@@ -28,22 +28,22 @@ private val __Date: KProperty1<MongoCacheData, Instant?>
 internal class MongoCacheData_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         MongoCacheData?>) : KPropertyPath<T, MongoCacheData?>(previous,property) {
     val id: KPropertyPath<T, Id<*>?>
-        get() = KPropertyPath<T, Id<*>?>(this,__Id)
+        get() = KPropertyPath(this,__Id)
 
     val type: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Type)
+        get() = KPropertyPath(this,__Type)
 
     val s: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__S)
+        get() = KPropertyPath(this,__S)
 
     val b: KPropertyPath<T, ByteArray?>
-        get() = KPropertyPath<T, ByteArray?>(this,__B)
+        get() = KPropertyPath(this,__B)
 
     val a: KPropertyPath<T, AnyValueWrapper?>
-        get() = KPropertyPath<T, AnyValueWrapper?>(this,__A)
+        get() = KPropertyPath(this,__A)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     companion object {
         val Id: KProperty1<MongoCacheData, Id<*>?>
@@ -64,22 +64,22 @@ internal class MongoCacheData_Col<T>(previous: KPropertyPath<T, *>?, property: K
         Collection<MongoCacheData>?>) : KCollectionPropertyPath<T, MongoCacheData?,
         MongoCacheData_<T>>(previous,property) {
     val id: KPropertyPath<T, Id<*>?>
-        get() = KPropertyPath<T, Id<*>?>(this,__Id)
+        get() = KPropertyPath(this,__Id)
 
     val type: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Type)
+        get() = KPropertyPath(this,__Type)
 
     val s: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__S)
+        get() = KPropertyPath(this,__S)
 
     val b: KPropertyPath<T, ByteArray?>
-        get() = KPropertyPath<T, ByteArray?>(this,__B)
+        get() = KPropertyPath(this,__B)
 
     val a: KPropertyPath<T, AnyValueWrapper?>
-        get() = KPropertyPath<T, AnyValueWrapper?>(this,__A)
+        get() = KPropertyPath(this,__A)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): MongoCacheData_<T> =
@@ -89,22 +89,22 @@ internal class MongoCacheData_Map<T, K>(previous: KPropertyPath<T, *>?, property
         Map<K, MongoCacheData>?>) : KMapPropertyPath<T, K, MongoCacheData?,
         MongoCacheData_<T>>(previous,property) {
     val id: KPropertyPath<T, Id<*>?>
-        get() = KPropertyPath<T, Id<*>?>(this,__Id)
+        get() = KPropertyPath(this,__Id)
 
     val type: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Type)
+        get() = KPropertyPath(this,__Type)
 
     val s: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__S)
+        get() = KPropertyPath(this,__S)
 
     val b: KPropertyPath<T, ByteArray?>
-        get() = KPropertyPath<T, ByteArray?>(this,__B)
+        get() = KPropertyPath(this,__B)
 
     val a: KPropertyPath<T, AnyValueWrapper?>
-        get() = KPropertyPath<T, AnyValueWrapper?>(this,__A)
+        get() = KPropertyPath(this,__A)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): MongoCacheData_<T> =

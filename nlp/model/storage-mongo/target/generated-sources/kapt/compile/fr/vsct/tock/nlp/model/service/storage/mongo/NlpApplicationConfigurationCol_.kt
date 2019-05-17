@@ -31,16 +31,16 @@ internal class NlpApplicationConfigurationCol_<T>(previous: KPropertyPath<T, *>?
         KPropertyPath<T,
         NlpApplicationConfigurationMongoDAO.NlpApplicationConfigurationCol?>(previous,property) {
     val applicationName: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ApplicationName)
+        get() = KPropertyPath(this,__ApplicationName)
 
     val engineType: KPropertyPath<T, NlpEngineType?>
-        get() = KPropertyPath<T, NlpEngineType?>(this,__EngineType)
+        get() = KPropertyPath(this,__EngineType)
 
     val configuration: KPropertyPath<T, NlpApplicationConfiguration?>
-        get() = KPropertyPath<T, NlpApplicationConfiguration?>(this,__Configuration)
+        get() = KPropertyPath(this,__Configuration)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     companion object {
         val ApplicationName:
@@ -67,16 +67,16 @@ internal class NlpApplicationConfigurationCol_Col<T>(previous: KPropertyPath<T, 
         NlpApplicationConfigurationMongoDAO.NlpApplicationConfigurationCol?,
         NlpApplicationConfigurationCol_<T>>(previous,property) {
     val applicationName: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ApplicationName)
+        get() = KPropertyPath(this,__ApplicationName)
 
     val engineType: KPropertyPath<T, NlpEngineType?>
-        get() = KPropertyPath<T, NlpEngineType?>(this,__EngineType)
+        get() = KPropertyPath(this,__EngineType)
 
     val configuration: KPropertyPath<T, NlpApplicationConfiguration?>
-        get() = KPropertyPath<T, NlpApplicationConfiguration?>(this,__Configuration)
+        get() = KPropertyPath(this,__Configuration)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String):
@@ -89,16 +89,16 @@ internal class NlpApplicationConfigurationCol_Map<T, K>(previous: KPropertyPath<
         NlpApplicationConfigurationMongoDAO.NlpApplicationConfigurationCol?,
         NlpApplicationConfigurationCol_<T>>(previous,property) {
     val applicationName: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ApplicationName)
+        get() = KPropertyPath(this,__ApplicationName)
 
     val engineType: KPropertyPath<T, NlpEngineType?>
-        get() = KPropertyPath<T, NlpEngineType?>(this,__EngineType)
+        get() = KPropertyPath(this,__EngineType)
 
     val configuration: KPropertyPath<T, NlpApplicationConfiguration?>
-        get() = KPropertyPath<T, NlpApplicationConfiguration?>(this,__Configuration)
+        get() = KPropertyPath(this,__Configuration)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String):

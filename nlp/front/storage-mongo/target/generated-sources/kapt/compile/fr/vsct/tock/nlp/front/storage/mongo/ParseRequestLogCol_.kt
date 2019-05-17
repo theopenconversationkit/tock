@@ -37,10 +37,10 @@ internal class ParseRequestLogCol_<T>(previous: KPropertyPath<T, *>?, property: 
         ParseRequestLogMongoDAO.ParseRequestLogCol?>) : KPropertyPath<T,
         ParseRequestLogMongoDAO.ParseRequestLogCol?>(previous,property) {
     val text: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Text)
+        get() = KPropertyPath(this,__Text)
 
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val query: ParseQuery_<T>
         get() = ParseQuery_(this,ParseRequestLogMongoDAO.ParseRequestLogCol::query)
@@ -49,13 +49,13 @@ internal class ParseRequestLogCol_<T>(previous: KPropertyPath<T, *>?, property: 
         get() = ParseResult_(this,ParseRequestLogMongoDAO.ParseRequestLogCol::result)
 
     val durationInMS: KPropertyPath<T, Long?>
-        get() = KPropertyPath<T, Long?>(this,__DurationInMS)
+        get() = KPropertyPath(this,__DurationInMS)
 
     val error: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__Error)
+        get() = KPropertyPath(this,__Error)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     companion object {
         val Text: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogCol, String?>
@@ -64,9 +64,9 @@ internal class ParseRequestLogCol_<T>(previous: KPropertyPath<T, *>?, property: 
                 Id<ApplicationDefinition>?>
             get() = __ApplicationId
         val Query: ParseQuery_<ParseRequestLogMongoDAO.ParseRequestLogCol>
-            get() = ParseQuery_<ParseRequestLogMongoDAO.ParseRequestLogCol>(null,__Query)
+            get() = ParseQuery_(null,__Query)
         val Result: ParseResult_<ParseRequestLogMongoDAO.ParseRequestLogCol>
-            get() = ParseResult_<ParseRequestLogMongoDAO.ParseRequestLogCol>(null,__Result)
+            get() = ParseResult_(null,__Result)
         val DurationInMS: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogCol, Long?>
             get() = __DurationInMS
         val Error: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogCol, Boolean?>
@@ -79,10 +79,10 @@ internal class ParseRequestLogCol_Col<T>(previous: KPropertyPath<T, *>?, propert
         Collection<ParseRequestLogMongoDAO.ParseRequestLogCol>?>) : KCollectionPropertyPath<T,
         ParseRequestLogMongoDAO.ParseRequestLogCol?, ParseRequestLogCol_<T>>(previous,property) {
     val text: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Text)
+        get() = KPropertyPath(this,__Text)
 
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val query: ParseQuery_<T>
         get() = ParseQuery_(this,ParseRequestLogMongoDAO.ParseRequestLogCol::query)
@@ -91,13 +91,13 @@ internal class ParseRequestLogCol_Col<T>(previous: KPropertyPath<T, *>?, propert
         get() = ParseResult_(this,ParseRequestLogMongoDAO.ParseRequestLogCol::result)
 
     val durationInMS: KPropertyPath<T, Long?>
-        get() = KPropertyPath<T, Long?>(this,__DurationInMS)
+        get() = KPropertyPath(this,__DurationInMS)
 
     val error: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__Error)
+        get() = KPropertyPath(this,__Error)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ParseRequestLogCol_<T> =
@@ -107,10 +107,10 @@ internal class ParseRequestLogCol_Map<T, K>(previous: KPropertyPath<T, *>?, prop
         Map<K, ParseRequestLogMongoDAO.ParseRequestLogCol>?>) : KMapPropertyPath<T, K,
         ParseRequestLogMongoDAO.ParseRequestLogCol?, ParseRequestLogCol_<T>>(previous,property) {
     val text: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Text)
+        get() = KPropertyPath(this,__Text)
 
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val query: ParseQuery_<T>
         get() = ParseQuery_(this,ParseRequestLogMongoDAO.ParseRequestLogCol::query)
@@ -119,13 +119,13 @@ internal class ParseRequestLogCol_Map<T, K>(previous: KPropertyPath<T, *>?, prop
         get() = ParseResult_(this,ParseRequestLogMongoDAO.ParseRequestLogCol::result)
 
     val durationInMS: KPropertyPath<T, Long?>
-        get() = KPropertyPath<T, Long?>(this,__DurationInMS)
+        get() = KPropertyPath(this,__DurationInMS)
 
     val error: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__Error)
+        get() = KPropertyPath(this,__Error)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ParseRequestLogCol_<T> =

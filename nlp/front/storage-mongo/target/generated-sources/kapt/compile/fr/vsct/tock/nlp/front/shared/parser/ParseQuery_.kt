@@ -27,22 +27,22 @@ private val __IntentsSubset: KProperty1<ParseQuery, Set<IntentQualifier>?>
 class ParseQuery_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ParseQuery?>) :
         KPropertyPath<T, ParseQuery?>(previous,property) {
     val queries: KCollectionSimplePropertyPath<T, String?>
-        get() = KCollectionSimplePropertyPath<T, String?>(this,ParseQuery::queries)
+        get() = KCollectionSimplePropertyPath(this,ParseQuery::queries)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val applicationName: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ApplicationName)
+        get() = KPropertyPath(this,__ApplicationName)
 
     val context: QueryContext_<T>
         get() = QueryContext_(this,ParseQuery::context)
 
     val state: KPropertyPath<T, QueryState?>
-        get() = KPropertyPath<T, QueryState?>(this,__State)
+        get() = KPropertyPath(this,__State)
 
     val intentsSubset: KCollectionSimplePropertyPath<T, IntentQualifier?>
-        get() = KCollectionSimplePropertyPath<T, IntentQualifier?>(this,ParseQuery::intentsSubset)
+        get() = KCollectionSimplePropertyPath(this,ParseQuery::intentsSubset)
 
     companion object {
         val Queries: KCollectionSimplePropertyPath<ParseQuery, String?>
@@ -52,7 +52,7 @@ class ParseQuery_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Par
         val ApplicationName: KProperty1<ParseQuery, String?>
             get() = __ApplicationName
         val Context: QueryContext_<ParseQuery>
-            get() = QueryContext_<ParseQuery>(null,__Context)
+            get() = QueryContext_(null,__Context)
         val State: KProperty1<ParseQuery, QueryState?>
             get() = __State
         val IntentsSubset: KCollectionSimplePropertyPath<ParseQuery, IntentQualifier?>
@@ -63,22 +63,22 @@ class ParseQuery_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         Collection<ParseQuery>?>) : KCollectionPropertyPath<T, ParseQuery?,
         ParseQuery_<T>>(previous,property) {
     val queries: KCollectionSimplePropertyPath<T, String?>
-        get() = KCollectionSimplePropertyPath<T, String?>(this,ParseQuery::queries)
+        get() = KCollectionSimplePropertyPath(this,ParseQuery::queries)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val applicationName: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ApplicationName)
+        get() = KPropertyPath(this,__ApplicationName)
 
     val context: QueryContext_<T>
         get() = QueryContext_(this,ParseQuery::context)
 
     val state: KPropertyPath<T, QueryState?>
-        get() = KPropertyPath<T, QueryState?>(this,__State)
+        get() = KPropertyPath(this,__State)
 
     val intentsSubset: KCollectionSimplePropertyPath<T, IntentQualifier?>
-        get() = KCollectionSimplePropertyPath<T, IntentQualifier?>(this,ParseQuery::intentsSubset)
+        get() = KCollectionSimplePropertyPath(this,ParseQuery::intentsSubset)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ParseQuery_<T> =
@@ -87,22 +87,22 @@ class ParseQuery_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
 class ParseQuery_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K,
         ParseQuery>?>) : KMapPropertyPath<T, K, ParseQuery?, ParseQuery_<T>>(previous,property) {
     val queries: KCollectionSimplePropertyPath<T, String?>
-        get() = KCollectionSimplePropertyPath<T, String?>(this,ParseQuery::queries)
+        get() = KCollectionSimplePropertyPath(this,ParseQuery::queries)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val applicationName: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ApplicationName)
+        get() = KPropertyPath(this,__ApplicationName)
 
     val context: QueryContext_<T>
         get() = QueryContext_(this,ParseQuery::context)
 
     val state: KPropertyPath<T, QueryState?>
-        get() = KPropertyPath<T, QueryState?>(this,__State)
+        get() = KPropertyPath(this,__State)
 
     val intentsSubset: KCollectionSimplePropertyPath<T, IntentQualifier?>
-        get() = KCollectionSimplePropertyPath<T, IntentQualifier?>(this,ParseQuery::intentsSubset)
+        get() = KCollectionSimplePropertyPath(this,ParseQuery::intentsSubset)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ParseQuery_<T> =

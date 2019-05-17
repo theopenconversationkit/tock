@@ -18,13 +18,13 @@ private val __ClientId: KProperty1<PlayerId, String?>
 class PlayerId_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, PlayerId?>) :
         KPropertyPath<T, PlayerId?>(previous,property) {
     val id: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Id)
+        get() = KPropertyPath(this,__Id)
 
     val type: KPropertyPath<T, PlayerType?>
-        get() = KPropertyPath<T, PlayerType?>(this,__Type)
+        get() = KPropertyPath(this,__Type)
 
     val clientId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ClientId)
+        get() = KPropertyPath(this,__ClientId)
 
     companion object {
         val Id: KProperty1<PlayerId, String?>
@@ -39,13 +39,13 @@ class PlayerId_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         Collection<PlayerId>?>) : KCollectionPropertyPath<T, PlayerId?,
         PlayerId_<T>>(previous,property) {
     val id: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Id)
+        get() = KPropertyPath(this,__Id)
 
     val type: KPropertyPath<T, PlayerType?>
-        get() = KPropertyPath<T, PlayerType?>(this,__Type)
+        get() = KPropertyPath(this,__Type)
 
     val clientId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ClientId)
+        get() = KPropertyPath(this,__ClientId)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): PlayerId_<T> = PlayerId_(this,
@@ -54,13 +54,13 @@ class PlayerId_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
 class PlayerId_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K, PlayerId>?>)
         : KMapPropertyPath<T, K, PlayerId?, PlayerId_<T>>(previous,property) {
     val id: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Id)
+        get() = KPropertyPath(this,__Id)
 
     val type: KPropertyPath<T, PlayerType?>
-        get() = KPropertyPath<T, PlayerType?>(this,__Type)
+        get() = KPropertyPath(this,__Type)
 
     val clientId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ClientId)
+        get() = KPropertyPath(this,__ClientId)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): PlayerId_<T> = PlayerId_(this,

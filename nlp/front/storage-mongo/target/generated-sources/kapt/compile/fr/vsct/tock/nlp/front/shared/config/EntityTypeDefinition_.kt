@@ -26,10 +26,10 @@ private val ___id: KProperty1<EntityTypeDefinition, Id<EntityTypeDefinition>?>
 class EntityTypeDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         EntityTypeDefinition?>) : KPropertyPath<T, EntityTypeDefinition?>(previous,property) {
     val name_: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Name)
+        get() = KPropertyPath(this,__Name)
 
     val description: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Description)
+        get() = KPropertyPath(this,__Description)
 
     val subEntities: EntityDefinition_Col<T>
         get() = EntityDefinition_Col(this,EntityTypeDefinition::subEntities)
@@ -38,7 +38,7 @@ class EntityTypeDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProper
         get() = PredefinedValue_Col(this,EntityTypeDefinition::predefinedValues)
 
     val _id: KPropertyPath<T, Id<EntityTypeDefinition>?>
-        get() = KPropertyPath<T, Id<EntityTypeDefinition>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     companion object {
         val Name: KProperty1<EntityTypeDefinition, String?>
@@ -46,9 +46,9 @@ class EntityTypeDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProper
         val Description: KProperty1<EntityTypeDefinition, String?>
             get() = __Description
         val SubEntities: EntityDefinition_Col<EntityTypeDefinition>
-            get() = EntityDefinition_Col<EntityTypeDefinition>(null,__SubEntities)
+            get() = EntityDefinition_Col(null,__SubEntities)
         val PredefinedValues: PredefinedValue_Col<EntityTypeDefinition>
-            get() = PredefinedValue_Col<EntityTypeDefinition>(null,__PredefinedValues)
+            get() = PredefinedValue_Col(null,__PredefinedValues)
         val _id: KProperty1<EntityTypeDefinition, Id<EntityTypeDefinition>?>
             get() = ___id}
 }
@@ -57,10 +57,10 @@ class EntityTypeDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KPro
         Collection<EntityTypeDefinition>?>) : KCollectionPropertyPath<T, EntityTypeDefinition?,
         EntityTypeDefinition_<T>>(previous,property) {
     val name_: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Name)
+        get() = KPropertyPath(this,__Name)
 
     val description: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Description)
+        get() = KPropertyPath(this,__Description)
 
     val subEntities: EntityDefinition_Col<T>
         get() = EntityDefinition_Col(this,EntityTypeDefinition::subEntities)
@@ -69,7 +69,7 @@ class EntityTypeDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KPro
         get() = PredefinedValue_Col(this,EntityTypeDefinition::predefinedValues)
 
     val _id: KPropertyPath<T, Id<EntityTypeDefinition>?>
-        get() = KPropertyPath<T, Id<EntityTypeDefinition>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): EntityTypeDefinition_<T> =
@@ -79,10 +79,10 @@ class EntityTypeDefinition_Map<T, K>(previous: KPropertyPath<T, *>?, property: K
         EntityTypeDefinition>?>) : KMapPropertyPath<T, K, EntityTypeDefinition?,
         EntityTypeDefinition_<T>>(previous,property) {
     val name_: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Name)
+        get() = KPropertyPath(this,__Name)
 
     val description: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Description)
+        get() = KPropertyPath(this,__Description)
 
     val subEntities: EntityDefinition_Col<T>
         get() = EntityDefinition_Col(this,EntityTypeDefinition::subEntities)
@@ -91,7 +91,7 @@ class EntityTypeDefinition_Map<T, K>(previous: KPropertyPath<T, *>?, property: K
         get() = PredefinedValue_Col(this,EntityTypeDefinition::predefinedValues)
 
     val _id: KPropertyPath<T, Id<EntityTypeDefinition>?>
-        get() = KPropertyPath<T, Id<EntityTypeDefinition>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): EntityTypeDefinition_<T> =

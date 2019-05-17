@@ -34,28 +34,28 @@ private val __Date: KProperty1<I18nAlternativeIndex, Instant?>
 internal class I18nAlternativeIndex_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         I18nAlternativeIndex?>) : KPropertyPath<T, I18nAlternativeIndex?>(previous,property) {
     val labelId: KPropertyPath<T, Id<I18nLabel>?>
-        get() = KPropertyPath<T, Id<I18nLabel>?>(this,__LabelId)
+        get() = KPropertyPath(this,__LabelId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val locale: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Locale)
+        get() = KPropertyPath(this,__Locale)
 
     val interfaceType: KPropertyPath<T, UserInterfaceType?>
-        get() = KPropertyPath<T, UserInterfaceType?>(this,__InterfaceType)
+        get() = KPropertyPath(this,__InterfaceType)
 
     val connectorId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ConnectorId)
+        get() = KPropertyPath(this,__ConnectorId)
 
     val contextId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ContextId)
+        get() = KPropertyPath(this,__ContextId)
 
     val index: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Index)
+        get() = KPropertyPath(this,__Index)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     companion object {
         val LabelId: KProperty1<I18nAlternativeIndex, Id<I18nLabel>?>
@@ -80,28 +80,28 @@ internal class I18nAlternativeIndex_Col<T>(previous: KPropertyPath<T, *>?, prope
         Collection<I18nAlternativeIndex>?>) : KCollectionPropertyPath<T, I18nAlternativeIndex?,
         I18nAlternativeIndex_<T>>(previous,property) {
     val labelId: KPropertyPath<T, Id<I18nLabel>?>
-        get() = KPropertyPath<T, Id<I18nLabel>?>(this,__LabelId)
+        get() = KPropertyPath(this,__LabelId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val locale: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Locale)
+        get() = KPropertyPath(this,__Locale)
 
     val interfaceType: KPropertyPath<T, UserInterfaceType?>
-        get() = KPropertyPath<T, UserInterfaceType?>(this,__InterfaceType)
+        get() = KPropertyPath(this,__InterfaceType)
 
     val connectorId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ConnectorId)
+        get() = KPropertyPath(this,__ConnectorId)
 
     val contextId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ContextId)
+        get() = KPropertyPath(this,__ContextId)
 
     val index: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Index)
+        get() = KPropertyPath(this,__Index)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): I18nAlternativeIndex_<T> =
@@ -111,28 +111,28 @@ internal class I18nAlternativeIndex_Map<T, K>(previous: KPropertyPath<T, *>?, pr
         KProperty1<*, Map<K, I18nAlternativeIndex>?>) : KMapPropertyPath<T, K,
         I18nAlternativeIndex?, I18nAlternativeIndex_<T>>(previous,property) {
     val labelId: KPropertyPath<T, Id<I18nLabel>?>
-        get() = KPropertyPath<T, Id<I18nLabel>?>(this,__LabelId)
+        get() = KPropertyPath(this,__LabelId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val locale: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Locale)
+        get() = KPropertyPath(this,__Locale)
 
     val interfaceType: KPropertyPath<T, UserInterfaceType?>
-        get() = KPropertyPath<T, UserInterfaceType?>(this,__InterfaceType)
+        get() = KPropertyPath(this,__InterfaceType)
 
     val connectorId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ConnectorId)
+        get() = KPropertyPath(this,__ConnectorId)
 
     val contextId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ContextId)
+        get() = KPropertyPath(this,__ContextId)
 
     val index: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Index)
+        get() = KPropertyPath(this,__Index)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): I18nAlternativeIndex_<T> =

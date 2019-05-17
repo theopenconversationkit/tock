@@ -34,28 +34,28 @@ private val __NbErrors: KProperty1<TestBuild, Int?>
 class TestBuild_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, TestBuild?>) :
         KPropertyPath<T, TestBuild?>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val startDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__StartDate)
+        get() = KPropertyPath(this,__StartDate)
 
     val buildModelDuration: KPropertyPath<T, Duration?>
-        get() = KPropertyPath<T, Duration?>(this,__BuildModelDuration)
+        get() = KPropertyPath(this,__BuildModelDuration)
 
     val testSentencesDuration: KPropertyPath<T, Duration?>
-        get() = KPropertyPath<T, Duration?>(this,__TestSentencesDuration)
+        get() = KPropertyPath(this,__TestSentencesDuration)
 
     val nbSentencesInModel: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__NbSentencesInModel)
+        get() = KPropertyPath(this,__NbSentencesInModel)
 
     val nbSentencesTested: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__NbSentencesTested)
+        get() = KPropertyPath(this,__NbSentencesTested)
 
     val nbErrors: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__NbErrors)
+        get() = KPropertyPath(this,__NbErrors)
 
     companion object {
         val ApplicationId: KProperty1<TestBuild, Id<ApplicationDefinition>?>
@@ -80,28 +80,28 @@ class TestBuild_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         Collection<TestBuild>?>) : KCollectionPropertyPath<T, TestBuild?,
         TestBuild_<T>>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val startDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__StartDate)
+        get() = KPropertyPath(this,__StartDate)
 
     val buildModelDuration: KPropertyPath<T, Duration?>
-        get() = KPropertyPath<T, Duration?>(this,__BuildModelDuration)
+        get() = KPropertyPath(this,__BuildModelDuration)
 
     val testSentencesDuration: KPropertyPath<T, Duration?>
-        get() = KPropertyPath<T, Duration?>(this,__TestSentencesDuration)
+        get() = KPropertyPath(this,__TestSentencesDuration)
 
     val nbSentencesInModel: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__NbSentencesInModel)
+        get() = KPropertyPath(this,__NbSentencesInModel)
 
     val nbSentencesTested: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__NbSentencesTested)
+        get() = KPropertyPath(this,__NbSentencesTested)
 
     val nbErrors: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__NbErrors)
+        get() = KPropertyPath(this,__NbErrors)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): TestBuild_<T> = TestBuild_(this,
@@ -110,28 +110,28 @@ class TestBuild_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
 class TestBuild_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K,
         TestBuild>?>) : KMapPropertyPath<T, K, TestBuild?, TestBuild_<T>>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val startDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__StartDate)
+        get() = KPropertyPath(this,__StartDate)
 
     val buildModelDuration: KPropertyPath<T, Duration?>
-        get() = KPropertyPath<T, Duration?>(this,__BuildModelDuration)
+        get() = KPropertyPath(this,__BuildModelDuration)
 
     val testSentencesDuration: KPropertyPath<T, Duration?>
-        get() = KPropertyPath<T, Duration?>(this,__TestSentencesDuration)
+        get() = KPropertyPath(this,__TestSentencesDuration)
 
     val nbSentencesInModel: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__NbSentencesInModel)
+        get() = KPropertyPath(this,__NbSentencesInModel)
 
     val nbSentencesTested: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__NbSentencesTested)
+        get() = KPropertyPath(this,__NbSentencesTested)
 
     val nbErrors: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__NbErrors)
+        get() = KPropertyPath(this,__NbErrors)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): TestBuild_<T> = TestBuild_(this,

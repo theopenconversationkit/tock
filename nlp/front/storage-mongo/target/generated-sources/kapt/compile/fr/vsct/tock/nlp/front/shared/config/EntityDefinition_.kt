@@ -19,13 +19,13 @@ private val __AtStartOfDay: KProperty1<EntityDefinition, Boolean?>
 class EntityDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         EntityDefinition?>) : KPropertyPath<T, EntityDefinition?>(previous,property) {
     val entityTypeName: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__EntityTypeName)
+        get() = KPropertyPath(this,__EntityTypeName)
 
     val role: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Role)
+        get() = KPropertyPath(this,__Role)
 
     val atStartOfDay: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__AtStartOfDay)
+        get() = KPropertyPath(this,__AtStartOfDay)
 
     companion object {
         val EntityTypeName: KProperty1<EntityDefinition, String?>
@@ -40,13 +40,13 @@ class EntityDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KPropert
         Collection<EntityDefinition>?>) : KCollectionPropertyPath<T, EntityDefinition?,
         EntityDefinition_<T>>(previous,property) {
     val entityTypeName: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__EntityTypeName)
+        get() = KPropertyPath(this,__EntityTypeName)
 
     val role: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Role)
+        get() = KPropertyPath(this,__Role)
 
     val atStartOfDay: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__AtStartOfDay)
+        get() = KPropertyPath(this,__AtStartOfDay)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): EntityDefinition_<T> =
@@ -56,13 +56,13 @@ class EntityDefinition_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProp
         EntityDefinition>?>) : KMapPropertyPath<T, K, EntityDefinition?,
         EntityDefinition_<T>>(previous,property) {
     val entityTypeName: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__EntityTypeName)
+        get() = KPropertyPath(this,__EntityTypeName)
 
     val role: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Role)
+        get() = KPropertyPath(this,__Role)
 
     val atStartOfDay: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__AtStartOfDay)
+        get() = KPropertyPath(this,__AtStartOfDay)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): EntityDefinition_<T> =

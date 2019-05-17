@@ -36,31 +36,31 @@ private val __FirstDetectionDate: KProperty1<IntentTestError, Instant?>
 class IntentTestError_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, IntentTestError?>)
         : KPropertyPath<T, IntentTestError?>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val text: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Text)
+        get() = KPropertyPath(this,__Text)
 
     val currentIntent: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__CurrentIntent)
+        get() = KPropertyPath(this,__CurrentIntent)
 
     val wrongIntent: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__WrongIntent)
+        get() = KPropertyPath(this,__WrongIntent)
 
     val averageErrorProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__AverageErrorProbability)
+        get() = KPropertyPath(this,__AverageErrorProbability)
 
     val count: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Count)
+        get() = KPropertyPath(this,__Count)
 
     val total: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Total)
+        get() = KPropertyPath(this,__Total)
 
     val firstDetectionDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__FirstDetectionDate)
+        get() = KPropertyPath(this,__FirstDetectionDate)
 
     companion object {
         val ApplicationId: KProperty1<IntentTestError, Id<ApplicationDefinition>?>
@@ -87,31 +87,31 @@ class IntentTestError_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty
         Collection<IntentTestError>?>) : KCollectionPropertyPath<T, IntentTestError?,
         IntentTestError_<T>>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val text: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Text)
+        get() = KPropertyPath(this,__Text)
 
     val currentIntent: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__CurrentIntent)
+        get() = KPropertyPath(this,__CurrentIntent)
 
     val wrongIntent: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__WrongIntent)
+        get() = KPropertyPath(this,__WrongIntent)
 
     val averageErrorProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__AverageErrorProbability)
+        get() = KPropertyPath(this,__AverageErrorProbability)
 
     val count: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Count)
+        get() = KPropertyPath(this,__Count)
 
     val total: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Total)
+        get() = KPropertyPath(this,__Total)
 
     val firstDetectionDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__FirstDetectionDate)
+        get() = KPropertyPath(this,__FirstDetectionDate)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): IntentTestError_<T> =
@@ -121,31 +121,31 @@ class IntentTestError_Map<T, K>(previous: KPropertyPath<T, *>?, property: KPrope
         IntentTestError>?>) : KMapPropertyPath<T, K, IntentTestError?,
         IntentTestError_<T>>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val text: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Text)
+        get() = KPropertyPath(this,__Text)
 
     val currentIntent: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__CurrentIntent)
+        get() = KPropertyPath(this,__CurrentIntent)
 
     val wrongIntent: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__WrongIntent)
+        get() = KPropertyPath(this,__WrongIntent)
 
     val averageErrorProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__AverageErrorProbability)
+        get() = KPropertyPath(this,__AverageErrorProbability)
 
     val count: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Count)
+        get() = KPropertyPath(this,__Count)
 
     val total: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Total)
+        get() = KPropertyPath(this,__Total)
 
     val firstDetectionDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__FirstDetectionDate)
+        get() = KPropertyPath(this,__FirstDetectionDate)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): IntentTestError_<T> =

@@ -29,25 +29,25 @@ private val ___id: KProperty1<DialogFlowStateCol, Id<DialogFlowStateCol>?>
 internal class DialogFlowStateCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         DialogFlowStateCol?>) : KPropertyPath<T, DialogFlowStateCol?>(previous,property) {
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val botId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__BotId)
+        get() = KPropertyPath(this,__BotId)
 
     val storyDefinitionId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__StoryDefinitionId)
+        get() = KPropertyPath(this,__StoryDefinitionId)
 
     val intent: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Intent)
+        get() = KPropertyPath(this,__Intent)
 
     val step: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Step)
+        get() = KPropertyPath(this,__Step)
 
     val entities: KCollectionSimplePropertyPath<T, String?>
-        get() = KCollectionSimplePropertyPath<T, String?>(this,DialogFlowStateCol::entities)
+        get() = KCollectionSimplePropertyPath(this,DialogFlowStateCol::entities)
 
     val _id: KPropertyPath<T, Id<DialogFlowStateCol>?>
-        get() = KPropertyPath<T, Id<DialogFlowStateCol>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     companion object {
         val Namespace: KProperty1<DialogFlowStateCol, String?>
@@ -70,25 +70,25 @@ internal class DialogFlowStateCol_Col<T>(previous: KPropertyPath<T, *>?, propert
         Collection<DialogFlowStateCol>?>) : KCollectionPropertyPath<T, DialogFlowStateCol?,
         DialogFlowStateCol_<T>>(previous,property) {
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val botId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__BotId)
+        get() = KPropertyPath(this,__BotId)
 
     val storyDefinitionId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__StoryDefinitionId)
+        get() = KPropertyPath(this,__StoryDefinitionId)
 
     val intent: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Intent)
+        get() = KPropertyPath(this,__Intent)
 
     val step: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Step)
+        get() = KPropertyPath(this,__Step)
 
     val entities: KCollectionSimplePropertyPath<T, String?>
-        get() = KCollectionSimplePropertyPath<T, String?>(this,DialogFlowStateCol::entities)
+        get() = KCollectionSimplePropertyPath(this,DialogFlowStateCol::entities)
 
     val _id: KPropertyPath<T, Id<DialogFlowStateCol>?>
-        get() = KPropertyPath<T, Id<DialogFlowStateCol>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): DialogFlowStateCol_<T> =
@@ -98,25 +98,25 @@ internal class DialogFlowStateCol_Map<T, K>(previous: KPropertyPath<T, *>?, prop
         Map<K, DialogFlowStateCol>?>) : KMapPropertyPath<T, K, DialogFlowStateCol?,
         DialogFlowStateCol_<T>>(previous,property) {
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val botId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__BotId)
+        get() = KPropertyPath(this,__BotId)
 
     val storyDefinitionId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__StoryDefinitionId)
+        get() = KPropertyPath(this,__StoryDefinitionId)
 
     val intent: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Intent)
+        get() = KPropertyPath(this,__Intent)
 
     val step: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Step)
+        get() = KPropertyPath(this,__Step)
 
     val entities: KCollectionSimplePropertyPath<T, String?>
-        get() = KCollectionSimplePropertyPath<T, String?>(this,DialogFlowStateCol::entities)
+        get() = KCollectionSimplePropertyPath(this,DialogFlowStateCol::entities)
 
     val _id: KPropertyPath<T, Id<DialogFlowStateCol>?>
-        get() = KPropertyPath<T, Id<DialogFlowStateCol>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): DialogFlowStateCol_<T> =

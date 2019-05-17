@@ -18,10 +18,10 @@ internal class DayAndYear_<T>(previous: KPropertyPath<T, *>?, property: KPropert
         ParseRequestLogMongoDAO.DayAndYear?>) : KPropertyPath<T,
         ParseRequestLogMongoDAO.DayAndYear?>(previous,property) {
     val dayOfYear: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__DayOfYear)
+        get() = KPropertyPath(this,__DayOfYear)
 
     val year: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Year)
+        get() = KPropertyPath(this,__Year)
 
     companion object {
         val DayOfYear: KProperty1<ParseRequestLogMongoDAO.DayAndYear, Int?>
@@ -34,10 +34,10 @@ internal class DayAndYear_Col<T>(previous: KPropertyPath<T, *>?, property: KProp
         Collection<ParseRequestLogMongoDAO.DayAndYear>?>) : KCollectionPropertyPath<T,
         ParseRequestLogMongoDAO.DayAndYear?, DayAndYear_<T>>(previous,property) {
     val dayOfYear: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__DayOfYear)
+        get() = KPropertyPath(this,__DayOfYear)
 
     val year: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Year)
+        get() = KPropertyPath(this,__Year)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): DayAndYear_<T> =
@@ -47,10 +47,10 @@ internal class DayAndYear_Map<T, K>(previous: KPropertyPath<T, *>?, property: KP
         ParseRequestLogMongoDAO.DayAndYear>?>) : KMapPropertyPath<T, K,
         ParseRequestLogMongoDAO.DayAndYear?, DayAndYear_<T>>(previous,property) {
     val dayOfYear: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__DayOfYear)
+        get() = KPropertyPath(this,__DayOfYear)
 
     val year: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Year)
+        get() = KPropertyPath(this,__Year)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): DayAndYear_<T> =

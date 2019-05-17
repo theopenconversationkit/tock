@@ -18,7 +18,7 @@ private val __Entities: KProperty1<Classification, List<ClassifiedEntity>?>
 class Classification_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Classification?>) :
         KPropertyPath<T, Classification?>(previous,property) {
     val intentId: KPropertyPath<T, Id<IntentDefinition>?>
-        get() = KPropertyPath<T, Id<IntentDefinition>?>(this,__IntentId)
+        get() = KPropertyPath(this,__IntentId)
 
     val entities: ClassifiedEntity_Col<T>
         get() = ClassifiedEntity_Col(this,Classification::entities)
@@ -27,14 +27,14 @@ class Classification_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         val IntentId: KProperty1<Classification, Id<IntentDefinition>?>
             get() = __IntentId
         val Entities: ClassifiedEntity_Col<Classification>
-            get() = ClassifiedEntity_Col<Classification>(null,__Entities)}
+            get() = ClassifiedEntity_Col(null,__Entities)}
 }
 
 class Classification_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         Collection<Classification>?>) : KCollectionPropertyPath<T, Classification?,
         Classification_<T>>(previous,property) {
     val intentId: KPropertyPath<T, Id<IntentDefinition>?>
-        get() = KPropertyPath<T, Id<IntentDefinition>?>(this,__IntentId)
+        get() = KPropertyPath(this,__IntentId)
 
     val entities: ClassifiedEntity_Col<T>
         get() = ClassifiedEntity_Col(this,Classification::entities)
@@ -47,7 +47,7 @@ class Classification_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProper
         Classification>?>) : KMapPropertyPath<T, K, Classification?,
         Classification_<T>>(previous,property) {
     val intentId: KPropertyPath<T, Id<IntentDefinition>?>
-        get() = KPropertyPath<T, Id<IntentDefinition>?>(this,__IntentId)
+        get() = KPropertyPath(this,__IntentId)
 
     val entities: ClassifiedEntity_Col<T>
         get() = ClassifiedEntity_Col(this,Classification::entities)

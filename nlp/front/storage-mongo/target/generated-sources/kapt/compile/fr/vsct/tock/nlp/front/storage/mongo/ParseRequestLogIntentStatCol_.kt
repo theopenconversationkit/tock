@@ -34,26 +34,25 @@ internal class ParseRequestLogIntentStatCol_<T>(previous: KPropertyPath<T, *>?, 
         KProperty1<*, ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol?>) : KPropertyPath<T,
         ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol?>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val intent1: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Intent1)
+        get() = KPropertyPath(this,__Intent1)
 
     val intent2: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Intent2)
+        get() = KPropertyPath(this,__Intent2)
 
     val averageDiff: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__AverageDiff)
+        get() = KPropertyPath(this,__AverageDiff)
 
     val count: KPropertyPath<T, Long?>
-        get() = KPropertyPath<T, Long?>(this,__Count)
+        get() = KPropertyPath(this,__Count)
 
     val _id: KPropertyPath<T, Id<ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol>?>
-        get() = KPropertyPath<T,
-                Id<ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     companion object {
         val ApplicationId: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol,
@@ -79,26 +78,25 @@ internal class ParseRequestLogIntentStatCol_Col<T>(previous: KPropertyPath<T, *>
         KCollectionPropertyPath<T, ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol?,
         ParseRequestLogIntentStatCol_<T>>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val intent1: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Intent1)
+        get() = KPropertyPath(this,__Intent1)
 
     val intent2: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Intent2)
+        get() = KPropertyPath(this,__Intent2)
 
     val averageDiff: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__AverageDiff)
+        get() = KPropertyPath(this,__AverageDiff)
 
     val count: KPropertyPath<T, Long?>
-        get() = KPropertyPath<T, Long?>(this,__Count)
+        get() = KPropertyPath(this,__Count)
 
     val _id: KPropertyPath<T, Id<ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol>?>
-        get() = KPropertyPath<T,
-                Id<ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ParseRequestLogIntentStatCol_<T>
@@ -109,26 +107,25 @@ internal class ParseRequestLogIntentStatCol_Map<T, K>(previous: KPropertyPath<T,
         KMapPropertyPath<T, K, ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol?,
         ParseRequestLogIntentStatCol_<T>>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val intent1: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Intent1)
+        get() = KPropertyPath(this,__Intent1)
 
     val intent2: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Intent2)
+        get() = KPropertyPath(this,__Intent2)
 
     val averageDiff: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__AverageDiff)
+        get() = KPropertyPath(this,__AverageDiff)
 
     val count: KPropertyPath<T, Long?>
-        get() = KPropertyPath<T, Long?>(this,__Count)
+        get() = KPropertyPath(this,__Count)
 
     val _id: KPropertyPath<T, Id<ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol>?>
-        get() = KPropertyPath<T,
-                Id<ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ParseRequestLogIntentStatCol_<T>

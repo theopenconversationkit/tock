@@ -25,17 +25,17 @@ internal class NlpStatsCol_<T>(previous: KPropertyPath<T, *>?, property: KProper
         get() = NlpStatsColId_(this,NlpStatsCol::_id)
 
     val stats: KPropertyPath<T, NlpCallStats?>
-        get() = KPropertyPath<T, NlpCallStats?>(this,__Stats)
+        get() = KPropertyPath(this,__Stats)
 
     val appNamespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__AppNamespace)
+        get() = KPropertyPath(this,__AppNamespace)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     companion object {
         val _id: NlpStatsColId_<NlpStatsCol>
-            get() = NlpStatsColId_<NlpStatsCol>(null,___id)
+            get() = NlpStatsColId_(null,___id)
         val Stats: KProperty1<NlpStatsCol, NlpCallStats?>
             get() = __Stats
         val AppNamespace: KProperty1<NlpStatsCol, String?>
@@ -51,13 +51,13 @@ internal class NlpStatsCol_Col<T>(previous: KPropertyPath<T, *>?, property: KPro
         get() = NlpStatsColId_(this,NlpStatsCol::_id)
 
     val stats: KPropertyPath<T, NlpCallStats?>
-        get() = KPropertyPath<T, NlpCallStats?>(this,__Stats)
+        get() = KPropertyPath(this,__Stats)
 
     val appNamespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__AppNamespace)
+        get() = KPropertyPath(this,__AppNamespace)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): NlpStatsCol_<T> =
@@ -69,13 +69,13 @@ internal class NlpStatsCol_Map<T, K>(previous: KPropertyPath<T, *>?, property: K
         get() = NlpStatsColId_(this,NlpStatsCol::_id)
 
     val stats: KPropertyPath<T, NlpCallStats?>
-        get() = KPropertyPath<T, NlpCallStats?>(this,__Stats)
+        get() = KPropertyPath(this,__Stats)
 
     val appNamespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__AppNamespace)
+        get() = KPropertyPath(this,__AppNamespace)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): NlpStatsCol_<T> =

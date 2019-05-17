@@ -29,19 +29,19 @@ internal class DialogFlowStateTransitionStatCol_<T>(previous: KPropertyPath<T, *
         KProperty1<*, DialogFlowStateTransitionStatCol?>) : KPropertyPath<T,
         DialogFlowStateTransitionStatCol?>(previous,property) {
     val applicationId: KPropertyPath<T, Id<BotApplicationConfiguration>?>
-        get() = KPropertyPath<T, Id<BotApplicationConfiguration>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val transitionId: KPropertyPath<T, Id<DialogFlowStateTransitionCol>?>
-        get() = KPropertyPath<T, Id<DialogFlowStateTransitionCol>?>(this,__TransitionId)
+        get() = KPropertyPath(this,__TransitionId)
 
     val dialogId: KPropertyPath<T, Id<Dialog>?>
-        get() = KPropertyPath<T, Id<Dialog>?>(this,__DialogId)
+        get() = KPropertyPath(this,__DialogId)
 
     val text: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Text)
+        get() = KPropertyPath(this,__Text)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     companion object {
         val ApplicationId: KProperty1<DialogFlowStateTransitionStatCol,
@@ -63,19 +63,19 @@ internal class DialogFlowStateTransitionStatCol_Col<T>(previous: KPropertyPath<T
         DialogFlowStateTransitionStatCol?, DialogFlowStateTransitionStatCol_<T>>(previous,property)
         {
     val applicationId: KPropertyPath<T, Id<BotApplicationConfiguration>?>
-        get() = KPropertyPath<T, Id<BotApplicationConfiguration>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val transitionId: KPropertyPath<T, Id<DialogFlowStateTransitionCol>?>
-        get() = KPropertyPath<T, Id<DialogFlowStateTransitionCol>?>(this,__TransitionId)
+        get() = KPropertyPath(this,__TransitionId)
 
     val dialogId: KPropertyPath<T, Id<Dialog>?>
-        get() = KPropertyPath<T, Id<Dialog>?>(this,__DialogId)
+        get() = KPropertyPath(this,__DialogId)
 
     val text: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Text)
+        get() = KPropertyPath(this,__Text)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String):
@@ -87,19 +87,19 @@ internal class DialogFlowStateTransitionStatCol_Map<T, K>(previous: KPropertyPat
         DialogFlowStateTransitionStatCol?, DialogFlowStateTransitionStatCol_<T>>(previous,property)
         {
     val applicationId: KPropertyPath<T, Id<BotApplicationConfiguration>?>
-        get() = KPropertyPath<T, Id<BotApplicationConfiguration>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val transitionId: KPropertyPath<T, Id<DialogFlowStateTransitionCol>?>
-        get() = KPropertyPath<T, Id<DialogFlowStateTransitionCol>?>(this,__TransitionId)
+        get() = KPropertyPath(this,__TransitionId)
 
     val dialogId: KPropertyPath<T, Id<Dialog>?>
-        get() = KPropertyPath<T, Id<Dialog>?>(this,__DialogId)
+        get() = KPropertyPath(this,__DialogId)
 
     val text: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Text)
+        get() = KPropertyPath(this,__Text)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String):

@@ -35,25 +35,25 @@ internal class ParseRequestLogStatCol_<T>(previous: KPropertyPath<T, *>?, proper
         ParseRequestLogMongoDAO.ParseRequestLogStatCol?>) : KPropertyPath<T,
         ParseRequestLogMongoDAO.ParseRequestLogStatCol?>(previous,property) {
     val text: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Text)
+        get() = KPropertyPath(this,__Text)
 
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val intentProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__IntentProbability)
+        get() = KPropertyPath(this,__IntentProbability)
 
     val entitiesProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__EntitiesProbability)
+        get() = KPropertyPath(this,__EntitiesProbability)
 
     val lastUsage: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUsage)
+        get() = KPropertyPath(this,__LastUsage)
 
     val count: KPropertyPath<T, Long?>
-        get() = KPropertyPath<T, Long?>(this,__Count)
+        get() = KPropertyPath(this,__Count)
 
     companion object {
         val Text: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, String?>
@@ -78,25 +78,25 @@ internal class ParseRequestLogStatCol_Col<T>(previous: KPropertyPath<T, *>?, pro
         ParseRequestLogMongoDAO.ParseRequestLogStatCol?,
         ParseRequestLogStatCol_<T>>(previous,property) {
     val text: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Text)
+        get() = KPropertyPath(this,__Text)
 
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val intentProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__IntentProbability)
+        get() = KPropertyPath(this,__IntentProbability)
 
     val entitiesProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__EntitiesProbability)
+        get() = KPropertyPath(this,__EntitiesProbability)
 
     val lastUsage: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUsage)
+        get() = KPropertyPath(this,__LastUsage)
 
     val count: KPropertyPath<T, Long?>
-        get() = KPropertyPath<T, Long?>(this,__Count)
+        get() = KPropertyPath(this,__Count)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ParseRequestLogStatCol_<T> =
@@ -107,25 +107,25 @@ internal class ParseRequestLogStatCol_Map<T, K>(previous: KPropertyPath<T, *>?, 
         KMapPropertyPath<T, K, ParseRequestLogMongoDAO.ParseRequestLogStatCol?,
         ParseRequestLogStatCol_<T>>(previous,property) {
     val text: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Text)
+        get() = KPropertyPath(this,__Text)
 
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val intentProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__IntentProbability)
+        get() = KPropertyPath(this,__IntentProbability)
 
     val entitiesProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__EntitiesProbability)
+        get() = KPropertyPath(this,__EntitiesProbability)
 
     val lastUsage: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUsage)
+        get() = KPropertyPath(this,__LastUsage)
 
     val count: KPropertyPath<T, Long?>
-        get() = KPropertyPath<T, Long?>(this,__Count)
+        get() = KPropertyPath(this,__Count)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ParseRequestLogStatCol_<T> =

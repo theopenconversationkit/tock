@@ -30,22 +30,22 @@ private val __Step: KProperty1<EventState, String?>
 class EventState_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, EventState?>) :
         KPropertyPath<T, EventState?>(previous,property) {
     val entityValues: KCollectionSimplePropertyPath<T, EntityValue?>
-        get() = KCollectionSimplePropertyPath<T, EntityValue?>(this,EventState::entityValues)
+        get() = KCollectionSimplePropertyPath(this,EventState::entityValues)
 
     val testEvent: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__TestEvent)
+        get() = KPropertyPath(this,__TestEvent)
 
     val targetConnectorType: ConnectorType_<T>
         get() = ConnectorType_(this,EventState::targetConnectorType)
 
     val userInterface: KPropertyPath<T, UserInterfaceType?>
-        get() = KPropertyPath<T, UserInterfaceType?>(this,__UserInterface)
+        get() = KPropertyPath(this,__UserInterface)
 
     val intent: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Intent)
+        get() = KPropertyPath(this,__Intent)
 
     val step: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Step)
+        get() = KPropertyPath(this,__Step)
 
     companion object {
         val EntityValues: KCollectionSimplePropertyPath<EventState, EntityValue?>
@@ -53,7 +53,7 @@ class EventState_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Eve
         val TestEvent: KProperty1<EventState, Boolean?>
             get() = __TestEvent
         val TargetConnectorType: ConnectorType_<EventState>
-            get() = ConnectorType_<EventState>(null,__TargetConnectorType)
+            get() = ConnectorType_(null,__TargetConnectorType)
         val UserInterface: KProperty1<EventState, UserInterfaceType?>
             get() = __UserInterface
         val Intent: KProperty1<EventState, String?>
@@ -66,22 +66,22 @@ class EventState_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         Collection<EventState>?>) : KCollectionPropertyPath<T, EventState?,
         EventState_<T>>(previous,property) {
     val entityValues: KCollectionSimplePropertyPath<T, EntityValue?>
-        get() = KCollectionSimplePropertyPath<T, EntityValue?>(this,EventState::entityValues)
+        get() = KCollectionSimplePropertyPath(this,EventState::entityValues)
 
     val testEvent: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__TestEvent)
+        get() = KPropertyPath(this,__TestEvent)
 
     val targetConnectorType: ConnectorType_<T>
         get() = ConnectorType_(this,EventState::targetConnectorType)
 
     val userInterface: KPropertyPath<T, UserInterfaceType?>
-        get() = KPropertyPath<T, UserInterfaceType?>(this,__UserInterface)
+        get() = KPropertyPath(this,__UserInterface)
 
     val intent: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Intent)
+        get() = KPropertyPath(this,__Intent)
 
     val step: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Step)
+        get() = KPropertyPath(this,__Step)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): EventState_<T> =
@@ -90,22 +90,22 @@ class EventState_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
 class EventState_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K,
         EventState>?>) : KMapPropertyPath<T, K, EventState?, EventState_<T>>(previous,property) {
     val entityValues: KCollectionSimplePropertyPath<T, EntityValue?>
-        get() = KCollectionSimplePropertyPath<T, EntityValue?>(this,EventState::entityValues)
+        get() = KCollectionSimplePropertyPath(this,EventState::entityValues)
 
     val testEvent: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__TestEvent)
+        get() = KPropertyPath(this,__TestEvent)
 
     val targetConnectorType: ConnectorType_<T>
         get() = ConnectorType_(this,EventState::targetConnectorType)
 
     val userInterface: KPropertyPath<T, UserInterfaceType?>
-        get() = KPropertyPath<T, UserInterfaceType?>(this,__UserInterface)
+        get() = KPropertyPath(this,__UserInterface)
 
     val intent: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Intent)
+        get() = KPropertyPath(this,__Intent)
 
     val step: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Step)
+        get() = KPropertyPath(this,__Step)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): EventState_<T> =

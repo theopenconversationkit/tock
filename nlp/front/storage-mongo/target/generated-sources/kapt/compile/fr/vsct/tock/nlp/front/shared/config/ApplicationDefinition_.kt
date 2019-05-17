@@ -40,37 +40,34 @@ private val ___id: KProperty1<ApplicationDefinition, Id<ApplicationDefinition>?>
 class ApplicationDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         ApplicationDefinition?>) : KPropertyPath<T, ApplicationDefinition?>(previous,property) {
     val name_: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Name)
+        get() = KPropertyPath(this,__Name)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val intents: KCollectionSimplePropertyPath<T, Id<IntentDefinition>?>
-        get() = KCollectionSimplePropertyPath<T,
-                Id<IntentDefinition>?>(this,ApplicationDefinition::intents)
+        get() = KCollectionSimplePropertyPath(this,ApplicationDefinition::intents)
 
     val supportedLocales: KCollectionSimplePropertyPath<T, Locale?>
-        get() = KCollectionSimplePropertyPath<T,
-                Locale?>(this,ApplicationDefinition::supportedLocales)
+        get() = KCollectionSimplePropertyPath(this,ApplicationDefinition::supportedLocales)
 
     val intentStatesMap: KMapSimplePropertyPath<T, Id<IntentDefinition>?, Set<String>?>
-        get() = KMapSimplePropertyPath<T, Id<IntentDefinition>?,
-                Set<String>?>(this,ApplicationDefinition::intentStatesMap)
+        get() = KMapSimplePropertyPath(this,ApplicationDefinition::intentStatesMap)
 
     val nlpEngineType: KPropertyPath<T, NlpEngineType?>
-        get() = KPropertyPath<T, NlpEngineType?>(this,__NlpEngineType)
+        get() = KPropertyPath(this,__NlpEngineType)
 
     val mergeEngineTypes: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__MergeEngineTypes)
+        get() = KPropertyPath(this,__MergeEngineTypes)
 
     val useEntityModels: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__UseEntityModels)
+        get() = KPropertyPath(this,__UseEntityModels)
 
     val supportSubEntities: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__SupportSubEntities)
+        get() = KPropertyPath(this,__SupportSubEntities)
 
     val _id: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     companion object {
         val Name: KProperty1<ApplicationDefinition, String?>
@@ -100,37 +97,34 @@ class ApplicationDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KPr
         Collection<ApplicationDefinition>?>) : KCollectionPropertyPath<T, ApplicationDefinition?,
         ApplicationDefinition_<T>>(previous,property) {
     val name_: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Name)
+        get() = KPropertyPath(this,__Name)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val intents: KCollectionSimplePropertyPath<T, Id<IntentDefinition>?>
-        get() = KCollectionSimplePropertyPath<T,
-                Id<IntentDefinition>?>(this,ApplicationDefinition::intents)
+        get() = KCollectionSimplePropertyPath(this,ApplicationDefinition::intents)
 
     val supportedLocales: KCollectionSimplePropertyPath<T, Locale?>
-        get() = KCollectionSimplePropertyPath<T,
-                Locale?>(this,ApplicationDefinition::supportedLocales)
+        get() = KCollectionSimplePropertyPath(this,ApplicationDefinition::supportedLocales)
 
     val intentStatesMap: KMapSimplePropertyPath<T, Id<IntentDefinition>?, Set<String>?>
-        get() = KMapSimplePropertyPath<T, Id<IntentDefinition>?,
-                Set<String>?>(this,ApplicationDefinition::intentStatesMap)
+        get() = KMapSimplePropertyPath(this,ApplicationDefinition::intentStatesMap)
 
     val nlpEngineType: KPropertyPath<T, NlpEngineType?>
-        get() = KPropertyPath<T, NlpEngineType?>(this,__NlpEngineType)
+        get() = KPropertyPath(this,__NlpEngineType)
 
     val mergeEngineTypes: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__MergeEngineTypes)
+        get() = KPropertyPath(this,__MergeEngineTypes)
 
     val useEntityModels: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__UseEntityModels)
+        get() = KPropertyPath(this,__UseEntityModels)
 
     val supportSubEntities: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__SupportSubEntities)
+        get() = KPropertyPath(this,__SupportSubEntities)
 
     val _id: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ApplicationDefinition_<T> =
@@ -140,37 +134,34 @@ class ApplicationDefinition_Map<T, K>(previous: KPropertyPath<T, *>?, property: 
         ApplicationDefinition>?>) : KMapPropertyPath<T, K, ApplicationDefinition?,
         ApplicationDefinition_<T>>(previous,property) {
     val name_: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Name)
+        get() = KPropertyPath(this,__Name)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val intents: KCollectionSimplePropertyPath<T, Id<IntentDefinition>?>
-        get() = KCollectionSimplePropertyPath<T,
-                Id<IntentDefinition>?>(this,ApplicationDefinition::intents)
+        get() = KCollectionSimplePropertyPath(this,ApplicationDefinition::intents)
 
     val supportedLocales: KCollectionSimplePropertyPath<T, Locale?>
-        get() = KCollectionSimplePropertyPath<T,
-                Locale?>(this,ApplicationDefinition::supportedLocales)
+        get() = KCollectionSimplePropertyPath(this,ApplicationDefinition::supportedLocales)
 
     val intentStatesMap: KMapSimplePropertyPath<T, Id<IntentDefinition>?, Set<String>?>
-        get() = KMapSimplePropertyPath<T, Id<IntentDefinition>?,
-                Set<String>?>(this,ApplicationDefinition::intentStatesMap)
+        get() = KMapSimplePropertyPath(this,ApplicationDefinition::intentStatesMap)
 
     val nlpEngineType: KPropertyPath<T, NlpEngineType?>
-        get() = KPropertyPath<T, NlpEngineType?>(this,__NlpEngineType)
+        get() = KPropertyPath(this,__NlpEngineType)
 
     val mergeEngineTypes: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__MergeEngineTypes)
+        get() = KPropertyPath(this,__MergeEngineTypes)
 
     val useEntityModels: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__UseEntityModels)
+        get() = KPropertyPath(this,__UseEntityModels)
 
     val supportSubEntities: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__SupportSubEntities)
+        get() = KPropertyPath(this,__SupportSubEntities)
 
     val _id: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ApplicationDefinition_<T> =

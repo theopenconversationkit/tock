@@ -53,44 +53,44 @@ internal class ClassifiedSentenceCol_<T>(previous: KPropertyPath<T, *>?, propert
         ClassifiedSentenceMongoDAO.ClassifiedSentenceCol?>) : KPropertyPath<T,
         ClassifiedSentenceMongoDAO.ClassifiedSentenceCol?>(previous,property) {
     val text: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Text)
+        get() = KPropertyPath(this,__Text)
 
     val fullText: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__FullText)
+        get() = KPropertyPath(this,__FullText)
 
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val creationDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__CreationDate)
+        get() = KPropertyPath(this,__CreationDate)
 
     val updateDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__UpdateDate)
+        get() = KPropertyPath(this,__UpdateDate)
 
     val status: KPropertyPath<T, ClassifiedSentenceStatus?>
-        get() = KPropertyPath<T, ClassifiedSentenceStatus?>(this,__Status)
+        get() = KPropertyPath(this,__Status)
 
     val classification: Classification_<T>
         get() =
                 Classification_(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::classification)
 
     val lastIntentProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__LastIntentProbability)
+        get() = KPropertyPath(this,__LastIntentProbability)
 
     val lastEntityProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__LastEntityProbability)
+        get() = KPropertyPath(this,__LastEntityProbability)
 
     val lastUsage: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUsage)
+        get() = KPropertyPath(this,__LastUsage)
 
     val usageCount: KPropertyPath<T, Long?>
-        get() = KPropertyPath<T, Long?>(this,__UsageCount)
+        get() = KPropertyPath(this,__UsageCount)
 
     val unknownCount: KPropertyPath<T, Long?>
-        get() = KPropertyPath<T, Long?>(this,__UnknownCount)
+        get() = KPropertyPath(this,__UnknownCount)
 
     companion object {
         val Text: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
@@ -110,8 +110,7 @@ internal class ClassifiedSentenceCol_<T>(previous: KPropertyPath<T, *>?, propert
                 ClassifiedSentenceStatus?>
             get() = __Status
         val Classification: Classification_<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol>
-            get() =
-                    Classification_<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol>(null,__Classification)
+            get() = Classification_(null,__Classification)
         val LastIntentProbability: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol,
                 Double?>
             get() = __LastIntentProbability
@@ -131,44 +130,44 @@ internal class ClassifiedSentenceCol_Col<T>(previous: KPropertyPath<T, *>?, prop
         ClassifiedSentenceMongoDAO.ClassifiedSentenceCol?,
         ClassifiedSentenceCol_<T>>(previous,property) {
     val text: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Text)
+        get() = KPropertyPath(this,__Text)
 
     val fullText: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__FullText)
+        get() = KPropertyPath(this,__FullText)
 
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val creationDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__CreationDate)
+        get() = KPropertyPath(this,__CreationDate)
 
     val updateDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__UpdateDate)
+        get() = KPropertyPath(this,__UpdateDate)
 
     val status: KPropertyPath<T, ClassifiedSentenceStatus?>
-        get() = KPropertyPath<T, ClassifiedSentenceStatus?>(this,__Status)
+        get() = KPropertyPath(this,__Status)
 
     val classification: Classification_<T>
         get() =
                 Classification_(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::classification)
 
     val lastIntentProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__LastIntentProbability)
+        get() = KPropertyPath(this,__LastIntentProbability)
 
     val lastEntityProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__LastEntityProbability)
+        get() = KPropertyPath(this,__LastEntityProbability)
 
     val lastUsage: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUsage)
+        get() = KPropertyPath(this,__LastUsage)
 
     val usageCount: KPropertyPath<T, Long?>
-        get() = KPropertyPath<T, Long?>(this,__UsageCount)
+        get() = KPropertyPath(this,__UsageCount)
 
     val unknownCount: KPropertyPath<T, Long?>
-        get() = KPropertyPath<T, Long?>(this,__UnknownCount)
+        get() = KPropertyPath(this,__UnknownCount)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ClassifiedSentenceCol_<T> =
@@ -179,44 +178,44 @@ internal class ClassifiedSentenceCol_Map<T, K>(previous: KPropertyPath<T, *>?, p
         KMapPropertyPath<T, K, ClassifiedSentenceMongoDAO.ClassifiedSentenceCol?,
         ClassifiedSentenceCol_<T>>(previous,property) {
     val text: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Text)
+        get() = KPropertyPath(this,__Text)
 
     val fullText: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__FullText)
+        get() = KPropertyPath(this,__FullText)
 
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val creationDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__CreationDate)
+        get() = KPropertyPath(this,__CreationDate)
 
     val updateDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__UpdateDate)
+        get() = KPropertyPath(this,__UpdateDate)
 
     val status: KPropertyPath<T, ClassifiedSentenceStatus?>
-        get() = KPropertyPath<T, ClassifiedSentenceStatus?>(this,__Status)
+        get() = KPropertyPath(this,__Status)
 
     val classification: Classification_<T>
         get() =
                 Classification_(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::classification)
 
     val lastIntentProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__LastIntentProbability)
+        get() = KPropertyPath(this,__LastIntentProbability)
 
     val lastEntityProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__LastEntityProbability)
+        get() = KPropertyPath(this,__LastEntityProbability)
 
     val lastUsage: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUsage)
+        get() = KPropertyPath(this,__LastUsage)
 
     val usageCount: KPropertyPath<T, Long?>
-        get() = KPropertyPath<T, Long?>(this,__UsageCount)
+        get() = KPropertyPath(this,__UsageCount)
 
     val unknownCount: KPropertyPath<T, Long?>
-        get() = KPropertyPath<T, Long?>(this,__UnknownCount)
+        get() = KPropertyPath(this,__UnknownCount)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ClassifiedSentenceCol_<T> =

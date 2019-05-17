@@ -34,31 +34,31 @@ internal class UserPreferencesWrapper_<T>(previous: KPropertyPath<T, *>?, proper
         UserTimelineCol.UserPreferencesWrapper?>) : KPropertyPath<T,
         UserTimelineCol.UserPreferencesWrapper?>(previous,property) {
     val firstName: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__FirstName)
+        get() = KPropertyPath(this,__FirstName)
 
     val lastName: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__LastName)
+        get() = KPropertyPath(this,__LastName)
 
     val email: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Email)
+        get() = KPropertyPath(this,__Email)
 
     val timezone: KPropertyPath<T, ZoneId?>
-        get() = KPropertyPath<T, ZoneId?>(this,__Timezone)
+        get() = KPropertyPath(this,__Timezone)
 
     val locale: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Locale)
+        get() = KPropertyPath(this,__Locale)
 
     val picture: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Picture)
+        get() = KPropertyPath(this,__Picture)
 
     val gender: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Gender)
+        get() = KPropertyPath(this,__Gender)
 
     val test: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__Test)
+        get() = KPropertyPath(this,__Test)
 
     val encrypted: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__Encrypted)
+        get() = KPropertyPath(this,__Encrypted)
 
     companion object {
         val FirstName: KProperty1<UserTimelineCol.UserPreferencesWrapper, String?>
@@ -85,31 +85,31 @@ internal class UserPreferencesWrapper_Col<T>(previous: KPropertyPath<T, *>?, pro
         Collection<UserTimelineCol.UserPreferencesWrapper>?>) : KCollectionPropertyPath<T,
         UserTimelineCol.UserPreferencesWrapper?, UserPreferencesWrapper_<T>>(previous,property) {
     val firstName: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__FirstName)
+        get() = KPropertyPath(this,__FirstName)
 
     val lastName: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__LastName)
+        get() = KPropertyPath(this,__LastName)
 
     val email: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Email)
+        get() = KPropertyPath(this,__Email)
 
     val timezone: KPropertyPath<T, ZoneId?>
-        get() = KPropertyPath<T, ZoneId?>(this,__Timezone)
+        get() = KPropertyPath(this,__Timezone)
 
     val locale: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Locale)
+        get() = KPropertyPath(this,__Locale)
 
     val picture: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Picture)
+        get() = KPropertyPath(this,__Picture)
 
     val gender: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Gender)
+        get() = KPropertyPath(this,__Gender)
 
     val test: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__Test)
+        get() = KPropertyPath(this,__Test)
 
     val encrypted: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__Encrypted)
+        get() = KPropertyPath(this,__Encrypted)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): UserPreferencesWrapper_<T> =
@@ -119,31 +119,31 @@ internal class UserPreferencesWrapper_Map<T, K>(previous: KPropertyPath<T, *>?, 
         KProperty1<*, Map<K, UserTimelineCol.UserPreferencesWrapper>?>) : KMapPropertyPath<T, K,
         UserTimelineCol.UserPreferencesWrapper?, UserPreferencesWrapper_<T>>(previous,property) {
     val firstName: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__FirstName)
+        get() = KPropertyPath(this,__FirstName)
 
     val lastName: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__LastName)
+        get() = KPropertyPath(this,__LastName)
 
     val email: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Email)
+        get() = KPropertyPath(this,__Email)
 
     val timezone: KPropertyPath<T, ZoneId?>
-        get() = KPropertyPath<T, ZoneId?>(this,__Timezone)
+        get() = KPropertyPath(this,__Timezone)
 
     val locale: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Locale)
+        get() = KPropertyPath(this,__Locale)
 
     val picture: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Picture)
+        get() = KPropertyPath(this,__Picture)
 
     val gender: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Gender)
+        get() = KPropertyPath(this,__Gender)
 
     val test: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__Test)
+        get() = KPropertyPath(this,__Test)
 
     val encrypted: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__Encrypted)
+        get() = KPropertyPath(this,__Encrypted)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): UserPreferencesWrapper_<T> =

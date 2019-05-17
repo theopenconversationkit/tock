@@ -35,16 +35,16 @@ internal open class ActionMongoWrapper_<T>(previous: KPropertyPath<T, *>?, prope
         DialogCol.ActionMongoWrapper?>) : KPropertyPath<T,
         DialogCol.ActionMongoWrapper?>(previous,property) {
     val id: KPropertyPath<T, Id<Action>?>
-        get() = KPropertyPath<T, Id<Action>?>(this,__Id)
+        get() = KPropertyPath(this,__Id)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     val state: EventState_<T>
         get() = EventState_(this,DialogCol.ActionMongoWrapper::state)
 
     val botMetadata: KPropertyPath<T, ActionMetadata?>
-        get() = KPropertyPath<T, ActionMetadata?>(this,__BotMetadata)
+        get() = KPropertyPath(this,__BotMetadata)
 
     val playerId: PlayerId_<T>
         get() = PlayerId_(this,DialogCol.ActionMongoWrapper::playerId)
@@ -53,7 +53,7 @@ internal open class ActionMongoWrapper_<T>(previous: KPropertyPath<T, *>?, prope
         get() = PlayerId_(this,DialogCol.ActionMongoWrapper::recipientId)
 
     val applicationId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     companion object {
         val Id: KProperty1<DialogCol.ActionMongoWrapper, Id<Action>?>
@@ -61,13 +61,13 @@ internal open class ActionMongoWrapper_<T>(previous: KPropertyPath<T, *>?, prope
         val Date: KProperty1<DialogCol.ActionMongoWrapper, Instant?>
             get() = __Date
         val State: EventState_<DialogCol.ActionMongoWrapper>
-            get() = EventState_<DialogCol.ActionMongoWrapper>(null,__State)
+            get() = EventState_(null,__State)
         val BotMetadata: KProperty1<DialogCol.ActionMongoWrapper, ActionMetadata?>
             get() = __BotMetadata
         val PlayerId: PlayerId_<DialogCol.ActionMongoWrapper>
-            get() = PlayerId_<DialogCol.ActionMongoWrapper>(null,__PlayerId)
+            get() = PlayerId_(null,__PlayerId)
         val RecipientId: PlayerId_<DialogCol.ActionMongoWrapper>
-            get() = PlayerId_<DialogCol.ActionMongoWrapper>(null,__RecipientId)
+            get() = PlayerId_(null,__RecipientId)
         val ApplicationId: KProperty1<DialogCol.ActionMongoWrapper, String?>
             get() = __ApplicationId}
 }
@@ -76,16 +76,16 @@ internal open class ActionMongoWrapper_Col<T>(previous: KPropertyPath<T, *>?, pr
         KProperty1<*, Collection<DialogCol.ActionMongoWrapper>?>) : KCollectionPropertyPath<T,
         DialogCol.ActionMongoWrapper?, ActionMongoWrapper_<T>>(previous,property) {
     val id: KPropertyPath<T, Id<Action>?>
-        get() = KPropertyPath<T, Id<Action>?>(this,__Id)
+        get() = KPropertyPath(this,__Id)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     val state: EventState_<T>
         get() = EventState_(this,DialogCol.ActionMongoWrapper::state)
 
     val botMetadata: KPropertyPath<T, ActionMetadata?>
-        get() = KPropertyPath<T, ActionMetadata?>(this,__BotMetadata)
+        get() = KPropertyPath(this,__BotMetadata)
 
     val playerId: PlayerId_<T>
         get() = PlayerId_(this,DialogCol.ActionMongoWrapper::playerId)
@@ -94,7 +94,7 @@ internal open class ActionMongoWrapper_Col<T>(previous: KPropertyPath<T, *>?, pr
         get() = PlayerId_(this,DialogCol.ActionMongoWrapper::recipientId)
 
     val applicationId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ActionMongoWrapper_<T> =
@@ -104,16 +104,16 @@ internal open class ActionMongoWrapper_Map<T, K>(previous: KPropertyPath<T, *>?,
         KProperty1<*, Map<K, DialogCol.ActionMongoWrapper>?>) : KMapPropertyPath<T, K,
         DialogCol.ActionMongoWrapper?, ActionMongoWrapper_<T>>(previous,property) {
     val id: KPropertyPath<T, Id<Action>?>
-        get() = KPropertyPath<T, Id<Action>?>(this,__Id)
+        get() = KPropertyPath(this,__Id)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     val state: EventState_<T>
         get() = EventState_(this,DialogCol.ActionMongoWrapper::state)
 
     val botMetadata: KPropertyPath<T, ActionMetadata?>
-        get() = KPropertyPath<T, ActionMetadata?>(this,__BotMetadata)
+        get() = KPropertyPath(this,__BotMetadata)
 
     val playerId: PlayerId_<T>
         get() = PlayerId_(this,DialogCol.ActionMongoWrapper::playerId)
@@ -122,7 +122,7 @@ internal open class ActionMongoWrapper_Map<T, K>(previous: KPropertyPath<T, *>?,
         get() = PlayerId_(this,DialogCol.ActionMongoWrapper::recipientId)
 
     val applicationId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ActionMongoWrapper_<T> =

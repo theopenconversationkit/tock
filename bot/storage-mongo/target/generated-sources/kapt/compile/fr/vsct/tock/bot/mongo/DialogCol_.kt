@@ -40,35 +40,35 @@ internal class DialogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty
         get() = PlayerId_Col(this,DialogCol::playerIds)
 
     val _id: KPropertyPath<T, Id<Dialog>?>
-        get() = KPropertyPath<T, Id<Dialog>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     val state: KPropertyPath<T, DialogCol.DialogStateMongoWrapper?>
-        get() = KPropertyPath<T, DialogCol.DialogStateMongoWrapper?>(this,__State)
+        get() = KPropertyPath(this,__State)
 
     val stories: StoryMongoWrapper_Col<T>
         get() = StoryMongoWrapper_Col(this,DialogCol::stories)
 
     val applicationIds: KCollectionSimplePropertyPath<T, String?>
-        get() = KCollectionSimplePropertyPath<T, String?>(this,DialogCol::applicationIds)
+        get() = KCollectionSimplePropertyPath(this,DialogCol::applicationIds)
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUpdateDate)
+        get() = KPropertyPath(this,__LastUpdateDate)
 
     val groupId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__GroupId)
+        get() = KPropertyPath(this,__GroupId)
 
     val test: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__Test)
+        get() = KPropertyPath(this,__Test)
 
     companion object {
         val PlayerIds: PlayerId_Col<DialogCol>
-            get() = PlayerId_Col<DialogCol>(null,__PlayerIds)
+            get() = PlayerId_Col(null,__PlayerIds)
         val _id: KProperty1<DialogCol, Id<Dialog>?>
             get() = ___id
         val State: KProperty1<DialogCol, DialogCol.DialogStateMongoWrapper?>
             get() = __State
         val Stories: StoryMongoWrapper_Col<DialogCol>
-            get() = StoryMongoWrapper_Col<DialogCol>(null,__Stories)
+            get() = StoryMongoWrapper_Col(null,__Stories)
         val ApplicationIds: KCollectionSimplePropertyPath<DialogCol, String?>
             get() = KCollectionSimplePropertyPath(null, __ApplicationIds)
         val LastUpdateDate: KProperty1<DialogCol, Instant?>
@@ -86,25 +86,25 @@ internal class DialogCol_Col<T>(previous: KPropertyPath<T, *>?, property: KPrope
         get() = PlayerId_Col(this,DialogCol::playerIds)
 
     val _id: KPropertyPath<T, Id<Dialog>?>
-        get() = KPropertyPath<T, Id<Dialog>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     val state: KPropertyPath<T, DialogCol.DialogStateMongoWrapper?>
-        get() = KPropertyPath<T, DialogCol.DialogStateMongoWrapper?>(this,__State)
+        get() = KPropertyPath(this,__State)
 
     val stories: StoryMongoWrapper_Col<T>
         get() = StoryMongoWrapper_Col(this,DialogCol::stories)
 
     val applicationIds: KCollectionSimplePropertyPath<T, String?>
-        get() = KCollectionSimplePropertyPath<T, String?>(this,DialogCol::applicationIds)
+        get() = KCollectionSimplePropertyPath(this,DialogCol::applicationIds)
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUpdateDate)
+        get() = KPropertyPath(this,__LastUpdateDate)
 
     val groupId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__GroupId)
+        get() = KPropertyPath(this,__GroupId)
 
     val test: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__Test)
+        get() = KPropertyPath(this,__Test)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): DialogCol_<T> = DialogCol_(this,
@@ -116,25 +116,25 @@ internal class DialogCol_Map<T, K>(previous: KPropertyPath<T, *>?, property: KPr
         get() = PlayerId_Col(this,DialogCol::playerIds)
 
     val _id: KPropertyPath<T, Id<Dialog>?>
-        get() = KPropertyPath<T, Id<Dialog>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     val state: KPropertyPath<T, DialogCol.DialogStateMongoWrapper?>
-        get() = KPropertyPath<T, DialogCol.DialogStateMongoWrapper?>(this,__State)
+        get() = KPropertyPath(this,__State)
 
     val stories: StoryMongoWrapper_Col<T>
         get() = StoryMongoWrapper_Col(this,DialogCol::stories)
 
     val applicationIds: KCollectionSimplePropertyPath<T, String?>
-        get() = KCollectionSimplePropertyPath<T, String?>(this,DialogCol::applicationIds)
+        get() = KCollectionSimplePropertyPath(this,DialogCol::applicationIds)
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUpdateDate)
+        get() = KPropertyPath(this,__LastUpdateDate)
 
     val groupId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__GroupId)
+        get() = KPropertyPath(this,__GroupId)
 
     val test: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__Test)
+        get() = KPropertyPath(this,__Test)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): DialogCol_<T> = DialogCol_(this,

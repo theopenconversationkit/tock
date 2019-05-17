@@ -35,16 +35,15 @@ internal class StoryDefinitionConfigurationHistoryCol_<T>(previous: KPropertyPat
                 StoryDefinitionConfiguration_(this,StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::conf)
 
     val deleted: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__Deleted)
+        get() = KPropertyPath(this,__Deleted)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     companion object {
         val Conf:
                 StoryDefinitionConfiguration_<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol>
-            get() =
-                    StoryDefinitionConfiguration_<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol>(null,__Conf)
+            get() = StoryDefinitionConfiguration_(null,__Conf)
         val Deleted:
                 KProperty1<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol,
                 Boolean?>
@@ -66,10 +65,10 @@ internal class StoryDefinitionConfigurationHistoryCol_Col<T>(previous: KProperty
                 StoryDefinitionConfiguration_(this,StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::conf)
 
     val deleted: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__Deleted)
+        get() = KPropertyPath(this,__Deleted)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String):
@@ -87,10 +86,10 @@ internal class StoryDefinitionConfigurationHistoryCol_Map<T, K>(previous: KPrope
                 StoryDefinitionConfiguration_(this,StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::conf)
 
     val deleted: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__Deleted)
+        get() = KPropertyPath(this,__Deleted)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String):

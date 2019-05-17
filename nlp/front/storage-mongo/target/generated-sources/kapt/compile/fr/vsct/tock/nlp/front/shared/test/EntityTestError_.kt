@@ -40,31 +40,31 @@ private val __FirstDetectionDate: KProperty1<EntityTestError, Instant?>
 class EntityTestError_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, EntityTestError?>)
         : KPropertyPath<T, EntityTestError?>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val text: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Text)
+        get() = KPropertyPath(this,__Text)
 
     val intentId: KPropertyPath<T, Id<IntentDefinition>?>
-        get() = KPropertyPath<T, Id<IntentDefinition>?>(this,__IntentId)
+        get() = KPropertyPath(this,__IntentId)
 
     val lastAnalyse: ClassifiedEntity_Col<T>
         get() = ClassifiedEntity_Col(this,EntityTestError::lastAnalyse)
 
     val averageErrorProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__AverageErrorProbability)
+        get() = KPropertyPath(this,__AverageErrorProbability)
 
     val count: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Count)
+        get() = KPropertyPath(this,__Count)
 
     val total: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Total)
+        get() = KPropertyPath(this,__Total)
 
     val firstDetectionDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__FirstDetectionDate)
+        get() = KPropertyPath(this,__FirstDetectionDate)
 
     companion object {
         val ApplicationId: KProperty1<EntityTestError, Id<ApplicationDefinition>?>
@@ -76,7 +76,7 @@ class EntityTestError_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*
         val IntentId: KProperty1<EntityTestError, Id<IntentDefinition>?>
             get() = __IntentId
         val LastAnalyse: ClassifiedEntity_Col<EntityTestError>
-            get() = ClassifiedEntity_Col<EntityTestError>(null,__LastAnalyse)
+            get() = ClassifiedEntity_Col(null,__LastAnalyse)
         val AverageErrorProbability: KProperty1<EntityTestError, Double?>
             get() = __AverageErrorProbability
         val Count: KProperty1<EntityTestError, Int?>
@@ -91,31 +91,31 @@ class EntityTestError_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty
         Collection<EntityTestError>?>) : KCollectionPropertyPath<T, EntityTestError?,
         EntityTestError_<T>>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val text: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Text)
+        get() = KPropertyPath(this,__Text)
 
     val intentId: KPropertyPath<T, Id<IntentDefinition>?>
-        get() = KPropertyPath<T, Id<IntentDefinition>?>(this,__IntentId)
+        get() = KPropertyPath(this,__IntentId)
 
     val lastAnalyse: ClassifiedEntity_Col<T>
         get() = ClassifiedEntity_Col(this,EntityTestError::lastAnalyse)
 
     val averageErrorProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__AverageErrorProbability)
+        get() = KPropertyPath(this,__AverageErrorProbability)
 
     val count: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Count)
+        get() = KPropertyPath(this,__Count)
 
     val total: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Total)
+        get() = KPropertyPath(this,__Total)
 
     val firstDetectionDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__FirstDetectionDate)
+        get() = KPropertyPath(this,__FirstDetectionDate)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): EntityTestError_<T> =
@@ -125,31 +125,31 @@ class EntityTestError_Map<T, K>(previous: KPropertyPath<T, *>?, property: KPrope
         EntityTestError>?>) : KMapPropertyPath<T, K, EntityTestError?,
         EntityTestError_<T>>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val text: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Text)
+        get() = KPropertyPath(this,__Text)
 
     val intentId: KPropertyPath<T, Id<IntentDefinition>?>
-        get() = KPropertyPath<T, Id<IntentDefinition>?>(this,__IntentId)
+        get() = KPropertyPath(this,__IntentId)
 
     val lastAnalyse: ClassifiedEntity_Col<T>
         get() = ClassifiedEntity_Col(this,EntityTestError::lastAnalyse)
 
     val averageErrorProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__AverageErrorProbability)
+        get() = KPropertyPath(this,__AverageErrorProbability)
 
     val count: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Count)
+        get() = KPropertyPath(this,__Count)
 
     val total: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Total)
+        get() = KPropertyPath(this,__Total)
 
     val firstDetectionDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__FirstDetectionDate)
+        get() = KPropertyPath(this,__FirstDetectionDate)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): EntityTestError_<T> =

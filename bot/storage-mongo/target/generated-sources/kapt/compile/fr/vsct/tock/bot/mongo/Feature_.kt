@@ -23,19 +23,19 @@ private val __Namespace: KProperty1<Feature, String?>
 internal class Feature_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Feature?>) :
         KPropertyPath<T, Feature?>(previous,property) {
     val _id: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     val key: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Key)
+        get() = KPropertyPath(this,__Key)
 
     val enabled: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__Enabled)
+        get() = KPropertyPath(this,__Enabled)
 
     val botId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__BotId)
+        get() = KPropertyPath(this,__BotId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     companion object {
         val _id: KProperty1<Feature, String?>
@@ -54,19 +54,19 @@ internal class Feature_Col<T>(previous: KPropertyPath<T, *>?, property: KPropert
         Collection<Feature>?>) : KCollectionPropertyPath<T, Feature?,
         Feature_<T>>(previous,property) {
     val _id: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     val key: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Key)
+        get() = KPropertyPath(this,__Key)
 
     val enabled: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__Enabled)
+        get() = KPropertyPath(this,__Enabled)
 
     val botId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__BotId)
+        get() = KPropertyPath(this,__BotId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): Feature_<T> = Feature_(this,
@@ -75,19 +75,19 @@ internal class Feature_Col<T>(previous: KPropertyPath<T, *>?, property: KPropert
 internal class Feature_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K,
         Feature>?>) : KMapPropertyPath<T, K, Feature?, Feature_<T>>(previous,property) {
     val _id: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     val key: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Key)
+        get() = KPropertyPath(this,__Key)
 
     val enabled: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__Enabled)
+        get() = KPropertyPath(this,__Enabled)
 
     val botId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__BotId)
+        get() = KPropertyPath(this,__BotId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): Feature_<T> = Feature_(this,

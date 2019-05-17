@@ -28,22 +28,22 @@ private val __Version: KProperty1<I18nLabel, Int?>
 class I18nLabel_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, I18nLabel?>) :
         KPropertyPath<T, I18nLabel?>(previous,property) {
     val _id: KPropertyPath<T, Id<I18nLabel>?>
-        get() = KPropertyPath<T, Id<I18nLabel>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val category: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Category)
+        get() = KPropertyPath(this,__Category)
 
     val i18n: KCollectionSimplePropertyPath<T, I18nLocalizedLabel?>
-        get() = KCollectionSimplePropertyPath<T, I18nLocalizedLabel?>(this,I18nLabel::i18n)
+        get() = KCollectionSimplePropertyPath(this,I18nLabel::i18n)
 
     val defaultLabel: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__DefaultLabel)
+        get() = KPropertyPath(this,__DefaultLabel)
 
     val version: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Version)
+        get() = KPropertyPath(this,__Version)
 
     companion object {
         val _id: KProperty1<I18nLabel, Id<I18nLabel>?>
@@ -64,22 +64,22 @@ class I18nLabel_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         Collection<I18nLabel>?>) : KCollectionPropertyPath<T, I18nLabel?,
         I18nLabel_<T>>(previous,property) {
     val _id: KPropertyPath<T, Id<I18nLabel>?>
-        get() = KPropertyPath<T, Id<I18nLabel>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val category: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Category)
+        get() = KPropertyPath(this,__Category)
 
     val i18n: KCollectionSimplePropertyPath<T, I18nLocalizedLabel?>
-        get() = KCollectionSimplePropertyPath<T, I18nLocalizedLabel?>(this,I18nLabel::i18n)
+        get() = KCollectionSimplePropertyPath(this,I18nLabel::i18n)
 
     val defaultLabel: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__DefaultLabel)
+        get() = KPropertyPath(this,__DefaultLabel)
 
     val version: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Version)
+        get() = KPropertyPath(this,__Version)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): I18nLabel_<T> = I18nLabel_(this,
@@ -88,22 +88,22 @@ class I18nLabel_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
 class I18nLabel_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K,
         I18nLabel>?>) : KMapPropertyPath<T, K, I18nLabel?, I18nLabel_<T>>(previous,property) {
     val _id: KPropertyPath<T, Id<I18nLabel>?>
-        get() = KPropertyPath<T, Id<I18nLabel>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val category: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Category)
+        get() = KPropertyPath(this,__Category)
 
     val i18n: KCollectionSimplePropertyPath<T, I18nLocalizedLabel?>
-        get() = KCollectionSimplePropertyPath<T, I18nLocalizedLabel?>(this,I18nLabel::i18n)
+        get() = KCollectionSimplePropertyPath(this,I18nLabel::i18n)
 
     val defaultLabel: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__DefaultLabel)
+        get() = KPropertyPath(this,__DefaultLabel)
 
     val version: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Version)
+        get() = KPropertyPath(this,__Version)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): I18nLabel_<T> = I18nLabel_(this,

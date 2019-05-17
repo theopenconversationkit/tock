@@ -40,35 +40,34 @@ private val ___id: KProperty1<TestPlan, Id<TestPlan>?>
 class TestPlan_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, TestPlan?>) :
         KPropertyPath<T, TestPlan?>(previous,property) {
     val dialogs: KCollectionSimplePropertyPath<T, TestDialogReport?>
-        get() = KCollectionSimplePropertyPath<T, TestDialogReport?>(this,TestPlan::dialogs)
+        get() = KCollectionSimplePropertyPath(this,TestPlan::dialogs)
 
     val name_: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Name)
+        get() = KPropertyPath(this,__Name)
 
     val applicationId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val nlpModel: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__NlpModel)
+        get() = KPropertyPath(this,__NlpModel)
 
     val botApplicationConfigurationId: KPropertyPath<T, Id<BotApplicationConfiguration>?>
-        get() = KPropertyPath<T,
-                Id<BotApplicationConfiguration>?>(this,__BotApplicationConfigurationId)
+        get() = KPropertyPath(this,__BotApplicationConfigurationId)
 
     val locale: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Locale)
+        get() = KPropertyPath(this,__Locale)
 
     val startAction: KPropertyPath<T, Message?>
-        get() = KPropertyPath<T, Message?>(this,__StartAction)
+        get() = KPropertyPath(this,__StartAction)
 
     val targetConnectorType: ConnectorType_<T>
         get() = ConnectorType_(this,TestPlan::targetConnectorType)
 
     val _id: KPropertyPath<T, Id<TestPlan>?>
-        get() = KPropertyPath<T, Id<TestPlan>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     companion object {
         val Dialogs: KCollectionSimplePropertyPath<TestPlan, TestDialogReport?>
@@ -88,7 +87,7 @@ class TestPlan_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, TestP
         val StartAction: KProperty1<TestPlan, Message?>
             get() = __StartAction
         val TargetConnectorType: ConnectorType_<TestPlan>
-            get() = ConnectorType_<TestPlan>(null,__TargetConnectorType)
+            get() = ConnectorType_(null,__TargetConnectorType)
         val _id: KProperty1<TestPlan, Id<TestPlan>?>
             get() = ___id}
 }
@@ -97,35 +96,34 @@ class TestPlan_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         Collection<TestPlan>?>) : KCollectionPropertyPath<T, TestPlan?,
         TestPlan_<T>>(previous,property) {
     val dialogs: KCollectionSimplePropertyPath<T, TestDialogReport?>
-        get() = KCollectionSimplePropertyPath<T, TestDialogReport?>(this,TestPlan::dialogs)
+        get() = KCollectionSimplePropertyPath(this,TestPlan::dialogs)
 
     val name_: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Name)
+        get() = KPropertyPath(this,__Name)
 
     val applicationId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val nlpModel: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__NlpModel)
+        get() = KPropertyPath(this,__NlpModel)
 
     val botApplicationConfigurationId: KPropertyPath<T, Id<BotApplicationConfiguration>?>
-        get() = KPropertyPath<T,
-                Id<BotApplicationConfiguration>?>(this,__BotApplicationConfigurationId)
+        get() = KPropertyPath(this,__BotApplicationConfigurationId)
 
     val locale: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Locale)
+        get() = KPropertyPath(this,__Locale)
 
     val startAction: KPropertyPath<T, Message?>
-        get() = KPropertyPath<T, Message?>(this,__StartAction)
+        get() = KPropertyPath(this,__StartAction)
 
     val targetConnectorType: ConnectorType_<T>
         get() = ConnectorType_(this,TestPlan::targetConnectorType)
 
     val _id: KPropertyPath<T, Id<TestPlan>?>
-        get() = KPropertyPath<T, Id<TestPlan>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): TestPlan_<T> = TestPlan_(this,
@@ -134,35 +132,34 @@ class TestPlan_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
 class TestPlan_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K, TestPlan>?>)
         : KMapPropertyPath<T, K, TestPlan?, TestPlan_<T>>(previous,property) {
     val dialogs: KCollectionSimplePropertyPath<T, TestDialogReport?>
-        get() = KCollectionSimplePropertyPath<T, TestDialogReport?>(this,TestPlan::dialogs)
+        get() = KCollectionSimplePropertyPath(this,TestPlan::dialogs)
 
     val name_: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Name)
+        get() = KPropertyPath(this,__Name)
 
     val applicationId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val nlpModel: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__NlpModel)
+        get() = KPropertyPath(this,__NlpModel)
 
     val botApplicationConfigurationId: KPropertyPath<T, Id<BotApplicationConfiguration>?>
-        get() = KPropertyPath<T,
-                Id<BotApplicationConfiguration>?>(this,__BotApplicationConfigurationId)
+        get() = KPropertyPath(this,__BotApplicationConfigurationId)
 
     val locale: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Locale)
+        get() = KPropertyPath(this,__Locale)
 
     val startAction: KPropertyPath<T, Message?>
-        get() = KPropertyPath<T, Message?>(this,__StartAction)
+        get() = KPropertyPath(this,__StartAction)
 
     val targetConnectorType: ConnectorType_<T>
         get() = ConnectorType_(this,TestPlan::targetConnectorType)
 
     val _id: KPropertyPath<T, Id<TestPlan>?>
-        get() = KPropertyPath<T, Id<TestPlan>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): TestPlan_<T> = TestPlan_(this,

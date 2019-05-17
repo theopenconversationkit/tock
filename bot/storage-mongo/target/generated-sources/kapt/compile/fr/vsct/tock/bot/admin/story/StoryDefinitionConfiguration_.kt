@@ -49,47 +49,44 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
         StoryDefinitionConfiguration?>) : KPropertyPath<T,
         StoryDefinitionConfiguration?>(previous,property) {
     val storyId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__StoryId)
+        get() = KPropertyPath(this,__StoryId)
 
     val botId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__BotId)
+        get() = KPropertyPath(this,__BotId)
 
     val intent: Intent_<T>
         get() = Intent_(this,StoryDefinitionConfiguration::intent)
 
     val currentType: KPropertyPath<T, AnswerConfigurationType?>
-        get() = KPropertyPath<T, AnswerConfigurationType?>(this,__CurrentType)
+        get() = KPropertyPath(this,__CurrentType)
 
     val answers: KCollectionSimplePropertyPath<T, AnswerConfiguration?>
-        get() = KCollectionSimplePropertyPath<T,
-                AnswerConfiguration?>(this,StoryDefinitionConfiguration::answers)
+        get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::answers)
 
     val version: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Version)
+        get() = KPropertyPath(this,__Version)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val mandatoryEntities: KCollectionSimplePropertyPath<T,
             StoryDefinitionConfigurationMandatoryEntity?>
-        get() = KCollectionSimplePropertyPath<T,
-                StoryDefinitionConfigurationMandatoryEntity?>(this,StoryDefinitionConfiguration::mandatoryEntities)
+        get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::mandatoryEntities)
 
     val steps: KCollectionSimplePropertyPath<T, StoryDefinitionConfigurationStep?>
-        get() = KCollectionSimplePropertyPath<T,
-                StoryDefinitionConfigurationStep?>(this,StoryDefinitionConfiguration::steps)
+        get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::steps)
 
     val name_: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Name)
+        get() = KPropertyPath(this,__Name)
 
     val category: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Category)
+        get() = KPropertyPath(this,__Category)
 
     val description: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Description)
+        get() = KPropertyPath(this,__Description)
 
     val _id: KPropertyPath<T, Id<StoryDefinitionConfiguration>?>
-        get() = KPropertyPath<T, Id<StoryDefinitionConfiguration>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     companion object {
         val StoryId: KProperty1<StoryDefinitionConfiguration, String?>
@@ -97,7 +94,7 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
         val BotId: KProperty1<StoryDefinitionConfiguration, String?>
             get() = __BotId
         val Intent: Intent_<StoryDefinitionConfiguration>
-            get() = Intent_<StoryDefinitionConfiguration>(null,__Intent)
+            get() = Intent_(null,__Intent)
         val CurrentType: KProperty1<StoryDefinitionConfiguration, AnswerConfigurationType?>
             get() = __CurrentType
         val Answers: KCollectionSimplePropertyPath<StoryDefinitionConfiguration,
@@ -127,47 +124,44 @@ class StoryDefinitionConfiguration_Col<T>(previous: KPropertyPath<T, *>?, proper
         Collection<StoryDefinitionConfiguration>?>) : KCollectionPropertyPath<T,
         StoryDefinitionConfiguration?, StoryDefinitionConfiguration_<T>>(previous,property) {
     val storyId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__StoryId)
+        get() = KPropertyPath(this,__StoryId)
 
     val botId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__BotId)
+        get() = KPropertyPath(this,__BotId)
 
     val intent: Intent_<T>
         get() = Intent_(this,StoryDefinitionConfiguration::intent)
 
     val currentType: KPropertyPath<T, AnswerConfigurationType?>
-        get() = KPropertyPath<T, AnswerConfigurationType?>(this,__CurrentType)
+        get() = KPropertyPath(this,__CurrentType)
 
     val answers: KCollectionSimplePropertyPath<T, AnswerConfiguration?>
-        get() = KCollectionSimplePropertyPath<T,
-                AnswerConfiguration?>(this,StoryDefinitionConfiguration::answers)
+        get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::answers)
 
     val version: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Version)
+        get() = KPropertyPath(this,__Version)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val mandatoryEntities: KCollectionSimplePropertyPath<T,
             StoryDefinitionConfigurationMandatoryEntity?>
-        get() = KCollectionSimplePropertyPath<T,
-                StoryDefinitionConfigurationMandatoryEntity?>(this,StoryDefinitionConfiguration::mandatoryEntities)
+        get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::mandatoryEntities)
 
     val steps: KCollectionSimplePropertyPath<T, StoryDefinitionConfigurationStep?>
-        get() = KCollectionSimplePropertyPath<T,
-                StoryDefinitionConfigurationStep?>(this,StoryDefinitionConfiguration::steps)
+        get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::steps)
 
     val name_: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Name)
+        get() = KPropertyPath(this,__Name)
 
     val category: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Category)
+        get() = KPropertyPath(this,__Category)
 
     val description: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Description)
+        get() = KPropertyPath(this,__Description)
 
     val _id: KPropertyPath<T, Id<StoryDefinitionConfiguration>?>
-        get() = KPropertyPath<T, Id<StoryDefinitionConfiguration>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): StoryDefinitionConfiguration_<T>
@@ -177,47 +171,44 @@ class StoryDefinitionConfiguration_Map<T, K>(previous: KPropertyPath<T, *>?, pro
         Map<K, StoryDefinitionConfiguration>?>) : KMapPropertyPath<T, K,
         StoryDefinitionConfiguration?, StoryDefinitionConfiguration_<T>>(previous,property) {
     val storyId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__StoryId)
+        get() = KPropertyPath(this,__StoryId)
 
     val botId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__BotId)
+        get() = KPropertyPath(this,__BotId)
 
     val intent: Intent_<T>
         get() = Intent_(this,StoryDefinitionConfiguration::intent)
 
     val currentType: KPropertyPath<T, AnswerConfigurationType?>
-        get() = KPropertyPath<T, AnswerConfigurationType?>(this,__CurrentType)
+        get() = KPropertyPath(this,__CurrentType)
 
     val answers: KCollectionSimplePropertyPath<T, AnswerConfiguration?>
-        get() = KCollectionSimplePropertyPath<T,
-                AnswerConfiguration?>(this,StoryDefinitionConfiguration::answers)
+        get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::answers)
 
     val version: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Version)
+        get() = KPropertyPath(this,__Version)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val mandatoryEntities: KCollectionSimplePropertyPath<T,
             StoryDefinitionConfigurationMandatoryEntity?>
-        get() = KCollectionSimplePropertyPath<T,
-                StoryDefinitionConfigurationMandatoryEntity?>(this,StoryDefinitionConfiguration::mandatoryEntities)
+        get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::mandatoryEntities)
 
     val steps: KCollectionSimplePropertyPath<T, StoryDefinitionConfigurationStep?>
-        get() = KCollectionSimplePropertyPath<T,
-                StoryDefinitionConfigurationStep?>(this,StoryDefinitionConfiguration::steps)
+        get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::steps)
 
     val name_: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Name)
+        get() = KPropertyPath(this,__Name)
 
     val category: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Category)
+        get() = KPropertyPath(this,__Category)
 
     val description: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Description)
+        get() = KPropertyPath(this,__Description)
 
     val _id: KPropertyPath<T, Id<StoryDefinitionConfiguration>?>
-        get() = KPropertyPath<T, Id<StoryDefinitionConfiguration>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): StoryDefinitionConfiguration_<T>

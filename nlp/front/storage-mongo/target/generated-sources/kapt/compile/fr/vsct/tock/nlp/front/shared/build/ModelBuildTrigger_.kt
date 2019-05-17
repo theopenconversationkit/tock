@@ -21,13 +21,13 @@ private val __OnlyIfModelNotExists: KProperty1<ModelBuildTrigger, Boolean?>
 class ModelBuildTrigger_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         ModelBuildTrigger?>) : KPropertyPath<T, ModelBuildTrigger?>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val all: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__All)
+        get() = KPropertyPath(this,__All)
 
     val onlyIfModelNotExists: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__OnlyIfModelNotExists)
+        get() = KPropertyPath(this,__OnlyIfModelNotExists)
 
     companion object {
         val ApplicationId: KProperty1<ModelBuildTrigger, Id<ApplicationDefinition>?>
@@ -42,13 +42,13 @@ class ModelBuildTrigger_Col<T>(previous: KPropertyPath<T, *>?, property: KProper
         Collection<ModelBuildTrigger>?>) : KCollectionPropertyPath<T, ModelBuildTrigger?,
         ModelBuildTrigger_<T>>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val all: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__All)
+        get() = KPropertyPath(this,__All)
 
     val onlyIfModelNotExists: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__OnlyIfModelNotExists)
+        get() = KPropertyPath(this,__OnlyIfModelNotExists)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ModelBuildTrigger_<T> =
@@ -58,13 +58,13 @@ class ModelBuildTrigger_Map<T, K>(previous: KPropertyPath<T, *>?, property: KPro
         ModelBuildTrigger>?>) : KMapPropertyPath<T, K, ModelBuildTrigger?,
         ModelBuildTrigger_<T>>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val all: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__All)
+        get() = KPropertyPath(this,__All)
 
     val onlyIfModelNotExists: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__OnlyIfModelNotExists)
+        get() = KPropertyPath(this,__OnlyIfModelNotExists)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ModelBuildTrigger_<T> =

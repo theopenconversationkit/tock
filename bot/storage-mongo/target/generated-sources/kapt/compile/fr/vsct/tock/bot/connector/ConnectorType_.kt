@@ -17,10 +17,10 @@ private val __UserInterfaceType: KProperty1<ConnectorType, UserInterfaceType?>
 class ConnectorType_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ConnectorType?>) :
         KPropertyPath<T, ConnectorType?>(previous,property) {
     val id: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Id)
+        get() = KPropertyPath(this,__Id)
 
     val userInterfaceType: KPropertyPath<T, UserInterfaceType?>
-        get() = KPropertyPath<T, UserInterfaceType?>(this,__UserInterfaceType)
+        get() = KPropertyPath(this,__UserInterfaceType)
 
     companion object {
         val Id: KProperty1<ConnectorType, String?>
@@ -33,10 +33,10 @@ class ConnectorType_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<
         Collection<ConnectorType>?>) : KCollectionPropertyPath<T, ConnectorType?,
         ConnectorType_<T>>(previous,property) {
     val id: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Id)
+        get() = KPropertyPath(this,__Id)
 
     val userInterfaceType: KPropertyPath<T, UserInterfaceType?>
-        get() = KPropertyPath<T, UserInterfaceType?>(this,__UserInterfaceType)
+        get() = KPropertyPath(this,__UserInterfaceType)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ConnectorType_<T> =
@@ -46,10 +46,10 @@ class ConnectorType_Map<T, K>(previous: KPropertyPath<T, *>?, property: KPropert
         ConnectorType>?>) : KMapPropertyPath<T, K, ConnectorType?,
         ConnectorType_<T>>(previous,property) {
     val id: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Id)
+        get() = KPropertyPath(this,__Id)
 
     val userInterfaceType: KPropertyPath<T, UserInterfaceType?>
-        get() = KPropertyPath<T, UserInterfaceType?>(this,__UserInterfaceType)
+        get() = KPropertyPath(this,__UserInterfaceType)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ConnectorType_<T> =

@@ -42,40 +42,37 @@ private val ___id: KProperty1<IntentDefinition, Id<IntentDefinition>?>
 class IntentDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         IntentDefinition?>) : KPropertyPath<T, IntentDefinition?>(previous,property) {
     val name_: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Name)
+        get() = KPropertyPath(this,__Name)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val applications: KCollectionSimplePropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KCollectionSimplePropertyPath<T,
-                Id<ApplicationDefinition>?>(this,IntentDefinition::applications)
+        get() = KCollectionSimplePropertyPath(this,IntentDefinition::applications)
 
     val entities: EntityDefinition_Col<T>
         get() = EntityDefinition_Col(this,IntentDefinition::entities)
 
     val entitiesRegexp: KMapSimplePropertyPath<T, Locale?, LinkedHashSet<EntitiesRegexp>?>
-        get() = KMapSimplePropertyPath<T, Locale?,
-                LinkedHashSet<EntitiesRegexp>?>(this,IntentDefinition::entitiesRegexp)
+        get() = KMapSimplePropertyPath(this,IntentDefinition::entitiesRegexp)
 
     val mandatoryStates: KCollectionSimplePropertyPath<T, String?>
-        get() = KCollectionSimplePropertyPath<T, String?>(this,IntentDefinition::mandatoryStates)
+        get() = KCollectionSimplePropertyPath(this,IntentDefinition::mandatoryStates)
 
     val sharedIntents: KCollectionSimplePropertyPath<T, Id<IntentDefinition>?>
-        get() = KCollectionSimplePropertyPath<T,
-                Id<IntentDefinition>?>(this,IntentDefinition::sharedIntents)
+        get() = KCollectionSimplePropertyPath(this,IntentDefinition::sharedIntents)
 
     val label: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Label)
+        get() = KPropertyPath(this,__Label)
 
     val description: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Description)
+        get() = KPropertyPath(this,__Description)
 
     val category: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Category)
+        get() = KPropertyPath(this,__Category)
 
     val _id: KPropertyPath<T, Id<IntentDefinition>?>
-        get() = KPropertyPath<T, Id<IntentDefinition>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     companion object {
         val Name: KProperty1<IntentDefinition, String?>
@@ -86,7 +83,7 @@ class IntentDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<
                 Id<ApplicationDefinition>?>
             get() = KCollectionSimplePropertyPath(null, __Applications)
         val Entities: EntityDefinition_Col<IntentDefinition>
-            get() = EntityDefinition_Col<IntentDefinition>(null,__Entities)
+            get() = EntityDefinition_Col(null,__Entities)
         val EntitiesRegexp: KMapSimplePropertyPath<IntentDefinition, Locale?,
                 LinkedHashSet<EntitiesRegexp>?>
             get() = KMapSimplePropertyPath(null, __EntitiesRegexp)
@@ -108,40 +105,37 @@ class IntentDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KPropert
         Collection<IntentDefinition>?>) : KCollectionPropertyPath<T, IntentDefinition?,
         IntentDefinition_<T>>(previous,property) {
     val name_: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Name)
+        get() = KPropertyPath(this,__Name)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val applications: KCollectionSimplePropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KCollectionSimplePropertyPath<T,
-                Id<ApplicationDefinition>?>(this,IntentDefinition::applications)
+        get() = KCollectionSimplePropertyPath(this,IntentDefinition::applications)
 
     val entities: EntityDefinition_Col<T>
         get() = EntityDefinition_Col(this,IntentDefinition::entities)
 
     val entitiesRegexp: KMapSimplePropertyPath<T, Locale?, LinkedHashSet<EntitiesRegexp>?>
-        get() = KMapSimplePropertyPath<T, Locale?,
-                LinkedHashSet<EntitiesRegexp>?>(this,IntentDefinition::entitiesRegexp)
+        get() = KMapSimplePropertyPath(this,IntentDefinition::entitiesRegexp)
 
     val mandatoryStates: KCollectionSimplePropertyPath<T, String?>
-        get() = KCollectionSimplePropertyPath<T, String?>(this,IntentDefinition::mandatoryStates)
+        get() = KCollectionSimplePropertyPath(this,IntentDefinition::mandatoryStates)
 
     val sharedIntents: KCollectionSimplePropertyPath<T, Id<IntentDefinition>?>
-        get() = KCollectionSimplePropertyPath<T,
-                Id<IntentDefinition>?>(this,IntentDefinition::sharedIntents)
+        get() = KCollectionSimplePropertyPath(this,IntentDefinition::sharedIntents)
 
     val label: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Label)
+        get() = KPropertyPath(this,__Label)
 
     val description: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Description)
+        get() = KPropertyPath(this,__Description)
 
     val category: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Category)
+        get() = KPropertyPath(this,__Category)
 
     val _id: KPropertyPath<T, Id<IntentDefinition>?>
-        get() = KPropertyPath<T, Id<IntentDefinition>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): IntentDefinition_<T> =
@@ -151,40 +145,37 @@ class IntentDefinition_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProp
         IntentDefinition>?>) : KMapPropertyPath<T, K, IntentDefinition?,
         IntentDefinition_<T>>(previous,property) {
     val name_: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Name)
+        get() = KPropertyPath(this,__Name)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val applications: KCollectionSimplePropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KCollectionSimplePropertyPath<T,
-                Id<ApplicationDefinition>?>(this,IntentDefinition::applications)
+        get() = KCollectionSimplePropertyPath(this,IntentDefinition::applications)
 
     val entities: EntityDefinition_Col<T>
         get() = EntityDefinition_Col(this,IntentDefinition::entities)
 
     val entitiesRegexp: KMapSimplePropertyPath<T, Locale?, LinkedHashSet<EntitiesRegexp>?>
-        get() = KMapSimplePropertyPath<T, Locale?,
-                LinkedHashSet<EntitiesRegexp>?>(this,IntentDefinition::entitiesRegexp)
+        get() = KMapSimplePropertyPath(this,IntentDefinition::entitiesRegexp)
 
     val mandatoryStates: KCollectionSimplePropertyPath<T, String?>
-        get() = KCollectionSimplePropertyPath<T, String?>(this,IntentDefinition::mandatoryStates)
+        get() = KCollectionSimplePropertyPath(this,IntentDefinition::mandatoryStates)
 
     val sharedIntents: KCollectionSimplePropertyPath<T, Id<IntentDefinition>?>
-        get() = KCollectionSimplePropertyPath<T,
-                Id<IntentDefinition>?>(this,IntentDefinition::sharedIntents)
+        get() = KCollectionSimplePropertyPath(this,IntentDefinition::sharedIntents)
 
     val label: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Label)
+        get() = KPropertyPath(this,__Label)
 
     val description: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Description)
+        get() = KPropertyPath(this,__Description)
 
     val category: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Category)
+        get() = KPropertyPath(this,__Category)
 
     val _id: KPropertyPath<T, Id<IntentDefinition>?>
-        get() = KPropertyPath<T, Id<IntentDefinition>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): IntentDefinition_<T> =

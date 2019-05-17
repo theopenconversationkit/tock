@@ -40,34 +40,34 @@ private val __Date: KProperty1<ModelBuild, Instant?>
 class ModelBuild_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ModelBuild?>) :
         KPropertyPath<T, ModelBuild?>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val type: KPropertyPath<T, ModelBuildType?>
-        get() = KPropertyPath<T, ModelBuildType?>(this,__Type)
+        get() = KPropertyPath(this,__Type)
 
     val intentId: KPropertyPath<T, Id<IntentDefinition>?>
-        get() = KPropertyPath<T, Id<IntentDefinition>?>(this,__IntentId)
+        get() = KPropertyPath(this,__IntentId)
 
     val entityTypeName: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__EntityTypeName)
+        get() = KPropertyPath(this,__EntityTypeName)
 
     val nbSentences: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__NbSentences)
+        get() = KPropertyPath(this,__NbSentences)
 
     val duration: KPropertyPath<T, Duration?>
-        get() = KPropertyPath<T, Duration?>(this,__Duration)
+        get() = KPropertyPath(this,__Duration)
 
     val error: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__Error)
+        get() = KPropertyPath(this,__Error)
 
     val errorMessage: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ErrorMessage)
+        get() = KPropertyPath(this,__ErrorMessage)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     companion object {
         val ApplicationId: KProperty1<ModelBuild, Id<ApplicationDefinition>?>
@@ -96,34 +96,34 @@ class ModelBuild_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         Collection<ModelBuild>?>) : KCollectionPropertyPath<T, ModelBuild?,
         ModelBuild_<T>>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val type: KPropertyPath<T, ModelBuildType?>
-        get() = KPropertyPath<T, ModelBuildType?>(this,__Type)
+        get() = KPropertyPath(this,__Type)
 
     val intentId: KPropertyPath<T, Id<IntentDefinition>?>
-        get() = KPropertyPath<T, Id<IntentDefinition>?>(this,__IntentId)
+        get() = KPropertyPath(this,__IntentId)
 
     val entityTypeName: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__EntityTypeName)
+        get() = KPropertyPath(this,__EntityTypeName)
 
     val nbSentences: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__NbSentences)
+        get() = KPropertyPath(this,__NbSentences)
 
     val duration: KPropertyPath<T, Duration?>
-        get() = KPropertyPath<T, Duration?>(this,__Duration)
+        get() = KPropertyPath(this,__Duration)
 
     val error: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__Error)
+        get() = KPropertyPath(this,__Error)
 
     val errorMessage: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ErrorMessage)
+        get() = KPropertyPath(this,__ErrorMessage)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ModelBuild_<T> =
@@ -132,34 +132,34 @@ class ModelBuild_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
 class ModelBuild_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K,
         ModelBuild>?>) : KMapPropertyPath<T, K, ModelBuild?, ModelBuild_<T>>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val type: KPropertyPath<T, ModelBuildType?>
-        get() = KPropertyPath<T, ModelBuildType?>(this,__Type)
+        get() = KPropertyPath(this,__Type)
 
     val intentId: KPropertyPath<T, Id<IntentDefinition>?>
-        get() = KPropertyPath<T, Id<IntentDefinition>?>(this,__IntentId)
+        get() = KPropertyPath(this,__IntentId)
 
     val entityTypeName: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__EntityTypeName)
+        get() = KPropertyPath(this,__EntityTypeName)
 
     val nbSentences: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__NbSentences)
+        get() = KPropertyPath(this,__NbSentences)
 
     val duration: KPropertyPath<T, Duration?>
-        get() = KPropertyPath<T, Duration?>(this,__Duration)
+        get() = KPropertyPath(this,__Duration)
 
     val error: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__Error)
+        get() = KPropertyPath(this,__Error)
 
     val errorMessage: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ErrorMessage)
+        get() = KPropertyPath(this,__ErrorMessage)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ModelBuild_<T> =

@@ -35,32 +35,31 @@ internal class DialogFlowStateTransitionCol_<T>(previous: KPropertyPath<T, *>?, 
         KProperty1<*, DialogFlowStateTransitionCol?>) : KPropertyPath<T,
         DialogFlowStateTransitionCol?>(previous,property) {
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val botId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__BotId)
+        get() = KPropertyPath(this,__BotId)
 
     val previousStateId: KPropertyPath<T, Id<DialogFlowStateCol>?>
-        get() = KPropertyPath<T, Id<DialogFlowStateCol>?>(this,__PreviousStateId)
+        get() = KPropertyPath(this,__PreviousStateId)
 
     val nextStateId: KPropertyPath<T, Id<DialogFlowStateCol>?>
-        get() = KPropertyPath<T, Id<DialogFlowStateCol>?>(this,__NextStateId)
+        get() = KPropertyPath(this,__NextStateId)
 
     val intent: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Intent)
+        get() = KPropertyPath(this,__Intent)
 
     val step: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Step)
+        get() = KPropertyPath(this,__Step)
 
     val newEntities: KCollectionSimplePropertyPath<T, String?>
-        get() = KCollectionSimplePropertyPath<T,
-                String?>(this,DialogFlowStateTransitionCol::newEntities)
+        get() = KCollectionSimplePropertyPath(this,DialogFlowStateTransitionCol::newEntities)
 
     val type: KPropertyPath<T, DialogFlowStateTransitionType?>
-        get() = KPropertyPath<T, DialogFlowStateTransitionType?>(this,__Type)
+        get() = KPropertyPath(this,__Type)
 
     val _id: KPropertyPath<T, Id<DialogFlowStateTransitionCol>?>
-        get() = KPropertyPath<T, Id<DialogFlowStateTransitionCol>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     companion object {
         val Namespace: KProperty1<DialogFlowStateTransitionCol, String?>
@@ -87,32 +86,31 @@ internal class DialogFlowStateTransitionCol_Col<T>(previous: KPropertyPath<T, *>
         KProperty1<*, Collection<DialogFlowStateTransitionCol>?>) : KCollectionPropertyPath<T,
         DialogFlowStateTransitionCol?, DialogFlowStateTransitionCol_<T>>(previous,property) {
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val botId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__BotId)
+        get() = KPropertyPath(this,__BotId)
 
     val previousStateId: KPropertyPath<T, Id<DialogFlowStateCol>?>
-        get() = KPropertyPath<T, Id<DialogFlowStateCol>?>(this,__PreviousStateId)
+        get() = KPropertyPath(this,__PreviousStateId)
 
     val nextStateId: KPropertyPath<T, Id<DialogFlowStateCol>?>
-        get() = KPropertyPath<T, Id<DialogFlowStateCol>?>(this,__NextStateId)
+        get() = KPropertyPath(this,__NextStateId)
 
     val intent: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Intent)
+        get() = KPropertyPath(this,__Intent)
 
     val step: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Step)
+        get() = KPropertyPath(this,__Step)
 
     val newEntities: KCollectionSimplePropertyPath<T, String?>
-        get() = KCollectionSimplePropertyPath<T,
-                String?>(this,DialogFlowStateTransitionCol::newEntities)
+        get() = KCollectionSimplePropertyPath(this,DialogFlowStateTransitionCol::newEntities)
 
     val type: KPropertyPath<T, DialogFlowStateTransitionType?>
-        get() = KPropertyPath<T, DialogFlowStateTransitionType?>(this,__Type)
+        get() = KPropertyPath(this,__Type)
 
     val _id: KPropertyPath<T, Id<DialogFlowStateTransitionCol>?>
-        get() = KPropertyPath<T, Id<DialogFlowStateTransitionCol>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): DialogFlowStateTransitionCol_<T>
@@ -122,32 +120,31 @@ internal class DialogFlowStateTransitionCol_Map<T, K>(previous: KPropertyPath<T,
         KProperty1<*, Map<K, DialogFlowStateTransitionCol>?>) : KMapPropertyPath<T, K,
         DialogFlowStateTransitionCol?, DialogFlowStateTransitionCol_<T>>(previous,property) {
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val botId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__BotId)
+        get() = KPropertyPath(this,__BotId)
 
     val previousStateId: KPropertyPath<T, Id<DialogFlowStateCol>?>
-        get() = KPropertyPath<T, Id<DialogFlowStateCol>?>(this,__PreviousStateId)
+        get() = KPropertyPath(this,__PreviousStateId)
 
     val nextStateId: KPropertyPath<T, Id<DialogFlowStateCol>?>
-        get() = KPropertyPath<T, Id<DialogFlowStateCol>?>(this,__NextStateId)
+        get() = KPropertyPath(this,__NextStateId)
 
     val intent: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Intent)
+        get() = KPropertyPath(this,__Intent)
 
     val step: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Step)
+        get() = KPropertyPath(this,__Step)
 
     val newEntities: KCollectionSimplePropertyPath<T, String?>
-        get() = KCollectionSimplePropertyPath<T,
-                String?>(this,DialogFlowStateTransitionCol::newEntities)
+        get() = KCollectionSimplePropertyPath(this,DialogFlowStateTransitionCol::newEntities)
 
     val type: KPropertyPath<T, DialogFlowStateTransitionType?>
-        get() = KPropertyPath<T, DialogFlowStateTransitionType?>(this,__Type)
+        get() = KPropertyPath(this,__Type)
 
     val _id: KPropertyPath<T, Id<DialogFlowStateTransitionCol>?>
-        get() = KPropertyPath<T, Id<DialogFlowStateTransitionCol>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): DialogFlowStateTransitionCol_<T>

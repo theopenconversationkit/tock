@@ -29,7 +29,7 @@
     <description>Google Speech STT implementation</description>
 
     <properties>
-        <google-speech>0.84.0-beta</google-speech>
+        <google-speech>1.4.0</google-speech>
         <jave>2.4.6</jave>
     </properties>
 

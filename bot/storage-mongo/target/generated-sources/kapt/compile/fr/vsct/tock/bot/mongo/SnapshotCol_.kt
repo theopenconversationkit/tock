@@ -24,13 +24,13 @@ private val __LastUpdateDate: KProperty1<SnapshotCol, Instant?>
 internal class SnapshotCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         SnapshotCol?>) : KPropertyPath<T, SnapshotCol?>(previous,property) {
     val _id: KPropertyPath<T, Id<Dialog>?>
-        get() = KPropertyPath<T, Id<Dialog>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     val snapshots: KCollectionSimplePropertyPath<T, Snapshot?>
-        get() = KCollectionSimplePropertyPath<T, Snapshot?>(this,SnapshotCol::snapshots)
+        get() = KCollectionSimplePropertyPath(this,SnapshotCol::snapshots)
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUpdateDate)
+        get() = KPropertyPath(this,__LastUpdateDate)
 
     companion object {
         val _id: KProperty1<SnapshotCol, Id<Dialog>?>
@@ -45,13 +45,13 @@ internal class SnapshotCol_Col<T>(previous: KPropertyPath<T, *>?, property: KPro
         Collection<SnapshotCol>?>) : KCollectionPropertyPath<T, SnapshotCol?,
         SnapshotCol_<T>>(previous,property) {
     val _id: KPropertyPath<T, Id<Dialog>?>
-        get() = KPropertyPath<T, Id<Dialog>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     val snapshots: KCollectionSimplePropertyPath<T, Snapshot?>
-        get() = KCollectionSimplePropertyPath<T, Snapshot?>(this,SnapshotCol::snapshots)
+        get() = KCollectionSimplePropertyPath(this,SnapshotCol::snapshots)
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUpdateDate)
+        get() = KPropertyPath(this,__LastUpdateDate)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): SnapshotCol_<T> =
@@ -60,13 +60,13 @@ internal class SnapshotCol_Col<T>(previous: KPropertyPath<T, *>?, property: KPro
 internal class SnapshotCol_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K,
         SnapshotCol>?>) : KMapPropertyPath<T, K, SnapshotCol?, SnapshotCol_<T>>(previous,property) {
     val _id: KPropertyPath<T, Id<Dialog>?>
-        get() = KPropertyPath<T, Id<Dialog>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     val snapshots: KCollectionSimplePropertyPath<T, Snapshot?>
-        get() = KCollectionSimplePropertyPath<T, Snapshot?>(this,SnapshotCol::snapshots)
+        get() = KCollectionSimplePropertyPath(this,SnapshotCol::snapshots)
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUpdateDate)
+        get() = KPropertyPath(this,__LastUpdateDate)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): SnapshotCol_<T> =

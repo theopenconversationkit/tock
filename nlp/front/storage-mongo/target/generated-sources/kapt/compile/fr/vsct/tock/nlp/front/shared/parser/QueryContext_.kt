@@ -36,34 +36,34 @@ private val __IncreaseQueryCounter: KProperty1<QueryContext, Boolean?>
 class QueryContext_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, QueryContext?>) :
         KPropertyPath<T, QueryContext?>(previous,property) {
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val clientId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ClientId)
+        get() = KPropertyPath(this,__ClientId)
 
     val clientDevice: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ClientDevice)
+        get() = KPropertyPath(this,__ClientDevice)
 
     val dialogId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__DialogId)
+        get() = KPropertyPath(this,__DialogId)
 
     val referenceDate: KPropertyPath<T, ZonedDateTime?>
-        get() = KPropertyPath<T, ZonedDateTime?>(this,__ReferenceDate)
+        get() = KPropertyPath(this,__ReferenceDate)
 
     val referenceTimezone: KPropertyPath<T, ZoneId?>
-        get() = KPropertyPath<T, ZoneId?>(this,__ReferenceTimezone)
+        get() = KPropertyPath(this,__ReferenceTimezone)
 
     val test: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__Test)
+        get() = KPropertyPath(this,__Test)
 
     val registerQuery: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__RegisterQuery)
+        get() = KPropertyPath(this,__RegisterQuery)
 
     val checkExistingQuery: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__CheckExistingQuery)
+        get() = KPropertyPath(this,__CheckExistingQuery)
 
     val increaseQueryCounter: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__IncreaseQueryCounter)
+        get() = KPropertyPath(this,__IncreaseQueryCounter)
 
     companion object {
         val Language: KProperty1<QueryContext, Locale?>
@@ -92,34 +92,34 @@ class QueryContext_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*
         Collection<QueryContext>?>) : KCollectionPropertyPath<T, QueryContext?,
         QueryContext_<T>>(previous,property) {
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val clientId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ClientId)
+        get() = KPropertyPath(this,__ClientId)
 
     val clientDevice: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ClientDevice)
+        get() = KPropertyPath(this,__ClientDevice)
 
     val dialogId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__DialogId)
+        get() = KPropertyPath(this,__DialogId)
 
     val referenceDate: KPropertyPath<T, ZonedDateTime?>
-        get() = KPropertyPath<T, ZonedDateTime?>(this,__ReferenceDate)
+        get() = KPropertyPath(this,__ReferenceDate)
 
     val referenceTimezone: KPropertyPath<T, ZoneId?>
-        get() = KPropertyPath<T, ZoneId?>(this,__ReferenceTimezone)
+        get() = KPropertyPath(this,__ReferenceTimezone)
 
     val test: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__Test)
+        get() = KPropertyPath(this,__Test)
 
     val registerQuery: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__RegisterQuery)
+        get() = KPropertyPath(this,__RegisterQuery)
 
     val checkExistingQuery: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__CheckExistingQuery)
+        get() = KPropertyPath(this,__CheckExistingQuery)
 
     val increaseQueryCounter: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__IncreaseQueryCounter)
+        get() = KPropertyPath(this,__IncreaseQueryCounter)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): QueryContext_<T> =
@@ -129,34 +129,34 @@ class QueryContext_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty
         QueryContext>?>) : KMapPropertyPath<T, K, QueryContext?,
         QueryContext_<T>>(previous,property) {
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val clientId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ClientId)
+        get() = KPropertyPath(this,__ClientId)
 
     val clientDevice: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ClientDevice)
+        get() = KPropertyPath(this,__ClientDevice)
 
     val dialogId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__DialogId)
+        get() = KPropertyPath(this,__DialogId)
 
     val referenceDate: KPropertyPath<T, ZonedDateTime?>
-        get() = KPropertyPath<T, ZonedDateTime?>(this,__ReferenceDate)
+        get() = KPropertyPath(this,__ReferenceDate)
 
     val referenceTimezone: KPropertyPath<T, ZoneId?>
-        get() = KPropertyPath<T, ZoneId?>(this,__ReferenceTimezone)
+        get() = KPropertyPath(this,__ReferenceTimezone)
 
     val test: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__Test)
+        get() = KPropertyPath(this,__Test)
 
     val registerQuery: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__RegisterQuery)
+        get() = KPropertyPath(this,__RegisterQuery)
 
     val checkExistingQuery: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__CheckExistingQuery)
+        get() = KPropertyPath(this,__CheckExistingQuery)
 
     val increaseQueryCounter: KPropertyPath<T, Boolean?>
-        get() = KPropertyPath<T, Boolean?>(this,__IncreaseQueryCounter)
+        get() = KPropertyPath(this,__IncreaseQueryCounter)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): QueryContext_<T> =

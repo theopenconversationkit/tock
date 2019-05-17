@@ -222,8 +222,8 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                     if (entityRole == null) null else Classification_.entities.role eq entityRole,
                     if (modifiedAfter == null)
                         if (searchMark == null) null else UpdateDate lte searchMark!!.date
-                    else if (searchMark == null) UpdateDate gt modifiedAfter
-                    else and(UpdateDate lte searchMark!!.date, UpdateDate gt modifiedAfter)
+                    else if (searchMark == null) UpdateDate gt modifiedAfter?.toInstant()
+                    else and(UpdateDate lte searchMark!!.date, UpdateDate gt modifiedAfter?.toInstant())
                 )
 
             logger.debug { filterBase.json }

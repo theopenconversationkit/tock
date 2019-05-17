@@ -35,33 +35,31 @@ private val __OtherIntentsProbabilities: KProperty1<ParseResult, Map<String, Dou
 class ParseResult_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ParseResult?>) :
         KPropertyPath<T, ParseResult?>(previous,property) {
     val intent: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Intent)
+        get() = KPropertyPath(this,__Intent)
 
     val intentNamespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__IntentNamespace)
+        get() = KPropertyPath(this,__IntentNamespace)
 
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val entities: KCollectionSimplePropertyPath<T, ParsedEntityValue?>
-        get() = KCollectionSimplePropertyPath<T, ParsedEntityValue?>(this,ParseResult::entities)
+        get() = KCollectionSimplePropertyPath(this,ParseResult::entities)
 
     val notRetainedEntities: KCollectionSimplePropertyPath<T, ParsedEntityValue?>
-        get() = KCollectionSimplePropertyPath<T,
-                ParsedEntityValue?>(this,ParseResult::notRetainedEntities)
+        get() = KCollectionSimplePropertyPath(this,ParseResult::notRetainedEntities)
 
     val intentProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__IntentProbability)
+        get() = KPropertyPath(this,__IntentProbability)
 
     val entitiesProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__EntitiesProbability)
+        get() = KPropertyPath(this,__EntitiesProbability)
 
     val retainedQuery: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__RetainedQuery)
+        get() = KPropertyPath(this,__RetainedQuery)
 
     val otherIntentsProbabilities: KMapSimplePropertyPath<T, String?, Double?>
-        get() = KMapSimplePropertyPath<T, String?,
-                Double?>(this,ParseResult::otherIntentsProbabilities)
+        get() = KMapSimplePropertyPath(this,ParseResult::otherIntentsProbabilities)
 
     companion object {
         val Intent: KProperty1<ParseResult, String?>
@@ -88,33 +86,31 @@ class ParseResult_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         Collection<ParseResult>?>) : KCollectionPropertyPath<T, ParseResult?,
         ParseResult_<T>>(previous,property) {
     val intent: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Intent)
+        get() = KPropertyPath(this,__Intent)
 
     val intentNamespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__IntentNamespace)
+        get() = KPropertyPath(this,__IntentNamespace)
 
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val entities: KCollectionSimplePropertyPath<T, ParsedEntityValue?>
-        get() = KCollectionSimplePropertyPath<T, ParsedEntityValue?>(this,ParseResult::entities)
+        get() = KCollectionSimplePropertyPath(this,ParseResult::entities)
 
     val notRetainedEntities: KCollectionSimplePropertyPath<T, ParsedEntityValue?>
-        get() = KCollectionSimplePropertyPath<T,
-                ParsedEntityValue?>(this,ParseResult::notRetainedEntities)
+        get() = KCollectionSimplePropertyPath(this,ParseResult::notRetainedEntities)
 
     val intentProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__IntentProbability)
+        get() = KPropertyPath(this,__IntentProbability)
 
     val entitiesProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__EntitiesProbability)
+        get() = KPropertyPath(this,__EntitiesProbability)
 
     val retainedQuery: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__RetainedQuery)
+        get() = KPropertyPath(this,__RetainedQuery)
 
     val otherIntentsProbabilities: KMapSimplePropertyPath<T, String?, Double?>
-        get() = KMapSimplePropertyPath<T, String?,
-                Double?>(this,ParseResult::otherIntentsProbabilities)
+        get() = KMapSimplePropertyPath(this,ParseResult::otherIntentsProbabilities)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ParseResult_<T> =
@@ -123,33 +119,31 @@ class ParseResult_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
 class ParseResult_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K,
         ParseResult>?>) : KMapPropertyPath<T, K, ParseResult?, ParseResult_<T>>(previous,property) {
     val intent: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Intent)
+        get() = KPropertyPath(this,__Intent)
 
     val intentNamespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__IntentNamespace)
+        get() = KPropertyPath(this,__IntentNamespace)
 
     val language: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Language)
+        get() = KPropertyPath(this,__Language)
 
     val entities: KCollectionSimplePropertyPath<T, ParsedEntityValue?>
-        get() = KCollectionSimplePropertyPath<T, ParsedEntityValue?>(this,ParseResult::entities)
+        get() = KCollectionSimplePropertyPath(this,ParseResult::entities)
 
     val notRetainedEntities: KCollectionSimplePropertyPath<T, ParsedEntityValue?>
-        get() = KCollectionSimplePropertyPath<T,
-                ParsedEntityValue?>(this,ParseResult::notRetainedEntities)
+        get() = KCollectionSimplePropertyPath(this,ParseResult::notRetainedEntities)
 
     val intentProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__IntentProbability)
+        get() = KPropertyPath(this,__IntentProbability)
 
     val entitiesProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__EntitiesProbability)
+        get() = KPropertyPath(this,__EntitiesProbability)
 
     val retainedQuery: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__RetainedQuery)
+        get() = KPropertyPath(this,__RetainedQuery)
 
     val otherIntentsProbabilities: KMapSimplePropertyPath<T, String?, Double?>
-        get() = KMapSimplePropertyPath<T, String?,
-                Double?>(this,ParseResult::otherIntentsProbabilities)
+        get() = KMapSimplePropertyPath(this,ParseResult::otherIntentsProbabilities)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ParseResult_<T> =

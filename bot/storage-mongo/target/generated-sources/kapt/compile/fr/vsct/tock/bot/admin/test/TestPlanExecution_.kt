@@ -30,23 +30,22 @@ private val ___id: KProperty1<TestPlanExecution, Id<TestPlanExecution>?>
 class TestPlanExecution_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         TestPlanExecution?>) : KPropertyPath<T, TestPlanExecution?>(previous,property) {
     val testPlanId: KPropertyPath<T, Id<TestPlan>?>
-        get() = KPropertyPath<T, Id<TestPlan>?>(this,__TestPlanId)
+        get() = KPropertyPath(this,__TestPlanId)
 
     val dialogs: KCollectionSimplePropertyPath<T, DialogExecutionReport?>
-        get() = KCollectionSimplePropertyPath<T,
-                DialogExecutionReport?>(this,TestPlanExecution::dialogs)
+        get() = KCollectionSimplePropertyPath(this,TestPlanExecution::dialogs)
 
     val nbErrors: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__NbErrors)
+        get() = KPropertyPath(this,__NbErrors)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     val duration: KPropertyPath<T, Duration?>
-        get() = KPropertyPath<T, Duration?>(this,__Duration)
+        get() = KPropertyPath(this,__Duration)
 
     val _id: KPropertyPath<T, Id<TestPlanExecution>?>
-        get() = KPropertyPath<T, Id<TestPlanExecution>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     companion object {
         val TestPlanId: KProperty1<TestPlanExecution, Id<TestPlan>?>
@@ -67,23 +66,22 @@ class TestPlanExecution_Col<T>(previous: KPropertyPath<T, *>?, property: KProper
         Collection<TestPlanExecution>?>) : KCollectionPropertyPath<T, TestPlanExecution?,
         TestPlanExecution_<T>>(previous,property) {
     val testPlanId: KPropertyPath<T, Id<TestPlan>?>
-        get() = KPropertyPath<T, Id<TestPlan>?>(this,__TestPlanId)
+        get() = KPropertyPath(this,__TestPlanId)
 
     val dialogs: KCollectionSimplePropertyPath<T, DialogExecutionReport?>
-        get() = KCollectionSimplePropertyPath<T,
-                DialogExecutionReport?>(this,TestPlanExecution::dialogs)
+        get() = KCollectionSimplePropertyPath(this,TestPlanExecution::dialogs)
 
     val nbErrors: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__NbErrors)
+        get() = KPropertyPath(this,__NbErrors)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     val duration: KPropertyPath<T, Duration?>
-        get() = KPropertyPath<T, Duration?>(this,__Duration)
+        get() = KPropertyPath(this,__Duration)
 
     val _id: KPropertyPath<T, Id<TestPlanExecution>?>
-        get() = KPropertyPath<T, Id<TestPlanExecution>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): TestPlanExecution_<T> =
@@ -93,23 +91,22 @@ class TestPlanExecution_Map<T, K>(previous: KPropertyPath<T, *>?, property: KPro
         TestPlanExecution>?>) : KMapPropertyPath<T, K, TestPlanExecution?,
         TestPlanExecution_<T>>(previous,property) {
     val testPlanId: KPropertyPath<T, Id<TestPlan>?>
-        get() = KPropertyPath<T, Id<TestPlan>?>(this,__TestPlanId)
+        get() = KPropertyPath(this,__TestPlanId)
 
     val dialogs: KCollectionSimplePropertyPath<T, DialogExecutionReport?>
-        get() = KCollectionSimplePropertyPath<T,
-                DialogExecutionReport?>(this,TestPlanExecution::dialogs)
+        get() = KCollectionSimplePropertyPath(this,TestPlanExecution::dialogs)
 
     val nbErrors: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__NbErrors)
+        get() = KPropertyPath(this,__NbErrors)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     val duration: KPropertyPath<T, Duration?>
-        get() = KPropertyPath<T, Duration?>(this,__Duration)
+        get() = KPropertyPath(this,__Duration)
 
     val _id: KPropertyPath<T, Id<TestPlanExecution>?>
-        get() = KPropertyPath<T, Id<TestPlanExecution>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): TestPlanExecution_<T> =

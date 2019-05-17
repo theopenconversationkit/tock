@@ -36,7 +36,7 @@ private val __LastUserActionDate: KProperty1<UserTimelineCol, Instant?>
 internal class UserTimelineCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         UserTimelineCol?>) : KPropertyPath<T, UserTimelineCol?>(previous,property) {
     val _id: KPropertyPath<T, Id<UserTimelineCol>?>
-        get() = KPropertyPath<T, Id<UserTimelineCol>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     val playerId: PlayerId_<T>
         get() = PlayerId_(this,UserTimelineCol::playerId)
@@ -48,29 +48,29 @@ internal class UserTimelineCol_<T>(previous: KPropertyPath<T, *>?, property: KPr
         get() = UserStateWrapper_(this,UserTimelineCol::userState)
 
     val temporaryIds: KCollectionSimplePropertyPath<T, String?>
-        get() = KCollectionSimplePropertyPath<T, String?>(this,UserTimelineCol::temporaryIds)
+        get() = KCollectionSimplePropertyPath(this,UserTimelineCol::temporaryIds)
 
     val applicationIds: KCollectionSimplePropertyPath<T, String?>
-        get() = KCollectionSimplePropertyPath<T, String?>(this,UserTimelineCol::applicationIds)
+        get() = KCollectionSimplePropertyPath(this,UserTimelineCol::applicationIds)
 
     val lastActionText: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__LastActionText)
+        get() = KPropertyPath(this,__LastActionText)
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUpdateDate)
+        get() = KPropertyPath(this,__LastUpdateDate)
 
     val lastUserActionDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUserActionDate)
+        get() = KPropertyPath(this,__LastUserActionDate)
 
     companion object {
         val _id: KProperty1<UserTimelineCol, Id<UserTimelineCol>?>
             get() = ___id
         val PlayerId: PlayerId_<UserTimelineCol>
-            get() = PlayerId_<UserTimelineCol>(null,__PlayerId)
+            get() = PlayerId_(null,__PlayerId)
         val UserPreferences: UserPreferencesWrapper_<UserTimelineCol>
-            get() = UserPreferencesWrapper_<UserTimelineCol>(null,__UserPreferences)
+            get() = UserPreferencesWrapper_(null,__UserPreferences)
         val UserState: UserStateWrapper_<UserTimelineCol>
-            get() = UserStateWrapper_<UserTimelineCol>(null,__UserState)
+            get() = UserStateWrapper_(null,__UserState)
         val TemporaryIds: KCollectionSimplePropertyPath<UserTimelineCol, String?>
             get() = KCollectionSimplePropertyPath(null, __TemporaryIds)
         val ApplicationIds: KCollectionSimplePropertyPath<UserTimelineCol, String?>
@@ -87,7 +87,7 @@ internal class UserTimelineCol_Col<T>(previous: KPropertyPath<T, *>?, property: 
         Collection<UserTimelineCol>?>) : KCollectionPropertyPath<T, UserTimelineCol?,
         UserTimelineCol_<T>>(previous,property) {
     val _id: KPropertyPath<T, Id<UserTimelineCol>?>
-        get() = KPropertyPath<T, Id<UserTimelineCol>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     val playerId: PlayerId_<T>
         get() = PlayerId_(this,UserTimelineCol::playerId)
@@ -99,19 +99,19 @@ internal class UserTimelineCol_Col<T>(previous: KPropertyPath<T, *>?, property: 
         get() = UserStateWrapper_(this,UserTimelineCol::userState)
 
     val temporaryIds: KCollectionSimplePropertyPath<T, String?>
-        get() = KCollectionSimplePropertyPath<T, String?>(this,UserTimelineCol::temporaryIds)
+        get() = KCollectionSimplePropertyPath(this,UserTimelineCol::temporaryIds)
 
     val applicationIds: KCollectionSimplePropertyPath<T, String?>
-        get() = KCollectionSimplePropertyPath<T, String?>(this,UserTimelineCol::applicationIds)
+        get() = KCollectionSimplePropertyPath(this,UserTimelineCol::applicationIds)
 
     val lastActionText: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__LastActionText)
+        get() = KPropertyPath(this,__LastActionText)
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUpdateDate)
+        get() = KPropertyPath(this,__LastUpdateDate)
 
     val lastUserActionDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUserActionDate)
+        get() = KPropertyPath(this,__LastUserActionDate)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): UserTimelineCol_<T> =
@@ -121,7 +121,7 @@ internal class UserTimelineCol_Map<T, K>(previous: KPropertyPath<T, *>?, propert
         Map<K, UserTimelineCol>?>) : KMapPropertyPath<T, K, UserTimelineCol?,
         UserTimelineCol_<T>>(previous,property) {
     val _id: KPropertyPath<T, Id<UserTimelineCol>?>
-        get() = KPropertyPath<T, Id<UserTimelineCol>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     val playerId: PlayerId_<T>
         get() = PlayerId_(this,UserTimelineCol::playerId)
@@ -133,19 +133,19 @@ internal class UserTimelineCol_Map<T, K>(previous: KPropertyPath<T, *>?, propert
         get() = UserStateWrapper_(this,UserTimelineCol::userState)
 
     val temporaryIds: KCollectionSimplePropertyPath<T, String?>
-        get() = KCollectionSimplePropertyPath<T, String?>(this,UserTimelineCol::temporaryIds)
+        get() = KCollectionSimplePropertyPath(this,UserTimelineCol::temporaryIds)
 
     val applicationIds: KCollectionSimplePropertyPath<T, String?>
-        get() = KCollectionSimplePropertyPath<T, String?>(this,UserTimelineCol::applicationIds)
+        get() = KCollectionSimplePropertyPath(this,UserTimelineCol::applicationIds)
 
     val lastActionText: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__LastActionText)
+        get() = KPropertyPath(this,__LastActionText)
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUpdateDate)
+        get() = KPropertyPath(this,__LastUpdateDate)
 
     val lastUserActionDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUserActionDate)
+        get() = KPropertyPath(this,__LastUserActionDate)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): UserTimelineCol_<T> =

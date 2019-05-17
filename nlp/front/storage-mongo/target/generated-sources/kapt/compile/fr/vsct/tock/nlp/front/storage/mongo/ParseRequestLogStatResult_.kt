@@ -33,23 +33,23 @@ internal class ParseRequestLogStatResult_<T>(previous: KPropertyPath<T, *>?, pro
         get() = DayAndYear_(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::_id)
 
     val error: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Error)
+        get() = KPropertyPath(this,__Error)
 
     val count: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Count)
+        get() = KPropertyPath(this,__Count)
 
     val duration: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__Duration)
+        get() = KPropertyPath(this,__Duration)
 
     val intentProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__IntentProbability)
+        get() = KPropertyPath(this,__IntentProbability)
 
     val entitiesProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__EntitiesProbability)
+        get() = KPropertyPath(this,__EntitiesProbability)
 
     companion object {
         val _id: DayAndYear_<ParseRequestLogMongoDAO.ParseRequestLogStatResult>
-            get() = DayAndYear_<ParseRequestLogMongoDAO.ParseRequestLogStatResult>(null,___id)
+            get() = DayAndYear_(null,___id)
         val Error: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatResult, Int?>
             get() = __Error
         val Count: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatResult, Int?>
@@ -72,19 +72,19 @@ internal class ParseRequestLogStatResult_Col<T>(previous: KPropertyPath<T, *>?, 
         get() = DayAndYear_(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::_id)
 
     val error: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Error)
+        get() = KPropertyPath(this,__Error)
 
     val count: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Count)
+        get() = KPropertyPath(this,__Count)
 
     val duration: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__Duration)
+        get() = KPropertyPath(this,__Duration)
 
     val intentProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__IntentProbability)
+        get() = KPropertyPath(this,__IntentProbability)
 
     val entitiesProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__EntitiesProbability)
+        get() = KPropertyPath(this,__EntitiesProbability)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ParseRequestLogStatResult_<T> =
@@ -98,19 +98,19 @@ internal class ParseRequestLogStatResult_Map<T, K>(previous: KPropertyPath<T, *>
         get() = DayAndYear_(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::_id)
 
     val error: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Error)
+        get() = KPropertyPath(this,__Error)
 
     val count: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Count)
+        get() = KPropertyPath(this,__Count)
 
     val duration: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__Duration)
+        get() = KPropertyPath(this,__Duration)
 
     val intentProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__IntentProbability)
+        get() = KPropertyPath(this,__IntentProbability)
 
     val entitiesProbability: KPropertyPath<T, Double?>
-        get() = KPropertyPath<T, Double?>(this,__EntitiesProbability)
+        get() = KPropertyPath(this,__EntitiesProbability)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ParseRequestLogStatResult_<T> =

@@ -23,15 +23,14 @@ private val __LastUpdateDate: KProperty1<ArchivedEntityValuesCol, Instant?>
 internal class ArchivedEntityValuesCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         ArchivedEntityValuesCol?>) : KPropertyPath<T, ArchivedEntityValuesCol?>(previous,property) {
     val _id: KPropertyPath<T, Id<ArchivedEntityValuesCol>?>
-        get() = KPropertyPath<T, Id<ArchivedEntityValuesCol>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     val values: KCollectionSimplePropertyPath<T,
             ArchivedEntityValuesCol.ArchivedEntityValueWrapper?>
-        get() = KCollectionSimplePropertyPath<T,
-                ArchivedEntityValuesCol.ArchivedEntityValueWrapper?>(this,ArchivedEntityValuesCol::values)
+        get() = KCollectionSimplePropertyPath(this,ArchivedEntityValuesCol::values)
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUpdateDate)
+        get() = KPropertyPath(this,__LastUpdateDate)
 
     companion object {
         val _id: KProperty1<ArchivedEntityValuesCol, Id<ArchivedEntityValuesCol>?>
@@ -47,15 +46,14 @@ internal class ArchivedEntityValuesCol_Col<T>(previous: KPropertyPath<T, *>?, pr
         KProperty1<*, Collection<ArchivedEntityValuesCol>?>) : KCollectionPropertyPath<T,
         ArchivedEntityValuesCol?, ArchivedEntityValuesCol_<T>>(previous,property) {
     val _id: KPropertyPath<T, Id<ArchivedEntityValuesCol>?>
-        get() = KPropertyPath<T, Id<ArchivedEntityValuesCol>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     val values: KCollectionSimplePropertyPath<T,
             ArchivedEntityValuesCol.ArchivedEntityValueWrapper?>
-        get() = KCollectionSimplePropertyPath<T,
-                ArchivedEntityValuesCol.ArchivedEntityValueWrapper?>(this,ArchivedEntityValuesCol::values)
+        get() = KCollectionSimplePropertyPath(this,ArchivedEntityValuesCol::values)
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUpdateDate)
+        get() = KPropertyPath(this,__LastUpdateDate)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ArchivedEntityValuesCol_<T> =
@@ -65,15 +63,14 @@ internal class ArchivedEntityValuesCol_Map<T, K>(previous: KPropertyPath<T, *>?,
         KProperty1<*, Map<K, ArchivedEntityValuesCol>?>) : KMapPropertyPath<T, K,
         ArchivedEntityValuesCol?, ArchivedEntityValuesCol_<T>>(previous,property) {
     val _id: KPropertyPath<T, Id<ArchivedEntityValuesCol>?>
-        get() = KPropertyPath<T, Id<ArchivedEntityValuesCol>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     val values: KCollectionSimplePropertyPath<T,
             ArchivedEntityValuesCol.ArchivedEntityValueWrapper?>
-        get() = KCollectionSimplePropertyPath<T,
-                ArchivedEntityValuesCol.ArchivedEntityValueWrapper?>(this,ArchivedEntityValuesCol::values)
+        get() = KCollectionSimplePropertyPath(this,ArchivedEntityValuesCol::values)
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUpdateDate)
+        get() = KPropertyPath(this,__LastUpdateDate)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ArchivedEntityValuesCol_<T> =

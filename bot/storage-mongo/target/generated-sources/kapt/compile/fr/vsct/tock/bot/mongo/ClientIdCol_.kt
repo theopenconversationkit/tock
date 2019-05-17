@@ -19,10 +19,10 @@ private val ___id: KProperty1<ClientIdCol, Id<ClientIdCol>?>
 internal class ClientIdCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         ClientIdCol?>) : KPropertyPath<T, ClientIdCol?>(previous,property) {
     val userIds: KCollectionSimplePropertyPath<T, String?>
-        get() = KCollectionSimplePropertyPath<T, String?>(this,ClientIdCol::userIds)
+        get() = KCollectionSimplePropertyPath(this,ClientIdCol::userIds)
 
     val _id: KPropertyPath<T, Id<ClientIdCol>?>
-        get() = KPropertyPath<T, Id<ClientIdCol>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     companion object {
         val UserIds: KCollectionSimplePropertyPath<ClientIdCol, String?>
@@ -35,10 +35,10 @@ internal class ClientIdCol_Col<T>(previous: KPropertyPath<T, *>?, property: KPro
         Collection<ClientIdCol>?>) : KCollectionPropertyPath<T, ClientIdCol?,
         ClientIdCol_<T>>(previous,property) {
     val userIds: KCollectionSimplePropertyPath<T, String?>
-        get() = KCollectionSimplePropertyPath<T, String?>(this,ClientIdCol::userIds)
+        get() = KCollectionSimplePropertyPath(this,ClientIdCol::userIds)
 
     val _id: KPropertyPath<T, Id<ClientIdCol>?>
-        get() = KPropertyPath<T, Id<ClientIdCol>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ClientIdCol_<T> =
@@ -47,10 +47,10 @@ internal class ClientIdCol_Col<T>(previous: KPropertyPath<T, *>?, property: KPro
 internal class ClientIdCol_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K,
         ClientIdCol>?>) : KMapPropertyPath<T, K, ClientIdCol?, ClientIdCol_<T>>(previous,property) {
     val userIds: KCollectionSimplePropertyPath<T, String?>
-        get() = KCollectionSimplePropertyPath<T, String?>(this,ClientIdCol::userIds)
+        get() = KCollectionSimplePropertyPath(this,ClientIdCol::userIds)
 
     val _id: KPropertyPath<T, Id<ClientIdCol>?>
-        get() = KPropertyPath<T, Id<ClientIdCol>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ClientIdCol_<T> =

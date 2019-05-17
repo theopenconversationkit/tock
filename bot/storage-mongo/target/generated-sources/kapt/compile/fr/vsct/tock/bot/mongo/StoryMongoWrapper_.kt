@@ -24,13 +24,13 @@ internal class StoryMongoWrapper_<T>(previous: KPropertyPath<T, *>?, property: K
         DialogCol.StoryMongoWrapper?>) : KPropertyPath<T,
         DialogCol.StoryMongoWrapper?>(previous,property) {
     val storyDefinitionId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__StoryDefinitionId)
+        get() = KPropertyPath(this,__StoryDefinitionId)
 
     val currentIntent: Intent_<T>
         get() = Intent_(this,DialogCol.StoryMongoWrapper::currentIntent)
 
     val currentStep: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__CurrentStep)
+        get() = KPropertyPath(this,__CurrentStep)
 
     val actions: ActionMongoWrapper_Col<T>
         get() = ActionMongoWrapper_Col(this,DialogCol.StoryMongoWrapper::actions)
@@ -39,24 +39,24 @@ internal class StoryMongoWrapper_<T>(previous: KPropertyPath<T, *>?, property: K
         val StoryDefinitionId: KProperty1<DialogCol.StoryMongoWrapper, String?>
             get() = __StoryDefinitionId
         val CurrentIntent: Intent_<DialogCol.StoryMongoWrapper>
-            get() = Intent_<DialogCol.StoryMongoWrapper>(null,__CurrentIntent)
+            get() = Intent_(null,__CurrentIntent)
         val CurrentStep: KProperty1<DialogCol.StoryMongoWrapper, String?>
             get() = __CurrentStep
         val Actions: ActionMongoWrapper_Col<DialogCol.StoryMongoWrapper>
-            get() = ActionMongoWrapper_Col<DialogCol.StoryMongoWrapper>(null,__Actions)}
+            get() = ActionMongoWrapper_Col(null,__Actions)}
 }
 
 internal class StoryMongoWrapper_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         Collection<DialogCol.StoryMongoWrapper>?>) : KCollectionPropertyPath<T,
         DialogCol.StoryMongoWrapper?, StoryMongoWrapper_<T>>(previous,property) {
     val storyDefinitionId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__StoryDefinitionId)
+        get() = KPropertyPath(this,__StoryDefinitionId)
 
     val currentIntent: Intent_<T>
         get() = Intent_(this,DialogCol.StoryMongoWrapper::currentIntent)
 
     val currentStep: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__CurrentStep)
+        get() = KPropertyPath(this,__CurrentStep)
 
     val actions: ActionMongoWrapper_Col<T>
         get() = ActionMongoWrapper_Col(this,DialogCol.StoryMongoWrapper::actions)
@@ -69,13 +69,13 @@ internal class StoryMongoWrapper_Map<T, K>(previous: KPropertyPath<T, *>?, prope
         Map<K, DialogCol.StoryMongoWrapper>?>) : KMapPropertyPath<T, K,
         DialogCol.StoryMongoWrapper?, StoryMongoWrapper_<T>>(previous,property) {
     val storyDefinitionId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__StoryDefinitionId)
+        get() = KPropertyPath(this,__StoryDefinitionId)
 
     val currentIntent: Intent_<T>
         get() = Intent_(this,DialogCol.StoryMongoWrapper::currentIntent)
 
     val currentStep: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__CurrentStep)
+        get() = KPropertyPath(this,__CurrentStep)
 
     val actions: ActionMongoWrapper_Col<T>
         get() = ActionMongoWrapper_Col(this,DialogCol.StoryMongoWrapper::actions)

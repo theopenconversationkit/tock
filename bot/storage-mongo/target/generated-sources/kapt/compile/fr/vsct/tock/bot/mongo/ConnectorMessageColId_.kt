@@ -19,10 +19,10 @@ private val __DialogId: KProperty1<ConnectorMessageColId, Id<Dialog>?>
 internal class ConnectorMessageColId_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         ConnectorMessageColId?>) : KPropertyPath<T, ConnectorMessageColId?>(previous,property) {
     val actionId: KPropertyPath<T, Id<Action>?>
-        get() = KPropertyPath<T, Id<Action>?>(this,__ActionId)
+        get() = KPropertyPath(this,__ActionId)
 
     val dialogId: KPropertyPath<T, Id<Dialog>?>
-        get() = KPropertyPath<T, Id<Dialog>?>(this,__DialogId)
+        get() = KPropertyPath(this,__DialogId)
 
     companion object {
         val ActionId: KProperty1<ConnectorMessageColId, Id<Action>?>
@@ -35,10 +35,10 @@ internal class ConnectorMessageColId_Col<T>(previous: KPropertyPath<T, *>?, prop
         Collection<ConnectorMessageColId>?>) : KCollectionPropertyPath<T, ConnectorMessageColId?,
         ConnectorMessageColId_<T>>(previous,property) {
     val actionId: KPropertyPath<T, Id<Action>?>
-        get() = KPropertyPath<T, Id<Action>?>(this,__ActionId)
+        get() = KPropertyPath(this,__ActionId)
 
     val dialogId: KPropertyPath<T, Id<Dialog>?>
-        get() = KPropertyPath<T, Id<Dialog>?>(this,__DialogId)
+        get() = KPropertyPath(this,__DialogId)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ConnectorMessageColId_<T> =
@@ -48,10 +48,10 @@ internal class ConnectorMessageColId_Map<T, K>(previous: KPropertyPath<T, *>?, p
         KProperty1<*, Map<K, ConnectorMessageColId>?>) : KMapPropertyPath<T, K,
         ConnectorMessageColId?, ConnectorMessageColId_<T>>(previous,property) {
     val actionId: KPropertyPath<T, Id<Action>?>
-        get() = KPropertyPath<T, Id<Action>?>(this,__ActionId)
+        get() = KPropertyPath(this,__ActionId)
 
     val dialogId: KPropertyPath<T, Id<Dialog>?>
-        get() = KPropertyPath<T, Id<Dialog>?>(this,__DialogId)
+        get() = KPropertyPath(this,__DialogId)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ConnectorMessageColId_<T> =

@@ -39,16 +39,16 @@ class BotApplicationConfiguration_<T>(previous: KPropertyPath<T, *>?, property: 
         BotApplicationConfiguration?>) : KPropertyPath<T,
         BotApplicationConfiguration?>(previous,property) {
     val applicationId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val botId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__BotId)
+        get() = KPropertyPath(this,__BotId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val nlpModel: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__NlpModel)
+        get() = KPropertyPath(this,__NlpModel)
 
     val connectorType: ConnectorType_<T>
         get() = ConnectorType_(this,BotApplicationConfiguration::connectorType)
@@ -57,20 +57,19 @@ class BotApplicationConfiguration_<T>(previous: KPropertyPath<T, *>?, property: 
         get() = ConnectorType_(this,BotApplicationConfiguration::ownerConnectorType)
 
     val name_: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Name)
+        get() = KPropertyPath(this,__Name)
 
     val baseUrl: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__BaseUrl)
+        get() = KPropertyPath(this,__BaseUrl)
 
     val parameters_: KMapSimplePropertyPath<T, String?, String?>
-        get() = KMapSimplePropertyPath<T, String?,
-                String?>(this,BotApplicationConfiguration::parameters)
+        get() = KMapSimplePropertyPath(this,BotApplicationConfiguration::parameters)
 
     val path_: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Path)
+        get() = KPropertyPath(this,__Path)
 
     val _id: KPropertyPath<T, Id<BotApplicationConfiguration>?>
-        get() = KPropertyPath<T, Id<BotApplicationConfiguration>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     companion object {
         val ApplicationId: KProperty1<BotApplicationConfiguration, String?>
@@ -82,9 +81,9 @@ class BotApplicationConfiguration_<T>(previous: KPropertyPath<T, *>?, property: 
         val NlpModel: KProperty1<BotApplicationConfiguration, String?>
             get() = __NlpModel
         val ConnectorType: ConnectorType_<BotApplicationConfiguration>
-            get() = ConnectorType_<BotApplicationConfiguration>(null,__ConnectorType)
+            get() = ConnectorType_(null,__ConnectorType)
         val OwnerConnectorType: ConnectorType_<BotApplicationConfiguration>
-            get() = ConnectorType_<BotApplicationConfiguration>(null,__OwnerConnectorType)
+            get() = ConnectorType_(null,__OwnerConnectorType)
         val Name: KProperty1<BotApplicationConfiguration, String?>
             get() = __Name
         val BaseUrl: KProperty1<BotApplicationConfiguration, String?>
@@ -101,16 +100,16 @@ class BotApplicationConfiguration_Col<T>(previous: KPropertyPath<T, *>?, propert
         Collection<BotApplicationConfiguration>?>) : KCollectionPropertyPath<T,
         BotApplicationConfiguration?, BotApplicationConfiguration_<T>>(previous,property) {
     val applicationId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val botId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__BotId)
+        get() = KPropertyPath(this,__BotId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val nlpModel: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__NlpModel)
+        get() = KPropertyPath(this,__NlpModel)
 
     val connectorType: ConnectorType_<T>
         get() = ConnectorType_(this,BotApplicationConfiguration::connectorType)
@@ -119,20 +118,19 @@ class BotApplicationConfiguration_Col<T>(previous: KPropertyPath<T, *>?, propert
         get() = ConnectorType_(this,BotApplicationConfiguration::ownerConnectorType)
 
     val name_: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Name)
+        get() = KPropertyPath(this,__Name)
 
     val baseUrl: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__BaseUrl)
+        get() = KPropertyPath(this,__BaseUrl)
 
     val parameters_: KMapSimplePropertyPath<T, String?, String?>
-        get() = KMapSimplePropertyPath<T, String?,
-                String?>(this,BotApplicationConfiguration::parameters)
+        get() = KMapSimplePropertyPath(this,BotApplicationConfiguration::parameters)
 
     val path_: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Path)
+        get() = KPropertyPath(this,__Path)
 
     val _id: KPropertyPath<T, Id<BotApplicationConfiguration>?>
-        get() = KPropertyPath<T, Id<BotApplicationConfiguration>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): BotApplicationConfiguration_<T> =
@@ -142,16 +140,16 @@ class BotApplicationConfiguration_Map<T, K>(previous: KPropertyPath<T, *>?, prop
         Map<K, BotApplicationConfiguration>?>) : KMapPropertyPath<T, K,
         BotApplicationConfiguration?, BotApplicationConfiguration_<T>>(previous,property) {
     val applicationId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ApplicationId)
+        get() = KPropertyPath(this,__ApplicationId)
 
     val botId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__BotId)
+        get() = KPropertyPath(this,__BotId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val nlpModel: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__NlpModel)
+        get() = KPropertyPath(this,__NlpModel)
 
     val connectorType: ConnectorType_<T>
         get() = ConnectorType_(this,BotApplicationConfiguration::connectorType)
@@ -160,20 +158,19 @@ class BotApplicationConfiguration_Map<T, K>(previous: KPropertyPath<T, *>?, prop
         get() = ConnectorType_(this,BotApplicationConfiguration::ownerConnectorType)
 
     val name_: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Name)
+        get() = KPropertyPath(this,__Name)
 
     val baseUrl: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__BaseUrl)
+        get() = KPropertyPath(this,__BaseUrl)
 
     val parameters_: KMapSimplePropertyPath<T, String?, String?>
-        get() = KMapSimplePropertyPath<T, String?,
-                String?>(this,BotApplicationConfiguration::parameters)
+        get() = KMapSimplePropertyPath(this,BotApplicationConfiguration::parameters)
 
     val path_: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Path)
+        get() = KPropertyPath(this,__Path)
 
     val _id: KPropertyPath<T, Id<BotApplicationConfiguration>?>
-        get() = KPropertyPath<T, Id<BotApplicationConfiguration>?>(this,___id)
+        get() = KPropertyPath(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): BotApplicationConfiguration_<T> =

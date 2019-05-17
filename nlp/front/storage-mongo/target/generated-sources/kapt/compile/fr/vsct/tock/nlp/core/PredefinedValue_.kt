@@ -19,10 +19,10 @@ private val __Labels: KProperty1<PredefinedValue, Map<Locale, List<String>>?>
 class PredefinedValue_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, PredefinedValue?>)
         : KPropertyPath<T, PredefinedValue?>(previous,property) {
     val value: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Value)
+        get() = KPropertyPath(this,__Value)
 
     val labels: KMapSimplePropertyPath<T, Locale?, List<String>?>
-        get() = KMapSimplePropertyPath<T, Locale?, List<String>?>(this,PredefinedValue::labels)
+        get() = KMapSimplePropertyPath(this,PredefinedValue::labels)
 
     companion object {
         val Value: KProperty1<PredefinedValue, String?>
@@ -35,10 +35,10 @@ class PredefinedValue_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty
         Collection<PredefinedValue>?>) : KCollectionPropertyPath<T, PredefinedValue?,
         PredefinedValue_<T>>(previous,property) {
     val value: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Value)
+        get() = KPropertyPath(this,__Value)
 
     val labels: KMapSimplePropertyPath<T, Locale?, List<String>?>
-        get() = KMapSimplePropertyPath<T, Locale?, List<String>?>(this,PredefinedValue::labels)
+        get() = KMapSimplePropertyPath(this,PredefinedValue::labels)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): PredefinedValue_<T> =
@@ -48,10 +48,10 @@ class PredefinedValue_Map<T, K>(previous: KPropertyPath<T, *>?, property: KPrope
         PredefinedValue>?>) : KMapPropertyPath<T, K, PredefinedValue?,
         PredefinedValue_<T>>(previous,property) {
     val value: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Value)
+        get() = KPropertyPath(this,__Value)
 
     val labels: KMapSimplePropertyPath<T, Locale?, List<String>?>
-        get() = KMapSimplePropertyPath<T, Locale?, List<String>?>(this,PredefinedValue::labels)
+        get() = KMapSimplePropertyPath(this,PredefinedValue::labels)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): PredefinedValue_<T> =

@@ -22,14 +22,13 @@ internal class UserStateWrapper_<T>(previous: KPropertyPath<T, *>?, property: KP
         UserTimelineCol.UserStateWrapper?>) : KPropertyPath<T,
         UserTimelineCol.UserStateWrapper?>(previous,property) {
     val creationDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__CreationDate)
+        get() = KPropertyPath(this,__CreationDate)
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUpdateDate)
+        get() = KPropertyPath(this,__LastUpdateDate)
 
     val flags: KMapSimplePropertyPath<T, String?, UserTimelineCol.TimeBoxedFlagWrapper?>
-        get() = KMapSimplePropertyPath<T, String?,
-                UserTimelineCol.TimeBoxedFlagWrapper?>(this,UserTimelineCol.UserStateWrapper::flags)
+        get() = KMapSimplePropertyPath(this,UserTimelineCol.UserStateWrapper::flags)
 
     companion object {
         val CreationDate: KProperty1<UserTimelineCol.UserStateWrapper, Instant?>
@@ -45,14 +44,13 @@ internal class UserStateWrapper_Col<T>(previous: KPropertyPath<T, *>?, property:
         Collection<UserTimelineCol.UserStateWrapper>?>) : KCollectionPropertyPath<T,
         UserTimelineCol.UserStateWrapper?, UserStateWrapper_<T>>(previous,property) {
     val creationDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__CreationDate)
+        get() = KPropertyPath(this,__CreationDate)
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUpdateDate)
+        get() = KPropertyPath(this,__LastUpdateDate)
 
     val flags: KMapSimplePropertyPath<T, String?, UserTimelineCol.TimeBoxedFlagWrapper?>
-        get() = KMapSimplePropertyPath<T, String?,
-                UserTimelineCol.TimeBoxedFlagWrapper?>(this,UserTimelineCol.UserStateWrapper::flags)
+        get() = KMapSimplePropertyPath(this,UserTimelineCol.UserStateWrapper::flags)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): UserStateWrapper_<T> =
@@ -62,14 +60,13 @@ internal class UserStateWrapper_Map<T, K>(previous: KPropertyPath<T, *>?, proper
         Map<K, UserTimelineCol.UserStateWrapper>?>) : KMapPropertyPath<T, K,
         UserTimelineCol.UserStateWrapper?, UserStateWrapper_<T>>(previous,property) {
     val creationDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__CreationDate)
+        get() = KPropertyPath(this,__CreationDate)
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUpdateDate)
+        get() = KPropertyPath(this,__LastUpdateDate)
 
     val flags: KMapSimplePropertyPath<T, String?, UserTimelineCol.TimeBoxedFlagWrapper?>
-        get() = KMapSimplePropertyPath<T, String?,
-                UserTimelineCol.TimeBoxedFlagWrapper?>(this,UserTimelineCol.UserStateWrapper::flags)
+        get() = KMapSimplePropertyPath(this,UserTimelineCol.UserStateWrapper::flags)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): UserStateWrapper_<T> =

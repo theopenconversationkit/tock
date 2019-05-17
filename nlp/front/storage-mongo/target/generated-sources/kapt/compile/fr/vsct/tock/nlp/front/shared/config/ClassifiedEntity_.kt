@@ -24,16 +24,16 @@ private val __SubEntities: KProperty1<ClassifiedEntity, List<ClassifiedEntity>?>
 class ClassifiedEntity_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         ClassifiedEntity?>) : KPropertyPath<T, ClassifiedEntity?>(previous,property) {
     val type: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Type)
+        get() = KPropertyPath(this,__Type)
 
     val role: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Role)
+        get() = KPropertyPath(this,__Role)
 
     val start: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Start)
+        get() = KPropertyPath(this,__Start)
 
     val end: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__End)
+        get() = KPropertyPath(this,__End)
 
     val subEntities: ClassifiedEntity_Col<T>
         get() = ClassifiedEntity_Col(this,ClassifiedEntity::subEntities)
@@ -48,23 +48,23 @@ class ClassifiedEntity_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<
         val End: KProperty1<ClassifiedEntity, Int?>
             get() = __End
         val SubEntities: ClassifiedEntity_Col<ClassifiedEntity>
-            get() = ClassifiedEntity_Col<ClassifiedEntity>(null,__SubEntities)}
+            get() = ClassifiedEntity_Col(null,__SubEntities)}
 }
 
 class ClassifiedEntity_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         Collection<ClassifiedEntity>?>) : KCollectionPropertyPath<T, ClassifiedEntity?,
         ClassifiedEntity_<T>>(previous,property) {
     val type: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Type)
+        get() = KPropertyPath(this,__Type)
 
     val role: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Role)
+        get() = KPropertyPath(this,__Role)
 
     val start: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Start)
+        get() = KPropertyPath(this,__Start)
 
     val end: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__End)
+        get() = KPropertyPath(this,__End)
 
     val subEntities: ClassifiedEntity_Col<T>
         get() = ClassifiedEntity_Col(this,ClassifiedEntity::subEntities)
@@ -77,16 +77,16 @@ class ClassifiedEntity_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProp
         ClassifiedEntity>?>) : KMapPropertyPath<T, K, ClassifiedEntity?,
         ClassifiedEntity_<T>>(previous,property) {
     val type: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Type)
+        get() = KPropertyPath(this,__Type)
 
     val role: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Role)
+        get() = KPropertyPath(this,__Role)
 
     val start: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Start)
+        get() = KPropertyPath(this,__Start)
 
     val end: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__End)
+        get() = KPropertyPath(this,__End)
 
     val subEntities: ClassifiedEntity_Col<T>
         get() = ClassifiedEntity_Col(this,ClassifiedEntity::subEntities)

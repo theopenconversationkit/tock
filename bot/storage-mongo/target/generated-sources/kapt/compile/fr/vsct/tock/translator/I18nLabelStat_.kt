@@ -30,25 +30,25 @@ private val __LastUpdate: KProperty1<I18nLabelStat, Instant?>
 class I18nLabelStat_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, I18nLabelStat?>) :
         KPropertyPath<T, I18nLabelStat?>(previous,property) {
     val labelId: KPropertyPath<T, Id<I18nLabel>?>
-        get() = KPropertyPath<T, Id<I18nLabel>?>(this,__LabelId)
+        get() = KPropertyPath(this,__LabelId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val locale: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Locale)
+        get() = KPropertyPath(this,__Locale)
 
     val interfaceType: KPropertyPath<T, UserInterfaceType?>
-        get() = KPropertyPath<T, UserInterfaceType?>(this,__InterfaceType)
+        get() = KPropertyPath(this,__InterfaceType)
 
     val connectorId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ConnectorId)
+        get() = KPropertyPath(this,__ConnectorId)
 
     val count: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Count)
+        get() = KPropertyPath(this,__Count)
 
     val lastUpdate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUpdate)
+        get() = KPropertyPath(this,__LastUpdate)
 
     companion object {
         val LabelId: KProperty1<I18nLabelStat, Id<I18nLabel>?>
@@ -71,25 +71,25 @@ class I18nLabelStat_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<
         Collection<I18nLabelStat>?>) : KCollectionPropertyPath<T, I18nLabelStat?,
         I18nLabelStat_<T>>(previous,property) {
     val labelId: KPropertyPath<T, Id<I18nLabel>?>
-        get() = KPropertyPath<T, Id<I18nLabel>?>(this,__LabelId)
+        get() = KPropertyPath(this,__LabelId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val locale: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Locale)
+        get() = KPropertyPath(this,__Locale)
 
     val interfaceType: KPropertyPath<T, UserInterfaceType?>
-        get() = KPropertyPath<T, UserInterfaceType?>(this,__InterfaceType)
+        get() = KPropertyPath(this,__InterfaceType)
 
     val connectorId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ConnectorId)
+        get() = KPropertyPath(this,__ConnectorId)
 
     val count: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Count)
+        get() = KPropertyPath(this,__Count)
 
     val lastUpdate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUpdate)
+        get() = KPropertyPath(this,__LastUpdate)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): I18nLabelStat_<T> =
@@ -99,25 +99,25 @@ class I18nLabelStat_Map<T, K>(previous: KPropertyPath<T, *>?, property: KPropert
         I18nLabelStat>?>) : KMapPropertyPath<T, K, I18nLabelStat?,
         I18nLabelStat_<T>>(previous,property) {
     val labelId: KPropertyPath<T, Id<I18nLabel>?>
-        get() = KPropertyPath<T, Id<I18nLabel>?>(this,__LabelId)
+        get() = KPropertyPath(this,__LabelId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Namespace)
+        get() = KPropertyPath(this,__Namespace)
 
     val locale: KPropertyPath<T, Locale?>
-        get() = KPropertyPath<T, Locale?>(this,__Locale)
+        get() = KPropertyPath(this,__Locale)
 
     val interfaceType: KPropertyPath<T, UserInterfaceType?>
-        get() = KPropertyPath<T, UserInterfaceType?>(this,__InterfaceType)
+        get() = KPropertyPath(this,__InterfaceType)
 
     val connectorId: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__ConnectorId)
+        get() = KPropertyPath(this,__ConnectorId)
 
     val count: KPropertyPath<T, Int?>
-        get() = KPropertyPath<T, Int?>(this,__Count)
+        get() = KPropertyPath(this,__Count)
 
     val lastUpdate: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__LastUpdate)
+        get() = KPropertyPath(this,__LastUpdate)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): I18nLabelStat_<T> =

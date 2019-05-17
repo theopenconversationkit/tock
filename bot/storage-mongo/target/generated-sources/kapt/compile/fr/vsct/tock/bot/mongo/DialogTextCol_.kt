@@ -21,13 +21,13 @@ private val __Date: KProperty1<DialogTextCol, Instant?>
 internal class DialogTextCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         DialogTextCol?>) : KPropertyPath<T, DialogTextCol?>(previous,property) {
     val text: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Text)
+        get() = KPropertyPath(this,__Text)
 
     val dialogId: KPropertyPath<T, Id<Dialog>?>
-        get() = KPropertyPath<T, Id<Dialog>?>(this,__DialogId)
+        get() = KPropertyPath(this,__DialogId)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     companion object {
         val Text: KProperty1<DialogTextCol, String?>
@@ -42,13 +42,13 @@ internal class DialogTextCol_Col<T>(previous: KPropertyPath<T, *>?, property: KP
         Collection<DialogTextCol>?>) : KCollectionPropertyPath<T, DialogTextCol?,
         DialogTextCol_<T>>(previous,property) {
     val text: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Text)
+        get() = KPropertyPath(this,__Text)
 
     val dialogId: KPropertyPath<T, Id<Dialog>?>
-        get() = KPropertyPath<T, Id<Dialog>?>(this,__DialogId)
+        get() = KPropertyPath(this,__DialogId)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): DialogTextCol_<T> =
@@ -58,13 +58,13 @@ internal class DialogTextCol_Map<T, K>(previous: KPropertyPath<T, *>?, property:
         Map<K, DialogTextCol>?>) : KMapPropertyPath<T, K, DialogTextCol?,
         DialogTextCol_<T>>(previous,property) {
     val text: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Text)
+        get() = KPropertyPath(this,__Text)
 
     val dialogId: KPropertyPath<T, Id<Dialog>?>
-        get() = KPropertyPath<T, Id<Dialog>?>(this,__DialogId)
+        get() = KPropertyPath(this,__DialogId)
 
     val date: KPropertyPath<T, Instant?>
-        get() = KPropertyPath<T, Instant?>(this,__Date)
+        get() = KPropertyPath(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): DialogTextCol_<T> =

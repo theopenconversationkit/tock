@@ -14,7 +14,7 @@ private val __Name: KProperty1<Intent, String?>
 class Intent_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Intent?>) :
         KPropertyPath<T, Intent?>(previous,property) {
     val name_: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Name)
+        get() = KPropertyPath(this,__Name)
 
     companion object {
         val Name: KProperty1<Intent, String?>
@@ -24,7 +24,7 @@ class Intent_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Intent?
 class Intent_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<Intent>?>) :
         KCollectionPropertyPath<T, Intent?, Intent_<T>>(previous,property) {
     val name_: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Name)
+        get() = KPropertyPath(this,__Name)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): Intent_<T> = Intent_(this,
@@ -33,7 +33,7 @@ class Intent_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Coll
 class Intent_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K, Intent>?>) :
         KMapPropertyPath<T, K, Intent?, Intent_<T>>(previous,property) {
     val name_: KPropertyPath<T, String?>
-        get() = KPropertyPath<T, String?>(this,__Name)
+        get() = KPropertyPath(this,__Name)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): Intent_<T> = Intent_(this,
