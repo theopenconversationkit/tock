@@ -8,9 +8,9 @@ import fr.vsct.tock.nlp.api.client.model.NlpEntityValue
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.entity.NumberValue
 import fr.vsct.tock.nlp.entity.StringValue
-import java.util.*
+import java.util.Locale
 
-class DialogflowTockMapper {
+internal class DialogflowTockMapper {
 
     /**
      * Returns a Tock entity from a Dialogflow Value.
@@ -32,7 +32,9 @@ class DialogflowTockMapper {
         val entity = dialogflowEntityToTockEntity(parameter.key, namespace)!!
         val value: fr.vsct.tock.nlp.entity.Value? = when (parameter.value.kindCase) {
             Value.KindCase.NUMBER_VALUE -> NumberValue(parameter.value.numberValue)
-            Value.KindCase.STRING_VALUE -> if (parameter.value.stringValue.trim().isEmpty()) null else StringValue(parameter.value.stringValue)
+            Value.KindCase.STRING_VALUE -> if (parameter.value.stringValue.trim().isEmpty()) null else StringValue(
+                parameter.value.stringValue
+            )
             Value.KindCase.BOOL_VALUE -> StringValue(parameter.value.boolValue.toString())
             else -> null
         }
@@ -53,7 +55,10 @@ class DialogflowTockMapper {
         val intent = queryResult.intent.displayName
 
         val parameters = queryResult.parameters?.fieldsMap?.filter {
-            !it.value.hasStructValue() && !it.value.hasListValue() && dialogflowEntityToTockEntity(it.key, namespace) != null
+            !it.value.hasStructValue() && !it.value.hasListValue() && dialogflowEntityToTockEntity(
+                it.key,
+                namespace
+            ) != null
         } ?: emptyMap()
         val entityValues =
             parameters.map {

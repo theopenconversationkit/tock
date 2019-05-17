@@ -12,12 +12,20 @@ import fr.vsct.tock.bot.engine.nlp.NlpCallStats
 import fr.vsct.tock.bot.engine.nlp.NlpController
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.NlpClient
-import fr.vsct.tock.nlp.api.client.model.*
+import fr.vsct.tock.nlp.api.client.model.NlpQuery
+import fr.vsct.tock.nlp.api.client.model.NlpQueryContext
+import fr.vsct.tock.nlp.api.client.model.NlpQueryState
+import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
 import fr.vsct.tock.nlp.api.client.model.dump.IntentDefinition
 import fr.vsct.tock.nlp.api.client.model.dump.SentencesDump
 import fr.vsct.tock.nlp.api.client.model.monitoring.MarkAsUnknownQuery
-import fr.vsct.tock.shared.*
+import fr.vsct.tock.shared.Executor
+import fr.vsct.tock.shared.defaultZoneId
+import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.provide
+import fr.vsct.tock.shared.withNamespace
 import mu.KotlinLogging
 import java.io.InputStream
 import java.time.ZonedDateTime
@@ -25,7 +33,7 @@ import java.time.ZonedDateTime
 /**
  * [NlpController] Dialogflow implementation.
  */
-class DialogflowNlp : NlpController {
+internal class DialogflowNlp : NlpController {
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -90,7 +98,7 @@ class DialogflowNlp : NlpController {
                             entityEvaluations
                                 .map {
                                     state.entityValues[it.entity.role] = EntityStateValue(sentence, it)
-                            }
+                                }
 
                             sentence.nlpStats = NlpCallStats(
                                 userTimeline.userPreferences.locale,

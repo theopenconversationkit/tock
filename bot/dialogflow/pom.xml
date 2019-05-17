@@ -4,13 +4,18 @@
 
     <parent>
         <groupId>fr.vsct.tock</groupId>
-        <artifactId>tock-nlp</artifactId>
+        <artifactId>tock-bot</artifactId>
         <version>19.3.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-nlp-dialogflow</artifactId>
-    <name>Tock NLP Dialogflow</name>
-    <description>Client interface for Tock NLP API</description>
+    <name>Tock NLP Dialogflow Client</name>
+    <description>DialogFlow Client for Tock NLP API</description>
+
+    <properties>
+        <dialogflow>0.87.0-alpha</dialogflow>
+        <google.oauth2>0.15.0</google.oauth2>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -18,22 +23,14 @@
             <artifactId>tock-bot-engine</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-dialogflow</artifactId>
-            <version>0.87.0-alpha</version>
+            <version>${dialogflow}</version>
         </dependency>
         <dependency>
             <groupId>com.google.auth</groupId>
             <artifactId>google-auth-library-oauth2-http</artifactId>
-            <version>0.15.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.microutils</groupId>
-            <artifactId>kotlin-logging</artifactId>
+            <version>${google.oauth2}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

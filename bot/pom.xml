@@ -44,6 +44,8 @@
         <module>connector-teams</module>
         <module>connector-businesschat</module>
 
+        <module>dialogflow</module>
+
         <module>storage-mongo</module>
 
         <module>toolkit-base</module>

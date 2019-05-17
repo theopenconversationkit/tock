@@ -1,6 +1,7 @@
 ## Usage
 
 To use Dialogflow as NLP in a Tock bot :
+
 - Add the module dependency to your pom.xml
 
         <dependency>
@@ -12,8 +13,7 @@ To use Dialogflow as NLP in a Tock bot :
 - Install your bot by adding a module with the following configuration :
 
 ```
-    bind<NlpClient>(overrides = true) with singleton { TockDialogflowNlpClient() }
-    bind<NlpController>(overrides = true) with singleton { DialogflowNlp() }
+    registerAndInstallBot(myBot, listOf(dialogFlowModule))
 ```    
     
 - Set the environment variable `dialogflow_project_id` with your Dialogflow project id

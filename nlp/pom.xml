@@ -43,7 +43,6 @@
         <module>api</module>
 
         <module>integration-tests</module>
-        <module>dialogflow</module>
     </modules>
 
     <dependencyManagement>

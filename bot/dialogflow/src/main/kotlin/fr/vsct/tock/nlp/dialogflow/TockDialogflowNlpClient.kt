@@ -14,15 +14,19 @@ import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeResult
 import fr.vsct.tock.nlp.api.client.model.monitoring.MarkAsUnknownQuery
 import fr.vsct.tock.shared.property
 import java.io.InputStream
-import java.util.*
+import java.util.Locale
 
-
-class TockDialogflowNlpClient : NlpClient {
+internal class TockDialogflowNlpClient : NlpClient {
 
     private val projectId = property("dialogflow_project_id", "please set a google project id")
 
     override fun parse(query: NlpQuery): NlpResult? {
-        return DialogflowService.detectIntentText(projectId, query.queries.firstOrNull()?: "", query.context.dialogId, query.context.language.toString())?.let {
+        return DialogflowService.detectIntentText(
+            projectId,
+            query.queries.firstOrNull() ?: "",
+            query.context.dialogId,
+            query.context.language.toString()
+        )?.let {
             DialogflowTockMapper().toNlpResult(it, query.namespace)
         }
     }

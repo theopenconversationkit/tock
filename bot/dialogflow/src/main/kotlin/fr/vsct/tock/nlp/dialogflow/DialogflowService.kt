@@ -1,10 +1,17 @@
 package fr.vsct.tock.nlp.dialogflow
 
-import com.google.cloud.dialogflow.v2.*
+import com.google.cloud.dialogflow.v2.Agent
+import com.google.cloud.dialogflow.v2.AgentsClient
+import com.google.cloud.dialogflow.v2.ProjectName
+import com.google.cloud.dialogflow.v2.QueryInput
+import com.google.cloud.dialogflow.v2.QueryResult
+import com.google.cloud.dialogflow.v2.SessionName
+import com.google.cloud.dialogflow.v2.SessionsClient
+import com.google.cloud.dialogflow.v2.TextInput
 import mu.KotlinLogging
 
 
-object DialogflowService {
+internal object DialogflowService {
 
     private val logger = KotlinLogging.logger {}
 
@@ -23,7 +30,8 @@ object DialogflowService {
         projectId: String,
         text: String,
         sessionId: String,
-        languageCode: String) : QueryResult? {
+        languageCode: String
+    ): QueryResult? {
 
         SessionsClient.create().use {
             // Set the session name using the sessionId (UUID) and projectID (my-project-id)
@@ -36,8 +44,8 @@ object DialogflowService {
                     QueryInput.newBuilder().setText(this).build().apply {
                         it.detectIntent(session, this).apply {
                             return this.queryResult.also {
-                                logger.debug("Query Text: '${it.queryText}'")
-                                logger.debug("Detected Intent: ${it.intent.displayName} (confidence: ${it.intentDetectionConfidence})")
+                                logger.debug{"Query Text: '${it.queryText}'"}
+                                logger.debug{"Detected Intent: ${it.intent.displayName} (confidence: ${it.intentDetectionConfidence})"}
                             }
                         }
                     }
