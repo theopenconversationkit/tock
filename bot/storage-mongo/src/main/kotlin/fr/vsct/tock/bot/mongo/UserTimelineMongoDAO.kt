@@ -110,6 +110,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
 
     private val maxActionsByDialog = intProperty("tock_bot_max_actions_by_dialog", 1000)
     private val dialogFlowStatEnabled = booleanProperty("tock_bot_sialog_flow_stat", true)
+    private val dialogMaxValidityInSeconds = longProperty("tock_bot_dialog_max_validity_in_seconds", 60 * 60 * 24)
 
     //wrapper to workaround the 1024 chars limit for String indexes
     private fun textKey(text: String): String =
@@ -407,7 +408,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     private fun loadLastValidGroupDialogCol(groupId: String): DialogCol? {
         return dialogCol.aggregate<DialogCol>(
             match(
-                GroupId eq groupId, LastUpdateDate gt now().minusSeconds(60 * 60 * 24)
+                GroupId eq groupId, LastUpdateDate gt now().minusSeconds(dialogMaxValidityInSeconds)
             ),
             sort(
                 descending(LastUpdateDate)
@@ -419,7 +420,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     private fun loadLastValidDialogCol(userId: PlayerId): DialogCol? {
         return dialogCol.aggregate<DialogCol>(
             match(
-                PlayerIds.id eq userId.id, LastUpdateDate gt now().minusSeconds(60 * 60 * 24)
+                PlayerIds.id eq userId.id, LastUpdateDate gt now().minusSeconds(dialogMaxValidityInSeconds)
             ),
             sort(
                 descending(LastUpdateDate)
