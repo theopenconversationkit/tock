@@ -41,7 +41,7 @@ import java.util.Locale
  *
  */
 internal class TockBotBus(
-    private val connector: TockConnectorController,
+    val connector: TockConnectorController,
     override val userTimeline: UserTimeline,
     override val dialog: Dialog,
     override val action: Action,

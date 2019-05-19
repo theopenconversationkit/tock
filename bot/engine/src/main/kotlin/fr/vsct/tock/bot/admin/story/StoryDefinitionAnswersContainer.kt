@@ -9,7 +9,7 @@ import fr.vsct.tock.bot.definition.StoryDefinition
 /**
  * Contains list of [AnswerConfiguration].
  */
-interface StoryDefinitionAnswersContainer {
+internal interface StoryDefinitionAnswersContainer {
 
     /**
      * The answers available.
@@ -21,13 +21,15 @@ interface StoryDefinitionAnswersContainer {
     val currentType: AnswerConfigurationType
 
     fun findCurrentAnswer(): AnswerConfiguration? =
-            findAnswer(currentType)
+        findAnswer(currentType)
 
     fun findAnswer(type: AnswerConfigurationType): AnswerConfiguration? =
-            answers.firstOrNull { it.answerType == type }
+        answers.firstOrNull { it.answerType == type }
 
     fun storyDefinition(botId: String): StoryDefinition? =
-            (findCurrentAnswer() as? ScriptAnswerConfiguration)
-                    ?.findBestVersion(BotVersion.getCurrentBotVersion(botId))
-                    ?.storyDefinition
+        (findCurrentAnswer() as? ScriptAnswerConfiguration)
+            ?.findBestVersion(BotVersion.getCurrentBotVersion(botId))
+            ?.storyDefinition
+
+    fun findNextSteps(story: StoryDefinitionConfiguration): List<String> = emptyList()
 }

@@ -37,9 +37,12 @@ data class StoryDefinitionConfigurationStep(
     val parentName: String? = null
 ) : StoryDefinitionAnswersContainer {
 
-    fun toStoryStep(): StoryStep<*> =
-        object : SimpleStoryStep {
-            override val name: String get() = this@StoryDefinitionConfigurationStep.name
-            override val intent: IntentAware? get() = this@StoryDefinitionConfigurationStep.intent
-        }
+    private data class Step(override val name: String, override val intent: IntentAware) : SimpleStoryStep {
+        constructor(s: StoryDefinitionConfigurationStep) : this(s.name, s.intent)
+    }
+
+    fun toStoryStep(): StoryStep<*> = Step(this)
+
+    override fun findNextSteps(story: StoryDefinitionConfiguration): List<String> =
+        story.steps.filter { it.parentName == name }.map { it.userSentence }
 }

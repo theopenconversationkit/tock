@@ -86,5 +86,6 @@ data class StoryDefinitionConfiguration(
     val _id: Id<StoryDefinitionConfiguration> = newId()
 ) : StoryDefinitionAnswersContainer {
 
-
+    override fun findNextSteps(story: StoryDefinitionConfiguration): List<String> =
+        steps.filter { it.parentName == null }.map { it.userSentence }
 }

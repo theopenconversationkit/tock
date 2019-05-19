@@ -76,7 +76,7 @@ interface Connector {
         step: StoryStep<out StoryHandlerDefinition>? = null,
         parameters: Map<String, String> = emptyMap()
     ): Unit =
-        throw UnsupportedOperationException("Connector does not support notification")
+        throw UnsupportedOperationException("Connector $connectorType does not support notification")
 
     /**
      * Load user preferences - default implementation returns null.
@@ -88,5 +88,17 @@ interface Connector {
      * Only not null values are taken into account.
      */
     fun refreshProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences? = null
+
+    /**
+     * Returns a [ConnectorMessage] with the specified list of suggestions.
+     * If the connector does not support suggestions, returns null.
+     */
+    fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): ConnectorMessage? = null
+
+    /**
+     * Updates a [ConnectorMessage] with the specified list of suggestions.
+     * Default returns [message] unmodified.
+     */
+    fun addSuggestions(message: ConnectorMessage, suggestions: List<CharSequence>): ConnectorMessage = message
 
 }
