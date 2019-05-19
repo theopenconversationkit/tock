@@ -67,7 +67,7 @@ export class SimpleAnswerComponent implements OnInit {
       this.bot.createI18nLabel(
         new CreateI18nLabelRequest(
           this.container.category,
-          this.newAnswer,
+          this.newAnswer.trim(),
           this.state.currentLocale,
         )
       ).subscribe(i18n => {
