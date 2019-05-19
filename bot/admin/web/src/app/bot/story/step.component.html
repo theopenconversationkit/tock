@@ -1,0 +1,40 @@
+<div *ngIf="step" class="step">
+  <!-- user sentence -->
+  <mat-form-field class="entity-button">
+    <input matInput
+           [(ngModel)]="step.userSentence"
+           placeholder="Enter a User Phrase">
+  </mat-form-field>
+
+  <!-- answer -->
+  <tock-answer [answer]="step" class="entity-button"></tock-answer>&nbsp;
+
+  <!-- intent -->
+  <mat-form-field class="entity-button">
+    <input matInput name="intent" placeholder="Intent" [(ngModel)]="step.intent.name"
+           matTooltip="Intent starting the Action"
+           [matAutocomplete]="intentAuto"
+           (keyup)="onIntentChange(step, $event.target.value)"
+           (focus)="onIntentChange(step, $event.target.value)"
+           (blur)="validateIntent(step)"
+           required>
+  </mat-form-field>
+
+  <button class="entity-button" mat-icon-button color="warn"
+          matTooltip="Remove Action" (click)="removeStep()">
+    <mat-icon>remove</mat-icon>
+  </button>
+
+  <button *ngIf="step.new" class="entity-button" mat-button color="primary"
+          matTooltip="Save Action" (click)="save()">
+    Save
+  </button>
+
+  <mat-autocomplete #intentAuto="matAutocomplete" autoActiveFirstOption>
+    <mat-optgroup *ngFor="let category of currentIntentCategories" [label]="category.category">
+      <mat-option *ngFor="let intent of category.intents" [value]="intent.name">
+        {{intent.intentLabel()}}
+      </mat-option>
+    </mat-optgroup>
+  </mat-autocomplete>
+</div>

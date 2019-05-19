@@ -29,15 +29,15 @@ import fr.vsct.tock.bot.definition.StoryDefinition
 internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefinition by botDefinition {
 
     @Volatile
+    private var configuredStories: Map<String, List<ConfiguredStoryDefinition>> = emptyMap()
+
+    @Volatile
     private var allStories: List<StoryDefinition> = botDefinition.stories
 
     fun updateStories(configuredStories: List<ConfiguredStoryDefinition>) {
+        this.configuredStories = configuredStories.filter { it.answerType != builtin }.groupBy { it.id }
         //configured stories can override built-in
-        allStories =
-                (configuredStories.filter { it.answerType != builtin }.groupBy { it.id }
-                        + botDefinition.stories.groupBy { it.id })
-                    .values
-                    .flatMap { it }
+        allStories = (this.configuredStories + botDefinition.stories.groupBy { it.id }).values.flatten()
     }
 
     override val stories: List<StoryDefinition>
@@ -52,15 +52,8 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
         return findStoryDefinition(intent?.wrappedIntent()?.name)
     }
 
-    override fun findStoryDefinition(intent: String?): StoryDefinition {
-        val s = super.findStoryDefinition(intent)
-        return if (s == unknownStory) BotDefinition.findStoryDefinition(
-            stories,
-            intent,
-            unknownStory,
-            keywordStory
-        ) else s
-    }
+    override fun findStoryDefinition(intent: String?): StoryDefinition =
+        intent?.let { i -> configuredStories[i]?.firstOrNull() } ?: super.findStoryDefinition(intent)
 
     override fun toString(): String {
         return "Wrapper($botDefinition)"

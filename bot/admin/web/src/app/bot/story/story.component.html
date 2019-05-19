@@ -8,7 +8,7 @@
     <button class="actionButton" mat-icon-button matTooltip="Edit Mandatory Entities" (click)="editEntities()">
       <mat-icon>extension</mat-icon>
     </button>
-    <button class="actionButton" mat-icon-button matTooltip="Edit Steps" (click)="editSteps()">
+    <button *ngIf="!displaySteps" class="actionButton" mat-icon-button matTooltip="Edit Actions" (click)="editSteps()">
       <mat-icon>dns</mat-icon>
     </button>
     <button *ngIf="story._id" mat-icon-button color="warn" matTooltip="Delete" (click)="deleteStory()">
@@ -43,17 +43,19 @@
     </div>
 
     <!-- default answer -->
-    Main Answer:
-    <tock-answer class="answer" [answer]="story" [fullDisplay]="fullDisplay" [create]="!story._id"></tock-answer>
+    <label for="main_answer" class="label-answer">Answer :</label>
+    <tock-answer id="main_answer" class="answer" [answer]="story" [fullDisplay]="fullDisplay" [create]="!story._id" (submit)="saveStory(true)"></tock-answer>
 
     <!-- steps -->
-    <div *ngIf="story.steps.length !== 0">
-      Steps
-      <button mat-icon-button matTooltip="Edit Steps" (click)="editSteps()">
+    <tock-steps *ngIf="displaySteps" [steps]="story.steps" [defaultCategory]="story.category"></tock-steps>
+
+    <div *ngIf="!displaySteps && story.steps.length !== 0">
+      Actions
+      <button mat-icon-button matTooltip="Edit Actions" (click)="editSteps()">
         <mat-icon>dns</mat-icon>
       </button>
       <ul>
-        <li *ngFor="let s of story.steps"><span class="intent" matTooltip="Intent requested">[{{s.intent.name}}]</span>: <tock-answer class="answer" [answer]="s" [editable]="false"></tock-answer></li>
+        <li *ngFor="let s of story.steps">{{s.userSentence}} <span class="intent" matTooltip="Action Intent">[{{s.intent.name}}]</span>: <tock-answer class="answer" [answer]="s" [editable]="false"></tock-answer></li>
       </ul>
     </div>
 

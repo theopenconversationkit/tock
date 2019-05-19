@@ -27,59 +27,63 @@ import org.litote.kmongo.newId
 /**
  * A [StoryDefinition] defined at runtime.
  */
-data class StoryDefinitionConfiguration (
-        /**
-         * The story definition identifier.
-         */
-        val storyId: String,
-        /**
-         * The bot identifier.
-         */
-        val botId: String,
-        /**
-         * The target main intent.
-         */
-        val intent: Intent,
-        /**
-         * The type of answer configuration.
-         */
-        override val currentType: AnswerConfigurationType,
-        /**
-         * The answers available.
-         */
-        override val answers: List<AnswerConfiguration>,
-        /**
-         * The version of the story.
-         */
-        val version: Int = 0,
-        /**
-         * The namespace of the story.
-         */
-        val namespace: String = defaultNamespace,
-        /**
-         * The mandatory entities.
-         */
-        val mandatoryEntities: List<StoryDefinitionConfigurationMandatoryEntity> = emptyList(),
-        /**
-         * The optional steps.
-         */
-        val steps: List<StoryDefinitionConfigurationStep> = emptyList(),
-        /**
-         * The name of the story.
-         */
-        val name: String = storyId,
-        /**
-         * The category of the story.
-         */
-        val category: String = "default",
-        /**
-         * The description of the story.
-         */
-        val description: String = "",
-        /**
-         * The configuration identifier.
-         */
-        val _id: Id<StoryDefinitionConfiguration> = newId()
+data class StoryDefinitionConfiguration(
+    /**
+     * The story definition identifier.
+     */
+    val storyId: String,
+    /**
+     * The bot identifier.
+     */
+    val botId: String,
+    /**
+     * The target main intent.
+     */
+    val intent: Intent,
+    /**
+     * The type of answer configuration.
+     */
+    override val currentType: AnswerConfigurationType,
+    /**
+     * The answers available.
+     */
+    override val answers: List<AnswerConfiguration>,
+    /**
+     * The version of the story.
+     */
+    val version: Int = 0,
+    /**
+     * The namespace of the story.
+     */
+    val namespace: String = defaultNamespace,
+    /**
+     * The mandatory entities.
+     */
+    val mandatoryEntities: List<StoryDefinitionConfigurationMandatoryEntity> = emptyList(),
+    /**
+     * The optional steps.
+     */
+    val steps: List<StoryDefinitionConfigurationStep> = emptyList(),
+    /**
+     * The name of the story.
+     */
+    val name: String = storyId,
+    /**
+     * The category of the story.
+     */
+    val category: String = "default",
+    /**
+     * The description of the story.
+     */
+    val description: String = "",
+    /**
+     * The user sentence sample.
+     */
+    val userSentence: String = "",
+    /**
+     * The configuration identifier.
+     */
+    val _id: Id<StoryDefinitionConfiguration> = newId()
 ) : StoryDefinitionAnswersContainer {
 
 

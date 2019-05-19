@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from "@angular/core";
+import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {
   AnswerConfigurationType,
   AnswerContainer,
@@ -30,6 +30,12 @@ export class AnswerComponent implements OnInit {
   @Input()
   create:boolean = false;
 
+  @Input()
+  answerLabel:string = "Answer";
+
+  @Output()
+  submit: EventEmitter<boolean> = new EventEmitter<boolean>();
+
   constructor(private state: StateService,
               private bot: BotService,
               private dialog: MatDialog,
@@ -50,7 +56,8 @@ export class AnswerComponent implements OnInit {
         data:
           {
             answer: this.answer,
-            create: this.create
+            create: this.create,
+            answerLabel: this.answerLabel
           }
       }
     );
@@ -80,6 +87,10 @@ export class AnswerComponent implements OnInit {
         this.answer.scriptAnswer().modified = true;
       }
     }
+  }
+
+  save() {
+    this.submit.emit(true);
   }
 
 }

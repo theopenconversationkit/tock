@@ -42,6 +42,8 @@ import {AnswerDialogComponent} from "./story/answer-dialog.component";
 import {StoryDialogComponent} from "./story/story-dialog.component";
 import {MandatoryEntitiesDialogComponent} from "./story/mandatory-entities-dialog.component";
 import {StepDialogComponent} from "./story/step-dialog.component";
+import {StepsComponent} from "./story/steps.component";
+import {StepComponent} from "./story/step.component";
 
 const routes: Routes = [
   {
@@ -114,7 +116,9 @@ export class BotRoutingModule {
     StoryDialogComponent,
     AnswerDialogComponent,
     MandatoryEntitiesDialogComponent,
-    StepDialogComponent
+    StepDialogComponent,
+    StepComponent,
+    StepsComponent
   ],
   exports: [],
   providers: [

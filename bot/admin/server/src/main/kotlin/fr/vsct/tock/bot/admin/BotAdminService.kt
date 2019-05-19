@@ -400,7 +400,8 @@ object BotAdminService {
             name,
             intent,
             answers.map { it.toConfiguration(botId, oldStory?.steps?.find { it.name == name }?.answers) },
-            currentType
+            currentType,
+            userSentence
         ).apply {
             //if intentDefinition is null, it means that step has not been modified
             if (intentDefinition != null) {
@@ -475,7 +476,8 @@ object BotAdminService {
                     intent = story.intent,
                     answers = story.answers.map { it.toStoryConfiguration(botConf.botId, storyDefinition) },
                     mandatoryEntities = story.mandatoryEntities.map { it.toEntityConfiguration(application, botConf.botId, storyDefinition) },
-                    steps = story.steps.map { it.toStepConfiguration(application, botConf.botId, storyDefinition) }
+                    steps = story.steps.map { it.toStepConfiguration(application, botConf.botId, storyDefinition) },
+                    userSentence = story.userSentence
                 )
             } else {
                 StoryDefinitionConfiguration(
@@ -490,7 +492,8 @@ object BotAdminService {
                     story.steps.map { it.toStepConfiguration(application, botConf.botId, storyDefinition) },
                     story.name,
                     story.category,
-                    story.description
+                    story.description,
+                    story.userSentence
                 )
             }
 

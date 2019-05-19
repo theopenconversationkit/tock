@@ -13,6 +13,7 @@ export class AnswerDialogComponent implements OnInit {
 
   create: boolean;
   answer: AnswerContainer;
+  answerLabel: string = "Answer";
 
   private originalCurrentType: AnswerConfigurationType;
   private originalAnswers: AnswerConfiguration[];
@@ -25,6 +26,8 @@ export class AnswerDialogComponent implements OnInit {
     private snackBar: MatSnackBar) {
     this.create = this.data.create;
     this.answer = this.data.answer;
+    this.answerLabel = this.data.answerLabel ? this.data.answerLabel : "Answer";
+    ;
     this.originalCurrentType = this.answer.currentType;
     this.originalAnswers = this.answer.answers.slice(0).map(a => a.clone());
   }
@@ -41,7 +44,7 @@ export class AnswerDialogComponent implements OnInit {
           this.dialogRef.close({
             answer: this.answer
           });
-          this.snackBar.open(`Answer Modified`, "UPDATE", {duration: 1000});
+          this.snackBar.open(`${this.answerLabel} Modified`, "UPDATE", {duration: 1000});
         },
         e => {
           //do nothing

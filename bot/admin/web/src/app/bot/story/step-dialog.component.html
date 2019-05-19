@@ -1,55 +1,6 @@
-<h1 mat-dialog-title>Story Steps</h1>
+<h1 mat-dialog-title>Actions</h1>
 <div class="container">
-  <div *ngFor="let s of steps">
-    <!-- answer -->
-    <tock-answer [answer]="s" class="entity-button"></tock-answer>&nbsp;
-
-    <!-- intent -->
-    <mat-form-field>
-      <input matInput name="intent" placeholder="Intent" [(ngModel)]="s.intent.name"
-             matTooltip="Intent starting the Step"
-             [matAutocomplete]="intentAuto"
-             (keyup)="onIntentChange(s, $event.target.value)"
-             (focus)="onIntentChange(s, $event.target.value)"
-             (blur)="validateIntent(s)"
-             required>
-    </mat-form-field>
-
-    <button class="entity-button" mat-icon-button color="warn"
-            matTooltip="Remove Step" (click)="removeStep(s)">
-      <mat-icon>remove</mat-icon>
-    </button>
-  </div>
-
-  <div>
-    <!-- answer -->
-    <tock-answer [answer]="newStep" class="entity-button"></tock-answer>&nbsp;
-    <!-- intent -->
-    <mat-form-field>
-      <input matInput name="intent" placeholder="Select Intent" [(ngModel)]="newStep.intent.name"
-             matTooltip="Intent starting the Step"
-             [matAutocomplete]="intentAuto"
-             (keyup)="onIntentChange(newStep, $event.target.value)"
-             (focus)="onIntentChange(newStep, $event.target.value)"
-             (blur)="validateIntent(newStep)"
-             required>
-    </mat-form-field>
-
-    <button mat-icon-button color="primary" matTooltip="Add Step" class="entity-button" (click)="addStep()">
-      <mat-icon>library_add</mat-icon>
-    </button>
-
-  </div>
-
-  <mat-autocomplete #intentAuto="matAutocomplete" autoActiveFirstOption>
-    <mat-optgroup *ngFor="let category of currentIntentCategories" [label]="category.category">
-      <mat-option *ngFor="let intent of category.intents" [value]="intent.name">
-        {{intent.intentLabel()}}
-      </mat-option>
-    </mat-optgroup>
-  </mat-autocomplete>
-
-
+  <tock-steps [steps]="steps" [defaultCategory]="defaultCategory"></tock-steps>
 </div>
 <mat-dialog-actions>
   <button mat-stroked-button (click)="cancel()">Cancel</button>

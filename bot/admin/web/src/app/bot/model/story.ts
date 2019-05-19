@@ -29,15 +29,6 @@ export class CreateStoryRequest {
 
 }
 
-export class UpdateStoryRequest {
-
-  constructor(public storyDefinitionId: string,
-              public language: string,
-              public reply: string) {
-  }
-
-}
-
 export class StorySearchQuery extends PaginatedQuery {
 
   constructor(public namespace: string,
@@ -130,7 +121,8 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
               public namespace: string,
               answers: AnswerConfiguration[] = [],
               category: string = "default",
-              public name: string = storyId
+              public name: string = storyId,
+              public userSentence: string = ""
   ) {
     super(currentType, answers, category);
   }
@@ -213,12 +205,15 @@ export class MandatoryEntity extends AnswerContainer {
 export class StoryStep extends AnswerContainer {
 
   public intentDefinition: Intent;
+  public new: boolean;
 
   constructor(public name: string,
               public intent: IntentName,
               answers: AnswerConfiguration[],
               currentType: AnswerConfigurationType,
-              category: string) {
+              category: string,
+              public userSentence: string,
+              public parentName?: string) {
     super(currentType, answers, category)
   }
 
@@ -231,7 +226,15 @@ export class StoryStep extends AnswerContainer {
   }
 
   clone(): StoryStep {
-    return new StoryStep(this.name, this.intent.clone(), this.answers.slice(0).map(a => a.clone()), this.currentType, this.category);
+    return new StoryStep(
+      this.name,
+      this.intent.clone(),
+      this.answers.slice(0).map(a => a.clone()),
+      this.currentType,
+      this.category,
+      this.userSentence,
+      this.parentName
+    );
   }
 
   static fromJSON(json: any): StoryStep {
@@ -314,14 +317,14 @@ export class SimpleAnswerConfiguration extends AnswerConfiguration {
   }
 
   simpleTextView(): string {
-    const r = this.answers && this.answers.length > 0 ? this.answers[0].label.defaultLocalizedLabel().label : "[no answer yet]";
+    const r = this.answers && this.answers.length > 0 ? this.answers[0].label.defaultLocalizedLabel().label : "[no text yet]";
 
     return r.substring(0, Math.min(r.length, 30)) + (r.length > 30 || this.answers.length > 1 ? "..." : "");
   }
 
   invalidMessage(): string {
     if (this.answers.length === 0) {
-      return "Please set at least one answer";
+      return "Please set at least one sentence";
     } else {
       return null;
     }

@@ -12,9 +12,21 @@
   margin-left: 20px;
 }
 
+.table {
+  display: table;
+}
+
+.line {
+  display: table-row;
+}
+
 .entity-button {
-  margin-right: 10px;
-  margin-left: 10px;
-  display: inline-block;
+  padding-right: 10px;
+  padding-left: 10px;
+  display: table-cell;
+}
+
+.answer {
+  max-width: 300px;
 }
 

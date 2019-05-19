@@ -1,7 +1,7 @@
 <div *ngIf="answer && answer.currentAnswer()" class="answer-container">
   <div *ngIf="!fullDisplay">
     <span class="simple">{{answer.simpleTextView()}}</span>
-    <button *ngIf="editable" mat-icon-button color="primary" matTooltip="Edit Answer" (click)="editAnswer()">
+    <button *ngIf="editable" mat-icon-button color="primary" matTooltip="Edit {{answerLabel}}" (click)="editAnswer()">
       <mat-icon>question_answer</mat-icon>
     </button>
   </div>
@@ -15,7 +15,7 @@
     </div>
 
     <div *ngIf="answer.isSimpleAnswer()">
-      <tock-simple-answer [container]="answer"></tock-simple-answer>
+      <tock-simple-answer [container]="answer" (submit)="save()" [answerLabel]="answerLabel"></tock-simple-answer>
     </div>
     <div *ngIf="answer.isScriptAnswer()">
       <tock-script-answer [container]="answer"></tock-script-answer>

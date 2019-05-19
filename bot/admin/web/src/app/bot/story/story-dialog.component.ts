@@ -38,6 +38,7 @@ export class StoryDialogComponent implements OnInit {
   private nameInitialized = false;
   intentCategories: IntentsCategory[] = [];
   freezeIntent:boolean = false;
+  userSentence:string = "";
 
   @ViewChild('labelElement') labelElement: ElementRef;
 
@@ -53,6 +54,7 @@ export class StoryDialogComponent implements OnInit {
     this.category = this.data.category;
     this.dialogType = this.data.story ? "Story" : "Intent";
     this.freezeIntent = this.data.freezeIntent;
+    this.userSentence = this.data.userSentence ? this.data.userSentence : "";
     setTimeout(() => this.labelElement.nativeElement.focus(), 500);
   }
 
@@ -111,6 +113,7 @@ export class StoryDialogComponent implements OnInit {
         intent: this.intent.trim(),
         description: !this.description || this.description.trim().length === 0 ? "" : this.description.trim(),
         category: !this.category || this.category.trim().length === 0 ? "default" : this.category.trim(),
+        userSentence: this.userSentence
       });
     }
   }

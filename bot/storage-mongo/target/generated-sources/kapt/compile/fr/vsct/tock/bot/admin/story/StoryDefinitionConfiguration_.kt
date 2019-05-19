@@ -43,6 +43,8 @@ private val __Category: KProperty1<StoryDefinitionConfiguration, String?>
     get() = StoryDefinitionConfiguration::category
 private val __Description: KProperty1<StoryDefinitionConfiguration, String?>
     get() = StoryDefinitionConfiguration::description
+private val __UserSentence: KProperty1<StoryDefinitionConfiguration, String?>
+    get() = StoryDefinitionConfiguration::userSentence
 private val ___id: KProperty1<StoryDefinitionConfiguration, Id<StoryDefinitionConfiguration>?>
     get() = StoryDefinitionConfiguration::_id
 class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -85,6 +87,9 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
     val description: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Description)
 
+    val userSentence: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__UserSentence)
+
     val _id: KPropertyPath<T, Id<StoryDefinitionConfiguration>?>
         get() = KPropertyPath(this,___id)
 
@@ -116,6 +121,8 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
             get() = __Category
         val Description: KProperty1<StoryDefinitionConfiguration, String?>
             get() = __Description
+        val UserSentence: KProperty1<StoryDefinitionConfiguration, String?>
+            get() = __UserSentence
         val _id: KProperty1<StoryDefinitionConfiguration, Id<StoryDefinitionConfiguration>?>
             get() = ___id}
 }
@@ -159,6 +166,9 @@ class StoryDefinitionConfiguration_Col<T>(previous: KPropertyPath<T, *>?, proper
 
     val description: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Description)
+
+    val userSentence: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__UserSentence)
 
     val _id: KPropertyPath<T, Id<StoryDefinitionConfiguration>?>
         get() = KPropertyPath(this,___id)
@@ -206,6 +216,9 @@ class StoryDefinitionConfiguration_Map<T, K>(previous: KPropertyPath<T, *>?, pro
 
     val description: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Description)
+
+    val userSentence: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__UserSentence)
 
     val _id: KPropertyPath<T, Id<StoryDefinitionConfiguration>?>
         get() = KPropertyPath(this,___id)

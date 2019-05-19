@@ -26,45 +26,50 @@ import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 
 internal fun List<AnswerConfiguration>.mapAnswers(): List<BotAnswerConfiguration> =
-        map {
-            when (it) {
-                is SimpleAnswerConfiguration -> BotSimpleAnswerConfiguration(it)
-                is ScriptAnswerConfiguration -> BotScriptAnswerConfiguration(it)
-                else -> error("unsupported conf $it")
-            }
+    map {
+        when (it) {
+            is SimpleAnswerConfiguration -> BotSimpleAnswerConfiguration(it)
+            is ScriptAnswerConfiguration -> BotScriptAnswerConfiguration(it)
+            else -> error("unsupported conf $it")
         }
+    }
 
 /**
  *
  */
 data class BotStoryDefinitionConfiguration(
-        val storyId: String,
-        val botId: String,
-        val intent: Intent,
-        val currentType: AnswerConfigurationType,
-        val namespace: String,
-        val answers: List<BotAnswerConfiguration>,
-        val mandatoryEntities: List<BotStoryDefinitionConfigurationMandatoryEntity> = emptyList(),
-        val steps: List<BotStoryDefinitionConfigurationStep> = emptyList(),
-        val name: String = storyId,
-        val category: String = "default",
-        val description: String = "",
-        val _id: Id<StoryDefinitionConfiguration> = newId()
+    val storyId: String,
+    val botId: String,
+    val intent: Intent,
+    val currentType: AnswerConfigurationType,
+    val namespace: String,
+    val answers: List<BotAnswerConfiguration>,
+    val mandatoryEntities: List<BotStoryDefinitionConfigurationMandatoryEntity> = emptyList(),
+    val steps: List<BotStoryDefinitionConfigurationStep> = emptyList(),
+    val name: String = storyId,
+    val category: String = "default",
+    val description: String = "",
+    /**
+     * The user sentence sample.
+     */
+    val userSentence: String = "",
+    val _id: Id<StoryDefinitionConfiguration> = newId()
 ) {
 
     constructor(story: StoryDefinitionConfiguration) : this(
-            story.storyId,
-            story.botId,
-            story.intent,
-            story.currentType,
-            story.namespace,
-            story.answers.mapAnswers(),
-            story.mandatoryEntities.map { BotStoryDefinitionConfigurationMandatoryEntity(story, it) },
-            story.steps.map { BotStoryDefinitionConfigurationStep(story, it) },
-            story.name,
-            story.category,
-            story.description,
-            story._id
+        story.storyId,
+        story.botId,
+        story.intent,
+        story.currentType,
+        story.namespace,
+        story.answers.mapAnswers(),
+        story.mandatoryEntities.map { BotStoryDefinitionConfigurationMandatoryEntity(story, it) },
+        story.steps.map { BotStoryDefinitionConfigurationStep(story, it) },
+        story.name,
+        story.category,
+        story.description,
+        story.userSentence,
+        story._id
     )
 
 }

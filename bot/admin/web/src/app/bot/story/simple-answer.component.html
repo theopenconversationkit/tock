@@ -1,7 +1,7 @@
 <div *ngIf="!fullDisplay">
 
-  <button mat-icon-button class="display" color="primary" matTooltip="Display I18n" (click)="toggleDisplay()">
-    <mat-icon>fullscreen</mat-icon>
+  <button *ngIf="answer.answers.length !== 0" mat-icon-button class="display" color="primary" matTooltip="Display I18n" (click)="toggleDisplay()">
+    <mat-icon>zoom_in</mat-icon>
   </button>
 
   <div *ngFor="let a of answer.answers">
@@ -11,25 +11,25 @@
               (change)="updateLabel(a)">
     </textarea>
     <button *ngIf="answer.answers.length !== 1" class="answerButton" mat-icon-button color="warn"
-            matTooltip="Delete Answer" (click)="deleteAnswer(a, true)">
+            matTooltip="Delete {{answerLabel}}" (click)="deleteAnswer(a, true)">
       <mat-icon>remove</mat-icon>
     </button>
   </div>
   <textarea class="i18n-label i18n-label-add"
             matInput
-            placeholder="Add new Anwser"
+            placeholder="Add new {{answerLabel}}"
             [(ngModel)]="newAnswer"
             (keyup.enter)="addAnswer()"
             (blur)="addAnswerIfNonEmpty()"
             #newAnswerElement>
     </textarea>
-  <button *ngIf="answer.answers.length !== 0" mat-icon-button color="primary" matTooltip="Add Answer" class="answerButton" (click)="addAnswer()">
+  <button mat-icon-button color="primary" matTooltip="Add {{answerLabel}}" class="answerButton" (click)="addAnswer()">
     <mat-icon>library_add</mat-icon>
   </button>
 </div>
 <div *ngIf="fullDisplay">
   <button mat-icon-button class="display" color="primary" matTooltip="Hide I18n" (click)="toggleDisplay()">
-    <mat-icon>fullscreen_exit</mat-icon>
+    <mat-icon>zoom_out</mat-icon>
   </button>
   <mat-list dense>
     <tock-i18n-label

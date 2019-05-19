@@ -78,6 +78,9 @@ internal class StoryDefinitionConfiguration_Serializer :
         gen.writeFieldName("description")
         val _description_ = value.description
         gen.writeString(_description_)
+        gen.writeFieldName("userSentence")
+        val _userSentence_ = value.userSentence
+        gen.writeString(_userSentence_)
         gen.writeFieldName("_id")
         val __id_ = value._id
         serializers.defaultSerializeValue(__id_, gen)

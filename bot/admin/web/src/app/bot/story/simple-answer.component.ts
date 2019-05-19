@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from "@angular/core";
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from "@angular/core";
 import {AnswerContainer, SimpleAnswer, SimpleAnswerConfiguration} from "../model/story";
 import {BotService} from "../bot-service";
 import {MatDialog, MatSnackBar} from "@angular/material";
@@ -14,6 +14,12 @@ export class SimpleAnswerComponent implements OnInit {
 
   @Input()
   container: AnswerContainer;
+
+  @Input()
+  answerLabel:string = "Answer";
+
+  @Output()
+  submit: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   answer: SimpleAnswerConfiguration;
 
@@ -51,7 +57,12 @@ export class SimpleAnswerComponent implements OnInit {
 
   addAnswer() {
     if (!this.newAnswer || this.newAnswer.trim().length === 0) {
-      this.snackBar.open("Please specify an answer", "Error", {duration: 5000})
+      this.newAnswer = "";
+      if (this.answer.answers.length === 0) {
+        this.snackBar.open("Please specify an answer", "Error", {duration: 5000})
+      } else {
+        this.submit.emit(true);
+      }
     } else {
       this.bot.createI18nLabel(
         new CreateI18nLabelRequest(

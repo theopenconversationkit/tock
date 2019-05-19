@@ -20,6 +20,11 @@
   <form #intentForm="ngForm" class="container">
     <!-- label -->
     <mat-form-field>
+      <input matInput name="userSentence" placeholder="User Phrase" [(ngModel)]="userSentence"
+             matTooltip="User Phrase">
+    </mat-form-field>
+    <!-- label -->
+    <mat-form-field>
       <input matInput name="label" placeholder="Label" [(ngModel)]="label" (keyup)="copyToName()" (keyup.enter)="save()"
              matTooltip="Displayed label" #labelElement>
     </mat-form-field>

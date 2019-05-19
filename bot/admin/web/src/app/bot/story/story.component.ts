@@ -26,6 +26,9 @@ export class StoryComponent implements OnInit, OnChanges {
   fullDisplay: boolean = false;
 
   @Input()
+  displaySteps: boolean = false;
+
+  @Input()
   botId: string = null;
 
   @Input()
@@ -33,6 +36,9 @@ export class StoryComponent implements OnInit, OnChanges {
 
   @Output()
   delete = new EventEmitter<string>();
+
+  @Output()
+  submit: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   constructor(private state: StateService,
               private bot: BotService,
@@ -101,7 +107,9 @@ export class StoryComponent implements OnInit, OnChanges {
             intent: this.story.intent.name,
             description: this.story.description,
             category: this.story.category,
-            freezeIntent: this.storyNode
+            freezeIntent: this.storyNode,
+            userSentence: this.story.userSentence,
+            story: this.story
           }
       }
     );
@@ -112,17 +120,22 @@ export class StoryComponent implements OnInit, OnChanges {
         this.story.intent.name = result.intent;
         this.story.category = result.category;
         this.story.description = result.description;
-        this.saveStory();
+        this.story.userSentence = result.userSentence;
+        this.saveStory(false);
       }
     });
   }
 
-  private saveStory() {
+  private saveStory(submit:boolean) {
     if (this.story._id) {
       this.bot.saveStory(this.story).subscribe(s => {
         this.state.resetConfiguration();
         this.snackBar.open(`Story ${this.story.name} modified`, "Update", {duration: 3000});
       })
+    } else {
+      if(submit) {
+        this.submit.emit(true);
+      }
     }
   }
 
@@ -140,7 +153,7 @@ export class StoryComponent implements OnInit, OnChanges {
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.entities) {
         this.story.mandatoryEntities = result.entities;
-        this.saveStory();
+        this.saveStory(false);
       }
     });
   }
@@ -159,7 +172,7 @@ export class StoryComponent implements OnInit, OnChanges {
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.steps) {
         this.story.steps = result.steps;
-        this.saveStory();
+        this.saveStory(false);
       }
     });
   }

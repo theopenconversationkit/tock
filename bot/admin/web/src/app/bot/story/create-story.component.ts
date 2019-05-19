@@ -33,8 +33,7 @@ import {BotConfigurationService} from "../../core/bot-configuration.service";
 export class CreateStoryComponent implements OnInit {
 
   sentence: Sentence;
-  text: string;
-  intent: string;
+  displayStory: boolean = false;
 
   botConfigurationId: string;
 
@@ -51,13 +50,17 @@ export class CreateStoryComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
-      this.text = params["text"];
-      if (this.text) {
-        this.onSentence(this.text);
-      }
-      setTimeout(() => this.newSentence.nativeElement.focus(), 500);
-    });
+    setTimeout(() => this.createStory(), 200);
+    setTimeout(() => {
+      this.route.queryParams.subscribe(params => {
+        const text = params["text"];
+        if (text) {
+          this.onSentence(text);
+        } else {
+          this.newSentence.nativeElement.focus()
+        }
+      })
+    }, 500);
   }
 
   onSentence(value: string) {
@@ -69,8 +72,12 @@ export class CreateStoryComponent implements OnInit {
     } else {
       this.nlp.parse(new ParseQuery(app.namespace, app.name, language, v, true)).subscribe(sentence => {
         this.sentence = sentence;
-        this.initIntentName(v);
-        this.createStory();
+        const intent = this.initIntentName(v);
+        this.story.userSentence = v;
+        this.story.storyId = intent;
+        this.story.intent = new IntentName(intent);
+        this.story.name = v;
+        this.displayStory = true;
       });
     }
   }
@@ -78,26 +85,28 @@ export class CreateStoryComponent implements OnInit {
   private createStory() {
     this.botConfiguration.configurations.subscribe(confs => {
       const botId = confs.find(c => c._id === this.botConfigurationId).botId;
-      let intent = this.intent;
       this.story = new StoryDefinitionConfiguration(
-        intent,
+        "",
         botId,
-        new IntentName(intent),
+        new IntentName(""),
         AnswerConfigurationType.simple,
         this.state.user.organization,
         [],
         "build",
-        intent
+        "",
+        ""
       )
     });
   }
 
   resetState() {
     this.sentence = null;
-    this.story = null;
+    this.displayStory = false;
+    this.createStory();
+    setTimeout(_ => this.newSentence.nativeElement.focus(), 200);
   }
 
-  initIntentName(value: string) {
+  private initIntentName(value: string): string {
     const appName = this.state.currentApplication.name;
     const underscoreIndex = appName.indexOf("_");
     const prefix = underscoreIndex !== -1 ? appName.substring(0, Math.min(underscoreIndex, 5)) : appName.substring(0, Math.min(appName.length, 5));
@@ -108,46 +117,33 @@ export class CreateStoryComponent implements OnInit {
     while (this.state.intentExists(candidate)) {
       candidate = candidateBase + (count++);
     }
-    this.intent = candidate;
-  }
-
-  onIntentChange(e: string) {
-    if (e) {
-      this.createStory();
-    } else {
-      this.resetState();
-    }
+    return candidate;
   }
 
   onReply() {
-    if (this.state.intentExists(this.intent)) {
-      this.snackBar.open(`Intent ${this.intent} already exists`, "Error", {duration: 5000});
+    if (this.state.intentExists(this.story.intent.name)) {
+      this.snackBar.open(`Intent ${this.story.intent.name} already exists`, "Error", {duration: 5000});
       return;
     }
     let invalidMessage = this.story.currentAnswer().invalidMessage();
     if (invalidMessage) {
       this.snackBar.open(`Error: ${invalidMessage}`, "ERROR", {duration: 5000});
     } else {
+      this.story.steps = this.story.steps.filter(s => !s.new);
       this.bot.newStory(
         new CreateStoryRequest(
           this.story,
           this.state.currentLocale,
-          this.text ? [this.text.trim()] : []
+          [this.story.userSentence.trim()]
         )
       ).subscribe(intent => {
         this.state.resetConfiguration();
         this.snackBar.open(`New story ${this.story.name} created for language ${this.state.currentLocale}`, "New Story", {duration: 3000});
-        this.onClose();
 
         this.newSentence.nativeElement.focus();
+        setTimeout(_ => this.resetState(), 200);
       });
     }
-  }
-
-  onClose() {
-    this.resetState();
-    this.intent = null;
-    this.text = null;
   }
 
 }

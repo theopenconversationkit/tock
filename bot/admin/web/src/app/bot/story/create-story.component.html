@@ -18,36 +18,36 @@
   <mat-card-content>
     <tock-select-bot [(configurationId)]="botConfigurationId" [displayConnectorChoice]="false">
       <br>
-      <mat-form-field class="sentence-input">
+      <mat-form-field class="sentence-input" *ngIf="story">
         <input matInput
-               [(ngModel)]="text"
-               placeholder="Enter a sentence"
+               [(ngModel)]="story.userSentence"
+               placeholder="Enter a User Phrase"
                #newSentence
                (keyup.enter)="onSentence(newSentence.value)">
       </mat-form-field>
-      <button [ngClass]="{'sentence-input-hidden': !story}" color="primary" mat-button
+      <button *ngIf="story && story.userSentence.length !== 0" color="primary" mat-button
               (click)="onSentence(newSentence.value)">Add
       </button>
       <br>
-      <div *ngIf="story" class="separator"></div>
-      <div *ngIf="story">
-        <tock-story class="story" [story]="story" [fullDisplay]="true"></tock-story>
+      <div *ngIf="displayStory" class="separator"></div>
+      <div *ngIf="displayStory">
+        <tock-story class="story" [story]="story" [fullDisplay]="true" [displaySteps]="true" (submit)="onReply()"></tock-story>
       </div>
     </tock-select-bot>
-    <mat-card-actions *ngIf="story" class="actions">
+    <mat-card-actions *ngIf="displayStory" class="actions">
       <button (click)="resetState()" mat-button>Cancel</button>
       <button (click)="onReply()" mat-raised-button color="primary">Create Story</button>
     </mat-card-actions>
   </mat-card-content>
 </mat-card>
 <br>
-<span *ngIf="story" class="current-analysis">
+<span *ngIf="displayStory" class="current-analysis">
   <br><br>
   <mat-divider></mat-divider>
   (or qualify)
   <br><br></span>
 <tock-sentence-analysis *ngIf="sentence"
                         [(sentence)]="sentence"
-                        (closed)="onClose()"
+                        (closed)="resetState()"
                         [displayProbabilities]="true">
 </tock-sentence-analysis>

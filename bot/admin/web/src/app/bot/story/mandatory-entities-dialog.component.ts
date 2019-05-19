@@ -62,6 +62,7 @@ export class MandatoryEntitiesDialogComponent implements OnInit {
   }
 
   onIntentChange(entity: MandatoryEntity, name: string) {
+    console.log("change" + name);
     if (this.currentEditedIntent !== name) {
       this.currentEditedIntent = name;
       const intent = name.trim().toLowerCase();
@@ -85,42 +86,44 @@ export class MandatoryEntitiesDialogComponent implements OnInit {
   }
 
   validateIntent(entity: MandatoryEntity) {
-    const intentName = entity.intent.name.trim();
-    if (intentName.length !== 0 && (!entity.intentDefinition || entity.intentDefinition.name !== intentName)) {
-      let intent = this.state.findIntentByName(intentName);
-      if (intent) {
-        entity.intentDefinition = intent;
-      } else {
-        let dialogRef = this.dialog.open(
-          IntentDialogComponent,
-          {
-            data: {
-              create: true,
-              category: this.defaultCategory,
-              name: intentName,
-              label: intentName
+    setTimeout(_ => {
+      const intentName = entity.intent.name.trim();
+      if (intentName.length !== 0 && (!entity.intentDefinition || entity.intentDefinition.name !== intentName)) {
+        let intent = this.state.findIntentByName(intentName);
+        if (intent) {
+          entity.intentDefinition = intent;
+        } else {
+          let dialogRef = this.dialog.open(
+            IntentDialogComponent,
+            {
+              data: {
+                create: true,
+                category: this.defaultCategory,
+                name: intentName,
+                label: intentName
+              }
+            });
+          dialogRef.afterClosed().subscribe(result => {
+            if (result.name) {
+              entity.intentDefinition =
+                new Intent(
+                  result.name,
+                  this.state.currentApplication.namespace,
+                  [],
+                  [this.state.currentApplication._id],
+                  [],
+                  [],
+                  result.label,
+                  result.description,
+                  result.category
+                )
+            } else {
+              entity.intent.name = entity.intentDefinition ? entity.intentDefinition.name : "";
             }
-          });
-        dialogRef.afterClosed().subscribe(result => {
-          if (result.name) {
-            entity.intentDefinition =
-              new Intent(
-                result.name,
-                this.state.currentApplication.namespace,
-                [],
-                [this.state.currentApplication._id],
-                [],
-                [],
-                result.label,
-                result.description,
-                result.category
-              )
-          } else {
-            entity.intent.name = entity.intentDefinition ? entity.intentDefinition.name : "";
-          }
-        })
+          })
+        }
       }
-    }
+    }, 200);
   }
 
   selectEntity(e: MandatoryEntity) {
