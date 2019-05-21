@@ -24,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 enum class MessageType {
  text,
  interactive,
+ richLink,
  @JsonProperty("pass-thread-control")
  pass_thread_control,
  @JsonProperty("take-thread-control")

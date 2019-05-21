@@ -20,6 +20,7 @@ import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorImageMessage
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorListPickerMessage
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorMessage
+import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorRichLinkMessage
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorTextMessage
 import fr.vsct.tock.bot.connector.businesschat.model.input.ListPickerItem
 import fr.vsct.tock.bot.engine.BotBus
@@ -87,3 +88,26 @@ fun BotBus.businessChatListPicker(
                 multipleSelection = false,
                 items = items
         )
+
+/**
+ *  Creates a [BusinessChatRichLink].
+ *
+ *  @param url
+ *  @param title
+ *  @param image
+ *  @param mimeType
+ */
+fun BotBus.businessChatRichLink(
+    url: String,
+    title: String,
+    image: ByteArray,
+    mimeType: String
+): BusinessChatConnectorMessage =
+    BusinessChatConnectorRichLinkMessage(
+        sourceId = botId.id,
+        destinationId = userId.id,
+        url = url,
+        title = title,
+        image = image,
+        mimeType = mimeType
+    )

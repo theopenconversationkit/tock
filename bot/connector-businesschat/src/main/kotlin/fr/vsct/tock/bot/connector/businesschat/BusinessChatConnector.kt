@@ -23,6 +23,7 @@ import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.businesschat.model.common.ReceivedModel
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorImageMessage
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorListPickerMessage
+import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorRichLinkMessage
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorTextMessage
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
@@ -63,6 +64,7 @@ internal class BusinessChatConnector(
                     is BusinessChatConnectorTextMessage -> cspBusinessChatClient.sendMessage(message)
                     is BusinessChatConnectorImageMessage -> cspBusinessChatClient.sendAttachment(message)
                     is BusinessChatConnectorListPickerMessage -> cspBusinessChatClient.sendListPicker(message)
+                    is BusinessChatConnectorRichLinkMessage -> cspBusinessChatClient.sendRichLink(message)
                 }
             }
         }
