@@ -89,9 +89,17 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
     private fun BotBus.send(container: StoryDefinitionAnswersContainer, answer: SimpleAnswer, end: Boolean = false) {
         val label = translate(answer.key)
         val suggestions = container.findNextSteps(configuration)
+        val connector = (this as? TockBotBus)?.connector?.connector
         val message =
-            if (suggestions.isNotEmpty()) (this as? TockBotBus)?.connector?.connector?.addSuggestions(label, suggestions)
-            else null
+            answer.mediaMessage
+                ?.let {
+                    connector?.toConnectorMessage(it.toMessage(this))
+                }
+                ?.let {
+                    if (suggestions.isNotEmpty()) connector?.addSuggestions(it, suggestions) else it
+                }
+                ?: suggestions.takeIf { suggestions.isNotEmpty() }?.let { connector?.addSuggestions(label, suggestions) }
+
         val sentence = SendSentence(
             botId,
             applicationId,

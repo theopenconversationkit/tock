@@ -301,7 +301,7 @@ export abstract class AnswerConfiguration {
       case AnswerConfigurationType.script :
         return ScriptAnswerConfiguration.fromJSON(json);
       default:
-        throw "unknown type : " + json.type
+        throw "unknown type : " + json.answerType
     }
   }
 
@@ -319,7 +319,7 @@ export class SimpleAnswerConfiguration extends AnswerConfiguration {
   simpleTextView(): string {
     const r = this.answers && this.answers.length > 0 ? this.answers[0].label.defaultLocalizedLabel().label : "[no text yet]";
 
-    return r.substring(0, Math.min(r.length, 30)) + (r.length > 30 || this.answers.length > 1 ? "..." : "");
+    return r.substring(0, Math.min(r.length, 25)) + (r.length > 25 || this.answers.length > 1 ? "..." : "");
   }
 
   invalidMessage(): string {
@@ -356,23 +356,123 @@ export class SimpleAnswerConfiguration extends AnswerConfiguration {
 export class SimpleAnswer {
 
   constructor(public label: I18nLabel,
-              public delay: number = -1) {
+              public delay: number = -1,
+              public mediaMessage?: Media) {
   }
 
   clone(): SimpleAnswer {
-    return new SimpleAnswer(this.label.clone(), this.delay);
+    return new SimpleAnswer(this.label.clone(), this.delay, this.mediaMessage ? this.mediaMessage.clone() : null);
   }
 
   static fromJSON(json: any): SimpleAnswer {
     const value = Object.create(SimpleAnswer.prototype);
     const result = Object.assign(value, json, {
-      label: I18nLabel.fromJSON(json.label)
+      label: I18nLabel.fromJSON(json.label),
+      mediaMessage: json.mediaMessage ? Media.fromJSON(json.mediaMessage) : null
     });
     return result;
   }
 
   static fromJSONArray(json?: Array<any>): SimpleAnswer[] {
     return json ? json.map(SimpleAnswer.fromJSON) : [];
+  }
+}
+
+export enum MediaType {
+  action,
+  card
+}
+
+export class Media {
+
+  constructor(public type: MediaType) {
+  }
+
+  clone(): Media {
+    return this;
+  }
+
+  static fromJSON(json: any): Media {
+    if (!json) {
+      return null;
+    }
+
+    const mediaType = MediaType[json.type as string];
+    switch (mediaType) {
+      case MediaType.action :
+        return MediaAction.fromJSON(json);
+      case MediaType.card :
+        return MediaCard.fromJSON(json);
+      default:
+        throw "unknown type : " + json.type
+    }
+  }
+}
+
+export class MediaCard extends Media {
+
+  public titleLabel: string;
+  public subTitleLabel: string;
+
+  constructor(
+    public actions: MediaAction[],
+    public title?: I18nLabel,
+    public subTitle?: I18nLabel,
+    public imageUrl?: string
+  ) {
+    super(MediaType.card);
+  }
+
+  clone(): Media {
+    return new MediaCard(
+      this.actions.map(a => a.clone()),
+      this.title ? this.title.clone() : null,
+      this.subTitle ? this.subTitle.clone() : null,
+      this.imageUrl
+    );
+  }
+
+  static fromJSON(json: any): MediaCard {
+
+    const value = Object.create(MediaCard.prototype);
+    const result = Object.assign(value, json, {
+      title: json.title ? I18nLabel.fromJSON(json.title) : null,
+      subTitle: json.subTitle ? I18nLabel.fromJSON(json.subTitle) : null,
+      actions: MediaAction.fromJSONArray(json.actions)
+    });
+    return result;
+  }
+
+}
+
+export class MediaAction extends Media {
+
+  public titleLabel: string = "";
+
+  constructor(
+    public title: I18nLabel,
+    public url: string
+  ) {
+    super(MediaType.action);
+  }
+
+  clone(): MediaAction {
+    return new MediaAction(
+      this.title ? this.title.clone() : null,
+      this.url
+    );
+  }
+
+  static fromJSON(json: any): MediaAction {
+    const value = Object.create(MediaAction.prototype);
+    const result = Object.assign(value, json, {
+      title: I18nLabel.fromJSON(json.title)
+    });
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): MediaAction[] {
+    return json ? json.map(MediaAction.fromJSON) : [];
   }
 }
 

@@ -16,10 +16,10 @@
 
 package fr.vsct.tock.bot.admin.answer
 
+import fr.vsct.tock.bot.connector.media.MediaMessageDescriptor
 import fr.vsct.tock.translator.I18nLabelValue
 
 /**
- * Answers that contains only i18n labels.
+ * Answer that contains only i18n label with an optional [delay] and [MediaMessageDescriptor].
  */
-data class SimpleAnswer(val key: I18nLabelValue, val delay: Long) {
-}
+data class SimpleAnswer(val key: I18nLabelValue, val delay: Long, val mediaMessage: MediaMessageDescriptor? = null)

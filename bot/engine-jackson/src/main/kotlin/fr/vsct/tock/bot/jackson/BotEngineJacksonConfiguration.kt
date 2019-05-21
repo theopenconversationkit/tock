@@ -34,6 +34,10 @@ import fr.vsct.tock.bot.admin.answer.MessageAnswerConfiguration
 import fr.vsct.tock.bot.admin.answer.ScriptAnswerConfiguration
 import fr.vsct.tock.bot.admin.answer.ScriptAnswerVersionedConfiguration
 import fr.vsct.tock.bot.admin.answer.SimpleAnswerConfiguration
+import fr.vsct.tock.bot.connector.media.MediaActionDescriptor
+import fr.vsct.tock.bot.connector.media.MediaCardDescriptor
+import fr.vsct.tock.bot.connector.media.MediaMessageDescriptor
+import fr.vsct.tock.bot.connector.media.MediaMessageType
 import fr.vsct.tock.bot.engine.event.EventType
 import fr.vsct.tock.bot.engine.message.Attachment
 import fr.vsct.tock.bot.engine.message.Choice
@@ -61,6 +65,13 @@ private object BotEngineJacksonConfiguration {
     )
     interface MixinAnswerConfiguration
 
+    @JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "type"
+    )
+    interface MixinMediaMessage
+
     val module: SimpleModule
         get() {
             val module = SimpleModule()
@@ -86,6 +97,10 @@ private object BotEngineJacksonConfiguration {
                         AnswerConfigurationType.builtin.name
                     )
                 )
+
+                setMixInAnnotation(MediaMessageDescriptor::class.java, MixinMediaMessage::class.java)
+                registerSubtypes(NamedType(MediaCardDescriptor::class.java, MediaMessageType.card.name))
+                registerSubtypes(NamedType(MediaActionDescriptor::class.java, MediaMessageType.action.name))
 
                 setSerializerModifier(object : BeanSerializerModifier() {
                     override fun changeProperties(

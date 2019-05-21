@@ -1,4 +1,3 @@
-<mat-divider [inset]="true" class="divider"></mat-divider>
 <div *ngFor="let s of steps">
   <tock-step [step]="s" (delete)="deleteStep($event)" [defaultCategory]="defaultCategory"></tock-step>
 </div>

@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.connector
 
+import fr.vsct.tock.bot.connector.media.MediaMessage
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
@@ -100,5 +101,12 @@ interface Connector {
      * Default returns [message] unmodified.
      */
     fun addSuggestions(message: ConnectorMessage, suggestions: List<CharSequence>): ConnectorMessage = message
+
+    /**
+     * Transforms a [MediaMessage] to a [ConnectorMessage].
+     * If returns null, the transformation is not supported.
+     * Default returns null.
+     */
+    fun toConnectorMessage(message: MediaMessage): ConnectorMessage? = null
 
 }

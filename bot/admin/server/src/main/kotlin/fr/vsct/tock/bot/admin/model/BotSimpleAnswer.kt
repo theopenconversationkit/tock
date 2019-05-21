@@ -24,11 +24,15 @@ import fr.vsct.tock.translator.Translator
 /**
  *
  */
-data class BotSimpleAnswer(val label: I18nLabel, val delay: Long) {
+data class BotSimpleAnswer(val label: I18nLabel, val delay: Long, val mediaMessage: BotMediaMessageDescriptor? = null) {
 
-    constructor(answer: SimpleAnswer)
-            : this(Translator.saveIfNotExists(answer.key), answer.delay)
+    constructor(answer: SimpleAnswer) :
+        this(
+            Translator.saveIfNotExists(answer.key),
+            answer.delay,
+            answer.mediaMessage?.let { BotMediaMessageDescriptor.fromDescriptor(it) }
+        )
 
     fun toConfiguration(): SimpleAnswer =
-            SimpleAnswer(I18nLabelValue(label), delay)
+        SimpleAnswer(I18nLabelValue(label), delay, mediaMessage?.toDescriptor())
 }

@@ -10,6 +10,13 @@
               [(ngModel)]="a.label.defaultLocalizedLabel().label"
               (change)="updateLabel(a)">
     </textarea>
+    <button mat-icon-button
+            class="mediaButton"
+            [color]="a.mediaMessage ? 'primary' : 'secondary'"
+            matTooltip="Choose media message"
+            (click)="displayMediaMessage(a)">
+      <mat-icon>perm_media</mat-icon>
+    </button>
     <button *ngIf="answer.answers.length !== 1" class="answerButton" mat-icon-button color="warn"
             matTooltip="Delete {{answerLabel}}" (click)="deleteAnswer(a, true)">
       <mat-icon>remove</mat-icon>
@@ -23,6 +30,13 @@
             (blur)="addAnswerIfNonEmpty()"
             #newAnswerElement>
     </textarea>
+  <button mat-icon-button
+          class="mediaButton"
+          [color]="newMedia ? 'primary' : 'secondary'"
+          matTooltip="Choose media message"
+          (click)="displayMediaMessage()">
+    <mat-icon>perm_media</mat-icon>
+  </button>
   <button mat-icon-button color="primary" matTooltip="Add {{answerLabel}}" class="answerButton" (click)="addAnswer()">
     <mat-icon>library_add</mat-icon>
   </button>

@@ -1,9 +1,10 @@
 import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from "@angular/core";
-import {AnswerContainer, SimpleAnswer, SimpleAnswerConfiguration} from "../model/story";
+import {AnswerContainer, Media, SimpleAnswer, SimpleAnswerConfiguration} from "../model/story";
 import {BotService} from "../bot-service";
 import {MatDialog, MatSnackBar} from "@angular/material";
 import {StateService} from "../../core-nlp/state.service";
 import {CreateI18nLabelRequest} from "../model/i18n";
+import {MediaDialogComponent} from "./media/media-dialog.component";
 
 @Component({
   selector: 'tock-simple-answer',
@@ -16,7 +17,7 @@ export class SimpleAnswerComponent implements OnInit {
   container: AnswerContainer;
 
   @Input()
-  answerLabel:string = "Answer";
+  answerLabel: string = "Answer";
 
   @Output()
   submit: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -25,6 +26,7 @@ export class SimpleAnswerComponent implements OnInit {
 
   fullDisplay: boolean;
   newAnswer: string;
+  newMedia: Media;
 
   @ViewChild('newAnswerElement') newAnswerElement: ElementRef;
 
@@ -74,9 +76,11 @@ export class SimpleAnswerComponent implements OnInit {
         this.answer.answers.push(
           new SimpleAnswer(
             i18n,
-            -1
+            -1,
+            this.newMedia
           ));
         this.newAnswer = "";
+        this.newMedia = null;
       });
     }
   }
@@ -85,6 +89,31 @@ export class SimpleAnswerComponent implements OnInit {
     this.answer.answers.splice(this.answer.answers.indexOf(answer), 1);
     this.bot.deleteI18nLabel(answer.label).subscribe(c => {
       if (notify) this.snackBar.open(`Label deleted`, "DELETE", {duration: 1000})
+    });
+  }
+
+  displayMediaMessage(answer?: SimpleAnswer) {
+    const media = answer ? answer.mediaMessage : this.newMedia;
+    let dialogRef = this.dialog.open(
+      MediaDialogComponent,
+      {
+        data:
+          {
+            media: media,
+            category: this.container.category
+          }
+      }
+    );
+    dialogRef.afterClosed().subscribe(result => {
+      const removeMedia = result.removeMedia;
+      const media = result.media;
+      if (removeMedia || media) {
+        if (removeMedia) {
+          if (answer) answer.mediaMessage = null; else this.newMedia = null;
+        } else {
+          if (answer) answer.mediaMessage = media; else this.newMedia = media;
+        }
+      }
     });
   }
 

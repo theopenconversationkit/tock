@@ -47,6 +47,7 @@
     <tock-answer id="main_answer" class="answer" [answer]="story" [fullDisplay]="fullDisplay" [create]="!story._id" (submit)="saveStory(true)"></tock-answer>
 
     <!-- steps -->
+    <mat-divider *ngIf="displaySteps" [inset]="true" class="divider"></mat-divider>
     <tock-steps *ngIf="displaySteps" [steps]="story.steps" [defaultCategory]="story.category"></tock-steps>
 
     <div *ngIf="!displaySteps && story.steps.length !== 0">
