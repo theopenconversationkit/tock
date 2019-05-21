@@ -9,6 +9,7 @@ import fr.vsct.tock.bot.connector.businesschat.model.csp.BusinessChatCommonModel
  * - message : the body contains the message
  * - interactive message : simple list picker response. Datas are in the InteractiveData
  * - large interactive message : list picker with icons. Datas are in th InteractiveDataRef
+ * - rich link data : url with image loaded
  */
 class ReceivedModel(
     sourceId: String,
@@ -16,6 +17,7 @@ class ReceivedModel(
     val body: String?,
     val interactiveData: InteractiveData?,
     val interactiveDataRef: InteractiveDataRef?,
+    val richLinkData: RichLinkData?,
     @JsonProperty("data")
     val handoverData: HandoverData?
 ) : BusinessChatCommonModel(sourceId = sourceId, destinationId = destinationId, type = MessageType.text)
@@ -43,5 +45,10 @@ class InteractiveDataRef(
     val signature: String,
     val owner: String,
     val size: Int
+)
+
+class RichLinkData(
+    val url: String,
+    val title: String
 )
 

@@ -20,6 +20,7 @@ import fr.vsct.tock.bot.connector.businesschat.model.common.ListPickerChoice
 import fr.vsct.tock.bot.connector.businesschat.model.common.ReceivedModel
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorImageMessage
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorListPickerMessage
+import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorRichLinkMessage
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorTextMessage
 
 /**
@@ -30,4 +31,5 @@ interface CSPBusinessChatClient {
     fun sendAttachment(attachment: BusinessChatConnectorImageMessage)
     fun sendListPicker(listPicker: BusinessChatConnectorListPickerMessage)
     fun receiveListPickerChoice(receivedModel: ReceivedModel): ListPickerChoice?
+    fun sendRichLink(richLink: BusinessChatConnectorRichLinkMessage)
 }
