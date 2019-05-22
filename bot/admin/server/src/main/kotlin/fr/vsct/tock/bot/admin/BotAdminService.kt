@@ -454,7 +454,7 @@ object BotAdminService {
                     }
                 } else {
                     if (it._id != storyDefinition?._id) {
-                        badRequest("Story already exists for the intent ${story.intent.name}")
+                        badRequest("Story already exists for the intent ${story.intent.name} : ${it.name}")
                     }
                 }
             }

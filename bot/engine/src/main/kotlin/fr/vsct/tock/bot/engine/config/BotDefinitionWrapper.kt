@@ -22,11 +22,14 @@ import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.Intent.Companion.unknown
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.StoryDefinition
+import mu.KotlinLogging
 
 /**
  *
  */
 internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefinition by botDefinition {
+
+    private val logger = KotlinLogging.logger {}
 
     @Volatile
     private var configuredStories: Map<String, List<ConfiguredStoryDefinition>> = emptyMap()
@@ -35,6 +38,7 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
     private var allStories: List<StoryDefinition> = botDefinition.stories
 
     fun updateStories(configuredStories: List<ConfiguredStoryDefinition>) {
+        logger.debug { "refresh configured stories for ${botDefinition.botId}" }
         this.configuredStories = configuredStories.filter { it.answerType != builtin }.groupBy { it.id }
         //configured stories can override built-in
         allStories = (this.configuredStories + botDefinition.stories.groupBy { it.id }).values.flatten()
