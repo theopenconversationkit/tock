@@ -16,13 +16,14 @@
 
 package fr.vsct.tock.bot.connector.media
 
+import fr.vsct.tock.bot.engine.action.SendAttachment.AttachmentType
+import fr.vsct.tock.bot.engine.config.UploadedFilesService
 
 /**
- * A media card. At least one of [title], [subTitle] or [file] is not null.
+ * An uploaded file.
  */
-data class MediaCard(
-    val title: CharSequence?,
-    val subTitle: CharSequence?,
-    val file: MediaFile?,
-    val actions: List<MediaAction> = emptyList()
-) : MediaMessage
+data class MediaFile(
+    val url: String,
+    val name:String,
+    val type: AttachmentType = UploadedFilesService.attachmentType(url)
+)

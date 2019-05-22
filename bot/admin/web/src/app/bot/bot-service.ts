@@ -94,6 +94,10 @@ export class BotService {
     this.rest.setFileUploaderOptions(uploader, "/i18n/import/json");
   }
 
+  prepareFileDumpUploader(uploader: FileUploader) {
+    this.rest.setFileUploaderOptions(uploader, "/file");
+  }
+
   getFeatures(botId: string): Observable<Feature[]> {
     return this.rest.get(`/feature/${encodeURIComponent(botId)}`, Feature.fromJSONArray);
   }

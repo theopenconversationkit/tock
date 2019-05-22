@@ -3,11 +3,11 @@ package fr.vsct.tock.bot.connector.teams
 import com.microsoft.bot.schema.models.Activity
 import fr.vsct.tock.bot.connector.teams.messages.TeamsBotTextMessage
 import fr.vsct.tock.bot.connector.teams.token.TokenHandler
-import fr.vsct.tock.bot.engine.nlp.NlpProxyBotListener.logger
 import fr.vsct.tock.shared.addJacksonConverter
 import fr.vsct.tock.shared.create
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import mu.KotlinLogging
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.BeforeEach
@@ -22,6 +22,7 @@ import kotlin.test.assertTrue
 class TeamsClientTest {
 
     private val tokenHandler = TokenHandler("fakeId", "fakePassword")
+    private val logger = KotlinLogging.logger {}
 
     @BeforeEach
     private fun resetToken() {
@@ -116,7 +117,7 @@ class TeamsClientTest {
             Activity::class.java
         )
 
-        client.sendMessage(activity, TeamsBotTextMessage( "plop"))
+        client.sendMessage(activity, TeamsBotTextMessage("plop"))
 
         assertFalse(tokenHandler.isTokenExpired())
         Thread.sleep(1000)

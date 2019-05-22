@@ -43,6 +43,8 @@ import fr.vsct.tock.bot.connector.ConnectorType.Companion.rest
 import fr.vsct.tock.bot.connector.ConnectorTypeConfiguration
 import fr.vsct.tock.bot.connector.rest.addRestConnector
 import fr.vsct.tock.bot.engine.BotRepository
+import fr.vsct.tock.bot.engine.config.UploadedFilesService
+import fr.vsct.tock.bot.engine.config.UploadedFilesService.downloadFile
 import fr.vsct.tock.nlp.admin.AdminVerticle
 import fr.vsct.tock.nlp.admin.model.ApplicationScopedQuery
 import fr.vsct.tock.shared.injector
@@ -54,6 +56,7 @@ import fr.vsct.tock.translator.I18nLabel
 import fr.vsct.tock.translator.Translator
 import fr.vsct.tock.translator.Translator.initTranslator
 import fr.vsct.tock.translator.Translator.transformOldLabels
+import io.vertx.core.http.HttpMethod.GET
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
@@ -357,6 +360,24 @@ open class BotAdminVerticle : AdminVerticle() {
         blockingUploadPost("/i18n/import/json", botUser) { context, content ->
             val labels: List<I18nLabel> = mapper.readValue(content)
             i18n.save(transformOldLabels(labels.filter { it.namespace == context.organization }))
+        }
+
+        blockingUploadBinaryPost("/file", botUser) { context, (fileName, bytes) ->
+            val file = UploadedFilesService.uploadFile(context.organization, fileName, bytes)
+            if (file == null) {
+                badRequest("file must have an extension (ie file.png)")
+            }
+            file
+        }
+
+        blocking(GET, "/file/:id.:suffix", botUser) { context ->
+
+            val id = context.path("id")
+            if (!id.startsWith(context.organization)) {
+                unauthorized()
+            } else {
+                downloadFile(context, id, context.path("suffix"))
+            }
         }
 
         blockingJsonGet("/connectorTypes", botUser) {

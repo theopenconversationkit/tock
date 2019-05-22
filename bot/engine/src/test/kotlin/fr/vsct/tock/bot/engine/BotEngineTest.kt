@@ -25,6 +25,7 @@ import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorCallback
+import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
@@ -69,6 +70,7 @@ abstract class BotEngineTest {
     open val botDefinition: BotDefinition = BotDefinitionTest()
     val dialog = Dialog(setOf(userId, botId))
     val botApplicationConfiguration: BotApplicationConfiguration = mockk(relaxed = true)
+    val connectorConfiguration: ConnectorConfiguration = mockk(relaxed = true)
     val story get() = Story(botDefinition.stories.first(), test.mainIntent())
     val connectorCallback: ConnectorCallback = mockk(relaxed = true)
     val connectorData = ConnectorData(connectorCallback)
@@ -154,7 +156,9 @@ abstract class BotEngineTest {
         TockConnectorController(
             bot,
             connector,
-            BotVerticle()
+            BotVerticle(false, false),
+            botDefinition,
+            connectorConfiguration
         )
     }
 

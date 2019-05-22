@@ -17,7 +17,9 @@
 package fr.vsct.tock.bot.engine
 
 import com.github.salomonbrys.kodein.instance
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.connector.Connector
+import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.engine.action.Action
@@ -52,7 +54,8 @@ internal class TockConnectorController constructor(
     val bot: Bot,
     override val connector: Connector,
     private val verticle: BotVerticle,
-    override val botDefinition: BotDefinition = bot.botDefinition
+    override val botDefinition: BotDefinition,
+    private val configuration: ConnectorConfiguration
 ) : ConnectorController {
 
     companion object {
@@ -66,9 +69,10 @@ internal class TockConnectorController constructor(
         internal fun register(
             connector: Connector,
             bot: Bot,
-            verticle: BotVerticle
+            verticle: BotVerticle,
+            configuration: BotApplicationConfiguration
         ): TockConnectorController =
-            TockConnectorController(bot, connector, verticle)
+            TockConnectorController(bot, connector, verticle, bot.botDefinition, ConnectorConfiguration(configuration))
                 .apply {
                     logger.info { "Register connector $connector for bot $bot" }
                     connector.register(this)
@@ -88,6 +92,8 @@ internal class TockConnectorController constructor(
     private val userTimelineDAO: UserTimelineDAO by injector.instance()
 
     private val serviceInstallers: MutableList<BotVerticle.ServiceInstaller> = CopyOnWriteArrayList()
+
+    fun getBaseUrl(): String = configuration.getBaseUrl()
 
     override fun handle(event: Event, data: ConnectorData) {
         val callback = data.callback

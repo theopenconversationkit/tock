@@ -92,6 +92,7 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
         val connector = (this as? TockBotBus)?.connector?.connector
         val message =
             answer.mediaMessage
+                ?.takeIf { it.isValid() }
                 ?.let {
                     connector?.toConnectorMessage(it.toMessage(this))
                 }

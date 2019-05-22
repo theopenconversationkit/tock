@@ -16,10 +16,12 @@
 
 import {Component, ElementRef, Inject, ViewChild} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
-import {MediaAction, MediaCard} from "../../model/story";
+import {MediaAction, MediaCard, MediaFile} from "../../model/story";
 import {CreateI18nLabelRequest} from "../../model/i18n";
 import {BotService} from "../../bot-service";
 import {StateService} from "../../../core-nlp/state.service";
+import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
+import {RestService} from "../../../core-nlp/rest/rest.service";
 
 @Component({
   selector: 'tock-media-dialog',
@@ -32,11 +34,14 @@ export class MediaDialogComponent {
   create: boolean;
   category: string;
 
+  uploader: FileUploader;
+
   @ViewChild('titleElement') titleElement: ElementRef;
 
   constructor(
     public dialogRef: MatDialogRef<MediaDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
+    public rest : RestService,
     private state: StateService,
     private bot: BotService) {
     this.category = this.data.category ? this.data.category : "build";
@@ -48,10 +53,16 @@ export class MediaDialogComponent {
     if (this.media.subTitle) {
       this.media.subTitleLabel = this.media.subTitle.defaultLocalizedLabel().label;
     }
-    if (!this.media.imageUrl) {
-      this.media.imageUrl = "";
-    }
+
     this.media.actions.forEach(a => a.titleLabel = a.title.defaultLocalizedLabel().label);
+
+    this.uploader = new FileUploader({removeAfterUpload: true});
+    this.uploader.onCompleteItem =
+      (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
+        console.log(item);
+        console.log(response);
+        this.media.file = MediaFile.fromJSON(JSON.parse(response));
+      };
 
     setTimeout(() => this.titleElement.nativeElement.focus(), 500);
   }
@@ -89,10 +100,6 @@ export class MediaDialogComponent {
       this.media.subTitle = null
     }
 
-    if (!this.media.imageUrl || this.media.imageUrl.trim().length === 0) {
-      this.media.imageUrl = null;
-    }
-
     this.media.actions = this.media.actions
       .filter(a => a.titleLabel && a.titleLabel.trim().length !== 0)
       .map(a => {
@@ -126,6 +133,11 @@ export class MediaDialogComponent {
   addAction() {
     const mediaAction = new MediaAction(null, null);
     this.media.actions.push(mediaAction);
+  }
+
+  upload() {
+    this.bot.prepareFileDumpUploader(this.uploader);
+    this.uploader.uploadAll()
   }
 
 }

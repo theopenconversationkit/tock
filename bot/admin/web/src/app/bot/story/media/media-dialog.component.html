@@ -15,23 +15,37 @@
   -->
 
 <h1 mat-dialog-title>Media Message</h1>
+<span class="subTitle">All fields are optionals</span>
 <div class="container">
+
   <form #mediaForm="ngForm" class="container">
     <!-- title -->
     <mat-form-field>
       <input matInput name="titleLabel" placeholder="Title" [(ngModel)]="media.titleLabel"
              matTooltip="Card Title" #titleElement>
     </mat-form-field>
+    <!-- File -->
+    <p *ngIf="media.file">
+      File:
+      <a href="{{rest.url}}/file/{{media.file.id}}.{{media.file.suffix}}" target="_blank">{{media.file.name}}</a>
+      <img *ngIf="media.file.isImage()" class="image" src="{{rest.url}}/file/{{media.file.id}}.{{media.file.suffix}}"/>
+      <button (click)="media.file = null" mat-icon-button color="warn">
+        <mat-icon>remove</mat-icon>
+      </button>
+    </p>
+    <p *ngIf="!media.file">
+      <label for="file" matTooltip="Could be an image, a video or a binary file">File: </label>
+      <input id="file" type="file" ng2FileSelect [uploader]="uploader"/>
+      <button (click)="upload()" [disabled]="!uploader.getNotUploadedItems().length" mat-raised-button color="primary">
+        Upload
+      </button>
+    </p>
     <!-- subTitle -->
     <mat-form-field>
       <input matInput name="subTitle" placeholder="Sub Title" [(ngModel)]="media.subTitleLabel"
              matTooltip="Card Sub Title">
     </mat-form-field>
-    <!-- Url -->
-    <mat-form-field>
-      <input matInput name="imageUrl" placeholder="Image Url" [(ngModel)]="media.imageUrl"
-             matTooltip="Image Card">
-    </mat-form-field>
+
     <!-- actions -->
     <div class="actions">
       <div *ngFor="let action of media.actions; let i = index" class="action-row">

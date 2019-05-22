@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+.subTitle {
+  font-style: italic;
+}
+
 .container {
   display: flex;
   flex-direction: column;
@@ -54,4 +58,9 @@
 
 .actions {
   display: table;
+}
+
+.image {
+  max-height: 50px;
+  max-width: 50px;
 }

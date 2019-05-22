@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.admin.model
 
 import fr.vsct.tock.bot.connector.media.MediaCardDescriptor
+import fr.vsct.tock.bot.connector.media.MediaFileDescriptor
 import fr.vsct.tock.bot.connector.media.MediaMessageType
 import fr.vsct.tock.bot.connector.media.MediaMessageType.card
 import fr.vsct.tock.translator.I18nLabel
@@ -24,16 +25,16 @@ import fr.vsct.tock.translator.I18nLabelValue
 import fr.vsct.tock.translator.Translator
 
 
-class BotMediaCardDescriptor(val title: I18nLabel?,
+data class BotMediaCardDescriptor(val title: I18nLabel?,
                              val subTitle: I18nLabel?,
-                             val imageUrl: String?,
+                             val file: MediaFileDescriptor?,
                              val actions: List<BotMediaActionDescriptor> = emptyList()) : BotMediaMessageDescriptor {
 
     constructor(desc: MediaCardDescriptor) :
         this(
             desc.title?.let { Translator.saveIfNotExists(it) },
             desc.subTitle?.let { Translator.saveIfNotExists(it) },
-            desc.imageUrl,
+            desc.file,
             desc.actions.map { BotMediaActionDescriptor(it) }
         )
 
@@ -43,7 +44,7 @@ class BotMediaCardDescriptor(val title: I18nLabel?,
         MediaCardDescriptor(
             title?.let { I18nLabelValue(it) },
             subTitle?.let { I18nLabelValue(it) },
-            imageUrl,
+            file,
             actions.map { it.toDescriptor() }
         )
 }

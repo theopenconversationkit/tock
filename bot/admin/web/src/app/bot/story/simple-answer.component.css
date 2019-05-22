@@ -21,3 +21,7 @@
 .mediaButton {
   margin-bottom: -10px;
 }
+
+.answer {
+  min-width: 400px;
+}

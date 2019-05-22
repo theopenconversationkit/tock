@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.bot.engine
 
+import fr.vsct.tock.shared.mockedVertx
+import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import kotlin.test.assertFalse
 
@@ -26,7 +28,7 @@ class BotVerticleTest : BotEngineTest() {
 
     @Test
     fun `unregisterRouter activates secondary router if one exists`() {
-        val verticle = BotVerticle()
+        val verticle = BotVerticle(false, false)
 
         var service1Installed = false
         var service2Installed = false
@@ -52,8 +54,7 @@ class BotVerticleTest : BotEngineTest() {
 
     @Test
     fun `GIVEN default BOT configuration WHEN configure BOT Verticle THEN nlp api is not exposed`() {
-        System.setProperty("tock_nlp_proxy_on_bot", "false")
-        val verticle = BotVerticle()
+        val verticle = BotVerticle(false, false)
         //NLP Api not exposed
         verticle.configure()
 
@@ -69,8 +70,9 @@ class BotVerticleTest : BotEngineTest() {
 
     @Test
     fun `GIVEN the need to expose NLP API on a BOT WHEN configure BOT Verticle THEN api is exposed`() {
-        System.setProperty("tock_nlp_proxy_on_bot", "true")
-        val verticle = BotVerticle()
+
+        val verticle = BotVerticle(true, false)
+        verticle.init(mockedVertx, mockk())
         //NLP Api exposed
         verticle.configure()
 

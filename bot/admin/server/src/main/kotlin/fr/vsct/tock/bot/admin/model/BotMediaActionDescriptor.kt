@@ -23,7 +23,7 @@ import fr.vsct.tock.translator.I18nLabel
 import fr.vsct.tock.translator.I18nLabelValue
 import fr.vsct.tock.translator.Translator
 
-class BotMediaActionDescriptor(val title: I18nLabel, var url: String? = null) : BotMediaMessageDescriptor {
+data class BotMediaActionDescriptor(val title: I18nLabel, var url: String? = null) : BotMediaMessageDescriptor {
 
     constructor(desc: MediaActionDescriptor) : this(Translator.saveIfNotExists(desc.title), desc.url)
 

@@ -16,7 +16,8 @@
 
 package fr.vsct.tock.bot.engine
 
-import fr.vsct.tock.bot.engine.nlp.NlpProxyBotListener
+import fr.vsct.tock.bot.engine.config.UploadedFilesService
+import fr.vsct.tock.bot.engine.nlp.NlpProxyBotService
 import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.listProperty
@@ -38,7 +39,10 @@ import java.util.concurrent.CopyOnWriteArraySet
 /**
  *
  */
-internal class BotVerticle : WebVerticle() {
+internal class BotVerticle(
+    private val nlpProxyOnBot: Boolean = booleanProperty("tock_nlp_proxy_on_bot", false),
+    private val serveUploadedFiles: Boolean = booleanProperty("tock_bot_serve_files", true)
+) : WebVerticle() {
 
     inner class ServiceInstaller(
         val serviceId: String,
@@ -118,8 +122,6 @@ internal class BotVerticle : WebVerticle() {
         return (paths + path).map { it.trim() }.toSet()
     }
 
-    private val nlpProxyOnBot = booleanProperty("tock_nlp_proxy_on_bot", false)
-
     @Synchronized
     override fun configure() {
         if (!initialized) {
@@ -127,7 +129,10 @@ internal class BotVerticle : WebVerticle() {
             initEncryptor()
             initTranslator()
             if (nlpProxyOnBot) {
-                registerServices("nlp_proxy_bot", NlpProxyBotListener.configure(vertx))
+                registerServices("nlp_proxy_bot", NlpProxyBotService.configure(vertx))
+            }
+            if (serveUploadedFiles) {
+                registerServices("serve_files", UploadedFilesService.configure())
             }
         }
 
@@ -135,7 +140,7 @@ internal class BotVerticle : WebVerticle() {
     }
 
     private fun install() {
-        if (handlers.isNotEmpty() && handlers.any { !it.value.installed }) {
+        if (handlers.any { !it.value.installed }) {
             logger.info { "Install Bot Services / ${handlers.size} registered" }
             //sort installers by registration date to keep registration order
             handlers.values.sortedBy { it.registrationDate }.forEach {

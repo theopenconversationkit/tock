@@ -4,7 +4,7 @@
     <mat-icon>zoom_in</mat-icon>
   </button>
 
-  <div *ngFor="let a of answer.answers">
+  <div *ngFor="let a of answer.answers" class="answer">
     <textarea class="i18n-label"
               matInput
               [(ngModel)]="a.label.defaultLocalizedLabel().label"

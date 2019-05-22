@@ -39,7 +39,7 @@ class TockConnectorControllerTest {
 
         val installer: (Router) -> Unit = mockk()
         every { installer.invoke(any()) } returns Unit
-        val controller = TockConnectorController(mockk(), mockk(), botVerticle, mockk())
+        val controller = TockConnectorController(mockk(), mockk(), botVerticle, mockk(), mockk())
 
         controller.registerServices("/path", installer)
 

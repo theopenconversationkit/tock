@@ -26,7 +26,7 @@ import fr.vsct.tock.translator.I18nLabelValue
 data class MediaCardDescriptor(
     val title: I18nLabelValue?,
     val subTitle: I18nLabelValue?,
-    val imageUrl: String?,
+    val file: MediaFileDescriptor?,
     val actions: List<MediaActionDescriptor> = emptyList()
 ) : MediaMessageDescriptor {
 
@@ -36,7 +36,9 @@ data class MediaCardDescriptor(
         MediaCard(
             bus.translate(title).takeUnless { it.isBlank() },
             bus.translate(subTitle).takeUnless { it.isBlank() },
-            imageUrl,
+            file?.toMessage(bus),
             actions.map { it.toMessage(bus) }
         )
+
+    override fun isValid(): Boolean = title != null || subTitle != null || file != null
 }

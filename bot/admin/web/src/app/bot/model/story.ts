@@ -19,6 +19,7 @@ import {EntityDefinition, Intent, Sentence} from "../../model/nlp";
 import {I18nLabel} from "./i18n";
 import {BotService} from "../bot-service";
 import {Observable, of} from "rxjs";
+import {AttachmentType} from "../../core/model/configuration";
 
 export class CreateStoryRequest {
 
@@ -418,7 +419,7 @@ export class MediaCard extends Media {
     public actions: MediaAction[],
     public title?: I18nLabel,
     public subTitle?: I18nLabel,
-    public imageUrl?: string
+    public file?: MediaFile
   ) {
     super(MediaType.card);
   }
@@ -428,7 +429,7 @@ export class MediaCard extends Media {
       this.actions.map(a => a.clone()),
       this.title ? this.title.clone() : null,
       this.subTitle ? this.subTitle.clone() : null,
-      this.imageUrl
+      this.file
     );
   }
 
@@ -438,7 +439,8 @@ export class MediaCard extends Media {
     const result = Object.assign(value, json, {
       title: json.title ? I18nLabel.fromJSON(json.title) : null,
       subTitle: json.subTitle ? I18nLabel.fromJSON(json.subTitle) : null,
-      actions: MediaAction.fromJSONArray(json.actions)
+      actions: MediaAction.fromJSONArray(json.actions),
+      file: MediaFile.fromJSON(json.file)
     });
     return result;
   }
@@ -474,6 +476,33 @@ export class MediaAction extends Media {
   static fromJSONArray(json?: Array<any>): MediaAction[] {
     return json ? json.map(MediaAction.fromJSON) : [];
   }
+}
+
+export class MediaFile {
+
+  constructor(
+    public suffix: string,
+    public name: string,
+    public id: string,
+    public type: AttachmentType
+  ) {
+  }
+
+  isImage(): boolean {
+    return this.type === AttachmentType.image;
+  }
+
+  static fromJSON(json: any): MediaFile {
+    if (!json) {
+      return null;
+    }
+    const value = Object.create(MediaFile.prototype);
+    const result = Object.assign(value, json, {
+      type: AttachmentType[json.type]
+    });
+    return result;
+  }
+
 }
 
 export class ScriptAnswerConfiguration extends AnswerConfiguration {

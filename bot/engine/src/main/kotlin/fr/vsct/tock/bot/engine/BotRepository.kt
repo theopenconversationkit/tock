@@ -149,7 +149,7 @@ object BotRepository {
         parameters: Map<String, String> = emptyMap()
     ) {
         val conf = connectorControllerMap.keys.firstOrNull { it.applicationId == applicationId }
-                ?: error("unknown application $applicationId")
+            ?: error("unknown application $applicationId")
         connectorControllerMap.getValue(conf).notify(recipientId, intent, step, parameters)
     }
 
@@ -323,7 +323,7 @@ object BotRepository {
         val bot = Bot(botDefinition, conf, app?.supportedLocales ?: emptySet())
         return botConfigurationDAO.save(conf)
             .apply {
-                val controller = TockConnectorController.register(connector, bot, verticle)
+                val controller = TockConnectorController.register(connector, bot, verticle, conf)
                 //monitor bot
                 StoryConfigurationMonitor.monitor(bot)
                 //register connector controller map

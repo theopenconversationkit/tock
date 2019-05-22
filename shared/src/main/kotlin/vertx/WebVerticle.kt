@@ -266,7 +266,7 @@ abstract class WebVerticle : AbstractVerticle() {
         role: TockUserRole,
         resultHandler: (AsyncResult<Boolean>) -> Unit
     ) = user()?.isAuthorized(role.name, resultHandler)
-            ?: resultHandler.invoke(Future.failedFuture("No user set"))
+        ?: resultHandler.invoke(Future.failedFuture("No user set"))
 
     protected inline fun <reified I : Any, O> blockingWithBodyJson(
         method: HttpMethod,
@@ -345,6 +345,18 @@ abstract class WebVerticle : AbstractVerticle() {
             val upload = context.fileUploads().first()
             val f = readString(upload)
             val result = handler.invoke(context, f)
+            context.endJson(result)
+        }
+    }
+
+    protected inline fun <O> blockingUploadBinaryPost(
+        path: String,
+        role: TockUserRole? = defaultRole(),
+        crossinline handler: (RoutingContext, Pair<String, ByteArray>) -> O
+    ) {
+        blocking(POST, path, role) { context ->
+            val upload = context.fileUploads().first()
+            val result = handler.invoke(context, upload.fileName() to readBytes(upload))
             context.endJson(result)
         }
     }
@@ -446,8 +458,10 @@ abstract class WebVerticle : AbstractVerticle() {
         return mapper.readValue<T>(File(upload.uploadedFileName()))
     }
 
+    fun readBytes(upload: FileUpload): ByteArray = Files.readAllBytes(Paths.get(upload.uploadedFileName()))
+
     fun readString(upload: FileUpload): String {
-        return String(Files.readAllBytes(Paths.get(upload.uploadedFileName())), StandardCharsets.UTF_8)
+        return String(readBytes(upload), StandardCharsets.UTF_8)
     }
 
     /**

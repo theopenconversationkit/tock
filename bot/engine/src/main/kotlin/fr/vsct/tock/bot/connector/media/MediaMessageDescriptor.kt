@@ -32,4 +32,9 @@ interface MediaMessageDescriptor {
      * Creates a [MediaMessage] for the specified [BotBus].
      */
     fun toMessage(bus: BotBus): MediaMessage
+
+    /**
+     * Returns true if the media is valid.
+     */
+    fun isValid(): Boolean = true
 }

@@ -103,8 +103,8 @@ interface Connector {
     fun addSuggestions(message: ConnectorMessage, suggestions: List<CharSequence>): ConnectorMessage = message
 
     /**
-     * Transforms a [MediaMessage] to a [ConnectorMessage].
-     * If returns null, the transformation is not supported.
+     * Maps a [MediaMessage] into a [ConnectorMessage].
+     * If [toConnectorMessage] returns null, the mapping is not supported for this connector.
      * Default returns null.
      */
     fun toConnectorMessage(message: MediaMessage): ConnectorMessage? = null

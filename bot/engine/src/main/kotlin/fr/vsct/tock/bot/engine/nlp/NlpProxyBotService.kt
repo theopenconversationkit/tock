@@ -19,7 +19,7 @@ import java.net.URL
  * Expose NLP API to BOT app
  *
  */
-object NlpProxyBotListener {
+internal object NlpProxyBotService {
 
     val logger: KLogger = KotlinLogging.logger {}
     private val tockNlpProxyOnBotPath = property("tock_nlp_proxy_on_bot_path", "/_proxy_nlp")
@@ -34,7 +34,7 @@ object NlpProxyBotListener {
         tockNlpServiceSsl = System.getenv("tock_nlp_service_SSL") ?: tocNlpServiceUrl.protocol == "https"
     }
 
-    fun configure(vertx: Vertx?): (Router) -> Unit {
+    fun configure(vertx: Vertx): (Router) -> Unit {
         return { router ->
             router.post("$tockNlpProxyOnBotPath*").handler { context ->
                 httpProxyToNlp(context, vertx, POST)
@@ -47,12 +47,12 @@ object NlpProxyBotListener {
 
     private fun httpProxyToNlp(
         context: RoutingContext,
-        vertx: Vertx?,
+        vertx: Vertx,
         httpMethod: HttpMethod
     ) {
         try {
             val uri = context.request().uri().substringAfter(tockNlpProxyOnBotPath)
-            val client: HttpClient = vertx!!.createHttpClient(HttpClientOptions())
+            val client: HttpClient = vertx.createHttpClient(HttpClientOptions())
             val options = RequestOptions()
                 .setHost(tockNlpServiceHost)
                 .setPort(tockNlpServicePort)

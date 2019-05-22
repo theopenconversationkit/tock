@@ -27,7 +27,7 @@ import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
 @Injectable()
 export class RestService {
 
-  private readonly url: string;
+  readonly url: string;
   readonly notAuthenticatedUrl: string;
 
   readonly errorEmitter: EventEmitter<string> = new EventEmitter();

@@ -16,13 +16,23 @@
 
 package fr.vsct.tock.bot.connector.media
 
+import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.action.SendAttachment.AttachmentType
+import fr.vsct.tock.bot.engine.config.UploadedFilesService
+import fr.vsct.tock.shared.Dice
 
 /**
- * A media card. At least one of [title], [subTitle] or [file] is not null.
+ * A file descriptor.
  */
-data class MediaCard(
-    val title: CharSequence?,
-    val subTitle: CharSequence?,
-    val file: MediaFile?,
-    val actions: List<MediaAction> = emptyList()
-) : MediaMessage
+data class MediaFileDescriptor(
+    val suffix: String,
+    val name: String,
+    val id: String = Dice.newId(),
+    val type: AttachmentType = UploadedFilesService.attachmentType(suffix)
+) {
+    /**
+     * Creates a [MediaMessage] for the specified [BotBus].
+     */
+    fun toMessage(bus: BotBus): MediaFile =
+        MediaFile(UploadedFilesService.botFilePath(bus, id, suffix), name)
+}
