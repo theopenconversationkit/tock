@@ -160,7 +160,7 @@ object TestPlanService {
                         botMessages = body?.messages?.toMutableList() ?: mutableListOf()
                     } else {
                         logger.error { answer.errorBody()?.string() }
-                        DialogExecutionReport(
+                        return DialogExecutionReport(
                             dialog.id, true, errorMessage = answer.errorBody()?.toString()
                                     ?: "unknown error"
                         )
