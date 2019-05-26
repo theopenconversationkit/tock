@@ -164,40 +164,13 @@ internal class Bot(
                 previousStory
             }
 
-        //set current step if necessary
-        var forced = false
-        if (action is SendChoice) {
-            action.step()?.apply {
-                forced = true
-                story.currentStep = this
-            }
-        }
-
-        //revalidate step
-        val step = story.findCurrentStep()
-        story.currentStep = step?.name
-
-        //check the step from the intent
-        if (!forced && step == null && newIntent != null) {
-            story.definition.steps.find { it.supportStarterIntent(newIntent) }
-                ?.apply {
-                    forced = true
-                    story.currentStep = name
-                }
-        }
-
-        //reset the step if applicable
-        if (!forced && newIntent != null
-            && (step?.intent != null && !step.supportIntent(newIntent))
-        ) {
-            story.currentStep = null
-        }
+        story.computeCurrentStep(action, newIntent)
 
         story.actions.add(action)
 
         //update action state
         action.state.intent = dialog.state.currentIntent?.name
-        action.state.step = story.currentStep
+        action.state.step = story.step
 
         return story
     }
@@ -253,6 +226,7 @@ internal class Bot(
         botDefinition.findIntent(choice.intentName).let { intent ->
             //restore state if it's possible (old dialog choice case)
             if (intent != Intent.unknown) {
+                //TODO use story id
                 val previousIntentName = choice.previousIntent()
                 if (previousIntentName != null) {
                     val previousStory = botDefinition.findStoryDefinition(previousIntentName)

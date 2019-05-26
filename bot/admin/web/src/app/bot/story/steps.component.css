@@ -1,0 +1,11 @@
+.step {
+  display:table;
+}
+
+.tree {
+  display: inline-table;
+}
+
+.action {
+  margin-left: 35px;
+}

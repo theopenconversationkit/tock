@@ -179,7 +179,7 @@ class BotBusMockTest {
 
         botBus.run()
 
-        assertEquals(Step.a.name, botBus.story.currentStep)
+        assertEquals(Step.a, botBus.story.currentStep)
     }
 
     @Test

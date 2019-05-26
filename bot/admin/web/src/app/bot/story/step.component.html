@@ -1,16 +1,13 @@
-<div *ngIf="step" class="step">
+<div *ngIf="step && !readonly" class="step">
   <!-- user sentence -->
-  <mat-form-field class="entity-button">
+  <mat-form-field class="input">
     <input matInput
            [(ngModel)]="step.userSentence"
            placeholder="Enter a User Phrase">
   </mat-form-field>
 
-  <!-- answer -->
-  <tock-answer [answer]="step" class="entity-button"></tock-answer>&nbsp;
-
   <!-- intent -->
-  <mat-form-field class="entity-button">
+  <mat-form-field class="input">
     <input matInput name="intent" placeholder="Intent" [(ngModel)]="step.intent.name"
            matTooltip="Intent starting the Action"
            [matAutocomplete]="intentAuto"
@@ -20,15 +17,28 @@
            required>
   </mat-form-field>
 
-  <button class="entity-button" mat-icon-button color="warn"
-          matTooltip="Remove Action" (click)="removeStep()">
-    <mat-icon>remove</mat-icon>
-  </button>
+  <!-- answer -->
+  <tock-answer [answer]="step" class="entity-button"></tock-answer>&nbsp;
 
-  <button *ngIf="step.new" class="entity-button" mat-button color="primary"
-          matTooltip="Save Action" (click)="save()">
-    Save
-  </button>
+  <div class="entity-button">
+    <button mat-icon-button color="warn"
+            matTooltip="Remove Action" (click)="removeStep()">
+      <mat-icon>remove</mat-icon>
+    </button>
+  </div>
+
+  <div class="entity-button">
+    <button *ngIf="!step.new"  mat-icon-button (click)="addChild()">
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+
+  <div class="entity-button">
+    <button *ngIf="step.new" mat-button color="primary"
+            matTooltip="Save Action" (click)="save()">
+      Save
+    </button>
+  </div>
 
   <mat-autocomplete #intentAuto="matAutocomplete" autoActiveFirstOption>
     <mat-optgroup *ngFor="let category of currentIntentCategories" [label]="category.category">
@@ -38,3 +48,4 @@
     </mat-optgroup>
   </mat-autocomplete>
 </div>
+<span *ngIf="step && readonly">{{step.userSentence}} <span class="intent" matTooltip="Action Intent">[{{step.intent.name}}]</span>: <tock-answer class="answer" [answer]="step" [editable]="false"></tock-answer></span>

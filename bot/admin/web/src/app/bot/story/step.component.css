@@ -2,12 +2,29 @@
   margin-left: 20px;
 }
 
-.entity-button {
-  margin-right: 10px;
-  margin-left: 10px;
-  display: table-cell;
-}
-
 .step {
   display: table-row;
 }
+
+.input {
+  padding-right: 10px;
+  padding-left: 10px;
+  display: table-cell
+}
+
+.entity-button {
+  display: table-cell;
+}
+
+.save {
+  margin-right: 10px;
+}
+
+.intent {
+  font-style: italic;
+}
+
+.answer {
+  display:inline-block;
+}
+

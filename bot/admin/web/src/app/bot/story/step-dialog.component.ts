@@ -30,9 +30,14 @@ export class StepDialogComponent {
     this.dialogRef.close({});
   }
 
+  private filterNew(steps: StoryStep[]): StoryStep[] {
+    steps.forEach(s => s.children = this.filterNew(s.children));
+    return steps.filter(s => !s.new);
+  }
+
   save() {
     this.dialogRef.close({
-      steps: this.steps.filter(s => !s.new)
+      steps: this.filterNew(this.steps)
     });
   }
 

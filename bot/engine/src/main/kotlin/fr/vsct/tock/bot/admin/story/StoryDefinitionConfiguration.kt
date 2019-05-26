@@ -87,5 +87,5 @@ data class StoryDefinitionConfiguration(
 ) : StoryDefinitionAnswersContainer {
 
     override fun findNextSteps(story: StoryDefinitionConfiguration): List<String> =
-        steps.filter { it.parentName == null }.map { it.userSentence }
+        steps.map { it.userSentence }
 }

@@ -214,7 +214,8 @@ export class StoryStep extends AnswerContainer {
               currentType: AnswerConfigurationType,
               category: string,
               public userSentence: string,
-              public parentName?: string) {
+              public children: StoryStep[],
+              public level: number) {
     super(currentType, answers, category)
   }
 
@@ -234,7 +235,8 @@ export class StoryStep extends AnswerContainer {
       this.currentType,
       this.category,
       this.userSentence,
-      this.parentName
+      this.children.map( c => c.clone()),
+      this.level
     );
   }
 
@@ -243,7 +245,8 @@ export class StoryStep extends AnswerContainer {
     const result = Object.assign(value, json, {
       intent: IntentName.fromJSON(json.intent),
       currentType: AnswerConfigurationType[json.currentType],
-      answers: AnswerConfiguration.fromJSONArray(json.answers)
+      answers: AnswerConfiguration.fromJSONArray(json.answers),
+      children : StoryStep.fromJSONArray(json.children)
     });
 
     return result;

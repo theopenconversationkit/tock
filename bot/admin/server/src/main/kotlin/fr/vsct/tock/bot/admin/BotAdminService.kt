@@ -401,7 +401,9 @@ object BotAdminService {
             intent,
             answers.map { it.toConfiguration(botId, oldStory?.steps?.find { it.name == name }?.answers) },
             currentType,
-            userSentence
+            userSentence,
+            children.map { it.toStepConfiguration(app, botId, oldStory) },
+            level
         ).apply {
             //if intentDefinition is null, it means that step has not been modified
             if (intentDefinition != null) {

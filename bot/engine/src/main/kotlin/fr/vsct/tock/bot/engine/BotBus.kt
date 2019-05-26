@@ -153,9 +153,9 @@ interface BotBus : I18nTranslator {
      * The current [StoryStep] of the [Story].
      */
     var step: StoryStep<out StoryHandlerDefinition>?
-        get() = story.findCurrentStep()
+        get() = story.currentStep
         set(step) {
-            story.currentStep = step?.name
+            story.step = step?.name
         }
 
     /**
@@ -546,7 +546,7 @@ interface BotBus : I18nTranslator {
      */
     fun switchStory(storyDefinition: StoryDefinition) {
         val starterIntent = storyDefinition.mainIntent()
-        story = Story(storyDefinition, starterIntent, story.currentStep)
+        story = Story(storyDefinition, starterIntent, story.step)
         dialog.stories.add(story)
         dialog.state.currentIntent = starterIntent
     }

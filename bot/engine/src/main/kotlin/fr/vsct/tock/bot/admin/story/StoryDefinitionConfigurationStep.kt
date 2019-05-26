@@ -5,6 +5,7 @@ import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.SimpleStoryStep
+import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 
 /**
@@ -32,17 +33,32 @@ data class StoryDefinitionConfigurationStep(
      */
     val userSentence: String = "",
     /**
-     * The parent step name - if null the parent is the story.
+     * The children of the steps
      */
-    val parentName: String? = null
+    val children: List<StoryDefinitionConfigurationStep> = emptyList(),
+    /**
+     * The level of the step.
+     */
+    val level: Int = 0
 ) : StoryDefinitionAnswersContainer {
 
-    private data class Step(override val name: String, override val intent: IntentAware) : SimpleStoryStep {
-        constructor(s: StoryDefinitionConfigurationStep) : this(s.name, s.intent)
+    internal class Step(
+        override val name: String,
+        override val intent: IntentAware,
+        val configuration: StoryDefinitionConfigurationStep
+    ) : SimpleStoryStep {
+        constructor(s: StoryDefinitionConfigurationStep) : this(s.name, s.intent, s)
+
+        override fun equals(other: Any?): Boolean = name == (other as? Step)?.name
+
+        override fun hashCode(): Int = name.hashCode()
+
+        override val children: Set<StoryStep<StoryHandlerDefinition>>
+            get() = configuration.children.map { it.toStoryStep() }.toSet()
     }
 
-    fun toStoryStep(): StoryStep<*> = Step(this)
+    fun toStoryStep(): StoryStep<StoryHandlerDefinition> = Step(this)
 
     override fun findNextSteps(story: StoryDefinitionConfiguration): List<String> =
-        story.steps.filter { it.parentName == name }.map { it.userSentence }
+        children.map { it.userSentence }
 }

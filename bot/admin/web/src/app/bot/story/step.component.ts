@@ -21,6 +21,12 @@ export class StepComponent implements OnInit {
   @Output()
   delete = new EventEmitter<StoryStep>();
 
+  @Output()
+  child = new EventEmitter<StoryStep>();
+
+  @Input()
+  readonly: boolean = false;
+
   intentCategories: IntentsCategory[] = [];
   currentIntentCategories: IntentsCategory[] = [];
 
@@ -62,6 +68,9 @@ export class StepComponent implements OnInit {
         let intent = this.state.findIntentByName(intentName);
         if (intent) {
           step.intentDefinition = intent;
+          if (!step.name || step.name.trim().length === 0) {
+            step.name = intentName + "_" + step.level;
+          }
         } else {
           let dialogRef = this.dialog.open(
             IntentDialogComponent,
@@ -88,6 +97,7 @@ export class StepComponent implements OnInit {
                   result.category
                 );
               step.intent.name = result.name;
+              step.name = result.name + "_" + step.level;
             } else {
               step.intent.name = step.intentDefinition ? step.intentDefinition.name : "";
             }
@@ -112,5 +122,10 @@ export class StepComponent implements OnInit {
       this.step.new = false;
     }
   }
+
+  addChild() {
+    this.child.emit(this.step);
+  }
+
 
 }

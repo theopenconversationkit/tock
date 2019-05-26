@@ -166,7 +166,8 @@ export class StoryComponent implements OnInit, OnChanges {
           {
             steps: this.story.steps,
             category: this.story.category
-          }
+          },
+        minWidth: 900
       }
     );
     dialogRef.afterClosed().subscribe(result => {

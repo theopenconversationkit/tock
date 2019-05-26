@@ -32,13 +32,18 @@ data class BotStoryDefinitionConfigurationStep(
      */
     val userSentence: String = "",
     /**
-     * The parent step name - if null the parent is the story.
+     * The children of the steps
      */
-    val parentName: String? = null,
+    val children: List<BotStoryDefinitionConfigurationStep> = emptyList(),
+    /**
+     * The level of the step.
+     */
+    val level: Int = 0,
     /**
      * Intent defined by the intent name.
      */
-    val intentDefinition: IntentDefinition? = null) {
+    val intentDefinition: IntentDefinition? = null
+) {
 
     constructor(story: StoryDefinitionConfiguration, e: StoryDefinitionConfigurationStep) :
         this(
@@ -47,6 +52,8 @@ data class BotStoryDefinitionConfigurationStep(
             e.answers.mapAnswers(),
             e.currentType,
             story.category,
-            e.userSentence
+            e.userSentence,
+            e.children.map { BotStoryDefinitionConfigurationStep(story, it) },
+            e.level
         )
 }

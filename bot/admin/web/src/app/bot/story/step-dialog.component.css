@@ -1,20 +1,18 @@
 .container {
   display: flex;
   flex-direction: column;
-  min-width: 400px;
 }
 
 .container > * {
   width: 100%;
 }
 
-.submit-button {
-  margin-left: 20px;
+.steps {
+  margin-left: -20px;
+  margin-right: 100px;
 }
 
-.entity-button {
-  margin-right: 10px;
-  margin-left: 10px;
-  display: inline-block;
+.submit-button {
+  margin-left: 20px;
 }
 

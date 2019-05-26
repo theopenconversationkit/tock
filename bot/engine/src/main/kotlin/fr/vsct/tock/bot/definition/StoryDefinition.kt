@@ -51,17 +51,23 @@ interface StoryDefinition : IntentAware {
     val storyHandler: StoryHandler
 
     /**
-     * The steps of the story.
+     * The root steps of the story.
      */
-    val steps: Set<StoryStep<out StoryHandlerDefinition>>
+    val steps: Set<StoryStep<*>>
 
     /**
      * When this story does not support all [UserInterfaceType]s.
      */
     val unsupportedUserInterfaces: Set<UserInterfaceType>
 
+    /**
+     * Is the specified intent is a starter intent?
+     */
     fun isStarterIntent(intent: Intent) = starterIntents.contains(intent)
 
+    /**
+     * Is the specified intent is supported by this story?
+     */
     fun supportIntent(intent: Intent) = intents.contains(intent)
 
     /**

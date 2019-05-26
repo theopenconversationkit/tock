@@ -74,6 +74,6 @@ class BotTest : BotEngineTest() {
         bot.handle(sentence, userTimeline, connectorController, connectorData)
 
         assertEquals(otherStory, dialog.currentStory?.definition)
-        assertNull(dialog.currentStory?.currentStep)
+        assertNull(dialog.currentStory?.step)
     }
 }

@@ -191,7 +191,7 @@ internal data class DialogCol(
         constructor(story: Story) : this(
             story.definition.id,
             story.starterIntent,
-            story.currentStep,
+            story.currentStep?.name,
             story.actions.map { getActionWrapper(it) })
 
         fun toStory(dialogId: Id<Dialog>, storyDefinitionProvider: (String) -> StoryDefinition): Story {

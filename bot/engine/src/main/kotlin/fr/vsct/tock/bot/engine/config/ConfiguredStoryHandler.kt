@@ -22,6 +22,7 @@ import fr.vsct.tock.bot.admin.answer.SimpleAnswer
 import fr.vsct.tock.bot.admin.answer.SimpleAnswerConfiguration
 import fr.vsct.tock.bot.admin.story.StoryDefinitionAnswersContainer
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration
+import fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationStep.Step
 import fr.vsct.tock.bot.definition.StoryHandler
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.TockBotBus
@@ -38,17 +39,16 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
     }
 
     override fun handle(bus: BotBus) {
-        configuration.steps.find { bus.isIntent(it.intent) }
-            ?.also {
-                it.send(bus)
-                return@handle
-            }
-
         configuration.mandatoryEntities.forEach { entity ->
             if (bus.entityValueDetails(entity.role) == null) {
                 entity.send(bus)
                 return@handle
             }
+        }
+
+        (bus.step as? Step)?.configuration?.also {
+            it.send(bus)
+            return@handle
         }
 
         configuration.send(bus)

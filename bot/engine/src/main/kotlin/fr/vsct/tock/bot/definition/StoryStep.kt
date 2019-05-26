@@ -84,4 +84,9 @@ interface StoryStep<T : StoryHandlerDefinition> {
      */
     fun supportIntent(i: Intent): Boolean = supportStarterIntent(i) || secondaryIntents.any { it.wrap(i) }
 
+    /**
+     * The optional children of the step.
+     */
+    val children: Set<StoryStep<T>> get() = emptySet()
+
 }
