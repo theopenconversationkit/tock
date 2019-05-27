@@ -50,7 +50,7 @@ data class Story(
     /**
      * The current step of the story.
      */
-    val currentStep: StoryStep<*>? get() = definition.steps.asSequence().map { findStep(it) }.firstOrNull()
+    val currentStep: StoryStep<*>? get() = definition.steps.asSequence().mapNotNull { findStep(it) }.firstOrNull()
 
     private fun findStep(step: StoryStep<*>): StoryStep<*>? {
         if (step.name == this.step) {
