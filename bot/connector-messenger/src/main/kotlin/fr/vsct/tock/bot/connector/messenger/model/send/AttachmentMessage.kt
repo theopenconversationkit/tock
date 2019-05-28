@@ -93,4 +93,6 @@ class AttachmentMessage(val attachment: Attachment, quickReplies: List<QuickRepl
         return "AttachmentMessage(attachment=$attachment,quickReplies=$quickReplies)"
     }
 
+    override fun copy(quickReplies: List<QuickReply>?): Message =
+        AttachmentMessage(attachment, quickReplies)
 }

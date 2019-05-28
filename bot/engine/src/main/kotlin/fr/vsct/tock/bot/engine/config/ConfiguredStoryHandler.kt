@@ -27,6 +27,8 @@ import fr.vsct.tock.bot.definition.StoryHandler
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.TockBotBus
 import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.engine.message.ActionWrappedMessage
+import fr.vsct.tock.bot.engine.message.MessagesList
 import mu.KotlinLogging
 
 /**
@@ -90,29 +92,47 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
         val label = translate(answer.key)
         val suggestions = container.findNextSteps(configuration)
         val connector = (this as? TockBotBus)?.connector?.connector
-        val message =
+        val connectorMessages =
             answer.mediaMessage
                 ?.takeIf { it.isValid() }
                 ?.let {
-                    connector?.toConnectorMessage(it.toMessage(this))
+                    connector?.toConnectorMessage(it.toMessage(this))?.invoke(this)
                 }
-                ?.let {
-                    if (suggestions.isNotEmpty()) connector?.addSuggestions(it, suggestions) else it
+                ?.let { messages ->
+                    if (suggestions.isNotEmpty() && messages.isNotEmpty())
+                        messages.take(messages.size - 1) + (connector?.addSuggestions(messages.last(), suggestions)?.invoke(this)
+                            ?: messages.last())
+                    else messages
                 }
-                ?: suggestions.takeIf { suggestions.isNotEmpty() }?.let { connector?.addSuggestions(label, suggestions) }
+                ?: listOfNotNull(suggestions.takeIf { suggestions.isNotEmpty() }?.let { connector?.addSuggestions(label, suggestions)?.invoke(this) })
 
-        val sentence = SendSentence(
-            botId,
-            applicationId,
-            userId,
-            if (message == null) label else null,
-            listOfNotNull(message).toMutableList()
-        )
+
+        val actions = connectorMessages
+            .map {
+                SendSentence(
+                    botId,
+                    applicationId,
+                    userId,
+                    null,
+                    mutableListOf(it)
+                )
+            }
+            .takeUnless { it.isEmpty() }
+            ?: listOf(
+                SendSentence(
+                    botId,
+                    applicationId,
+                    userId,
+                    label
+                )
+            )
+
+        val messagesList = MessagesList(actions.map { ActionWrappedMessage(it, 0) })
         val delay = if (answer.delay == -1L) botDefinition.defaultDelay(currentAnswerIndex) else answer.delay
         if (end) {
-            end(sentence, delay)
+            end(messagesList, delay)
         } else {
-            send(sentence, delay)
+            send(messagesList, delay)
         }
     }
 

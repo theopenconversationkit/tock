@@ -19,17 +19,18 @@ package fr.vsct.tock.bot.connector.messenger.model.send
 import com.fasterxml.jackson.annotation.JsonProperty
 import fr.vsct.tock.bot.connector.messenger.AttachmentCacheService
 import fr.vsct.tock.bot.connector.messenger.MessengerConfiguration.reuseAttachmentByDefault
+import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.action.SendAttachment
 
 /**
  *
  */
 data class UrlPayload(
-        val url: String?,
-        @JsonProperty("attachment_id")
-        val attachmentId: String?,
-        @JsonProperty("is_reusable")
-        val reusable: Boolean?
+    val url: String?,
+    @JsonProperty("attachment_id")
+    val attachmentId: String?,
+    @JsonProperty("is_reusable")
+    val reusable: Boolean?
 ) : Payload() {
 
     companion object {
@@ -40,11 +41,14 @@ data class UrlPayload(
          */
         fun getUrlPayload(attachment: SendAttachment): UrlPayload {
             return getUrlPayload(
-                    attachment.applicationId,
-                    attachment.url,
-                    reuseAttachmentByDefault && !attachment.state.testEvent
+                attachment.applicationId,
+                attachment.url,
+                reuseAttachmentByDefault && !attachment.state.testEvent
             )
         }
+
+        internal fun getUrlPayload(bus: BotBus, url: String): UrlPayload =
+            getUrlPayload(bus.applicationId, url, reuseAttachmentByDefault && !bus.action.state.testEvent)
 
         /**
          * Create an UrlPayload from an url.

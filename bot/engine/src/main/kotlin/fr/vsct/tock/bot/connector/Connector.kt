@@ -94,19 +94,19 @@ interface Connector {
      * Returns a [ConnectorMessage] with the specified list of suggestions.
      * If the connector does not support suggestions, returns null.
      */
-    fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): ConnectorMessage? = null
+    fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = { null }
 
     /**
      * Updates a [ConnectorMessage] with the specified list of suggestions.
      * Default returns [message] unmodified.
      */
-    fun addSuggestions(message: ConnectorMessage, suggestions: List<CharSequence>): ConnectorMessage = message
+    fun addSuggestions(message: ConnectorMessage, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = { message }
 
     /**
      * Maps a [MediaMessage] into a [ConnectorMessage].
-     * If [toConnectorMessage] returns null, the mapping is not supported for this connector.
-     * Default returns null.
+     * If [toConnectorMessage] returns an empty list, the mapping is not supported for this connector.
+     * Default returns an empty list.
      */
-    fun toConnectorMessage(message: MediaMessage): ConnectorMessage? = null
+    fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = { emptyList() }
 
 }

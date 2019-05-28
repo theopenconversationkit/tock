@@ -421,9 +421,9 @@ interface BotBus : I18nTranslator {
     fun end(action: Action, delay: Long = botDefinition.defaultDelay(currentAnswerIndex)): BotBus
 
     /**
-     * Sends [MessagesList] as last bot answer.
+     * Sends a [MessagesList] and end the dialog.
      */
-    fun end(messages: MessagesList, initialDelay: Long = botDefinition.defaultDelay(currentAnswerIndex)): BotBus {
+    fun end(messages: MessagesList, initialDelay: Long = 0): BotBus {
         messages.messages.forEachIndexed { i, m ->
             val wait = initialDelay + m.delay
             if (messages.messages.size - 1 == i) {
@@ -500,14 +500,25 @@ interface BotBus : I18nTranslator {
     fun sendRawText(plainText: CharSequence?, delay: Long = botDefinition.defaultDelay(currentAnswerIndex)): BotBus
 
     /**
-     * Sends [Message].
+     * Sends a [Message].
      */
     fun send(message: Message, delay: Long = botDefinition.defaultDelay(currentAnswerIndex)): BotBus {
         return send(message.toAction(this), delay)
     }
 
     /**
-     * Sends [Action].
+     * Sends a [MessagesList].
+     */
+    fun send(messages: MessagesList, initialDelay: Long = 0): BotBus {
+        messages.messages.forEachIndexed { i, m ->
+            val wait = initialDelay + m.delay
+            send(m.toAction(this), wait)
+        }
+        return this
+    }
+
+    /**
+     * Sends an [Action].
      */
     fun send(action: Action, delay: Long = botDefinition.defaultDelay(currentAnswerIndex)): BotBus
 

@@ -271,7 +271,7 @@ fun genericTemplate(vararg elements: Element): AttachmentMessage {
 /**
  * Creates a [generic template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/generic).
  */
-fun genericTemplate(elements: List<Element>, vararg quickReplies: QuickReply): AttachmentMessage {
+fun genericTemplate(elements: List<Element>, quickReplies: List<QuickReply>): AttachmentMessage {
     if (elements.isEmpty() || elements.size > 10) {
         error("must have at least 1 elements and at most 10")
     }
@@ -283,9 +283,15 @@ fun genericTemplate(elements: List<Element>, vararg quickReplies: QuickReply): A
                 elements
             )
         ),
-        quickReplies.run { if (isEmpty()) null else toList() }
+        quickReplies.takeUnless { it.isEmpty() }
     )
 }
+
+/**
+ * Creates a [generic template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/generic).
+ */
+fun genericTemplate(elements: List<Element>, vararg quickReplies: QuickReply): AttachmentMessage =
+    genericTemplate(elements, quickReplies.toList())
 
 /**
  * Creates an [attachment](https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
@@ -450,7 +456,7 @@ fun logoutButton(): LogoutButton = LogoutButton()
 fun locationQuickReply(): QuickReply = LocationQuickReply()
 
 /**
- * This quick reply will not be used as payload, but the [textToSend] will we parsed by the NLP engine.
+ * This quick reply does not use any custom payload, but the [textToSend] will we parsed by the NLP engine.
  */
 fun I18nTranslator.nlpQuickReply(
     title: CharSequence,
@@ -467,6 +473,7 @@ fun I18nTranslator.nlpQuickReply(
  * Creates a [quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies)
  * from an [I18nTranslator].
  */
+@Deprecated("use notify method for standalone")
 fun I18nTranslator.standaloneQuickReply(
     /**
      * The title of the quick reply.
@@ -584,6 +591,7 @@ private fun I18nTranslator.quickReply(
  * Creates a [postback button](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback).
  * from an [I18nTranslator].
  */
+@Deprecated("use notify method for standalone")
 fun I18nTranslator.standalonePostbackButton(
     /**
      * The title of the button.
@@ -686,6 +694,18 @@ private fun I18nTranslator.postbackButton(
     return PostbackButton(payload, t.toString())
 }
 
+/**
+ * This button does not use any custom payload, but the [textToSend] will we parsed by the NLP engine.
+ */
+fun I18nTranslator.nlpPostbackButton(
+    title: CharSequence,
+    textToSend: CharSequence = title
+): PostbackButton =
+    PostbackButton(
+        SendChoice.encodeNlpChoiceId(translate(textToSend).toString()),
+        translate(title).toString()
+    )
+
 fun I18nTranslator.callToButton(
     title: CharSequence,
     phoneNumber: String
@@ -712,6 +732,7 @@ fun I18nTranslator.urlButton(title: CharSequence, url: String): UrlButton {
  * Used to generate a text only event,
  * usually sent later by [MessengerConnector.send] or [MessengerConnector.sendOptInEvent].
  */
+@Deprecated("use notify method for standalone")
 fun standaloneMessengerAnswer(
     playerId: PlayerId,
     applicationId: String,
@@ -739,6 +760,7 @@ fun standaloneMessengerAnswer(
  * Used to generate a [MessengerConnectorMessage] event,
  * usually sent later by [MessengerConnector.send] or [MessengerConnector.sendOptInEvent].
  */
+@Deprecated("use notify method for standalone")
 fun standaloneMessengerAnswer(
     playerId: PlayerId,
     applicationId: String,
@@ -767,6 +789,7 @@ fun standaloneMessengerAnswer(
  * Used to generate multiple [MessengerConnectorMessage] events,
  * usually sent later by [MessengerConnector.send] or [MessengerConnector.sendOptInEvent].
  */
+@Deprecated("use notify method for standalone")
 fun standaloneMessengerAnswers(
     playerId: PlayerId,
     applicationId: String,

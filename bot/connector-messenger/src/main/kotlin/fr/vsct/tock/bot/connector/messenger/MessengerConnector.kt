@@ -23,6 +23,8 @@ import com.google.common.cache.CacheBuilder
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorData
+import fr.vsct.tock.bot.connector.ConnectorMessage
+import fr.vsct.tock.bot.connector.media.MediaMessage
 import fr.vsct.tock.bot.connector.messenger.AttachmentCacheService.getAttachmentId
 import fr.vsct.tock.bot.connector.messenger.AttachmentCacheService.setAttachmentId
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
@@ -37,6 +39,7 @@ import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentMessage
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType
 import fr.vsct.tock.bot.connector.messenger.model.send.CustomEventRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.MediaPayload
+import fr.vsct.tock.bot.connector.messenger.model.send.Message
 import fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.SendResponse
 import fr.vsct.tock.bot.connector.messenger.model.send.SenderAction.mark_seen
@@ -47,6 +50,7 @@ import fr.vsct.tock.bot.connector.messenger.model.webhook.CallbackRequest
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
+import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.BotRepository.requestTimer
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
@@ -109,7 +113,7 @@ class MessengerConnector internal constructor(
         fun getConnectorByPageId(pageId: String): MessengerConnector? {
             return connectors.find { it.pageId == pageId }
             //TODO remove this when backward compatibility is no more assured
-                    ?: (connectors.find { it.applicationId == pageId }?.also { logger.warn { "use appId as pageId $pageId not found" } })
+                ?: (connectors.find { it.applicationId == pageId }?.also { logger.warn { "use appId as pageId $pageId not found" } })
         }
 
         fun healthcheck(): Boolean {
@@ -575,11 +579,11 @@ class MessengerConnector internal constructor(
     private fun getToken(appId: String): String =
         applicationTokenMap[appId]
         //TODO remove this when backward compatibility is no more assured
-                ?: pageApplicationMap[appId]?.let {
-                    logger.warn { "use pageId as appId for $appId" }
-                    applicationTokenMap[it]
-                }
-                ?: error("$appId not found")
+            ?: pageApplicationMap[appId]?.let {
+                logger.warn { "use pageId as appId for $appId" }
+                applicationTokenMap[it]
+            }
+            ?: error("$appId not found")
 
     private fun isSignedByFacebook(payload: String, facebookSignature: String): Boolean {
         return "sha1=${sha1(payload, client.secretKey)}" == facebookSignature
@@ -657,4 +661,19 @@ class MessengerConnector internal constructor(
             )
         )
     }
+
+    override fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
+        text(text, suggestions.map { nlpQuickReply(it) })
+    }
+
+    override fun addSuggestions(message: ConnectorMessage, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
+        if (message is Message && message.quickReplies.isNullOrEmpty()) {
+            message.copy(suggestions.map { nlpQuickReply(it) })
+        } else {
+            message
+        }
+    }
+
+    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> =
+        MediaConverter.toConnectorMessage(message)
 }

@@ -31,9 +31,9 @@ class TextMessage(val text: String, quickReplies: List<QuickReply>? = null) : Me
         val texts = mapOf("title" to text)
         return if (quickReplies?.isNotEmpty() == true) {
             GenericMessage(
-                    texts = texts,
-                    choices = quickReplies.mapNotNull { it.toChoice() },
-                    locations = quickReplies.mapNotNull { it.toLocation() })
+                texts = texts,
+                choices = quickReplies.mapNotNull { it.toChoice() },
+                locations = quickReplies.mapNotNull { it.toLocation() })
         } else {
             GenericMessage(texts = texts)
         }
@@ -63,5 +63,5 @@ class TextMessage(val text: String, quickReplies: List<QuickReply>? = null) : Me
         return "TextMessage(text='$text',quickReplies=$quickReplies)"
     }
 
-
+    override fun copy(quickReplies: List<QuickReply>?): Message = TextMessage(text, quickReplies)
 }

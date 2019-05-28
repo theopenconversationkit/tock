@@ -39,7 +39,7 @@
         <kotlin-logging>1.6.26</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>3.10.2-SNAPSHOT</kmongo>
+        <kmongo>3.10.2</kmongo>
         <jackson>2.9.9</jackson>
         <jackson-module>2.9.9</jackson-module>
         <jackson-module-loader>0.1.0</jackson-module-loader>
