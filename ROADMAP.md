@@ -1,24 +1,26 @@
-- 19.3.1 May 2019
-    - Business Chat connector
-    - Code editor admin interface   
-    
 - 19.3.2 July 2019
-    - Conversational framework: allow to create a bot in the administration interface without IDE
     - Bot API
     - External Bot demo server
-    - AB Test engine workflow           
+    - NLP model translation support           
 
-- 19.9 September 2019  
-    - Spacy and RASA support
-    - Spark NLP support 
-    - NLP model translation support       
+- 19.9 September 2019      
     - Conversational framework: support for other languages than Kotlin (using APIs & multi-platform Kotlin feature)
     - nodejs support sample 
+    - Code editor admin interface 
+    - AB Test engine workflow
+    
+- 20.3 March 2020
+    - Spacy, Rasa & Spark NLP support 
     
 ## Latest releases  
               
+- 19.3.1 May 2019
+    - Business Chat connector
+    - DialogFlow NLP support
+    - Conversational framework: allow to create a bot in the administration interface without IDE
+              
 - 19.3 March 2019
-    - Add bot flow view     
+    - Bot flow view     
 
 - 2.0.2 February 2019
     - External NLP demo server
