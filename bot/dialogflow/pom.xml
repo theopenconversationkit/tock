@@ -13,7 +13,7 @@
     <description>DialogFlow Client for Tock NLP API</description>
 
     <properties>
-        <dialogflow>0.87.0-alpha</dialogflow>
+        <dialogflow>0.93.0-alpha</dialogflow>
         <google.oauth2>0.15.0</google.oauth2>
     </properties>
 
