@@ -45,7 +45,12 @@ internal object TestPlanMongoDAO : TestPlanDAO {
         testPlanCol.ensureIndex(ApplicationId)
     }
 
-    override fun save(testPlan: TestPlan) {
+    /**
+     * Save the given common test plan into the mongo database.
+     *
+     * @param testPlan is the test plan to save.
+     */
+    override fun saveTestPlan(testPlan: TestPlan) {
         testPlanCol.save(testPlan)
     }
 
@@ -54,8 +59,13 @@ internal object TestPlanMongoDAO : TestPlanDAO {
         testPlanExecutionCol.deleteMany(TestPlanId eq planId)
     }
 
-    override fun save(testPlan: TestPlanExecution) {
-        testPlanExecutionCol.save(testPlan)
+    /**
+     * Save the given common test plan execution into the mongo database.
+     *
+     * @param testPlanExecution is the test plan execution to save.
+     */
+    override fun saveTestExecution(testPlanExecution: TestPlanExecution) {
+        testPlanExecutionCol.save(testPlanExecution)
     }
 
     override fun getPlan(testPlanId: Id<TestPlan>): TestPlan? {

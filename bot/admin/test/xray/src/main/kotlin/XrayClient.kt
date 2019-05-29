@@ -59,57 +59,92 @@ object XrayClient {
 
     init {
         xray = retrofitBuilderWithTimeoutAndLogger(
-            xrayTimeoutInSeconds,
-            interceptors = listOf(basicAuthInterceptor(xrayLogin, xrayPassword))
+                xrayTimeoutInSeconds,
+                interceptors = listOf(basicAuthInterceptor(xrayLogin, xrayPassword))
         )
-            .addJacksonConverter()
-            .baseUrl(xrayUrl)
-            .build()
-            .create()
+                .addJacksonConverter()
+                .baseUrl(xrayUrl)
+                .build()
+                .create()
     }
 
+    /**
+     * Return all the tests contained in the test plan given in parameter.
+     * First of all, the function will gather all tests of the given test plan,
+     * and then, it will retrieve the Xray issue for each test.
+     *
+     * @param testPlanKey Identifier of the test plan to obtain its tests.
+     * @return a list of XrayTest to represent all tests of the targeted test plan.
+     */
     fun getTestPlanTests(testPlanKey: String): List<XrayTest> {
+        // retrieve all tests of the given test plan
         val tests = xray.getTestsOfTestPlan(testPlanKey).execute().body() ?: error("no test in $testPlanKey")
+        // and retrieve the content of those tests, including steps, and return them
         return xray.getTests(tests.joinToString(";") { it.key })
-            .execute()
-            .body()
+                .execute()
+                .body()
                 ?: error("unable to get tests for $tests")
     }
 
+    fun getTests(testKey: String): List<XrayTest> {
+        return xray.getTests(testKey)
+                .execute()
+                .body()
+                ?: error("unable to get the test $testKey")
+    }
+
+    /**
+     * Ask the Jira API for the steps of a given test.
+     *
+     * @param testKey is the identifier of the test to retrieve the steps.
+     * @return a list of steps as a XrayTestStep object.
+     */
     fun getTestSteps(testKey: String): List<XrayTestStep> =
-        xray.getTestSteps(testKey).execute().body() ?: error("no test steps for $testKey")
+            xray.getTestSteps(testKey).execute().body() ?: error("no test steps for $testKey")
 
+    /**
+     * Send the test execution to Jira.
+     *
+     * @param execution is the result of the test execution.
+     * @return the answer of Jira after the test execution reception.
+     */
     fun sendTestExecution(execution: XrayTestExecution): Response<ResponseBody> =
-        xray.sendTestExecution(execution).execute()
+            xray.sendTestExecution(execution).execute()
 
+    /**
+     * This function converts an attachment file into a String.
+     *
+     * @param attachment is the attachment stored as an XrayAttachment object linked to a test step.
+     * @return the content of the attachment in String format.
+     */
     fun getAttachmentToString(attachment: XrayAttachment): String =
-        xray.getAttachment(attachment.id, attachment.fileName).execute().body()?.string()
-                ?: "error : empty jira attachment"
+            xray.getAttachment(attachment.id, attachment.fileName).execute().body()?.string()
+                    ?: "error : empty jira attachment"
 
     fun createTest(test: JiraTest): JiraIssue =
-        xray.createTest(test).execute().body() ?: error("error during creating test $test")
+            xray.createTest(test).execute().body() ?: error("error during creating test $test")
 
     fun saveStep(testKey: String, step: XrayBuildTestStep) = xray.saveStep(testKey, step).execute().body()
 
     fun addPrecondition(preConditionKey: String, jiraId: String) =
-        xray.addPrecondition(
-            preConditionKey,
-            XrayUpdateTest(listOf(jiraId))
-        ).execute().body()
+            xray.addPrecondition(
+                    preConditionKey,
+                    XrayUpdateTest(listOf(jiraId))
+            ).execute().body()
 
     fun updateTest(jiraId: String, test: JiraTest) = xray.updateTest(jiraId, test).execute().body()
 
     fun uploadAttachment(issueId: String, name: String, content: String): JiraAttachment =
-        xray.addAttachment(
-            issueId,
-            MultipartBody.Part.createFormData(
-                "file",
-                name,
-                RequestBody.create(MediaType.parse("text/plain"), content)
+            xray.addAttachment(
+                    issueId,
+                    MultipartBody.Part.createFormData(
+                            "file",
+                            name,
+                            RequestBody.create(MediaType.parse("text/plain"), content)
+                    )
             )
-        )
-            .execute()
-            .body()?.firstOrNull() ?: error("error during attachment of $content")
+                    .execute()
+                    .body()?.firstOrNull() ?: error("error during attachment of $content")
 
     fun linkTest(key1: String, key2: String) {
         xray.linkIssue(JiraIssueLink(JiraType("Associate"), JiraKey(key1), JiraKey(key2))).execute()
@@ -128,5 +163,5 @@ object XrayClient {
     }
 
     fun addTestToTestPlan(test: String, testPlan: String) =
-        xray.addTestToTestPlans(testPlan, XrayUpdateTest(listOf(test))).execute()
+            xray.addTestToTestPlans(testPlan, XrayUpdateTest(listOf(test))).execute()
 }

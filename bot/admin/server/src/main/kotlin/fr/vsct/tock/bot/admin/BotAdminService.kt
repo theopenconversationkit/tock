@@ -598,6 +598,10 @@ object BotAdminService {
         return dialogFlowDAO.loadApplicationData(namespace, request.botId, applicationIds)
     }
 
+    /**
+     * This function executes all test contained in the common test plan.
+     *
+     */
     fun executeTestPlan(namespace: String, testPlan: TestPlan): TestPlanExecution =
         getBotConfiguration(testPlan.botApplicationConfigurationId, namespace)
             .let {

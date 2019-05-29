@@ -1,13 +1,14 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="NlpService" type="JetRunConfigurationType" factoryName="Kotlin">
-    <module name="tock-nlp-api-service" />
+    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+    <option name="MAIN_CLASS_NAME" value="fr.vsct.tock.nlp.api.StartNlpServiceKt" />
     <option name="VM_PARAMETERS" value="" />
     <option name="PROGRAM_PARAMETERS" value="" />
+    <option name="WORKING_DIRECTORY" value="" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <option name="PASS_PARENT_ENVS" value="true" />
-    <option name="MAIN_CLASS_NAME" value="fr.vsct.tock.nlp.api.StartNlpServiceKt" />
-    <option name="WORKING_DIRECTORY" value="" />
+    <module name="tock-nlp-api-service" />
     <envs>
       <env name="nlpverticle_port" value="8888" />
     </envs>

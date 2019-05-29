@@ -189,7 +189,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     }
 
     override fun save(userTimeline: UserTimeline, botDefinition: BotDefinition?) {
-        logger.debug { "start to save timeline $userTimeline" }
+        logger.debug { "start to saveTestPlan timeline $userTimeline" }
         val oldTimeline = userTimelineCol.findOneById(userTimeline.playerId.id)
         logger.debug { "load old timeline $userTimeline" }
         val newTimeline = UserTimelineCol(userTimeline, oldTimeline)
@@ -203,12 +203,12 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         }
         for (dialog in userTimeline.dialogs) {
             val dialogToSave = DialogCol(dialog, newTimeline)
-            logger.debug { "dialog to save created $userTimeline" }
+            logger.debug { "dialog to saveTestPlan created $userTimeline" }
             try {
                 dialogCol.save(dialogToSave)
             } catch (e: Exception) {
                 logger.error(e)
-                logger.error("Dialog save failure: $dialogToSave")
+                logger.error("Dialog saveTestPlan failure: $dialogToSave")
             }
             logger.debug { "dialog saved $userTimeline" }
         }
@@ -570,7 +570,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     private fun addArchivedValues(dialog: Dialog) {
         dialog.state.entityValues.values.filter { it.hasBeanUpdatedInBus }
             .forEach {
-                logger.debug { "save archived values for $it" }
+                logger.debug { "saveTestPlan archived values for $it" }
                 archivedEntityValuesCol.save(ArchivedEntityValuesCol(it.previousValues, it.stateValueId))
             }
     }

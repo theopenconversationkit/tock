@@ -63,7 +63,6 @@ interface XrayApi {
     @GET("/plugins/servlet/raven/attachment/{id}/{fileName}")
     fun getAttachment(@Path("id") id: Long, @Path("fileName") fileName: String): Call<ResponseBody>
 
-
     @PUT("/rest/raven/1.0/api/test/{id}/step")
     fun saveStep(@Path("id") id: String, @Body execution: XrayBuildTestStep): Call<ResponseBody>
 

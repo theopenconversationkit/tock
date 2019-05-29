@@ -1,19 +1,18 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Admin" type="JetRunConfigurationType" factoryName="Kotlin">
-    <module name="tock-nlp-admin-server" />
+    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+    <option name="MAIN_CLASS_NAME" value="fr.vsct.tock.nlp.admin.StartAdminServerKt" />
     <option name="VM_PARAMETERS" value="" />
     <option name="PROGRAM_PARAMETERS" value="" />
+    <option name="WORKING_DIRECTORY" value="" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <option name="PASS_PARENT_ENVS" value="true" />
-    <option name="MAIN_CLASS_NAME" value="fr.vsct.tock.nlp.admin.StartAdminServerKt" />
-    <option name="WORKING_DIRECTORY" value="" />
+    <module name="tock-nlp-admin-server" />
     <envs>
       <env name="adminverticle_port" value="7999" />
       <env name="botadminverticle_body_limit" value="-1" />
     </envs>
-    <method v="2">
-      <option name="Make" enabled="true" />
-    </method>
+    <method />
   </configuration>
 </component>

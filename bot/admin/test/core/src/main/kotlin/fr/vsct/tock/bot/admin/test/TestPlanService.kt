@@ -36,7 +36,6 @@ import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.provide
 import mu.KotlinLogging
 import org.litote.kmongo.Id
-import org.litote.kmongo.toId
 import java.time.Duration
 import java.time.Instant
 
@@ -84,22 +83,38 @@ object TestPlanService {
     }
 
     fun saveTestPlan(plan: TestPlan) {
-        testPlanDAO.save(plan)
+        testPlanDAO.saveTestPlan(plan)
     }
 
     fun getTestPlan(planId: Id<TestPlan>): TestPlan? {
         return testPlanDAO.getPlan(planId)
     }
 
+    /**
+     * This function saves the given test plan in the mongo database and then run the test plan.
+     *
+     * @param client is the client to use for running the test plan.
+     * @param plan is the common test plan to run.
+     * @return the results of the test plan execution as a TestPlanExecution object.
+     */
     fun saveAndRunTestPlan(client: ConnectorRestClient, plan: TestPlan): TestPlanExecution {
-        testPlanDAO.save(plan)
+        testPlanDAO.saveTestPlan(plan)
         return runTestPlan(client, plan)
     }
 
+    /**
+     * This function execute the given common test plan.
+     * It goes over all steps of related tests and sends each step as a dialog.
+     *
+     * @param client is the client to use for the dialogs.
+     * @param plan is the common test plan to run.
+     * @return the results of the test plan execution as a TestPlanExecution object.
+     */
     fun runTestPlan(client: ConnectorRestClient, plan: TestPlan): TestPlanExecution {
         val start = Instant.now()
         val dialogs: MutableList<DialogExecutionReport> = mutableListOf()
         var nbErrors: Int = 0
+        // run all the steps as dialog, one by one
         plan.dialogs.forEach {
             runDialog(client, plan, it).run {
                 dialogs.add(this)
@@ -108,17 +123,28 @@ object TestPlanService {
                 }
             }
         }
+        // store the test plan execution into the right Object
         val exec = TestPlanExecution(
             plan._id,
             dialogs,
             nbErrors,
             duration = Duration.between(start, Instant.now())
         )
-        testPlanDAO.save(exec)
+        // save the test plan execution into the database
+        testPlanDAO.saveTestExecution(exec)
+        // return the completed test execution
         return exec
     }
 
-
+    /**
+     * This function starts the dialog with the right bot.
+     * Dialogs are built using tests steps and they are sent to the bot.
+     *
+     * @param client is the bot to dialog with.
+     * @param testPlan is the common test plan to run.
+     * @param dialog is the dialog to send.
+     * @return the result of the dialog as a DialogExecutionReport object.
+     */
     private fun runDialog(
         client: ConnectorRestClient,
         testPlan: TestPlan,
@@ -128,7 +154,8 @@ object TestPlanService {
         val botId = Dice.newId()
         return try {
             var botMessages: MutableList<ClientMessage> = mutableListOf()
-            //send first action if specified
+            // send first action if specified
+            // first action is just saying Hi!
             if (testPlan.startAction != null) {
                 client.talk(
                     getPath(testPlan),
@@ -159,7 +186,7 @@ object TestPlanService {
                         logger.debug { "answer: $body" }
                         botMessages = body?.messages?.toMutableList() ?: mutableListOf()
                     } else {
-                        logger.error { answer.errorBody()?.string() }
+                        logger.error { "ERROR : " + answer.errorBody()?.string() }
                         return DialogExecutionReport(
                             dialog.id, true, errorMessage = answer.errorBody()?.toString()
                                     ?: "unknown error"
@@ -175,6 +202,7 @@ object TestPlanService {
                         )
                     }
                     val botMessage = botMessages.removeAt(0)
+                    // TODO
                     if (!botMessage.deepEquals(it)) {
                         logger.info { "no same message:\n$botMessage\n${it.messages.map { m -> m.toClientMessage() }}" }
                         return DialogExecutionReport(

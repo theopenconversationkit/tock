@@ -1,13 +1,14 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="KotlinCompilerServer" type="JetRunConfigurationType" factoryName="Kotlin">
-    <module name="tock-bot-admin-kotlin-compiler-server" />
+    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+    <option name="MAIN_CLASS_NAME" value="fr.vsct.tock.bot.admin.kotlin.compiler.server.KotlinCompilerServerKt" />
     <option name="VM_PARAMETERS" value="" />
     <option name="PROGRAM_PARAMETERS" value="" />
+    <option name="WORKING_DIRECTORY" value="" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <option name="PASS_PARENT_ENVS" value="true" />
-    <option name="MAIN_CLASS_NAME" value="fr.vsct.tock.bot.admin.kotlin.compiler.server.KotlinCompilerServerKt" />
-    <option name="WORKING_DIRECTORY" value="" />
+    <module name="tock-bot-admin-kotlin-compiler-server" />
     <envs>
       <env name="kotlincompilerverticle_port" value="8887" />
     </envs>
