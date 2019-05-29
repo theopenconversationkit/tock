@@ -5,7 +5,7 @@ site_url: 'https://voyages-sncf-technologies.github.io/tock/en'
 repo_name: 'tock'
 repo_url: 'https://github.com/voyages-sncf-technologies/tock'
 edit_uri: ''
-pages:
+nav:
     - Introduction: index.md
     - Getting Started: getting-started.md
     - Build NLP model: build-nlp-model.md
@@ -20,12 +20,13 @@ pages:
 theme:
   name: 'material'
   logo: 'assets/images/logo.svg'
-  custom_dir: 'theme'
+  favicon: 'assets/images/favicon.ico'
 markdown_extensions:
   - admonition
-  - codehilite(guess_lang=false)
-  - toc(permalink=true)
-copyright: 'Copyright &copy; 2018/2019 VSCT'
+  - codehilite
+  - toc:
+      permalink: true
+copyright: 'Copyright &copy; 2017/2019 VSCT'
 extra:
   social:
     - type: 'github'

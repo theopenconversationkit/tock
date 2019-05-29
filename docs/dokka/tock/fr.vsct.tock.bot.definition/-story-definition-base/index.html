@@ -68,7 +68,7 @@ Usually, you don't have the same starter intent in two different story definitio
 </td>
 <td>
 <code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">steps</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="../-story-step/index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span></code>
-<p>The steps of the story.</p>
+<p>The root steps of the story.</p>
 </td>
 </tr>
 <tr>
@@ -111,7 +111,9 @@ Usually, you don't have the same starter intent in two different story definitio
 <p><a href="../-story-definition/is-starter-intent.html">isStarterIntent</a></p>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">isStarterIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryDefinition$isStarterIntent(fr.vsct.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">isStarterIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryDefinition$isStarterIntent(fr.vsct.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Is the specified intent is a starter intent?</p>
+</td>
 </tr>
 <tr>
 <td>
@@ -127,7 +129,9 @@ Usually, you don't have the same starter intent in two different story definitio
 <p><a href="../-story-definition/support-intent.html">supportIntent</a></p>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">supportIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryDefinition$supportIntent(fr.vsct.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">supportIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryDefinition$supportIntent(fr.vsct.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Is the specified intent is supported by this story?</p>
+</td>
 </tr>
 <tr>
 <td>
@@ -136,6 +140,20 @@ Usually, you don't have the same starter intent in two different story definitio
 <td>
 <code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">wrappedIntent</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-intent/index.html"><span class="identifier">Intent</span></a></code>
 <p>Implementation for <a href="../-intent-aware/index.html">IntentAware</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Extension Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.test/test.html">test</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><a href="./index.html"><span class="identifier">StoryDefinitionBase</span></a><span class="symbol">.</span><span class="identifier">test</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test$test(fr.vsct.tock.bot.definition.StoryDefinitionBase, fr.vsct.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Test a <a href="#">StoryDefinition</a> with a mocked (mockk) <a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html">BotBus</a>.</p>
 </td>
 </tr>
 </tbody>

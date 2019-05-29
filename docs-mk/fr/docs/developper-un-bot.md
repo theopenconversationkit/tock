@@ -18,14 +18,14 @@ Avec Maven :
         <dependency>
             <groupId>fr.vsct.tock</groupId>
             <artifactId>bot-toolkit</artifactId>
-            <version>19.3.0</version>
+            <version>19.3.1</version>
         </dependency>
 ```
 
 ou Gradle :
 
 ```gradle
-      compile 'fr.vsct.tock:bot-toolkit:19.3.0'
+      compile 'fr.vsct.tock:bot-toolkit:19.3.1'
 ```
 
 ## Un bot est un ensemble de Stories
@@ -367,13 +367,13 @@ val story = storyWithSteps<MyStep>("intent") {
 
 * Utiliser les boutons ou autres quick replies
 
-Plus de détails sur ce sujet [ici](./developper-un-bot/index.html#postback-buttons-quick-replies).
+Plus de détails sur ce sujet [ici](../developper-un-bot/#postback-buttons-quick-replies).
 
 
 #### Les StoryStep avec comportement
 
 Dans des cas plus complexes, on souhaite pouvoir définir un comportement pour chaque étape. 
-L'utilisation de [HandlerDef](./developper-un-bot/index.html#utiliser-handlerdef) est alors un prérequis.
+L'utilisation de [HandlerDef](../developper-un-bot/#utiliser-handlerdef) est alors un prérequis.
 
 ```kotlin
 enum class MySteps : StoryStep<MyHandlerDef> {

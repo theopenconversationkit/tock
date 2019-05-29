@@ -17,7 +17,7 @@
 <p><a href="-init-.html">&lt;init&gt;</a></p>
 </td>
 <td>
-<code><span class="identifier">TeamsConnectorCallback</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.teams.TeamsConnectorCallback$<init>(kotlin.String, )/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.teams.TeamsConnectorCallback$<init>(kotlin.String, )/activity">activity</span><span class="symbol">:</span>&nbsp;<span class="identifier">&lt;ERROR CLASS&gt;</span><span class="symbol">)</span></code></td>
+<code><span class="identifier">TeamsConnectorCallback</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.teams.TeamsConnectorCallback$<init>(kotlin.String, com.microsoft.bot.schema.models.Activity)/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.teams.TeamsConnectorCallback$<init>(kotlin.String, com.microsoft.bot.schema.models.Activity)/activity">activity</span><span class="symbol">:</span>&nbsp;<span class="identifier">Activity</span><span class="symbol">)</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -29,7 +29,7 @@
 <p><a href="activity.html">activity</a></p>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">activity</span><span class="symbol">: </span><span class="identifier">&lt;ERROR CLASS&gt;</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">activity</span><span class="symbol">: </span><span class="identifier">Activity</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -86,20 +86,20 @@
 </tr>
 <tr>
 <td>
-<p><a href="../../fr.vsct.tock.bot.connector/-connector-callback-base/user-lock-released.html">userLockReleased</a></p>
-</td>
-<td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">userLockReleased</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.ConnectorCallbackBase$userLockReleased(fr.vsct.tock.bot.engine.event.Event)/event">event</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.event/-event/index.html"><span class="identifier">Event</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
-<p>Called by <a href="../../fr.vsct.tock.bot.engine/-connector-controller/handle.html">ConnectorController.handle</a> when the user lock is released.</p>
-</td>
-</tr>
-<tr>
-<td>
 <p><a href="../../fr.vsct.tock.bot.connector/-connector-callback-base/user-locked.html">userLocked</a></p>
 </td>
 <td>
 <code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">userLocked</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.ConnectorCallbackBase$userLocked(fr.vsct.tock.bot.engine.event.Event)/event">event</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.event/-event/index.html"><span class="identifier">Event</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
 <p>Called by <a href="../../fr.vsct.tock.bot.engine/-connector-controller/handle.html">ConnectorController.handle</a> when the user is locked.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.connector/-connector-callback-base/user-lock-released.html">userLockReleased</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">userLockReleased</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.ConnectorCallbackBase$userLockReleased(fr.vsct.tock.bot.engine.event.Event)/event">event</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.event/-event/index.html"><span class="identifier">Event</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Called by <a href="../../fr.vsct.tock.bot.engine/-connector-controller/handle.html">ConnectorController.handle</a> when the user lock is released.</p>
 </td>
 </tr>
 </tbody>

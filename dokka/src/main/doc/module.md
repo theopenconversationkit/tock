@@ -22,6 +22,10 @@ Conversation monitoring via the admin interface
 
 Messages created with the scripts managed via the admin interface	
 
+# Package fr.vsct.tock.bot.admin.story
+
+Configurable stories
+
 # Package fr.vsct.tock.bot.admin.test
 
 Contains [TestPlan] and [TestPlanExecution] to manage automated integration tests	
@@ -53,6 +57,10 @@ Google Assistant connector request model
 # Package fr.vsct.tock.bot.connector.ga.model.response
 
 Google Assistant connector response model
+
+# Package fr.vsct.tock.bot.connector.media
+
+Generic Media Configuration
 
 # Package fr.vsct.tock.bot.connector.messenger
 
@@ -98,9 +106,17 @@ Old Slack connector model - will be removed in 19.3
 
 Teams connector implementation
 
+# Package fr.vsct.tock.bot.connector.teams.auth
+
+Teams connector authentication
+
 # Package fr.vsct.tock.bot.connector.teams.messages
 
 Teams connector complex messages
+
+# Package fr.vsct.tock.bot.connector.teams.token
+
+Teams connector token support
 
 # Package fr.vsct.tock.bot.connector.whatsapp
 
@@ -128,7 +144,11 @@ Contains all classes used to *define* a bot
 
 # Package fr.vsct.tock.bot.engine.action
 
-The bot and user core [Action] definitions	
+The bot and user core [Action] definitions
+
+# Package fr.vsct.tock.bot.engine.config	
+
+Configuration utilities
 
 # Package fr.vsct.tock.bot.engine.dialog
 

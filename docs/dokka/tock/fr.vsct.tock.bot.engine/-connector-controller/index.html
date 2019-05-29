@@ -8,7 +8,7 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.engine</a>&nbsp;/&nbsp;<a href="./index.html">ConnectorController</a><br/>
 <br/>
 <h1>ConnectorController</h1>
-<code><span class="keyword">interface </span><span class="identifier">ConnectorController</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/ConnectorController.kt#L34">(source)</a>
+<code><span class="keyword">interface </span><span class="identifier">ConnectorController</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/ConnectorController.kt#L35">(source)</a>
 <p>Controller to connect <a href="../../fr.vsct.tock.bot.connector/-connector/index.html">Connector</a> and <a href="../../fr.vsct.tock.bot.definition/-bot-definition/index.html">BotDefinition</a>.</p>
 <h3>Properties</h3>
 <table>
@@ -29,6 +29,15 @@
 <td>
 <code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">connector</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector/-connector/index.html"><span class="identifier">Connector</span></a></code>
 <p>The connector used by the controller.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="connector-type.html">connectorType</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">connectorType</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a></code>
+<p>The type of connector used by the controller.</p>
 </td>
 </tr>
 </tbody>

@@ -1,0 +1,93 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>MediaCardDescriptor - tock</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.connector.media</a>&nbsp;/&nbsp;<a href="./index.html">MediaCardDescriptor</a><br/>
+<br/>
+<h1>MediaCardDescriptor</h1>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">MediaCardDescriptor</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-media-message-descriptor/index.html"><span class="identifier">MediaMessageDescriptor</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/connector/media/MediaCardDescriptor.kt#L26">(source)</a>
+<p>The <a href="../-media-card/index.html">MediaCard</a> descriptor.</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">MediaCardDescriptor</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.media.MediaCardDescriptor$<init>(fr.vsct.tock.translator.I18nLabelValue, fr.vsct.tock.translator.I18nLabelValue, fr.vsct.tock.bot.connector.media.MediaFileDescriptor, kotlin.collections.List((fr.vsct.tock.bot.connector.media.MediaActionDescriptor)))/title">title</span><span class="symbol">:</span>&nbsp;<span class="identifier">I18nLabelValue</span><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.media.MediaCardDescriptor$<init>(fr.vsct.tock.translator.I18nLabelValue, fr.vsct.tock.translator.I18nLabelValue, fr.vsct.tock.bot.connector.media.MediaFileDescriptor, kotlin.collections.List((fr.vsct.tock.bot.connector.media.MediaActionDescriptor)))/subTitle">subTitle</span><span class="symbol">:</span>&nbsp;<span class="identifier">I18nLabelValue</span><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.media.MediaCardDescriptor$<init>(fr.vsct.tock.translator.I18nLabelValue, fr.vsct.tock.translator.I18nLabelValue, fr.vsct.tock.bot.connector.media.MediaFileDescriptor, kotlin.collections.List((fr.vsct.tock.bot.connector.media.MediaActionDescriptor)))/file">file</span><span class="symbol">:</span>&nbsp;<a href="../-media-file-descriptor/index.html"><span class="identifier">MediaFileDescriptor</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.media.MediaCardDescriptor$<init>(fr.vsct.tock.translator.I18nLabelValue, fr.vsct.tock.translator.I18nLabelValue, fr.vsct.tock.bot.connector.media.MediaFileDescriptor, kotlin.collections.List((fr.vsct.tock.bot.connector.media.MediaActionDescriptor)))/actions">actions</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-media-action-descriptor/index.html"><span class="identifier">MediaActionDescriptor</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;emptyList()<span class="symbol">)</span></code>
+<p>The <a href="../-media-card/index.html">MediaCard</a> descriptor.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="actions.html">actions</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">actions</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-media-action-descriptor/index.html"><span class="identifier">MediaActionDescriptor</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="file.html">file</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">file</span><span class="symbol">: </span><a href="../-media-file-descriptor/index.html"><span class="identifier">MediaFileDescriptor</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="sub-title.html">subTitle</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">subTitle</span><span class="symbol">: </span><span class="identifier">I18nLabelValue</span><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="title.html">title</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">title</span><span class="symbol">: </span><span class="identifier">I18nLabelValue</span><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="type.html">type</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">type</span><span class="symbol">: </span><a href="../-media-message-type/index.html"><span class="identifier">MediaMessageType</span></a></code>
+<p>The type of message.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="is-valid.html">isValid</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">isValid</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Returns true if the media is valid.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="to-message.html">toMessage</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">toMessage</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.media.MediaCardDescriptor$toMessage(fr.vsct.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-media-card/index.html"><span class="identifier">MediaCard</span></a></code>
+<p>Creates a <a href="../-media-message.html">MediaMessage</a> for the specified <a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html">BotBus</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

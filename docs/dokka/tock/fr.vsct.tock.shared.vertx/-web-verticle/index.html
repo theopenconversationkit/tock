@@ -178,6 +178,13 @@
 </tr>
 <tr>
 <td>
+<p><a href="blocking-upload-binary-post.html">blockingUploadBinaryPost</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">O</span><span class="symbol">&gt;</span> <span class="identifier">blockingUploadBinaryPost</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingUploadBinaryPost(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function2((io.vertx.ext.web.RoutingContext, kotlin.Pair((kotlin.String, kotlin.ByteArray)), fr.vsct.tock.shared.vertx.WebVerticle.blockingUploadBinaryPost.O)))/path">path</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingUploadBinaryPost(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function2((io.vertx.ext.web.RoutingContext, kotlin.Pair((kotlin.String, kotlin.ByteArray)), fr.vsct.tock.shared.vertx.WebVerticle.blockingUploadBinaryPost.O)))/role">role</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.shared.security/-tock-user-role/index.html"><span class="identifier">TockUserRole</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;defaultRole()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingUploadBinaryPost(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function2((io.vertx.ext.web.RoutingContext, kotlin.Pair((kotlin.String, kotlin.ByteArray)), fr.vsct.tock.shared.vertx.WebVerticle.blockingUploadBinaryPost.O)))/handler">handler</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="identifier">RoutingContext</span><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-pair/index.html"><span class="identifier">Pair</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html"><span class="identifier">ByteArray</span></a><span class="symbol">&gt;</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="blocking-upload-binary-post.html#O"><span class="identifier">O</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
 <p><a href="blocking-upload-json-post.html">blockingUploadJsonPost</a></p>
 </td>
 <td>
@@ -306,7 +313,7 @@
 <p><a href="path-to-locale.html">pathToLocale</a></p>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">RoutingContext</span><span class="symbol">.</span><span class="identifier">pathToLocale</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$pathToLocale(io.vertx.ext.web.RoutingContext, kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="http://docs.oracle.com/javase/8/docs/api/java/util/Locale.html"><span class="identifier">Locale</span></a></code></td>
+<code><span class="keyword">fun </span><span class="identifier">RoutingContext</span><span class="symbol">.</span><span class="identifier">pathToLocale</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$pathToLocale(io.vertx.ext.web.RoutingContext, kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html"><span class="identifier">Locale</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -328,6 +335,13 @@
 </td>
 <td>
 <code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span> <span class="identifier">RoutingContext</span><span class="symbol">.</span><span class="identifier">queryId</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$queryId(io.vertx.ext.web.RoutingContext, kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Id</span><span class="symbol">&lt;</span><a href="query-id.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="read-bytes.html">readBytes</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">readBytes</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$readBytes(io.vertx.ext.web.FileUpload)/upload">upload</span><span class="symbol">:</span>&nbsp;<span class="identifier">FileUpload</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html"><span class="identifier">ByteArray</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -356,21 +370,21 @@
 <p><a href="start.html">start</a></p>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">start</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$start(io.vertx.core.Future((java.lang.Void)))/startFuture">startFuture</span><span class="symbol">:</span>&nbsp;<span class="identifier">Future</span><span class="symbol">&lt;</span><a href="http://docs.oracle.com/javase/8/docs/api/java/lang/Void.html"><span class="identifier">Void</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">start</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$start(io.vertx.core.Future((java.lang.Void)))/startFuture">startFuture</span><span class="symbol">:</span>&nbsp;<span class="identifier">Future</span><span class="symbol">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Void.html"><span class="identifier">Void</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
 </tr>
 <tr>
 <td>
 <p><a href="start-server.html">startServer</a></p>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">startServer</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$startServer(io.vertx.core.Future((java.lang.Void)))/startFuture">startFuture</span><span class="symbol">:</span>&nbsp;<span class="identifier">Future</span><span class="symbol">&lt;</span><a href="http://docs.oracle.com/javase/8/docs/api/java/lang/Void.html"><span class="identifier">Void</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">startServer</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$startServer(io.vertx.core.Future((java.lang.Void)))/startFuture">startFuture</span><span class="symbol">:</span>&nbsp;<span class="identifier">Future</span><span class="symbol">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Void.html"><span class="identifier">Void</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
 </tr>
 <tr>
 <td>
 <p><a href="stop.html">stop</a></p>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">stop</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$stop(io.vertx.core.Future((java.lang.Void)))/stopFuture">stopFuture</span><span class="symbol">:</span>&nbsp;<span class="identifier">Future</span><span class="symbol">&lt;</span><a href="http://docs.oracle.com/javase/8/docs/api/java/lang/Void.html"><span class="identifier">Void</span></a><span class="symbol">&gt;</span><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">stop</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$stop(io.vertx.core.Future((java.lang.Void)))/stopFuture">stopFuture</span><span class="symbol">:</span>&nbsp;<span class="identifier">Future</span><span class="symbol">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Void.html"><span class="identifier">Void</span></a><span class="symbol">&gt;</span><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
 </tr>
 <tr>
 <td>

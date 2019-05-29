@@ -28,6 +28,15 @@
 </tr>
 <tr>
 <td>
+<p><a href="-test-client-service/index.html">TestClientService</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">TestClientService</span></code>
+<p>A tock client, used to get info from Tock in a potential test context.</p>
+</td>
+</tr>
+<tr>
+<td>
 <p><a href="-test-dialog-report/index.html">TestDialogReport</a></p>
 </td>
 <td>
@@ -56,6 +65,20 @@
 <td>
 <code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">TestPlanExecution</span></code>
 <p>An execution of a <a href="-test-plan/index.html">TestPlan</a>, with its result.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="find-test-client.html">findTestClient</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">findTestClient</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="-test-client-service/index.html"><span class="identifier">TestClientService</span></a></code>
+<p>Retrieve a test client from <a href="#">ServiceLoader</a>.</p>
 </td>
 </tr>
 </tbody>

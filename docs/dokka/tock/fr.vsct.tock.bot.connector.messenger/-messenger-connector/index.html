@@ -8,24 +8,24 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.connector.messenger</a>&nbsp;/&nbsp;<a href="./index.html">MessengerConnector</a><br/>
 <br/>
 <h1>MessengerConnector</h1>
-<code><span class="keyword">class </span><span class="identifier">MessengerConnector</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-base/index.html"><span class="identifier">ConnectorBase</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/connector-messenger/src/main/kotlin/fr/vsct/tock/bot/connector/messenger/MessengerConnector.kt#L86">(source)</a>
+<code><span class="keyword">class </span><span class="identifier">MessengerConnector</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-base/index.html"><span class="identifier">ConnectorBase</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/connector-messenger/src/main/kotlin/fr/vsct/tock/bot/connector/messenger/MessengerConnector.kt#L90">(source)</a>
 <p>Contains built-in checks to ensure that two <a href="../../fr.vsct.tock.bot.connector.messenger.model.send/-message-request/index.html">MessageRequest</a> for the same recipient are sent sequentially.</p>
 <h3>Properties</h3>
 <table>
 <tbody>
 <tr>
 <td>
-<p><a href="app-token.html">appToken</a></p>
-</td>
-<td>
-<code><span class="keyword">val </span><span class="identifier">appToken</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
-</tr>
-<tr>
-<td>
 <p><a href="application-id.html">applicationId</a></p>
 </td>
 <td>
 <code><span class="keyword">val </span><span class="identifier">applicationId</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="app-token.html">appToken</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">appToken</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -74,6 +74,19 @@
 <h3>Functions</h3>
 <table>
 <tbody>
+<tr>
+<td>
+<p><a href="add-suggestions.html">addSuggestions</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">addSuggestions</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.MessengerConnector$addSuggestions(kotlin.CharSequence, kotlin.collections.List((kotlin.CharSequence)))/text">text</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.MessengerConnector$addSuggestions(kotlin.CharSequence, kotlin.collections.List((kotlin.CharSequence)))/suggestions">suggestions</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">?</span></code>
+<p>Returns a <a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html">ConnectorMessage</a> with the specified list of suggestions.
+If the connector does not support suggestions, returns null.</p>
+<code><span class="keyword">fun </span><span class="identifier">addSuggestions</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.MessengerConnector$addSuggestions(fr.vsct.tock.bot.connector.ConnectorMessage, kotlin.collections.List((kotlin.CharSequence)))/message">message</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.MessengerConnector$addSuggestions(fr.vsct.tock.bot.connector.ConnectorMessage, kotlin.collections.List((kotlin.CharSequence)))/suggestions">suggestions</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">?</span></code>
+<p>Updates a <a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html">ConnectorMessage</a> with the specified list of suggestions.
+Default returns <a href="../../fr.vsct.tock.bot.connector/-connector/add-suggestions.html#fr.vsct.tock.bot.connector.Connector$addSuggestions(fr.vsct.tock.bot.connector.ConnectorMessage, kotlin.collections.List((kotlin.CharSequence)))/message">message</a> unmodified.</p>
+</td>
+</tr>
 <tr>
 <td>
 <p><a href="get-secondary-receivers.html">getSecondaryReceivers</a></p>
@@ -203,6 +216,17 @@ See https://developers.facebook.com/docs/messenger-platform/plugin-reference/che
 <td>
 <code><span class="keyword">fun </span><span class="identifier">takeThreadControl</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.MessengerConnector$takeThreadControl(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String)/userId">userId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.MessengerConnector$takeThreadControl(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String)/metadata">metadata</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector.messenger.model.send/-send-response/index.html"><span class="identifier">SendResponse</span></a><span class="symbol">?</span></code>
 <p>Takes the thread control.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="to-connector-message.html">toConnectorMessage</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">toConnectorMessage</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.MessengerConnector$toConnectorMessage(fr.vsct.tock.bot.connector.media.MediaMessage)/message">message</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector.media/-media-message.html"><span class="identifier">MediaMessage</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">&gt;</span></code>
+<p>Maps a <a href="../../fr.vsct.tock.bot.connector.media/-media-message.html">MediaMessage</a> into a <a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html">ConnectorMessage</a>.
+If <a href="../../fr.vsct.tock.bot.connector/-connector/to-connector-message.html">toConnectorMessage</a> returns an empty list, the mapping is not supported for this connector.
+Default returns an empty list.</p>
 </td>
 </tr>
 <tr>

@@ -8,7 +8,7 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.connector.slack.model</a>&nbsp;/&nbsp;<a href="./index.html">EventApiMessage</a><br/>
 <br/>
 <h1>EventApiMessage</h1>
-<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">EventApiMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-slack-connector-message/index.html"><span class="identifier">SlackConnectorMessage</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/connector-slack/src/main/kotlin/fr/vsct/tock/bot/connector/slack/model/EventApiMessage.kt#L39">(source)</a>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">EventApiMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-slack-connector-message/index.html"><span class="identifier">SlackConnectorMessage</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/connector-slack/src/main/kotlin/fr/vsct/tock/bot/connector/slack/model/EventApiMessage.kt#L40">(source)</a>
 <p>Event API base class.</p>
 <h3>Constructors</h3>
 <table>
@@ -72,6 +72,13 @@
 <code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">CallbackEvent</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">EventApiMessage</span></a></code>
 <p>An event callback.</p>
 </td>
+</tr>
+<tr>
+<td>
+<p><a href="../-interactive-message-event/index.html">InteractiveMessageEvent</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">InteractiveMessageEvent</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">EventApiMessage</span></a></code></td>
 </tr>
 <tr>
 <td>

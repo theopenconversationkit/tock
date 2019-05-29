@@ -14,14 +14,14 @@ With Maven:
         <dependency>
             <groupId>fr.vsct.tock</groupId>
             <artifactId>bot-toolkit</artifactId>
-            <version>19.3.0</version>
+            <version>19.3.1</version>
         </dependency>
 ```
 
 With Gradle:
 
 ```gradle
-      compile 'fr.vsct.tock:bot-toolkit:19.3.0'
+      compile 'fr.vsct.tock:bot-toolkit:19.3.1'
 ```
 
 ## A Bot is a Set of Stories
@@ -369,7 +369,7 @@ val story = storyWithSteps<MyStep>("intent") {
 
 * Use buttons or quick replies
 
-More details on this topic [here](./code-a-bot/index.html#postback-buttons-quick-replies).
+More details on this topic [here](../code-a-bot/#postback-buttons-quick-replies).
 
 
 #### StorySteps with complex behavior

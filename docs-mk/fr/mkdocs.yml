@@ -5,29 +5,30 @@ site_url: 'https://voyages-sncf-technologies.github.io/tock/fr'
 repo_name: 'tock'
 repo_url: 'https://github.com/voyages-sncf-technologies/tock'
 edit_uri: ''
-pages:
-    - Présentation: index.md
-    - Pour commencer: pour-commencer.md
-    - Construire le modèle: construire-le-modele.md
-    - Evaluer la pertinence du modèle: evaluer-la-pertinence-du-modele.md
-    - APIs de Tock: api.md
-    - Présentation du bot Open Data: presentation-du-bot-open-data.md
-    - Développer un bot: developper-un-bot.md
-    - Tester le bot: tester-le-bot.md
-    - i18n: i18n.md
-    - KDoc: kdoc.md
-    - Contribuer au projet: contribuer.md
-    - Installation de Tock: installation.md
+nav:
+  - 'Présentation': 'index.md'
+  - 'Pour commencer': 'pour-commencer.md'
+  - 'Construire le modèle': 'construire-le-modele.md'
+  - 'Evaluer la pertinence du modèle': 'evaluer-la-pertinence-du-modele.md'
+  - 'APIs de Tock': 'api.md'
+  - 'Présentation du bot Open Data': 'presentation-du-bot-open-data.md'
+  - 'Développer un bot': 'developper-un-bot.md'
+  - 'Tester le bot': 'tester-le-bot.md'
+  - 'i18n': 'i18n.md'
+  - 'KDoc': 'kdoc.md'
+  - 'Contribuer au projet': 'contribuer.md'
+  - 'Installation de Tock': 'installation.md'
 theme:
   name: 'material'
-  custom_dir: 'theme'
   language: 'fr'
   logo: 'assets/images/logo.svg'
+  favicon: 'assets/images/favicon.ico'
 markdown_extensions:
   - admonition
-  - codehilite(guess_lang=false)
-  - toc(permalink=true)
-copyright: 'Copyright &copy; 2018/2019 VSCT'
+  - codehilite
+  - toc:
+      permalink: true
+copyright: 'Copyright &copy; 2017/2019 VSCT'
 extra:
   social:
     - type: 'github'

@@ -51,8 +51,8 @@ Usually, you don't have the same starter intent in two different story definitio
 <p><a href="steps.html">steps</a></p>
 </td>
 <td>
-<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">steps</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="../-story-step/index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span></code>
-<p>The steps of the story.</p>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">steps</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="../-story-step/index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><span class="identifier">*</span><span class="symbol">&gt;</span><span class="symbol">&gt;</span></code>
+<p>The root steps of the story.</p>
 </td>
 </tr>
 <tr>
@@ -83,7 +83,9 @@ Usually, you don't have the same starter intent in two different story definitio
 <p><a href="is-starter-intent.html">isStarterIntent</a></p>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">isStarterIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryDefinition$isStarterIntent(fr.vsct.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">isStarterIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryDefinition$isStarterIntent(fr.vsct.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Is the specified intent is a starter intent?</p>
+</td>
 </tr>
 <tr>
 <td>
@@ -99,7 +101,9 @@ Usually, you don't have the same starter intent in two different story definitio
 <p><a href="support-intent.html">supportIntent</a></p>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">supportIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryDefinition$supportIntent(fr.vsct.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">supportIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryDefinition$supportIntent(fr.vsct.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Is the specified intent is supported by this story?</p>
+</td>
 </tr>
 <tr>
 <td>
