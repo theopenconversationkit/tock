@@ -1,1 +1,1 @@
-A KDoc documentation is [provided](../dokka/tock).
+A KDoc documentation is [provided](../../dokka/tock).

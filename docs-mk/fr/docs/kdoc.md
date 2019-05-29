@@ -1,1 +1,1 @@
-La documentation KDoc est [mise à disposition](../dokka/tock).
+La documentation KDoc est [mise à disposition](../../dokka/tock).

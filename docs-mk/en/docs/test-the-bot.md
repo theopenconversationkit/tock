@@ -21,12 +21,12 @@ With Gradle :
       testCompile 'fr.vsct.tock:bot-test:19.3.1'
 ``` 
 
-This framework is documented in KDoc format [here](../dokka/tock/fr.vsct.tock.bot.test). 
+This framework is documented in KDoc format [here](../../dokka/tock/fr.vsct.tock.bot.test). 
 
 ## Write a Simple Test
 
 In the next samples, [JUnit5](https://junit.org/junit5/) is used as test engine. 
-A dedicated extension for Tock is [available](../dokka/tock/fr.vsct.tock.bot.test.junit/-tock-j-unit5-extension/index.html).
+A dedicated extension for Tock is [available](../../dokka/tock/fr.vsct.tock.bot.test.junit/-tock-j-unit5-extension/index.html).
 
 ```kotlin
 

@@ -22,7 +22,7 @@ theme:
   name: 'material'
   language: 'fr'
   logo: 'assets/images/logo.svg'
-  favicon: 'assets/images/favicon.ico'
+  favicon: 'img/favicon.png'
 markdown_extensions:
   - admonition
   - codehilite

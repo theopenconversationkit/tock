@@ -125,7 +125,7 @@ Par ailleurs, il peut être souhaitable que certaines phrases soient affichées 
 
 ### Logs
 
-Tock utilise [SLF4J](www.slf4j.org). 
+Tock utilise [SLF4J](http://www.slf4j.org). 
 
 ### Ligne de vie
 
