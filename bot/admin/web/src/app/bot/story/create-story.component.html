@@ -26,7 +26,8 @@
                (keyup.enter)="onSentence(newSentence.value)">
       </mat-form-field>
       <button *ngIf="story && story.userSentence.length !== 0" color="primary" mat-button
-              (click)="onSentence(newSentence.value)">Add
+              (click)="onSentence()">
+        Add
       </button>
         <br>
         <div *ngIf="displayStory" class="separator"></div>

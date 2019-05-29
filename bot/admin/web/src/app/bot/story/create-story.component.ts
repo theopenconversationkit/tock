@@ -63,10 +63,10 @@ export class CreateStoryComponent implements OnInit {
     }, 500);
   }
 
-  onSentence(value: string) {
+  onSentence(value?: string) {
     const app = this.state.currentApplication;
     const language = this.state.currentLocale;
-    const v = value.trim();
+    const v = value ? value.trim() : this.story.userSentence.trim();
     if (v.length == 0) {
       this.snackBar.open(`Please enter a non-empty sentence`, "ERROR", {duration: 2000});
     } else {
