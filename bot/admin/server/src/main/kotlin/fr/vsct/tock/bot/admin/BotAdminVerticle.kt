@@ -247,7 +247,7 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonPost("/test/plan/execute", botUser) { context, testPlan: TestPlan ->
-            BotAdminService.executeTestPlan(context.organization, testPlan)
+            BotAdminService.saveAndExecuteTestPlan(context.organization, testPlan)
         }
 
         blockingJsonPost("/test/plan/:planId/run", botUser) { context, _: ApplicationScopedQuery ->
@@ -363,7 +363,7 @@ open class BotAdminVerticle : AdminVerticle() {
             i18n.save(labels.filter { it.namespace == context.organization })
         }
 
-        blockingJsonPost("/i18n/save", botUser) { context, label: I18nLabel ->
+        blockingJsonPost("/i18n/saveTestPlan", botUser) { context, label: I18nLabel ->
             if (label.namespace == context.organization) {
                 i18n.save(label)
             } else {
@@ -434,6 +434,7 @@ open class BotAdminVerticle : AdminVerticle() {
             XrayService(
                 listOfNotNull(configuration.configurationId),
                 listOf(configuration.testPlanKey),
+                listOf(),
                 configuration.testedBotId
             ).executePlans(context.organization)
         }

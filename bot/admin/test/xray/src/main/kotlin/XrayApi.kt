@@ -16,15 +16,7 @@
 
 package fr.vsct.tock.bot.admin.test.xray
 
-import fr.vsct.tock.bot.admin.test.xray.model.JiraAttachment
-import fr.vsct.tock.bot.admin.test.xray.model.JiraIssue
-import fr.vsct.tock.bot.admin.test.xray.model.JiraIssueLink
-import fr.vsct.tock.bot.admin.test.xray.model.JiraTest
-import fr.vsct.tock.bot.admin.test.xray.model.XrayBuildTestStep
-import fr.vsct.tock.bot.admin.test.xray.model.XrayUpdateTest
-import fr.vsct.tock.bot.admin.test.xray.model.XrayTest
-import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecution
-import fr.vsct.tock.bot.admin.test.xray.model.XrayTestStep
+import fr.vsct.tock.bot.admin.test.xray.model.*
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -42,6 +34,8 @@ import retrofit2.http.Query
  *
  */
 interface XrayApi {
+
+
 
     @GET("/rest/raven/1.0/api/testplan/{testPlanKey}/test")
     fun getTestsOfTestPlan(@Path("testPlanKey") testPlanKey: String): Call<List<XrayTest>>
@@ -63,7 +57,6 @@ interface XrayApi {
     @GET("/plugins/servlet/raven/attachment/{id}/{fileName}")
     fun getAttachment(@Path("id") id: Long, @Path("fileName") fileName: String): Call<ResponseBody>
 
-
     @PUT("/rest/raven/1.0/api/test/{id}/step")
     fun saveStep(@Path("id") id: String, @Body execution: XrayBuildTestStep): Call<ResponseBody>
 
@@ -74,6 +67,9 @@ interface XrayApi {
 
     @POST("/rest/api/2/issue")
     fun createTest(@Body test: JiraTest): Call<JiraIssue>
+
+    @POST("/rest/api/2/issue")
+    fun createTestExecution(@Body fields: XrayTestExecutionCreation): Call<JiraIssue>
 
     @POST("/rest/api/2/issueLink")
     fun linkIssue(@Body link: JiraIssueLink): Call<ResponseBody>
@@ -91,4 +87,7 @@ interface XrayApi {
 
     @GET("/rest/api/2/issue/{id}")
     fun getIssue(@Path("id") id: String): Call<ResponseBody>
+
+    @GET("/rest/api/2/search")
+    fun searchIssue(@Query("jql") jql: String): Call<ResponseBody>
 }

@@ -7,8 +7,8 @@ import fr.vsct.tock.bot.admin.test.TestPlanExecution
 
 internal class AdminTestClient : TestClientService {
 
-    override fun executeTestPlan(testPlan: TestPlan): TestPlanExecution =
-            BotAdminService.executeTestPlan(testPlan.namespace, testPlan)
+    override fun saveAndExecuteTestPlan(testPlan: TestPlan): TestPlanExecution =
+            BotAdminService.saveAndExecuteTestPlan(testPlan.namespace, testPlan)
 
     override fun getBotConfigurations(namespace: String, botId: String): List<BotApplicationConfiguration> =
             BotAdminService.getBotConfigurationsByNamespaceAndBotId(namespace, botId)

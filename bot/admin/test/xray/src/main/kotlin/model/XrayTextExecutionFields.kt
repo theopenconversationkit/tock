@@ -16,12 +16,8 @@
 
 package fr.vsct.tock.bot.admin.test.xray.model
 
-/**
- *
- */
-data class XrayTestExecution(
-        val testExecutionKey: String,
-        val info: XrayTestExecutionInfo,
-        val tests: List<XrayTestExecutionReport>
-) {
-}
+data class XrayTextExecutionFields(
+    val project: JiraTestProject,
+    val summary: String,
+    val description: String,
+    val issuetype: JiraIssueType)

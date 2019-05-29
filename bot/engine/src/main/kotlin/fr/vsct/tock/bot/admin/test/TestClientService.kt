@@ -15,7 +15,7 @@ fun findTestClient(): TestClientService =
  */
 interface TestClientService {
 
-    fun executeTestPlan(testPlan: TestPlan): TestPlanExecution
+    fun saveAndExecuteTestPlan(testPlan: TestPlan): TestPlanExecution
 
     fun getBotConfigurations(namespace:String, botId: String): List<BotApplicationConfiguration>
 

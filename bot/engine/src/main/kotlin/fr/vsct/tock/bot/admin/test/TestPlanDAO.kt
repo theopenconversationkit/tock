@@ -23,11 +23,26 @@ import org.litote.kmongo.Id
  */
 interface TestPlanDAO {
 
-    fun save(testPlan: TestPlan)
+    /**
+     * Save the given common test plan into the mongo database.
+     *
+     * @param testPlan is the test plan to save.
+     */
+    fun saveTestPlan(testPlan: TestPlan)
 
+    /**
+     * Remove the given test plan from the database.
+     *
+     * @param planId is the identifier of the common test plan to remove from the database.
+     */
     fun removeTestPlan(planId: Id<TestPlan>)
 
-    fun save(testPlan: TestPlanExecution)
+    /**
+     * Save the given common test plan execution into the mongo database.
+     *
+     * @param testPlanExecution is the test plan execution to save.
+     */
+    fun saveTestExecution(testPlanExecution: TestPlanExecution)
 
     fun getPlans(): List<TestPlan>
 

@@ -36,7 +36,6 @@ import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.provide
 import mu.KotlinLogging
 import org.litote.kmongo.Id
-import org.litote.kmongo.toId
 import java.time.Duration
 import java.time.Instant
 
@@ -53,7 +52,7 @@ object TestPlanService {
     private val botConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
 
     private val applicationIdPathCache: Cache<String, String> =
-        CacheBuilder.newBuilder().expireAfterAccess(Duration.ofMinutes(1)).build()
+            CacheBuilder.newBuilder().expireAfterAccess(Duration.ofMinutes(1)).build()
 
     fun getPlanExecutions(plan: TestPlan): List<TestPlanExecution> {
         return testPlanDAO.getPlanExecutions(plan._id)
@@ -84,22 +83,38 @@ object TestPlanService {
     }
 
     fun saveTestPlan(plan: TestPlan) {
-        testPlanDAO.save(plan)
+        testPlanDAO.saveTestPlan(plan)
     }
 
     fun getTestPlan(planId: Id<TestPlan>): TestPlan? {
         return testPlanDAO.getPlan(planId)
     }
 
+    /**
+     * This function saves the given test plan in the mongo database and then run the test plan.
+     *
+     * @param client is the client to use for running the test plan.
+     * @param plan is the common test plan to run.
+     * @return the results of the test plan execution as a TestPlanExecution object.
+     */
     fun saveAndRunTestPlan(client: ConnectorRestClient, plan: TestPlan): TestPlanExecution {
-        testPlanDAO.save(plan)
+        testPlanDAO.saveTestPlan(plan)
         return runTestPlan(client, plan)
     }
 
+    /**
+     * This function execute the given common test plan.
+     * It goes over all steps of related tests and sends each step as a dialog.
+     *
+     * @param client is the client to use for the dialogs.
+     * @param plan is the common test plan to run.
+     * @return the results of the test plan execution as a TestPlanExecution object.
+     */
     fun runTestPlan(client: ConnectorRestClient, plan: TestPlan): TestPlanExecution {
         val start = Instant.now()
         val dialogs: MutableList<DialogExecutionReport> = mutableListOf()
         var nbErrors: Int = 0
+        // run all the steps as dialog, one by one
         plan.dialogs.forEach {
             runDialog(client, plan, it).run {
                 dialogs.add(this)
@@ -108,80 +123,111 @@ object TestPlanService {
                 }
             }
         }
+        // store the test plan execution into the right Object
         val exec = TestPlanExecution(
-            plan._id,
-            dialogs,
-            nbErrors,
-            duration = Duration.between(start, Instant.now())
+                plan._id,
+                dialogs,
+                nbErrors,
+                duration = Duration.between(start, Instant.now())
         )
-        testPlanDAO.save(exec)
+        // save the test plan execution into the database
+        testPlanDAO.saveTestExecution(exec)
+        // return the completed test execution
         return exec
     }
 
-
-    private fun runDialog(
-        client: ConnectorRestClient,
-        testPlan: TestPlan,
-        dialog: TestDialogReport
-    ): DialogExecutionReport {
+    /**
+     * This function starts the dialog with the right bot.
+     * Dialogs are built using tests steps and they are sent to the bot.
+     *
+     * @param client is the bot to dialog with.
+     * @param testPlan is the common test plan to run.
+     * @param dialog is the dialog to send to the bot. It is an object TestDialogReport which is composed by :
+     *                          val actions: List<TestActionReport> = emptyList()
+     *                          val userInterface: UserInterfaceType
+     *                          val id: Id<Dialog>
+     * @return the result of the dialog as a DialogExecutionReport object.
+     */
+    private fun runDialog(client: ConnectorRestClient, testPlan: TestPlan, dialog: TestDialogReport): DialogExecutionReport {
         val playerId = Dice.newId()
         val botId = Dice.newId()
         return try {
             var botMessages: MutableList<ClientMessage> = mutableListOf()
-            //send first action if specified
+            // send first action if specified
+            // first action is just saying Hi!
             if (testPlan.startAction != null) {
                 client.talk(
-                    getPath(testPlan),
-                    testPlan.locale,
-                    ClientMessageRequest(
-                        playerId,
-                        botId,
-                        testPlan.startAction!!.toClientMessage(),
-                        testPlan.targetConnectorType.toClientConnectorType(),
-                        true
-                    )
+                        getPath(testPlan),
+                        testPlan.locale,
+                        ClientMessageRequest(
+                                playerId,
+                                botId,
+                                testPlan.startAction!!.toClientMessage(),
+                                testPlan.targetConnectorType.toClientConnectorType(),
+                                true
+                        )
                 )
             }
 
+            // run each test step
+            // "it" represents here a TestActionReport
             dialog.actions.forEach {
                 if (it.playerId.type == PlayerType.user) {
+                    // convert the current test step as a request formatted to be understandable by the bot
                     val request = ClientMessageRequest(
-                        playerId,
-                        botId,
-                        it.findFirstMessage().toClientMessage(),
-                        testPlan.targetConnectorType.toClientConnectorType(),
-                        true
+                            playerId,
+                            botId,
+                            it.findFirstMessage().toClientMessage(),
+                            testPlan.targetConnectorType.toClientConnectorType(),
+                            true
                     )
-                    logger.debug { "ask: $request" }
+                    logger.debug { "ASK -- : $request" }
+                    // send the converted test step to the bot
                     val answer = client.talk(getPath(testPlan), testPlan.locale, request)
+                    // if the bot answers then store the response body, otherwise it is an error
                     if (answer.isSuccessful) {
                         val body = answer.body()
-                        logger.debug { "answer: $body" }
-                        botMessages = body?.messages?.toMutableList() ?: mutableListOf()
+                        logger.debug { "ANSWER -- : $body" }
+                        // go over the bot answer to remove emoticons
+                        val list = body?.messages?.toMutableList() ?: mutableListOf()
+                        list.forEachIndexed { index, message ->
+                            var text = (message as ClientSentence).text
+                            text?.forEach { c ->
+                                // if emoticon is found, remove it
+                                if (c.isSurrogate()) {
+                                    text = text?.replace("$c", "")?.trim()
+                                    list[index] = ClientSentence(text)
+                                }
+                            }
+                        }
+                        // then store the bot answer into a proper variable
+                        botMessages = list
+                        logger.debug { "ANSWER without surrogate -- : $botMessages" }
                     } else {
-                        logger.error { answer.errorBody()?.string() }
+                        logger.error { "ERROR : " + answer.errorBody()?.string() }
                         return DialogExecutionReport(
-                            dialog.id, true, errorMessage = answer.errorBody()?.toString()
-                                    ?: "unknown error"
+                                dialog.id, true, errorMessage = answer.errorBody()?.toString()
+                                ?: "Unknown error"
                         )
                     }
                 } else {
                     if (botMessages.isEmpty()) {
                         return DialogExecutionReport(
-                            dialog.id,
-                            true,
-                            it.id,
-                            errorMessage = "(no answer but one expected)"
+                                dialog.id,
+                                true,
+                                it.id,
+                                errorMessage = "(no answer but one expected)"
                         )
                     }
                     val botMessage = botMessages.removeAt(0)
-                    if (!botMessage.deepEquals(it)) {
-                        logger.info { "no same message:\n$botMessage\n${it.messages.map { m -> m.toClientMessage() }}" }
+                    // if the bot's answer does not equal to the test step
+                    if (!botMessage.convertAndDeepEquals(it)) {
+                        logger.error { "Not the same messages:\n\t\tObtained ----- $botMessage\n\t\tExpected ----- ${it.messages.map { m -> m.toClientMessage() }}" }
                         return DialogExecutionReport(
-                            dialog.id,
-                            true,
-                            it.id,
-                            botMessage.toMessage()
+                                dialog.id,
+                                true,
+                                it.id,
+                                botMessage.toMessage()
                         )
                     }
                 }
@@ -199,27 +245,37 @@ object TestPlanService {
     private fun getPath(testPlan: TestPlan): String {
         val applicationId = testPlan.applicationId
         return applicationIdPathCache.get(applicationId) {
-            botConfigurationDAO.getConfigurationById(testPlan.botApplicationConfigurationId)?.path ?: "/$applicationId"
+            botConfigurationDAO.getConfigurationById(testPlan.botApplicationConfigurationId)?.path
+                    ?: "/$applicationId"
         }
     }
 
-    private fun ClientMessage.deepEquals(action: TestActionReport): Boolean {
+    /**
+     * This function checks if at least, one message returned by the bot, equals to the message of the current test step.
+     * Test step is first converted into a bot client message before starting the comparison using another function.
+     * This conversion is essential to compare the same objects.
+     *
+     * @param action is the xray step formatted as a TestActionReport which contains the message sent to the bot.
+     * @return true if the messages are equals, false otherwise.
+     */
+    private fun ClientMessage.convertAndDeepEquals(action: TestActionReport): Boolean {
         return action.messages.any {
-            deepEquals(it.toClientMessage())
+            // convert the user message stored in xray to a bot message format
+            deepEquals(it.toClientMessage(), this)
         }
     }
 
-    private fun ClientMessage.deepEquals(message: ClientMessage): Boolean {
-        return if (message is ClientSentence && this is ClientSentence) {
-            message.copy(
-                text = message.text?.trim(),
-                messages = message.messages.map { it.copy(connectorType = ClientConnectorType.none) }.toMutableList()
-            ) == copy(
-                text = text?.trim(),
-                messages = messages.map { it.copy(connectorType = ClientConnectorType.none) }.toMutableList())
-        } else {
-            message == this
-        }
+    /**
+     * This function checks if the answer sent by the bot equals the expected expectedMessage stored in the test step.
+     *
+     * @param expectedMessage is the message to expect as an answer from the bot.
+     * @return true if messages are the same, false otherwise.
+     */
+    private fun deepEquals(expectedMessage: ClientMessage, botAnswer: ClientMessage): Boolean {
+        var botAnswerText = (botAnswer as ClientSentence).text
+        botAnswer.text?.forEach { c -> if (c.isSurrogate()) botAnswerText = botAnswerText?.replace("$c", "") }
+
+        return expectedMessage is ClientSentence && botAnswer is ClientSentence && (expectedMessage == botAnswer || expectedMessage.text?.trim() == botAnswerText?.trim())
     }
 
 }

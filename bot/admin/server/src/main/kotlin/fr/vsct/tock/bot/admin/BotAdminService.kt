@@ -610,10 +610,28 @@ object BotAdminService {
         return dialogFlowDAO.loadApplicationData(namespace, request.botId, applicationIds)
     }
 
-    fun executeTestPlan(namespace: String, testPlan: TestPlan): TestPlanExecution =
+    /**
+     * This function saves the current test plan in the mongo database and
+     * executes all test contained in the common test plan.
+     *
+     */
+    fun saveAndExecuteTestPlan(namespace: String, testPlan: TestPlan): TestPlanExecution =
         getBotConfiguration(testPlan.botApplicationConfigurationId, namespace)
             .let {
                 TestPlanService.saveAndRunTestPlan(
+                    getRestClient(it),
+                    testPlan
+                )
+            }
+
+    /**
+     * This function only executes all test contained in the common test plan.
+     *
+     */
+    fun executeTestPlan(namespace: String, testPlan: TestPlan): TestPlanExecution =
+        getBotConfiguration(testPlan.botApplicationConfigurationId, namespace)
+            .let {
+                TestPlanService.runTestPlan(
                     getRestClient(it),
                     testPlan
                 )

@@ -49,7 +49,7 @@ internal object TockTestClient : TestClientService {
                 .create()
     }
 
-    override fun executeTestPlan(testPlan: TestPlan): TestPlanExecution {
+    override fun saveAndExecuteTestPlan(testPlan: TestPlan): TestPlanExecution {
         return tock.executeTestPlan(testPlan).execute().body() ?: TestPlanExecution(testPlan._id, emptyList(), 1)
     }
 
