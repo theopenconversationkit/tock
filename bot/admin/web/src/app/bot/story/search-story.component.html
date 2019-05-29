@@ -14,6 +14,14 @@
   ~ limitations under the License.
   -->
 
-<span *ngIf="stories">
-  <tock-story *ngFor="let s of stories" [story]="s" (delete)="delete($event)"></tock-story>
-</span>
+<mat-card>
+  <mat-card-content>
+    <mat-form-field class="search-input">
+      <input matInput placeholder="Search Stories" [(ngModel)]="filter" (keyup)="search()">
+    </mat-form-field>
+  </mat-card-content>
+</mat-card>
+<mat-accordion *ngIf="stories">
+  <tock-story *ngFor="let s of stories" [story]="s" (delete)="delete($event)"
+              [fullDisplay]="true" [displaySteps]="true"></tock-story>
+</mat-accordion>

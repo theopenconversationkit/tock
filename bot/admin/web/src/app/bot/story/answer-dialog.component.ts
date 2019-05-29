@@ -27,7 +27,6 @@ export class AnswerDialogComponent implements OnInit {
     this.create = this.data.create;
     this.answer = this.data.answer;
     this.answerLabel = this.data.answerLabel ? this.data.answerLabel : "Answer";
-    ;
     this.originalCurrentType = this.answer.currentType;
     this.originalAnswers = this.answer.answers.slice(0).map(a => a.clone());
   }

@@ -28,8 +28,8 @@
       <button *ngIf="story && story.userSentence.length !== 0" color="primary" mat-button
               (click)="onSentence(newSentence.value)">Add
       </button>
-      <br>
-      <div *ngIf="displayStory" class="separator"></div>
+        <br>
+        <div *ngIf="displayStory" class="separator"></div>
       <div *ngIf="displayStory">
         <tock-story class="story" [story]="story" [fullDisplay]="true" [displaySteps]="true" (submit)="onReply()"></tock-story>
       </div>

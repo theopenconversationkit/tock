@@ -62,7 +62,6 @@ export class MandatoryEntitiesDialogComponent implements OnInit {
   }
 
   onIntentChange(entity: MandatoryEntity, name: string) {
-    console.log("change" + name);
     if (this.currentEditedIntent !== name) {
       this.currentEditedIntent = name;
       const intent = name.trim().toLowerCase();

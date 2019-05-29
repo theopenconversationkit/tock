@@ -17,3 +17,7 @@
 .answer-container {
   min-width: 240px;
 }
+
+.fullDisplay {
+  min-width: 600px;
+}

@@ -59,8 +59,6 @@ export class MediaDialogComponent {
     this.uploader = new FileUploader({removeAfterUpload: true});
     this.uploader.onCompleteItem =
       (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
-        console.log(item);
-        console.log(response);
         this.media.file = MediaFile.fromJSON(JSON.parse(response));
       };
 

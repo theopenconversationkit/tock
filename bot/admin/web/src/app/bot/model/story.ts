@@ -114,6 +114,7 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
   public steps: StoryStep[] = [];
   public description: string = "";
   public _id: string;
+  public hideDetails:boolean = false;
 
   constructor(public storyId: string,
               public botId: string,
@@ -207,6 +208,11 @@ export class StoryStep extends AnswerContainer {
 
   public intentDefinition: Intent;
   public new: boolean;
+
+  static filterNew(steps:StoryStep[]): StoryStep[] {
+    steps.forEach(s => s.children = StoryStep.filterNew(s.children));
+    return steps.filter(s => !s.new);
+  }
 
   constructor(public name: string,
               public intent: IntentName,
@@ -443,7 +449,8 @@ export class MediaCard extends Media {
       title: json.title ? I18nLabel.fromJSON(json.title) : null,
       subTitle: json.subTitle ? I18nLabel.fromJSON(json.subTitle) : null,
       actions: MediaAction.fromJSONArray(json.actions),
-      file: MediaFile.fromJSON(json.file)
+      file: MediaFile.fromJSON(json.file),
+      type: MediaType.card
     });
     return result;
   }
@@ -471,7 +478,8 @@ export class MediaAction extends Media {
   static fromJSON(json: any): MediaAction {
     const value = Object.create(MediaAction.prototype);
     const result = Object.assign(value, json, {
-      title: I18nLabel.fromJSON(json.title)
+      title: I18nLabel.fromJSON(json.title),
+      type: MediaType.action
     });
     return result;
   }

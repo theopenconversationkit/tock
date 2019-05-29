@@ -1,11 +1,11 @@
 <div *ngIf="answer && answer.currentAnswer()" class="answer-container">
   <div *ngIf="!fullDisplay">
     <span class="simple">{{answer.simpleTextView()}}</span>
-    <button *ngIf="editable" mat-icon-button color="primary" matTooltip="Edit {{answerLabel}}" (click)="editAnswer()">
+    <button *ngIf="editable" mat-icon-button color="primary" matTooltip="Edit {{answerLabel}}" (click)="$event.stopPropagation();editAnswer()">
       <mat-icon>question_answer</mat-icon>
     </button>
   </div>
-  <div *ngIf="fullDisplay">
+  <div *ngIf="fullDisplay" class="fullDisplay">
     <div class="answer-group">
       <label id="answer-type-label">Type:</label>
       <mat-radio-group aria-labelledby="answer-type-label" [(ngModel)]="answer.currentType" (change)="changeType($event)">

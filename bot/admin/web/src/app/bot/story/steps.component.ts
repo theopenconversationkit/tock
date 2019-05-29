@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from "@angular/core";
+import {Component, Input, OnChanges, OnInit, SimpleChanges} from "@angular/core";
 import {AnswerConfigurationType, IntentName, SimpleAnswerConfiguration, StoryStep} from "../model/story";
 import {StateService} from "../../core-nlp/state.service";
 import {FlatTreeControl} from "@angular/cdk/tree";
@@ -9,7 +9,7 @@ import {MatTreeFlatDataSource, MatTreeFlattener} from "@angular/material";
   templateUrl: './steps.component.html',
   styleUrls: ['./steps.component.css']
 })
-export class StepsComponent implements OnInit {
+export class StepsComponent implements OnInit, OnChanges {
 
   @Input()
   steps: StoryStep[] = [];
@@ -35,6 +35,13 @@ export class StepsComponent implements OnInit {
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
     this.dataSource.data = this.steps;
     this.treeControl.expandAll();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if(this.dataSource) {
+      this.dataSource.data = this.steps;
+      this.treeControl.expandAll();
+    }
   }
 
   isExpandable(s: StoryStep): boolean {

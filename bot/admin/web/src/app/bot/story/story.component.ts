@@ -1,5 +1,11 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange, SimpleChanges} from "@angular/core";
-import {AnswerConfigurationType, CreateStoryRequest, IntentName, StoryDefinitionConfiguration} from "../model/story";
+import {
+  AnswerConfigurationType,
+  CreateStoryRequest,
+  IntentName,
+  StoryDefinitionConfiguration,
+  StoryStep
+} from "../model/story";
 import {BotService} from "../bot-service";
 import {MatDialog, MatSnackBar} from "@angular/material";
 import {StateService} from "../../core-nlp/state.service";
@@ -38,7 +44,10 @@ export class StoryComponent implements OnInit, OnChanges {
   delete = new EventEmitter<string>();
 
   @Output()
-  submit: EventEmitter<boolean> = new EventEmitter<boolean>();
+  submit = new EventEmitter<boolean>();
+
+  @Output()
+  select = new EventEmitter<boolean>();
 
   constructor(private state: StateService,
               private bot: BotService,
@@ -127,6 +136,7 @@ export class StoryComponent implements OnInit, OnChanges {
   }
 
   private saveStory(submit:boolean) {
+    this.story.steps = StoryStep.filterNew(this.story.steps);
     if (this.story._id) {
       this.bot.saveStory(this.story).subscribe(s => {
         this.state.resetConfiguration();
@@ -208,5 +218,9 @@ export class StoryComponent implements OnInit, OnChanges {
         this.initStoryByBotIdAndIntent();
       });
     }
+  }
+
+  selectStory() {
+    this.select.emit(true);
   }
 }

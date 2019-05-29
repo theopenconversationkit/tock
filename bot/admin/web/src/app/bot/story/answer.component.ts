@@ -7,7 +7,7 @@ import {
   SimpleAnswerConfiguration
 } from "../model/story";
 import {BotService} from "../bot-service";
-import {MatDialog, MatRadioChange, MatSnackBar} from "@angular/material";
+import {MatDialog, MatRadioChange} from "@angular/material";
 import {StateService} from "../../core-nlp/state.service";
 import {AnswerDialogComponent} from "./answer-dialog.component";
 
@@ -25,25 +25,24 @@ export class AnswerComponent implements OnInit {
   fullDisplay: boolean = false;
 
   @Input()
-  editable:boolean = true;
+  editable: boolean = true;
 
   @Input()
-  create:boolean = false;
+  create: boolean = false;
 
   @Input()
-  answerLabel:string = "Answer";
+  answerLabel: string = "Answer";
 
   @Output()
   submit: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   constructor(private state: StateService,
               private bot: BotService,
-              private dialog: MatDialog,
-              private snackBar: MatSnackBar) {
+              private dialog: MatDialog) {
   }
 
   ngOnInit(): void {
-    if(!this.answer.currentAnswer()) {
+    if (!this.answer.currentAnswer()) {
       this.changeAnswerType(this.answer.currentType);
     }
   }

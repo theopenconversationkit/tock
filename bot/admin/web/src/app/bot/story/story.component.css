@@ -1,7 +1,3 @@
-.answer-title {
-  font-size: medium;
-  vertical-align: text-bottom;
-}
 .category {
   font-size: x-small;
 }
@@ -28,4 +24,22 @@
   margin-top: 10px !important;
   margin-bottom: 10px !important;
 }
+
+.fullDisplayDivider {
+  min-height: 20px;
+}
+
+.mat-expansion-panel-header-title .mat-expansion-panel-header-description {
+  flex-basis: 0;
+}
+
+.mat-expansion-panel-header-description {
+  justify-content: flex-end;
+  align-items: end;
+}
+
+.answer-title {
+  margin-top: 10px;
+}
+
 

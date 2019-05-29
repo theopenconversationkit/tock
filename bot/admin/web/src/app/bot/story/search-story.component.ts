@@ -16,7 +16,6 @@
 
 import {Component, OnInit} from "@angular/core";
 import {BotService} from "../bot-service";
-import {MatSnackBar} from "@angular/material";
 import {NlpService} from "../../nlp-tabs/nlp.service";
 import {StateService} from "../../core-nlp/state.service";
 import {StoryDefinitionConfiguration, StorySearchQuery} from "../model/story";
@@ -28,12 +27,14 @@ import {StoryDefinitionConfiguration, StorySearchQuery} from "../model/story";
 })
 export class SearchStoryComponent implements OnInit {
 
+  loadedStories: StoryDefinitionConfiguration[];
   stories: StoryDefinitionConfiguration[];
+
+  filter: string = "";
 
   constructor(private nlp: NlpService,
               private state: StateService,
-              private bot: BotService,
-              private snackBar: MatSnackBar) {
+              private bot: BotService) {
   }
 
   ngOnInit(): void {
@@ -46,10 +47,19 @@ export class SearchStoryComponent implements OnInit {
         1000
       )).subscribe(s => {
       this.stories = s;
+      this.loadedStories = s;
+      s.forEach(story => story.hideDetails = true)
     })
   }
 
   delete(storyDefinitionId: string) {
     this.stories = this.stories.filter(s => s._id !== storyDefinitionId);
+    this.loadedStories = this.loadedStories.filter(s => s._id !== storyDefinitionId);
+  }
+
+  search() {
+    this.stories = this.loadedStories.filter(s =>
+      s.name.toLowerCase().indexOf(this.filter.toLowerCase()) !== -1
+      || s.intent.name.toLowerCase().indexOf(this.filter.toLowerCase()) !== -1)
   }
 }
