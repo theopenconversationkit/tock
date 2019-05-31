@@ -32,6 +32,7 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import java.time.DayOfWeek
+import java.time.Month
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
@@ -244,10 +245,34 @@ internal class DatesMergeTest {
     }
 
     @Test
+    fun `le 20 02 does change the month`() {
+        val d2002 = ValueDescriptor(
+            DateEntityValue(
+                referenceTime.withMonth(2).withDayOfMonth(20),
+                DateEntityGrain.day
+            ),
+            "le 20 02",
+            false,
+            2
+        )
+        val r = DatesMerge.merge(context, listOf(tomorrow.copy(initial = true), d2002))
+        assertEquals(Month.FEBRUARY, (r?.value as DateEntityValue).date.month)
+        assertEquals(20, (r.value as DateEntityValue).date.dayOfMonth)
+    }
+
+    @Test
     fun `merge with change day of week returns the new day of week`() {
         val r = DatesMerge.merge(context, listOf(nextMonth.copy(initial = true), changeDayOfWeek))
         val date = (r?.value as DateEntityValue).date
         assertEquals(DayOfWeek.THURSDAY, date.dayOfWeek)
+        assertEquals(date.truncatedTo(ChronoUnit.DAYS), date.truncatedTo(ChronoUnit.DAYS))
+    }
+
+    @Test
+    fun `merge with change day of week (simplified version) returns the new day of week`() {
+        val r = DatesMerge.merge(context, listOf(nextMonth.copy(initial = true), changeDayOfWeek2))
+        val date = (r?.value as DateEntityValue).date
+        assertEquals(DayOfWeek.FRIDAY, date.dayOfWeek)
         assertEquals(date.truncatedTo(ChronoUnit.DAYS), date.truncatedTo(ChronoUnit.DAYS))
     }
 
@@ -272,8 +297,10 @@ internal class DatesMergeTest {
         )
 
         val r = DatesMerge.merge(
-            context, listOf(
-                tomorrow.copy(initial = true), changeDayOfMonth.copy(
+            context,
+            listOf(
+                tomorrow.copy(initial = true),
+                changeDayOfMonth.copy(
                     value = DateEntityValue(
                         referenceDate.plusMonths(1).withDayOfMonth(20),
                         DateEntityGrain.day
@@ -284,4 +311,5 @@ internal class DatesMergeTest {
         assertEquals((tomorrow.value as DateEntityValue).date.month + 1, (r?.value as DateEntityValue).date.month)
         assertEquals(20, (r.value as DateEntityValue).date.dayOfMonth)
     }
+
 }
