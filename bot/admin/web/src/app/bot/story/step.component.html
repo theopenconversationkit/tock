@@ -13,8 +13,7 @@
            [matAutocomplete]="intentAuto"
            (keyup)="onIntentChange(step, $event.target.value)"
            (focus)="onIntentChange(step, $event.target.value)"
-           (blur)="validateIntent(step)"
-           required>
+           (blur)="validateIntent(step)">
   </mat-form-field>
 
   <!-- answer -->
@@ -48,4 +47,4 @@
     </mat-optgroup>
   </mat-autocomplete>
 </div>
-<span *ngIf="step && readonly">{{step.userSentence}} <span class="intent" matTooltip="Action Intent">[{{step.intent.name}}]</span>: <tock-answer class="answer" [answer]="step" [editable]="false"></tock-answer></span>
+<span *ngIf="step && readonly">{{step.userSentence}} <span *ngIf="step.intent" class="intent" matTooltip="Action Intent">[{{step.intent.name}}]</span>: <tock-answer class="answer" [answer]="step" [editable]="false"></tock-answer></span>

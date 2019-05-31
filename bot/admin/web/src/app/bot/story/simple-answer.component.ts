@@ -1,4 +1,4 @@
-import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from "@angular/core";
+import {Component, ElementRef, EventEmitter, Input, OnInit, ViewChild} from "@angular/core";
 import {AnswerContainer, Media, SimpleAnswer, SimpleAnswerConfiguration} from "../model/story";
 import {BotService} from "../bot-service";
 import {MatDialog, MatSnackBar} from "@angular/material";
@@ -19,7 +19,7 @@ export class SimpleAnswerComponent implements OnInit {
   @Input()
   answerLabel: string = "Answer";
 
-  @Output()
+  @Input()
   submit: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   answer: SimpleAnswerConfiguration;
@@ -38,7 +38,10 @@ export class SimpleAnswerComponent implements OnInit {
 
   ngOnInit(): void {
     this.answer = this.container.simpleAnswer();
+    this.answer.allowNoAnswer = this.container.allowNoAnwser();
     setTimeout(_ => this.newAnswerElement.nativeElement.focus(), 500);
+    const _this = this;
+    this.submit.subscribe(_this.addAnswerIfNonEmpty);
   }
 
   toggleDisplay() {
@@ -52,18 +55,15 @@ export class SimpleAnswerComponent implements OnInit {
   }
 
   addAnswerIfNonEmpty() {
-    setTimeout(_ => {
-        if (this.newAnswer && this.newAnswer.trim().length !== 0 && this.answer.answers.length === 0) {
-          this.addAnswer();
-        }
-      }, 500
-    );
+    if (this && this.newAnswer && this.newAnswer.trim().length !== 0) {
+      this.addAnswer();
+    }
   }
 
   addAnswer() {
     if (!this.newAnswer || this.newAnswer.trim().length === 0) {
       this.newAnswer = "";
-      if (this.answer.answers.length === 0) {
+      if (!this.container.allowNoAnwser() && this.answer.answers.length === 0) {
         this.snackBar.open("Please specify an answer", "Error", {duration: 5000})
       } else {
         this.submit.emit(true);

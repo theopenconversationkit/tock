@@ -17,9 +17,9 @@ data class StoryDefinitionConfigurationStep(
      */
     val name: String,
     /**
-     * The intent used to reach the step
+     * The intent used to reach the step - mandatory if an answer is set.
      */
-    val intent: Intent,
+    val intent: Intent?,
     /**
      * The answers available.
      */
@@ -44,7 +44,7 @@ data class StoryDefinitionConfigurationStep(
 
     internal class Step(
         override val name: String,
-        override val intent: IntentAware,
+        override val intent: IntentAware?,
         val configuration: StoryDefinitionConfigurationStep
     ) : SimpleStoryStep {
         constructor(s: StoryDefinitionConfigurationStep) : this(s.name, s.intent, s)

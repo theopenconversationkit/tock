@@ -77,6 +77,10 @@ export abstract class AnswerContainer {
 
   abstract save(bot: BotService): Observable<AnswerContainer>
 
+  allowNoAnwser(): boolean {
+    return false;
+  }
+
   isSimpleAnswer(): boolean {
     return this.currentType === AnswerConfigurationType.simple;
   }
@@ -114,7 +118,7 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
   public steps: StoryStep[] = [];
   public description: string = "";
   public _id: string;
-  public hideDetails:boolean = false;
+  public hideDetails: boolean = false;
 
   constructor(public storyId: string,
               public botId: string,
@@ -209,7 +213,7 @@ export class StoryStep extends AnswerContainer {
   public intentDefinition: Intent;
   public new: boolean;
 
-  static filterNew(steps:StoryStep[]): StoryStep[] {
+  static filterNew(steps: StoryStep[]): StoryStep[] {
     steps.forEach(s => s.children = StoryStep.filterNew(s.children));
     return steps.filter(s => !s.new);
   }
@@ -233,6 +237,10 @@ export class StoryStep extends AnswerContainer {
     return of(this);
   }
 
+  allowNoAnwser(): boolean {
+    return true;
+  }
+
   clone(): StoryStep {
     return new StoryStep(
       this.name,
@@ -241,7 +249,7 @@ export class StoryStep extends AnswerContainer {
       this.currentType,
       this.category,
       this.userSentence,
-      this.children.map( c => c.clone()),
+      this.children.map(c => c.clone()),
       this.level
     );
   }
@@ -252,7 +260,7 @@ export class StoryStep extends AnswerContainer {
       intent: IntentName.fromJSON(json.intent),
       currentType: AnswerConfigurationType[json.currentType],
       answers: AnswerConfiguration.fromJSONArray(json.answers),
-      children : StoryStep.fromJSONArray(json.children)
+      children: StoryStep.fromJSONArray(json.children)
     });
 
     return result;
@@ -284,7 +292,9 @@ export class IntentName {
 
 export abstract class AnswerConfiguration {
 
-  protected constructor(public answerType: AnswerConfigurationType, public modified: boolean = false) {
+  public allowNoAnswer: boolean = false;
+
+  protected constructor(public answerType: AnswerConfigurationType) {
   }
 
   abstract simpleTextView(): string
@@ -293,8 +303,9 @@ export abstract class AnswerConfiguration {
     return null;
   }
 
+  abstract isEmpty(): boolean
+
   checkAfterReset(bot: BotService) {
-    this.modified = false;
   }
 
   abstract clone(): AnswerConfiguration
@@ -323,7 +334,11 @@ export abstract class AnswerConfiguration {
 export class SimpleAnswerConfiguration extends AnswerConfiguration {
 
   constructor(public answers: SimpleAnswer[]) {
-    super(AnswerConfigurationType.simple, true)
+    super(AnswerConfigurationType.simple)
+  }
+
+  isEmpty(): boolean {
+    return this.answers.length === 0;
   }
 
   simpleTextView(): string {
@@ -333,7 +348,7 @@ export class SimpleAnswerConfiguration extends AnswerConfiguration {
   }
 
   invalidMessage(): string {
-    if (this.answers.length === 0) {
+    if (!this.allowNoAnswer && this.answers.length === 0) {
       return "Please set at least one sentence";
     } else {
       return null;
@@ -521,7 +536,7 @@ export class ScriptAnswerConfiguration extends AnswerConfiguration {
   constructor(
     public scriptVersions: ScriptAnswerVersionedConfiguration[],
     public current: ScriptAnswerVersionedConfiguration) {
-    super(AnswerConfigurationType.script, true)
+    super(AnswerConfigurationType.script)
   }
 
   invalidMessage(): string {
@@ -534,6 +549,10 @@ export class ScriptAnswerConfiguration extends AnswerConfiguration {
 
   simpleTextView(): string {
     return "[Script]";
+  }
+
+  isEmpty(): boolean {
+    return false;
   }
 
   clone(): AnswerConfiguration {

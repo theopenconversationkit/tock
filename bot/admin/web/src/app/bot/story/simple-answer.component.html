@@ -17,7 +17,7 @@
             (click)="displayMediaMessage(a)">
       <mat-icon>perm_media</mat-icon>
     </button>
-    <button *ngIf="answer.answers.length !== 1" class="answerButton" mat-icon-button color="warn"
+    <button *ngIf="answer.allowNoAnswer || answer.answers.length !== 1" class="answerButton" mat-icon-button color="warn"
             matTooltip="Delete {{answerLabel}}" (click)="deleteAnswer(a, true)">
       <mat-icon>remove</mat-icon>
     </button>

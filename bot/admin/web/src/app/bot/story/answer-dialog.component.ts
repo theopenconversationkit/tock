@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from "@angular/core";
+import {Component, EventEmitter, Inject, OnInit} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialogRef, MatSnackBar} from "@angular/material";
 import {StateService} from "../../core-nlp/state.service";
 import {AnswerConfiguration, AnswerConfigurationType, AnswerContainer} from "../model/story";
@@ -15,8 +15,12 @@ export class AnswerDialogComponent implements OnInit {
   answer: AnswerContainer;
   answerLabel: string = "Answer";
 
+  submit: EventEmitter<boolean> = new EventEmitter<boolean>();
+
   private originalCurrentType: AnswerConfigurationType;
   private originalAnswers: AnswerConfiguration[];
+
+  private currentSave = false;
 
   constructor(
     public dialogRef: MatDialogRef<AnswerDialogComponent>,
@@ -32,26 +36,29 @@ export class AnswerDialogComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.submit.subscribe(_ => this.save())
   }
 
   save() {
-    let invalidMessage = this.answer.currentAnswer().invalidMessage();
-    if (invalidMessage) {
-      this.snackBar.open(`Error: ${invalidMessage}`, "ERROR", {duration: 5000});
-    } else if (!this.create) {
-      this.answer.save(this.bot).subscribe(r => {
+    if (!this.currentSave) {
+      this.currentSave = true;
+      this.submit.emit(true);
+      let invalidMessage = this.answer.currentAnswer().invalidMessage();
+      if (invalidMessage) {
+        this.currentSave = false;
+        this.snackBar.open(`Error: ${invalidMessage}`, "ERROR", {duration: 5000});
+      } else if (!this.create) {
+        this.answer.save(this.bot).subscribe(r => {
           this.dialogRef.close({
             answer: this.answer
           });
           this.snackBar.open(`${this.answerLabel} Modified`, "UPDATE", {duration: 1000});
-        },
-        e => {
-          //do nothing
         });
-    } else {
-      this.dialogRef.close({
-        answer: this.answer
-      });
+      } else {
+        this.dialogRef.close({
+          answer: this.answer
+        });
+      }
     }
 
   }

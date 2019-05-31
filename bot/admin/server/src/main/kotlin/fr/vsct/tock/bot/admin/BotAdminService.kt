@@ -302,23 +302,28 @@ object BotAdminService {
         oldAnswer: ScriptAnswerConfiguration?,
         answer: BotScriptAnswerConfiguration
     ): ScriptAnswerConfiguration {
+
         val script = answer.current.script
-        val fileName = "T${Dice.newId()}.kt"
-        val result = KotlinCompilerClient.compile(KotlinFile(script, fileName))
-        if (result?.compilationResult == null) {
-            throw badRequest("Compilation error: ${result?.errors?.joinToString()}")
+        if (oldAnswer?.current?.script != script) {
+            val fileName = "T${Dice.newId()}.kt"
+            val result = KotlinCompilerClient.compile(KotlinFile(script, fileName))
+            if (result?.compilationResult == null) {
+                throw badRequest("Compilation error: ${result?.errors?.joinToString()}")
+            } else {
+                val c = result.compilationResult!!
+                val newScript = ScriptAnswerVersionedConfiguration(
+                    script,
+                    c.files.map { it.key.substring(0, it.key.length - ".class".length) to it.value },
+                    BotVersion.getCurrentBotVersion(botId),
+                    c.mainClass
+                )
+                return ScriptAnswerConfiguration(
+                    (oldAnswer?.scriptVersions ?: emptyList()) + newScript,
+                    newScript
+                )
+            }
         } else {
-            val c = result.compilationResult!!
-            val newScript = ScriptAnswerVersionedConfiguration(
-                script,
-                c.files.map { it.key.substring(0, it.key.length - ".class".length) to it.value },
-                BotVersion.getCurrentBotVersion(botId),
-                c.mainClass
-            )
-            return ScriptAnswerConfiguration(
-                (oldAnswer?.scriptVersions ?: emptyList()) + newScript,
-                newScript
-            )
+            return oldAnswer
         }
     }
 
@@ -326,20 +331,15 @@ object BotAdminService {
         botId: String,
         answers: List<AnswerConfiguration>?
     ): AnswerConfiguration =
-        if (!modified && answers != null) {
-            answers.first { it.answerType == this.answerType }
-        } else {
-            logger.debug { "answer modified : update $this" }
-            when (this) {
-                is BotSimpleAnswerConfiguration -> simpleAnswer(this)
-                is BotScriptAnswerConfiguration ->
-                    scriptAnswer(
-                        botId,
-                        answers?.find { it.answerType == script } as? ScriptAnswerConfiguration,
-                        this
-                    )
-                else -> error("unsupported type $this")
-            }
+        when (this) {
+            is BotSimpleAnswerConfiguration -> simpleAnswer(this)
+            is BotScriptAnswerConfiguration ->
+                scriptAnswer(
+                    botId,
+                    answers?.find { it.answerType == script } as? ScriptAnswerConfiguration,
+                    this
+                )
+            else -> error("unsupported type $this")
         }
 
     private fun BotAnswerConfiguration.toStoryConfiguration(
@@ -405,13 +405,14 @@ object BotAdminService {
             children.map { it.toStepConfiguration(app, botId, oldStory) },
             level
         ).apply {
-            //if intentDefinition is null, it means that step has not been modified
+            //if intentDefinition is null, we don't need to update intent
             if (intentDefinition != null) {
                 //check that the intent exists
-                var newIntent = front.getIntentByNamespaceAndName(app.namespace, intent.name)
-                if (newIntent == null) {
+                val intentName = intent?.name
+                var newIntent = intentName?.let { front.getIntentByNamespaceAndName(app.namespace, intentName) }
+                if (newIntent == null && intentName != null) {
                     newIntent = IntentDefinition(
-                        intent.name,
+                        intentName,
                         app.namespace,
                         setOf(app._id),
                         emptySet(),

@@ -14,7 +14,7 @@ data class BotStoryDefinitionConfigurationStep(
     /**
      * The intent used to reach the step
      */
-    val intent: Intent,
+    val intent: Intent?,
     /**
      * The answers available.
      */

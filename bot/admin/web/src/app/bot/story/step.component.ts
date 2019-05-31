@@ -113,7 +113,7 @@ export class StepComponent implements OnInit {
 
   save() {
     let invalidMessage = this.step.currentAnswer().invalidMessage();
-    if (this.step.intent.name.trim().length === 0) {
+    if (!this.step.currentAnswer().isEmpty() && this.step.intent.name.trim().length === 0) {
       invalidMessage = "Please choose an intent";
     }
     if (invalidMessage) {

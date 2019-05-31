@@ -33,6 +33,7 @@ export class AnswerComponent implements OnInit {
   @Input()
   answerLabel: string = "Answer";
 
+  @Input()
   @Output()
   submit: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -48,7 +49,6 @@ export class AnswerComponent implements OnInit {
   }
 
   editAnswer() {
-    this.answer.currentAnswer().modified = true;
     let dialogRef = this.dialog.open(
       AnswerDialogComponent,
       {
@@ -70,8 +70,6 @@ export class AnswerComponent implements OnInit {
     if (value === AnswerConfigurationType.simple) {
       if (!this.answer.simpleAnswer()) {
         this.answer.answers.push(new SimpleAnswerConfiguration([]));
-      } else {
-        this.answer.simpleAnswer().modified = true;
       }
     } else if (value === AnswerConfigurationType.script) {
       if (!this.answer.scriptAnswer()) {
@@ -82,14 +80,8 @@ export class AnswerComponent implements OnInit {
           "}";
         const script = new ScriptAnswerVersionedConfiguration(s);
         this.answer.answers.push(new ScriptAnswerConfiguration([script], script));
-      } else {
-        this.answer.scriptAnswer().modified = true;
       }
     }
-  }
-
-  save() {
-    this.submit.emit(true);
   }
 
 }

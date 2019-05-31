@@ -34,6 +34,6 @@ import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
         JsonSubTypes.Type(value = BotScriptAnswerConfiguration::class, name = "2"),
         JsonSubTypes.Type(value = BotScriptAnswerConfiguration::class, name = "script")
 )
-abstract class BotAnswerConfiguration(val answerType: AnswerConfigurationType, val modified: Boolean = false) {
+abstract class BotAnswerConfiguration(val answerType: AnswerConfigurationType) {
 
 }
