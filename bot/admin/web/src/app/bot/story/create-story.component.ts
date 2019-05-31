@@ -121,10 +121,6 @@ export class CreateStoryComponent implements OnInit {
   }
 
   onReply() {
-    if (this.state.intentExists(this.story.intent.name)) {
-      this.snackBar.open(`Intent ${this.story.intent.name} already exists`, "Error", {duration: 5000});
-      return;
-    }
     let invalidMessage = this.story.currentAnswer().invalidMessage();
     if (invalidMessage) {
       this.snackBar.open(`Error: ${invalidMessage}`, "ERROR", {duration: 5000});

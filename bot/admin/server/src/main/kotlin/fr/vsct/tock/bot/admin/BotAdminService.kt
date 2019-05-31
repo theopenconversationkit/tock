@@ -254,7 +254,7 @@ object BotAdminService {
         return if (botConf != null) {
             val nlpApplication = front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)!!
             val intentDefinition =
-                AdminService.createOrUpdateIntent(
+                AdminService.createOrGetIntent(
                     namespace,
                     IntentDefinition(
                         request.story.intent.name,
@@ -443,7 +443,7 @@ object BotAdminService {
                 if (it == null) {
                     //intent change
                     if (storyDefinition?._id != null) {
-                        AdminService.createOrUpdateIntent(
+                        AdminService.createOrGetIntent(
                             namespace,
                             IntentDefinition(
                                 story.intent.name,

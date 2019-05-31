@@ -92,6 +92,23 @@ object AdminService {
         return ApplicationWithIntents(application, intents)
     }
 
+    fun createOrGetIntent(namespace: String, intent: IntentDefinition): IntentDefinition? {
+        return if (namespace == intent.namespace) {
+            val intentId = front.getIntentIdByQualifiedName(intent.qualifiedName)
+            if (intentId == null) {
+                front.save(intent)
+                intent.applications.forEach { appId ->
+                    front.save(front.getApplicationById(appId)!!.let { it.copy(intents = it.intents + intent._id) })
+                }
+                intent
+            } else {
+                front.getIntentById(intentId)
+            }
+        } else {
+            null
+        }
+    }
+
     fun createOrUpdateIntent(namespace: String, intent: IntentDefinition): IntentDefinition? {
         return if (namespace == intent.namespace) {
             val intentId = front.getIntentIdByQualifiedName(intent.qualifiedName)
