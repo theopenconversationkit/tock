@@ -44,7 +44,7 @@ export class I18nLabel {
 
   constructor(public _id: string,
               public category: string,
-              public namespace:string,
+              public namespace: string,
               public i18n: I18nLocalizedLabel[],
               public defaultLabel?: string,
               public statCount?: number,
@@ -113,7 +113,11 @@ export class I18nLocalizedLabel {
 
   }
 
-  clone() : I18nLocalizedLabel {
+  baseHeight(): string {
+    return ((1 + Math.trunc(this.label.length / 60)) * 23) + 'px'
+  }
+
+  clone(): I18nLocalizedLabel {
     return new I18nLocalizedLabel(
       this.locale,
       this.interfaceType,
@@ -196,7 +200,7 @@ export class I18nLabelStat {
 export class CreateI18nLabelRequest {
 
   constructor(public category: string,
-              public label:string,
-              public locale:string) {
+              public label: string,
+              public locale: string) {
   }
 }

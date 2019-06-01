@@ -14,6 +14,7 @@ import {StoryDialogComponent} from "./story-dialog.component";
 import {MandatoryEntitiesDialogComponent} from "./mandatory-entities-dialog.component";
 import {StoryNode} from "../flow/node";
 import {StepDialogComponent} from "./step-dialog.component";
+import {AnswerController} from "./controller";
 
 @Component({
   selector: 'tock-story',
@@ -43,11 +44,8 @@ export class StoryComponent implements OnInit, OnChanges {
   @Output()
   delete = new EventEmitter<string>();
 
-  @Output()
-  submit = new EventEmitter<boolean>();
-
-  @Output()
-  select = new EventEmitter<boolean>();
+  @Input()
+  submit = new AnswerController();
 
   constructor(private state: StateService,
               private bot: BotService,
@@ -56,7 +54,6 @@ export class StoryComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -130,22 +127,18 @@ export class StoryComponent implements OnInit, OnChanges {
         this.story.category = result.category;
         this.story.description = result.description;
         this.story.userSentence = result.userSentence;
-        this.saveStory(false);
+        this.saveStory();
       }
     });
   }
 
-  private saveStory(submit:boolean) {
+  private saveStory() {
     this.story.steps = StoryStep.filterNew(this.story.steps);
     if (this.story._id) {
       this.bot.saveStory(this.story).subscribe(s => {
         this.state.resetConfiguration();
         this.snackBar.open(`Story ${this.story.name} modified`, "Update", {duration: 3000});
       })
-    } else {
-      if(submit) {
-        this.submit.emit(true);
-      }
     }
   }
 
@@ -163,7 +156,7 @@ export class StoryComponent implements OnInit, OnChanges {
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.entities) {
         this.story.mandatoryEntities = result.entities;
-        this.saveStory(false);
+        this.saveStory();
       }
     });
   }
@@ -183,7 +176,7 @@ export class StoryComponent implements OnInit, OnChanges {
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.steps) {
         this.story.steps = result.steps;
-        this.saveStory(false);
+        this.saveStory();
       }
     });
   }
@@ -220,7 +213,4 @@ export class StoryComponent implements OnInit, OnChanges {
     }
   }
 
-  selectStory() {
-    this.select.emit(true);
-  }
 }

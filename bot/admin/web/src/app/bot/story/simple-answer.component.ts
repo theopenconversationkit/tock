@@ -1,10 +1,11 @@
-import {Component, ElementRef, EventEmitter, Input, OnInit, ViewChild} from "@angular/core";
+import {Component, ElementRef, Input, OnInit, ViewChild} from "@angular/core";
 import {AnswerContainer, Media, SimpleAnswer, SimpleAnswerConfiguration} from "../model/story";
 import {BotService} from "../bot-service";
 import {MatDialog, MatSnackBar} from "@angular/material";
 import {StateService} from "../../core-nlp/state.service";
 import {CreateI18nLabelRequest} from "../model/i18n";
 import {MediaDialogComponent} from "./media/media-dialog.component";
+import {AnswerController} from "./controller";
 
 @Component({
   selector: 'tock-simple-answer',
@@ -20,7 +21,7 @@ export class SimpleAnswerComponent implements OnInit {
   answerLabel: string = "Answer";
 
   @Input()
-  submit: EventEmitter<boolean> = new EventEmitter<boolean>();
+  submit: AnswerController = new AnswerController();
 
   answer: SimpleAnswerConfiguration;
 
@@ -41,7 +42,7 @@ export class SimpleAnswerComponent implements OnInit {
     this.answer.allowNoAnswer = this.container.allowNoAnwser();
     setTimeout(_ => this.newAnswerElement.nativeElement.focus(), 500);
     const _this = this;
-    this.submit.subscribe(_this.addAnswerIfNonEmpty);
+    this.submit.answerSubmitListener = callback => _this.addAnswerIfNonEmpty(callback);
   }
 
   toggleDisplay() {
@@ -54,19 +55,21 @@ export class SimpleAnswerComponent implements OnInit {
       .subscribe(_ => this.snackBar.open(`Label updated`, "Update", {duration: 3000}));
   }
 
-  addAnswerIfNonEmpty() {
+  private addAnswerIfNonEmpty(callback) {
     if (this && this.newAnswer && this.newAnswer.trim().length !== 0) {
-      this.addAnswer();
+      this.addAnswer(callback);
+    } else {
+      callback();
     }
   }
 
-  addAnswer() {
+  addAnswer(callback?) {
     if (!this.newAnswer || this.newAnswer.trim().length === 0) {
       this.newAnswer = "";
       if (!this.container.allowNoAnwser() && this.answer.answers.length === 0) {
         this.snackBar.open("Please specify an answer", "Error", {duration: 5000})
       } else {
-        this.submit.emit(true);
+        this.submit.submitAnswer();
       }
     } else {
       this.bot.createI18nLabel(
@@ -84,6 +87,9 @@ export class SimpleAnswerComponent implements OnInit {
           ));
         this.newAnswer = "";
         this.newMedia = null;
+        if (callback) {
+          callback();
+        }
       });
     }
   }

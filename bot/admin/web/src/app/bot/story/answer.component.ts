@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
+import {Component, Input, OnInit} from "@angular/core";
 import {
   AnswerConfigurationType,
   AnswerContainer,
@@ -10,6 +10,7 @@ import {BotService} from "../bot-service";
 import {MatDialog, MatRadioChange} from "@angular/material";
 import {StateService} from "../../core-nlp/state.service";
 import {AnswerDialogComponent} from "./answer-dialog.component";
+import {AnswerController} from "./controller";
 
 @Component({
   selector: 'tock-answer',
@@ -34,8 +35,7 @@ export class AnswerComponent implements OnInit {
   answerLabel: string = "Answer";
 
   @Input()
-  @Output()
-  submit: EventEmitter<boolean> = new EventEmitter<boolean>();
+  submit: AnswerController = new AnswerController();
 
   constructor(private state: StateService,
               private bot: BotService,
@@ -85,3 +85,4 @@ export class AnswerComponent implements OnInit {
   }
 
 }
+

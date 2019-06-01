@@ -1,8 +1,9 @@
-import {Component, EventEmitter, Inject, OnInit} from "@angular/core";
+import {Component, Inject, OnInit} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialogRef, MatSnackBar} from "@angular/material";
 import {StateService} from "../../core-nlp/state.service";
 import {AnswerConfiguration, AnswerConfigurationType, AnswerContainer} from "../model/story";
 import {BotService} from "../bot-service";
+import {AnswerController} from "./controller";
 
 @Component({
   selector: 'tock-answer-dialog',
@@ -15,12 +16,10 @@ export class AnswerDialogComponent implements OnInit {
   answer: AnswerContainer;
   answerLabel: string = "Answer";
 
-  submit: EventEmitter<boolean> = new EventEmitter<boolean>();
+  submit: AnswerController = new AnswerController();
 
   private originalCurrentType: AnswerConfigurationType;
   private originalAnswers: AnswerConfiguration[];
-
-  private currentSave = false;
 
   constructor(
     public dialogRef: MatDialogRef<AnswerDialogComponent>,
@@ -36,16 +35,14 @@ export class AnswerDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.submit.subscribe(_ => this.save())
+    const _this = this;
+    this.submit.submitListener = _ => _this.save();
   }
 
   save() {
-    if (!this.currentSave) {
-      this.currentSave = true;
-      this.submit.emit(true);
+    this.submit.checkAnswer(_ => {
       let invalidMessage = this.answer.currentAnswer().invalidMessage();
       if (invalidMessage) {
-        this.currentSave = false;
         this.snackBar.open(`Error: ${invalidMessage}`, "ERROR", {duration: 5000});
       } else if (!this.create) {
         this.answer.save(this.bot).subscribe(r => {
@@ -59,8 +56,7 @@ export class AnswerDialogComponent implements OnInit {
           answer: this.answer
         });
       }
-    }
-
+    });
   }
 
   cancel() {

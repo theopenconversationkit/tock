@@ -24,6 +24,7 @@ import {BotService} from "../bot-service";
 import {AnswerConfigurationType, CreateStoryRequest, IntentName, StoryDefinitionConfiguration} from "../model/story";
 import {ActivatedRoute} from "@angular/router";
 import {BotConfigurationService} from "../../core/bot-configuration.service";
+import {AnswerController} from "./controller";
 
 @Component({
   selector: 'tock-create-story',
@@ -38,6 +39,7 @@ export class CreateStoryComponent implements OnInit {
   botConfigurationId: string;
 
   story: StoryDefinitionConfiguration;
+  submit = new AnswerController();
 
   @ViewChild('newSentence') newSentence: ElementRef;
 
@@ -61,6 +63,8 @@ export class CreateStoryComponent implements OnInit {
         }
       })
     }, 500);
+    const _this = this;
+    this.submit.submitListener = _ => _this.onReply();
   }
 
   onSentence(value?: string) {
@@ -121,25 +125,28 @@ export class CreateStoryComponent implements OnInit {
   }
 
   onReply() {
-    let invalidMessage = this.story.currentAnswer().invalidMessage();
-    if (invalidMessage) {
-      this.snackBar.open(`Error: ${invalidMessage}`, "ERROR", {duration: 5000});
-    } else {
-      this.story.steps = this.story.steps.filter(s => !s.new);
-      this.bot.newStory(
-        new CreateStoryRequest(
-          this.story,
-          this.state.currentLocale,
-          [this.story.userSentence.trim()]
-        )
-      ).subscribe(intent => {
-        this.state.resetConfiguration();
-        this.snackBar.open(`New story ${this.story.name} created for language ${this.state.currentLocale}`, "New Story", {duration: 3000});
+    this.submit.checkAnswer(_ => {
+        let invalidMessage = this.story.currentAnswer().invalidMessage();
+        if (invalidMessage) {
+          this.snackBar.open(`Error: ${invalidMessage}`, "ERROR", {duration: 5000});
+        } else {
+          this.story.steps = this.story.steps.filter(s => !s.new);
+          this.bot.newStory(
+            new CreateStoryRequest(
+              this.story,
+              this.state.currentLocale,
+              [this.story.userSentence.trim()]
+            )
+          ).subscribe(intent => {
+            this.state.resetConfiguration();
+            this.snackBar.open(`New story ${this.story.name} created for language ${this.state.currentLocale}`, "New Story", {duration: 3000});
 
-        this.newSentence.nativeElement.focus();
-        setTimeout(_ => this.resetState(), 200);
-      });
-    }
+            this.newSentence.nativeElement.focus();
+            setTimeout(_ => this.resetState(), 200);
+          });
+        }
+      }
+    );
   }
 
 }

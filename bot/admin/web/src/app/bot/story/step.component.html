@@ -27,7 +27,7 @@
   </div>
 
   <div class="entity-button">
-    <button *ngIf="!step.new"  mat-icon-button (click)="addChild()">
+    <button *ngIf="!step.new && step.intent && !step.currentAnswer().isEmpty()" mat-icon-button (click)="addChild()">
       <mat-icon>add</mat-icon>
     </button>
   </div>
@@ -47,4 +47,6 @@
     </mat-optgroup>
   </mat-autocomplete>
 </div>
-<span *ngIf="step && readonly">{{step.userSentence}} <span *ngIf="step.intent" class="intent" matTooltip="Action Intent">[{{step.intent.name}}]</span>: <tock-answer class="answer" [answer]="step" [editable]="false"></tock-answer></span>
+<span *ngIf="step && readonly">{{step.userSentence}} <span *ngIf="step.intent" class="intent"
+                                                           matTooltip="Action Intent">[{{step.intent.name}}]</span>: <tock-answer
+  class="answer" [answer]="step" [editable]="false"></tock-answer></span>

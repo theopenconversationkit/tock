@@ -8,7 +8,8 @@
     <textarea class="i18n-label"
               matInput
               [(ngModel)]="a.label.defaultLocalizedLabel().label"
-              (change)="updateLabel(a)">
+              (change)="updateLabel(a)"
+              [style.height]="a.label.defaultLocalizedLabel().baseHeight()">
     </textarea>
     <button mat-icon-button
             class="mediaButton"
@@ -27,7 +28,6 @@
             placeholder="Add new {{answerLabel}}"
             [(ngModel)]="newAnswer"
             (keyup.enter)="addAnswer()"
-            (blur)="addAnswerIfNonEmpty()"
             #newAnswerElement>
     </textarea>
   <button mat-icon-button

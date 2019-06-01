@@ -32,7 +32,7 @@
         <br>
         <div *ngIf="displayStory" class="separator"></div>
       <div *ngIf="displayStory">
-        <tock-story class="story" [story]="story" [fullDisplay]="true" [displaySteps]="true" (submit)="onReply()"></tock-story>
+        <tock-story class="story" [story]="story" [fullDisplay]="true" [displaySteps]="true" [submit]="submit"></tock-story>
       </div>
     </tock-select-bot>
     <mat-card-actions *ngIf="displayStory" class="actions">
