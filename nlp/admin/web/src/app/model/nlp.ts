@@ -1021,6 +1021,31 @@ export class UpdateSentencesReport {
   }
 }
 
+export class TranslateSentencesQuery extends ApplicationScopedQuery {
+
+  constructor(public namespace: string,
+              public applicationName: string,
+              public language: string,
+              public targetLanguage:string,
+              public selectedSentences: Sentence[],
+              public searchQuery?: SearchQuery) {
+    super(namespace, applicationName, language)
+  }
+}
+
+export class TranslateReport {
+  constructor(public nbTranslations: number) {
+  }
+
+  static fromJSON(json?: any): TranslateReport {
+    const value = Object.create(TranslateReport.prototype);
+
+    const result = Object.assign(value, json, {});
+
+    return result;
+  }
+}
+
 export class PredefinedValue {
 
   constructor(public value: string,

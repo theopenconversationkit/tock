@@ -19,9 +19,10 @@ package fr.vsct.tock.nlp.admin
 import com.github.salomonbrys.kodein.Kodein
 import fr.vsct.tock.nlp.front.ioc.FrontIoc
 import fr.vsct.tock.shared.vertx.vertx
+import fr.vsct.tock.translator.noop.noOpTranslatorModule
 
-fun main(args: Array<String>) {
-    startAdminServer()
+fun main() {
+    startAdminServer(noOpTranslatorModule)
 }
 
 fun startAdminServer(vararg modules: Kodein.Module) {

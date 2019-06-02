@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.translator
 
+import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.defaultNamespace
 import org.litote.kmongo.Id
 import java.util.Locale
@@ -24,24 +25,30 @@ import java.util.Locale
  * The label persisted in database.
  */
 data class I18nLabel(
-        val _id: Id<I18nLabel>,
-        val namespace: String = defaultNamespace,
-        val category: String,
-        val i18n: LinkedHashSet<I18nLocalizedLabel>,
-        val defaultLabel: String? = null,
-        val version: Int = 0
+    val _id: Id<I18nLabel>,
+    val namespace: String = defaultNamespace,
+    val category: String,
+    val i18n: LinkedHashSet<I18nLocalizedLabel>,
+    val defaultLabel: String? = null,
+    val version: Int = 0
 ) {
 
     fun findLabel(locale: Locale, userInterfaceType: UserInterfaceType, connectorId: String?): I18nLocalizedLabel? =
-            i18n.firstOrNull { it.locale == locale && it.interfaceType == userInterfaceType && it.connectorId == connectorId }
-                    ?: i18n.firstOrNull { it.locale == locale && it.interfaceType == userInterfaceType && it.connectorId == null }
-                    ?: i18n.firstOrNull { it.locale.language == locale.language && it.interfaceType == userInterfaceType && it.connectorId == connectorId }
-                    ?: i18n.firstOrNull { it.locale.language == locale.language && it.interfaceType == userInterfaceType && it.connectorId == null }
+        i18n.firstOrNull { it.locale == locale && it.interfaceType == userInterfaceType && it.connectorId == connectorId }
+            ?: i18n.firstOrNull { it.locale == locale && it.interfaceType == userInterfaceType && it.connectorId == null }
+            ?: i18n.firstOrNull { it.locale.language == locale.language && it.interfaceType == userInterfaceType && it.connectorId == connectorId }
+            ?: i18n.firstOrNull { it.locale.language == locale.language && it.interfaceType == userInterfaceType && it.connectorId == null }
 
     fun findLabel(locale: Locale, connectorId: String?): I18nLocalizedLabel? =
-            i18n.firstOrNull { it.locale == locale && it.label.isNotBlank() && it.connectorId == connectorId }
-                    ?: i18n.firstOrNull { it.locale == locale && it.label.isNotBlank() && it.connectorId == null }
-                    ?: i18n.firstOrNull { it.locale.language == locale.language && it.label.isNotBlank() && it.connectorId == connectorId }
-                    ?: i18n.firstOrNull { it.locale.language == locale.language && it.label.isNotBlank() && it.connectorId == null }
+        i18n.firstOrNull { it.locale == locale && it.label.isNotBlank() && it.connectorId == connectorId }
+            ?: i18n.firstOrNull { it.locale == locale && it.label.isNotBlank() && it.connectorId == null }
+            ?: i18n.firstOrNull { it.locale.language == locale.language && it.label.isNotBlank() && it.connectorId == connectorId }
+            ?: i18n.firstOrNull { it.locale.language == locale.language && it.label.isNotBlank() && it.connectorId == null }
+
+    fun findExistingLabelForOtherLocale(forbiddenLocale: Locale, userInterfaceType: UserInterfaceType, connectorId: String?): I18nLocalizedLabel? =
+        i18n.firstOrNull { it.label.isNotBlank() && it.locale == defaultLocale && it.interfaceType == userInterfaceType && it.connectorId == connectorId }
+            ?.takeIf { forbiddenLocale != defaultLocale }
+            ?: i18n.firstOrNull { it.label.isNotBlank() && it.locale != forbiddenLocale && it.interfaceType == userInterfaceType && it.connectorId == connectorId }
+
 
 }

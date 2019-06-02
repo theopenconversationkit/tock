@@ -16,7 +16,15 @@
 
 import {Component, OnInit, ViewChild} from "@angular/core";
 import {SentenceFilter, SentencesScrollComponent} from "../sentences-scroll/sentences-scroll.component";
-import {EntityDefinition, EntityType, getRoles, Sentence, SentenceStatus, UpdateSentencesQuery} from "../model/nlp";
+import {
+  EntityDefinition,
+  EntityType,
+  getRoles,
+  Sentence,
+  SentenceStatus,
+  TranslateSentencesQuery,
+  UpdateSentencesQuery
+} from "../model/nlp";
 import {StateService} from "../core-nlp/state.service";
 import {ActivatedRoute} from "@angular/router";
 import {NlpService} from "../nlp-tabs/nlp.service";
@@ -37,6 +45,7 @@ export class SearchComponent implements OnInit {
   entityRoles: string[];
   selectedSentences: Sentence[];
   update: SentencesUpdate = new SentencesUpdate();
+  targetLocale: string;
 
   @ViewChild(SentencesScrollComponent) scroll;
 
@@ -156,6 +165,36 @@ export class SearchComponent implements OnInit {
           this.snackBar.open(`${n} sentences updated`, "UPDATE", {duration: 1000})
         }
         this.scroll.refresh();
+      });
+    }
+  }
+
+  translateSentences() {
+    if(!this.targetLocale || this.targetLocale.length === 0) {
+      this.snackBar.open(`Please select a target language first`, "UPDATE", {duration: 1000})
+    } else if (this.selectedSentences && this.selectedSentences.length === 0) {
+      this.snackBar.open(`Please select at least one sentence first`, "UPDATE", {duration: 1000})
+    } else {
+      this.nlp.translateSentences(
+        new TranslateSentencesQuery(
+          this.state.currentApplication.namespace,
+          this.state.currentApplication.name,
+          this.state.currentLocale,
+          this.targetLocale,
+          this.selectedSentences ? this.selectedSentences : [],
+          this.selectedSentences
+            ? null
+            : this.scroll.toSearchQuery(this.state.createPaginatedQuery(0, 100000))
+        )
+      ).subscribe(r => {
+        const n = r.nbTranslations;
+        if (n === 0) {
+          this.snackBar.open(`No sentence translated`, "UPDATE", {duration: 1000})
+        } else if (n === 1) {
+          this.snackBar.open(`1 sentence translated`, "UPDATE", {duration: 1000})
+        } else {
+          this.snackBar.open(`${n} sentences translated`, "UPDATE", {duration: 1000})
+        }
       });
     }
   }

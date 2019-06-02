@@ -276,5 +276,9 @@ export class StateService implements AuthListener {
     );
   }
 
+  otherThanCurrentLocales() : string[] {
+    return this.currentApplication.supportedLocales.filter(l => l !== this.currentLocale);
+  }
+
 }
 

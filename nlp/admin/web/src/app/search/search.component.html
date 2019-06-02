@@ -114,6 +114,17 @@
 
             <button color="primary" mat-button (click)="updateSentencesEntity()">Change Entity</button>
           </div>
+          <div *ngIf="state.currentApplication.supportedLocales.length !== 1">
+            Translate selected sentences:
+            <mat-form-field class="search-criterion">
+              <mat-select [(ngModel)]="targetLocale" placeholder="Target Language">
+                <mat-option *ngFor="let l of state.otherThanCurrentLocales()"
+                            [value]="l">{{ state.localeName(l) }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <button color="primary" mat-button (click)="translateSentences()">Translate</button>
+          </div>
         </mat-expansion-panel>
       </mat-card-footer>
     </mat-card>

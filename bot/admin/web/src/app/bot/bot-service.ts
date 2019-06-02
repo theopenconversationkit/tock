@@ -17,7 +17,7 @@
 import {Injectable} from "@angular/core";
 import {RestService} from "../core-nlp/rest/rest.service";
 import {CreateStoryRequest, StoryDefinitionConfiguration, StorySearchQuery} from "./model/story";
-import {Intent} from "../model/nlp";
+import {Intent, TranslateReport} from "../model/nlp";
 import {Observable} from "rxjs";
 import {CreateI18nLabelRequest, I18nLabel, I18nLabels} from "./model/i18n";
 import {FileUploader} from "ng2-file-upload";
@@ -46,7 +46,7 @@ export class BotService {
     return this.rest.get(`/bot/story/${storyDefinitionId}`, StoryDefinitionConfiguration.fromJSON)
   }
 
-  findStoryByBotIdAndIntent(botId: string, intent:string): Observable<StoryDefinitionConfiguration> {
+  findStoryByBotIdAndIntent(botId: string, intent: string): Observable<StoryDefinitionConfiguration> {
     return this.rest.get(`/bot/story/${botId}/${intent}`, StoryDefinitionConfiguration.fromJSON)
   }
 
@@ -58,8 +58,8 @@ export class BotService {
     return this.rest.get("/i18n", I18nLabels.fromJSON);
   }
 
-  completeI18nLabels(labels: I18nLabel[]): Observable<boolean> {
-    return this.rest.post("/i18n/complete", labels);
+  completeI18nLabels(labels: I18nLabel[]): Observable<TranslateReport> {
+    return this.rest.post("/i18n/complete", labels, TranslateReport.fromJSON);
   }
 
   saveI18nLabels(labels: I18nLabel[]): Observable<boolean> {

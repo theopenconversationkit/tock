@@ -33,6 +33,7 @@ import fr.vsct.tock.nlp.admin.model.PredefinedValueQuery
 import fr.vsct.tock.nlp.admin.model.SearchQuery
 import fr.vsct.tock.nlp.admin.model.SentenceReport
 import fr.vsct.tock.nlp.admin.model.SentencesReport
+import fr.vsct.tock.nlp.admin.model.TranslateSentencesQuery
 import fr.vsct.tock.nlp.admin.model.UpdateEntityDefinitionQuery
 import fr.vsct.tock.nlp.admin.model.UpdateSentencesQuery
 import fr.vsct.tock.nlp.core.NlpEngineType
@@ -602,19 +603,19 @@ open class AdminVerticle : WebVerticle() {
                 ?.run {
                     val value = query.oldPredefinedValue ?: query.predefinedValue
                     copy(predefinedValues = predefinedValues.filter { it.value != value } +
-                            (predefinedValues.find { it.value == value }
-                                ?.copy(value = query.predefinedValue)
-                                    ?: PredefinedValue(
-                                        query.predefinedValue,
-                                        mapOf(query.locale to listOf(query.predefinedValue))
-                                    )
-                                    )
+                        (predefinedValues.find { it.value == value }
+                            ?.copy(value = query.predefinedValue)
+                            ?: PredefinedValue(
+                                query.predefinedValue,
+                                mapOf(query.locale to listOf(query.predefinedValue))
+                            )
+                            )
                     )
                 }
                 ?.also {
                     front.save(it)
                 }
-                    ?: unauthorized()
+                ?: unauthorized()
         }
 
         blockingDelete("/entity-types/predefined-values/:entityType/:value", nlpUser)
@@ -634,23 +635,23 @@ open class AdminVerticle : WebVerticle() {
                 ?.takeIf { it.name.namespace() == context.organization }
                 ?.run {
                     copy(predefinedValues = predefinedValues.filter { it.value != query.predefinedValue } +
-                            (predefinedValues.find { it.value == query.predefinedValue }
-                                ?.run {
-                                    copy(labels = labels.filter { it.key != query.locale } +
-                                            mapOf(query.locale to ((labels[query.locale]?.filter { it != query.label }
-                                                    ?: emptyList()) + listOf(query.label)).sorted())
-                                    )
-                                }
-                                    ?: PredefinedValue(
-                                        query.predefinedValue,
-                                        mapOf(query.locale to listOf(query.label))
-                                    ))
+                        (predefinedValues.find { it.value == query.predefinedValue }
+                            ?.run {
+                                copy(labels = labels.filter { it.key != query.locale } +
+                                    mapOf(query.locale to ((labels[query.locale]?.filter { it != query.label }
+                                        ?: emptyList()) + listOf(query.label)).sorted())
+                                )
+                            }
+                            ?: PredefinedValue(
+                                query.predefinedValue,
+                                mapOf(query.locale to listOf(query.label))
+                            ))
                     )
                 }
                 ?.also {
                     front.save(it)
                 }
-                    ?: unauthorized()
+                ?: unauthorized()
 
         }
 
@@ -664,6 +665,17 @@ open class AdminVerticle : WebVerticle() {
                     context.pathToLocale("locale"),
                     context.path("label")
                 )
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/translation/sentence", admin)
+        { context, s: TranslateSentencesQuery ->
+            if (context.organization == s.namespace
+                && (s.searchQuery == null || context.organization == s.searchQuery.namespace)
+            ) {
+                service.translateSentences(s)
             } else {
                 unauthorized()
             }

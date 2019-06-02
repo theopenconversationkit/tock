@@ -23,6 +23,14 @@ import java.util.Locale
  */
 interface TranslatorEngine {
 
+    /**
+     * Translates a text from [source] to [destination] locale.
+     */
     fun translate(text: String, source: Locale, target: Locale): String
+
+    /**
+     * Does the engine support "on the fly" translations?
+     */
+    val supportAdminTranslation: Boolean get() = false
 
 }

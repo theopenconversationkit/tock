@@ -16,17 +16,18 @@
 
 package fr.vsct.tock.bot.admin
 
+import com.github.salomonbrys.kodein.Kodein
 import fr.vsct.tock.bot.BotIoc
 import fr.vsct.tock.nlp.front.ioc.FrontIoc
 import fr.vsct.tock.shared.vertx.vertx
 
-fun main(args: Array<String>) {
+fun main() {
     startAdminServer()
 }
 
-fun startAdminServer() {
+fun startAdminServer(vararg modules: Kodein.Module) {
     //setup ioc
-    FrontIoc.setup(BotIoc.coreModules)
+    FrontIoc.setup(BotIoc.coreModules + modules.toList())
     //deploy verticle
     vertx.deployVerticle(BotAdminVerticle())
 }

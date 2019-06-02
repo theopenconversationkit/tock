@@ -29,18 +29,27 @@ import fr.vsct.tock.nlp.admin.model.SearchQuery
 import fr.vsct.tock.nlp.admin.model.SentenceReport
 import fr.vsct.tock.nlp.admin.model.SentencesReport
 import fr.vsct.tock.nlp.admin.model.TestBuildStat
+import fr.vsct.tock.nlp.admin.model.TranslateReport
+import fr.vsct.tock.nlp.admin.model.TranslateSentencesQuery
 import fr.vsct.tock.nlp.admin.model.UpdateSentencesQuery
 import fr.vsct.tock.nlp.admin.model.UpdateSentencesReport
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
+import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.nlp.front.shared.test.TestErrorQuery
+import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.provide
+import fr.vsct.tock.shared.vertx.WebVerticle.Companion.badRequest
 import fr.vsct.tock.shared.withNamespace
+import fr.vsct.tock.translator.TranslatorEngine
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
 import java.time.Duration
+import java.time.Instant.now
 
 /**
  *
@@ -80,6 +89,36 @@ object AdminService {
         } else {
             UpdateSentencesReport()
         }
+    }
+
+    fun translateSentences(query: TranslateSentencesQuery): TranslateReport {
+        val application = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
+        val sentences = if (query.searchQuery == null) {
+            query.selectedSentences.filter { it.applicationId == application._id }.map { it.toClassifiedSentence() }
+        } else {
+            front.search(query.searchQuery.toSentencesQuery(application._id)).sentences
+        }
+        val engine: TranslatorEngine = injector.provide()
+        if(!engine.supportAdminTranslation) {
+            badRequest("Translation is not activated for this account")
+        }
+        sentences.forEach {
+            val translation = engine.translate(it.text, it.language, query.targetLanguage)
+            val translatedSentence = it.copy(
+                text = translation,
+                language = query.targetLanguage,
+                //for now entities are not kept during translation
+                classification = it.classification.copy(entities = emptyList()),
+                status = if (it.status == model) validated else it.status,
+                usageCount = 0,
+                unknownCount = 0,
+                creationDate = now(),
+                updateDate = now()
+            )
+            //TODO not not override existing sentences
+            front.save(translatedSentence)
+        }
+        return TranslateReport(sentences.size)
     }
 
     fun getApplicationWithIntents(applicationId: Id<ApplicationDefinition>): ApplicationWithIntents? {

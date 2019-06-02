@@ -170,7 +170,7 @@ export class I18nComponent extends I18nController implements OnInit {
         && (v.length === 0
           || (i.defaultLabel && i.defaultLabel.toLowerCase().indexOf(v) !== -1)
           || i.i18n.some(label => label.label.length !== 0 && label.label.toLowerCase().indexOf(v) !== -1)
-          )
+        )
         && (this.selectedCategory === this.doNotFilterByCategory || i.category === this.selectedCategory)
         && (this.notUsedFrom == -1 || !i.lastUpdate || i.lastUpdate.getTime() < notUsedFromDate)
     });
@@ -183,9 +183,17 @@ export class I18nComponent extends I18nController implements OnInit {
 
   complete() {
     this.loading = true;
-    this.botService.completeI18nLabels(this.i18n).subscribe(_ => {
+    this.botService.completeI18nLabels(this.i18n).subscribe(r => {
       this.load();
       this.loading = false;
+      const n = r.nbTranslations;
+      if (n === 0) {
+        this.snackBar.open(`No label translated`, "UPDATE", {duration: 1000})
+      } else if (n === 1) {
+        this.snackBar.open(`1 label translated`, "UPDATE", {duration: 1000})
+      } else {
+        this.snackBar.open(`${n} labels translated`, "UPDATE", {duration: 1000})
+      }
     });
   }
 

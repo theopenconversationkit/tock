@@ -28,7 +28,7 @@ import {
   PredefinedValueQuery,
   SearchQuery,
   Sentence,
-  SentencesResult,
+  SentencesResult, TranslateReport, TranslateSentencesQuery,
   UpdateEntityDefinitionQuery,
   UpdateSentencesQuery,
   UpdateSentencesReport
@@ -141,6 +141,10 @@ export class NlpService implements OnDestroy {
 
   deleteLabel(query: PredefinedLabelQuery): Observable<boolean> {
     return this.rest.delete(`/entity-type/predefined-value/labels/${encodeURIComponent(query.entityTypeName)}/${encodeURIComponent(query.predefinedValue)}/${encodeURIComponent(query.locale)}/${encodeURIComponent(query.label)}`)
+  }
+
+  translateSentences(query: TranslateSentencesQuery): Observable<TranslateReport> {
+    return this.rest.post("/translation/sentence", query, TranslateReport.fromJSON)
   }
 
 }

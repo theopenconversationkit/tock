@@ -47,8 +47,10 @@ import fr.vsct.tock.bot.engine.config.UploadedFilesService
 import fr.vsct.tock.bot.engine.config.UploadedFilesService.downloadFile
 import fr.vsct.tock.nlp.admin.AdminVerticle
 import fr.vsct.tock.nlp.admin.model.ApplicationScopedQuery
+import fr.vsct.tock.nlp.admin.model.TranslateReport
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.provide
 import fr.vsct.tock.shared.security.TockUserRole.admin
 import fr.vsct.tock.shared.security.TockUserRole.botUser
 import fr.vsct.tock.translator.I18nDAO
@@ -56,6 +58,7 @@ import fr.vsct.tock.translator.I18nLabel
 import fr.vsct.tock.translator.Translator
 import fr.vsct.tock.translator.Translator.initTranslator
 import fr.vsct.tock.translator.Translator.transformOldLabels
+import fr.vsct.tock.translator.TranslatorEngine
 import io.vertx.core.http.HttpMethod.GET
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
@@ -322,7 +325,10 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonPost("/i18n/complete", botUser) { context, labels: List<I18nLabel> ->
-            Translator.completeAllLabels(labels.filter { it.namespace == context.organization })
+            if(!injector.provide<TranslatorEngine>().supportAdminTranslation) {
+                badRequest("Translation is not activated for this account")
+            }
+            TranslateReport(Translator.completeAllLabels(labels.filter { it.namespace == context.organization }))
         }
 
         blockingJsonPost("/i18n/saveAll", botUser) { context, labels: List<I18nLabel> ->

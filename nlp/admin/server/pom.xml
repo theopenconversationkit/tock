@@ -37,7 +37,10 @@
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-nlp-front-client</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>fr.vsct.tock</groupId>
+            <artifactId>tock-translator-noop</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-web</artifactId>
