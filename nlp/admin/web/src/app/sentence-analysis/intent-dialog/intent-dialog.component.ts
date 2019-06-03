@@ -64,10 +64,12 @@ export class IntentDialogComponent implements OnInit {
   }
 
   categoryChange() {
-    let cat = this.category.toLowerCase().trim();
-    this.categories = cat.length === 0
-      ? this.originalCategories
-      : this.originalCategories.filter(c => c.toLowerCase().startsWith(cat))
+    if (this.category) {
+      let cat = this.category.toLowerCase().trim();
+      this.categories = cat.length === 0
+        ? this.originalCategories
+        : this.originalCategories.filter(c => c.toLowerCase().startsWith(cat));
+    }
   }
 
   format() {
