@@ -23,12 +23,12 @@ import java.nio.charset.StandardCharsets
 /**
  * Get a resource url from the classpath.
  */
-fun resource(path: String): URL = Loader::class.java.getResource(path)
+fun resource(path: String): URL = Loader::class.java.getResource(path) ?: error("resource $path not found")
 
 /**
  * Get a resource [InputStream] from the classpath.
  */
-fun resourceAsStream(path: String): InputStream = Loader::class.java.getResourceAsStream(path)
+fun resourceAsStream(path: String): InputStream = Loader::class.java.getResourceAsStream(path) ?: error("path not found: $path")
 
 /**
  * Get a text content of a resource from the classpath.
