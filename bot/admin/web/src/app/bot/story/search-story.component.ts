@@ -29,8 +29,10 @@ export class SearchStoryComponent implements OnInit {
 
   loadedStories: StoryDefinitionConfiguration[];
   stories: StoryDefinitionConfiguration[];
+  categories: string[] = [];
 
   filter: string = "";
+  category: string = "";
 
   constructor(private nlp: NlpService,
               private state: StateService,
@@ -48,7 +50,13 @@ export class SearchStoryComponent implements OnInit {
       )).subscribe(s => {
       this.stories = s;
       this.loadedStories = s;
-      s.forEach(story => story.hideDetails = true)
+      s.forEach(story => {
+        story.hideDetails = true;
+        if (this.categories.indexOf(story.category) === -1) {
+          this.categories.push(story.category);
+        }
+      });
+      this.categories.sort();
     })
   }
 
@@ -57,9 +65,15 @@ export class SearchStoryComponent implements OnInit {
     this.loadedStories = this.loadedStories.filter(s => s._id !== storyDefinitionId);
   }
 
-  search() {
+  search(story?:StoryDefinitionConfiguration) {
+    if(story && this.categories.indexOf(story.category) === -1) {
+      this.categories.push(story.category);
+      this.categories.sort();
+    }
     this.stories = this.loadedStories.filter(s =>
-      s.name.toLowerCase().indexOf(this.filter.toLowerCase()) !== -1
-      || s.intent.name.toLowerCase().indexOf(this.filter.toLowerCase()) !== -1)
+      (s.name.toLowerCase().indexOf(this.filter.toLowerCase()) !== -1
+        || s.intent.name.toLowerCase().indexOf(this.filter.toLowerCase()) !== -1)
+      && (this.category.length === 0 || this.category === s.category)
+    );
   }
 }

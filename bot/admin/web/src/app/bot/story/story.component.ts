@@ -47,6 +47,9 @@ export class StoryComponent implements OnInit, OnChanges {
   @Input()
   submit = new AnswerController();
 
+  @Output()
+  close = new EventEmitter<boolean>();
+
   constructor(private state: StateService,
               private bot: BotService,
               private dialog: MatDialog,
@@ -128,6 +131,7 @@ export class StoryComponent implements OnInit, OnChanges {
         this.story.description = result.description;
         this.story.userSentence = result.userSentence;
         this.saveStory();
+        this.submitClose();
       }
     });
   }
@@ -177,6 +181,7 @@ export class StoryComponent implements OnInit, OnChanges {
       if (result && result.steps) {
         this.story.steps = result.steps;
         this.saveStory();
+        this.submitClose();
       }
     });
   }
@@ -211,6 +216,10 @@ export class StoryComponent implements OnInit, OnChanges {
         this.initStoryByBotIdAndIntent();
       });
     }
+  }
+
+  submitClose() {
+    this.close.emit(true);
   }
 
 }

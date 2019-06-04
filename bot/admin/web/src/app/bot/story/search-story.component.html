@@ -16,6 +16,14 @@
 
 <mat-card>
   <mat-card-content>
+    <mat-form-field class="field">
+      <mat-select placeholder="Category" [(ngModel)]="category" (selectionChange)="search()">
+        <mat-option value="">All</mat-option>
+        <mat-option *ngFor="let c of categories" [value]="c">
+          {{c}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
     <mat-form-field class="search-input">
       <input matInput placeholder="Search Stories" [(ngModel)]="filter" (keyup)="search()">
     </mat-form-field>
@@ -23,5 +31,5 @@
 </mat-card>
 <mat-accordion *ngIf="stories">
   <tock-story *ngFor="let s of stories" [story]="s" (delete)="delete($event)"
-              [fullDisplay]="true" [displaySteps]="true"></tock-story>
+              [fullDisplay]="true" [displaySteps]="true" (close)="search(s)"></tock-story>
 </mat-accordion>
