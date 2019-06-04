@@ -69,7 +69,9 @@ export class AnswerComponent implements OnInit {
   private changeAnswerType(value: AnswerConfigurationType) {
     if (value === AnswerConfigurationType.simple) {
       if (!this.answer.simpleAnswer()) {
-        this.answer.answers.push(new SimpleAnswerConfiguration([]));
+        const newAnswer = new SimpleAnswerConfiguration([]);
+        newAnswer.allowNoAnswer = this.answer.allowNoAnwser();
+        this.answer.answers.push(newAnswer);
       }
     } else if (value === AnswerConfigurationType.script) {
       if (!this.answer.scriptAnswer()) {

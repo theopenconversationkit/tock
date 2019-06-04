@@ -49,10 +49,12 @@ export class StepsComponent implements OnInit, OnChanges {
   }
 
   addNewStep(step?: StoryStep) {
+    const answer = new SimpleAnswerConfiguration([]);
+    answer.allowNoAnswer = true;
     const newStep = new StoryStep(
       "",
       new IntentName(""),
-      [new SimpleAnswerConfiguration([])],
+      [answer],
       AnswerConfigurationType.simple,
       this.defaultCategory,
       "",
