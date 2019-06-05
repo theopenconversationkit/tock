@@ -38,7 +38,6 @@ import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType.bot
 import fr.vsct.tock.bot.engine.user.PlayerType.user
 import fr.vsct.tock.shared.defaultLocale
-import fr.vsct.tock.shared.defaultNamespace
 import fr.vsct.tock.shared.defaultZoneId
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.listProperty
@@ -130,7 +129,7 @@ class XrayService(
     fun executeTests(namespace: String): XRayPlanExecutionResult {
         val dummyTestPlan = listOf("MOCK")
 
-        logger.info { "execute tests with namespace $namespace" }
+        logger.info { "Execute tests with namespace $namespace" }
         return try {
             // getBotConfiguration retrieves all configuration for the selected namespace
             // getBotConfiguration will reach information stored in tab Configuration on BotAdmin site
@@ -141,9 +140,9 @@ class XrayService(
                         configurationIds.contains(it._id.toString())
                                 || (configurationIds.isEmpty() && configurationNames.contains(it.name))
                     }
-                    // test execution
+                    // test execution of a dummy test plan
                     .flatMap {
-                        exec(XrayExecutionConfiguration(it, dummyTestPlan))
+                        execTestsOnly(XrayExecutionConfiguration(it, dummyTestPlan), dummyTestPlan.get(0), testKeys)
                     }
                     .let {
                         sendToXray(it)
@@ -155,7 +154,10 @@ class XrayService(
     }
 
     /**
-     * This function sends all test plan execution reports to Xray.
+     * This function will take all the test plan executions results and send them to Xray as a Test Execution.
+     *
+     * @param reports is the list of the reports of all test plan executions.
+     * @return the results of the test plan execution as a XRay Test Execution
      */
     private fun sendToXray(reports: List<TestPlanExecutionReport>): XRayPlanExecutionResult {
         reports
@@ -203,12 +205,14 @@ class XrayService(
 
     /**
      * This function sends each test dialogs to Xray with its result (fail or not).
+     *
      * @param planKey is the identifier of the executed test plan.
      * @param start is the start time of test plan execution.
      * @param end is the end time of test plan execution.
      * @param configurations is the configuration used to launch test plan execution.
      * @param dialogs is the list of all dialogs of the executed test plan.
      * @param executionDialogs is the list of reports of executed dialogs.
+     * @return the status of the whole execution - true if all tests passed, false otherwise.
      */
     private fun sendXrayExecution(
             planKey: String,
@@ -218,8 +222,10 @@ class XrayService(
             dialogs: List<TestDialogReport>,
             executionDialogs: List<DialogExecutionReport>
     ): Boolean {
+        val testExecutionKey = XrayClient.getKeyOfSearchedIssue("project = \"JARVIS FT\" and issuetype = \"Test Execution\" and summary ~ \"Mock\"")
+
         val xrayExecution = XrayTestExecution(
-                "JARVISFT-2265",
+                testExecutionKey,
                 XrayTestExecutionInfo(
                         "$planKey - ${configurations.map { it.botConfiguration.name }.toSortedSet().joinToString()}",
                         "Automatized Test Execution",
@@ -292,24 +298,50 @@ class XrayService(
     /**
      * For each test plan to execute, this function will retrieve the test plan issue in Xray
      * and then it will execute it.
+     *
+     * @param configuration is the configuration to execute the test plan.
+     * @return the list of all tests plan that have been executed and their execution results.
      */
     private fun exec(configuration: XrayExecutionConfiguration): List<TestPlanExecutionReport> {
         return configuration
-                .testPlanKeys
-                .mapNotNull { planKey ->
-                    logger.info { "start plan $planKey execution" }
+                .xrayTestPlanKeys
+                .mapNotNull { xrayPlanKey ->
+                    logger.info { "Start plan $xrayPlanKey execution" }
                     try {
                         // retrieve the Xray issue with associated tests for the current test plan
-                        val testPlan = getTestPlan(configuration, planKey)
+                        val xrayTestPlan = getTestPlanFromXray(configuration, xrayPlanKey)
                         // if the current test plan has dialogs to send, then execute it, otherwise skip it and jump to the next one
-                        if (testPlan.dialogs.isNotEmpty()) {
-                            executePlan(configuration, planKey, testPlan)
+                        if (xrayTestPlan.dialogs.isNotEmpty()) {
+                            executePlan(configuration, xrayPlanKey, xrayTestPlan)
                         } else {
-                            logger.info { "empty test plan for $configuration - skipped" }
+                            logger.info { "Empty test plan for $configuration - skipped" }
                             null
                         }
                     } finally {
-                        logger.info { "plan $planKey executed" }
+                        logger.info { "Plan $xrayPlanKey executed" }
+                    }
+                }
+    }
+
+    private fun execTestsOnly(configuration: XrayExecutionConfiguration, planKey: String, testKeys: List<String>): List<TestPlanExecutionReport> {
+
+        return configuration
+                .xrayTestPlanKeys
+                .mapNotNull { xrayPlanKey ->
+                    logger.info { "Start plan $xrayPlanKey execution" }
+                    try {
+                        // create a test plan with all given tests
+                        val testPlan = createTestPlanWithTests(configuration, planKey, testKeys)
+                        // if the current test plan has dialogs to send, then execute it, otherwise skip it and jump to the next one
+                        if (testPlan.dialogs.isNotEmpty()) {
+                            //
+                            executePlan(configuration, testPlan.name, testPlan)
+                        } else {
+                            logger.info { "Empty test plan for $configuration - skipped" }
+                            null
+                        }
+                    } finally {
+                        logger.info { "Plan $xrayPlanKey executed" }
                     }
                 }
     }
@@ -318,21 +350,21 @@ class XrayService(
      * This function will execute the common Test Plan.
      *
      * @param configuration is the configuration to execute the test plan.
-     * @param jiraKey is the Xray identifier of the test plan to execute.
+     * @param xrayTestPlanKey is the Xray identifier of the test plan to execute.
      * @param testPlan is the test plan to execute formatted in the common Test Plan manageable by Tock test framework.
      * @return a TestPlanExecutionReport which contains.... TODO
      */
     private fun executePlan(
             configuration: XrayExecutionConfiguration,
-            jiraKey: String,
+            xrayTestPlanKey: String,
             testPlan: TestPlan
     ): TestPlanExecutionReport {
-        logger.debug { "execute test plan $testPlan" }
+        logger.debug { "Execute test plan $testPlan" }
         val execution = findTestClient().executeTestPlan(testPlan)
         logger.debug { "Test plan execution $execution" }
         return TestPlanExecutionReport(
                 configuration,
-                jiraKey,
+                xrayTestPlanKey,
                 testPlan,
                 execution
         )
@@ -340,15 +372,19 @@ class XrayService(
 
     /**
      * This function converts the Xray Test Plan into a common Test Plan, understandable and usable by the testing framework of Tock.
+     *
+     * @param configuration is the configuration to execute the test plan.
+     * @param xrayPlanKey is the Xray identifier of the current test plan.
+     * @return the current test plan as a common Test Plan understandable by Tock.
      */
-    private fun getTestPlan(configuration: XrayExecutionConfiguration, planKey: String): TestPlan {
+    private fun getTestPlanFromXray(configuration: XrayExecutionConfiguration, xrayPlanKey: String): TestPlan {
         // retrieve all tests of the test plan as XrayTest objects
-        val tests = XrayClient.getTestPlanTests(planKey)
-        // create the common Test Plan using the retrieve tests
+        val xrayTests = XrayClient.getTestPlanTests(xrayPlanKey)
+        // create the common Test Plan using the retrieved tests
         return with(configuration) {
             TestPlan(
                     // retrieve all test steps
-                    tests
+                    xrayTests
                             .filter {
                                 val connectorJiras = connectorJiraMap[configuration.botConfiguration.ownerConnectorType?.id]
                                         ?: emptyList()
@@ -359,6 +395,31 @@ class XrayService(
                             .filter { it.supportConf(configuration.botConfiguration.name) }
                             // retrieve all steps of tests of the test plan
                             .map { getDialogReport(configuration, it) },
+                    xrayPlanKey,
+                    botConfiguration.applicationId,
+                    botConfiguration.namespace,
+                    botConfiguration.nlpModel,
+                    botConfiguration._id,
+                    locale,
+                    if (startSentence.isBlank()) null else MessageParser.parse(startSentence).first(),
+                    botConfiguration.targetConnectorType,
+                    "${xrayPlanKey}_${configuration.botConfiguration.applicationId}".toId()
+            )
+        }
+    }
+
+    private fun createTestPlanWithTests(configuration: XrayExecutionConfiguration, planKey: String, testKeys: List<String>): TestPlan {
+        val xrayTests = mutableListOf<XrayTest>()
+        testKeys.forEach {
+            xrayTests.addAll(XrayClient.getTests(it))
+        }
+
+        return with(configuration) {
+            TestPlan(
+                    xrayTests.filter { it.supportConf(configuration.botConfiguration.name) }
+                            .map {
+                                getDialogReport(configuration, it)
+                            },
                     planKey,
                     botConfiguration.applicationId,
                     botConfiguration.namespace,
@@ -373,21 +434,21 @@ class XrayService(
     }
 
     /**
-     * This function will retrieve all steps for a given test and parse step content.
+     * This function will retrieve all steps for a given xrayTest and parse step content.
      * It also parses content according of attachment file presence.
      * All these steps are converted in a TestDialogReport as actions.
      *
      * @param configuration
-     * @param test is the XrayTest to get its steps.
+     * @param xrayTest is the XrayTest to get its steps.
      * @return all the tests steps as a TestDialogReport to submit to the targeted bot.
      */
-    private fun getDialogReport(configuration: XrayExecutionConfiguration, test: XrayTest): TestDialogReport {
-        val userInterface = test.findUserInterface()
-        // store all steps of the given test
-        val steps = XrayClient.getTestSteps(test.key)
+    private fun getDialogReport(configuration: XrayExecutionConfiguration, xrayTest: XrayTest): TestDialogReport {
+        val userInterface = xrayTest.findUserInterface()
+        // store all steps of the given xrayTest
+        val xraySteps = XrayClient.getTestSteps(xrayTest.key)
         // return the TestDialogReport with parsed steps
         return TestDialogReport(
-                steps.flatMap {
+                xraySteps.flatMap {
                     listOfNotNull(
                             parseStepData(
                                     configuration,
@@ -405,8 +466,8 @@ class XrayService(
                                     it.attachments.firstOrNull { it.fileName == "bot.message" })
                     )
                 },
-                test.findUserInterface(),
-                test.key.toId()
+                xrayTest.findUserInterface(),
+                xrayTest.key.toId()
         )
     }
 
@@ -423,10 +484,10 @@ class XrayService(
             stepId: Long,
             playerId: PlayerId,
             raw: String?,
-            attachment: XrayAttachment?
+            xrayAttachment: XrayAttachment?
     ): TestActionReport? {
-        val message = if (attachment != null) {
-            XrayClient.getAttachmentToString(attachment)
+        val message = if (xrayAttachment != null) {
+            XrayClient.getAttachmentToString(xrayAttachment)
         } else {
             raw
         }

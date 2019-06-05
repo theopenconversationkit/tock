@@ -30,12 +30,14 @@ fun main() {
     logger.info { "Start tests" }
 
 //    val result = XrayService().executePlans(defaultNamespace)
-    val result : XRayPlanExecutionResult
+    val result: XRayPlanExecutionResult
 
 
-    if(itemToExecute == "TEST")
+    if (itemToExecute == "TEST") {
+        result = XrayService().executeTests(defaultNamespace)
+    } else {
         result = XrayService().executePlans(defaultNamespace)
-    else result = XrayService().executeTests(defaultNamespace)
+    }
 
     if (result.total == 0) {
         logger.error { "No test played" }

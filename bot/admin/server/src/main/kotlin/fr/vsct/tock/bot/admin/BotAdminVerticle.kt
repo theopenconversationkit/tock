@@ -36,11 +36,9 @@ import fr.vsct.tock.bot.admin.model.DialogsSearchQuery
 import fr.vsct.tock.bot.admin.model.StorySearchRequest
 import fr.vsct.tock.bot.admin.model.TestPlanUpdate
 import fr.vsct.tock.bot.admin.model.UserSearchQuery
-import fr.vsct.tock.bot.admin.model.XRayPlanExecutionConfiguration
 import fr.vsct.tock.bot.admin.test.TestPlan
 import fr.vsct.tock.bot.admin.test.TestPlanService
 import fr.vsct.tock.bot.admin.test.xray.XrayConfiguration
-import fr.vsct.tock.bot.admin.test.xray.XrayService
 import fr.vsct.tock.bot.connector.ConnectorType.Companion.rest
 import fr.vsct.tock.bot.connector.ConnectorTypeConfiguration
 import fr.vsct.tock.bot.connector.rest.addRestConnector
@@ -233,7 +231,7 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonPost("/test/plan/execute", botUser) { context, testPlan: TestPlan ->
-            BotAdminService.executeTestPlan(context.organization, testPlan)
+            BotAdminService.saveAndExecuteTestPlan(context.organization, testPlan)
         }
 
         blockingJsonPost("/test/plan/:planId/run", botUser) { context, _: ApplicationScopedQuery ->

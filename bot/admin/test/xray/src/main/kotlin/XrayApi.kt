@@ -90,4 +90,7 @@ interface XrayApi {
 
     @GET("/rest/api/2/issue/{id}")
     fun getIssue(@Path("id") id: String): Call<ResponseBody>
+
+    @GET("/rest/api/2/search")
+    fun searchIssue(@Query("jql") jql: String): Call<ResponseBody>
 }

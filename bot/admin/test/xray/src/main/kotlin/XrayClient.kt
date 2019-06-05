@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.admin.test.xray
 
 import com.beust.klaxon.JsonObject
+import com.beust.klaxon.Klaxon
 import com.beust.klaxon.Parser
 import fr.vsct.tock.bot.admin.test.xray.XrayConfiguration.xrayUrl
 import fr.vsct.tock.bot.admin.test.xray.model.JiraAttachment
@@ -43,6 +44,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
+import java.io.StringReader
 
 /**
  *
@@ -101,6 +103,31 @@ object XrayClient {
      */
     fun getTestSteps(testKey: String): List<XrayTestStep> =
             xray.getTestSteps(testKey).execute().body() ?: error("no test steps for $testKey")
+
+    /**
+     * This functions will search for the issue using the JQL query given in parameters
+     * and return the identifier of the retrieved issue.
+     * This function will return a result only if there is only one issue retrieved by the JQL query.
+     *
+     * @param jql is the query format of Jira to search for issues.
+     * @return The identifier of the retrieved issue in String format.
+     */
+    fun getKeyOfSearchedIssue(jql: String): String {
+        val klaxon = Klaxon()
+
+        // get the body content of the response
+        val body = xray.searchIssue(jql).execute().body()?.string()
+
+        // parse the body
+        val parsed = klaxon.parseJsonObject(StringReader(body))
+        val issuesArray = parsed.array<Any>("issues")
+
+        // if only one issue has been found, return the identifier of the issue
+        if(issuesArray!!.size == 1) {
+            return issuesArray?.get("key").value.toString().replace("[", "").replace("]", "")
+        }
+        return ""
+    }
 
     /**
      * Send the test execution to Jira.
