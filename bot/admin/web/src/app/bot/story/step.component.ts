@@ -61,13 +61,18 @@ export class StepComponent implements OnInit {
     }
   }
 
-  validateIntent(step: StoryStep) {
+  validateIntent(step: StoryStep, targetIntent?: boolean) {
     setTimeout(_ => {
-      const intentName = step.intent.name.trim();
-      if (intentName.length !== 0 && (!step.intentDefinition || step.intentDefinition.name !== intentName)) {
+      const intentName = (targetIntent ? step.targetIntent : step.intent).name.trim();
+      const intentDef = (targetIntent ? step.targetIntentDefinition : step.intentDefinition);
+      if (intentName.length !== 0 && (!intentDef || intentDef.name !== intentName)) {
         let intent = this.state.findIntentByName(intentName);
         if (intent) {
-          step.intentDefinition = intent;
+          if (targetIntent) {
+            step.targetIntentDefinition = intent;
+          } else {
+            step.intentDefinition = intent;
+          }
           if (!step.name || step.name.trim().length === 0) {
             step.name = intentName + "_" + step.level;
           }
@@ -84,7 +89,7 @@ export class StepComponent implements OnInit {
             });
           dialogRef.afterClosed().subscribe(result => {
             if (result.name) {
-              step.intentDefinition =
+              const newIntent =
                 new Intent(
                   result.name,
                   this.state.currentApplication.namespace,
@@ -96,10 +101,20 @@ export class StepComponent implements OnInit {
                   result.description,
                   result.category
                 );
-              step.intent.name = result.name;
-              step.name = result.name + "_" + step.level;
+              if (targetIntent) {
+                step.targetIntentDefinition = newIntent;
+                step.targetIntent.name = result.name;
+              } else {
+                step.intentDefinition = newIntent;
+                step.intent.name = result.name;
+                step.name = result.name + "_" + step.level;
+              }
             } else {
-              step.intent.name = step.intentDefinition ? step.intentDefinition.name : "";
+              if (targetIntent) {
+                step.targetIntent.name = step.targetIntentDefinition ? step.targetIntentDefinition.name : "";
+              } else {
+                step.intent.name = step.intentDefinition ? step.intentDefinition.name : "";
+              }
             }
           })
         }
@@ -113,7 +128,8 @@ export class StepComponent implements OnInit {
 
   save() {
     let invalidMessage = this.step.currentAnswer().invalidMessage();
-    if (!this.step.currentAnswer().isEmpty() && this.step.intent.name.trim().length === 0) {
+    if ((!this.step.currentAnswer().isEmpty() || this.step.targetIntent.name.trim().length !== 0)
+      && this.step.intent.name.trim().length === 0) {
       invalidMessage = "Please choose an intent";
     }
     if (invalidMessage) {

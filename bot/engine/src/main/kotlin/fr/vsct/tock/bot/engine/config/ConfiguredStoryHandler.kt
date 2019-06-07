@@ -48,8 +48,12 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
             }
         }
 
-        (bus.step as? Step)?.configuration?.also {
-            it.send(bus)
+        (bus.step as? Step)?.configuration?.also { step ->
+            step.send(bus)
+            bus.botDefinition
+                .findStoryDefinition(step.targetIntent)
+                .takeUnless { it == bus.botDefinition.unknownStory }
+                ?.apply { bus.handleAndSwitchStory(this) }
             return@handle
         }
 
@@ -76,7 +80,8 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
         if (simple == null) {
             fallbackAnswer()
         } else {
-            simple.answers.let {
+            simple.answers.takeUnless { it.isEmpty() }
+                ?.let {
                 it.subList(0, it.size - 1)
                     .forEach { a ->
                         send(container, a)
@@ -104,7 +109,7 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
                             ?: messages.last())
                     else messages
                 }
-                ?: listOfNotNull(suggestions.takeIf { suggestions.isNotEmpty() }?.let { connector?.addSuggestions(label, suggestions)?.invoke(this) })
+                ?: listOfNotNull(suggestions.takeIf { suggestions.isNotEmpty() && end }?.let { connector?.addSuggestions(label, suggestions)?.invoke(this) })
 
 
         val actions = connectorMessages

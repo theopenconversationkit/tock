@@ -16,6 +16,10 @@ data class BotStoryDefinitionConfigurationStep(
      */
     val intent: Intent?,
     /**
+     * The optional intent to switch to when the step is reached.
+     */
+    val targetIntent: Intent?,
+    /**
      * The answers available.
      */
     val answers: List<BotAnswerConfiguration>,
@@ -42,13 +46,18 @@ data class BotStoryDefinitionConfigurationStep(
     /**
      * Intent defined by the intent name.
      */
-    val intentDefinition: IntentDefinition? = null
+    val intentDefinition: IntentDefinition? = null,
+    /**
+     * Target Intent defined by the intent name.
+     */
+    val targetIntentDefinition: IntentDefinition? = null
 ) {
 
     constructor(story: StoryDefinitionConfiguration, e: StoryDefinitionConfigurationStep) :
         this(
             e.name,
             e.intent,
+            e.targetIntent,
             e.answers.mapAnswers(),
             e.currentType,
             story.category,

@@ -398,7 +398,8 @@ object BotAdminService {
     ): StoryDefinitionConfigurationStep =
         StoryDefinitionConfigurationStep(
             name,
-            intent,
+            intent?.takeIf { it.name.isNotBlank()  },
+            targetIntent?.takeIf { it.name.isNotBlank()  },
             answers.map { it.toConfiguration(botId, oldStory?.steps?.find { it.name == name }?.answers) },
             currentType,
             userSentence,
@@ -419,6 +420,23 @@ object BotAdminService {
                         label = intentDefinition.label,
                         category = intentDefinition.category,
                         description = intentDefinition.description
+                    )
+                    front.save(newIntent)
+                }
+            }
+            if (targetIntentDefinition != null) {
+                //check that the intent exists
+                val intentName = targetIntent?.name
+                var newIntent = intentName?.let { front.getIntentByNamespaceAndName(app.namespace, intentName) }
+                if (newIntent == null && intentName != null) {
+                    newIntent = IntentDefinition(
+                        intentName,
+                        app.namespace,
+                        setOf(app._id),
+                        emptySet(),
+                        label = targetIntentDefinition.label,
+                        category = targetIntentDefinition.category,
+                        description = targetIntentDefinition.description
                     )
                     front.save(newIntent)
                 }

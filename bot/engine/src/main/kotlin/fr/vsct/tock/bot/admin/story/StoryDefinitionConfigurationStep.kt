@@ -17,9 +17,13 @@ data class StoryDefinitionConfigurationStep(
      */
     val name: String,
     /**
-     * The intent used to reach the step - mandatory if an answer is set.
+     * The intent used to reach the step - mandatory if an answer is set, or if there is a [targetIntent].
      */
     val intent: Intent?,
+    /**
+     * The optional intent to switch to when the step is reached.
+     */
+    val targetIntent: Intent?,
     /**
      * The answers available.
      */

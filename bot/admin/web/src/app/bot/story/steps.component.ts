@@ -54,6 +54,7 @@ export class StepsComponent implements OnInit, OnChanges {
     const newStep = new StoryStep(
       "",
       new IntentName(""),
+      new IntentName(""),
       [answer],
       AnswerConfigurationType.simple,
       this.defaultCategory,

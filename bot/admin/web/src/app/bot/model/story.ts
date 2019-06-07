@@ -211,6 +211,7 @@ export class MandatoryEntity extends AnswerContainer {
 export class StoryStep extends AnswerContainer {
 
   public intentDefinition: Intent;
+  public targetIntentDefinition: Intent;
   public new: boolean;
 
   static filterNew(steps: StoryStep[]): StoryStep[] {
@@ -220,6 +221,7 @@ export class StoryStep extends AnswerContainer {
 
   constructor(public name: string,
               public intent: IntentName,
+              public targetIntent:IntentName,
               answers: AnswerConfiguration[],
               currentType: AnswerConfigurationType,
               category: string,
@@ -245,6 +247,7 @@ export class StoryStep extends AnswerContainer {
     return new StoryStep(
       this.name,
       this.intent.clone(),
+      this.targetIntent.clone(),
       this.answers.slice(0).map(a => a.clone()),
       this.currentType,
       this.category,
@@ -258,6 +261,7 @@ export class StoryStep extends AnswerContainer {
     const value = Object.create(StoryStep.prototype);
     const result = Object.assign(value, json, {
       intent: IntentName.fromJSON(json.intent),
+      targetIntent: IntentName.fromJSON(json.targetIntent),
       currentType: AnswerConfigurationType[json.currentType],
       answers: AnswerConfiguration.fromJSONArray(json.answers),
       children: StoryStep.fromJSONArray(json.children)
@@ -281,7 +285,9 @@ export class IntentName {
 
   static fromJSON(json: any): IntentName {
     const value = Object.create(IntentName.prototype);
-    const result = Object.assign(value, json, {});
+    const result = Object.assign(value, json, {
+      name: json && json.name ? json.name : ""
+    });
     return result;
   }
 
