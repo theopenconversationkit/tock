@@ -84,123 +84,125 @@ object ApplicationCodecService : ApplicationCodec {
         configuration: ApplicationImportConfiguration
     ): ImportReport {
         logger.info { "Import dump..." }
-        with(configuration) {
-            val report = ImportReport()
-            try {
+        val report = ImportReport()
+        try {
 
-                dump.entityTypes.forEach { e ->
-                    if (!entityTypeExists(e.name)) {
-                        val newEntity = e.copy(_id = newId())
-                        config.save(newEntity)
-                        report.add(newEntity)
-                        logger.debug { "Import entity type $newEntity" }
-                    }
+            dump.entityTypes.forEach { e ->
+                if (!entityTypeExists(e.name)) {
+                    val newEntity = e.copy(_id = newId())
+                    config.save(newEntity)
+                    report.add(newEntity)
+                    logger.debug { "Import entity type $newEntity" }
                 }
-
-                val appName =
-                    if (configuration.newApplicationName.isNullOrBlank()) dump.application.name else configuration.newApplicationName!!.trim()
-                val app = config.getApplicationByNamespaceAndName(namespace, appName)
-                    .let { app ->
-                        if (app == null) {
-                            val appToSave = dump.application.copy(
-                                namespace = namespace,
-                                name = appName,
-                                intents = emptySet(),
-                                intentStatesMap = emptyMap(),
-                                _id = newId()
-                            )
-                            report.add(appToSave)
-                            logger.debug { "Import application $appToSave" }
-                            config.save(appToSave)
-                        } else {
-                            //a fresh empty model has been initialized before with the default locale
-                            //then remove the default locale
-                            if (
-                                configuration.defaultModelMayExist
-                                && app.supportedLocales.size == 1
-                                && app.supportedLocales.contains(defaultLocale)
-                                && app.intents.isEmpty()
-                            ) {
-                                app.copy(supportedLocales = emptySet())
-                            } else {
-                                app
-                            }
-                        }
-                    }
-                val appId = app._id
-
-                val intentsToCreate = mutableListOf<IntentDefinition>()
-                var intentsIdsMap = dump.intents.map { i ->
-                    var intent = config.getIntentByNamespaceAndName(namespace, i.name)
-                    if (intent == null) {
-                        intent = i.copy(_id = newId(), namespace = namespace, applications = setOf(appId))
-                        intentsToCreate.add(intent)
-                    } else {
-                        config.save(intent.copy(namespace = namespace, applications = intent.applications + appId))
-                    }
-                    i._id to intent._id
-                }.toMap()
-
-                //save new intents
-                intentsToCreate.forEach { intent ->
-                    val newIntent =
-                        intent.copy(sharedIntents = intent.sharedIntents.asSequence().mapNotNull { intentsIdsMap[it] }.toSet())
-                    config.save(newIntent)
-                    report.add(newIntent)
-                    logger.debug { "Import intent $newIntent" }
-                }
-
-                //update application intent list & locales
-                config.save(
-                    app.copy(
-                        intents = app.intents + intentsIdsMap.values.toSet(),
-                        intentStatesMap = app.intentStatesMap + dump.application.intentStatesMap.mapKeys { intentsIdsMap[it.key]!! },
-                        supportedLocales = app.supportedLocales + dump.application.supportedLocales
-                    )
-                )
-                report.localeAdded = !app.supportedLocales.containsAll(dump.application.supportedLocales)
-
-                //add unknown intent to intent map
-                intentsIdsMap += (Intent.UNKNOWN_INTENT_NAME.toId<IntentDefinition>() to Intent.UNKNOWN_INTENT_NAME.toId())
-
-                dump.sentences.forEach { s ->
-                    if (config.search(
-                            SentencesQuery(
-                                appId,
-                                s.language,
-                                search = s.text,
-                                onlyExactMatch = true
-                            )
-                        ).total == 0L
-                    ) {
-                        logger.debug { "Import sentence ${s.text}" }
-                        val sentence = s.copy(
-                            applicationId = appId,
-                            classification = s.classification.copy(
-                                intentId = intentsIdsMap[s.classification.intentId]!!,
-                                //ensure that entities are correctly sorted
-                                entities = s.classification.entities.sortedBy { it.start }
-
-                            ))
-                        report.add(sentence)
-                        config.save(sentence)
-                    }
-                }
-                logger.info { "Dump imported! Result : $report" }
-
-                //trigger build
-                if (report.modified) {
-                    triggerBuild(ModelBuildTrigger(appId, true))
-                }
-
-            } catch (t: Throwable) {
-                logger.error(t)
-                report.success = false
-                report.addError(t.message ?: "exception without message")
             }
 
-            return report
+            val appName =
+                if (configuration.newApplicationName.isNullOrBlank()) dump.application.name else configuration.newApplicationName!!.trim()
+            val app = config.getApplicationByNamespaceAndName(namespace, appName)
+                .let { app ->
+                    if (app == null) {
+                        val appToSave = dump.application.copy(
+                            namespace = namespace,
+                            name = appName,
+                            intents = emptySet(),
+                            intentStatesMap = emptyMap(),
+                            _id = newId()
+                        )
+                        report.add(appToSave)
+                        logger.debug { "Import application $appToSave" }
+                        config.save(appToSave)
+                    } else {
+                        //a fresh empty model has been initialized before with the default locale
+                        //then remove the default locale
+                        if (
+                            configuration.defaultModelMayExist
+                            && app.supportedLocales.size == 1
+                            && app.supportedLocales.contains(defaultLocale)
+                            && app.intents.isEmpty()
+                        ) {
+                            app.copy(supportedLocales = emptySet())
+                        } else {
+                            app
+                        }
+                    }
+                }
+            val appId = app._id
+
+            val intentsToCreate = mutableListOf<IntentDefinition>()
+            var intentsIdsMap = dump.intents.map { i ->
+                var intent = config.getIntentByNamespaceAndName(namespace, i.name)
+                if (intent == null) {
+                    intent = i.copy(
+                        _id = newId(),
+                        namespace = namespace,
+                        applications = setOf(appId),
+                        description = i.description?.replace("<br>", "\n")?.replace("</br>", "\n"))
+                    intentsToCreate.add(intent)
+                } else {
+                    config.save(intent.copy(namespace = namespace, applications = intent.applications + appId))
+                }
+                i._id to intent._id
+            }.toMap()
+
+            //save new intents
+            intentsToCreate.forEach { intent ->
+                val newIntent =
+                    intent.copy(sharedIntents = intent.sharedIntents.asSequence().mapNotNull { intentsIdsMap[it] }.toSet())
+                config.save(newIntent)
+                report.add(newIntent)
+                logger.debug { "Import intent $newIntent" }
+            }
+
+            //update application intent list & locales
+            config.save(
+                app.copy(
+                    intents = app.intents + intentsIdsMap.values.toSet(),
+                    intentStatesMap = app.intentStatesMap + dump.application.intentStatesMap.mapKeys { intentsIdsMap[it.key]!! },
+                    supportedLocales = app.supportedLocales + dump.application.supportedLocales
+                )
+            )
+            report.localeAdded = !app.supportedLocales.containsAll(dump.application.supportedLocales)
+
+            //add unknown intent to intent map
+            intentsIdsMap += (Intent.UNKNOWN_INTENT_NAME.toId<IntentDefinition>() to Intent.UNKNOWN_INTENT_NAME.toId())
+
+            dump.sentences.forEach { s ->
+                if (config.search(
+                        SentencesQuery(
+                            appId,
+                            s.language,
+                            search = s.text,
+                            onlyExactMatch = true
+                        )
+                    ).total == 0L
+                ) {
+                    logger.debug { "Import sentence ${s.text}" }
+                    val sentence = s.copy(
+                        applicationId = appId,
+                        classification = s.classification.copy(
+                            intentId = intentsIdsMap[s.classification.intentId]!!,
+                            //ensure that entities are correctly sorted
+                            entities = s.classification.entities.sortedBy { it.start }
+
+                        ))
+                    report.add(sentence)
+                    config.save(sentence)
+                }
+            }
+            logger.info { "Dump imported! Result : $report" }
+
+            //trigger build
+            if (report.modified) {
+                triggerBuild(ModelBuildTrigger(appId, true))
+            }
+
+        } catch (t: Throwable) {
+            logger.error(t)
+            report.success = false
+            report.addError(t.message ?: "exception without message")
         }
+
+        return report
     }
 
     override fun importSentences(namespace: String, dump: SentencesDump): ImportReport {
