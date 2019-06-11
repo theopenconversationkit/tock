@@ -307,7 +307,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             connectorMessageCol.findOneById(ConnectorMessageColId(actionId, dialogId))
                 ?.messages
                 ?.mapNotNull { it?.value as? ConnectorMessage }
-                    ?: emptyList()
+                ?: emptyList()
         } catch (e: Exception) {
             logger.error(e)
             emptyList()
@@ -607,4 +607,19 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             emptyList()
         }
     }
+
+    private fun disableBot(clientId: String, botDisabled: Boolean) {
+        val userTimeline = loadWithoutDialogs(PlayerId(clientId))
+        userTimeline.userState.botDisabled = botDisabled
+        save(userTimeline)
+    }
+
+    override fun disableBot(clientId: String) {
+        disableBot(clientId, true)
+    }
+
+    override fun enableBot(clientId: String) {
+        disableBot(clientId, false)
+    }
+
 }

@@ -112,4 +112,14 @@ interface UserTimelineDAO {
         stateValueId: Id<EntityStateValue>,
         oldActionsMap: Map<Id<Action>, Action> = emptyMap()
     ): List<ArchivedEntityValue>
+
+    /**
+     * Disable bot associated of a client id.
+     */
+    fun disableBot(clientId: String)
+
+    /**
+     * Enable bot associated of a client id.
+     */
+    fun enableBot(clientId: String)
 }

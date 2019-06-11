@@ -57,11 +57,11 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
     @Test
     fun `get userTimeLine with temporaryIds `() {
         val id = PlayerId("id", PlayerType.user, "clientId")
-        val u = UserTimeline(id, dialogs = mutableListOf(Dialog(setOf(id))),temporaryIds = mutableSetOf("123456879", "1477854545"))
+        val u = UserTimeline(id, dialogs = mutableListOf(Dialog(setOf(id))), temporaryIds = mutableSetOf("123456879", "1477854545"))
         UserTimelineMongoDAO.save(u)
         assertEquals(
             u.toString(),
-            UserTimelineMongoDAO.loadByTemporaryIdsWithoutDialogs(listOf("123456879","99999999")).firstOrNull()?.toString()
+            UserTimelineMongoDAO.loadByTemporaryIdsWithoutDialogs(listOf("123456879", "99999999")).firstOrNull()?.toString()
         )
     }
 
@@ -85,4 +85,29 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
         )
 
     }
+
+    @Test
+    fun `disableBot update userState`() {
+        val id = PlayerId("userid")
+        val u = UserTimeline(id)
+        UserTimelineMongoDAO.save(u)
+        UserTimelineMongoDAO.disableBot("userid")
+        assertEquals(
+            UserTimelineMongoDAO.loadWithoutDialogs(id).userState.botDisabled,
+            true
+        )
+    }
+
+    @Test
+    fun `enableBot update userState`() {
+        val id = PlayerId("userid", PlayerType.user)
+        val u = UserTimeline(id)
+        UserTimelineMongoDAO.save(u)
+        UserTimelineMongoDAO.enableBot("userid")
+        assertEquals(
+            UserTimelineMongoDAO.loadWithoutDialogs(id).userState.botDisabled,
+            false
+        )
+    }
+
 }
