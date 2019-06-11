@@ -22,7 +22,6 @@ import fr.vsct.tock.bot.connector.messenger.json.webhook.MessageDeserializer
 
 @JsonDeserialize(using = MessageDeserializer::class)
 open class Message(open val mid: String,
-                   open val seq: Long,
                    open var text: String? = null,
                    open val attachments: List<Attachment> = emptyList(),
                    @get:JsonProperty("quick_reply") open val quickReply: UserActionPayload? = null) {
@@ -32,7 +31,6 @@ open class Message(open val mid: String,
         if (other !is Message) return false
 
         if (mid != other.mid) return false
-        if (seq != other.seq) return false
         if (text != other.text) return false
         if (attachments != other.attachments) return false
         if (quickReply != other.quickReply) return false
@@ -42,7 +40,6 @@ open class Message(open val mid: String,
 
     override fun hashCode(): Int {
         var result = mid.hashCode()
-        result = 31 * result + seq.hashCode()
         result = 31 * result + (text?.hashCode() ?: 0)
         result = 31 * result + attachments.hashCode()
         result = 31 * result + (quickReply?.hashCode() ?: 0)

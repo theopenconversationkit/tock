@@ -58,6 +58,8 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
+private const val VERSION = "3.3"
+
 /**
  * Messenger client.
  */
@@ -65,53 +67,53 @@ internal class MessengerClient(val secretKey: String) {
 
     interface GraphApi {
 
-        @POST("/v3.1/me/messages")
+        @POST("/v$VERSION/me/messages")
         fun sendMessage(@Query("access_token") accessToken: String, @Body messageRequest: MessageRequest): Call<SendResponse>
 
-        @POST("/v3.1/me/messages")
+        @POST("/v$VERSION/me/messages")
         fun sendAction(@Query("access_token") accessToken: String, @Body actionRequest: ActionRequest): Call<SendResponse>
 
-        @GET("/v3.1/{userId}/")
+        @GET("/v$VERSION/{userId}/")
         fun getUserProfile(@Path("userId") userId: String, @Query("access_token") accessToken: String, @Query("fields") fields: String): Call<UserProfile>
 
-        @POST("/v3.1/me/message_attachments")
+        @POST("/v$VERSION/me/message_attachments")
         fun sendAttachment(@Query("access_token") accessToken: String, @Body attachmentRequest: AttachmentRequest): Call<SendResponse>
 
-        @POST("/v3.1/me/pass_thread_control")
+        @POST("/v$VERSION/me/pass_thread_control")
         fun passThreadControl(@Query("access_token") accessToken: String, @Body request: PassThreadControlRequest): Call<SendResponse>
 
-        @POST("/v3.1/me/take_thread_control")
+        @POST("/v$VERSION/me/take_thread_control")
         fun takeThreadControl(@Query("access_token") accessToken: String, @Body request: TakeThreadControlRequest): Call<SendResponse>
 
-        @POST("/v3.1/me/request_thread_control")
+        @POST("/v$VERSION/me/request_thread_control")
         fun requestThreadControl(@Query("access_token") accessToken: String, @Body request: RequestThreadControlRequest): Call<SendResponse>
 
-        @GET("/v3.1/me/secondary_receivers")
+        @GET("/v$VERSION/me/secondary_receivers")
         fun secondaryReceivers(@Query("access_token") accessToken: String, @Query("fields") recipient: String = "id,name"): Call<SecondaryReceiverResponse>
 
-        @GET("/v3.1/me/thread_owner")
+        @GET("/v$VERSION/me/thread_owner")
         fun threadOwner(@Query("access_token") accessToken: String, @Query("recipient") recipient: String): Call<ThreadOwnerResponse>
 
         @POST("/{appId}/activities")
         fun sendCustomEvent(@Path("appId") appId: String, @Body customEventRequest: CustomEventRequest): Call<SendResponse>
 
-        @GET("/v3.1/{appId}/subscriptions")
+        @GET("/v$VERSION/{appId}/subscriptions")
         fun getSubscriptions(@Path("appId") appId: String, @Query("access_token") appAccessToken: String): Call<SubscriptionsResponse>
 
-        @POST("/v3.1/{appId}/subscriptions")
+        @POST("/v$VERSION/{appId}/subscriptions")
         fun subscriptions(
             @Path("appId") appId: String, @Query("object") obj: String,
             @Query("callback_url") callbackUrl: String, @Query("fields") fields: String,
             @Query("verify_token") verifyToken: String, @Query("access_token") appAccessToken: String
         ): Call<SuccessResponse>
 
-        @DELETE("/v3.1/{pageId}/subscribed_apps")
+        @DELETE("/v$VERSION/{pageId}/subscribed_apps")
         fun deleteSubscribedApps(
             @Path("pageId") pageId: String, @Query("subscribed_fields") subscribedFields: String,
             @Query("access_token") accessToken: String
         ): Call<SuccessResponse>
 
-        @POST("/v3.1/{pageId}/subscribed_apps")
+        @POST("/v$VERSION/{pageId}/subscribed_apps")
         fun subscribedApps(
             @Path("pageId") pageId: String, @Query("subscribed_fields") subscribedFields: String,
             @Query("access_token") accessToken: String

@@ -50,11 +50,10 @@ internal class MessageDeserializer : JacksonDeserializer<Message>() {
 
 
         val (mid, seq, text, attachments, isEcho, appId, metadata, quickReply)
-                = jp.read<MessageFields> { fields, name ->
+            = jp.read<MessageFields> { fields, name ->
             with(fields) {
                 when (name) {
                     Message::mid.name -> mid = jp.valueAsString
-                    Message::seq.name -> seq = jp.longValue
                     Message::text.name -> text = jp.valueAsString
                     Message::attachments.name -> attachments = jp.readListValues<Attachment>().filterNotNull()
                     "is_echo" -> isEcho = jp.booleanValue
@@ -66,20 +65,20 @@ internal class MessageDeserializer : JacksonDeserializer<Message>() {
             }
         }
 
-        if (mid == null || seq == null || (text == null && attachments?.isEmpty() ?: true && quickReply == null)) {
-            logger.warn { "invalid message $mid $seq $text $attachments" }
+        if (mid == null || (text == null && attachments?.isEmpty() != false && quickReply == null)) {
+            logger.warn { "invalid message $mid $text $attachments" }
             return null
         }
 
         return if (isEcho) {
             if (appId == null) {
-                logger.warn { "null appId foe echo $mid $seq $text $attachments $metadata" }
+                logger.warn { "null appId foe echo $mid $text $attachments $metadata" }
                 null
             } else {
-                MessageEcho(mid, seq, text, attachments ?: emptyList(), true, appId, metadata)
+                MessageEcho(mid, text, attachments ?: emptyList(), true, appId, metadata)
             }
         } else {
-            Message(mid, seq, text, attachments ?: emptyList(), quickReply)
+            Message(mid, text, attachments ?: emptyList(), quickReply)
         }
     }
 }

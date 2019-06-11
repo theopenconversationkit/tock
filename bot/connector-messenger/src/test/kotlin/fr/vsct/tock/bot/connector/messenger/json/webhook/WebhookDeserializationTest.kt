@@ -43,14 +43,14 @@ class WebhookDeserializationTest {
 
     @Test
     fun testMessageWebhookDeserialization() {
-        val m = MessageWebhook(Sender("1"), Recipient("2"), 1L, Message("aa", 2, "text"))
+        val m = MessageWebhook(Sender("1"), Recipient("2"), 1L, Message("aa", "text"))
         val s = mapper.writeValueAsString(m)
         assertEquals(m, mapper.readValue<Webhook>(s))
     }
 
     @Test
     fun testMessageWebhookWithEmptyAttachmentDeserialization() {
-        val m = MessageWebhook(Sender("1"), Recipient("2"), 1L, Message("aa", 2, "text"))
+        val m = MessageWebhook(Sender("1"), Recipient("2"), 1L, Message("aa", "text"))
         val s =
             """{"sender":{"id":"1"},"recipient":{"id":"2"},"timestamp":1,"message":{"mid":"aa","seq":2,"text":"text","attachments":[{}]}}"""
         assertEquals(m, mapper.readValue<Webhook>(s))
@@ -58,7 +58,7 @@ class WebhookDeserializationTest {
 
     @Test
     fun testMessageEchoWebhookDeserialization() {
-        val m = MessageEchoWebhook(Sender("1"), Recipient("2"), 1L, MessageEcho("aa", 2, "text", appId = 123L))
+        val m = MessageEchoWebhook(Sender("1"), Recipient("2"), 1L, MessageEcho("aa", "text", appId = 123L))
         val s = mapper.writeValueAsString(m)
         assertEquals(m, mapper.readValue<Webhook>(s))
     }
@@ -80,22 +80,22 @@ class WebhookDeserializationTest {
     @Test
     fun testQuickReplayWebhookDeserialization() {
         val input = "{\n" +
-                "  \"sender\": {\n" +
-                "    \"id\": \"USER_ID\"\n" +
-                "  },\n" +
-                "  \"recipient\": {\n" +
-                "    \"id\": \"PAGE_ID\"\n" +
-                "  },\n" +
-                "  \"timestamp\": 1464990849275,\n" +
-                "  \"message\": {\n" +
-                "    \"mid\": \"mid.1464990849238:b9a22a2bcb1de31773\",\n" +
-                "    \"seq\": 69,\n" +
-                "    \"text\": \"Red\",\n" +
-                "    \"quick_reply\": {\n" +
-                "      \"payload\": \"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED\"\n" +
-                "    }\n" +
-                "  }\n" +
-                "} "
+            "  \"sender\": {\n" +
+            "    \"id\": \"USER_ID\"\n" +
+            "  },\n" +
+            "  \"recipient\": {\n" +
+            "    \"id\": \"PAGE_ID\"\n" +
+            "  },\n" +
+            "  \"timestamp\": 1464990849275,\n" +
+            "  \"message\": {\n" +
+            "    \"mid\": \"mid.1464990849238:b9a22a2bcb1de31773\",\n" +
+            "    \"seq\": 69,\n" +
+            "    \"text\": \"Red\",\n" +
+            "    \"quick_reply\": {\n" +
+            "      \"payload\": \"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED\"\n" +
+            "    }\n" +
+            "  }\n" +
+            "} "
         val output = mapper.readValue<Webhook>(input)
         assertEquals(
             MessageWebhook(
@@ -104,7 +104,6 @@ class WebhookDeserializationTest {
                 1464990849275,
                 Message(
                     "mid.1464990849238:b9a22a2bcb1de31773",
-                    69,
                     "Red",
                     emptyList(),
                     UserActionPayload("DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED")

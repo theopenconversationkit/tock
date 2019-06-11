@@ -167,6 +167,7 @@ fun mediaTemplate(
  * This function generates a generic template if there is one element,
  * or a classic list element if there is between 2 and 4.
  */
+@Deprecated("messenger lists are deprecated")
 fun flexibleListTemplate(
     elements: List<Element>,
     topElementStyle: ListElementStyle? = null,
@@ -179,6 +180,7 @@ fun flexibleListTemplate(
  * This function generates a generic template if there is one element,
  * or a classic list element if there is between 2 and 4.
  */
+@Deprecated("messenger lists are deprecated")
 fun flexibleListTemplate(
     elements: List<Element>,
     topElementStyle: ListElementStyle? = null,
@@ -194,6 +196,7 @@ fun flexibleListTemplate(
 /**
  * Creates a [list template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
  */
+@Deprecated("messenger lists are deprecated")
 fun listTemplate(
     e1: Element,
     e2: Element,
@@ -207,6 +210,7 @@ fun listTemplate(
 /**
  * Creates a [list template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
  */
+@Deprecated("messenger lists are deprecated")
 fun listTemplate(
     e1: Element,
     e2: Element,
@@ -221,6 +225,7 @@ fun listTemplate(
 /**
  * Creates a [list template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
  */
+@Deprecated("messenger lists are deprecated")
 fun listTemplate(
     elements: List<Element>,
     topElementStyle: ListElementStyle? = null,
@@ -230,6 +235,7 @@ fun listTemplate(
 /**
  * Creates a [list template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
  */
+@Deprecated("messenger lists are deprecated")
 fun listTemplate(
     elements: List<Element>,
     topElementStyle: ListElementStyle? = null,
@@ -417,6 +423,7 @@ fun I18nTranslator.genericElement(
 /**
  * Creates a [list element](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
  */
+@Deprecated("messenger lists are deprecated")
 fun I18nTranslator.listElement(
     title: CharSequence,
     subtitle: CharSequence? = null,
@@ -453,6 +460,7 @@ fun logoutButton(): LogoutButton = LogoutButton()
 /**
  * Creates a [location quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies#location).
  */
+@Deprecated("location QR is deprecated")
 fun locationQuickReply(): QuickReply = LocationQuickReply()
 
 /**

@@ -23,11 +23,10 @@ import com.fasterxml.jackson.annotation.JsonProperty
  */
 data class MessageEcho(
         override val mid: String,
-        override val seq: Long,
         override var text: String? = null,
         override val attachments: List<Attachment> = emptyList(),
         @JsonProperty("is_echo") val echo: Boolean = true,
         @JsonProperty("app_id") val appId: Long,
         val metadata: String? = null
-) : Message(mid, seq, text, attachments) {
+) : Message(mid, text, attachments) {
 }
