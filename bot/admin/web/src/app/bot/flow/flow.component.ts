@@ -158,36 +158,40 @@ export class FlowComponent implements OnInit {
   }
 
   displayFlow(event: string) {
-    this.botConfiguration.configurations.subscribe(c => {
-      const all = event === "all";
-      const conf = c.find(c => c._id === this.botConfigurationId);
-      if (conf || (all && c.length !== 0)) {
-        if (!all) {
-          this.lastBotId = conf.botId;
-        } else {
-          this.lastBotId = c[0].botId
-        }
-        this.bot.getApplicationFlow(
-          new DialogFlowRequest(
-            this.state.currentApplication.namespace,
-            this.state.currentApplication.name,
-            this.state.currentLocale,
-            this.lastBotId,
-            conf ? conf._id : null
-          )
-        ).subscribe(f => {
-          this.flow = f;
-          this.reset();
-        });
+    const c = this.botConfiguration.configurations.getValue();
+    const all = event === "all";
+    const conf = c.find(c => c._id === this.botConfigurationId);
+    if (conf || (all && c.length !== 0)) {
+      if (!all) {
+        this.lastBotId = conf.botId;
       } else {
-        this.graphData = null;
-        this.flow = null;
-        this.reset();
+        this.lastBotId = c[0].botId
       }
-    });
+      this.bot.getApplicationFlow(
+        new DialogFlowRequest(
+          this.state.currentApplication.namespace,
+          this.state.currentApplication.name,
+          this.state.currentLocale,
+          this.lastBotId,
+          conf ? conf._id : null
+        )
+      ).subscribe(f => {
+        this.flow = f;
+        this.reset();
+      });
+    } else {
+      this.graphData = null;
+      this.flow = null;
+      this.reset();
+    }
   }
 
-  private toGraphData(flow: ApplicationDialogFlow) {
+  private
+
+  toGraphData(flow
+                :
+                ApplicationDialogFlow
+  ) {
     this.flow = flow;
     if (flow) {
       const displayOnlyNext: boolean = this.direction === -1;
@@ -389,12 +393,18 @@ export class FlowComponent implements OnInit {
     }
   }
 
-  nodeChange(id: string) {
+  nodeChange(id
+               :
+               string
+  ) {
     this.selectedNode = this.allNodes[id];
     this.selectedEdge = null;
   }
 
-  edgeChange(key: string) {
+  edgeChange(key
+               :
+               string
+  ) {
     this.selectedEdge = this.allTransitions.get(key);
     this.selectedNode = null;
   }

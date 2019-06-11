@@ -60,7 +60,7 @@
   <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalTransitionPercentage" (change)="updateCount()"></mat-slider>
 </mat-expansion-panel>
 
-<div *ngIf="graphData" style="height: 90%; width: 80%; float: left; overflow: auto; overflow-y: hidden">
+<div *ngIf="graphData" class="cytoscape">
   <tock-cytoscape [elements]="graphData" [layout]="layout" (selectedNode)="nodeChange($event)" (selectedEdge)="edgeChange($event)"></tock-cytoscape>
 </div>
 

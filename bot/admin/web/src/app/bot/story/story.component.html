@@ -3,7 +3,7 @@
     <mat-panel-title>
       <span *ngIf="!storyNode" matTooltip="Story name" class="answer-title">{{story.name}}</span>
       <span *ngIf="storyNode" matTooltip="Story name" [matBadge]="storyNode.displayCount()"
-            matBadgeOverlap="false" class="answer-title">{{story.name}}</span>
+            matBadgeOverlap="false" class="answer-title answer-title-right-panel">{{story.name}}</span>
     </mat-panel-title>
     <mat-panel-description>
       <tock-answer *ngIf="!storyNode && story._id" class="answer" [answer]="story" [fullDisplay]="false"></tock-answer>

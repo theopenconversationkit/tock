@@ -30,20 +30,28 @@ tock-cytoscape {
   margin-left: 10px;
 }
 
-.selected-node {
+.cytoscape {
   height: 90%;
-  width: 20%;
+  width: 75%;
   float: left;
   overflow: auto;
+  overflow-y: hidden;
+}
+
+.selected-node {
+  height: 90%;
+  width: 25%;
+  float: right;
+  overflow: auto;
   overflow-x: hidden;
-  margin-top:10px;
+  margin-top: 10px;
 }
 
 .selected-edge {
   height: 90%;
-  width: 20%;
-  float: left;
+  width: 25%;
+  float: right;
   overflow: auto;
   overflow-x: hidden;
-  margin-top:10px;
+  margin-top: 10px;
 }

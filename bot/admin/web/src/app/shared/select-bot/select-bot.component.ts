@@ -65,15 +65,20 @@ export class SelectBotComponent implements OnInit {
           if (conf.length !== 0 && conf !== this.configurations) {
             this.botNames = Array.from(new Set(conf.map(c => this.getName(c)))).sort();
             const retainedConfs = conf.filter(c => this.useRestConfiguration || !c.connectorType.isRest());
-            if (!this.allowNoSelection) {
+            const containsCurrentSelection = this.configurationId && retainedConfs.some(c => c._id === this.configurationId);
+            if (!this.allowNoSelection && !containsCurrentSelection) {
               this.configurationId = conf[0]._id;
             }
             if (this.configurationId) {
-              this.changeConf(conf.find(c => c._id === this.configurationId), retainedConfs);
+              if(!containsCurrentSelection) {
+                this.changeConf(conf.find(c => c._id === this.configurationId), retainedConfs);
+              }
             } else {
               this.currentBotName = 'None';
               this.configurations = retainedConfs;
-              this.configurationIdChange.emit(null)
+              if(!containsCurrentSelection) {
+                this.configurationIdChange.emit(null)
+              }
             }
           } else {
             if (conf.length === 0) {
