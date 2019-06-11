@@ -36,6 +36,7 @@ import fr.vsct.tock.bot.engine.nlp.NlpController
 import fr.vsct.tock.bot.engine.nlp.NlpListener
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.nlp.api.client.NlpClient
+import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDefinition
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.error
@@ -265,6 +266,9 @@ object BotRepository {
     @Synchronized
     private fun checkBotConfigurations(startup: Boolean = false) {
         logger.trace { "check configurations" }
+        //
+        val applicationsCache = mutableListOf<ApplicationDefinition>()
+
         //clone conf list as we may update connectorControllerMap
         val existingConfs = ArrayList(connectorControllerMap.keys)
         val confs = botConfigurationDAO.getConfigurations()
@@ -278,7 +282,7 @@ object BotRepository {
                     val oldConfiguration = existingConfs.find { it._id == c._id }
                     val connector = findConnectorProvider(c.connectorType)?.connector(ConnectorConfiguration(c))
                     if (connector != null) {
-                        createBot(botDefinition, connector, c)
+                        createBot(botDefinition, connector, c, applicationsCache)
 
                         if (oldConfiguration != null) {
                             removeBot(oldConfiguration)
@@ -307,16 +311,19 @@ object BotRepository {
     private fun createBot(
         botDefinition: BotDefinition,
         connector: Connector,
-        conf: BotApplicationConfiguration
+        conf: BotApplicationConfiguration,
+        applicationsCache: MutableList<ApplicationDefinition>
     ): BotApplicationConfiguration {
 
-        val app = try {
-            nlpController.waitAvailability()
-            nlpClient.getApplicationByNamespaceAndName(botDefinition.namespace, botDefinition.nlpModelName)
-        } catch (e: Exception) {
-            logger.error(e)
-            null
-        }
+        val app = applicationsCache.find { it.name == botDefinition.nlpModelName && it.namespace == botDefinition.namespace }
+            ?: try {
+                nlpController.waitAvailability()
+                nlpClient.getApplicationByNamespaceAndName(botDefinition.namespace, botDefinition.nlpModelName)
+                    ?.also { applicationsCache.add(it) }
+            } catch (e: Exception) {
+                logger.error(e)
+                null
+            }
         if (app == null) {
             logger.warn { "model ${botDefinition.namespace}:${botDefinition.nlpModelName} not found" }
         }
