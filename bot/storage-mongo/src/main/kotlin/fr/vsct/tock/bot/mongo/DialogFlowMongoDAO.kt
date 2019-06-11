@@ -120,12 +120,12 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
     override fun loadApplicationData(
             namespace: String,
             botId: String,
-            applicationId: Id<BotApplicationConfiguration>?
+            applicationIds: Set<Id<BotApplicationConfiguration>>
     ): ApplicationDialogFlowData {
         val states = findStates(namespace, botId)
         val transitions = findTransitions(namespace, botId)
         val stats =
-                findStats(transitions.map { it._id }, applicationId).associateBy { it.first }.mapValues { it.value.second }
+                findStats(transitions.map { it._id }, applicationIds).associateBy { it.first }.mapValues { it.value.second }
 
         @Suppress("UNCHECKED_CAST")
         val transitionsWithStats = transitions.map {
@@ -167,14 +167,14 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
 
     private fun findStats(
             transitionIds: List<Id<DialogFlowStateTransitionCol>>,
-            botAppConfId: Id<BotApplicationConfiguration>?
+            botAppConfIds: Set<Id<BotApplicationConfiguration>>
     ): List<Pair<Id<DialogFlowStateTransitionCol>, Long>> =
             flowTransitionStatsCol.aggregate<Pair<String, Long>>(
                     match(
                             and(
                                     listOfNotNull(
                                             TransitionId `in` transitionIds,
-                                            if (botAppConfId == null) null else ApplicationId eq botAppConfId
+                                            if (botAppConfIds.isEmpty()) null else ApplicationId `in` botAppConfIds
                                     )
                             )
                     ),

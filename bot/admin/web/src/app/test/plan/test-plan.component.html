@@ -21,7 +21,7 @@
 <mat-card *ngIf="xray">
   <mat-card-title>Execute XRay plan</mat-card-title>
   <tock-select-bot [(configurationId)]="xrayBotConfigurationId"
-                   (configurationIdChange)="xrayBotConfigurationId=$event"
+                   (configurationIdChange)="xrayBotConfigurationId=$event ? $event.configurationId : undefined"
                     [allowNoSelection]="true"></tock-select-bot>
 
     <mat-form-field class="input-text">

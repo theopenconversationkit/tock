@@ -29,6 +29,6 @@ interface DialogFlowDAO {
     fun loadApplicationData(
         namespace: String,
         botId: String,
-        applicationId: Id<BotApplicationConfiguration>?
+        applicationIds: Set<Id<BotApplicationConfiguration>>
     ): ApplicationDialogFlowData
 }

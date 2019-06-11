@@ -20,6 +20,7 @@ import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.ApplicationId
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.BotId
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Name
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Namespace
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.NlpModel
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Parameters
@@ -83,14 +84,14 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
         botId: String
     ): BotApplicationConfiguration? {
         return getConfigurationByApplicationIdAndBotId(namespace, applicationId, botId)
-                ?: col.findOne(
-                    Namespace eq namespace,
-                    Parameters.keyProjection("appId") eq applicationId,
-                    BotId eq botId
-                )
+            ?: col.findOne(
+                Namespace eq namespace,
+                Parameters.keyProjection("appId") eq applicationId,
+                BotId eq botId
+            )
     }
 
-    override fun getConfigurationsByNamespaceAndBotId(namespace:String, botId: String): List<BotApplicationConfiguration> {
+    override fun getConfigurationsByNamespaceAndBotId(namespace: String, botId: String): List<BotApplicationConfiguration> {
         return col.find(Namespace eq namespace, BotId eq botId).toList()
     }
 
@@ -119,6 +120,10 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
         nlpModel: String
     ): List<BotApplicationConfiguration> {
         return col.find(Namespace eq namespace, NlpModel eq nlpModel).toList()
+    }
+
+    override fun getConfigurationsByNamespaceAndConfigurationName(namespace: String, configurationName: String): List<BotApplicationConfiguration> {
+        return col.find(Namespace eq namespace, Name eq configurationName).toList()
     }
 
     override fun getConfigurations(): List<BotApplicationConfiguration> {

@@ -32,6 +32,8 @@ interface BotApplicationConfigurationDAO {
 
     fun getConfigurationsByNamespaceAndNlpModel(namespace: String, nlpModel: String): List<BotApplicationConfiguration>
 
+    fun getConfigurationsByNamespaceAndConfigurationName(namespace: String, configurationName: String): List<BotApplicationConfiguration>
+
     fun getConfigurations(): List<BotApplicationConfiguration>
 
     fun getConfigurationById(id: Id<BotApplicationConfiguration>): BotApplicationConfiguration?

@@ -35,7 +35,7 @@ export class SelectBotComponent implements OnInit {
   allowNoSelection: boolean = false;
 
   @Output()
-  private configurationIdChange = new EventEmitter<string>();
+  private configurationIdChange = new EventEmitter<SelectBotEvent>();
 
   @Input()
   allowNoConfigurationSelection: boolean = false;
@@ -70,13 +70,13 @@ export class SelectBotComponent implements OnInit {
               this.configurationId = conf[0]._id;
             }
             if (this.configurationId) {
-              if(!containsCurrentSelection) {
+              if (!containsCurrentSelection) {
                 this.changeConf(conf.find(c => c._id === this.configurationId), retainedConfs);
               }
             } else {
               this.currentBotName = 'None';
               this.configurations = retainedConfs;
-              if(!containsCurrentSelection) {
+              if (!containsCurrentSelection) {
                 this.configurationIdChange.emit(null)
               }
             }
@@ -101,7 +101,7 @@ export class SelectBotComponent implements OnInit {
         .map(c => c.ownConnectorType());
       this.configurationId = conf._id;
       this.configurations = configurations;
-      this.configurationIdChange.emit(conf._id);
+      this.configurationIdChange.emit(new SelectBotEvent(conf.name, false, conf._id));
     } else {
       this.currentBotName = 'None';
       this.configurationIdChange.emit(null)
@@ -119,7 +119,18 @@ export class SelectBotComponent implements OnInit {
     if (conf) {
       this.changeConf(conf, this.configurations);
     } else {
-      this.configurationIdChange.emit("all")
+      this.configurationIdChange.emit(new SelectBotEvent(this.currentBotName, true))
     }
+  }
+}
+
+export class SelectBotEvent {
+
+  constructor(
+    public configurationName: string,
+    public all: boolean,
+    public configurationId?: string
+  ) {
+
   }
 }

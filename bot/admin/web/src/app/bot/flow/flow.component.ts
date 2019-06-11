@@ -24,6 +24,7 @@ import {entityColor} from "../../model/nlp";
 import {KeyValue} from "@angular/common";
 import {NodeTransition, StoryNode} from "./node";
 import {MatSnackBar} from "@angular/material";
+import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
 
 @Component({
   selector: 'tock-flow',
@@ -118,6 +119,7 @@ export class FlowComponent implements OnInit {
   allTransitions: Map<string, NodeTransition>;
   graphData;
 
+  botConfigurationName: string;
   botConfigurationId: string;
   lastBotId: string;
   flow: ApplicationDialogFlow;
@@ -157,10 +159,10 @@ export class FlowComponent implements OnInit {
     this.updateCount();
   }
 
-  displayFlow(event: string) {
+  displayFlow(event?: SelectBotEvent) {
     const c = this.botConfiguration.configurations.getValue();
-    const all = event === "all";
-    const conf = c.find(c => c._id === this.botConfigurationId);
+    const all = event ? event.all : false;
+    const conf = c.find(c => c._id === (event ? event.configurationId : this.botConfigurationId));
     if (conf || (all && c.length !== 0)) {
       if (!all) {
         this.lastBotId = conf.botId;
@@ -173,6 +175,7 @@ export class FlowComponent implements OnInit {
           this.state.currentApplication.name,
           this.state.currentLocale,
           this.lastBotId,
+          event.configurationName,
           conf ? conf._id : null
         )
       ).subscribe(f => {
@@ -185,8 +188,6 @@ export class FlowComponent implements OnInit {
       this.reset();
     }
   }
-
-  private
 
   toGraphData(flow
                 :

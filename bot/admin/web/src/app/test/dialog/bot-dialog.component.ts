@@ -22,6 +22,7 @@ import {BotDialogRequest, TestMessage} from "../model/test";
 import {BotMessage, Sentence} from "../../shared/model/dialog-data";
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef, MatSnackBar} from "@angular/material";
 import {BotSharedService} from "../../shared/bot-shared.service";
+import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
 
 @Component({
   selector: 'tock-bot-dialog',
@@ -53,11 +54,11 @@ export class BotDialogComponent implements OnInit, OnDestroy {
     )
   }
 
-  changeConfiguration(applicationConfigurationId: string) {
+  changeConfiguration(selectBotEvent: SelectBotEvent) {
     this.userMessage = "";
     this.messages = [];
     this.loading = false;
-    this.currentConfigurationId = applicationConfigurationId;
+    this.currentConfigurationId = selectBotEvent ? selectBotEvent.configurationId : null;
   }
 
   onNewMessage(message: BotMessage) {

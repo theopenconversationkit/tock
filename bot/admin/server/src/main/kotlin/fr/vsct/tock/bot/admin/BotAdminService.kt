@@ -398,8 +398,8 @@ object BotAdminService {
     ): StoryDefinitionConfigurationStep =
         StoryDefinitionConfigurationStep(
             name,
-            intent?.takeIf { it.name.isNotBlank()  },
-            targetIntent?.takeIf { it.name.isNotBlank()  },
+            intent?.takeIf { it.name.isNotBlank() },
+            targetIntent?.takeIf { it.name.isNotBlank() },
             answers.map { it.toConfiguration(botId, oldStory?.steps?.find { it.name == name }?.answers) },
             currentType,
             userSentence,
@@ -584,7 +584,16 @@ object BotAdminService {
     }
 
     fun loadDialogFlow(request: DialogFlowRequest): ApplicationDialogFlowData {
-        return dialogFlowDAO.loadApplicationData(request.namespace, request.botId, request.botConfigurationId)
+        val namespace = request.namespace
+        val applicationIds = if (request.botConfigurationId != null) {
+            setOf(request.botConfigurationId)
+        } else {
+            applicationConfigurationDAO
+                .getConfigurationsByNamespaceAndConfigurationName(namespace, request.botConfigurationName)
+                .map { it._id }
+                .toSet()
+        }
+        return dialogFlowDAO.loadApplicationData(namespace, request.botId, applicationIds)
     }
 
     fun executeTestPlan(namespace: String, testPlan: TestPlan): TestPlanExecution =
