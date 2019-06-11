@@ -25,7 +25,7 @@
   </mat-expansion-panel-header>
   <tock-select-bot [(configurationId)]="botConfigurationId" [displayConnectorChoice]="true"
                    [allowNoConfigurationSelection]="true" [useRestConfiguration]="false"
-                   (configurationIdChange)="displayFlow($event)" class="select">
+                   (selectionChange)="displayFlow($event)" class="select">
   </tock-select-bot>
   <mat-form-field class="select">
     <mat-label>Story Focus</mat-label>

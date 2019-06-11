@@ -88,18 +88,20 @@ export class CreateStoryComponent implements OnInit {
 
   private createStory() {
     this.botConfiguration.configurations.subscribe(confs => {
-      const botId = confs.find(c => c._id === this.botConfigurationId).botId;
-      this.story = new StoryDefinitionConfiguration(
-        "",
-        botId,
-        new IntentName(""),
-        AnswerConfigurationType.simple,
-        this.state.user.organization,
-        [],
-        "build",
-        "",
-        ""
-      )
+      const conf = confs.find(c => c._id === this.botConfigurationId);
+      if (conf) {
+        this.story = new StoryDefinitionConfiguration(
+          "",
+          conf.botId,
+          new IntentName(""),
+          AnswerConfigurationType.simple,
+          this.state.user.organization,
+          [],
+          "build",
+          "",
+          ""
+        )
+      }
     });
   }
 

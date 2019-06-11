@@ -35,7 +35,10 @@ export class SelectBotComponent implements OnInit {
   allowNoSelection: boolean = false;
 
   @Output()
-  private configurationIdChange = new EventEmitter<SelectBotEvent>();
+  private configurationIdChange = new EventEmitter<string>();
+
+  @Output()
+  private selectionChange = new EventEmitter<SelectBotEvent>();
 
   @Input()
   allowNoConfigurationSelection: boolean = false;
@@ -77,14 +80,16 @@ export class SelectBotComponent implements OnInit {
               this.currentBotName = 'None';
               this.configurations = retainedConfs;
               if (!containsCurrentSelection) {
-                this.configurationIdChange.emit(null)
+                this.selectionChange.emit(null);
+                this.configurationIdChange.emit(null);
               }
             }
           } else {
             if (conf.length === 0) {
               this.currentBotName = 'None';
               this.configurations = conf;
-              this.configurationIdChange.emit(null)
+              this.selectionChange.emit(null);
+              this.configurationIdChange.emit(null);
             }
           }
 
@@ -101,10 +106,12 @@ export class SelectBotComponent implements OnInit {
         .map(c => c.ownConnectorType());
       this.configurationId = conf._id;
       this.configurations = configurations;
-      this.configurationIdChange.emit(new SelectBotEvent(conf.name, false, conf._id));
+      this.selectionChange.emit(new SelectBotEvent(conf.name, false, conf._id));
+      this.configurationIdChange.emit(conf._id);
     } else {
       this.currentBotName = 'None';
-      this.configurationIdChange.emit(null)
+      this.selectionChange.emit(null);
+      this.configurationIdChange.emit(null);
     }
   }
 
@@ -119,7 +126,8 @@ export class SelectBotComponent implements OnInit {
     if (conf) {
       this.changeConf(conf, this.configurations);
     } else {
-      this.configurationIdChange.emit(new SelectBotEvent(this.currentBotName, true))
+      this.selectionChange.emit(new SelectBotEvent(this.currentBotName, true));
+      this.configurationIdChange.emit(null);
     }
   }
 }
@@ -132,5 +140,12 @@ export class SelectBotEvent {
     public configurationId?: string
   ) {
 
+  }
+
+  equals(e: SelectBotEvent): boolean {
+    return e
+      && this.configurationId === e.configurationId
+      && this.all === e.all
+      && this.configurationName === e.configurationName
   }
 }

@@ -57,6 +57,6 @@
     </mat-optgroup>
   </mat-autocomplete>
 </div>
-<span *ngIf="step && readonly">{{step.userSentence}} <span *ngIf="step.intent" class="intent"
-                                                           matTooltip="Action Intent">[{{step.intent.name}}]</span>: <tock-answer
+<span *ngIf="step && readonly" class="read-only">{{step.userSentence}}
+  <span *ngIf="step.intent && step.intent.name" class="intent" matTooltip="Action Intent">[{{step.intent.name}}]</span>: <tock-answer
   class="answer" [answer]="step" [editable]="false"></tock-answer></span>

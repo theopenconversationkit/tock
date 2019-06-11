@@ -119,9 +119,9 @@ export class FlowComponent implements OnInit {
   allTransitions: Map<string, NodeTransition>;
   graphData;
 
-  botConfigurationName: string;
   botConfigurationId: string;
   lastBotId: string;
+  lastBotSelection: SelectBotEvent;
   flow: ApplicationDialogFlow;
 
   valueAscOrder = (a: KeyValue<string, string>, b: KeyValue<string, string>): number => {
@@ -160,32 +160,35 @@ export class FlowComponent implements OnInit {
   }
 
   displayFlow(event?: SelectBotEvent) {
-    const c = this.botConfiguration.configurations.getValue();
-    const all = event ? event.all : false;
-    const conf = c.find(c => c._id === (event ? event.configurationId : this.botConfigurationId));
-    if (conf || (all && c.length !== 0)) {
-      if (!all) {
-        this.lastBotId = conf.botId;
+    if (!event || !event.equals(this.lastBotSelection)) {
+      this.lastBotSelection = event;
+      const c = this.botConfiguration.configurations.getValue();
+      const all = event ? event.all : false;
+      const conf = c.find(c => c._id === (event ? event.configurationId : this.botConfigurationId));
+      if (conf || (all && c.length !== 0)) {
+        if (!all) {
+          this.lastBotId = conf.botId;
+        } else {
+          this.lastBotId = c[0].botId
+        }
+        this.bot.getApplicationFlow(
+          new DialogFlowRequest(
+            this.state.currentApplication.namespace,
+            this.state.currentApplication.name,
+            this.state.currentLocale,
+            this.lastBotId,
+            event.configurationName,
+            conf ? conf._id : null
+          )
+        ).subscribe(f => {
+          this.flow = f;
+          this.reset();
+        });
       } else {
-        this.lastBotId = c[0].botId
-      }
-      this.bot.getApplicationFlow(
-        new DialogFlowRequest(
-          this.state.currentApplication.namespace,
-          this.state.currentApplication.name,
-          this.state.currentLocale,
-          this.lastBotId,
-          event.configurationName,
-          conf ? conf._id : null
-        )
-      ).subscribe(f => {
-        this.flow = f;
+        this.graphData = null;
+        this.flow = null;
         this.reset();
-      });
-    } else {
-      this.graphData = null;
-      this.flow = null;
-      this.reset();
+      }
     }
   }
 

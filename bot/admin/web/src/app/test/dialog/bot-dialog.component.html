@@ -21,7 +21,7 @@
     <br>
     <div>
       <tock-select-bot [(configurationId)]="currentConfigurationId"
-                       (configurationIdChange)="changeConfiguration($event)">
+                       (selectionChange)="changeConfiguration($event)">
         <button *ngIf="messages.length !== 0" mat-icon-button matTooltip="Clear conversation" (click)="clear()" color="primary"><mat-icon>remove_from_queue</mat-icon></button>
         <br><br><br>
         <table *ngIf="messages.length !== 0">

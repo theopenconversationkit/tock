@@ -53,9 +53,8 @@
         <mat-icon>extension</mat-icon>
       </button>
       <ul>
-        <li *ngFor="let e of story.mandatoryEntities">{{e.role}} <span class="intent"
-                                                                       matTooltip="Intent requested">[{{e.intent.name}}
-          ]</span>:
+        <li *ngFor="let e of story.mandatoryEntities">{{e.role}}
+          <span *ngIf="e.intent" class="intent" matTooltip="Intent requested">[{{e.intent.name}}]</span>:
           <tock-answer class="answer" [answer]="e" [editable]="false"></tock-answer>
         </li>
       </ul>
