@@ -61,16 +61,16 @@ export class SelectBotComponent implements OnInit {
   }
 
   ngOnInit() {
-    (this.displayConnectorChoice && this.useRestConfiguration
+    ((this.displayConnectorChoice && this.useRestConfiguration)
       ? this.botConfiguration.restConfigurations : this.botConfiguration.configurations)
       .subscribe(conf => {
         setTimeout(_ => {
           if (conf.length !== 0 && conf !== this.configurations) {
-            this.botNames = Array.from(new Set(conf.map(c => this.getName(c)))).sort();
             const retainedConfs = conf.filter(c => this.useRestConfiguration || !c.connectorType.isRest());
+            this.botNames = Array.from(new Set(retainedConfs.map(c => this.getName(c)))).sort();
             const containsCurrentSelection = this.configurationId && retainedConfs.some(c => c._id === this.configurationId);
-            if (!this.allowNoSelection && !containsCurrentSelection) {
-              this.configurationId = conf[0]._id;
+            if (!this.allowNoSelection && !containsCurrentSelection && retainedConfs.length !== 0) {
+              this.configurationId = retainedConfs[0]._id;
             }
             if (this.configurationId) {
               if (!containsCurrentSelection) {

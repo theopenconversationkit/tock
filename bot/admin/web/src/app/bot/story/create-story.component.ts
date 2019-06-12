@@ -53,16 +53,6 @@ export class CreateStoryComponent implements OnInit {
 
   ngOnInit(): void {
     setTimeout(() => this.createStory(), 200);
-    setTimeout(() => {
-      this.route.queryParams.subscribe(params => {
-        const text = params["text"];
-        if (text) {
-          this.onSentence(text);
-        } else {
-          this.newSentence.nativeElement.focus()
-        }
-      })
-    }, 500);
     const _this = this;
     this.submit.submitListener = _ => _this.onReply();
   }
@@ -100,7 +90,17 @@ export class CreateStoryComponent implements OnInit {
           "build",
           "",
           ""
-        )
+        );
+        setTimeout(() => {
+          this.route.queryParams.subscribe(params => {
+            const text = params["text"];
+            if (text) {
+              this.onSentence(text);
+            } else {
+              this.newSentence.nativeElement.focus()
+            }
+          })
+        }, 500);
       }
     });
   }

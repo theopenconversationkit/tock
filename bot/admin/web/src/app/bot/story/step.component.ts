@@ -1,9 +1,10 @@
 import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
-import {StoryStep} from "../model/story";
+import {IntentName, StoryStep} from "../model/story";
 import {MatDialog, MatSnackBar} from "@angular/material";
-import {Intent, IntentsCategory} from "../../model/nlp";
+import {Intent, IntentsCategory, ParseQuery} from "../../model/nlp";
 import {StateService} from "../../core-nlp/state.service";
 import {IntentDialogComponent} from "../../sentence-analysis/intent-dialog/intent-dialog.component";
+import {NlpService} from "../../nlp-tabs/nlp.service";
 
 @Component({
   selector: 'tock-step',
@@ -35,7 +36,8 @@ export class StepComponent implements OnInit {
   constructor(
     public state: StateService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog) {
+    private dialog: MatDialog,
+    private nlp: NlpService) {
   }
 
   ngOnInit() {
@@ -141,6 +143,29 @@ export class StepComponent implements OnInit {
 
   addChild() {
     this.child.emit(this.step);
+  }
+
+  userSentenceChange(userSentence: string) {
+    if (userSentence.trim().length !== 0 && this.step.intent.name.length === 0) {
+      const app = this.state.currentApplication;
+      const language = this.state.currentLocale;
+      this.nlp.parse(new ParseQuery(
+        app.namespace,
+        app.name,
+        language,
+        userSentence,
+        true
+      )).subscribe(r => {
+        if (r.classification.intentId) {
+          const intent = this.state.findIntentById(r.classification.intentId);
+          if(intent) {
+            this.step.intentDefinition = intent;
+            this.step.intent = new IntentName(intent.name);
+            this.onIntentChange(this.step, intent.name);
+          }
+        }
+      })
+    }
   }
 
 

@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.engine.config
 import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationStep
+import fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationStep.Step
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.definition.StoryHandler
@@ -48,7 +49,10 @@ internal class ConfiguredStoryDefinition(val configuration: StoryDefinitionConfi
         starterIntents +
             (configuration.storyDefinition(configuration.botId)?.intents ?: emptySet()) +
             configuration.mandatoryEntities.map { it.intent } +
-            allSteps().mapNotNull { it.intent?.wrappedIntent() }
+            allSteps()
+                .filterIsInstance<Step>()
+                .filter { it.configuration.findCurrentAnswer() != null || it.configuration.targetIntent != null }
+                .mapNotNull { it.intent?.wrappedIntent() }
 
     override val unsupportedUserInterfaces: Set<UserInterfaceType> =
         configuration.storyDefinition(configuration.botId)?.unsupportedUserInterfaces ?: emptySet()

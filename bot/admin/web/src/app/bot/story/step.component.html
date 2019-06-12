@@ -3,7 +3,8 @@
   <mat-form-field class="input">
     <input matInput
            [(ngModel)]="step.userSentence"
-           placeholder="Enter a User Phrase">
+           placeholder="Enter a User Phrase"
+           (blur)="userSentenceChange($event.target.value)">
   </mat-form-field>
 
   <!-- intent -->
@@ -49,7 +50,7 @@
     </button>
   </div>
 
-  <mat-autocomplete #intentAuto="matAutocomplete" autoActiveFirstOption>
+  <mat-autocomplete #intentAuto="matAutocomplete" autoActiveFirstOption panelWidth="auto">
     <mat-optgroup *ngFor="let category of currentIntentCategories" [label]="category.category">
       <mat-option *ngFor="let intent of category.intents" [value]="intent.name">
         {{intent.intentLabel()}}

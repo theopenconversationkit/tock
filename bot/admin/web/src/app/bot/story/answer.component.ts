@@ -51,7 +51,7 @@ export class AnswerComponent implements OnInit {
   }
 
   editAnswer() {
-    let dialogRef = this.dialog.open(
+    this.dialog.open(
       AnswerDialogComponent,
       {
         data:

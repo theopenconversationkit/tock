@@ -334,7 +334,6 @@ export class FlowComponent implements OnInit {
           } else {
             maxCount = Math.max(maxCount, s.count);
           }
-          //console.log(s);
           graph.nodes.push({
             data: {
               id: s.id,
