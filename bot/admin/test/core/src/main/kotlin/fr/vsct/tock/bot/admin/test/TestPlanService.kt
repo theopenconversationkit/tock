@@ -142,14 +142,13 @@ object TestPlanService {
      *
      * @param client is the bot to dialog with.
      * @param testPlan is the common test plan to run.
-     * @param dialog is the dialog to send.
+     * @param dialog is the dialog to send to the bot. It is an object TestDialogReport which is composed by :
+     *                          val actions: List<TestActionReport> = emptyList()
+     *                          val userInterface: UserInterfaceType
+     *                          val id: Id<Dialog>
      * @return the result of the dialog as a DialogExecutionReport object.
      */
-    private fun runDialog(
-        client: ConnectorRestClient,
-        testPlan: TestPlan,
-        dialog: TestDialogReport
-    ): DialogExecutionReport {
+    private fun runDialog(client: ConnectorRestClient, testPlan: TestPlan, dialog: TestDialogReport): DialogExecutionReport {
         val playerId = Dice.newId()
         val botId = Dice.newId()
         return try {
@@ -170,8 +169,11 @@ object TestPlanService {
                 )
             }
 
+            // run each test step
+            // "it" represents here a TestActionReport
             dialog.actions.forEach {
                 if (it.playerId.type == PlayerType.user) {
+                    // convert the current test step as a request formatted to be understandable by the bot
                     val request = ClientMessageRequest(
                         playerId,
                         botId,
@@ -179,17 +181,19 @@ object TestPlanService {
                         testPlan.targetConnectorType.toClientConnectorType(),
                         true
                     )
-                    logger.debug { "ask: $request" }
+                    logger.debug { "ASK -- : $request" }
+                    // send the converted test step to the bot
                     val answer = client.talk(getPath(testPlan), testPlan.locale, request)
+                    // if the bot answers then store the response body, otherwise it is an error
                     if (answer.isSuccessful) {
                         val body = answer.body()
-                        logger.debug { "answer: $body" }
+                        logger.debug { "ANSWER -- : $body" }
                         botMessages = body?.messages?.toMutableList() ?: mutableListOf()
                     } else {
                         logger.error { "ERROR : " + answer.errorBody()?.string() }
                         return DialogExecutionReport(
                             dialog.id, true, errorMessage = answer.errorBody()?.toString()
-                                    ?: "unknown error"
+                                    ?: "Unknown error"
                         )
                     }
                 } else {
@@ -202,9 +206,9 @@ object TestPlanService {
                         )
                     }
                     val botMessage = botMessages.removeAt(0)
-                    // TODO
-                    if (!botMessage.deepEquals(it)) {
-                        logger.info { "no same message:\n$botMessage\n${it.messages.map { m -> m.toClientMessage() }}" }
+                    // if the bot's answer does not equal to the test step
+                    if (!botMessage.convertAndDeepEquals(it)) {
+                        logger.error { "Not the same messages:\n\t\tObtained ----- $botMessage\n\t\tExpected ----- ${it.messages.map { m -> m.toClientMessage() }}" }
                         return DialogExecutionReport(
                             dialog.id,
                             true,
@@ -231,23 +235,47 @@ object TestPlanService {
         }
     }
 
-    private fun ClientMessage.deepEquals(action: TestActionReport): Boolean {
+    /**
+     * This function checks if at least, one message returned by the bot, equals to the message of the current test step.
+     * Test step is first converted into a bot client message before starting the comparison using another function.
+     * This conversion is essential to compare the same objects.
+     *
+     * @param action is the xray step formatted as a TestActionReport which contains the message sent to the bot.
+     * @return true if the messages are equals, false otherwise.
+    */
+    private fun ClientMessage.convertAndDeepEquals(action: TestActionReport): Boolean {
         return action.messages.any {
-            deepEquals(it.toClientMessage())
+            // convert the user message stored in xray to a bot message format
+//            deepEquals(it.toClientMessage())
+            deepEqualsTest(it.toClientMessage(), this)
         }
     }
 
-    private fun ClientMessage.deepEquals(message: ClientMessage): Boolean {
-        return if (message is ClientSentence && this is ClientSentence) {
-            message.copy(
-                text = message.text?.trim(),
-                messages = message.messages.map { it.copy(connectorType = ClientConnectorType.none) }.toMutableList()
+    /**
+     * This function checks if the answer sent by the bot equals the expected expectedMessage stored in the test step.
+     *
+     * @param expectedMessage is the message to expect as an answer from the bot.
+     * @return true if messages are the same, false otherwise.
+     *
+     *
+     * mesage non modifiable donc obligé de paser par copy
+     */
+    private fun ClientMessage.deepEquals(expectedMessage: ClientMessage): Boolean {
+        return if (expectedMessage is ClientSentence && this is ClientSentence) {
+
+            expectedMessage.copy(
+                    text = expectedMessage.text?.trim(),
+                    messages = expectedMessage.messages.map { it.copy(connectorType = ClientConnectorType.none) }.toMutableList()
             ) == copy(
-                text = text?.trim(),
-                messages = messages.map { it.copy(connectorType = ClientConnectorType.none) }.toMutableList())
+                    text = text?.trim(),
+                    messages = messages.map { it.copy(connectorType = ClientConnectorType.none) }.toMutableList())
         } else {
-            message == this
+            expectedMessage == this
         }
+    }
+
+    private fun deepEqualsTest(expectedMessage: ClientMessage, botAnswer: ClientMessage): Boolean {
+        return expectedMessage is ClientSentence && botAnswer is ClientSentence && (expectedMessage == botAnswer || expectedMessage.text == botAnswer.text)
     }
 
 }

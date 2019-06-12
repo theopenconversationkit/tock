@@ -20,18 +20,7 @@ import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Klaxon
 import com.beust.klaxon.Parser
 import fr.vsct.tock.bot.admin.test.xray.XrayConfiguration.xrayUrl
-import fr.vsct.tock.bot.admin.test.xray.model.JiraAttachment
-import fr.vsct.tock.bot.admin.test.xray.model.JiraIssue
-import fr.vsct.tock.bot.admin.test.xray.model.JiraIssueLink
-import fr.vsct.tock.bot.admin.test.xray.model.JiraKey
-import fr.vsct.tock.bot.admin.test.xray.model.JiraTest
-import fr.vsct.tock.bot.admin.test.xray.model.JiraType
-import fr.vsct.tock.bot.admin.test.xray.model.XrayAttachment
-import fr.vsct.tock.bot.admin.test.xray.model.XrayBuildTestStep
-import fr.vsct.tock.bot.admin.test.xray.model.XrayTest
-import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecution
-import fr.vsct.tock.bot.admin.test.xray.model.XrayTestStep
-import fr.vsct.tock.bot.admin.test.xray.model.XrayUpdateTest
+import fr.vsct.tock.bot.admin.test.xray.model.*
 import fr.vsct.tock.shared.addJacksonConverter
 import fr.vsct.tock.shared.basicAuthInterceptor
 import fr.vsct.tock.shared.create
@@ -123,10 +112,24 @@ object XrayClient {
         val issuesArray = parsed.array<Any>("issues")
 
         // if only one issue has been found, return the identifier of the issue
-        if(issuesArray!!.size == 1) {
-            return issuesArray?.get("key").value.toString().replace("[", "").replace("]", "")
+        when(issuesArray!!.size) {
+            0 -> logger.error { "ERROR -- Unable to retrieve the issue!" }
+            1 -> return issuesArray?.get("key").value.toString().replace("[", "").replace("]", "")
+            else -> logger.error { "ERROR -- Too much issue have been retrieved!" }
         }
         return ""
+    }
+
+    fun getProjectFromIssue(issueKey: String): JiraTestProject {
+        val klaxon = Klaxon()
+
+        val body = xray.getIssue(issueKey).execute().body()?.string()
+
+        // parse the body
+        val parsed = klaxon.parseJsonObject(StringReader(body))
+        val project = parsed.array<Any>("project")
+
+        return JiraTestProject("test")
     }
 
     /**

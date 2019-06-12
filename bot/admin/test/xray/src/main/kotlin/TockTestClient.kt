@@ -32,7 +32,6 @@ import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
  */
 internal object TockTestClient : TestClientService {
 
-
     private val tockTimeoutInSeconds = longProperty("tock_bot_test_timeout_in_ms", 60 * 60000L)
     private val tockLogin = property("tock_bot_test_login", "please set tock test login")
     private val tockPassword = property("tock_bot_test_password", "please set tock test password")
@@ -48,6 +47,10 @@ internal object TockTestClient : TestClientService {
                 .baseUrl(tockUrl)
                 .build()
                 .create()
+    }
+
+    override fun saveAndExecuteTestPlan(testPlan: TestPlan): TestPlanExecution {
+        return tock.executeTestPlan(testPlan).execute().body() ?: TestPlanExecution(testPlan._id, emptyList(), 1)
     }
 
     override fun executeTestPlan(testPlan: TestPlan): TestPlanExecution {

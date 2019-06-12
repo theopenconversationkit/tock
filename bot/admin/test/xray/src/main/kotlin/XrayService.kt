@@ -18,20 +18,11 @@ package fr.vsct.tock.bot.admin.test.xray
 
 import fr.vsct.tock.bot.admin.dialog.DialogReport
 import fr.vsct.tock.bot.admin.test.*
-import fr.vsct.tock.bot.admin.test.xray.model.JiraTest
-import fr.vsct.tock.bot.admin.test.xray.model.XrayAttachment
-import fr.vsct.tock.bot.admin.test.xray.model.XrayBuildStepAttachment
-import fr.vsct.tock.bot.admin.test.xray.model.XrayBuildTestStep
-import fr.vsct.tock.bot.admin.test.xray.model.XrayExecutionConfiguration
-import fr.vsct.tock.bot.admin.test.xray.model.XrayPrecondition
+import fr.vsct.tock.bot.admin.test.xray.XrayClient.getProjectFromIssue
+import fr.vsct.tock.bot.admin.test.xray.model.*
 import fr.vsct.tock.bot.admin.test.xray.model.XrayStatus.FAIL
 import fr.vsct.tock.bot.admin.test.xray.model.XrayStatus.PASS
 import fr.vsct.tock.bot.admin.test.xray.model.XrayStatus.TODO
-import fr.vsct.tock.bot.admin.test.xray.model.XrayTest
-import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecution
-import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecutionInfo
-import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecutionReport
-import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecutionStepReport
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.message.parser.MessageParser
 import fr.vsct.tock.bot.engine.user.PlayerId
@@ -222,7 +213,8 @@ class XrayService(
             dialogs: List<TestDialogReport>,
             executionDialogs: List<DialogExecutionReport>
     ): Boolean {
-        val testExecutionKey = XrayClient.getKeyOfSearchedIssue("project = \"JARVIS FT\" and issuetype = \"Test Execution\" and summary ~ \"Mock\"")
+        val project = getProjectFromIssue(planKey)
+        val testExecutionKey = XrayClient.getKeyOfSearchedIssue("project = \"JARVIS FT\" and issuetype = \"Test Execution\" and summary ~ \"$planKey\"")
 
         val xrayExecution = XrayTestExecution(
                 testExecutionKey,
@@ -360,7 +352,7 @@ class XrayService(
             testPlan: TestPlan
     ): TestPlanExecutionReport {
         logger.debug { "Execute test plan $testPlan" }
-        val execution = findTestClient().executeTestPlan(testPlan)
+        val execution = findTestClient().saveAndExecuteTestPlan(testPlan)
         logger.debug { "Test plan execution $execution" }
         return TestPlanExecutionReport(
                 configuration,

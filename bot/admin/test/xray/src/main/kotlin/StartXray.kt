@@ -28,8 +28,6 @@ fun main() {
     val itemToExecute = "TEST"
 
     logger.info { "Start tests" }
-
-//    val result = XrayService().executePlans(defaultNamespace)
     val result: XRayPlanExecutionResult
 
 
@@ -43,9 +41,9 @@ fun main() {
         logger.error { "No test played" }
         System.exit(1)
     } else if (result.success != result.total) {
-        logger.error { "At least one test fail" }
+        logger.error { "At least one test failed" }
         System.exit(1)
     } else {
-        logger.info { "All tests pass" }
+        logger.info { "All tests passed" }
     }
 }
