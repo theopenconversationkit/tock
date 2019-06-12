@@ -11,6 +11,7 @@ import {MatDialog, MatRadioChange} from "@angular/material";
 import {StateService} from "../../core-nlp/state.service";
 import {AnswerDialogComponent} from "./answer-dialog.component";
 import {AnswerController} from "./controller";
+import {BotSharedService} from "../../shared/bot-shared.service";
 
 @Component({
   selector: 'tock-answer',
@@ -39,7 +40,8 @@ export class AnswerComponent implements OnInit {
 
   constructor(private state: StateService,
               private bot: BotService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              public shared: BotSharedService) {
   }
 
   ngOnInit(): void {

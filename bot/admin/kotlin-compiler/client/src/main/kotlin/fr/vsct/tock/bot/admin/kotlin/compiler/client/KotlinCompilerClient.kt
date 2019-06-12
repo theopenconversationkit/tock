@@ -19,10 +19,12 @@ package fr.vsct.tock.bot.admin.kotlin.compiler.client
 import fr.vsct.tock.bot.admin.kotlin.compiler.KotlinFile
 import fr.vsct.tock.bot.admin.kotlin.compiler.KotlinFileCompilation
 import fr.vsct.tock.shared.addJacksonConverter
+import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.create
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import mu.KotlinLogging
 
 
 /**
@@ -32,6 +34,8 @@ object KotlinCompilerClient {
 
     private val compilerTimeoutInSeconds = longProperty("tock_bot_compiler_timeout_in_ms", 60000L)
     private val compilerUrl = property("tock_bot_compiler_service_url", "http://localhost:8887")
+    private val logger = KotlinLogging.logger {}
+    val compilerDisabled: Boolean = booleanProperty("tock_bot_compiler_disabled", false)
 
     private val service: KotlinCompilerService
 
@@ -43,6 +47,12 @@ object KotlinCompilerClient {
             .create()
     }
 
-    fun compile(file: KotlinFile): KotlinFileCompilation? = service.compile(file).execute().body()
+    fun compile(file: KotlinFile): KotlinFileCompilation? =
+        if (compilerDisabled) {
+            logger.warn { "kotlin compiler is disabled" }
+            null
+        } else {
+            service.compile(file).execute().body()
+        }
 
 }

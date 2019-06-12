@@ -151,18 +151,7 @@ object BotAdminService {
     }
 
     fun getBotConfigurationsByNamespaceAndBotId(namespace: String, botId: String): List<BotApplicationConfiguration> {
-        return applicationConfigurationDAO
-            .getConfigurations()
-            .filter { it.namespace == namespace && it.botId == botId }
-    }
-
-    fun getBotConfigurationsByNamespaceAndBotConfigurationId(
-        namespace: String,
-        botConfigurationId: Id<BotApplicationConfiguration>
-    ): List<BotApplicationConfiguration> {
-        return applicationConfigurationDAO
-            .getConfigurations()
-            .filter { it.namespace == namespace && it._id == botConfigurationId }
+        return applicationConfigurationDAO.getConfigurationsByNamespaceAndBotId(namespace, botId)
     }
 
     fun getBotConfigurationsByNamespaceAndNlpModel(
@@ -170,12 +159,7 @@ object BotAdminService {
         applicationName: String
     ): List<BotApplicationConfiguration> {
         val app = applicationDAO.getApplicationByNamespaceAndName(namespace, applicationName)
-        return applicationConfigurationDAO
-            .getConfigurations()
-            .filter {
-                it.namespace == app?.namespace
-                    && it.nlpModel == app.name
-            }
+        return if (app == null) emptyList() else applicationConfigurationDAO.getConfigurationsByNamespaceAndNlpModel(namespace, app.name)
     }
 
     fun saveApplicationConfiguration(conf: BotApplicationConfiguration) {
@@ -301,10 +285,10 @@ object BotAdminService {
         botId: String,
         oldAnswer: ScriptAnswerConfiguration?,
         answer: BotScriptAnswerConfiguration
-    ): ScriptAnswerConfiguration {
+    ): ScriptAnswerConfiguration? {
 
         val script = answer.current.script
-        if (oldAnswer?.current?.script != script) {
+        if (!KotlinCompilerClient.compilerDisabled && oldAnswer?.current?.script != script) {
             val fileName = "T${Dice.newId()}.kt"
             val result = KotlinCompilerClient.compile(KotlinFile(script, fileName))
             if (result?.compilationResult == null) {
@@ -330,7 +314,7 @@ object BotAdminService {
     private fun BotAnswerConfiguration.toConfiguration(
         botId: String,
         answers: List<AnswerConfiguration>?
-    ): AnswerConfiguration =
+    ): AnswerConfiguration? =
         when (this) {
             is BotSimpleAnswerConfiguration -> simpleAnswer(this)
             is BotScriptAnswerConfiguration ->
@@ -345,7 +329,7 @@ object BotAdminService {
     private fun BotAnswerConfiguration.toStoryConfiguration(
         botId: String,
         oldStory: StoryDefinitionConfiguration?
-    ): AnswerConfiguration =
+    ): AnswerConfiguration? =
         toConfiguration(botId, oldStory?.answers)
 
     private fun BotStoryDefinitionConfigurationMandatoryEntity.toEntityConfiguration(
@@ -356,7 +340,7 @@ object BotAdminService {
         StoryDefinitionConfigurationMandatoryEntity(
             role,
             intent,
-            answers.map { it.toConfiguration(botId, oldStory?.mandatoryEntities?.find { it.role == role }?.answers) },
+            answers.mapNotNull { it.toConfiguration(botId, oldStory?.mandatoryEntities?.find { it.role == role }?.answers) },
             currentType
         ).apply {
             //if entity is null, it means that entity has not been modified
@@ -400,7 +384,7 @@ object BotAdminService {
             name,
             intent?.takeIf { it.name.isNotBlank() },
             targetIntent?.takeIf { it.name.isNotBlank() },
-            answers.map { it.toConfiguration(botId, oldStory?.steps?.find { it.name == name }?.answers) },
+            answers.mapNotNull { it.toConfiguration(botId, oldStory?.steps?.find { it.name == name }?.answers) },
             currentType,
             userSentence,
             children.map { it.toStepConfiguration(app, botId, oldStory) },
@@ -495,7 +479,7 @@ object BotAdminService {
                     category = story.category,
                     currentType = story.currentType,
                     intent = story.intent,
-                    answers = story.answers.map { it.toStoryConfiguration(botConf.botId, storyDefinition) },
+                    answers = story.answers.mapNotNull { it.toStoryConfiguration(botConf.botId, storyDefinition) },
                     mandatoryEntities = story.mandatoryEntities.map { it.toEntityConfiguration(application, botConf.botId, storyDefinition) },
                     steps = story.steps.map { it.toStepConfiguration(application, botConf.botId, storyDefinition) },
                     userSentence = story.userSentence
@@ -506,7 +490,7 @@ object BotAdminService {
                     story.botId,
                     story.intent,
                     story.currentType,
-                    story.answers.map { it.toStoryConfiguration(botConf.botId, storyDefinition) },
+                    story.answers.mapNotNull { it.toStoryConfiguration(botConf.botId, storyDefinition) },
                     0,
                     namespace,
                     story.mandatoryEntities.map { it.toEntityConfiguration(application, botConf.botId, storyDefinition) },

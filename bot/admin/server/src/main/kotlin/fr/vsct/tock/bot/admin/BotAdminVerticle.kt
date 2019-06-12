@@ -22,6 +22,7 @@ import fr.vsct.tock.bot.admin.BotAdminService.createI18nRequest
 import fr.vsct.tock.bot.admin.BotAdminService.dialogReportDAO
 import fr.vsct.tock.bot.admin.BotAdminService.getBotConfigurationByApplicationIdAndBotId
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
+import fr.vsct.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
 import fr.vsct.tock.bot.admin.model.BotConfiguration
 import fr.vsct.tock.bot.admin.model.BotDialogRequest
 import fr.vsct.tock.bot.admin.model.BotI18nLabel
@@ -325,7 +326,7 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonPost("/i18n/complete", botUser) { context, labels: List<I18nLabel> ->
-            if(!injector.provide<TranslatorEngine>().supportAdminTranslation) {
+            if (!injector.provide<TranslatorEngine>().supportAdminTranslation) {
                 badRequest("Translation is not activated for this account")
             }
             TranslateReport(Translator.completeAllLabels(labels.filter { it.namespace == context.organization }))
@@ -408,6 +409,10 @@ open class BotAdminVerticle : AdminVerticle() {
                 listOf(configuration.testPlanKey),
                 configuration.testedBotId
             ).executePlans(context.organization)
+        }
+
+        blockingJsonGet("/compiler/available", botUser) {
+            !KotlinCompilerClient.compilerDisabled
         }
 
         configureStaticHandling()

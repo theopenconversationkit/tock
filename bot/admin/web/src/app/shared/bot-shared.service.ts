@@ -17,8 +17,7 @@
 
 import {tap} from 'rxjs/operators';
 import {Injectable, OnDestroy} from "@angular/core";
-import {RestService} from "../core-nlp/rest/rest.service";
-import {StateService} from "../core-nlp/state.service";
+import {BooleanResponse, RestService} from "../core-nlp/rest/rest.service";
 import {Observable, of} from "rxjs";
 import {ConnectorType, ConnectorTypeConfiguration} from "../core/model/configuration";
 import {NlpCallStats} from "./model/dialog-data";
@@ -27,9 +26,10 @@ import {NlpCallStats} from "./model/dialog-data";
 export class BotSharedService implements OnDestroy {
 
   private connectorTypes: ConnectorTypeConfiguration[];
+  compilerAvailable: boolean = false;
 
-  constructor(private rest: RestService,
-              private state: StateService) {
+  constructor(private rest: RestService) {
+    this.isCompilerAvailable().subscribe(r => this.compilerAvailable = r.success)
   }
 
   ngOnDestroy(): void {
@@ -41,7 +41,7 @@ export class BotSharedService implements OnDestroy {
     } else {
       return this.rest
         .get(`/connectorTypes`, ConnectorTypeConfiguration.fromJSONArray).pipe(
-        tap((c => this.connectorTypes = c)))
+          tap((c => this.connectorTypes = c)))
     }
   }
 
@@ -56,6 +56,10 @@ export class BotSharedService implements OnDestroy {
 
   getNlpDialogStats(actionId: string): Observable<NlpCallStats> {
     return this.rest.get(`/action/nlp-stats/${actionId}`, NlpCallStats.fromJSON)
+  }
+
+  isCompilerAvailable(): Observable<BooleanResponse> {
+    return this.rest.get(`/compiler/available`, BooleanResponse.fromJSON);
   }
 
 }
