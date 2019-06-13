@@ -137,8 +137,8 @@ object XrayClient {
      *
      * @param testExecutionFields contains all required information to be able to create the new issue.
      */
-    fun createNewTestExecutionIssue(textExectuionFields: XrayTestExecutionCreation) /*:JiraIssue*/ {
-       xray.createTestExecution(textExectuionFields).execute()
+    fun createNewTestExecutionIssue(textExectuionFields: XrayTestExecutionCreation):JiraIssue {
+       return xray.createTestExecution(textExectuionFields).execute().body() ?: error("Test execution creation has failed.")
     }
 
     /**

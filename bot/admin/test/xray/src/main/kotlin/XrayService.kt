@@ -217,22 +217,23 @@ class XrayService(
             executionDialogs: List<DialogExecutionReport>
     ): Boolean {
         // try to get the jira identifier of the test plan
-        val testExecutionKey = XrayClient.getKeyOfSearchedIssue("project = \"${configurations.get(0).jiraTestProject.key}\" and issuetype = \"Test Execution\" and summary ~ \"$planKey\"")
+        var testExecutionKey = XrayClient.getKeyOfSearchedIssue("project = \"${configurations.get(0).jiraTestProject.key}\" and issuetype = \"Test Execution\" and summary ~ \"$planKey\"")
 
         // if no test execution has been found, then create a new one
         if (testExecutionKey.isEmpty()) {
-            XrayClient.createNewTestExecutionIssue(
+            testExecutionKey = XrayClient.createNewTestExecutionIssue(
                     XrayTestExecutionCreation(
                             XrayTextExectuionFields(
                                     configurations.get(0).jiraTestProject,
-                                    "Dummy test plan",
+                                    "$planKey - ${configurations.map { it.botConfiguration.name }.toSortedSet().joinToString()}",
                                     "Description of the dummy test plan",
                                     JiraIssueType("Test Execution")
                             )
                     )
-            )
+            ).key
         }
 
+        // gather test execution information
         val xrayExecution = XrayTestExecution(
                 testExecutionKey,
                 XrayTestExecutionInfo(
@@ -294,6 +295,7 @@ class XrayService(
                             )
                         }
         )
+        // and send the execution to xray
         return if (
                 XrayClient.sendTestExecution(xrayExecution).isSuccessful
                 && executionDialogs.none { it.error }
