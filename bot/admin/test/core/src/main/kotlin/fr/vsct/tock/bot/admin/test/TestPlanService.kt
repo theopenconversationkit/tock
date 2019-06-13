@@ -275,7 +275,7 @@ object TestPlanService {
     }
 
     private fun deepEqualsTest(expectedMessage: ClientMessage, botAnswer: ClientMessage): Boolean {
-        return expectedMessage is ClientSentence && botAnswer is ClientSentence && (expectedMessage == botAnswer || expectedMessage.text == botAnswer.text)
+        return expectedMessage is ClientSentence && botAnswer is ClientSentence && (expectedMessage == botAnswer || expectedMessage.text?.trim() == botAnswer.text?.trim())
     }
 
 }

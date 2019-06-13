@@ -127,9 +127,9 @@ object XrayClient {
 
         // parse the body
         val parsed = klaxon.parseJsonObject(StringReader(body))
-        val project = parsed.array<Any>("project")
+        val project = (parsed.getValue("fields") as JsonObject).map.get("project")
 
-        return JiraTestProject("test")
+        return JiraTestProject((project as JsonObject).get("key").toString())
     }
 
     /**

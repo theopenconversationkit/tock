@@ -25,6 +25,7 @@ import fr.vsct.tock.shared.property
 data class XrayExecutionConfiguration(
         val botConfiguration: BotApplicationConfiguration,
         val xrayTestPlanKeys: List<String>,
+        val jiraTestProject: JiraTestProject,
         val environment: String = property("tock_bot_test_xray_test_plan_env", ""),
         val botUrl: String = property("tock_bot_test_xray_test_plan_bot_url", "")
 )

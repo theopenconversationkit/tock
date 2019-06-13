@@ -89,6 +89,8 @@ class XrayService(
      */
     fun executePlans(namespace: String): XRayPlanExecutionResult {
         logger.info { "execute plans with namespace $namespace" }
+        val jiraProject = getProjectFromIssue(testKeys.get(0))
+
         return try {
             // getBotConfiguration retrieves all configuration for the selected namespace
             // getBotConfiguration will reach information stored in tab Configuration on BotAdmin site
@@ -101,7 +103,7 @@ class XrayService(
                     }
                     // test plan execution
                     .flatMap {
-                        exec(XrayExecutionConfiguration(it, testPlanKeys))
+                        exec(XrayExecutionConfiguration(it, testPlanKeys, jiraProject))
                     }
                     .let {
                         sendToXray(it)
@@ -119,6 +121,7 @@ class XrayService(
      */
     fun executeTests(namespace: String): XRayPlanExecutionResult {
         val dummyTestPlan = listOf("MOCK")
+        val jiraProject = getProjectFromIssue(testKeys.get(0))
 
         logger.info { "Execute tests with namespace $namespace" }
         return try {
@@ -133,7 +136,7 @@ class XrayService(
                     }
                     // test execution of a dummy test plan
                     .flatMap {
-                        execTestsOnly(XrayExecutionConfiguration(it, dummyTestPlan), dummyTestPlan.get(0), testKeys)
+                        execTestsOnly(XrayExecutionConfiguration(it, dummyTestPlan, jiraProject), dummyTestPlan.get(0), testKeys)
                     }
                     .let {
                         sendToXray(it)
@@ -213,9 +216,8 @@ class XrayService(
             dialogs: List<TestDialogReport>,
             executionDialogs: List<DialogExecutionReport>
     ): Boolean {
-        val project = getProjectFromIssue(planKey)
+//        val testExecutionKey = XrayClient.getKeyOfSearchedIssue("project = \"${configurations.get(0).jiraTestProject}\" and issuetype = \"Test Execution\" and summary ~ \"$planKey\"")
         val testExecutionKey = XrayClient.getKeyOfSearchedIssue("project = \"JARVIS FT\" and issuetype = \"Test Execution\" and summary ~ \"$planKey\"")
-
         val xrayExecution = XrayTestExecution(
                 testExecutionKey,
                 XrayTestExecutionInfo(
