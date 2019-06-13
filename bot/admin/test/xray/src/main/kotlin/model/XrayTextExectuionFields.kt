@@ -20,5 +20,5 @@ data class XrayTextExectuionFields (
         val project: JiraTestProject,
         val summary: String,
         val description: String,
-        val issueType: JiraIssueType) {
+        val issuetype: JiraIssueType) {
 }

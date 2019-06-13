@@ -69,7 +69,7 @@ interface XrayApi {
     fun createTest(@Body test: JiraTest): Call<JiraIssue>
 
     @POST("/rest/api/2/issue")
-    fun createTestExecution(@Body fields: XrayTextExectuionFields): Call<JiraIssue>
+    fun createTestExecution(@Body fields: XrayTestExecutionCreation): Call<JiraIssue>
 
     @POST("/rest/api/2/issueLink")
     fun linkIssue(@Body link: JiraIssueLink): Call<ResponseBody>

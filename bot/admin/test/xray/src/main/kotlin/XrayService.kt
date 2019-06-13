@@ -216,8 +216,23 @@ class XrayService(
             dialogs: List<TestDialogReport>,
             executionDialogs: List<DialogExecutionReport>
     ): Boolean {
-//        val testExecutionKey = XrayClient.getKeyOfSearchedIssue("project = \"${configurations.get(0).jiraTestProject}\" and issuetype = \"Test Execution\" and summary ~ \"$planKey\"")
-        val testExecutionKey = XrayClient.getKeyOfSearchedIssue("project = \"JARVIS FT\" and issuetype = \"Test Execution\" and summary ~ \"$planKey\"")
+        // try to get the jira identifier of the test plan
+        val testExecutionKey = XrayClient.getKeyOfSearchedIssue("project = \"${configurations.get(0).jiraTestProject.key}\" and issuetype = \"Test Execution\" and summary ~ \"$planKey\"")
+
+        // if no test execution has been found, then create a new one
+        if (testExecutionKey.isEmpty()) {
+            XrayClient.createNewTestExecutionIssue(
+                    XrayTestExecutionCreation(
+                            XrayTextExectuionFields(
+                                    configurations.get(0).jiraTestProject,
+                                    "Dummy test plan",
+                                    "Description of the dummy test plan",
+                                    JiraIssueType("Test Execution")
+                            )
+                    )
+            )
+        }
+
         val xrayExecution = XrayTestExecution(
                 testExecutionKey,
                 XrayTestExecutionInfo(

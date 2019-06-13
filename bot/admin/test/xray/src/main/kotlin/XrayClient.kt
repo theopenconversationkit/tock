@@ -133,6 +133,15 @@ object XrayClient {
     }
 
     /**
+     * Create a new Test execution issue in Jira.
+     *
+     * @param testExecutionFields contains all required information to be able to create the new issue.
+     */
+    fun createNewTestExecutionIssue(textExectuionFields: XrayTestExecutionCreation) /*:JiraIssue*/ {
+       xray.createTestExecution(textExectuionFields).execute()
+    }
+
+    /**
      * Send the test execution to Jira.
      *
      * @param execution is the result of the test execution.
