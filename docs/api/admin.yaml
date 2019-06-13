@@ -398,6 +398,12 @@ definitions:
       namespace:
         type: "string"
         description: "The namespace of the intent"
+      category:
+        type: "string"
+        description: "The category of the intent"
+      _id:
+        type: "string"
+        description: "Technical identifier"
       applications:
         type: "array"
         description: "The application ids using this intent"
@@ -408,6 +414,16 @@ definitions:
         description: "The entity definitions of the intent"
         items:
           $ref: "#/definitions/EntityDefinition"
+      mandatoryStates:
+        type: "array"
+        description: "The optional mandatory states"
+        items:
+          type: "string"
+      sharedIntents:
+        type: "array"
+        description: "The optional shared intents names"
+        items:
+          type: "string"
 
   EntityDefinition:
     type: "object"
