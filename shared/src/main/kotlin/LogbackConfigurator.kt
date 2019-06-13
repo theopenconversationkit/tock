@@ -34,6 +34,14 @@ import ch.qos.logback.core.util.FileSize
  */
 internal class LogbackConfigurator : ContextAwareBase(), Configurator {
 
+    private val defaultLevel =
+        Level.toLevel(
+            property(
+                "tock_default_log_level",
+                if (devEnvironment) "DEBUG" else "INFO"
+            )
+        )
+
     override fun configure(loggerContext: LoggerContext) {
         if (booleanProperty("tock_logback_enabled", true)) {
             val c = context
@@ -98,7 +106,7 @@ internal class LogbackConfigurator : ContextAwareBase(), Configurator {
             }
 
             loggerContext.getLogger(Logger.ROOT_LOGGER_NAME).apply {
-                level = if (devEnvironment) Level.DEBUG else Level.INFO
+                level = defaultLevel
                 addAppender(appender)
             }
         }
