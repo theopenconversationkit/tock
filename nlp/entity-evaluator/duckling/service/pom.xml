@@ -51,11 +51,6 @@
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptors>
-                        <descriptor>src/main/assembly/assembly.xml</descriptor>
-                    </descriptors>
-                </configuration>
                 <executions>
                     <execution>
                         <id>make-assembly</id>
@@ -63,6 +58,30 @@
                         <goals>
                             <goal>single</goal>
                         </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/assembly.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>make-assembly-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <mainClass>
+                                        fr.vsct.tock.duckling.service.StartServerKt
+                                    </mainClass>
+                                </manifest>
+                            </archive>
+                            <descriptors>
+                                <descriptor>src/main/assembly/assembly_jar.xml</descriptor>
+                            </descriptors>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
