@@ -119,7 +119,8 @@ fun bot(
         findStory(userLocation),
         findStory(handleAttachment),
         eventListener,
-        keywordStory
+        keywordStory,
+        conversation
     )
 }
 
