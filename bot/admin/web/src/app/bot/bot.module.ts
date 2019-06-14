@@ -57,7 +57,7 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        component: FlowComponent
+        component: CreateStoryComponent
       },
       {
         path: 'flow',

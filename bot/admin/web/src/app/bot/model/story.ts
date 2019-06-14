@@ -219,9 +219,22 @@ export class StoryStep extends AnswerContainer {
     return steps.filter(s => !s.new);
   }
 
+  static findOutcomingIntent(intents: Set<string>, steps: StoryStep[]) {
+    steps.forEach(s => {
+      if (s.intent.name.length !== 0) {
+        if (s.targetIntent.name.length !== 0) {
+          intents.add(s.targetIntent.name);
+        } else if (!s.currentAnswer() || s.currentAnswer().isEmpty()) {
+          intents.add(s.intent.name)
+        }
+      }
+      StoryStep.findOutcomingIntent(intents, s.children)
+    });
+  }
+
   constructor(public name: string,
               public intent: IntentName,
-              public targetIntent:IntentName,
+              public targetIntent: IntentName,
               answers: AnswerConfiguration[],
               currentType: AnswerConfigurationType,
               category: string,

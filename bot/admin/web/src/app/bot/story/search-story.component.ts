@@ -46,7 +46,7 @@ export class SearchStoryComponent implements OnInit {
         this.state.currentApplication.name,
         this.state.currentLocale,
         0,
-        1000
+        10000
       )).subscribe(s => {
       this.stories = s;
       this.loadedStories = s;

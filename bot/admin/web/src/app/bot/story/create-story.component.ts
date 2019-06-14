@@ -21,7 +21,13 @@ import {StateService} from "../../core-nlp/state.service";
 import {NormalizeUtil} from "../../model/commons";
 import {ParseQuery, Sentence} from "../../model/nlp";
 import {BotService} from "../bot-service";
-import {AnswerConfigurationType, CreateStoryRequest, IntentName, StoryDefinitionConfiguration} from "../model/story";
+import {
+  AnswerConfigurationType,
+  CreateStoryRequest,
+  IntentName,
+  StoryDefinitionConfiguration,
+  StorySearchQuery
+} from "../model/story";
 import {ActivatedRoute} from "@angular/router";
 import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {AnswerController} from "./controller";
@@ -43,6 +49,8 @@ export class CreateStoryComponent implements OnInit {
 
   @ViewChild('newSentence') newSentence: ElementRef;
 
+  private stories: StoryDefinitionConfiguration[] = [];
+
   constructor(private nlp: NlpService,
               public state: StateService,
               private botConfiguration: BotConfigurationService,
@@ -52,9 +60,19 @@ export class CreateStoryComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    setTimeout(() => this.createStory(), 200);
+    this.createStory();
     const _this = this;
     this.submit.submitListener = _ => _this.onReply();
+    this.bot.getStories(
+      new StorySearchQuery(
+        this.state.currentApplication.namespace,
+        this.state.currentApplication.name,
+        this.state.currentLocale,
+        0,
+        10000
+      )).subscribe(s => {
+      this.stories = s;
+    })
   }
 
   onSentence(value?: string) {
@@ -66,7 +84,7 @@ export class CreateStoryComponent implements OnInit {
     } else {
       this.nlp.parse(new ParseQuery(app.namespace, app.name, language, v, true)).subscribe(sentence => {
         this.sentence = sentence;
-        const intent = this.initIntentName(v);
+        const intent = this.initIntentName(v, sentence.classification.intentId);
         this.story.userSentence = v;
         this.story.storyId = intent;
         this.story.intent = new IntentName(intent);
@@ -77,7 +95,9 @@ export class CreateStoryComponent implements OnInit {
   }
 
   private createStory() {
-    this.botConfiguration.configurations.subscribe(confs => {
+    const _this = this;
+    if (this.botConfigurationId) {
+      const confs = this.botConfiguration.configurations.getValue();
       const conf = confs.find(c => c._id === this.botConfigurationId);
       if (conf) {
         this.story = new StoryDefinitionConfiguration(
@@ -91,18 +111,18 @@ export class CreateStoryComponent implements OnInit {
           "",
           ""
         );
-        setTimeout(() => {
-          this.route.queryParams.subscribe(params => {
-            const text = params["text"];
-            if (text) {
-              this.onSentence(text);
-            } else {
-              this.newSentence.nativeElement.focus()
-            }
-          })
-        }, 500);
+        this.route.queryParams.subscribe(params => {
+          const text = params["text"];
+          if (text) {
+            this.onSentence(text);
+          } else {
+            setTimeout(_ => _this.newSentence.nativeElement.focus(), 500);
+          }
+        });
       }
-    });
+    } else {
+      setTimeout(_ => _this.createStory(), 200);
+    }
   }
 
   resetState() {
@@ -112,12 +132,20 @@ export class CreateStoryComponent implements OnInit {
     setTimeout(_ => this.newSentence.nativeElement.focus(), 200);
   }
 
-  private initIntentName(value: string): string {
-    const appName = this.state.currentApplication.name;
-    const underscoreIndex = appName.indexOf("_");
-    const prefix = underscoreIndex !== -1 ? appName.substring(0, Math.min(underscoreIndex, 5)) : appName.substring(0, Math.min(appName.length, 5));
-    const v = NormalizeUtil.normalize(value.trim().toLowerCase()).replace(new RegExp(" ", 'g'), "_");
-    let candidate = prefix + "_" + v.substring(0, Math.min(value.length, 10));
+  private initIntentName(sentence: string, intentId?: string): string {
+    if (intentId) {
+      const intent = this.state.findIntentById(intentId);
+      if (intent) {
+        const story = this.stories.find(s => s.intent.name === intent.name);
+        //if there is no existing story with this intent, select the intent
+        if (!story) {
+          return intent.name;
+        }
+      }
+    }
+    //else suggest a new intent
+    const v = NormalizeUtil.normalize(sentence.trim().toLowerCase()).replace(new RegExp(" ", 'g'), "_");
+    let candidate = v.substring(0, Math.min(sentence.length, 10));
     let count = 1;
     const candidateBase = candidate;
     while (this.state.intentExists(candidate)) {

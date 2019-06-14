@@ -33,6 +33,8 @@ export class StepComponent implements OnInit {
 
   currentEditedIntent: string;
 
+  displayTargetIntent: boolean = false;
+
   constructor(
     public state: StateService,
     private snackBar: MatSnackBar,
@@ -45,6 +47,7 @@ export class StepComponent implements OnInit {
       this.intentCategories = c;
       this.currentIntentCategories = c;
     });
+    this.displayTargetIntent = this.step.targetIntent.name.trim().length !== 0;
   }
 
   onIntentChange(step: StoryStep, name: string) {
@@ -145,6 +148,11 @@ export class StepComponent implements OnInit {
     this.child.emit(this.step);
   }
 
+  focusTargetIntent(element) {
+    this.displayTargetIntent = true;
+    setTimeout(_ => element.focus(), 200);
+  }
+
   userSentenceChange(userSentence: string) {
     if (userSentence.trim().length !== 0 && this.step.intent.name.length === 0) {
       const app = this.state.currentApplication;
@@ -158,7 +166,7 @@ export class StepComponent implements OnInit {
       )).subscribe(r => {
         if (r.classification.intentId) {
           const intent = this.state.findIntentById(r.classification.intentId);
-          if(intent) {
+          if (intent) {
             this.step.intentDefinition = intent;
             this.step.intent = new IntentName(intent.name);
             this.onIntentChange(this.step, intent.name);

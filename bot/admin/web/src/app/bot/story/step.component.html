@@ -21,14 +21,20 @@
   <tock-answer [answer]="step" class="entity-button"></tock-answer>&nbsp;
 
   <!-- target intent -->
-  <mat-form-field class="input input-intent">
-    <input matInput name="targetIntent" placeholder="Target Intent" [(ngModel)]="step.targetIntent.name"
+  <mat-form-field [style.display]="displayTargetIntent ? 'inline-block' : 'none'" class="input input-intent">
+    <input #targetIntent matInput name="targetIntent" placeholder="Target Intent" [(ngModel)]="step.targetIntent.name"
            matTooltip="Intent to switch when reaching the step"
            [matAutocomplete]="intentAuto"
            (keyup)="onIntentChange(step, $event.target.value)"
            (focus)="onIntentChange(step, $event.target.value)"
            (blur)="validateIntent(step, true)">
   </mat-form-field>
+  <div *ngIf="!displayTargetIntent" class="entity-button">
+    <button mat-icon-button
+            matTooltip="Set Target Intent" (click)="focusTargetIntent(targetIntent)">
+      <mat-icon>subdirectory_arrow_right</mat-icon>
+    </button>
+  </div>
 
   <div class="entity-button">
     <button mat-icon-button color="warn"

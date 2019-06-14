@@ -1,9 +1,10 @@
 <mat-expansion-panel *ngIf="story" [expanded]="storyNode || !story._id" [hideToggle]="storyNode || !story._id" #expansionPanel (opened)="story.hideDetails = false">
   <mat-expansion-panel-header>
-    <mat-panel-title>
+    <mat-panel-title class="panel-title">
       <span *ngIf="!storyNode" matTooltip="Story name" class="answer-title">{{story.name}}</span>
-      <span *ngIf="storyNode" matTooltip="Story name" [matBadge]="storyNode.displayCount()"
-            matBadgeOverlap="false" class="answer-title answer-title-right-panel">{{story.name}}</span>
+      <span *ngIf="storyNode" matTooltip="Story name" [matBadge]="storyNode.displayCount()" [matBadgeHidden]="!displayCount"
+            matBadgeOverlap="false" class="answer-title">
+        <div class="answer-title-right-panel">{{story.name}}</div></span>
     </mat-panel-title>
     <mat-panel-description>
       <tock-answer *ngIf="!storyNode && story._id" class="answer" [answer]="story" [fullDisplay]="false"></tock-answer>
@@ -37,7 +38,6 @@
       <li *ngIf="storyNode.intent">Intent: <b>{{storyNode.intent}}</b></li>
       <li *ngIf="storyNode.step">Step: <b>{{storyNode.step}}</b></li>
       <li *ngIf="storyNode.entities.length !==0">Entities: <b>{{storyNode.entities}}</b></li>
-      <li>{{storyNode.count}} {{storyNode.count === 1 ? 'instance' : 'instances'}}</li>
     </ul>
   </div>
 

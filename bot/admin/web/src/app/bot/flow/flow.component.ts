@@ -18,13 +18,20 @@ import {Component, OnInit} from "@angular/core";
 import {BotService} from "../bot-service";
 import {NlpService} from "../../nlp-tabs/nlp.service";
 import {StateService} from "../../core-nlp/state.service";
-import {ApplicationDialogFlow, DialogFlowRequest, DialogFlowStateTransitionType} from "../model/flow";
+import {
+  ApplicationDialogFlow,
+  DialogFlowRequest,
+  DialogFlowStateData,
+  DialogFlowStateTransitionData,
+  DialogFlowStateTransitionType
+} from "../model/flow";
 import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {entityColor} from "../../model/nlp";
 import {KeyValue} from "@angular/common";
 import {NodeTransition, StoryNode} from "./node";
 import {MatSnackBar} from "@angular/material";
 import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
+import {StoryDefinitionConfiguration, StorySearchQuery, StoryStep} from "../model/story";
 
 @Component({
   selector: 'tock-flow',
@@ -106,7 +113,7 @@ export class FlowComponent implements OnInit {
   intent: boolean = false;
   minimalNodeCount: number = 0;
   maxNodeCount: number = 1;
-  minimalTransitionPercentage: number = 10;
+  minimalTransitionPercentage: number = 0;
 
   selectedStoryId: string;
   direction: number;
@@ -124,6 +131,10 @@ export class FlowComponent implements OnInit {
   lastBotSelection: SelectBotEvent;
   flow: ApplicationDialogFlow;
 
+  configuredStories: StoryDefinitionConfiguration[];
+  configuredFlow: ApplicationDialogFlow;
+  statsMode: boolean = false;
+
   valueAscOrder = (a: KeyValue<string, string>, b: KeyValue<string, string>): number => {
     return a.value.localeCompare(b.value);
   };
@@ -136,6 +147,17 @@ export class FlowComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.bot.getStories(
+      new StorySearchQuery(
+        this.state.currentApplication.namespace,
+        this.state.currentApplication.name,
+        this.state.currentLocale,
+        0,
+        10000
+      )).subscribe(s => {
+      this.configuredStories = s;
+      this.fillConfiguration();
+    });
   }
 
   changeLayout(layout: string) {
@@ -143,7 +165,60 @@ export class FlowComponent implements OnInit {
   }
 
   updateCount() {
-    setTimeout(_ => this.toGraphData(this.flow));
+    setTimeout(_ => {
+      this.toGraphData(this.statsMode ? this.flow : this.configuredFlow)
+    });
+  }
+
+  private fillConfiguration() {
+    const intentStoryMap = new Map<string, StoryDefinitionConfiguration>();
+    const states: DialogFlowStateData[] = [];
+    const transitions: DialogFlowStateTransitionData[] = [];
+    this.configuredStories.forEach(s => {
+      intentStoryMap.set(s.intent.name, s);
+      states.push(
+        new DialogFlowStateData(
+          s.intent.name,
+          s.intent.name,
+          [],
+          null,
+          1,
+          s.intent.name
+        )
+      );
+      transitions.push(
+        new DialogFlowStateTransitionData(
+          s.intent.name,
+          [],
+          DialogFlowStateTransitionType.nlp,
+          null,
+          null,
+          1
+        )
+      );
+    });
+
+    this.configuredStories.forEach(s => {
+      const intents = new Set<string>();
+      StoryStep.findOutcomingIntent(intents, s.steps);
+      intents.forEach(i => {
+        const targetStory = intentStoryMap.get(i);
+        if (targetStory) {
+          transitions.push(
+            new DialogFlowStateTransitionData(
+              targetStory.intent.name,
+              [],
+              DialogFlowStateTransitionType.nlp,
+              s.intent.name,
+              null,
+              1
+            )
+          );
+        }
+      });
+    });
+    this.configuredFlow = new ApplicationDialogFlow(states, transitions);
+    this.reset();
   }
 
   reset() {
@@ -157,6 +232,12 @@ export class FlowComponent implements OnInit {
   update() {
     this.minimalNodeCount = 0;
     this.updateCount();
+  }
+
+  changeMode() {
+    this.statsMode = !this.statsMode;
+    this.minimalTransitionPercentage = this.statsMode ? 10 : 0;
+    setTimeout(_ => this.reset());
   }
 
   displayFlow(event?: SelectBotEvent) {
@@ -192,11 +273,7 @@ export class FlowComponent implements OnInit {
     }
   }
 
-  toGraphData(flow
-                :
-                ApplicationDialogFlow
-  ) {
-    this.flow = flow;
+  toGraphData(flow: ApplicationDialogFlow) {
     if (flow) {
       const displayOnlyNext: boolean = this.direction === -1;
       const displayOnlyPrev: boolean = this.direction === 1;
@@ -211,7 +288,7 @@ export class FlowComponent implements OnInit {
       const stateIdNodeMap = new Map<string, StoryNode>();
 
       const nodeByKey = [];
-      this.flow.states.forEach(s => {
+      flow.states.forEach(s => {
         if (this.entity && this.step && this.intent) {
           const node = new StoryNode(s.storyDefinitionId, [s], nodeCount++, s.entities, s.intent, s.step);
           nodesMap.set(node.id, node);
@@ -256,7 +333,7 @@ export class FlowComponent implements OnInit {
       //4 create transitions
       const countTransitionByStartId = [];
       const transitionsByKey = new Map<string, NodeTransition>();
-      this.flow.transitions.forEach(t => {
+      flow.transitions.forEach(t => {
         const prev = stateIdNodeMap.get(t.previousStateId);
         const next = stateIdNodeMap.get(t.nextStateId);
         const prevId = prev ? prev.id : -1;
@@ -396,18 +473,12 @@ export class FlowComponent implements OnInit {
     }
   }
 
-  nodeChange(id
-               :
-               string
-  ) {
+  nodeChange(id: string) {
     this.selectedNode = this.allNodes[id];
     this.selectedEdge = null;
   }
 
-  edgeChange(key
-               :
-               string
-  ) {
+  edgeChange(key: string) {
     this.selectedEdge = this.allTransitions.get(key);
     this.selectedNode = null;
   }

@@ -20,7 +20,13 @@
       Bot Flow
     </mat-panel-title>
     <mat-panel-description>
-      Layout options
+      <span class="description">Layout options</span>
+      <mat-slide-toggle
+        class="mode-selection"
+        color="primary"
+        (click)="$event.stopPropagation();changeMode()">
+        Stats
+      </mat-slide-toggle>
     </mat-panel-description>
   </mat-expansion-panel-header>
   <tock-select-bot [(configurationId)]="botConfigurationId" [displayConnectorChoice]="true"
@@ -49,6 +55,7 @@
       <mat-option *ngFor="let l of layouts" [value]="l.name">{{l.name}}</mat-option>
     </mat-select>
   </mat-form-field>
+  <span *ngIf="statsMode">
   <mat-checkbox [(ngModel)]="recursive" (change)="update()" class="checkbox">Display Recursive</mat-checkbox>
   <mat-checkbox [(ngModel)]="entity" (change)="update()" class="checkbox">Entity</mat-checkbox>
   <mat-checkbox [(ngModel)]="step" (change)="update()" class="checkbox">Step</mat-checkbox>
@@ -56,20 +63,27 @@
   / Node Weight:
   <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalNodeCount" [max]="maxNodeCount"
               (change)="updateCount()"></mat-slider>
+  </span>
   Transition Percentage:
-  <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalTransitionPercentage" (change)="updateCount()"></mat-slider>
+  <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalTransitionPercentage"
+              (change)="updateCount()"></mat-slider>
 </mat-expansion-panel>
 
 <div *ngIf="graphData" class="cytoscape">
-  <tock-cytoscape [elements]="graphData" [layout]="layout" (selectedNode)="nodeChange($event)" (selectedEdge)="edgeChange($event)"></tock-cytoscape>
+  <tock-cytoscape [elements]="graphData" [layout]="layout" (selectedNode)="nodeChange($event)"
+                  (selectedEdge)="edgeChange($event)"></tock-cytoscape>
 </div>
 
 <div *ngIf="graphData && selectedNode" class="selected-node">
-  <tock-story [storyNode]="selectedNode" [botId]="lastBotId"></tock-story>
+  <tock-story [storyNode]="selectedNode" [botId]="lastBotId" [displayCount]="statsMode"></tock-story>
 </div>
 
 <div *ngIf="graphData && selectedEdge" class="selected-edge">
   <ul>
     <li>Count: <b>{{selectedEdge.count}}</b></li>
   </ul>
+</div>
+
+<div *ngIf="graphData && !selectedNode && !selectedEdge" class="selected-node">
+  <button mat-button color="primary" routerLink="/build/story-create">Add a New Story</button>
 </div>

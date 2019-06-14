@@ -18,7 +18,7 @@
   No bot configuration detected &nbsp;
 </div>
 <div *ngIf="configurations && configurations.length !== 0">
-  <mat-form-field class="select-configuration">
+  <mat-form-field class="select-configuration" *ngIf="botNames && ((allowNoSelection || botNames.length > 1) || (displayConnectorChoice && connectorTypes.length > 1))">
     <mat-select (selectionChange)="changeBotName($event.value)"
                 placeholder="Select a configuration"
                 [ngModel]="currentBotName">
@@ -26,7 +26,7 @@
       <mat-option *ngFor="let n of botNames" [value]="n">{{ n }}</mat-option>
     </mat-select>
   </mat-form-field>
-  <mat-form-field *ngIf="displayConnectorChoice && currentBotName !== 'None'" class="select-configuration">
+  <mat-form-field *ngIf="displayConnectorChoice && currentBotName !== 'None' && connectorTypes.length > 1" class="select-configuration">
     <mat-select (selectionChange)="changeConnectorType($event.value)"
                 placeholder="Select a connector"
                 [ngModel]="currentConnectorType">

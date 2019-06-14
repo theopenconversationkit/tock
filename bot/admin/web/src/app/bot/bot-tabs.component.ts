@@ -23,9 +23,9 @@ class TabLink {
 }
 
 const tabs = [
-  new TabLink("flow", "Bot Flow"),
   new TabLink("story-create", "New Story"),
   new TabLink("story-search", "Search Stories"),
+  new TabLink("flow", "Bot Flow"),
   new TabLink("i18n", "i18n"),
   new TabLink("feature-flipping", "Feature Flipping")
 ];
@@ -44,7 +44,7 @@ export class BotTabsComponent implements OnInit {
 
   ngOnInit() {
     if(this.router.routerState.snapshot.url.endsWith("/build")) {
-      this.router.navigateByUrl("/build/flow");
+      this.router.navigateByUrl("/build/story-create");
     }
   }
 

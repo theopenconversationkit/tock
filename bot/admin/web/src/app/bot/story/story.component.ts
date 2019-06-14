@@ -47,6 +47,9 @@ export class StoryComponent implements OnInit, OnChanges {
   @Input()
   submit = new AnswerController();
 
+  @Input()
+  displayCount:boolean = true;
+
   @Output()
   close = new EventEmitter<boolean>();
 
