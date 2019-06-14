@@ -31,6 +31,7 @@ import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.namespace
+import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.security.auth.TockAuthProvider
 import fr.vsct.tock.shared.security.initEncryptor
 import fr.vsct.tock.shared.vertx.WebVerticle
@@ -45,7 +46,7 @@ class NlpVerticle : WebVerticle() {
 
     private val protectPath = verticleBooleanProperty("tock_nlp_protect_path", false)
 
-    override val rootPath: String = "/rest/nlp"
+    override val rootPath: String = property("tock_nlp_root", "/rest/nlp")
 
     private val executor: Executor by injector.instance()
 
