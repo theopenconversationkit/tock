@@ -79,6 +79,7 @@
         <plugin.clean>3.1.0</plugin.clean>
         <plugin.jar>3.1.2</plugin.jar>
         <plugin.ant>1.8</plugin.ant>
+        <plugin.shade>3.2.1</plugin.shade>
 
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
 
@@ -662,6 +663,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-antrun-plugin</artifactId>
                     <version>${plugin.ant}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>${plugin.shade}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
