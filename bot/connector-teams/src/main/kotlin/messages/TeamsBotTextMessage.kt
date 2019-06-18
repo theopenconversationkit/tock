@@ -2,14 +2,23 @@ package fr.vsct.tock.bot.connector.teams.messages
 
 import com.microsoft.bot.schema.models.CardAction
 import com.microsoft.bot.schema.models.CardImage
-import fr.vsct.tock.bot.connector.teams.teamsConnectorType
 import fr.vsct.tock.bot.engine.action.SendAttachment
 import fr.vsct.tock.bot.engine.message.Attachment
 import fr.vsct.tock.bot.engine.message.Choice
+import fr.vsct.tock.bot.engine.message.GenericElement
 import fr.vsct.tock.bot.engine.message.GenericMessage
 import fr.vsct.tock.shared.mapNotNullValues
 
+class TeamsCarousel(val listMessage : List<TeamsBotMessage>): TeamsBotMessage(null) {
+    override fun toGenericMessage(): GenericMessage? {
+        return GenericMessage(
+                subElements = listMessage.map{ GenericElement(it.toGenericMessage() ?: GenericMessage())}
+        )
+    }
+}
+
 class TeamsBotTextMessage(text: String) : TeamsBotMessage(text) {
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is TeamsBotTextMessage) return false

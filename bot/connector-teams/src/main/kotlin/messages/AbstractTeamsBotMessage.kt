@@ -21,6 +21,4 @@ abstract class TeamsBotMessage(val text: String?) : ConnectorMessage {
     override fun hashCode(): Int {
         return text?.hashCode() ?: 0
     }
-
-
 }

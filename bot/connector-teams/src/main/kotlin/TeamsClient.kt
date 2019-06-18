@@ -1,14 +1,10 @@
 package fr.vsct.tock.bot.connector.teams
 
-import com.microsoft.bot.schema.models.Activity
-import com.microsoft.bot.schema.models.ActivityTypes
-import com.microsoft.bot.schema.models.Attachment
-import com.microsoft.bot.schema.models.HeroCard
-import com.microsoft.bot.schema.models.TextFormatTypes
-import com.microsoft.bot.schema.models.ThumbnailCard
+import com.microsoft.bot.schema.models.*
 import fr.vsct.tock.bot.connector.teams.messages.MarkdownHelper.activeLink
 import fr.vsct.tock.bot.connector.teams.messages.TeamsBotMessage
 import fr.vsct.tock.bot.connector.teams.messages.TeamsCardAction
+import fr.vsct.tock.bot.connector.teams.messages.TeamsCarousel
 import fr.vsct.tock.bot.connector.teams.messages.TeamsHeroCard
 import fr.vsct.tock.bot.connector.teams.token.TokenHandler
 import fr.vsct.tock.shared.addJacksonConverter
@@ -59,6 +55,9 @@ internal class TeamsClient(private val tokenHandler: TokenHandler) {
             .withConversation(callbackActivity.conversation())
             .withReplyToId(callbackActivity.id())
 
+        if (event is TeamsCarousel) {
+            activity.withAttachmentLayout(AttachmentLayoutTypes.CAROUSEL)
+        }
         //send the message
         val messageResponse = connectorApi.postResponse(
             url,
@@ -82,6 +81,17 @@ internal class TeamsClient(private val tokenHandler: TokenHandler) {
                     .withContent(card)
                 )
             }
+            is TeamsCarousel -> {
+                val listElement = mutableListOf<TeamsBotMessage>()
+                listElement.addAll(event.listMessage)
+                while (listElement.isNotEmpty()) {
+                    attachments.addAll(
+                            getAttachment(
+                                    listElement.removeAt(0)
+                            ) as MutableList<Attachment>
+                    )
+                }
+            }
             is TeamsHeroCard -> {
                 val card = HeroCard()
                     .withTitle(event.title)
@@ -91,8 +101,8 @@ internal class TeamsClient(private val tokenHandler: TokenHandler) {
                     .withButtons(event.buttons)
                     .withTap(event.tap)
                 attachments.add(Attachment()
-                    .withContentType("application/vnd.microsoft.card.hero")
-                    .withContent(card)
+                        .withContentType("application/vnd.microsoft.card.hero")
+                        .withContent(card)
                 )
             }
         }

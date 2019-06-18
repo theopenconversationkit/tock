@@ -27,3 +27,7 @@ fun I18nTranslator.teamsHeroCard(
     buttons: List<CardAction>? = null,
     tap: CardAction? = null
 ) : TeamsHeroCard = TeamsHeroCard(title, subtitle, attachmentContent, images, buttons, tap)
+
+fun I18nTranslator.teamsCarousel(
+    carouselContent: List<TeamsBotMessage>
+) : TeamsCarousel = TeamsCarousel(carouselContent)
