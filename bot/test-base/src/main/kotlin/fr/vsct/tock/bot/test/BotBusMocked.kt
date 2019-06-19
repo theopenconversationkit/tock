@@ -176,6 +176,7 @@ fun mockTockCommon(bus: BotBus) {
             args.subList(1, args.size)
         )
     }
+    every { bus.defaultDelay(any())} returns 0
 
     mockkObject(SendChoice.Companion)
     every {
