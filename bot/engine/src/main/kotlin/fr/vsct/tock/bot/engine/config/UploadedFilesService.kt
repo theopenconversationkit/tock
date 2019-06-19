@@ -42,7 +42,7 @@ object UploadedFilesService {
     private val audioTypes = setOf("ogg", "mp3", "oga")
     private val videoTypes = setOf("ogv", "mp4")
 
-    internal fun attachmentType(url: String): AttachmentType =
+    fun attachmentType(url: String): AttachmentType =
         if (url.length > 2) {
             url.substring(url.length - 3).let { suffix ->
                 when {

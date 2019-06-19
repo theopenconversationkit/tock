@@ -20,7 +20,7 @@ import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
-import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.Bus
 import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.message.Choice
@@ -63,17 +63,17 @@ class SendChoice(
         state: EventState = EventState(),
         metadata: ActionMetadata = ActionMetadata()
     ) :
-            this(
-                playerId,
-                applicationId,
-                recipientId,
-                intentName,
-                parameters + mapNotNullValues(STEP_PARAMETER to step?.name),
-                id,
-                date,
-                state,
-                metadata
-            )
+        this(
+            playerId,
+            applicationId,
+            recipientId,
+            intentName,
+            parameters + mapNotNullValues(STEP_PARAMETER to step?.name),
+            id,
+            date,
+            state,
+            metadata
+        )
 
     companion object {
 
@@ -102,7 +102,7 @@ class SendChoice(
             /**
              * The bus.
              */
-            bus: BotBus,
+            bus: Bus<*>,
             /**
              * The target intent.
              */
@@ -116,7 +116,7 @@ class SendChoice(
              */
             parameters: Map<String, String> = emptyMap()
         ): String {
-            return encodeChoiceId(intent, step, parameters, bus.step, bus.dialog.state.currentIntent)
+            return encodeChoiceId(intent, step, parameters, bus.step, bus.intent?.wrappedIntent())
         }
 
         /**
@@ -143,16 +143,49 @@ class SendChoice(
              * The current intent of the bus.
              */
             currentIntent: Intent? = null
+        ): String =
+            encodeChoiceId(
+                intent,
+                step?.name,
+                parameters,
+                busStep?.name,
+                currentIntent
+            )
+
+        /**
+         * Encodes a choice id.
+         */
+        private fun encodeChoiceId(
+            /**
+             * The target intent.
+             */
+            intent: IntentAware,
+            /**
+             * The target step.
+             */
+            step: String? = null,
+            /**
+             * The custom parameters.
+             */
+            parameters: Map<String, String> = emptyMap(),
+            /**
+             * The current step of the bus.
+             */
+            busStep: String? = null,
+            /**
+             * The current intent of the bus.
+             */
+            currentIntent: Intent? = null
         ): String {
             val currentStep = if (step == null) busStep else step
             return StringBuilder().apply {
                 append(intent.wrappedIntent().name)
                 val params = parameters +
-                        listOfNotNull(
-                            if (currentStep != null) STEP_PARAMETER to currentStep.name else null,
-                            if (currentIntent != null && currentIntent != intent)
-                                PREVIOUS_INTENT_PARAMETER to currentIntent.name else null
-                        )
+                    listOfNotNull(
+                        if (currentStep != null) STEP_PARAMETER to currentStep else null,
+                        if (currentIntent != null && currentIntent != intent)
+                            PREVIOUS_INTENT_PARAMETER to currentIntent.name else null
+                    )
 
                 if (params.isNotEmpty()) {
                     params.map { e ->
@@ -209,7 +242,7 @@ class SendChoice(
     /**
      * Provides the id used by connectors.
      */
-    fun toEncodedId(): String = encodeChoiceId(Intent(intentName), null, parameters, null, null)
+    fun toEncodedId(): String = encodeChoiceId(Intent(intentName), step(), parameters, null, null)
 
     override fun toString(): String {
         return "SendChoice(intentName='$intentName', parameters=$parameters)"

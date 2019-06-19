@@ -95,7 +95,7 @@ class BotRepositoryTest : BotEngineTest() {
 
         every { botConfDAO.getConfigurations() } returns botConfs
         BotRepository.installBots(emptyList())
-        verify { botConfDAO.save(match { it.parameters.containsKey("test") }) }
+        verify { botConfDAO.save(match<BotApplicationConfiguration> { it.parameters.containsKey("test") }) }
     }
 
     @Test

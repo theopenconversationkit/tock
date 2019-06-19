@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.engine
 
+import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
@@ -76,7 +77,10 @@ internal class TockBotBus(
 
     override val userInterfaceType: UserInterfaceType =
         action.state.userInterface ?: connector.connectorType.userInterfaceType
+
     override val targetConnectorType: ConnectorType = action.state.targetConnectorType ?: connector.connectorType
+
+    override val targetConnector: Connector = connector.connector
 
     private val context: BusContext = BusContext()
 

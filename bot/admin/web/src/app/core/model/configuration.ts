@@ -16,6 +16,32 @@
 
 import {environment} from '../../../environments/environment';
 
+export class BotConfiguration {
+
+  constructor(
+    public botId: string,
+    public name: string,
+    public namespace: string,
+    public nlpModel: string,
+    public configurations?: BotApplicationConfiguration[],
+    public webhookUrl?: string
+  ) {
+
+  }
+
+  static fromJSON(json?: any): BotConfiguration {
+    const value = Object.create(BotConfiguration.prototype);
+
+    const result = Object.assign(value, json, {});
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): BotConfiguration[] {
+    return json ? json.map(BotConfiguration.fromJSON) : [];
+  }
+}
+
 export class BotApplicationConfiguration {
 
   constructor(public applicationId: string,
@@ -32,7 +58,7 @@ export class BotApplicationConfiguration {
   }
 
   ownConnectorType(): ConnectorType {
-    return  this.ownerConnectorType ? this.ownerConnectorType : this.connectorType;
+    return this.ownerConnectorType ? this.ownerConnectorType : this.connectorType;
   }
 
   static fromJSON(json?: any): BotApplicationConfiguration {

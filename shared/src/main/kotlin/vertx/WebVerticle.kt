@@ -197,8 +197,16 @@ abstract class WebVerticle : AbstractVerticle() {
      */
     protected open fun defaultRole(): TockUserRole? = null
 
+    /**
+     * The default port of the verticle
+     */
+    protected open val defaultPort: Int = 8080
+
     protected open fun startServer(startFuture: Future<Void>) {
-        val port = verticleIntProperty("port", 8080)
+        startServer(startFuture, verticleIntProperty("port", defaultPort))
+    }
+
+    protected open fun startServer(startFuture: Future<Void>, port: Int) {
         server.requestHandler { r -> router.handle(r) }
             .listen(
                 port

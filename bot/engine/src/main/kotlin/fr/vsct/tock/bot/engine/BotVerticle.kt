@@ -26,6 +26,7 @@ import fr.vsct.tock.shared.security.auth.TockAuthProvider
 import fr.vsct.tock.shared.security.initEncryptor
 import fr.vsct.tock.shared.vertx.WebVerticle
 import fr.vsct.tock.translator.Translator.initTranslator
+import io.vertx.core.Future
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
@@ -41,7 +42,8 @@ import java.util.concurrent.CopyOnWriteArraySet
  */
 internal class BotVerticle(
     private val nlpProxyOnBot: Boolean = booleanProperty("tock_nlp_proxy_on_bot", false),
-    private val serveUploadedFiles: Boolean = booleanProperty("tock_bot_serve_files", true)
+    private val serveUploadedFiles: Boolean = booleanProperty("tock_bot_serve_files", true),
+    private val websocketEnabled: Boolean = booleanProperty("tock_websocket_enabled", false)
 ) : WebVerticle() {
 
     inner class ServiceInstaller(
@@ -151,5 +153,21 @@ internal class BotVerticle(
 
     override fun healthcheck(): (RoutingContext) -> Unit {
         return BotRepository.healthcheckHandler
+    }
+
+    override fun startServer(startFuture: Future<Void>, port: Int) {
+        if (websocketEnabled) {
+            logger.info { "Install WebSocket handler" }
+            server.websocketHandler { context ->
+                logger.info { "Install WebSocket push handler" }
+                WebSocketListener.pushHandler = { context.writeTextMessage(it) }
+
+                context.textMessageHandler { json ->
+                    WebSocketListener.receivedHandler?.invoke(json)
+                }
+            }
+        }
+        super.startServer(startFuture, port)
+
     }
 }

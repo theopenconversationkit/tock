@@ -25,4 +25,6 @@ data class MediaCard(
     val subTitle: CharSequence?,
     val file: MediaFile?,
     val actions: List<MediaAction> = emptyList()
-) : MediaMessage
+) : MediaMessage {
+    override fun isValid(): Boolean = title != null || subTitle != null || file != null
+}

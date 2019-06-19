@@ -16,7 +16,12 @@
 
 import {Component, OnInit} from "@angular/core";
 import {BotConfigurationService} from "../../core/bot-configuration.service";
-import {BotApplicationConfiguration, ConnectorType, UserInterfaceType} from "../../core/model/configuration";
+import {
+  BotApplicationConfiguration,
+  BotConfiguration,
+  ConnectorType,
+  UserInterfaceType
+} from "../../core/model/configuration";
 import {MatDialog, MatSnackBar} from "@angular/material";
 import {ConfirmDialogComponent} from "../../shared-nlp/confirm-dialog/confirm-dialog.component";
 import {StateService} from "../../core-nlp/state.service";
@@ -39,17 +44,32 @@ export class BotConfigurationsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.load();
+  }
+
+  private load() {
     this.botConfiguration.configurations.subscribe(confs => {
-      const r = new Map();
+      const r = new Map<string, BotApplicationConfiguration[]>();
       confs.forEach(c => {
-        const a = r.get(c.botId);
+        const a = r.get(c.name);
         if (!a) {
-          r.set(c.botId, [c]);
+          r.set(c.name, [c]);
         } else {
           a.push(c);
         }
       });
-      this.configurations = Array.from(r).map(e => new BotConfiguration(e[0], e[1]));
+      const bots = this.botConfiguration.bots.getValue();
+      this.configurations = Array.from(r.values()).map(
+        e => {
+          const existingConf = bots.find(b => b.name === e[0].name);
+          if(existingConf) {
+            existingConf.configurations = e;
+            return existingConf;
+          }
+          const c = e[0];
+          return new BotConfiguration(c.botId, c.name, c.namespace, c.nlpModel, e)
+        }
+      );
     });
   }
 
@@ -113,14 +133,14 @@ export class BotConfigurationsComponent implements OnInit {
           });
       }
     });
-
-
   }
 
-}
-
-export class BotConfiguration {
-  constructor(public botId: string, public configurations: BotApplicationConfiguration[]) {
-
+  saveBot(bot: BotConfiguration) {
+    this.botConfiguration.saveBot(bot).subscribe(_ => {
+        this.snackBar.open(`Webhook saved`, "Save", {duration: 5000});
+        this.botConfiguration.updateConfigurations();
+      }
+    );
   }
+
 }

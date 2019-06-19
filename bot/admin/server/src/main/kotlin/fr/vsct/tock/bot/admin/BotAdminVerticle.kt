@@ -22,8 +22,9 @@ import fr.vsct.tock.bot.admin.BotAdminService.createI18nRequest
 import fr.vsct.tock.bot.admin.BotAdminService.dialogReportDAO
 import fr.vsct.tock.bot.admin.BotAdminService.getBotConfigurationByApplicationIdAndBotId
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
+import fr.vsct.tock.bot.admin.bot.BotConfiguration
 import fr.vsct.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
-import fr.vsct.tock.bot.admin.model.BotConfiguration
+import fr.vsct.tock.bot.admin.model.BotConnectorConfiguration
 import fr.vsct.tock.bot.admin.model.BotDialogRequest
 import fr.vsct.tock.bot.admin.model.BotI18nLabel
 import fr.vsct.tock.bot.admin.model.BotI18nLabels
@@ -98,6 +99,18 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
+        blockingJsonGet("/bots/:botId", botUser) { context ->
+            BotAdminService.getBots(context.organization, context.path("botId"))
+        }
+
+        blockingJsonPost("/bot") { context, bot: BotConfiguration ->
+            if (context.organization == bot.namespace) {
+                BotAdminService.save(bot)
+            } else {
+                unauthorized()
+            }
+        }
+
         blockingJsonGet("/configuration/bots/:botId", botUser) { context ->
             BotAdminService.getBotConfigurationsByNamespaceAndBotId(context.organization, context.path("botId"))
         }
@@ -110,7 +123,7 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonPost("/configuration/bot") { context, bot: BotConfiguration ->
+        blockingJsonPost("/configuration/bot") { context, bot: BotConnectorConfiguration ->
             if (context.organization == bot.namespace) {
                 if (bot._id != null) {
                     val conf = BotAdminService.getBotConfigurationById(bot._id)
@@ -157,7 +170,7 @@ open class BotAdminVerticle : AdminVerticle() {
                         }
                     }
                 } else {
-                    logger.error("unknown connector provider ${conf.connectorType}")
+                    badRequest("unknown connector provider ${conf.connectorType}")
                 }
             } else {
                 unauthorized()

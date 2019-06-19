@@ -16,8 +16,6 @@
 
 package fr.vsct.tock.translator
 
-import fr.vsct.tock.shared.booleanProperty
-
 /**
  * An i18n key generator. Used to generate an unique id from a default label.
  */

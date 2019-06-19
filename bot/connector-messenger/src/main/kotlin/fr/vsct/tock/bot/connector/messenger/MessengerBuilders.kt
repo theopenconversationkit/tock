@@ -49,7 +49,7 @@ import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.Parameters
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
-import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.Bus
 import fr.vsct.tock.bot.engine.I18nTranslator
 import fr.vsct.tock.bot.engine.action.ActionMetadata
 import fr.vsct.tock.bot.engine.action.ActionNotificationType
@@ -69,12 +69,12 @@ internal const val MESSENGER_CONNECTOR_TYPE_ID = "messenger"
 val messengerConnectorType = ConnectorType(MESSENGER_CONNECTOR_TYPE_ID)
 
 /**
- * Sends a Messenger message only if the [ConnectorType] of the current [BotBus] is [messengerConnectorType].
+ * Sends a Messenger message only if the [ConnectorType] of the current [Bus] is [messengerConnectorType].
  */
-fun BotBus.sendToMessenger(
-    delay: Long = botDefinition.defaultDelay(currentAnswerIndex),
-    messageProvider: BotBus.() -> MessengerConnectorMessage
-): BotBus {
+fun <T : Bus<T>> T.sendToMessenger(
+    delay: Long = defaultDelay(currentAnswerIndex),
+    messageProvider:T.() -> MessengerConnectorMessage
+): T {
     if (targetConnectorType == messengerConnectorType) {
         withMessage(messageProvider(this))
         send(delay)
@@ -83,12 +83,12 @@ fun BotBus.sendToMessenger(
 }
 
 /**
- * Sends a Messenger message as last bot answer, only if the [ConnectorType] of the current [BotBus] is [messengerConnectorType].
+ * Sends a Messenger message as last bot answer, only if the [ConnectorType] of the current [Bus] is [messengerConnectorType].
  */
-fun BotBus.endForMessenger(
-    delay: Long = botDefinition.defaultDelay(currentAnswerIndex),
-    messageProvider: BotBus.() -> MessengerConnectorMessage
-): BotBus {
+fun <T : Bus<T>> T.endForMessenger(
+    delay: Long = defaultDelay(currentAnswerIndex),
+    messageProvider: T.() -> MessengerConnectorMessage
+): T {
     if (targetConnectorType == messengerConnectorType) {
         withMessage(messageProvider(this))
         end(delay)
@@ -98,9 +98,9 @@ fun BotBus.endForMessenger(
 
 /**
  * Adds a Messenger [ConnectorMessage] if the current connector is Messenger.
- * You need to call [BotBus.send] or [BotBus.end] later to send this message.
+ * You need to call [<T : Bus<T>> T.send] or [<T : Bus<T>> T.end] later to send this message.
  */
-fun BotBus.withMessenger(messageProvider: () -> MessengerConnectorMessage): BotBus {
+fun <T : Bus<T>> T.withMessenger(messageProvider: () -> MessengerConnectorMessage): T {
     return withMessage(messengerConnectorType, messageProvider)
 }
 
@@ -302,7 +302,7 @@ fun genericTemplate(elements: List<Element>, vararg quickReplies: QuickReply): A
 /**
  * Creates an [attachment](https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
  */
-fun BotBus.attachment(
+fun <T : Bus<T>> T.attachment(
     attachmentUrl: String,
     type: AttachmentType,
     vararg quickReplies: QuickReply
@@ -312,7 +312,7 @@ fun BotBus.attachment(
 /**
  * Creates an [attachment](https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
  */
-fun BotBus.attachment(
+fun <T : Bus<T>> T.attachment(
     attachmentUrl: String,
     type: AttachmentType,
     quickReplies: List<QuickReply>
@@ -328,7 +328,7 @@ fun BotBus.attachment(
     }
 }
 
-private fun BotBus.cachedAttachment(
+private fun <T : Bus<T>> T.cachedAttachment(
     attachmentUrl: String,
     type: AttachmentType,
     useCache: Boolean = MessengerConfiguration.reuseAttachmentByDefault,
@@ -338,7 +338,7 @@ private fun BotBus.cachedAttachment(
     return AttachmentMessage(
         Attachment(
             type,
-            UrlPayload.getUrlPayload(applicationId, attachmentUrl, useCache && !userPreferences.test)
+            UrlPayload.getUrlPayload(applicationId, attachmentUrl, useCache && !test)
         ),
         quickReplies.run { if (isEmpty()) null else this }
     )
@@ -347,37 +347,37 @@ private fun BotBus.cachedAttachment(
 /**
  * Creates an [image] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
  */
-fun BotBus.image(imageUrl: String, vararg quickReplies: QuickReply): AttachmentMessage =
+fun <T : Bus<T>> T.image(imageUrl: String, vararg quickReplies: QuickReply): AttachmentMessage =
     image(imageUrl, quickReplies.toList())
 
 /**
  * Creates an [image] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
  */
-fun BotBus.image(imageUrl: String, quickReplies: List<QuickReply>): AttachmentMessage =
+fun <T : Bus<T>> T.image(imageUrl: String, quickReplies: List<QuickReply>): AttachmentMessage =
     cachedAttachment(imageUrl, AttachmentType.image, quickReplies = quickReplies)
 
 /**
  * Creates an [audio file] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
  */
-fun BotBus.audio(audioUrl: String, vararg quickReplies: QuickReply): AttachmentMessage =
+fun <T : Bus<T>> T.audio(audioUrl: String, vararg quickReplies: QuickReply): AttachmentMessage =
     audio(audioUrl, quickReplies.toList())
 
 /**
  * Creates an [audio file] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
  */
-fun BotBus.audio(audioUrl: String, quickReplies: List<QuickReply>): AttachmentMessage =
+fun <T : Bus<T>> T.audio(audioUrl: String, quickReplies: List<QuickReply>): AttachmentMessage =
     cachedAttachment(audioUrl, AttachmentType.audio, quickReplies = quickReplies.toList())
 
 /**
  * Creates a [video] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
  */
-fun BotBus.video(videoUrl: String, vararg quickReplies: QuickReply): AttachmentMessage =
+fun <T : Bus<T>> T.video(videoUrl: String, vararg quickReplies: QuickReply): AttachmentMessage =
     video(videoUrl, quickReplies.toList())
 
 /**
  * Creates a [video] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
  */
-fun BotBus.video(videoUrl: String, quickReplies: List<QuickReply>): AttachmentMessage =
+fun <T : Bus<T>> T.video(videoUrl: String, quickReplies: List<QuickReply>): AttachmentMessage =
     cachedAttachment(videoUrl, AttachmentType.video, quickReplies = quickReplies)
 
 /**
@@ -504,11 +504,11 @@ fun I18nTranslator.standaloneQuickReply(
      */
     imageUrl: String? = null,
     /**
-     * The current step of the bus.
+     * The current step of the Bus<T>.
      */
     busStep: StoryStep<out StoryHandlerDefinition>? = null,
     /**
-     * The current intent of the bus.
+     * The current intent of the Bus<T>.
      */
     currentIntent: Intent? = null
 ): QuickReply =
@@ -519,7 +519,7 @@ fun I18nTranslator.standaloneQuickReply(
 /**
  * Creates a [quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies).
  */
-fun BotBus.quickReply(
+fun <T : Bus<T>> T.quickReply(
     title: CharSequence,
     targetIntent: IntentAware,
     parameters: Parameters
@@ -529,7 +529,7 @@ fun BotBus.quickReply(
 /**
  * Creates a [quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies).
  */
-fun BotBus.quickReply(
+fun <T : Bus<T>> T.quickReply(
     title: CharSequence,
     targetIntent: IntentAware,
     imageUrl: String? = null,
@@ -541,7 +541,7 @@ fun BotBus.quickReply(
 /**
  * Create a [quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies).
  */
-fun BotBus.quickReply(
+fun <T : Bus<T>> T.quickReply(
     title: CharSequence,
     targetIntent: IntentAware,
     imageUrl: String? = null,
@@ -553,7 +553,7 @@ fun BotBus.quickReply(
 /**
  * Creates a [quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies).
  */
-fun BotBus.quickReply(
+fun <T : Bus<T>> T.quickReply(
     title: CharSequence,
     targetIntent: IntentAware,
     imageUrl: String? = null,
@@ -565,7 +565,7 @@ fun BotBus.quickReply(
 /**
  * Creates a [quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies).
  */
-fun BotBus.quickReply(
+fun <T : Bus<T>> T.quickReply(
     title: CharSequence,
     targetIntent: IntentAware,
     imageUrl: String? = null,
@@ -618,11 +618,11 @@ fun I18nTranslator.standalonePostbackButton(
      */
     step: StoryStep<out StoryHandlerDefinition>? = null,
     /**
-     * The current step of the bus.
+     * The current step of the Bus<T>.
      */
     busStep: StoryStep<out StoryHandlerDefinition>? = null,
     /**
-     * The current intent of the bus.
+     * The current intent of the Bus<T>.
      */
     currentIntent: Intent? = null
 ): PostbackButton =
@@ -638,17 +638,17 @@ fun I18nTranslator.standalonePostbackButton(
 /**
  * Creates a [postback button](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback).
  */
-fun BotBus.postbackButton(
+fun <T : Bus<T>> T.postbackButton(
     title: CharSequence,
     targetIntent: IntentAware,
     vararg parameters: Pair<String, String>
 ): PostbackButton =
-    postbackButton(title, targetIntent, null, *parameters)
+    postbackButton<T>(title, targetIntent, null, *parameters)
 
 /**
  * Creates a [postback button](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback).
  */
-fun BotBus.postbackButton(
+fun <T : Bus<T>> T.postbackButton(
     title: CharSequence,
     targetIntent: IntentAware,
     parameters: Parameters
@@ -658,7 +658,7 @@ fun BotBus.postbackButton(
 /**
  * Creates a [postback button](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback).
  */
-fun BotBus.postbackButton(
+fun <T : Bus<T>> T.postbackButton(
     title: CharSequence,
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>? = null,
@@ -669,7 +669,7 @@ fun BotBus.postbackButton(
 /**
  * Creates a [postback button](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback).
  */
-fun BotBus.postbackButton(
+fun <T : Bus<T>> T.postbackButton(
     title: CharSequence,
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>? = null,

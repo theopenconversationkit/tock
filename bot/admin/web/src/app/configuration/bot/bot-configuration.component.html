@@ -50,9 +50,6 @@
   </mat-form-field>
 
   <mat-form-field class="bot-input">
-    <input matInput placeholder="Bot identifier" [(ngModel)]="configuration.botId" disabled>
-  </mat-form-field>
-  <mat-form-field class="bot-input">
     <input matInput placeholder="Connector identifier" [(ngModel)]="configuration.applicationId">
   </mat-form-field>
   <mat-form-field class="bot-input">
@@ -60,9 +57,6 @@
   </mat-form-field>
   <mat-form-field class="bot-input">
     <input matInput placeholder="Application base url" [(ngModel)]="configuration.baseUrl" title="optional">
-  </mat-form-field>
-  <mat-form-field class="bot-input">
-    <input matInput placeholder="Nlp model" [(ngModel)]="configuration.nlpModel" [disabled]="true">
   </mat-form-field>
   <mat-expansion-panel *ngIf="botSharedService.findConnectorConfiguration(configuration.connectorType) && botSharedService.findConnectorConfiguration(configuration.connectorType).fields.length !== 0">
     <mat-expansion-panel-header>

@@ -46,8 +46,12 @@
 
       <div *ngFor="let a of configurations">
 
-        <h2>{{a.botId}}</h2>
-
+        <h2>{{a.name}}</h2>
+        <mat-form-field>
+          <input matInput placeholder="Webhook url" [(ngModel)]="a.webhookUrl" matTooltip="Optional webhook for Bot API" (keyup.enter)="saveBot(a)">
+        </mat-form-field>
+        <button mat-button (click)="saveBot(a)">Save Webhook</button>
+        <h3>Connectors</h3>
         <div *ngFor="let conf of a.configurations">
           <tock-bot-configuration
             *ngIf="!conf.connectorType.isRest() || displayTestConfigurations"

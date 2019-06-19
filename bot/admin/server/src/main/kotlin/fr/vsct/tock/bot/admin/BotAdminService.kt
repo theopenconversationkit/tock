@@ -24,6 +24,7 @@ import fr.vsct.tock.bot.admin.answer.ScriptAnswerVersionedConfiguration
 import fr.vsct.tock.bot.admin.answer.SimpleAnswerConfiguration
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import fr.vsct.tock.bot.admin.bot.BotConfiguration
 import fr.vsct.tock.bot.admin.bot.BotVersion
 import fr.vsct.tock.bot.admin.dialog.ApplicationDialogFlowData
 import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
@@ -115,6 +116,14 @@ object BotAdminService {
         }
     }
 
+    fun getBots(namespace: String, botId: String): List<BotConfiguration> {
+        return applicationConfigurationDAO.getBotConfigurationsByNamespaceAndBotId(namespace, botId)
+    }
+
+    fun save(conf: BotConfiguration) {
+        applicationConfigurationDAO.save(conf)
+    }
+
     fun getBotConfiguration(
         botApplicationConfigurationId: Id<BotApplicationConfiguration>,
         namespace: String
@@ -164,6 +173,15 @@ object BotAdminService {
 
     fun saveApplicationConfiguration(conf: BotApplicationConfiguration) {
         applicationConfigurationDAO.save(conf)
+        if (applicationConfigurationDAO.getBotConfigurationsByNamespaceAndNameAndBotId(conf.namespace, conf.name, conf.botId) == null) {
+            applicationConfigurationDAO.save(
+                BotConfiguration(
+                    conf.name,
+                    conf.botId,
+                    conf.namespace,
+                    conf.nlpModel
+                ))
+        }
     }
 
     fun loadSentencesFromIntent(namespace: String, nlpModel: String, intentName: String, locale: Locale): List<SentenceReport> {

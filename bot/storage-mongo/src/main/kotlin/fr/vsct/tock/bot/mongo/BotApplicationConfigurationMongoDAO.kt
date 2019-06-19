@@ -24,11 +24,15 @@ import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Name
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Namespace
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.NlpModel
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Parameters
+import fr.vsct.tock.bot.admin.bot.BotConfiguration
+import fr.vsct.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
+import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.watch
 import mu.KotlinLogging
 import org.bson.types.ObjectId
 import org.litote.kmongo.Id
+import org.litote.kmongo.and
 import org.litote.kmongo.deleteOne
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
@@ -41,6 +45,7 @@ import org.litote.kmongo.getCollection
 import org.litote.kmongo.json
 import org.litote.kmongo.reactivestreams.getCollectionOfName
 import org.litote.kmongo.save
+import org.litote.kmongo.upsert
 
 /**
  *
@@ -49,15 +54,21 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
 
     private val logger = KotlinLogging.logger {}
 
-    private val col = MongoBotConfiguration.database.getCollection<BotApplicationConfiguration>("bot_configuration")
-    private val asyncCol =
-        MongoBotConfiguration.asyncDatabase.getCollectionOfName<BotApplicationConfiguration>("bot_configuration")
+    private val botCol = database.getCollection<BotConfiguration>("bot")
+    private val asyncBotCol = asyncDatabase.getCollectionOfName<BotConfiguration>("bot")
 
+    private val col = database.getCollection<BotApplicationConfiguration>("bot_configuration")
+    private val asyncCol = asyncDatabase.getCollectionOfName<BotApplicationConfiguration>("bot_configuration")
 
     init {
         col.ensureUniqueIndex(ApplicationId, BotId, Namespace)
         col.ensureIndex(ApplicationId, BotId)
         col.ensureIndex(Namespace, BotId)
+        botCol.ensureUniqueIndex(Name, BotId, Namespace)
+    }
+
+    override fun listenBotChanges(listener: () -> Unit) {
+        asyncCol.watch { listener() }
     }
 
     override fun listenChanges(listener: () -> Unit) {
@@ -128,6 +139,30 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
 
     override fun getConfigurations(): List<BotApplicationConfiguration> {
         return col.find().toList()
+    }
+
+    override fun save(conf: BotConfiguration) {
+        botCol.replaceOne(
+            and(
+                Name eq conf.name,
+                Namespace eq conf.namespace,
+                BotId eq conf.botId
+            ),
+            conf,
+            upsert()
+        )
+    }
+
+    override fun getBotConfigurationsByNamespaceAndBotId(namespace: String, botId: String): List<BotConfiguration> {
+        return botCol.find(Namespace eq namespace, BotId eq botId).toList()
+    }
+
+    override fun getBotConfigurationsByNamespaceAndNameAndBotId(namespace: String, name: String, botId: String): BotConfiguration? {
+        return botCol.findOne(Namespace eq namespace, Name eq name, BotId eq botId)
+    }
+
+    override fun getBotConfigurations(): List<BotConfiguration> {
+        return botCol.find().toList()
     }
 
     fun getApplicationIds(namespace: String, nlpModel: String): Set<String> =

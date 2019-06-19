@@ -22,4 +22,10 @@ package fr.vsct.tock.bot.definition
 open class BotProviderBase(val botDefinition: BotDefinition) : BotProvider {
 
     override fun botDefinition(): BotDefinition = botDefinition
+
+    override fun equals(other: Any?): Boolean =
+        botId() == (other as? BotProvider)?.botId()
+            && configurationName() == (other as? BotProvider)?.configurationName()
+
+    override fun hashCode(): Int = botId().hashCode()
 }

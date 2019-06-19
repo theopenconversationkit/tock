@@ -19,4 +19,9 @@ package fr.vsct.tock.bot.connector.media
 /**
  * A message that contains more than simple text and ca be (optionally) transformed by [Connector] to [ConnectorMessage].
  */
-interface MediaMessage
+interface MediaMessage {
+    /**
+     * Returns true if the media is valid.
+     */
+    fun isValid(): Boolean = true
+}

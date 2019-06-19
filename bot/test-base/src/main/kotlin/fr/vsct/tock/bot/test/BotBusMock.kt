@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.test
 
+import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorCallbackBase
 import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.ConnectorMessage
@@ -219,6 +220,7 @@ open class BotBusMock(
             action.state.targetConnectorType = value
             connectorType = value
         }
+    override val targetConnector: Connector get() = error("do not use targetConnector method")
 
     private val mockData: BusMockData = BusMockData()
 

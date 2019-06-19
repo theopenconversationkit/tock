@@ -64,7 +64,7 @@ class KotlinCompilerTest {
                         TextPosition(2, 27)
                     ),
                     "Unresolved reference: println",
-                    Severity.INFO,
+                    Severity.ERROR,
                     "ERROR"
                 ),
                 CompileError(
@@ -73,7 +73,7 @@ class KotlinCompilerTest {
                         TextPosition(2, 35)
                     ),
                     "Expecting '\"'",
-                    Severity.INFO,
+                    Severity.ERROR,
                     "red_wavy_line"
                 ),
                 CompileError(
@@ -82,7 +82,7 @@ class KotlinCompilerTest {
                         TextPosition(line = 2, ch = 35)
                     ),
                     "Expecting ')'",
-                    Severity.INFO,
+                    Severity.ERROR,
                     "red_wavy_line"
                 )
             )
@@ -95,7 +95,7 @@ class KotlinCompilerTest {
                         TextPosition(2, 35)
                     ),
                     "Expecting '\"'",
-                    Severity.INFO,
+                    Severity.ERROR,
                     "red_wavy_line"
                 ),
                 CompileError(
@@ -104,7 +104,7 @@ class KotlinCompilerTest {
                         TextPosition(2, 35)
                     ),
                     "Expecting ')'",
-                    Severity.INFO,
+                    Severity.ERROR,
                     "red_wavy_line"
                 )
             )
@@ -113,8 +113,8 @@ class KotlinCompilerTest {
 
         val erroneousSourceCode = mapOf(
             "ClassToBeCompiled.kt"
-                    to
-                    """
+                to
+                """
                 fun main(args: Array<String>) {
                     println("Hello)
                 }"""
@@ -123,7 +123,8 @@ class KotlinCompilerTest {
         val errors = KotlinCompiler.getErrors(erroneousSourceCode)
         assertEquals(1, errors.size)
         assertEquals(
-            expectedError, errors["ClassToBeCompiled.kt"]
+            expectedError,
+            errors["ClassToBeCompiled.kt"]
         )
     }
 
@@ -131,8 +132,8 @@ class KotlinCompilerTest {
     fun `simple compilation and execution succeed`() {
         val sourceCode = mapOf(
             "ClassToBeCompiled.kt"
-                    to
-                    """
+                to
+                """
                 fun main(args: Array<String>) {
                     fr.vsct.tock.bot.admin.kotlin.compiler.KotlinCompilerTest.mark = true
                 }"""
@@ -158,8 +159,8 @@ class KotlinCompilerTest {
         }
         val sourceCode = mapOf(
             "ClassToBeCompiled.kt"
-                    to
-                    """
+                to
+                """
                 fun main(args: Array<String>) {
                     fr.vsct.tock.duckling.client.DucklingEntityEvaluatorProvider()
                 }"""

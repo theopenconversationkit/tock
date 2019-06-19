@@ -17,9 +17,9 @@
 import {Injectable, OnDestroy, OnInit} from "@angular/core";
 import {RestService} from "../core-nlp/rest/rest.service";
 import {StateService} from "../core-nlp/state.service";
-import {Observable, BehaviorSubject} from "rxjs";
+import {BehaviorSubject, Observable} from "rxjs";
 import {ApplicationScopedQuery} from "../model/commons";
-import {BotApplicationConfiguration, ConnectorType} from "./model/configuration";
+import {BotApplicationConfiguration, BotConfiguration, ConnectorType} from "./model/configuration";
 
 @Injectable()
 export class BotConfigurationService implements OnInit, OnDestroy {
@@ -28,13 +28,15 @@ export class BotConfigurationService implements OnInit, OnDestroy {
   private currentLocaleUnsuscriber: any;
 
   //only rest configurations
-  restConfigurations: BehaviorSubject<BotApplicationConfiguration[]> = new BehaviorSubject([]);
+  readonly restConfigurations: BehaviorSubject<BotApplicationConfiguration[]> = new BehaviorSubject([]);
   //all configurations
-  configurations: BehaviorSubject<BotApplicationConfiguration[]> = new BehaviorSubject([]);
+  readonly configurations: BehaviorSubject<BotApplicationConfiguration[]> = new BehaviorSubject([]);
   //has rest configuration
-  hasRestConfigurations: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  readonly hasRestConfigurations: BehaviorSubject<boolean> = new BehaviorSubject(false);
   //supported connectors
-  supportedConnectors: BehaviorSubject<ConnectorType[]> = new BehaviorSubject([]);
+  readonly supportedConnectors: BehaviorSubject<ConnectorType[]> = new BehaviorSubject([]);
+  //bots
+  readonly bots: BehaviorSubject<BotConfiguration[]> = new BehaviorSubject([]);
 
   constructor(private rest: RestService,
               private state: StateService) {
@@ -52,20 +54,23 @@ export class BotConfigurationService implements OnInit, OnDestroy {
   }
 
   updateConfigurations() {
-    this.getConfigurations(this.state.createApplicationScopedQuery())
-      .subscribe(c => {
-        this.configurations.next(c);
-        let rest = c.filter(c => c.connectorType.isRest());
-        this.restConfigurations.next(rest);
-        this.hasRestConfigurations.next(rest.length !== 0);
-        const connectors = [];
-        c.forEach(conf => {
-          if (!conf.connectorType.isRest() && !connectors.some(e => conf.connectorType.id === e.id)) {
-            connectors.push(conf.connectorType)
-          }
+    this.getBots(this.state.currentApplication.name).subscribe(bots => {
+      this.bots.next(bots);
+      this.getConfigurations(this.state.createApplicationScopedQuery())
+        .subscribe(c => {
+          this.configurations.next(c);
+          let rest = c.filter(c => c.connectorType.isRest());
+          this.restConfigurations.next(rest);
+          this.hasRestConfigurations.next(rest.length !== 0);
+          const connectors = [];
+          c.forEach(conf => {
+            if (!conf.connectorType.isRest() && !connectors.some(e => conf.connectorType.id === e.id)) {
+              connectors.push(conf.connectorType)
+            }
+          });
+          this.supportedConnectors.next(connectors)
         });
-        this.supportedConnectors.next(connectors)
-      });
+    });
   }
 
   private getConfigurations(query: ApplicationScopedQuery): Observable<BotApplicationConfiguration[]> {
@@ -78,6 +83,14 @@ export class BotConfigurationService implements OnInit, OnDestroy {
 
   deleteConfiguration(conf: BotApplicationConfiguration): Observable<boolean> {
     return this.rest.delete(`/configuration/bot/${conf._id}`);
+  }
+
+  private getBots(botId: string): Observable<BotConfiguration[]> {
+    return this.rest.get(`/bots/${botId}`, BotConfiguration.fromJSONArray);
+  }
+
+  saveBot(conf: BotConfiguration): Observable<any> {
+    return this.rest.post("/bot", conf);
   }
 
 }

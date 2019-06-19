@@ -25,7 +25,6 @@ import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationStep.Step
 import fr.vsct.tock.bot.definition.StoryHandler
 import fr.vsct.tock.bot.engine.BotBus
-import fr.vsct.tock.bot.engine.TockBotBus
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.message.ActionWrappedMessage
 import fr.vsct.tock.bot.engine.message.MessagesList
@@ -82,34 +81,33 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
         } else {
             simple.answers.takeUnless { it.isEmpty() }
                 ?.let {
-                it.subList(0, it.size - 1)
-                    .forEach { a ->
-                        send(container, a)
+                    it.subList(0, it.size - 1)
+                        .forEach { a ->
+                            send(container, a)
+                        }
+                    it.last().apply {
+                        send(container, this, true)
                     }
-                it.last().apply {
-                    send(container, this, true)
                 }
-            }
         }
     }
 
     private fun BotBus.send(container: StoryDefinitionAnswersContainer, answer: SimpleAnswer, end: Boolean = false) {
         val label = translate(answer.key)
         val suggestions = container.findNextSteps(configuration)
-        val connector = (this as? TockBotBus)?.connector?.connector
         val connectorMessages =
             answer.mediaMessage
                 ?.takeIf { it.isValid() }
                 ?.let {
-                    connector?.toConnectorMessage(it.toMessage(this))?.invoke(this)
+                    targetConnector.toConnectorMessage(it.toMessage(this)).invoke(this)
                 }
                 ?.let { messages ->
                     if (suggestions.isNotEmpty() && messages.isNotEmpty())
-                        messages.take(messages.size - 1) + (connector?.addSuggestions(messages.last(), suggestions)?.invoke(this)
+                        messages.take(messages.size - 1) + (targetConnector.addSuggestions(messages.last(), suggestions).invoke(this)
                             ?: messages.last())
                     else messages
                 }
-                ?: listOfNotNull(suggestions.takeIf { suggestions.isNotEmpty() && end }?.let { connector?.addSuggestions(label, suggestions)?.invoke(this) })
+                ?: listOfNotNull(suggestions.takeIf { suggestions.isNotEmpty() && end }?.let { targetConnector.addSuggestions(label, suggestions).invoke(this) })
 
 
         val actions = connectorMessages

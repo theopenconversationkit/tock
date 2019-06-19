@@ -32,4 +32,12 @@ interface BotProvider {
      */
     fun botId(): String = botDefinition().botId
 
+    /**
+     * Is this [BotProvider] specific to a configuration name?
+     * If yes, this methods returns the configuration name.
+     * If no, this methods returns null.
+     * By default this method returns null.
+     */
+    fun configurationName(): String? = null
+
 }

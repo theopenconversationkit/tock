@@ -181,6 +181,7 @@ fun mockTockCommon(bus: BotBus) {
     every {
         SendChoice.encodeChoiceId(bus, any(), any(), any())
     } answers {
+        @Suppress("UNCHECKED_CAST")
         SendChoice.encodeChoiceId(
             (args[1] as IntentAware).wrappedIntent(),
             args[2] as? StoryStep<out StoryHandlerDefinition>,

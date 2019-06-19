@@ -20,7 +20,7 @@ import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.event.EventType
 import fr.vsct.tock.bot.engine.user.PlayerId
 
-internal data class ActionWrappedMessage(val action: Action, override val delay: Long) : Message {
+data class ActionWrappedMessage(val action: Action, override val delay: Long) : Message {
 
     override val eventType: EventType get() = action.toMessage().eventType
 

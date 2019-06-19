@@ -263,9 +263,12 @@ object BotRepository {
         return connectorProviders.firstOrNull { it.connectorType == connectorType }
     }
 
+    /**
+     * Checks that configurations are synchronized with the database.
+     */
     @Synchronized
-    private fun checkBotConfigurations(startup: Boolean = false) {
-        logger.trace { "check configurations" }
+    fun checkBotConfigurations(startup: Boolean = false) {
+        logger.debug { "check configurations" }
         //
         val applicationsCache = mutableListOf<ApplicationDefinition>()
 
@@ -276,7 +279,12 @@ object BotRepository {
         confs.forEach { c ->
             if (existingConfs.none { c.equalsWithoutId(it) }) {
                 val botDefinition =
-                    botProviders.find { it.botId() == c.botId }?.botDefinition()
+                    botProviders
+                        .find { botProvider ->
+                            botProvider.botId() == c.botId
+                                && botProvider.configurationName().let { it == null || it == c.name }
+                        }
+                        ?.botDefinition()
                 if (botDefinition?.namespace == c.namespace) {
                     logger.debug { "refresh configuration $c" }
                     val oldConfiguration = existingConfs.find { it._id == c._id }

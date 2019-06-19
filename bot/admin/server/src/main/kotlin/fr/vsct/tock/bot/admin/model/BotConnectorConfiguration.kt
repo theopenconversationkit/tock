@@ -25,7 +25,7 @@ import org.litote.kmongo.newId
 /**
  *
  */
-data class BotConfiguration(
+data class BotConnectorConfiguration(
     val applicationId: String,
     val botId: String,
     val namespace: String,

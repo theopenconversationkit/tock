@@ -95,21 +95,21 @@ internal object KotlinCompiler {
                     logger.debug { "load url $it" }
                     Paths.get(it.toURI())
                 }
-                    ?:
-                    //java 9
-                    classPath
-                        .flatMap {
-                            Paths.get(it).let {
-                                if (Files.isDirectory(it)) {
-                                    Files.list(it).filter {
-                                        it.toString().endsWith(".jar")
-                                    }.collect(Collectors.toList()) + listOf(it)
-                                } else {
-                                    listOf(it)
-                                }
+                ?:
+                //java 9
+                classPath
+                    .flatMap {
+                        Paths.get(it).let {
+                            if (Files.isDirectory(it)) {
+                                Files.list(it).filter {
+                                    it.toString().endsWith(".jar")
+                                }.collect(Collectors.toList()) + listOf(it)
+                            } else {
+                                listOf(it)
                             }
                         }
-                        .apply { logger.info { "class path used : $this" } }
+                    }
+                    .apply { logger.info { "class path used : $this" } }
         )
     }
 
@@ -181,7 +181,7 @@ internal object KotlinCompiler {
         return files
             .firstOrNull { mainFunctionDetector.hasMain(it.declarations) }
             ?.let { getMainClassName(it) }
-                ?: getMainClassName(files.iterator().next())
+            ?: getMainClassName(files.iterator().next())
     }
 
     private fun getMainClassName(file: KtFile): String {
@@ -280,7 +280,7 @@ internal object KotlinCompiler {
                     if (render.contains("This cast can never succeed")) {
                         continue
                     }
-                    if (diagnostic.severity != Severity.INFO) {
+                    if (diagnostic.severity != org.jetbrains.kotlin.diagnostics.Severity.INFO) {
                         val textRangeIterator = diagnostic.textRanges.iterator()
                         if (!textRangeIterator.hasNext()) {
                             continue
@@ -288,7 +288,7 @@ internal object KotlinCompiler {
                         val firstRange = textRangeIterator.next()
 
                         var className = diagnostic.severity.name
-                        if (!(diagnostic.factory === Errors.UNRESOLVED_REFERENCE) && diagnostic.severity == Severity.ERROR) {
+                        if (!(diagnostic.factory === Errors.UNRESOLVED_REFERENCE) && diagnostic.severity == org.jetbrains.kotlin.diagnostics.Severity.ERROR) {
                             className = "red_wavy_line"
                         }
                         val interval = getInterval(
@@ -361,9 +361,9 @@ internal object KotlinCompiler {
 
         private fun convertSeverity(severity: org.jetbrains.kotlin.diagnostics.Severity): Severity {
             return when (severity) {
-                Severity.ERROR -> Severity.ERROR
-                Severity.INFO -> Severity.INFO
-                Severity.WARNING -> Severity.WARNING
+                org.jetbrains.kotlin.diagnostics.Severity.ERROR -> Severity.ERROR
+                org.jetbrains.kotlin.diagnostics.Severity.INFO -> Severity.INFO
+                org.jetbrains.kotlin.diagnostics.Severity.WARNING -> Severity.WARNING
                 else -> Severity.INFO
             }
         }

@@ -53,6 +53,8 @@
         <module>test-base</module>
         <module>test</module>
 
+        <module>api</module>
+
         <module>admin</module>
 
 

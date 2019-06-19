@@ -40,7 +40,20 @@ interface BotApplicationConfigurationDAO {
 
     fun getConfigurationByApplicationIdAndBotId(namespace: String, applicationId: String, botId: String): BotApplicationConfiguration?
 
-    fun getConfigurationsByNamespaceAndBotId(namespace:String, botId: String): List<BotApplicationConfiguration>
+    fun getConfigurationsByNamespaceAndBotId(namespace: String, botId: String): List<BotApplicationConfiguration>
 
     fun delete(conf: BotApplicationConfiguration)
+
+    /**
+     * Listen changes on bot configurations.
+     */
+    fun listenBotChanges(listener: () -> Unit)
+
+    fun save(conf: BotConfiguration)
+
+    fun getBotConfigurationsByNamespaceAndBotId(namespace: String, botId: String): List<BotConfiguration>
+
+    fun getBotConfigurationsByNamespaceAndNameAndBotId(namespace: String, name: String, botId: String): BotConfiguration?
+
+    fun getBotConfigurations(): List<BotConfiguration>
 }

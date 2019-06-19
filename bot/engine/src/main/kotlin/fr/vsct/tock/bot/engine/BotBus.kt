@@ -19,7 +19,6 @@ package fr.vsct.tock.bot.engine
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.ConnectorMessage
-import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.ParameterKey
@@ -43,7 +42,6 @@ import fr.vsct.tock.bot.engine.feature.FeatureType
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.message.MessagesList
 import fr.vsct.tock.bot.engine.nlp.NlpCallStats
-import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.model.Entity
@@ -52,15 +50,13 @@ import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.provide
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelValue
-import fr.vsct.tock.translator.UserInterfaceType
-import java.util.Locale
 
 /**
  * A new bus instance is created for each user request.
  *
  * The bus is used by bot implementations to reply to the user request.
  */
-interface BotBus : I18nTranslator {
+interface BotBus : Bus<BotBus> {
 
     companion object {
         /**
@@ -76,7 +72,7 @@ interface BotBus : I18nTranslator {
      */
     val botDefinition: BotDefinition
     /**
-     * The user timeline. Get history and data abgout the user.
+     * The user timeline. Gets history and data about the user.
      */
     val userTimeline: UserTimeline
     /**
@@ -100,44 +96,20 @@ interface BotBus : I18nTranslator {
     //shortcuts
 
     /**
-     * The current application id.
-     */
-    val applicationId: String
-    /**
-     * The current bot id.
-     */
-    val botId: PlayerId
-    /**
-     * The current user id.
-     */
-    val userId: PlayerId
-    /**
      * User preferences of the current user.
      */
     val userPreferences: UserPreferences
+
     /**
-     * The current user [Locale].
-     * Only supported app locales are returned.
-     * if the locale is not supported, returns the supported language or the default.
+     * The underlying [Connector] used.
+     * Please do not use this method as it is exposed for third party libraries only.
      */
-    override val userLocale: Locale
-    /**
-     * The current user interface type.
-     */
-    override val userInterfaceType: UserInterfaceType
-    /**
-     * The [ConnectorType] used for the response.
-     */
-    override val targetConnectorType: ConnectorType
+    val targetConnector: Connector
 
     /**
      * The entities in the dialog state.
      */
     val entities: Map<String, EntityStateValue>
-    /**
-     * The current intent.
-     */
-    val intent: IntentAware?
 
     /**
      * To manage i18n.
@@ -149,19 +121,11 @@ interface BotBus : I18nTranslator {
      */
     var nextUserActionState: NextUserActionState?
 
-    /**
-     * The current [StoryStep] of the [Story].
-     */
-    var step: StoryStep<out StoryHandlerDefinition>?
+    override var step: StoryStep<out StoryHandlerDefinition>?
         get() = story.currentStep
         set(step) {
             story.step = step?.name
         }
-
-    /**
-     * The current answer index of the bot for this action.
-     */
-    val currentAnswerIndex: Int
 
     /**
      * The text sent by the user if any.
@@ -377,48 +341,23 @@ interface BotBus : I18nTranslator {
     fun setBusContextValue(key: ParameterKey, value: Any?) = setBusContextValue(key.key, value)
 
     /**
-     * Send previously registered [ConnectorMessage] as last bot answer.
-     */
-    fun end(delay: Long = botDefinition.defaultDelay(currentAnswerIndex)): BotBus {
-        return endRawText(null, delay)
-    }
-
-    /**
-     * Sends i18nText as last bot answer.
-     */
-    fun end(
-        i18nText: CharSequence,
-        delay: Long = botDefinition.defaultDelay(currentAnswerIndex),
-        vararg i18nArgs: Any?
-    ): BotBus {
-        return endRawText(translate(i18nText, *i18nArgs), delay)
-    }
-
-    /**
-     * Sends i18nText as last bot answer.
-     */
-    fun end(i18nText: CharSequence, vararg i18nArgs: Any?): BotBus {
-        return endRawText(translate(i18nText, *i18nArgs))
-    }
-
-    /**
      * Sends text that should not be translated as last bot answer.
      */
-    fun endRawText(plainText: CharSequence?, delay: Long = botDefinition.defaultDelay(currentAnswerIndex)): BotBus {
+    override fun endRawText(plainText: CharSequence?, delay: Long): BotBus {
         return end(SendSentence(botId, applicationId, userId, plainText), delay)
     }
 
     /**
      * Sends [Message] as last bot answer.
      */
-    fun end(message: Message, delay: Long = botDefinition.defaultDelay(currentAnswerIndex)): BotBus {
+    fun end(message: Message, delay: Long = defaultDelay(currentAnswerIndex)): BotBus {
         return end(message.toAction(this), delay)
     }
 
     /**
      * Sends [Action] as last bot answer.
      */
-    fun end(action: Action, delay: Long = botDefinition.defaultDelay(currentAnswerIndex)): BotBus
+    fun end(action: Action, delay: Long = defaultDelay(currentAnswerIndex)): BotBus
 
     /**
      * Sends a [MessagesList] and end the dialog.
@@ -436,73 +375,9 @@ interface BotBus : I18nTranslator {
     }
 
     /**
-     * Sends messages provided by [messageProvider] as last bot answer.
-     * if [messageProvider] returns a [CharSequence] send it as text. Else call simply end().
-     */
-    fun end(
-        delay: Long = botDefinition.defaultDelay(currentAnswerIndex),
-        messageProvider: BotBus.() -> Any?
-    ): BotBus {
-        val r = messageProvider(this)
-        if (r is CharSequence) {
-            end(r, delay)
-        } else {
-            end(delay)
-        }
-        return this
-    }
-
-    /**
-     * Sends i18nText.
-     */
-    fun send(
-        i18nText: CharSequence,
-        delay: Long = botDefinition.defaultDelay(currentAnswerIndex),
-        vararg i18nArgs: Any?
-    ): BotBus {
-        return sendRawText(translate(i18nText, *i18nArgs), delay)
-    }
-
-    /**
-     * Sends i18nText.
-     */
-    fun send(i18nText: CharSequence, vararg i18nArgs: Any?): BotBus {
-        return sendRawText(translate(i18nText, *i18nArgs))
-    }
-
-    /**
-     * Sends previously registered [ConnectorMessage].
-     */
-    fun send(delay: Long = botDefinition.defaultDelay(currentAnswerIndex)): BotBus {
-        return sendRawText(null, delay)
-    }
-
-    /**
-     * Sends messages provided by [messageProvider].
-     * if [messageProvider] returns a [CharSequence] send it as text. Else call simply send().
-     */
-    fun send(
-        delay: Long = botDefinition.defaultDelay(currentAnswerIndex),
-        messageProvider: BotBus.() -> Any?
-    ): BotBus {
-        val r = messageProvider(this)
-        if (r is CharSequence) {
-            send(r, delay)
-        } else {
-            send(delay)
-        }
-        return this
-    }
-
-    /**
-     * Send text that should not be translated.
-     */
-    fun sendRawText(plainText: CharSequence?, delay: Long = botDefinition.defaultDelay(currentAnswerIndex)): BotBus
-
-    /**
      * Sends a [Message].
      */
-    fun send(message: Message, delay: Long = botDefinition.defaultDelay(currentAnswerIndex)): BotBus {
+    fun send(message: Message, delay: Long = defaultDelay(currentAnswerIndex)): BotBus {
         return send(message.toAction(this), delay)
     }
 
@@ -520,7 +395,7 @@ interface BotBus : I18nTranslator {
     /**
      * Sends an [Action].
      */
-    fun send(action: Action, delay: Long = botDefinition.defaultDelay(currentAnswerIndex)): BotBus
+    fun send(action: Action, delay: Long = defaultDelay(currentAnswerIndex)): BotBus
 
     /**
      * Adds the specified [ActionPriority] to the bus context.
@@ -536,16 +411,6 @@ interface BotBus : I18nTranslator {
      * Adds the specified [ActionVisibility] to the bus context.
      */
     fun withVisibility(visibility: ActionVisibility): BotBus
-
-    /**
-     * Adds the specified [ConnectorMessage] to the bus context if the [targetConnectorType] is compatible.
-     */
-    fun withMessage(message: ConnectorMessage): BotBus = withMessage(message.connectorType) { message }
-
-    /**
-     * Adds the specified [ConnectorMessage] to the bus context if the [targetConnectorType] is compatible.
-     */
-    fun withMessage(connectorType: ConnectorType, messageProvider: () -> ConnectorMessage): BotBus
 
     /**
      * Reloads the user profile.
@@ -567,6 +432,7 @@ interface BotBus : I18nTranslator {
      */
     fun handleAndSwitchStory(storyDefinition: StoryDefinition) {
         switchStory(storyDefinition)
+        @Suppress("UNCHECKED_CAST")
         storyDefinition.storyHandler.handle(this)
     }
 
@@ -617,4 +483,28 @@ interface BotBus : I18nTranslator {
 
     //I18nTranslator implementation
     override val contextId: String? get() = dialog.id.toString()
+
+    override fun defaultDelay(answerIndex: Int): Long = botDefinition.defaultDelay(answerIndex)
+
+    override val test: Boolean get() = userPreferences.test
+
+    //this is mainly to allow mockk to work -->
+
+    override fun withMessage(message: ConnectorMessage): BotBus = super.withMessage(message)
+
+    override fun send(delay: Long): BotBus = super.send(delay)
+
+    override fun send(i18nText: CharSequence, delay: Long, vararg i18nArgs: Any?): BotBus = super.send(i18nText, delay, *i18nArgs)
+
+    override fun send(i18nText: CharSequence, vararg i18nArgs: Any?): BotBus = super.send(i18nText, *i18nArgs)
+
+    override fun send(delay: Long, messageProvider: BotBus.() -> Any?): BotBus = super.send(delay, messageProvider)
+
+    override fun end(i18nText: CharSequence, delay: Long, vararg i18nArgs: Any?): BotBus = super.end(i18nText, delay, *i18nArgs)
+
+    override fun end(i18nText: CharSequence, vararg i18nArgs: Any?): BotBus = super.end(i18nText, *i18nArgs)
+
+    override fun end(delay: Long): BotBus = super.end(delay)
+
+    override fun end(delay: Long, messageProvider: BotBus.() -> Any?): BotBus = super.end(delay, messageProvider)
 }

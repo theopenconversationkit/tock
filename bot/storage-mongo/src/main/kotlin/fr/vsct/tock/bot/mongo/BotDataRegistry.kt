@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.mongo
 
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
+import fr.vsct.tock.bot.admin.bot.BotConfiguration
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.admin.test.TestPlan
 import fr.vsct.tock.bot.admin.test.TestPlanExecution
@@ -26,8 +27,8 @@ import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.translator.I18nLabel
 import fr.vsct.tock.translator.I18nLabelStat
-import org.litote.kmongo.DataRegistry
 import org.litote.jackson.data.JacksonDataRegistry
+import org.litote.kmongo.DataRegistry
 
 /**
  *
@@ -37,6 +38,7 @@ import org.litote.jackson.data.JacksonDataRegistry
         I18nLabel::class,
         I18nLabelStat::class,
         BotApplicationConfiguration::class,
+        BotConfiguration::class,
         StoryDefinitionConfiguration::class,
         TestPlan::class,
         TestPlanExecution::class,
@@ -51,6 +53,7 @@ import org.litote.jackson.data.JacksonDataRegistry
         I18nLabel::class,
         I18nLabelStat::class,
         BotApplicationConfiguration::class,
+        BotConfiguration::class,
         StoryDefinitionConfiguration::class,
         TestPlan::class,
         TestPlanExecution::class,
