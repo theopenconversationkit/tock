@@ -30,12 +30,6 @@
   display: block;
 }
 
-.table {
-  border-spacing: 0;
-  border-collapse: collapse;
-  width: 100%;
-}
-
 .entity_icon {
   position: relative;
   top: 7px;

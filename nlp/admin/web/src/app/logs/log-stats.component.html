@@ -14,23 +14,25 @@
   ~ limitations under the License.
   -->
 
-<mat-card class="search">
-  <mat-card-content>
-    <mat-form-field class="intent">
-      <mat-select placeholder="Intent" [(ngModel)]="intent" (selectionChange)="search()" class="search-input">
-        <mat-option value="">All</mat-option>
-        <mat-optgroup *ngFor="let category of state.currentIntentsCategories | async" [label]="category.category">
-          <mat-option *ngFor="let intent of category.intents" [value]="intent.name">
+<nb-card class="search">
+  <nb-card-body>
+      <span class="i18n-select nb-form-field-infix">
+      <nb-select placeholder="Intent" [(ngModel)]="intent" (selectedChange)="search()" class="search-input nb-select">
+        <nb-option value="">All</nb-option>
+        <nb-option-group *ngFor="let category of state.currentIntentsCategories | async" [title]="category.category">
+          <nb-option *ngFor="let intent of category.intents" [value]="intent.name">
             {{intent.intentLabel()}}
-          </mat-option>
-        </mat-optgroup>
-        <mat-option value="unknown">Unknown</mat-option>
-      </mat-select>
-    </mat-form-field>
-    <mat-slide-toggle class="choice" [(ngModel)]="onlyCurrentLocale" (change)="search()">Only current locale</mat-slide-toggle>
-    <button mat-button (click)="search()">GO</button>
-  </mat-card-content>
-</mat-card>
+          </nb-option>
+        </nb-option-group>
+        <nb-option value="unknown">Unknown</nb-option>
+      </nb-select>
+      <span class="nb-form-field-label-wrapper">
+          <label class="label-title">Filter by category</label>
+        </span>
+      </span>
+    <button nbButton size="small" outline (click)="search()" class="btn">GO</button>
+  </nb-card-body>
+</nb-card>
 
 <h2 *ngIf="nodata" class="search">
   No Data

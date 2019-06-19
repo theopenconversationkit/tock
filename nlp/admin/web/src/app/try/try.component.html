@@ -14,27 +14,28 @@
   ~ limitations under the License.
   -->
 
-<mat-card class="try">
-  <mat-card-content>
+<nb-card class="try">
+  <nb-card-body>
     <mat-form-field class="try-input">
       <input matInput placeholder="Write some text" #tryIt (keyup.enter)="onTry(tryIt.value)">
     </mat-form-field>
-    <button mat-raised-button (click)="onTry(tryIt.value)" color="primary">GO</button>
+    <button nbButton outline status="primary" (click)="onTry(tryIt.value)" style="margin-left: 10px;">GO</button>
     &nbsp;
-    <button mat-button (click)="advanced = true">Advanced Options</button>
-    <mat-card *ngIf="advanced">
-      <mat-card-content>
-        <mat-form-field>
-          <input matInput [(ngModel)]="queryState" placeholder="Enter query state">
-        </mat-form-field><br>
-        <mat-checkbox [(ngModel)]="skipCache" matTooltip="Force NLP model query (skip cache)">skip cache</mat-checkbox>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-raised-button (click)="advanced = false">Hide Advanced Options</button>
-      </mat-card-actions>
-    </mat-card>
-  </mat-card-content>
-</mat-card>
+    <nb-accordion>
+      <nb-accordion-item>
+        <nb-accordion-item-header>Advanced options</nb-accordion-item-header>
+        <nb-accordion-item-body>
+          <mat-form-field>
+            <input matInput [(ngModel)]="queryState" placeholder="Enter query state">
+          </mat-form-field>
+          <br>
+          <nb-checkbox [(ngModel)]="skipCache" nbTooltip="Force NLP model query (skip cache)">skip cache</nb-checkbox>
+        </nb-accordion-item-body>
+      </nb-accordion-item>
+    </nb-accordion>
+
+  </nb-card-body>
+</nb-card>
 <br>
 <tock-sentence-analysis *ngIf="sentence"
                         [(sentence)]="sentence"

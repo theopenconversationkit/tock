@@ -36,3 +36,17 @@
 .test {
   font-size: smaller;
 }
+
+.from-date{
+  left: 575px;
+  position: absolute;
+  top: 285px;
+  z-index: 1000;
+}
+
+.to-date{
+  left: 975px;
+  position: absolute;
+  top: 285px;
+  z-index: 1000;
+}

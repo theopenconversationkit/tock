@@ -419,7 +419,7 @@ export class Sentence extends EntityContainer {
       case SentenceStatus.inbox :
         return "lightblue";
       case SentenceStatus.model :
-        return "lightgreen";
+        return "#00d68f";
       case SentenceStatus.validated :
         return "mediumspringgreen ";
     }

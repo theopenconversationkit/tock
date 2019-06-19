@@ -16,28 +16,29 @@
 
 <div class="search">
 
-  <mat-card>
-    <mat-card-content>
+  <nb-card [nbSpinner]="loading">
+    <nb-card-body>
       <mat-form-field class="search-input">
         <input matInput placeholder="Search Logs" [(ngModel)]="text" (keyup.enter)="refresh()">
       </mat-form-field>
       <mat-slide-toggle class="choice" [(ngModel)]="onlyCurrentLocale" (change)="refresh()">Only current locale</mat-slide-toggle>
       <mat-slide-toggle [(ngModel)]="test" (change)="refresh()">Display tests</mat-slide-toggle>
-      <button mat-button (click)="refresh()">GO</button>
-    </mat-card-content>
-  </mat-card>
+      <button nbButton outline status="primary" size="small" (click)="refresh()" class="go-btn">GO</button>
+    </nb-card-body>
+  </nb-card>
 
 <div *ngIf="total !== -1">
   <h1 *ngIf="total === 0">{{title}} is empty!
-    <button mat-button (click)="refresh()" matTooltip="Refresh">
+    <button mat-button (click)="refresh()" nbTooltip="Refresh">
       <mat-icon>refresh</mat-icon>
     </button>
   </h1>
-  <h1 *ngIf="total !== 0"><span *ngIf="total > 10">Estimated</span> {{title}} size : {{total}}
-    <button mat-icon-button class="button" (click)="downloadDump()" matTooltip="Download a minimal csv dump of the logs">
+  <h1 *ngIf="total !== 0">
+    <span *ngIf="total > 10">Estimated</span> {{title}} size : {{total}}
+    <button mat-icon-button class="button" (click)="downloadDump()" nbTooltip="Download a minimal csv dump of the logs">
       <mat-icon>cloud_download</mat-icon>
     </button>
-    <button mat-icon-button class="button" (click)="refresh()">
+    <button mat-icon-button class="button" (click)="refresh()" nbTooltip="Refresh">
       <mat-icon>refresh</mat-icon>
     </button>
   </h1>
@@ -47,14 +48,14 @@
     [infiniteScrollDistance]="2"
     [infiniteScrollThrottle]="300"
     (scrolled)="onScroll()">
-    <mat-card *ngFor="let d of data" class="log">
-      <mat-card-title>
-        <h4 *ngIf="d.error">{{d.textRequest()}} <mat-icon color="warn" matTooltip="error">error</mat-icon></h4>
+    <nb-card *ngFor="let d of data" class="log">
+      <nb-card-header>
+        <h4 *ngIf="d.error">{{d.textRequest()}} <mat-icon color="warn" nbTooltip="error">error</mat-icon></h4>
         <tock-highlight *ngIf="!d.error" [sentence]="d.sentence" [readOnly]="true"></tock-highlight>
-      </mat-card-title>
-      <mat-card-content>
+      </nb-card-header>
+      <nb-card-body>
         {{state.intentLabelByName(d.intent)}}
-          <span *ngIf="d.sentence?.classification?.intentId && d.sentence.classification.hasIntentProbability()" matTooltip="intent probability">
+          <span *ngIf="d.sentence?.classification?.intentId && d.sentence.classification.hasIntentProbability()" nbTooltip="intent probability">
             <span class="intentProbability">({{d.sentence.classification.intentProbability | percent:'1.0-2'}})</span>
         </span> {{state.intentLabelByName(d.intent) ? '-' : ''}}
         {{d.date | amTimeAgo}} <span *ngIf="d.durationInMS !== 0">in {{d.durationInMS}} ms</span>
@@ -65,9 +66,9 @@
             text: d.error ? d.textRequest() : d.sentence.text
           }"
           *ngIf="config.displayDialogUrl" mat-icon-button matTooltip="Display Conversation" color="primary"><mat-icon>speaker_notes</mat-icon></a>
-        <button mat-icon-button (click)="displayFullLog(d)" matTooltip="View Full Log"><mat-icon>visibility</mat-icon></button>
-      </mat-card-content>
-    </mat-card>
+        <button mat-icon-button (click)="displayFullLog(d)" nbTooltip="View Full Log"><mat-icon>visibility</mat-icon></button>
+      </nb-card-body>
+    </nb-card>
   </div>
 </div>
 </div>

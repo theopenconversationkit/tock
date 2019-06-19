@@ -13,16 +13,16 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<mat-card>
-  <mat-card-title>
-    Test the application {{state.currentApplication.name}}
-  </mat-card-title>
-  <mat-card-content>
+<nb-card>
+  <nb-card-header>
+    Test the application <i>{{state.currentApplication.name}}</i>
+  </nb-card-header>
+  <nb-card-body>
     <br>
     <div>
       <tock-select-bot [(configurationId)]="currentConfigurationId"
                        (selectionChange)="changeConfiguration($event)">
-        <button *ngIf="messages.length !== 0" mat-icon-button matTooltip="Clear conversation" (click)="clear()" color="primary"><mat-icon>remove_from_queue</mat-icon></button>
+        <button *ngIf="messages.length !== 0" mat-icon-button matTooltip="Clear conversation" (click)="clear()" color="primary"><mat-icon>clear_all</mat-icon></button>
         <br><br><br>
         <table *ngIf="messages.length !== 0">
           <tr *ngFor="let m of messages">
@@ -47,14 +47,14 @@
             </td>
           </tr>
         </table>
-        <mat-form-field class="input-text">
-          <input matInput
+        <span class="input-text">
+          <input nbInput status="primary"
                  placeholder="Type some text"
                  [(ngModel)]="userMessage"
                  (keyup.enter)="submit()">
-        </mat-form-field>
-        <button mat-button (click)="submit()">GO</button>
+        </span>
+        <button nbButton outline status="primary" size="small" (click)="submit()">GO</button>
       </tock-select-bot>
     </div>
-  </mat-card-content>
-</mat-card>
+  </nb-card-body>
+</nb-card>

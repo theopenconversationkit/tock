@@ -14,35 +14,76 @@
   ~ limitations under the License.
   -->
 
-<mat-card *ngIf="displayLogin">
-  <mat-card-title>Authentication</mat-card-title>
-  <mat-card-content>
-    <mat-spinner *ngIf="sendLogin" class="spinner"></mat-spinner>
-    <p *ngIf="errorMessage" class="error">
-      {{errorMessage}}
-    </p>
-    <form (keydown.enter)="onSubmit()" (ngSubmit)="onSubmit()" #loginForm="ngForm">
-      <p>
-        <mat-form-field #emailInputContainer class="formInput">
-          <input matInput placeholder="E-MAIL"
-                 #emailInput name="emailInput"
-                 [(ngModel)]="email" autofocus
-                 ngDefaultControl required email>
-        </mat-form-field>
-      </p>
-      <p>
-        <mat-form-field class="formInput">
-          <input type="password"
-                 [(ngModel)]="password"
-                 #passwordInput name="passwordInput" matInput placeholder="PASSWORD"
-                 ngDefaultControl required>
-        </mat-form-field>
-      </p>
-      <mat-card-actions>
-        <button mat-raised-button color="primary" type="submit">LOGIN</button>
-      </mat-card-actions>
-    </form>
-  </mat-card-content>
-</mat-card>
+<div class="row container-login100" style="background-image: url('/assets/images/back-blur.jpg');" *ngIf="!authService.isLoggedIn()">
+  <div class="col-md-3">
+  </div>
+  <div class="col-md-6">
+    <nb-card>
+      <nb-card-header></nb-card-header>
+      <nb-card-body>
+        <div style="text-align: center">
+          <img style="width: 250px; margin-bottom: 50px;" src="/assets/images/Logo_Tock_bleu.svg"/>
+        </div>
+        <div class="row">
+          <div class="col-md-2">
+          </div>
+          <div class="col-md-8">
+            <form (ngSubmit)="onSubmit()" #form="ngForm" aria-labelledby="title">
+              <div class="form-group">
+                <label class="label">Email address</label>
+                <input type="email" class="form-control"
+                       nbInput
+                       fullWidth
+                       [(ngModel)]="email"
+                       #userEmail="ngModel"
+                       name="email"
+                       id="input-email"
+                       pattern=".+@.+\..+"
+                       placeholder="Email address"
+                       autofocus
+                       [required]="true">
+                <ng-container *ngIf="userEmail.invalid && userEmail.touched">
+                  <p class="error-message" *ngIf="userEmail.errors?.required">
+                    Email is required!
+                  </p>
+                  <p class="error-message" *ngIf="userEmail.errors?.pattern">
+                    Email should be the real one!
+                  </p>
+                </ng-container>
+              </div>
+              <div class="form-group">
+                <label class="label">Password</label>
+                <input type="password" class="form-control" placeholder="Password"
+                       nbInput
+                       fullWidth
+                       [(ngModel)]="password"
+                       #userPassword="ngModel"
+                       name="password"
+                       type="password"
+                       id="input-password"
+                       placeholder="Password"
+                       [required]="true">
+                <ng-container *ngIf="userPassword.invalid && userPassword.touched ">
+                  <p class="error-message" *ngIf="userPassword.errors?.required">
+                    Password is required!
+                  </p>
+                </ng-container>
+              </div>
+              <div class="row">
+                <div style="text-align: center;margin: auto;">
+                  <button type="submit" class="btn btn-outline-primary">Login</button>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="col-md-2">
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+  <div class="col-md-3">
+  </div>
+</div>
 
 

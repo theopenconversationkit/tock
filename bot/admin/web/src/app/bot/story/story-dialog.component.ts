@@ -40,7 +40,7 @@ export class StoryDialogComponent implements OnInit {
   freezeIntent:boolean = false;
   userSentence:string = "";
 
-  @ViewChild('labelElement') labelElement: ElementRef;
+  @ViewChild('labelElement', {static: false}) labelElement: ElementRef;
 
   constructor(
     public dialogRef: MatDialogRef<StoryDialogComponent>,

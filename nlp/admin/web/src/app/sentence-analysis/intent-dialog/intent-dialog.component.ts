@@ -35,7 +35,7 @@ export class IntentDialogComponent implements OnInit {
   dialogType: string;
   private nameInitialized = false;
 
-  @ViewChild('labelElement') labelElement: ElementRef;
+  @ViewChild('labelElement', {static: false}) labelElement: ElementRef;
 
   constructor(
     public dialogRef: MatDialogRef<IntentDialogComponent>,

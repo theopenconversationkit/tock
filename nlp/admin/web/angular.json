@@ -26,7 +26,9 @@
               {
                 "input": "node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css"
               },
-              "src/styles.css"
+              "node_modules/bootstrap/dist/css/bootstrap.css",
+              "src/styles.css",
+              "src/app/theme/styles/styles.scss"
             ],
             "scripts": []
           },

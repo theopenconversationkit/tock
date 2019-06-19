@@ -18,6 +18,9 @@
   width: 200px;
   padding-right: 10px;
 }
+.select-width {
+  width: 12rem;
+}
 
 .connector-icon {
   vertical-align: text-top;

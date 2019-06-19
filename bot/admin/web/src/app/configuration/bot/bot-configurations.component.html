@@ -14,27 +14,35 @@
   ~ limitations under the License.
   -->
 
-<mat-card *ngIf="configurations">
-  <mat-card-title>
-    Bot Configurations
-    <button mat-button (click)="refresh()" matTooltip="Refresh">
-      <mat-icon>refresh</mat-icon>
-    </button>
-  </mat-card-title>
-  <mat-card-subtitle *ngIf="!newApplicationConfiguration">
-    <button mat-button (click)="prepareCreate()" color="primary">
-      <mat-icon>add_box</mat-icon>
-      Create a new Configuration
-    </button>
-    <button mat-button (click)="displayTestConfigurations = !displayTestConfigurations">
-      <mat-icon *ngIf="!displayTestConfigurations">visibility</mat-icon>
-      <mat-icon *ngIf="displayTestConfigurations">visibility_off</mat-icon>
-      {{ displayTestConfigurations ? 'Hide test configurations' : 'Display test configurations'}}
-    </button>
-  </mat-card-subtitle>
-  <mat-card-content>
+<nb-card *ngIf="configurations">
+  <nb-card-header>
+    <div style="display: flex;">
+      <span style="font-size: x-large;">Bot Configurations</span>
+      <nb-actions size="medium" style="cursor: pointer;">
+        <nb-action class="control-item" nbTooltip="Refresh" (click)="refresh()">
+          <i class="material-icons tock-toolbar-menu">refresh</i>
+        </nb-action>
+
+        <nb-action class="control-item"
+                   nbTooltip="Create a new Configuration"
+                   (click)="prepareCreate()"
+                   *ngIf="!newApplicationConfiguration">
+          <i class="material-icons tock-toolbar-menu" style="color: #3366ff;">add_box</i>
+        </nb-action>
+
+        <nb-action class="control-item"
+                   nbTooltip="{{ displayTestConfigurations ? 'Hide test configurations' : 'Display test configurations'}}"
+                   (click)="displayTestConfigurations = !displayTestConfigurations"
+                   *ngIf="!newApplicationConfiguration">
+          <i *ngIf="!displayTestConfigurations" class="material-icons tock-toolbar-menu">visibility</i>
+          <i *ngIf="displayTestConfigurations" class="material-icons tock-toolbar-menu">visibility_off</i>
+        </nb-action>
+      </nb-actions>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
     <div>
-      <div *ngIf="configurations.length ===0">
+      <div *ngIf="configurations.length === 0">
         <h3>No bot configuration detected.</h3>
       </div>
 
@@ -47,28 +55,45 @@
       <textarea #copy class="copy"></textarea>
 
       <div *ngFor="let a of configurations">
-
-        <h2>{{a.name}}</h2>
-        <mat-form-field class="configuration-input">
-          <input matInput placeholder="API Key" [ngModel]="a.apiKey"
-                 matTooltip="API Key for Bot API" [readonly]="true">
-        </mat-form-field>
-        <button mat-icon-button (click)="copyToClipboard(a)" matTooltip="Copy API Key" class="copy-button"><mat-icon>content_copy</mat-icon></button>
-        <mat-form-field class="configuration-input">
-          <input matInput placeholder="Webhook url" [(ngModel)]="a.webhookUrl"
-                 matTooltip="Optional webhook for Bot API" (keyup.enter)="saveBot(a)">
-        </mat-form-field>
-        <button mat-button (click)="saveBot(a)">Save Webhook</button>
-        <h3>Connectors</h3>
-        <div *ngFor="let conf of a.configurations">
-          <tock-bot-configuration
-            *ngIf="!conf.connectorType.isRest() || displayTestConfigurations"
-            [configuration]="conf"
-            (onRemove)="remove(conf)"
-            (onValidate)="update(conf)">
-          </tock-bot-configuration>
-        </div>
+        <nb-accordion>
+          <nb-accordion-item>
+            <nb-accordion-item-header>
+              {{a.name}}
+              <div *ngFor="let conf of a.configurations">
+                <img *ngIf="!conf.connectorType.isRest()"
+                  src="{{conf.connectorType.iconUrl()}}"
+                     class="connector"
+                     [matTooltip]="conf.connectorType.id"/>
+              </div>
+            </nb-accordion-item-header>
+            <nb-accordion-item-body>
+              <mat-form-field class="configuration-input">
+                <input matInput placeholder="API Key" [ngModel]="a.apiKey"
+                       nbTooltip="API Key for Bot API" [readonly]="true">
+              </mat-form-field>
+              <button mat-button (click)="copyToClipboard(a)" nbTooltip="Copy API Key" class="copy-button">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+              <mat-form-field class="configuration-input">
+                <input matInput placeholder="Webhook url" [(ngModel)]="a.webhookUrl"
+                       nbTooltip="Optional webhook for Bot API" (keyup.enter)="saveBot(a)">
+              </mat-form-field>
+              <button mat-button (click)="saveBot(a)" nbTooltip="Save Webhook">
+                <mat-icon>save</mat-icon>
+              </button>
+              <h5>Connectors</h5>
+              <div *ngFor="let conf of a.configurations">
+                <tock-bot-configuration
+                  *ngIf="!conf.connectorType.isRest() || displayTestConfigurations"
+                  [configuration]="conf"
+                  (onRemove)="remove(conf)"
+                  (onValidate)="update(conf)">
+                </tock-bot-configuration>
+              </div>
+            </nb-accordion-item-body>
+          </nb-accordion-item>
+        </nb-accordion>
       </div>
     </div>
-  </mat-card-content>
-</mat-card>
+  </nb-card-body>
+</nb-card>

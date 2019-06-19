@@ -48,7 +48,7 @@ export class CreateStoryComponent implements OnInit {
   submit = new AnswerController();
   textRetrieved: boolean = false;
 
-  @ViewChild('newSentence') newSentence: ElementRef;
+  @ViewChild('newSentence', {static: false}) newSentence: ElementRef;
 
   private stories: StoryDefinitionConfiguration[] = [];
 

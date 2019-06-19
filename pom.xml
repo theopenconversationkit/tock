@@ -88,7 +88,7 @@
 
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
 
-        <node>v8.12.0</node>
+        <node>v10.15.0</node>
     </properties>
 
     <modules>
