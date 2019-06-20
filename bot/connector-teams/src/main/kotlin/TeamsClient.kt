@@ -1,6 +1,12 @@
 package fr.vsct.tock.bot.connector.teams
 
-import com.microsoft.bot.schema.models.*
+import com.microsoft.bot.schema.models.Activity
+import com.microsoft.bot.schema.models.ActivityTypes
+import com.microsoft.bot.schema.models.Attachment
+import com.microsoft.bot.schema.models.AttachmentLayoutTypes
+import com.microsoft.bot.schema.models.HeroCard
+import com.microsoft.bot.schema.models.TextFormatTypes
+import com.microsoft.bot.schema.models.ThumbnailCard
 import fr.vsct.tock.bot.connector.teams.messages.MarkdownHelper.activeLink
 import fr.vsct.tock.bot.connector.teams.messages.TeamsBotMessage
 import fr.vsct.tock.bot.connector.teams.messages.TeamsCardAction
@@ -86,9 +92,9 @@ internal class TeamsClient(private val tokenHandler: TokenHandler) {
                 listElement.addAll(event.listMessage)
                 while (listElement.isNotEmpty()) {
                     attachments.addAll(
-                            getAttachment(
-                                    listElement.removeAt(0)
-                            ) as MutableList<Attachment>
+                        getAttachment(
+                            listElement.removeAt(0)
+                        ) as MutableList<Attachment>
                     )
                 }
             }
@@ -101,8 +107,8 @@ internal class TeamsClient(private val tokenHandler: TokenHandler) {
                     .withButtons(event.buttons)
                     .withTap(event.tap)
                 attachments.add(Attachment()
-                        .withContentType("application/vnd.microsoft.card.hero")
-                        .withContent(card)
+                    .withContentType("application/vnd.microsoft.card.hero")
+                    .withContent(card)
                 )
             }
         }
