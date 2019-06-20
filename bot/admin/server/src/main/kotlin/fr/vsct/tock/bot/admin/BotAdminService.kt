@@ -556,7 +556,7 @@ object BotAdminService {
                 } ?: BotDialogResponse(emptyList())
 
             } else {
-                logger.error { response.errorBody()?.string() }
+                logger.error { "error with $request : ${response.errorBody()?.string()}" }
                 BotDialogResponse(listOf(ClientSentence("technical error :( ${response.errorBody()?.string()}]")))
             }
         } catch (throwable: Throwable) {

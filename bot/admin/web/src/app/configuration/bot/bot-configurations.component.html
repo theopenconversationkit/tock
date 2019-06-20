@@ -44,6 +44,8 @@
         (onRemove)="cancelCreate()"
         (onValidate)="create()"></tock-bot-configuration>
 
+      <textarea #copy class="copy"></textarea>
+
       <div *ngFor="let a of configurations">
 
         <h2>{{a.name}}</h2>
@@ -51,6 +53,7 @@
           <input matInput placeholder="API Key" [ngModel]="a.apiKey"
                  matTooltip="API Key for Bot API" [readonly]="true">
         </mat-form-field>
+        <button mat-icon-button (click)="copyToClipboard(a)" matTooltip="Copy API Key" class="copy-button"><mat-icon>content_copy</mat-icon></button>
         <mat-form-field class="configuration-input">
           <input matInput placeholder="Webhook url" [(ngModel)]="a.webhookUrl"
                  matTooltip="Optional webhook for Bot API" (keyup.enter)="saveBot(a)">

@@ -32,7 +32,7 @@ internal class FallbackStoryHandler(
 ) : SimpleStoryHandlerBase() {
 
     private val logger = KotlinLogging.logger {}
-    private val handler = BotApiHandler(configuration.webhookUrl)
+    private val handler = BotApiHandler(configuration.apiKey, configuration.webhookUrl)
 
     override fun action(bus: BotBus) {
         try {

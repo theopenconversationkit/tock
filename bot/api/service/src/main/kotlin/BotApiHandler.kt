@@ -27,7 +27,7 @@ import fr.vsct.tock.bot.connector.media.MediaAction
 import fr.vsct.tock.bot.connector.media.MediaCard
 import fr.vsct.tock.bot.connector.media.MediaFile
 import fr.vsct.tock.bot.engine.BotBus
-import fr.vsct.tock.bot.engine.WebSocketListener
+import fr.vsct.tock.bot.engine.WebSocketController
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendAttachment.AttachmentType
 import fr.vsct.tock.bot.engine.action.SendSentence
@@ -42,11 +42,11 @@ import mu.KotlinLogging
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit.SECONDS
 
-internal class BotApiHandler(webhookUrl: String?) {
+internal class BotApiHandler(val apiKey: String, webhookUrl: String?) {
 
     private val logger = KotlinLogging.logger {}
 
-    private val client = webhookUrl?.let {
+    private val client = webhookUrl?.takeUnless { it.isBlank() }?.let {
         try {
             BotApiClient(it)
         } catch (e: Exception) {
@@ -63,12 +63,12 @@ internal class BotApiHandler(webhookUrl: String?) {
             bus.handleResponse(request, response)
 
         } else {
-            val pushHandler = WebSocketListener.pushHandler
+            val pushHandler = WebSocketController.getPushHandler(apiKey)
             if (pushHandler != null) {
                 pushHandler.invoke(mapper.writeValueAsString(request))
                 var response: BotResponse? = null
                 val latch = CountDownLatch(1)
-                WebSocketListener.receivedHandler = {
+                WebSocketController.setReceiveHandler(apiKey) {
                     response = mapper.readValue(it)
                     latch.countDown()
                 }

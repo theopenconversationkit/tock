@@ -45,14 +45,17 @@ fun start(
     }
     logger.info { "start web socket client" }
     val client = vertx.createHttpClient()
-    client.webSocket(serverPort, serverHost, "/") { context ->
+    client.webSocket(serverPort, serverHost, "/${botDefinition.apiKey}") { context ->
         val socket = context.result()
         socket
             ?.textMessageHandler { json ->
                 vertx.blocking<String>({
+                    logger.debug { json }
                     val request: UserRequest = mapper.readValue(json)
                     val bus = TockClientBus(botDefinition, request) { messages ->
-                        it.complete(mapper.writeValueAsString(BotResponse(messages, ResponseContext(request.context.requestId))))
+                        val response = mapper.writeValueAsString(BotResponse(messages, ResponseContext(request.context.requestId)))
+                        logger.debug { response }
+                        it.complete(response)
                     }
                     bus.handle()
                 }) {

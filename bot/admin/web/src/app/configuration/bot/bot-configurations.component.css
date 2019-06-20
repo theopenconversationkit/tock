@@ -16,5 +16,23 @@
 
 .configuration-input {
   min-width: 280px;
+}
+
+.copy-button {
   padding-right: 20px;
 }
+
+.copy {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 2em;
+  height: 2em;
+  padding: 0;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  background: transparent;
+  display: none;
+}
+

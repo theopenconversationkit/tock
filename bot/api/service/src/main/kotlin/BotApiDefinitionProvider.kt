@@ -18,9 +18,14 @@ package fr.vsct.tock.bot.api.service
 
 import fr.vsct.tock.bot.admin.bot.BotConfiguration
 import fr.vsct.tock.bot.definition.BotProviderBase
+import fr.vsct.tock.bot.engine.WebSocketController
 
-internal class BotApiDefinitionProvider(val configuration: BotConfiguration) :
-    BotProviderBase(BotApiDefinition(configuration)) {
+internal class BotApiDefinitionProvider(val configuration: BotConfiguration)
+    : BotProviderBase(BotApiDefinition(configuration)) {
+
+    init {
+        WebSocketController.registerAuthorizedKey(configuration.apiKey)
+    }
 
     override fun configurationName(): String = configuration.name
 }

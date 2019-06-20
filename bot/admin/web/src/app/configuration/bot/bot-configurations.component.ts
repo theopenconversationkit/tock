@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
+import {Component, ElementRef, OnInit, ViewChild} from "@angular/core";
 import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {
   BotApplicationConfiguration,
@@ -36,6 +36,9 @@ export class BotConfigurationsComponent implements OnInit {
   newApplicationConfiguration: BotApplicationConfiguration;
   configurations: BotConfiguration[];
   displayTestConfigurations: boolean = false;
+
+  //used to copy to clipboard
+  @ViewChild('copy') tmpTextArea: ElementRef;
 
   constructor(private state: StateService,
               private botConfiguration: BotConfigurationService,
@@ -62,7 +65,7 @@ export class BotConfigurationsComponent implements OnInit {
       this.configurations = Array.from(r.values()).map(
         e => {
           const existingConf = bots.find(b => b.name === e[0].name);
-          if(existingConf) {
+          if (existingConf) {
             existingConf.configurations = e;
             return existingConf;
           }
@@ -141,6 +144,22 @@ export class BotConfigurationsComponent implements OnInit {
         this.botConfiguration.updateConfigurations();
       }
     );
+  }
+
+  copyToClipboard(bot: BotConfiguration) {
+    const t = this.tmpTextArea.nativeElement;
+    t.style.display = "block";
+    const text = bot.apiKey;
+    t.value = text;
+    t.select();
+    let successful = false;
+    try {
+      successful = document.execCommand('copy');
+    } catch (err) {
+      //do nothing
+    }
+    t.style.display = "none";
+    this.snackBar.open(successful ? `${text} copied to clipboard` : `Unable to copy to clipboard`, "Clipboard", {duration: 1000})
   }
 
 }

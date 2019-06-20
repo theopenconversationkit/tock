@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.engine
 
+import fr.vsct.tock.bot.engine.WebSocketController.websocketEnabled
 import fr.vsct.tock.bot.engine.config.UploadedFilesService
 import fr.vsct.tock.bot.engine.nlp.NlpProxyBotService
 import fr.vsct.tock.shared.booleanProperty
@@ -42,8 +43,7 @@ import java.util.concurrent.CopyOnWriteArraySet
  */
 internal class BotVerticle(
     private val nlpProxyOnBot: Boolean = booleanProperty("tock_nlp_proxy_on_bot", false),
-    private val serveUploadedFiles: Boolean = booleanProperty("tock_bot_serve_files", true),
-    private val websocketEnabled: Boolean = booleanProperty("tock_websocket_enabled", false)
+    private val serveUploadedFiles: Boolean = booleanProperty("tock_bot_serve_files", true)
 ) : WebVerticle() {
 
     inner class ServiceInstaller(
@@ -159,11 +159,20 @@ internal class BotVerticle(
         if (websocketEnabled) {
             logger.info { "Install WebSocket handler" }
             server.websocketHandler { context ->
-                logger.info { "Install WebSocket push handler" }
-                WebSocketListener.pushHandler = { context.writeTextMessage(it) }
+                val key = context.path().let { if (it.startsWith("/")) it.substring(1) else null }
 
-                context.textMessageHandler { json ->
-                    WebSocketListener.receivedHandler?.invoke(json)
+                if (WebSocketController.isAuthorizedKey(key)) {
+                    logger.info { "Install WebSocket push handler for ${context.path()}" }
+                    WebSocketController.setPushHandler(key!!) { context.writeTextMessage(it) }
+
+                    context.textMessageHandler { json ->
+                        WebSocketController.getReceiveHandler(key)?.invoke(json)
+                    }.closeHandler {
+                        WebSocketController.removeHandler(key)
+                    }
+                } else {
+                    logger.warn { "unknown key: $key" }
+                    context.reject()
                 }
             }
         }
