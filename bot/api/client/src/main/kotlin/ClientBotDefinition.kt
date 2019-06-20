@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.api.client
 
 class ClientBotDefinition(
+    val apiKey: String,
     val stories: List<ClientStoryDefinition>,
     val unknownStory: ClientStoryDefinition
 )

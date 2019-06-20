@@ -3,8 +3,6 @@ package fr.vsct.tock.bot.api.websocket
 import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.api.client.ClientBotDefinition
 import fr.vsct.tock.bot.api.client.TockClientBus
-import fr.vsct.tock.bot.api.client.newBot
-import fr.vsct.tock.bot.api.client.newStory
 import fr.vsct.tock.bot.api.model.BotResponse
 import fr.vsct.tock.bot.api.model.ResponseContext
 import fr.vsct.tock.bot.api.model.UserRequest
@@ -35,12 +33,6 @@ import java.util.concurrent.TimeUnit
  */
 
 private val logger = KotlinLogging.logger {}
-
-fun main() {
-    start(newBot(newStory("indicate_location") {
-        end("Coucou")
-    }))
-}
 
 fun start(
     botDefinition: ClientBotDefinition,

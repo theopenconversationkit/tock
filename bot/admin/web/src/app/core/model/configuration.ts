@@ -24,7 +24,8 @@ export class BotConfiguration {
     public namespace: string,
     public nlpModel: string,
     public configurations?: BotApplicationConfiguration[],
-    public webhookUrl?: string
+    public webhookUrl?: string,
+    public apiKey?:string
   ) {
 
   }

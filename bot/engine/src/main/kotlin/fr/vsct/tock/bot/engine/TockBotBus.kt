@@ -80,7 +80,7 @@ internal class TockBotBus(
 
     override val targetConnectorType: ConnectorType = action.state.targetConnectorType ?: connector.connectorType
 
-    override val targetConnector: Connector = connector.connector
+    override val underlyingConnector: Connector = connector.connector
 
     private val context: BusContext = BusContext()
 

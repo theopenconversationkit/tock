@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.bot.admin.bot
 
+import java.util.UUID
+
 /**
  * Configuration details for a bot.
  */
@@ -36,6 +38,10 @@ data class BotConfiguration(
      * The name of the model.
      */
     val nlpModel: String,
+    /**
+     * The api key.
+     */
+    val apiKey: String = UUID.randomUUID().toString(),
     /**
      * Optional webhook url.
      */

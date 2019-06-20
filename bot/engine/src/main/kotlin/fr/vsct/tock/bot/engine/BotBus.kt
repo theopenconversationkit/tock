@@ -104,7 +104,7 @@ interface BotBus : Bus<BotBus> {
      * The underlying [Connector] used.
      * Please do not use this method as it is exposed for third party libraries only.
      */
-    val targetConnector: Connector
+    val underlyingConnector: Connector
 
     /**
      * The entities in the dialog state.

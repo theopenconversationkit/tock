@@ -114,7 +114,7 @@ internal class BotApiHandler(webhookUrl: String?) {
     private fun BotBus.toAction(sentence: Sentence): Action {
         val text = translateText(sentence.text)
         if (sentence.suggestions.isNotEmpty() && text != null) {
-            val message = targetConnector.addSuggestions(text, sentence.suggestions.mapNotNull { translateText(it.title) }).invoke(this)
+            val message = underlyingConnector.addSuggestions(text, sentence.suggestions.mapNotNull { translateText(it.title) }).invoke(this)
             if (message != null) {
                 return SendSentence(
                     botId,
@@ -138,7 +138,7 @@ internal class BotApiHandler(webhookUrl: String?) {
             toMediaCard(card)
                 .takeIf { it.isValid() }
                 ?.let {
-                    targetConnector.toConnectorMessage(it).invoke(this)
+                    underlyingConnector.toConnectorMessage(it).invoke(this)
                 }
 
         return connectorMessages?.map {

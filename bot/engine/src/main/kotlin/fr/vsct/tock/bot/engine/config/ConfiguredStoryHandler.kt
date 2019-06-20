@@ -99,15 +99,15 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
             answer.mediaMessage
                 ?.takeIf { it.isValid() }
                 ?.let {
-                    targetConnector.toConnectorMessage(it.toMessage(this)).invoke(this)
+                    underlyingConnector.toConnectorMessage(it.toMessage(this)).invoke(this)
                 }
                 ?.let { messages ->
                     if (suggestions.isNotEmpty() && messages.isNotEmpty())
-                        messages.take(messages.size - 1) + (targetConnector.addSuggestions(messages.last(), suggestions).invoke(this)
+                        messages.take(messages.size - 1) + (underlyingConnector.addSuggestions(messages.last(), suggestions).invoke(this)
                             ?: messages.last())
                     else messages
                 }
-                ?: listOfNotNull(suggestions.takeIf { suggestions.isNotEmpty() && end }?.let { targetConnector.addSuggestions(label, suggestions).invoke(this) })
+                ?: listOfNotNull(suggestions.takeIf { suggestions.isNotEmpty() && end }?.let { underlyingConnector.addSuggestions(label, suggestions).invoke(this) })
 
 
         val actions = connectorMessages

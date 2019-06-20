@@ -26,23 +26,26 @@ private fun defaultUnknownStory() = ClientStoryDefinition(Intent.unknown, newSto
  * Creates a new bot.
  */
 fun newBot(
+    apiKey: String,
     /**
      * List of stories supported by the bot.
      */
     stories: List<ClientStoryDefinition>,
     unknownStory: ClientStoryDefinition = defaultUnknownStory()
-): ClientBotDefinition = ClientBotDefinition(stories, unknownStory)
+): ClientBotDefinition = ClientBotDefinition(apiKey, stories, unknownStory)
 
 /**
  * Creates a new bot.
  */
 fun newBot(
+    apiKey: String,
     /**
      * List of stories supported by the bot.
      */
     vararg stories: ClientStoryDefinition
 ): ClientBotDefinition =
     newBot(
+        apiKey,
         stories.toList(),
         stories.find { it.wrap(Intent.unknown) } ?: defaultUnknownStory()
     )

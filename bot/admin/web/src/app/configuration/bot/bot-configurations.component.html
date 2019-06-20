@@ -47,8 +47,13 @@
       <div *ngFor="let a of configurations">
 
         <h2>{{a.name}}</h2>
-        <mat-form-field>
-          <input matInput placeholder="Webhook url" [(ngModel)]="a.webhookUrl" matTooltip="Optional webhook for Bot API" (keyup.enter)="saveBot(a)">
+        <mat-form-field class="configuration-input">
+          <input matInput placeholder="API Key" [ngModel]="a.apiKey"
+                 matTooltip="API Key for Bot API" [readonly]="true">
+        </mat-form-field>
+        <mat-form-field class="configuration-input">
+          <input matInput placeholder="Webhook url" [(ngModel)]="a.webhookUrl"
+                 matTooltip="Optional webhook for Bot API" (keyup.enter)="saveBot(a)">
         </mat-form-field>
         <button mat-button (click)="saveBot(a)">Save Webhook</button>
         <h3>Connectors</h3>

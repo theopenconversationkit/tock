@@ -220,7 +220,7 @@ open class BotBusMock(
             action.state.targetConnectorType = value
             connectorType = value
         }
-    override val targetConnector: Connector get() = error("do not use targetConnector method")
+    override val underlyingConnector: Connector get() = error("do not use underlyingConnector method")
 
     private val mockData: BusMockData = BusMockData()
 
