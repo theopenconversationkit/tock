@@ -17,6 +17,8 @@ private val __Namespace: KProperty1<BotConfiguration, String?>
     get() = BotConfiguration::namespace
 private val __NlpModel: KProperty1<BotConfiguration, String?>
     get() = BotConfiguration::nlpModel
+private val __ApiKey: KProperty1<BotConfiguration, String?>
+    get() = BotConfiguration::apiKey
 private val __WebhookUrl: KProperty1<BotConfiguration, String?>
     get() = BotConfiguration::webhookUrl
 class BotConfiguration_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -33,6 +35,9 @@ class BotConfiguration_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<
     val nlpModel: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__NlpModel)
 
+    val apiKey: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__ApiKey)
+
     val webhookUrl: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__WebhookUrl)
 
@@ -45,6 +50,8 @@ class BotConfiguration_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<
             get() = __Namespace
         val NlpModel: KProperty1<BotConfiguration, String?>
             get() = __NlpModel
+        val ApiKey: KProperty1<BotConfiguration, String?>
+            get() = __ApiKey
         val WebhookUrl: KProperty1<BotConfiguration, String?>
             get() = __WebhookUrl}
 }
@@ -63,6 +70,9 @@ class BotConfiguration_Col<T>(previous: KPropertyPath<T, *>?, property: KPropert
 
     val nlpModel: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__NlpModel)
+
+    val apiKey: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__ApiKey)
 
     val webhookUrl: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__WebhookUrl)
@@ -85,6 +95,9 @@ class BotConfiguration_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProp
 
     val nlpModel: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__NlpModel)
+
+    val apiKey: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__ApiKey)
 
     val webhookUrl: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__WebhookUrl)

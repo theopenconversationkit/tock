@@ -28,6 +28,9 @@ internal class BotConfiguration_Serializer :
         gen.writeFieldName("nlpModel")
         val _nlpModel_ = value.nlpModel
         gen.writeString(_nlpModel_)
+        gen.writeFieldName("apiKey")
+        val _apiKey_ = value.apiKey
+        gen.writeString(_apiKey_)
         gen.writeFieldName("webhookUrl")
         val _webhookUrl_ = value.webhookUrl
         if(_webhookUrl_ == null) { gen.writeNull() } else {

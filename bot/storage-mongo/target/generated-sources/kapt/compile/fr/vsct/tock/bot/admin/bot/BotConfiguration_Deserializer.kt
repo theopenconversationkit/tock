@@ -27,6 +27,8 @@ internal class BotConfiguration_Deserializer : JsonDeserializer<BotConfiguration
             var _namespace_set : Boolean = false
             var _nlpModel_: String? = null
             var _nlpModel_set : Boolean = false
+            var _apiKey_: String? = null
+            var _apiKey_set : Boolean = false
             var _webhookUrl_: String? = null
             var _webhookUrl_set : Boolean = false
             var _token_ : JsonToken? = currentToken
@@ -59,6 +61,11 @@ internal class BotConfiguration_Deserializer : JsonDeserializer<BotConfiguration
                              else p.text;
                             _nlpModel_set = true
                             }
+                    "apiKey" -> {
+                            _apiKey_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _apiKey_set = true
+                            }
                     "webhookUrl" -> {
                             _webhookUrl_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
@@ -72,9 +79,10 @@ internal class BotConfiguration_Deserializer : JsonDeserializer<BotConfiguration
                     } 
                 _token_ = currentToken
                         } 
-            return if(_name_set && _botId_set && _namespace_set && _nlpModel_set && _webhookUrl_set)
+            return if(_name_set && _botId_set && _namespace_set && _nlpModel_set && _apiKey_set &&
+                    _webhookUrl_set)
                     BotConfiguration(name = _name_!!, botId = _botId_!!, namespace = _namespace_!!,
-                            nlpModel = _nlpModel_!!, webhookUrl = _webhookUrl_)
+                            nlpModel = _nlpModel_!!, apiKey = _apiKey_!!, webhookUrl = _webhookUrl_)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_name_set)
@@ -85,6 +93,8 @@ internal class BotConfiguration_Deserializer : JsonDeserializer<BotConfiguration
                     map[parameters.getValue("namespace")] = _namespace_
                     if(_nlpModel_set)
                     map[parameters.getValue("nlpModel")] = _nlpModel_
+                    if(_apiKey_set)
+                    map[parameters.getValue("apiKey")] = _apiKey_
                     if(_webhookUrl_set)
                     map[parameters.getValue("webhookUrl")] = _webhookUrl_ 
                     primaryConstructor.callBy(map) 
@@ -101,7 +111,8 @@ internal class BotConfiguration_Deserializer : JsonDeserializer<BotConfiguration
                 kotlin.collections.mapOf("name" to primaryConstructor.findParameterByName("name")!!,
                 "botId" to primaryConstructor.findParameterByName("botId")!!, "namespace" to
                 primaryConstructor.findParameterByName("namespace")!!, "nlpModel" to
-                primaryConstructor.findParameterByName("nlpModel")!!, "webhookUrl" to
+                primaryConstructor.findParameterByName("nlpModel")!!, "apiKey" to
+                primaryConstructor.findParameterByName("apiKey")!!, "webhookUrl" to
                 primaryConstructor.findParameterByName("webhookUrl")!!) }
     }
 }

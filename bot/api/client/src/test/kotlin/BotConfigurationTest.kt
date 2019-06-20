@@ -25,5 +25,5 @@ val story2 = newStory("story2") {
     end("Goodby")
 }
 
-val test = newBot(story1, story2)
+val test = newBot("key",story1, story2)
 
