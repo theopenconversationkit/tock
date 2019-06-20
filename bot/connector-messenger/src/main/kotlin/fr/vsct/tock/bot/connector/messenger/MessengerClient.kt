@@ -132,6 +132,7 @@ internal class MessengerClient(val secretKey: String) {
     private val statusApi: StatusApi
     private val nbRetriesLimit = intProperty("messenger_retries_on_error_limit", 1)
     private val nbRetriesWaitInMs = longProperty("messenger_retries_on_error_wait_in_ms", 5000)
+    private val extendedProfileFields = booleanProperty("tock_messenger_extended_profile_fields", false)
 
     init {
         graphApi = retrofitBuilderWithTimeoutAndLogger(
@@ -237,14 +238,34 @@ internal class MessengerClient(val secretKey: String) {
     fun getUserProfile(token: String, recipient: Recipient): UserProfile {
         val requestTimerData = requestTimer.start("messenger_user_profile")
         return try {
-            graphApi.getUserProfile(recipient.id!!, token, "first_name,last_name,profile_pic,locale,timezone,gender")
-                .execute().body() ?: defaultUserProfile()
+
+            graphApi.getUserProfile(recipient.id!!, token, getProfileFields(extendedProfileFields))
+                    .execute().body() ?: defaultUserProfile()
         } catch (e: Exception) {
             logger.warn { recipient }
             logger.logError(e, requestTimerData)
             defaultUserProfile()
         } finally {
             requestTimer.end(requestTimerData)
+        }
+    }
+
+    /**
+     * Get the list of fields to send to facebook for the user profile.
+     * For more information on user profile fields:
+     * https://developers.facebook.com/docs/messenger-platform/identity/user-profile/#fields
+     *
+     * @param extendedFieldsRequire A boolean to specify if the fields that need special permissions need to be returned or nor
+     *
+     * @return The list of user profile fields
+     */
+    fun getProfileFields(extendedFieldsRequire: Boolean): String {
+        val standardFields = listOf("first_name", "last_name", "profile_pic")
+        val extendedFields = listOf("locale", "timezone", "gender")
+        return if (extendedFieldsRequire) {
+            standardFields.plus(extendedFields).joinToString(",")
+        } else {
+            standardFields.joinToString(",")
         }
     }
 
