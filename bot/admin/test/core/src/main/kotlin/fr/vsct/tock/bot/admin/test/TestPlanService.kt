@@ -52,7 +52,7 @@ object TestPlanService {
     private val botConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
 
     private val applicationIdPathCache: Cache<String, String> =
-        CacheBuilder.newBuilder().expireAfterAccess(Duration.ofMinutes(1)).build()
+            CacheBuilder.newBuilder().expireAfterAccess(Duration.ofMinutes(1)).build()
 
     fun getPlanExecutions(plan: TestPlan): List<TestPlanExecution> {
         return testPlanDAO.getPlanExecutions(plan._id)
@@ -188,94 +188,112 @@ object TestPlanService {
                     if (answer.isSuccessful) {
                         val body = answer.body()
                         logger.debug { "ANSWER -- : $body" }
-                        botMessages = body?.messages?.toMutableList() ?: mutableListOf()
-                    } else {
-                        logger.error { "ERROR : " + answer.errorBody()?.string() }
-                        return DialogExecutionReport(
-                            dialog.id, true, errorMessage = answer.errorBody()?.toString()
+                        // go over the bot answer to remove emoticons
+                        val list = body?.messages?.toMutableList() ?: mutableListOf()
+                        list.forEachIndexed { index, message ->
+                            var text = (message as ClientSentence).text
+                            text?.forEach { c ->
+                                // if emoticon is found, remove it
+                                if (c.isSurrogate()) {
+                                    text = text?.replace("$c", "")?.trim()
+                                    list[index] = ClientSentence(text)
+                                }
+                            }
+                        }
+                        // then store the bot answer into a proper variable
+                        botMessages = list
+                        logger.debug { "ANSWER without surrogate -- : $botMessages" }
+                        } else {
+                            logger.error { "ERROR : " + answer.errorBody()?.string() }
+                            return DialogExecutionReport(
+                                    dialog.id, true, errorMessage = answer.errorBody()?.toString()
                                     ?: "Unknown error"
-                        )
-                    }
-                } else {
-                    if (botMessages.isEmpty()) {
-                        return DialogExecutionReport(
-                            dialog.id,
-                            true,
-                            it.id,
-                            errorMessage = "(no answer but one expected)"
-                        )
-                    }
-                    val botMessage = botMessages.removeAt(0)
-                    // if the bot's answer does not equal to the test step
-                    if (!botMessage.convertAndDeepEquals(it)) {
-                        logger.error { "Not the same messages:\n\t\tObtained ----- $botMessage\n\t\tExpected ----- ${it.messages.map { m -> m.toClientMessage() }}" }
-                        return DialogExecutionReport(
-                            dialog.id,
-                            true,
-                            it.id,
-                            botMessage.toMessage()
-                        )
+                            )
+                        }
+                    } else {
+                        if (botMessages.isEmpty()) {
+                            return DialogExecutionReport(
+                                    dialog.id,
+                                    true,
+                                    it.id,
+                                    errorMessage = "(no answer but one expected)"
+                            )
+                        }
+                        val botMessage = botMessages.removeAt(0)
+                        // if the bot's answer does not equal to the test step
+                        if (!botMessage.convertAndDeepEquals(it)) {
+                            logger.error { "Not the same messages:\n\t\tObtained ----- $botMessage\n\t\tExpected ----- ${it.messages.map { m -> m.toClientMessage() }}" }
+                            return DialogExecutionReport(
+                                    dialog.id,
+                                    true,
+                                    it.id,
+                                    botMessage.toMessage()
+                            )
+                        }
                     }
                 }
+
+                DialogExecutionReport(dialog.id)
+            } catch (e: Exception) {
+                logger.error(e)
+                DialogExecutionReport(dialog.id, true, errorMessage = e.message)
+            } finally {
+                userTimelineDAO.remove(PlayerId(playerId, PlayerType.user))
             }
-
-            DialogExecutionReport(dialog.id)
-        } catch (e: Exception) {
-            logger.error(e)
-            DialogExecutionReport(dialog.id, true, errorMessage = e.message)
-        } finally {
-            userTimelineDAO.remove(PlayerId(playerId, PlayerType.user))
         }
-    }
 
-    private fun getPath(testPlan: TestPlan): String {
-        val applicationId = testPlan.applicationId
-        return applicationIdPathCache.get(applicationId) {
-            botConfigurationDAO.getConfigurationById(testPlan.botApplicationConfigurationId)?.path ?: "/$applicationId"
+        private fun getPath(testPlan: TestPlan): String {
+            val applicationId = testPlan.applicationId
+            return applicationIdPathCache.get(applicationId) {
+                botConfigurationDAO.getConfigurationById(testPlan.botApplicationConfigurationId)?.path
+                        ?: "/$applicationId"
+            }
         }
-    }
 
-    /**
-     * This function checks if at least, one message returned by the bot, equals to the message of the current test step.
-     * Test step is first converted into a bot client message before starting the comparison using another function.
-     * This conversion is essential to compare the same objects.
-     *
-     * @param action is the xray step formatted as a TestActionReport which contains the message sent to the bot.
-     * @return true if the messages are equals, false otherwise.
-    */
-    private fun ClientMessage.convertAndDeepEquals(action: TestActionReport): Boolean {
-        return action.messages.any {
-            // convert the user message stored in xray to a bot message format
+        /**
+         * This function checks if at least, one message returned by the bot, equals to the message of the current test step.
+         * Test step is first converted into a bot client message before starting the comparison using another function.
+         * This conversion is essential to compare the same objects.
+         *
+         * @param action is the xray step formatted as a TestActionReport which contains the message sent to the bot.
+         * @return true if the messages are equals, false otherwise.
+         */
+        private fun ClientMessage.convertAndDeepEquals(action: TestActionReport): Boolean {
+            return action.messages.any {
+                // convert the user message stored in xray to a bot message format
 //            deepEquals(it.toClientMessage())
-            deepEqualsTest(it.toClientMessage(), this)
+                deepEqualsTest(it.toClientMessage(), this)
+            }
         }
-    }
 
-    /**
-     * This function checks if the answer sent by the bot equals the expected expectedMessage stored in the test step.
-     *
-     * @param expectedMessage is the message to expect as an answer from the bot.
-     * @return true if messages are the same, false otherwise.
-     *
-     *
-     * mesage non modifiable donc obligé de paser par copy
-     */
-    private fun ClientMessage.deepEquals(expectedMessage: ClientMessage): Boolean {
-        return if (expectedMessage is ClientSentence && this is ClientSentence) {
+        /**
+         * This function checks if the answer sent by the bot equals the expected expectedMessage stored in the test step.
+         *
+         * @param expectedMessage is the message to expect as an answer from the bot.
+         * @return true if messages are the same, false otherwise.
+         *
+         *
+         * mesage non modifiable donc obligé de paser par copy
+         */
+        private fun ClientMessage.deepEquals(expectedMessage: ClientMessage): Boolean {
+            return if (expectedMessage is ClientSentence && this is ClientSentence) {
 
-            expectedMessage.copy(
-                    text = expectedMessage.text?.trim(),
-                    messages = expectedMessage.messages.map { it.copy(connectorType = ClientConnectorType.none) }.toMutableList()
-            ) == copy(
-                    text = text?.trim(),
-                    messages = messages.map { it.copy(connectorType = ClientConnectorType.none) }.toMutableList())
-        } else {
-            expectedMessage == this
+                expectedMessage.copy(
+                        text = expectedMessage.text?.trim(),
+                        messages = expectedMessage.messages.map { it.copy(connectorType = ClientConnectorType.none) }.toMutableList()
+                ) == copy(
+                        text = text?.trim(),
+                        messages = messages.map { it.copy(connectorType = ClientConnectorType.none) }.toMutableList())
+            } else {
+                expectedMessage == this
+            }
         }
-    }
 
-    private fun deepEqualsTest(expectedMessage: ClientMessage, botAnswer: ClientMessage): Boolean {
-        return expectedMessage is ClientSentence && botAnswer is ClientSentence && (expectedMessage == botAnswer || expectedMessage.text?.trim() == botAnswer.text?.trim())
-    }
+        private fun deepEqualsTest(expectedMessage: ClientMessage, botAnswer: ClientMessage): Boolean {
+            var botAnswerText = (botAnswer as ClientSentence).text
+            botAnswer.text?.forEach { c -> if (c.isSurrogate()) botAnswerText = botAnswerText?.replace("$c", "") }
 
-}
+            return expectedMessage is ClientSentence && botAnswer is ClientSentence && (expectedMessage == botAnswer || expectedMessage.text?.trim() == botAnswerText?.trim())
+        }
+
+    }
