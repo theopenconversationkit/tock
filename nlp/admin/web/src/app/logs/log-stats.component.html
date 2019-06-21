@@ -16,7 +16,7 @@
 
 <mat-card class="search">
   <mat-card-content>
-    <mat-form-field>
+    <mat-form-field class="intent">
       <mat-select placeholder="Intent" [(ngModel)]="intent" (selectionChange)="search()" class="search-input">
         <mat-option value="">All</mat-option>
         <mat-optgroup *ngFor="let category of state.currentIntentsCategories | async" [label]="category.category">
@@ -27,6 +27,7 @@
         <mat-option value="unknown">Unknown</mat-option>
       </mat-select>
     </mat-form-field>
+    <mat-slide-toggle class="choice" [(ngModel)]="onlyCurrentLocale" (change)="search()">Only current locale</mat-slide-toggle>
     <button mat-button (click)="search()">GO</button>
   </mat-card-content>
 </mat-card>

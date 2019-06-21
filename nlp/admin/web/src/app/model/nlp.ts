@@ -824,7 +824,8 @@ export class LogStatsQuery extends ApplicationScopedQuery {
               public applicationName: string,
               public language: string,
               public intent?: string,
-              public minOccurrences?: number) {
+              public minOccurrences?: number,
+              public onlyCurrentLocale?: boolean) {
     super(namespace, applicationName, language)
   }
 }

@@ -22,12 +22,15 @@ import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogStatQuery
 /**
  *
  */
-data class LogStatsQuery(val intent: String?, val minOccurrences: Int?) : ApplicationScopedQuery() {
+data class LogStatsQuery(
+    val intent: String?,
+    val minOccurrences: Int?,
+    val onlyCurrentLocale: Boolean = false) : ApplicationScopedQuery() {
 
     fun toStatQuery(application: ApplicationDefinition): ParseRequestLogStatQuery {
         return ParseRequestLogStatQuery(
             application._id,
-            currentLanguage,
+            if (onlyCurrentLocale) currentLanguage else null,
             intent,
             minOccurrences
         )

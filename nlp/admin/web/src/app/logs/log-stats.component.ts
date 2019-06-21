@@ -93,6 +93,7 @@ export class LogStatsComponent implements OnInit {
   public lineChartType: string = 'line';
   public intent: string = "";
   public nodata: boolean = false;
+  onlyCurrentLocale: boolean = false;
 
   constructor(public state: StateService, private quality: QualityService) {
 
@@ -109,7 +110,9 @@ export class LogStatsComponent implements OnInit {
         this.state.currentApplication.namespace,
         this.state.currentApplication.name,
         this.state.currentLocale,
-        i))
+        i,
+        null,
+        this.onlyCurrentLocale))
       .subscribe(result => {
         if (result.length === 0) {
           this.nodata = true;
