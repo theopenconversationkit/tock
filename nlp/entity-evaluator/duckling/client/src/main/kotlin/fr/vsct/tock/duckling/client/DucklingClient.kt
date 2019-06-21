@@ -17,7 +17,7 @@
 package fr.vsct.tock.duckling.client
 
 import fr.vsct.tock.shared.create
-import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.info
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.property
@@ -66,9 +66,9 @@ internal object DucklingClient {
             longProperty("tock_duckling_request_timeout_ms", 4000),
             logger,
             circuitBreaker = true)
-                .baseUrl("${property("nlp_duckling_url", "http://localhost:8889")}/")
-                .addConverterFactory(RawJsonBodyConverterFactory)
-                .build()
+            .baseUrl("${property("nlp_duckling_url", "http://localhost:8889")}/")
+            .addConverterFactory(RawJsonBodyConverterFactory)
+            .build()
 
         service = retrofit.create()
     }
@@ -96,11 +96,11 @@ internal object DucklingClient {
     }
 
     fun parse(
-            language: String,
-            dimensions: List<String>,
-            referenceDate: ZonedDateTime,
-            referenceTimezone: ZoneId,
-            textToParse: String): JSONValue? {
+        language: String,
+        dimensions: List<String>,
+        referenceDate: ZonedDateTime,
+        referenceTimezone: ZoneId,
+        textToParse: String): JSONValue? {
         //duckling does not support well ’ char
         val text = textToParse.replace("’", "'")
         return service.parse(ParseRequest(language, dimensions, referenceDate, referenceTimezone, text)).execute().body()
@@ -110,7 +110,7 @@ internal object DucklingClient {
         return try {
             service.healthcheck().execute().isSuccessful
         } catch (t: Throwable) {
-            logger.error(t)
+            logger.info(t)
             false
         }
     }
