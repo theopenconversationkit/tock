@@ -16,4 +16,6 @@
 
 package fr.vsct.tock.bot.api.model.message.user
 
-data class Choice(val payload:String) : UserMessage
+data class Choice(val payload:String) : UserMessage {
+    override fun toString(): String = payload
+}
