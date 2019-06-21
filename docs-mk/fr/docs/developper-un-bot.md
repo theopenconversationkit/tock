@@ -1,11 +1,10 @@
 # Le langage dédié au conversationnel de Tock
 
-Pour développer un bot ou un assistant avec Tock,
+Pour développer un bot ou un assistant avec Tock en mode intégré,
 il est nécessaire aujourd'hui de développer dans un [Domain Specifique Language (DSL)](https://fr.wikipedia.org/wiki/Langage_d%C3%A9di%C3%A9) 
 développé en [Kotlin](https://kotlinlang.org/) via un IDE.
 
-Dans les mois à venir, Tock va supporter d'autres langages mais surtout permettre de scripter les réponses
-via l'interface d'administration. 
+Dans ce mode de développement, il est nécessaire de disposer d'une connexion à la base de donnée de Tock.
 
 Pour appréhender complètement ce qui va suivre, il est recommandé de maîtriser les bases du langage Kotlin.
 

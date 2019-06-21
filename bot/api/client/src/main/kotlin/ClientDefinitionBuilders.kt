@@ -18,9 +18,16 @@ package fr.vsct.tock.bot.api.client
 
 import fr.vsct.tock.bot.definition.Intent
 
-private fun defaultUnknownStory() = ClientStoryDefinition(Intent.unknown, newStoryHandler {
-    end("Sorry I didn't understand")
-})
+private fun defaultUnknownStory() = unknownStory { end("Sorry I didn't understand") }
+
+/**
+ * Create a story addressing [Intent.unknown] intent.
+ */
+fun unknownStory(
+    /**
+     * The handler for the story.
+     */
+    handler: (ClientBus).() -> Unit) = ClientStoryDefinition(Intent.unknown, newStoryHandler(handler))
 
 /**
  * Creates a new bot.

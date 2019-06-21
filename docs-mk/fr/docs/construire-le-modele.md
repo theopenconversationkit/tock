@@ -1,4 +1,4 @@
-# Mise en place d'un modèle NLP
+# Mise en place d'un modèle NLU (Natural Language Understanding)
 
 ## Vue d'ensemble
 
