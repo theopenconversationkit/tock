@@ -28,5 +28,8 @@ enum class MessageType {
  @JsonProperty("pass-thread-control")
  pass_thread_control,
  @JsonProperty("take-thread-control")
- take_thread_control
+ take_thread_control,
+ typing_start,
+ typing_end,
+ close
 }
