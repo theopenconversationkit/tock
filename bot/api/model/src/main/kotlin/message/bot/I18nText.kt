@@ -18,8 +18,9 @@ package fr.vsct.tock.bot.api.model.message.bot
 
 data class I18nText(
     val text: String,
-    val args: List<String> = emptyList(),
-    val toBeTranslated: Boolean = true) : CharSequence by text {
+    val args: List<String?> = emptyList(),
+    val toBeTranslated: Boolean = true,
+    val key: String? = null) : CharSequence by text {
 
     override fun toString(): String = text
 

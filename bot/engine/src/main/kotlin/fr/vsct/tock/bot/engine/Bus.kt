@@ -18,7 +18,6 @@ package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
@@ -117,6 +116,9 @@ interface Bus<T : Bus<T>> : I18nTranslator {
         if (r is CharSequence) {
             send(r, delay)
         } else {
+            if (r is ConnectorMessage) {
+                withMessage(r)
+            }
             send(delay)
         }
         return this
@@ -166,6 +168,9 @@ interface Bus<T : Bus<T>> : I18nTranslator {
         if (r is CharSequence) {
             end(r, delay)
         } else {
+            if (r is ConnectorMessage) {
+                withMessage(r)
+            }
             end(delay)
         }
         return this

@@ -75,6 +75,9 @@ fun newStory(
         newStoryHandler(handler)
     )
 
+/**
+ * Creates a new [ClientStoryHandler].
+ */
 fun newStoryHandler(handler: (ClientBus).() -> Unit): ClientStoryHandler =
     object : ClientStoryHandler {
         override fun handle(bus: ClientBus) {

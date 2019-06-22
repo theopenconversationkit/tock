@@ -19,4 +19,5 @@ package fr.vsct.tock.bot.api.model.message.bot
 data class Card(val title: I18nText? = null,
                 val subTitle: I18nText? = null,
                 val attachment: Attachment? = null,
-                val actions: List<Action> = emptyList()) : BotMessage
+                val actions: List<Action> = emptyList(),
+                override val delay: Long = 0) : BotMessage

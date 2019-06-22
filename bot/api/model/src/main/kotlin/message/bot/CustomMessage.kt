@@ -16,5 +16,8 @@
 
 package fr.vsct.tock.bot.api.model.message.bot
 
-class CustomMessage(val message:Any) : BotMessage {
-}
+import fr.vsct.tock.shared.jackson.AnyValueWrapper
+
+class CustomMessage(
+    val message: AnyValueWrapper,
+    override val delay: Long = 0) : BotMessage

@@ -17,11 +17,16 @@
 package fr.vsct.tock.bot.connector.rest
 
 import com.fasterxml.jackson.module.kotlin.readValue
+import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorData
+import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.media.MediaMessage
 import fr.vsct.tock.bot.connector.rest.model.MessageRequest
+import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.event.Event
@@ -42,8 +47,7 @@ class RestConnector(
     val applicationId: String,
     private val path: String,
     private val requestFilter: RequestFilter
-) :
-    ConnectorBase(ConnectorType.rest) {
+) : ConnectorBase(ConnectorType.rest) {
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -102,4 +106,22 @@ class RestConnector(
             callback.testContext?.setup(this, callback.connectorType, locale)
         }
     }
+
+    private fun getTargetConnector(targetConnectorType: ConnectorType): Connector? =
+        BotRepository.getController { it.targetConnectorType == targetConnectorType }?.connector
+
+
+    override fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
+        getTargetConnector(targetConnectorType)?.addSuggestions(text, suggestions)?.invoke(this)
+    }
+
+    override fun addSuggestions(message: ConnectorMessage, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
+        getTargetConnector(targetConnectorType)?.addSuggestions(message, suggestions)?.invoke(this)
+    }
+
+
+    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
+        getTargetConnector(targetConnectorType)?.toConnectorMessage(message)?.invoke(this) ?: emptyList()
+    }
+
 }

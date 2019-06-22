@@ -16,4 +16,8 @@
 
 package fr.vsct.tock.bot.api.model.message.bot
 
-data class Sentence(val text: I18nText, val suggestions: List<Suggestion> = emptyList()) : BotMessage
+data class Sentence(
+    val text: I18nText,
+    val suggestions: List<Suggestion> = emptyList(),
+    override val delay: Long = 0
+) : BotMessage

@@ -29,4 +29,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(value = Card::class, name = "card"),
     JsonSubTypes.Type(value = CustomMessage::class, name = "custom")
 )
-interface BotMessage
+interface BotMessage {
+    /**
+     * The delay to wait before sending this message.
+     */
+    val delay: Long
+}

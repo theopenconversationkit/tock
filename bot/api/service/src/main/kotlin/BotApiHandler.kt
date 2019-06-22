@@ -21,8 +21,10 @@ import fr.vsct.tock.bot.api.model.BotResponse
 import fr.vsct.tock.bot.api.model.UserRequest
 import fr.vsct.tock.bot.api.model.message.bot.BotMessage
 import fr.vsct.tock.bot.api.model.message.bot.Card
+import fr.vsct.tock.bot.api.model.message.bot.CustomMessage
 import fr.vsct.tock.bot.api.model.message.bot.I18nText
 import fr.vsct.tock.bot.api.model.message.bot.Sentence
+import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.media.MediaAction
 import fr.vsct.tock.bot.connector.media.MediaCard
 import fr.vsct.tock.bot.connector.media.MediaFile
@@ -99,9 +101,13 @@ internal class BotApiHandler(val apiKey: String, webhookUrl: String?) {
             when (message) {
                 is Sentence -> listOf(toAction(message))
                 is Card -> toActions(message)
+                is CustomMessage -> listOf(toAction(message))
                 else -> error("unsupported message $message")
             }
 
+        if (actions.isEmpty()) {
+            error("no message find in $message")
+        }
         val messagesList = MessagesList(actions.map { ActionWrappedMessage(it, 0) })
         val delay = botDefinition.defaultDelay(currentAnswerIndex)
         if (end) {
@@ -109,6 +115,16 @@ internal class BotApiHandler(val apiKey: String, webhookUrl: String?) {
         } else {
             send(messagesList, delay)
         }
+    }
+
+    private fun BotBus.toAction(message: CustomMessage): Action {
+        return SendSentence(
+            botId,
+            applicationId,
+            userId,
+            null,
+            mutableListOf(message.message.value as ConnectorMessage)
+        )
     }
 
     private fun BotBus.toAction(sentence: Sentence): Action {

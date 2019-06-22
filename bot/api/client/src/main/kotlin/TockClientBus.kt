@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.api.client
 import fr.vsct.tock.bot.api.model.UserRequest
 import fr.vsct.tock.bot.api.model.context.Entity
 import fr.vsct.tock.bot.api.model.message.bot.BotMessage
+import fr.vsct.tock.bot.api.model.message.bot.Card
 import fr.vsct.tock.bot.api.model.message.bot.CustomMessage
 import fr.vsct.tock.bot.api.model.message.bot.I18nText
 import fr.vsct.tock.bot.api.model.message.bot.Sentence
@@ -30,6 +31,8 @@ import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.shared.jackson.AnyValueWrapper
+import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelValue
 import fr.vsct.tock.translator.RawString
 import fr.vsct.tock.translator.TranslatedString
@@ -56,6 +59,7 @@ class TockClientBus(
     override val currentAnswerIndex: Int get() = _currentAnswerIndex
     override val entities: List<Entity> = request.entities
     override val message: UserMessage = request.message
+
     private val context = ClientBusContext()
     private val messages: MutableList<BotMessage> = CopyOnWriteArrayList()
 
@@ -66,27 +70,41 @@ class TockClientBus(
 
     override fun defaultDelay(answerIndex: Int): Long = 0
 
-    private fun addMessage(plainText: CharSequence?) {
+    private fun addMessage(plainText: CharSequence?, delay: Long) {
         context.connectorMessages.remove(targetConnectorType)?.also {
-            messages.add(CustomMessage(it))
+            messages.add(CustomMessage(AnyValueWrapper(it), delay))
         }
         if (plainText != null) {
-            when (plainText) {
-                is String -> messages.add(Sentence(I18nText(plainText)))
-                is TranslatedString, is RawString -> messages.add(Sentence(I18nText(plainText.toString(), toBeTranslated = false)))
-                else -> messages.add(Sentence(I18nText(plainText.toString())))
-            }
+            messages.add(
+                when (plainText) {
+                    is String -> Sentence(I18nText(plainText), delay = delay)
+                    is TranslatedString, is RawString -> Sentence(I18nText(plainText.toString(), toBeTranslated = false), delay = delay)
+                    is I18nText -> Sentence(plainText, delay = delay)
+                    else -> Sentence(I18nText(plainText.toString()), delay = delay)
+                }
+            )
         }
     }
 
     override fun endRawText(plainText: CharSequence?, delay: Long): ClientBus {
-        addMessage(plainText)
+        addMessage(plainText, delay)
         sendAnswer(messages)
         return this
     }
 
     override fun sendRawText(plainText: CharSequence?, delay: Long): ClientBus {
-        addMessage(plainText)
+        addMessage(plainText, delay)
+        return this
+    }
+
+    override fun end(card: Card): ClientBus {
+        send(card)
+        sendAnswer(messages)
+        return this
+    }
+
+    override fun send(card: Card): ClientBus {
+        messages.add(card)
         return this
     }
 
@@ -97,19 +115,14 @@ class TockClientBus(
         return this
     }
 
-    override fun translate(text: CharSequence?, vararg args: Any?): CharSequence {
-        return if (text.isNullOrBlank()) {
-            ""
-        } else if (text is I18nLabelValue) {
-            translate(text)
-        } else if (text is TranslatedString || text is RawString) {
-            text
-        } else {
-            return I18nText(text.toString(), args.map { it.toString() })
-        }
-    }
-
     override fun i18n(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue {
-        error("not yet supported")
+        val namespace = request.context.namespace
+        val category = intent?.wrappedIntent()?.name ?: namespace
+        return I18nLabelValue(
+            I18nKeyProvider.generateKey(namespace, category, defaultLabel),
+            namespace,
+            category,
+            defaultLabel,
+            args)
     }
 }

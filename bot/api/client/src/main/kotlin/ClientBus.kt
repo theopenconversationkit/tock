@@ -16,8 +16,16 @@
 package fr.vsct.tock.bot.api.client
 
 import fr.vsct.tock.bot.api.model.context.Entity
+import fr.vsct.tock.bot.api.model.message.bot.Action
+import fr.vsct.tock.bot.api.model.message.bot.Attachment
+import fr.vsct.tock.bot.api.model.message.bot.AttachmentType
+import fr.vsct.tock.bot.api.model.message.bot.Card
+import fr.vsct.tock.bot.api.model.message.bot.I18nText
 import fr.vsct.tock.bot.api.model.message.user.UserMessage
 import fr.vsct.tock.bot.engine.Bus
+import fr.vsct.tock.translator.I18nLabelValue
+import fr.vsct.tock.translator.RawString
+import fr.vsct.tock.translator.TranslatedString
 
 interface ClientBus : Bus<ClientBus> {
 
@@ -32,4 +40,63 @@ interface ClientBus : Bus<ClientBus> {
             ?: botDefinition.unknownStory
         story.handler.handle(this)
     }
+
+    fun send(card: Card): ClientBus
+
+    fun end(card: Card): ClientBus
+
+    override fun translate(text: CharSequence?, vararg args: Any?): I18nText {
+        return if (text.isNullOrBlank()) {
+            I18nText("", toBeTranslated = false)
+        } else if (text is I18nLabelValue) {
+            I18nText(text.defaultLabel.toString(), text.args.map { it?.toString() }, key = text.key)
+        } else if (text is TranslatedString || text is RawString) {
+            I18nText(text.toString(), toBeTranslated = false)
+        } else {
+            I18nText(text.toString(), args.map { it?.toString() })
+        }
+    }
+
+    /**
+     * Creates a new [Card].
+     */
+    fun newCard(
+        title: CharSequence? = null,
+        subTitle: CharSequence? = null,
+        attachment: Attachment? = null,
+        actions: List<Action> = emptyList(),
+        delay: Long = defaultDelay(currentAnswerIndex)): Card =
+        Card(
+            title?.let { translate(it) },
+            subTitle?.let { translate(it) },
+            attachment,
+            actions,
+            delay
+        )
+
+    /**
+     * Creates a new [Card].
+     */
+    fun newCard(
+        title: CharSequence? = null,
+        subTitle: CharSequence? = null,
+        attachment: Attachment? = null,
+        vararg actions: Action,
+        delay: Long = defaultDelay(currentAnswerIndex)): Card = newCard(title, subTitle, attachment, actions.toList(), delay)
+
+    /**
+     * Creates a new [Action].
+     */
+    fun newAction(
+        title: CharSequence,
+        url: String? = null
+    ): Action = Action(translate(title), url)
+
+    /**
+     * Creates a new [Attachment].
+     */
+    fun newAttachment(
+        url: String,
+        type: AttachmentType? = null
+    ): Attachment = Attachment(url, type)
 }
