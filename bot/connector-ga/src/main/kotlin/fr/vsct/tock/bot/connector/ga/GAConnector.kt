@@ -24,10 +24,15 @@ import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorCallbackBase
 import fr.vsct.tock.bot.connector.ConnectorData
+import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ga.model.request.GARequest
+import fr.vsct.tock.bot.connector.media.MediaCard
+import fr.vsct.tock.bot.connector.media.MediaMessage
+import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.action.SendAttachment.AttachmentType.image
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.event.LoginEvent
 import fr.vsct.tock.bot.engine.user.PlayerId
@@ -170,6 +175,60 @@ class GAConnector internal constructor(
             } else {
                 null
             }
+        }
+    }
+
+    override fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
+        gaMessage(richResponse(text, suggestions))
+    }
+
+    override fun addSuggestions(message: ConnectorMessage, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
+        if (message is GAResponseConnectorMessage) {
+            val m = message.expectedInputs.lastOrNull()?.inputPrompt?.richInitialPrompt
+            if (m != null && m.suggestions.isEmpty()) {
+                message.copy(
+                    expectedInputs = message.expectedInputs.take(message.expectedInputs.size - 1) +
+                        message.expectedInputs.last().copy(
+                            inputPrompt = message.expectedInputs.last().inputPrompt.copy(
+                                richInitialPrompt = m.copy(suggestions = suggestions.map { suggestion(it) })
+                            )
+                        )
+                )
+            } else {
+                null
+            }
+        } else {
+            null
+        }
+    }
+
+    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
+        if (message is MediaCard) {
+            val title = message.title
+            val subTitle = message.subTitle
+            val image = message.file?.takeIf { it.type == image }
+            val card = if (image != null) basicCard(title, null, subTitle, gaImage(image.url, image.name))
+            else if (title != null) if (subTitle == null) basicCard(formattedText = title) else basicCard(title, formattedText = subTitle)
+            else if (subTitle != null) basicCard(formattedText = subTitle)
+            else null
+
+            if (card != null) {
+                val actions = message.actions
+                val suggestions = actions.filter { it.url == null }.map { it.title }
+                val redirect = actions.firstOrNull { it.url != null }?.let { gaButton(it.title, it.url!!) }
+                listOf(
+                    gaMessage(
+                        richResponse(
+                            card.copy(buttons = listOfNotNull(redirect)),
+                            suggestions
+                        )
+                    )
+                )
+            } else {
+                emptyList()
+            }
+        } else {
+            emptyList()
         }
     }
 }

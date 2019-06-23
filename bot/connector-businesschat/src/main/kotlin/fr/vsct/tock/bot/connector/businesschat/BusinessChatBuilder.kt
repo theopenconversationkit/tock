@@ -23,13 +23,13 @@ import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnector
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorRichLinkMessage
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorTextMessage
 import fr.vsct.tock.bot.connector.businesschat.model.input.ListPickerItem
-import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.Bus
 
 /**
  * Adds a Business Chat [ConnectorMessage] if the current connector is Business Chat.
  * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
-fun BotBus.withBusinessChat(messageProvider: () -> BusinessChatConnectorMessage): BotBus {
+fun <T : Bus<T>> T.withBusinessChat(messageProvider: () -> BusinessChatConnectorMessage): T {
     return withMessage(businessChatConnectorType, messageProvider)
 }
 
@@ -39,7 +39,7 @@ fun BotBus.withBusinessChat(messageProvider: () -> BusinessChatConnectorMessage)
  * @param text the text sent
  *
  */
-fun BotBus.businessChatText(
+fun <T : Bus<T>> T.businessChatText(
     text: String
 ): BusinessChatConnectorMessage =
     BusinessChatConnectorTextMessage(
@@ -54,7 +54,7 @@ fun BotBus.businessChatText(
  * @param attachment an array of bytes containing an image
  * @param mimeType the mime type of the image, which is image/png by default
  */
-fun BotBus.businessChatAttachement(
+fun <T : Bus<T>> T.businessChatAttachement(
     attachment: ByteArray,
     mimeType: String = "image/png"
 ): BusinessChatConnectorMessage =
@@ -73,21 +73,21 @@ fun BotBus.businessChatAttachement(
  * @param listDetails the list details, in the top of items list
  * @param items the items list
  */
-fun BotBus.businessChatListPicker(
-        title: String,
-        subtitle: String,
-        listDetails: String,
-        items: List<ListPickerItem>
+fun <T : Bus<T>> T.businessChatListPicker(
+    title: String,
+    subtitle: String,
+    listDetails: String,
+    items: List<ListPickerItem>
 ): BusinessChatConnectorMessage =
-        BusinessChatConnectorListPickerMessage(
-                sourceId = botId.id,
-                destinationId = userId.id,
-                title = title,
-                subtitle = subtitle,
-                listDetails = listDetails,
-                multipleSelection = false,
-                items = items
-        )
+    BusinessChatConnectorListPickerMessage(
+        sourceId = botId.id,
+        destinationId = userId.id,
+        title = title,
+        subtitle = subtitle,
+        listDetails = listDetails,
+        multipleSelection = false,
+        items = items
+    )
 
 /**
  *  Creates a [BusinessChatRichLink].
@@ -97,7 +97,7 @@ fun BotBus.businessChatListPicker(
  *  @param image
  *  @param mimeType
  */
-fun BotBus.businessChatRichLink(
+fun <T : Bus<T>> T.businessChatRichLink(
     url: String,
     title: String,
     image: ByteArray,

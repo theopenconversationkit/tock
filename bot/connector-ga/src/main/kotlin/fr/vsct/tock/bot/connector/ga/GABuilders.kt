@@ -43,7 +43,7 @@ import fr.vsct.tock.bot.connector.ga.model.response.GAStructuredResponse
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
-import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.Bus
 import fr.vsct.tock.bot.engine.I18nTranslator
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.translator.UserInterfaceType.textAndVoiceAssistant
@@ -62,10 +62,10 @@ val gaConnectorType = ConnectorType(GA_CONNECTOR_TYPE_ID, textAndVoiceAssistant)
 /**
  * Sends a Google Assistant message only if the [ConnectorType] of the current [BotBus] is [gaConnectorType].
  */
-fun BotBus.sendToGoogleAssistant(
-    messageProvider: BotBus.() -> GAResponseConnectorMessage,
-    delay: Long = botDefinition.defaultDelay(currentAnswerIndex)
-): BotBus {
+fun <T : Bus<T>> T.sendToGoogleAssistant(
+    messageProvider: T.() -> GAResponseConnectorMessage,
+    delay: Long = defaultDelay(currentAnswerIndex)
+): T {
     if (targetConnectorType == gaConnectorType) {
         withMessage(messageProvider(this))
         send(delay)
@@ -76,10 +76,10 @@ fun BotBus.sendToGoogleAssistant(
 /**
  * Sends a Google Assistant message as last bot answer, only if the [ConnectorType] of the current [BotBus] is [gaConnectorType].
  */
-fun BotBus.endForGoogleAssistant(
-    messageProvider: BotBus.() -> GAResponseConnectorMessage,
-    delay: Long = botDefinition.defaultDelay(currentAnswerIndex)
-): BotBus {
+fun <T : Bus<T>> T.endForGoogleAssistant(
+    messageProvider: T.() -> GAResponseConnectorMessage,
+    delay: Long = defaultDelay(currentAnswerIndex)
+): T {
     if (targetConnectorType == gaConnectorType) {
         withMessage(messageProvider(this))
         end(delay)
@@ -91,7 +91,7 @@ fun BotBus.endForGoogleAssistant(
  * Adds a Google Assistant [ConnectorMessage] if the current connector is Google Assistant.
  * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
-fun BotBus.withGoogleAssistant(messageProvider: () -> GAResponseConnectorMessage): BotBus {
+fun <T : Bus<T>> T.withGoogleAssistant(messageProvider: () -> GAResponseConnectorMessage): T {
     return withMessage(gaConnectorType, messageProvider)
 }
 
@@ -99,7 +99,7 @@ fun BotBus.withGoogleAssistant(messageProvider: () -> GAResponseConnectorMessage
  * If the device supports audio, adds a Google Assistant [ConnectorMessage] if the current connector is Google Assistant.
  * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
-fun BotBus.withGoogleVoiceAssistant(messageProvider: () -> GAResponseConnectorMessage): BotBus {
+fun <T : Bus<T>> T.withGoogleVoiceAssistant(messageProvider: () -> GAResponseConnectorMessage): T {
     if (userInterfaceType != textChat) {
         withMessage(gaConnectorType, messageProvider)
     }
@@ -288,7 +288,7 @@ fun I18nTranslator.gaButton(title: CharSequence, url: String): GAButton {
 /**
  * Provides a [GAOptionInfo] with all available parameters.
  */
-fun BotBus.optionInfo(
+fun <T : Bus<T>> T.optionInfo(
     title: CharSequence,
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>? = null,

@@ -35,6 +35,7 @@ import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.Bus
 import fr.vsct.tock.bot.engine.action.ActionVisibility
 import fr.vsct.tock.bot.engine.action.SendChoice
 import mu.KotlinLogging
@@ -61,7 +62,7 @@ internal fun CharSequence.truncateIfLongerThan(maxCharacter: Int): String =
 /**
  * Creates a direct message with only text
  */
-fun BotBus.directMessage(message: CharSequence): OutcomingEvent =
+fun <T : Bus<T>> T.directMessage(message: CharSequence): OutcomingEvent =
     OutcomingEvent(
         DirectMessageOutcomingEvent(
             MessageCreate(
@@ -77,7 +78,7 @@ fun BotBus.directMessage(message: CharSequence): OutcomingEvent =
  * Creates a direct message with Buttons
  * @see https://developer.twitter.com/en/docs/direct-messages/buttons/api-reference/buttons
  */
-fun BotBus.directMessageWithButtons(message: CharSequence, ctas: List<CTA>): OutcomingEvent =
+fun <T : Bus<T>> T.directMessageWithButtons(message: CharSequence, ctas: List<CTA>): OutcomingEvent =
     OutcomingEvent(
         DirectMessageOutcomingEvent(
             MessageCreate(
@@ -96,14 +97,14 @@ fun BotBus.directMessageWithButtons(message: CharSequence, ctas: List<CTA>): Out
  * Creates a direct message with Buttons
  * @see https://developer.twitter.com/en/docs/direct-messages/buttons/api-reference/buttons
  */
-fun BotBus.directMessageWithButtons(message: CharSequence, vararg ctas: CTA): OutcomingEvent =
+fun <T : Bus<T>> T.directMessageWithButtons(message: CharSequence, vararg ctas: CTA): OutcomingEvent =
     directMessageWithButtons(message, ctas.toList())
 
 /**
  * Creates a direct message with quick replies
  * @see https://developer.twitter.com/en/docs/direct-messages/quick-replies/overview
  */
-fun BotBus.directMessageWithOptions(message: CharSequence, options: List<Option>): OutcomingEvent =
+fun <T : Bus<T>> T.directMessageWithOptions(message: CharSequence, options: List<Option>): OutcomingEvent =
     OutcomingEvent(
         DirectMessageOutcomingEvent(
             MessageCreate(
@@ -122,7 +123,7 @@ fun BotBus.directMessageWithOptions(message: CharSequence, options: List<Option>
  * Creates a direct message with quick replies
  * @see https://developer.twitter.com/en/docs/direct-messages/quick-replies/overview
  */
-fun BotBus.directMessageWithOptions(message: CharSequence, vararg options: Option): OutcomingEvent =
+fun <T : Bus<T>> T.directMessageWithOptions(message: CharSequence, vararg options: Option): OutcomingEvent =
     directMessageWithOptions(message, options.toList())
 
 
@@ -130,7 +131,7 @@ fun BotBus.directMessageWithOptions(message: CharSequence, vararg options: Optio
  * Creates a direct message with an attachment
  * @see https://developer.twitter.com/en/docs/direct-messages/message-attachments/overview
  */
-fun BotBus.directMessageWithAttachment(
+fun <T : Bus<T>> T.directMessageWithAttachment(
     message: CharSequence,
     mediaCategory: MediaCategory,
     contentType: String,
@@ -159,7 +160,7 @@ fun BotBus.directMessageWithAttachment(
  * Creates a direct message with a gif (Max 15MB)
  * @see https://developer.twitter.com/en/docs/direct-messages/message-attachments/overview
  */
-fun BotBus.directMessageWithGIF(
+fun <T : Bus<T>> T.directMessageWithGIF(
     message: CharSequence,
     contentType: String,
     bytes: ByteArray,
@@ -170,7 +171,7 @@ fun BotBus.directMessageWithGIF(
  * Creates a direct message with a gif (Max 15MB)
  * @see https://developer.twitter.com/en/docs/direct-messages/message-attachments/overview
  */
-fun BotBus.directMessageWithGIF(
+fun <T : Bus<T>> T.directMessageWithGIF(
     contentType: String,
     bytes: ByteArray,
     vararg options: Option
@@ -180,7 +181,7 @@ fun BotBus.directMessageWithGIF(
  * Creates a direct message with an image (Max 5MB)
  * @see https://developer.twitter.com/en/docs/direct-messages/message-attachments/overview
  */
-fun BotBus.directMessageWithImage(
+fun <T : Bus<T>> T.directMessageWithImage(
     message: CharSequence,
     contentType: String,
     bytes: ByteArray,
@@ -191,7 +192,7 @@ fun BotBus.directMessageWithImage(
  * Creates a direct message with an image (Max 5MB)
  * @see https://developer.twitter.com/en/docs/direct-messages/message-attachments/overview
  */
-fun BotBus.directMessageWithImage(
+fun <T : Bus<T>> T.directMessageWithImage(
     contentType: String,
     bytes: ByteArray,
     vararg options: Option
@@ -201,7 +202,7 @@ fun BotBus.directMessageWithImage(
  * Creates a direct message with a video (Max 15MB)
  * @see https://developer.twitter.com/en/docs/direct-messages/message-attachments/overview
  */
-fun BotBus.directMessageWithVideo(
+fun <T : Bus<T>> T.directMessageWithVideo(
     message: CharSequence,
     contentType: String,
     bytes: ByteArray,
@@ -212,7 +213,7 @@ fun BotBus.directMessageWithVideo(
  * Creates a direct message with a video (Max 15MB)
  * @see https://developer.twitter.com/en/docs/direct-messages/message-attachments/overview
  */
-fun BotBus.directMessageWithVideo(
+fun <T : Bus<T>> T.directMessageWithVideo(
     contentType: String,
     bytes: ByteArray,
     vararg options: Option
@@ -222,7 +223,7 @@ fun BotBus.directMessageWithVideo(
  * Creates a url button
  * @see https://developer.twitter.com/en/docs/direct-messages/buttons/api-reference/buttons
  */
-fun BotBus.webUrl(
+fun <T : Bus<T>> T.webUrl(
     label: CharSequence,
     url: CharSequence
 ): WebUrl {
@@ -238,7 +239,7 @@ fun BotBus.webUrl(
  * Creates an Option Quick Reply
  * @see https://developer.twitter.com/en/docs/direct-messages/quick-replies/overview
  */
-fun BotBus.option(
+fun <T : Bus<T>> T.option(
     label: CharSequence,
     description: CharSequence,
     targetIntent: IntentAware,
@@ -251,7 +252,7 @@ fun BotBus.option(
  * Creates an Option Quick Reply
  * @see https://developer.twitter.com/en/docs/direct-messages/quick-replies/overview
  */
-fun BotBus.option(
+fun <T : Bus<T>> T.option(
     label: CharSequence,
     description: CharSequence,
     targetIntent: IntentAware,
@@ -266,7 +267,7 @@ fun BotBus.option(
  * Creates an Option Quick Reply
  * @see https://developer.twitter.com/en/docs/direct-messages/quick-replies/overview
  */
-private fun BotBus.option(
+private fun <T : Bus<T>> T.option(
     label: CharSequence,
     description: CharSequence,
     targetIntent: IntentAware,
@@ -299,7 +300,7 @@ private fun BotBus.option(
  */
 fun BotBus.withTwitter(messageProvider: () -> TwitterConnectorMessage): BotBus {
     withVisibility(action.metadata.visibility)
-    return if(action.metadata.visibility != ActionVisibility.public) {
+    return if (action.metadata.visibility != ActionVisibility.public) {
         withMessage(twitterConnectorType, messageProvider)
     } else {
         this
@@ -312,7 +313,7 @@ fun BotBus.withTwitter(messageProvider: () -> TwitterConnectorMessage): BotBus {
  */
 fun BotBus.withPublicTwitter(messageProvider: () -> TwitterPublicConnectorMessage): BotBus {
     withVisibility(action.metadata.visibility)
-    return if(action.metadata.visibility == ActionVisibility.public) {
+    return if (action.metadata.visibility == ActionVisibility.public) {
         withMessage(twitterConnectorType, messageProvider)
     } else {
         this

@@ -33,7 +33,9 @@ fun richResponse(
     items: List<GAItem>,
     linkOutSuggestion: GALinkOutSuggestion? = null,
     suggestions: List<GASuggestion>
-): GARichResponse = GARichResponse(items, suggestions, linkOutSuggestion)
+): GARichResponse =
+    //not more than 8 suggestions
+    GARichResponse(items, suggestions.take(8), linkOutSuggestion)
 
 /**
  * Provides a [GARichResponse] with suggestions as [String].

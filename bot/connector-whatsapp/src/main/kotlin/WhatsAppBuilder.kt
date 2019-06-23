@@ -23,6 +23,7 @@ import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotImageMessage
 import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotMessage
 import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotTextMessage
 import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.Bus
 
 internal const val WHATS_APP_CONNECTOR_TYPE_ID = "whatsapp"
 
@@ -34,10 +35,10 @@ val whatsAppConnectorType = ConnectorType(WHATS_APP_CONNECTOR_TYPE_ID)
 /**
  * Sends an WhatsApp message only if the [ConnectorType] of the current [BotBus] is [whatsAppConnectorType].
  */
-fun BotBus.sendToWhatsApp(
-    messageProvider: BotBus.() -> WhatsAppBotMessage,
-    delay: Long = botDefinition.defaultDelay(currentAnswerIndex)
-): BotBus {
+fun <T : Bus<T>> T.sendToWhatsApp(
+    messageProvider: T.() -> WhatsAppBotMessage,
+    delay: Long = defaultDelay(currentAnswerIndex)
+): T {
     if (targetConnectorType == whatsAppConnectorType) {
         withMessage(messageProvider(this))
         send(delay)
@@ -48,10 +49,10 @@ fun BotBus.sendToWhatsApp(
 /**
  * Sends an WhatsApp message as last bot answer, only if the [ConnectorType] of the current [BotBus] is [whatsAppConnectorType].
  */
-fun BotBus.endForWhatsApp(
-    messageProvider: BotBus.() -> WhatsAppBotMessage,
-    delay: Long = botDefinition.defaultDelay(currentAnswerIndex)
-): BotBus {
+fun <T : Bus<T>> T.endForWhatsApp(
+    messageProvider: T.() -> WhatsAppBotMessage,
+    delay: Long = defaultDelay(currentAnswerIndex)
+): T {
     if (targetConnectorType == whatsAppConnectorType) {
         withMessage(messageProvider(this))
         end(delay)
@@ -63,7 +64,7 @@ fun BotBus.endForWhatsApp(
  * Adds a WhatsApp [ConnectorMessage] if the current connector is WhatsApp.
  * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
-fun BotBus.withWhatsApp(messageProvider: () -> WhatsAppBotMessage): BotBus {
+fun <T : Bus<T>> T.withWhatsApp(messageProvider: () -> WhatsAppBotMessage): T {
     return withMessage(whatsAppConnectorType, messageProvider)
 }
 

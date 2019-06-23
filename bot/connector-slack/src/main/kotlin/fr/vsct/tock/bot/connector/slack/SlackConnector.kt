@@ -20,10 +20,15 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
+import fr.vsct.tock.bot.connector.ConnectorMessage
+import fr.vsct.tock.bot.connector.media.MediaCard
+import fr.vsct.tock.bot.connector.media.MediaMessage
 import fr.vsct.tock.bot.connector.slack.model.EventApiMessage
 import fr.vsct.tock.bot.connector.slack.model.SlackConnectorMessage
+import fr.vsct.tock.bot.connector.slack.model.SlackMessageOut
 import fr.vsct.tock.bot.connector.slack.model.UrlVerificationEvent
 import fr.vsct.tock.bot.connector.slack.model.old.SlackMessageIn
+import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.BotRepository.requestTimer
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
@@ -170,4 +175,45 @@ class SlackConnector(
         }
     }
 
+    override fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
+        slackMessage(
+            text,
+            slackAttachment(null, suggestions.map { slackButton(it) })
+        )
+    }
+
+    override fun addSuggestions(message: ConnectorMessage, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
+        if (message is SlackMessageOut) {
+            val attachment = message.attachments.lastOrNull()
+            if (attachment == null) {
+                message.copy(attachments = listOf(slackAttachment(null, suggestions.map { slackButton(it) })))
+            } else if (attachment.actions.isEmpty()) {
+                message.copy(attachments =
+                message.attachments.take(message.attachments.size - 1) + slackAttachment(null, suggestions.map { slackButton(it) }))
+            } else {
+                null
+            }
+        } else {
+            null
+        }
+    }
+
+    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
+        if (message is MediaCard) {
+            val title = message.title
+            val subTitle = message.subTitle
+            listOfNotNull(
+                if (title != null && subTitle != null) {
+                    textMessage(title)
+                } else {
+                    null
+                },
+                slackMessage(
+                    subTitle ?: title ?: "",
+                    slackAttachment(null, message.actions.filter { it.url == null }.map { slackButton(it.title) }))
+            )
+        } else {
+            emptyList()
+        }
+    }
 }

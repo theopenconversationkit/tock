@@ -20,7 +20,7 @@ import com.amazon.speech.ui.Image
 import com.amazon.speech.ui.StandardCard
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.Bus
 import fr.vsct.tock.bot.engine.I18nTranslator
 import fr.vsct.tock.translator.UserInterfaceType
 
@@ -32,12 +32,12 @@ internal const val ALEXA_CONNECTOR_TYPE_ID = "alexa"
 val alexaConnectorType = ConnectorType(ALEXA_CONNECTOR_TYPE_ID, UserInterfaceType.voiceAssistant)
 
 /**
-* Sends an Alexa message only if the [ConnectorType] of the current [BotBus] is [alexaConnectorType].
-*/
-fun BotBus.sendToAlexa(
-    messageProvider: BotBus.() -> AlexaMessage,
-    delay: Long = botDefinition.defaultDelay(currentAnswerIndex)
-): BotBus {
+ * Sends an Alexa message only if the [ConnectorType] of the current [BotBus] is [alexaConnectorType].
+ */
+fun <T : Bus<T>> T.sendToAlexa(
+    messageProvider: T.() -> AlexaMessage,
+    delay: Long = defaultDelay(currentAnswerIndex)
+): T {
     if (targetConnectorType == alexaConnectorType) {
         withMessage(messageProvider(this))
         send(delay)
@@ -48,10 +48,10 @@ fun BotBus.sendToAlexa(
 /**
  * Sends an Alexa message as last bot answer, only if the [ConnectorType] of the current [BotBus] is [alexaConnectorType].
  */
-fun BotBus.endForAlexa(
-    messageProvider: BotBus.() -> AlexaMessage,
-    delay: Long = botDefinition.defaultDelay(currentAnswerIndex)
-): BotBus {
+fun <T : Bus<T>> T.endForAlexa(
+    messageProvider: T.() -> AlexaMessage,
+    delay: Long = defaultDelay(currentAnswerIndex)
+): T {
     if (targetConnectorType == alexaConnectorType) {
         withMessage(messageProvider(this))
         end(delay)
@@ -63,7 +63,7 @@ fun BotBus.endForAlexa(
  * Adds an Alexa [ConnectorMessage] if the current connector is Alexa.
  * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
-fun BotBus.withAlexa(messageProvider: () -> AlexaMessage): BotBus {
+fun <T : Bus<T>> T.withAlexa(messageProvider: () -> AlexaMessage): T {
     return withMessage(alexaConnectorType, messageProvider)
 }
 

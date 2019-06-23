@@ -24,7 +24,7 @@ import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.Parameters
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
-import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.Bus
 import fr.vsct.tock.bot.engine.I18nTranslator
 
 /**
@@ -42,47 +42,43 @@ fun I18nTranslator.expectedIntentForSimpleSelect(items: List<GASelectItem>): GAE
 /**
  * Provides a [GASelectItem] with [String] parameters.
  */
-fun BotBus.selectItem(
+fun <T : Bus<T>> T.selectItem(
     title: CharSequence,
     targetIntent: IntentAware,
     vararg parameters: Pair<String, String>
-)
-        : GASelectItem = selectItem(title, targetIntent, null, null, *parameters)
+): GASelectItem = selectItem<T>(title, targetIntent, null, null, *parameters)
 
 /**
  * Provides a [GASelectItem] with option title and [String] parameters.
  */
-fun BotBus.selectItem(
+fun <T : Bus<T>> T.selectItem(
     title: CharSequence,
     targetIntent: IntentAware,
     optionTitle: CharSequence? = null,
     vararg parameters: Pair<String, String>
-)
-        : GASelectItem = selectItem(title, targetIntent, null, optionTitle, *parameters)
+): GASelectItem = selectItem(title, targetIntent, null, optionTitle, *parameters)
 
 /**
  * Provides a [GASelectItem] with option title, [StoryStep] and [Parameters] parameters.
  */
-fun BotBus.selectItem(
+fun <T : Bus<T>> T.selectItem(
     title: CharSequence,
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>,
     optionTitle: CharSequence? = null,
     parameters: Parameters
-)
-        : GASelectItem = selectItem(title, targetIntent, step, optionTitle, *parameters.toArray())
+): GASelectItem = selectItem(title, targetIntent, step, optionTitle, *parameters.toArray())
 
 /**
  * Provides a [GASelectItem] with option title, [StoryStep] and [String] parameters.
  */
-fun BotBus.selectItem(
+fun <T : Bus<T>> T.selectItem(
     title: CharSequence,
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>? = null,
     optionTitle: CharSequence? = null,
     vararg parameters: Pair<String, String>
-)
-        : GASelectItem {
+): GASelectItem {
     return GASelectItem(
         optionInfo(
             title,

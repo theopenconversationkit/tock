@@ -27,7 +27,7 @@ import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.Parameters
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
-import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.Bus
 import fr.vsct.tock.bot.engine.I18nTranslator
 import fr.vsct.tock.translator.raw
 import mu.KotlinLogging
@@ -123,16 +123,16 @@ fun I18nTranslator.expectedIntentForList(items: List<GAListItem>, title: CharSeq
 /**
  * Provides a [GAListItem] with [String] parameters without description.
  */
-fun BotBus.listItem(
+fun <T : Bus<T>> T.listItem(
     title: CharSequence,
     targetIntent: IntentAware,
     vararg parameters: Pair<String, String>
-): GAListItem = listItem(title, targetIntent, null, null, null, *parameters)
+): GAListItem = listItem<T>(title, targetIntent, null, null, null, *parameters)
 
 /**
  * Provides a [GAListItem] with [String] parameters with description and optional imageUrl.
  */
-fun BotBus.listItem(
+fun <T : Bus<T>> T.listItem(
     title: CharSequence,
     targetIntent: IntentAware,
     description: CharSequence,
@@ -143,7 +143,7 @@ fun BotBus.listItem(
 /**
  * Provides a [GAListItem] with [String] parameters without description.
  */
-fun BotBus.listItem(
+fun <T : Bus<T>> T.listItem(
     title: CharSequence,
     targetIntent: IntentAware,
     parameters: Parameters
@@ -152,7 +152,7 @@ fun BotBus.listItem(
 /**
  * Provides a [GAListItem] with [String] parameters  with description and optional imageUrl.
  */
-fun BotBus.listItem(
+fun <T : Bus<T>> T.listItem(
     title: CharSequence,
     targetIntent: IntentAware,
     description: CharSequence?,
@@ -163,7 +163,7 @@ fun BotBus.listItem(
 /**
  * Provides a [GAListItem] with [StoryStep] and [Parameters] parameters without description.
  */
-fun BotBus.listItem(
+fun <T : Bus<T>> T.listItem(
     title: CharSequence,
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>?,
@@ -173,17 +173,17 @@ fun BotBus.listItem(
 /**
  * Provides a [GAListItem] with [StoryStep] and [Parameters] parameters without description.
  */
-fun BotBus.listItem(
+fun <T : Bus<T>> T.listItem(
     title: CharSequence,
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>?,
     vararg parameters: Pair<String, String>
-): GAListItem = listItem(title, targetIntent, step, null, null, *parameters)
+): GAListItem = listItem<T>(title, targetIntent, step, null, null, *parameters)
 
 /**
  * Provides a [GAListItem] with [StoryStep] and [Parameters] parameters.
  */
-fun BotBus.listItem(
+fun <T : Bus<T>> T.listItem(
     title: CharSequence,
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>?,
@@ -195,7 +195,7 @@ fun BotBus.listItem(
 /**
  * Provides a [GAListItem] with [StoryStep] and [Parameters] parameters.
  */
-fun BotBus.listItem(
+fun <T : Bus<T>> T.listItem(
     title: CharSequence,
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>?,

@@ -26,9 +26,14 @@ import com.amazon.speech.speechlet.verifier.SpeechletRequestVerifierWrapper
 import com.amazon.speech.speechlet.verifier.TimestampSpeechletRequestVerifier
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
+import fr.vsct.tock.bot.connector.ConnectorMessage
+import fr.vsct.tock.bot.connector.media.MediaCard
+import fr.vsct.tock.bot.connector.media.MediaMessage
+import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.action.SendAttachment.AttachmentType.image
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.error
@@ -139,5 +144,20 @@ class AlexaConnector internal constructor(
         }
     }
 
+    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
+
+        if (message is MediaCard) {
+            val title = message.title
+            val subTitle = message.subTitle
+            val file = message.file
+            if (title != null && subTitle != null && file != null && file.type == image) {
+                listOf(alexaStandardCard(title, subTitle, file.url))
+            } else {
+                emptyList()
+            }
+        } else {
+            emptyList()
+        }
+    }
 
 }

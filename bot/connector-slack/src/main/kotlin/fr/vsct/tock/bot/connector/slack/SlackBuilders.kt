@@ -28,7 +28,7 @@ import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.Parameters
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
-import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.Bus
 import fr.vsct.tock.bot.engine.I18nTranslator
 import fr.vsct.tock.bot.engine.action.SendChoice
 
@@ -42,10 +42,10 @@ val slackConnectorType = ConnectorType(SLACK_CONNECTOR_TYPE_ID)
 /**
  * Sends a Slack message only if the [ConnectorType] of the current [BotBus] is [slackConnectorType].
  */
-fun BotBus.sendToSlack(
-    delay: Long = botDefinition.defaultDelay(currentAnswerIndex),
-    messageProvider: BotBus.() -> SlackConnectorMessage
-): BotBus {
+fun <T : Bus<T>> T.sendToSlack(
+    delay: Long = defaultDelay(currentAnswerIndex),
+    messageProvider: T.() -> SlackConnectorMessage
+): T {
     if (targetConnectorType == slackConnectorType) {
         withMessage(messageProvider(this))
         send(delay)
@@ -56,10 +56,10 @@ fun BotBus.sendToSlack(
 /**
  * Sends a Slack message as last bot answer, only if the [ConnectorType] of the current [BotBus] is [slackConnectorType].
  */
-fun BotBus.endForSlack(
-    delay: Long = botDefinition.defaultDelay(currentAnswerIndex),
-    messageProvider: BotBus.() -> SlackConnectorMessage
-): BotBus {
+fun <T : Bus<T>> T.endForSlack(
+    delay: Long = defaultDelay(currentAnswerIndex),
+    messageProvider: T.() -> SlackConnectorMessage
+): T {
     if (targetConnectorType == slackConnectorType) {
         withMessage(messageProvider(this))
         end(delay)
@@ -71,7 +71,7 @@ fun BotBus.endForSlack(
  * Adds a Slack [ConnectorMessage] if the current connector is Slack.
  * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
-fun BotBus.withSlack(messageProvider: () -> SlackConnectorMessage): BotBus {
+fun <T : Bus<T>> T.withSlack(messageProvider: () -> SlackConnectorMessage): T {
     return withMessage(slackConnectorType, messageProvider)
 }
 
@@ -104,6 +104,11 @@ fun I18nTranslator.slackAttachment(
     slackAttachment(text, buttons.toList())
 
 fun I18nTranslator.slackAttachment(
+    vararg buttons: Button
+): SlackMessageAttachment =
+    slackAttachment(buttons = buttons.toList())
+
+fun I18nTranslator.slackAttachment(
     text: CharSequence? = null,
     buttons: List<Button> = emptyList(),
     color: String = "good",
@@ -124,10 +129,10 @@ fun emoji(emoji: SlackEmoji): String = emoji.format
 /**
  * Creates Slack button: https://api.slack.com/reference/messaging/block-elements#button
  */
-fun BotBus.slackButton(
+fun <T : Bus<T>> T.slackButton(
     title: CharSequence,
-    targetIntent: IntentAware,
-    parameters: Parameters,
+    targetIntent: IntentAware? = null,
+    parameters: Parameters = Parameters(),
     name: String = "default"
 ): Button =
     slackButton(title, targetIntent, null, parameters, name)
@@ -135,11 +140,11 @@ fun BotBus.slackButton(
 /**
  * Creates a Slack button: https://api.slack.com/reference/messaging/block-elements#button
  */
-fun BotBus.slackButton(
+fun <T : Bus<T>> T.slackButton(
     title: CharSequence,
-    targetIntent: IntentAware,
+    targetIntent: IntentAware?,
     step: StoryStep<out StoryHandlerDefinition>? = null,
-    parameters: Parameters,
+    parameters: Parameters = Parameters(),
     name: String = "default"
 ): Button =
     slackButton(title, targetIntent, step, *parameters.toArray(), name = name)
@@ -147,15 +152,18 @@ fun BotBus.slackButton(
 /**
  * Creates a Slack button: https://api.slack.com/reference/messaging/block-elements#button
  */
-fun BotBus.slackButton(
+fun <T : Bus<T>> T.slackButton(
     title: CharSequence,
-    targetIntent: IntentAware,
+    targetIntent: IntentAware?,
     step: StoryStep<out StoryHandlerDefinition>? = null,
     vararg parameters: Pair<String, String>,
     name: String = "default"
-): Button =
-    Button(
+): Button {
+    val t = translate(title).toString()
+    return Button(
         name,
-        translate(title).toString(),
-        SendChoice.encodeChoiceId(this, targetIntent, step, parameters.toMap())
+        t,
+        if (targetIntent == null) SendChoice.encodeNlpChoiceId(t)
+        else SendChoice.encodeChoiceId(this, targetIntent, step, parameters.toMap())
     )
+}

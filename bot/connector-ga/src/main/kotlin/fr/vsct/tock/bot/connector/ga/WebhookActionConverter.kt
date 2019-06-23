@@ -36,23 +36,20 @@ import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserLocation
 import fr.vsct.tock.translator.UserInterfaceType
-import mu.KotlinLogging
 
 /**
  *
  */
 internal object WebhookActionConverter {
 
-    private val logger = KotlinLogging.logger {}
-
     fun toEvent(
         message: GARequest,
         applicationId: String
     ): Event {
-        val eventState =  message.getEventState()
+        val eventState = message.getEventState()
         val userInterface = eventState.userInterface
         //for google home, use conversationId
-        val userId = if(userInterface == UserInterfaceType.voiceAssistant) message.conversation.conversationId else message.user.userId
+        val userId = if (userInterface == UserInterfaceType.voiceAssistant) message.conversation.conversationId else message.user.userId
         val playerId = PlayerId(userId, PlayerType.user)
         val botId = PlayerId(applicationId, PlayerType.bot)
 
@@ -73,7 +70,7 @@ internal object WebhookActionConverter {
             } else if (input.arguments?.any { it.builtInArg == GAArgumentBuiltInName.OPTION } == true) {
                 val params = SendChoice.decodeChoiceId(
                     input.arguments.first { it.builtInArg == GAArgumentBuiltInName.OPTION }.textValue
-                            ?: error("no text value")
+                        ?: error("no text value")
                 )
                 //Google assistant makes an somewhat erroneous nlp selection sometimes
                 //to avoid that, double check the label
