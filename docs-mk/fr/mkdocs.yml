@@ -10,13 +10,13 @@ nav:
   - 'Pour commencer': 'pour-commencer.md'
   - 'Construire le modèle': 'construire-le-modele.md'
   - 'Evaluer la pertinence du modèle': 'evaluer-la-pertinence-du-modele.md'
-  - 'Comment développer un Bot': 'options-de-developpement.md'
-  - 'Bot intégré':
-    - 'Présentation du bot Open Data': 'presentation-du-bot-open-data.md'
-    - 'Développer un bot': 'developper-un-bot.md'
-    - 'Tester le bot': 'tester-le-bot.md'
-  -  'Bot via API':
-     - 'Développer un bot via API': 'bot-api.md'
+  - 'Développer un Assistant': 'developper-un-assistant.md'
+  - 'Assistant Tock':
+    - 'Présentation du Bot Open Data': 'presentation-du-bot-open-data.md'
+    - 'Développer': 'developper.md'
+    - 'Tester': 'tester.md'
+  -  'Assistant via API':
+     - 'Développer via API': 'developper-api.md'
   - 'i18n': 'i18n.md'
   - 'APIs de Tock': 'api.md'
   - 'KDoc': 'kdoc.md'

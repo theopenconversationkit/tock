@@ -34,6 +34,8 @@ qui permet de compiler les scripts du bot via l'interface d'administration.
 les modèles NLP quand cela se révèle nécessaire.
 - [tock/nlp_api](https://hub.docker.com/r/tock/nlp_api) Permet au bot d'analyser les phrases à partir des modèles
 construits via l'interface d'administration.
+- [tock/bot_api](https://hub.docker.com/r/tock/bot_api) Permet de développer un bot en mode "API". 
+Met à disposition une API qui sera utilisée pour le développement du ou des bots.
 - [tock/duckling](https://hub.docker.com/r/tock/duckling) Permet d'analyser et de valoriser les dates
 et les types primitifs en utilisant le projet [duckling](https://duckling.wit.ai).
 
@@ -42,6 +44,20 @@ image qui doit être accessible de l'extérieur.
 
 Un exemple de configuration de cette dernière image se trouve dans le fichier 
 [docker-compose-bot-open-data.yml](https://github.com/voyages-sncf-technologies/tock-docker/blob/master/docker-compose-bot-open-data.yml).
+
+### Schémas des flux
+
+- Pour une stack uniquement NLU :
+
+![Schéma NLU](img/nlp_api.png "Schéma NLU")
+
+- Pour une stack exposant l'API BOT :
+
+![BOT API](img/bot_api.png "BOT API")
+
+- Pour une stack intégrant un Bot Tock :
+
+![Bot TOCK](img/bot_open_data.png "Bot Tock")
 
 ## Recommandations
  
