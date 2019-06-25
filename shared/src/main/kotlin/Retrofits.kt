@@ -54,10 +54,10 @@ fun tryToFindLocalIp(): String {
         .run {
             find { it.name.contains("eno") }
                 ?.inetAddresses?.toList()?.filterIsInstance<Inet4Address>()?.firstOrNull()?.hostName
-                    ?: flatMap { it.inetAddresses.toList().filterIsInstance<Inet4Address>() }
-                        .find { it.hostName.startsWith("192.168.0") }
-                        ?.hostName
-                    ?: "localhost"
+                ?: flatMap { it.inetAddresses.toList().filterIsInstance<Inet4Address>() }
+                    .find { it.hostName.startsWith("192.168.0") }
+                    ?.hostName
+                ?: "localhost"
         }
 }
 
@@ -120,6 +120,21 @@ fun basicAuthInterceptor(login: String, password: String): Interceptor {
 
         val requestBuilder = original.newBuilder()
             .header("Authorization", credential)
+
+        val request = requestBuilder.build()
+        chain.proceed(request)
+    }
+}
+
+/**
+ * Create a token authentication interceptor.
+ */
+fun tokenAuthenticationInterceptor(token: String): Interceptor {
+    return Interceptor { chain ->
+        val original = chain.request()
+
+        val requestBuilder = original.newBuilder()
+            .header("Authorization", "Bearer $token")
 
         val request = requestBuilder.build()
         chain.proceed(request)

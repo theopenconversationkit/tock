@@ -40,6 +40,7 @@ import fr.vsct.tock.bot.connector.ga.model.response.GARichResponse
 import fr.vsct.tock.bot.connector.ga.model.response.GASimpleResponse
 import fr.vsct.tock.bot.connector.ga.model.response.GASimpleSelect
 import fr.vsct.tock.bot.connector.ga.model.response.GAStructuredResponse
+import fr.vsct.tock.bot.connector.ga.model.response.GAUpdatePermissionValueSpec
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
@@ -191,7 +192,7 @@ fun I18nTranslator.gaMessage(text: CharSequence, possibleIntents: List<GAExpecte
  * Google Assistant Message asking for [GAPermission].
  */
 fun I18nTranslator.permissionIntent(
-    optionalContext: CharSequence?,
+    optionalContext: CharSequence? = null,
     vararg permissions: GAPermission
 ): GAExpectedIntent {
     return GAExpectedIntent(
@@ -199,6 +200,22 @@ fun I18nTranslator.permissionIntent(
         GAPermissionValueSpec(
             translate(optionalContext).toString(),
             permissions.toSet()
+        )
+    )
+}
+
+/**
+ * Google Assistant Message asking for update [GAPermission].
+ */
+fun I18nTranslator.updatePermissionIntent(
+    intent: String
+): GAExpectedIntent {
+    return GAExpectedIntent(
+        GAIntent.permission,
+        GAPermissionValueSpec(
+            null,
+            setOf(GAPermission.UPDATE),
+            GAUpdatePermissionValueSpec(intent)
         )
     )
 }

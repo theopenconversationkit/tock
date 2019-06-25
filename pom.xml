@@ -61,6 +61,7 @@
         <commons-lang>3.9</commons-lang>
         <json>20180813</json>
         <httpclient>4.5.8</httpclient>
+        <google-auth2>0.16.1</google-auth2>
 
         <junit-jupiter>5.4.0</junit-jupiter>
 
@@ -484,6 +485,11 @@
                         <artifactId>commons-logging</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.google.auth</groupId>
+                <artifactId>google-auth-library-oauth2-http</artifactId>
+                <version>${google-auth2}</version>
             </dependency>
 
             <dependency>
