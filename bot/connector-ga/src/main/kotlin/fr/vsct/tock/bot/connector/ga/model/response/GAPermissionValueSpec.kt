@@ -25,7 +25,8 @@ import fr.vsct.tock.bot.connector.ga.model.request.GAPermission
  */
 data class GAPermissionValueSpec(
         @get:JsonProperty("opt_context")
-        val optContext: String,
-        val permissions: Set<GAPermission>
+        val optContext: String?,
+        val permissions: Set<GAPermission>,
+        val updatePermissionValueSpec: GAUpdatePermissionValueSpec? = null
 ) : GAInputValueData(GAIntent.permission.type!!) {
 }

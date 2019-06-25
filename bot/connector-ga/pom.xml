@@ -50,6 +50,10 @@
             <groupId>com.google.http-client</groupId>
             <artifactId>google-http-client-jackson2</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.google.auth</groupId>
+            <artifactId>google-auth-library-oauth2-http</artifactId>
+        </dependency>
         <!-- force jackson dependencies -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
