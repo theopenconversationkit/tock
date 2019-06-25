@@ -108,7 +108,7 @@ class RestConnector(
     }
 
     private fun getTargetConnector(targetConnectorType: ConnectorType): Connector? =
-        BotRepository.getController { it.targetConnectorType == targetConnectorType }?.connector
+        BotRepository.getController { it.connectorType == targetConnectorType }?.connector
 
 
     override fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
