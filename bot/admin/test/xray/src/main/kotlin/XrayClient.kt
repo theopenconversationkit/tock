@@ -112,9 +112,9 @@ object XrayClient {
         val issuesArray = parsed.array<Any>("issues")
 
         // if only one issue has been found, return the identifier of the issue
-        when(issuesArray!!.size) {
+        when(issuesArray?.size ?:0) {
             0 -> logger.error { "ERROR -- Unable to retrieve the issue!" }
-            1 -> return issuesArray?.get("key").value.toString().replace("[", "").replace("]", "")
+            1 -> return issuesArray?.get("key")?.value.toString().replace("[", "").replace("]", "")
             else -> logger.error { "ERROR -- Too much issue have been retrieved!" }
         }
         return ""
@@ -127,9 +127,9 @@ object XrayClient {
 
         // parse the body
         val parsed = klaxon.parseJsonObject(StringReader(body))
-        val project = (parsed.getValue("fields") as JsonObject).map.get("project")
+        val project = (parsed.getValue("fields") as JsonObject).map["project"]
 
-        return JiraTestProject((project as JsonObject).get("key").toString())
+        return JiraTestProject((project as JsonObject)["key"].toString())
     }
 
     /**

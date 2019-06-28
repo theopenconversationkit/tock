@@ -20,4 +20,3 @@ package fr.vsct.tock.bot.admin.test.xray.model
  *
  */
 data class JiraIssue(val id: String, val key: String)
-{}

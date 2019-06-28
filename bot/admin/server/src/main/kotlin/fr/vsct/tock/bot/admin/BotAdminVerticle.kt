@@ -39,6 +39,7 @@ import fr.vsct.tock.bot.admin.model.UserSearchQuery
 import fr.vsct.tock.bot.admin.test.TestPlan
 import fr.vsct.tock.bot.admin.test.TestPlanService
 import fr.vsct.tock.bot.admin.test.xray.XrayConfiguration
+import fr.vsct.tock.bot.admin.test.xray.XrayService
 import fr.vsct.tock.bot.connector.ConnectorType.Companion.rest
 import fr.vsct.tock.bot.connector.ConnectorTypeConfiguration
 import fr.vsct.tock.bot.connector.rest.addRestConnector
@@ -413,15 +414,16 @@ open class BotAdminVerticle : AdminVerticle() {
         blockingJsonGet("/xray/available", botUser) {
             XrayConfiguration.isXrayAvailable()
         }
-/*
+
         blockingJsonPost("/xray/execute", botUser) { context, configuration: XRayPlanExecutionConfiguration ->
             XrayService(
                 listOfNotNull(configuration.configurationId),
                 listOf(configuration.testPlanKey),
+                listOf(),
                 configuration.testedBotId
             ).executePlans(context.organization)
         }
-*/
+
         blockingJsonGet("/compiler/available", botUser) {
             !KotlinCompilerClient.compilerDisabled
         }

@@ -53,10 +53,6 @@ internal object TockTestClient : TestClientService {
         return tock.executeTestPlan(testPlan).execute().body() ?: TestPlanExecution(testPlan._id, emptyList(), 1)
     }
 
-    override fun executeTestPlan(testPlan: TestPlan): TestPlanExecution {
-        return tock.executeTestPlan(testPlan).execute().body() ?: TestPlanExecution(testPlan._id, emptyList(), 1)
-    }
-
     override fun getBotConfigurations(namespace: String, botId: String): List<BotApplicationConfiguration> {
         return tock.getBotConfigurations(botId).execute().body() ?: error("not a bot configuration")
     }

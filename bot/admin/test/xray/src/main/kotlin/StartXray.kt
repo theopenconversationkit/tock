@@ -25,7 +25,7 @@ private val logger = KotlinLogging.logger {}
  *
  */
 fun main() {
-    val itemToExecute = "TEST"
+    val itemToExecute = ""
 
     logger.info { "Start tests" }
     val result: XRayPlanExecutionResult

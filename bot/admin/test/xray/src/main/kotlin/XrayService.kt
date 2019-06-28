@@ -121,7 +121,7 @@ class XrayService(
      */
     fun executeTests(namespace: String): XRayPlanExecutionResult {
         val dummyTestPlan = listOf("MOCK")
-        val jiraProject = getProjectFromIssue(testKeys.get(0))
+        val jiraProject = getProjectFromIssue(testKeys[0])
 
         logger.info { "Execute tests with namespace $namespace" }
         return try {
@@ -136,7 +136,7 @@ class XrayService(
                     }
                     // test execution of a dummy test plan
                     .flatMap {
-                        execTestsOnly(XrayExecutionConfiguration(it, dummyTestPlan, jiraProject), dummyTestPlan.get(0), testKeys)
+                        execTestsOnly(XrayExecutionConfiguration(it, dummyTestPlan, jiraProject), dummyTestPlan[0], testKeys)
                     }
                     .let {
                         sendToXray(it)
@@ -217,7 +217,7 @@ class XrayService(
             executionDialogs: List<DialogExecutionReport>
     ): Boolean {
         // try to get the jira identifier of the test plan
-        var testExecutionKey = XrayClient.getKeyOfSearchedIssue("project = \"${configurations.get(0).jiraTestProject.key}\" and issuetype = \"Test Execution\" and summary ~ \"$planKey\"")
+        var testExecutionKey = XrayClient.getKeyOfSearchedIssue("project = \"${configurations[0].jiraTestProject.key}\" and issuetype = \"Test Execution\" and summary ~ \"$planKey\"")
 
         // if no test execution has been found, then create a new one
         if (testExecutionKey.isEmpty()) {
@@ -345,7 +345,6 @@ class XrayService(
                         val testPlan = createTestPlanWithTests(configuration, planKey, testKeys)
                         // if the current test plan has dialogs to send, then execute it, otherwise skip it and jump to the next one
                         if (testPlan.dialogs.isNotEmpty()) {
-                            //
                             executePlan(configuration, testPlan.name, testPlan)
                         } else {
                             logger.info { "Empty test plan for $configuration - skipped" }
