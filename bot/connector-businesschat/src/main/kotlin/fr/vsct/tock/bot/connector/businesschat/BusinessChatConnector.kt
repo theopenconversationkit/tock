@@ -91,7 +91,8 @@ internal class BusinessChatConnector(
                                 controller.handle(
                                     event,
                                     ConnectorData(
-                                        BusinessChatConnectorCallback(connectorId)
+                                        BusinessChatConnectorCallback(connectorId),
+                                        referer = message.intent
                                     )
                                 )
                             }

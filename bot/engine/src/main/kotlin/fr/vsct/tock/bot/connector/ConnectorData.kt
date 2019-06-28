@@ -39,7 +39,11 @@ open class ConnectorData(
     /**
      * An optional group id (for users group conversation handling).
      */
-    val groupId: String? = null
+    val groupId: String? = null,
+    /**
+     * An optional referer.
+     */
+    val referer: String? = null
 ) {
     /**
      * Set to true if the bot does not make any answer to a user sentence.
