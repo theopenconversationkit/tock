@@ -18,7 +18,9 @@ package fr.vsct.tock.bot.admin
 
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.admin.answer.AnswerConfiguration
+import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType.builtin
 import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType.script
+import fr.vsct.tock.bot.admin.answer.BuiltInAnswerConfiguration
 import fr.vsct.tock.bot.admin.answer.ScriptAnswerConfiguration
 import fr.vsct.tock.bot.admin.answer.ScriptAnswerVersionedConfiguration
 import fr.vsct.tock.bot.admin.answer.SimpleAnswerConfiguration
@@ -32,6 +34,7 @@ import fr.vsct.tock.bot.admin.dialog.DialogReportQueryResult
 import fr.vsct.tock.bot.admin.kotlin.compiler.KotlinFile
 import fr.vsct.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
 import fr.vsct.tock.bot.admin.model.BotAnswerConfiguration
+import fr.vsct.tock.bot.admin.model.BotBuiltinAnswerConfiguration
 import fr.vsct.tock.bot.admin.model.BotDialogRequest
 import fr.vsct.tock.bot.admin.model.BotDialogResponse
 import fr.vsct.tock.bot.admin.model.BotScriptAnswerConfiguration
@@ -341,6 +344,7 @@ object BotAdminService {
                     answers?.find { it.answerType == script } as? ScriptAnswerConfiguration,
                     this
                 )
+            is BotBuiltinAnswerConfiguration -> BuiltInAnswerConfiguration(storyHandlerClassName)
             else -> error("unsupported type $this")
         }
 
@@ -461,7 +465,11 @@ object BotAdminService {
                 botConf.botId,
                 story.intent.name
             ).let {
-                if (it == null) {
+                if (it == null || it.currentType == builtin) {
+                    if (it?.currentType == builtin) {
+                        storyDefinitionDAO.delete(it)
+                    }
+
                     //intent change
                     if (storyDefinition?._id != null) {
                         AdminService.createOrGetIntent(
@@ -476,9 +484,7 @@ object BotAdminService {
                         )
                     }
                 } else {
-                    if (it._id != storyDefinition?._id) {
-                        badRequest("Story already exists for the intent ${story.intent.name} : ${it.name}")
-                    }
+                    badRequest("Story already exists for the intent ${story.intent.name} : ${it.name}")
                 }
             }
             if (storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(

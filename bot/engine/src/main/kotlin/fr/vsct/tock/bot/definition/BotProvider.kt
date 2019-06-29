@@ -34,10 +34,18 @@ interface BotProvider {
 
     /**
      * Is this [BotProvider] specific to a configuration name?
-     * If yes, this methods returns the configuration name.
-     * If no, this methods returns null.
-     * By default this method returns null.
+     * If yes, this property stores the configuration name.
+     * If no, this property returns null.
+     * By default the¬ property returns null.
      */
-    fun configurationName(): String? = null
+    val configurationName: String? get() = null
+
+    /**
+     * Does this bot provider gets a configuration update ?
+     */
+    var configurationUpdated: Boolean
+        get() = false
+        set(v) {}
+
 
 }

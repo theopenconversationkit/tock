@@ -17,22 +17,26 @@
 package fr.vsct.tock.bot.api.service
 
 import fr.vsct.tock.bot.admin.bot.BotConfiguration
+import fr.vsct.tock.bot.api.model.configuration.ClientConfiguration
+import fr.vsct.tock.bot.api.model.configuration.StepConfiguration
 import fr.vsct.tock.bot.definition.BotDefinitionBase
 import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.SimpleStoryDefinition
 import fr.vsct.tock.bot.definition.SimpleStoryHandlerBase
 import fr.vsct.tock.bot.definition.StoryDefinition
+import fr.vsct.tock.bot.definition.StoryHandlerDefinition
+import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.shared.error
 import mu.KotlinLogging
 
 internal class FallbackStoryHandler(
-    configuration: BotConfiguration,
-    val defaultUnknown: StoryDefinition
+    private val defaultUnknown: StoryDefinition,
+    private val handler: BotApiHandler
 ) : SimpleStoryHandlerBase() {
 
     private val logger = KotlinLogging.logger {}
-    private val handler = BotApiHandler(configuration.apiKey, configuration.webhookUrl)
 
     override fun action(bus: BotBus) {
         try {
@@ -45,22 +49,51 @@ internal class FallbackStoryHandler(
 }
 
 internal class FallbackStoryDefinition(
-    configuration: BotConfiguration,
-    defaultUnknown: StoryDefinition
+    defaultUnknown: StoryDefinition,
+    handler: BotApiHandler
 ) : SimpleStoryDefinition(
     defaultUnknown.id,
-    FallbackStoryHandler(configuration, defaultUnknown),
+    FallbackStoryHandler(defaultUnknown, handler),
     defaultUnknown.intents
 )
 
-internal class BotApiDefinition(configuration: BotConfiguration) :
+internal class ApiStep(s: StepConfiguration) : StoryStep<StoryHandlerDefinition> {
+    override val name: String = s.name
+    override val intent: IntentAware = Intent(s.mainIntent)
+    override val otherStarterIntents: Set<IntentAware> = s.otherStarterIntents.map { Intent(it) }.toSet()
+    override val secondaryIntents: Set<IntentAware> = s.secondaryIntents.map { Intent(it) }.toSet()
+
+}
+
+internal class BotApiDefinition(
+    configuration: BotConfiguration,
+    clientConfiguration: ClientConfiguration?,
+    handler: BotApiHandler) :
     BotDefinitionBase(
         configuration.botId,
         configuration.namespace,
-        emptyList(),
+        clientConfiguration
+            ?.stories
+            ?.filter { it.mainIntent != Intent.unknown.name }
+            ?.map { s ->
+                SimpleStoryDefinition(
+                    s.name,
+                    FallbackStoryHandler(defaultUnknownStory, handler),
+                    setOf(Intent(s.mainIntent)) + s.otherStarterIntents.map { Intent(it) },
+                    setOf(Intent(s.mainIntent)) + s.otherStarterIntents.map { Intent(it) } + s.secondaryIntents.map { Intent(it) },
+                    s.steps.map { ApiStep(it) }.toSet()
+                )
+            } ?: emptyList(),
         configuration.nlpModel,
-        FallbackStoryDefinition(configuration, defaultUnknownStory)
+        FallbackStoryDefinition(defaultUnknownStory, handler)
     ) {
 
-    override fun findIntent(intent: String): Intent = Intent(intent)
+    override fun findIntent(intent: String): Intent =
+        super.findIntent(intent).let {
+            if (it.wrap(Intent.unknown)) {
+                Intent(intent)
+            } else {
+                it
+            }
+        }
 }

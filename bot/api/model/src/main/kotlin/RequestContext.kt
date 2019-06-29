@@ -23,7 +23,6 @@ import fr.vsct.tock.translator.UserInterfaceType
 import java.util.Locale
 
 data class RequestContext(
-    val requestId:String,
     val namespace: String,
     val language: Locale,
     val connectorType: ConnectorType,

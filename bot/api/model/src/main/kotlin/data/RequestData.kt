@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.model
+package fr.vsct.tock.bot.api.model.websocket
 
-import fr.vsct.tock.bot.api.model.message.bot.BotMessage
+import fr.vsct.tock.bot.api.model.UserRequest
+import fr.vsct.tock.shared.Dice
 
-data class BotResponse(
-    val messages: List<BotMessage> = emptyList(),
-    val storyId: String,
-    val step: String?,
-    val context: ResponseContext
+data class RequestData(
+    val botRequest: UserRequest? = null,
+    val configuration: Boolean? = null,
+    val requestId: String = Dice.newId()
 )

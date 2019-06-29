@@ -48,7 +48,7 @@ export class StoryComponent implements OnInit, OnChanges {
   submit = new AnswerController();
 
   @Input()
-  displayCount:boolean = true;
+  displayCount: boolean = true;
 
   @Output()
   close = new EventEmitter<boolean>();
@@ -223,6 +223,10 @@ export class StoryComponent implements OnInit, OnChanges {
 
   submitClose() {
     this.close.emit(true);
+  }
+
+  manageStory() {
+    this.story.currentType = AnswerConfigurationType.simple;
   }
 
 }

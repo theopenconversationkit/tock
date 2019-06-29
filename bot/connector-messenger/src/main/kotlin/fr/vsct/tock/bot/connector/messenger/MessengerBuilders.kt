@@ -73,7 +73,7 @@ val messengerConnectorType = ConnectorType(MESSENGER_CONNECTOR_TYPE_ID)
  */
 fun <T : Bus<T>> T.sendToMessenger(
     delay: Long = defaultDelay(currentAnswerIndex),
-    messageProvider:T.() -> MessengerConnectorMessage
+    messageProvider: T.() -> MessengerConnectorMessage
 ): T {
     if (targetConnectorType == messengerConnectorType) {
         withMessage(messageProvider(this))
@@ -512,8 +512,8 @@ fun I18nTranslator.standaloneQuickReply(
      */
     currentIntent: Intent? = null
 ): QuickReply =
-    quickReply(title, targetIntent, imageUrl, step, parameters.toMap()) { intent, s, params ->
-        SendChoice.encodeChoiceId(intent, s, params, busStep, currentIntent)
+    quickReply(title, targetIntent, imageUrl, step?.name, parameters.toMap()) { intent, s, params ->
+        SendChoice.encodeChoiceId(intent, s, params, busStep?.name, currentIntent)
     }
 
 /**
@@ -524,7 +524,7 @@ fun <T : Bus<T>> T.quickReply(
     targetIntent: IntentAware,
     parameters: Parameters
 ): QuickReply =
-    quickReply(title, targetIntent, null, step, parameters)
+    quickReply(title, targetIntent, null, stepName, parameters.toMap())
 
 /**
  * Creates a [quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies).
@@ -572,6 +572,15 @@ fun <T : Bus<T>> T.quickReply(
     step: StoryStep<out StoryHandlerDefinition>? = null,
     parameters: Map<String, String>
 ): QuickReply =
+    quickReply(title, targetIntent, imageUrl, step?.name, parameters)
+
+private fun <T : Bus<T>> T.quickReply(
+    title: CharSequence,
+    targetIntent: IntentAware,
+    imageUrl: String? = null,
+    step: String? = null,
+    parameters: Map<String, String>
+): QuickReply =
     quickReply(title, targetIntent, imageUrl, step, parameters) { intent, s, params ->
         SendChoice.encodeChoiceId(this, intent, s, params)
     }
@@ -580,9 +589,9 @@ private fun I18nTranslator.quickReply(
     title: CharSequence,
     targetIntent: IntentAware,
     imageUrl: String? = null,
-    step: StoryStep<out StoryHandlerDefinition>? = null,
+    step: String? = null,
     parameters: Map<String, String>,
-    payloadEncoder: (IntentAware, StoryStep<out StoryHandlerDefinition>?, Map<String, String>) -> String
+    payloadEncoder: (IntentAware, String?, Map<String, String>) -> String
 ): QuickReply {
     val t = translate(title)
     if (t.length > 20) {

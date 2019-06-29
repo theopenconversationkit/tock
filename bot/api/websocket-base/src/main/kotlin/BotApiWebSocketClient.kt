@@ -3,9 +3,10 @@ package fr.vsct.tock.bot.api.websocket
 import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.api.client.ClientBotDefinition
 import fr.vsct.tock.bot.api.client.TockClientBus
-import fr.vsct.tock.bot.api.model.BotResponse
-import fr.vsct.tock.bot.api.model.ResponseContext
-import fr.vsct.tock.bot.api.model.UserRequest
+import fr.vsct.tock.bot.api.client.toConfiguration
+import fr.vsct.tock.bot.api.model.websocket.RequestData
+import fr.vsct.tock.bot.api.model.websocket.ResponseData
+import fr.vsct.tock.shared.Dice
 import fr.vsct.tock.shared.intProperty
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.property
@@ -47,17 +48,32 @@ fun start(
     val client = vertx.createHttpClient()
     client.webSocket(serverPort, serverHost, "/${botDefinition.apiKey}") { context ->
         val socket = context.result()
+        //send bot configuration
+        socket?.writeTextMessage(
+            mapper.writeValueAsString(
+                ResponseData(Dice.newId(), botConfiguration = botDefinition.toConfiguration())
+            )
+        )
         socket
             ?.textMessageHandler { json ->
                 vertx.blocking<String>({
                     logger.debug { json }
-                    val request: UserRequest = mapper.readValue(json)
-                    val bus = TockClientBus(botDefinition, request) { messages ->
-                        val response = mapper.writeValueAsString(BotResponse(messages, ResponseContext(request.context.requestId)))
-                        logger.debug { response }
-                        it.complete(response)
+                    val data: RequestData = mapper.readValue(json)
+                    val request = data.botRequest
+                    if (request != null) {
+                        val bus = TockClientBus(botDefinition, data) { r ->
+                            val response = mapper.writeValueAsString(ResponseData(data.requestId, r))
+                            logger.debug { response }
+                            it.complete(response)
+                        }
+                        bus.handle()
+                    } else if (data.configuration == true) {
+                        it.complete(mapper.writeValueAsString(
+                            ResponseData(data.requestId, botConfiguration = botDefinition.toConfiguration())
+                        ))
+                    } else {
+                        it.fail("invalid request")
                     }
-                    bus.handle()
                 }) {
                     socket.writeTextMessage(it.result())
                 }

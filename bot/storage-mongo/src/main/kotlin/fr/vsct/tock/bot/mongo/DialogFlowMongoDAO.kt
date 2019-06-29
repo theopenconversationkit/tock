@@ -122,6 +122,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
             botId: String,
             applicationIds: Set<Id<BotApplicationConfiguration>>
     ): ApplicationDialogFlowData {
+        logger.debug { "namespace: $namespace, botId: $botId, appIds: $applicationIds" }
         val states = findStates(namespace, botId)
         val transitions = findTransitions(namespace, botId)
         val stats =

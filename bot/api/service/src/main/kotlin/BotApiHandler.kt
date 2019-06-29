@@ -17,13 +17,19 @@
 package fr.vsct.tock.bot.api.service
 
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.google.common.cache.Cache
+import com.google.common.cache.CacheBuilder
+import fr.vsct.tock.bot.admin.bot.BotConfiguration
 import fr.vsct.tock.bot.api.model.BotResponse
 import fr.vsct.tock.bot.api.model.UserRequest
+import fr.vsct.tock.bot.api.model.configuration.ClientConfiguration
 import fr.vsct.tock.bot.api.model.message.bot.BotMessage
 import fr.vsct.tock.bot.api.model.message.bot.Card
 import fr.vsct.tock.bot.api.model.message.bot.CustomMessage
 import fr.vsct.tock.bot.api.model.message.bot.I18nText
 import fr.vsct.tock.bot.api.model.message.bot.Sentence
+import fr.vsct.tock.bot.api.model.websocket.RequestData
+import fr.vsct.tock.bot.api.model.websocket.ResponseData
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.media.MediaAction
 import fr.vsct.tock.bot.connector.media.MediaCard
@@ -38,15 +44,43 @@ import fr.vsct.tock.bot.engine.message.ActionWrappedMessage
 import fr.vsct.tock.bot.engine.message.MessagesList
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.translator.I18nContext
 import fr.vsct.tock.translator.Translator
 import mu.KotlinLogging
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit.SECONDS
 
-internal class BotApiHandler(val apiKey: String, webhookUrl: String?) {
+private val timeoutInSeconds: Long = longProperty("tock_api_timout_in_s", 10)
+
+private class WSHolder(
+    @Volatile
+    private var response: ResponseData? = null,
+    private val latch: CountDownLatch = CountDownLatch(1)) {
+
+    fun receive(response: ResponseData) {
+        this.response = response
+        latch.countDown()
+    }
+
+    fun wait(): ResponseData? {
+        latch.await(timeoutInSeconds, SECONDS)
+        return response
+    }
+}
+
+private val wsRepository: Cache<String, WSHolder> =
+    CacheBuilder.newBuilder().expireAfterWrite(timeoutInSeconds + 1, SECONDS).build()
+
+
+internal class BotApiHandler(
+    private val provider: BotApiDefinitionProvider,
+    configuration: BotConfiguration) {
 
     private val logger = KotlinLogging.logger {}
+
+    private val apiKey: String = configuration.apiKey
+    private val webhookUrl: String? = configuration.webhookUrl
 
     private val client = webhookUrl?.takeUnless { it.isBlank() }?.let {
         try {
@@ -57,42 +91,85 @@ internal class BotApiHandler(val apiKey: String, webhookUrl: String?) {
         }
     }
 
-    fun send(bus: BotBus) {
-        val request = bus.toUserRequest()
-        if (client != null) {
-
-            val response = client.send(request)
-            bus.handleResponse(request, response)
-
-        } else {
-            val pushHandler = WebSocketController.getPushHandler(apiKey)
-            if (pushHandler != null) {
-                pushHandler.invoke(mapper.writeValueAsString(request))
-                var response: BotResponse? = null
-                val latch = CountDownLatch(1)
-                WebSocketController.setReceiveHandler(apiKey) {
-                    response = mapper.readValue(it)
-                    latch.countDown()
+    init {
+        if (WebSocketController.websocketEnabled) {
+            logger.debug { "register $apiKey" }
+            WebSocketController.registerAuthorizedKey(apiKey)
+            WebSocketController.setReceiveHandler(apiKey) { content: String ->
+                val response: ResponseData? = mapper.readValue(content)
+                if (response != null) {
+                    val holder = wsRepository.getIfPresent(response.requestId)
+                    if (holder == null) {
+                        logger.warn { "unknown request ${response.requestId}" }
+                    }
+                    holder?.receive(response)
+                    if (response.botConfiguration != null) {
+                        provider.updateIfConfigurationChange(response.botConfiguration!!)
+                    }
+                } else {
+                    logger.warn { "null response: $content" }
                 }
-                latch.await(10, SECONDS)
-                bus.handleResponse(request, response)
-            } else {
-                error("no webhook set and websocket is not enabled")
             }
         }
     }
 
-    private fun BotBus.handleResponse(request: UserRequest, response: BotResponse?) {
-        val messages = response?.messages
-        if (messages.isNullOrEmpty()) {
-            error("no response for $request")
-        }
-        messages.subList(0, messages.size - 1)
-            .forEach { a ->
-                send(a)
+    fun configuration(): ClientConfiguration? =
+        client?.send(RequestData(configuration = true))?.botConfiguration
+            ?: sendWithWebSocket(RequestData(configuration = true))?.botConfiguration
+
+    fun send(bus: BotBus) {
+        val request = bus.toUserRequest()
+        if (client != null) {
+            val response = client.send(RequestData(request))
+            bus.handleResponse(request, response?.botResponse)
+        } else {
+            val response = sendWithWebSocket(RequestData(request))
+            if (response != null) {
+                bus.handleResponse(request, response.botResponse)
+            } else {
+                error("no webhook set and no response from websocket")
             }
-        messages.last().apply {
-            send(this, true)
+        }
+    }
+
+    private fun sendWithWebSocket(request: RequestData): ResponseData? {
+        val pushHandler = WebSocketController.getPushHandler(apiKey)
+        return if (pushHandler != null) {
+            val holder = WSHolder()
+            wsRepository.put(request.requestId, holder)
+            logger.debug { "send request ${request.requestId}" }
+            pushHandler.invoke(mapper.writeValueAsString(request))
+            holder.wait()
+        } else {
+            null
+        }
+    }
+
+    private fun BotBus.handleResponse(request: UserRequest, response: BotResponse?) {
+        if (response != null) {
+            val messages = response.messages
+            if (messages.isNullOrEmpty()) {
+                error("no response for $request")
+            }
+            messages.subList(0, messages.size - 1)
+                .forEach { a ->
+                    send(a)
+                }
+            messages.last().apply {
+                send(this, true)
+            }
+            //switch story if new story
+            if (response.storyId != request.storyId) {
+                botDefinition.stories.find { it.id == response.storyId }
+                    ?.also {
+                        switchStory(it)
+                    }
+
+            }
+            //set step
+            if (response.step != null) {
+                step = story.definition.steps.find { it.name == response.step }
+            }
         }
     }
 

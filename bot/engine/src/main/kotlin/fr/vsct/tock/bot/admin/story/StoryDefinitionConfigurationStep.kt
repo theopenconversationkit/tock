@@ -2,6 +2,7 @@ package fr.vsct.tock.bot.admin.story
 
 import fr.vsct.tock.bot.admin.answer.AnswerConfiguration
 import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
+import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType.builtin
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.SimpleStoryStep
@@ -60,6 +61,15 @@ data class StoryDefinitionConfigurationStep(
         override val children: Set<StoryStep<StoryHandlerDefinition>>
             get() = configuration.children.map { it.toStoryStep() }.toSet()
     }
+
+    constructor(step: StoryStep<*>) :
+        this(
+            step.name,
+            step.intent?.wrappedIntent(),
+            null,
+            emptyList(),
+            builtin
+        )
 
     fun toStoryStep(): StoryStep<StoryHandlerDefinition> = Step(this)
 

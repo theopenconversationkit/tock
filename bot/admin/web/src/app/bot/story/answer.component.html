@@ -1,6 +1,6 @@
 <div *ngIf="answer && answer.currentAnswer()" class="answer-container">
-  <div *ngIf="!fullDisplay">
-    <span class="simple">{{answer.simpleTextView()}}</span>
+  <div *ngIf="!fullDisplay" class="simple-container">
+    <span class="simple">{{answer.simpleTextView(wide)}}</span>
     <button *ngIf="editable" mat-icon-button [color]="answer.currentAnswer().isEmpty() ? 'basic' : 'primary'" matTooltip="Edit {{answerLabel}}" (click)="$event.stopPropagation();editAnswer()">
       <mat-icon>question_answer</mat-icon>
     </button>

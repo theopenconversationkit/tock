@@ -16,41 +16,62 @@
 
 package fr.vsct.tock.bot.engine
 
+import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.booleanProperty
+import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.provide
+import fr.vsct.tock.shared.vertx.vertx
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArraySet
 
+/**
+ * Internal object used to manage websocket events.
+ */
 object WebSocketController {
 
     private class Handler(
         var pushHandler: ((String) -> Unit)? = null,
         var receiveHandler: ((String) -> Unit)? = null)
 
+    /**
+     * Is websocket enabled ?
+     */
     val websocketEnabled: Boolean = booleanProperty("tock_websocket_enabled", false)
 
     private val authorizedKeys: MutableSet<String> = CopyOnWriteArraySet()
+
+    private val executor: Executor = injector.provide()
 
     fun registerAuthorizedKey(key: String) {
         authorizedKeys.add(key)
     }
 
-    fun isAuthorizedKey(key: String?): Boolean = key != null && authorizedKeys.contains(key)
+    internal fun isAuthorizedKey(key: String?): Boolean = key != null && authorizedKeys.contains(key)
 
     private val handlers: MutableMap<String, Handler> = ConcurrentHashMap()
 
-    fun setPushHandler(id: String, handler: ((String) -> Unit)) {
-        handlers.getOrPut(id, { Handler() }).pushHandler = handler
+    internal fun setPushHandler(id: String, handler: ((String) -> Unit)) {
+        val context = vertx.orCreateContext
+        handlers.getOrPut(id, { Handler() }).pushHandler = { content ->
+            context.runOnContext {
+                handler(content)
+            }
+        }
     }
 
     fun getPushHandler(id: String): ((String) -> Unit)? = handlers[id]?.pushHandler
 
     fun setReceiveHandler(id: String, handler: ((String) -> Unit)) {
-        handlers.getOrPut(id, { Handler() }).receiveHandler = handler
+        handlers.getOrPut(id, { Handler() }).receiveHandler = {
+            executor.executeBlocking {
+                handler(it)
+            }
+        }
     }
 
     fun getReceiveHandler(id: String): ((String) -> Unit)? = handlers[id]?.receiveHandler
 
-    fun removeHandler(id: String) {
-        handlers.remove(id)
+    internal fun removePushHandler(id: String) {
+        handlers[id]?.pushHandler = null
     }
 }

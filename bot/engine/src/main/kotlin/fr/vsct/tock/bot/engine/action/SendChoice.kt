@@ -116,7 +116,31 @@ class SendChoice(
              */
             parameters: Map<String, String> = emptyMap()
         ): String {
-            return encodeChoiceId(intent, step, parameters, bus.step, bus.intent?.wrappedIntent())
+            return encodeChoiceId(intent, step?.name, parameters, bus.stepName, bus.intent?.wrappedIntent())
+        }
+
+        /**
+         * Encodes a choice id.
+         */
+        fun encodeChoiceId(
+            /**
+             * The bus.
+             */
+            bus: Bus<*>,
+            /**
+             * The target intent.
+             */
+            intent: IntentAware,
+            /**
+             * The target step.
+             */
+            step: String? = null,
+            /**
+             * The custom parameters.
+             */
+            parameters: Map<String, String> = emptyMap()
+        ): String {
+            return encodeChoiceId(intent, step, parameters, bus.stepName, bus.intent?.wrappedIntent())
         }
 
         /**
@@ -155,7 +179,7 @@ class SendChoice(
         /**
          * Encodes a choice id.
          */
-        private fun encodeChoiceId(
+        fun encodeChoiceId(
             /**
              * The target intent.
              */
@@ -163,19 +187,19 @@ class SendChoice(
             /**
              * The target step.
              */
-            step: String? = null,
+            step: String?,
             /**
              * The custom parameters.
              */
-            parameters: Map<String, String> = emptyMap(),
+            parameters: Map<String, String>,
             /**
              * The current step of the bus.
              */
-            busStep: String? = null,
+            busStep: String?,
             /**
              * The current intent of the bus.
              */
-            currentIntent: Intent? = null
+            currentIntent: Intent?
         ): String {
             val currentStep = if (step == null) busStep else step
             return StringBuilder().apply {

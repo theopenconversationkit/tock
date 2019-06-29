@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.admin.model
 
 import fr.vsct.tock.bot.admin.answer.AnswerConfiguration
 import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
+import fr.vsct.tock.bot.admin.answer.BuiltInAnswerConfiguration
 import fr.vsct.tock.bot.admin.answer.ScriptAnswerConfiguration
 import fr.vsct.tock.bot.admin.answer.SimpleAnswerConfiguration
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration
@@ -30,6 +31,7 @@ internal fun List<AnswerConfiguration>.mapAnswers(): List<BotAnswerConfiguration
         when (it) {
             is SimpleAnswerConfiguration -> BotSimpleAnswerConfiguration(it)
             is ScriptAnswerConfiguration -> BotScriptAnswerConfiguration(it)
+            is BuiltInAnswerConfiguration -> BotBuiltinAnswerConfiguration(it)
             else -> error("unsupported conf $it")
         }
     }

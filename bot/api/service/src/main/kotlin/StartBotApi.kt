@@ -37,7 +37,10 @@ fun main() {
     BotRepository.installBots(emptyList())
     dao.listenBotChanges {
         logger.info("reload bot configurations")
-        dao.getBotConfigurations().forEach { BotRepository.registerBotProvider(BotApiDefinitionProvider(it)) }
+        dao.getBotConfigurations().forEach {
+            val provider = BotApiDefinitionProvider(it)
+            BotRepository.registerBotProvider(provider)
+        }
         BotRepository.checkBotConfigurations()
     }
 }

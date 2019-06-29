@@ -56,6 +56,8 @@ internal class StoryDefinitionConfiguration_Deserializer :
             var _description_set : Boolean = false
             var _userSentence_: String? = null
             var _userSentence_set : Boolean = false
+            var _configurationName_: String? = null
+            var _configurationName_set : Boolean = false
             var __id_: Id<StoryDefinitionConfiguration>? = null
             var __id_set : Boolean = false
             var _token_ : JsonToken? = currentToken
@@ -133,6 +135,11 @@ internal class StoryDefinitionConfiguration_Deserializer :
                              else p.text;
                             _userSentence_set = true
                             }
+                    "configurationName" -> {
+                            _configurationName_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _configurationName_set = true
+                            }
                     "_id" -> {
                             __id_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(__id__reference);
@@ -148,13 +155,15 @@ internal class StoryDefinitionConfiguration_Deserializer :
                         } 
             return if(_storyId_set && _botId_set && _intent_set && _currentType_set && _answers_set
                     && _version_set && _namespace_set && _mandatoryEntities_set && _steps_set &&
-                    _name_set && _category_set && _description_set && _userSentence_set && __id_set)
+                    _name_set && _category_set && _description_set && _userSentence_set &&
+                    _configurationName_set && __id_set)
                     StoryDefinitionConfiguration(storyId = _storyId_!!, botId = _botId_!!, intent =
                             _intent_!!, currentType = _currentType_!!, answers = _answers_!!,
                             version = _version_!!, namespace = _namespace_!!, mandatoryEntities =
                             _mandatoryEntities_!!, steps = _steps_!!, name = _name_!!, category =
                             _category_!!, description = _description_!!, userSentence =
-                            _userSentence_!!, _id = __id_!!)
+                            _userSentence_!!, configurationName = _configurationName_, _id =
+                            __id_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_storyId_set)
@@ -183,6 +192,8 @@ internal class StoryDefinitionConfiguration_Deserializer :
                     map[parameters.getValue("description")] = _description_
                     if(_userSentence_set)
                     map[parameters.getValue("userSentence")] = _userSentence_
+                    if(_configurationName_set)
+                    map[parameters.getValue("configurationName")] = _configurationName_
                     if(__id_set)
                     map[parameters.getValue("_id")] = __id_ 
                     primaryConstructor.callBy(map) 
@@ -209,7 +220,8 @@ internal class StoryDefinitionConfiguration_Deserializer :
                 primaryConstructor.findParameterByName("name")!!, "category" to
                 primaryConstructor.findParameterByName("category")!!, "description" to
                 primaryConstructor.findParameterByName("description")!!, "userSentence" to
-                primaryConstructor.findParameterByName("userSentence")!!, "_id" to
+                primaryConstructor.findParameterByName("userSentence")!!, "configurationName" to
+                primaryConstructor.findParameterByName("configurationName")!!, "_id" to
                 primaryConstructor.findParameterByName("_id")!!) }
 
         private val _answers__reference: TypeReference<List<AnswerConfiguration>> = object :

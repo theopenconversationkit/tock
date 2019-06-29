@@ -20,9 +20,16 @@ import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.IntentAware
 
 class ClientStoryDefinition(
-    val mainIntent: Intent,
+    val mainIntent: IntentAware,
+    val otherStarterIntents: Set<IntentAware> = emptySet(),
+    val secondaryIntents: Set<IntentAware> = emptySet(),
+    val steps: List<ClientStep> = emptyList(),
+    val storyId: String = mainIntent.wrappedIntent().name,
     val handler: ClientStoryHandler
 ) : IntentAware {
 
-    override fun wrappedIntent(): Intent = mainIntent
+    override fun wrappedIntent(): Intent = mainIntent.wrappedIntent()
+
+    fun isStarterIntent(intent: Intent): Boolean =
+        mainIntent.wrap(intent) || otherStarterIntents.any { it.wrap(intent) }
 }

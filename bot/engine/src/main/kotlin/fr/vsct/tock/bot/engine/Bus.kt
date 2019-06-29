@@ -19,9 +19,6 @@ package fr.vsct.tock.bot.engine
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.IntentAware
-import fr.vsct.tock.bot.definition.StoryHandlerDefinition
-import fr.vsct.tock.bot.definition.StoryStep
-import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.PlayerId
 
 /**
@@ -48,6 +45,11 @@ interface Bus<T : Bus<T>> : I18nTranslator {
     val intent: IntentAware?
 
     /**
+     * The name of the step if any.
+     */
+    val stepName: String?
+
+    /**
      * The current answer index of the bot for this action.
      */
     val currentAnswerIndex: Int
@@ -56,11 +58,6 @@ interface Bus<T : Bus<T>> : I18nTranslator {
      * Is it a test mode ?
      */
     val test: Boolean
-
-    /**
-     * The current [StoryStep] of the [Story].
-     */
-    var step: StoryStep<out StoryHandlerDefinition>?
 
     /**
      * Get the default delay between two answers.

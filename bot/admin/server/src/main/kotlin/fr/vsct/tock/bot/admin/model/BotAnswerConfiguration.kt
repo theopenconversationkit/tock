@@ -32,7 +32,9 @@ import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
         JsonSubTypes.Type(value = BotSimpleAnswerConfiguration::class, name = "0"),
         JsonSubTypes.Type(value = BotSimpleAnswerConfiguration::class, name = "simple"),
         JsonSubTypes.Type(value = BotScriptAnswerConfiguration::class, name = "2"),
-        JsonSubTypes.Type(value = BotScriptAnswerConfiguration::class, name = "script")
+        JsonSubTypes.Type(value = BotScriptAnswerConfiguration::class, name = "script"),
+        JsonSubTypes.Type(value = BotBuiltinAnswerConfiguration::class, name = "3"),
+        JsonSubTypes.Type(value = BotBuiltinAnswerConfiguration::class, name = "builtin")
 )
 abstract class BotAnswerConfiguration(val answerType: AnswerConfigurationType) {
 

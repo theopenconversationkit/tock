@@ -121,11 +121,13 @@ interface BotBus : Bus<BotBus> {
      */
     var nextUserActionState: NextUserActionState?
 
-    override var step: StoryStep<out StoryHandlerDefinition>?
+    var step: StoryStep<out StoryHandlerDefinition>?
         get() = story.currentStep
         set(step) {
             story.step = step?.name
         }
+
+    override val stepName: String? get() = step?.name
 
     /**
      * The text sent by the user if any.

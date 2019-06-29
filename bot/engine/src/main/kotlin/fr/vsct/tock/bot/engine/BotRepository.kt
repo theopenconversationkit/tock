@@ -18,6 +18,8 @@ package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration
+import fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorProvider
@@ -25,6 +27,7 @@ import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotAnswerInterceptor
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.BotProvider
+import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryHandlerListener
@@ -46,6 +49,7 @@ import fr.vsct.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
+import org.litote.kmongo.Id
 import java.util.ServiceLoader
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArraySet
@@ -60,6 +64,7 @@ object BotRepository {
     private val logger = KotlinLogging.logger {}
 
     private val botConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
+    private val storyDefinitionConfigurationDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
     internal val botProviders: MutableSet<BotProvider> = mutableSetOf()
     internal val storyHandlerListeners: MutableList<StoryHandlerListener> = mutableListOf()
     private val nlpListeners: MutableList<NlpListener> = mutableListOf(BuiltInKeywordListener)
@@ -170,6 +175,23 @@ object BotRepository {
     }
 
     /**
+     * Register built-in story definitions.
+     */
+    fun registerBuiltInStoryDefinitions(botProvider: BotProvider) {
+        val botDefinition = botProvider.botDefinition()
+        val configurationName = botProvider.configurationName
+        executor.executeBlocking {
+            storyDefinitionConfigurationDAO.createBuiltInStoriesIfNotExist(
+                botDefinition.stories
+                    .filter { it.mainIntent() != Intent.unknown }
+                    .map { storyDefinition ->
+                        StoryDefinitionConfiguration(botDefinition, storyDefinition, configurationName)
+                    }
+            )
+        }
+    }
+
+    /**
      * Registers a new [StoryHandlerListener].
      */
     fun registerStoryHandlerListener(listener: StoryHandlerListener) {
@@ -225,6 +247,11 @@ object BotRepository {
                 }
             }
 
+        //persist builtin stories
+        botProviders.forEach {
+            registerBuiltInStoryDefinitions(it)
+        }
+
         //load configurations
         try {
             checkBotConfigurations(true)
@@ -269,31 +296,45 @@ object BotRepository {
     @Synchronized
     fun checkBotConfigurations(startup: Boolean = false) {
         logger.debug { "check configurations" }
-        //
+        //the application definition cache
         val applicationsCache = mutableListOf<ApplicationDefinition>()
+        //the existing confs mapped by path
+        val existingConfsByPath: Map<String?, BotApplicationConfiguration> = connectorControllerMap.keys
+            .groupBy { it.path }.mapValues { it.value.first() }
+        //the existing confs mapped by id
+        val existingConfsById: Map<Id<BotApplicationConfiguration>, BotApplicationConfiguration> = connectorControllerMap.keys
+            .groupBy { it._id }.mapValues { it.value.first() }
+        //path -> botAppConf
+        val confs: Map<Id<BotApplicationConfiguration>, BotApplicationConfiguration> = botConfigurationDAO.getConfigurations()
+            .groupBy { it._id }.mapValues { it.value.first() }
+        //providers
+        val providers: Map<String, List<BotProvider>> = botProviders.groupBy { it.botId() }
 
-        //clone conf list as we may update connectorControllerMap
-        val existingConfs = ArrayList(connectorControllerMap.keys)
-        val confs = botConfigurationDAO.getConfigurations()
+        confs.values.forEach { c ->
+            //gets the provider
+            val provider = providers[c.botId]?.find { botProvider ->
+                botProvider.configurationName?.takeUnless { it == c.name } == null
+            }
 
-        confs.forEach { c ->
-            if (existingConfs.none { c.equalsWithoutId(it) }) {
-                val botDefinition =
-                    botProviders
-                        .find { botProvider ->
-                            botProvider.botId() == c.botId
-                                && botProvider.configurationName().let { it == null || it == c.name }
-                        }
-                        ?.botDefinition()
-                if (botDefinition?.namespace == c.namespace) {
+            //is there a configuration change ?
+            if (provider != null &&
+                (provider.configurationUpdated
+                    || existingConfsByPath[c.path]?.takeIf { c.equalsWithoutId(it) } == null)) {
+                val botDefinition = provider.botDefinition()
+                if (botDefinition.namespace == c.namespace) {
                     logger.debug { "refresh configuration $c" }
-                    val oldConfiguration = existingConfs.find { it._id == c._id }
+                    val oldConfiguration = existingConfsById[c._id]
+                    val oldConfigurationController = oldConfiguration?.let { connectorControllerMap[it] }
                     val connector = findConnectorProvider(c.connectorType)?.connector(ConnectorConfiguration(c))
                     if (connector != null) {
+                        //install new conf
                         createBot(botDefinition, connector, c, applicationsCache)
-
-                        if (oldConfiguration != null) {
-                            removeBot(oldConfiguration)
+                        if (oldConfigurationController != null) {
+                            //remove old conf
+                            removeBot(oldConfigurationController)
+                            if (oldConfiguration != c) {
+                                connectorControllerMap.remove(oldConfiguration)
+                            }
                         }
                     } else {
                         logger.warn { "unknown connector ${c.connectorType}" }
@@ -304,16 +345,21 @@ object BotRepository {
             }
         }
 
-        //remove old confs
-        connectorControllerMap.keys.forEach { conf ->
-            if (confs.none { it._id == conf._id }) {
+        //remove deleted confs
+        existingConfsById.values.forEach { conf ->
+            if (!confs.containsKey(conf._id)) {
                 removeBot(conf)
             }
         }
+
+        //updates of all bot providers are now ok
+        botProviders.forEach { it.configurationUpdated = false }
+
         if (!startup) {
             //register new confs
             verticle.configure()
         }
+        logger.debug { "end check configurations" }
     }
 
     private fun createBot(
@@ -349,8 +395,12 @@ object BotRepository {
     private fun removeBot(conf: BotApplicationConfiguration) {
         logger.debug { "uninstall $conf" }
         val controller = connectorControllerMap.remove(conf)
+        removeBot(controller)
+    }
+
+    private fun removeBot(controller: ConnectorController?) {
         if (controller != null) {
-            logger.debug { "unregister $conf" }
+            logger.debug { "unregister $controller" }
             controller.unregisterServices()
             if (controller is TockConnectorController) {
                 StoryConfigurationMonitor.unmonitor(controller.bot)

@@ -33,6 +33,7 @@ export class SearchStoryComponent implements OnInit {
 
   filter: string = "";
   category: string = "";
+  onlyConfigured: boolean = true;
 
   constructor(private nlp: NlpService,
               private state: StateService,
@@ -48,7 +49,7 @@ export class SearchStoryComponent implements OnInit {
         0,
         10000
       )).subscribe(s => {
-      this.stories = s;
+      this.stories = s.filter(story => !story.isBuiltIn());
       this.loadedStories = s;
       s.forEach(story => {
         story.hideDetails = true;
@@ -65,8 +66,8 @@ export class SearchStoryComponent implements OnInit {
     this.loadedStories = this.loadedStories.filter(s => s._id !== storyDefinitionId);
   }
 
-  search(story?:StoryDefinitionConfiguration) {
-    if(story && this.categories.indexOf(story.category) === -1) {
+  search(story?: StoryDefinitionConfiguration) {
+    if (story && this.categories.indexOf(story.category) === -1) {
       this.categories.push(story.category);
       this.categories.sort();
     }
@@ -74,6 +75,7 @@ export class SearchStoryComponent implements OnInit {
       (s.name.toLowerCase().indexOf(this.filter.toLowerCase()) !== -1
         || s.intent.name.toLowerCase().indexOf(this.filter.toLowerCase()) !== -1)
       && (this.category.length === 0 || this.category === s.category)
+      && (!this.onlyConfigured || !s.isBuiltIn())
     );
   }
 }

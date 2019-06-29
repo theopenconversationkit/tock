@@ -27,6 +27,7 @@
     <mat-form-field class="search-input">
       <input matInput placeholder="Search Stories" [(ngModel)]="filter" (keyup)="search()">
     </mat-form-field>
+    <mat-slide-toggle [(ngModel)]="onlyConfigured" (change)="search()">Only Configured Stories</mat-slide-toggle>
   </mat-card-content>
 </mat-card>
 <mat-accordion *ngIf="stories">

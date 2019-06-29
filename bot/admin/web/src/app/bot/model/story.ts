@@ -89,6 +89,10 @@ export abstract class AnswerContainer {
     return this.currentType === AnswerConfigurationType.script;
   }
 
+  isBuiltIn() : boolean {
+    return this.currentType === AnswerConfigurationType.builtin;
+  }
+
   simpleAnswer(): SimpleAnswerConfiguration {
     return this.findAnswer(AnswerConfigurationType.simple) as SimpleAnswerConfiguration;
   }
@@ -105,8 +109,8 @@ export abstract class AnswerContainer {
     return this.answers.find(c => c.answerType === type)
   }
 
-  simpleTextView(): string {
-    return this.currentAnswer().simpleTextView();
+  simpleTextView(wide:boolean): string {
+    return this.currentAnswer().simpleTextView(wide);
   }
 
 }
@@ -316,7 +320,7 @@ export abstract class AnswerConfiguration {
   protected constructor(public answerType: AnswerConfigurationType) {
   }
 
-  abstract simpleTextView(): string
+  abstract simpleTextView(wide:boolean): string
 
   invalidMessage(): string {
     return null;
@@ -340,6 +344,8 @@ export abstract class AnswerConfiguration {
         return SimpleAnswerConfiguration.fromJSON(json);
       case AnswerConfigurationType.script :
         return ScriptAnswerConfiguration.fromJSON(json);
+      case AnswerConfigurationType.builtin :
+        return BuiltinAnswerConfiguration.fromJSON(json);
       default:
         throw "unknown type : " + json.answerType
     }
@@ -360,10 +366,10 @@ export class SimpleAnswerConfiguration extends AnswerConfiguration {
     return this.answers.length === 0;
   }
 
-  simpleTextView(): string {
+  simpleTextView(wide:boolean): string {
     const r = this.answers && this.answers.length > 0 ? this.answers[0].label.defaultLocalizedLabel().label : "[no text yet]";
-
-    return r.substring(0, Math.min(r.length, 25)) + (r.length > 25 || this.answers.length > 1 ? "..." : "");
+    const limit = wide ? 80 : 25;
+    return r.substring(0, Math.min(r.length, limit)) + (r.length > limit || this.answers.length > 1 ? "..." : "");
   }
 
   invalidMessage(): string {
@@ -566,7 +572,7 @@ export class ScriptAnswerConfiguration extends AnswerConfiguration {
     }
   }
 
-  simpleTextView(): string {
+  simpleTextView(wide:boolean): string {
     return "[Script]";
   }
 
@@ -605,5 +611,38 @@ export class ScriptAnswerVersionedConfiguration {
 
   static fromJSONArray(json?: Array<any>): ScriptAnswerVersionedConfiguration[] {
     return json ? json.map(ScriptAnswerVersionedConfiguration.fromJSON) : [];
+  }
+}
+
+export class BuiltinAnswerConfiguration extends AnswerConfiguration {
+
+  constructor(
+    public storyHandlerClassName?: string) {
+    super(AnswerConfigurationType.builtin)
+  }
+
+  invalidMessage(): string {
+    return null;
+  }
+
+  simpleTextView(wide:boolean): string {
+    return "[Built in]";
+  }
+
+  isEmpty(): boolean {
+    return false;
+  }
+
+  clone(): AnswerConfiguration {
+    return new BuiltinAnswerConfiguration(
+      this.storyHandlerClassName
+    );
+  }
+
+  static fromJSON(json: any): BuiltinAnswerConfiguration {
+    const value = Object.create(BuiltinAnswerConfiguration.prototype);
+    const result = Object.assign(value, json, {
+    });
+    return result;
   }
 }

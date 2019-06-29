@@ -19,25 +19,37 @@ package fr.vsct.tock.bot.api.webhook
 import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.api.client.ClientBotDefinition
 import fr.vsct.tock.bot.api.client.TockClientBus
-import fr.vsct.tock.bot.api.model.BotResponse
-import fr.vsct.tock.bot.api.model.ResponseContext
-import fr.vsct.tock.bot.api.model.UserRequest
+import fr.vsct.tock.bot.api.client.toConfiguration
+import fr.vsct.tock.bot.api.model.websocket.RequestData
+import fr.vsct.tock.bot.api.model.websocket.ResponseData
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.vertx.WebVerticle
 import io.vertx.core.http.HttpMethod
 import io.vertx.ext.web.RoutingContext
 
-class WebhookVerticle(val botDefinition: ClientBotDefinition) : WebVerticle() {
+internal class WebhookVerticle(private val botDefinition: ClientBotDefinition) : WebVerticle() {
 
     override fun configure() {
         blocking(HttpMethod.POST, "/webhook") { context ->
-            val request: UserRequest = mapper.readValue(context.bodyAsString)
-            val bus = TockClientBus(botDefinition, request) { messages ->
-                context.response().end(mapper.writeValueAsString(
-                    BotResponse(messages, ResponseContext(request.context.requestId))
-                ))
+            val content = context.bodyAsString
+            val request: RequestData = mapper.readValue(content)
+            if (request.botRequest != null) {
+                val bus = TockClientBus(botDefinition, request) { response ->
+                    context.response().end(mapper.writeValueAsString(ResponseData(request.requestId, response)))
+                }
+                bus.handle()
+            } else if (request.configuration != null) {
+                context.response().end(
+                    mapper.writeValueAsString(
+                        ResponseData(
+                            request.requestId,
+                            botConfiguration = botDefinition.toConfiguration()
+                        )
+                    )
+                )
+            } else {
+                error("unknown request: $content")
             }
-            bus.handle()
         }
 
     }

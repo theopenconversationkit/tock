@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.model
+package fr.vsct.tock.bot.api.model.configuration
 
-import fr.vsct.tock.bot.api.model.message.bot.BotMessage
-
-data class BotResponse(
-    val messages: List<BotMessage> = emptyList(),
-    val storyId: String,
-    val step: String?,
-    val context: ResponseContext
-)
+data class ClientConfiguration(val stories:List<StoryConfiguration>)

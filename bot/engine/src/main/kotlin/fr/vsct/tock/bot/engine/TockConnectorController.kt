@@ -232,4 +232,6 @@ internal class TockConnectorController constructor(
         connector.send(TypingOnEvent(action.playerId, action.applicationId), data.callback)
     }
 
+    override fun toString(): String = configuration.toString()
+
 }

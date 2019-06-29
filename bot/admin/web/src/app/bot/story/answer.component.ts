@@ -38,6 +38,9 @@ export class AnswerComponent implements OnInit {
   @Input()
   submit: AnswerController = new AnswerController();
 
+  @Input()
+  wide: boolean = false;
+
   constructor(private state: StateService,
               private bot: BotService,
               private dialog: MatDialog,

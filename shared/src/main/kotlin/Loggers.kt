@@ -37,3 +37,8 @@ fun KLogger.info(throwable: Throwable) = info(throwable.message ?: "", throwable
  * Logs a [Throwable].
  */
 fun KLogger.warn(throwable: Throwable) = warn(throwable.message ?: "", throwable)
+
+/**
+ * Logs a [Throwable].
+ */
+fun KLogger.trace(throwable: Throwable) = trace(throwable.message ?: "", throwable)

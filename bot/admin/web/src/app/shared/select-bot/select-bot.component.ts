@@ -74,7 +74,7 @@ export class SelectBotComponent implements OnInit {
             }
             if (this.configurationId) {
               if (!containsCurrentSelection) {
-                this.changeConf(conf.find(c => c._id === this.configurationId), retainedConfs);
+                this.changeConf(conf.find(c => c._id === this.configurationId), retainedConfs, this.allowNoConfigurationSelection);
               }
             } else {
               this.currentBotName = 'None';
@@ -97,7 +97,7 @@ export class SelectBotComponent implements OnInit {
       });
   }
 
-  private changeConf(conf: BotApplicationConfiguration, configurations: BotApplicationConfiguration[]) {
+  private changeConf(conf: BotApplicationConfiguration, configurations: BotApplicationConfiguration[], noConnectorSelection: boolean) {
     if (conf) {
       this.currentBotName = this.getName(conf);
       this.currentConnectorType = conf.ownConnectorType();
@@ -106,7 +106,7 @@ export class SelectBotComponent implements OnInit {
         .map(c => c.ownConnectorType());
       this.configurationId = conf._id;
       this.configurations = configurations;
-      this.selectionChange.emit(new SelectBotEvent(conf.name, false, conf._id));
+      this.selectionChange.emit(new SelectBotEvent(conf.name, noConnectorSelection, noConnectorSelection ? null : conf._id));
       this.configurationIdChange.emit(conf._id);
     } else {
       this.currentBotName = 'None';
@@ -116,7 +116,7 @@ export class SelectBotComponent implements OnInit {
   }
 
   changeBotName(botName: string) {
-    this.changeConf(this.configurations.find(c => this.getName(c) === botName), this.configurations)
+    this.changeConf(this.configurations.find(c => this.getName(c) === botName), this.configurations, this.allowNoConfigurationSelection)
   }
 
   changeConnectorType(connectorType: ConnectorType) {
@@ -124,7 +124,7 @@ export class SelectBotComponent implements OnInit {
       c => this.getName(c) === this.currentBotName
         && c.ownConnectorType().id === connectorType.id);
     if (conf) {
-      this.changeConf(conf, this.configurations);
+      this.changeConf(conf, this.configurations, false);
     } else {
       this.selectionChange.emit(new SelectBotEvent(this.currentBotName, true));
       this.configurationIdChange.emit(null);

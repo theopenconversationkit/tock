@@ -168,7 +168,7 @@ internal class BotVerticle(
                     context.textMessageHandler { json ->
                         WebSocketController.getReceiveHandler(key)?.invoke(json)
                     }.closeHandler {
-                        WebSocketController.removeHandler(key)
+                        WebSocketController.removePushHandler(key)
                     }
                 } else {
                     logger.warn { "unknown key: $key" }

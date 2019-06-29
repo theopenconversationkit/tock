@@ -68,7 +68,7 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
     }
 
     override fun listenBotChanges(listener: () -> Unit) {
-        asyncCol.watch { listener() }
+        asyncBotCol.watch { listener() }
     }
 
     override fun listenChanges(listener: () -> Unit) {

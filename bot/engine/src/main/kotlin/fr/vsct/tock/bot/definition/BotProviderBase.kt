@@ -25,7 +25,7 @@ open class BotProviderBase(val botDefinition: BotDefinition) : BotProvider {
 
     override fun equals(other: Any?): Boolean =
         botId() == (other as? BotProvider)?.botId()
-            && configurationName() == (other as? BotProvider)?.configurationName()
+            && configurationName == (other as? BotProvider)?.configurationName
 
     override fun hashCode(): Int = botId().hashCode()
 }

@@ -17,15 +17,48 @@
 package fr.vsct.tock.bot.api.service
 
 import fr.vsct.tock.bot.admin.bot.BotConfiguration
-import fr.vsct.tock.bot.definition.BotProviderBase
-import fr.vsct.tock.bot.engine.WebSocketController
+import fr.vsct.tock.bot.api.model.configuration.ClientConfiguration
+import fr.vsct.tock.bot.definition.BotDefinition
+import fr.vsct.tock.bot.definition.BotProvider
+import fr.vsct.tock.bot.engine.BotRepository
+import mu.KotlinLogging
 
-internal class BotApiDefinitionProvider(val configuration: BotConfiguration)
-    : BotProviderBase(BotApiDefinition(configuration)) {
+internal class BotApiDefinitionProvider(private val configuration: BotConfiguration) : BotProvider {
+
+    private val logger = KotlinLogging.logger {}
+
+    @Volatile
+    private var lastConfiguration: ClientConfiguration? = null
+    @Volatile
+    private var bot: BotDefinition
+    private val handler: BotApiHandler = BotApiHandler(this, configuration)
 
     init {
-        WebSocketController.registerAuthorizedKey(configuration.apiKey)
+        lastConfiguration = handler.configuration()
+        bot = BotApiDefinition(configuration, lastConfiguration, handler)
     }
 
-    override fun configurationName(): String = configuration.name
+    fun updateIfConfigurationChange(conf: ClientConfiguration) {
+        logger.debug { "check conf $conf" }
+        if (conf != lastConfiguration) {
+            this.lastConfiguration = conf
+            bot = BotApiDefinition(configuration, conf, handler)
+            configurationUpdated = true
+            BotRepository.registerBuiltInStoryDefinitions(this)
+            BotRepository.checkBotConfigurations()
+        }
+    }
+
+    override fun botDefinition(): BotDefinition = bot
+
+    override fun equals(other: Any?): Boolean =
+        botId() == (other as? BotProvider)?.botId()
+            && configurationName == (other as? BotProvider)?.configurationName
+
+    override fun hashCode(): Int = botId().hashCode()
+
+    override val configurationName: String = configuration.name
+
+    @Volatile
+    override var configurationUpdated: Boolean = true
 }

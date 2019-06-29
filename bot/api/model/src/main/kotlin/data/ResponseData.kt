@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.model
+package fr.vsct.tock.bot.api.model.websocket
 
-import fr.vsct.tock.bot.api.model.message.bot.BotMessage
+import fr.vsct.tock.bot.api.model.BotResponse
+import fr.vsct.tock.bot.api.model.configuration.ClientConfiguration
 
-data class BotResponse(
-    val messages: List<BotMessage> = emptyList(),
-    val storyId: String,
-    val step: String?,
-    val context: ResponseContext
+data class ResponseData(
+    val requestId:String,
+    val botResponse:BotResponse? = null,
+    val botConfiguration: ClientConfiguration? = null
 )

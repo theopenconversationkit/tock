@@ -1,27 +1,30 @@
-<mat-expansion-panel *ngIf="story" [expanded]="storyNode || !story._id" [hideToggle]="storyNode || !story._id" #expansionPanel (opened)="story.hideDetails = false">
+<mat-expansion-panel *ngIf="story" [expanded]="storyNode || !story._id" [hideToggle]="storyNode || !story._id"
+                     #expansionPanel (opened)="story.hideDetails = false">
   <mat-expansion-panel-header>
     <mat-panel-title class="panel-title">
+      <mat-icon *ngIf="!storyNode && story.isBuiltIn()" class="story-type">build</mat-icon>
+      <mat-icon *ngIf="!storyNode && story.isSimpleAnswer()" class="story-type">message</mat-icon>
+      <mat-icon *ngIf="!storyNode && story.isScriptAnswer()" class="story-type">code</mat-icon>
       <span *ngIf="!storyNode" matTooltip="Story name" class="answer-title">{{story.name}}</span>
-      <span *ngIf="storyNode" matTooltip="Story name" [matBadge]="storyNode.displayCount()" [matBadgeHidden]="!displayCount"
+      <span *ngIf="storyNode" matTooltip="Story name" [matBadge]="storyNode.displayCount()"
+            [matBadgeHidden]="!displayCount"
             matBadgeOverlap="false" class="answer-title">
         <div class="answer-title-right-panel">{{story.name}}</div></span>
     </mat-panel-title>
     <mat-panel-description>
-      <tock-answer *ngIf="!storyNode && story._id" class="answer" [answer]="story" [fullDisplay]="false"></tock-answer>
-      <button mat-icon-button color="primary" matTooltip="Edit" (click)="$event.stopPropagation();editStory()">
+      <tock-answer *ngIf="!storyNode && story._id && !story.isBuiltIn()" class="answer"
+                   [answer]="story" [fullDisplay]="false" [wide]="true"></tock-answer>
+      <button *ngIf="!story.isBuiltIn()" mat-icon-button color="primary" matTooltip="Edit" (click)="$event.stopPropagation();editStory()">
         <mat-icon>edit</mat-icon>
       </button>
-      <!--button *ngIf="!fullDisplay" mat-icon-button color="primary" matTooltip="View Story Details"
-              (click)="$event.stopPropagation();selectStory()">
-        <mat-icon>zoom_in</mat-icon>
-      </button-->
-      <button mat-icon-button matTooltip="Edit Mandatory Entities" (click)="$event.stopPropagation();editEntities()">
+      <button *ngIf="!story.isBuiltIn()" mat-icon-button matTooltip="Edit Mandatory Entities" (click)="$event.stopPropagation();editEntities()">
         <mat-icon>extension</mat-icon>
       </button>
-      <button mat-icon-button matTooltip="Edit Actions" (click)="$event.stopPropagation();editSteps()">
+      <button *ngIf="!story.isBuiltIn()" mat-icon-button matTooltip="Edit Actions" (click)="$event.stopPropagation();editSteps()">
         <mat-icon>dns</mat-icon>
       </button>
-      <button *ngIf="story._id" mat-icon-button color="warn" matTooltip="Delete" (click)="$event.stopPropagation();deleteStory()">
+      <button *ngIf="story._id" mat-icon-button color="warn" matTooltip="Delete"
+              (click)="$event.stopPropagation();deleteStory()">
         <mat-icon>delete</mat-icon>
       </button>
     </mat-panel-description>
@@ -41,7 +44,7 @@
     </ul>
   </div>
 
-  <div *ngIf="!story.hideDetails">
+  <div *ngIf="!story.hideDetails && !story.isBuiltIn()">
     <div class="fullDisplayDivider" *ngIf="fullDisplay"></div>
     <mat-divider *ngIf="fullDisplay" [inset]="true" class="divider"></mat-divider>
     <div class="fullDisplayDivider" *ngIf="fullDisplay"></div>
@@ -88,7 +91,13 @@
   <mat-action-row *ngIf="storyNode || story._id">
     <button *ngIf="!story._id" (click)="saveNewStory()" mat-raised-button color="primary">Create Story</button>
     <button *ngIf="story._id" (click)="expansionPanel.close();" mat-button>Cancel</button>
-    <button *ngIf="story._id" (click)="saveStory();expansionPanel.close();submitClose();" mat-raised-button color="primary">Update Story</button>
+    <button *ngIf="story._id && !story.isBuiltIn()" (click)="saveStory();expansionPanel.close();submitClose();"
+            mat-raised-button
+            color="primary">Update Story
+    </button>
+    <button *ngIf="story._id && story.isBuiltIn()" (click)="manageStory();" mat-raised-button
+            color="primary">Manage Story
+    </button>
   </mat-action-row>
 </mat-expansion-panel>
 <mat-card *ngIf="!story && storyNode">

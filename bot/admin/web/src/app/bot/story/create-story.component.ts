@@ -136,7 +136,7 @@ export class CreateStoryComponent implements OnInit {
     if (intentId) {
       const intent = this.state.findIntentById(intentId);
       if (intent) {
-        const story = this.stories.find(s => s.intent.name === intent.name);
+        const story = this.stories.find(s => s.intent.name === intent.name && !s.isBuiltIn());
         //if there is no existing story with this intent, select the intent
         if (!story) {
           return intent.name;

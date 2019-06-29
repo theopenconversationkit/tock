@@ -27,22 +27,51 @@ import fr.vsct.tock.translator.I18nLabelValue
 import fr.vsct.tock.translator.RawString
 import fr.vsct.tock.translator.TranslatedString
 
+/**
+ * A new bus instance is created for each user request.
+ *
+ * The bus is used by bot implementations to reply to the user request.
+ */
 interface ClientBus : Bus<ClientBus> {
 
+    /**
+     * The bot definition.
+     */
     val botDefinition: ClientBotDefinition
 
+    /**
+     * The entity list.
+     */
     val entities: List<Entity>
 
+    /**
+     * The user message.
+     */
     val message: UserMessage
 
-    fun handle() {
-        val story = botDefinition.stories.find { intent?.wrap(it.mainIntent) == true }
-            ?: botDefinition.unknownStory
-        story.handler.handle(this)
-    }
+    /**
+     * The current story.
+     */
+    var story: ClientStoryDefinition
 
+    /**
+     * The current step.
+     */
+    var step: ClientStep?
+
+    /**
+     * Handles the current request.
+     */
+    fun handle()
+
+    /**
+     * Sends a [Card].
+     */
     fun send(card: Card): ClientBus
 
+    /**
+     * Sends a [Card] as last bot answer.
+     */
     fun end(card: Card): ClientBus
 
     override fun translate(text: CharSequence?, vararg args: Any?): I18nText {

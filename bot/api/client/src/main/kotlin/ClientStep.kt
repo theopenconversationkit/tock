@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.model
+package fr.vsct.tock.bot.api.client
 
-import fr.vsct.tock.bot.api.model.message.bot.BotMessage
+import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.definition.IntentAware
 
-data class BotResponse(
-    val messages: List<BotMessage> = emptyList(),
-    val storyId: String,
-    val step: String?,
-    val context: ResponseContext
-)
+class ClientStep(
+    val name: String,
+    val mainIntent: IntentAware = Intent(name),
+    val otherStarterIntents: Set<IntentAware> = emptySet(),
+    val secondaryIntents: Set<IntentAware> = emptySet())

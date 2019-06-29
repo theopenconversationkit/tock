@@ -18,6 +18,9 @@ package fr.vsct.tock.bot.admin.story
 
 import fr.vsct.tock.bot.admin.answer.AnswerConfiguration
 import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
+import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType.builtin
+import fr.vsct.tock.bot.admin.answer.BuiltInAnswerConfiguration
+import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.shared.defaultNamespace
@@ -81,10 +84,26 @@ data class StoryDefinitionConfiguration(
      */
     val userSentence: String = "",
     /**
+     * The configuration name if any.
+     */
+    val configurationName: String? = null,
+    /**
      * The configuration identifier.
      */
     val _id: Id<StoryDefinitionConfiguration> = newId()
 ) : StoryDefinitionAnswersContainer {
+
+    constructor(botDefinition: BotDefinition, storyDefinition: StoryDefinition, configurationName: String?) :
+        this(
+            storyDefinition.id,
+            botDefinition.botId,
+            storyDefinition.mainIntent().wrappedIntent(),
+            builtin,
+            listOf(BuiltInAnswerConfiguration(storyDefinition.javaClass.kotlin.qualifiedName)),
+            namespace = botDefinition.namespace,
+            configurationName = configurationName,
+            steps = storyDefinition.steps.map { StoryDefinitionConfigurationStep(it) }
+        )
 
     override fun findNextSteps(story: StoryDefinitionConfiguration): List<String> =
         steps.map { it.userSentence }

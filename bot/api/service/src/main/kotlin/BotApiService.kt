@@ -15,8 +15,8 @@
  */
 package fr.vsct.tock.bot.api.service
 
-import fr.vsct.tock.bot.api.model.BotResponse
-import fr.vsct.tock.bot.api.model.UserRequest
+import fr.vsct.tock.bot.api.model.websocket.RequestData
+import fr.vsct.tock.bot.api.model.websocket.ResponseData
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -24,5 +24,6 @@ import retrofit2.http.POST
 internal interface BotApiService {
 
     @POST("webhook")
-    fun send(@Body request: UserRequest): Call<BotResponse>
+    fun send(@Body request: RequestData): Call<ResponseData>
+
 }

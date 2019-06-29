@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.api.client
 
 import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.definition.IntentAware
 
 private fun defaultUnknownStory() = unknownStory { end("Sorry I didn't understand") }
 
@@ -27,7 +28,7 @@ fun unknownStory(
     /**
      * The handler for the story.
      */
-    handler: (ClientBus).() -> Unit) = ClientStoryDefinition(Intent.unknown, newStoryHandler(handler))
+    handler: (ClientBus).() -> Unit) = ClientStoryDefinition(Intent.unknown, handler = newStoryHandler(handler))
 
 /**
  * Creates a new bot.
@@ -65,6 +66,10 @@ fun newStory(
      * The main intent.
      */
     mainIntent: String,
+    otherStarterIntents: Set<IntentAware> = emptySet(),
+    secondaryIntents: Set<IntentAware> = emptySet(),
+    steps: List<ClientStep> = emptyList(),
+    storyId: String = mainIntent,
     /**
      * The handler for the story.
      */
@@ -72,6 +77,36 @@ fun newStory(
 ): ClientStoryDefinition =
     ClientStoryDefinition(
         Intent(mainIntent),
+        otherStarterIntents,
+        secondaryIntents,
+        steps,
+        storyId,
+        newStoryHandler(handler)
+    )
+
+/**
+ * Creates a new story.
+ */
+fun newStory(
+    /**
+     * The main intent.
+     */
+    mainIntent: IntentAware,
+    otherStarterIntents: Set<IntentAware> = emptySet(),
+    secondaryIntents: Set<IntentAware> = emptySet(),
+    steps: List<ClientStep> = emptyList(),
+    storyId: String = mainIntent.wrappedIntent().name,
+    /**
+     * The handler for the story.
+     */
+    handler: (ClientBus).() -> Unit
+): ClientStoryDefinition =
+    ClientStoryDefinition(
+        mainIntent,
+        otherStarterIntents,
+        secondaryIntents,
+        steps,
+        storyId,
         newStoryHandler(handler)
     )
 

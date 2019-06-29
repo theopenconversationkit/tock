@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.model
+package fr.vsct.tock.bot.api.model.configuration
 
-import fr.vsct.tock.bot.api.model.message.bot.BotMessage
-
-data class BotResponse(
-    val messages: List<BotMessage> = emptyList(),
-    val storyId: String,
-    val step: String?,
-    val context: ResponseContext
+data class StepConfiguration(
+    val name: String,
+    val mainIntent: String = name,
+    val otherStarterIntents: Set<String> = emptySet(),
+    val secondaryIntents: Set<String> = emptySet()
 )

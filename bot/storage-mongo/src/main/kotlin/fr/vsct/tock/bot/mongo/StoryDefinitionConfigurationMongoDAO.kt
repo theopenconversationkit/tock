@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.mongo
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.BotId
+import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.ConfigurationName
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Intent
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Namespace
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.StoryId
@@ -28,6 +29,7 @@ import fr.vsct.tock.bot.mongo.StoryDefinitionConfigurationHistoryCol_.Companion.
 import fr.vsct.tock.bot.mongo.StoryDefinitionConfigurationHistoryCol_.Companion.Date
 import fr.vsct.tock.shared.defaultNamespace
 import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.trace
 import fr.vsct.tock.shared.watch
 import mu.KotlinLogging
 import org.litote.jackson.data.JacksonData
@@ -59,15 +61,15 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
     @Data(internal = true)
     @JacksonData(internal = true)
     data class StoryDefinitionConfigurationHistoryCol(
-            val conf: StoryDefinitionConfiguration,
-            val deleted: Boolean = false,
-            val date: Instant = Instant.now()
+        val conf: StoryDefinitionConfiguration,
+        val deleted: Boolean = false,
+        val date: Instant = Instant.now()
     )
 
     private val col = database.getCollectionOfName<StoryDefinitionConfiguration>("story_configuration")
     private val asyncCol = asyncDatabase.getCollectionOfName<StoryDefinitionConfiguration>("story_configuration")
     private val historyCol =
-            database.getCollection<StoryDefinitionConfigurationHistoryCol>("story_configuration_history")
+        database.getCollection<StoryDefinitionConfigurationHistoryCol>("story_configuration_history")
 
     init {
         try {
@@ -89,13 +91,19 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
                 //ignore
             }
             col.updateMany(
-                    Namespace exists false,
-                    set(Namespace, defaultNamespace)
+                Namespace exists false,
+                set(Namespace, defaultNamespace)
             )
+            try {
+                col.dropIndex(ascending(Namespace, BotId, Intent.name_))
+            } catch (e: Exception) {
+                //ignore
+            }
             //END TODO
 
             col.ensureIndex(Namespace, BotId)
-            col.ensureUniqueIndex(Namespace, BotId, Intent.name_)
+            col.ensureIndex(Namespace, BotId, Intent.name_)
+            col.ensureUniqueIndex(Namespace, BotId, Intent.name_, ConfigurationName)
 
             historyCol.ensureIndex(Date)
         } catch (e: Exception) {
@@ -126,11 +134,11 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
     override fun save(story: StoryDefinitionConfiguration) {
         val previous = col.findOneById(story._id)
         val toSave =
-                if (previous != null) {
-                    story.copy(version = previous.version + 1)
-                } else {
-                    story
-                }
+            if (previous != null) {
+                story.copy(version = previous.version + 1)
+            } else {
+                story
+            }
         historyCol.save(StoryDefinitionConfigurationHistoryCol(toSave))
         col.save(toSave)
     }
@@ -141,5 +149,16 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
             historyCol.save(StoryDefinitionConfigurationHistoryCol(previous, true))
         }
         col.deleteOneById(story._id)
+    }
+
+    override fun createBuiltInStoriesIfNotExist(stories: List<StoryDefinitionConfiguration>) {
+        stories.forEach {
+            //unique index throws exception if the story already exists
+            try {
+                col.insertOne(it)
+            } catch (e: Exception) {
+                logger.trace(e)
+            }
+        }
     }
 }

@@ -39,4 +39,9 @@ interface StoryDefinitionConfigurationDAO {
     fun save(story: StoryDefinitionConfiguration)
 
     fun delete(story: StoryDefinitionConfiguration)
+
+    /**
+     * Create the built-in stories if they don't exist yet.
+     */
+    fun createBuiltInStoriesIfNotExist(stories: List<StoryDefinitionConfiguration>)
 }

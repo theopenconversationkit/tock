@@ -10,8 +10,15 @@
   margin-right: 5px;
 }
 
+.simple-container {
+  float:right;
+}
+
 .simple {
   font-size: small;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .answer-container {

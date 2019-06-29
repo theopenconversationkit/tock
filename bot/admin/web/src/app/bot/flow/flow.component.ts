@@ -31,7 +31,7 @@ import {KeyValue} from "@angular/common";
 import {NodeTransition, StoryNode} from "./node";
 import {MatSnackBar} from "@angular/material";
 import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
-import {StoryDefinitionConfiguration, StorySearchQuery, StoryStep} from "../model/story";
+import {AnswerConfigurationType, StoryDefinitionConfiguration, StorySearchQuery, StoryStep} from "../model/story";
 
 @Component({
   selector: 'tock-flow',
@@ -131,6 +131,7 @@ export class FlowComponent implements OnInit {
   lastBotSelection: SelectBotEvent;
   flow: ApplicationDialogFlow;
 
+  allStories: StoryDefinitionConfiguration[];
   configuredStories: StoryDefinitionConfiguration[];
   configuredFlow: ApplicationDialogFlow;
   statsMode: boolean = false;
@@ -155,7 +156,8 @@ export class FlowComponent implements OnInit {
         0,
         10000
       )).subscribe(s => {
-      this.configuredStories = s;
+      this.allStories = s;
+      this.configuredStories = s.filter(story => !story.isBuiltIn());
       this.fillConfiguration();
     });
   }
@@ -174,7 +176,7 @@ export class FlowComponent implements OnInit {
     const intentStoryMap = new Map<string, StoryDefinitionConfiguration>();
     const states: DialogFlowStateData[] = [];
     const transitions: DialogFlowStateTransitionData[] = [];
-    this.configuredStories.forEach(s => {
+    this.allStories.forEach(s => {
       intentStoryMap.set(s.intent.name, s);
       states.push(
         new DialogFlowStateData(
@@ -198,7 +200,7 @@ export class FlowComponent implements OnInit {
       );
     });
 
-    this.configuredStories.forEach(s => {
+    this.allStories.forEach(s => {
       const intents = new Set<string>();
       StoryStep.findOutcomingIntent(intents, s.steps);
       intents.forEach(i => {

@@ -41,7 +41,7 @@ import java.util.Locale
  */
 internal class Bot(
     botDefinitionBase: BotDefinition,
-    private val configuration: BotApplicationConfiguration,
+    val configuration: BotApplicationConfiguration,
     val supportedLocales: Set<Locale> = emptySet()
 ) {
 

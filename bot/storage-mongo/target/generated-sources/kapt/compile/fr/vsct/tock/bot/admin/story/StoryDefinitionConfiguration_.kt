@@ -45,6 +45,8 @@ private val __Description: KProperty1<StoryDefinitionConfiguration, String?>
     get() = StoryDefinitionConfiguration::description
 private val __UserSentence: KProperty1<StoryDefinitionConfiguration, String?>
     get() = StoryDefinitionConfiguration::userSentence
+private val __ConfigurationName: KProperty1<StoryDefinitionConfiguration, String?>
+    get() = StoryDefinitionConfiguration::configurationName
 private val ___id: KProperty1<StoryDefinitionConfiguration, Id<StoryDefinitionConfiguration>?>
     get() = StoryDefinitionConfiguration::_id
 class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -90,6 +92,9 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
     val userSentence: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__UserSentence)
 
+    val configurationName: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__ConfigurationName)
+
     val _id: KPropertyPath<T, Id<StoryDefinitionConfiguration>?>
         get() = KPropertyPath(this,___id)
 
@@ -123,6 +128,8 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
             get() = __Description
         val UserSentence: KProperty1<StoryDefinitionConfiguration, String?>
             get() = __UserSentence
+        val ConfigurationName: KProperty1<StoryDefinitionConfiguration, String?>
+            get() = __ConfigurationName
         val _id: KProperty1<StoryDefinitionConfiguration, Id<StoryDefinitionConfiguration>?>
             get() = ___id}
 }
@@ -169,6 +176,9 @@ class StoryDefinitionConfiguration_Col<T>(previous: KPropertyPath<T, *>?, proper
 
     val userSentence: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__UserSentence)
+
+    val configurationName: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__ConfigurationName)
 
     val _id: KPropertyPath<T, Id<StoryDefinitionConfiguration>?>
         get() = KPropertyPath(this,___id)
@@ -219,6 +229,9 @@ class StoryDefinitionConfiguration_Map<T, K>(previous: KPropertyPath<T, *>?, pro
 
     val userSentence: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__UserSentence)
+
+    val configurationName: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__ConfigurationName)
 
     val _id: KPropertyPath<T, Id<StoryDefinitionConfiguration>?>
         get() = KPropertyPath(this,___id)

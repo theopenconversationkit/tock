@@ -16,10 +16,11 @@
 
 package fr.vsct.tock.bot.api.service
 
-import fr.vsct.tock.bot.api.model.BotResponse
-import fr.vsct.tock.bot.api.model.UserRequest
+import fr.vsct.tock.bot.api.model.websocket.RequestData
+import fr.vsct.tock.bot.api.model.websocket.ResponseData
 import fr.vsct.tock.shared.addJacksonConverter
 import fr.vsct.tock.shared.create
+import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import mu.KotlinLogging
@@ -39,6 +40,12 @@ internal class BotApiClient(baseUrl: String) {
             .create()
     }
 
-    fun send(request: UserRequest): BotResponse? =
-        service.send(request).execute().body()
+    fun send(request: RequestData): ResponseData? =
+        try {
+            service.send(request).execute().body()
+        } catch (e: Exception) {
+            logger.error(e)
+            null
+        }
+
 }

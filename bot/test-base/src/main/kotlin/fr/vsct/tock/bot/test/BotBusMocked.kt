@@ -180,12 +180,23 @@ fun mockTockCommon(bus: BotBus) {
 
     mockkObject(SendChoice.Companion)
     every {
-        SendChoice.encodeChoiceId(bus, any(), any(), any())
+        SendChoice.encodeChoiceId(bus, any(), any<StoryStep<*>>(), any())
     } answers {
         @Suppress("UNCHECKED_CAST")
         SendChoice.encodeChoiceId(
             (args[1] as IntentAware).wrappedIntent(),
             args[2] as? StoryStep<out StoryHandlerDefinition>,
+            (args[3] as? Map<String, String>) ?: emptyMap(),
+            null,
+            null)
+    }
+    every {
+        SendChoice.encodeChoiceId(bus, any(), any<String>(), any())
+    } answers {
+        @Suppress("UNCHECKED_CAST")
+        SendChoice.encodeChoiceId(
+            (args[1] as IntentAware).wrappedIntent(),
+            args[2] as? String,
             (args[3] as? Map<String, String>) ?: emptyMap(),
             null,
             null)

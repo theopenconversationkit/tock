@@ -29,7 +29,6 @@ import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.EntityValue
 import fr.vsct.tock.bot.engine.user.UserPreferences
-import fr.vsct.tock.shared.Dice
 
 internal fun BotBus.toUserRequest(): UserRequest =
     UserRequest(
@@ -39,6 +38,8 @@ internal fun BotBus.toUserRequest(): UserRequest =
             .mapNotNull { it.value }
             .map { it.toEntity(this) },
         action.toApiMessage(),
+        story.definition.id,
+        step?.name,
         toRequestContext())
 
 private fun EntityValue.toEntity(bus: BotBus): Entity =
@@ -61,7 +62,6 @@ private fun Action.toApiMessage(): UserMessage =
 
 private fun BotBus.toRequestContext(): RequestContext =
     RequestContext(
-        Dice.newId(),
         botDefinition.namespace,
         userLocale,
         targetConnectorType,
