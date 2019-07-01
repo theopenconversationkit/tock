@@ -84,20 +84,8 @@ export class ConnectorType {
               public userInterfaceType: UserInterfaceType) {
   }
 
-  getProperties(): string[] {
-    if (this.isMessenger()) {
-      return ['appId', 'pageId', 'token', 'verifyToken', 'secret'];
-    } else if (this.isGa()) {
-      return ['_project_ids'];
-    } else if (this.isAlexa()) {
-      return ['_project_ids', '_project_timestamp', '_mapper'];
-    } else if (this.isSlack()) {
-      return ['outToken1', 'outToken2', 'outToken3'];
-    } else if (this.isRest()) {
-      return [];
-    } else {
-      return [];
-    }
+  public label() : string {
+    return this.isRest() ? "test" : this.id;
   }
 
   iconUrl(): string {

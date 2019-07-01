@@ -24,6 +24,7 @@ import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Name
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Namespace
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.NlpModel
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Parameters
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Path
 import fr.vsct.tock.bot.admin.bot.BotConfiguration
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
@@ -62,6 +63,7 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
 
     init {
         col.ensureUniqueIndex(ApplicationId, BotId, Namespace)
+        col.ensureUniqueIndex(Path)
         col.ensureIndex(ApplicationId, BotId)
         col.ensureIndex(Namespace, BotId)
         botCol.ensureUniqueIndex(Name, BotId, Namespace)

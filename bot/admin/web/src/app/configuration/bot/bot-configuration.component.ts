@@ -15,8 +15,10 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
-import {BotApplicationConfiguration, ConnectorType, UserInterfaceType} from "../../core/model/configuration";
+import {BotApplicationConfiguration, ConnectorType} from "../../core/model/configuration";
 import {BotSharedService} from "../../shared/bot-shared.service";
+import {StateService} from "../../core-nlp/state.service";
+import {BotConfigurationService} from "../../core/bot-configuration.service";
 
 @Component({
   selector: 'tock-bot-configuration',
@@ -37,7 +39,10 @@ export class BotConfigurationComponent implements OnInit {
   connectorTypes: ConnectorType[] = [];
   connectorTypesAndRestType: ConnectorType[] = [];
 
-  constructor(public botSharedService: BotSharedService) {
+  constructor(
+    public botSharedService: BotSharedService,
+    private state: StateService,
+    private botConfiguration: BotConfigurationService) {
   }
 
   ngOnInit(): void {
@@ -53,6 +58,7 @@ export class BotConfigurationComponent implements OnInit {
           this.connectorTypesAndRestType.push(rest);
           if (!this.configuration._id && c.length > 0) {
             this.configuration.connectorType = c[0];
+            this.changeConnectorType();
           }
         }
       )
@@ -64,5 +70,25 @@ export class BotConfigurationComponent implements OnInit {
 
   update() {
     this.onValidate.emit(true);
+  }
+
+  changeConnectorType() {
+    const bots = this.botConfiguration.bots.getValue();
+
+    const baseTargetPath = `/io/${this.state.user.organization}/${this.configuration.connectorType.id}`;
+    let targetPath = baseTargetPath;
+    let index = 1;
+    while (bots.findIndex(b => b.configurations && b.configurations.findIndex(c => c.path === targetPath) !== -1) !== -1) {
+      targetPath = baseTargetPath + (index++);
+    }
+    this.configuration.path = targetPath;
+
+    const baseId = this.configuration.name;
+    let targetId = baseId;
+    index = 1;
+    while (bots.findIndex(b => b.configurations && b.configurations.findIndex(c => c.applicationId === targetId) !== -1) !== -1) {
+      targetId = baseId + (index++);
+    }
+    this.configuration.applicationId = targetId;
   }
 }

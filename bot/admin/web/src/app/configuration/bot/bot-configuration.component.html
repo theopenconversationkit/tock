@@ -21,23 +21,24 @@
   <mat-form-field *ngIf="configuration._id" class="bot-input">
     <input matInput
            placeholder="Connector type"
-           [ngModel]="configuration.connectorType.id"
+           [ngModel]="configuration.connectorType.label()"
            [disabled]="true">
   </mat-form-field>
 
   <mat-form-field class="bot-input" *ngIf="!configuration._id">
   <mat-select
              placeholder="Connector type"
-             [(ngModel)]="configuration.connectorType">
+             [(ngModel)]="configuration.connectorType"
+             (selectionChange)="changeConnectorType()">
     <mat-option *ngFor="let c of connectorTypesAndRestType"
-               [value]="c">{{ c.id }}</mat-option>
+               [value]="c">{{ c.label() }}</mat-option>
   </mat-select>
   </mat-form-field>
 
   <mat-form-field *ngIf="configuration._id && configuration.connectorType.isRest()" class="bot-input">
     <input matInput
            placeholder="Owner connector type"
-           [ngModel]="configuration.ownerConnectorType?.id"
+           [ngModel]="configuration.ownerConnectorType?.label()"
            [disabled]="true">
   </mat-form-field>
 
@@ -45,7 +46,7 @@
   <mat-select placeholder="Owner connector type"
              [(ngModel)]="configuration.ownerConnectorType">
     <mat-option *ngFor="let c of connectorTypes"
-               [value]="c">{{ c.id }}</mat-option>
+               [value]="c">{{ c.label() }}</mat-option>
   </mat-select>
   </mat-form-field>
 
@@ -55,14 +56,14 @@
   <mat-form-field class="bot-input">
     <input matInput placeholder="Relative REST path" [(ngModel)]="configuration.path" title="e.g. /messenger">
   </mat-form-field>
-  <mat-form-field class="bot-input">
-    <input matInput placeholder="Application base url" [(ngModel)]="configuration.baseUrl" title="optional">
-  </mat-form-field>
   <mat-expansion-panel *ngIf="botSharedService.findConnectorConfiguration(configuration.connectorType) && botSharedService.findConnectorConfiguration(configuration.connectorType).fields.length !== 0">
     <mat-expansion-panel-header>
       <mat-panel-title>Connector Custom Configuration</mat-panel-title>
       <mat-panel-description>Parameters</mat-panel-description>
     </mat-expansion-panel-header>
+    <mat-form-field class="bot-input">
+      <input matInput placeholder="Application base url" [(ngModel)]="configuration.baseUrl" title="optional">
+    </mat-form-field>
     <mat-form-field class="long-text bot-input" *ngFor="let f of botSharedService.findConnectorConfiguration(configuration.connectorType).fields">
       <input matInput [placeholder]="f.label" [(ngModel)]="configuration.parameters[f.key]">
     </mat-form-field>
