@@ -123,7 +123,7 @@ open class AdminVerticle : WebVerticle() {
             admin
         ) { context, conf: NlpApplicationConfiguration ->
             front.getApplicationById(context.pathId("id"))
-                ?.takeIf { it.namespace == context.organization }
+                ?.takeIf { it.namespace == context.organization && it.supportedLocales.isNotEmpty() }
                 ?.let { front.updateModelConfiguration(it.qualifiedName, NlpEngineType(context.path("engine")), conf) }
         }
 

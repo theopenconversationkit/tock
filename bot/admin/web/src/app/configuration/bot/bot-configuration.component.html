@@ -18,36 +18,60 @@
   <mat-form-field class="bot-input">
     <input matInput placeholder="Configuration name" [(ngModel)]="configuration.name">
   </mat-form-field>
+  <img *ngIf="configuration._id" src="{{configuration.connectorType.iconUrl()}}" class="connector-icon"
+       [matTooltip]="configuration.connectorType.label()"/>
   <mat-form-field *ngIf="configuration._id" class="bot-input">
     <input matInput
            placeholder="Connector type"
            [ngModel]="configuration.connectorType.label()"
-           [disabled]="true">
+           [disabled]="true"
+           class="connector">
   </mat-form-field>
 
   <mat-form-field class="bot-input" *ngIf="!configuration._id">
-  <mat-select
-             placeholder="Connector type"
-             [(ngModel)]="configuration.connectorType"
-             (selectionChange)="changeConnectorType()">
-    <mat-option *ngFor="let c of connectorTypesAndRestType"
-               [value]="c">{{ c.label() }}</mat-option>
-  </mat-select>
+    <mat-select
+      placeholder="Connector type"
+      [(ngModel)]="configuration.connectorType"
+      (selectionChange)="changeConnectorType()"
+      #type>
+      <mat-select-trigger>
+            <span *ngIf="type.value" class="connector">
+              <img src="{{type.value.iconUrl()}}" class="connector-icon"
+                   [matTooltip]="type.value.label()"/> {{ type.value.label() }}
+            </span>
+      </mat-select-trigger>
+      <mat-option *ngFor="let c of connectorTypesAndRestType"
+                  [value]="c" class="connector"><img src="{{c.iconUrl()}}" class="connector-icon"
+                                                     [matTooltip]="c.label()"/> {{ c.label() }}</mat-option>
+    </mat-select>
   </mat-form-field>
 
-  <mat-form-field *ngIf="configuration._id && configuration.connectorType.isRest()" class="bot-input">
+  <img *ngIf="configuration._id && configuration.connectorType.isRest() && configuration.ownerConnectorType"
+       src="{{configuration.ownerConnectorType.iconUrl()}}" class="connector-icon"
+       [matTooltip]="configuration.ownerConnectorType.label()"/>
+  <mat-form-field *ngIf="configuration._id && configuration.connectorType.isRest() && configuration.ownerConnectorType"
+                  class="bot-input">
+
     <input matInput
            placeholder="Owner connector type"
+           class="connector"
            [ngModel]="configuration.ownerConnectorType?.label()"
            [disabled]="true">
   </mat-form-field>
 
   <mat-form-field class="bot-input" *ngIf="!configuration._id && configuration.connectorType.isRest()">
-  <mat-select placeholder="Owner connector type"
-             [(ngModel)]="configuration.ownerConnectorType">
-    <mat-option *ngFor="let c of connectorTypes"
-               [value]="c">{{ c.label() }}</mat-option>
-  </mat-select>
+    <mat-select placeholder="Owner connector type"
+                [(ngModel)]="configuration.ownerConnectorType" #owner>
+      <mat-select-trigger>
+            <span *ngIf="owner.value" class="connector">
+              <img src="{{owner.value.iconUrl()}}" class="connector-icon"
+                   [matTooltip]="owner.value.label()"/> {{ owner.value.label() }}
+            </span>
+      </mat-select-trigger>
+      <mat-option *ngFor="let c of connectorTypes"
+                  [value]="c" class="connector"><img src="{{c.iconUrl()}}" class="connector-icon"
+                                                     [matTooltip]="c.label()"/> {{ c.label() }}</mat-option>
+    </mat-select>
   </mat-form-field>
 
   <mat-form-field class="bot-input">
@@ -56,7 +80,8 @@
   <mat-form-field class="bot-input">
     <input matInput placeholder="Relative REST path" [(ngModel)]="configuration.path" title="e.g. /messenger">
   </mat-form-field>
-  <mat-expansion-panel *ngIf="botSharedService.findConnectorConfiguration(configuration.connectorType) && botSharedService.findConnectorConfiguration(configuration.connectorType).fields.length !== 0">
+  <mat-expansion-panel
+    *ngIf="botSharedService.findConnectorConfiguration(configuration.connectorType) && botSharedService.findConnectorConfiguration(configuration.connectorType).fields.length !== 0">
     <mat-expansion-panel-header>
       <mat-panel-title>Connector Custom Configuration</mat-panel-title>
       <mat-panel-description>Parameters</mat-panel-description>
@@ -64,7 +89,8 @@
     <mat-form-field class="bot-input">
       <input matInput placeholder="Application base url" [(ngModel)]="configuration.baseUrl" title="optional">
     </mat-form-field>
-    <mat-form-field class="long-text bot-input" *ngFor="let f of botSharedService.findConnectorConfiguration(configuration.connectorType).fields">
+    <mat-form-field class="long-text bot-input"
+                    *ngFor="let f of botSharedService.findConnectorConfiguration(configuration.connectorType).fields">
       <input matInput [placeholder]="f.label" [(ngModel)]="configuration.parameters[f.key]">
     </mat-form-field>
   </mat-expansion-panel>

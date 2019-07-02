@@ -34,8 +34,9 @@ const routes: Routes = [
     path: 'monitoring',
     loadChildren: './monitoring/monitoring.module#BotMonitoringModule'
   },
-  { path: '**', redirectTo: '/nlp/inbox' }
+  {path: '**', redirectTo: '/nlp/inbox'}
 ];
+
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]

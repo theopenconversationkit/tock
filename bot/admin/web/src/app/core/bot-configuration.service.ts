@@ -54,23 +54,25 @@ export class BotConfigurationService implements OnInit, OnDestroy {
   }
 
   updateConfigurations() {
-    this.getBots(this.state.currentApplication.name).subscribe(bots => {
-      this.bots.next(bots);
-      this.getConfigurations(this.state.createApplicationScopedQuery())
-        .subscribe(c => {
-          this.configurations.next(c);
-          let rest = c.filter(c => c.connectorType.isRest());
-          this.restConfigurations.next(rest);
-          this.hasRestConfigurations.next(rest.length !== 0);
-          const connectors = [];
-          c.forEach(conf => {
-            if (!conf.connectorType.isRest() && !connectors.some(e => conf.connectorType.id === e.id)) {
-              connectors.push(conf.connectorType)
-            }
+    if(this.state.currentApplication) {
+      this.getBots(this.state.currentApplication.name).subscribe(bots => {
+        this.bots.next(bots);
+        this.getConfigurations(this.state.createApplicationScopedQuery())
+          .subscribe(c => {
+            this.configurations.next(c);
+            let rest = c.filter(c => c.connectorType.isRest());
+            this.restConfigurations.next(rest);
+            this.hasRestConfigurations.next(rest.length !== 0);
+            const connectors = [];
+            c.forEach(conf => {
+              if (!conf.connectorType.isRest() && !connectors.some(e => conf.connectorType.id === e.id)) {
+                connectors.push(conf.connectorType)
+              }
+            });
+            this.supportedConnectors.next(connectors)
           });
-          this.supportedConnectors.next(connectors)
-        });
-    });
+      });
+    }
   }
 
   private getConfigurations(query: ApplicationScopedQuery): Observable<BotApplicationConfiguration[]> {
@@ -91,6 +93,28 @@ export class BotConfigurationService implements OnInit, OnDestroy {
 
   saveBot(conf: BotConfiguration): Observable<any> {
     return this.rest.post("/bot", conf);
+  }
+
+  findValidPath(connectorType: ConnectorType): string {
+    const bots = this.bots.getValue();
+    const baseTargetPath = `/io/${this.state.user.organization}/${connectorType.id}`;
+    let targetPath = baseTargetPath;
+    let index = 1;
+    while (bots.findIndex(b => b.configurations && b.configurations.findIndex(c => c.path === targetPath) !== -1) !== -1) {
+      targetPath = baseTargetPath + (index++);
+    }
+    return targetPath;
+  }
+
+  findValidId(name: string): string {
+    const bots = this.bots.getValue();
+    const baseId = name;
+    let targetId = baseId;
+    let index = 1;
+    while (bots.findIndex(b => b.configurations && b.configurations.findIndex(c => c.applicationId === targetId) !== -1) !== -1) {
+      targetId = baseId + (index++);
+    }
+    return targetId;
   }
 
 }

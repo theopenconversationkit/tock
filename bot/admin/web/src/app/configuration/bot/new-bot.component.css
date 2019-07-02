@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 VSCT
+ * Copyright (C) 2017/2019 VSCT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -7,28 +7,12 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing, software
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-.conf {
-  margin-bottom: 10px;
-}
-
-.newConf {
-  margin-bottom: 100px;
-}
-
-.long-text {
-  width: 90%;
-}
-
-.bot-input {
-  padding-right: 10px;
-}
 
 .connector-icon {
   vertical-align: text-top;
@@ -41,3 +25,20 @@
   text-transform: capitalize;
 }
 
+.create {
+  padding-bottom: 20px;
+}
+
+.stepper {
+  width: 100%;
+}
+
+.container {
+  height: 100%;
+}
+
+.fill-remaining-space {
+  flex-grow: 1;
+  height:800px;
+  background-color: white;
+}

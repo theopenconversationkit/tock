@@ -51,7 +51,8 @@ export class BotConfigurationComponent implements OnInit {
       .getConnectorTypes()
       .subscribe(
         confConf => {
-          const c = confConf.map(it => it.connectorType);
+          const c = confConf.map(it => it.connectorType).sort((a, b) => a.id.localeCompare(b.id));
+          ;
           this.connectorTypes = c;
           const rest = c.find(conn => conn.isRest());
           this.connectorTypesAndRestType = c.filter(conn => !conn.isRest());
@@ -73,22 +74,7 @@ export class BotConfigurationComponent implements OnInit {
   }
 
   changeConnectorType() {
-    const bots = this.botConfiguration.bots.getValue();
-
-    const baseTargetPath = `/io/${this.state.user.organization}/${this.configuration.connectorType.id}`;
-    let targetPath = baseTargetPath;
-    let index = 1;
-    while (bots.findIndex(b => b.configurations && b.configurations.findIndex(c => c.path === targetPath) !== -1) !== -1) {
-      targetPath = baseTargetPath + (index++);
-    }
-    this.configuration.path = targetPath;
-
-    const baseId = this.configuration.name;
-    let targetId = baseId;
-    index = 1;
-    while (bots.findIndex(b => b.configurations && b.configurations.findIndex(c => c.applicationId === targetId) !== -1) !== -1) {
-      targetId = baseId + (index++);
-    }
-    this.configuration.applicationId = targetId;
+    this.configuration.path = this.botConfiguration.findValidPath(this.configuration.connectorType);
+    this.configuration.applicationId = this.botConfiguration.findValidId(this.configuration.name);
   }
 }

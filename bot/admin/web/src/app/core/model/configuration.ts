@@ -55,7 +55,8 @@ export class BotApplicationConfiguration {
               public baseUrl?: string,
               public _id?: string,
               public ownerConnectorType?: ConnectorType,
-              public path?: string) {
+              public path?: string,
+              public fillMandatoryValues?:boolean) {
   }
 
   ownConnectorType(): ConnectorType {

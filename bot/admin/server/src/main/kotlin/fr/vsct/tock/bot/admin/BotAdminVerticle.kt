@@ -144,22 +144,35 @@ open class BotAdminVerticle : AdminVerticle() {
                 val conf = bot.toBotApplicationConfiguration()
                 val connectorProvider = BotRepository.findConnectorProvider(conf.connectorType)
                 if (connectorProvider != null) {
-                    connectorProvider.check(conf.toConnectorConfiguration())
+                    val filledConf = if (bot.fillMandatoryValues) {
+                        val additionalProperties = connectorProvider
+                            .configuration()
+                            .fields
+                            .filter { it.mandatory && !bot.parameters.containsKey(it.key) }
+                            .map {
+                                it.key to "Please fill a value"
+                            }
+                            .toMap()
+                        conf.copy(parameters = conf.parameters + additionalProperties)
+                    } else {
+                        conf
+                    }
+                    connectorProvider.check(filledConf.toConnectorConfiguration())
                         .apply {
                             if (isNotEmpty()) {
                                 badRequest(joinToString())
                             }
                         }
-                    BotAdminService.saveApplicationConfiguration(conf)
+                    BotAdminService.saveApplicationConfiguration(filledConf)
                     //add rest connector
                     if (bot._id == null && bot.connectorType != rest) {
-                        addRestConnector(conf).apply {
+                        addRestConnector(filledConf).apply {
                             BotAdminService.saveApplicationConfiguration(
                                 BotApplicationConfiguration(
                                     connectorId,
-                                    conf.botId,
-                                    conf.namespace,
-                                    conf.nlpModel,
+                                    filledConf.botId,
+                                    filledConf.namespace,
+                                    filledConf.nlpModel,
                                     type,
                                     ownerConnectorType,
                                     getName(),

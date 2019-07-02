@@ -36,6 +36,7 @@ data class BotConnectorConfiguration(
     val baseUrl: String? = BotApplicationConfiguration.defaultBaseUrl,
     val parameters: Map<String, String> = emptyMap(),
     val path: String? = null,
+    val fillMandatoryValues:Boolean = false,
     val _id: Id<BotApplicationConfiguration>? = null
 ) {
     fun toBotApplicationConfiguration(): BotApplicationConfiguration =

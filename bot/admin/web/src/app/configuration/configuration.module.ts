@@ -27,6 +27,8 @@ import {ApplicationsResolver} from "../applications/applications.resolver";
 import {CommonModule} from "@angular/common";
 import {BotSharedModule} from "../shared/bot-shared.module";
 import {BotConfigurationComponent} from "./bot/bot-configuration.component";
+import {NewBotComponent} from "./bot/new-bot.component";
+import {ReactiveFormsModule} from "@angular/forms";
 
 const routes: Routes = [
   {
@@ -39,7 +41,10 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        component: ApplicationsComponent
+        component: ApplicationsComponent,
+        resolve: {
+          application: ApplicationsResolver
+        }
       },
       {
         path: 'bot',
@@ -63,11 +68,22 @@ const routes: Routes = [
             path: 'create',
             component: ApplicationComponent
           }
-        ]
+        ],
+        resolve: {
+          application: ApplicationsResolver
+        }
+      },
+      {
+        path: 'new',
+        component: NewBotComponent,
+        resolve: {
+          application: ApplicationsResolver
+        }
       }
     ]
   }
 ];
+
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
@@ -79,12 +95,14 @@ export class BotConfigurationRoutingModule {
   declarations: [
     ConfigurationTabsComponent,
     BotConfigurationsComponent,
-    BotConfigurationComponent
+    BotConfigurationComponent,
+    NewBotComponent
   ],
   imports: [
     CommonModule,
     SharedModule,
     BotSharedModule,
+    ReactiveFormsModule,
     BotConfigurationRoutingModule,
     ApplicationsModule
   ],

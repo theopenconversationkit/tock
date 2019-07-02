@@ -21,6 +21,7 @@ import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.ConnectorTypeConfiguration
+import fr.vsct.tock.shared.resourceAsString
 
 
 /**
@@ -40,16 +41,17 @@ internal object RestConnectorProvider : ConnectorProvider {
 
     override fun check(connectorConfiguration: ConnectorConfiguration): List<String> =
         super.check(connectorConfiguration) +
-                listOfNotNull(
-                    if (connectorConfiguration.ownerConnectorType == null)
-                        "rest connector must have an owner connector type"
-                    else null
-                )
+            listOfNotNull(
+                if (connectorConfiguration.ownerConnectorType == null)
+                    "rest connector must have an owner connector type"
+                else null
+            )
 
     override fun configuration(): ConnectorTypeConfiguration =
         ConnectorTypeConfiguration(
             ConnectorType.rest,
-            ConnectorTypeConfiguration.commonSecurityFields()
+            ConnectorTypeConfiguration.commonSecurityFields(),
+            resourceAsString("/test.svg")
         )
 
 }

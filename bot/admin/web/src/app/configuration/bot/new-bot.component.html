@@ -1,0 +1,67 @@
+<!--
+  ~ Copyright (C) 2017/2019 VSCT
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<div class="container">
+  <mat-horizontal-stepper [linear]="true" #stepper class="stepper">
+    <mat-step [stepControl]="firstFormGroup">
+      <form [formGroup]="firstFormGroup">
+        <ng-template matStepLabel>Choose your language</ng-template>
+        <mat-form-field>
+          <mat-select placeholder="Language" formControlName="firstCtrl" required>
+            <mat-option *ngFor="let l of state.locales; let i = index"
+                        [value]="l.first">{{l.second }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="secondFormGroup">
+      <form [formGroup]="secondFormGroup">
+        <ng-template matStepLabel>Select a first Channel</ng-template>
+        <mat-form-field>
+          <mat-select required placeholder="Channel" [formControl]="channel">
+            <mat-select-trigger>
+            <span *ngIf="channel.value" class="connector">
+              <img src="{{channel.value.iconUrl()}}" class="connector-icon"
+                   [matTooltip]="channel.value.label()"/> {{ channel.value.label() }}
+            </span>
+            </mat-select-trigger>
+            <mat-option *ngFor="let c of connectorTypes"
+                        [value]="c" class="connector"><img src="{{c.iconUrl()}}" class="connector-icon"
+                                                           [matTooltip]="c.label()"/> {{ c.label() }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Create your Assistant</ng-template>
+      <p class="create">
+        After clicking on the "Create" button, you would have to enter a few first user phrases for your Assistant.
+      </p>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button (click)="stepper.reset()">Reset</button>
+        <button mat-raised-button (click)="validate()" color="primary">Create</button>
+      </div>
+    </mat-step>
+  </mat-horizontal-stepper>
+  <div class="fill-remaining-space"></div>
+</div>

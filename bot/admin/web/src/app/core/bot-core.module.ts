@@ -28,7 +28,7 @@ import {UserRole} from "../model/auth";
     {
       provide: ApplicationConfig,
       useValue: {
-        configurationUrl: "/configuration",
+        configurationUrl: "/configuration/new",
         displayDialogUrl: "/monitoring/dialogs",
         answerToSentenceUrl : "/build/story-create",
         roleMap: new Map(
