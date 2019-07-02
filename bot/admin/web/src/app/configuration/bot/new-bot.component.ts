@@ -39,7 +39,7 @@ export class NewBotComponent implements OnInit {
 
   constructor(
     private _formBuilder: FormBuilder,
-    private state: StateService,
+    public state: StateService,
     private botSharedService: BotSharedService,
     private router: Router,
     private applicationService: ApplicationService,
