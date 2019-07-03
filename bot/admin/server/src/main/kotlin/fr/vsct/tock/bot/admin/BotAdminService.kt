@@ -488,7 +488,9 @@ object BotAdminService {
                         )
                     }
                 } else {
-                    badRequest("Story already exists for the intent ${story.intent.name} : ${it.name}")
+                    if (story._id != it._id) {
+                        badRequest("Story already exists for the intent ${story.intent.name} : ${it.name}")
+                    }
                 }
             }
             if (storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
