@@ -325,19 +325,23 @@ object BotRepository {
                     logger.debug { "refresh configuration $c" }
                     val oldConfiguration = existingConfsById[c._id]
                     val oldConfigurationController = oldConfiguration?.let { connectorControllerMap[it] }
-                    val connector = findConnectorProvider(c.connectorType)?.connector(ConnectorConfiguration(c))
-                    if (connector != null) {
-                        //install new conf
-                        createBot(botDefinition, connector, c, applicationsCache)
-                        if (oldConfigurationController != null) {
-                            //remove old conf
-                            removeBot(oldConfigurationController)
-                            if (oldConfiguration != c) {
-                                connectorControllerMap.remove(oldConfiguration)
+                    try {
+                        val connector = findConnectorProvider(c.connectorType)?.connector(ConnectorConfiguration(c))
+                        if (connector != null) {
+                            //install new conf
+                            createBot(botDefinition, connector, c, applicationsCache)
+                            if (oldConfigurationController != null) {
+                                //remove old conf
+                                removeBot(oldConfigurationController)
+                                if (oldConfiguration != c) {
+                                    connectorControllerMap.remove(oldConfiguration)
+                                }
                             }
+                        } else {
+                            logger.warn { "unknown connector ${c.connectorType}" }
                         }
-                    } else {
-                        logger.warn { "unknown connector ${c.connectorType}" }
+                    } catch (e: Exception) {
+                        logger.error(e)
                     }
                 } else {
                     logger.trace { "not valid namespace for bot ${c.botId} - installation skipped" }
