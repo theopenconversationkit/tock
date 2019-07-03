@@ -425,7 +425,8 @@ export class SubEntityProvider implements EntityProvider {
   }
 
   addEntity(entity: EntityDefinition, highlight: HighlightComponent): string {
-    if (this.entity.root.containsEntityType(entity.entityTypeName)) {
+    if (this.entity.root.containsEntityType(entity.entityTypeName)
+      || this.containsEntityType(this.state.findEntityTypeByName(entity.entityTypeName), this.entity.root.type, new Set())) {
       return "adding recursive sub entity is not allowed";
     }
     this.entityType.addEntity(entity);
@@ -434,6 +435,16 @@ export class SubEntityProvider implements EntityProvider {
       }
     );
     return null;
+  }
+
+  private containsEntityType(entityType: EntityType, entityTypeName: string, entityTypes: Set<string>): boolean {
+    if (entityTypeName === entityType.name) {
+      return true;
+    }
+    entityTypes.add(entityType.name);
+    return entityType.subEntities
+      .filter(e => !entityTypes.has(e.entityTypeName))
+      .find(e => this.containsEntityType(this.state.findEntityTypeByName(e.entityTypeName), entityTypeName, entityTypes)) !== undefined;
   }
 
   hasEntityRole(role: string): boolean {
