@@ -23,6 +23,7 @@ import fr.vsct.tock.bot.api.model.message.bot.Card
 import fr.vsct.tock.bot.api.model.message.bot.I18nText
 import fr.vsct.tock.bot.api.model.message.user.UserMessage
 import fr.vsct.tock.bot.engine.Bus
+import fr.vsct.tock.nlp.entity.Value
 import fr.vsct.tock.translator.I18nLabelValue
 import fr.vsct.tock.translator.RawString
 import fr.vsct.tock.translator.TranslatedString
@@ -42,7 +43,7 @@ interface ClientBus : Bus<ClientBus> {
     /**
      * The entity list.
      */
-    val entities: List<Entity>
+    val entities: MutableList<Entity>
 
     /**
      * The user message.
@@ -73,6 +74,32 @@ interface ClientBus : Bus<ClientBus> {
      * Sends a [Card] as last bot answer.
      */
     fun end(card: Card): ClientBus
+
+    /**
+     * Finds the [Entity] from the specified entity role.
+     */
+    fun entity(role: String): Entity? = entities.find { it.role == role }
+
+    /**
+     * Returns the [Entity] text content from the specified entity role.
+     */
+    fun entityText(role: String): String? = entity(role)?.content
+
+    /**
+     * Returns the corresponding [Entity] [Value] from the specified entity role.
+     */
+    @Suppress("UNCHECKED_CAST")
+    fun <T : Value> entityValue(role: String): T? = entity(role)?.value as? T
+
+    /**
+     * Removes the entity of the specified role.
+     */
+    fun removeEntity(role: String): Boolean = entities.removeIf { it.role == role }
+
+    /**
+     * Remove the specified entity.
+     */
+    fun removeEntity(entity: Entity): Boolean = entities.remove(entity)
 
     override fun translate(text: CharSequence?, vararg args: Any?): I18nText {
         return if (text.isNullOrBlank()) {

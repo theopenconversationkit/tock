@@ -42,7 +42,7 @@ internal fun BotBus.toUserRequest(): UserRequest =
         step?.name,
         toRequestContext())
 
-private fun EntityValue.toEntity(bus: BotBus): Entity =
+internal fun EntityValue.toEntity(bus: BotBus): Entity =
     Entity(
         entity.entityType.name,
         entity.role,

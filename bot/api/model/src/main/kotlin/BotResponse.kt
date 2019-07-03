@@ -16,11 +16,13 @@
 
 package fr.vsct.tock.bot.api.model
 
+import fr.vsct.tock.bot.api.model.context.Entity
 import fr.vsct.tock.bot.api.model.message.bot.BotMessage
 
 data class BotResponse(
     val messages: List<BotMessage> = emptyList(),
     val storyId: String,
     val step: String?,
+    val entities: List<Entity> = emptyList(),
     val context: ResponseContext
 )

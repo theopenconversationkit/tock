@@ -62,7 +62,7 @@ class TockClientBus(
     override val contextId: String? = request.context.userId.id
     private var _currentAnswerIndex: Int = 0
     override val currentAnswerIndex: Int get() = _currentAnswerIndex
-    override val entities: List<Entity> = request.entities
+    override val entities: MutableList<Entity> = request.entities.toMutableList()
     override val message: UserMessage = request.message
 
     private val context = ClientBusContext()
@@ -123,6 +123,7 @@ class TockClientBus(
                 messages,
                 story.storyId,
                 step?.name,
+                entities,
                 ResponseContext(requestId)
             )
         )

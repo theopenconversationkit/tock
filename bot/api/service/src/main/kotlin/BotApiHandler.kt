@@ -42,6 +42,8 @@ import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.config.UploadedFilesService
 import fr.vsct.tock.bot.engine.message.ActionWrappedMessage
 import fr.vsct.tock.bot.engine.message.MessagesList
+import fr.vsct.tock.nlp.api.client.model.Entity
+import fr.vsct.tock.nlp.api.client.model.EntityType
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.longProperty
@@ -158,6 +160,36 @@ internal class BotApiHandler(
             messages.last().apply {
                 send(this, true)
             }
+            //handle entity changes
+            entities
+                .entries
+                //new collection
+                .toList()
+                .forEach { (role, entity) ->
+                    val result = response.entities.find { it.role == role }
+                    val value = entity.value
+                    //remove not present
+                    if (result == null) {
+                        removeEntityValue(role)
+                    } else if (value != null) {
+
+                        if (result.content != value.content) {
+                            changeEntityText(value.entity, result.content)
+                        }
+                        if (result.value != value.value) {
+                            changeEntityValue(value.entity, result.value)
+                        }
+                    }
+                }
+            //handle entity add
+            response.entities.forEach {
+                if (entityValueDetails(it.role) == null) {
+                    val entity = Entity(EntityType(it.type), it.role)
+                    changeEntityText(entity, it.content)
+                    changeEntityValue(entity, it.value)
+                }
+            }
+
             //switch story if new story
             if (response.storyId != request.storyId) {
                 botDefinition.stories.find { it.id == response.storyId }

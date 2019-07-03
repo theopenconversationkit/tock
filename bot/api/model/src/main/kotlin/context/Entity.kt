@@ -30,11 +30,11 @@ data class Entity(
     /**
      * Text content if any.
      */
-    val content: String?,
+    var content: String?,
     /**
      * Value if any.
      */
-    val value: Value? = null,
+    var value: Value? = null,
     /**
      * Is the value has been evaluated?
      */
