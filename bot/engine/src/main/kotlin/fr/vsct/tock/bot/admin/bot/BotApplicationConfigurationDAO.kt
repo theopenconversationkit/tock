@@ -42,6 +42,11 @@ interface BotApplicationConfigurationDAO {
 
     fun getConfigurationsByNamespaceAndBotId(namespace: String, botId: String): List<BotApplicationConfiguration>
 
+    /**
+     * Get configuration by path.
+     */
+    fun getConfigurationByPath(path: String): BotApplicationConfiguration?
+
     fun delete(conf: BotApplicationConfiguration)
 
     /**

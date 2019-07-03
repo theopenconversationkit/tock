@@ -62,6 +62,7 @@ import fr.vsct.tock.bot.admin.user.UserReportDAO
 import fr.vsct.tock.bot.connector.rest.client.ConnectorRestClient
 import fr.vsct.tock.bot.connector.rest.client.model.ClientMessageRequest
 import fr.vsct.tock.bot.connector.rest.client.model.ClientSentence
+import fr.vsct.tock.bot.connector.rest.generateRestConnectorPath
 import fr.vsct.tock.bot.engine.dialog.DialogFlowDAO
 import fr.vsct.tock.bot.engine.feature.FeatureDAO
 import fr.vsct.tock.bot.engine.feature.FeatureState
@@ -148,6 +149,9 @@ object BotAdminService {
 
     fun deleteApplicationConfiguration(conf: BotApplicationConfiguration) {
         applicationConfigurationDAO.delete(conf)
+        //delete rest connector if found
+        applicationConfigurationDAO.getConfigurationByPath(generateRestConnectorPath(conf))
+            ?.also { applicationConfigurationDAO.delete(it) }
     }
 
     fun getBotConfigurationById(id: Id<BotApplicationConfiguration>): BotApplicationConfiguration? {

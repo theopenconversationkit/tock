@@ -108,6 +108,10 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
         return col.find(Namespace eq namespace, BotId eq botId).toList()
     }
 
+    override fun getConfigurationByPath(path: String): BotApplicationConfiguration? {
+        return col.findOne(Path eq path)
+    }
+
     override fun save(conf: BotApplicationConfiguration): BotApplicationConfiguration {
         return try {
             col.save(conf)
