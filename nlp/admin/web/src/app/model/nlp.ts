@@ -166,7 +166,11 @@ export abstract class EntityContainer {
       this.editedSubEntities =
         this.getEntities()
           .filter(e => e.subEntities.length !== 0)
-          .map(e => new EntityWithSubEntities(this.getText().substring(e.start, e.end), e));
+          .map(e => new EntityWithSubEntities(
+            this.getText().substring(e.start, e.end),
+            e,
+            this.rootEntity() ? this.rootEntity() : e)
+          );
     }
     return this.editedSubEntities;
   }
@@ -177,7 +181,7 @@ export abstract class EntityContainer {
       this.editedSubEntities.splice(this.editedSubEntities.indexOf(e), 1);
       e = e.clone();
     } else {
-      e = new EntityWithSubEntities(this.getText().substring(entity.start, entity.end), entity);
+      e = new EntityWithSubEntities(this.getText().substring(entity.start, entity.end), entity, this.rootEntity() ? this.rootEntity() : entity);
     }
     this.editedSubEntities.push(e);
     this.editedSubEntities.sort((e1, e2) => e1.start < e2.start ? -1 : (e1.start > e2.start ? 1 : 0))
@@ -186,6 +190,10 @@ export abstract class EntityContainer {
 
   findEditedSubEntities(entity: ClassifiedEntity): EntityWithSubEntities {
     return this.getEditedSubEntities().find(e => e.start === entity.start);
+  }
+
+  rootEntity(): ClassifiedEntity {
+    return null;
   }
 
   abstract clone(): EntityContainer
@@ -309,7 +317,6 @@ export class IntentsCategory {
 
 export class Sentence extends EntityContainer {
 
-  private withSubEntities: EntityWithSubEntities[];
   private intentLabel: string;
 
   constructor(public text: string,
@@ -436,7 +443,7 @@ export class EntityWithSubEntities extends EntityContainer {
   startSelection: number;
   endSelection: number;
 
-  constructor(public text: string, public entity: ClassifiedEntity) {
+  constructor(public text: string, public entity: ClassifiedEntity, public root: ClassifiedEntity) {
     super();
     this.qualifiedRole = entity.qualifiedRole;
     this.entityColor = entity.entityColor;
@@ -469,10 +476,16 @@ export class EntityWithSubEntities extends EntityContainer {
     this.endSelection = undefined;
   }
 
+  rootEntity(): ClassifiedEntity {
+    return this.root;
+  }
+
   clone(): EntityWithSubEntities {
     return new EntityWithSubEntities(
       this.text,
-      this.entity);
+      this.entity,
+      this.root
+    );
   }
 
   getText(): string {
@@ -636,6 +649,13 @@ export class ClassifiedEntity {
 
   qualifiedName(user: User): string {
     return qualifiedName(user, this.type, this.role);
+  }
+
+  containsEntityType(entityTypeName: string): boolean {
+    if (entityTypeName === this.type) {
+      return true;
+    }
+    return this.subEntities.find(e => e.containsEntityType(entityTypeName)) !== undefined;
   }
 
   static sort(entityA: ClassifiedEntity, entityB: ClassifiedEntity): number {
@@ -1027,7 +1047,7 @@ export class TranslateSentencesQuery extends ApplicationScopedQuery {
   constructor(public namespace: string,
               public applicationName: string,
               public language: string,
-              public targetLanguage:string,
+              public targetLanguage: string,
               public selectedSentences: Sentence[],
               public searchQuery?: SearchQuery) {
     super(namespace, applicationName, language)

@@ -85,7 +85,8 @@ export class EntityDetailsComponent implements OnInit {
     if (!entityType) {
       return [];
     } else {
-      return entityType.subEntities;
+      //filter sub entities already seen (avoid direct recursive problem)
+      return entityType.subEntities.filter(s => s.entityTypeName !== entityType.name);
     }
   }
 

@@ -222,6 +222,7 @@ export class StateService implements AuthListener {
 
   login(user: User) {
     this.user = user;
+    this.resetConfiguration();
   }
 
   logout() {

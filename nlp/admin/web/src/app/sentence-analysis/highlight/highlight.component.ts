@@ -202,7 +202,10 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
         const existingEntityType = this.state.findEntityTypeByName(name);
         if (existingEntityType) {
           const entity = new EntityDefinition(name, role);
-          this.entityProvider.addEntity(entity, this);
+          const result = this.entityProvider.addEntity(entity, this);
+          if (result) {
+            this.snackBar.open(result, "Error", {duration: 1000} as MatSnackBarConfig);
+          }
         } else {
           this.nlp.createEntityType(name).subscribe(e => {
             if (e) {
@@ -210,7 +213,10 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
               const entities = this.state.entityTypes.getValue().slice(0);
               entities.push(e);
               this.state.entityTypes.next(entities);
-              this.entityProvider.addEntity(entity, this);
+              const result = this.entityProvider.addEntity(entity, this);
+              if (result) {
+                this.snackBar.open(result, "Error", {duration: 1000} as MatSnackBarConfig);
+              }
             } else {
               this.snackBar.open(`Error when creating Entity Type ${name}`, "Error", {duration: 1000} as MatSnackBarConfig);
             }
@@ -365,7 +371,7 @@ export interface EntityProvider {
 
   hasEntityRole(role: string): boolean
 
-  addEntity(entity: EntityDefinition, highlight: HighlightComponent)
+  addEntity(entity: EntityDefinition, highlight: HighlightComponent): string
 
 }
 
@@ -378,12 +384,13 @@ export class IntentEntityProvider implements EntityProvider {
   }
 
 
-  addEntity(entity: EntityDefinition, highlight: HighlightComponent) {
+  addEntity(entity: EntityDefinition, highlight: HighlightComponent): string {
     this.intent.addEntity(entity);
     this.nlp.saveIntent(this.intent).subscribe(_ => {
         highlight.notifyAddEntity(entity)
       }
     );
+    return null;
   }
 
   hasEntityRole(role: string): boolean {
@@ -417,12 +424,16 @@ export class SubEntityProvider implements EntityProvider {
               private entityType?: EntityType) {
   }
 
-  addEntity(entity: EntityDefinition, highlight: HighlightComponent) {
+  addEntity(entity: EntityDefinition, highlight: HighlightComponent): string {
+    if (this.entity.root.containsEntityType(entity.entityTypeName)) {
+      return "adding recursive sub entity is not allowed";
+    }
     this.entityType.addEntity(entity);
     this.nlp.updateEntityType(this.entityType).subscribe(_ => {
         highlight.notifyAddEntity(entity)
       }
     );
+    return null;
   }
 
   hasEntityRole(role: string): boolean {
