@@ -73,11 +73,11 @@ fun start(
                             ResponseData(data.requestId, botConfiguration = botDefinition.toConfiguration())
                         ))
                     } else {
-                        it.fail("invalid request")
+                        it.fail("invalid request: $json")
                     }
                 }) {
                     if (it.succeeded()) {
-                        if (it.result() == null) {
+                        if (it.result() != null) {
                             socket.writeTextMessage(it.result())
                         } else {
                             logger.error { "empty response for $json" }
