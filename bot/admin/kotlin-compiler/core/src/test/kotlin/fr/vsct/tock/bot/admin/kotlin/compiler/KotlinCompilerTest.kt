@@ -31,7 +31,7 @@ class KotlinCompilerTest {
         @BeforeAll
         @JvmStatic
         fun beforeClass() {
-            KotlinCompiler.init(listOf("target/test-classes/"))
+            KotlinCompiler.init(listOf("target/dependency/", "target/test-classes/"))
         }
 
         var mark = false
@@ -60,19 +60,10 @@ class KotlinCompilerTest {
             listOf(
                 CompileError(
                     TextInterval(
-                        TextPosition(2, 20),
-                        TextPosition(2, 27)
-                    ),
-                    "Unresolved reference: println",
-                    Severity.ERROR,
-                    "ERROR"
-                ),
-                CompileError(
-                    TextInterval(
                         TextPosition(2, 34),
                         TextPosition(2, 35)
                     ),
-                    "Expecting '\"'",
+                    """Expecting '"'""",
                     Severity.ERROR,
                     "red_wavy_line"
                 ),
@@ -162,7 +153,7 @@ class KotlinCompilerTest {
                 to
                 """
                 fun main(args: Array<String>) {
-                    fr.vsct.tock.duckling.client.DucklingEntityEvaluatorProvider()
+                    fr.vsct.tock.shared.Dice.newInt(2)
                 }"""
         )
         assertEquals(emptyList(), KotlinCompiler.getErrors(sourceCode)["ClassToBeCompiled.kt"])

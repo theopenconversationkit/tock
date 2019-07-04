@@ -38,7 +38,6 @@ import org.jetbrains.kotlin.codegen.ClassBuilderFactories
 import org.jetbrains.kotlin.codegen.KotlinCodegenFacade
 import org.jetbrains.kotlin.codegen.state.GenerationState
 import org.jetbrains.kotlin.config.CompilerConfiguration
-import org.jetbrains.kotlin.config.JVMConfigurationKeys
 import org.jetbrains.kotlin.config.LanguageVersionSettingsImpl
 import org.jetbrains.kotlin.container.ComponentProvider
 import org.jetbrains.kotlin.container.getService
@@ -215,12 +214,13 @@ internal object KotlinCompiler {
         return analyzeExhaust.bindingContext
     }
 
+    @Synchronized
     fun analyzeFileForJvm(files: List<KtFile>, project: Project): Pair<AnalysisResult, ComponentProvider> {
         val environment = EnvironmentManager.environment!!
         val trace = CliBindingTrace()
 
         val configuration = environment.configuration
-        configuration.put(JVMConfigurationKeys.ADD_BUILT_INS_FROM_COMPILER_TO_DEPENDENCIES, true)
+        //configuration.put(JVMConfigurationKeys.ADD_BUILT_INS_FROM_COMPILER_TO_DEPENDENCIES, true)
 
         val container = TopDownAnalyzerFacadeForJVM.createContainer(
             environment.project,
@@ -228,8 +228,7 @@ internal object KotlinCompiler {
             trace,
             configuration,
             { globalSearchScope -> environment.createPackagePartProvider(globalSearchScope) },
-            { storageManager, ktFiles -> FileBasedDeclarationProviderFactory(storageManager, ktFiles) },
-            TopDownAnalyzerFacadeForJVM.newModuleSearchScope(project, files)
+            { storageManager, ktFiles -> FileBasedDeclarationProviderFactory(storageManager, ktFiles) }
         )
 
         container.getService(LazyTopDownAnalyzer::class.java)
