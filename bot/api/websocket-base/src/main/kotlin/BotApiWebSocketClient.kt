@@ -7,6 +7,7 @@ import fr.vsct.tock.bot.api.client.toConfiguration
 import fr.vsct.tock.bot.api.model.websocket.RequestData
 import fr.vsct.tock.bot.api.model.websocket.ResponseData
 import fr.vsct.tock.shared.Dice
+import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.intProperty
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.property
@@ -75,7 +76,20 @@ fun start(
                         it.fail("invalid request")
                     }
                 }) {
-                    socket.writeTextMessage(it.result())
+                    if (it.succeeded()) {
+                        if (it.result() == null) {
+                            socket.writeTextMessage(it.result())
+                        } else {
+                            logger.error { "empty response for $json" }
+                        }
+                    } else {
+                        val c = it.cause()
+                        if (c == null) {
+                            logger.error("unknown error for $json : ${it.result()}")
+                        } else {
+                            logger.error(c)
+                        }
+                    }
                 }
             }
             ?.exceptionHandler {
@@ -88,4 +102,5 @@ fun start(
             } ?: restart(client, 10).apply { logger.warn { "web socket server not found - retry" } }
     }
 }
+
 
