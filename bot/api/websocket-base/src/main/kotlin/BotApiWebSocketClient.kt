@@ -7,6 +7,7 @@ import fr.vsct.tock.bot.api.client.toConfiguration
 import fr.vsct.tock.bot.api.model.websocket.RequestData
 import fr.vsct.tock.bot.api.model.websocket.ResponseData
 import fr.vsct.tock.shared.Dice
+import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.intProperty
 import fr.vsct.tock.shared.jackson.mapper
@@ -14,7 +15,9 @@ import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.vertx.blocking
 import fr.vsct.tock.shared.vertx.vertx
 import io.vertx.core.http.HttpClient
+import io.vertx.core.http.WebSocketConnectOptions
 import mu.KotlinLogging
+import java.net.URL
 import java.util.concurrent.TimeUnit
 
 
@@ -36,18 +39,53 @@ import java.util.concurrent.TimeUnit
 
 private val logger = KotlinLogging.logger {}
 
+/**
+ * Starts a bot using the demo server.
+ */
+fun startWithDemo(botDefinition: ClientBotDefinition) {
+    start(botDefinition, "https://demotock-prod-bot.vsct-prod.aws.vsct.fr")
+}
+
+/**
+ * Starts a client.
+ *
+ * @param botDefinition the [ClientBotDefinition]
+ * @param url the target server url
+ */
+fun start(
+    botDefinition: ClientBotDefinition,
+    url: String) {
+    val u = URL(url)
+    start(botDefinition, u.port.takeUnless { it == -1 } ?: u.defaultPort, u.host, u.protocol == "https")
+}
+
+
+/**
+ * Starts a client.
+ *
+ * @param botDefinition the [ClientBotDefinition]
+ * @param serverPort the server port
+ * @param serverHost the server host
+ * @param ssl is it ssl ?
+ */
 fun start(
     botDefinition: ClientBotDefinition,
     serverPort: Int = intProperty("tock_websocket_port", 8080),
-    serverHost: String = property("tock_websocket_host", "localhost")) {
+    serverHost: String = property("tock_websocket_host", "localhost"),
+    ssl: Boolean = booleanProperty("tock_websocket_ssl", false)) {
 
     fun restart(client: HttpClient, delay: Long) {
         client.close()
-        vertx.setTimer(TimeUnit.SECONDS.toMillis(delay)) { start(botDefinition) }
+        vertx.setTimer(TimeUnit.SECONDS.toMillis(delay)) { start(botDefinition, serverPort, serverHost, ssl) }
     }
-    logger.info { "start web socket client" }
+
+    val options = WebSocketConnectOptions().setSsl(ssl).setHost(serverHost).setPort(serverPort)
+        .setURI("/${botDefinition.apiKey}")
+
+    logger.info { "start web socket client: ${options.toJson()}" }
     val client = vertx.createHttpClient()
-    client.webSocket(serverPort, serverHost, "/${botDefinition.apiKey}") { context ->
+
+    client.webSocket(options) { context ->
         val socket = context.result()
         //send bot configuration
         socket?.writeTextMessage(
