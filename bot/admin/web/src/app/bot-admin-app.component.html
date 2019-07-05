@@ -56,7 +56,7 @@
                  [value]="l">{{ state.localeName(l) }}</mat-option>
     </mat-select>
 
-    <button *ngIf="auth.isLoggedIn()" class="tock-icon-button" (click)="auth.logout()" matTooltip="Logout">
+    <button *ngIf="auth.isLoggedIn() && !auth.isSSO()" class="tock-icon-button" (click)="auth.logout()" matTooltip="Logout">
       <i class="material-icons tock-toolbar-menu">exit_to_app</i>
     </button>
 
