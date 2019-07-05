@@ -25,6 +25,8 @@ import fr.vsct.tock.shared.security.TockUserRole
 import fr.vsct.tock.shared.vertx.WebVerticle
 import io.vertx.core.Future
 import io.vertx.core.Vertx
+import io.vertx.core.http.HttpMethod.GET
+import io.vertx.core.json.JsonObject
 import io.vertx.ext.auth.oauth2.OAuth2Auth
 import io.vertx.ext.auth.oauth2.providers.GithubAuth
 import io.vertx.ext.web.RoutingContext
@@ -35,7 +37,6 @@ import io.vertx.ext.web.handler.SessionHandler
 import io.vertx.ext.web.handler.UserSessionHandler
 import mu.KLogger
 import mu.KotlinLogging
-
 
 /**
  *
@@ -65,8 +66,6 @@ internal class GithubOAuthProvider(
         sessionHandler: SessionHandler,
         userSessionHandler: UserSessionHandler
     ): AuthHandler {
-        verticle.router.route().handler(verticle.corsHandler("https://github.com"))
-
         val authHandler =
             super.protectPaths(verticle, pathsToProtect, cookieHandler, sessionHandler, userSessionHandler)
 
@@ -74,18 +73,19 @@ internal class GithubOAuthProvider(
             setupCallback(verticle.router.get(callbackPath(verticle)))
         }
 
-        verticle.router.route("/*").handler {
-            val user = it.user()
-            if (user != null && !user.principal().containsKey("login")) {
-                executor.executeBlocking {
-                    user.principal()
-                        .put("login", RetrofitGithubClient.login(user.principal().getString("access_token")))
+        verticle.router.route("/*")
+            .handler {
+                val user = it.user()
+                if (user != null && !user.principal().containsKey("login")) {
+                    executor.executeBlocking {
+                        user.principal()
+                            .put("login", RetrofitGithubClient.login(user.principal().getString("access_token")))
+                        it.next()
+                    }
+                } else {
                     it.next()
                 }
-            } else {
-                it.next()
             }
-        }
 
         return authHandler
     }
@@ -101,3 +101,4 @@ internal class GithubOAuthProvider(
         return TockUser(login, login, TockUserRole.values().map { r -> r.name }.toSet())
     }
 }
+

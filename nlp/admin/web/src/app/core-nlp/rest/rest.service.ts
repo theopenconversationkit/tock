@@ -15,7 +15,7 @@
  */
 
 
-import {Observable, throwError as observableThrowError} from 'rxjs';
+import {NEVER, Observable, throwError as observableThrowError} from 'rxjs';
 
 import {catchError, map} from 'rxjs/operators';
 import {EventEmitter, Injectable} from "@angular/core";
@@ -126,15 +126,21 @@ export class RestService {
   private static handleError(rest: RestService, error: Response | any) {
     console.error(error);
     let errMsg: string;
-    if (error instanceof Response) {
-      if (error.status === 403) {
+    const e = Array.isArray(error) ? error[0] : error;
+    if (e instanceof Response) {
+      if (e.status === 403) {
         rest.router.navigateByUrl("/login");
-        return;
+        return NEVER;
       }
       errMsg = error.status === 400
         ? error.statusText || ''
         : `Server error : ${error.status} - ${error.statusText || ''}`;
     } else {
+      //strange things happen
+      if (e && e.status === 0) {
+        location.reload();
+        return NEVER;
+      }
       errMsg = error.message ? error.message : error.toString();
     }
     rest.errorEmitter.emit(errMsg);
