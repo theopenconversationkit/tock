@@ -103,7 +103,7 @@ class GAConnector internal constructor(
                 if (request.user.accessToken != null && event !is LoginEvent) {
                     controller.handle(
                         LoginEvent(
-                            PlayerId(request.user.userId, PlayerType.user),
+                            PlayerId(request.conversation.conversationId, PlayerType.user),
                             PlayerId(applicationId, PlayerType.bot),
                             request.user.accessToken,
                             applicationId,
