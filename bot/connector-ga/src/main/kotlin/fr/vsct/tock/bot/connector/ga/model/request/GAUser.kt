@@ -22,7 +22,6 @@ import mu.KotlinLogging
 import java.util.Locale
 
 data class GAUser(
-        val userId: String,
         val profile: GAUserProfile? = null,
         val accessToken: String? = null,
         val permissions: Set<GAPermission>? = null,

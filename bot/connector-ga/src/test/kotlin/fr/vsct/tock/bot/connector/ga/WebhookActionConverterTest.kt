@@ -84,7 +84,7 @@ class WebhookActionConverterTest {
     @Test
     fun `GIVEN Assistant request THEN toEvent returns conversationId as player id`() {
         val e = WebhookActionConverter.toEvent(optionRequest, appId) as SendChoice
-        assertEquals(optionRequest.user.userId, e.playerId.id)
+        assertEquals(optionRequest.conversation.conversationId, e.playerId.id)
     }
 
 

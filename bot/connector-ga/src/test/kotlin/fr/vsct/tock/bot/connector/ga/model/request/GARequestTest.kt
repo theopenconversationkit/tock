@@ -29,7 +29,7 @@ class GARequestTest {
     @Test
     fun getEventState_shouldReturnsVoiceAssistant_whenOnlyAudioCapability() {
         val request = GARequest(
-            GAUser("a"),
+            GAUser(),
             GADevice(),
             GASurface(listOf(GACapability(AUDIO_OUTPUT))),
             GAConversation(),

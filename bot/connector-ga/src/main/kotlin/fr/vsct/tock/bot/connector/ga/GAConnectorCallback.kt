@@ -351,7 +351,7 @@ internal data class GAConnectorCallback(
                                                                                             PlayerType.bot),
                                                                                     applicationId,
                                                                                     PlayerId(
-                                                                                            request?.user?.userId ?: "unknown",
+                                                                                            request?.conversation?.conversationId ?: "unknown",
                                                                                             PlayerType.user)
                                                                             ) as? SendSentence)?.stringText ?: "Technical error"
                                                                     )

@@ -74,7 +74,7 @@ class RoutingContextHolderTest {
                 controller,
                 context,
                 GARequest(
-                    GAUser("userId"),
+                    GAUser(),
                     GADevice(),
                     GASurface(emptyList()),
                     GAConversation(),
