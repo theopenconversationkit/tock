@@ -65,6 +65,8 @@ internal class GithubOAuthProvider(
         sessionHandler: SessionHandler,
         userSessionHandler: UserSessionHandler
     ): AuthHandler {
+        verticle.router.route().handler(verticle.corsHandler("https://github.com"))
+
         val authHandler =
             super.protectPaths(verticle, pathsToProtect, cookieHandler, sessionHandler, userSessionHandler)
 

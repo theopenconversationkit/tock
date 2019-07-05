@@ -436,7 +436,7 @@ abstract class WebVerticle : AbstractVerticle() {
         }
     }
 
-    protected fun corsHandler(
+    fun corsHandler(
         origin: String = "*",
         allowCredentials: Boolean = false,
         allowedMethods: Set<HttpMethod> = EnumSet.of(GET, POST, PUT, DELETE),
@@ -459,11 +459,11 @@ abstract class WebVerticle : AbstractVerticle() {
     }
 
     inline fun <reified T : Any> RoutingContext.readJson(): T {
-        return mapper.readValue<T>(this.bodyAsString)
+        return mapper.readValue(this.bodyAsString)
     }
 
     inline fun <reified T : Any> readJson(upload: FileUpload): T {
-        return mapper.readValue<T>(File(upload.uploadedFileName()))
+        return mapper.readValue(File(upload.uploadedFileName()))
     }
 
     fun readBytes(upload: FileUpload): ByteArray = Files.readAllBytes(Paths.get(upload.uploadedFileName()))
