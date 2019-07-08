@@ -171,6 +171,16 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
         return botCol.find().toList()
     }
 
+    override fun delete(conf: BotConfiguration) {
+        botCol.deleteOne(
+            and(
+                Name eq conf.name,
+                Namespace eq conf.namespace,
+                BotId eq conf.botId
+            )
+        )
+    }
+
     fun getApplicationIds(namespace: String, nlpModel: String): Set<String> =
         getConfigurationsByNamespaceAndNlpModel(namespace, nlpModel)
             .asSequence()

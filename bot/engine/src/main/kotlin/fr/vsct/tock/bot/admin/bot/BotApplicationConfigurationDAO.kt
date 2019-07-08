@@ -61,4 +61,6 @@ interface BotApplicationConfigurationDAO {
     fun getBotConfigurationsByNamespaceAndNameAndBotId(namespace: String, name: String, botId: String): BotConfiguration?
 
     fun getBotConfigurations(): List<BotConfiguration>
+
+    fun delete(conf: BotConfiguration)
 }

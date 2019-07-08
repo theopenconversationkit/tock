@@ -625,6 +625,12 @@ object BotAdminService {
         ).forEach {
             applicationConfigurationDAO.delete(it)
         }
+        applicationConfigurationDAO.getBotConfigurationsByNamespaceAndBotId(
+            app.namespace, app.name
+        ).forEach {
+            applicationConfigurationDAO.delete(it)
+        }
+
         //delete stories
         storyDefinitionDAO.getStoryDefinitionsByNamespaceAndBotId(
             app.namespace, app.name
@@ -639,7 +645,12 @@ object BotAdminService {
         ).forEach {
             applicationConfigurationDAO.save(it.copy(botId = newApp.name, nlpModel = newApp.name))
         }
-        //delete stories
+        applicationConfigurationDAO.getBotConfigurationsByNamespaceAndBotId(
+            existingApp.namespace, existingApp.name
+        ).forEach {
+            applicationConfigurationDAO.save(it.copy(botId = newApp.name))
+        }
+        //stories
         storyDefinitionDAO.getStoryDefinitionsByNamespaceAndBotId(
             existingApp.namespace, existingApp.name
         ).forEach {

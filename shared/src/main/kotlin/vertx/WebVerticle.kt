@@ -509,7 +509,7 @@ abstract class WebVerticle : AbstractVerticle() {
     }
 
     fun RoutingContext.endJson(success: Boolean) {
-        this.endJson(fr.vsct.tock.shared.vertx.WebVerticle.BooleanResponse(success))
+        this.endJson(BooleanResponse(success))
     }
 
     fun RoutingContext.endJson(result: Any?) {
