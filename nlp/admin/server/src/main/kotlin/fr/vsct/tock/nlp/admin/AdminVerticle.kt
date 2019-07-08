@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.admin
 
+import fr.vsct.tock.nlp.admin.AdminService.front
 import fr.vsct.tock.nlp.admin.CsvCodec.newPrinter
 import fr.vsct.tock.nlp.admin.model.ApplicationScopedQuery
 import fr.vsct.tock.nlp.admin.model.ApplicationWithIntents
@@ -207,14 +208,15 @@ open class AdminVerticle : WebVerticle() {
 
         //Create or update application
         blockingJsonPost("/application", admin) { context, application: ApplicationWithIntents ->
+            val existingApp = application._id?.let { front.getApplicationById(it) }
             if (context.organization == application.namespace
-                && (application._id == null || context.organization == front.getApplicationById(application._id)?.namespace)
+                && (application._id == null || context.organization == existingApp?.namespace)
             ) {
                 val appWithSameName = front.getApplicationByNamespaceAndName(application.namespace, application.name)
                 if (appWithSameName != null && appWithSameName._id != application._id) {
                     badRequest("Application with same name already exists")
                 }
-                val newApp = front.save(application.toApplication().copy(name = application.name.toLowerCase()))
+                val newApp = saveApplication(existingApp, application.toApplication().copy(name = application.name.toLowerCase()))
                 //trigger a full rebuild if nlp engine change
                 if (appWithSameName?.nlpEngineType != newApp.nlpEngineType) {
                     front.triggerBuild(ModelBuildTrigger(newApp._id, true))
@@ -266,8 +268,9 @@ open class AdminVerticle : WebVerticle() {
         //Delete application that matches given identifier
         blockingDelete("/application/:id", admin) {
             val id: Id<ApplicationDefinition> = it.pathId("id")
-            if (it.organization == front.getApplicationById(id)?.namespace) {
-                front.deleteApplicationById(id)
+            val app = front.getApplicationById(id)
+            if (it.organization == app?.namespace) {
+                deleteApplication(app)
             } else {
                 unauthorized()
             }
@@ -742,6 +745,14 @@ open class AdminVerticle : WebVerticle() {
                     }
                 }
         }
+    }
+
+    protected open fun deleteApplication(app: ApplicationDefinition) {
+        front.deleteApplicationById(app._id)
+    }
+
+    protected open fun saveApplication(existingApp: ApplicationDefinition?, app: ApplicationDefinition): ApplicationDefinition {
+        return front.save(app)
     }
 
     override fun configure() {

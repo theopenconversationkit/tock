@@ -50,6 +50,7 @@ import fr.vsct.tock.bot.engine.config.UploadedFilesService.downloadFile
 import fr.vsct.tock.nlp.admin.AdminVerticle
 import fr.vsct.tock.nlp.admin.model.ApplicationScopedQuery
 import fr.vsct.tock.nlp.admin.model.TranslateReport
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.provide
@@ -442,6 +443,18 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         configureStaticHandling()
+    }
+
+    override fun deleteApplication(app: ApplicationDefinition) {
+        super.deleteApplication(app)
+        BotAdminService.deleteApplication(app)
+    }
+
+    override fun saveApplication(existingApp: ApplicationDefinition?, app: ApplicationDefinition): ApplicationDefinition {
+        if (existingApp != null && existingApp.name != app.name) {
+            BotAdminService.changeApplicationName(existingApp, app)
+        }
+        return super.saveApplication(existingApp, app)
     }
 
     fun RoutingContext.loadTestPlan(): TestPlan {

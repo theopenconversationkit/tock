@@ -618,4 +618,32 @@ object BotAdminService {
                     testPlan
                 )
             }
+
+    fun deleteApplication(app: ApplicationDefinition) {
+        applicationConfigurationDAO.getConfigurationsByNamespaceAndNlpModel(
+            app.namespace, app.name
+        ).forEach {
+            applicationConfigurationDAO.delete(it)
+        }
+        //delete stories
+        storyDefinitionDAO.getStoryDefinitionsByNamespaceAndBotId(
+            app.namespace, app.name
+        ).forEach {
+            storyDefinitionDAO.delete(it)
+        }
+    }
+
+    fun changeApplicationName(existingApp: ApplicationDefinition, newApp: ApplicationDefinition) {
+        applicationConfigurationDAO.getConfigurationsByNamespaceAndNlpModel(
+            existingApp.namespace, existingApp.name
+        ).forEach {
+            applicationConfigurationDAO.save(it.copy(botId = newApp.name, nlpModel = newApp.name))
+        }
+        //delete stories
+        storyDefinitionDAO.getStoryDefinitionsByNamespaceAndBotId(
+            existingApp.namespace, existingApp.name
+        ).forEach {
+            storyDefinitionDAO.save(it.copy(botId = newApp.name))
+        }
+    }
 }

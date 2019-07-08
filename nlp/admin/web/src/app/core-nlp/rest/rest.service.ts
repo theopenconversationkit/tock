@@ -29,6 +29,7 @@ export class RestService {
 
   readonly url: string;
   readonly notAuthenticatedUrl: string;
+  private ssologin = environment.ssologin;
 
   readonly errorEmitter: EventEmitter<string> = new EventEmitter();
 
@@ -36,6 +37,10 @@ export class RestService {
               private router: Router) {
     this.notAuthenticatedUrl = environment.serverUrl;
     this.url = `${environment.serverUrl}/admin`;
+  }
+
+  isSSO(): boolean {
+    return this.ssologin || document.cookie.indexOf("tock-sso=") !== -1;
   }
 
   private headers(): HttpHeaders {
@@ -56,13 +61,13 @@ export class RestService {
   get<T>(path: string, parseFunction: (value: any) => T): Observable<T> {
     return this.http.get(`${this.url}${path}`, {headers: this.headers(), withCredentials: true}).pipe(
       map((res: string) => parseFunction(res || {})),
-      catchError(e => RestService.handleError(this, e)),);
+      catchError(e => this.handleError(this, e)),);
   }
 
   getArray<T>(path: string, parseFunction: (value: any) => T[]): Observable<T[]> {
     return this.http.get(`${this.url}${path}`, {headers: this.headers(), withCredentials: true}).pipe(
       map((res: string) => parseFunction(res || [])),
-      catchError(e => RestService.handleError(this, e)),);
+      catchError(e => this.handleError(this, e)),);
   }
 
   delete<I>(path: string): Observable<boolean> {
@@ -70,7 +75,7 @@ export class RestService {
       `${this.url}${path}`,
       {headers: this.headers(), withCredentials: true}).pipe(
       map((res: string) => BooleanResponse.fromJSON(res || {}).success),
-      catchError(e => RestService.handleError(this, e)),);
+      catchError(e => this.handleError(this, e)),);
   }
 
   post<I, O>(path: string, value?: I, parseFunction?: (value: any) => O, baseUrl?: string): Observable<O> {
@@ -79,7 +84,7 @@ export class RestService {
       value ? JSON.stringify(value) : "{}",
       {headers: this.headers(), withCredentials: true}).pipe(
       map((res: string) => parseFunction ? parseFunction(res || {}) : (res || {}) as O),
-      catchError(e => RestService.handleError(this, e)),);
+      catchError(e => this.handleError(this, e)),);
   }
 
   put<I, O>(path: string, value?: I, parseFunction?: (value: any) => O): Observable<O> {
@@ -88,13 +93,13 @@ export class RestService {
       value ? JSON.stringify(value) : "{}",
       {headers: this.headers(), withCredentials: true}).pipe(
       map((res: string) => parseFunction ? parseFunction(res || {}) : (res || {}) as O),
-      catchError(e => RestService.handleError(this, e)),);
+      catchError(e => this.handleError(this, e)),);
   }
 
   getNotAuthenticated<T>(path: string, parseFunction: (value: any) => T): Observable<T> {
     return this.http.get(`${this.notAuthenticatedUrl}${path}`, {headers: this.headers(), withCredentials: true}).pipe(
       map((res: string) => parseFunction(res || {})),
-      catchError(e => RestService.handleError(this, e)),);
+      catchError(e => this.handleError(this, e)),);
   }
 
   postNotAuthenticated<I, O>(path: string, value?: I, parseFunction?: (value: any) => O): Observable<O> {
@@ -103,7 +108,7 @@ export class RestService {
       value ? JSON.stringify(value) : "{}",
       {headers: this.notAuthenticatedHeaders(), withCredentials: true}).pipe(
       map((res: string) => parseFunction ? parseFunction(res || {}) : (res || {}) as O),
-      catchError(e => RestService.handleError(this, e)),);
+      catchError(e => this.handleError(this, e)),);
   }
 
   fileUploader(path: string): FileUploader {
@@ -117,13 +122,13 @@ export class RestService {
     uploader.onErrorItem =
       (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
         uploader.removeFromQueue(item);
-        RestService.handleError(this, response ? response : `Error ${status}`);
+        this.handleError(this, response ? response : `Error ${status}`);
       };
 
     return uploader;
   }
 
-  private static handleError(rest: RestService, error: Response | any) {
+  private handleError(rest: RestService, error: Response | any) {
     console.error(error);
     let errMsg: string;
     const e = Array.isArray(error) ? error[0] : error;
@@ -137,7 +142,7 @@ export class RestService {
         : `Server error : ${error.status} - ${error.statusText || ''}`;
     } else {
       //strange things happen
-      if (e && e.status === 0) {
+      if (e && e.status === 0 && this.isSSO()) {
         location.reload();
         return NEVER;
       }

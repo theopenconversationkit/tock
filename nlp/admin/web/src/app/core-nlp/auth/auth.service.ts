@@ -25,7 +25,6 @@ import {environment} from "../../../environments/environment";
 @Injectable()
 export class AuthService {
 
-  private ssologin = environment.ssologin;
   private logged: boolean;
   private redirectUrl: string;
   private authListeners: AuthListener[] = [];
@@ -46,7 +45,7 @@ export class AuthService {
   }
 
   isSSO(): boolean {
-    return this.ssologin || document.cookie.indexOf("tock-sso=") !== -1;
+    return this.rest.isSSO();
   }
 
   addListener(listener: AuthListener) {
