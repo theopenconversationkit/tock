@@ -728,6 +728,11 @@ open class AdminVerticle : WebVerticle() {
                     }
                 }
             }
+            router.route(GET, "/")
+                .handler(
+                    StaticHandler.create()
+                        .setAllowRootFileSystemAccess(true).setCachingEnabled(false).setWebRoot(webRoot)
+                )
             router.route(GET, "/*")
                 .handler(StaticHandler.create().setAllowRootFileSystemAccess(true).setWebRoot(webRoot))
                 .handler { context ->
