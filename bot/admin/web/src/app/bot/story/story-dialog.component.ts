@@ -52,7 +52,7 @@ export class StoryDialogComponent implements OnInit {
     this.label = this.data.label;
     this.description = this.data.description;
     this.category = this.data.category;
-    this.dialogType = this.data.story ? "Story" : "Intent";
+    this.dialogType = "Story";
     this.freezeIntent = this.data.freezeIntent;
     this.userSentence = this.data.userSentence ? this.data.userSentence : "";
     setTimeout(() => this.labelElement.nativeElement.focus(), 500);

@@ -28,7 +28,7 @@
                               [style.background]="t.color()"
                               [id]="t.index"
                               [matTooltip]="t.display(sentence, state.user)">{{t.text}}</span></div>
-    <button *ngIf="displayActions && appConfig.answerToSentenceUrl && isRootSentence()" mat-icon-button (click)="answerToSentence()" matTooltip="Set a custom answer" class="answer-button"><mat-icon>question_answer</mat-icon></button>
+    <button *ngIf="displayActions && appConfig.answerToSentenceUrl && isRootSentence()" mat-icon-button (click)="answerToSentence()" matTooltip="Create a Story" class="answer-button"><mat-icon>question_answer</mat-icon></button>
     <button *ngIf="displayActions && isRootSentence()" mat-icon-button (click)="copyToClipboard()" matTooltip="Copy sentence to clipboard" class="copy-button"><mat-icon>content_copy</mat-icon></button>
     <textarea *ngIf="displayActions && isRootSentence()" #copy class="copy"></textarea>
   </div>

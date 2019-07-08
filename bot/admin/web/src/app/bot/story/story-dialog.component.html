@@ -20,24 +20,24 @@
   <form #intentForm="ngForm" class="container">
     <!-- label -->
     <mat-form-field>
-      <input matInput name="userSentence" placeholder="User Phrase" [(ngModel)]="userSentence"
-             matTooltip="User Phrase">
+      <input matInput name="userSentence" placeholder="User Phrase Sample" [(ngModel)]="userSentence"
+             matTooltip="User phrase provided as sample for the user">
     </mat-form-field>
     <!-- label -->
     <mat-form-field>
-      <input matInput name="label" placeholder="Label" [(ngModel)]="label" (keyup)="copyToName()" (keyup.enter)="save()"
-             matTooltip="Displayed label" #labelElement>
+      <input matInput name="label" placeholder="Story Label" [(ngModel)]="label" (keyup)="copyToName()" (keyup.enter)="save()"
+             matTooltip="Displayed label for the story" #labelElement>
     </mat-form-field>
     <!-- story id -->
     <mat-form-field>
-      <input [disabled]="!create" matInput name="name" placeholder="Name" [(ngModel)]="name" (keyup)="format()" (keyup.enter)="save()"
-             matTooltip="Technical id"
+      <input [disabled]="!create" matInput name="name" placeholder="Story Id" [(ngModel)]="name" (keyup)="format()" (keyup.enter)="save()"
+             matTooltip="Story technical id"
              required>
     </mat-form-field>
     <!-- intent -->
     <mat-form-field>
       <input matInput name="intent" placeholder="Intent" [(ngModel)]="intent"
-             matTooltip="Intent" [disabled]="freezeIntent"
+             matTooltip="The intent that triggers the story" [disabled]="freezeIntent"
              (keyup)="intentCategoryChange()" (focus)="intentCategoryChange()"
              [matAutocomplete]="intentAuto"
              (change)="intent = $event.target.value"
@@ -53,7 +53,7 @@
     <!-- category -->
     <mat-form-field>
       <input matInput name="category" placeholder="Category" [(ngModel)]="category"
-             matTooltip="Category" (keyup)="categoryChange()" (focus)="categoryChange()"
+             matTooltip="The category of the story" (keyup)="categoryChange()" (focus)="categoryChange()"
              [matAutocomplete]="catAuto">
     </mat-form-field>
     <mat-autocomplete #catAuto="matAutocomplete" autoActiveFirstOption>
@@ -61,7 +61,7 @@
       </mat-autocomplete>
     <!-- description -->
     <mat-form-field>
-      <textarea rows="5" matInput name="description" placeholder="Description" [(ngModel)]="description"></textarea>
+      <textarea rows="5" matInput name="description" placeholder="Description" [(ngModel)]="description"  matTooltip="The description of the story"></textarea>
     </mat-form-field>
   </form>
 </div>

@@ -46,6 +46,7 @@ export class CreateStoryComponent implements OnInit {
 
   story: StoryDefinitionConfiguration;
   submit = new AnswerController();
+  textRetrieved: boolean = false;
 
   @ViewChild('newSentence') newSentence: ElementRef;
 
@@ -111,14 +112,18 @@ export class CreateStoryComponent implements OnInit {
           "",
           ""
         );
-        this.route.queryParams.subscribe(params => {
-          const text = params["text"];
-          if (text) {
-            this.onSentence(text);
-          } else {
-            setTimeout(_ => _this.newSentence.nativeElement.focus(), 500);
-          }
-        });
+        if (!this.textRetrieved) {
+          this.route.queryParams.subscribe(params => {
+            this.textRetrieved = true;
+            const text = params["text"];
+            if (text) {
+              this.story.userSentence = text;
+              this.onSentence(text);
+            } else {
+              setTimeout(_ => _this.newSentence.nativeElement.focus(), 500);
+            }
+          });
+        }
       }
     } else {
       setTimeout(_ => _this.createStory(), 200);
