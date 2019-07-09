@@ -80,8 +80,7 @@
   <mat-form-field class="bot-input">
     <input matInput placeholder="Relative REST path" [(ngModel)]="configuration.path" title="e.g. /messenger">
   </mat-form-field>
-  <mat-expansion-panel
-    *ngIf="botSharedService.findConnectorConfiguration(configuration.connectorType) && botSharedService.findConnectorConfiguration(configuration.connectorType).fields.length !== 0">
+  <mat-expansion-panel>
     <mat-expansion-panel-header>
       <mat-panel-title>Connector Custom Configuration</mat-panel-title>
       <mat-panel-description>Parameters</mat-panel-description>
