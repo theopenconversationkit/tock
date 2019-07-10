@@ -23,14 +23,14 @@ Avec Maven :
         <dependency>
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-bot-api-websocket</artifactId>
-            <version>19.3.2-SNAPSHOT</version>
+            <version>19.3.2</version>
         </dependency>
 ```
 
 ou Gradle :
 
 ```gradle
-      compile 'fr.vsct.tock:tock-bot-api-websocket:19.3.2-SNAPSHOT'
+      compile 'fr.vsct.tock:tock-bot-api-websocket:19.3.2'
 ```
 
 ### Webhook
@@ -43,14 +43,14 @@ Avec Maven :
         <dependency>
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-bot-api-webhook</artifactId>
-            <version>19.3.2-SNAPSHOT</version>
+            <version>19.3.2</version>
         </dependency>
 ```
 
 ou Gradle :
 
 ```gradle
-      compile 'fr.vsct.tock:tock-bot-api-webhook:19.3.2-SNAPSHOT'
+      compile 'fr.vsct.tock:tock-bot-api-webhook:19.3.2'
 ```
 
 Dans ce cas, contrairement au mode "websocket", 
@@ -106,6 +106,11 @@ fun main() {
         ))
 }
 ```
+
+### Se connecter à la plateforme de démonstration
+
+Pour se connecter automatiquement à la plateforme de démonstration,
+utilisez la méthode `startWithDemo()` au lieu de `start()``
 
 ## Se connecter à l'API directement
 

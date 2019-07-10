@@ -105,3 +105,9 @@ Enfin deux autres projets sont mis à disposition :
 * Un projet contenant des images dockers avec comme objectif de faciliter la prise en main : [https://github.com/voyages-sncf-technologies/tock-docker](https://github.com/voyages-sncf-technologies/tock-docker)
 * Un projet contenant un exemple d'implémentation de bot se basant sur les [API SNCF](https://www.digital.sncf.com/startup/api) en Open Data : [https://github.com/voyages-sncf-technologies/tock-bot-open-data](https://github.com/voyages-sncf-technologies/tock-bot-open-data) 
 
+## Plateforme de démonstration
+
+Une plateforme de démonstration est [disponible](https://demotock-production-admin.vsct-prod.aws.vsct.fr). 
+Pour vous authentifier, un compte github est nécessaire. 
+Cette plateforme vous permet de découvrir les différents aspects de Tock. 
+Elle n'a pas vocation a être utilisée pour une application en production.

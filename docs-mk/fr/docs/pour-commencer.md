@@ -1,6 +1,26 @@
 # Commencer à utiliser Tock
 
+## Plateforme de démonstration
+
+Le plus simple est de démarrer en utilisant la [plateforme de démonstration](https://demotock-production-admin.vsct-prod.aws.vsct.fr).
+
+Cette plateforme vous permet de tester simplement les différentes fonctionnalités de Tock.
+
+N'hésitez pas à nous faire vos retours via [gitter](https://gitter.im/tockchat/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge)
+ou en signalant une [anomalie](https://github.com/voyages-sncf-technologies/tock/issues).
+
+Elle permet de créer des modèles NLU (pour Natural Language Understanding) et de développer
+des bots via l'API "BOT" de Tock. Pour plus de détails, veuillez consulter les chapitres correspondants :
+
+- [Construire le modèle](../construire-le-modele)
+- [Développer un Assistant](../developper-un-assistant)
+- [Développer via API](../developper-api)
+
 ## Images Docker
+
+Si vous souhaitez ne pas développer un assistant en utilisation l'API BOT ( c'est à dire en développant un assistant "Tock"), 
+ou si vous souhaitez mettre en plateforme de production, vous aurez besoin d'installer
+Tock sur vos serveurs.
 
 Des images docker sont mises à disposition pour faciliter le démarrage.
 
