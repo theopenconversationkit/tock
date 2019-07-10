@@ -22,6 +22,7 @@ import io.github.resilience4j.circuitbreaker.CircuitBreaker
 import io.github.resilience4j.retrofit.CircuitBreakerCallAdapter
 import mu.KLogger
 import mu.KotlinLogging
+import okhttp3.ConnectionSpec
 import okhttp3.Credentials
 import okhttp3.Headers
 import okhttp3.Interceptor
@@ -97,6 +98,8 @@ fun retrofitBuilderWithTimeoutAndLogger(
     }
     .addInterceptor(LoggingInterceptor(logger, level))
     .apply {
+        //support compatible tls
+        connectionSpecs(listOf(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS, ConnectionSpec.CLEARTEXT))
         takeIf { proxy != null }
             ?.proxy(proxy)
     }
@@ -105,6 +108,7 @@ fun retrofitBuilderWithTimeoutAndLogger(
     .let {
         Retrofit.Builder().client(it)
             .apply {
+
                 takeIf { circuitBreaker }
                     ?.addCallAdapterFactory(CircuitBreakerCallAdapter.of(CircuitBreaker.ofDefaults(logger.name)))
             }
@@ -326,12 +330,12 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
                     logger.info(buffer.readString(charset))
                     logger.info(
                         "--> END " + request.method()
-                                + " (" + requestBody.contentLength() + "-byte body)"
+                            + " (" + requestBody.contentLength() + "-byte body)"
                     )
                 } else {
                     logger.info(
                         "--> END " + request.method() + " (binary "
-                                + requestBody.contentLength() + "-byte body omitted)"
+                            + requestBody.contentLength() + "-byte body omitted)"
                     )
                 }
             }
@@ -353,9 +357,9 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
         val bodySize = if (contentLength != -1L) contentLength.toString() + "-byte" else "unknown-length"
         logger.info(
             "<-- " + response.code() + ' ' + response.message() + ' '
-                    + response.request().url() + " (" + tookMs + "ms" + (if (!logHeaders)
+                + response.request().url() + " (" + tookMs + "ms" + (if (!logHeaders)
                 ", "
-                        + bodySize + " body"
+                    + bodySize + " body"
             else
                 "") + ')'
         )
