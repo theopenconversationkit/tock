@@ -141,7 +141,7 @@ internal object EntityCoreService : EntityCore {
     ): EvaluationResult {
         return try {
             evaluator.evaluate(context, text)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             logger.error(e)
             EvaluationResult(false)
         }
