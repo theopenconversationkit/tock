@@ -111,7 +111,7 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
         val text: String,
         val applicationId: Id<ApplicationDefinition>,
         val query: ParseQuery,
-        val result: ParseResult?,
+        val result: ParseResult? = null,
         val durationInMS: Long = 0,
         val error: Boolean = false,
         val date: Instant = Instant.now()
@@ -145,8 +145,8 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
         val text: String,
         val applicationId: Id<ApplicationDefinition>,
         val language: Locale,
-        val intentProbability: Double?,
-        val entitiesProbability: Double?,
+        val intentProbability: Double? = null,
+        val entitiesProbability: Double? = null,
         val lastUsage: Instant = Instant.now(),
         val count: Long = 1
     ) {
