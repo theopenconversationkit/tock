@@ -11,6 +11,32 @@
 <code><span class="keyword">interface </span><span class="identifier">BotProvider</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/definition/BotProvider.kt#L23">(source)</a>
 <p>Provides a specific type of <a href="../-bot-definition/index.html">BotDefinition</a>.
 Custom provider should usually not directly extend this class, but instead extend <a href="../-bot-provider-base/index.html">BotProviderBase</a>.</p>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="configuration-name.html">configurationName</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">configurationName</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code>
+<p>Is this <a href="./index.html">BotProvider</a> specific to a configuration name?
+If yes, this property stores the configuration name.
+If no, this property returns null.
+By default the¬ property returns null.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="configuration-updated.html">configurationUpdated</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">var </span><span class="identifier">configurationUpdated</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Does this bot provider gets a configuration update ?</p>
+</td>
+</tr>
+</tbody>
+</table>
 <h3>Functions</h3>
 <table>
 <tbody>

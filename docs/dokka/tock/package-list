@@ -19,6 +19,7 @@ $dokka.location:fr.vsct.tock.shared$provideOrDefault(com.github.salomonbrys.kode
 $dokka.location:fr.vsct.tock.shared$sumByLong(kotlin.collections.Iterable((fr.vsct.tock.shared.sumByLong.T)), kotlin.Function1((fr.vsct.tock.shared.sumByLong.T, kotlin.Long)))fr.vsct.tock.shared/kotlin.collections.-iterable/sum-by-long.html
 $dokka.location:fr.vsct.tock.shared$toList(kotlin.collections.Iterator((fr.vsct.tock.shared.toList.T)))fr.vsct.tock.shared/kotlin.collections.-iterator/to-list.html
 $dokka.location:fr.vsct.tock.shared$toSet(java.util.Enumeration((fr.vsct.tock.shared.toSet.T)))fr.vsct.tock.shared/java.util.-enumeration/to-set.html
+$dokka.location:fr.vsct.tock.shared$trace(mu.KLogger, kotlin.Throwable)fr.vsct.tock.shared/mu.-k-logger/trace.html
 $dokka.location:fr.vsct.tock.shared$warn(mu.KLogger, kotlin.Throwable)fr.vsct.tock.shared/mu.-k-logger/warn.html
 $dokka.location:fr.vsct.tock.shared$watch(com.mongodb.reactivestreams.client.MongoCollection((fr.vsct.tock.shared.watch.T)), com.mongodb.client.model.changestream.FullDocument, kotlin.Function1((com.mongodb.client.model.changestream.ChangeStreamDocument((fr.vsct.tock.shared.watch.T)), kotlin.Unit)))fr.vsct.tock.shared/com.mongodb.reactivestreams.client.-mongo-collection/watch.html
 $dokka.location:fr.vsct.tock.shared$withNamespace(kotlin.String, kotlin.String)fr.vsct.tock.shared/kotlin.-string/with-namespace.html
@@ -43,6 +44,7 @@ fr.vsct.tock.bot.connector
 fr.vsct.tock.bot.connector.alexa
 fr.vsct.tock.bot.connector.ga
 fr.vsct.tock.bot.connector.ga.model
+fr.vsct.tock.bot.connector.ga.model.notification
 fr.vsct.tock.bot.connector.ga.model.request
 fr.vsct.tock.bot.connector.ga.model.response
 fr.vsct.tock.bot.connector.media

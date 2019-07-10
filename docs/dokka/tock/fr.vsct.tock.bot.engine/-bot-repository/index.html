@@ -8,7 +8,7 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.engine</a>&nbsp;/&nbsp;<a href="./index.html">BotRepository</a><br/>
 <br/>
 <h1>BotRepository</h1>
-<code><span class="keyword">object </span><span class="identifier">BotRepository</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/BotRepository.kt#L57">(source)</a>
+<code><span class="keyword">object </span><span class="identifier">BotRepository</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/BotRepository.kt#L62">(source)</a>
 <p>Advanced bot configuration.</p>
 <p><a href="../../fr.vsct.tock.bot/register-and-install-bot.html">fr.vsct.tock.bot.registerAndInstallBot</a> method is the preferred way to start a bot in most use cases.</p>
 <h3>Properties</h3>
@@ -37,6 +37,15 @@
 <h3>Functions</h3>
 <table>
 <tbody>
+<tr>
+<td>
+<p><a href="check-bot-configurations.html">checkBotConfigurations</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">checkBotConfigurations</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotRepository$checkBotConfigurations(kotlin.Boolean)/startup">startup</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a>&nbsp;<span class="symbol">=</span>&nbsp;false<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Checks that configurations are synchronized with the database.</p>
+</td>
+</tr>
 <tr>
 <td>
 <p><a href="find-connector-provider.html">findConnectorProvider</a></p>
@@ -99,6 +108,15 @@ A <a href="../-bot-bus/index.html">BotBus</a> is created and the corresponding s
 <td>
 <code><span class="keyword">fun </span><span class="identifier">registerBotProvider</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotRepository$registerBotProvider(fr.vsct.tock.bot.definition.BotProvider)/bot">bot</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-bot-provider/index.html"><span class="identifier">BotProvider</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
 <p>Registers a new <a href="../../fr.vsct.tock.bot.definition/-bot-provider/index.html">BotProvider</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="register-built-in-story-definitions.html">registerBuiltInStoryDefinitions</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">registerBuiltInStoryDefinitions</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotRepository$registerBuiltInStoryDefinitions(fr.vsct.tock.bot.definition.BotProvider)/botProvider">botProvider</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-bot-provider/index.html"><span class="identifier">BotProvider</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Register built-in story definitions.</p>
 </td>
 </tr>
 <tr>

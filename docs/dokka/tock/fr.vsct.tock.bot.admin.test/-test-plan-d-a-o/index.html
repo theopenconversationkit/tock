@@ -45,15 +45,27 @@
 <p><a href="remove-test-plan.html">removeTestPlan</a></p>
 </td>
 <td>
-<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">removeTestPlan</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.admin.test.TestPlanDAO$removeTestPlan(org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlan)))/planId">planId</span><span class="symbol">:</span>&nbsp;<span class="identifier">Id</span><span class="symbol">&lt;</span><a href="../-test-plan/index.html"><span class="identifier">TestPlan</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">removeTestPlan</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.admin.test.TestPlanDAO$removeTestPlan(org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlan)))/planId">planId</span><span class="symbol">:</span>&nbsp;<span class="identifier">Id</span><span class="symbol">&lt;</span><a href="../-test-plan/index.html"><span class="identifier">TestPlan</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Remove the given test plan from the database.</p>
+</td>
 </tr>
 <tr>
 <td>
-<p><a href="save.html">save</a></p>
+<p><a href="save-test-execution.html">saveTestExecution</a></p>
 </td>
 <td>
-<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">save</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.admin.test.TestPlanDAO$save(fr.vsct.tock.bot.admin.test.TestPlan)/testPlan">testPlan</span><span class="symbol">:</span>&nbsp;<a href="../-test-plan/index.html"><span class="identifier">TestPlan</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code><br/>
-<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">save</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.admin.test.TestPlanDAO$save(fr.vsct.tock.bot.admin.test.TestPlanExecution)/testPlan">testPlan</span><span class="symbol">:</span>&nbsp;<a href="../-test-plan-execution/index.html"><span class="identifier">TestPlanExecution</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">saveTestExecution</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.admin.test.TestPlanDAO$saveTestExecution(fr.vsct.tock.bot.admin.test.TestPlanExecution)/testPlanExecution">testPlanExecution</span><span class="symbol">:</span>&nbsp;<a href="../-test-plan-execution/index.html"><span class="identifier">TestPlanExecution</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Save the given common test plan execution into the mongo database.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="save-test-plan.html">saveTestPlan</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">saveTestPlan</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.admin.test.TestPlanDAO$saveTestPlan(fr.vsct.tock.bot.admin.test.TestPlan)/testPlan">testPlan</span><span class="symbol">:</span>&nbsp;<a href="../-test-plan/index.html"><span class="identifier">TestPlan</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Save the given common test plan into the mongo database.</p>
+</td>
 </tr>
 </tbody>
 </table>

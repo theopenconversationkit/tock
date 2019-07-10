@@ -8,7 +8,7 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.connector.alexa</a>&nbsp;/&nbsp;<a href="./index.html">AlexaConnector</a><br/>
 <br/>
 <h1>AlexaConnector</h1>
-<code><span class="keyword">class </span><span class="identifier">AlexaConnector</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-base/index.html"><span class="identifier">ConnectorBase</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/connector-alexa/src/main/kotlin/fr/vsct/tock/bot/connector/alexa/AlexaConnector.kt#L43">(source)</a>
+<code><span class="keyword">class </span><span class="identifier">AlexaConnector</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-base/index.html"><span class="identifier">ConnectorBase</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/connector-alexa/src/main/kotlin/fr/vsct/tock/bot/connector/alexa/AlexaConnector.kt#L48">(source)</a>
 <p><a href="#">Connector</a> for Amazon Alexa.</p>
 <h3>Properties</h3>
 <table>
@@ -69,6 +69,17 @@
 <td>
 <code><span class="keyword">fun </span><span class="identifier">send</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.alexa.AlexaConnector$send(fr.vsct.tock.bot.engine.event.Event, fr.vsct.tock.bot.connector.ConnectorCallback, kotlin.Long)/event">event</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.event/-event/index.html"><span class="identifier">Event</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.alexa.AlexaConnector$send(fr.vsct.tock.bot.engine.event.Event, fr.vsct.tock.bot.connector.ConnectorCallback, kotlin.Long)/callback">callback</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-callback/index.html"><span class="identifier">ConnectorCallback</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.alexa.AlexaConnector$send(fr.vsct.tock.bot.engine.event.Event, fr.vsct.tock.bot.connector.ConnectorCallback, kotlin.Long)/delayInMs">delayInMs</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
 <p>Send an event with this connector for the specified delay.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="to-connector-message.html">toConnectorMessage</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">toConnectorMessage</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.alexa.AlexaConnector$toConnectorMessage(fr.vsct.tock.bot.connector.media.MediaMessage)/message">message</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector.media/-media-message/index.html"><span class="identifier">MediaMessage</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">&gt;</span></code>
+<p>Maps a <a href="../../fr.vsct.tock.bot.connector.media/-media-message/index.html">MediaMessage</a> into a <a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html">ConnectorMessage</a>.
+If <a href="../../fr.vsct.tock.bot.connector/-connector/to-connector-message.html">toConnectorMessage</a> returns an empty list, the mapping is not supported for this connector.
+Default returns an empty list.</p>
 </td>
 </tr>
 </tbody>
