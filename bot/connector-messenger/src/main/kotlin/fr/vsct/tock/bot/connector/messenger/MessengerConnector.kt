@@ -417,7 +417,7 @@ class MessengerConnector internal constructor(
     fun requestThreadControl(userId: PlayerId, metadata: String? = null): SendResponse? =
         client.requestThreadControl(
             getToken(applicationId),
-            RequestThreadControlRequest(Recipient(userId.id, metadata))
+            RequestThreadControlRequest(Recipient(userId.id), metadata)
         )
 
     /**
@@ -426,16 +426,16 @@ class MessengerConnector internal constructor(
     fun takeThreadControl(userId: PlayerId, metadata: String? = null): SendResponse? =
         client.takeThreadControl(
             getToken(applicationId),
-            TakeThreadControlRequest(Recipient(userId.id, metadata))
+            TakeThreadControlRequest(Recipient(userId.id), metadata)
         )
 
     /**
      * Passes thread control.
      */
-    fun passThreadControl(userId: PlayerId, metadata: String? = null): SendResponse? =
+    fun passThreadControl(userId: PlayerId, targetAppId: String, metadata: String? = null): SendResponse? =
         client.passThreadControl(
             getToken(applicationId),
-            PassThreadControlRequest(Recipient(userId.id, metadata))
+            PassThreadControlRequest(Recipient(userId.id), targetAppId, metadata)
         )
 
     /**
