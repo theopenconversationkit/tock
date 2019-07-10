@@ -48,7 +48,8 @@ object ValueResolverRepository {
             PhoneNumberValue::class,
             CustomValueWrapper::class,
             UnknownValue::class,
-            StringValue::class
+            StringValue::class,
+            DurationValue::class
         )
             .forEach { registerType(it) }
     }

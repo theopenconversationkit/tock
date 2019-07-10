@@ -16,8 +16,10 @@
 
 package fr.vsct.tock.duckling.client
 
+import fr.vsct.tock.nlp.entity.DurationValue
 import fr.vsct.tock.nlp.entity.NumberValue
 import org.junit.jupiter.api.Test
+import java.time.Duration
 import java.time.ZonedDateTime
 import kotlin.test.assertEquals
 
@@ -30,5 +32,12 @@ class DucklingParserIntegrationTest {
     fun testParseNumber() {
         val v = DucklingParser.parse("en", "number", ZonedDateTime.now(), "12")
         assertEquals(12, (v.first().value as NumberValue).value)
+    }
+
+    @Test
+    fun testDuration() {
+        val result =
+            DucklingParser.parse("fr", "duration", ZonedDateTime.now(), "deux heures et 1 min")
+        assertEquals(DurationValue(Duration.parse("PT2H1M")), result.first().value)
     }
 }

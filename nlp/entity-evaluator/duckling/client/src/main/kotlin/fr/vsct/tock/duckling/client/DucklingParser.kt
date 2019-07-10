@@ -26,6 +26,7 @@ import fr.vsct.tock.nlp.core.service.entity.EntityTypeValue
 import fr.vsct.tock.nlp.core.service.entity.EvaluationResult
 import fr.vsct.tock.nlp.entity.AmountOfMoneyValue
 import fr.vsct.tock.nlp.entity.DistanceValue
+import fr.vsct.tock.nlp.entity.DurationValue
 import fr.vsct.tock.nlp.entity.EmailValue
 import fr.vsct.tock.nlp.entity.NumberValue
 import fr.vsct.tock.nlp.entity.OrdinalValue
@@ -46,6 +47,7 @@ import mu.KotlinLogging
 import java.time.Duration
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 /**
  *
@@ -186,9 +188,30 @@ internal object DucklingParser : EntityEvaluator, EntityTypeClassifier, Parser {
             "url" -> parseSimple(parseResult, dimension) { UrlValue(it[":value"].string()) }
             "email" -> parseSimple(parseResult, dimension) { EmailValue(it[":value"].string()) }
             "phone-number" -> parseSimple(parseResult, dimension) { PhoneNumberValue(it[":value"].string()) }
-            //TODO duration
-            else -> TODO("Not yet supported yet : $dimension")
+            "duration" -> parseDuration(parseResult)
+            else -> error("Not yet supported yet : $dimension")
         }
+    }
+
+    private fun parseDuration(parseResult: JSONValue): List<ValueWithRange> {
+        var start = Integer.MAX_VALUE
+        var end = Integer.MIN_VALUE
+        return parseResult.iterable().mapNotNull {
+            if (it[":dim"].string() == "duration") {
+                val n = it[":value"][":normalized"]
+                val v = n[":value"].number().toLong()
+                val u = if (n[":unit"].string() == "second") ChronoUnit.SECONDS else error("unknown unit: ${n[":unit"]}")
+
+                start = Math.min(start, it[":start"].int())
+                end = Math.max(end, it[":end"].int())
+                Duration.of(v, u)
+            } else {
+                null
+            }
+        }.reduce { a, b -> a + b }
+            .let {
+                listOf(ValueWithRange(start, end, DurationValue(it), "duration"))
+            }
     }
 
     private fun parseSimple(
