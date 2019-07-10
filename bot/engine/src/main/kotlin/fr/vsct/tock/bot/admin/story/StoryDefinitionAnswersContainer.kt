@@ -23,6 +23,11 @@ internal interface StoryDefinitionAnswersContainer {
     fun findCurrentAnswer(): AnswerConfiguration? =
         findAnswer(currentType)
 
+    /**
+     * Is there a current answer ?
+     */
+    fun hasCurrentAnwser(): Boolean = findCurrentAnswer()?.hasAnswer() == true
+
     fun findAnswer(type: AnswerConfigurationType): AnswerConfiguration? =
         answers.firstOrNull { it.answerType == type }
 

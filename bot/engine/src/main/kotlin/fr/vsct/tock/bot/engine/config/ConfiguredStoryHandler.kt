@@ -41,20 +41,22 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
 
     override fun handle(bus: BotBus) {
         configuration.mandatoryEntities.forEach { entity ->
-            if (bus.entityValueDetails(entity.role) == null) {
+            if (bus.entityValueDetails(entity.role) == null && entity.hasCurrentAnwser()) {
                 entity.send(bus)
                 return@handle
             }
         }
 
-        (bus.step as? Step)?.configuration?.also { step ->
-            step.send(bus)
-            bus.botDefinition
-                .findStoryDefinition(step.targetIntent)
-                .takeUnless { it == bus.botDefinition.unknownStory }
-                ?.apply { bus.handleAndSwitchStory(this) }
-            return@handle
-        }
+        (bus.step as? Step)?.configuration
+            ?.takeUnless { it.targetIntent == null && !it.hasCurrentAnwser() }
+            ?.also { step ->
+                step.send(bus)
+                bus.botDefinition
+                    .findStoryDefinition(step.targetIntent)
+                    .takeUnless { it == bus.botDefinition.unknownStory }
+                    ?.apply { bus.handleAndSwitchStory(this) }
+                return@handle
+            }
 
         configuration.send(bus)
     }
