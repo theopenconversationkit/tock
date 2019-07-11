@@ -94,6 +94,21 @@ enum class DateEntityGrain(val time: Boolean) {
         }
     }
 
+    fun calculateInclusiveEnd(start: ZonedDateTime, zoneId: ZoneId): ZonedDateTime {
+        val s = calculateEnd(start, zoneId)
+        return when (this) {
+            second -> truncate(s.minusSeconds(1))
+            minute -> truncate(s.minusMinutes(1))
+            hour -> truncate(s.minusHours(1))
+            day_of_week, day -> truncate(s.minusDays(1))
+            week -> truncate(s.minusWeeks(1))
+            month -> truncate(s.minusMonths(1))
+            quarter -> truncate(s.minusMonths(3))
+            year -> truncate(s.minusYears(1))
+            else -> s
+        }
+    }
+
     fun calculateEnd(start: ZonedDateTime, zoneId: ZoneId): ZonedDateTime {
         val s = start.withZoneSameInstant(zoneId)
         return when (this) {

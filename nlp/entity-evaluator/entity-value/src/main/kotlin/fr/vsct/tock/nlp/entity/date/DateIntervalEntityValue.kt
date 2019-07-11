@@ -30,6 +30,10 @@ data class DateIntervalEntityValue(val date: DateEntityValue,
         return date.date
     }
 
+    override fun inclusiveEnd(zoneId: ZoneId): ZonedDateTime {
+        return toDate.grain.calculateInclusiveEnd(toDate.date, zoneId)
+    }
+
     override fun end(zoneId: ZoneId): ZonedDateTime {
         return toDate.grain.calculateEnd(toDate.date, zoneId)
     }

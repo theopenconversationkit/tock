@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.nlp.entity.date
 
+import fr.vsct.tock.nlp.entity.date.DateEntityGrain.hour
+import fr.vsct.tock.nlp.entity.date.DateEntityGrain.minute
 import org.junit.jupiter.api.Test
 import java.time.Duration
 import java.time.ZoneId
@@ -35,9 +37,51 @@ class DateIntervalValueTest {
         assertEquals(
             duration,
             DateIntervalEntityValue(
-                DateEntityValue(actual, DateEntityGrain.hour),
-                DateEntityValue(end, DateEntityGrain.hour)
+                DateEntityValue(actual, hour),
+                DateEntityValue(end, hour)
             ).duration()
+        )
+    }
+
+    @Test
+    fun testEnd() {
+        val zoneId = ZoneId.of("America/Phoenix")
+        val actual = hour.truncate(ZonedDateTime.now())
+        val end = actual.plusHours(1).withZoneSameInstant(zoneId)
+        assertEquals(
+            end.plusHours(1),
+            DateIntervalEntityValue(
+                DateEntityValue(actual, hour),
+                DateEntityValue(end, hour)
+            ).end(zoneId)
+        )
+    }
+
+    @Test
+    fun testInclusiveEnd() {
+        val zoneId = ZoneId.of("America/Phoenix")
+        val actual = hour.truncate(ZonedDateTime.now())
+        val end = actual.plusHours(1).withZoneSameInstant(zoneId)
+        assertEquals(
+            end,
+            DateIntervalEntityValue(
+                DateEntityValue(actual, hour),
+                DateEntityValue(end, hour)
+            ).inclusiveEnd(zoneId)
+        )
+    }
+
+    @Test
+    fun testInclusiveEndWithMinute() {
+        val zoneId = ZoneId.of("America/Phoenix")
+        val actual = hour.truncate(ZonedDateTime.now())
+        val end = actual.plusHours(1).plusHours(1).withZoneSameInstant(zoneId)
+        assertEquals(
+            end,
+            DateIntervalEntityValue(
+                DateEntityValue(actual, hour),
+                DateEntityValue(end, minute)
+            ).inclusiveEnd(zoneId)
         )
     }
 }

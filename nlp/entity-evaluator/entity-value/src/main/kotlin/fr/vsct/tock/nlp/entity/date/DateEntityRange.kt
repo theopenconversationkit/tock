@@ -26,10 +26,46 @@ import java.time.ZonedDateTime
  */
 interface DateEntityRange : Value {
 
+    /**
+     * Returns the start inclusive date.
+     * Ie
+     * - 9h -> 9h
+     * - from 9h to 10h -> 9h
+     */
     fun start(): ZonedDateTime
 
+    /**
+     * Returns the end inclusive date.
+     * - from 9h to 10h -> 10h
+     * - from 9h to 10h00 -> 10h
+     * - 9h -> 10h
+     */
+    fun inclusiveEnd(): ZonedDateTime = inclusiveEnd(ZoneId.systemDefault())
+
+    /**
+     * Returns the end inclusive date.
+     * Ie:
+     * - from 9h to 10h -> 10h
+     * - from 9h to 10h00 -> 10h
+     * - 9h -> 10h
+     */
+    fun inclusiveEnd(zoneId: ZoneId): ZonedDateTime = end(zoneId)
+
+    /**
+     * Returns the end exclusive date.
+     * - from 9h to 10h -> 11h
+     * - from 9h to 10h00 -> 10h01
+     * - 9h -> 10h
+     */
     fun end(): ZonedDateTime = end(ZoneId.systemDefault())
 
+    /**
+     * Returns the end exclusive date.
+     * Ie:
+     * - from 9h to 10h -> 11h
+     * - from 9h to 10h00 -> 10h01
+     * - 9h -> 10h
+     */
     fun end(zoneId: ZoneId): ZonedDateTime
 
     fun duration(): Duration
