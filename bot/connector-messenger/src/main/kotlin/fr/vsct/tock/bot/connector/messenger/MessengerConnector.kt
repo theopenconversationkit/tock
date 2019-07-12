@@ -77,6 +77,7 @@ import org.apache.commons.codec.binary.Hex
 import org.apache.commons.lang3.LocaleUtils
 import java.time.Duration
 import java.time.ZoneOffset
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.CopyOnWriteArraySet
@@ -540,27 +541,30 @@ class MessengerConnector internal constructor(
     override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences {
         try {
             val userProfile =
-                client.getUserProfile(applicationTokenMap.getValue(callback.applicationId), Recipient(userId.id))
+                    client.getUserProfile(applicationTokenMap.getValue(callback.applicationId), Recipient(userId.id))
             logger.debug { "User profile : $userProfile for $userId" }
             return UserPreferences(
-                userProfile.firstName,
-                userProfile.lastName,
-                null,
-                ZoneOffset.ofHours(userProfile.timezone),
-                userProfile.locale?.let {
-                    try {
-                        LocaleUtils.toLocale(it)
-                    } catch (e: Exception) {
-                        logger.error(e)
-                        null
-                    }
-                } ?: defaultLocale,
-                userProfile.profilePic,
-                userProfile.gender)
+                    userProfile.firstName,
+                    userProfile.lastName,
+                    null,
+                    ZoneOffset.ofHours(userProfile.timezone),
+                    userProfile.locale?.let {getLocale(it)} ?: defaultLocale,
+                    userProfile.profilePic,
+                    userProfile.gender,
+                    originalLocale = userProfile.locale?.let {getLocale(it)} ?: defaultLocale)
         } catch (e: Exception) {
             logger.error(e)
         }
         return UserPreferences()
+    }
+
+    private fun getLocale(it: String): Locale? {
+        return try {
+            LocaleUtils.toLocale(it)
+        } catch (e: Exception) {
+            logger.error(e)
+            null
+        }
     }
 
     override fun refreshProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences? =

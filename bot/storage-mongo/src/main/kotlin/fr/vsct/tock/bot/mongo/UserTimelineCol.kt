@@ -121,6 +121,7 @@ internal data class UserTimelineCol(
         var locale: Locale = defaultLocale,
         var picture: String? = null,
         var gender: String? = null,
+        var originaLocale: Locale = defaultLocale,
         /**
          * Is it a test user?
          */
@@ -136,6 +137,7 @@ internal data class UserTimelineCol(
             pref.locale,
             pref.picture?.let { if (encryptionEnabled) encrypt(it) else it },
             pref.gender?.let { if (encryptionEnabled) encrypt(it) else it },
+            pref.originalLocale,
             pref.test,
             encryptionEnabled
         )
@@ -149,7 +151,8 @@ internal data class UserTimelineCol(
                 locale,
                 picture?.let { if (encrypted) decrypt(it) else it },
                 gender?.let { if (encrypted) decrypt(it) else it },
-                test
+                test,
+                originaLocale
             )
         }
 

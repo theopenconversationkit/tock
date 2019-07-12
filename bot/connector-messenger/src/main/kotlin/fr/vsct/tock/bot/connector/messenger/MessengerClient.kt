@@ -22,41 +22,19 @@ import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.UserProfile
 import fr.vsct.tock.bot.connector.messenger.model.attachment.AttachmentRequest
-import fr.vsct.tock.bot.connector.messenger.model.handover.PassThreadControlRequest
-import fr.vsct.tock.bot.connector.messenger.model.handover.RequestThreadControlRequest
-import fr.vsct.tock.bot.connector.messenger.model.handover.SecondaryReceiverData
-import fr.vsct.tock.bot.connector.messenger.model.handover.SecondaryReceiverResponse
-import fr.vsct.tock.bot.connector.messenger.model.handover.TakeThreadControlRequest
-import fr.vsct.tock.bot.connector.messenger.model.handover.ThreadOwnerResponse
-import fr.vsct.tock.bot.connector.messenger.model.send.ActionRequest
-import fr.vsct.tock.bot.connector.messenger.model.send.CustomEventRequest
-import fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest
-import fr.vsct.tock.bot.connector.messenger.model.send.SendResponse
-import fr.vsct.tock.bot.connector.messenger.model.send.SendResponseErrorContainer
+import fr.vsct.tock.bot.connector.messenger.model.handover.*
+import fr.vsct.tock.bot.connector.messenger.model.send.*
 import fr.vsct.tock.bot.connector.messenger.model.subscription.SubscriptionsResponse
 import fr.vsct.tock.bot.connector.messenger.model.subscription.SuccessResponse
 import fr.vsct.tock.bot.engine.BotRepository.requestTimer
 import fr.vsct.tock.bot.engine.monitoring.logError
-import fr.vsct.tock.shared.Level
-import fr.vsct.tock.shared.addJacksonConverter
-import fr.vsct.tock.shared.booleanProperty
-import fr.vsct.tock.shared.create
-import fr.vsct.tock.shared.error
-import fr.vsct.tock.shared.intProperty
+import fr.vsct.tock.shared.*
 import fr.vsct.tock.shared.jackson.mapper
-import fr.vsct.tock.shared.longProperty
-import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
-import fr.vsct.tock.shared.warn
 import mu.KotlinLogging
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.DELETE
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 
 private const val VERSION = "3.3"
 
@@ -132,7 +110,7 @@ internal class MessengerClient(val secretKey: String) {
     private val statusApi: StatusApi
     private val nbRetriesLimit = intProperty("messenger_retries_on_error_limit", 1)
     private val nbRetriesWaitInMs = longProperty("messenger_retries_on_error_wait_in_ms", 5000)
-    private val extendedProfileFields = booleanProperty("tock_messenger_extended_profile_fields", false)
+    private val extendedProfileFields = property("tock_messenger_extended_profile_fields", "")
 
     init {
         graphApi = retrofitBuilderWithTimeoutAndLogger(
@@ -255,14 +233,14 @@ internal class MessengerClient(val secretKey: String) {
      * For more information on user profile fields:
      * https://developers.facebook.com/docs/messenger-platform/identity/user-profile/#fields
      *
-     * @param extendedFieldsRequire A boolean to specify if the fields that need special permissions need to be returned or nor
+     * @param extendedFields A string containing the fields that need special permissions
+     *          for example locale, timezone, gender
      *
      * @return The list of user profile fields
      */
-    fun getProfileFields(extendedFieldsRequire: Boolean): String {
+    private fun getProfileFields(extendedFields: String): String {
         val standardFields = listOf("first_name", "last_name", "profile_pic")
-        val extendedFields = listOf("locale", "timezone", "gender")
-        return if (extendedFieldsRequire) {
+        return if (extendedFields.isNotEmpty()) {
             standardFields.plus(extendedFields).joinToString(",")
         } else {
             standardFields.joinToString(",")

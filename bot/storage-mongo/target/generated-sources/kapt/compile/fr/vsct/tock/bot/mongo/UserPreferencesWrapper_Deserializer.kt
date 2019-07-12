@@ -38,6 +38,8 @@ internal class UserPreferencesWrapper_Deserializer :
             var _picture_set : Boolean = false
             var _gender_: String? = null
             var _gender_set : Boolean = false
+            var _originaLocale_: Locale? = null
+            var _originaLocale_set : Boolean = false
             var _test_: Boolean? = null
             var _test_set : Boolean = false
             var _encrypted_: Boolean? = null
@@ -87,6 +89,11 @@ internal class UserPreferencesWrapper_Deserializer :
                              else p.text;
                             _gender_set = true
                             }
+                    "originaLocale" -> {
+                            _originaLocale_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(Locale::class.java);
+                            _originaLocale_set = true
+                            }
                     "test" -> {
                             _test_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.booleanValue;
@@ -106,11 +113,12 @@ internal class UserPreferencesWrapper_Deserializer :
                 _token_ = currentToken
                         } 
             return if(_firstName_set && _lastName_set && _email_set && _timezone_set && _locale_set
-                    && _picture_set && _gender_set && _test_set && _encrypted_set)
+                    && _picture_set && _gender_set && _originaLocale_set && _test_set &&
+                    _encrypted_set)
                     UserTimelineCol.UserPreferencesWrapper(firstName = _firstName_, lastName =
                             _lastName_, email = _email_, timezone = _timezone_!!, locale =
-                            _locale_!!, picture = _picture_, gender = _gender_, test = _test_!!,
-                            encrypted = _encrypted_!!)
+                            _locale_!!, picture = _picture_, gender = _gender_, originaLocale =
+                            _originaLocale_!!, test = _test_!!, encrypted = _encrypted_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_firstName_set)
@@ -127,6 +135,8 @@ internal class UserPreferencesWrapper_Deserializer :
                     map[parameters.getValue("picture")] = _picture_
                     if(_gender_set)
                     map[parameters.getValue("gender")] = _gender_
+                    if(_originaLocale_set)
+                    map[parameters.getValue("originaLocale")] = _originaLocale_
                     if(_test_set)
                     map[parameters.getValue("test")] = _test_
                     if(_encrypted_set)
@@ -149,7 +159,8 @@ internal class UserPreferencesWrapper_Deserializer :
                 primaryConstructor.findParameterByName("timezone")!!, "locale" to
                 primaryConstructor.findParameterByName("locale")!!, "picture" to
                 primaryConstructor.findParameterByName("picture")!!, "gender" to
-                primaryConstructor.findParameterByName("gender")!!, "test" to
+                primaryConstructor.findParameterByName("gender")!!, "originaLocale" to
+                primaryConstructor.findParameterByName("originaLocale")!!, "test" to
                 primaryConstructor.findParameterByName("test")!!, "encrypted" to
                 primaryConstructor.findParameterByName("encrypted")!!) }
     }
