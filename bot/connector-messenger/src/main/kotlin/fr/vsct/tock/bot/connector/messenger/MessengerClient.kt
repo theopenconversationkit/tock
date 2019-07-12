@@ -45,6 +45,7 @@ import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.intProperty
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.longProperty
+import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import fr.vsct.tock.shared.warn
 import mu.KotlinLogging
@@ -132,7 +133,7 @@ internal class MessengerClient(val secretKey: String) {
     private val statusApi: StatusApi
     private val nbRetriesLimit = intProperty("messenger_retries_on_error_limit", 1)
     private val nbRetriesWaitInMs = longProperty("messenger_retries_on_error_wait_in_ms", 5000)
-    private val extendedProfileFields = booleanProperty("tock_messenger_extended_profile_fields", false)
+    private val extendedProfileFields = property("tock_messenger_extended_profile_fields", "")
 
     init {
         graphApi = retrofitBuilderWithTimeoutAndLogger(
@@ -240,7 +241,7 @@ internal class MessengerClient(val secretKey: String) {
         return try {
 
             graphApi.getUserProfile(recipient.id!!, token, getProfileFields(extendedProfileFields))
-                    .execute().body() ?: defaultUserProfile()
+                .execute().body() ?: defaultUserProfile()
         } catch (e: Exception) {
             logger.warn { recipient }
             logger.logError(e, requestTimerData)
@@ -255,14 +256,14 @@ internal class MessengerClient(val secretKey: String) {
      * For more information on user profile fields:
      * https://developers.facebook.com/docs/messenger-platform/identity/user-profile/#fields
      *
-     * @param extendedFieldsRequire A boolean to specify if the fields that need special permissions need to be returned or nor
+     * @param extendedFields A string containing the fields that need special permissions
+     *          for example locale, timezone, gender
      *
      * @return The list of user profile fields
      */
-    fun getProfileFields(extendedFieldsRequire: Boolean): String {
+    private fun getProfileFields(extendedFields: String): String {
         val standardFields = listOf("first_name", "last_name", "profile_pic")
-        val extendedFields = listOf("locale", "timezone", "gender")
-        return if (extendedFieldsRequire) {
+        return if (extendedFields.isNotEmpty()) {
             standardFields.plus(extendedFields).joinToString(",")
         } else {
             standardFields.joinToString(",")

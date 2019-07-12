@@ -56,7 +56,11 @@ data class UserPreferences(
     /**
      * Is it a test user?
      */
-    var test: Boolean = false
+    var test: Boolean = false,
+    /**
+     * The initial locale of the user
+     */
+    var initialLocale: Locale = locale
 ) {
 
     /**
@@ -71,6 +75,7 @@ data class UserPreferences(
         picture = userPref.picture
         gender = userPref.gender
         test = userPref.test
+        initialLocale = userPref.locale
     }
 
     /**

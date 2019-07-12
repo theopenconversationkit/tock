@@ -26,6 +26,8 @@ private val __Picture: KProperty1<UserTimelineCol.UserPreferencesWrapper, String
     get() = UserTimelineCol.UserPreferencesWrapper::picture
 private val __Gender: KProperty1<UserTimelineCol.UserPreferencesWrapper, String?>
     get() = UserTimelineCol.UserPreferencesWrapper::gender
+private val __InitialLocale: KProperty1<UserTimelineCol.UserPreferencesWrapper, Locale?>
+    get() = UserTimelineCol.UserPreferencesWrapper::initialLocale
 private val __Test: KProperty1<UserTimelineCol.UserPreferencesWrapper, Boolean?>
     get() = UserTimelineCol.UserPreferencesWrapper::test
 private val __Encrypted: KProperty1<UserTimelineCol.UserPreferencesWrapper, Boolean?>
@@ -54,6 +56,9 @@ internal class UserPreferencesWrapper_<T>(previous: KPropertyPath<T, *>?, proper
     val gender: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Gender)
 
+    val initialLocale: KPropertyPath<T, Locale?>
+        get() = KPropertyPath(this,__InitialLocale)
+
     val test: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__Test)
 
@@ -75,6 +80,8 @@ internal class UserPreferencesWrapper_<T>(previous: KPropertyPath<T, *>?, proper
             get() = __Picture
         val Gender: KProperty1<UserTimelineCol.UserPreferencesWrapper, String?>
             get() = __Gender
+        val InitialLocale: KProperty1<UserTimelineCol.UserPreferencesWrapper, Locale?>
+            get() = __InitialLocale
         val Test: KProperty1<UserTimelineCol.UserPreferencesWrapper, Boolean?>
             get() = __Test
         val Encrypted: KProperty1<UserTimelineCol.UserPreferencesWrapper, Boolean?>
@@ -104,6 +111,9 @@ internal class UserPreferencesWrapper_Col<T>(previous: KPropertyPath<T, *>?, pro
 
     val gender: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Gender)
+
+    val initialLocale: KPropertyPath<T, Locale?>
+        get() = KPropertyPath(this,__InitialLocale)
 
     val test: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__Test)
@@ -138,6 +148,9 @@ internal class UserPreferencesWrapper_Map<T, K>(previous: KPropertyPath<T, *>?, 
 
     val gender: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Gender)
+
+    val initialLocale: KPropertyPath<T, Locale?>
+        get() = KPropertyPath(this,__InitialLocale)
 
     val test: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__Test)

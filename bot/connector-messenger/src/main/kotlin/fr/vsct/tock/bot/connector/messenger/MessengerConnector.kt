@@ -77,6 +77,7 @@ import org.apache.commons.codec.binary.Hex
 import org.apache.commons.lang3.LocaleUtils
 import java.time.Duration
 import java.time.ZoneOffset
+import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.CopyOnWriteArraySet
@@ -547,20 +548,23 @@ class MessengerConnector internal constructor(
                 userProfile.lastName,
                 null,
                 ZoneOffset.ofHours(userProfile.timezone),
-                userProfile.locale?.let {
-                    try {
-                        LocaleUtils.toLocale(it)
-                    } catch (e: Exception) {
-                        logger.error(e)
-                        null
-                    }
-                } ?: defaultLocale,
+                userProfile.locale?.let { getLocale(it) } ?: defaultLocale,
                 userProfile.profilePic,
-                userProfile.gender)
+                userProfile.gender,
+                initialLocale = userProfile.locale?.let { getLocale(it) } ?: defaultLocale)
         } catch (e: Exception) {
             logger.error(e)
         }
         return UserPreferences()
+    }
+
+    private fun getLocale(it: String): Locale? {
+        return try {
+            LocaleUtils.toLocale(it)
+        } catch (e: Exception) {
+            logger.error(e)
+            null
+        }
     }
 
     override fun refreshProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences? =
