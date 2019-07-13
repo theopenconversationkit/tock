@@ -49,6 +49,9 @@ internal class UserPreferencesWrapper_Serializer :
         if(_gender_ == null) { gen.writeNull() } else {
                 gen.writeString(_gender_)
                 }
+        gen.writeFieldName("initialLocale")
+        val _initialLocale_ = value.initialLocale
+        serializers.defaultSerializeValue(_initialLocale_, gen)
         gen.writeFieldName("test")
         val _test_ = value.test
         gen.writeBoolean(_test_)
