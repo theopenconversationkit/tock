@@ -23,6 +23,15 @@
             <artifactId>tock-bot-engine</artifactId>
         </dependency>
         <dependency>
+            <groupId>fr.vsct.tock</groupId>
+            <artifactId>tock-bot-storage-mongo</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>fr.vsct.tock</groupId>
+            <artifactId>tock-nlp-front-ioc</artifactId>
+            <version>${version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-dialogflow</artifactId>
             <version>${dialogflow}</version>
