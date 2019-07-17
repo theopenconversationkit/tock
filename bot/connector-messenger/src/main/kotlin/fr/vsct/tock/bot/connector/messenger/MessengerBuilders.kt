@@ -26,6 +26,7 @@ import fr.vsct.tock.bot.connector.messenger.model.send.Button
 import fr.vsct.tock.bot.connector.messenger.model.send.ButtonPayload
 import fr.vsct.tock.bot.connector.messenger.model.send.CallButton
 import fr.vsct.tock.bot.connector.messenger.model.send.Element
+import fr.vsct.tock.bot.connector.messenger.model.send.EmailQuickReply
 import fr.vsct.tock.bot.connector.messenger.model.send.GenericPayload
 import fr.vsct.tock.bot.connector.messenger.model.send.ListElementStyle
 import fr.vsct.tock.bot.connector.messenger.model.send.ListPayload
@@ -603,6 +604,12 @@ private fun I18nTranslator.quickReply(
     }
     return TextQuickReply(t.toString(), payload, imageUrl)
 }
+
+/**
+ * Creates a [quick reply email](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies).
+ */
+
+fun emailQuickReply(): QuickReply = EmailQuickReply()
 
 /**
  * Creates a [postback button](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback).
