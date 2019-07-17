@@ -23,6 +23,7 @@ import fr.vsct.tock.bot.connector.messenger.model.send.Attachment
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentMessage
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType
 import fr.vsct.tock.bot.connector.messenger.model.send.Element
+import fr.vsct.tock.bot.connector.messenger.model.send.EmailQuickReply
 import fr.vsct.tock.bot.connector.messenger.model.send.GenericPayload
 import fr.vsct.tock.bot.connector.messenger.model.send.LocationQuickReply
 import fr.vsct.tock.bot.connector.messenger.model.send.MediaElement
@@ -143,6 +144,18 @@ class MessageRequestDeserializationTest {
     }
 
     @Test
+    fun testEmailQuickReplyDeserialization() {
+        val input = "{\n" +
+                "        \"content_type\":\"user_email\"\n" +
+                "      }"
+        val output = mapper.readValue<QuickReply>(input)
+        assertEquals(
+            EmailQuickReply(),
+            output
+        )
+    }
+
+    @Test
     fun testQuickRepliesMessageRequestDeserialization() {
         val input = "{\n" +
                 "  \"recipient\":{\n" +
@@ -179,6 +192,39 @@ class MessageRequestDeserializationTest {
                             "Green",
                             "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_GREEN"
                         )
+                    )
+                )
+
+            ),
+            output
+        )
+
+        assertEquals(output, mapper.readValue(mapper.writeValueAsString(output)))
+    }
+
+    @Test
+    fun testEmailQuickRepliesMessageRequestDeserialization() {
+        val input = "{\n" +
+                "  \"recipient\":{\n" +
+                "    \"id\":\"USER_ID\"\n" +
+                "  },\n" +
+                "  \"message\":{\n" +
+                "    \"text\":\"Send us your email to get more deals and offers!\",\n" +
+                "    \"quick_replies\":[\n" +
+                "      {\n" +
+                "        \"content_type\":\"user_email\"\n" +
+                "      }\n" +
+                "    ]\n" +
+                "  }\n" +
+                "}"
+        val output = mapper.readValue<MessageRequest>(input)
+        assertEquals(
+            MessageRequest(
+                Recipient("USER_ID"),
+                TextMessage(
+                    "Send us your email to get more deals and offers!",
+                    listOf(
+                        EmailQuickReply()
                     )
                 )
 

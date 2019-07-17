@@ -61,25 +61,29 @@ internal object WebhookActionConverter {
             is MessageWebhook ->
                 with(message.message) {
                     if (quickReply != null) {
-                        SendChoice.decodeChoiceId(quickReply!!.payload)
-                            .let { (intentName, parameters) ->
-                                if (parameters.containsKey(SendChoice.NLP)) {
-                                    SendSentence(
-                                        message.playerId(PlayerType.user),
-                                        applicationId,
-                                        message.recipientId(PlayerType.bot),
-                                        parameters[SendChoice.NLP]
-                                    )
-                                } else {
-                                    SendChoice(
-                                        message.playerId(PlayerType.user),
-                                        applicationId,
-                                        message.recipientId(PlayerType.bot),
-                                        intentName,
-                                        parameters
-                                    )
+                        if(quickReply!!.hasEmailPayloadFromMessenger()){
+                            readSentence(message,applicationId)
+                        }else{
+                            SendChoice.decodeChoiceId(quickReply!!.payload)
+                                .let { (intentName, parameters) ->
+                                    if (parameters.containsKey(SendChoice.NLP)) {
+                                        SendSentence(
+                                            message.playerId(PlayerType.user),
+                                            applicationId,
+                                            message.recipientId(PlayerType.bot),
+                                            parameters[SendChoice.NLP]
+                                        )
+                                    } else {
+                                        SendChoice(
+                                            message.playerId(PlayerType.user),
+                                            applicationId,
+                                            message.recipientId(PlayerType.bot),
+                                            intentName,
+                                            parameters
+                                        )
+                                    }
                                 }
-                            }
+                        }
                     } else {
                         val a = attachments
                         if (a.isNotEmpty()) {

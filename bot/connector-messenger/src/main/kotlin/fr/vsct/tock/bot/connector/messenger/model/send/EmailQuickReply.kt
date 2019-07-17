@@ -16,6 +16,18 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
-enum class QuickReplyContentType {
-    text, location, user_email
+class EmailQuickReply : QuickReply(QuickReplyContentType.user_email) {
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is QuickReply) return false
+
+        if (contentType != other.contentType) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return contentType.hashCode()
+    }
 }

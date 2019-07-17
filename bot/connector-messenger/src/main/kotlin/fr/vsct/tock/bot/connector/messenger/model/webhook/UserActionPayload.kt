@@ -16,6 +16,23 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.webhook
 
-data class UserActionPayload(val payload: String) {
+import java.util.regex.Pattern
 
+private val PATTERN =
+    Pattern.compile("[a-zA-Z0-9\\.\\_\\-]{1,256}\\@[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}(\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25})+")
+
+
+data class UserActionPayload(val payload: String) {
+    fun hasEmailPayloadFromMessenger() : Boolean {
+        val e = payload.trim()
+        if (e.isEmpty()) {
+            return false
+        }
+
+        // Copy from ANDROID10 Patterns API. (because API8- does not support it)
+
+        val matcher = PATTERN.matcher(e)
+        val lastPointPosition = e.lastIndexOf('.')
+        return e.trim { it <= ' ' }.isNotEmpty() && matcher.matches() && lastPointPosition != -1 && lastPointPosition < e.length - 2
+    }
 }

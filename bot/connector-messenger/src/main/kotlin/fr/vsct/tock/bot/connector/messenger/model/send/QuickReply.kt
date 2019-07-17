@@ -29,7 +29,8 @@ import fr.vsct.tock.bot.engine.message.Location
 )
 @JsonSubTypes(
         JsonSubTypes.Type(value = TextQuickReply::class, name = "text"),
-        JsonSubTypes.Type(value = LocationQuickReply::class, name = "location")
+        JsonSubTypes.Type(value = LocationQuickReply::class, name = "location"),
+        JsonSubTypes.Type(value = EmailQuickReply::class, name = "user_email")
 )
 abstract class QuickReply(
         @get:JsonProperty("content_type") val contentType: QuickReplyContentType) : UserAction {
