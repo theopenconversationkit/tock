@@ -23,6 +23,7 @@ import fr.vsct.tock.bot.engine.event.EventType
 import fr.vsct.tock.bot.engine.message.parser.MessageParser.elementsToString
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.shared.error
+import fr.vsct.tock.translator.UserInterfaceType
 import mu.KotlinLogging
 
 /**
@@ -31,6 +32,7 @@ import mu.KotlinLogging
 data class Sentence(
     val text: String?,
     val messages: MutableList<GenericMessage> = mutableListOf(),
+    val userInterface: UserInterfaceType? = null,
     override val delay: Long = 0
 ) : Message {
 
@@ -46,8 +48,8 @@ data class Sentence(
                 }
     }
 
-    constructor(text: String?, messages: MutableList<ConnectorMessage> = mutableListOf())
-            : this(text, messages.map { toSentenceElement(it) }.toMutableList())
+    constructor(text: String?, messages: MutableList<ConnectorMessage> = mutableListOf(), userInterface: UserInterfaceType? = null)
+            : this(text, messages.map { toSentenceElement(it) }.toMutableList(), userInterface)
 
     override val eventType: EventType = EventType.sentence
 

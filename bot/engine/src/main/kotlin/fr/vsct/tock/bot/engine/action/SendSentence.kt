@@ -64,7 +64,7 @@ open class SendSentence(
     }
 
     override fun toMessage(): Message {
-        return Sentence(stringText, messages)
+        return Sentence(stringText, messages, state.userInterface)
     }
 
     override fun obfuscate(mode: StringObfuscatorMode, playerId: PlayerId): Event {
