@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {AttachmentType, ConnectorType, EventType} from "../../core/model/configuration";
+import {AttachmentType, ConnectorType, EventType, UserInterfaceType} from "../../core/model/configuration";
 import {JsonUtils} from "../../model/commons";
 import {ClassifiedEntity} from "../../model/nlp";
 import {IntentName} from "../../bot/model/story";
@@ -212,7 +212,8 @@ export class UserLocation {
 export class Sentence extends BotMessage {
   constructor(public delay: number,
               public messages: SentenceElement[],
-              public text?: String) {
+              public text?: String,
+              public userInterface?: UserInterfaceType) {
     super(EventType.sentence, delay)
   }
 
