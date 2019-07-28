@@ -27,6 +27,7 @@ class LoginEvent(
     recipientId: PlayerId,
     val userToken: String,
     applicationId: String,
+    val previousUserId: PlayerId = userId,
     var checkLogin: Boolean = false
 ) : OneToOneEvent(userId, recipientId, applicationId)
 

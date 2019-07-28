@@ -25,6 +25,9 @@ import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorCallbackBase
 import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.ConnectorMessage
+import fr.vsct.tock.bot.connector.ga.GAAccountLinking.Companion.getUserId
+import fr.vsct.tock.bot.connector.ga.GAAccountLinking.Companion.isUserAuthenticated
+import fr.vsct.tock.bot.connector.ga.GAAccountLinking.Companion.switchTimeLine
 import fr.vsct.tock.bot.connector.ga.model.request.GARequest
 import fr.vsct.tock.bot.connector.media.MediaCard
 import fr.vsct.tock.bot.connector.media.MediaMessage
@@ -61,6 +64,7 @@ class GAConnector internal constructor(
     }
 
     private val executor: Executor get() = injector.provide()
+
     private val verifier: IdTokenVerifier by lazy(PUBLICATION) { IdTokenVerifier.Builder().build() }
 
     override fun register(controller: ConnectorController) {
@@ -96,34 +100,42 @@ class GAConnector internal constructor(
             val callback = GAConnectorCallback(applicationId, controller, context, request)
             try {
                 val event = WebhookActionConverter.toEvent(request, applicationId)
+
                 fun sendRequest() {
                     controller.handle(event, ConnectorData(callback, saveTimeline = !request.healthcheck))
                 }
 
-                if (request.user.accessToken != null && event !is LoginEvent) {
-                    controller.handle(
-                        LoginEvent(
-                            PlayerId(request.conversation.conversationId, PlayerType.user),
-                            PlayerId(applicationId, PlayerType.bot),
-                            request.user.accessToken,
-                            applicationId,
-                            true
-                        ),
-                        ConnectorData(object : ConnectorCallbackBase(applicationId, gaConnectorType) {
+                when {
+                    event is LoginEvent -> {
+                        switchTimeLine(event.userId, event.previousUserId, controller)
+                        sendRequest()
+                    }
+                    isUserAuthenticated(request) -> {
+                        logger.debug { "Google Assistant refresh token before story execution" }
+                        controller.handle(
+                            LoginEvent(
+                                PlayerId(getUserId(request), PlayerType.user),
+                                PlayerId(applicationId, PlayerType.bot),
+                                request.user.accessToken ?: error("Access token can't be null"),
+                                applicationId,
+                                checkLogin = true
+                            ),
+                            ConnectorData(object : ConnectorCallbackBase(applicationId, gaConnectorType) {
 
-                            // send 401 for revoke token and logout google assistant user
-                            override fun eventSkipped(event: Event) {
-                                context.fail(401)
-                            }
+                                // send 401 for revoke token and logout google assistant user
+                                override fun eventSkipped(event: Event) {
+                                    context.fail(401)
+                                }
 
-                            override fun eventAnswered(event: Event) {
-                                sendRequest()
-                            }
-                        })
-                    )
-                } else {
-                    sendRequest()
+                                override fun eventAnswered(event: Event) {
+                                    sendRequest()
+                                }
+                            })
+                        )
+                    }
+                    else -> sendRequest()
                 }
+
 
             } catch (t: Throwable) {
                 BotRepository.requestTimer.throwable(t, timerData)
@@ -182,17 +194,20 @@ class GAConnector internal constructor(
         gaMessage(richResponse(text, suggestions))
     }
 
-    override fun addSuggestions(message: ConnectorMessage, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
+    override fun addSuggestions(
+        message: ConnectorMessage,
+        suggestions: List<CharSequence>
+    ): BotBus.() -> ConnectorMessage? = {
         if (message is GAResponseConnectorMessage) {
             val m = message.expectedInputs.lastOrNull()?.inputPrompt?.richInitialPrompt
             if (m != null && m.suggestions.isEmpty()) {
                 message.copy(
                     expectedInputs = message.expectedInputs.take(message.expectedInputs.size - 1) +
-                        message.expectedInputs.last().copy(
-                            inputPrompt = message.expectedInputs.last().inputPrompt.copy(
-                                richInitialPrompt = m.copy(suggestions = suggestions.map { suggestion(it) })
+                            message.expectedInputs.last().copy(
+                                inputPrompt = message.expectedInputs.last().inputPrompt.copy(
+                                    richInitialPrompt = m.copy(suggestions = suggestions.map { suggestion(it) })
+                                )
                             )
-                        )
                 )
             } else {
                 null
@@ -208,7 +223,10 @@ class GAConnector internal constructor(
             val subTitle = message.subTitle
             val image = message.file?.takeIf { it.type == image }
             val card = if (image != null) basicCard(title, null, subTitle, gaImage(image.url, image.name))
-            else if (title != null) if (subTitle == null) basicCard(formattedText = title) else basicCard(title, formattedText = subTitle)
+            else if (title != null) if (subTitle == null) basicCard(formattedText = title) else basicCard(
+                title,
+                formattedText = subTitle
+            )
             else if (subTitle != null) basicCard(formattedText = subTitle)
             else null
 

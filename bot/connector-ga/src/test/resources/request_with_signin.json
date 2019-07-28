@@ -1,0 +1,66 @@
+{
+  "user": {
+    "accessToken": "jarvisteam@yopmail.com|voowYDrMsUWYiwRwyrWsgZYH3O2XDsCaDzcgy8CFHZC7XEXMhSKfpmnOmPRfyD8zf3Zw82cJeHCgCZF2rPd4Rn2UNzoATb-SMovHGbsRCakMzHJhWRWWM2DQE1mCd8UFDtBevtYmHDDIvNbC7Md_2MCth-cnjGEr20dtH7-1pLfiZxJI9EMRHbb_bqNsrN_G3zzUbX_5OnsRqq3af4FqDQpZ2p7-5ongqxcN1uY0KjZb3jD1oyAZpFMSBUo2SOnMPHo84sq2ya0PEbEzPlzsjHVFKTcLnMhFfhLFm-JkNS8pV590mp4GPWWzYSy9o2f29euDIfgRzzICkVy0n6jQ_SHkV3bjtKSIhRgB9ap0JVKLVpHD_PBbFZuccjhIAMj3mmdaeccB7co1dL7Nmg3d_2dTn-M-OSiDoQF4Z7ajST-n7EpyK3yPrvghfUhw3yJQklpMWhug2ozLmp7DnRxgM1-x0WJgcrDUbRpQ2BHSVJ14l7eDeEgbHaxXRYfl84_bUSyc7kX8KmN9nTq6-GpG9jUJqcqYfxrtViCTk62L9jUetk4INtF9lYQDt53Cgbv022RKz0F0-jEGWbbDJlXOgaf0HoLHfSe1gB3_WOhHlfj0uTklJePrU1il9VEmMUhNM2Hyv1hlBMyq2kUMSS5m5iECKg_1Msvja_Uh6SokZq3Kqd73HJcJ_pkSEaebDUwdADZx1VHdJTbr5mLliCQ7NQxns2qZDiDwzT4SQBYTLXYjmeAnk83RGmGpzimrTnjadrY8Srm_4R_2c-vIKfsOIasJJRmdTMN1AFUnYm8sLUMWgmZWN0XaEtdVPtkEcBstv3rjZtKIhp9qALj6L2F_zyRVYfHIDIq_zG3WTQK0um1ibMBPnDMSn2iJB4iUODfw0K16C3FZlE3J7B9Vzlrbzv_tOjMEufRcqXBsKKlqhV_QHYfb4VGGaIFTFsZYL1RYkHKMdODAtEZs-cSY2CXqGloPIKfcd_aySMFcwFdZSJPcTPGxaPRx8qSqZlHDaMq7E8cS5wqeICfTf301Sn9UJ0jK5ZIlwy37dMRdOipaVVDd_0JQP63ux9PK9__8tS7XgEReTgoDwP2aQzSNo0-Lg-IN4LFQnm6_UWMFHAzIt2mGwW2SyD6W6hXGynj1ReZtA8OYQLogy7zjZzRab8ml8Tn7B5Fq5pKWEh4bXdVBiSGxTOkAKBNIV5HWTwaWMhC6ganIExHgyW4ai3aYKGi-B747eHlyblyhRzYryUGvwfvYPMMuF9sn-Dw7fprj3D7Rsh5MQAbThzrGxqLonDqsjjSr8ugnMBJQouqJPIp8xvlccSVYIt83AaD8naKyQo6VAF0D2FKZVCC_hPO8Fo_oorHDmUKr4DiooZM_CxfIwbWDoKqlMgqPuxFWzPTSOrQkh5bnRp4LIFhpqIrQpP-dBm1bfLYA4kvj-S3cRsNPeosdsCamKefHMrVf4jeVJoc8PGFEOx8Oern-U0vcO55BN_YLfStRM6a7Ns4U0hxojBxuFc-jZOAfEqydW3cVRtyjl-i40ZT6phAKY54dlBn5R7ONqBhYEQrhe6C-MkHMfHeFnBsxjEAmYeL8u3Dlsb_RX02lqv0fsmnC0vJGPxIE5P2R8TUPxojPuq8agsanX20x9ZGX2cCnyNjS0jlBUT62|",
+    "locale": "fr-FR",
+    "lastSeen": "2019-07-28T20:37:41Z",
+    "userVerificationStatus": "VERIFIED"
+  },
+  "conversation": {
+    "conversationId": "ABwppHHaWSlfkEc3cou4A-K_rzAfjSsLZTkNEq3NLM_d8bVanmj61irxpfM8bPE1DA4NJD6Lw-4ZOQY43LIp9sWNj7w",
+    "type": "NEW"
+  },
+  "inputs": [
+    {
+      "intent": "actions.intent.SIGN_IN",
+      "rawInputs": [
+        {}
+      ],
+      "arguments": [
+        {
+          "name": "SIGN_IN",
+          "extension": {
+            "@type": "type.googleapis.com/google.actions.v2.SignInValue",
+            "status": "OK"
+          }
+        },
+        {
+          "name": "text"
+        }
+      ]
+    }
+  ],
+  "surface": {
+    "capabilities": [
+      {
+        "name": "actions.capability.ACCOUNT_LINKING"
+      },
+      {
+        "name": "actions.capability.SCREEN_OUTPUT"
+      },
+      {
+        "name": "actions.capability.WEB_BROWSER"
+      },
+      {
+        "name": "actions.capability.AUDIO_OUTPUT"
+      },
+      {
+        "name": "actions.capability.MEDIA_RESPONSE_AUDIO"
+      }
+    ]
+  },
+  "availableSurfaces": [
+    {
+      "capabilities": [
+        {
+          "name": "actions.capability.WEB_BROWSER"
+        },
+        {
+          "name": "actions.capability.AUDIO_OUTPUT"
+        },
+        {
+          "name": "actions.capability.SCREEN_OUTPUT"
+        }
+      ]
+    }
+  ]
+}

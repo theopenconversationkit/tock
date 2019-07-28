@@ -1,10 +1,14 @@
 {
   "user": {
-    "userId": "a",
+    "profile": {
+      "displayName": "Pierre Totor",
+      "givenName": "Pierre",
+      "familyName": "Totor"
+    },
     "locale": "en-US"
   },
   "conversation": {
-    "conversationId": "1505388822587",
+    "conversationId": "1504529220232",
     "type": "NEW"
   },
   "inputs": [
@@ -28,19 +32,9 @@
     "capabilities": [
       {
         "name": "actions.capability.AUDIO_OUTPUT"
-      },
-      {
-        "name": "actions.capability.SCREEN_OUTPUT"
       }
     ]
   },
-  "device": {
-    "location": {
-      "coordinates": {
-        "latitude": 37.4219806,
-        "longitude": -122.0841979
-      }
-    }
-  },
+  "device": {},
   "isInSandbox": true
 }

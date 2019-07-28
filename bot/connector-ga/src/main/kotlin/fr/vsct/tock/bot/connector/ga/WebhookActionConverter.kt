@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.connector.ga
 
+import fr.vsct.tock.bot.connector.ga.GAAccountLinking.Companion.getUserId
 import fr.vsct.tock.bot.connector.ga.model.GAIntent
 import fr.vsct.tock.bot.connector.ga.model.request.GAArgumentBuiltInName
 import fr.vsct.tock.bot.connector.ga.model.request.GAInputType.URL
@@ -48,7 +49,9 @@ internal object WebhookActionConverter {
     ): Event {
         val eventState = message.getEventState()
         val userInterface = eventState.userInterface
-        val userId = message.conversation.conversationId
+
+        val userId = getUserId(message)
+
         val playerId = PlayerId(userId, PlayerType.user)
         val botId = PlayerId(applicationId, PlayerType.bot)
 
@@ -108,7 +111,13 @@ internal object WebhookActionConverter {
                 GAIntent.noInput -> NoInputEvent(playerId, botId, applicationId).setEventState()
                 GAIntent.signIn -> {
                     when ((input.arguments?.first { it.builtInArg == GAArgumentBuiltInName.SIGN_IN }?.extension as GASignInValue).status) {
-                        GASignInStatus.OK -> LoginEvent(playerId, botId, message.user.accessToken ?: "", applicationId)
+                        GASignInStatus.OK -> LoginEvent(
+                            playerId,
+                            botId,
+                            message.user.accessToken ?: "",
+                            applicationId,
+                            previousUserId = PlayerId(message.conversation.conversationId, PlayerType.user)
+                        )
                         else -> LogoutEvent(playerId, botId, applicationId)
                     }
                 }

@@ -51,7 +51,7 @@ class GARequestDeserializerTest {
 
     @Test
     fun testGARequestWithLocationDeserializer() {
-        val json = resource("/request-with-location.json")
+        val json = resource("/request_with_location.json")
         val request: GARequest = mapper.readValue(json)
         assertEquals(
             GARequest(

@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.connector.ga
 
 import com.fasterxml.jackson.module.kotlin.readValue
+import fr.vsct.tock.bot.connector.ga.GAAccountLinking.Companion.getUserId
 import fr.vsct.tock.bot.connector.ga.model.request.GARequest
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
@@ -42,6 +43,7 @@ class WebhookActionConverterTest {
         val optionWithRawTextRequest: GARequest = mapper.readValue(resource("/request_with_option_and_raw_text.json"))
         val sttRequest: GARequest = mapper.readValue(resource("/request_with_stt_transformer.json"))
         val googleHomeRequest: GARequest = mapper.readValue(resource("/google-home-request.json"))
+        val googleAssistantConnectedRequest: GARequest = mapper.readValue(resource("/request_with_access_token.json"))
     }
 
     @Test
@@ -85,6 +87,12 @@ class WebhookActionConverterTest {
     fun `GIVEN Assistant request THEN toEvent returns conversationId as player id`() {
         val e = WebhookActionConverter.toEvent(optionRequest, appId) as SendChoice
         assertEquals(optionRequest.conversation.conversationId, e.playerId.id)
+    }
+
+    @Test
+    fun `GIVEN Assistant request with connected user THEN toEvent returns userId from accessToken as player id`() {
+        val e = WebhookActionConverter.toEvent(googleAssistantConnectedRequest, appId) as SendSentence
+        assertEquals(getUserId(googleAssistantConnectedRequest), e.playerId.id)
     }
 
 

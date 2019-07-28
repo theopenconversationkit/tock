@@ -1,0 +1,51 @@
+{
+  "user": {
+    "locale": "en-US",
+    "accessToken": "jarvisteam@yopmail.com|eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIixxxxxxd3FXaDlEZ0h6YkNpdXZKQy04VUFucmZCNDBUSTdLRnFpU0hKWXNBUW9VIn0.eyJqdGkiOiIxNzhlMTgxxxxxxzVmLTQ4ZjgtYWFlYi1kMmI2ZDBmZjJmZTkiLCJleHAiOjE1MzU1NzcxMjMsIm5iZiI6MCwiaWF0IjoxNTM1NTQ3MDAzLCJpc3MiOiJodHRwczovL3JlY2V0dGUxLWNvbm5lY3QudGVzdC1vdWkuc25jZi9hdXRoL3JlYWxtcy9vdWljb25uZWN0LXJlYzEiLCJhdWQiOiJjY2wiLCJzdWIiOiJmOmJhNjgwM2FmLTVkM2ItNGU2YS05ZDI2LTYwOWRjMGNkZTZmODpqYXJ2axxxxxxtQHlvcG1haWwuY29tIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiY2NsIiwiYXV0aF90aW1lIjowLCJzZXNzaW9uX3N0YXRlIjoiOTYwOThmNjQtZWVmOC00MDZkLTk4NjQtY2Y5ZDEyMTgwNTIyIiwiYWNyIjoiMSIsImFsbxxxxxxtb3JpZ2lucyI6WyIiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwicHJlZmVycmVkX3VzZXJuYW1lIjoiamFydmlzdGVhbUB5b3BtYWlsLmNvbSJ9.L2Y0wpbGY-XBw9tH8iGPzDCpnxxxxxxhNoM5D4q-SxC5MCMy-f9ab4jhXNSQl_7MliRb6KahqtH6duTC0Oxrz_r4xxIozGrkY9LUMjgOHNJsTGH09wCtWbgyAk1dyJv2PTN5dexxxxxxoMjfWjtl-tB3BcwEStuaEHc4kaQfr-LguYGwcFy6k_ocvVyXbUmkKEgGpEPQ7sDPj-wf1iVE7j8fiaVlzuJknMQZLA7I1Va3-cRvm35uEO_LtDviM_TZw1uRCicWo4lDFEcSnoirJoi8jnk0d6aKPm7ce35yRq3amf4XB3gJXDTdcIH58eIBUKa_7nQWNsjBF9-75R5X_g|jarvisteam@yopmail.com"
+  },
+  "conversation": {
+    "conversationId": "1506330333841",
+    "type": "NEW"
+  },
+  "inputs": [
+    {
+      "intent": "actions.intent.OPTION",
+      "rawInputs": [
+        {
+          "inputType": "VOICE",
+          "query": "autre texte"
+        }
+      ],
+      "arguments": [
+        {
+          "name": "OPTION",
+          "textValue": "select_proposal?_title=Sélection de la proposition 2 : Massy Tgv-Nantes départ Nantes arrivée 06:38"
+        }
+      ]
+    }
+  ],
+  "surface": {
+    "capabilities": [
+      {
+        "name": "actions.capability.AUDIO_OUTPUT"
+      },
+      {
+        "name": "actions.capability.SCREEN_OUTPUT"
+      }
+    ]
+  },
+  "device": {},
+  "isInSandbox": true,
+  "availableSurfaces": [
+    {
+      "capabilities": [
+        {
+          "name": "actions.capability.AUDIO_OUTPUT"
+        },
+        {
+          "name": "actions.capability.SCREEN_OUTPUT"
+        }
+      ]
+    }
+  ]
+}

@@ -18,20 +18,25 @@ package fr.vsct.tock.bot.connector.ga
 
 import com.google.common.io.Resources
 import fr.vsct.tock.bot.connector.ConnectorData
+import fr.vsct.tock.bot.connector.ga.GAAccountLinking.Companion.isUserAuthenticated
+import fr.vsct.tock.bot.connector.ga.GAAccountLinking.Companion.switchTimeLine
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.event.LoginEvent
 import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.bot.engine.user.PlayerType
+import fr.vsct.tock.bot.engine.user.PlayerType.user
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.resource
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.slot
+import io.mockk.unmockkObject
 import io.mockk.verify
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.RoutingContext
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import kotlin.test.AfterTest
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -52,6 +57,11 @@ class GAConnectorTest {
         every { context.response() } returns response
     }
 
+    @AfterTest
+    fun after() {
+        unmockkObject(GAAccountLinking)
+    }
+
     @Test
     fun handleRequest_shouldHandleWell_NamePermissions() {
 
@@ -60,7 +70,7 @@ class GAConnectorTest {
             userPreferences.fillWith(
                 connector.loadProfile(
                     (secondArg() as ConnectorData).callback,
-                    PlayerId("a", PlayerType.user)
+                    PlayerId("a", user)
                 )!!
             )
         }
@@ -68,7 +78,7 @@ class GAConnectorTest {
         connector.handleRequest(
             controller,
             context,
-            Resources.toString(resource("/request-with-permission.json"), Charsets.UTF_8)
+            Resources.toString(resource("/request_with_permission.json"), Charsets.UTF_8)
         )
 
         assertEquals("Pierre", userPreferences.firstName)
@@ -82,7 +92,7 @@ class GAConnectorTest {
         connector.handleRequest(
             controller,
             context,
-            Resources.toString(resource("/request-with-ACCESS-TOKEN.json"), Charsets.UTF_8)
+            Resources.toString(resource("/request_with_signout_error.json"), Charsets.UTF_8)
         )
 
         val slotLoginEvent = slot<LoginEvent>()
@@ -112,12 +122,74 @@ class GAConnectorTest {
         connector.handleRequest(
             controller,
             context,
-            Resources.toString(resource("/request-with-ACCESS-TOKEN.json"), Charsets.UTF_8)
+            Resources.toString(resource("/request_with_signout_error.json"), Charsets.UTF_8)
         )
 
         val connectorData = slot<ConnectorData>()
         verify { controller.handle(any(), capture(connectorData)) }
         assertTrue { connectorData.captured.saveTimeline }
+    }
+
+    @Test
+    fun `GIVEN new connected user and login event THEN new time line is created`() {
+        every { controller.connector } returns connector
+        mockkObject(GAAccountLinking)
+        every {
+            switchTimeLine(
+                PlayerId("jarvisteam@yopmail.com", user),
+                PlayerId(
+                    "ABwppHHaWSlfkEc3cou4A-K_rzAfjSsLZTkNEq3NLM_d8bVanmj61irxpfM8bPE1DA4NJD6Lw-4ZOQY43LIp9sWNj7w",
+                    user
+                ),
+                controller
+            )
+        } answers {}
+
+        connector.handleRequest(
+            controller,
+            context,
+            Resources.toString(resource("/request_with_signin.json"), Charsets.UTF_8)
+        )
+
+        val connectorData = slot<ConnectorData>()
+        verify { controller.handle(any(), capture(connectorData)) }
+        assertTrue { connectorData.captured.saveTimeline }
+        verify(exactly = 1) {
+            switchTimeLine(
+                PlayerId("jarvisteam@yopmail.com", user),
+                PlayerId(
+                    "ABwppHHaWSlfkEc3cou4A-K_rzAfjSsLZTkNEq3NLM_d8bVanmj61irxpfM8bPE1DA4NJD6Lw-4ZOQY43LIp9sWNj7w",
+                    user
+                ),
+                controller
+            )
+        }
+    }
+
+    @Test
+    fun `GIVEN connected user and not login event THEN login event is sent in order to refresh before callback event`() {
+        every { controller.connector } returns connector
+        mockkObject(GAAccountLinking)
+        every {
+            isUserAuthenticated(any())
+        } returns true
+
+        connector.handleRequest(
+            controller,
+            context,
+            Resources.toString(resource("/request_with_access_token.json"), Charsets.UTF_8)
+        )
+
+        val loginEvent = slot<LoginEvent>()
+
+        verify(exactly = 1) {
+            controller.handle(
+                capture(loginEvent),
+                any()
+            )
+        }
+
+        assertTrue(loginEvent.captured.checkLogin)
     }
 
 }
