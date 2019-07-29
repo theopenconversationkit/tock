@@ -35,7 +35,7 @@
                        style="width: 12rem;">
               <nb-option value="-1">All</nb-option>
               <nb-option-group *ngFor="let category of state.currentIntentsCategories | async"
-                               [title]="category.category">
+                               [title]="category.category" >
                 <nb-option *ngFor="let intent of category.intents" [value]="intent._id">
                   {{intent.intentLabel()}}
                 </nb-option>
@@ -55,14 +55,26 @@
             </nb-select>
           </div>
           <div class="search-criterion">
-            <nb-select *ngIf="entityRoles" placeholder="Entity Role" status="primary"
-                       [(ngModel)]="filter.entityRole"
-                       (selectedChange)="search()">
-              <nb-option value="">All</nb-option>
-              <nb-option *ngFor="let r of entityRoles" [value]="r">
-                {{r}}
-              </nb-option>
-            </nb-select>
+              <nb-select *ngIf="entityRolesToInlude" multiple placeholder="Entity Roles to include" status="primary"
+                         [(ngModel)]="filter.entityRolesToInclude"
+                         (selectionChange)="search()"
+                         style="width: 12rem;">
+                <nb-option>Clear selection</nb-option>
+                <nb-option *ngFor="let r of entityRolesToInlude" [value]="r">
+                  {{r}}
+                </nb-option>
+              </nb-select>
+          </div>
+          <div class="search-criterion">
+              <nb-select *ngIf="entityRolesToExclude" multiple placeholder="Entity Roles to exclude" status="primary"
+                         [(ngModel)]="filter.entityRolesToExclude"
+                          (selectionChange)="search()"
+                         style="width: 12rem;">
+                <nb-option>Clear selection</nb-option>
+                <nb-option *ngFor="let r of entityRolesToExclude" [value]="r">
+                  {{r}}
+                </nb-option>
+              </nb-select>
           </div>
           <div class="search-criterion">
             <nb-select placeholder="Status" status="primary" [(ngModel)]="status" (selectedChange)="search()"
@@ -78,6 +90,11 @@
           <input nbInput (keyup.enter)="search()" placeholder="Modified after" [(ngModel)]="filter.modifiedAfter"
                  [nbDatepicker]="after" (ngModelChange)="search()">
           <nb-datepicker #after (dateChange)="search()"></nb-datepicker>
+          </div>
+          <div class="search-criterion">
+            <input nbInput (keyup.enter)="search()" placeholder="Modified before" [(ngModel)]="filter.modifiedBefore"
+                   [nbDatepicker]="before" (ngModelChange)="search()">
+            <nb-datepicker #before (dateChange)="search()"></nb-datepicker>
           </div>
         </div>
       </nb-card-body>

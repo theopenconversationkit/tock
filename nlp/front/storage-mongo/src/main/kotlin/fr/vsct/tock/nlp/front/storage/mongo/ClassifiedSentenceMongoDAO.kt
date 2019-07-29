@@ -54,36 +54,14 @@ import fr.vsct.tock.shared.security.UserLogin
 import mu.KotlinLogging
 import org.bson.conversions.Bson
 import org.litote.jackson.data.JacksonData
-import org.litote.kmongo.Data
-import org.litote.kmongo.Id
+import org.litote.kmongo.*
 import org.litote.kmongo.MongoOperator.elemMatch
 import org.litote.kmongo.MongoOperator.pull
-import org.litote.kmongo.`in`
-import org.litote.kmongo.and
-import org.litote.kmongo.combine
-import org.litote.kmongo.descendingSort
-import org.litote.kmongo.ensureIndex
-import org.litote.kmongo.ensureUniqueIndex
-import org.litote.kmongo.eq
-import org.litote.kmongo.find
-import org.litote.kmongo.getCollection
-import org.litote.kmongo.gt
-import org.litote.kmongo.inc
-import org.litote.kmongo.json
-import org.litote.kmongo.lte
-import org.litote.kmongo.ne
-import org.litote.kmongo.or
-import org.litote.kmongo.orderBy
-import org.litote.kmongo.pullByFilter
-import org.litote.kmongo.regex
-import org.litote.kmongo.replaceOneWithFilter
-import org.litote.kmongo.set
-import org.litote.kmongo.setTo
-import org.litote.kmongo.updateMany
 import java.time.Instant
 import java.time.Instant.now
 import java.util.Locale
 import java.util.concurrent.TimeUnit.DAYS
+import kotlin.collections.toList
 
 
 /**
@@ -118,24 +96,24 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     ) {
 
         constructor(sentence: ClassifiedSentence) :
-            this(
-                textKey(sentence.text),
-                sentence.text,
-                sentence.language,
-                sentence.applicationId,
-                sentence.creationDate,
-                now(),
-                sentence.status,
-                sentence.classification,
-                sentence.lastIntentProbability,
-                sentence.lastEntityProbability,
-                sentence.lastUsage,
-                sentence.usageCount,
-                sentence.unknownCount,
-                sentence.forReview,
-                sentence.reviewComment,
-                sentence.qualifier
-            )
+                this(
+                    textKey(sentence.text),
+                    sentence.text,
+                    sentence.language,
+                    sentence.applicationId,
+                    sentence.creationDate,
+                    now(),
+                    sentence.status,
+                    sentence.classification,
+                    sentence.lastIntentProbability,
+                    sentence.lastEntityProbability,
+                    sentence.lastUsage,
+                    sentence.usageCount,
+                    sentence.unknownCount,
+                    sentence.forReview,
+                    sentence.reviewComment,
+                    sentence.qualifier
+                )
 
         fun toSentence(): ClassifiedSentence =
             ClassifiedSentence(
@@ -239,25 +217,16 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
             val filterBase =
                 and(
                     ApplicationId eq applicationId,
-                    if (language == null) null else Language eq language,
-                    when {
-                        search.isNullOrBlank() -> null
-                        onlyExactMatch -> Text eq search
-                        else -> FullText.regex(search!!.trim(), "i")
-                    },
-                    if (intentId == null) null else Classification_.intentId eq intentId,
-                    if (status.isNotEmpty()) Status `in` status else if (notStatus != null) Status ne notStatus else null,
-                    if (entityType == null) null else
-                        if (searchSubEntities) subEntityTypeQuery(entityType!!)
-                        else Classification_.entities.type eq entityType,
-                    if (entityRole == null) null else
-                        if (searchSubEntities) subEntityRoleQuery(entityRole!!)
-                        else Classification_.entities.role eq entityRole,
-                    if (modifiedAfter == null)
-                        if (searchMark == null) null else UpdateDate lte searchMark!!.date
-                    else if (searchMark == null) UpdateDate gt modifiedAfter?.toInstant()
-                    else and(UpdateDate lte searchMark!!.date, UpdateDate gt modifiedAfter?.toInstant()),
-                    if (onlyToReview) ForReview eq true else null
+                    filterLanguage(),
+                    filterText(),
+                    filterIntent(),
+                    filterStatus(),
+                    filterEntityType(),
+                    filterEntityRolesToInclude(),
+                    filterEntityRoleToExclude(),
+                    filterModifiedAfter(),
+                    filterModifiedBefore(),
+                    filterReviewOnly()
                 )
 
             logger.debug { filterBase.json }
@@ -314,6 +283,51 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         }
     }
 
+    private fun SentencesQuery.filterReviewOnly() = if (onlyToReview) ForReview eq true else null
+
+    private fun SentencesQuery.filterModifiedAfter(): Bson? = when {
+        modifiedAfter == null -> if (searchMark == null) null else UpdateDate lte searchMark!!.date
+        searchMark == null -> UpdateDate gt modifiedAfter?.toInstant()
+        else -> and(UpdateDate lte searchMark!!.date, UpdateDate gt modifiedAfter?.toInstant())
+    }
+
+    private fun SentencesQuery.filterModifiedBefore(): Bson? = when {
+        modifiedBefore == null -> if (searchMark == null) null else UpdateDate gte searchMark!!.date
+        searchMark == null -> UpdateDate lt modifiedBefore?.toInstant()
+        else -> and(UpdateDate gte searchMark!!.date, UpdateDate lt modifiedBefore?.toInstant())
+    }
+
+    private fun SentencesQuery.filterEntityRoleToExclude(): Bson? = when {
+        entityRolesToExclude.isEmpty() -> null
+        searchSubEntities -> subEntityRoleQueryToExclude(entityRolesToExclude)
+        else -> Classification_.entities.role `nin` entityRolesToExclude
+    }
+
+    private fun SentencesQuery.filterEntityRolesToInclude(): Bson? = when {
+        entityRolesToInclude.isEmpty() -> null
+        searchSubEntities -> subEntityRoleQueryToInclude(entityRolesToInclude)
+        else -> Classification_.entities.role `in` entityRolesToInclude
+    }
+
+    private fun SentencesQuery.filterEntityType(): Bson? = when {
+        entityType == null -> null
+        searchSubEntities -> subEntityTypeQuery(entityType!!)
+        else -> Classification_.entities.type eq entityType
+    }
+
+    private fun SentencesQuery.filterStatus() =
+        if (status.isNotEmpty()) Status `in` status else if (notStatus != null) Status ne notStatus else null
+
+    private fun SentencesQuery.filterIntent() = if (intentId == null) null else Classification_.intentId eq intentId
+
+    private fun SentencesQuery.filterText(): Bson? = when {
+        search.isNullOrBlank() -> null
+        onlyExactMatch -> Text eq search
+        else -> FullText.regex(search!!.trim(), "i")
+    }
+
+    private fun SentencesQuery.filterLanguage() = if (language == null) null else Language eq language
+
     //ugly
     private fun subEntityTypeQuery(entityType: String): Bson =
         or(
@@ -328,17 +342,31 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
             Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.type eq entityType
         )
 
-    private fun subEntityRoleQuery(role: String): Bson =
+
+    private fun subEntityRoleQueryToInclude(roles: List<String>): Bson =
         or(
-            Classification_.entities.role eq role,
-            Classification_.entities.subEntities.role eq role,
-            Classification_.entities.subEntities.subEntities.role eq role,
-            Classification_.entities.subEntities.subEntities.subEntities.role eq role,
-            Classification_.entities.subEntities.subEntities.subEntities.subEntities.role eq role,
-            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.role eq role,
-            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role eq role,
-            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role eq role,
-            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role eq role
+            Classification_.entities.role `in` roles,
+            Classification_.entities.subEntities.role `in` roles,
+            Classification_.entities.subEntities.subEntities.role `in` roles,
+            Classification_.entities.subEntities.subEntities.subEntities.role `in` roles,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.role `in` roles,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.role `in` roles,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role `in` roles,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role `in` roles,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role `in` roles
+        )
+
+    private fun subEntityRoleQueryToExclude(roles: List<String>): Bson =
+        and(
+            Classification_.entities.role `nin` roles,
+            Classification_.entities.subEntities.role `nin` roles,
+            Classification_.entities.subEntities.subEntities.role `nin` roles,
+            Classification_.entities.subEntities.subEntities.subEntities.role `nin` roles,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.role `nin` roles,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.role `nin` roles,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role `nin` roles,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role `nin` roles,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role `nin` roles
         )
 
     override fun switchSentencesIntent(
@@ -381,7 +409,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 it.copy(
                     classification = it.classification.copy(
                         entities = it.classification.entities.filterNot { it.role == oldEntity.role && it.type == oldEntity.entityTypeName }
-                            + selectedEntities.map {
+                                + selectedEntities.map {
                             it.copy(
                                 type = newEntity.entityTypeName,
                                 role = newEntity.role

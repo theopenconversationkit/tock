@@ -775,8 +775,10 @@ export class SearchQuery extends PaginatedQuery {
               public intentId?: string,
               public status?: SentenceStatus[],
               public entityType?: string,
-              public entityRole?: string,
+              public entityRolesToInclude: string[] = [],
+              public entityRolesToExclude: string[] = [],
               public modifiedAfter?: Date,
+              public modifiedBefore?: Date,
               public sort?: Entry<string, boolean>[],
               public onlyToReview: boolean = false,
               public searchSubEntities: boolean = false) {
