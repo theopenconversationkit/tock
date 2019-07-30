@@ -1,6 +1,8 @@
 package fr.vsct.tock.bot.test
 
 
+import ch.tutteli.atrium.api.cc.en_GB.get
+import ch.tutteli.atrium.api.cc.en_GB.hasSize
 import ch.tutteli.atrium.api.cc.en_GB.isA
 import ch.tutteli.atrium.api.cc.en_GB.notToBeNull
 import ch.tutteli.atrium.api.cc.en_GB.property
@@ -14,6 +16,8 @@ import ch.tutteli.atrium.verbs.expect
 import fr.vsct.tock.bot.connector.messenger.model.send.Attachment
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentMessage
 import fr.vsct.tock.bot.connector.messenger.model.send.ButtonPayload
+import fr.vsct.tock.bot.connector.messenger.model.send.Element
+import fr.vsct.tock.bot.connector.messenger.model.send.GenericPayload
 import fr.vsct.tock.bot.connector.messenger.model.send.PostbackButton
 import fr.vsct.tock.bot.connector.messenger.model.send.TextMessage
 import fr.vsct.tock.bot.connector.messenger.model.send.TextQuickReply
@@ -49,13 +53,41 @@ fun Assert<AttachmentMessage>.withButtonAttachment(text: String, buttonTitles: L
             property(ButtonPayload::buttons) {
                 expect(subject.map { button ->
                     when (button) {
-                        is PostbackButton -> (button as PostbackButton).title
-                        is UrlButton -> (button as UrlButton).title
+                        is PostbackButton -> button.title
+                        is UrlButton -> button.title
                         else -> null
                     }
                 }).toBe(buttonTitles)
 
             }
+        }
+
+fun Assert<AttachmentMessage>.withGenericTemplateElement(
+    index: Int,
+    expectedTitle: String,
+    subtitle: String?,
+    buttonTitles: List<String>
+) =
+    property(AttachmentMessage::attachment)
+        .property(Attachment::payload)
+        .isA<GenericPayload> {
+            property(GenericPayload::elements) {
+                expect(subject[index]) {
+                    property(Element::title).toBe(expectedTitle)
+                    subtitle?.let { property(Element::subtitle).toBe(it) }
+                    property(Element::buttons).notToBeNull {
+                        expect(subject.map { button ->
+                            when (button) {
+                                is PostbackButton -> button.title
+                                is UrlButton -> button.title
+                                else -> null
+                            }
+                        }).toBe(buttonTitles)
+                    }
+                }
+
+            }
+
         }
 
 fun Assert<AttachmentMessage>.withTextQuickReplies(quickReplies: List<String>) = addAssertionsCreatedBy {
