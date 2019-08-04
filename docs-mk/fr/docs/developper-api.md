@@ -82,23 +82,23 @@ fun main() {
             },
             //réponse sous format card correspondant à l'intention location
             newStory("location") {
-                            end(
-                                newCard(
-                                    "Titre",
-                                    "Sous-Titre",
-                                    newAttachment("https://url-image.png"),
-                                    newAction("Action 1"),
-                                    newAction("Action 2", "http://redirection")
-                                )
-                            )
-                        }
+                end(
+                    newCard(
+                        "Titre",
+                        "Sous-Titre",
+                        newAttachment("https://url-image.png"),
+                        newAction("Action 1"),
+                        newAction("Action 2", "http://redirection")
+                    )
+                )
+            },
             //réponse sous format spécifique au canal (ici messenger)
             //correspondant à l'intention goodbye
             newStory("goodbye") {
                 end {
                     buttonsTemplate("Mais pourquoi?", nlpQuickReply("Je ne veux pas partir"))
                 } 
-            }                                                                
+            },
              //réponse renvoyée quand l'intention n'est pas répertoriée  
             unknownStory {
                 end("je n'ai pas compris")
