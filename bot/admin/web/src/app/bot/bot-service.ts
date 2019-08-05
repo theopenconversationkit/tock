@@ -67,7 +67,7 @@ export class BotService {
   }
 
   saveI18nLabel(label: I18nLabel): Observable<boolean> {
-    return this.rest.post("/i18n/saveTestPlan", label);
+    return this.rest.post("/i18n/save", label);
   }
 
   createI18nLabel(request: CreateI18nLabelRequest): Observable<I18nLabel> {

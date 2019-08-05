@@ -46,8 +46,12 @@ export class BotSharedService implements OnDestroy {
   }
 
   findConnectorConfiguration(connectorType: ConnectorType): ConnectorTypeConfiguration {
+    let r = undefined;
     if (this.connectorTypes) {
-      return this.connectorTypes.find(c => c.connectorType.id === connectorType.id);
+      r = this.connectorTypes.find(c => c.connectorType.id === connectorType.id)
+    }
+    if (r) {
+      return r;
     } else {
       //should not happen
       return new ConnectorTypeConfiguration(connectorType, [], "")
