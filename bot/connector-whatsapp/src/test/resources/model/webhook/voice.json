@@ -1,0 +1,23 @@
+{
+  "contacts": [
+    {
+      "profile": {
+        "name": "Julien"
+      },
+      "wa_id": "33676112295"
+    }
+  ],
+  "messages": [
+    {
+      "from": "33676112295",
+      "id": "ABGGM2dhMilfAhD9Ph8NBcBsRwLJBj-Yylcs",
+      "timestamp": "1565076169",
+      "type": "voice",
+      "voice": {
+        "id": "abf599fa-c3e6-47b4-86fd-b413ed3411f1",
+        "mime_type": "audio/ogg; codecs=opus",
+        "sha256": "0ff1568e4a913fd5be9c9c4580f7b05b4dfa4cdcdd1ab1153245738da19bb32b"
+      }
+    }
+  ]
+}

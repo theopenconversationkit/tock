@@ -22,10 +22,10 @@ import com.fasterxml.jackson.annotation.JsonProperty
  *
  */
 data class WhatsAppAttachment(
-    val file: String,
     val id: String,
     @get:JsonProperty("mime_type")
     val mimeType: String,
     val sha256: String,
+    val filename: String? = null,
     val caption: String? = null
 )
