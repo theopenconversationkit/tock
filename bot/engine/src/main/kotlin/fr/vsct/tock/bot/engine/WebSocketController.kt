@@ -40,7 +40,7 @@ object WebSocketController {
 
     private val authorizedKeys: MutableSet<String> = CopyOnWriteArraySet()
 
-    private val executor: Executor = injector.provide()
+    private val executor: Executor get() = injector.provide()
 
     fun registerAuthorizedKey(key: String) {
         authorizedKeys.add(key)

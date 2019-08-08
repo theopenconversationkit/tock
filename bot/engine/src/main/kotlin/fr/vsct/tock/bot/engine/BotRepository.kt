@@ -27,6 +27,7 @@ import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotAnswerInterceptor
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.BotProvider
+import fr.vsct.tock.bot.definition.BotProviderId
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
@@ -65,7 +66,7 @@ object BotRepository {
 
     private val botConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
     private val storyDefinitionConfigurationDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
-    internal val botProviders: MutableSet<BotProvider> = mutableSetOf()
+    internal val botProviders: MutableMap<BotProviderId, BotProvider> = ConcurrentHashMap()
     internal val storyHandlerListeners: MutableList<StoryHandlerListener> = mutableListOf()
     private val nlpListeners: MutableList<NlpListener> = mutableListOf(BuiltInKeywordListener)
     private val nlpClient: NlpClient get() = injector.provide()
@@ -171,7 +172,7 @@ object BotRepository {
      * Registers a new [BotProvider].
      */
     fun registerBotProvider(bot: BotProvider) {
-        botProviders.add(bot)
+        botProviders[bot.botProviderId] = bot
     }
 
     /**
@@ -179,7 +180,7 @@ object BotRepository {
      */
     fun registerBuiltInStoryDefinitions(botProvider: BotProvider) {
         val botDefinition = botProvider.botDefinition()
-        val configurationName = botProvider.configurationName
+        val configurationName = botProvider.botProviderId.configurationName
         executor.executeBlocking {
             storyDefinitionConfigurationDAO.createBuiltInStoriesIfNotExist(
                 botDefinition.stories
@@ -229,7 +230,7 @@ object BotRepository {
      * @param routerHandlers the additional router handlers
      */
     fun installBots(routerHandlers: List<(Router) -> Unit>) {
-        val bots = botProviders.map { it.botDefinition() }
+        val bots = botProviders.values.map { it.botDefinition() }
 
         //check that nlp applications exist
         bots.distinctBy { it.namespace to it.nlpModelName }
@@ -248,7 +249,7 @@ object BotRepository {
             }
 
         //persist builtin stories
-        botProviders.forEach {
+        botProviders.values.forEach {
             registerBuiltInStoryDefinitions(it)
         }
 
@@ -307,14 +308,11 @@ object BotRepository {
         //path -> botAppConf
         val confs: Map<Id<BotApplicationConfiguration>, BotApplicationConfiguration> = botConfigurationDAO.getConfigurations()
             .groupBy { it._id }.mapValues { it.value.first() }
-        //providers
-        val providers: Map<String, List<BotProvider>> = botProviders.groupBy { it.botId() }
 
         confs.values.forEach { c ->
             //gets the provider
-            val provider = providers[c.botId]?.find { botProvider ->
-                botProvider.configurationName?.takeUnless { it == c.name } == null
-            }
+            val provider = botProviders[BotProviderId(c.botId, c.namespace, c.name)]
+                ?: botProviders[BotProviderId(c.botId, c.namespace)]
 
             //is there a configuration change ?
             if (provider != null &&
@@ -357,7 +355,7 @@ object BotRepository {
         }
 
         //updates of all bot providers are now ok
-        botProviders.forEach { it.configurationUpdated = false }
+        botProviders.values.forEach { it.configurationUpdated = false }
 
         if (!startup) {
             //register new confs

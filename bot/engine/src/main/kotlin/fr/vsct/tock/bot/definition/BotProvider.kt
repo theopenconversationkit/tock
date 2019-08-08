@@ -28,24 +28,17 @@ interface BotProvider {
     fun botDefinition(): BotDefinition
 
     /**
-     * The bot unique identifier.
+     * The bot provider unique identifier.
      */
-    fun botId(): String = botDefinition().botId
-
-    /**
-     * Is this [BotProvider] specific to a configuration name?
-     * If yes, this property stores the configuration name.
-     * If no, this property returns null.
-     * By default the¬ property returns null.
-     */
-    val configurationName: String? get() = null
+    val botProviderId: BotProviderId
+        get() = botDefinition().let { BotProviderId(it.botId, it.namespace) }
 
     /**
      * Does this bot provider gets a configuration update ?
      */
     var configurationUpdated: Boolean
         get() = false
-        set(v) {}
+        set(_) {}
 
 
 }

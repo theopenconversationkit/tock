@@ -20,6 +20,7 @@ import fr.vsct.tock.bot.admin.bot.BotConfiguration
 import fr.vsct.tock.bot.api.model.configuration.ClientConfiguration
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.BotProvider
+import fr.vsct.tock.bot.definition.BotProviderId
 import fr.vsct.tock.bot.engine.BotRepository
 import mu.KotlinLogging
 
@@ -51,13 +52,12 @@ internal class BotApiDefinitionProvider(private val configuration: BotConfigurat
 
     override fun botDefinition(): BotDefinition = bot
 
-    override fun equals(other: Any?): Boolean =
-        botId() == (other as? BotProvider)?.botId()
-            && configurationName == (other as? BotProvider)?.configurationName
+    override fun equals(other: Any?): Boolean = botProviderId == (other as? BotProvider)?.botProviderId
 
-    override fun hashCode(): Int = botId().hashCode()
+    override fun hashCode(): Int = botProviderId.hashCode()
 
-    override val configurationName: String = configuration.name
+    override val botProviderId: BotProviderId =
+        BotProviderId(configuration.botId, configuration.namespace, configuration.name)
 
     @Volatile
     override var configurationUpdated: Boolean = true
