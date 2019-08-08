@@ -22,6 +22,8 @@ import com.google.cloud.speech.v1.SpeechClient
 import com.google.protobuf.ByteString
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.stt.AudioCodec
+import fr.vsct.tock.stt.AudioCodec.unknown
+import fr.vsct.tock.stt.AudioCodec.ogg
 import fr.vsct.tock.stt.STT
 import mu.KotlinLogging
 import ws.schild.jave.AudioAttributes
@@ -71,18 +73,23 @@ internal object GoogleSpeechClient : STT {
                 val config = RecognitionConfig.newBuilder()
                     .setEncoding(
                         when (codec) {
-                            AudioCodec.ogg -> RecognitionConfig.AudioEncoding.OGG_OPUS
-                            AudioCodec.unknown -> RecognitionConfig.AudioEncoding.FLAC
+                            ogg -> RecognitionConfig.AudioEncoding.OGG_OPUS
+                            unknown -> RecognitionConfig.AudioEncoding.FLAC
                         }
                     )
                     .setLanguageCode(language.toString())
+                    .apply {
+                        if(codec == ogg) {
+                            sampleRateHertz = 16000
+                        }
+                    }
                     .build()
                 val audio = RecognitionAudio.newBuilder()
                     .setContent(
                         ByteString.copyFrom(
                             when (codec) {
-                                AudioCodec.ogg -> bytes
-                                AudioCodec.unknown -> parseUnknown(bytes)
+                                ogg -> bytes
+                                unknown -> parseUnknown(bytes)
                             }
                         )
                     )

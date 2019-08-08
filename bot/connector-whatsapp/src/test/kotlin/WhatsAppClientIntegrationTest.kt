@@ -16,7 +16,16 @@
 
 package fr.vsct.tock.bot.connector.whatsapp
 
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
 import fr.vsct.tock.shared.property
+import fr.vsct.tock.shared.provide
+import fr.vsct.tock.stt.AudioCodec.ogg
+import fr.vsct.tock.stt.STT
+import fr.vsct.tock.stt.google.googleSTTModule
+import io.mockk.mockk
 import org.junit.jupiter.api.Test
 
 /**
@@ -25,12 +34,24 @@ import org.junit.jupiter.api.Test
 class WhatsAppClientIntegrationTest {
 
     @Test
-    fun `get Media`() {
+    fun `translate voice`() {
         val client = WhatsAppClient(
             property("url", "none"),
             "admin",
             property("password", "password")
         )
-        client.getMedia("eeeee")
+        val bytes = client.getMedia("9b1b92f8-4ba9-4132-8e5b-872483453614")!!
+        val injector = KodeinInjector().apply {
+            inject(
+                Kodein {
+                    import(Kodein.Module {
+                        bind<STT>() with provider { mockk<STT>() }
+                    })
+                    import(googleSTTModule, true)
+                }
+            )
+        }
+        val translate = injector.provide<STT>().parse(bytes, codec = ogg)
+        println(translate)
     }
 }
