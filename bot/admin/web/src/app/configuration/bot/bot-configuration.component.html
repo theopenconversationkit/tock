@@ -85,7 +85,7 @@
       <mat-panel-title>Connector Custom Configuration</mat-panel-title>
       <mat-panel-description>Parameters</mat-panel-description>
     </mat-expansion-panel-header>
-    <mat-form-field class="bot-input">
+    <mat-form-field class="long-text bot-input" *ngIf="!botSharedService.configuration || !botSharedService.configuration.botApiSupport">
       <input matInput placeholder="Application base url" [(ngModel)]="configuration.baseUrl" title="optional">
     </mat-form-field>
     <mat-form-field class="long-text bot-input"

@@ -15,7 +15,7 @@
  */
 
 import {Injectable} from "@angular/core";
-import {BooleanResponse, RestService} from "../core-nlp/rest/rest.service";
+import {RestService} from "../core-nlp/rest/rest.service";
 import {StateService} from "../core-nlp/state.service";
 import {
   BotDialogRequest,
@@ -60,10 +60,6 @@ export class TestService {
 
   removeDialogFromTestPlan(planId: string, dialogId: string): Observable<boolean> {
     return this.rest.post(`/test/plan/${planId}/dialog/delete/${dialogId}`, this.state.createApplicationScopedQuery());
-  }
-
-  isXrayAvailable(): Observable<BooleanResponse> {
-    return this.rest.get("/xray/available", BooleanResponse.fromJSON);
   }
 
   executeXRay(conf: XRayPlanExecutionConfiguration): Observable<XRayPlanExecutionResult> {

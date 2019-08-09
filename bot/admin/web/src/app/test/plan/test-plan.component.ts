@@ -21,6 +21,7 @@ import {StateService} from "../../core-nlp/state.service";
 import {MatSnackBar} from "@angular/material";
 import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {DialogReport} from "../../shared/model/dialog-data";
+import {BotSharedService} from "../../shared/bot-shared.service";
 
 @Component({
   selector: 'tock-bot-test-plan',
@@ -44,7 +45,8 @@ export class TestPlanComponent implements OnInit {
   constructor(private state: StateService,
               private test: TestService,
               private snackBar: MatSnackBar,
-              public botConfiguration: BotConfigurationService) {
+              public botConfiguration: BotConfigurationService,
+              private shared: BotSharedService) {
   }
 
   ngOnInit(): void {
@@ -65,8 +67,8 @@ export class TestPlanComponent implements OnInit {
           this.testPlans = p;
 
           if (c.length !== 0)
-            this.test.isXrayAvailable().subscribe(r => {
-                if (r.success) {
+            this.shared.getConfiguration().subscribe(r => {
+                if (r.xrayAvailable) {
                   this.xray = new XRayPlanExecutionConfiguration("", "", "");
                 }
               }

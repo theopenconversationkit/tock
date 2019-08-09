@@ -17,19 +17,20 @@
 
 import {tap} from 'rxjs/operators';
 import {Injectable, OnDestroy} from "@angular/core";
-import {BooleanResponse, RestService} from "../core-nlp/rest/rest.service";
+import {RestService} from "../core-nlp/rest/rest.service";
 import {Observable, of} from "rxjs";
 import {ConnectorType, ConnectorTypeConfiguration} from "../core/model/configuration";
 import {NlpCallStats} from "./model/dialog-data";
+import {AdminConfiguration} from "./model/conf";
 
 @Injectable()
 export class BotSharedService implements OnDestroy {
 
   private connectorTypes: ConnectorTypeConfiguration[];
-  compilerAvailable: boolean = false;
+  configuration: AdminConfiguration;
 
   constructor(private rest: RestService) {
-    this.isCompilerAvailable().subscribe(r => this.compilerAvailable = r.success)
+    this.getConfiguration().subscribe(r => this.configuration = r)
   }
 
   ngOnDestroy(): void {
@@ -62,8 +63,12 @@ export class BotSharedService implements OnDestroy {
     return this.rest.get(`/action/nlp-stats/${actionId}`, NlpCallStats.fromJSON)
   }
 
-  isCompilerAvailable(): Observable<BooleanResponse> {
-    return this.rest.get(`/compiler/available`, BooleanResponse.fromJSON);
+  getConfiguration(): Observable<AdminConfiguration> {
+    if(this.configuration) {
+      return of(this.configuration);
+    } else {
+      return this.rest.get(`/configuration`, AdminConfiguration.fromJSON);
+    }
   }
 
 }

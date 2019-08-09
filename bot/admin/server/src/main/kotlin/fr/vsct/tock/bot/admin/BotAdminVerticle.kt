@@ -23,7 +23,7 @@ import fr.vsct.tock.bot.admin.BotAdminService.dialogReportDAO
 import fr.vsct.tock.bot.admin.BotAdminService.getBotConfigurationByApplicationIdAndBotId
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.bot.BotConfiguration
-import fr.vsct.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
+import fr.vsct.tock.bot.admin.model.BotAdminConfiguration
 import fr.vsct.tock.bot.admin.model.BotConnectorConfiguration
 import fr.vsct.tock.bot.admin.model.BotDialogRequest
 import fr.vsct.tock.bot.admin.model.BotI18nLabel
@@ -39,7 +39,6 @@ import fr.vsct.tock.bot.admin.model.UserSearchQuery
 import fr.vsct.tock.bot.admin.model.XRayPlanExecutionConfiguration
 import fr.vsct.tock.bot.admin.test.TestPlan
 import fr.vsct.tock.bot.admin.test.TestPlanService
-import fr.vsct.tock.bot.admin.test.xray.XrayConfiguration
 import fr.vsct.tock.bot.admin.test.xray.XrayService
 import fr.vsct.tock.bot.connector.ConnectorType.Companion.rest
 import fr.vsct.tock.bot.connector.ConnectorTypeConfiguration
@@ -426,10 +425,6 @@ open class BotAdminVerticle : AdminVerticle() {
                 ?: ""
         }
 
-        blockingJsonGet("/xray/available", botUser) {
-            XrayConfiguration.isXrayAvailable()
-        }
-
         blockingJsonPost("/xray/execute", botUser) { context, configuration: XRayPlanExecutionConfiguration ->
             XrayService(
                 listOfNotNull(configuration.configurationId),
@@ -439,8 +434,8 @@ open class BotAdminVerticle : AdminVerticle() {
             ).executePlans(context.organization)
         }
 
-        blockingJsonGet("/compiler/available", botUser) {
-            !KotlinCompilerClient.compilerDisabled
+        blockingJsonGet("/configuration") {
+            BotAdminConfiguration()
         }
 
         configureStaticHandling()
