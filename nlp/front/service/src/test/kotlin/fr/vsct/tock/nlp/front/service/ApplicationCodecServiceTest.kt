@@ -19,6 +19,8 @@ package fr.vsct.tock.nlp.front.service
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationImportConfiguration
 import fr.vsct.tock.nlp.front.shared.codec.DumpType
+import fr.vsct.tock.nlp.front.shared.codec.SentenceDump
+import fr.vsct.tock.nlp.front.shared.codec.SentencesDump
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.Classification
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
@@ -98,7 +100,7 @@ class ApplicationCodecServiceTest : AbstractTest() {
         verify {
             context.config.save(match<ApplicationDefinition> {
                 it.supportedLocales.contains(newLocale)
-                        && it.supportedLocales.contains(defaultLocale)
+                    && it.supportedLocales.contains(defaultLocale)
             })
         }
     }
@@ -115,7 +117,7 @@ class ApplicationCodecServiceTest : AbstractTest() {
         verify {
             context.config.save(match<ApplicationDefinition> {
                 it.supportedLocales.contains(newLocale)
-                        && !it.supportedLocales.contains(defaultLocale)
+                    && !it.supportedLocales.contains(defaultLocale)
             })
         }
     }
@@ -150,18 +152,18 @@ class ApplicationCodecServiceTest : AbstractTest() {
         verify {
             context.config.save(match<IntentDefinition> {
                 it.name == defaultIntentDefinition.name
-                        && it._id == defaultIntentDefinition._id
-                        && it.sharedIntents.isEmpty()
+                    && it._id == defaultIntentDefinition._id
+                    && it.sharedIntents.isEmpty()
             })
         }
         var newOtherIntentId: Id<IntentDefinition>? = null
         verify {
             context.config.save(match<IntentDefinition> {
                 (it.name == otherIntent.name
-                        && it._id != otherIntent._id
-                        && it.sharedIntents.size == 1
-                        && it.sharedIntents.contains(defaultIntentDefinition._id)
-                        )
+                    && it._id != otherIntent._id
+                    && it.sharedIntents.size == 1
+                    && it.sharedIntents.contains(defaultIntentDefinition._id)
+                    )
                     .apply { if (this) newOtherIntentId = it._id }
 
             })
@@ -169,11 +171,23 @@ class ApplicationCodecServiceTest : AbstractTest() {
         verify {
             context.config.save(match<IntentDefinition> {
                 it.name == andOtherIntent.name
-                        && it._id != andOtherIntent._id
-                        && it.sharedIntents.size == 1
-                        && it.sharedIntents.contains(newOtherIntentId)
+                    && it._id != andOtherIntent._id
+                    && it.sharedIntents.size == 1
+                    && it.sharedIntents.contains(newOtherIntentId)
 
             })
+        }
+    }
+
+    @Test
+    fun `import sentence flagged of a Locale with country use the Locale language only`() {
+        val dump = SentencesDump(
+            app.qualifiedName,
+            sentences = listOf(SentenceDump("a", "a", emptyList(), Locale.FRANCE))
+        )
+        ApplicationCodecService.importSentences(app.namespace, dump)
+        verify {
+            context.config.save(match<ClassifiedSentence> { it.language == Locale.FRENCH })
         }
     }
 }

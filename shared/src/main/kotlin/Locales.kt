@@ -17,9 +17,22 @@
 package fr.vsct.tock.shared
 
 import java.util.Locale
+import kotlin.LazyThreadSafetyMode.PUBLICATION
 
 /**
  * The default Tock [Locale].
  * Use property "tock_default_locale" and default value "en".
  */
 val defaultLocale: Locale = Locale(property("tock_default_locale", "en"))
+
+/**
+ * The languages supported by Tock.
+ */
+val supportedLanguages: Map<String, Locale> by lazy(PUBLICATION) {
+    Locale.getAvailableLocales()
+        .asSequence()
+        .filter { it.language.isNotEmpty() }
+        .distinctBy { it.language }
+        .map { it.language to Locale(it.language) }
+        .toMap()
+}

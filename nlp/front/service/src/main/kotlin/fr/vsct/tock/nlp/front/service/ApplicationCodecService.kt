@@ -48,6 +48,7 @@ import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.namespace
 import fr.vsct.tock.shared.provide
 import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
+import fr.vsct.tock.shared.supportedLanguages
 import fr.vsct.tock.shared.withoutNamespace
 import mu.KotlinLogging
 import org.litote.kmongo.Id
@@ -164,7 +165,7 @@ object ApplicationCodecService : ApplicationCodec {
             report.localeAdded = !app.supportedLocales.containsAll(dump.application.supportedLocales)
 
             //add unknown intent to intent map
-            intentsIdsMap += (Intent.UNKNOWN_INTENT_NAME.toId<IntentDefinition>() to Intent.UNKNOWN_INTENT_NAME.toId())
+            intentsIdsMap += (UNKNOWN_INTENT_NAME.toId<IntentDefinition>() to UNKNOWN_INTENT_NAME.toId())
 
             dump.sentences.forEach { s ->
                 if (config.search(
@@ -230,12 +231,15 @@ object ApplicationCodecService : ApplicationCodec {
                     .toMutableMap()
 
             dump.sentences.forEach { s ->
-                val language = s.language ?: dump.language
+                val language = (s.language ?: dump.language)?.language
                 if (language == null) {
                     report.addError("please specify a language for : ${s.text}")
+                } else if (!supportedLanguages.containsKey(language)) {
+                    report.addError("unknown language : $language")
                 } else {
-                    if (!app.supportedLocales.contains(language)) {
-                        app = config.save(app.copy(supportedLocales = app.supportedLocales + language))
+                    val locale = Locale(language)
+                    if (!app.supportedLocales.contains(locale)) {
+                        app = config.save(app.copy(supportedLocales = app.supportedLocales + locale))
                     }
 
                     val intent: IntentDefinition? = if (s.intent == UNKNOWN_INTENT_NAME) {
@@ -283,10 +287,10 @@ object ApplicationCodecService : ApplicationCodec {
                             if (newIntent.entities.none { it.entityTypeName == e.entity && it.role == e.role }) {
                                 val intentWithEntities = newIntent.copy(
                                     entities = newIntent.entities +
-                                            EntityDefinition(
-                                                e.entity,
-                                                e.role
-                                            )
+                                        EntityDefinition(
+                                            e.entity,
+                                            e.role
+                                        )
                                 )
                                 config.save(intentWithEntities)
                                 intentsByNameMap[intentWithEntities.qualifiedName] = intentWithEntities
@@ -298,7 +302,7 @@ object ApplicationCodecService : ApplicationCodec {
                     config.save(
                         ClassifiedSentence(
                             s.text,
-                            language,
+                            locale,
                             appId,
                             Instant.now(),
                             Instant.now(),
@@ -367,7 +371,7 @@ object ApplicationCodecService : ApplicationCodec {
             app.qualifiedName,
             sentences = sentences.mapNotNull { s ->
                 val sentenceIntent = intents[s.classification.intentId]
-                if (sentenceIntent == null && s.classification.intentId != Intent.UNKNOWN_INTENT_NAME.toId<IntentDefinition>()) {
+                if (sentenceIntent == null && s.classification.intentId != UNKNOWN_INTENT_NAME.toId<IntentDefinition>()) {
                     logger.warn { "unknown intent ${s.classification.intentId}" }
                     null
                 } else {

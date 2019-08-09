@@ -65,6 +65,7 @@ import fr.vsct.tock.shared.security.TockUserRole.nlpUser
 import fr.vsct.tock.shared.security.TockUserRole.technicalAdmin
 import fr.vsct.tock.shared.security.auth.TockAuthProvider
 import fr.vsct.tock.shared.security.initEncryptor
+import fr.vsct.tock.shared.supportedLanguages
 import fr.vsct.tock.shared.vertx.WebVerticle
 import io.netty.handler.codec.http.HttpHeaderNames
 import io.vertx.core.Handler
@@ -339,15 +340,10 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonGet("/locales")
-        {
-            Locale.getAvailableLocales()
-                .asSequence()
-                .filter { it.language.isNotEmpty() }
-                .distinctBy { it.language }
-                .map { it.language to it.getDisplayLanguage(Locale.ENGLISH).capitalize() }
+        blockingJsonGet("/locales") {
+            supportedLanguages
+                .map { it.key to it.value.getDisplayLanguage(Locale.ENGLISH).capitalize() }
                 .sortedBy { it.second }
-                .toList()
         }
 
         blockingJsonPost("/parse", nlpUser)
