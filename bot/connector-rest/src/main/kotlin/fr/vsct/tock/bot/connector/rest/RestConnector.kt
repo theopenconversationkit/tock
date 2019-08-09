@@ -29,7 +29,10 @@ import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.event.Event
+import fr.vsct.tock.bot.engine.message.Choice
+import fr.vsct.tock.bot.engine.message.Sentence
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserPreferences
@@ -64,11 +67,7 @@ class RestConnector(
                         return@blocking
                     }
                     val message: MessageRequest = mapper.readValue(context.bodyAsString)
-                    val action = message.message.toAction(
-                        PlayerId(message.userId, PlayerType.user),
-                        applicationId,
-                        PlayerId(message.recipientId, PlayerType.bot)
-                    )
+                    val action = transformMessage(message)
                     val locale = Locale.forLanguageTag(context.pathParam("locale"))
                     action.state.targetConnectorType = message.targetConnectorType
                     controller.handle(
@@ -88,6 +87,18 @@ class RestConnector(
             }
         }
     }
+
+    private fun transformMessage(message: MessageRequest): Action =
+        with(message.message) {
+            //choice nlp support
+            val nlp = (this as? Choice)?.parameters?.get(SendChoice.NLP)
+            val m = takeUnless { nlp != null } ?: Sentence(nlp)
+            m.toAction(
+                PlayerId(message.userId, PlayerType.user),
+                applicationId,
+                PlayerId(message.recipientId, PlayerType.bot)
+            )
+        }
 
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
         callback as RestConnectorCallback

@@ -58,6 +58,18 @@ export class RestService {
     return headers;
   }
 
+  private replacer(key, value) {
+    const originalObject = this[key];
+    if(originalObject instanceof Map) {
+      return Array.from(originalObject).reduce((obj, [key, value]) => {
+        obj[key] = value;
+        return obj;
+      }, {});
+    } else {
+      return value;
+    }
+  }
+
   get<T>(path: string, parseFunction: (value: any) => T): Observable<T> {
     return this.http.get(`${this.url}${path}`, {headers: this.headers(), withCredentials: true}).pipe(
       map((res: string) => parseFunction(res || {})),
@@ -81,7 +93,7 @@ export class RestService {
   post<I, O>(path: string, value?: I, parseFunction?: (value: any) => O, baseUrl?: string): Observable<O> {
     return this.http.post(
       `${baseUrl ? baseUrl : this.url}${path}`,
-      value ? JSON.stringify(value) : "{}",
+      value ? JSON.stringify(value, this.replacer) : "{}",
       {headers: this.headers(), withCredentials: true}).pipe(
       map((res: string) => parseFunction ? parseFunction(res || {}) : (res || {}) as O),
       catchError(e => this.handleError(this, e)),);
@@ -90,7 +102,7 @@ export class RestService {
   put<I, O>(path: string, value?: I, parseFunction?: (value: any) => O): Observable<O> {
     return this.http.put(
       `${this.url}${path}`,
-      value ? JSON.stringify(value) : "{}",
+      value ? JSON.stringify(value, this.replacer) : "{}",
       {headers: this.headers(), withCredentials: true}).pipe(
       map((res: string) => parseFunction ? parseFunction(res || {}) : (res || {}) as O),
       catchError(e => this.handleError(this, e)),);
@@ -105,7 +117,7 @@ export class RestService {
   postNotAuthenticated<I, O>(path: string, value?: I, parseFunction?: (value: any) => O): Observable<O> {
     return this.http.post(
       `${this.notAuthenticatedUrl}${path}`,
-      value ? JSON.stringify(value) : "{}",
+      value ? JSON.stringify(value, this.replacer) : "{}",
       {headers: this.notAuthenticatedHeaders(), withCredentials: true}).pipe(
       map((res: string) => parseFunction ? parseFunction(res || {}) : (res || {}) as O),
       catchError(e => this.handleError(this, e)),);
