@@ -61,7 +61,9 @@ open class BotBusMock(
     override val action: Action = context.firstAction
 ) : BotBus {
 
-    private val logger = KotlinLogging.logger {}
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
     private val logsRepository: MutableList<BotBusMockLog> = mutableListOf()
 

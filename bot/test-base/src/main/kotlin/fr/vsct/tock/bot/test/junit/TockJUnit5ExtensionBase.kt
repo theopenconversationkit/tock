@@ -36,6 +36,7 @@ import fr.vsct.tock.bot.test.TestContext
 import fr.vsct.tock.bot.test.TestLifecycle
 import fr.vsct.tock.bot.test.newBusMockContext
 import fr.vsct.tock.translator.UserInterfaceType
+import mu.KotlinLogging
 import org.junit.jupiter.api.extension.AfterEachCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
@@ -48,6 +49,10 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
     val botDefinition: BotDefinition,
     @Suppress("UNCHECKED_CAST") val lifecycle: TestLifecycle<T> = TestLifecycle(TestContext() as T)
 ) : BeforeEachCallback, AfterEachCallback {
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
     /**
      * The [TestContext].
@@ -347,13 +352,27 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
      */
     fun busMock(): BotBusMock = BotBusMock(testContext.botBusMockContext)
 
+    //for some strange reason beforeEach can be called multiple time.
+    //we need to check that there is only one call (for performance reason)
+    private var start = false
+    private var end = false
 
-    override fun beforeEach(p0: ExtensionContext) {
-        lifecycle.start()
+    override fun beforeEach(context: ExtensionContext) {
+        if (!start) {
+            start = true
+            logger.info { "initialize Test ${context.displayName}" }
+            lifecycle.start()
+            logger.debug { "end initialize Test ${context.displayName}" }
+        }
     }
 
-    override fun afterEach(p0: ExtensionContext) {
-        lifecycle.end()
+    override fun afterEach(context: ExtensionContext) {
+        if (!end) {
+            end = true
+            logger.info { "cleanup Test ${context.displayName}" }
+            lifecycle.end()
+            logger.debug { "end cleanup Test ${context.displayName}" }
+        }
     }
 
 }
