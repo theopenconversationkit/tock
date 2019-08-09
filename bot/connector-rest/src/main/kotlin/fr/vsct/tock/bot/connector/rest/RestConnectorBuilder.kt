@@ -60,7 +60,7 @@ fun addRestConnector(
 /**
  * Generates a default connector path from a base configuration.
  */
-fun generateRestConnectorPath(botConfiguration: BotApplicationConfiguration): String = "/${botConfiguration.namespace}/test/test-${botConfiguration.applicationId}"
+fun generateRestConnectorPath(botConfiguration: BotApplicationConfiguration): String = "/io/${botConfiguration.namespace}/test/test-${botConfiguration.applicationId}"
 
 /**
  * Returns a rest configuration from a base configuration.
