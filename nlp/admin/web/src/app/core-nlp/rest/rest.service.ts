@@ -150,7 +150,7 @@ export class RestService {
         return NEVER;
       }
       errMsg = error.status === 400
-        ? error.statusText || ''
+        ? (error.error ? error.error : (error.statusText ? error.statusText : ''))
         : `Server error : ${error.status} - ${error.statusText || ''}`;
     } else {
       //strange things happen
@@ -158,7 +158,7 @@ export class RestService {
         location.reload();
         return NEVER;
       }
-      errMsg = error.message ? error.message : error.toString();
+      errMsg = error.error ? error.error : (error.message ? error.message : error.toString());
     }
     rest.errorEmitter.emit(errMsg);
     return observableThrowError(errMsg);
