@@ -19,8 +19,10 @@ package fr.vsct.tock.nlp.core.service
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
+import fr.vsct.tock.nlp.core.DictionaryRepository
 import fr.vsct.tock.nlp.core.ModelCore
 import fr.vsct.tock.nlp.core.NlpCore
+import fr.vsct.tock.nlp.core.service.entity.DictionaryRepositoryService
 import fr.vsct.tock.nlp.core.service.entity.EntityCore
 import fr.vsct.tock.nlp.core.service.entity.EntityCoreService
 import fr.vsct.tock.nlp.core.service.entity.EntityMerge
@@ -29,6 +31,7 @@ import fr.vsct.tock.nlp.core.service.entity.EntityMergeService
 val coreModule = Kodein.Module {
     bind<NlpCore>() with provider { NlpCoreService }
     bind<ModelCore>() with provider { ModelCoreService }
+    bind<DictionaryRepository>() with provider { DictionaryRepositoryService}
 
     //internal bindings
     bind<EntityCore>() with provider { EntityCoreService }

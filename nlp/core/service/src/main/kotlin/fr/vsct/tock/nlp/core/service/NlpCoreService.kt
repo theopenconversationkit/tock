@@ -152,16 +152,20 @@ internal object NlpCoreService : NlpCore {
 
             if (context.evaluationContext.mergeEntityTypes || context.evaluationContext.classifyEntityTypes) {
                 val classifiedEntityTypes = entityCore.classifyEntityTypes(intentContext, text)
-                if (context.evaluationContext.mergeEntityTypes) {
-                    val result =
-                        entityMerge.mergeEntityTypes(context, text, intent, evaluatedEntities, classifiedEntityTypes)
-                    result to
+                if (classifiedEntityTypes.isNotEmpty()) {
+                    if (context.evaluationContext.mergeEntityTypes) {
+                        val result =
+                            entityMerge.mergeEntityTypes(context, text, intent, evaluatedEntities, classifiedEntityTypes)
+                        result to
                             (evaluatedEntities + classifiedEntityTypes.map { it.toEntityRecognition(it.entityType.name) })
                                 .subtract(result).toList()
-                } else {
-                    evaluatedEntities to
+                    } else {
+                        evaluatedEntities to
                             classifiedEntityTypes.map { it.toEntityRecognition(it.entityType.name) }
                                 .subtract(evaluatedEntities).toList()
+                    }
+                } else {
+                    evaluatedEntities to emptyList()
                 }
             } else {
                 evaluatedEntities to emptyList()
@@ -184,10 +188,6 @@ internal object NlpCoreService : NlpCore {
         return nlpClassifier.supportedNlpEngineTypes()
     }
 
-    override fun getEvaluableEntityTypes(): Set<String> {
-        return entityCore.getEvaluableEntityTypes()
-    }
-
     override fun supportValuesMerge(entityType: EntityType): Boolean {
         return entityCore.supportValuesMerge(entityType)
     }
@@ -195,6 +195,22 @@ internal object NlpCoreService : NlpCore {
     override fun mergeValues(context: CallContext, entity: Entity, values: List<ValueDescriptor>): ValueDescriptor? {
         return entityCore.mergeValues(EntityCallContextForEntity(context, entity), values)
     }
+
+    override fun getBuiltInEntityTypes(): Set<String> =
+        //TODO remove this when custom entity type choice is implemented
+        setOf(
+            "duckling:datetime",
+            "duckling:temperature",
+            "duckling:number",
+            "duckling:ordinal",
+            "duckling:distance",
+            "duckling:volume",
+            "duckling:amount-of-money",
+            "duckling:duration",
+            "duckling:email",
+            "duckling:url",
+            "duckling:phone-number"
+        )
 
     override fun healthcheck(): Boolean {
         return entityCore.healthcheck()

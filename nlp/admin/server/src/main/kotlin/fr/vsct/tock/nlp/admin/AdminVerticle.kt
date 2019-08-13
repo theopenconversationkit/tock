@@ -37,6 +37,7 @@ import fr.vsct.tock.nlp.admin.model.SentencesReport
 import fr.vsct.tock.nlp.admin.model.TranslateSentencesQuery
 import fr.vsct.tock.nlp.admin.model.UpdateEntityDefinitionQuery
 import fr.vsct.tock.nlp.admin.model.UpdateSentencesQuery
+import fr.vsct.tock.nlp.core.DictionaryData
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.core.PredefinedValue
 import fr.vsct.tock.nlp.core.configuration.NlpApplicationConfiguration
@@ -51,7 +52,6 @@ import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.test.TestErrorQuery
 import fr.vsct.tock.shared.BUILTIN_ENTITY_EVALUATOR_NAMESPACE
-import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.defaultNamespace
 import fr.vsct.tock.shared.devEnvironment
 import fr.vsct.tock.shared.jackson.mapper
@@ -87,9 +87,6 @@ open class AdminVerticle : WebVerticle() {
     override val logger: KLogger = KotlinLogging.logger {}
 
     override val rootPath: String = "/rest/admin"
-
-    //TODO remove this flag when the new platform is set
-    private val OLD_ENTITY_TYPE_BEHAVIOUR = booleanProperty("tock_nlp_admin_old_entity_type_behaviour", false)
 
     override fun authProvider(): TockAuthProvider = defaultAuthProvider()
 
@@ -454,12 +451,8 @@ open class AdminVerticle : WebVerticle() {
         }
 
         blockingJsonGet("/entity-types") { context ->
-            if (OLD_ENTITY_TYPE_BEHAVIOUR) {
-                front.getEntityTypes()
-            } else {
-                front.getEntityTypes().filter {
-                    it.name.namespace() == context.organization || it.name.namespace() == BUILTIN_ENTITY_EVALUATOR_NAMESPACE
-                }
+            front.getEntityTypes().filter {
+                it.name.namespace() == context.organization || it.name.namespace() == BUILTIN_ENTITY_EVALUATOR_NAMESPACE
             }
         }
 
@@ -470,6 +463,27 @@ open class AdminVerticle : WebVerticle() {
             } else {
                 unauthorized()
             }
+        }
+
+        blockingJsonGet("/dictionary/:qualifiedName") { context ->
+            context.path("qualifiedName").takeUnless { it.namespace() != context.organization }?.let {
+                front.getDictionaryDataByEntityName(it) ?: DictionaryData(it.namespace(), it.name())
+            } ?: unauthorized()
+        }
+
+        blockingJsonPost("/dictionary", nlpUser)
+        { context, query: DictionaryData ->
+            if (context.organization == query.namespace) {
+                front.save(query)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingUploadJsonPost("/dump/dictionary/:entityName", admin) { context, dump: DictionaryData ->
+            val data = dump.copy(namespace = context.organization, entityName = context.path("entityName"))
+            front.save(data)
+            data
         }
 
         blockingJsonGet("/nlp-engines")
@@ -495,7 +509,7 @@ open class AdminVerticle : WebVerticle() {
                         copy(
                             description = entityType.description,
                             subEntities = entityType.subEntities,
-                            predefinedValues = entityType.predefinedValues
+                            dictionary = entityType.dictionary
                         )
                     }
                 if (update != null) {
@@ -594,15 +608,15 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/entity-types/predefined-values", nlpUser)
+        blockingJsonPost("/dictionary/predefined-values", nlpUser)
         { context, query: PredefinedValueQuery ->
 
-            front.getEntityTypeByName(query.entityTypeName)
-                ?.takeIf { it.name.namespace() == context.organization }
+            front.getDictionaryDataByEntityName(query.entityTypeName)
+                ?.takeIf { it.namespace == context.organization }
                 ?.run {
                     val value = query.oldPredefinedValue ?: query.predefinedValue
-                    copy(predefinedValues = predefinedValues.filter { it.value != value } +
-                        (predefinedValues.find { it.value == value }
+                    copy(values = values.filter { it.value != value } +
+                        (values.find { it.value == value }
                             ?.copy(value = query.predefinedValue)
                             ?: PredefinedValue(
                                 query.predefinedValue,
@@ -617,7 +631,7 @@ open class AdminVerticle : WebVerticle() {
                 ?: unauthorized()
         }
 
-        blockingDelete("/entity-types/predefined-values/:entityType/:value", nlpUser)
+        blockingDelete("/dictionary/predefined-values/:entityType/:value", nlpUser)
         { context ->
             val entityType = context.path("entityType")
             if (context.organization == entityType.namespace()) {
@@ -627,14 +641,14 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/entity-type/predefined-value/labels", nlpUser)
+        blockingJsonPost("/dictionary/predefined-value/labels", nlpUser)
         { context, query: PredefinedLabelQuery ->
 
-            front.getEntityTypeByName(query.entityTypeName)
-                ?.takeIf { it.name.namespace() == context.organization }
+            front.getDictionaryDataByEntityName(query.entityTypeName)
+                ?.takeIf { it.namespace == context.organization }
                 ?.run {
-                    copy(predefinedValues = predefinedValues.filter { it.value != query.predefinedValue } +
-                        (predefinedValues.find { it.value == query.predefinedValue }
+                    copy(values = values.filter { it.value != query.predefinedValue } +
+                        (values.find { it.value == query.predefinedValue }
                             ?.run {
                                 copy(labels = labels.filter { it.key != query.locale } +
                                     mapOf(query.locale to ((labels[query.locale]?.filter { it != query.label }
@@ -654,7 +668,7 @@ open class AdminVerticle : WebVerticle() {
 
         }
 
-        blockingDelete("/entity-type/predefined-value/labels/:entityType/:value/:locale/:label", nlpUser)
+        blockingDelete("/dictionary/predefined-value/labels/:entityType/:value/:locale/:label", nlpUser)
         { context ->
             val entityType = context.path("entityType")
             if (context.organization == entityType.namespace()) {

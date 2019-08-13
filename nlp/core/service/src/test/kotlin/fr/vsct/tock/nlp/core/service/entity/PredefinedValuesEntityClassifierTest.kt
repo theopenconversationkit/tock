@@ -16,34 +16,50 @@
 
 package fr.vsct.tock.nlp.core.service.entity
 
+import fr.vsct.tock.nlp.core.DictionaryData
 import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.EntityType
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.core.PredefinedValue
 import fr.vsct.tock.nlp.model.EntityCallContextForIntent
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.ZonedDateTime
 import java.util.Locale
 
 class PredefinedValuesEntityClassifierTest {
 
+    @BeforeEach
+    fun fillDictionary() {
+        DictionaryRepositoryService.updateData(
+            listOf(
+                DictionaryData(
+                    "namespace",
+                    "pizza",
+                    listOf(
+                        PredefinedValue(
+                            "pizza", mapOf(
+                            Pair(Locale.FRENCH, listOf("4 fromages", "napolitaine", "calzone")),
+                            Pair(Locale.ITALIAN, listOf("4 formaggi", "napoletana", "calzone"))
+                        )
+                        )
+                    ))))
+    }
+
+    @AfterEach
+    fun cleanupDictionary() {
+        DictionaryRepositoryService.updateData(emptyList())
+    }
+
     @Test
     fun qualify_predefined_values() {
 
         val text = "Je voudrais manger une napolitaine"
 
-        val entityType = EntityType(
-            "pizza", predefinedValues = listOf(
-                PredefinedValue(
-                    "pizza", mapOf(
-                        Pair(Locale.FRENCH, listOf("4 fromages", "napolitaine", "calzone")),
-                        Pair(Locale.ITALIAN, listOf("4 formaggi", "napoletana", "calzone"))
-                    )
-                )
-            )
-        )
+        val entityType = EntityType("namespace:pizza", dictionary = true)
 
         val context = EntityCallContextForIntent(
             Intent("eat", listOf(Entity(entityType, "pizza"))),
@@ -52,7 +68,7 @@ class PredefinedValuesEntityClassifierTest {
             "pizzayolo",
             ZonedDateTime.now())
 
-        val entityTypeRecognitions = PredefinedValuesEntityClassifier.classifyEntities(context, text)
+        val entityTypeRecognitions = DictionaryEntityTypeClassifier.classifyEntities(context, text)
 
         Assertions.assertEquals(listOf(
             EntityTypeRecognition(

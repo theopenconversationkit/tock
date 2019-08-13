@@ -25,7 +25,9 @@ import fr.vsct.tock.nlp.model.EntityCallContextForEntity
 import fr.vsct.tock.nlp.model.EntityCallContextForIntent
 import fr.vsct.tock.nlp.model.EntityCallContextForSubEntities
 import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.namespaceAndName
 import mu.KotlinLogging
+import kotlin.LazyThreadSafetyMode.PUBLICATION
 
 /**
  *
@@ -34,36 +36,16 @@ internal object EntityCoreService : EntityCore {
 
     private val logger = KotlinLogging.logger {}
 
-    private val evaluatorProviders: List<EntityEvaluatorProvider> = SupportedEntityEvaluatorsProvider.evaluators()
+    private val entityTypeProviders: List<EntityTypeProvider> by lazy(PUBLICATION) { SupportedEntityTypeProviders.providers() }
 
-    private val entityTypeProviderMap: Map<String, EntityEvaluatorProvider> = evaluatorProviders
-        .flatMap { provider ->
-            provider.getSupportedEntityTypes().map { it to provider }
+    private fun getEntityEvaluator(entityType: EntityType): EntityTypeEvaluator? =
+        entityType.name.namespaceAndName().let { (namespace, name) ->
+            entityTypeProviders.firstOrNull { it.supportEvaluation(namespace, name) }?.getEntityTypeEvaluator()
         }
-        .toMap()
 
-    private val entityTypeWithValuesMergeSupport: Set<String> = evaluatorProviders
-        .flatMap { provider ->
-            provider.getEntityTypesWithValuesMergeSupport()
-        }
-        .toSet()
-
-    override fun getEvaluableEntityTypes(): Set<String> = entityTypeProviderMap.keys
-
-    override fun supportValuesMerge(entityType: EntityType) = entityTypeWithValuesMergeSupport.contains(entityType.name)
-
-    private fun getEntityEvaluatorProvider(entityType: EntityType): EntityEvaluatorProvider? {
-        if (entityType.predefinedValues.isNotEmpty()) {
-            return PredefinedValueEntityEvaluatorProvider()
-        }
-        return entityTypeProviderMap[entityType.name]
-    }
-
-    private fun getEntityEvaluator(entityType: EntityType): EntityEvaluator? =
-        if (entityType.predefinedValues.isNotEmpty()) {
-            PredefinedValuesEntityEvaluator
-        } else {
-            getEntityEvaluatorProvider(entityType)?.getEntityEvaluator()
+    override fun supportValuesMerge(entityType: EntityType) =
+        entityType.name.namespaceAndName().let { (namespace, name) ->
+            entityTypeProviders.any { it.supportValuesMerge(namespace, name) }
         }
 
     override fun classifyEntityTypes(
@@ -72,8 +54,8 @@ internal object EntityCoreService : EntityCore {
     ): List<EntityTypeRecognition> {
         return when (context) {
             is EntityCallContextForIntent -> classifyEntityTypesForIntent(context, text)
-            is EntityCallContextForEntity -> TODO()
-            is EntityCallContextForSubEntities -> TODO()
+            is EntityCallContextForEntity -> emptyList() //TODO
+            is EntityCallContextForSubEntities -> emptyList() //TODO
         }
     }
 
@@ -83,9 +65,12 @@ internal object EntityCoreService : EntityCore {
     ): List<EntityTypeRecognition> {
         return context.intent
             .entities
-            .mapNotNull { getEntityEvaluatorProvider(it.entityType) }
+            .mapNotNull { e ->
+                e.entityType.name.namespaceAndName().let { (namespace, name) ->
+                    entityTypeProviders.firstOrNull { it.supportClassification(namespace, name) }?.getEntityTypeClassifier()
+                }
+            }
             .distinct()
-            .mapNotNull { it.getEntityTypeClassifier() }
             .flatMap { classifyEntities(it, context, text) }
     }
 
@@ -96,7 +81,7 @@ internal object EntityCoreService : EntityCore {
     ): List<EntityTypeRecognition> {
         return try {
             classifier.classifyEntities(context, text)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             logger.error(e)
             emptyList()
         }
@@ -134,8 +119,8 @@ internal object EntityCoreService : EntityCore {
         }
     }
 
-    fun evaluate(
-        evaluator: EntityEvaluator,
+    private fun evaluate(
+        evaluator: EntityTypeEvaluator,
         context: EntityCallContextForEntity,
         text: String
     ): EvaluationResult {
@@ -152,6 +137,6 @@ internal object EntityCoreService : EntityCore {
     }
 
     override fun healthcheck(): Boolean {
-        return evaluatorProviders.all { it.healthcheck() }
+        return entityTypeProviders.all { it.healthcheck() }
     }
 }

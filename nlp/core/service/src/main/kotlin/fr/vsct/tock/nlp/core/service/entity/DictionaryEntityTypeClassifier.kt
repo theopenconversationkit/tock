@@ -16,17 +16,16 @@
 
 package fr.vsct.tock.nlp.core.service.entity
 
-import fr.vsct.tock.nlp.core.EntityType
 import fr.vsct.tock.nlp.core.PredefinedValue
 import fr.vsct.tock.nlp.model.EntityCallContext
 import fr.vsct.tock.nlp.model.EntityCallContextForEntity
 import fr.vsct.tock.nlp.model.EntityCallContextForIntent
 import fr.vsct.tock.nlp.model.EntityCallContextForSubEntities
-import java.util.Locale
 import java.text.Normalizer
+import java.util.Locale
 
 
-internal object PredefinedValuesEntityClassifier : EntityTypeClassifier {
+internal object DictionaryEntityTypeClassifier : EntityTypeClassifier {
 
     override fun classifyEntities(
         context: EntityCallContext,
@@ -34,54 +33,48 @@ internal object PredefinedValuesEntityClassifier : EntityTypeClassifier {
     ): List<EntityTypeRecognition> {
         return when (context) {
             is EntityCallContextForIntent -> classifyForIntent(context, stripAccents(text))
-            is EntityCallContextForEntity -> TODO()
-            is EntityCallContextForSubEntities -> TODO()
+            is EntityCallContextForEntity -> emptyList() //TODO
+            is EntityCallContextForSubEntities -> emptyList() //TODO
         }
     }
 
     private fun classifyForIntent(context: EntityCallContextForIntent, text: String): List<EntityTypeRecognition> {
+        //TODO use tokenization
         return context
             .intent
             .entities
-            .filter { e -> e.entityType.predefinedValues.isNotEmpty() }
-            .filter { e -> e.entityType.predefinedValues.firstOrNull { pv -> pv.labels.containsKey(context.language) } != null }
-            .map { e ->
+            .asSequence()
+            .map { it.entityType }
+            .distinct()
+            .mapNotNull { e ->
+                val data = DictionaryRepositoryService.getDictionary(e)
+                if (data != null) {
+                    val labelsMap = data.getLabelsMap(context.language)
+                    val synonyms = labelsMap.values.flatMap { it ?: emptyList() }
 
-                val synonyms = e
-                    .entityType
-                    .predefinedValues
-                    .map { pv -> pv.value } +
-                    e
-                    .entityType
-                    .predefinedValues
-                    .flatMap { pv -> pv.labels[context.language]!! }
+                    synonyms
+                        .asSequence()
+                        .distinct()
+                        .filter { synonym -> text.contains(synonym, true) }
+                        .map { synonym ->
 
+                            val start = text.indexOf(synonym, 0, true)
+                            val end = start + synonym.length
 
-                return synonyms
-                    .filter { synonym -> text.contains(synonym, true) }
-                    .map {
-                        synonym ->
+                            val predefinedValueOfSynonym = predefinedValueOfSynonym(
+                                context.language,
+                                labelsMap,
+                                synonym
+                            )
 
-                        val start = text.indexOf(synonym, 0, true)
-                        val end = start + synonym.length
-
-                        val predefinedValueOfSynonym = predefinedValueOfSynonym(
-                            context.language,
-                            localizedPredefinedValues(context.language, e.entityType),
-                            synonym
-                        )
-
-                    EntityTypeRecognition(EntityTypeValue(start, end, e.entityType, predefinedValueOfSynonym!!.value, true), 1.0)
-
+                            EntityTypeRecognition(EntityTypeValue(start, end, e, predefinedValueOfSynonym!!.value, true), 1.0)
+                        }
+                } else {
+                    emptySequence()
                 }
-
             }
-    }
-
-    private fun localizedPredefinedValues(locale: Locale, entityType: EntityType): Map<PredefinedValue, List<String>?> {
-        return entityType
-            .predefinedValues
-            .associate { predefinedValue -> predefinedValue to predefinedValue.labels[locale] }
+            .flatMap { it }
+            .toList()
     }
 
     private fun predefinedValueOfSynonym(
@@ -100,15 +93,11 @@ internal object PredefinedValuesEntityClassifier : EntityTypeClassifier {
         return null
     }
 
-    fun stripAccents(text: String): String {
+    private fun stripAccents(text: String): String {
         var string = text
         string = Normalizer.normalize(string, Normalizer.Form.NFD)
         string = string.replace("[\\p{InCombiningDiacriticalMarks}]".toRegex(), "")
         return string
-    }
-
-    fun supportedEntityTypes(): Set<String> {
-        return setOf()
     }
 
 }

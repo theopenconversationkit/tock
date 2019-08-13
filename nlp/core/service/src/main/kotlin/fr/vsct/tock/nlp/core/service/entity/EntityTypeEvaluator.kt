@@ -22,7 +22,7 @@ import fr.vsct.tock.nlp.model.EntityCallContextForEntity
 /**
  * Evaluate a text for the specified entity.
  */
-interface EntityEvaluator {
+interface EntityTypeEvaluator {
 
     /**
      * Evaluates a text from the given entity context.

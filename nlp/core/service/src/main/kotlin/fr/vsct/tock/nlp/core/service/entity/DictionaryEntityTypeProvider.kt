@@ -16,12 +16,15 @@
 
 package fr.vsct.tock.nlp.core.service.entity
 
-class PredefinedValueEntityEvaluatorProvider : EntityEvaluatorProvider {
+internal class DictionaryEntityTypeProvider : EntityTypeProvider {
 
-    override fun getEntityTypeClassifier(): EntityTypeClassifier = PredefinedValuesEntityClassifier
+    override fun getEntityTypeClassifier(): EntityTypeClassifier = DictionaryEntityTypeClassifier
 
-    override fun getEntityEvaluator(): EntityEvaluator? = PredefinedValuesEntityEvaluator
+    override fun getEntityTypeEvaluator(): EntityTypeEvaluator? = DictionaryEntityTypeEvaluator
 
-    override fun getSupportedEntityTypes(): Set<String> = PredefinedValuesEntityClassifier.supportedEntityTypes()
+    override fun supportClassification(namespace: String, entityTypeName: String): Boolean = supportEvaluation(namespace, entityTypeName)
+
+    override fun supportEvaluation(namespace: String, entityTypeName: String): Boolean =
+        DictionaryRepositoryService.isSupportedEntityType(namespace, entityTypeName)
 
 }

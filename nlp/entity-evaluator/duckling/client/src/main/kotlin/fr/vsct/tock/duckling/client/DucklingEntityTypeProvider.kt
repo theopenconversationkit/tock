@@ -16,9 +16,11 @@
 
 package fr.vsct.tock.duckling.client
 
-import fr.vsct.tock.nlp.core.service.entity.EntityEvaluator
-import fr.vsct.tock.nlp.core.service.entity.EntityEvaluatorProvider
+import fr.vsct.tock.duckling.client.DucklingDimensions.DUCKLING
+import fr.vsct.tock.duckling.client.DucklingDimensions.dimensions
+import fr.vsct.tock.nlp.core.service.entity.EntityTypeEvaluator
 import fr.vsct.tock.nlp.core.service.entity.EntityTypeClassifier
+import fr.vsct.tock.nlp.core.service.entity.EntityTypeProvider
 import fr.vsct.tock.shared.booleanProperty
 
 private val ducklingEnabled = booleanProperty("tock_duckling_enabled", true)
@@ -26,16 +28,19 @@ private val ducklingEnabled = booleanProperty("tock_duckling_enabled", true)
 /**
  *
  */
-class DucklingEntityEvaluatorProvider : EntityEvaluatorProvider {
+internal class DucklingEntityTypeProvider : EntityTypeProvider {
 
     override fun getEntityTypeClassifier(): EntityTypeClassifier = DucklingParser
 
-    override fun getEntityEvaluator(): EntityEvaluator = DucklingParser
+    override fun getEntityTypeEvaluator(): EntityTypeEvaluator = DucklingParser
 
-    override fun getSupportedEntityTypes(): Set<String> =
-        if (ducklingEnabled) DucklingDimensions.entityTypes else emptySet()
+    override fun supportClassification(namespace: String, entityTypeName: String): Boolean = supportEvaluation(namespace, entityTypeName)
 
-    override fun getEntityTypesWithValuesMergeSupport(): Set<String> = DucklingDimensions.mergeSupport
+    override fun supportEvaluation(namespace: String, entityTypeName: String): Boolean =
+        ducklingEnabled && namespace == DUCKLING && dimensions.contains(entityTypeName)
+
+    override fun supportValuesMerge(namespace: String, entityTypeName: String): Boolean =
+        ducklingEnabled && namespace == DUCKLING && entityTypeName == DucklingDimensions.DATETIME_DIMENSION
 
     override fun healthcheck(): Boolean =
         if (ducklingEnabled) DucklingClient.healthcheck() else true

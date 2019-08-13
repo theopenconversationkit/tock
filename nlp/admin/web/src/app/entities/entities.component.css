@@ -22,6 +22,22 @@
   text-align:center;
 }
 
+.add-value {
+  float:right;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.no-model {
+  padding-top:14px;
+}
+
+.model {
+  float:left;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
 .add-predefined-list {
   color: blue;
   font-size: 18px;
@@ -47,4 +63,17 @@
   margin-left: 6px;
   cursor: pointer;
   opacity: 0.54;
+}
+
+.values {
+  width:100%;
+  padding-bottom: 50px;
+}
+
+.export {
+  padding-top:6px;
+}
+
+.io {
+  float:right;
 }

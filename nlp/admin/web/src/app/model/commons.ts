@@ -43,14 +43,30 @@ export class JsonUtils {
     }
   }
 
-  static mapToObject<K, V>(map:Map<string,string>): any {
+  static mapToObject<K, V>(map: Map<string, string>): any {
     let obj = Object.create(null);
-    map.forEach((v,k) => {
+    map.forEach((v, k) => {
       // We don’t escape the key '__proto__'
       // which can cause problems on older engines
       obj[k] = v;
     });
     return obj;
+  }
+
+  private static replacer(key, value) {
+    const originalObject = this[key];
+    if (originalObject instanceof Map) {
+      return Array.from(originalObject).reduce((obj, [key, value]) => {
+        obj[key] = value;
+        return obj;
+      }, {});
+    } else {
+      return value;
+    }
+  }
+
+  static stringify(value): string {
+    return value ? JSON.stringify(value, JsonUtils.replacer) : "{}"
   }
 }
 
@@ -68,7 +84,7 @@ export class PaginatedQuery extends ApplicationScopedQuery {
               public start: number,
               public size: number,
               public searchMark?: SearchMark,
-              public sort? : Entry<string,boolean>[]) {
+              public sort?: Entry<string, boolean>[]) {
     super(namespace, applicationName, language)
   }
 }

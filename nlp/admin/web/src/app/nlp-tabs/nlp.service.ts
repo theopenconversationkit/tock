@@ -18,6 +18,7 @@ import {Injectable, OnDestroy} from "@angular/core";
 import {RestService} from "../core-nlp/rest/rest.service";
 import {StateService} from "../core-nlp/state.service";
 import {
+  Dictionary,
   EntityDefinition,
   EntityType,
   Intent,
@@ -28,13 +29,16 @@ import {
   PredefinedValueQuery,
   SearchQuery,
   Sentence,
-  SentencesResult, TranslateReport, TranslateSentencesQuery,
+  SentencesResult,
+  TranslateReport,
+  TranslateSentencesQuery,
   UpdateEntityDefinitionQuery,
   UpdateSentencesQuery,
   UpdateSentencesReport
 } from "../model/nlp";
 import {Observable} from "rxjs";
 import {Application} from "../model/application";
+import {FileUploader} from "ng2-file-upload";
 
 @Injectable()
 export class NlpService implements OnDestroy {
@@ -103,6 +107,18 @@ export class NlpService implements OnDestroy {
     return this.rest.delete(`/entity-type/${encodeURIComponent(entityType.name)}`);
   }
 
+  prepareDictionaryJsonDumpUploader(uploader: FileUploader, entityName: string) {
+    this.rest.setFileUploaderOptions(uploader, `/dump/dictionary/${entityName}`);
+  }
+
+  saveDictionary(dictionary: Dictionary): Observable<boolean> {
+    return this.rest.post('/dictionary', dictionary)
+  }
+
+  getDictionary(entityType: EntityType): Observable<Dictionary> {
+    return this.rest.get(`/dictionary/${entityType.name}`, Dictionary.fromJSON)
+  }
+
   updateSentence(sentence: Sentence): Observable<Sentence> {
     return this.rest.post("/sentence", sentence)
   }
@@ -127,20 +143,20 @@ export class NlpService implements OnDestroy {
     return this.rest.post(`/sentences/dump/${full ? 'full/' : ''}${application._id}`, query, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
   }
 
-  createOrUpdatePredefinedValue(query: PredefinedValueQuery): Observable<EntityType> {
-    return this.rest.post(`/entity-types/predefined-values`, query, EntityType.fromJSON)
+  createOrUpdatePredefinedValue(query: PredefinedValueQuery): Observable<Dictionary> {
+    return this.rest.post(`/dictionary/predefined-values`, query, Dictionary.fromJSON)
   }
 
   deletePredefinedValue(query: PredefinedValueQuery): Observable<boolean> {
-    return this.rest.delete(`/entity-types/predefined-values/${encodeURIComponent(query.entityTypeName)}/${encodeURIComponent(query.predefinedValue)}`)
+    return this.rest.delete(`/dictionary/predefined-values/${encodeURIComponent(query.entityTypeName)}/${encodeURIComponent(query.predefinedValue)}`)
   }
 
-  createLabel(query: PredefinedLabelQuery): Observable<EntityType> {
-    return this.rest.post(`/entity-type/predefined-value/labels`, query, EntityType.fromJSON)
+  createLabel(query: PredefinedLabelQuery): Observable<Dictionary> {
+    return this.rest.post(`/dictionary/predefined-value/labels`, query, Dictionary.fromJSON)
   }
 
   deleteLabel(query: PredefinedLabelQuery): Observable<boolean> {
-    return this.rest.delete(`/entity-type/predefined-value/labels/${encodeURIComponent(query.entityTypeName)}/${encodeURIComponent(query.predefinedValue)}/${encodeURIComponent(query.locale)}/${encodeURIComponent(query.label)}`)
+    return this.rest.delete(`/dictionary/predefined-value/labels/${encodeURIComponent(query.entityTypeName)}/${encodeURIComponent(query.predefinedValue)}/${encodeURIComponent(query.locale)}/${encodeURIComponent(query.label)}`)
   }
 
   translateSentences(query: TranslateSentencesQuery): Observable<TranslateReport> {

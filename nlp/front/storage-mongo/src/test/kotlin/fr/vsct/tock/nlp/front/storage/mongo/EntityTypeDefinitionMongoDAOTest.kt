@@ -16,12 +16,13 @@
 
 package fr.vsct.tock.nlp.front.storage.mongo
 
+import fr.vsct.tock.nlp.core.DictionaryData
 import fr.vsct.tock.nlp.core.PredefinedValue
 import fr.vsct.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.provide
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import java.util.Locale.ENGLISH
 import kotlin.test.assertEquals
@@ -32,40 +33,43 @@ import kotlin.test.assertEquals
 internal class EntityTypeDefinitionMongoDAOTest : AbstractTest() {
 
     val entityType = EntityTypeDefinition(
-        "test",
+        "test:desc",
         "desc",
-        emptyList(),
-        predefinedValues = listOf(
-            PredefinedValue(
-                "A",
-                mapOf(ENGLISH to listOf("B", "C"))
-            )
-        )
+        dictionary = true
     )
+
+    val dictionary = DictionaryData("test", "desc", listOf(
+        PredefinedValue(
+            "A",
+            mapOf(ENGLISH to listOf("B", "C"))
+        )
+    ))
 
     val entityTypeDAO: EntityTypeDefinitionDAO get() = injector.provide()
 
-    @BeforeEach
-    fun beforeTest() {
+    @AfterEach
+    fun cleanup() {
         entityTypeDAO.deleteEntityTypeByName(entityType.name)
     }
 
     @Test
     fun `deletePredefinedValueByName deletes a value by name`() {
         entityTypeDAO.save(entityType)
-        assertEquals(entityType.predefinedValues, entityTypeDAO.getEntityTypeByName(entityType.name)?.predefinedValues)
+        entityTypeDAO.save(dictionary)
+        assertEquals(dictionary.values, entityTypeDAO.getDictionaryDataByEntityName(entityType.name)?.values)
         entityTypeDAO.deletePredefinedValueByName(entityType.name, "A")
-        assertEquals(emptyList(), entityTypeDAO.getEntityTypeByName(entityType.name)?.predefinedValues)
+        assertEquals(emptyList(), entityTypeDAO.getDictionaryDataByEntityName(entityType.name)?.values)
     }
 
     @Test
     fun `deletePredefinedValueLabelByName deletes a label by name`() {
         entityTypeDAO.save(entityType)
-        assertEquals(entityType.predefinedValues, entityTypeDAO.getEntityTypeByName(entityType.name)?.predefinedValues)
+        entityTypeDAO.save(dictionary)
+        assertEquals(dictionary.values, entityTypeDAO.getDictionaryDataByEntityName(entityType.name)?.values)
         entityTypeDAO.deletePredefinedValueLabelByName(entityType.name, "A", ENGLISH, "C")
         assertEquals(
             listOf("B"),
-            entityTypeDAO.getEntityTypeByName(entityType.name)?.predefinedValues?.first()?.labels?.get(ENGLISH)
+            entityTypeDAO.getDictionaryDataByEntityName(entityType.name)?.values?.first()?.labels?.get(ENGLISH)
         )
     }
 

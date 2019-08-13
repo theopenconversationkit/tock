@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.front.storage.mongo
 
+import fr.vsct.tock.nlp.core.DictionaryData
 import fr.vsct.tock.nlp.core.PredefinedValue
 import fr.vsct.tock.nlp.front.shared.build.ModelBuild
 import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger
@@ -31,8 +32,8 @@ import fr.vsct.tock.nlp.front.shared.parser.QueryContext
 import fr.vsct.tock.nlp.front.shared.test.EntityTestError
 import fr.vsct.tock.nlp.front.shared.test.IntentTestError
 import fr.vsct.tock.nlp.front.shared.test.TestBuild
-import org.litote.kmongo.DataRegistry
 import org.litote.jackson.data.JacksonDataRegistry
+import org.litote.kmongo.DataRegistry
 
 /**
  *
@@ -53,7 +54,8 @@ import org.litote.jackson.data.JacksonDataRegistry
         QueryContext::class,
         IntentTestError::class,
         TestBuild::class,
-        PredefinedValue::class
+        PredefinedValue::class,
+        DictionaryData::class
     ]
 )
 @JacksonDataRegistry(
@@ -72,7 +74,8 @@ import org.litote.jackson.data.JacksonDataRegistry
         QueryContext::class,
         IntentTestError::class,
         TestBuild::class,
-        PredefinedValue::class
+        PredefinedValue::class,
+        DictionaryData::class
     ]
 )
 internal object NlpDataRegistry

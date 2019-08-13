@@ -62,6 +62,7 @@
         <json>20180813</json>
         <httpclient>4.5.9</httpclient>
         <google-auth2>0.16.2</google-auth2>
+        <simmetrics>4.1.1</simmetrics>
 
         <junit-jupiter>5.5.0</junit-jupiter>
 
@@ -414,6 +415,11 @@
                 <groupId>org.json</groupId>
                 <artifactId>json</artifactId>
                 <version>${json}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.mpkorstanje</groupId>
+                <artifactId>simmetrics-core</artifactId>
+                <version>${simmetrics}</version>
             </dependency>
 
             <dependency>

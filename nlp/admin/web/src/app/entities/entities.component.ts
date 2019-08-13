@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-
+import {saveAs} from "file-saver";
 import {map} from 'rxjs/operators';
 import {Component, OnInit} from "@angular/core";
 import {StateService} from "../core-nlp/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {MatDialog, MatDialogConfig, MatInput, MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {ApplicationService} from "../core-nlp/applications.service";
-import {EntityDefinition, EntityType, PredefinedValue} from "../model/nlp";
+import {Dictionary, EntityDefinition, EntityType, PredefinedValue} from "../model/nlp";
 import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialog.component";
+import {JsonUtils} from "../model/commons";
+import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
 
 @Component({
   selector: 'tock-entities',
@@ -32,6 +34,8 @@ import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialo
 export class EntitiesComponent implements OnInit {
 
   selectedEntityType: EntityType;
+  selectedDictionary: Dictionary;
+  public uploader: FileUploader;
 
   constructor(public state: StateService,
               private nlp: NlpService,
@@ -41,6 +45,21 @@ export class EntitiesComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.uploader = new FileUploader({autoUpload: true, removeAfterUpload: true});
+    this.uploader.onCompleteItem =
+      (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
+        const d = Dictionary.fromJSON(JSON.parse(response));
+        this.selectedDictionary = d;
+        this.selectedEntityType.dictionary = d.values.length !== 0;
+        this.nlp.updateEntityType(this.selectedEntityType).subscribe(s => {
+          if (s) this.refreshEntityType(this.selectedEntityType);
+        });
+      };
+  }
+
+  downloadDictionary() {
+    saveAs(new Blob([JsonUtils.stringify(this.selectedDictionary)]), "dictionary_" + this.selectedEntityType.name + ".json");
+    this.snackBar.open(`Dictionary exported`, "Dictionary", {duration: 1000});
   }
 
   update(entity: EntityDefinition) {
@@ -81,8 +100,20 @@ export class EntitiesComponent implements OnInit {
   selectEntityType(entityType: EntityType) {
     if (entityType.namespace() === this.state.currentApplication.namespace) {
       this.selectedEntityType = entityType;
+      this.nlp.getDictionary(entityType).subscribe(
+        d => {
+          this.selectedDictionary = d;
+          this.nlp.prepareDictionaryJsonDumpUploader(this.uploader, d.entityName);
+          //save dictionary if not exists
+          if (d.values.length === 0) {
+            this.nlp.saveDictionary(d).subscribe(
+              _ => this.selectedDictionary = d
+            );
+          }
+        })
     } else {
       this.selectedEntityType = null;
+      this.selectedDictionary = null;
     }
   }
 
@@ -95,7 +126,7 @@ export class EntitiesComponent implements OnInit {
         input.value = oldValue;
         input.focus();
       } else {
-        if (this.selectedEntityType.predefinedValues.some(v => v.value === newValue)) {
+        if (this.selectedDictionary.values.some(v => v.value === newValue)) {
           this.snackBar.open(`Predefined Value already exist`, "Error", {duration: 5000} as MatSnackBarConfig<any>);
           input.value = oldValue;
           input.focus();
@@ -103,7 +134,7 @@ export class EntitiesComponent implements OnInit {
           this.nlp.createOrUpdatePredefinedValue(
             this.state.createPredefinedValueQuery(this.selectedEntityType.name, newValue, oldValue)).subscribe(
             next => {
-              this.refreshEntityType(next);
+              this.selectedDictionary = next;
             },
             error => {
               input.value = oldValue;
@@ -122,9 +153,15 @@ export class EntitiesComponent implements OnInit {
       this.nlp.createOrUpdatePredefinedValue(
         this.state.createPredefinedValueQuery(this.selectedEntityType.name, name)).subscribe(
         next => {
-          this.refreshEntityType(next);
+          this.selectedDictionary = next;
+          if (next.values.length === 1) {
+            this.selectedEntityType.dictionary = true;
+            this.nlp.updateEntityType(this.selectedEntityType).subscribe(s => {
+              if (s) this.refreshEntityType(this.selectedEntityType);
+            });
+          }
         },
-        error => this.snackBar.open(`Create Predefined Value '${name}' failed`, "Error", {duration: 5000} as MatSnackBarConfig<any>))
+        _ => this.snackBar.open(`Create Predefined Value '${name}' failed`, "Error", {duration: 5000} as MatSnackBarConfig<any>))
     }
   }
 
@@ -133,16 +170,22 @@ export class EntitiesComponent implements OnInit {
       this.state.createPredefinedValueQuery(this.selectedEntityType.name, name)).subscribe(
       next => {
         let index = -1;
-        this.selectedEntityType.predefinedValues.forEach((pv, i) => {
+        this.selectedDictionary.values.forEach((pv, i) => {
           if (pv.value === name) {
             index = i;
           }
         });
         if (index > -1) {
-          this.selectedEntityType.predefinedValues.splice(index, 1);
+          this.selectedDictionary.values.splice(index, 1);
+        }
+        if (this.selectedDictionary.values.length === 0) {
+          this.selectedEntityType.dictionary = false;
+          this.nlp.updateEntityType(this.selectedEntityType).subscribe(s => {
+            if (s) this.refreshEntityType(this.selectedEntityType);
+          });
         }
       },
-      error => this.snackBar.open(`Delete Predefined Value '${name}' failed`, "Error", {duration: 5000} as MatSnackBarConfig<any>))
+      _ => this.snackBar.open(`Delete Predefined Value '${name}' failed`, "Error", {duration: 5000} as MatSnackBarConfig<any>))
   }
 
   createLabel(predefinedValue: PredefinedValue, name: string) {
@@ -157,9 +200,9 @@ export class EntitiesComponent implements OnInit {
           name))
         .subscribe(
           next => {
-            this.refreshEntityType(next);
+            this.selectedDictionary = next;
           },
-          error => this.snackBar.open(`Create Label '${name}' for Predefined Value '${predefinedValue.value}' failed`, "Error", {duration: 5000} as MatSnackBarConfig<any>))
+          _ => this.snackBar.open(`Create Label '${name}' for Predefined Value '${predefinedValue.value}' failed`, "Error", {duration: 5000} as MatSnackBarConfig<any>))
     }
   }
 
@@ -173,7 +216,7 @@ export class EntitiesComponent implements OnInit {
       .subscribe(
         next => {
           let locale = this.state.currentLocale;
-          this.selectedEntityType.predefinedValues.forEach(function (pv) {
+          this.selectedDictionary.values.forEach(function (pv) {
             if (pv.value === predefinedValue.value) {
               pv.labels.set(locale, pv.labels.get(locale).filter(s => {
                 return s !== name
@@ -181,7 +224,7 @@ export class EntitiesComponent implements OnInit {
             }
           })
         },
-        error => this.snackBar.open(`Delete Label '${name}' for Predefined Value '${predefinedValue.value}' failed`, "Error", {duration: 5000} as MatSnackBarConfig<any>))
+        _ => this.snackBar.open(`Delete Label '${name}' for Predefined Value '${predefinedValue.value}' failed`, "Error", {duration: 5000} as MatSnackBarConfig<any>))
   }
 
 }

@@ -103,7 +103,7 @@ export class EntityType {
   constructor(public name: string,
               public description: string,
               public subEntities: EntityDefinition[],
-              public predefinedValues?: PredefinedValue[]) {
+              public dictionary: boolean) {
   }
 
   qualifiedName(user: User): string {
@@ -145,15 +145,36 @@ export class EntityType {
 
     const result = Object.assign(value, json, {
       subEntities: EntityDefinition.fromJSONArray(json.subEntities),
-      predefinedValues: PredefinedValue.fromJSONArray(json.predefinedValues)
-        .sort((a, b) => a.value.localeCompare(b.value))
     });
-
     return result;
   }
 
   static fromJSONArray(json?: Array<any>): EntityType[] {
     return json ? json.map(EntityType.fromJSON) : [];
+  }
+}
+
+export class Dictionary {
+
+  constructor(public namespace: string,
+              public entityName: string,
+              public values: PredefinedValue[],
+              public onlyValues: boolean,
+              public minDistance: number) {
+  }
+
+  static fromJSON(json?: any): Dictionary {
+    if (!json) {
+      return
+    }
+    const value = Object.create(Dictionary.prototype);
+
+    const result = Object.assign(value, json, {
+      values: PredefinedValue.fromJSONArray(json.values)
+        .sort((a, b) => a.value.localeCompare(b.value))
+    });
+
+    return result;
   }
 }
 

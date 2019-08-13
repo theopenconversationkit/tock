@@ -19,7 +19,7 @@ package fr.vsct.tock.duckling.client
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import fr.vsct.tock.duckling.client.DucklingDimensions.timeDucklingDimension
+import fr.vsct.tock.duckling.client.DucklingDimensions.TIME_DIMENSION
 import fr.vsct.tock.nlp.core.EntityType
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.core.merge.ValueDescriptor
@@ -164,29 +164,29 @@ internal class DatesMergeTest {
             every {
                 parser.parse(
                     eq(Locale.FRENCH.language),
-                    eq(timeDucklingDimension),
+                    eq(TIME_DIMENSION),
                     eq((tomorrow.value as DateEntityValue).date),
                     eq("2 jours Après")
                 )
-            } answers { listOf(ValueWithRange(0, 0, inThreeDays, timeDucklingDimension)) }
+            } answers { listOf(ValueWithRange(0, 0, inThreeDays, TIME_DIMENSION)) }
 
             every {
                 parser.parse(
                     eq(Locale.FRENCH.language),
-                    eq(timeDucklingDimension),
+                    eq(TIME_DIMENSION),
                     eq(referenceTime),
                     eq("en soirée demain")
                 )
-            } answers { listOf(ValueWithRange(0, 0, tomorrowInTheEvening, timeDucklingDimension)) }
+            } answers { listOf(ValueWithRange(0, 0, tomorrowInTheEvening, TIME_DIMENSION)) }
 
             every {
                 parser.parse(
                     eq(Locale.FRENCH.language),
-                    eq(timeDucklingDimension),
+                    eq(TIME_DIMENSION),
                     eq((tomorrow.value as DateEntityValue).date.truncatedTo(ChronoUnit.DAYS)),
                     eq("en soirée")
                 )
-            } answers { listOf(ValueWithRange(0, 0, tomorrowInTheEvening, timeDucklingDimension)) }
+            } answers { listOf(ValueWithRange(0, 0, tomorrowInTheEvening, TIME_DIMENSION)) }
 
             injector.inject(Kodein {
                 bind<Parser>() with provider { parser }

@@ -29,17 +29,13 @@ import fr.vsct.tock.nlp.model.EntityCallContextForEntity
 internal interface EntityCore {
 
     /**
-     * Returns all (built-in) evaluable entities.
-     *
-     * @return the evaluated entity types (namespace:name)
-     */
-    fun getEvaluableEntityTypes(): Set<String>
-
-    /**
      * Does the given [EntityType] supports values merge?
      */
     fun supportValuesMerge(entityType: EntityType): Boolean
 
+    /**
+     * Classifies entity types.
+     */
     fun classifyEntityTypes(context: EntityCallContext, text: String): List<EntityTypeRecognition>
 
     /**

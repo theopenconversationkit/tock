@@ -18,6 +18,10 @@ package fr.vsct.tock.nlp.front.storage.mongo
 
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.ReplaceOptions
+import fr.vsct.tock.nlp.core.DictionaryData
+import fr.vsct.tock.nlp.core.DictionaryData_.Companion.EntityName
+import fr.vsct.tock.nlp.core.DictionaryData_.Companion.Namespace
+import fr.vsct.tock.nlp.core.DictionaryData_.Companion.Values
 import fr.vsct.tock.nlp.core.PredefinedValue_.Companion.Value
 import fr.vsct.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
@@ -25,22 +29,31 @@ import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition_.Companion.Name
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition_.Companion.PredefinedValues
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.asyncDatabase
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
+import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.name
+import fr.vsct.tock.shared.namespace
 import fr.vsct.tock.shared.watch
+import mu.KotlinLogging
 import org.litote.kmongo.and
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
+import org.litote.kmongo.exists
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
+import org.litote.kmongo.not
 import org.litote.kmongo.pull
 import org.litote.kmongo.pullByFilter
 import org.litote.kmongo.reactivestreams.getCollection
 import org.litote.kmongo.replaceOneWithFilter
+import org.litote.kmongo.size
 import java.util.Locale
 
 /**
  *
  */
 internal object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
+
+    private val logger = KotlinLogging.logger {}
 
     private val col: MongoCollection<EntityTypeDefinition> by lazy {
         val c = database.getCollection<EntityTypeDefinition>()
@@ -50,13 +63,54 @@ internal object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
     private val asyncCol by lazy {
         asyncDatabase.getCollection<EntityTypeDefinition>()
     }
+    private val dictionaryCol: MongoCollection<DictionaryData> by lazy {
+        val c = database.getCollection<DictionaryData>()
+        c.ensureUniqueIndex(Namespace, EntityName)
+        c
+    }
+    private val asyncDictionaryCol by lazy {
+        asyncDatabase.getCollection<DictionaryData>()
+    }
 
     override fun listenEntityTypeChanges(listener: () -> Unit) {
         asyncCol.watch { listener() }
     }
 
+    init {
+        //TODO remove this in 20.3
+        try {
+            col.find(and(PredefinedValues.exists(), not(PredefinedValues.size(0))))
+                .forEach {
+                    save(DictionaryData(it.name.namespace(), it.name.name(), it.predefinedValues))
+                    save(it.copy(predefinedValues = emptyList(), dictionary = true))
+                }
+        } catch (t: Throwable) {
+            logger.error(t)
+        }
+    }
+
     override fun save(entityType: EntityTypeDefinition) {
         col.replaceOneWithFilter(Name eq entityType.name, entityType, ReplaceOptions().upsert(true))
+    }
+
+    override fun save(data: DictionaryData) {
+        dictionaryCol.replaceOneWithFilter(
+            and(Namespace eq data.namespace, EntityName eq data.entityName),
+            data,
+            ReplaceOptions().upsert(true)
+        )
+    }
+
+    override fun getAllDictionaryData(): List<DictionaryData> = dictionaryCol.find().toList()
+
+    override fun getDictionaryDataByEntityName(qualifiedName: String): DictionaryData? =
+        dictionaryCol.findOne(Namespace eq qualifiedName.namespace(), EntityName eq qualifiedName.name())
+
+    override fun getDictionaryDataByNamespace(namespace: String): List<DictionaryData> =
+        dictionaryCol.find(Namespace eq namespace).toList()
+
+    override fun listenDictionaryDataChanges(listener: () -> Unit) {
+        asyncDictionaryCol.watch { listener() }
     }
 
     override fun getEntityTypeByName(name: String): EntityTypeDefinition? {
@@ -68,11 +122,17 @@ internal object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
     }
 
     override fun deleteEntityTypeByName(name: String): Boolean {
+        dictionaryCol.deleteOne(and(Namespace eq name.namespace(), EntityName eq name.name()))
         return col.deleteOne(Name eq name).deletedCount == 1L
     }
 
     override fun deletePredefinedValueByName(entityTypeName: String, predefinedValue: String) {
-        col.updateOne(Name eq entityTypeName, pullByFilter(PredefinedValues, Value eq predefinedValue))
+        dictionaryCol.updateOne(
+            and(
+                Namespace eq entityTypeName.namespace(),
+                EntityName eq entityTypeName.name()
+            ),
+            pullByFilter(Values, Value eq predefinedValue))
     }
 
     override fun deletePredefinedValueLabelByName(
@@ -81,9 +141,13 @@ internal object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
         locale: Locale,
         label: String
     ) {
-        col.updateOne(
-            and(Name eq entityTypeName, PredefinedValues.value eq predefinedValue),
-            pull(PredefinedValues.posOp.labels.keyProjection(locale), label)
+        dictionaryCol.updateOne(
+            and(
+                Namespace eq entityTypeName.namespace(),
+                EntityName eq entityTypeName.name(),
+                Values.value eq predefinedValue
+            ),
+            pull(Values.posOp.labels.keyProjection(locale), label)
         )
     }
 }

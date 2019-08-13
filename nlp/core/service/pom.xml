@@ -37,6 +37,10 @@
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-nlp-model-client</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.github.mpkorstanje</groupId>
+            <artifactId>simmetrics-core</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>

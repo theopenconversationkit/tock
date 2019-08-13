@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.front.service
 
 import fr.vsct.tock.nlp.core.Application
+import fr.vsct.tock.nlp.core.DictionaryRepository
 import fr.vsct.tock.nlp.core.EntitiesRegexp
 import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.EntityType
@@ -60,10 +61,10 @@ internal object ConfigurationRepository {
 
     private fun refreshApplications() {
         applicationsByNamespaceAndName =
-                applicationDAO
-                    .getApplications()
-                    .groupBy { it.namespace }
-                    .mapValues { it.value.associateBy { it.name } }
+            applicationDAO
+                .getApplications()
+                .groupBy { it.namespace }
+                .mapValues { it.value.associateBy { it.name } }
     }
 
     private fun refreshIntents() {
@@ -88,7 +89,7 @@ internal object ConfigurationRepository {
         val entityTypesDefinitionMap = entityTypeDAO.getEntityTypes().map { it.name to it }.toMap()
         //init subEntities only when all entities are known
         val entityTypesMap =
-            entityTypesDefinitionMap.mapValues { (_, v) -> EntityType(v.name, predefinedValues = v.predefinedValues) }
+            entityTypesDefinitionMap.mapValues { (_, v) -> EntityType(v.name, dictionary = v.dictionary) }
 
         //init subEntities
         return ConcurrentHashMap(
@@ -127,7 +128,8 @@ internal object ConfigurationRepository {
                 entityType.subEntities.mapNotNull {
                     it.toEntity()
                 },
-                entityType.predefinedValues
+                emptyList(),
+                entityType.dictionary
             )
         }
     }
@@ -152,7 +154,7 @@ internal object ConfigurationRepository {
 
     fun getApplicationByNamespaceAndName(namespace: String, name: String): ApplicationDefinition? {
         return applicationsByNamespaceAndName[namespace]?.get(name)
-                ?: config.getApplicationByNamespaceAndName(namespace, name)
+            ?: config.getApplicationByNamespaceAndName(namespace, name)
     }
 
     fun getIntentsByApplicationId(applicationId: Id<ApplicationDefinition>): List<IntentDefinition> {
@@ -166,7 +168,7 @@ internal object ConfigurationRepository {
     fun initRepository() {
         try {
             refreshEntityTypes()
-            core.getEvaluableEntityTypes().forEach {
+            core.getBuiltInEntityTypes().forEach {
                 if (!entityTypeExists(it)) {
                     try {
                         logger.debug { "save built-in entity type $it" }
@@ -183,6 +185,11 @@ internal object ConfigurationRepository {
             entityTypeDAO.listenEntityTypeChanges { refreshEntityTypes() }
             applicationDAO.listenApplicationDefinitionChanges { refreshApplications() }
             intentDAO.listenIntentDefinitionChanges { refreshIntents() }
+
+            injector.provide<DictionaryRepository>().updateData(entityTypeDAO.getAllDictionaryData())
+            entityTypeDAO.listenDictionaryDataChanges {
+                injector.provide<DictionaryRepository>().updateData(entityTypeDAO.getAllDictionaryData())
+            }
         } catch (e: Exception) {
             logger.error(e)
         }

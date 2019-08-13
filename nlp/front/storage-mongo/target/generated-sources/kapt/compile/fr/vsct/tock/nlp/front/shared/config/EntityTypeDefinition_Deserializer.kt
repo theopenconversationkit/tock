@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import fr.vsct.tock.nlp.core.PredefinedValue
+import kotlin.Boolean
 import kotlin.String
 import kotlin.collections.List
 import kotlin.collections.Map
@@ -30,10 +31,12 @@ internal class EntityTypeDefinition_Deserializer : JsonDeserializer<EntityTypeDe
             var _description_set : Boolean = false
             var _subEntities_: MutableList<EntityDefinition>? = null
             var _subEntities_set : Boolean = false
-            var _predefinedValues_: MutableList<PredefinedValue>? = null
-            var _predefinedValues_set : Boolean = false
+            var _dictionary_: Boolean? = null
+            var _dictionary_set : Boolean = false
             var __id_: Id<EntityTypeDefinition>? = null
             var __id_set : Boolean = false
+            var _predefinedValues_: MutableList<PredefinedValue>? = null
+            var _predefinedValues_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -59,15 +62,20 @@ internal class EntityTypeDefinition_Deserializer : JsonDeserializer<EntityTypeDe
                              else p.readValueAs(_subEntities__reference);
                             _subEntities_set = true
                             }
-                    "predefinedValues" -> {
-                            _predefinedValues_ = if(_token_ == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(_predefinedValues__reference);
-                            _predefinedValues_set = true
+                    "dictionary" -> {
+                            _dictionary_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.booleanValue;
+                            _dictionary_set = true
                             }
                     "_id" -> {
                             __id_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(__id__reference);
                             __id_set = true
+                            }
+                    "predefinedValues" -> {
+                            _predefinedValues_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_predefinedValues__reference);
+                            _predefinedValues_set = true
                             }
                     else -> {
                             if (_token_?.isStructStart == true)
@@ -77,11 +85,11 @@ internal class EntityTypeDefinition_Deserializer : JsonDeserializer<EntityTypeDe
                     } 
                 _token_ = currentToken
                         } 
-            return if(_name_set && _description_set && _subEntities_set && _predefinedValues_set &&
-                    __id_set)
+            return if(_name_set && _description_set && _subEntities_set && _dictionary_set &&
+                    __id_set && _predefinedValues_set)
                     EntityTypeDefinition(name = _name_!!, description = _description_!!, subEntities
-                            = _subEntities_!!, predefinedValues = _predefinedValues_!!, _id =
-                            __id_!!)
+                            = _subEntities_!!, dictionary = _dictionary_!!, _id = __id_!!,
+                            predefinedValues = _predefinedValues_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_name_set)
@@ -90,10 +98,12 @@ internal class EntityTypeDefinition_Deserializer : JsonDeserializer<EntityTypeDe
                     map[parameters.getValue("description")] = _description_
                     if(_subEntities_set)
                     map[parameters.getValue("subEntities")] = _subEntities_
-                    if(_predefinedValues_set)
-                    map[parameters.getValue("predefinedValues")] = _predefinedValues_
+                    if(_dictionary_set)
+                    map[parameters.getValue("dictionary")] = _dictionary_
                     if(__id_set)
-                    map[parameters.getValue("_id")] = __id_ 
+                    map[parameters.getValue("_id")] = __id_
+                    if(_predefinedValues_set)
+                    map[parameters.getValue("predefinedValues")] = _predefinedValues_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -108,16 +118,17 @@ internal class EntityTypeDefinition_Deserializer : JsonDeserializer<EntityTypeDe
                 kotlin.collections.mapOf("name" to primaryConstructor.findParameterByName("name")!!,
                 "description" to primaryConstructor.findParameterByName("description")!!,
                 "subEntities" to primaryConstructor.findParameterByName("subEntities")!!,
-                "predefinedValues" to primaryConstructor.findParameterByName("predefinedValues")!!,
-                "_id" to primaryConstructor.findParameterByName("_id")!!) }
+                "dictionary" to primaryConstructor.findParameterByName("dictionary")!!, "_id" to
+                primaryConstructor.findParameterByName("_id")!!, "predefinedValues" to
+                primaryConstructor.findParameterByName("predefinedValues")!!) }
 
         private val _subEntities__reference: TypeReference<List<EntityDefinition>> = object :
                 TypeReference<List<EntityDefinition>>() {}
 
-        private val _predefinedValues__reference: TypeReference<List<PredefinedValue>> = object :
-                TypeReference<List<PredefinedValue>>() {}
-
         private val __id__reference: TypeReference<Id<EntityTypeDefinition>> = object :
                 TypeReference<Id<EntityTypeDefinition>>() {}
+
+        private val _predefinedValues__reference: TypeReference<List<PredefinedValue>> = object :
+                TypeReference<List<PredefinedValue>>() {}
     }
 }

@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.front.service.storage
 
+import fr.vsct.tock.nlp.core.DictionaryData
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import java.util.Locale
 
@@ -36,6 +37,31 @@ interface EntityTypeDefinitionDAO {
     fun getEntityTypes(): List<EntityTypeDefinition>
 
     fun deleteEntityTypeByName(name: String): Boolean
+
+    /**
+     * Save [DictionaryData].
+     */
+    fun save(data: DictionaryData)
+
+    /**
+     * Load all dictionary data.
+     */
+    fun getAllDictionaryData(): List<DictionaryData>
+
+    /**
+     * Listen all dictionary data changes
+     */
+    fun listenDictionaryDataChanges(listener: () -> Unit)
+
+    /**
+     * Load DictionaryData for entity qualified name.
+     */
+    fun getDictionaryDataByEntityName(qualifiedName: String): DictionaryData?
+
+    /**
+     * Load all data of given namespace.
+     */
+    fun getDictionaryDataByNamespace(namespace: String): List<DictionaryData>
 
     fun deletePredefinedValueByName(entityTypeName: String, predefinedValue: String)
 

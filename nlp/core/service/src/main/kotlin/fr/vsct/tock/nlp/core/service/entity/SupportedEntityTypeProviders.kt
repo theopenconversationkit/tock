@@ -19,11 +19,11 @@ package fr.vsct.tock.nlp.core.service.entity
 import java.util.ServiceLoader
 
 /**
- * Provides all supported entity evaluators.
+ * Provides all supported entity type providers.
  */
-internal object SupportedEntityEvaluatorsProvider {
+internal object SupportedEntityTypeProviders {
 
-    fun evaluators(): List<EntityEvaluatorProvider> {
-        return ServiceLoader.load(EntityEvaluatorProvider::class.java).toList()
+    fun providers(): List<EntityTypeProvider> {
+        return ServiceLoader.load(EntityTypeProvider::class.java).toList()
     }
 }

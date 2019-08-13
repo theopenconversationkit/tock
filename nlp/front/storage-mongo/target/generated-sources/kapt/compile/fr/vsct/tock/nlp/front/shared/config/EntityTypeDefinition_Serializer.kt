@@ -34,6 +34,12 @@ internal class EntityTypeDefinition_Serializer :
                 null
                 )
                 .serialize(_subEntities_, gen, serializers)
+        gen.writeFieldName("dictionary")
+        val _dictionary_ = value.dictionary
+        gen.writeBoolean(_dictionary_)
+        gen.writeFieldName("_id")
+        val __id_ = value._id
+        serializers.defaultSerializeValue(__id_, gen)
         gen.writeFieldName("predefinedValues")
         val _predefinedValues_ = value.predefinedValues
         serializers.findTypedValueSerializer(
@@ -45,9 +51,6 @@ internal class EntityTypeDefinition_Serializer :
                 null
                 )
                 .serialize(_predefinedValues_, gen, serializers)
-        gen.writeFieldName("_id")
-        val __id_ = value._id
-        serializers.defaultSerializeValue(__id_, gen)
         gen.writeEndObject()
     }
 }

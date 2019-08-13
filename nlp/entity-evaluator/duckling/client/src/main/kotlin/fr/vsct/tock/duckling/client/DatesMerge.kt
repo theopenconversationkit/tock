@@ -262,7 +262,7 @@ internal object DatesMerge {
     }
 
     private fun parseDate(language: Locale, referenceDateTime: ZonedDateTime, text: String): ValueDescriptor? {
-        return parser.parse(language.language, DucklingDimensions.timeDucklingDimension, referenceDateTime, text)
+        return parser.parse(language.language, DucklingDimensions.TIME_DIMENSION, referenceDateTime, text)
             .firstOrNull()
             ?.run { ValueDescriptor(value, text) }
     }

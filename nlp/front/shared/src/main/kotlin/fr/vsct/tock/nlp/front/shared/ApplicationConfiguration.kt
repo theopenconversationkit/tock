@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.front.shared
 
+import fr.vsct.tock.nlp.core.DictionaryData
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.core.configuration.NlpApplicationConfiguration
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
@@ -101,6 +102,16 @@ interface ApplicationConfiguration {
     fun getEntityTypes(): List<EntityTypeDefinition>
 
     fun getEntityTypeByName(name: String): EntityTypeDefinition?
+
+    /**
+     * Load DictionaryData for entity qualified name.
+     */
+    fun getDictionaryDataByEntityName(qualifiedName: String): DictionaryData?
+
+    /**
+     * Save [DictionaryData].
+     */
+    fun save(data: DictionaryData)
 
     /**
      * Delete the [EntityTypeDefinition] and cleanup all sentences from this entity type.

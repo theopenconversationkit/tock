@@ -24,32 +24,31 @@ import fr.vsct.tock.shared.name
  */
 internal object DucklingDimensions {
 
-    val timeDucklingDimension = "time"
-    private val datetimeEntityTypeName = "datetime"
-    val datetimeEntityType = datetimeEntityTypeName.withDucklingPrefix()
+    const val DUCKLING = "duckling"
+    const val TIME_DIMENSION = "time"
+    const val DATETIME_DIMENSION = "datetime"
+    val datetimeEntityType = DATETIME_DIMENSION.withDucklingPrefix()
 
     val dimensions = listOf(
-            datetimeEntityTypeName,
-            "temperature",
-            "number",
-            "ordinal",
-            "distance",
-            "volume",
-            "amount-of-money",
-            "duration",
-            "email",
-            "url",
-            "phone-number")
+        DATETIME_DIMENSION,
+        "temperature",
+        "number",
+        "ordinal",
+        "distance",
+        "volume",
+        "amount-of-money",
+        "duration",
+        "email",
+        "url",
+        "phone-number")
 
-    private fun String.withDucklingPrefix() = "duckling:$this"
+    private fun String.withDucklingPrefix() = "$DUCKLING:$this"
 
     val entityTypes = dimensions.map { it.withDucklingPrefix() }.toSet()
 
-    val mergeSupport = setOf(datetimeEntityTypeName).map { it.withDucklingPrefix() }.toSet()
-
     fun tockTypeToDucklingType(type: String): String {
         return when (type) {
-            datetimeEntityTypeName -> timeDucklingDimension
+            DATETIME_DIMENSION -> TIME_DIMENSION
             else -> type
         }
     }

@@ -37,11 +37,16 @@ data class EntityTypeDefinition(
      */
     val subEntities: List<EntityDefinition> = emptyList(),
     /**
-     * The entity predefined values (if any).
+     * Is the entity based on a dictionary (predefined set of data)?
      */
-    val predefinedValues: List<PredefinedValue> = emptyList(),
+    val dictionary: Boolean = false,
     /**
      * The unique id of the entity.
      */
-    val _id: Id<EntityTypeDefinition> = newId()
+    val _id: Id<EntityTypeDefinition> = newId(),
+    /**
+     * The entity predefined values (if any).
+     */
+    @Deprecated("Remove this in 20.3")
+    val predefinedValues: List<PredefinedValue> = emptyList()
 )

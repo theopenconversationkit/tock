@@ -42,6 +42,7 @@ import {EntitiesComponent} from "../entities/entities.component";
 import {EditEntitiesComponent} from "../sentence-analysis/entities/edit-entities.component";
 import {EntityDetailsComponent} from "../entities/entity-details.component";
 import {MatDatepickerModule, MatNativeDateModule} from "@angular/material";
+import {FileUploadModule} from "ng2-file-upload";
 
 const routes: Routes = [
   {
@@ -104,7 +105,8 @@ export class NlpRoutingModule {
     InfiniteScrollModule,
     MomentModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    FileUploadModule
   ],
   declarations: [
     NlpTabsComponent,

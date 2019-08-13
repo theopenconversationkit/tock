@@ -25,6 +25,13 @@ import fr.vsct.tock.nlp.core.merge.ValueDescriptor
 interface NlpCore {
 
     /**
+     * Returns all built-in entities.
+     *
+     * @return the built-in entity types (namespace:name)
+     */
+    fun getBuiltInEntityTypes(): Set<String>
+
+    /**
      * Parse text with NLP engine.
      */
     fun parse(context: CallContext,
@@ -50,13 +57,6 @@ interface NlpCore {
             context: CallContext,
             text: String,
             entities: List<EntityRecognition>): List<EntityRecognition>
-
-    /**
-     * Returns all (built-in) evaluable entities.
-     *
-     * @return the evaluated entity types (namespace:name)
-     */
-    fun getEvaluableEntityTypes(): Set<String>
 
     /**
      * Does the given [EntityType] supports values merge?

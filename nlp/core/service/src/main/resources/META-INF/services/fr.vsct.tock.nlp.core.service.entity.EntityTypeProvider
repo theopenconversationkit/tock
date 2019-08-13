@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2017 VSCT
+# Copyright (C) 2017/2019 VSCT
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,4 +14,4 @@
 # limitations under the License.
 #
 
-fr.vsct.tock.duckling.client.DucklingEntityEvaluatorProvider
+fr.vsct.tock.nlp.core.service.entity.DictionaryEntityTypeProvider
