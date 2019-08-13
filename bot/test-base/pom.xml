@@ -78,7 +78,7 @@
         <dependency>
             <groupId>ch.tutteli.atrium</groupId>
             <artifactId>atrium-cc-en_GB-robstoll</artifactId>
-            <version>0.8.0</version>
+            <version>${atrium}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

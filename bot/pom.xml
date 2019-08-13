@@ -43,6 +43,7 @@
         <module>connector-whatsapp</module>
         <module>connector-teams</module>
         <module>connector-businesschat</module>
+        <module>connector-web</module>
 
         <module>dialogflow</module>
 
@@ -120,6 +121,11 @@
             <dependency>
                 <groupId>fr.vsct.tock</groupId>
                 <artifactId>tock-bot-connector-teams</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.vsct.tock</groupId>
+                <artifactId>tock-bot-connector-web</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

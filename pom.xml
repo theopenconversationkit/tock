@@ -69,6 +69,7 @@
         <mockk>1.9.3</mockk>
         <assertj>3.12.2</assertj>
         <byte-buddy>1.9.13</byte-buddy>
+        <atrium>0.8.0</atrium>
 
         <plugin.surefire>3.0.0-M3</plugin.surefire>
         <plugin.source>3.1.0</plugin.source>
