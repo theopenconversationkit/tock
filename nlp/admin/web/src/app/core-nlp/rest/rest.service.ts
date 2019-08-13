@@ -19,7 +19,7 @@ import {NEVER, Observable, throwError as observableThrowError} from 'rxjs';
 
 import {catchError, map} from 'rxjs/operators';
 import {EventEmitter, Injectable} from "@angular/core";
-import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
 import {Router} from "@angular/router";
 import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
@@ -147,7 +147,11 @@ export class RestService {
         location.reload();
         return NEVER;
       }
-      errMsg = error.error ? error.error : (error.message ? error.message : error.toString());
+      if (e instanceof HttpErrorResponse) {
+        errMsg = error.message
+      } else {
+        errMsg = error.error ? error.error : (error.message ? error.message : error.toString());
+      }
     }
     rest.errorEmitter.emit(errMsg);
     return observableThrowError(errMsg);
