@@ -54,6 +54,7 @@ export class EntitiesComponent implements OnInit {
         this.nlp.updateEntityType(this.selectedEntityType).subscribe(s => {
           if (s) this.refreshEntityType(this.selectedEntityType);
         });
+        this.snackBar.open(`Dictionary imported`, "Dictionary", {duration: 1000});
       };
   }
 

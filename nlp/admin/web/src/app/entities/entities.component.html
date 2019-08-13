@@ -68,7 +68,12 @@
           <mat-icon>file_download</mat-icon>
           Download Dictionary
         </button>
-        <input id="file" type="file" ng2FileSelect [uploader]="uploader"/>
+        <button mat-button (click)="file.hidden = false;$event.srcElement.setAttribute('style','display:none');"
+                matTooltip="Download Dictionary" class="export">
+          <mat-icon>file_upload</mat-icon>
+          Upload Dictionary
+        </button>
+        <input #file [hidden]="true" id="file" type="file" ng2FileSelect [uploader]="uploader"/>
       </div>
 
       <mat-form-field>
