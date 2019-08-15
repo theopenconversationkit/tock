@@ -89,11 +89,17 @@ class SendChoice(
         const val NLP = "_nlp"
 
         /**
-         * Encodes a choice id.
+         * Encodes a choice id where text will be analysed by NLP engine.
          */
-        fun encodeNlpChoiceId(nlp: String): String {
-            return "?$NLP=${encode(nlp, UTF_8.name())}"
+        fun encodeNlpChoiceId(text: String): String {
+            return "?$NLP=${encode(text, UTF_8.name())}"
         }
+
+        internal fun nlpParametersMap(text: String): Map<String, String> =
+            mapOf(
+                NLP to text,
+                TITLE_PARAMETER to text
+            )
 
         /**
          * Encodes a choice id.

@@ -16,7 +16,12 @@
 
 package fr.vsct.tock.bot.connector.rest.model
 
+import fr.vsct.tock.bot.connector.ConnectorMessage
+import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.engine.message.GenericMessage
 import fr.vsct.tock.bot.engine.message.Message
+import fr.vsct.tock.bot.engine.message.Sentence
+import fr.vsct.tock.shared.Dice
 import java.util.Locale
 
 /**
@@ -25,7 +30,12 @@ import java.util.Locale
 internal data class MessageResponse(
     val messages: List<Message>,
     val applicationId: String,
-    val userActionId: String,
+    val userActionId: String = Dice.newId(),
     val userLocale: Locale? = null,
     val hasNlpStats: Boolean = false
-)
+) : ConnectorMessage {
+    override val connectorType: ConnectorType = ConnectorType.rest
+
+    override fun toGenericMessage(): GenericMessage? =
+        messages.filterIsInstance<Sentence>().firstOrNull()?.messages?.firstOrNull()
+}

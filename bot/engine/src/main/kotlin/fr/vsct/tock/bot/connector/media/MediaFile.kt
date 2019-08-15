@@ -18,12 +18,16 @@ package fr.vsct.tock.bot.connector.media
 
 import fr.vsct.tock.bot.engine.action.SendAttachment.AttachmentType
 import fr.vsct.tock.bot.engine.config.UploadedFilesService
+import fr.vsct.tock.bot.engine.message.Attachment
 
 /**
  * An uploaded file.
  */
 data class MediaFile(
     val url: String,
-    val name:String,
+    val name: String,
     val type: AttachmentType = UploadedFilesService.attachmentType(url)
-)
+) {
+
+    internal fun toAttachment(): Attachment = Attachment(url, type)
+}

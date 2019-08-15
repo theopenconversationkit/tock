@@ -28,16 +28,28 @@ import fr.vsct.tock.bot.engine.user.PlayerId
  * A user choice.
  */
 data class Choice(
-        val intentName: String,
-        val parameters: Map<String, String> = emptyMap(),
-        override val delay: Long = 0
+    val intentName: String,
+    val parameters: Map<String, String> = emptyMap(),
+    override val delay: Long = 0
 ) : Message {
+
+    companion object {
+
+        /**
+         * Returns a choice from text that will be analyzed by the NLP engine.
+         */
+        fun fromText(text: String): Choice =
+            Choice(
+                "",
+                SendChoice.nlpParametersMap(text)
+            )
+    }
 
     constructor(intentName: String,
                 step: StoryStep<out StoryHandlerDefinition>,
                 parameters: Map<String, String> = emptyMap(),
                 delay: Long = 0)
-            : this(intentName, parameters + (SendChoice.STEP_PARAMETER to step.name), delay)
+        : this(intentName, parameters + (SendChoice.STEP_PARAMETER to step.name), delay)
 
     override val eventType: EventType = EventType.choice
 
@@ -45,11 +57,11 @@ data class Choice(
                           applicationId: String,
                           recipientId: PlayerId): Action {
         return SendChoice(
-                playerId,
-                applicationId,
-                recipientId,
-                intentName,
-                parameters
+            playerId,
+            applicationId,
+            recipientId,
+            intentName,
+            parameters
         )
     }
 

@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.connector.rest.model
 
+import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.message.Message
 
@@ -28,4 +29,6 @@ internal data class MessageRequest(
     val message: Message,
     val targetConnectorType: ConnectorType,
     val test: Boolean = false
-)
+) : ConnectorMessage {
+    override val connectorType: ConnectorType = ConnectorType.rest
+}

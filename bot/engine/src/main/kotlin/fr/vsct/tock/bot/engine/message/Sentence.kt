@@ -39,7 +39,7 @@ data class Sentence(
     companion object {
         private val logger = KotlinLogging.logger {}
 
-        private fun toSentenceElement(message: ConnectorMessage): GenericMessage =
+        private fun toGenericMessage(message: ConnectorMessage): GenericMessage =
                 try {
                     message.toGenericMessage() ?: GenericMessage(message)
                 } catch (t: Throwable) {
@@ -49,7 +49,7 @@ data class Sentence(
     }
 
     constructor(text: String?, messages: MutableList<ConnectorMessage> = mutableListOf(), userInterface: UserInterfaceType? = null)
-            : this(text, messages.map { toSentenceElement(it) }.toMutableList(), userInterface)
+            : this(text, messages.map { toGenericMessage(it) }.toMutableList(), userInterface)
 
     override val eventType: EventType = EventType.sentence
 

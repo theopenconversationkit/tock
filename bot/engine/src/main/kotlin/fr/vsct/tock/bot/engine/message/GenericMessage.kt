@@ -38,6 +38,21 @@ data class GenericMessage(
     @Transient private val connectorMessage: ConnectorMessage? = null
 ) {
 
+    companion object {
+        /**
+         * A [texts] parameter for title.
+         */
+        const val TITLE_PARAM = "title"
+        /**
+         * A [texts] parameter for subtitle.
+         */
+        const val SUBTITLE_PARAM = "subtitle"
+        /**
+         * A [texts] parameter for text content.
+         */
+        const val TEXT_PARAM = "text"
+    }
+
     constructor(connectorMessage: ConnectorMessage,
                 attachments: List<Attachment> = emptyList(),
                 choices: List<Choice> = emptyList(),

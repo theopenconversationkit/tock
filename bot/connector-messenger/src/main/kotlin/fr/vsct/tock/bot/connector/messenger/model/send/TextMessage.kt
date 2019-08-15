@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.connector.messenger.model.send
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.engine.message.GenericMessage
+import fr.vsct.tock.bot.engine.message.GenericMessage.Companion.TEXT_PARAM
 import fr.vsct.tock.shared.security.StringObfuscatorMode
 import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
 
@@ -28,7 +29,7 @@ import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
 class TextMessage(val text: String, quickReplies: List<QuickReply>? = null) : Message(quickReplies?.run { if (isEmpty()) null else this }) {
 
     override fun toGenericMessage(): GenericMessage? {
-        val texts = mapOf("title" to text)
+        val texts = mapOf(TEXT_PARAM to text)
         return if (quickReplies?.isNotEmpty() == true) {
             GenericMessage(
                 texts = texts,

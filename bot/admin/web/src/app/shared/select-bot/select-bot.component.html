@@ -31,7 +31,9 @@
                 placeholder="Select a connector"
                 [ngModel]="currentConnectorType">
       <mat-option *ngIf="allowNoConfigurationSelection" value="">All</mat-option>
-      <mat-option *ngFor="let c of connectorTypes" [value]="c">{{ c.id }}</mat-option>
+      <mat-option *ngFor="let c of connectorTypes" [value]="c" class="connector">
+        <img src="{{c.iconUrl()}}" class="connector-icon" [matTooltip]="c.label()"/>
+        {{ c.label() }}</mat-option>
     </mat-select>
   </mat-form-field>
   <ng-content></ng-content>

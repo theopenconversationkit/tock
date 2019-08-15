@@ -23,6 +23,8 @@ import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.action.SendAttachment.AttachmentType
 import fr.vsct.tock.bot.engine.message.Attachment
 import fr.vsct.tock.bot.engine.message.GenericMessage
+import fr.vsct.tock.bot.engine.message.GenericMessage.Companion.TEXT_PARAM
+import fr.vsct.tock.bot.engine.message.GenericMessage.Companion.TITLE_PARAM
 import fr.vsct.tock.shared.mapNotNullValues
 
 /**
@@ -58,8 +60,8 @@ data class AlexaMessage(
             ),
             texts = mapNotNullValues(
                 ::reprompt.name to reprompt,
-                "title" to card?.title,
-                "text" to (card as? StandardCard)?.text
+                TITLE_PARAM to card?.title,
+                TEXT_PARAM to (card as? StandardCard)?.text
             ),
             metadata = mapOf(::end.name to end.toString())
         )

@@ -18,3 +18,14 @@
   width: 200px;
   padding-right: 10px;
 }
+
+.connector-icon {
+  vertical-align: text-top;
+  width: 20px;
+  height: auto;
+  margin-right: 10px;
+}
+
+.connector {
+  text-transform: capitalize;
+}

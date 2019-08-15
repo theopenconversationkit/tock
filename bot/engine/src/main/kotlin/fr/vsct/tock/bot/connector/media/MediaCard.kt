@@ -16,6 +16,11 @@
 
 package fr.vsct.tock.bot.connector.media
 
+import fr.vsct.tock.bot.engine.message.GenericMessage
+import fr.vsct.tock.bot.engine.message.GenericMessage.Companion.SUBTITLE_PARAM
+import fr.vsct.tock.bot.engine.message.GenericMessage.Companion.TITLE_PARAM
+import fr.vsct.tock.shared.mapNotNullValues
+
 
 /**
  * A media card. At least one of [title], [subTitle] or [file] is not null.
@@ -26,5 +31,16 @@ data class MediaCard(
     val file: MediaFile?,
     val actions: List<MediaAction> = emptyList()
 ) : MediaMessage {
+
     override fun isValid(): Boolean = title != null || subTitle != null || file != null
+
+    override fun toGenericMessage(): GenericMessage? =
+        GenericMessage(
+            choices = actions.map { it.toChoice() },
+            texts = mapNotNullValues(
+                TITLE_PARAM to title?.toString(),
+                SUBTITLE_PARAM to subTitle?.toString()
+            ),
+            attachments = listOfNotNull(file?.toAttachment())
+        )
 }

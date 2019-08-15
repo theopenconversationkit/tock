@@ -7,12 +7,13 @@ import fr.vsct.tock.bot.engine.message.Attachment
 import fr.vsct.tock.bot.engine.message.Choice
 import fr.vsct.tock.bot.engine.message.GenericElement
 import fr.vsct.tock.bot.engine.message.GenericMessage
+import fr.vsct.tock.bot.engine.message.GenericMessage.Companion.TITLE_PARAM
 import fr.vsct.tock.shared.mapNotNullValues
 
-class TeamsCarousel(val listMessage : List<TeamsBotMessage>): TeamsBotMessage(null) {
+class TeamsCarousel(val listMessage: List<TeamsBotMessage>) : TeamsBotMessage(null) {
     override fun toGenericMessage(): GenericMessage? {
         return GenericMessage(
-                subElements = listMessage.map{ GenericElement(it.toGenericMessage() ?: GenericMessage())}
+            subElements = listMessage.map { GenericElement(it.toGenericMessage() ?: GenericMessage()) }
         )
     }
 }
@@ -45,10 +46,10 @@ class TeamsHeroCard(
     val images: List<CardImage>?,
     val buttons: List<CardAction>?,
     val tap: CardAction?
-): TeamsBotMessage(null) {
+) : TeamsBotMessage(null) {
 
     override fun toString(): String {
-        val images = images?.map {  it.url() } ?: ""
+        val images = images?.map { it.url() } ?: ""
         val buttons = buttons?.map { it.value() } ?: ""
         return "TeamsHeroCard(" +
             "title=$title, " +
@@ -63,7 +64,7 @@ class TeamsHeroCard(
         return GenericMessage(
             connectorType = connectorType,
             texts = mapNotNullValues(
-                "title" to title,
+                TITLE_PARAM to title,
                 "subtitle" to subtitle,
                 "attachmentContent" to attachmentContent
             ),
@@ -91,12 +92,12 @@ class TeamsHeroCard(
 
 class TeamsCardAction(
     val actionTitle: String,
-    val buttons: List<CardAction>): TeamsBotMessage(null) {
+    val buttons: List<CardAction>) : TeamsBotMessage(null) {
 
     override fun toGenericMessage(): GenericMessage? {
         return GenericMessage(
             connectorType = connectorType,
-            texts = mapNotNullValues("title" to actionTitle),
+            texts = mapNotNullValues(TITLE_PARAM to actionTitle),
             choices = buttons.map {
                 Choice(intentName = it.text()?.toString() ?: it.title(),
                     parameters = mapNotNullValues(
