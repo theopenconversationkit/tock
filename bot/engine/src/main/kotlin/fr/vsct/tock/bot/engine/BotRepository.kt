@@ -338,7 +338,7 @@ object BotRepository {
                         } else {
                             logger.warn { "unknown connector ${c.connectorType}" }
                         }
-                    } catch (e: Exception) {
+                    } catch (e: Throwable) {
                         logger.error(e)
                     }
                 } else {

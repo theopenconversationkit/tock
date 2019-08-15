@@ -139,18 +139,18 @@ export class RestService {
         return NEVER;
       }
       errMsg = error.status === 400
-        ? (error.error ? error.error : (error.statusText ? error.statusText : ''))
-        : `Server error : ${error.status} - ${error.statusText}`;
+        ? error.statusText || ''
+        : `Server error : ${error.status} - ${error.statusText || ''}`;
     } else {
       //strange things happen
       if (e && e.status === 0 && this.isSSO()) {
         location.reload();
         return NEVER;
       }
-      if (e instanceof HttpErrorResponse) {
-        errMsg = error.message
+      if (e instanceof HttpErrorResponse && e.status !== 400) {
+        errMsg = e.message ? e.message : e.error;
       } else {
-        errMsg = error.error ? error.error : (error.message ? error.message : error.toString());
+        errMsg = e.error ? e.error : (e.message ? e.message : e.toString());
       }
     }
     rest.errorEmitter.emit(errMsg);

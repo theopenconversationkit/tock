@@ -51,6 +51,12 @@ interface ConnectorProvider {
             if (path.isBlank() || !path.trim().startsWith("/")) {
                 list.add("path may not be empty and must start with /")
             }
+
+            configuration().fields.filter { it.mandatory }.forEach {
+                if (connectorConfiguration.parameters[it.key].isNullOrBlank()) {
+                    list.add("${it.label} is mandatory")
+                }
+            }
         }
         return list
     }

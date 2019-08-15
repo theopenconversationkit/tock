@@ -89,8 +89,9 @@
       <input matInput placeholder="Application base url" [(ngModel)]="configuration.baseUrl" title="optional">
     </mat-form-field>
     <mat-form-field class="long-text bot-input"
-                    *ngFor="let f of botSharedService.findConnectorConfiguration(configuration.connectorType).fields">
-      <input matInput [placeholder]="f.label" [(ngModel)]="configuration.parameters[f.key]">
+                    *ngFor="let f of botSharedService.findConnectorConfiguration(configuration.connectorType).fields"
+                    [hideRequiredMarker]="!f.mandatory">
+      <input matInput [placeholder]="f.label" [(ngModel)]="configuration.parameters[f.key]" required>
     </mat-form-field>
   </mat-expansion-panel>
   <mat-card-actions>

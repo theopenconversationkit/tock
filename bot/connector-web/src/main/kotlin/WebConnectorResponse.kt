@@ -21,13 +21,41 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.media.MediaMessage
+import fr.vsct.tock.bot.engine.action.SendChoice
+import fr.vsct.tock.bot.engine.message.Choice
+import fr.vsct.tock.bot.engine.message.GenericMessage
+import fr.vsct.tock.bot.engine.message.GenericMessage.Companion.TEXT_PARAM
+import fr.vsct.tock.shared.mapNotNullValues
 
-data class WebButton(val title: String, val payload: String? = null)
+data class WebButton(val title: String, val payload: String? = null) {
+
+    fun toChoice(): Choice =
+        if (payload == null) {
+            Choice.fromText(title)
+        } else {
+            SendChoice.decodeChoiceId(payload).let { (intent, params) ->
+                Choice(intent, params + (SendChoice.TITLE_PARAMETER to title))
+            }
+        }
+}
 
 @JsonInclude(NON_EMPTY)
-data class WebMessage(val text: String, val buttons: List<WebButton> = emptyList()) : ConnectorMessage {
+data class WebMessage(
+    val text: String? = null,
+    val buttons: List<WebButton> = emptyList(),
+    val media: MediaMessage? = null) : ConnectorMessage {
+
     @get:JsonIgnore
     override val connectorType: ConnectorType = webConnectorType
+
+    override fun toGenericMessage(): GenericMessage? =
+        media?.toGenericMessage()
+            ?: GenericMessage(
+                connectorType = webConnectorType,
+                texts = mapNotNullValues(TEXT_PARAM to text),
+                choices = buttons.map { it.toChoice() }
+            )
 }
 
 internal data class WebConnectorResponse(val responses: List<WebMessage>)

@@ -52,16 +52,6 @@ internal object MessengerConnectorProvider : ConnectorProvider {
         }
     }
 
-    override fun check(connectorConfiguration: ConnectorConfiguration): List<String> =
-        super.check(connectorConfiguration) +
-                with(connectorConfiguration) {
-                    listOfNotNull(
-                        if (parameters[PAGE_ID].isNullOrBlank()) "page id is mandatory" else null,
-                        if (parameters[TOKEN].isNullOrBlank()) "token is mandatory" else null,
-                        if (parameters[SECRET].isNullOrBlank()) "secret is mandatory" else null
-                    )
-                }
-
     override fun configuration(): ConnectorTypeConfiguration =
         ConnectorTypeConfiguration(
             messengerConnectorType,

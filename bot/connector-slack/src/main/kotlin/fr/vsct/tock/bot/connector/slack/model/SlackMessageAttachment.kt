@@ -30,8 +30,10 @@ data class SlackMessageAttachment(
     val text: String? = null,
     val pretext: String? = null,
     @get:JsonProperty("callback_id")
-    val callbackId:String = "default"
+    val callbackId: String = "default"
 ) {
+
+    fun hasOnlyActions() : Boolean = actions.isNotEmpty() && fields.isEmpty() && text == null && pretext == null
 
     fun toGenericElement(): GenericElement =
         GenericElement(

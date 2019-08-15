@@ -59,19 +59,6 @@ internal object TwitterConnectorProvider : ConnectorProvider {
         }
     }
 
-    override fun check(connectorConfiguration: ConnectorConfiguration): List<String> =
-        super.check(connectorConfiguration) +
-                with(connectorConfiguration) {
-                    listOfNotNull(
-                        if (parameters[APP_ID].isNullOrBlank()) "application id is mandatory" else null,
-                        if (parameters[ENVIRONMENT].isNullOrBlank()) "environment is mandatory" else null,
-                        if (parameters[CONSUMER_KEY].isNullOrBlank()) "consumer key is mandatory" else null,
-                        if (parameters[CONSUMER_SECRET].isNullOrBlank()) "consumer secret is mandatory" else null,
-                        if (parameters[TOKEN].isNullOrBlank()) "token is mandatory" else null,
-                        if (parameters[SECRET].isNullOrBlank()) "secret is mandatory" else null
-                    )
-                }
-
     override fun configuration(): ConnectorTypeConfiguration =
         ConnectorTypeConfiguration(
             twitterConnectorType,

@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.connector.web
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
+import fr.vsct.tock.bot.connector.media.MediaMessage
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.Parameters
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
@@ -54,3 +55,14 @@ fun <T : Bus<T>> T.webButton(
         translate(title).toString(),
         targetIntent?.let { i -> SendChoice.encodeChoiceId(this, i, step, parameters.toMap()) }
     )
+
+/**
+ * Creates a button from a text.
+ */
+fun <T : Bus<T>> T.webTextButton(text: CharSequence): WebButton =
+    translate(text).toString().let { t -> WebButton(t, SendChoice.encodeNlpChoiceId(t)) }
+
+/**
+ * Creates a [WebMessage] from a [MediaMessage].
+ */
+fun <T : Bus<T>> T.webMediaMessage(media: MediaMessage): WebMessage = WebMessage(media = media)

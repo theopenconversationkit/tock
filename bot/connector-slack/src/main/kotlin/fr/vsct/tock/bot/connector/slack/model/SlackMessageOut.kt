@@ -27,8 +27,9 @@ data class SlackMessageOut(
 
     override fun toGenericMessage(): GenericMessage? =
         GenericMessage(
-            texts = mapOf(SlackMessageOut::text.name to text),
-            subElements = attachments.map { it.toGenericElement() }
+            texts = mapOf(GenericMessage.TEXT_PARAM to text),
+            choices = attachments.filter { it.hasOnlyActions() }.flatMap { it.actions }.map { it.toChoice() },
+            subElements = attachments.filter { !it.hasOnlyActions() }.map { it.toGenericElement() }
         )
 
 }
