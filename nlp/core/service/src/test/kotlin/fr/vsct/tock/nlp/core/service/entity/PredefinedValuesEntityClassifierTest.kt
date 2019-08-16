@@ -32,6 +32,14 @@ import java.util.Locale
 
 class PredefinedValuesEntityClassifierTest {
 
+    val entityType = EntityType("namespace:pizza", dictionary = true)
+    val context = EntityCallContextForIntent(
+        Intent("eat", listOf(Entity(entityType, "pizza"))),
+        Locale.FRENCH,
+        NlpEngineType.stanford,
+        "pizzayolo",
+        ZonedDateTime.now())
+
     @BeforeEach
     fun fillDictionary() {
         DictionaryRepositoryService.updateData(
@@ -55,26 +63,98 @@ class PredefinedValuesEntityClassifierTest {
     }
 
     @Test
-    fun qualify_predefined_values() {
+    fun `classifier recognized label a end of sentence`() {
 
         val text = "Je voudrais manger une napolitaine"
 
-        val entityType = EntityType("namespace:pizza", dictionary = true)
+        val entityTypeRecognitions = DictionaryEntityTypeClassifier.classifyEntities(context, text)
 
-        val context = EntityCallContextForIntent(
-            Intent("eat", listOf(Entity(entityType, "pizza"))),
-            Locale.FRENCH,
-            NlpEngineType.stanford,
-            "pizzayolo",
-            ZonedDateTime.now())
+        Assertions.assertEquals(
+            listOf(
+                EntityTypeRecognition(
+                    EntityTypeValue(23, 34, entityType, "pizza", true), 1.0)
+            ),
+            entityTypeRecognitions
+        )
+    }
+
+    @Test
+    fun `classifier recognized label a start of sentence`() {
+
+        val text = "Napolitaine stp!"
 
         val entityTypeRecognitions = DictionaryEntityTypeClassifier.classifyEntities(context, text)
 
-        Assertions.assertEquals(listOf(
-            EntityTypeRecognition(
-                EntityTypeValue(23, 34, entityType, "pizza", true), 1.0)),
-            entityTypeRecognitions)
+        Assertions.assertEquals(
+            listOf(
+                EntityTypeRecognition(
+                    EntityTypeValue(0, 11, entityType, "pizza", true), 1.0)
+            ),
+            entityTypeRecognitions
+        )
+    }
 
+    @Test
+    fun `classifier recognized label if label equals to sentence`() {
+
+        val text = "Napolitaine"
+
+        val entityTypeRecognitions = DictionaryEntityTypeClassifier.classifyEntities(context, text)
+
+        Assertions.assertEquals(
+            listOf(
+                EntityTypeRecognition(
+                    EntityTypeValue(0, 11, entityType, "pizza", true), 1.0)
+            ),
+            entityTypeRecognitions
+        )
+    }
+
+    @Test
+    fun `classifier recognized label contaiones in a sentence`() {
+
+        val text = "une Napolitaine stp"
+
+        val entityTypeRecognitions = DictionaryEntityTypeClassifier.classifyEntities(context, text)
+
+        Assertions.assertEquals(
+            listOf(
+                EntityTypeRecognition(
+                    EntityTypeValue(4, 15, entityType, "pizza", true), 1.0)
+            ),
+            entityTypeRecognitions
+        )
+    }
+
+    @Test
+    fun `classifier regognized only exact match`() {
+        val text = "une Napolitaine Napolitaine-Man stp"
+
+        val entityTypeRecognitions = DictionaryEntityTypeClassifier.classifyEntities(context, text)
+
+        Assertions.assertEquals(
+            listOf(
+                EntityTypeRecognition(
+                    EntityTypeValue(4, 15, entityType, "pizza", true), 1.0)
+            ),
+            entityTypeRecognitions
+        )
+    }
+
+    @Test
+    fun `classifier regognized multi matches`() {
+        val text = "une Napolitaine stp, je voudrais une napolitaine , oui une napolitaine"
+
+        val entityTypeRecognitions = DictionaryEntityTypeClassifier.classifyEntities(context, text)
+
+        Assertions.assertEquals(
+            listOf(
+                EntityTypeRecognition(EntityTypeValue(4, 15, entityType, "pizza", true), 1.0),
+                EntityTypeRecognition(EntityTypeValue(37, 48, entityType, "pizza", true), 1.0),
+                EntityTypeRecognition(EntityTypeValue(59, 70, entityType, "pizza", true), 1.0)
+            ),
+            entityTypeRecognitions
+        )
     }
 
 }

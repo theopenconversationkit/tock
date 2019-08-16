@@ -23,6 +23,7 @@ import fr.vsct.tock.nlp.model.EntityCallContextForIntent
 import fr.vsct.tock.nlp.model.EntityCallContextForSubEntities
 import java.text.Normalizer
 import java.util.Locale
+import kotlin.text.RegexOption.IGNORE_CASE
 
 
 internal object DictionaryEntityTypeClassifier : EntityTypeClassifier {
@@ -39,7 +40,6 @@ internal object DictionaryEntityTypeClassifier : EntityTypeClassifier {
     }
 
     private fun classifyForIntent(context: EntityCallContextForIntent, text: String): List<EntityTypeRecognition> {
-        //TODO use tokenization
         return context
             .intent
             .entities
@@ -56,24 +56,37 @@ internal object DictionaryEntityTypeClassifier : EntityTypeClassifier {
                         .asSequence()
                         .distinct()
                         .filter { synonym -> text.contains(synonym, true) }
-                        .map { synonym ->
-
-                            val start = text.indexOf(synonym, 0, true)
-                            val end = start + synonym.length
-
-                            val predefinedValueOfSynonym = predefinedValueOfSynonym(
-                                context.language,
-                                labelsMap,
-                                synonym
-                            )
-
-                            EntityTypeRecognition(EntityTypeValue(start, end, e, predefinedValueOfSynonym!!.value, true), 1.0)
+                        .flatMap { synonym ->
+                            "\\s+($synonym)\\s+|^($synonym)$|^($synonym)\\s+|\\s+($synonym)$"
+                                .toRegex(IGNORE_CASE)
+                                .findAll(text)
+                                .mapNotNull { m ->
+                                    m.groups
+                                        .filterNotNull()
+                                        .firstOrNull { it.value.equals(synonym, true) }
+                                        ?.let { g ->
+                                            val predefinedValueOfSynonym = predefinedValueOfSynonym(
+                                                context.language,
+                                                labelsMap,
+                                                synonym
+                                            )
+                                            EntityTypeRecognition(
+                                                EntityTypeValue(
+                                                    g.range.first,
+                                                    g.range.last + 1,
+                                                    e,
+                                                    predefinedValueOfSynonym!!.value, true),
+                                                1.0
+                                            )
+                                        }
+                                }
                         }
                 } else {
                     emptySequence()
                 }
             }
             .flatMap { it }
+            .distinct()
             .toList()
     }
 
