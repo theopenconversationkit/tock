@@ -48,6 +48,7 @@ import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogMongoDAO.ParseRequestLogStatCol
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.intProperty
 import mu.KotlinLogging
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
@@ -77,6 +78,7 @@ import org.litote.kmongo.setTo
 import org.litote.kmongo.updateMany
 import java.time.Instant
 import java.util.Locale
+import java.util.concurrent.TimeUnit.DAYS
 
 
 /**
@@ -108,21 +110,21 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     ) {
 
         constructor(sentence: ClassifiedSentence) :
-                this(
-                    textKey(sentence.text),
-                    sentence.text,
-                    sentence.language,
-                    sentence.applicationId,
-                    sentence.creationDate,
-                    sentence.updateDate,
-                    sentence.status,
-                    sentence.classification,
-                    sentence.lastIntentProbability,
-                    sentence.lastEntityProbability,
-                    sentence.lastUsage,
-                    sentence.usageCount,
-                    sentence.unknownCount
-                )
+            this(
+                textKey(sentence.text),
+                sentence.text,
+                sentence.language,
+                sentence.applicationId,
+                sentence.creationDate,
+                sentence.updateDate,
+                sentence.status,
+                sentence.classification,
+                sentence.lastIntentProbability,
+                sentence.lastEntityProbability,
+                sentence.lastUsage,
+                sentence.usageCount,
+                sentence.unknownCount
+            )
 
         fun toSentence(): ClassifiedSentence =
             ClassifiedSentence(
@@ -156,6 +158,18 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 ApplicationId, Classification_.intentId, Language, UpdateDate,
                 indexOptions = IndexOptions().background(true)
             )
+            intProperty("tock_nlp_classified_sentences_index_ttl_days", -1)
+                .takeUnless { it == -1 }
+                ?.let { ttl ->
+                    c.ensureIndex(
+                        UpdateDate,
+                        indexOptions = IndexOptions()
+                            .expireAfter(ttl.toLong(), DAYS)
+                            .background(true)
+                            .partialFilterExpression(Status eq inbox)
+                    )
+                }
+
         } catch (e: Exception) {
             logger.error(e)
         }
@@ -320,7 +334,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 it.copy(
                     classification = it.classification.copy(
                         entities = it.classification.entities.filterNot { it.role == oldEntity.role && it.type == oldEntity.entityTypeName }
-                                + selectedEntities.map {
+                            + selectedEntities.map {
                             it.copy(
                                 type = newEntity.entityTypeName,
                                 role = newEntity.role
