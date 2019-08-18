@@ -47,6 +47,8 @@ export class SearchComponent implements OnInit {
   update: SentencesUpdate = new SentencesUpdate();
   targetLocale: string;
 
+  private firstSearch = false;
+
   @ViewChild(SentencesScrollComponent) scroll;
 
   constructor(public state: StateService,
@@ -71,7 +73,10 @@ export class SearchComponent implements OnInit {
         this.selectedSentences = null;
         this.update = new SentencesUpdate();
         this.fillEntitiesFilter();
-        this.search();
+        if (!this.firstSearch) {
+          this.firstSearch = true;
+          this.search();
+        }
       })
     });
   }
@@ -170,7 +175,7 @@ export class SearchComponent implements OnInit {
   }
 
   translateSentences() {
-    if(!this.targetLocale || this.targetLocale.length === 0) {
+    if (!this.targetLocale || this.targetLocale.length === 0) {
       this.snackBar.open(`Please select a target language first`, "UPDATE", {duration: 1000})
     } else if (this.selectedSentences && this.selectedSentences.length === 0) {
       this.snackBar.open(`Please select at least one sentence first`, "UPDATE", {duration: 1000})

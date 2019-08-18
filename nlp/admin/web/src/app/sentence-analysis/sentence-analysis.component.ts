@@ -51,22 +51,7 @@ export class SentenceAnalysisComponent implements OnInit {
 
   onIntentChange(value) {
     if (value === "newIntent") {
-      //cleanup entities
-      this.sentence.classification.entities = [];
-      let dialogRef = this.dialog.open(IntentDialogComponent, {data: {create:true}});
-      dialogRef.afterClosed().subscribe(result => {
-        if (result.name) {
-          if (this.createIntent(result.name, result.label, result.description, result.category)) {
-            return;
-          }
-        }
-        //we need to be sure the selected value has changed to avoid side effects
-        if (this.sentence.classification.intentId) {
-          this.sentence.classification.intentId = undefined;
-        } else {
-          this.onIntentChange(Intent.unknown);
-        }
-      });
+      this.newIntent();
     } else {
       const oldSentence = this.sentence;
       const newSentence = oldSentence.clone();
@@ -78,9 +63,28 @@ export class SentenceAnalysisComponent implements OnInit {
         oldSentence
           .classification
           .entities
-          .filter(e => intent.containsEntity(e.type, e.role));
+          .filter(e => intent && intent.containsEntity(e.type, e.role));
       this.sentence = newSentence;
     }
+  }
+
+  newIntent() {
+    //cleanup entities
+    this.sentence.classification.entities = [];
+    let dialogRef = this.dialog.open(IntentDialogComponent, {data: {create: true}});
+    dialogRef.afterClosed().subscribe(result => {
+      if (result.name) {
+        if (this.createIntent(result.name, result.label, result.description, result.category)) {
+          return;
+        }
+      }
+      //we need to be sure the selected value has changed to avoid side effects
+      if (this.sentence.classification.intentId) {
+        this.sentence.classification.intentId = undefined;
+      } else {
+        this.onIntentChange(Intent.unknown);
+      }
+    });
   }
 
   onSentenceChange() {
@@ -159,6 +163,7 @@ export class SentenceAnalysisComponent implements OnInit {
             this.saveIntent(name, label, description, category);
           }
         });
+        return false;
       } else {
         this.saveIntent(name, label, description, category);
         return true;

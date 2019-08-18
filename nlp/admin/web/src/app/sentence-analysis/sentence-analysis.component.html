@@ -31,6 +31,7 @@
           <mat-option value="newIntent">Create New Intent</mat-option>
         </mat-select>
       </mat-form-field>
+      <button mat-icon-button (click)="newIntent()" matTooltip="Create New Intent"><mat-icon>library_add</mat-icon></button>
 
       <mat-form-field class="locale">
         <mat-select placeholder="Language" [(ngModel)]="sentence.language"
