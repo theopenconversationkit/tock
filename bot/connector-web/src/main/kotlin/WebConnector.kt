@@ -22,6 +22,8 @@ import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.media.MediaCard
+import fr.vsct.tock.bot.connector.media.MediaCarousel
 import fr.vsct.tock.bot.connector.media.MediaMessage
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.BotRepository
@@ -118,6 +120,12 @@ class WebConnector internal constructor(
     }
 
     override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
-        listOf(WebMessage(media = message))
+        listOfNotNull(
+            when (message) {
+                is MediaCard -> WebMessage(card = message)
+                is MediaCarousel -> WebMessage(carousel = message)
+                else -> null
+            }
+        )
     }
 }

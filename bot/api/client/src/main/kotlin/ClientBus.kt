@@ -20,6 +20,7 @@ import fr.vsct.tock.bot.api.model.message.bot.Action
 import fr.vsct.tock.bot.api.model.message.bot.Attachment
 import fr.vsct.tock.bot.api.model.message.bot.AttachmentType
 import fr.vsct.tock.bot.api.model.message.bot.Card
+import fr.vsct.tock.bot.api.model.message.bot.Carousel
 import fr.vsct.tock.bot.api.model.message.bot.I18nText
 import fr.vsct.tock.bot.api.model.message.user.UserMessage
 import fr.vsct.tock.bot.engine.Bus
@@ -76,6 +77,16 @@ interface ClientBus : Bus<ClientBus> {
     fun end(card: Card): ClientBus
 
     /**
+     * Sends a [Carousel].
+     */
+    fun send(carousel: Carousel): ClientBus
+
+    /**
+     * Sends a [Carousel as last bot answer.
+     */
+    fun end(carousel: Carousel): ClientBus
+
+    /**
      * Finds the [Entity] from the specified entity role.
      */
     fun entity(role: String): Entity? = entities.find { it.role == role }
@@ -129,6 +140,22 @@ interface ClientBus : Bus<ClientBus> {
             actions,
             delay
         )
+
+    /**
+     * Creates a new [Carousel].
+     */
+    fun newCarousel(
+        cards: List<Card>,
+        delay: Long = defaultDelay(currentAnswerIndex)): Carousel =
+        Carousel(cards, delay)
+
+    /**
+     * Creates a new [Carousel].
+     */
+    fun newCarousel(
+        vararg cards: Card,
+        delay: Long = defaultDelay(currentAnswerIndex)): Carousel =
+        Carousel(cards.toList(), delay)
 
     /**
      * Creates a new [Card].

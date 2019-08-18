@@ -16,25 +16,17 @@
 
 package fr.vsct.tock.bot.connector.media
 
+import fr.vsct.tock.bot.connector.media.MediaMessageType.carousel
 import fr.vsct.tock.bot.engine.BotBus
 
 /**
- * Descriptor of [MediaMessage].
+ * The [MediaCarousel] descriptor.
  */
-interface MediaMessageDescriptor {
+data class MediaCarouselDescriptor(val cards: List<MediaCardDescriptor>) : MediaMessageDescriptor {
 
-    /**
-     * The type of message.
-     */
-    val type: MediaMessageType
+    override val type: MediaMessageType = carousel
 
-    /**
-     * Creates a [MediaMessage] for the specified [BotBus].
-     */
-    fun toMessage(bus: BotBus): MediaMessage
+    override fun toMessage(bus: BotBus): MediaCarousel = MediaCarousel(cards.map { it.toMessage(bus) })
 
-    /**
-     * Returns true if the media is valid.
-     */
-    fun checkValidity(): Boolean = true
+    override fun checkValidity(): Boolean = cards.isNotEmpty()
 }

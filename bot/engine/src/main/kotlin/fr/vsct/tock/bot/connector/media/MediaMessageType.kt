@@ -28,6 +28,10 @@ enum class MediaMessageType {
     /**
      * Type of [MediaCard].
      */
-    card
+    card,
+    /**
+     * Type of [MediaCarousel].
+     */
+    carousel
 
 }

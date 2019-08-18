@@ -21,7 +21,8 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.connector.media.MediaMessage
+import fr.vsct.tock.bot.connector.media.MediaCard
+import fr.vsct.tock.bot.connector.media.MediaCarousel
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.message.Choice
 import fr.vsct.tock.bot.engine.message.GenericMessage
@@ -44,13 +45,15 @@ data class WebButton(val title: String, val payload: String? = null) {
 data class WebMessage(
     val text: String? = null,
     val buttons: List<WebButton> = emptyList(),
-    val media: MediaMessage? = null) : ConnectorMessage {
+    val card: MediaCard? = null,
+    val carousel: MediaCarousel? = null) : ConnectorMessage {
 
     @get:JsonIgnore
     override val connectorType: ConnectorType = webConnectorType
 
     override fun toGenericMessage(): GenericMessage? =
-        media?.toGenericMessage()
+        card?.toGenericMessage()
+            ?: carousel?.toGenericMessage()
             ?: GenericMessage(
                 connectorType = webConnectorType,
                 texts = mapNotNullValues(TEXT_PARAM to text),

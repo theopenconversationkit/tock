@@ -45,3 +45,80 @@ response:
   ]
 }
 ```
+
+4) Get a card:
+
+```
+{
+  "responses": [
+    {
+      "card": {
+          {
+            "title": "Title",
+            "subTitle": "subTitle",
+            "file": {
+              "url": "https:/url1",
+              "name": "name",
+              "type": "image"
+            },
+            "actions": [
+              {
+                "title": "Test"
+              },
+              {
+                "title": "Test2"
+              }
+            ]
+          }
+    }
+  ]
+}
+```
+
+5) Get a carousel:
+```
+{
+  "responses": [
+    {
+      "carousel": {
+        "cards": [
+          {
+            "title": "Title",
+            "subTitle": "subTitle",
+            "file": {
+              "url": "https:/url1",
+              "name": "name",
+              "type": "image"
+            },
+            "actions": [
+              {
+                "title": "Test"
+              },
+              {
+                "title": "Test2"
+              }
+            ]
+          },
+          {
+            "title": "Title2",
+            "subTitle": "subTitle2",
+            "file": {
+              "url": "https:/url2",
+              "name": "name2",
+              "type": "image2"
+            },
+            "actions": [
+              {
+                "title": "Test"
+              },
+              {
+                "title": "Test2"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
+```

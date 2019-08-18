@@ -25,6 +25,7 @@ import fr.vsct.tock.bot.api.model.UserRequest
 import fr.vsct.tock.bot.api.model.configuration.ClientConfiguration
 import fr.vsct.tock.bot.api.model.message.bot.BotMessage
 import fr.vsct.tock.bot.api.model.message.bot.Card
+import fr.vsct.tock.bot.api.model.message.bot.Carousel
 import fr.vsct.tock.bot.api.model.message.bot.CustomMessage
 import fr.vsct.tock.bot.api.model.message.bot.I18nText
 import fr.vsct.tock.bot.api.model.message.bot.Sentence
@@ -33,6 +34,7 @@ import fr.vsct.tock.bot.api.model.websocket.ResponseData
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.media.MediaAction
 import fr.vsct.tock.bot.connector.media.MediaCard
+import fr.vsct.tock.bot.connector.media.MediaCarousel
 import fr.vsct.tock.bot.connector.media.MediaFile
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.WebSocketController
@@ -211,6 +213,7 @@ internal class BotApiHandler(
                 is Sentence -> listOf(toAction(message))
                 is Card -> toActions(message)
                 is CustomMessage -> listOf(toAction(message))
+                is Carousel -> toActions(message)
                 else -> error("unsupported message $message")
             }
 
@@ -261,7 +264,26 @@ internal class BotApiHandler(
     private fun BotBus.toActions(card: Card): List<Action> {
         val connectorMessages =
             toMediaCard(card)
-                .takeIf { it.isValid() }
+                .takeIf { it.checkValidity() }
+                ?.let {
+                    underlyingConnector.toConnectorMessage(it).invoke(this)
+                }
+
+        return connectorMessages?.map {
+            SendSentence(
+                botId,
+                applicationId,
+                userId,
+                null,
+                mutableListOf(it)
+            )
+        } ?: emptyList()
+    }
+
+    private fun BotBus.toActions(carousel: Carousel): List<Action> {
+        val connectorMessages =
+            MediaCarousel(carousel.cards.map { toMediaCard(it) })
+                .takeIf { it.checkValidity() }
                 ?.let {
                     underlyingConnector.toConnectorMessage(it).invoke(this)
                 }

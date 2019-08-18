@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.Module
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fr.vsct.tock.shared.error
@@ -58,6 +59,10 @@ val mapper: ObjectMapper by lazy {
         //force java time module
         .registerModule(JavaTimeModule())
         .registerModule(IdJacksonModule())
+        .registerModule(SimpleModule().apply {
+            //fallback for serializing CharSequence
+            addSerializer(CharSequence::class.java, ToStringSerializer())
+        })
         .registerModules(jacksonAdditionalModules)
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         .setSerializationInclusion(JsonInclude.Include.NON_NULL)

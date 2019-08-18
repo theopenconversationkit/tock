@@ -22,6 +22,7 @@ import fr.vsct.tock.bot.api.model.UserRequest
 import fr.vsct.tock.bot.api.model.context.Entity
 import fr.vsct.tock.bot.api.model.message.bot.BotMessage
 import fr.vsct.tock.bot.api.model.message.bot.Card
+import fr.vsct.tock.bot.api.model.message.bot.Carousel
 import fr.vsct.tock.bot.api.model.message.bot.CustomMessage
 import fr.vsct.tock.bot.api.model.message.bot.I18nText
 import fr.vsct.tock.bot.api.model.message.bot.Sentence
@@ -117,6 +118,12 @@ class TockClientBus(
         return this
     }
 
+    override fun end(carousel: Carousel): ClientBus {
+        send(carousel)
+        answer(messages)
+        return this
+    }
+
     private fun answer(messages: List<BotMessage>) {
         sendAnswer(
             BotResponse(
@@ -127,6 +134,11 @@ class TockClientBus(
                 ResponseContext(requestId)
             )
         )
+    }
+
+    override fun send(carousel: Carousel): ClientBus {
+        messages.add(carousel)
+        return this
     }
 
     override fun send(card: Card): ClientBus {

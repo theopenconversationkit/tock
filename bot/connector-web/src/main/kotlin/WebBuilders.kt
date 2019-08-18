@@ -17,7 +17,8 @@
 package fr.vsct.tock.bot.connector.web
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
-import fr.vsct.tock.bot.connector.media.MediaMessage
+import fr.vsct.tock.bot.connector.media.MediaCard
+import fr.vsct.tock.bot.connector.media.MediaCarousel
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.Parameters
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
@@ -63,6 +64,11 @@ fun <T : Bus<T>> T.webTextButton(text: CharSequence): WebButton =
     translate(text).toString().let { t -> WebButton(t, SendChoice.encodeNlpChoiceId(t)) }
 
 /**
- * Creates a [WebMessage] from a [MediaMessage].
+ * Creates a [WebMessage] from a [MediaCard].
  */
-fun <T : Bus<T>> T.webMediaMessage(media: MediaMessage): WebMessage = WebMessage(media = media)
+fun <T : Bus<T>> T.webCard(card: MediaCard): WebMessage = WebMessage(card = card)
+
+/**
+ * Creates a [WebMessage] from a [MediaCarousel].
+ */
+fun <T : Bus<T>> T.webCarousel(carousel: MediaCarousel): WebMessage = WebMessage(carousel = carousel)

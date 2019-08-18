@@ -40,5 +40,5 @@ data class MediaCardDescriptor(
             actions.map { it.toMessage(bus) }
         )
 
-    override fun isValid(): Boolean = title != null || subTitle != null || file != null
+    override fun checkValidity(): Boolean = title != null || subTitle != null || file != null
 }

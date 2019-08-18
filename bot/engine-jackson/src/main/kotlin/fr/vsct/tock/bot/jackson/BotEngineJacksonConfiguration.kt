@@ -36,6 +36,7 @@ import fr.vsct.tock.bot.admin.answer.ScriptAnswerVersionedConfiguration
 import fr.vsct.tock.bot.admin.answer.SimpleAnswerConfiguration
 import fr.vsct.tock.bot.connector.media.MediaActionDescriptor
 import fr.vsct.tock.bot.connector.media.MediaCardDescriptor
+import fr.vsct.tock.bot.connector.media.MediaCarouselDescriptor
 import fr.vsct.tock.bot.connector.media.MediaMessageDescriptor
 import fr.vsct.tock.bot.connector.media.MediaMessageType
 import fr.vsct.tock.bot.engine.event.EventType
@@ -101,6 +102,7 @@ private object BotEngineJacksonConfiguration {
                 setMixInAnnotation(MediaMessageDescriptor::class.java, MixinMediaMessage::class.java)
                 registerSubtypes(NamedType(MediaCardDescriptor::class.java, MediaMessageType.card.name))
                 registerSubtypes(NamedType(MediaActionDescriptor::class.java, MediaMessageType.action.name))
+                registerSubtypes(NamedType(MediaCarouselDescriptor::class.java, MediaMessageType.carousel.name))
 
                 setSerializerModifier(object : BeanSerializerModifier() {
                     override fun changeProperties(

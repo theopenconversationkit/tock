@@ -99,7 +99,7 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
         val suggestions = container.findNextSteps(configuration)
         val connectorMessages =
             answer.mediaMessage
-                ?.takeIf { it.isValid() }
+                ?.takeIf { it.checkValidity() }
                 ?.let {
                     underlyingConnector.toConnectorMessage(it.toMessage(this)).invoke(this)
                 }

@@ -25,7 +25,7 @@ interface MediaMessage {
     /**
      * Returns true if the media is valid.
      */
-    fun isValid(): Boolean = true
+    fun checkValidity(): Boolean = true
 
     /**
      * Returns a [GenericMessage] view of this [MediaMessage] if supported.

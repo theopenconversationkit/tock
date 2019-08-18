@@ -14,27 +14,12 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.media
-
-import fr.vsct.tock.bot.engine.BotBus
+package fr.vsct.tock.bot.api.model.message.bot
 
 /**
- * Descriptor of [MediaMessage].
+ * A list fo [Card]s.
  */
-interface MediaMessageDescriptor {
-
-    /**
-     * The type of message.
-     */
-    val type: MediaMessageType
-
-    /**
-     * Creates a [MediaMessage] for the specified [BotBus].
-     */
-    fun toMessage(bus: BotBus): MediaMessage
-
-    /**
-     * Returns true if the media is valid.
-     */
-    fun checkValidity(): Boolean = true
-}
+data class Carousel(
+    val cards: List<Card>,
+    override val delay: Long = 0
+) : BotMessage

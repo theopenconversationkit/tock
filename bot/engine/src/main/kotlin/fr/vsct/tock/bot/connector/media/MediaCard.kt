@@ -32,7 +32,7 @@ data class MediaCard(
     val actions: List<MediaAction> = emptyList()
 ) : MediaMessage {
 
-    override fun isValid(): Boolean = title != null || subTitle != null || file != null
+    override fun checkValidity(): Boolean = title != null || subTitle != null || file != null
 
     override fun toGenericMessage(): GenericMessage? =
         GenericMessage(
