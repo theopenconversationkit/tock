@@ -19,7 +19,10 @@ package fr.vsct.tock.bot.test
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.engine.message.Choice
+import fr.vsct.tock.bot.engine.message.GenericMessage
 import kotlin.test.assertEquals
 
 /**
@@ -66,5 +69,31 @@ data class BotBusMockLog(
      * Assert that log contains specified message.
      */
     infix fun assert(message: ConnectorMessage) = assertMessage(message)
+
+    /**
+     * Convert current BotBusLog action first message to a generic message
+     */
+    fun genericMessage(): GenericMessage? = (action as? SendSentence)
+        ?.messages
+        ?.let { if (it.size == 1) it.first() else null }
+        ?.toGenericMessage()
+
+    /**
+     * Retrieve choice member with expected title belonging to element with specified index
+     */
+    fun elementChoice(elementIndex: Int, title: String): Choice? =
+        genericMessage()?.subElements?.get(elementIndex)
+            ?.choices
+            ?.find(hasTitle(title))
+
+    /**
+     * Retrieve choice member of main part of generic message with expected title
+     */
+    fun choice(title: String): Choice? =
+        genericMessage()?.choices
+            ?.find(hasTitle(title))
+
+    private fun hasTitle(title: String): (Choice) -> Boolean =
+        { it.parameters[SendChoice.TITLE_PARAMETER] == title }
 
 }
