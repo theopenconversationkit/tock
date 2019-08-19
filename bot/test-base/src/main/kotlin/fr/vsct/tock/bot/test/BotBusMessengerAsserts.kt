@@ -1,8 +1,6 @@
 package fr.vsct.tock.bot.test
 
 
-import ch.tutteli.atrium.api.cc.en_GB.get
-import ch.tutteli.atrium.api.cc.en_GB.hasSize
 import ch.tutteli.atrium.api.cc.en_GB.isA
 import ch.tutteli.atrium.api.cc.en_GB.notToBeNull
 import ch.tutteli.atrium.api.cc.en_GB.property
@@ -65,7 +63,7 @@ fun Assert<AttachmentMessage>.withButtonAttachment(text: String, buttonTitles: L
 fun Assert<AttachmentMessage>.withGenericTemplateElement(
     index: Int,
     expectedTitle: String,
-    subtitle: String?,
+    subtitle: String? = null,
     buttonTitles: List<String>
 ) =
     property(AttachmentMessage::attachment)
