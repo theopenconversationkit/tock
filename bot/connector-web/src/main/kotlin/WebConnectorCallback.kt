@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.bot.connector.web
 
+import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 import fr.vsct.tock.bot.connector.ConnectorCallbackBase
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
@@ -34,7 +36,12 @@ internal class WebConnectorCallback(
 ) : ConnectorCallbackBase(applicationId, webConnectorType) {
 
     private val logger = KotlinLogging.logger {}
-
+    private val webMapper = mapper.copy().registerModule(
+        SimpleModule().apply {
+            //fallback for serializing CharSequence
+            addSerializer(CharSequence::class.java, ToStringSerializer())
+        }
+    )
 
     fun addAction(event: Event) {
         if (event is Action) {
@@ -55,6 +62,6 @@ internal class WebConnectorCallback(
                 }
 
             }
-        context.response().end(mapper.writeValueAsString(WebConnectorResponse(messages)))
+        context.response().end(webMapper.writeValueAsString(WebConnectorResponse(messages)))
     }
 }
