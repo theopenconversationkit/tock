@@ -27,6 +27,7 @@ import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.EntityValue
 import fr.vsct.tock.bot.engine.dialog.EventState
+import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserPreferences
@@ -72,8 +73,8 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         botId: PlayerId = PlayerId("bot", PlayerType.bot),
         userPreferences: UserPreferences = UserPreferences(locale = locale),
         tests: BotBusMock.() -> Unit
-    ) {
-        send(
+    ): BotBusMock {
+        return send(
             intent,
             connectorType,
             userInterfaceType,
@@ -95,6 +96,33 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
     }
 
     /**
+     * Sends a message and execute the tests.
+     */
+    fun sendMessage(
+        intent: IntentAware = testContext.defaultStoryDefinition(botDefinition),
+        message: Message,
+        connectorType: ConnectorType = testContext.defaultConnectorType(),
+        userInterfaceType: UserInterfaceType = connectorType.userInterfaceType,
+        locale: Locale = testContext.defaultLocale(),
+        userId: PlayerId = testContext.defaultPlayerId(),
+        botId: PlayerId = PlayerId("bot", PlayerType.bot),
+        userPreferences: UserPreferences = UserPreferences(locale = locale),
+        tests: BotBusMock.() -> Unit
+    ): BotBusMock {
+        return send(
+            intent,
+            connectorType,
+            userInterfaceType,
+            locale,
+            userId,
+            botId,
+            userPreferences,
+            { message.toAction(userId, botDefinition.botId, botId) },
+            tests
+        )
+    }
+
+    /**
      * Sends a sentence and execute the tests.
      */
     fun send(
@@ -109,8 +137,8 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         userPreferences: UserPreferences = UserPreferences(locale = locale),
         metadata: ActionMetadata = ActionMetadata(),
         tests: BotBusMock.() -> Unit
-    ) {
-        send(
+    ): BotBusMock {
+        return send(
             intent,
             connectorType,
             userInterfaceType,
@@ -148,27 +176,27 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         userPreferences: UserPreferences = UserPreferences(locale = locale),
         actionProvider: () -> Action,
         tests: BotBusMock.() -> Unit
-    ) {
+    ): BotBusMock {
         val action = actionProvider.invoke()
-        tests.invoke(
-            BotBusMock(
-                if (testContext.isInitialized()) {
-                    testContext.botBusMockContext
-                } else {
-                    newBusMockContext(
-                        findStoryDefinition(intent),
-                        connectorType,
-                        locale,
-                        userId,
-                        botId,
-                        action,
-                        userInterfaceType,
-                        userPreferences
-                    )
-                },
-                action
-            ).run()
+        val botBusMock = BotBusMock(
+            if (testContext.isInitialized()) {
+                testContext.botBusMockContext
+            } else {
+                newBusMockContext(
+                    findStoryDefinition(intent),
+                    connectorType,
+                    locale,
+                    userId,
+                    botId,
+                    action,
+                    userInterfaceType,
+                    userPreferences
+                )
+            },
+            action
         )
+        tests.invoke(botBusMock.run())
+        return botBusMock
     }
 
     /**
