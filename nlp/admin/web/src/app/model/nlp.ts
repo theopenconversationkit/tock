@@ -347,7 +347,10 @@ export class Sentence extends EntityContainer {
               public classification: Classification,
               public creationDate: Date,
               public updateDate: Date,
-              public key?: string,) {
+              public forReview: Boolean,
+              public reviewComment: string,
+              public qualifier: string,
+              public key?: string) {
     super()
   }
 
@@ -417,6 +420,9 @@ export class Sentence extends EntityContainer {
       this.classification,
       this.creationDate,
       this.updateDate,
+      this.forReview,
+      this.reviewComment,
+      this.qualifier,
       this.key);
   }
 
@@ -755,7 +761,8 @@ export class SearchQuery extends PaginatedQuery {
               public entityType?: string,
               public entityRole?: string,
               public modifiedAfter?: Date,
-              public sort?: Entry<string, boolean>[]) {
+              public sort?: Entry<string, boolean>[],
+              public onlyToReview: boolean = false) {
     super(namespace, applicationName, language, start, size, searchMark, sort)
   }
 }

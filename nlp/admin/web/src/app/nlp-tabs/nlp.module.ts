@@ -43,6 +43,7 @@ import {EditEntitiesComponent} from "../sentence-analysis/entities/edit-entities
 import {EntityDetailsComponent} from "../entities/entity-details.component";
 import {MatDatepickerModule, MatNativeDateModule} from "@angular/material";
 import {FileUploadModule} from "ng2-file-upload";
+import {ReviewRequestDialogComponent} from "../sentence-analysis/review-request-dialog/review-request-dialog.component";
 
 const routes: Routes = [
   {
@@ -125,7 +126,8 @@ export class NlpRoutingModule {
     DisplayFullLogComponent,
     AddStateDialogComponent,
     EntitiesComponent,
-    EntityDetailsComponent
+    EntityDetailsComponent,
+    ReviewRequestDialogComponent
   ],
   exports: [
     SentenceAnalysisComponent,
@@ -138,7 +140,8 @@ export class NlpRoutingModule {
     CreateEntityDialogComponent,
     IntentDialogComponent,
     DisplayFullLogComponent,
-    AddStateDialogComponent
+    AddStateDialogComponent,
+    ReviewRequestDialogComponent
   ]
 })
 export class NlpModule {

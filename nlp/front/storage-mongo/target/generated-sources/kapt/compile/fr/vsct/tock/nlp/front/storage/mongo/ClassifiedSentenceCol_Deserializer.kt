@@ -11,6 +11,7 @@ import fr.vsct.tock.nlp.front.shared.config.Classification
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import java.time.Instant
 import java.util.Locale
+import kotlin.Boolean
 import kotlin.Double
 import kotlin.Long
 import kotlin.String
@@ -58,6 +59,12 @@ internal class ClassifiedSentenceCol_Deserializer :
             var _usageCount_set : Boolean = false
             var _unknownCount_: Long? = null
             var _unknownCount_set : Boolean = false
+            var _forReview_: Boolean? = null
+            var _forReview_set : Boolean = false
+            var _reviewComment_: String? = null
+            var _reviewComment_set : Boolean = false
+            var _classifier_: String? = null
+            var _classifier_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -133,6 +140,21 @@ internal class ClassifiedSentenceCol_Deserializer :
                              else p.longValue;
                             _unknownCount_set = true
                             }
+                    "forReview" -> {
+                            _forReview_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.booleanValue;
+                            _forReview_set = true
+                            }
+                    "reviewComment" -> {
+                            _reviewComment_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _reviewComment_set = true
+                            }
+                    "classifier" -> {
+                            _classifier_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _classifier_set = true
+                            }
                     else -> {
                             if (_token_?.isStructStart == true)
                             p.skipChildren()
@@ -144,14 +166,17 @@ internal class ClassifiedSentenceCol_Deserializer :
             return if(_text_set && _fullText_set && _language_set && _applicationId_set &&
                     _creationDate_set && _updateDate_set && _status_set && _classification_set &&
                     _lastIntentProbability_set && _lastEntityProbability_set && _lastUsage_set &&
-                    _usageCount_set && _unknownCount_set)
+                    _usageCount_set && _unknownCount_set && _forReview_set && _reviewComment_set &&
+                    _classifier_set)
                     ClassifiedSentenceMongoDAO.ClassifiedSentenceCol(text = _text_!!, fullText =
                             _fullText_!!, language = _language_!!, applicationId =
                             _applicationId_!!, creationDate = _creationDate_!!, updateDate =
                             _updateDate_!!, status = _status_!!, classification =
                             _classification_!!, lastIntentProbability = _lastIntentProbability_,
                             lastEntityProbability = _lastEntityProbability_, lastUsage =
-                            _lastUsage_, usageCount = _usageCount_, unknownCount = _unknownCount_)
+                            _lastUsage_, usageCount = _usageCount_, unknownCount = _unknownCount_,
+                            forReview = _forReview_!!, reviewComment = _reviewComment_, classifier =
+                            _classifier_)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_text_set)
@@ -179,7 +204,13 @@ internal class ClassifiedSentenceCol_Deserializer :
                     if(_usageCount_set)
                     map[parameters.getValue("usageCount")] = _usageCount_
                     if(_unknownCount_set)
-                    map[parameters.getValue("unknownCount")] = _unknownCount_ 
+                    map[parameters.getValue("unknownCount")] = _unknownCount_
+                    if(_forReview_set)
+                    map[parameters.getValue("forReview")] = _forReview_
+                    if(_reviewComment_set)
+                    map[parameters.getValue("reviewComment")] = _reviewComment_
+                    if(_classifier_set)
+                    map[parameters.getValue("classifier")] = _classifier_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -204,7 +235,10 @@ internal class ClassifiedSentenceCol_Deserializer :
                 primaryConstructor.findParameterByName("lastEntityProbability")!!, "lastUsage" to
                 primaryConstructor.findParameterByName("lastUsage")!!, "usageCount" to
                 primaryConstructor.findParameterByName("usageCount")!!, "unknownCount" to
-                primaryConstructor.findParameterByName("unknownCount")!!) }
+                primaryConstructor.findParameterByName("unknownCount")!!, "forReview" to
+                primaryConstructor.findParameterByName("forReview")!!, "reviewComment" to
+                primaryConstructor.findParameterByName("reviewComment")!!, "classifier" to
+                primaryConstructor.findParameterByName("classifier")!!) }
 
         private val _applicationId__reference: TypeReference<Id<ApplicationDefinition>> = object :
                 TypeReference<Id<ApplicationDefinition>>() {}

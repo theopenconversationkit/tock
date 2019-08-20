@@ -43,6 +43,7 @@ import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.nlp.front.shared.test.TestErrorQuery
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.provide
+import fr.vsct.tock.shared.security.UNKNOWN_USER_LOGIN
 import fr.vsct.tock.shared.vertx.WebVerticle.Companion.badRequest
 import fr.vsct.tock.shared.withNamespace
 import fr.vsct.tock.translator.TranslatorEngine
@@ -116,7 +117,7 @@ object AdminService {
                 updateDate = now()
             )
             //TODO not not override existing sentences
-            front.save(translatedSentence)
+            front.save(translatedSentence, it.qualifier ?: UNKNOWN_USER_LOGIN)
         }
         return TranslateReport(sentences.size)
     }

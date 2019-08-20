@@ -37,6 +37,7 @@ import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.namespace
 import fr.vsct.tock.shared.namespaceAndName
 import fr.vsct.tock.shared.provide
+import fr.vsct.tock.shared.security.UserLogin
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
@@ -55,6 +56,10 @@ object ApplicationConfigurationService :
     IntentDefinitionDAO by intentDAO,
     ClassifiedSentenceDAO by sentenceDAO,
     ApplicationConfiguration {
+
+    override fun save(sentence: ClassifiedSentence, user: UserLogin?) {
+        sentenceDAO.save(sentence.copy(qualifier = user))
+    }
 
     private val logger = KotlinLogging.logger {}
 

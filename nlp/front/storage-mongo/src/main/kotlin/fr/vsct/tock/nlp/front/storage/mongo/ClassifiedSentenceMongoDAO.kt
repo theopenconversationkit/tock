@@ -34,6 +34,7 @@ import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.nlp.front.shared.config.SentencesQueryResult
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.ApplicationId
+import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.ForReview
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.FullText
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Language
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.LastEntityProbability
@@ -49,6 +50,7 @@ import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogMongoDAO.ParseRequest
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.intProperty
+import fr.vsct.tock.shared.security.UserLogin
 import mu.KotlinLogging
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
@@ -106,7 +108,10 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         val lastEntityProbability: Double? = null,
         val lastUsage: Instant? = null,
         val usageCount: Long? = 0,
-        val unknownCount: Long? = 0
+        val unknownCount: Long? = 0,
+        val forReview: Boolean = false,
+        val reviewComment: String? = null,
+        val classifier: UserLogin? = null
     ) {
 
         constructor(sentence: ClassifiedSentence) :
@@ -123,7 +128,10 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 sentence.lastEntityProbability,
                 sentence.lastUsage,
                 sentence.usageCount,
-                sentence.unknownCount
+                sentence.unknownCount,
+                sentence.forReview,
+                sentence.reviewComment,
+                sentence.qualifier
             )
 
         fun toSentence(): ClassifiedSentence =
@@ -139,7 +147,10 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 lastEntityProbability,
                 lastUsage,
                 usageCount ?: 0,
-                unknownCount ?: 0
+                unknownCount ?: 0,
+                forReview,
+                reviewComment,
+                classifier
             )
     }
 
@@ -158,6 +169,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 ApplicationId, Classification_.intentId, Language, UpdateDate,
                 indexOptions = IndexOptions().background(true)
             )
+            c.ensureIndex(ForReview)
             intProperty("tock_nlp_classified_sentences_index_ttl_days", -1)
                 .takeUnless { it == -1 }
                 ?.let { ttl ->
@@ -237,7 +249,8 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                     if (modifiedAfter == null)
                         if (searchMark == null) null else UpdateDate lte searchMark!!.date
                     else if (searchMark == null) UpdateDate gt modifiedAfter?.toInstant()
-                    else and(UpdateDate lte searchMark!!.date, UpdateDate gt modifiedAfter?.toInstant())
+                    else and(UpdateDate lte searchMark!!.date, UpdateDate gt modifiedAfter?.toInstant()),
+                    if(onlyToReview) { ForReview eq true } else { null }
                 )
 
             logger.debug { filterBase.json }

@@ -57,6 +57,7 @@
 }
 
 .status {
+  margin-right: 0.5em;
   border-radius: 25px;
   padding: 8px;
 }
@@ -69,5 +70,10 @@
   float: right;
   font-size: x-small;
   position: relative;
+  clear: both;
   top: 20px;
+}
+
+.reviewComment {
+  white-space: pre-wrap;
 }

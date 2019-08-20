@@ -128,7 +128,8 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
       this.filter.modifiedAfter,
       this.tableView && this.sort.length !== 0
         ? this.sort.map(s => new Entry<string, boolean>(s.active, s.direction === 'asc'))
-        : null
+        : null,
+      this.filter.onlyToReview
     )
   }
 
@@ -226,11 +227,12 @@ export class SentenceFilter {
               public status?: SentenceStatus[],
               public entityType?: string,
               public entityRole?: string,
-              public modifiedAfter?: Date) {
+              public modifiedAfter?: Date,
+              public onlyToReview: boolean = false) {
   }
 
   clone(): SentenceFilter {
-    return new SentenceFilter(this.search, this.intentId, this.status, this.entityType, this.entityRole, this.modifiedAfter);
+    return new SentenceFilter(this.search, this.intentId, this.status, this.entityType, this.entityRole, this.modifiedAfter, this.onlyToReview);
   }
 }
 

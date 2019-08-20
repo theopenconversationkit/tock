@@ -28,7 +28,7 @@ import io.vertx.ext.auth.User
  * Tock implementation of vertx [User].
  */
 data class TockUser(
-    val user: String,
+    val user: UserLogin,
     val namespace: String,
     val roles: Set<String>
 ) : AbstractUser() {

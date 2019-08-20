@@ -63,6 +63,7 @@ import fr.vsct.tock.shared.security.TockUserRole
 import fr.vsct.tock.shared.security.TockUserRole.admin
 import fr.vsct.tock.shared.security.TockUserRole.nlpUser
 import fr.vsct.tock.shared.security.TockUserRole.technicalAdmin
+import fr.vsct.tock.shared.security.UNKNOWN_USER_LOGIN
 import fr.vsct.tock.shared.security.auth.TockAuthProvider
 import fr.vsct.tock.shared.security.initEncryptor
 import fr.vsct.tock.shared.supportedLanguages
@@ -353,9 +354,9 @@ open class AdminVerticle : WebVerticle() {
         }
 
         blockingJsonPost("/sentence", nlpUser)
-        { context, s: SentenceReport ->
-            if (context.organization == front.getApplicationById(s.applicationId)?.namespace) {
-                front.save(s.toClassifiedSentence())
+        { context, sentenceReport: SentenceReport ->
+            if (context.organization == front.getApplicationById(sentenceReport.applicationId)?.namespace) {
+                front.save(sentenceReport.toClassifiedSentence(), context.user?.user ?: UNKNOWN_USER_LOGIN)
             } else {
                 unauthorized()
             }

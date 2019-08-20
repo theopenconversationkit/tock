@@ -32,7 +32,8 @@ data class SearchQuery(
     val status: Set<ClassifiedSentenceStatus> = emptySet(),
     val entityType: String? = null,
     val entityRole: String? = null,
-    val modifiedAfter: ZonedDateTime? = null
+    val modifiedAfter: ZonedDateTime? = null,
+    val onlyToReview: Boolean = false
 ) : PaginatedQuery() {
 
     fun toSentencesQuery(applicationId: Id<ApplicationDefinition>): SentencesQuery {
@@ -48,7 +49,8 @@ data class SearchQuery(
             entityRole = entityRole,
             modifiedAfter = modifiedAfter,
             searchMark = searchMark,
-            sort = sort ?: emptyList()
+            sort = sort ?: emptyList(),
+            onlyToReview = onlyToReview
         )
     }
 }
