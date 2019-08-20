@@ -21,7 +21,8 @@ import {flatMap} from "../../model/commons";
 
 @Component({
   selector: 'tock-create-entity-dialog',
-  templateUrl: 'review-request-dialog.component.html'
+  templateUrl: 'review-request-dialog.component.html',
+  styleUrls: ['./review-request-dialog.component.css']
 })
 export class ReviewRequestDialogComponent implements OnInit {
   description: string;
@@ -41,12 +42,12 @@ export class ReviewRequestDialogComponent implements OnInit {
     } else {
       this.state.currentIntentsCategories.subscribe(c => {
         let intent = flatMap(c, cat => cat.intents).find(intent => intent._id === this.beforeClassification);
-        this.description = "Before classification : " + intent.name + "\n\n";
+        this.description = "Initial intent: " + intent.name + "\n\n";
       });
     }
   }
 
   save() {
-    this.dialogRef.close({status: 'confirm',  description: this.description});
+    this.dialogRef.close({status: 'confirm', description: this.description});
   }
 }

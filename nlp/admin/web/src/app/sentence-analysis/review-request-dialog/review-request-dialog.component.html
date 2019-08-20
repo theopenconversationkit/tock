@@ -15,10 +15,10 @@
   -->
 
 <h1 mat-dialog-title>Request review</h1>
-<div mat-dialog-content>
+<div mat-dialog-content class="container">
   <p>
-    <mat-form-field>
-      <textarea rows="5" matInput name="description" placeholder="Description" [(ngModel)]="description"></textarea>
+    <mat-form-field class="description">
+      <textarea dkTextareaAutosize rows="10" matInput name="description" placeholder="Description" [(ngModel)]="description"></textarea>
     </mat-form-field>
   </p>
 </div>

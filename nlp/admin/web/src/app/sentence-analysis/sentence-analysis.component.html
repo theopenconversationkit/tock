@@ -96,7 +96,7 @@
                           (containerChange)="onSentenceChange()"></tock-edit-entities>
     </div>
     <mat-card *ngIf="sentence.forReview && sentence.reviewComment">
-      <mat-card-subtitle>To review</mat-card-subtitle>
+      <mat-card-subtitle>Comment</mat-card-subtitle>
       <mat-card-content class="reviewComment">
         {{sentence.reviewComment}}
       </mat-card-content>
@@ -108,7 +108,7 @@
             matTooltip="Set as unknown to use later">Unknown
     </button>
     <button mat-raised-button class="validate" color="primary" (click)="onValidate()">Validate</button>
-    <button mat-raised-button class="validate" color="accent" (click)="onReviewRequest()">Review request</button>
+    <button mat-raised-button class="validate" (click)="onReviewRequest()">Review request</button>
     <button mat-button *ngIf="config.displayDialogUrl"
             color="primary"
             (click)="displayDialogs()"

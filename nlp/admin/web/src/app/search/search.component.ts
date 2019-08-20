@@ -40,7 +40,7 @@ export class SearchComponent implements OnInit {
 
   UserRole = UserRole;
   filter: SentenceFilter = new SentenceFilter();
-  status: SentenceStatus;
+  status: string;
   entityTypes: EntityType[];
   entityRoles: string[];
   selectedSentences: Sentence[];
@@ -115,8 +115,14 @@ export class SearchComponent implements OnInit {
 
   search() {
     setTimeout(_ => {
+      this.filter.onlyToReview = false;
       if (this.status) {
-        this.filter.status = [this.status];
+        if (this.status == "review") {
+          this.filter.onlyToReview = true;
+          this.filter.status = [];
+        } else {
+          this.filter.status = [SentenceStatus[this.status]];
+        }
       } else {
         this.filter.status = [];
       }

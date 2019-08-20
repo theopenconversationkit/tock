@@ -62,6 +62,7 @@
             <mat-option value="inbox">Inbox</mat-option>
             <mat-option value="validated">Validated</mat-option>
             <mat-option value="model">Included in model</mat-option>
+            <mat-option value="review">To review</mat-option>
           </mat-select>
         </mat-form-field>
         <mat-form-field class="search-criterion">
@@ -70,9 +71,6 @@
           <mat-datepicker-toggle matSuffix [for]="after"></mat-datepicker-toggle>
           <mat-datepicker #after (selectedChanged)="search()"></mat-datepicker>
         </mat-form-field>
-        <mat-checkbox [(ngModel)]="filter.onlyToReview" (change)="search()">
-          To review
-        </mat-checkbox>
       </mat-card-content>
       <mat-card-footer *ngIf="state.hasRole(UserRole.admin)">
         <mat-expansion-panel>

@@ -347,7 +347,7 @@ export class Sentence extends EntityContainer {
               public classification: Classification,
               public creationDate: Date,
               public updateDate: Date,
-              public forReview: Boolean,
+              public forReview: boolean,
               public reviewComment: string,
               public qualifier: string,
               public key?: string) {
