@@ -23,6 +23,7 @@ import {MatDialog, MatSnackBar} from "@angular/material";
 import {ApplicationConfig} from "../core-nlp/application.config";
 import {Router} from "@angular/router";
 import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialog.component";
+import {ReviewRequestDialogComponent} from "./review-request-dialog/review-request-dialog.component";
 
 @Component({
   selector: 'tock-sentence-analysis',
@@ -37,6 +38,7 @@ export class SentenceAnalysisComponent implements OnInit {
   @Input() displayStatus: boolean = false;
   @Output() closed = new EventEmitter();
   @Input() displayEntities: Boolean = true;
+  intentBeforeClassification: string;
 
   constructor(public state: StateService,
               private nlp: NlpService,
@@ -47,6 +49,7 @@ export class SentenceAnalysisComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.intentBeforeClassification = this.sentence.classification.intentId
   }
 
   onIntentChange(value) {
@@ -96,6 +99,12 @@ export class SentenceAnalysisComponent implements OnInit {
   }
 
   onValidate() {
+    this.sentence.forReview = false;
+    this.sentence.reviewComment = "";
+    this.validate();
+  }
+
+  private validate() {
     const intent = this.sentence.classification.intentId;
     if (!intent) {
       this.snackBar.open(`Please select an intent first`, "Error", {duration: 3000});
@@ -104,6 +113,22 @@ export class SentenceAnalysisComponent implements OnInit {
     } else {
       this.update(SentenceStatus.validated);
     }
+  }
+
+  onReviewRequest() {
+    let dialogRef = this.dialog.open(ReviewRequestDialogComponent, {
+      data: {
+        beforeClassification: this.intentBeforeClassification,
+        reviewComment: this.sentence.reviewComment
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.status === 'confirm') {
+        this.sentence.forReview = true;
+        this.sentence.reviewComment = result.description;
+        this.validate()
+      }
+    });
   }
 
   onUnknown() {

@@ -37,6 +37,7 @@ data class SentencesQuery(
     val entityRole: String? = null,
     val modifiedAfter: ZonedDateTime? = null,
     val searchMark: SearchMark? = null,
+    val onlyToReview: Boolean = false,
     /**
      * The optional sort parameters.
      */

@@ -27,6 +27,7 @@ import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.nlp.front.shared.config.SentencesQueryResult
+import fr.vsct.tock.shared.security.UserLogin
 import org.litote.kmongo.Id
 import java.util.Locale
 
@@ -68,7 +69,7 @@ interface ApplicationConfiguration {
 
     fun deleteSentencesByStatus(status: ClassifiedSentenceStatus)
 
-    fun save(sentence: ClassifiedSentence)
+    fun save(sentence: ClassifiedSentence, user: UserLogin? = sentence.qualifier)
 
     fun search(query: SentencesQuery): SentencesQueryResult
 

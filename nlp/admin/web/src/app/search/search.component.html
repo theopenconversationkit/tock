@@ -70,6 +70,9 @@
           <mat-datepicker-toggle matSuffix [for]="after"></mat-datepicker-toggle>
           <mat-datepicker #after (selectedChanged)="search()"></mat-datepicker>
         </mat-form-field>
+        <mat-checkbox [(ngModel)]="filter.onlyToReview" (change)="search()">
+          To review
+        </mat-checkbox>
       </mat-card-content>
       <mat-card-footer *ngIf="state.hasRole(UserRole.admin)">
         <mat-expansion-panel>

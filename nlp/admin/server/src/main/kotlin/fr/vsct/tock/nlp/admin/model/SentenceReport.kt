@@ -24,6 +24,7 @@ import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 import fr.vsct.tock.nlp.front.shared.test.EntityTestError
 import fr.vsct.tock.nlp.front.shared.test.IntentTestError
 import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
+import fr.vsct.tock.shared.security.UserLogin
 import fr.vsct.tock.shared.security.decrypt
 import fr.vsct.tock.shared.security.encrypt
 import org.litote.kmongo.Id
@@ -42,7 +43,10 @@ data class SentenceReport(
     val updateDate: Instant,
     val status: ClassifiedSentenceStatus,
     val classification: ClassificationReport,
-    var key: String? = null
+    var key: String? = null,
+    val forReview: Boolean = false,
+    val reviewComment: String? = null,
+    val qualifier: UserLogin? = null
 ) {
 
     constructor(
@@ -72,7 +76,10 @@ data class SentenceReport(
         sentence.creationDate,
         sentence.updateDate,
         sentence.status,
-        ClassificationReport(sentence)
+        ClassificationReport(sentence),
+        forReview = sentence.forReview,
+        reviewComment = sentence.reviewComment,
+        qualifier = sentence.qualifier
     ) {
         if (text != sentence.text) {
             key = encrypt(sentence.text)
@@ -109,7 +116,10 @@ data class SentenceReport(
             status,
             classification.toClassification(),
             1.0,
-            1.0
+            1.0,
+            forReview = forReview,
+            reviewComment = reviewComment,
+            qualifier = qualifier
         )
     }
 }

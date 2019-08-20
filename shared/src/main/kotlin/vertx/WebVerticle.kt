@@ -26,6 +26,7 @@ import fr.vsct.tock.shared.intProperty
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.property
+import fr.vsct.tock.shared.security.TockUser
 import fr.vsct.tock.shared.security.TockUserRole
 import fr.vsct.tock.shared.security.auth.AWSJWTAuthProvider
 import fr.vsct.tock.shared.security.auth.GithubOAuthProvider
@@ -532,7 +533,10 @@ abstract class WebVerticle : AbstractVerticle() {
     fun <T> RoutingContext.queryId(name: String): Id<T>? = firstQueryParam(name)?.toId()
 
     val RoutingContext.organization: String
-        get() = cachedAuthProvider?.toTockUser(this)?.namespace ?: "none"
+        get() = user?.namespace ?: "none"
+
+    val RoutingContext.user: TockUser?
+        get() = cachedAuthProvider?.toTockUser(this)
 
     fun HttpServerResponse.endJson(result: Any?) {
         if (result == null) {

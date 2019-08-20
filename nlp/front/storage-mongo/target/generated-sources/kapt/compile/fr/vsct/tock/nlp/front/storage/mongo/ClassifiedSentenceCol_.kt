@@ -6,6 +6,7 @@ import fr.vsct.tock.nlp.front.shared.config.Classification_
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import java.time.Instant
 import java.util.Locale
+import kotlin.Boolean
 import kotlin.Double
 import kotlin.Long
 import kotlin.String
@@ -49,6 +50,12 @@ private val __UsageCount: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSenten
     get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::usageCount
 private val __UnknownCount: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, Long?>
     get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::unknownCount
+private val __ForReview: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, Boolean?>
+    get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::forReview
+private val __ReviewComment: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
+    get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::reviewComment
+private val __Classifier: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
+    get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::classifier
 internal class ClassifiedSentenceCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         ClassifiedSentenceMongoDAO.ClassifiedSentenceCol?>) : KPropertyPath<T,
         ClassifiedSentenceMongoDAO.ClassifiedSentenceCol?>(previous,property) {
@@ -92,6 +99,15 @@ internal class ClassifiedSentenceCol_<T>(previous: KPropertyPath<T, *>?, propert
     val unknownCount: KPropertyPath<T, Long?>
         get() = KPropertyPath(this,__UnknownCount)
 
+    val forReview: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__ForReview)
+
+    val reviewComment: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__ReviewComment)
+
+    val classifier: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__Classifier)
+
     companion object {
         val Text: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
             get() = __Text
@@ -122,7 +138,13 @@ internal class ClassifiedSentenceCol_<T>(previous: KPropertyPath<T, *>?, propert
         val UsageCount: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, Long?>
             get() = __UsageCount
         val UnknownCount: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, Long?>
-            get() = __UnknownCount}
+            get() = __UnknownCount
+        val ForReview: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, Boolean?>
+            get() = __ForReview
+        val ReviewComment: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
+            get() = __ReviewComment
+        val Classifier: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
+            get() = __Classifier}
 }
 
 internal class ClassifiedSentenceCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -168,6 +190,15 @@ internal class ClassifiedSentenceCol_Col<T>(previous: KPropertyPath<T, *>?, prop
 
     val unknownCount: KPropertyPath<T, Long?>
         get() = KPropertyPath(this,__UnknownCount)
+
+    val forReview: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__ForReview)
+
+    val reviewComment: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__ReviewComment)
+
+    val classifier: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__Classifier)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ClassifiedSentenceCol_<T> =
@@ -216,6 +247,15 @@ internal class ClassifiedSentenceCol_Map<T, K>(previous: KPropertyPath<T, *>?, p
 
     val unknownCount: KPropertyPath<T, Long?>
         get() = KPropertyPath(this,__UnknownCount)
+
+    val forReview: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__ForReview)
+
+    val reviewComment: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__ReviewComment)
+
+    val classifier: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__Classifier)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ClassifiedSentenceCol_<T> =

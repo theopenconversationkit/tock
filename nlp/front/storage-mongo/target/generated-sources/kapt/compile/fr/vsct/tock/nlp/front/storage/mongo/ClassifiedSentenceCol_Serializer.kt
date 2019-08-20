@@ -68,6 +68,19 @@ internal class ClassifiedSentenceCol_Serializer :
         if(_unknownCount_ == null) { gen.writeNull() } else {
                 gen.writeNumber(_unknownCount_)
                 }
+        gen.writeFieldName("forReview")
+        val _forReview_ = value.forReview
+        gen.writeBoolean(_forReview_)
+        gen.writeFieldName("reviewComment")
+        val _reviewComment_ = value.reviewComment
+        if(_reviewComment_ == null) { gen.writeNull() } else {
+                gen.writeString(_reviewComment_)
+                }
+        gen.writeFieldName("classifier")
+        val _classifier_ = value.classifier
+        if(_classifier_ == null) { gen.writeNull() } else {
+                gen.writeString(_classifier_)
+                }
         gen.writeEndObject()
     }
 }
