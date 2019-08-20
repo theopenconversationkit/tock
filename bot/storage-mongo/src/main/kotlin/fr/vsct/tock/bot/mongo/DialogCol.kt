@@ -102,7 +102,10 @@ internal data class DialogCol(
 
     fun toDialogReport(): DialogReport {
         return DialogReport(
-            stories.flatMap { it.actions }
+            stories
+                .flatMap { it.actions }
+                .asSequence()
+                .distinctBy { it.id }
                 .map { it.toAction(_id) }
                 .map {
                     ActionReport(
@@ -115,12 +118,13 @@ internal data class DialogCol(
                         it.state.testEvent,
                         it.toActionId()
                     )
-                },
+                }
+                .toList(),
             stories
                 .flatMap { it.actions }
                 .firstOrNull { it.state.userInterface != null }
                 ?.state?.userInterface
-                    ?: textChat,
+                ?: textChat,
             _id
         )
     }
@@ -246,13 +250,13 @@ internal data class DialogCol(
     ) : ActionMongoWrapper() {
 
         constructor(sentence: SendSentence) :
-                this(
-                    sentence.stringText?.let {
-                        val text = checkMaxLengthAllowed(it)
-                        if (sentence.state.testEvent) text else obfuscate(text)
-                    },
-                    sentence is SendSentenceWithNotLoadedMessage || sentence.messages.isNotEmpty()
-                ) {
+            this(
+                sentence.stringText?.let {
+                    val text = checkMaxLengthAllowed(it)
+                    if (sentence.state.testEvent) text else obfuscate(text)
+                },
+                sentence is SendSentenceWithNotLoadedMessage || sentence.messages.isNotEmpty()
+            ) {
             assignFrom(sentence)
         }
 
