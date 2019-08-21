@@ -13,6 +13,7 @@ import java.util.Locale
 import kotlin.Int
 import kotlin.String
 import kotlin.collections.Map
+import kotlin.collections.MutableMap
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.findParameterByName
@@ -41,6 +42,16 @@ internal class TestBuild_Deserializer : JsonDeserializer<TestBuild>(), JacksonMo
             var _nbSentencesTested_set : Boolean = false
             var _nbErrors_: Int? = null
             var _nbErrors_set : Boolean = false
+            var _intentErrors_: Int? = null
+            var _intentErrors_set : Boolean = false
+            var _entityErrors_: Int? = null
+            var _entityErrors_set : Boolean = false
+            var _nbSentencesTestedByIntent_: MutableMap<String, Int>? = null
+            var _nbSentencesTestedByIntent_set : Boolean = false
+            var _intentErrorsByIntent_: MutableMap<String, Int>? = null
+            var _intentErrorsByIntent_set : Boolean = false
+            var _entityErrorsByIntent_: MutableMap<String, Int>? = null
+            var _entityErrorsByIntent_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -91,6 +102,31 @@ internal class TestBuild_Deserializer : JsonDeserializer<TestBuild>(), JacksonMo
                              else p.intValue;
                             _nbErrors_set = true
                             }
+                    "intentErrors" -> {
+                            _intentErrors_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.intValue;
+                            _intentErrors_set = true
+                            }
+                    "entityErrors" -> {
+                            _entityErrors_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.intValue;
+                            _entityErrors_set = true
+                            }
+                    "nbSentencesTestedByIntent" -> {
+                            _nbSentencesTestedByIntent_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_nbSentencesTestedByIntent__reference);
+                            _nbSentencesTestedByIntent_set = true
+                            }
+                    "intentErrorsByIntent" -> {
+                            _intentErrorsByIntent_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_intentErrorsByIntent__reference);
+                            _intentErrorsByIntent_set = true
+                            }
+                    "entityErrorsByIntent" -> {
+                            _entityErrorsByIntent_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_entityErrorsByIntent__reference);
+                            _entityErrorsByIntent_set = true
+                            }
                     else -> {
                             if (_token_?.isStructStart == true)
                             p.skipChildren()
@@ -101,12 +137,18 @@ internal class TestBuild_Deserializer : JsonDeserializer<TestBuild>(), JacksonMo
                         } 
             return if(_applicationId_set && _language_set && _startDate_set &&
                     _buildModelDuration_set && _testSentencesDuration_set && _nbSentencesInModel_set
-                    && _nbSentencesTested_set && _nbErrors_set)
+                    && _nbSentencesTested_set && _nbErrors_set && _intentErrors_set &&
+                    _entityErrors_set && _nbSentencesTestedByIntent_set && _intentErrorsByIntent_set
+                    && _entityErrorsByIntent_set)
                     TestBuild(applicationId = _applicationId_!!, language = _language_!!, startDate
                             = _startDate_!!, buildModelDuration = _buildModelDuration_!!,
                             testSentencesDuration = _testSentencesDuration_!!, nbSentencesInModel =
                             _nbSentencesInModel_!!, nbSentencesTested = _nbSentencesTested_!!,
-                            nbErrors = _nbErrors_!!)
+                            nbErrors = _nbErrors_!!, intentErrors = _intentErrors_!!, entityErrors =
+                            _entityErrors_!!, nbSentencesTestedByIntent =
+                            _nbSentencesTestedByIntent_!!, intentErrorsByIntent =
+                            _intentErrorsByIntent_!!, entityErrorsByIntent =
+                            _entityErrorsByIntent_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_applicationId_set)
@@ -124,7 +166,18 @@ internal class TestBuild_Deserializer : JsonDeserializer<TestBuild>(), JacksonMo
                     if(_nbSentencesTested_set)
                     map[parameters.getValue("nbSentencesTested")] = _nbSentencesTested_
                     if(_nbErrors_set)
-                    map[parameters.getValue("nbErrors")] = _nbErrors_ 
+                    map[parameters.getValue("nbErrors")] = _nbErrors_
+                    if(_intentErrors_set)
+                    map[parameters.getValue("intentErrors")] = _intentErrors_
+                    if(_entityErrors_set)
+                    map[parameters.getValue("entityErrors")] = _entityErrors_
+                    if(_nbSentencesTestedByIntent_set)
+                    map[parameters.getValue("nbSentencesTestedByIntent")] =
+                            _nbSentencesTestedByIntent_
+                    if(_intentErrorsByIntent_set)
+                    map[parameters.getValue("intentErrorsByIntent")] = _intentErrorsByIntent_
+                    if(_entityErrorsByIntent_set)
+                    map[parameters.getValue("entityErrorsByIntent")] = _entityErrorsByIntent_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -145,9 +198,26 @@ internal class TestBuild_Deserializer : JsonDeserializer<TestBuild>(), JacksonMo
                 "nbSentencesInModel" to
                 primaryConstructor.findParameterByName("nbSentencesInModel")!!, "nbSentencesTested"
                 to primaryConstructor.findParameterByName("nbSentencesTested")!!, "nbErrors" to
-                primaryConstructor.findParameterByName("nbErrors")!!) }
+                primaryConstructor.findParameterByName("nbErrors")!!, "intentErrors" to
+                primaryConstructor.findParameterByName("intentErrors")!!, "entityErrors" to
+                primaryConstructor.findParameterByName("entityErrors")!!,
+                "nbSentencesTestedByIntent" to
+                primaryConstructor.findParameterByName("nbSentencesTestedByIntent")!!,
+                "intentErrorsByIntent" to
+                primaryConstructor.findParameterByName("intentErrorsByIntent")!!,
+                "entityErrorsByIntent" to
+                primaryConstructor.findParameterByName("entityErrorsByIntent")!!) }
 
         private val _applicationId__reference: TypeReference<Id<ApplicationDefinition>> = object :
                 TypeReference<Id<ApplicationDefinition>>() {}
+
+        private val _nbSentencesTestedByIntent__reference: TypeReference<Map<String, Int>> = object
+                : TypeReference<Map<String, Int>>() {}
+
+        private val _intentErrorsByIntent__reference: TypeReference<Map<String, Int>> = object :
+                TypeReference<Map<String, Int>>() {}
+
+        private val _entityErrorsByIntent__reference: TypeReference<Map<String, Int>> = object :
+                TypeReference<Map<String, Int>>() {}
     }
 }

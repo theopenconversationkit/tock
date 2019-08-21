@@ -14,6 +14,28 @@
   ~ limitations under the License.
   -->
 
+<mat-card class="search">
+  <mat-card-content>
+    <mat-form-field class="intent">
+      <mat-select placeholder="Intent" [(ngModel)]="intent" (selectionChange)="search()" class="search-input">
+        <mat-option value="">All</mat-option>
+        <mat-optgroup *ngFor="let category of state.currentIntentsCategories | async" [label]="category.category">
+          <mat-option *ngFor="let intent of category.intents" [value]="intent.qualifiedName()">
+            {{intent.intentLabel()}}
+          </mat-option>
+        </mat-optgroup>
+        <mat-option value="unknown">Unknown</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field class="search-criterion">
+      <input matInput [matDatepicker]="after" placeholder="Data after" [(ngModel)]="modifiedAfter"
+             (dateChange)="search()">
+      <mat-datepicker-toggle matSuffix [for]="after"></mat-datepicker-toggle>
+      <mat-datepicker #after (selectedChanged)="search()"></mat-datepicker>
+    </mat-form-field>
+    <button mat-button (click)="search()">GO</button>
+  </mat-card-content>
+</mat-card>
 <h2 *ngIf="nodata" class="search">
   No Data
 </h2>

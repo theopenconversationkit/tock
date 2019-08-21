@@ -39,5 +39,5 @@ interface ModelTester {
 
     fun deleteTestEntityError(applicationId: Id<ApplicationDefinition>, language: Locale, text: String)
 
-    fun getTestBuilds(applicationId: Id<ApplicationDefinition>, language: Locale): List<TestBuild>
+    fun getTestBuilds(query: TestErrorQuery): List<TestBuild>
 }

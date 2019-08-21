@@ -57,5 +57,25 @@ data class TestBuild(
     /**
      * Number of errors.
      */
-    val nbErrors: Int
+    val nbErrors: Int,
+    /**
+     * Number of intent errors.
+     */
+    val intentErrors: Int = -1,
+    /**
+     * Number of entity errors
+     */
+    val entityErrors: Int = -1,
+    /**
+     * Number of sentences tested by intent.
+     */
+    val nbSentencesTestedByIntent: Map<String, Int> = emptyMap(),
+    /**
+     * Number of intent errors by intent.
+     */
+    val intentErrorsByIntent: Map<String, Int> = emptyMap(),
+    /**
+     * Number of entity errors by intent.
+     */
+    val entityErrorsByIntent: Map<String, Int> = emptyMap()
 )

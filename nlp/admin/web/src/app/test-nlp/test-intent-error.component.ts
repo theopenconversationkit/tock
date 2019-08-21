@@ -17,7 +17,7 @@
 import {AfterViewInit, Component, EventEmitter, OnInit, ViewChild} from "@angular/core";
 import {MatPaginator, MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {DataSource} from "@angular/cdk/collections";
-import {Observable, BehaviorSubject, merge} from "rxjs";
+import {BehaviorSubject, merge, Observable} from "rxjs";
 import {IntentTestError, TestErrorQuery} from "../model/nlp";
 import {StateService} from "../core-nlp/state.service";
 import {Router} from "@angular/router";
@@ -35,7 +35,7 @@ export class TestIntentErrorComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   dataSource: TestIntentErrorDataSource | null;
 
-  constructor(private state: StateService,
+  constructor(public state: StateService,
               private quality: QualityService,
               private snackBar: MatSnackBar,
               private router: Router) {
@@ -46,6 +46,10 @@ export class TestIntentErrorComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    this.search();
+  }
+
+  search() {
     this.dataSource.refresh();
   }
 
@@ -78,6 +82,7 @@ export class TestIntentErrorComponent implements OnInit, AfterViewInit {
 export class TestIntentErrorDataSource extends DataSource<IntentTestError> {
 
   size: number = 0;
+  intent: string = "";
   private refreshEvent = new EventEmitter();
   private subject = new BehaviorSubject([]);
 
@@ -102,11 +107,11 @@ export class TestIntentErrorDataSource extends DataSource<IntentTestError> {
       const startIndex = this._paginator.pageIndex * this._paginator.pageSize;
 
       this.qualityService.searchIntentErrors(
-        new TestErrorQuery(
-          this.state.currentApplication._id,
-          this.state.currentLocale,
+        TestErrorQuery.create(
+          this.state,
           startIndex,
-          this._paginator.pageSize
+          this._paginator.pageSize,
+          this.intent === "" ? undefined : this.intent
         )
       ).subscribe(r => {
         this.size = r.total;

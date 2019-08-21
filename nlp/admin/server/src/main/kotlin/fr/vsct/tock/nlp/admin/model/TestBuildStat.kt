@@ -23,11 +23,18 @@ import java.time.Instant
  *
  */
 data class TestBuildStat(
-        val date: Instant,
-        val errors: Int,
-        val nbSentencesInModel: Int,
-        val nbSentencesTested: Int,
-        val buildModelDuration: Duration,
-        val testModelDuration: Duration
-) {
-}
+    val date: Instant,
+    val errors: Int,
+    /**
+     * Number of intent errors.
+     */
+    val intentErrors: Int = 0,
+    /**
+     * Number of entity errors
+     */
+    val entityErrors: Int = 0,
+    val nbSentencesInModel: Int,
+    val nbSentencesTested: Int,
+    val buildModelDuration: Duration,
+    val testModelDuration: Duration
+)

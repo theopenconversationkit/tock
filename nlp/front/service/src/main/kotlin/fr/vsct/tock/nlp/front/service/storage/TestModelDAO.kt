@@ -31,7 +31,7 @@ import java.util.Locale
  */
 interface TestModelDAO {
 
-    fun getTestBuilds(applicationId: Id<ApplicationDefinition>, language: Locale): List<TestBuild>
+    fun getTestBuilds(query: TestErrorQuery): List<TestBuild>
 
     fun saveTestBuild(build: TestBuild)
 

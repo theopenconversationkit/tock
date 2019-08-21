@@ -16,7 +16,6 @@
 
 package fr.vsct.tock.nlp.admin
 
-import fr.vsct.tock.nlp.admin.model.ApplicationScopedQuery
 import fr.vsct.tock.nlp.admin.model.ApplicationWithIntents
 import fr.vsct.tock.nlp.admin.model.EntityTestErrorQueryResultReport
 import fr.vsct.tock.nlp.admin.model.EntityTestErrorWithSentenceReport
@@ -28,6 +27,7 @@ import fr.vsct.tock.nlp.admin.model.ParseQuery
 import fr.vsct.tock.nlp.admin.model.SearchQuery
 import fr.vsct.tock.nlp.admin.model.SentenceReport
 import fr.vsct.tock.nlp.admin.model.SentencesReport
+import fr.vsct.tock.nlp.admin.model.TestBuildQuery
 import fr.vsct.tock.nlp.admin.model.TestBuildStat
 import fr.vsct.tock.nlp.admin.model.TranslateReport
 import fr.vsct.tock.nlp.admin.model.TranslateSentencesQuery
@@ -100,7 +100,7 @@ object AdminService {
             front.search(query.searchQuery.toSentencesQuery(application._id)).sentences
         }
         val engine: TranslatorEngine = injector.provide()
-        if(!engine.supportAdminTranslation) {
+        if (!engine.supportAdminTranslation) {
             badRequest("Translation is not activated for this account")
         }
         sentences.forEach {
@@ -230,14 +230,15 @@ object AdminService {
             }
     }
 
-    fun testBuildStats(query: ApplicationScopedQuery): List<TestBuildStat> {
-        val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
+    fun testBuildStats(query: TestBuildQuery, app: ApplicationDefinition): List<TestBuildStat> {
         val stats = front
-            .getTestBuilds(app._id, query.currentLanguage)
+            .getTestBuilds(query.toTestErrorQuery(app))
             .map {
                 TestBuildStat(
                     it.startDate,
                     it.nbErrors,
+                    it.intentErrors,
+                    it.entityErrors,
                     it.nbSentencesInModel,
                     it.nbSentencesTested,
                     it.buildModelDuration,

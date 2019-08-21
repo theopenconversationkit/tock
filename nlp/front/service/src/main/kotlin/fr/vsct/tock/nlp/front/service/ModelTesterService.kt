@@ -72,26 +72,31 @@ object ModelTesterService : ModelTester {
             logger.info { "Start testing model for $application and locale $locale" }
             val intentCache = mutableMapOf<Id<IntentDefinition>, Intent>()
             val report = model.testModel(
-                    TestContext(
-                            CallContext(
-                                    toApplication(application),
-                                    locale,
-                                    application.nlpEngineType,
-                                    EntityEvaluationContext(mergeEntityTypes = application.mergeEngineTypes)),
-                            0.9F),
-                    sentences.map { it.toSampleExpression({ config.toIntent(it, intentCache) }, { entityTypeByName(it) }) }
+                TestContext(
+                    CallContext(
+                        toApplication(application),
+                        locale,
+                        application.nlpEngineType,
+                        EntityEvaluationContext(mergeEntityTypes = application.mergeEngineTypes)),
+                    0.9F),
+                sentences.map { it.toSampleExpression({ config.toIntent(it, intentCache) }, { entityTypeByName(it) }) }
             )
             modelDAO.saveTestBuild(
-                    TestBuild(
-                            application._id,
-                            locale,
-                            report.startDate,
-                            report.buildModelDuration,
-                            report.testSentencesDuration,
-                            report.expressionsInModel.size,
-                            report.expressionsTested.size,
-                            report.intentErrors.size + report.entityErrors.size
-                    )
+                TestBuild(
+                    application._id,
+                    locale,
+                    report.startDate,
+                    report.buildModelDuration,
+                    report.testSentencesDuration,
+                    report.expressionsInModel.size,
+                    report.expressionsTested.size,
+                    report.intentErrors.size + report.entityErrors.size,
+                    report.intentErrors.size,
+                    report.entityErrors.size,
+                    report.expressionsTested.groupBy { it.intent.name }.mapValues { it.value.size },
+                    report.intentErrors.groupBy { it.expression.intent.name }.mapValues { it.value.size },
+                    report.entityErrors.groupBy { it.expression.intent.name }.mapValues { it.value.size }
+                )
             )
 
             val sentencesMap = sentences.map { it.text to it }.toMap()
@@ -100,59 +105,59 @@ object ModelTesterService : ModelTester {
 
             report.intentErrors.forEach {
                 modelDAO.addTestIntentError(
-                        IntentTestError(
-                                application._id,
-                                locale,
-                                it.expression.text,
-                                it.expression.intent.name,
-                                it.intent,
-                                it.intentProbability,
-                                1
-                        )
+                    IntentTestError(
+                        application._id,
+                        locale,
+                        it.expression.text,
+                        it.expression.intent.name,
+                        it.intent,
+                        it.intentProbability,
+                        1
+                    )
                 )
             }
             report.expressionsTested.forEach {
                 if (!intentErrorsMap.containsKey(it.text)) {
                     modelDAO.addTestIntentError(
-                            IntentTestError(
-                                    application._id,
-                                    locale,
-                                    it.text,
-                                    "",
-                                    "",
-                                    0.0,
-                                    0
-                            )
+                        IntentTestError(
+                            application._id,
+                            locale,
+                            it.text,
+                            "",
+                            "",
+                            0.0,
+                            0
+                        )
                     )
                 }
             }
 
             report.entityErrors.forEach {
                 modelDAO.addTestEntityError(
-                        EntityTestError(
-                                application._id,
-                                locale,
-                                it.expression.text,
-                                sentencesMap[it.expression.text]!!.classification.intentId,
-                                it.entities.map { ClassifiedEntity(it.value) },
-                                if (it.entities.isEmpty()) 1.0 else it.entities.map { it.probability }.average(),
-                                1
-                        )
+                    EntityTestError(
+                        application._id,
+                        locale,
+                        it.expression.text,
+                        sentencesMap[it.expression.text]!!.classification.intentId,
+                        it.entities.map { ClassifiedEntity(it.value) },
+                        if (it.entities.isEmpty()) 1.0 else it.entities.map { it.probability }.average(),
+                        1
+                    )
                 )
             }
 
             report.expressionsTested.forEach {
                 if (!intentErrorsMap.containsKey(it.text) && !entityErrorsMap.containsKey(it.text)) {
                     modelDAO.addTestEntityError(
-                            EntityTestError(
-                                    application._id,
-                                    locale,
-                                    it.text,
-                                    null,
-                                    emptyList(),
-                                    0.0,
-                                    0
-                            )
+                        EntityTestError(
+                            application._id,
+                            locale,
+                            it.text,
+                            null,
+                            emptyList(),
+                            0.0,
+                            0
+                        )
                     )
                 }
             }
@@ -177,7 +182,7 @@ object ModelTesterService : ModelTester {
         modelDAO.deleteTestEntityError(applicationId, language, text)
     }
 
-    override fun getTestBuilds(applicationId: Id<ApplicationDefinition>, language: Locale): List<TestBuild> {
-        return modelDAO.getTestBuilds(applicationId, language)
+    override fun getTestBuilds(query: TestErrorQuery): List<TestBuild> {
+        return modelDAO.getTestBuilds(query)
     }
 }

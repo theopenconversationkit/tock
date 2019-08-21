@@ -22,25 +22,29 @@ import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.test.EntityTestError
 import fr.vsct.tock.nlp.front.shared.test.EntityTestErrorQueryResult
 import fr.vsct.tock.nlp.front.shared.test.EntityTestError_
+import fr.vsct.tock.nlp.front.shared.test.EntityTestError_.Companion.IntentId
 import fr.vsct.tock.nlp.front.shared.test.IntentTestError
 import fr.vsct.tock.nlp.front.shared.test.IntentTestErrorQueryResult
 import fr.vsct.tock.nlp.front.shared.test.IntentTestError_
 import fr.vsct.tock.nlp.front.shared.test.IntentTestError_.Companion.Count
+import fr.vsct.tock.nlp.front.shared.test.IntentTestError_.Companion.CurrentIntent
 import fr.vsct.tock.nlp.front.shared.test.IntentTestError_.Companion.Text
 import fr.vsct.tock.nlp.front.shared.test.TestBuild
 import fr.vsct.tock.nlp.front.shared.test.TestBuild_.Companion.ApplicationId
 import fr.vsct.tock.nlp.front.shared.test.TestBuild_.Companion.Language
 import fr.vsct.tock.nlp.front.shared.test.TestBuild_.Companion.StartDate
 import fr.vsct.tock.nlp.front.shared.test.TestErrorQuery
+import fr.vsct.tock.shared.name
+import fr.vsct.tock.shared.namespace
 import org.litote.kmongo.Id
 import org.litote.kmongo.and
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
-import org.litote.kmongo.find
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
+import org.litote.kmongo.gte
 import org.litote.kmongo.save
 import java.util.Locale
 
@@ -69,9 +73,32 @@ internal object TestModelMongoDAO : TestModelDAO {
         c
     }
 
-    override fun getTestBuilds(applicationId: Id<ApplicationDefinition>, language: Locale): List<TestBuild> {
-        return buildCol.find(Language eq language, ApplicationId eq applicationId)
-            .descendingSort(StartDate).toList()
+    override fun getTestBuilds(query: TestErrorQuery): List<TestBuild> {
+        return with(query) {
+            buildCol.find(
+                and(
+                    Language eq language,
+                    ApplicationId eq applicationId,
+                    if (after != null) StartDate gte after else null
+                )
+            )
+                .descendingSort(StartDate)
+                .mapNotNull {
+                    val intent = intentName
+                    if (intent == null) {
+                        it
+                    } else {
+                        val intentErrors = it.intentErrorsByIntent[intent] ?: 0
+                        val entityErrors = it.entityErrorsByIntent[intent] ?: 0
+                        it.copy(
+                            nbSentencesTested = it.nbSentencesTestedByIntent[intent] ?: 0,
+                            nbErrors = intentErrors + entityErrors,
+                            intentErrors = intentErrors,
+                            entityErrors = entityErrors)
+                    }
+                }
+                .toList()
+        }
     }
 
     override fun saveTestBuild(build: TestBuild) {
@@ -79,7 +106,11 @@ internal object TestModelMongoDAO : TestModelDAO {
     }
 
     override fun searchTestIntentErrors(query: TestErrorQuery): IntentTestErrorQueryResult {
-        val filter = and(Language eq query.language, ApplicationId eq query.applicationId)
+        val filter = and(
+            Language eq query.language,
+            ApplicationId eq query.applicationId,
+            if (query.intentName == null) null else CurrentIntent eq query.intentName
+        )
         val count = intentErrorCol.countDocuments(filter).toInt()
         return if (count == 0) {
             IntentTestErrorQueryResult(0, emptyList())
@@ -116,7 +147,7 @@ internal object TestModelMongoDAO : TestModelDAO {
                     )
                 )
             }
-                ?: if (newError) intentErrorCol.save(intentError.copy(text = textKey(intentError.text)))
+            ?: if (newError) intentErrorCol.save(intentError.copy(text = textKey(intentError.text)))
     }
 
     override fun deleteTestIntentError(applicationId: Id<ApplicationDefinition>, language: Locale, text: String) {
@@ -130,7 +161,14 @@ internal object TestModelMongoDAO : TestModelDAO {
     }
 
     override fun searchTestEntityErrors(query: TestErrorQuery): EntityTestErrorQueryResult {
-        val filter = and(Language eq query.language, ApplicationId eq query.applicationId)
+        val filter = and(
+            Language eq query.language,
+            ApplicationId eq query.applicationId,
+            query.intentName?.let { intentName ->
+                IntentDefinitionMongoDAO.getIntentByNamespaceAndName(intentName.namespace(), intentName.name())
+                    ?.let { IntentId eq it._id }
+            }
+        )
         val count = entityErrorCol.countDocuments(filter).toInt()
         return if (count == 0) {
             EntityTestErrorQueryResult(0, emptyList())
@@ -167,7 +205,7 @@ internal object TestModelMongoDAO : TestModelDAO {
                     )
                 )
             }
-                ?: if (newError) entityErrorCol.save(entityError.copy(text = textKey(entityError.text)))
+            ?: if (newError) entityErrorCol.save(entityError.copy(text = textKey(entityError.text)))
     }
 
     override fun deleteTestEntityError(applicationId: Id<ApplicationDefinition>, language: Locale, text: String) {

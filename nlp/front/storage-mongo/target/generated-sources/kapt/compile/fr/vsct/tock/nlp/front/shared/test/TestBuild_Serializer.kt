@@ -40,6 +40,48 @@ internal class TestBuild_Serializer : StdSerializer<TestBuild>(TestBuild::class.
         gen.writeFieldName("nbErrors")
         val _nbErrors_ = value.nbErrors
         gen.writeNumber(_nbErrors_)
+        gen.writeFieldName("intentErrors")
+        val _intentErrors_ = value.intentErrors
+        gen.writeNumber(_intentErrors_)
+        gen.writeFieldName("entityErrors")
+        val _entityErrors_ = value.entityErrors
+        gen.writeNumber(_entityErrors_)
+        gen.writeFieldName("nbSentencesTestedByIntent")
+        val _nbSentencesTestedByIntent_ = value.nbSentencesTestedByIntent
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructMapType(
+                kotlin.collections.Map::class.java,
+                serializers.config.typeFactory.constructType(kotlin.String::class.java),
+                serializers.config.typeFactory.constructType(kotlin.Int::class.java)
+                ),
+                true,
+                null
+                )
+                .serialize(_nbSentencesTestedByIntent_, gen, serializers)
+        gen.writeFieldName("intentErrorsByIntent")
+        val _intentErrorsByIntent_ = value.intentErrorsByIntent
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructMapType(
+                kotlin.collections.Map::class.java,
+                serializers.config.typeFactory.constructType(kotlin.String::class.java),
+                serializers.config.typeFactory.constructType(kotlin.Int::class.java)
+                ),
+                true,
+                null
+                )
+                .serialize(_intentErrorsByIntent_, gen, serializers)
+        gen.writeFieldName("entityErrorsByIntent")
+        val _entityErrorsByIntent_ = value.entityErrorsByIntent
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructMapType(
+                kotlin.collections.Map::class.java,
+                serializers.config.typeFactory.constructType(kotlin.String::class.java),
+                serializers.config.typeFactory.constructType(kotlin.Int::class.java)
+                ),
+                true,
+                null
+                )
+                .serialize(_entityErrorsByIntent_, gen, serializers)
         gen.writeEndObject()
     }
 }

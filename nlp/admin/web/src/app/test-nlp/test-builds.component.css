@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+.intent {
+  margin-right: 20px;
+}
+
 .search {
   height:100%;
   width:80%;
@@ -21,4 +25,8 @@
   margin-right: auto;
   margin-top:20px;
   text-align:center;
+}
+
+.search-input {
+  font-size: large;
 }

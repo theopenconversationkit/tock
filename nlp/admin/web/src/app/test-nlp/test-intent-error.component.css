@@ -1,0 +1,14 @@
+.intent {
+  margin-right: 20px;
+}
+
+.search {
+  height:100%;
+  width:80%;
+  text-align:center;
+  margin: 20px auto;
+}
+
+.search-input {
+  font-size: large;
+}

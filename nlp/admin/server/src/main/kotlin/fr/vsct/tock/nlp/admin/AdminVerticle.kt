@@ -34,6 +34,7 @@ import fr.vsct.tock.nlp.admin.model.PredefinedValueQuery
 import fr.vsct.tock.nlp.admin.model.SearchQuery
 import fr.vsct.tock.nlp.admin.model.SentenceReport
 import fr.vsct.tock.nlp.admin.model.SentencesReport
+import fr.vsct.tock.nlp.admin.model.TestBuildQuery
 import fr.vsct.tock.nlp.admin.model.TranslateSentencesQuery
 import fr.vsct.tock.nlp.admin.model.UpdateEntityDefinitionQuery
 import fr.vsct.tock.nlp.admin.model.UpdateSentencesQuery
@@ -50,7 +51,6 @@ import fr.vsct.tock.nlp.front.shared.codec.SentencesDump
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
-import fr.vsct.tock.nlp.front.shared.test.TestErrorQuery
 import fr.vsct.tock.shared.BUILTIN_ENTITY_EVALUATOR_NAMESPACE
 import fr.vsct.tock.shared.defaultNamespace
 import fr.vsct.tock.shared.devEnvironment
@@ -365,7 +365,7 @@ open class AdminVerticle : WebVerticle() {
         jsonPost("/sentences/search", nlpUser)
         { context, s: SearchQuery, handler: Handler<SentencesReport> ->
             if (context.organization == s.namespace) {
-                context.isAuthorized(technicalAdmin) { plain ->
+                context.isAuthorized(nlpUser) { plain ->
                     context.executeBlocking {
                         handler.handle(service.searchSentences(s, !(plain.result() ?: false)))
                     }
@@ -534,11 +534,13 @@ open class AdminVerticle : WebVerticle() {
         }
 
         jsonPost("/test/intent-errors", nlpUser)
-        { context, query: TestErrorQuery, handler: Handler<IntentTestErrorQueryResultReport> ->
-            if (context.organization == front.getApplicationById(query.applicationId)?.namespace) {
+        { context, query: TestBuildQuery, handler: Handler<IntentTestErrorQueryResultReport> ->
+            if (context.organization == query.namespace) {
                 context.isAuthorized(technicalAdmin) { plain ->
                     context.executeBlocking {
-                        handler.handle(AdminService.searchTestIntentErrors(query, !(plain.result() ?: false)))
+                        val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
+                        handler.handle(AdminService.searchTestIntentErrors(query.toTestErrorQuery(app), !(plain.result()
+                            ?: false)))
                     }
                 }
             } else {
@@ -560,11 +562,13 @@ open class AdminVerticle : WebVerticle() {
         }
 
         jsonPost("/test/entity-errors", nlpUser)
-        { context, query: TestErrorQuery, handler: Handler<EntityTestErrorQueryResultReport> ->
-            if (context.organization == front.getApplicationById(query.applicationId)?.namespace) {
+        { context, query: TestBuildQuery, handler: Handler<EntityTestErrorQueryResultReport> ->
+            if (context.organization == query.namespace) {
                 context.isAuthorized(technicalAdmin) { plain ->
                     context.executeBlocking {
-                        handler.handle(service.searchTestEntityErrors(query, !(plain.result() ?: false)))
+                        val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
+                        handler.handle(service.searchTestEntityErrors(query.toTestErrorQuery(app), !(plain.result()
+                            ?: false)))
                     }
                 }
             } else {
@@ -587,13 +591,14 @@ open class AdminVerticle : WebVerticle() {
         }
 
         blockingJsonPost("/test/stats", nlpUser)
-        { context, query: ApplicationScopedQuery ->
-            if (context.organization == front.getApplicationByNamespaceAndName(
-                    query.namespace,
-                    query.applicationName
-                )?.namespace
+        { context, query: TestBuildQuery ->
+            val app = front.getApplicationByNamespaceAndName(
+                query.namespace,
+                query.applicationName
+            )
+            if (context.organization == app?.namespace
             ) {
-                AdminService.testBuildStats(query)
+                AdminService.testBuildStats(query, app)
             } else {
                 unauthorized()
             }

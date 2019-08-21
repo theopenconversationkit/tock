@@ -19,16 +19,15 @@ import {Injectable} from "@angular/core";
 import {
   EntityTestError,
   EntityTestErrorQueryResult,
+  IntentQA,
   IntentTestError,
   IntentTestErrorQueryResult,
   LogStat,
   LogStatsQuery,
   TestBuildStat,
-  TestErrorQuery,
-  IntentQA
+  TestErrorQuery
 } from "../model/nlp";
 import {Observable} from "rxjs";
-import {ApplicationScopedQuery} from "../model/commons";
 
 @Injectable()
 export class QualityService {
@@ -60,7 +59,7 @@ export class QualityService {
     return this.rest.post("/test/entity-error/delete", error)
   }
 
-  buildStats(query: ApplicationScopedQuery): Observable<TestBuildStat[]> {
+  buildStats(query: TestErrorQuery): Observable<TestBuildStat[]> {
     return this.rest.post("/test/stats", query, TestBuildStat.fromJSONArray)
   }
 

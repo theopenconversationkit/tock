@@ -177,7 +177,6 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                         UpdateDate,
                         indexOptions = IndexOptions()
                             .expireAfter(ttl.toLong(), DAYS)
-                            .background(true)
                             .partialFilterExpression(Status eq inbox)
                     )
                 }

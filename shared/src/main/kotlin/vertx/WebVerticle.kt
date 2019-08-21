@@ -410,9 +410,13 @@ abstract class WebVerticle : AbstractVerticle() {
         crossinline handler: (RoutingContext, I, Handler<O>) -> Unit
     ) {
         register(method, path, role) { context ->
-            val input = context.readJson<I>()
-
-            handler.invoke(context, input, Handler { event -> context.endJson(event) })
+            try {
+                val input = context.readJson<I>()
+                handler.invoke(context, input, Handler { event -> context.endJson(event) })
+            } catch (e: Throwable) {
+                logger.error(e)
+                context.fail(e)
+            }
         }
     }
 

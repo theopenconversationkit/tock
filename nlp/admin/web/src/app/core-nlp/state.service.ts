@@ -248,13 +248,13 @@ export class StateService implements AuthListener {
     )
   }
 
-  createPaginatedQuery(start: number, size: number, searchMark?: SearchMark): PaginatedQuery {
+  createPaginatedQuery(start: number, size?: number, searchMark?: SearchMark): PaginatedQuery {
     return new PaginatedQuery(
       this.currentApplication.namespace,
       this.currentApplication.name,
       this.currentLocale,
       start,
-      size,
+      size ? size : 1000,
       searchMark
     );
   }
@@ -277,7 +277,7 @@ export class StateService implements AuthListener {
     );
   }
 
-  otherThanCurrentLocales() : string[] {
+  otherThanCurrentLocales(): string[] {
     return this.currentApplication.supportedLocales.filter(l => l !== this.currentLocale);
   }
 

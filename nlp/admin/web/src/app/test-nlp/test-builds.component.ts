@@ -18,6 +18,7 @@ import {Component, OnInit} from "@angular/core";
 import {StateService} from "../core-nlp/state.service";
 import * as moment from 'moment';
 import {QualityService} from "../quality-nlp/quality.service";
+import {TestErrorQuery} from "../model/nlp";
 
 let maxDurationUnit: string = "ms";
 
@@ -129,13 +130,22 @@ export class TestBuildsComponent implements OnInit {
   public lineChartType: string = 'line';
   public nodata: boolean = false;
 
-  constructor(private state: StateService, private quality: QualityService) {
+  public intent: string = "";
+  public modifiedAfter?: Date;
+
+  constructor(public state: StateService, private quality: QualityService) {
   }
 
   ngOnInit(): void {
-    this.quality.buildStats(this.state.createApplicationScopedQuery())
+    this.search();
+  }
+
+  search(): void {
+    this.quality.buildStats(
+      TestErrorQuery.createWithoutSize(this.state, this.intent === "" ? undefined : this.intent, this.modifiedAfter)
+    )
       .subscribe(result => {
-        if(result.length === 0) {
+        if (result.length === 0) {
           this.nodata = true;
           return;
         }
@@ -144,13 +154,33 @@ export class TestBuildsComponent implements OnInit {
         const errorData = result.map(p => {
           return {
             x: p.date,
-            y: Math.round(10000 * (p.errors / p.nbSentencesTested)) / 100,
+            y: p.nbSentencesTested === 0 ? 0 : Math.round(10000 * (p.errors / p.nbSentencesTested)) / 100,
+          };
+        });
+        const intentData = result.map(p => {
+          return {
+            x: p.date,
+            y: p.nbSentencesTested === 0 ? 0 : Math.round(10000 * (p.intentErrors / p.nbSentencesTested)) / 100,
+          };
+        });
+        const entityData = result.map(p => {
+          return {
+            x: p.date,
+            y: p.nbSentencesTested === 0 ? 0 : Math.round(10000 * (p.entityErrors / p.nbSentencesTested)) / 100,
           };
         });
         this.errors = [
           {
             data: errorData,
             label: "Errors"
+          },
+          {
+            data: intentData,
+            label: "Intent Errors"
+          },
+          {
+            data: entityData,
+            label: "Entity Errors"
           }
         ];
         const modelData = result.map(p => {

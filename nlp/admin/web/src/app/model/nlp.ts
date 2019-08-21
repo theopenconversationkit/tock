@@ -991,13 +991,35 @@ export class EntityTestError {
 
 }
 
-export class TestErrorQuery {
+export class TestErrorQuery extends PaginatedQuery {
 
-  constructor(public applicationId: string,
+  static createWithoutSize(stateService: StateService, intentName: string, after?: Date): TestErrorQuery {
+    return TestErrorQuery.create(stateService, 0, undefined, intentName, after)
+  }
+
+  static create(stateService: StateService, start: number, size?: number, intentName?: string, after?: Date): TestErrorQuery {
+    const p = stateService.createPaginatedQuery(start, size);
+    return new TestErrorQuery(
+      p.namespace,
+      p.applicationName,
+      p.language,
+      p.start,
+      p.size,
+      intentName,
+      after
+    )
+  }
+
+  constructor(public namespace: string,
+              public applicationName: string,
               public language: string,
               public start: number,
-              public size: number) {
+              public size: number,
+              public intentName?: string,
+              public after?: Date) {
+    super(namespace, applicationName, language, start, size);
   }
+
 }
 
 export class TestBuildStat {
@@ -1007,6 +1029,8 @@ export class TestBuildStat {
               public nbSentencesTested: number,
               public buildModelDuration: any,
               public testModelDuration: any,
+              public intentErrors: number,
+              public entityErrors: number,
               public date: Date) {
   }
 

@@ -18,6 +18,7 @@ package fr.vsct.tock.nlp.front.shared.test
 
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import org.litote.kmongo.Id
+import java.time.Instant
 import java.util.Locale
 
 /**
@@ -25,6 +26,7 @@ import java.util.Locale
  */
 data class TestErrorQuery(val applicationId: Id<ApplicationDefinition>,
                           val language: Locale,
+                          val intentName: String?,
+                          val after: Instant?,
                           val start: Long = 0,
-                          val size: Int = 1) {
-}
+                          val size: Int = 1)
