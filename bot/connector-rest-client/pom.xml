@@ -21,7 +21,7 @@
     <parent>
         <groupId>fr.vsct.tock</groupId>
         <artifactId>tock-bot</artifactId>
-        <version>19.3.3</version>
+        <version>19.3.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-bot-connector-rest-client</artifactId>
