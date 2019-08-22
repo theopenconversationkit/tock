@@ -30,6 +30,7 @@ import fr.vsct.tock.bot.engine.user.PlayerType
 abstract class IncomingEvent : TwitterConnectorMessage() {
     abstract val forUserId: String
     abstract val users: Map<String, User>
+    abstract val ignored: Boolean
 
     open fun playerId(playerType: PlayerType): PlayerId =
         PlayerId(users.values.firstOrNull()?.id ?: error("null sender field in IncomingEvent"), playerType)

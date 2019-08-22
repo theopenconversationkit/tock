@@ -38,6 +38,9 @@ data class TweetIncomingEvent(
         private val logger = KotlinLogging.logger {}
     }
 
+    override val ignored: Boolean
+        get() = false
+
     override val users: Map<String, User>
         get() = mapOf(Pair(tweets.first().user.id, tweets.first().user))
 
