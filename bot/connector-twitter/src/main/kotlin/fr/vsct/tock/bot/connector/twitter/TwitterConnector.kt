@@ -133,7 +133,9 @@ internal class TwitterConnector internal constructor(
                             val incomingEvent = mapper.readValue<IncomingEvent?>(body)
 
                             if (incomingEvent == null) {
-                                logger.debug { "Unsupported twitter event" }
+                                logger.debug { "Unknown event" }
+                            } else if (incomingEvent.ignored) {
+                                logger.debug { "Ignored event : ${incomingEvent.javaClass.simpleName}" }
                             } else {
                                 logger.info { incomingEvent }
                                 executor.executeBlocking {

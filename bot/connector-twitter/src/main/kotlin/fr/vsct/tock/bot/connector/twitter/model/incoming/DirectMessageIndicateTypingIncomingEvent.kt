@@ -30,6 +30,9 @@ data class DirectMessageIndicateTypingIncomingEvent(
     @JsonProperty("direct_message_indicate_typing_events")
     val directMessagesIndicateTyping: List<DirectMessageIndicateTyping>
 ) : IncomingEvent() {
+    override val ignored: Boolean
+        get() = true
+
     override fun toEvent(applicationId: String): Event? {
         return null
     }
