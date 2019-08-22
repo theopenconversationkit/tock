@@ -23,14 +23,14 @@ Avec Maven :
         <dependency>
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-bot-api-websocket</artifactId>
-            <version>19.3.2</version>
+            <version>19.3.3</version>
         </dependency>
 ```
 
 ou Gradle :
 
 ```gradle
-      compile 'fr.vsct.tock:tock-bot-api-websocket:19.3.2'
+      compile 'fr.vsct.tock:tock-bot-api-websocket:19.3.3'
 ```
 
 ### Webhook
@@ -43,14 +43,14 @@ Avec Maven :
         <dependency>
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-bot-api-webhook</artifactId>
-            <version>19.3.2</version>
+            <version>19.3.3</version>
         </dependency>
 ```
 
 ou Gradle :
 
 ```gradle
-      compile 'fr.vsct.tock:tock-bot-api-webhook:19.3.2'
+      compile 'fr.vsct.tock:tock-bot-api-webhook:19.3.3'
 ```
 
 Dans ce cas, contrairement au mode "websocket", 

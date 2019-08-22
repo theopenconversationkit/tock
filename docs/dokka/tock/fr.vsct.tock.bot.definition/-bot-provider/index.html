@@ -16,14 +16,11 @@ Custom provider should usually not directly extend this class, but instead exten
 <tbody>
 <tr>
 <td>
-<p><a href="configuration-name.html">configurationName</a></p>
+<p><a href="bot-provider-id.html">botProviderId</a></p>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">configurationName</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code>
-<p>Is this <a href="./index.html">BotProvider</a> specific to a configuration name?
-If yes, this property stores the configuration name.
-If no, this property returns null.
-By default the¬ property returns null.</p>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">botProviderId</span><span class="symbol">: </span><a href="../-bot-provider-id/index.html"><span class="identifier">BotProviderId</span></a></code>
+<p>The bot provider unique identifier.</p>
 </td>
 </tr>
 <tr>
@@ -47,15 +44,6 @@ By default the¬ property returns null.</p>
 <td>
 <code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">botDefinition</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-bot-definition/index.html"><span class="identifier">BotDefinition</span></a></code>
 <p>Provides the bot definition.</p>
-</td>
-</tr>
-<tr>
-<td>
-<p><a href="bot-id.html">botId</a></p>
-</td>
-<td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">botId</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
-<p>The bot unique identifier.</p>
 </td>
 </tr>
 </tbody>

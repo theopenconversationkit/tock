@@ -15,13 +15,13 @@ Les fonctionnalités sont aujourd'hui limitées par rapport au mode "Assistant T
 <div class="codehilite"><pre><span></span>        <span class="nt">&lt;dependency&gt;</span>
             <span class="nt">&lt;groupId&gt;</span>fr.vsct.tock<span class="nt">&lt;/groupId&gt;</span>
             <span class="nt">&lt;artifactId&gt;</span>tock-bot-api-websocket<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>19.3.2<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;version&gt;</span>19.3.3<span class="nt">&lt;/version&gt;</span>
         <span class="nt">&lt;/dependency&gt;</span>
 </pre></div>
 
 
 <p>ou Gradle :</p>
-<div class="codehilite"><pre><span></span>      <span class="n">compile</span> <span class="s1">&#39;fr.vsct.tock:tock-bot-api-websocket:19.3.2&#39;</span>
+<div class="codehilite"><pre><span></span>      <span class="n">compile</span> <span class="s1">&#39;fr.vsct.tock:tock-bot-api-websocket:19.3.3&#39;</span>
 </pre></div>
 
 
@@ -31,13 +31,13 @@ Les fonctionnalités sont aujourd'hui limitées par rapport au mode "Assistant T
 <div class="codehilite"><pre><span></span>        <span class="nt">&lt;dependency&gt;</span>
             <span class="nt">&lt;groupId&gt;</span>fr.vsct.tock<span class="nt">&lt;/groupId&gt;</span>
             <span class="nt">&lt;artifactId&gt;</span>tock-bot-api-webhook<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>19.3.2<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;version&gt;</span>19.3.3<span class="nt">&lt;/version&gt;</span>
         <span class="nt">&lt;/dependency&gt;</span>
 </pre></div>
 
 
 <p>ou Gradle :</p>
-<div class="codehilite"><pre><span></span>      <span class="n">compile</span> <span class="s1">&#39;fr.vsct.tock:tock-bot-api-webhook:19.3.2&#39;</span>
+<div class="codehilite"><pre><span></span>      <span class="n">compile</span> <span class="s1">&#39;fr.vsct.tock:tock-bot-api-webhook:19.3.3&#39;</span>
 </pre></div>
 
 
@@ -63,23 +63,23 @@ les formats spécifiques aux différents canaux supportés.</p>
             <span class="p">},</span>
             <span class="c1">//réponse sous format card correspondant à l&#39;intention location</span>
             <span class="n">newStory</span><span class="p">(</span><span class="s">&quot;location&quot;</span><span class="p">)</span> <span class="p">{</span>
-                            <span class="n">end</span><span class="p">(</span>
-                                <span class="n">newCard</span><span class="p">(</span>
-                                    <span class="s">&quot;Titre&quot;</span><span class="p">,</span>
-                                    <span class="s">&quot;Sous-Titre&quot;</span><span class="p">,</span>
-                                    <span class="n">newAttachment</span><span class="p">(</span><span class="s">&quot;https://url-image.png&quot;</span><span class="p">),</span>
-                                    <span class="n">newAction</span><span class="p">(</span><span class="s">&quot;Action 1&quot;</span><span class="p">),</span>
-                                    <span class="n">newAction</span><span class="p">(</span><span class="s">&quot;Action 2&quot;</span><span class="p">,</span> <span class="s">&quot;http://redirection&quot;</span><span class="p">)</span>
-                                <span class="p">)</span>
-                            <span class="p">)</span>
-                        <span class="p">}</span>
+                <span class="n">end</span><span class="p">(</span>
+                    <span class="n">newCard</span><span class="p">(</span>
+                        <span class="s">&quot;Titre&quot;</span><span class="p">,</span>
+                        <span class="s">&quot;Sous-Titre&quot;</span><span class="p">,</span>
+                        <span class="n">newAttachment</span><span class="p">(</span><span class="s">&quot;https://url-image.png&quot;</span><span class="p">),</span>
+                        <span class="n">newAction</span><span class="p">(</span><span class="s">&quot;Action 1&quot;</span><span class="p">),</span>
+                        <span class="n">newAction</span><span class="p">(</span><span class="s">&quot;Action 2&quot;</span><span class="p">,</span> <span class="s">&quot;http://redirection&quot;</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">},</span>
             <span class="c1">//réponse sous format spécifique au canal (ici messenger)</span>
             <span class="c1">//correspondant à l&#39;intention goodbye</span>
             <span class="n">newStory</span><span class="p">(</span><span class="s">&quot;goodbye&quot;</span><span class="p">)</span> <span class="p">{</span>
                 <span class="n">end</span> <span class="p">{</span>
                     <span class="n">buttonsTemplate</span><span class="p">(</span><span class="s">&quot;Mais pourquoi?&quot;</span><span class="p">,</span> <span class="n">nlpQuickReply</span><span class="p">(</span><span class="s">&quot;Je ne veux pas partir&quot;</span><span class="p">))</span>
                 <span class="p">}</span> 
-            <span class="p">}</span>                                                                
+            <span class="p">},</span>
              <span class="c1">//réponse renvoyée quand l&#39;intention n&#39;est pas répertoriée  </span>
             <span class="n">unknownStory</span> <span class="p">{</span>
                 <span class="n">end</span><span class="p">(</span><span class="s">&quot;je n&#39;ai pas compris&quot;</span><span class="p">)</span>

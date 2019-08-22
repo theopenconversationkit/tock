@@ -8,7 +8,7 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.test</a>&nbsp;/&nbsp;<a href="./index.html">BotBusMockLog</a><br/>
 <br/>
 <h1>BotBusMockLog</h1>
-<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">BotBusMockLog</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/test-base/src/main/kotlin/fr/vsct/tock/bot/test/BotBusMockLog.kt#L28">(source)</a>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">BotBusMockLog</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/test-base/src/main/kotlin/fr/vsct/tock/bot/test/BotBusMockLog.kt#L31">(source)</a>
 <p>The actions sent by the mocked bus.</p>
 <h3>Constructors</h3>
 <table>
@@ -77,6 +77,33 @@
 <td>
 <code><span class="keyword">fun </span><span class="identifier">assertText</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockLog$assertText(kotlin.String, kotlin.String)/text">text</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockLog$assertText(kotlin.String, kotlin.String)/errorMessage">errorMessage</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">&lt;ERROR CLASS&gt;</span></code>
 <p>Assert that log contains specified text.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="choice.html">choice</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">choice</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockLog$choice(kotlin.String)/title">title</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.message/-choice/index.html"><span class="identifier">Choice</span></a><span class="symbol">?</span></code>
+<p>Retrieve choice member of main part of generic message with expected title</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="element-choice.html">elementChoice</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">elementChoice</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockLog$elementChoice(kotlin.Int, kotlin.String)/elementIndex">elementIndex</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockLog$elementChoice(kotlin.Int, kotlin.String)/title">title</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.message/-choice/index.html"><span class="identifier">Choice</span></a><span class="symbol">?</span></code>
+<p>Retrieve choice member with expected title belonging to element with specified index</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="generic-message.html">genericMessage</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">genericMessage</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.message/-generic-message/index.html"><span class="identifier">GenericMessage</span></a><span class="symbol">?</span></code>
+<p>Convert current BotBusLog action first message to a generic message</p>
 </td>
 </tr>
 <tr>
