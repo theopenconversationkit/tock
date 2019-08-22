@@ -41,6 +41,9 @@ data class DirectMessageIncomingEvent(
     @JsonProperty("direct_message_events")
     val directMessages: List<DirectMessage>
 ) : IncomingEvent() {
+    override val ignored: Boolean
+        get() = false
+
     companion object {
         private val logger = KotlinLogging.logger {}
     }
