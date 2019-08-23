@@ -21,7 +21,6 @@ import {NlpService} from "../nlp-tabs/nlp.service";
 import {IntentDialogComponent} from "./intent-dialog/intent-dialog.component";
 import {MatDialog, MatSnackBar} from "@angular/material";
 import {ApplicationConfig} from "../core-nlp/application.config";
-import {Router} from "@angular/router";
 import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialog.component";
 import {ReviewRequestDialogComponent} from "./review-request-dialog/review-request-dialog.component";
 
@@ -44,8 +43,7 @@ export class SentenceAnalysisComponent implements OnInit {
               private nlp: NlpService,
               private snackBar: MatSnackBar,
               private dialog: MatDialog,
-              public config: ApplicationConfig,
-              private router: Router) {
+              public config: ApplicationConfig) {
   }
 
   ngOnInit() {
@@ -139,17 +137,6 @@ export class SentenceAnalysisComponent implements OnInit {
 
   onDelete() {
     this.update(SentenceStatus.deleted);
-  }
-
-  displayDialogs() {
-    this.router.navigate(
-      [this.config.displayDialogUrl],
-      {
-        queryParams: {
-          text: this.sentence.text
-        }
-      }
-    );
   }
 
   private update(status: SentenceStatus) {

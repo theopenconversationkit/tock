@@ -24,7 +24,6 @@ import {PaginatedQuery, SearchMark} from "../model/commons";
 import {Observable} from "rxjs";
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef, MatSnackBar} from "@angular/material";
 import {ApplicationConfig} from "../core-nlp/application.config";
-import {Router} from "@angular/router";
 
 @Component({
   selector: 'tock-logs',
@@ -42,7 +41,6 @@ export class LogsComponent extends ScrollComponent<Log> {
               private nlp: NlpService,
               private dialog: MatDialog,
               private config: ApplicationConfig,
-              private router: Router,
               private snackBar: MatSnackBar) {
     super(state);
   }
@@ -71,18 +69,6 @@ export class LogsComponent extends ScrollComponent<Log> {
 
   dataEquals(d1: Log, d2: Log): boolean {
     return d1.request === d2.request;
-  }
-
-  displayConversation(log: Log) {
-    this.router.navigate(
-      [this.config.displayDialogUrl],
-      {
-        queryParams: {
-          dialogId: log.dialogId,
-          text: log.error ? log.textRequest() : log.sentence.text
-        }
-      }
-    );
   }
 
   displayFullLog(log: Log) {

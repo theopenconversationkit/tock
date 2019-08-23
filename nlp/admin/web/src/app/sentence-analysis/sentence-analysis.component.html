@@ -109,11 +109,14 @@
     </button>
     <button mat-raised-button class="validate" color="primary" (click)="onValidate()">Validate</button>
     <button mat-raised-button class="validate" (click)="onReviewRequest()">Ask for Review</button>
-    <button mat-button *ngIf="config.displayDialogUrl"
-            color="primary"
-            (click)="displayDialogs()"
-            matTooltip="Display conversations using this sentence">Conversations
-    </button>
+    <a mat-button
+       [routerLink]="[config.displayDialogUrl]"
+       [queryParams]="{ text: this.sentence.text}"
+       *ngIf="config.displayDialogUrl"
+       color="primary"
+       matTooltip="Display conversations using this sentence"
+    >Conversations
+    </a>
     <div *ngIf="sentence.qualifier" class="lastUpdate" matTooltip="Qualifier">{{sentence.qualifier}}</div>
     <div *ngIf="sentence.updateDate" class="lastUpdate" matTooltip="Last update">{{sentence.updateDate | amLocal | amDateFormat: 'HH:mm:ss YYYY/MM/DD'}}</div>
   </mat-card-actions>
