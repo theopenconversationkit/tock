@@ -41,7 +41,7 @@
         <kodein>4.1.0</kodein>
         <kmongo>3.11.0</kmongo>
         <jackson>2.9.9</jackson>
-        <jackson-databind>2.9.9</jackson-databind>
+        <jackson-databind>2.9.9.3</jackson-databind>
         <jackson-module>2.9.9</jackson-module>
         <jackson-module-loader>0.1.0</jackson-module-loader>
         <jackson-data>0.1.0</jackson-data>
