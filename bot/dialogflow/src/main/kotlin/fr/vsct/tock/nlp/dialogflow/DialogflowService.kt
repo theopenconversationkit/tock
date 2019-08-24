@@ -2,6 +2,11 @@ package fr.vsct.tock.nlp.dialogflow
 
 import com.google.cloud.dialogflow.v2.Agent
 import com.google.cloud.dialogflow.v2.AgentsClient
+import com.google.cloud.dialogflow.v2.Intent
+import com.google.cloud.dialogflow.v2.IntentView
+import com.google.cloud.dialogflow.v2.IntentsClient
+import com.google.cloud.dialogflow.v2.ListIntentsRequest
+import com.google.cloud.dialogflow.v2.ProjectAgentName
 import com.google.cloud.dialogflow.v2.ProjectName
 import com.google.cloud.dialogflow.v2.QueryInput
 import com.google.cloud.dialogflow.v2.QueryResult
@@ -61,6 +66,17 @@ internal object DialogflowService {
         AgentsClient.create().use {
             val parent: ProjectName = ProjectName.of(projectId)
             return it.getAgent(parent)
+        }
+    }
+
+    /**
+     * Get intents with training phrases
+     */
+    fun getIntents(projectId: String): List<Intent> {
+        IntentsClient.create().use {
+            val parent = ProjectAgentName.of(projectId)
+            val request  = ListIntentsRequest.newBuilder().setIntentView(IntentView.INTENT_VIEW_FULL).setParent(parent.toString()).build()
+            return it.listIntents(request).iterateAll().asSequence().toList()
         }
     }
 

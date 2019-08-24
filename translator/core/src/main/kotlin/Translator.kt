@@ -191,14 +191,14 @@ object Translator {
     /**
      * Creates a new label. If the label key exists, increment the key with a _$count suffix.
      */
-    fun create(value: I18nLabelValue, defaultLocale: Locale): I18nLabel {
+    fun create(value: I18nLabelValue, defaultLocale: Locale, alternatives: List<String> = emptyList()): I18nLabel {
         var count = 1;
         var v = value
         while (getLabel(v) != null) {
             v = I18nLabelValue(value.key + "_" + count++, value.namespace, value.category, value.defaultLabel, value.args)
         }
         val defaultLabelKey = v.defaultLabel.toString()
-        val defaultLabel = I18nLocalizedLabel(defaultLocale, defaultInterface, defaultLabelKey)
+        val defaultLabel = I18nLocalizedLabel(defaultLocale, defaultInterface, defaultLabelKey, alternatives)
         val label =
             I18nLabel(
                 v.key.toId(),
