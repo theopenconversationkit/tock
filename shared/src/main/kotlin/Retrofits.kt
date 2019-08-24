@@ -31,11 +31,11 @@ import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.RequestBody
 import okhttp3.Response
-import okhttp3.internal.http.HttpHeaders
+import okhttp3.internal.http.promisesBody
 import okio.Buffer
 import okio.BufferedSink
 import okio.GzipSink
-import okio.Okio
+import okio.buffer
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 import java.io.EOFException
@@ -164,7 +164,7 @@ private class GzipRequestInterceptor : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
-        val body = originalRequest.body()
+        val body = originalRequest.body
         if (body == null
             || originalRequest.header("Content-Encoding") != null
             || body.contentLength() < 512
@@ -174,7 +174,7 @@ private class GzipRequestInterceptor : Interceptor {
 
         val compressedRequest = originalRequest.newBuilder()
             .header("Content-Encoding", "gzip")
-            .method(originalRequest.method(), gzip(body))
+            .method(originalRequest.method, gzip(body))
             .build()
         return chain.proceed(compressedRequest)
     }
@@ -190,7 +190,7 @@ private class GzipRequestInterceptor : Interceptor {
             }
 
             override fun writeTo(sink: BufferedSink) {
-                val gzipSink = Okio.buffer(GzipSink(sink))
+                val gzipSink = GzipSink(sink).buffer()
                 body.writeTo(gzipSink)
                 gzipSink.close()
             }
@@ -272,12 +272,12 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
         val logBody = level == Level.BODY
         val logHeaders = logBody || level == Level.HEADERS
 
-        val requestBody = request.body()
+        val requestBody = request.body
         val hasRequestBody = requestBody != null
 
         val connection = chain.connection()
         val protocol = if (connection != null) connection.protocol() else Protocol.HTTP_1_1
-        var requestStartMessage = "--> " + request.method() + ' ' + request.url() + ' ' + protocol
+        var requestStartMessage = "--> " + request.method + ' ' + request.url + ' ' + protocol
         if (!logHeaders && hasRequestBody) {
             requestStartMessage += " (" + requestBody!!.contentLength() + "-byte body)"
         }
@@ -295,9 +295,9 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
                 }
             }
 
-            val headers = request.headers()
+            val headers = request.headers
             var i = 0
-            val count = headers.size()
+            val count = headers.size
             while (i < count) {
                 val name = headers.name(i)
                 // Skip headers from the request body as they are explicitly logged above.
@@ -312,9 +312,9 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
             }
 
             if (!logBody || !hasRequestBody) {
-                logger.info("--> END " + request.method())
-            } else if (bodyEncoded(request.headers())) {
-                logger.info("--> END " + request.method() + " (encoded body omitted)")
+                logger.info("--> END " + request.method)
+            } else if (bodyEncoded(request.headers)) {
+                logger.info("--> END " + request.method + " (encoded body omitted)")
             } else {
                 val buffer = Buffer()
                 requestBody!!.writeTo(buffer)
@@ -329,12 +329,12 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
                 if (isPlaintext(buffer)) {
                     logger.info(buffer.readString(charset))
                     logger.info(
-                        "--> END " + request.method()
+                        "--> END " + request.method
                             + " (" + requestBody.contentLength() + "-byte body)"
                     )
                 } else {
                     logger.info(
-                        "--> END " + request.method() + " (binary "
+                        "--> END " + request.method + " (binary "
                             + requestBody.contentLength() + "-byte body omitted)"
                     )
                 }
@@ -352,12 +352,12 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
 
         val tookMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNs)
 
-        val responseBody = response.body()!!
+        val responseBody = response.body!!
         val contentLength = responseBody.contentLength()
         val bodySize = if (contentLength != -1L) contentLength.toString() + "-byte" else "unknown-length"
         logger.info(
-            "<-- " + response.code() + ' ' + response.message() + ' '
-                + response.request().url() + " (" + tookMs + "ms" + (if (!logHeaders)
+            "<-- " + response.code + ' ' + response.message + ' '
+                + response.request.url + " (" + tookMs + "ms" + (if (!logHeaders)
                 ", "
                     + bodySize + " body"
             else
@@ -365,22 +365,22 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
         )
 
         if (logHeaders) {
-            val headers = response.headers()
+            val headers = response.headers
             var i = 0
-            val count = headers.size()
+            val count = headers.size
             while (i < count) {
                 logger.info(headers.name(i) + ": " + headers.value(i))
                 i++
             }
 
-            if (!logBody || !HttpHeaders.hasBody(response)) {
+            if (!logBody || !response.promisesBody()) {
                 logger.info("<-- END HTTP")
-            } else if (bodyEncoded(response.headers())) {
+            } else if (bodyEncoded(response.headers)) {
                 logger.info("<-- END HTTP (encoded body omitted)")
             } else {
                 val source = responseBody.source()
                 source.request(java.lang.Long.MAX_VALUE) // Buffer the entire body.
-                val buffer = source.buffer()
+                val buffer = source.buffer
 
                 var charset = UTF_8
                 val contentType = responseBody.contentType()
@@ -390,7 +390,7 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
 
                 if (!isPlaintext(buffer)) {
                     logger.info("")
-                    logger.info("<-- END HTTP (binary " + buffer.size() + "-byte body omitted)")
+                    logger.info("<-- END HTTP (binary " + buffer.size + "-byte body omitted)")
                     return response
                 }
 
@@ -399,7 +399,7 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
                     logger.info(buffer.clone().readString(charset))
                 }
 
-                logger.info("<-- END HTTP (" + buffer.size() + "-byte body)")
+                logger.info("<-- END HTTP (" + buffer.size + "-byte body)")
             }
         }
 
@@ -413,7 +413,7 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
     internal fun isPlaintext(buffer: Buffer): Boolean {
         try {
             val prefix = Buffer()
-            val byteCount = if (buffer.size() < 64) buffer.size() else 64
+            val byteCount = if (buffer.size < 64) buffer.size else 64
             buffer.copyTo(prefix, 0, byteCount)
             for (i in 0..15) {
                 if (prefix.exhausted()) {

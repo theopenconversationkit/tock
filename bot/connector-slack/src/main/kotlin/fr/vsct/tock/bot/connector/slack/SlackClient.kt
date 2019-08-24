@@ -20,7 +20,7 @@ import fr.vsct.tock.bot.connector.slack.model.SlackConnectorMessage
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import mu.KotlinLogging
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.Body
@@ -46,7 +46,7 @@ object SlackClient {
         .create(SlackApi::class.java)
 
     fun sendMessage(outToken1: String, outToken2: String, outToken3: String, message: SlackConnectorMessage) {
-        val body = RequestBody.create(MediaType.parse("application/json"), mapper.writeValueAsBytes(message))
+        val body = RequestBody.create("application/json".toMediaType(), mapper.writeValueAsBytes(message))
         val response = slackApi.sendMessage(outToken1, outToken2, outToken3, body).execute()
         logger.debug { response }
     }

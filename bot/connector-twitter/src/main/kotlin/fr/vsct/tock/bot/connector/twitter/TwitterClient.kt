@@ -35,6 +35,7 @@ import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import mu.KotlinLogging
 import oauth.signpost.http.HttpParameters
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -603,7 +604,7 @@ internal class TwitterClient(
     private fun uploadMediaAppend(mediaId: String, segmentIndex: Int, chunk: ByteArray): Boolean {
 
         val requestChunk: RequestBody = RequestBody.create(
-            MediaType.get("application/octet-stream"),
+            "application/octet-stream".toMediaType(),
             chunk
         )
 

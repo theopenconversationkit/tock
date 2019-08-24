@@ -31,44 +31,45 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
-        <kotlin>1.3.41</kotlin>
+        <kotlin>1.3.50</kotlin>
 
         <slf4j>1.7.25</slf4j>
         <logback>1.2.3</logback>
 
-        <kotlin-logging>1.6.26</kotlin-logging>
+        <kotlin-logging>1.7.6</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>3.10.2</kmongo>
+        <kmongo>3.11.0</kmongo>
         <jackson>2.9.9</jackson>
+        <jackson-databind>2.9.9</jackson-databind>
         <jackson-module>2.9.9</jackson-module>
         <jackson-module-loader>0.1.0</jackson-module-loader>
         <jackson-data>0.1.0</jackson-data>
         <jackson-generator>0.3.1</jackson-generator>
-        <klaxon>5.0.7</klaxon>
-        <vertx>3.7.1</vertx>
-        <retrofit>2.6.0</retrofit>
-        <okhttp>3.14.2</okhttp>
+        <klaxon>5.0.11</klaxon>
+        <vertx>3.8.0</vertx>
+        <retrofit>2.6.1</retrofit>
+        <okhttp>4.1.0</okhttp>
         <okhttp-signpost>1.1.0</okhttp-signpost>
         <signpost-core>1.2.1.2</signpost-core>
-        <circuitbreaker>0.16.0</circuitbreaker>
+        <circuitbreaker>0.17.0</circuitbreaker>
         <guava>28.0-jre</guava>
         <google-auth>1.30.1</google-auth>
         <jasypt>1.9.3</jasypt>
         <commons-csv>1.7</commons-csv>
         <emoji>5.0</emoji>
-        <commons-codec>1.12</commons-codec>
+        <commons-codec>1.13</commons-codec>
         <commons-lang>3.9</commons-lang>
-        <json>20180813</json>
+        <json>20190722</json>
         <httpclient>4.5.9</httpclient>
-        <google-auth2>0.16.2</google-auth2>
+        <google-auth2>0.17.1</google-auth2>
         <simmetrics>4.1.1</simmetrics>
 
-        <junit-jupiter>5.5.0</junit-jupiter>
+        <junit-jupiter>5.5.1</junit-jupiter>
 
         <mockk>1.9.3</mockk>
         <assertj>3.12.2</assertj>
-        <byte-buddy>1.9.13</byte-buddy>
+        <byte-buddy>1.10.1</byte-buddy>
         <atrium>0.8.0</atrium>
 
         <plugin.surefire>3.0.0-M3</plugin.surefire>
@@ -78,7 +79,7 @@
         <plugin.nexus-staging>1.6.8</plugin.nexus-staging>
         <plugin.dokka>0.9.18</plugin.dokka>
         <plugin.assembly>3.1.1</plugin.assembly>
-        <plugin.frontend>1.7.6</plugin.frontend>
+        <plugin.frontend>1.8.0</plugin.frontend>
         <plugin.clean>3.1.0</plugin.clean>
         <plugin.jar>3.1.2</plugin.jar>
         <plugin.ant>1.8</plugin.ant>
@@ -323,7 +324,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>${jackson}</version>
+                <version>${jackson-databind}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.datatype</groupId>

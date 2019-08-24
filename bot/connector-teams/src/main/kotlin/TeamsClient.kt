@@ -139,7 +139,7 @@ internal class TeamsClient(private val tokenHandler: TokenHandler) {
                 .addHeader("Authorization", "Bearer ${tokenHandler.token}")
                 .build()
             val response = chain.proceed(request)
-            logger.debug { "Response sent to Teams : ${response.code()} - ${response.message()}" }
+            logger.debug { "Response sent to Teams : ${response.code} - ${response.message}" }
 
             return response
         }

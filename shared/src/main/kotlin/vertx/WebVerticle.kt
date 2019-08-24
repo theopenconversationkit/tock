@@ -484,24 +484,28 @@ abstract class WebVerticle : AbstractVerticle() {
         sharedVertx.executeBlocking<Unit>({
             try {
                 handler.invoke(this)
-                it.succeeded()
+                it.tryComplete()
             } catch (t: Throwable) {
-                it.fail(t)
+                it.tryFail(t)
             }
         },
             false,
             {
                 if (it.failed()) {
                     it.cause().apply {
-                        if (this is RestException) {
-                            response().statusMessage = message
-                            fail(code)
-                        } else if (this != null) {
-                            logger.error(this)
-                            fail(this)
-                        } else {
-                            logger.error { "unknown error" }
-                            fail(500)
+                        when {
+                            this is RestException -> {
+                                response().statusMessage = message
+                                fail(code)
+                            }
+                            this != null -> {
+                                logger.error(this)
+                                fail(this)
+                            }
+                            else -> {
+                                logger.error { "unknown error" }
+                                fail(500)
+                            }
                         }
                     }
                 }

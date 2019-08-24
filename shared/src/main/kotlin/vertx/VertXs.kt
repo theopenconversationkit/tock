@@ -23,7 +23,7 @@ import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.provideOrDefault
 import io.vertx.core.AsyncResult
-import io.vertx.core.Future
+import io.vertx.core.Promise
 import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions
 import io.vertx.ext.web.Route
@@ -59,7 +59,7 @@ private val internalVertx: Vertx by lazy {
 }
 
 //used to avoid name collisions
-internal val sharedVertx : Vertx get() = vertx
+internal val sharedVertx: Vertx get() = vertx
 
 /**
  * The Tock [Vertx] entry point instance.
@@ -69,9 +69,9 @@ val vertx: Vertx get() = internalVertx
 /**
  * Execute a blocking task (with ordered false).
  */
-fun <T> Vertx.blocking(blockingHandler: (Future<T>) -> Unit, resultHandler: (AsyncResult<T>) -> Unit) {
+fun <T> Vertx.blocking(blockingHandler: (Promise<T>) -> Unit, resultHandler: (AsyncResult<T>) -> Unit) {
     this.executeBlocking(
-        { future: Future<T> ->
+        { future: Promise<T> ->
             try {
                 blockingHandler.invoke(future)
             } catch (throwable: Throwable) {

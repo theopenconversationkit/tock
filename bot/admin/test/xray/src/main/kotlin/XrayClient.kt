@@ -20,7 +20,20 @@ import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Klaxon
 import com.beust.klaxon.Parser
 import fr.vsct.tock.bot.admin.test.xray.XrayConfiguration.xrayUrl
-import fr.vsct.tock.bot.admin.test.xray.model.*
+import fr.vsct.tock.bot.admin.test.xray.model.JiraAttachment
+import fr.vsct.tock.bot.admin.test.xray.model.JiraIssue
+import fr.vsct.tock.bot.admin.test.xray.model.JiraIssueLink
+import fr.vsct.tock.bot.admin.test.xray.model.JiraKey
+import fr.vsct.tock.bot.admin.test.xray.model.JiraTest
+import fr.vsct.tock.bot.admin.test.xray.model.JiraTestProject
+import fr.vsct.tock.bot.admin.test.xray.model.JiraType
+import fr.vsct.tock.bot.admin.test.xray.model.XrayAttachment
+import fr.vsct.tock.bot.admin.test.xray.model.XrayBuildTestStep
+import fr.vsct.tock.bot.admin.test.xray.model.XrayTest
+import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecution
+import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecutionCreation
+import fr.vsct.tock.bot.admin.test.xray.model.XrayTestStep
+import fr.vsct.tock.bot.admin.test.xray.model.XrayUpdateTest
 import fr.vsct.tock.shared.addJacksonConverter
 import fr.vsct.tock.shared.basicAuthInterceptor
 import fr.vsct.tock.shared.create
@@ -28,7 +41,7 @@ import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import mu.KotlinLogging
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -50,13 +63,13 @@ object XrayClient {
 
     init {
         xray = retrofitBuilderWithTimeoutAndLogger(
-                xrayTimeoutInSeconds,
-                interceptors = listOf(basicAuthInterceptor(xrayLogin, xrayPassword))
+            xrayTimeoutInSeconds,
+            interceptors = listOf(basicAuthInterceptor(xrayLogin, xrayPassword))
         )
-                .addJacksonConverter()
-                .baseUrl(xrayUrl)
-                .build()
-                .create()
+            .addJacksonConverter()
+            .baseUrl(xrayUrl)
+            .build()
+            .create()
     }
 
     /**
@@ -72,16 +85,16 @@ object XrayClient {
         val tests = xray.getTestsOfTestPlan(testPlanKey).execute().body() ?: error("no test in $testPlanKey")
         // and retrieve the content of those tests, including steps, and return them
         return xray.getTests(tests.joinToString(";") { it.key })
-                .execute()
-                .body()
-                ?: error("unable to get tests for $tests")
+            .execute()
+            .body()
+            ?: error("unable to get tests for $tests")
     }
 
     fun getTests(testKey: String): List<XrayTest> {
         return xray.getTests(testKey)
-                .execute()
-                .body()
-                ?: error("unable to get the test $testKey")
+            .execute()
+            .body()
+            ?: error("unable to get the test $testKey")
     }
 
     /**
@@ -91,7 +104,7 @@ object XrayClient {
      * @return a list of steps as a XrayTestStep object.
      */
     fun getTestSteps(testKey: String): List<XrayTestStep> =
-            xray.getTestSteps(testKey).execute().body() ?: error("no test steps for $testKey")
+        xray.getTestSteps(testKey).execute().body() ?: error("no test steps for $testKey")
 
     /**
      * This functions will search for the issue using the JQL query given in parameters
@@ -112,7 +125,7 @@ object XrayClient {
         val issuesArray = parsed.array<Any>("issues")
 
         // if only one issue has been found, return the identifier of the issue
-        when(issuesArray?.size ?:0) {
+        when (issuesArray?.size ?: 0) {
             0 -> logger.error { "ERROR -- Unable to retrieve the issue!" }
             1 -> return issuesArray?.get("key")?.value.toString().replace("[", "").replace("]", "")
             else -> logger.error { "ERROR -- Too much issue have been retrieved!" }
@@ -137,8 +150,9 @@ object XrayClient {
      *
      * @param testExecutionFields contains all required information to be able to create the new issue.
      */
-    fun createNewTestExecutionIssue(textExectuionFields: XrayTestExecutionCreation):JiraIssue {
-       return xray.createTestExecution(textExectuionFields).execute().body() ?: error("Test execution creation has failed.")
+    fun createNewTestExecutionIssue(textExectuionFields: XrayTestExecutionCreation): JiraIssue {
+        return xray.createTestExecution(textExectuionFields).execute().body()
+            ?: error("Test execution creation has failed.")
     }
 
     /**
@@ -148,7 +162,7 @@ object XrayClient {
      * @return the answer of Jira after the test execution reception.
      */
     fun sendTestExecution(execution: XrayTestExecution): Response<ResponseBody> =
-            xray.sendTestExecution(execution).execute()
+        xray.sendTestExecution(execution).execute()
 
     /**
      * This function converts an attachment file into a String.
@@ -157,33 +171,33 @@ object XrayClient {
      * @return the content of the attachment in String format.
      */
     fun getAttachmentToString(attachment: XrayAttachment): String =
-            xray.getAttachment(attachment.id, attachment.fileName).execute().body()?.string()
-                    ?: "error : empty jira attachment"
+        xray.getAttachment(attachment.id, attachment.fileName).execute().body()?.string()
+            ?: "error : empty jira attachment"
 
     fun createTest(test: JiraTest): JiraIssue =
-            xray.createTest(test).execute().body() ?: error("error during creating test $test")
+        xray.createTest(test).execute().body() ?: error("error during creating test $test")
 
     fun saveStep(testKey: String, step: XrayBuildTestStep) = xray.saveStep(testKey, step).execute().body()
 
     fun addPrecondition(preConditionKey: String, jiraId: String) =
-            xray.addPrecondition(
-                    preConditionKey,
-                    XrayUpdateTest(listOf(jiraId))
-            ).execute().body()
+        xray.addPrecondition(
+            preConditionKey,
+            XrayUpdateTest(listOf(jiraId))
+        ).execute().body()
 
     fun updateTest(jiraId: String, test: JiraTest) = xray.updateTest(jiraId, test).execute().body()
 
     fun uploadAttachment(issueId: String, name: String, content: String): JiraAttachment =
-            xray.addAttachment(
-                    issueId,
-                    MultipartBody.Part.createFormData(
-                            "file",
-                            name,
-                            RequestBody.create(MediaType.parse("text/plain"), content)
-                    )
+        xray.addAttachment(
+            issueId,
+            MultipartBody.Part.createFormData(
+                "file",
+                name,
+                RequestBody.create("text/plain".toMediaType(), content)
             )
-                    .execute()
-                    .body()?.firstOrNull() ?: error("error during attachment of $content")
+        )
+            .execute()
+            .body()?.firstOrNull() ?: error("error during attachment of $content")
 
     fun linkTest(key1: String, key2: String) {
         xray.linkIssue(JiraIssueLink(JiraType("Associate"), JiraKey(key1), JiraKey(key2))).execute()
@@ -202,5 +216,5 @@ object XrayClient {
     }
 
     fun addTestToTestPlan(test: String, testPlan: String) =
-            xray.addTestToTestPlans(testPlan, XrayUpdateTest(listOf(test))).execute()
+        xray.addTestToTestPlans(testPlan, XrayUpdateTest(listOf(test))).execute()
 }

@@ -47,10 +47,10 @@ class JWKHandlerTest {
         val secondRecordedResponse = server.takeRequest()
         assertEquals("GET / HTTP/1.1", secondRecordedResponse.requestLine)
         val thirdRecordedRequest = server.takeRequest(1, TimeUnit.SECONDS)
-        assertEquals("GET /.well-known/openid-configuration/ HTTP/1.1", thirdRecordedRequest.requestLine)
+        assertEquals("GET /.well-known/openid-configuration/ HTTP/1.1", thirdRecordedRequest?.requestLine)
         val fourthRequest = server.takeRequest()
         assertEquals("GET / HTTP/1.1", fourthRequest.requestLine)
         val fifthRequest = server.takeRequest(3, TimeUnit.SECONDS)
-        assertEquals("GET /.well-known/openidconfiguration/ HTTP/1.1", fifthRequest.requestLine)
+        assertEquals("GET /.well-known/openidconfiguration/ HTTP/1.1", fifthRequest?.requestLine)
     }
 }

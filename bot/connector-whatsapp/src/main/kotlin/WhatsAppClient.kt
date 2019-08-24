@@ -33,7 +33,7 @@ import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import mu.KotlinLogging
 import okhttp3.Interceptor
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -202,7 +202,7 @@ internal class WhatsAppClient(
                         val response = api.sendMedia(
                             message.image.contentType,
                             RequestBody.create(
-                                MediaType.parse(message.image.contentType),
+                                message.image.contentType.toMediaType(),
                                 message.image.byteImages!!
                             )
                         ).execute()
