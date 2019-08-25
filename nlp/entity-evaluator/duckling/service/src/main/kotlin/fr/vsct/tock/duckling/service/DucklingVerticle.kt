@@ -25,7 +25,7 @@ import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.vertx.WebVerticle
 import fr.vsct.tock.shared.vertx.blocking
-import io.vertx.core.Future
+import io.vertx.core.Promise
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
@@ -69,7 +69,7 @@ class DucklingVerticle : WebVerticle() {
         return { context -> if (DucklingBridge.initialized) context.response().end() else context.fail(500) }
     }
 
-    override fun startServer(startFuture: Future<Void>) {
+    override fun startServer(promise: Promise<Void>) {
         vertx.blocking<Boolean>(
             {
                 try {
@@ -84,9 +84,9 @@ class DucklingVerticle : WebVerticle() {
             },
             {
                 if (it.succeeded()) {
-                    super.startServer(startFuture)
+                    super.startServer(promise)
                 } else {
-                    startFuture.fail(it.cause())
+                    promise.fail(it.cause())
                 }
             })
     }

@@ -36,6 +36,7 @@ import io.vertx.core.AbstractVerticle
 import io.vertx.core.AsyncResult
 import io.vertx.core.Future
 import io.vertx.core.Handler
+import io.vertx.core.Promise
 import io.vertx.core.http.HttpMethod
 import io.vertx.core.http.HttpMethod.DELETE
 import io.vertx.core.http.HttpMethod.GET
@@ -48,10 +49,8 @@ import io.vertx.ext.web.FileUpload
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.BodyHandler
-import io.vertx.ext.web.handler.CookieHandler
 import io.vertx.ext.web.handler.CorsHandler
 import io.vertx.ext.web.handler.SessionHandler
-import io.vertx.ext.web.handler.UserSessionHandler
 import io.vertx.ext.web.sstore.LocalSessionStore
 import mu.KLogger
 import mu.KotlinLogging
@@ -123,7 +122,7 @@ abstract class WebVerticle : AbstractVerticle() {
 
     abstract fun healthcheck(): (RoutingContext) -> Unit
 
-    override fun start(startFuture: Future<Void>) {
+    override fun start(promise: Promise<Void>) {
         vertx.executeBlocking<Unit>(
             {
                 try {
@@ -151,7 +150,7 @@ abstract class WebVerticle : AbstractVerticle() {
             false,
             {
                 if (it.succeeded()) {
-                    startServer(startFuture)
+                    startServer(promise)
                 }
             })
     }
@@ -164,8 +163,6 @@ abstract class WebVerticle : AbstractVerticle() {
         authProvider: TockAuthProvider = defaultAuthProvider(),
         pathsToProtect: Set<String> = protectedPaths().map { "$it/*" }.toSet()
     ) {
-
-        val cookieHandler = CookieHandler.create()
         val https = !devEnvironment && booleanProperty("tock_https_env", true)
         val sessionHandler = SessionHandler.create(LocalSessionStore.create(vertx))
             .setSessionTimeout(6 * 60 * 60 * 1000 /*6h*/)
@@ -173,9 +170,8 @@ abstract class WebVerticle : AbstractVerticle() {
             .setCookieHttpOnlyFlag(https)
             .setCookieSecureFlag(https)
             .setSessionCookieName(authProvider.sessionCookieName)
-        val userSessionHandler = UserSessionHandler.create(authProvider)
 
-        authProvider.protectPaths(this, pathsToProtect, cookieHandler, sessionHandler, userSessionHandler)
+        authProvider.protectPaths(this, pathsToProtect, sessionHandler)
     }
 
     /**
@@ -203,21 +199,21 @@ abstract class WebVerticle : AbstractVerticle() {
      */
     protected open val defaultPort: Int = 8080
 
-    protected open fun startServer(startFuture: Future<Void>) {
-        startServer(startFuture, verticleIntProperty("port", defaultPort))
+    protected open fun startServer(promise: Promise<Void>) {
+        startServer(promise, verticleIntProperty("port", defaultPort))
     }
 
-    protected open fun startServer(startFuture: Future<Void>, port: Int) {
+    protected open fun startServer(promise: Promise<Void>, port: Int) {
         server.requestHandler { r -> router.handle(r) }
             .listen(
                 port
             ) { r ->
                 if (r.succeeded()) {
                     logger.info { "$verticleName started on port $port" }
-                    startFuture.complete()
+                    promise.complete()
                 } else {
                     logger.error { "$verticleName NOT started on port $port" }
-                    startFuture.fail(r.cause())
+                    promise.fail(r.cause())
                 }
             }
     }

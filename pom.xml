@@ -47,7 +47,7 @@
         <jackson-data>0.1.0</jackson-data>
         <jackson-generator>0.3.1</jackson-generator>
         <klaxon>5.0.11</klaxon>
-        <vertx>3.8.0</vertx>
+        <vertx>3.8.1</vertx>
         <retrofit>2.6.1</retrofit>
         <okhttp>4.1.0</okhttp>
         <okhttp-signpost>1.1.0</okhttp-signpost>

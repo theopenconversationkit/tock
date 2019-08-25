@@ -38,9 +38,7 @@ import io.vertx.ext.auth.AuthProvider
 import io.vertx.ext.auth.User
 import io.vertx.ext.web.handler.AuthHandler
 import io.vertx.ext.web.handler.BasicAuthHandler
-import io.vertx.ext.web.handler.CookieHandler
 import io.vertx.ext.web.handler.SessionHandler
-import io.vertx.ext.web.handler.UserSessionHandler
 
 /**
  * Simple [AuthProvider] used in dev mode.
@@ -66,16 +64,12 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
     override fun protectPaths(
         verticle: WebVerticle,
         pathsToProtect: Set<String>,
-        cookieHandler: CookieHandler,
-        sessionHandler: SessionHandler,
-        userSessionHandler: UserSessionHandler
+        sessionHandler: SessionHandler
     ): AuthHandler {
         val authHandler = BasicAuthHandler.create(this)
         with(verticle) {
             (pathsToProtect + logoutPath + authenticatePath).forEach { protectedPath ->
-                router.route(protectedPath).handler(cookieHandler)
                 router.route(protectedPath).handler(sessionHandler)
-                router.route(protectedPath).handler(userSessionHandler)
             }
 
             pathsToProtect.forEach { protectedPath ->
@@ -139,9 +133,9 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
                             username,
                             organizations[it],
                             roles.getOrNull(it)?.takeIf { r -> r.size > 1 || r.firstOrNull()?.isBlank() == false }
-                                    ?: allRoles))
+                                ?: allRoles))
                 }
-                    ?: Future.failedFuture<User>("invalid credentials")
+                ?: Future.failedFuture<User>("invalid credentials")
         )
     }
 

@@ -20,12 +20,10 @@ import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.vertx.WebVerticle
 import io.vertx.core.Handler
 import io.vertx.core.Vertx
-import io.vertx.ext.web.Cookie
+import io.vertx.core.http.Cookie
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.AuthHandler
-import io.vertx.ext.web.handler.CookieHandler
 import io.vertx.ext.web.handler.SessionHandler
-import io.vertx.ext.web.handler.UserSessionHandler
 
 /**
  *
@@ -67,16 +65,12 @@ internal abstract class SSOTockAuthProvider(val vertx: Vertx) : TockAuthProvider
     override fun protectPaths(
         verticle: WebVerticle,
         pathsToProtect: Set<String>,
-        cookieHandler: CookieHandler,
-        sessionHandler: SessionHandler,
-        userSessionHandler: UserSessionHandler
+        sessionHandler: SessionHandler
     ): AuthHandler {
         val authHandler = createAuthHandler(verticle)
         with(verticle) {
             val excluded = excludedPaths(verticle)
-            router.route("/*").handler(WithExcludedPathHandler(excluded, cookieHandler))
             router.route("/*").handler(WithExcludedPathHandler(excluded, sessionHandler))
-            router.route("/*").handler(WithExcludedPathHandler(excluded, userSessionHandler))
             router.route("/*").handler(WithExcludedPathHandler(excluded, authHandler))
             router.route("/*").handler(AddSSOCookieHandler)
 

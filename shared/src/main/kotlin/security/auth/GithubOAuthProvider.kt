@@ -25,16 +25,12 @@ import fr.vsct.tock.shared.security.TockUserRole
 import fr.vsct.tock.shared.vertx.WebVerticle
 import io.vertx.core.Future
 import io.vertx.core.Vertx
-import io.vertx.core.http.HttpMethod.GET
-import io.vertx.core.json.JsonObject
 import io.vertx.ext.auth.oauth2.OAuth2Auth
 import io.vertx.ext.auth.oauth2.providers.GithubAuth
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.AuthHandler
-import io.vertx.ext.web.handler.CookieHandler
 import io.vertx.ext.web.handler.OAuth2AuthHandler
 import io.vertx.ext.web.handler.SessionHandler
-import io.vertx.ext.web.handler.UserSessionHandler
 import mu.KLogger
 import mu.KotlinLogging
 
@@ -47,7 +43,7 @@ internal class GithubOAuthProvider(
         vertx,
         property("tock_github_oauth_client_id", "CLIENT_ID"),
         property("tock_github_oauth_secret_key", "SECRET_KEY")
-    ).rbacHandler { user, authority, handler ->
+    ).rbacHandler { _, _, handler ->
         //TODO better
         handler.handle(Future.succeededFuture(true))
     }
@@ -62,12 +58,10 @@ internal class GithubOAuthProvider(
     override fun protectPaths(
         verticle: WebVerticle,
         pathsToProtect: Set<String>,
-        cookieHandler: CookieHandler,
-        sessionHandler: SessionHandler,
-        userSessionHandler: UserSessionHandler
+        sessionHandler: SessionHandler
     ): AuthHandler {
         val authHandler =
-            super.protectPaths(verticle, pathsToProtect, cookieHandler, sessionHandler, userSessionHandler)
+            super.protectPaths(verticle, pathsToProtect, sessionHandler)
 
         (authHandler as OAuth2AuthHandler).apply {
             setupCallback(verticle.router.get(callbackPath(verticle)))

@@ -16,9 +16,9 @@
 
 package fr.vsct.tock.bot
 
-import botModule
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.Kodein.Module
+import fr.vsct.tock.bot.engine.botModule
 import fr.vsct.tock.bot.mongo.botMongoModule
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.sharedModule

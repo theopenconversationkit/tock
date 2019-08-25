@@ -27,7 +27,7 @@ import fr.vsct.tock.shared.security.auth.TockAuthProvider
 import fr.vsct.tock.shared.security.initEncryptor
 import fr.vsct.tock.shared.vertx.WebVerticle
 import fr.vsct.tock.translator.Translator.initTranslator
-import io.vertx.core.Future
+import io.vertx.core.Promise
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
@@ -155,7 +155,7 @@ internal class BotVerticle(
         return BotRepository.healthcheckHandler
     }
 
-    override fun startServer(startFuture: Future<Void>, port: Int) {
+    override fun startServer(promise: Promise<Void>, port: Int) {
         if (websocketEnabled) {
             logger.info { "Install WebSocket handler" }
             server.websocketHandler { context ->
@@ -176,7 +176,7 @@ internal class BotVerticle(
                 }
             }
         }
-        super.startServer(startFuture, port)
+        super.startServer(promise, port)
 
     }
 }
