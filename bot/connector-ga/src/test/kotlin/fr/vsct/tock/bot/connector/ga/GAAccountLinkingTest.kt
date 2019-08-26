@@ -50,7 +50,8 @@ internal class GAAccountLinkingTest {
             "conversationId"
         ),
         inputs = emptyList(),
-        device = null
+        device = null,
+        availableSurfaces = emptyList()
     )
 
     private val notConnectedUserRequest = GARequest(
@@ -60,7 +61,8 @@ internal class GAAccountLinkingTest {
             "conversationId"
         ),
         inputs = emptyList(),
-        device = null
+        device = null,
+        availableSurfaces = emptyList()
     )
 
     @Test

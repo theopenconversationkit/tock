@@ -99,7 +99,62 @@ class GARequestDeserializerTest {
                         )
                     )
                 ),
-                isInSandbox = true
+                isInSandbox = true,
+                availableSurfaces = emptyList()
+
+            ),
+            request
+        )
+    }
+
+    @Test
+    fun testGARequestWithNewSurfaceDeserializer() {
+        val json = resource("/request_with_new_surface.json")
+        val request: GARequest = mapper.readValue(json)
+        assertEquals(
+            GARequest(
+                user = GAUser(profile = null, accessToken = null, permissions = null, locale = "en-US"),
+                device = GADevice(
+                ),
+                surface = GASurface(
+                    capabilities = listOf(
+                        GACapability(name = "actions.capability.SCREEN_OUTPUT"),
+                        GACapability(name = "actions.capability.AUDIO_OUTPUT"),
+                        GACapability(name = "actions.capability.WEB_BROWSER")
+                    )
+                ),
+                conversation = GAConversation(
+                    conversationId = "1505388822587",
+                    type = GAConversationType.NEW,
+                    conversationToken = null
+                ),
+                inputs = listOf(
+                    GAInput(
+                        rawInputs = listOf(),
+                        intent = "new_surface_intent", arguments =
+                        listOf(
+                            GAArgument
+                                (
+                                name = "NEW_SURFACE",
+                                rawText = null,
+                                boolValue = null,
+                                textValue = null,
+                                datetimeValue = null,
+                                extension = GANewSurfaceValue(GANewSurfaceStatus.OK)
+                            )
+                        )
+                    )
+                ),
+                isInSandbox = true,
+                availableSurfaces = listOf(
+                    GASurface(
+                        listOf(
+                            GACapability(name = "actions.capability.SCREEN_OUTPUT"),
+                            GACapability(name = "actions.capability.AUDIO_OUTPUT"),
+                            GACapability(name = "actions.capability.WEB_BROWSER")
+                        )
+                    )
+                )
             ),
             request
         )

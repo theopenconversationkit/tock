@@ -25,5 +25,6 @@ enum class GAInputValueDataType(@get:JsonValue val value: String) {
     deliveryAddress("type.googleapis.com/google.actions.v2.DeliveryAddressValueSpec"),
     transactionDecision("type.googleapis.com/google.actions.v2.TransactionDecisionValueSpec"),
     permission("type.googleapis.com/google.actions.v2.PermissionValueSpec"),
-    datetime("type.googleapis.com/google.actions.v2.DateTimeValueSpec")
+    datetime("type.googleapis.com/google.actions.v2.DateTimeValueSpec"),
+    newSurface("type.googleapis.com/google.actions.v2.NewSurfaceValueSpec")
 }
