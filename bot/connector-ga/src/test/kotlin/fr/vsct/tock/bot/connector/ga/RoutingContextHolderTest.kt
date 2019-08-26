@@ -78,6 +78,8 @@ class RoutingContextHolderTest {
                     GADevice(),
                     GASurface(emptyList()),
                     GAConversation(),
+                    emptyList(),
+                    false,
                     emptyList()
                 ),
                 listOf(r0, r1, r2).map {

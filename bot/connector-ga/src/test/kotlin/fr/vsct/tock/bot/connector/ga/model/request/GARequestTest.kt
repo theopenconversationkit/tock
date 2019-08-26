@@ -33,6 +33,8 @@ class GARequestTest {
             GADevice(),
             GASurface(listOf(GACapability(AUDIO_OUTPUT))),
             GAConversation(),
+            emptyList(),
+            false,
             emptyList()
         )
 

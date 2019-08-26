@@ -21,6 +21,7 @@ import fr.vsct.tock.bot.connector.ga.model.GAIntent
 import fr.vsct.tock.bot.connector.ga.model.request.GAArgumentBuiltInName
 import fr.vsct.tock.bot.connector.ga.model.request.GAInputType.URL
 import fr.vsct.tock.bot.connector.ga.model.request.GAInputType.VOICE
+import fr.vsct.tock.bot.connector.ga.model.request.GANewSurfaceValue
 import fr.vsct.tock.bot.connector.ga.model.request.GARequest
 import fr.vsct.tock.bot.connector.ga.model.request.GASignInStatus
 import fr.vsct.tock.bot.connector.ga.model.request.GASignInValue
@@ -31,6 +32,7 @@ import fr.vsct.tock.bot.engine.event.EndConversationEvent
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.event.LoginEvent
 import fr.vsct.tock.bot.engine.event.LogoutEvent
+import fr.vsct.tock.bot.engine.event.NewDeviceEvent
 import fr.vsct.tock.bot.engine.event.NoInputEvent
 import fr.vsct.tock.bot.engine.event.StartConversationEvent
 import fr.vsct.tock.bot.engine.stt.SttService
@@ -109,6 +111,12 @@ internal object WebhookActionConverter {
                 GAIntent.main -> StartConversationEvent(playerId, botId, applicationId).setEventState()
                 GAIntent.cancel -> EndConversationEvent(playerId, botId, applicationId).setEventState()
                 GAIntent.noInput -> NoInputEvent(playerId, botId, applicationId).setEventState()
+                GAIntent.newSurface -> NewDeviceEvent(
+                    playerId,
+                    botId,
+                    applicationId,
+                    (input.arguments?.first { it.builtInArg == GAArgumentBuiltInName.NEW_SURFACE }?.extension as GANewSurfaceValue).status.toString()
+                ).setEventState()
                 GAIntent.signIn -> {
                     when ((input.arguments?.first { it.builtInArg == GAArgumentBuiltInName.SIGN_IN }?.extension as GASignInValue).status) {
                         GASignInStatus.OK -> LoginEvent(

@@ -36,7 +36,8 @@ enum class GAIntent(
     transactionDecision("actions.intent.TRANSACTION_DECISION", GAInputValueDataType.transactionDecision),
     permission("actions.intent.PERMISSION", GAInputValueDataType.permission),
     datetime("actions.intent.DATETIME", GAInputValueDataType.datetime),
-    signIn("actions.intent.SIGN_IN");
+    signIn("actions.intent.SIGN_IN"),
+    newSurface("actions.intent.NEW_SURFACE",GAInputValueDataType.newSurface);
 
     companion object {
         fun findIntent(name: String): GAIntent? {

@@ -33,7 +33,8 @@ import fr.vsct.tock.bot.engine.message.GenericMessage
         JsonSubTypes.Type(value = GAOptionValueSpec::class, name = "type.googleapis.com/google.actions.v2.OptionValueSpec"),
         JsonSubTypes.Type(value = GAPermissionValueSpec::class, name = "type.googleapis.com/google.actions.v2.PermissionValueSpec"),
         JsonSubTypes.Type(value = GATransactionRequirementsCheckSpec::class, name = "type.googleapis.com/google.actions.v2.TransactionRequirementsCheckSpec"),
-        JsonSubTypes.Type(value = GATransactionDecisionValueSpec::class, name = "type.googleapis.com/google.actions.v2.TransactionDecisionValueSpec")
+        JsonSubTypes.Type(value = GATransactionDecisionValueSpec::class, name = "type.googleapis.com/google.actions.v2.TransactionDecisionValueSpec"),
+        JsonSubTypes.Type(value = GANewSurfaceValueSpec::class, name = "type.googleapis.com/google.actions.v2.TransactionDecisionValueSpec")
 )
 abstract class GAInputValueData(@get:JsonProperty("@type") val type: GAInputValueDataType) {
 

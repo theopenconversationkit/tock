@@ -36,5 +36,8 @@ enum class GAArgumentBuiltInName {
     /** DateTime argument. */
     DATETIME,
     /** Sign in status argument. */
-    SIGN_IN
+    SIGN_IN,
+    /** New Surface status argument. */
+    NEW_SURFACE
+
 }

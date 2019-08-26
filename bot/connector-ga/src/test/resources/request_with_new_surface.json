@@ -1,0 +1,55 @@
+{
+  "user": {
+    "locale": "en-US"
+  },
+  "conversation": {
+    "conversationId": "1505388822587",
+    "type": "NEW"
+  },
+  "inputs": [
+    {
+      "intent": "new_surface_intent",
+      "rawInputs": [],
+      "arguments": [
+        {
+          "name": "NEW_SURFACE",
+          "extension": {
+            "@type": "type.googleapis.com/google.actions.v2.NewSurfaceValue",
+            "status": "OK"
+          }
+        }
+      ]
+    }
+  ],
+  "surface": {
+    "capabilities": [
+      {
+        "name": "actions.capability.SCREEN_OUTPUT"
+      },
+      {
+        "name": "actions.capability.AUDIO_OUTPUT"
+      },
+      {
+        "name": "actions.capability.WEB_BROWSER"
+      }
+    ]
+  },
+  "availableSurfaces": [
+    {
+      "capabilities": [
+        {
+          "name": "actions.capability.SCREEN_OUTPUT"
+        },
+        {
+          "name": "actions.capability.AUDIO_OUTPUT"
+        },
+        {
+          "name": "actions.capability.WEB_BROWSER"
+        }
+      ]
+    }
+  ],
+  "device": {
+  },
+  "isInSandbox": true
+}
