@@ -166,8 +166,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
             c.ensureIndex(Language, ApplicationId, UnknownCount)
             c.ensureIndex(Language, Status, Classification_.intentId)
             c.ensureIndex(
-                ApplicationId, Classification_.intentId, Language, UpdateDate,
-                indexOptions = IndexOptions().background(true)
+                ApplicationId, Classification_.intentId, Language, UpdateDate
             )
             c.ensureIndex(ForReview)
             intProperty("tock_nlp_classified_sentences_index_ttl_days", -1)
