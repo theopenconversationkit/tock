@@ -48,6 +48,7 @@ interface DateEntityRange : Value {
      * - from 9h to 10h -> 10h
      * - from 9h to 10h00 -> 10h
      * - 9h -> 10h
+     * - this morning (4h to 12h) -> 12h
      */
     fun inclusiveEnd(zoneId: ZoneId): ZonedDateTime = end(zoneId)
 
@@ -56,6 +57,7 @@ interface DateEntityRange : Value {
      * - from 9h to 10h -> 11h
      * - from 9h to 10h00 -> 10h01
      * - 9h -> 10h
+     * - this morning (4h to 12h) -> 13h
      */
     fun end(): ZonedDateTime = end(ZoneId.systemDefault())
 
