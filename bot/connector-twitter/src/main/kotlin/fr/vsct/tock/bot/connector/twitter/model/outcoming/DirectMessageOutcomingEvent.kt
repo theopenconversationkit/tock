@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.connector.twitter.model.outcoming
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeName
 import fr.vsct.tock.bot.connector.twitter.model.MessageCreate
+import fr.vsct.tock.bot.engine.message.GenericMessage
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 
@@ -29,6 +30,9 @@ data class DirectMessageOutcomingEvent(
     @JsonProperty("message_create")
     val messageCreate: MessageCreate
 ) : AbstractOutcomingEvent() {
+    override fun toGenericMessage(): GenericMessage =
+        messageCreate.messageData.toGenericMessage()
+
     override fun playerId(playerType: PlayerType): PlayerId =
         PlayerId(messageCreate.senderId, playerType)
 

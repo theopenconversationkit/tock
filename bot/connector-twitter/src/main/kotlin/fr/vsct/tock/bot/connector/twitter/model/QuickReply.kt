@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.connector.twitter.model
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
+import fr.vsct.tock.bot.engine.message.Choice
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -27,4 +28,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonSubTypes(
     JsonSubTypes.Type(value = Options::class, name = "options")
 )
-abstract class QuickReply()
+abstract class QuickReply() {
+    abstract fun toChoices(): List<Choice>
+}
