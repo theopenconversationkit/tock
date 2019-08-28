@@ -25,6 +25,9 @@ import fr.vsct.tock.bot.connector.twitter.model.Hashtag
 import fr.vsct.tock.bot.connector.twitter.model.Mention
 import fr.vsct.tock.bot.connector.twitter.model.MessageCreate
 import fr.vsct.tock.bot.connector.twitter.model.MessageData
+import fr.vsct.tock.bot.connector.twitter.model.Option
+import fr.vsct.tock.bot.connector.twitter.model.OptionWithoutDescription
+import fr.vsct.tock.bot.connector.twitter.model.Options
 import fr.vsct.tock.bot.connector.twitter.model.Recipient
 import fr.vsct.tock.bot.connector.twitter.model.Symbol
 import fr.vsct.tock.bot.connector.twitter.model.Tweet
@@ -179,6 +182,158 @@ internal class IncomingEventDeserializationTest {
             )
         )
         val deserializedEvent = mapper.readValue<IncomingEvent>(resourceAsStream("/direct_message_event_sent.json"))
+        assertThat(deserializedEvent).isEqualTo(expected)
+    }
+
+    @Test
+    fun `direct message event sent with options`() {
+        val expected = DirectMessageIncomingEvent(
+            forUserId = "1090334520887386112",
+            directMessages = listOf(
+                DirectMessage(
+                    id = "1167008736986226692",
+                    created = 1567071539528,
+                    messageCreated = MessageCreate(
+                        target = Recipient(
+                            recipientId = "1100452418326806530"
+                        ),
+                        senderId = "1090334520887386112",
+                        sourceAppId = "16132880",
+                        messageData = MessageData(
+                            text = "Bonjour bag0u1, je suis l'Agent virtuel SNCF !",
+                            entities = Entities(
+                                hashtags = listOf(),
+                                mentions = listOf(),
+                                urls = listOf(),
+                                symbols = emptyList()
+                            ),
+                            quickReply = Options(
+                                listOf(
+                                    Option.of(
+                                        "\uD83D\uDC64 Parler à un agent",
+                                        "description",
+                                        "speak_agent?_previous_intent=greetings"
+                                    ),
+                                    Option.of("🚦 Info trafic", "description", "train_is_running?_previous_intent=greetings")
+                                )
+                            )
+                        )
+                    )
+                )
+            ),
+            apps = mapOf(
+                "16132880" to Application(
+                    id = "16132880",
+                    name = "aiv-local",
+                    url = "https://www.sncf.com"
+                )
+            ),
+            users = mapOf(
+                "1090334520887386112" to User(
+                    id = "1090334520887386112",
+                    lang = null,
+                    location = "Paris, France",
+                    createdTimestamp = 1548790982035,
+                    name = "bag0u",
+                    screenName = "bag0u",
+                    protected = false,
+                    verified = false,
+                    followersCount = 2,
+                    friendsCount = 2,
+                    statusesCount = 58,
+                    profileImageUrlHttps = "https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png"
+                ),
+                "1100452418326806530" to User(
+                    id = "1100452418326806530",
+                    lang = null,
+                    location = null,
+                    createdTimestamp = 1551203276725,
+                    name = "bag0u1",
+                    screenName = "bag0u1",
+                    protected = false,
+                    verified = false,
+                    followersCount = 1,
+                    friendsCount = 2,
+                    statusesCount = 83,
+                    profileImageUrlHttps = "https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png"
+                )
+            )
+        )
+        val deserializedEvent = mapper.readValue<IncomingEvent>(resourceAsStream("/direct_message_event_with_options_sent.json"))
+        assertThat(deserializedEvent).isEqualTo(expected)
+    }
+
+    @Test
+    fun `direct message event sent with options without description`() {
+        val expected = DirectMessageIncomingEvent(
+            forUserId = "1090334520887386112",
+            directMessages = listOf(
+                DirectMessage(
+                    id = "1167008736986226692",
+                    created = 1567071539528,
+                    messageCreated = MessageCreate(
+                        target = Recipient(
+                            recipientId = "1100452418326806530"
+                        ),
+                        senderId = "1090334520887386112",
+                        sourceAppId = "16132880",
+                        messageData = MessageData(
+                            text = "Bonjour bag0u1, je suis l'Agent virtuel SNCF !",
+                            entities = Entities(
+                                hashtags = listOf(),
+                                mentions = listOf(),
+                                urls = listOf(),
+                                symbols = emptyList()
+                            ),
+                            quickReply = Options(
+                                listOf(
+                                    OptionWithoutDescription.of("\uD83D\uDC64 Parler à un agent", "speak_agent?_previous_intent=greetings"),
+                                    OptionWithoutDescription.of("🚦 Info trafic", "train_is_running?_previous_intent=greetings")
+                                )
+                            )
+                        )
+                    )
+                )
+            ),
+            apps = mapOf(
+                "16132880" to Application(
+                    id = "16132880",
+                    name = "aiv-local",
+                    url = "https://www.sncf.com"
+                )
+            ),
+            users = mapOf(
+                "1090334520887386112" to User(
+                    id = "1090334520887386112",
+                    lang = null,
+                    location = "Paris, France",
+                    createdTimestamp = 1548790982035,
+                    name = "bag0u",
+                    screenName = "bag0u",
+                    protected = false,
+                    verified = false,
+                    followersCount = 2,
+                    friendsCount = 2,
+                    statusesCount = 58,
+                    profileImageUrlHttps = "https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png"
+                ),
+                "1100452418326806530" to User(
+                    id = "1100452418326806530",
+                    lang = null,
+                    location = null,
+                    createdTimestamp = 1551203276725,
+                    name = "bag0u1",
+                    screenName = "bag0u1",
+                    protected = false,
+                    verified = false,
+                    followersCount = 1,
+                    friendsCount = 2,
+                    statusesCount = 83,
+                    profileImageUrlHttps = "https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png"
+                )
+            )
+        )
+        val deserializedEvent = mapper.readValue<IncomingEvent>(resourceAsStream("/direct_message_event_with_options_without_description_sent.json"))
         assertThat(deserializedEvent).isEqualTo(expected)
     }
 
@@ -365,7 +520,15 @@ internal class IncomingEventDeserializationTest {
                     isQuote = false,
                     entities = Entities(
                         hashtags = emptyList(),
-                        mentions = listOf(Mention(screenName = "Delphes99", name = "Laurent Gautho-lapeyre aka Delphes", id = "602907365", idStr = "602907365", indices = listOf(6, 16))),
+                        mentions = listOf(
+                            Mention(
+                                screenName = "Delphes99",
+                                name = "Laurent Gautho-lapeyre aka Delphes",
+                                id = "602907365",
+                                idStr = "602907365",
+                                indices = listOf(6, 16)
+                            )
+                        ),
                         urls = emptyList(),
                         symbols = emptyList()
                     )
@@ -406,7 +569,15 @@ internal class IncomingEventDeserializationTest {
                     contributors = "Delphes99",
                     entities = Entities(
                         hashtags = emptyList(),
-                        mentions = listOf(Mention(screenName = "Delphes99", name = "Laurent Gautho-lapeyre aka Delphes", id = "602907365", idStr = "602907365", indices = listOf(0, 10))),
+                        mentions = listOf(
+                            Mention(
+                                screenName = "Delphes99",
+                                name = "Laurent Gautho-lapeyre aka Delphes",
+                                id = "602907365",
+                                idStr = "602907365",
+                                indices = listOf(0, 10)
+                            )
+                        ),
                         urls = emptyList(),
                         symbols = emptyList()
                     )
@@ -447,7 +618,15 @@ internal class IncomingEventDeserializationTest {
                     isQuote = false,
                     entities = Entities(
                         hashtags = emptyList(),
-                        mentions = listOf(Mention(screenName = "chabott4", name = "chabotté", id = "1121407864646656000", idStr = "1121407864646656000", indices = listOf(6, 15))),
+                        mentions = listOf(
+                            Mention(
+                                screenName = "chabott4",
+                                name = "chabotté",
+                                id = "1121407864646656000",
+                                idStr = "1121407864646656000",
+                                indices = listOf(6, 15)
+                            )
+                        ),
                         urls = emptyList(),
                         symbols = emptyList()
                     )

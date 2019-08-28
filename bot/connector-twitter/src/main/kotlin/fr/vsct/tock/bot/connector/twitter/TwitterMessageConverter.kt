@@ -17,8 +17,6 @@
 package fr.vsct.tock.bot.connector.twitter
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
-import fr.vsct.tock.bot.connector.twitter.model.MessageCreate
-import fr.vsct.tock.bot.connector.twitter.model.MessageData
 import fr.vsct.tock.bot.connector.twitter.model.Recipient
 import fr.vsct.tock.bot.connector.twitter.model.outcoming.DirectMessageOutcomingEvent
 import fr.vsct.tock.bot.connector.twitter.model.outcoming.OutcomingEvent
@@ -34,7 +32,7 @@ internal object TwitterMessageConverter {
 
     fun toEvent(action: Action): ConnectorMessage? {
         return if (action is SendSentence) {
-            if(action.metadata.visibility == ActionVisibility.public) {
+            if (action.metadata.visibility == ActionVisibility.public) {
                 if (action.hasMessage(TwitterConnectorProvider.connectorType)) {
                     action.message(TwitterConnectorProvider.connectorType) as Tweet
                 } else {
@@ -46,14 +44,11 @@ internal object TwitterMessageConverter {
                 } else {
                     action.stringText?.run {
                         if (isBlank()) null else OutcomingEvent(
-                            DirectMessageOutcomingEvent(
-                                MessageCreate(
-                                    target = Recipient(action.recipientId.id),
-                                    sourceAppId = action.applicationId,
-                                    senderId = action.playerId.id,
-                                    messageData = MessageData(this)
-                                )
+                            DirectMessageOutcomingEvent.builder(
+                                Recipient(action.recipientId.id), action.playerId.id, this
                             )
+                                .withSourceAppId(action.applicationId)
+                                .build()
                         )
                     }
                 }

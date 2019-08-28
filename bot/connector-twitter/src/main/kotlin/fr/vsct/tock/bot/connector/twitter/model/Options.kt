@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import fr.vsct.tock.bot.engine.message.Choice
 
 @JsonTypeName("options")
-data class Options(val options: List<Option>) : QuickReply() {
+data class Options(val options: List<AbstractOption>) : QuickReply() {
     override fun toChoices(): List<Choice> =
         options.mapNotNull { it.toChoice() }
 }
