@@ -16,4 +16,19 @@
 
 package fr.vsct.tock.bot.connector.twitter.model
 
-data class Option(val label: String, val description: String, val metadata: String)
+import fr.vsct.tock.bot.engine.action.SendChoice
+import fr.vsct.tock.bot.engine.message.Choice
+import fr.vsct.tock.shared.mapNotNullValues
+
+data class Option(val label: String, val description: String, val metadata: String) {
+    fun toChoice(): Choice {
+        return SendChoice.decodeChoiceId(metadata)
+            .let { (intent, params) ->
+                Choice(
+                    intent,
+                    params
+                            + mapNotNullValues(SendChoice.TITLE_PARAMETER to label)
+                )
+            }
+    }
+}

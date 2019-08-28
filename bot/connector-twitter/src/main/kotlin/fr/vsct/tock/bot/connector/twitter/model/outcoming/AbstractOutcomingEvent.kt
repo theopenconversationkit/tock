@@ -17,7 +17,7 @@ package fr.vsct.tock.bot.connector.twitter.model.outcoming
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import fr.vsct.tock.bot.connector.twitter.model.TwitterConnectorMessage
+import fr.vsct.tock.bot.engine.message.GenericMessage
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 
@@ -32,6 +32,7 @@ import fr.vsct.tock.bot.engine.user.PlayerType
     JsonSubTypes.Type(value = DirectMessageOutcomingEvent::class, name = "message_create")
 )
 abstract class AbstractOutcomingEvent {
+    abstract fun toGenericMessage(): GenericMessage
     abstract fun playerId(playerType: PlayerType): PlayerId
     abstract fun recipientId(playerType: PlayerType): PlayerId
 }

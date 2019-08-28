@@ -18,6 +18,8 @@ package fr.vsct.tock.bot.connector.twitter.model
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
+import fr.vsct.tock.bot.engine.message.Choice
+import fr.vsct.tock.bot.engine.message.GenericMessage
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -28,4 +30,5 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(value = WebUrl::class, name = "web_url")
 )
 abstract class CTA {
+    abstract fun toChoice(): Choice
 }
