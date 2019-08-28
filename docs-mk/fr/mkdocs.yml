@@ -22,6 +22,7 @@ nav:
   - 'KDoc': 'kdoc.md'
   - 'Contribuer au projet': 'contribuer.md'
   - 'Installation de Tock': 'installation.md'
+  - 'Nous contacter': 'contact.md'
 theme:
   name: 'material'
   language: 'fr'
