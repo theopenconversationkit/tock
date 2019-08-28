@@ -22,6 +22,7 @@ import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
+import fr.vsct.tock.bot.connector.ConnectorNotifyStateModifier
 import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotAnswerInterceptor
@@ -153,13 +154,13 @@ object BotRepository {
         recipientId: PlayerId,
         intent: IntentAware,
         step: StoryStep<out StoryHandlerDefinition>? = null,
-        parameters: Map<String, String> = emptyMap()
+        parameters: Map<String, String> = emptyMap(),
+        stateModifier: ConnectorNotifyStateModifier = ConnectorNotifyStateModifier.KEEP_CURRENT_STATE
     ) {
         val conf = connectorControllerMap.keys.firstOrNull { it.applicationId == applicationId }
             ?: error("unknown application $applicationId")
-        connectorControllerMap.getValue(conf).notify(recipientId, intent, step, parameters)
+        connectorControllerMap.getValue(conf).notify(recipientId, intent, step, parameters, stateModifier)
     }
-
 
     /**
      * Registers a new [ConnectorProvider].

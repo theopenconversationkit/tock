@@ -80,6 +80,27 @@ interface Connector {
         throw UnsupportedOperationException("Connector $connectorType does not support notification")
 
     /**
+     * Sends a notification to the connector.
+     * A [BotBus] is created and the corresponding story is called.
+     *
+     * @param applicationId the configuration connector id
+     * @param recipientId the recipient identifier
+     * @param intent the notification intent
+     * @param step the optional step target
+     * @param parameters the optional parameters
+     * @param stateModifier allow the notification to bypass current user state
+     *
+     */
+    fun notify(
+        controller: ConnectorController,
+        recipientId: PlayerId,
+        intent: IntentAware,
+        step: StoryStep<out StoryHandlerDefinition>?,
+        parameters: Map<String, String>,
+        stateModifier: ConnectorNotifyStateModifier
+    )
+
+    /**
      * Load user preferences - default implementation returns null.
      */
     fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences? = null

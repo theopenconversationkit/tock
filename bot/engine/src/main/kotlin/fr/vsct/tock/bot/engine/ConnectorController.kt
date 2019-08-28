@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.engine
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorCallbackBase
 import fr.vsct.tock.bot.connector.ConnectorData
+import fr.vsct.tock.bot.connector.ConnectorNotifyStateModifier
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.IntentAware
@@ -62,8 +63,11 @@ interface ConnectorController {
         recipientId: PlayerId,
         intent: IntentAware,
         step: StoryStep<out StoryHandlerDefinition>? = null,
-        parameters: Map<String, String> = emptyMap()): Unit =
-        connector.notify(this, recipientId, intent, step, parameters)
+        parameters: Map<String, String> = emptyMap(),
+        stateModifier: ConnectorNotifyStateModifier = ConnectorNotifyStateModifier.KEEP_CURRENT_STATE
+    ): Unit {
+        connector.notify(this, recipientId, intent, step, parameters, stateModifier)
+    }
 
     /**
      * Handles an event sent by the connector. the primary goal of this controller.
