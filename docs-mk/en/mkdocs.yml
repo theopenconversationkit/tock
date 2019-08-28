@@ -17,6 +17,7 @@ nav:
     - i18n: i18n.md
     - KDoc: kdoc.md
     - Contribute: contribute.md
+    - 'Contact us': 'contact.md'
 theme:
   name: 'material'
   logo: 'assets/images/logo.svg'
