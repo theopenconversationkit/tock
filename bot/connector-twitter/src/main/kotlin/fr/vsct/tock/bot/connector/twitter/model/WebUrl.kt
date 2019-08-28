@@ -18,10 +18,21 @@ package fr.vsct.tock.bot.connector.twitter.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeName
+import fr.vsct.tock.bot.engine.action.SendChoice
+import fr.vsct.tock.bot.engine.message.Choice
+import fr.vsct.tock.bot.engine.message.GenericMessage
 
 @JsonTypeName("web_url")
 data class WebUrl(
     val label: String,
     val url: String,
     @JsonProperty("tco_url") val tcoUrl: String? = null
-) : CTA()
+) : CTA() {
+    override fun toChoice(): Choice = Choice(
+        SendChoice.EXIT_INTENT,
+        mapOf(
+            SendChoice.URL_PARAMETER to url,
+            SendChoice.TITLE_PARAMETER to label
+        )
+    )
+}

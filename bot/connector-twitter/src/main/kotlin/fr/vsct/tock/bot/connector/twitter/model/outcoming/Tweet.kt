@@ -17,5 +17,12 @@
 package fr.vsct.tock.bot.connector.twitter.model.outcoming
 
 import fr.vsct.tock.bot.connector.twitter.model.TwitterPublicConnectorMessage
+import fr.vsct.tock.bot.engine.message.GenericMessage
 
-data class Tweet(val text: String, val dmRecipientID: String? = null): TwitterPublicConnectorMessage()
+data class Tweet(val text: String, val dmRecipientID: String? = null): TwitterPublicConnectorMessage(){
+    override fun toGenericMessage(): GenericMessage? {
+        return GenericMessage(
+            texts = mapOf("text" to text)
+        )
+    }
+}
