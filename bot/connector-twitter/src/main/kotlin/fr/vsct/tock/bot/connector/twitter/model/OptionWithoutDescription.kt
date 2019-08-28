@@ -17,7 +17,6 @@
 package fr.vsct.tock.bot.connector.twitter.model
 
 import fr.vsct.tock.bot.connector.twitter.MAX_METADATA
-import fr.vsct.tock.bot.connector.twitter.MAX_OPTION_DESCRIPTION
 import fr.vsct.tock.bot.connector.twitter.MAX_OPTION_LABEL
 import fr.vsct.tock.bot.connector.twitter.truncateIfLongerThan
 import fr.vsct.tock.bot.engine.action.SendChoice
@@ -27,25 +26,20 @@ import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 
-data class Option private constructor(val label: String, val description: String, val metadata: String) : AbstractOption() {
+data class OptionWithoutDescription private constructor(val label: String, val metadata: String) : AbstractOption() {
 
     companion object {
 
-        fun of(label: String, description: String, metadata: String): Option {
+        fun of(label: String, metadata: String): OptionWithoutDescription {
             if (label.length > MAX_OPTION_LABEL) {
                 logger.warn { "label $label has more than $MAX_OPTION_LABEL chars, it will be truncated" }
-            }
-
-            if (description.length > MAX_OPTION_DESCRIPTION) {
-                logger.warn { "label $description has more than $MAX_OPTION_DESCRIPTION chars, it will be truncated" }
             }
 
             if (metadata.length > MAX_METADATA) {
                 logger.warn { "payload $metadata has more than $MAX_METADATA chars, it will be truncated" }
             }
-            return Option(
+            return OptionWithoutDescription(
                 label.truncateIfLongerThan(MAX_OPTION_LABEL),
-                description.truncateIfLongerThan(MAX_OPTION_DESCRIPTION),
                 metadata.truncateIfLongerThan(MAX_METADATA)
             )
         }
