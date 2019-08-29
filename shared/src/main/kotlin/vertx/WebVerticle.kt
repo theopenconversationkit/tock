@@ -525,8 +525,7 @@ abstract class WebVerticle : AbstractVerticle() {
         }
     }
 
-    fun RoutingContext.path(name: String): String =
-        pathParam(name)!!.let { URLDecoder.decode(it, StandardCharsets.UTF_8.name()) }
+    fun RoutingContext.path(name: String): String = pathParam(name)
 
     fun RoutingContext.pathToLocale(name: String): Locale = Locale.forLanguageTag(path(name))
 
