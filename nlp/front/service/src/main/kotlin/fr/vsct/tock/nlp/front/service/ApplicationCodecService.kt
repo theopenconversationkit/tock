@@ -32,6 +32,7 @@ import fr.vsct.tock.nlp.front.shared.codec.SentenceEntityDump
 import fr.vsct.tock.nlp.front.shared.codec.SentencesDump
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.Classification
+import fr.vsct.tock.nlp.front.shared.config.ClassifiedEntity
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
@@ -79,6 +80,72 @@ object ApplicationCodecService : ApplicationCodec {
         return ApplicationImportConfiguration(dump.application.name)
     }
 
+    private fun EntityTypeDefinition.newName(namespace: String): String = name.newName(namespace)
+
+    private fun EntityDefinition.newName(namespace: String): String = entityTypeName.newName(namespace)
+
+    private fun String.newName(namespace: String): String {
+        val n = this.namespace()
+        return if (n == namespace || n == BUILTIN_ENTITY_EVALUATOR_NAMESPACE) {
+            this
+        } else {
+            "$namespace:${name()}"
+        }
+    }
+
+    private fun EntityDefinition.withNewName(namespace: String): EntityDefinition =
+        copy(entityTypeName = newName(namespace))
+
+    private fun changeEntityNames(entities: Set<EntityDefinition>, namespace: String): Set<EntityDefinition> =
+        entities.asSequence().map { it.withNewName(namespace) }.toSet()
+
+    private fun ClassifiedEntity.createEntityTypeIfNotExist(namespace: String, report: ImportReport? = null) {
+        val newName = type.newName(namespace)
+        val entityTypeDef = if (!entityTypeExists(newName)) {
+            val newEntity = EntityTypeDefinition(
+                newName,
+                ""
+            )
+            config.save(newEntity)
+            report?.add(newEntity)
+            newEntity
+        } else {
+            config.getEntityTypeByName(newName)!!
+        }
+
+        if (subEntities.isNotEmpty()) {
+            val newEntities = (entityTypeDef.subEntities +
+                subEntities.map {
+                    it.withNewName(namespace, true, report).let { e -> EntityDefinition(e.type, e.role) }
+                }
+                )
+                .distinctBy { it.role }
+            if (newEntities.size != entityTypeDef.subEntities.size) {
+                config.save(entityTypeDef.copy(subEntities = newEntities))
+            }
+        }
+    }
+
+    private fun ClassifiedEntity.withNewName(
+        namespace: String,
+        createEntityTypeIfNotExist: Boolean = false,
+        report: ImportReport? = null): ClassifiedEntity {
+        if (createEntityTypeIfNotExist) {
+            createEntityTypeIfNotExist(namespace, report)
+        }
+        return copy(
+            type = type.newName(namespace),
+            subEntities = changeEntityNames(subEntities, namespace)
+        )
+    }
+
+    private fun changeEntityNames(
+        entities: List<ClassifiedEntity>,
+        namespace: String,
+        createEntityTypeIfNotExist: Boolean = false,
+        report: ImportReport? = null): List<ClassifiedEntity> =
+        entities.map { it.withNewName(namespace, createEntityTypeIfNotExist, report) }
+
     override fun import(
         namespace: String,
         dump: ApplicationDump,
@@ -89,11 +156,23 @@ object ApplicationCodecService : ApplicationCodec {
         try {
 
             dump.entityTypes.forEach { e ->
-                if (!entityTypeExists(e.name)) {
-                    val newEntity = e.copy(_id = newId())
+                if (!entityTypeExists(e.newName(namespace))) {
+                    val newEntity = e.copy(_id = newId(), name = e.newName(namespace))
                     config.save(newEntity)
                     report.add(newEntity)
                     logger.debug { "Import entity type $newEntity" }
+                }
+            }
+            //register sub entities
+            dump.entityTypes.forEach { e ->
+                if (e.subEntities.isNotEmpty()) {
+                    config.getEntityTypeByName(e.newName(namespace))?.run {
+                        config.save(copy(
+                            subEntities = (
+                                subEntities + e.subEntities.map { EntityDefinition(it.newName(namespace), it.role) }
+                                ).distinctBy { it.role }
+                        ))
+                    }
                 }
             }
 
@@ -136,6 +215,7 @@ object ApplicationCodecService : ApplicationCodec {
                     intent = i.copy(
                         _id = newId(),
                         namespace = namespace,
+                        entities = changeEntityNames(i.entities, namespace),
                         applications = setOf(appId),
                         description = i.description?.replace("<br>", "\n")?.replace("</br>", "\n"))
                     intentsToCreate.add(intent)
@@ -183,7 +263,7 @@ object ApplicationCodecService : ApplicationCodec {
                         classification = s.classification.copy(
                             intentId = intentsIdsMap[s.classification.intentId]!!,
                             //ensure that entities are correctly sorted
-                            entities = s.classification.entities.sortedBy { it.start }
+                            entities = changeEntityNames(s.classification.entities, namespace).sortedBy { it.start }
 
                         ))
                     report.add(sentence)
@@ -276,19 +356,12 @@ object ApplicationCodecService : ApplicationCodec {
                             }
 
                         s.entities.forEach { e ->
-                            if (!entityTypeExists(e.entity)) {
-                                val newEntity = EntityTypeDefinition(
-                                    e.entity,
-                                    ""
-                                )
-                                config.save(newEntity)
-                                report.add(newEntity)
-                            }
-                            if (newIntent.entities.none { it.entityTypeName == e.entity && it.role == e.role }) {
+                            val newName = e.entity.newName(namespace)
+                            if (newIntent.entities.none { it.entityTypeName == newName && it.role == e.role }) {
                                 val intentWithEntities = newIntent.copy(
                                     entities = newIntent.entities +
                                         EntityDefinition(
-                                            e.entity,
+                                            newName,
                                             e.role
                                         )
                                 )
@@ -310,7 +383,7 @@ object ApplicationCodecService : ApplicationCodec {
                             s.status.takeUnless { it == model } ?: validated,
                             Classification(
                                 intent?._id ?: UNKNOWN_INTENT_NAME.toId(),
-                                s.entities.map { it.toClassifiedEntity() }
+                                changeEntityNames(s.entities.map { it.toClassifiedEntity() }, namespace, true, report)
                             ),
                             1.0,
                             1.0)

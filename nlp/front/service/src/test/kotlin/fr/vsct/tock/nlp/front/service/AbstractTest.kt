@@ -20,6 +20,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
+import fr.vsct.tock.nlp.core.DictionaryRepository
 import fr.vsct.tock.nlp.core.NlpCore
 import fr.vsct.tock.nlp.front.service.storage.ApplicationDefinitionDAO
 import fr.vsct.tock.nlp.front.service.storage.ClassifiedSentenceDAO
@@ -66,6 +67,7 @@ abstract class AbstractTest {
         val entityTypeDefinitionDAO: EntityTypeDefinitionDAO = mockk(relaxed = true)
         val intentDefinitionDAO: IntentDefinitionDAO = mockk(relaxed = true)
         val classifiedSentenceDAO: ClassifiedSentenceDAO = mockk(relaxed = true)
+        val dictionaryRepository: DictionaryRepository = mockk(relaxed = true)
 
         val frontTestModule = Kodein.Module {
             bind<ApplicationConfiguration>() with provider { config }
@@ -77,15 +79,16 @@ abstract class AbstractTest {
             bind<EntityTypeDefinitionDAO>() with provider { entityTypeDefinitionDAO }
             bind<IntentDefinitionDAO>() with provider { intentDefinitionDAO }
             bind<ClassifiedSentenceDAO>() with provider { classifiedSentenceDAO }
+            bind<DictionaryRepository>() with provider { dictionaryRepository }
         }
 
         fun init() {
             every { config.getApplicationByNamespaceAndName(namespace, appName) } returns app
             every { config.getIntentsByApplicationId(app._id) } returns
-                    listOf(
-                        defaultIntentDefinition,
-                        intent2Definition
-                    )
+                listOf(
+                    defaultIntentDefinition,
+                    intent2Definition
+                )
 
             every { config.getIntentById(any()) } returns null
             every { config.getIntentById(defaultIntentDefinition._id) } returns defaultIntentDefinition

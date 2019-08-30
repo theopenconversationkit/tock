@@ -20,6 +20,7 @@ import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationImportConfiguration
 import fr.vsct.tock.nlp.front.shared.codec.DumpType
 import fr.vsct.tock.nlp.front.shared.codec.SentenceDump
+import fr.vsct.tock.nlp.front.shared.codec.SentenceEntityDump
 import fr.vsct.tock.nlp.front.shared.codec.SentencesDump
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.Classification
@@ -55,7 +56,7 @@ class ApplicationCodecServiceTest : AbstractTest() {
     }
 
     @Test
-    fun `import existing app_does not create app`() {
+    fun `import existing app does not create app`() {
         val dump = ApplicationDump(app)
 
         val report = ApplicationCodecService.import(namespace, dump)
@@ -63,7 +64,7 @@ class ApplicationCodecServiceTest : AbstractTest() {
     }
 
     @Test
-    fun `export sentence_fails WHEN sentence intent is unknown`() {
+    fun `export sentence fails WHEN sentence intent is unknown`() {
         val appId = "id".toId<ApplicationDefinition>()
         val app = ApplicationDefinition("test", "test", _id = appId)
         val sentences = listOf(
@@ -189,5 +190,47 @@ class ApplicationCodecServiceTest : AbstractTest() {
         verify {
             context.config.save(match<ClassifiedSentence> { it.language == Locale.FRENCH })
         }
+    }
+
+    @Test
+    fun `import sentence with sub entities create the sub entities`() {
+        val dump = SentencesDump(
+            app.qualifiedName,
+            sentences = listOf(
+                SentenceDump(
+                    "a",
+                    "a",
+                    listOf(
+                        SentenceEntityDump(
+                            "test:e1",
+                            "r1",
+                            listOf(
+                                SentenceEntityDump(
+                                    "test:e2",
+                                    "r2",
+                                    listOf(
+                                        SentenceEntityDump(
+                                            "test:e3",
+                                            "r3",
+                                            emptyList(),
+                                            0,
+                                            1
+                                        )
+                                    ),
+                                    0,
+                                    1
+                                )
+                            ),
+                            0,
+                            1
+                        )
+                    ),
+                    Locale.FRANCE
+                )
+            )
+        )
+        val report = ApplicationCodecService.importSentences(app.namespace, dump)
+        //note that the entity namespace has changed
+        assertEquals(setOf("namespace:e1", "namespace:e2", "namespace:e3"), report.entitiesImported)
     }
 }
