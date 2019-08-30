@@ -105,7 +105,7 @@ class ClassifiedSentenceMongoDAOTest : AbstractTest() {
                 language = defaultLocale,
                 applicationId = applicationId,
                 creationDate = now,
-                updateDate = now,
+                updateDate = s.updateDate,
                 status = model,
                 classification = Classification(
                     intentId = intentId,

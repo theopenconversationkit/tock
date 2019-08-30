@@ -79,6 +79,7 @@ import org.litote.kmongo.set
 import org.litote.kmongo.setTo
 import org.litote.kmongo.updateMany
 import java.time.Instant
+import java.time.Instant.now
 import java.util.Locale
 import java.util.concurrent.TimeUnit.DAYS
 
@@ -121,7 +122,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 sentence.language,
                 sentence.applicationId,
                 sentence.creationDate,
-                sentence.updateDate,
+                now(),
                 sentence.status,
                 sentence.classification,
                 sentence.lastIntentProbability,
@@ -248,7 +249,11 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                         if (searchMark == null) null else UpdateDate lte searchMark!!.date
                     else if (searchMark == null) UpdateDate gt modifiedAfter?.toInstant()
                     else and(UpdateDate lte searchMark!!.date, UpdateDate gt modifiedAfter?.toInstant()),
-                    if(onlyToReview) { ForReview eq true } else { null }
+                    if (onlyToReview) {
+                        ForReview eq true
+                    } else {
+                        null
+                    }
                 )
 
             logger.debug { filterBase.json }
