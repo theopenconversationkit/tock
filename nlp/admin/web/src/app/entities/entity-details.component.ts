@@ -71,7 +71,7 @@ export class EntityDetailsComponent implements OnInit {
       if (result === "remove") {
         this.nlp.removeSubEntity(this.state.currentApplication, this.entityType, this.entity).subscribe(
           _ => {
-            this.state.removeSubEntityByRole(this.entityType, this.entity.role);
+            this.state.resetConfiguration();
             this.snackBar.open(`Subentity ${this.entity.entityTypeName} removed`, "Remove Subentity", {duration: 1000} as MatSnackBarConfig<any>);
           },
           _ => this.snackBar.open(`Remove Subentity ${this.entity.entityTypeName} failed`, "Error", {duration: 5000} as MatSnackBarConfig<any>)
