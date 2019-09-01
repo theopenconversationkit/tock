@@ -1,0 +1,75 @@
+{
+  "for_user_id": "1090334520887386112",
+  "direct_message_events": [
+    {
+      "type": "message_create",
+      "id": "1167008736986226692",
+      "created_timestamp": "1567071539528",
+      "message_create": {
+        "target": {
+          "recipient_id": "1100452418326806530"
+        },
+        "sender_id": "1090334520887386112",
+        "source_app_id": "16132880",
+        "message_data": {
+          "text": "Bonjour bag0u1, je suis l'Agent virtuel SNCF !",
+          "entities": {
+            "hashtags": [],
+            "symbols": [],
+            "user_mentions": [],
+            "urls": []
+          },
+          "quick_reply": {
+            "type": "options",
+            "options": [
+              {
+                "label": "👤 Parler à un agent",
+                "metadata": "speak_agent?_previous_intent=greetings"
+              },
+              {
+                "label": "🚦 Info trafic",
+                "metadata": "train_is_running?_previous_intent=greetings"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "apps": {
+    "16132880": {
+      "id": "16132880",
+      "name": "aiv-local",
+      "url": "https://www.sncf.com"
+    }
+  },
+  "users": {
+    "1090334520887386112": {
+      "id": "1090334520887386112",
+      "created_timestamp": "1548790982035",
+      "name": "bag0u",
+      "screen_name": "bag0u",
+      "location": "Paris, France",
+      "protected": false,
+      "verified": false,
+      "followers_count": 2,
+      "friends_count": 2,
+      "statuses_count": 58,
+      "profile_image_url": "http://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png",
+      "profile_image_url_https": "https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png"
+    },
+    "1100452418326806530": {
+      "id": "1100452418326806530",
+      "created_timestamp": "1551203276725",
+      "name": "bag0u1",
+      "screen_name": "bag0u1",
+      "protected": false,
+      "verified": false,
+      "followers_count": 1,
+      "friends_count": 2,
+      "statuses_count": 83,
+      "profile_image_url": "http://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png",
+      "profile_image_url_https": "https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png"
+    }
+  }
+}
