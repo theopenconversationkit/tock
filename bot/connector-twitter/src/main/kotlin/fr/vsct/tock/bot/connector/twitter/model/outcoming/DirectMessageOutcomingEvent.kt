@@ -18,6 +18,11 @@ package fr.vsct.tock.bot.connector.twitter.model.outcoming
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeName
 import fr.vsct.tock.bot.connector.twitter.model.MessageCreate
+import fr.vsct.tock.bot.connector.twitter.model.MessageData
+import fr.vsct.tock.bot.connector.twitter.model.Option
+import fr.vsct.tock.bot.connector.twitter.model.OptionWithoutDescription
+import fr.vsct.tock.bot.connector.twitter.model.Options
+import fr.vsct.tock.bot.connector.twitter.model.Recipient
 import fr.vsct.tock.bot.engine.message.GenericMessage
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
@@ -41,4 +46,55 @@ data class DirectMessageOutcomingEvent(
         messageCreate.target.recipientId,
         playerType
     )
+
+    override fun toString(): String = messageCreate.messageData.text
+
+    companion object {
+        fun builder(
+            target: Recipient,
+            senderId: String,
+            text: String
+        ) = Builder(target, senderId, text)
+    }
+
+    class Builder(
+        val target: Recipient,
+        val senderId: String,
+        val text: String
+    ) {
+
+        var sourceAppId: String? = null
+        var options: List<Option> = listOf()
+        var optionsWithoutDescription: List<OptionWithoutDescription> = listOf()
+
+        fun build(): DirectMessageOutcomingEvent {
+            return DirectMessageOutcomingEvent(
+                MessageCreate(
+                    target = target,
+                    sourceAppId = sourceAppId,
+                    senderId = senderId,
+                    messageData = MessageData(
+                        text = text,
+                        quickReply = if (!options.isEmpty()) Options(options) else Options(optionsWithoutDescription)
+                    )
+                )
+            )
+        }
+
+        fun withSourceAppId(sourceAppId: String): Builder {
+            this.sourceAppId = sourceAppId
+            return this
+        }
+
+        fun withOptions(vararg options: Option): Builder {
+            this.options = options.toList()
+            return this
+        }
+
+        fun withOptions(vararg optionsWithoutDescription: OptionWithoutDescription): Builder {
+            this.optionsWithoutDescription = optionsWithoutDescription.toList()
+            return this
+        }
+
+    }
 }

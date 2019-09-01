@@ -23,7 +23,7 @@ import fr.vsct.tock.bot.connector.twitter.model.MediaCategory
 import fr.vsct.tock.bot.connector.twitter.model.MessageCreate
 import fr.vsct.tock.bot.connector.twitter.model.MessageData
 import fr.vsct.tock.bot.connector.twitter.model.Option
-import fr.vsct.tock.bot.connector.twitter.model.Options
+import fr.vsct.tock.bot.connector.twitter.model.OptionWithoutDescription
 import fr.vsct.tock.bot.connector.twitter.model.Recipient
 import fr.vsct.tock.bot.connector.twitter.model.TwitterConnectorMessage
 import fr.vsct.tock.bot.connector.twitter.model.TwitterPublicConnectorMessage
@@ -49,9 +49,9 @@ internal const val TWITTER_CONNECTOR_TYPE_ID = "twitter"
  */
 val twitterConnectorType = ConnectorType(TWITTER_CONNECTOR_TYPE_ID)
 
-private const val MAX_OPTION_LABEL = 36
-private const val MAX_OPTION_DESCRIPTION = 72
-private const val MAX_METADATA = 1000
+const val MAX_OPTION_LABEL = 36
+const val MAX_OPTION_DESCRIPTION = 72
+const val MAX_METADATA = 1000
 
 internal fun CharSequence.truncateIfLongerThan(maxCharacter: Int): String =
     if (maxCharacter >= 0 && this.length > maxCharacter) {
@@ -100,31 +100,36 @@ fun <T : Bus<T>> T.directMessageWithButtons(message: CharSequence, ctas: List<CT
 fun <T : Bus<T>> T.directMessageWithButtons(message: CharSequence, vararg ctas: CTA): OutcomingEvent =
     directMessageWithButtons(message, ctas.toList())
 
-/**
- * Creates a direct message with quick replies
- * @see https://developer.twitter.com/en/docs/direct-messages/quick-replies/overview
- */
-fun <T : Bus<T>> T.directMessageWithOptions(message: CharSequence, options: List<Option>): OutcomingEvent =
-    OutcomingEvent(
-        DirectMessageOutcomingEvent(
-            MessageCreate(
-                target = Recipient(userId.id),
-                sourceAppId = applicationId,
-                senderId = botId.id,
-                messageData = MessageData(
-                    translate(message).toString(),
-                    quickReply = if (options.isNotEmpty()) Options(options) else null
-                )
-            )
-        )
+private fun <T : Bus<T>> T.directMessageBuidler(message: CharSequence): DirectMessageOutcomingEvent.Builder =
+    DirectMessageOutcomingEvent.builder(
+        target = Recipient(userId.id),
+        senderId = botId.id,
+        text = translate(message).toString()
     )
+        .withSourceAppId(applicationId)
+
 
 /**
  * Creates a direct message with quick replies
  * @see https://developer.twitter.com/en/docs/direct-messages/quick-replies/overview
  */
 fun <T : Bus<T>> T.directMessageWithOptions(message: CharSequence, vararg options: Option): OutcomingEvent =
-    directMessageWithOptions(message, options.toList())
+    OutcomingEvent(
+        directMessageBuidler(message)
+            .withOptions(*options)
+            .build()
+    )
+
+/**
+ * Creates a direct message with quick replies
+ * @see https://developer.twitter.com/en/docs/direct-messages/quick-replies/overview
+ */
+fun <T : Bus<T>> T.directMessageWithOptions(message: CharSequence, vararg options: OptionWithoutDescription): OutcomingEvent =
+    OutcomingEvent(
+        directMessageBuidler(message)
+            .withOptions(*options)
+            .build()
+    )
 
 
 /**
@@ -138,17 +143,30 @@ fun <T : Bus<T>> T.directMessageWithAttachment(
     bytes: ByteArray,
     vararg options: Option
 ): OutcomingEvent = OutcomingEvent(
-    DirectMessageOutcomingEvent(
-        MessageCreate(
-            target = Recipient(userId.id),
-            sourceAppId = applicationId,
-            senderId = botId.id,
-            messageData = MessageData(
-                translate(message).toString(),
-                quickReply = if (options.size > 0) Options(options.toList()) else null
-            )
-        )
-    ),
+    directMessageBuidler(message)
+        .withOptions(*options)
+        .build(),
+    AttachmentData(
+        mediaCategory,
+        contentType,
+        bytes
+    )
+)
+
+/**
+ * Creates a direct message with an attachment
+ * @see https://developer.twitter.com/en/docs/direct-messages/message-attachments/overview
+ */
+fun <T : Bus<T>> T.directMessageWithAttachment(
+    message: CharSequence,
+    mediaCategory: MediaCategory,
+    contentType: String,
+    bytes: ByteArray,
+    vararg options: OptionWithoutDescription
+): OutcomingEvent = OutcomingEvent(
+    directMessageBuidler(message)
+        .withOptions(*options)
+        .build(),
     AttachmentData(
         mediaCategory,
         contentType,
@@ -172,9 +190,30 @@ fun <T : Bus<T>> T.directMessageWithGIF(
  * @see https://developer.twitter.com/en/docs/direct-messages/message-attachments/overview
  */
 fun <T : Bus<T>> T.directMessageWithGIF(
+    message: CharSequence,
+    contentType: String,
+    bytes: ByteArray,
+    vararg options: OptionWithoutDescription
+): OutcomingEvent = directMessageWithAttachment(message, MediaCategory.GIF, contentType, bytes, *options)
+
+/**
+ * Creates a direct message with a gif (Max 15MB)
+ * @see https://developer.twitter.com/en/docs/direct-messages/message-attachments/overview
+ */
+fun <T : Bus<T>> T.directMessageWithGIF(
     contentType: String,
     bytes: ByteArray,
     vararg options: Option
+): OutcomingEvent = directMessageWithImage("", contentType, bytes, *options)
+
+/**
+ * Creates a direct message with a gif (Max 15MB)
+ * @see https://developer.twitter.com/en/docs/direct-messages/message-attachments/overview
+ */
+fun <T : Bus<T>> T.directMessageWithGIF(
+    contentType: String,
+    bytes: ByteArray,
+    vararg options: OptionWithoutDescription
 ): OutcomingEvent = directMessageWithImage("", contentType, bytes, *options)
 
 /**
@@ -193,9 +232,30 @@ fun <T : Bus<T>> T.directMessageWithImage(
  * @see https://developer.twitter.com/en/docs/direct-messages/message-attachments/overview
  */
 fun <T : Bus<T>> T.directMessageWithImage(
+    message: CharSequence,
+    contentType: String,
+    bytes: ByteArray,
+    vararg options: OptionWithoutDescription
+): OutcomingEvent = directMessageWithAttachment(message, MediaCategory.IMAGE, contentType, bytes, *options)
+
+/**
+ * Creates a direct message with an image (Max 5MB)
+ * @see https://developer.twitter.com/en/docs/direct-messages/message-attachments/overview
+ */
+fun <T : Bus<T>> T.directMessageWithImage(
     contentType: String,
     bytes: ByteArray,
     vararg options: Option
+): OutcomingEvent = directMessageWithImage("", contentType, bytes, *options)
+
+/**
+ * Creates a direct message with an image (Max 5MB)
+ * @see https://developer.twitter.com/en/docs/direct-messages/message-attachments/overview
+ */
+fun <T : Bus<T>> T.directMessageWithImage(
+    contentType: String,
+    bytes: ByteArray,
+    vararg options: OptionWithoutDescription
 ): OutcomingEvent = directMessageWithImage("", contentType, bytes, *options)
 
 /**
@@ -214,9 +274,30 @@ fun <T : Bus<T>> T.directMessageWithVideo(
  * @see https://developer.twitter.com/en/docs/direct-messages/message-attachments/overview
  */
 fun <T : Bus<T>> T.directMessageWithVideo(
+    message: CharSequence,
+    contentType: String,
+    bytes: ByteArray,
+    vararg options: OptionWithoutDescription
+): OutcomingEvent = directMessageWithAttachment(message, MediaCategory.VIDEO, contentType, bytes, *options)
+
+/**
+ * Creates a direct message with a video (Max 15MB)
+ * @see https://developer.twitter.com/en/docs/direct-messages/message-attachments/overview
+ */
+fun <T : Bus<T>> T.directMessageWithVideo(
     contentType: String,
     bytes: ByteArray,
     vararg options: Option
+): OutcomingEvent = directMessageWithVideo("", contentType, bytes, *options)
+
+/**
+ * Creates a direct message with a video (Max 15MB)
+ * @see https://developer.twitter.com/en/docs/direct-messages/message-attachments/overview
+ */
+fun <T : Bus<T>> T.directMessageWithVideo(
+    contentType: String,
+    bytes: ByteArray,
+    vararg options: OptionWithoutDescription
 ): OutcomingEvent = directMessageWithVideo("", contentType, bytes, *options)
 
 /**
@@ -249,6 +330,18 @@ fun <T : Bus<T>> T.option(
     option(label, description, targetIntent.wrappedIntent(), step, parameters.toMap())
 
 /**
+ * Creates an Option Quick Reply without description
+ * @see https://developer.twitter.com/en/docs/direct-messages/quick-replies/overview
+ */
+fun <T : Bus<T>> T.option(
+    label: CharSequence,
+    targetIntent: IntentAware,
+    step: StoryStep<out StoryHandlerDefinition>? = null,
+    vararg parameters: Pair<String, String>
+): OptionWithoutDescription =
+    option(label, targetIntent.wrappedIntent(), step, parameters.toMap())
+
+/**
  * Creates an Option Quick Reply
  * @see https://developer.twitter.com/en/docs/direct-messages/quick-replies/overview
  */
@@ -264,6 +357,20 @@ fun <T : Bus<T>> T.option(
     }
 
 /**
+ * Creates an Option Quick Reply without description
+ * @see https://developer.twitter.com/en/docs/direct-messages/quick-replies/overview
+ */
+fun <T : Bus<T>> T.option(
+    label: CharSequence,
+    targetIntent: IntentAware,
+    step: StoryStep<out StoryHandlerDefinition>? = null,
+    parameters: Map<String, String>
+): OptionWithoutDescription =
+    option(label, targetIntent, step, parameters) { intent, s, params ->
+        SendChoice.encodeChoiceId(this, intent, s, params)
+    }
+
+/**
  * Creates an Option Quick Reply
  * @see https://developer.twitter.com/en/docs/direct-messages/quick-replies/overview
  */
@@ -274,25 +381,19 @@ private fun <T : Bus<T>> T.option(
     step: StoryStep<out StoryHandlerDefinition>? = null,
     parameters: Map<String, String>,
     metadataEncoder: (IntentAware, StoryStep<out StoryHandlerDefinition>?, Map<String, String>) -> String
-): Option {
-    val l = translate(label)
-    if (l.length > MAX_OPTION_LABEL) {
-        logger.warn { "label $l has more than $MAX_OPTION_LABEL chars, it will be truncated" }
-    }
-    val d = translate(description)
-    if (d.length > MAX_OPTION_DESCRIPTION) {
-        logger.warn { "label $d has more than $MAX_OPTION_DESCRIPTION chars, it will be truncated" }
-    }
-    val metadata = metadataEncoder.invoke(targetIntent, step, parameters)
-    if (metadata.length > MAX_METADATA) {
-        logger.warn { "payload $metadata has more than $MAX_METADATA chars, it will be truncated" }
-    }
-    return Option(
-        l.truncateIfLongerThan(MAX_OPTION_LABEL),
-        d.truncateIfLongerThan(MAX_OPTION_DESCRIPTION),
-        metadata.truncateIfLongerThan(MAX_METADATA)
-    )
-}
+): Option = Option.of(translate(label).toString(), translate(description).toString(), metadataEncoder.invoke(targetIntent, step, parameters))
+
+/**
+ * Creates an Option Quick Reply witout description
+ * @see https://developer.twitter.com/en/docs/direct-messages/quick-replies/overview
+ */
+private fun <T : Bus<T>> T.option(
+    label: CharSequence,
+    targetIntent: IntentAware,
+    step: StoryStep<out StoryHandlerDefinition>? = null,
+    parameters: Map<String, String>,
+    metadataEncoder: (IntentAware, StoryStep<out StoryHandlerDefinition>?, Map<String, String>) -> String
+): OptionWithoutDescription = OptionWithoutDescription.of(translate(label).toString(), metadataEncoder.invoke(targetIntent, step, parameters))
 
 /**
  * Adds a Twitter [ConnectorMessage] if the current connector is Twitter and the interface is not public.
