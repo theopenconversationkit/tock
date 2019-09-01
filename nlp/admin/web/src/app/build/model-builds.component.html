@@ -30,8 +30,8 @@
     </ng-container>
 
     <ng-container matColumnDef="intent">
-      <mat-header-cell *matHeaderCellDef> Intent </mat-header-cell>
-      <mat-cell *matCellDef="let row"> {{intentName(row)}}</mat-cell>
+      <mat-header-cell *matHeaderCellDef> Intent / Entity Type </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{intentOrEntityName(row)}}</mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="count">

@@ -41,5 +41,9 @@ data class SentencesQuery(
     /**
      * The optional sort parameters.
      */
-    val sort: List<Pair<String, Boolean>> = emptyList()
+    val sort: List<Pair<String, Boolean>> = emptyList(),
+    /**
+     * Search the sub entities in the whole entity tree.
+     */
+    val searchSubEntities: Boolean = false
 )

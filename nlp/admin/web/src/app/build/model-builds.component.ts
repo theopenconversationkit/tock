@@ -20,7 +20,7 @@ import {ApplicationService} from "../core-nlp/applications.service";
 import {MatPaginator} from "@angular/material";
 import {DataSource} from "@angular/cdk/collections";
 import {ModelBuild} from "../model/application";
-import {BehaviorSubject, Observable, merge} from "rxjs";
+import {BehaviorSubject, merge, Observable} from "rxjs";
 import {PaginatedQuery} from "../model/commons";
 
 @Component({
@@ -49,13 +49,24 @@ export class ModelBuildsComponent implements OnInit, AfterViewInit {
 
   intentName(build: ModelBuild): string {
     if (build.intentId) {
-      const i = this.state.findIntentById(build.intentId)
+      const i = this.state.findIntentById(build.intentId);
       return i ? i.intentLabel() : "unknown";
     } else {
       return "";
     }
   }
 
+  intentOrEntityName(build: ModelBuild): string {
+    const i = this.intentName(build);
+    if (i) {
+      return i;
+    } else {
+      console.log(build.entityTypeName);
+      const e = this.state.findEntityTypeByName(build.entityTypeName);
+      console.log(e);
+      return e ? e.simpleName() : "";
+    }
+  }
 }
 
 export class ModelBuildDataSource extends DataSource<ModelBuild> {

@@ -52,6 +52,7 @@ import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.intProperty
 import fr.vsct.tock.shared.security.UserLogin
 import mu.KotlinLogging
+import org.bson.conversions.Bson
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
@@ -71,6 +72,7 @@ import org.litote.kmongo.inc
 import org.litote.kmongo.json
 import org.litote.kmongo.lte
 import org.litote.kmongo.ne
+import org.litote.kmongo.or
 import org.litote.kmongo.orderBy
 import org.litote.kmongo.pullByFilter
 import org.litote.kmongo.regex
@@ -238,22 +240,24 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 and(
                     ApplicationId eq applicationId,
                     if (language == null) null else Language eq language,
-                    if (search.isNullOrBlank()) null
-                    else if (onlyExactMatch) Text eq search
-                    else FullText.regex(search!!.trim(), "i"),
+                    when {
+                        search.isNullOrBlank() -> null
+                        onlyExactMatch -> Text eq search
+                        else -> FullText.regex(search!!.trim(), "i")
+                    },
                     if (intentId == null) null else Classification_.intentId eq intentId,
                     if (status.isNotEmpty()) Status `in` status else if (notStatus != null) Status ne notStatus else null,
-                    if (entityType == null) null else Classification_.entities.type eq entityType,
-                    if (entityRole == null) null else Classification_.entities.role eq entityRole,
+                    if (entityType == null) null else
+                        if (searchSubEntities) subEntityTypeQuery(entityType!!)
+                        else Classification_.entities.type eq entityType,
+                    if (entityRole == null) null else
+                        if (searchSubEntities) subEntityRoleQuery(entityRole!!)
+                        else Classification_.entities.role eq entityRole,
                     if (modifiedAfter == null)
                         if (searchMark == null) null else UpdateDate lte searchMark!!.date
                     else if (searchMark == null) UpdateDate gt modifiedAfter?.toInstant()
                     else and(UpdateDate lte searchMark!!.date, UpdateDate gt modifiedAfter?.toInstant()),
-                    if (onlyToReview) {
-                        ForReview eq true
-                    } else {
-                        null
-                    }
+                    if (onlyToReview) ForReview eq true else null
                 )
 
             logger.debug { filterBase.json }
@@ -309,6 +313,33 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
             }
         }
     }
+
+    //ugly
+    private fun subEntityTypeQuery(entityType: String): Bson =
+        or(
+            Classification_.entities.type eq entityType,
+            Classification_.entities.subEntities.type eq entityType,
+            Classification_.entities.subEntities.subEntities.type eq entityType,
+            Classification_.entities.subEntities.subEntities.subEntities.type eq entityType,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.type eq entityType,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.type eq entityType,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.type eq entityType,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.type eq entityType,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.type eq entityType
+        )
+
+    private fun subEntityRoleQuery(role: String): Bson =
+        or(
+            Classification_.entities.role eq role,
+            Classification_.entities.subEntities.role eq role,
+            Classification_.entities.subEntities.subEntities.role eq role,
+            Classification_.entities.subEntities.subEntities.subEntities.role eq role,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.role eq role,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.role eq role,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role eq role,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role eq role,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role eq role
+        )
 
     override fun switchSentencesIntent(
         applicationId: Id<ApplicationDefinition>,

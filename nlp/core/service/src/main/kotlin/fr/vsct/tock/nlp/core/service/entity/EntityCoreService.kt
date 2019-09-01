@@ -91,31 +91,33 @@ internal object EntityCoreService : EntityCore {
         context: CallContext,
         text: String,
         entitiesRecognition: List<EntityRecognition>
-    ): List<EntityRecognition> {
-        val newEvaluatedEntities: Map<EntityRecognition, EvaluationResult> =
-            entitiesRecognition
-                .filterNot { it.value.evaluated }
-                .mapNotNull { e ->
-                    getEntityEvaluator(e.entityType)?.let { evaluator ->
-                        e to evaluate(
-                            evaluator,
-                            EntityCallContextForEntity(context, e.value.entity),
-                            e.value.textValue(text)
-                        )
-                    }
-                }
-                .toMap()
+    ): List<EntityRecognition> = entitiesRecognition.map { e -> evaluate(context, text, e) }
 
-        return entitiesRecognition.map {
-            if (newEvaluatedEntities.containsKey(it)) {
-                val evaluation = newEvaluatedEntities[it]!!
-                it.copy(
-                    probability = if (evaluation.evaluated) (it.probability + evaluation.probability) / 2 else it.probability,
-                    value = it.value.copy(value = evaluation.value, evaluated = true)
+    private fun evaluate(context: CallContext, text: String, e: EntityRecognition): EntityRecognition {
+        if (e.value.evaluated) {
+            return e
+        }
+        val root = getEntityEvaluator(e.entityType)?.let { evaluator ->
+            evaluate(
+                evaluator,
+                EntityCallContextForEntity(context, e.value.entity),
+                e.value.textValue(text)
+            )
+        }
+
+        return if (e.value.subEntities.isNotEmpty()) {
+            val t = e.textValue(text)
+            e.copy(
+                probability = if (root == null) 1.0 else e.probability,
+                value = e.value.copy(
+                    value = root?.value,
+                    evaluated = root?.evaluated == true,
+                    subEntities = e.value.subEntities.map { evaluate(context, t, it) }
                 )
-            } else {
-                it
-            }
+            )
+        } else {
+            root?.let { e.copy(probability = it.probability, value = e.value.copy(value = it.value, evaluated = it.evaluated)) }
+                ?: e
         }
     }
 

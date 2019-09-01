@@ -25,6 +25,7 @@ import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.NlpCore
 import fr.vsct.tock.nlp.front.service.ApplicationCodecService.config
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.shared.error
@@ -145,12 +146,40 @@ internal object ConfigurationRepository {
     fun toApplication(applicationDefinition: ApplicationDefinition): Application {
         val intentDefinitions = getIntentsByApplicationId(applicationDefinition._id)
         val intents = intentDefinitions.map {
-            Intent(it.qualifiedName,
-                it.entities.mapNotNull { toEntity(it.entityTypeName, it.role) },
-                it.entitiesRegexp.mapValues { LinkedHashSet(it.value.map { EntitiesRegexp(it.regexp) }) })
+            Intent(
+                it.qualifiedName,
+                it.entities.mapNotNull { e -> toEntityWithEntityTypesTree(e) },
+                it.entitiesRegexp.mapValues { r -> LinkedHashSet(r.value.map { v -> EntitiesRegexp(v.regexp) }) }
+            )
         }
         return Application(applicationDefinition.qualifiedName, intents, applicationDefinition.supportedLocales)
     }
+
+    private fun toEntityWithEntityTypesTree(e: EntityDefinition): Entity? {
+        var entity = toEntity(e.entityTypeName, e.role)
+        if (entity?.entityType?.subEntities?.isNotEmpty() == true) {
+            entity = entity.copy(entityType = loadEntityTypesTree(entity.entityType))
+        }
+        return entity
+    }
+
+    private fun loadEntityTypesTree(entityType: EntityType, level: Int = 0): EntityType =
+        //sanity check
+        if (level > 10) {
+            entityType
+        } else {
+            entityType.copy(
+                subEntities = entityType.subEntities.map { e ->
+                    val t = entityTypeByName(e.entityType.name)
+                    if (t != null) {
+                        e.copy(
+                            entityType = loadEntityTypesTree(t, level + 1)
+                        )
+                    } else {
+                        e
+                    }
+                })
+        }
 
     fun getApplicationByNamespaceAndName(namespace: String, name: String): ApplicationDefinition? {
         return applicationsByNamespaceAndName[namespace]?.get(name)

@@ -37,7 +37,6 @@ data class EntityTypeRecognition(val value: EntityTypeValue, val probability: Do
                 value.end,
                 Entity(value.entityType, role),
                 value.value,
-                //TODO evaluation of sub entities not yet supported
                 emptyList(),
                 value.evaluated
             ),

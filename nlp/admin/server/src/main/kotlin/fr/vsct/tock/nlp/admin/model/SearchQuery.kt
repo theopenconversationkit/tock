@@ -33,7 +33,11 @@ data class SearchQuery(
     val entityType: String? = null,
     val entityRole: String? = null,
     val modifiedAfter: ZonedDateTime? = null,
-    val onlyToReview: Boolean = false
+    val onlyToReview: Boolean = false,
+    /**
+     * Search the sub entities in the whole entity tree.
+     */
+    val searchSubEntities: Boolean = false
 ) : PaginatedQuery() {
 
     fun toSentencesQuery(applicationId: Id<ApplicationDefinition>): SentencesQuery {
@@ -50,7 +54,8 @@ data class SearchQuery(
             modifiedAfter = modifiedAfter,
             searchMark = searchMark,
             sort = sort ?: emptyList(),
-            onlyToReview = onlyToReview
+            onlyToReview = onlyToReview,
+            searchSubEntities = searchSubEntities
         )
     }
 }

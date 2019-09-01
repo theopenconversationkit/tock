@@ -17,10 +17,9 @@
 package fr.vsct.tock.nlp.core.service.entity
 
 /**
- *
+ * An entity evaluation result.
  */
 data class EvaluationResult(
-        val evaluated: Boolean,
-        val value: Any? = null,
-        val probability: Double = 1.0) {
-}
+    val evaluated: Boolean,
+    val value: Any? = null,
+    val probability: Double = 1.0)
