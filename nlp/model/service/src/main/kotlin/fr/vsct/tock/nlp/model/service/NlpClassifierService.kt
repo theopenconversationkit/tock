@@ -144,7 +144,7 @@ object NlpClassifierService : NlpClassifier {
     }
 
     override fun buildEntityModel(context: EntityBuildContext, expressions: List<SampleExpression>): ModelHolder? {
-        val exp = context.selectValid(expressions)
+        val exp = context.select(expressions)
         return if (exp.isNotEmpty())
             getModelBuilder(context).buildEntityModel(
                 context,

@@ -20,6 +20,7 @@ import {
   EntityDefinition,
   EntityType,
   getRoles,
+  Intent,
   Sentence,
   SentenceStatus,
   TranslateSentencesQuery,
@@ -81,23 +82,37 @@ export class SearchComponent implements OnInit {
     });
   }
 
+  private findEntitiesAndSubEntities(entities: EntityType[], intent: Intent): EntityType[] {
+    return entities.filter(
+      e => intent.entities.some(
+        intentEntity => intentEntity.entityTypeName === e.name || e.containsSuperEntity(intentEntity, entities))
+    );
+  }
+
   private fillEntitiesFilter() {
     this.state.entityTypesSortedByName()
       .subscribe(entities => {
           if (!this.filter.intentId || this.filter.intentId === "-1") {
             this.entityTypes = entities;
-            this.entityRoles = getRoles(this.state.currentIntents.value, this.filter.entityType);
+            this.entityRoles = getRoles(this.state.currentIntents.value, entities, this.filter.entityType);
           } else {
             const intent = this.state.findIntentById(this.filter.intentId);
             if (intent) {
-              this.entityTypes =
-                entities.filter(
-                  e => intent.entities.some(intentEntity => intentEntity.entityTypeName === e.name));
-              this.entityRoles = getRoles([intent], this.filter.entityType);
+              this.entityTypes = this.findEntitiesAndSubEntities(entities, intent);
+              this.entityRoles = getRoles([intent], entities, this.filter.entityType);
             } else {
               this.entityTypes = [];
               this.entityRoles = [];
             }
+          }
+          if (this.filter.entityType) {
+            const e = entities.find(e => e.name === this.filter.entityType);
+            this.filter.searchSubEntities = e && e.allSuperEntities(entities, new Set()).size !== 0;
+          } else {
+            this.filter.searchSubEntities = false;
+          }
+          if (!this.filter.searchSubEntities && this.filter.entityRole) {
+            this.filter.searchSubEntities = entities.find(e => e.subEntities.find(s => s.role === this.filter.entityRole) != undefined) != undefined;
           }
         }
       );

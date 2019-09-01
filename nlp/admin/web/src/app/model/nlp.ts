@@ -137,6 +137,21 @@ export class EntityType {
     }
   }
 
+  allSuperEntities(entityTypes: EntityType[], set: Set<EntityType>): Set<EntityType> {
+    const r = entityTypes.filter(e => !set.has(e) && e.subEntities.find(sub => sub.entityTypeName === this.name));
+    r.forEach(e => set.add(e));
+    r.forEach(e => e.allSuperEntities(entityTypes, set));
+    return set;
+  }
+
+  containsSuperEntityType(superEntity: EntityType, entityTypes: EntityType[]): boolean {
+    return this.allSuperEntities(entityTypes, new Set()).has(superEntity);
+  }
+
+  containsSuperEntity(superEntity: EntityDefinition, entityTypes: EntityType[]): boolean {
+    return this.allSuperEntities(entityTypes, new Set()).has(entityTypes.find(e => e.name === superEntity.entityTypeName));
+  }
+
   static fromJSON(json?: any): EntityType {
     if (!json) {
       return
@@ -762,7 +777,8 @@ export class SearchQuery extends PaginatedQuery {
               public entityRole?: string,
               public modifiedAfter?: Date,
               public sort?: Entry<string, boolean>[],
-              public onlyToReview: boolean = false) {
+              public onlyToReview: boolean = false,
+              public searchSubEntities: boolean = false) {
     super(namespace, applicationName, language, start, size, searchMark, sort)
   }
 }
@@ -1226,13 +1242,21 @@ export function nameFromQualifiedName(qualifiedName: string): string {
   return qualifiedName ? qualifiedName.split(":")[1] : "error";
 }
 
-export function getRoles(intents: Intent[], entityType?: string): string[] {
+export function getRoles(intents: Intent[], entityTypes: EntityType[], entityType?: string): string[] {
   const roles = new Set();
   intents.forEach(
     intent => intent.entities.forEach(
       entity => {
         if (!entityType || entityType.length === 0 || entity.entityTypeName === entityType) {
           roles.add(entity.role);
+        }
+      }
+    )
+  );
+  entityTypes.forEach(e =>
+    e.subEntities.forEach(sub => {
+        if (!entityType || entityType.length === 0 || sub.entityTypeName === entityType) {
+          roles.add(sub.role);
         }
       }
     )

@@ -86,7 +86,9 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
             build = build.copy(error = true, errorMessage = e.message)
         } finally {
             try {
-                triggerDAO.save(build.copy(duration = Duration.between(build.date, Instant.now())))
+                if (build.error || build.nbSentences != 0) {
+                    triggerDAO.save(build.copy(duration = Duration.between(build.date, Instant.now())))
+                }
             } catch (e: Exception) {
                 logger.error(e)
             }
@@ -177,18 +179,19 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
     ) {
         val entityType = entityTypeByName(entityTypeDefinition.name)
         if (entityType != null) {
-            logBuild(application, language, ModelBuildType.intentEntities, null, entityTypeDefinition.name) {
+            logBuild(application, language, ModelBuildType.entityTypeEntities, null, entityTypeDefinition.name) {
                 val modelSentences = config.search(
                     SentencesQuery(
                         application._id,
                         language,
                         size = Integer.MAX_VALUE,
                         status = setOf(ClassifiedSentenceStatus.model),
-                        entityType = entityTypeDefinition.name
+                        entityType = entityTypeDefinition.name,
+                        searchSubEntities = true
                     )
                 )
                 val samples = (modelSentences.sentences + validatedSentences).map { s ->
-                    s.toSampleExpression({ config.toIntent(it) }, { entityType })
+                    s.toSampleExpression({ config.toIntent(it) }, { entityTypeByName(it) })
                 }
                 model.updateEntityModelForEntityType(
                     BuildContext(toApplication(application), language, engineType, onlyIfNotExists),

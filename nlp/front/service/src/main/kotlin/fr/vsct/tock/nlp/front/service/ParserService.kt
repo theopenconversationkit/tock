@@ -235,8 +235,8 @@ object ParserService : Parser {
                 )
                 val intent = ConfigurationRepository.getIntentById(validatedSentence.classification.intentId)
                 return ParseResult(
-                    intent?.name ?: Intent.UNKNOWN_INTENT_NAME.name(),
-                    intent?.namespace ?: Intent.UNKNOWN_INTENT_NAME.namespace(),
+                    intent?.name ?: UNKNOWN_INTENT_NAME.name(),
+                    intent?.namespace ?: UNKNOWN_INTENT_NAME.namespace(),
                     language,
                     entityValues.map { ParsedEntityValue(it.value, 1.0, core.supportValuesMerge(it.entityType)) },
                     emptyList(),

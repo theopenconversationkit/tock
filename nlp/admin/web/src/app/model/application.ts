@@ -147,7 +147,8 @@ export class ModelBuild {
               public error: boolean,
               public date: Date,
               public errorMessage?: string,
-              public intentId?: string) {
+              public intentId?: string,
+              public entityTypeName?: string) {
   }
 
   static fromJSON(json: any): ModelBuild {
