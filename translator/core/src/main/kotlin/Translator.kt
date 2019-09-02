@@ -47,8 +47,6 @@ object Translator {
 
     private val logger = KotlinLogging.logger {}
 
-    private val noTransformer = booleanProperty("tock_no_key_transformer", true)
-
     private val loadAllLabelsOfDefaultNamespace = booleanProperty("tock_load_all_labels_of_default_namespace", true)
 
     /**
@@ -60,7 +58,6 @@ object Translator {
 
     private val statWriteEnabled = booleanProperty("tock_i18n_stat_write_enabled", true)
 
-    private val keyLabelRegex = "[^\\p{L}_]+".toRegex()
     private val defaultInterface: UserInterfaceType = textChat
 
     private val i18nDAO: I18nDAO get() = injector.provide()
@@ -87,10 +84,8 @@ object Translator {
         if (enabled && loadAllLabelsOfDefaultNamespace) {
             try {
                 val labels = i18nDAO.getLabels(defaultNamespace)
-                //transform labels
-                val transformedLabels = transformOldLabels(labels)
 
-                cache.putAll(transformedLabels.associateBy { it._id.toString() })
+                cache.putAll(labels.associateBy { it._id.toString() })
                 //clean up cache
                 i18nDAO.listenI18n {
                     logger.debug { "remove i18n $it from cache" }
@@ -100,44 +95,6 @@ object Translator {
                 logger.error(e)
             }
         }
-    }
-
-    fun transformOldLabels(labels: List<I18nLabel>): List<I18nLabel> {
-        //TODO remove in 19.3
-        //transform labels
-        return if (noTransformer) labels.map { label ->
-            if (label.version == 0) {
-                logger.debug { "Update label $label" }
-                with(label) {
-                    val l = defaultLabel ?: findLabel(defaultLocale, null)?.label
-                    if (l == null) {
-                        logger.warn { "no default label" }
-                        label
-                    } else {
-                        val key1 = "${category}_${oldKeyFromDefaultLabel(l)}"
-                        val key2 = "${namespace}_${category}_${oldKeyFromDefaultLabel(l)}"
-                        val key3 = "${namespace}_${oldKeyFromDefaultLabel(l)}"
-                        val key4 = "${category}_${newKeyFromDefaultLabel(l)}"
-                        val key5 = "${namespace}_${category}_${newKeyFromDefaultLabel(l)}"
-                        val key6 = "${namespace}_${newKeyFromDefaultLabel(l)}"
-                        when (_id.toString()) {
-                            key1, key2, key3, key4, key5, key6 -> label.copy(
-                                _id =
-                                ((if (category.isEmpty()) namespace else "${namespace}_$category") +
-                                    "_${notTransformedKeyFromDefaultLabel(l)}").toId()
-                            )
-                            else -> label
-                        }.also {
-                            logger.debug { "update i18n $it" }
-                            i18nDAO.deleteByNamespaceAndId(namespace, label._id)
-                            i18nDAO.save(it)
-                        }
-                    }
-                }
-            } else {
-                label
-            }
-        } else labels
     }
 
     fun registerVoiceTransformer(transformer: VoiceTransformer) {
@@ -356,21 +313,10 @@ object Translator {
         context: I18nContext
     ): String {
 
-        val (locale, userInterfaceType, connectorId) = context
+        val (locale, _, connectorId) = context
 
         val labelWithoutUserInterface = i18nLabel.findLabel(locale, connectorId)
         return if (labelWithoutUserInterface != null) {
-            i18nDAO.save(
-                i18nLabel.copy(
-                    i18n =
-                    LinkedHashSet(
-                        i18nLabel.i18n + labelWithoutUserInterface.copy(
-                            interfaceType = userInterfaceType,
-                            validated = false
-                        )
-                    )
-                )
-            )
             labelWithoutUserInterface.label
         } else {
             val newLabel = translate(defaultLabel, defaultLocale, locale)
@@ -380,7 +326,7 @@ object Translator {
                     LinkedHashSet(
                         i18nLabel.i18n + I18nLocalizedLabel(
                             locale,
-                            userInterfaceType,
+                            defaultUserInterface,
                             newLabel
                         )
                     )
@@ -410,6 +356,9 @@ object Translator {
         .replace("%%", "'")
 
     fun translate(text: String, source: Locale, target: Locale): String {
+        if(source == target) {
+            return text
+        }
         val t = escapeQuotes(text)
         val m = MessageFormat(t, source)
         var pattern = m.toPattern()
@@ -485,25 +434,13 @@ object Translator {
         )
     }
 
-    private fun oldKeyFromDefaultLabel(label: CharSequence): String {
-        val s = label.trim().toString().replace(" ", "_").replace(keyLabelRegex, "").toLowerCase()
-        return s.substring(0, Math.min(40, s.length))
-    }
-
-    private fun newKeyFromDefaultLabel(label: CharSequence): String {
-        val s = label.trim().toString().replace(" ", "_").replace(keyLabelRegex, "_").toLowerCase()
-        return s.substring(0, Math.min(512, s.length))
-    }
-
     private fun notTransformedKeyFromDefaultLabel(label: CharSequence): String {
         return label.substring(0, Math.min(512, label.length))
     }
 
-    fun getKeyFromDefaultLabel(label: CharSequence): String =
-        if (noTransformer) notTransformedKeyFromDefaultLabel(label)
-        else newKeyFromDefaultLabel(label)
+    fun getKeyFromDefaultLabel(label: CharSequence): String = notTransformedKeyFromDefaultLabel(label)
 
-    fun completeAllLabels(i18n: List<I18nLabel>) : Int {
+    fun completeAllLabels(i18n: List<I18nLabel>): Int {
         var count = 0
         val newI18n = i18n.map { i ->
             val newLabels = i.i18n.map { label ->
@@ -512,7 +449,7 @@ object Translator {
                 } else {
                     val baseValue = i.findExistingLabelForOtherLocale(label.locale, label.interfaceType, label.connectorId)
                     if (!baseValue?.label.isNullOrBlank()) {
-                        count ++
+                        count++
                         label.copy(label = translate(baseValue!!.label, baseValue.locale, label.locale))
                     } else {
                         label
