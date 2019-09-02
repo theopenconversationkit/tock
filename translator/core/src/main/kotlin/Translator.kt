@@ -128,9 +128,9 @@ object Translator {
         statsCache.get(I18nLabelStatKey(value, context)) { AtomicInteger() }.getAndIncrement()
     }
 
-    fun saveIfNotExists(value: I18nLabelValue): I18nLabel = saveIfNotExists(value, defaultLocale)
+    fun saveIfNotExist(value: I18nLabelValue): I18nLabel = saveIfNotExist(value, defaultLocale)
 
-    fun saveIfNotExists(value: I18nLabelValue, defaultLocale: Locale): I18nLabel = getLabel(value) ?: {
+    private fun saveIfNotExist(value: I18nLabelValue, defaultLocale: Locale): I18nLabel = getLabel(value) ?: {
         val defaultLabelKey = value.defaultLabel.toString()
         val defaultLabel = I18nLocalizedLabel(defaultLocale, defaultInterface, defaultLabelKey)
         val label =
@@ -356,7 +356,7 @@ object Translator {
         .replace("%%", "'")
 
     fun translate(text: String, source: Locale, target: Locale): String {
-        if(source == target) {
+        if (source == target) {
             return text
         }
         val t = escapeQuotes(text)

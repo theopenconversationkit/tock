@@ -32,8 +32,8 @@ data class BotMediaCardDescriptor(val title: I18nLabel?,
 
     constructor(desc: MediaCardDescriptor) :
         this(
-            desc.title?.let { Translator.saveIfNotExists(it) },
-            desc.subTitle?.let { Translator.saveIfNotExists(it) },
+            desc.title?.let { Translator.saveIfNotExist(it) },
+            desc.subTitle?.let { Translator.saveIfNotExist(it) },
             desc.file,
             desc.actions.map { BotMediaActionDescriptor(it) }
         )
