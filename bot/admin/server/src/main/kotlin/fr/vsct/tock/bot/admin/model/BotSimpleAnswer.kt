@@ -28,7 +28,7 @@ data class BotSimpleAnswer(val label: I18nLabel, val delay: Long, val mediaMessa
 
     constructor(answer: SimpleAnswer) :
         this(
-            Translator.saveIfNotExists(answer.key),
+            Translator.saveIfNotExist(answer.key),
             answer.delay,
             answer.mediaMessage?.let { BotMediaMessageDescriptor.fromDescriptor(it) }
         )

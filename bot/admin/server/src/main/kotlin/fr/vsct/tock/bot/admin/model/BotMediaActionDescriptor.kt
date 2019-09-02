@@ -25,7 +25,7 @@ import fr.vsct.tock.translator.Translator
 
 data class BotMediaActionDescriptor(val title: I18nLabel, var url: String? = null) : BotMediaMessageDescriptor {
 
-    constructor(desc: MediaActionDescriptor) : this(Translator.saveIfNotExists(desc.title), desc.url)
+    constructor(desc: MediaActionDescriptor) : this(Translator.saveIfNotExist(desc.title), desc.url)
 
     override val type: MediaMessageType = card
 

@@ -59,7 +59,6 @@ import fr.vsct.tock.translator.I18nDAO
 import fr.vsct.tock.translator.I18nLabel
 import fr.vsct.tock.translator.Translator
 import fr.vsct.tock.translator.Translator.initTranslator
-import fr.vsct.tock.translator.Translator.transformOldLabels
 import fr.vsct.tock.translator.TranslatorEngine
 import io.vertx.core.http.HttpMethod.GET
 import io.vertx.ext.web.RoutingContext
@@ -73,7 +72,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
     override val logger: KLogger = KotlinLogging.logger {}
 
-    val i18n: I18nDAO  by injector.instance()
+    val i18n: I18nDAO by injector.instance()
 
     override fun configureServices() {
         initTranslator()
@@ -392,7 +391,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingUploadPost("/i18n/import/json", botUser) { context, content ->
             val labels: List<I18nLabel> = mapper.readValue(content)
-            i18n.save(transformOldLabels(labels.filter { it.namespace == context.organization }))
+            i18n.save(labels.filter { it.namespace == context.organization })
         }
 
         blockingUploadBinaryPost("/file", botUser) { context, (fileName, bytes) ->
