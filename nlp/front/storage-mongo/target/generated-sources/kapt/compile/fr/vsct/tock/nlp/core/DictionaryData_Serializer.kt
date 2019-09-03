@@ -39,6 +39,9 @@ internal class DictionaryData_Serializer :
         gen.writeFieldName("minDistance")
         val _minDistance_ = value.minDistance
         gen.writeNumber(_minDistance_)
+        gen.writeFieldName("textSearch")
+        val _textSearch_ = value.textSearch
+        gen.writeBoolean(_textSearch_)
         gen.writeEndObject()
     }
 }

@@ -22,6 +22,8 @@ private val __OnlyValues: KProperty1<DictionaryData, Boolean?>
     get() = DictionaryData::onlyValues
 private val __MinDistance: KProperty1<DictionaryData, Double?>
     get() = DictionaryData::minDistance
+private val __TextSearch: KProperty1<DictionaryData, Boolean?>
+    get() = DictionaryData::textSearch
 class DictionaryData_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, DictionaryData?>) :
         KPropertyPath<T, DictionaryData?>(previous,property) {
     val namespace: KPropertyPath<T, String?>
@@ -39,6 +41,9 @@ class DictionaryData_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
     val minDistance: KPropertyPath<T, Double?>
         get() = KPropertyPath(this,__MinDistance)
 
+    val textSearch: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__TextSearch)
+
     companion object {
         val Namespace: KProperty1<DictionaryData, String?>
             get() = __Namespace
@@ -49,7 +54,9 @@ class DictionaryData_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         val OnlyValues: KProperty1<DictionaryData, Boolean?>
             get() = __OnlyValues
         val MinDistance: KProperty1<DictionaryData, Double?>
-            get() = __MinDistance}
+            get() = __MinDistance
+        val TextSearch: KProperty1<DictionaryData, Boolean?>
+            get() = __TextSearch}
 }
 
 class DictionaryData_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -69,6 +76,9 @@ class DictionaryData_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1
 
     val minDistance: KPropertyPath<T, Double?>
         get() = KPropertyPath(this,__MinDistance)
+
+    val textSearch: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__TextSearch)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): DictionaryData_<T> =
@@ -91,6 +101,9 @@ class DictionaryData_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProper
 
     val minDistance: KPropertyPath<T, Double?>
         get() = KPropertyPath(this,__MinDistance)
+
+    val textSearch: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__TextSearch)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): DictionaryData_<T> =

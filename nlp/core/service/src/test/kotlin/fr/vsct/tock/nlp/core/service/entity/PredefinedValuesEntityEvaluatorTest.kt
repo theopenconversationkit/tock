@@ -4,6 +4,7 @@ import fr.vsct.tock.nlp.core.DictionaryData
 import fr.vsct.tock.nlp.core.EntityType
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.core.PredefinedValue
+import fr.vsct.tock.nlp.entity.StringValue
 import fr.vsct.tock.nlp.model.EntityCallContextForEntity
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -55,7 +56,7 @@ class PredefinedValuesEntityEvaluatorTest {
 
         assertTrue(evaluationResult.evaluated)
         assertEquals(1.0, evaluationResult.probability)
-        assertEquals("Jour", evaluationResult.value)
+        assertEquals("Jour", (evaluationResult.value as StringValue).value)
 
     }
 
@@ -65,7 +66,7 @@ class PredefinedValuesEntityEvaluatorTest {
         val evaluationResult = DictionaryEntityTypeEvaluator.evaluate(context, "Week")
 
         assertTrue(evaluationResult.evaluated)
-        assertEquals(0.2, evaluationResult.probability)
+        assertEquals(1.0, evaluationResult.probability)
         assertNull(evaluationResult.value)
     }
 
@@ -76,7 +77,7 @@ class PredefinedValuesEntityEvaluatorTest {
 
         assertTrue(evaluationResult.evaluated)
         assertEquals(0.7272727489471436, evaluationResult.probability)
-        assertEquals("Jour", evaluationResult.value)
+        assertEquals("Jour", (evaluationResult.value as StringValue).value)
 
     }
 
