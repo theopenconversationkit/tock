@@ -34,6 +34,8 @@ internal class DictionaryData_Deserializer : JsonDeserializer<DictionaryData>(),
             var _onlyValues_set : Boolean = false
             var _minDistance_: Double? = null
             var _minDistance_set : Boolean = false
+            var _textSearch_: Boolean? = null
+            var _textSearch_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -69,6 +71,11 @@ internal class DictionaryData_Deserializer : JsonDeserializer<DictionaryData>(),
                              else p.doubleValue;
                             _minDistance_set = true
                             }
+                    "textSearch" -> {
+                            _textSearch_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.booleanValue;
+                            _textSearch_set = true
+                            }
                     else -> {
                             if (_token_?.isStructStart == true)
                             p.skipChildren()
@@ -78,9 +85,10 @@ internal class DictionaryData_Deserializer : JsonDeserializer<DictionaryData>(),
                 _token_ = currentToken
                         } 
             return if(_namespace_set && _entityName_set && _values_set && _onlyValues_set &&
-                    _minDistance_set)
+                    _minDistance_set && _textSearch_set)
                     DictionaryData(namespace = _namespace_!!, entityName = _entityName_!!, values =
-                            _values_!!, onlyValues = _onlyValues_!!, minDistance = _minDistance_!!)
+                            _values_!!, onlyValues = _onlyValues_!!, minDistance = _minDistance_!!,
+                            textSearch = _textSearch_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_namespace_set)
@@ -92,7 +100,9 @@ internal class DictionaryData_Deserializer : JsonDeserializer<DictionaryData>(),
                     if(_onlyValues_set)
                     map[parameters.getValue("onlyValues")] = _onlyValues_
                     if(_minDistance_set)
-                    map[parameters.getValue("minDistance")] = _minDistance_ 
+                    map[parameters.getValue("minDistance")] = _minDistance_
+                    if(_textSearch_set)
+                    map[parameters.getValue("textSearch")] = _textSearch_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -109,7 +119,8 @@ internal class DictionaryData_Deserializer : JsonDeserializer<DictionaryData>(),
                 primaryConstructor.findParameterByName("entityName")!!, "values" to
                 primaryConstructor.findParameterByName("values")!!, "onlyValues" to
                 primaryConstructor.findParameterByName("onlyValues")!!, "minDistance" to
-                primaryConstructor.findParameterByName("minDistance")!!) }
+                primaryConstructor.findParameterByName("minDistance")!!, "textSearch" to
+                primaryConstructor.findParameterByName("textSearch")!!) }
 
         private val _values__reference: TypeReference<List<PredefinedValue>> = object :
                 TypeReference<List<PredefinedValue>>() {}
