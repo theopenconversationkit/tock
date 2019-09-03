@@ -127,9 +127,9 @@ export class ApplicationComponent implements OnInit {
     this.snackBar.open(`${this.state.localeName(locale)} removed`, "Locale", {duration: 1000});
   }
 
-  addLocale(newLocale: string) {
-    this.application.supportedLocales.push(newLocale);
-    this.snackBar.open(`${this.state.localeName(newLocale)} added`, "Locale", {duration: 1000});
+  addLocale() {
+    this.application.supportedLocales.push(this.newLocale);
+    this.snackBar.open(`${this.state.localeName(this.newLocale)} added`, "Locale", {duration: 1000});
   }
 
   changeNlpEngine(type: string) {

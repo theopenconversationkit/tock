@@ -24,10 +24,15 @@
               "src/assets"
             ],
             "styles": [
-              {
-                "input": "node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css"
-              },
-              "src/styles.css"
+              "src/app/theme/styles/styles.scss",
+              "src/styles.css",
+              "node_modules/typeface-exo/index.css",
+              "node_modules/roboto-fontface/css/roboto/roboto-fontface.css",
+              "node_modules/ionicons/scss/ionicons.scss",
+              "node_modules/nebular-icons/scss/nebular-icons.scss",
+              "node_modules/pace-js/templates/pace-theme-flash.tmpl.css",
+              "node_modules/leaflet/dist/leaflet.css",
+              "node_modules/bootstrap/dist/css/bootstrap.css"
             ],
             "scripts": [
               "node_modules/cytoscape/dist/cytoscape.min.js",
@@ -37,7 +42,8 @@
               "node_modules/cytoscape-cola/cytoscape-cola.js",
               "node_modules/cytoscape-cose-bilkent/cytoscape-cose-bilkent.js",
               "node_modules/dagre/dist/dagre.min.js",
-              "node_modules/cytoscape-dagre/cytoscape-dagre.js"
+              "node_modules/cytoscape-dagre/cytoscape-dagre.js",
+              "node_modules/chart.js/dist/Chart.min.js"
             ]
           },
           "configurations": {

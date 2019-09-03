@@ -14,22 +14,22 @@
   ~ limitations under the License.
   -->
 
-<mat-card>
-  <mat-card-content>
-    <mat-form-field class="field">
-      <mat-select placeholder="Category" [(ngModel)]="category" (selectionChange)="search()">
-        <mat-option value="">All</mat-option>
-        <mat-option *ngFor="let c of categories" [value]="c">
+<nb-card [nbSpinner]="loading" nbSpinnerStatus="primary">
+  <nb-card-body>
+    <span class="field">
+      <nb-select placeholder="Category" [(ngModel)]="category" (selectedChange)="search()" status="primary">
+        <nb-option value="">All</nb-option>
+        <nb-option *ngFor="let c of categories" [value]="c">
           {{c}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-    <mat-form-field class="search-input">
-      <input matInput placeholder="Search Stories" [(ngModel)]="filter" (keyup)="search()">
-    </mat-form-field>
+        </nb-option>
+      </nb-select>
+    </span>
+    <span class="search-input">
+      <input nbInput status="primary" placeholder="Search Stories" [(ngModel)]="filter" (keyup)="search()">
+    </span>
     <mat-slide-toggle [(ngModel)]="onlyConfigured" (change)="search()">Only Configured Stories</mat-slide-toggle>
-  </mat-card-content>
-</mat-card>
+  </nb-card-body>
+</nb-card>
 <mat-accordion *ngIf="stories">
   <tock-story *ngFor="let s of stories" [story]="s" (delete)="delete($event)"
               [fullDisplay]="true" [displaySteps]="true" (close)="search(s)"></tock-story>

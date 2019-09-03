@@ -65,7 +65,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
   tokens: Token[];
 
   //used to copy to clipboard
-  @ViewChild('copy') tmpTextArea: ElementRef;
+  @ViewChild('copy', {static: false}) tmpTextArea: ElementRef;
 
   constructor(private nlp: NlpService,
               public state: StateService,

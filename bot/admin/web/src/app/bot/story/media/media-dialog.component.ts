@@ -36,7 +36,7 @@ export class MediaDialogComponent {
 
   uploader: FileUploader;
 
-  @ViewChild('titleElement') titleElement: ElementRef;
+  @ViewChild('titleElement', {static: false}) titleElement: ElementRef;
 
   constructor(
     public dialogRef: MatDialogRef<MediaDialogComponent>,

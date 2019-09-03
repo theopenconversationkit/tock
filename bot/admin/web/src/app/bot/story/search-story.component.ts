@@ -34,6 +34,7 @@ export class SearchStoryComponent implements OnInit {
   filter: string = "";
   category: string = "";
   onlyConfigured: boolean = true;
+  loading: Boolean = false
 
   constructor(private nlp: NlpService,
               private state: StateService,
@@ -41,6 +42,7 @@ export class SearchStoryComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loading = true;
     this.bot.getStories(
       new StorySearchQuery(
         this.state.currentApplication.namespace,
@@ -58,6 +60,7 @@ export class SearchStoryComponent implements OnInit {
         }
       });
       this.categories.sort();
+      this.loading = false;
     })
   }
 

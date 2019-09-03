@@ -33,6 +33,8 @@ import {NlpModule} from "../nlp-tabs/nlp.module";
 import {LogStatsComponent} from "../logs/log-stats.component";
 import {ModelBuildsComponent} from "../build/model-builds.component";
 import {IntentQAComponent} from "../intents/quality/intent-qa.component";
+import {NbThemeModule, NbRouteTabsetModule, NbCardModule, NbButtonModule, NbSelectModule } from "@nebular/theme";
+import {ThemeModule} from "../theme/theme.module";
 
 const routes: Routes = [
   {
@@ -90,7 +92,13 @@ export class QualityRoutingModule {
     ApplicationsModule,
     NlpModule,
     MomentModule,
-    ChartsModule
+    ChartsModule,
+    NbThemeModule,
+    ThemeModule,
+    NbRouteTabsetModule,
+    NbCardModule,
+    NbButtonModule,
+    NbSelectModule
   ],
   declarations: [
     QualityTabsComponent,

@@ -14,33 +14,31 @@
   ~ limitations under the License.
   -->
 
-<mat-card class="sentence-analysis">
-  <tock-highlight *ngIf="displayEntities" [sentence]="sentence"></tock-highlight>
-  <mat-card-content>
+<nb-card class="sentence-analysis">
+  <nb-card-header style="font-size: medium;font-weight: normal;">
+    <tock-highlight *ngIf="displayEntities" [sentence]="sentence"></tock-highlight>
+  </nb-card-header>
+  <nb-card-body>
     <div class="sentence-analysis-content">
-      <mat-form-field class="intent">
-        <mat-select placeholder="Intent"
-                    [ngModel]="sentence.classification.intentId"
-                    (selectionChange)="onIntentChange($event.value)">
-          <mat-optgroup *ngFor="let category of state.currentIntentsCategories | async" [label]="category.category">
-            <mat-option *ngFor="let intent of category.intents" [value]="intent._id">
-              {{intent.intentLabel()}}
-            </mat-option>
-          </mat-optgroup>
-          <mat-option value="tock:unknown">Unknown</mat-option>
-          <mat-option value="newIntent">Create New Intent</mat-option>
-        </mat-select>
-      </mat-form-field>
+      <nb-select placeholder="Intent" size="small" status="primary"
+                 [(ngModel)]="sentence.classification.intentId"
+                 (selectedChange)="onIntentChange($event.value)"
+                 style="margin-right: 10px; width: 12rem;">
+        <nb-option-group *ngFor="let category of state.currentIntentsCategories | async" [title]="category.category">
+          <nb-option *ngFor="let intent of category.intents" [value]="intent._id">
+            {{intent.intentLabel()}}
+          </nb-option>
+        </nb-option-group>
+        <nb-option value="tock:unknown">Unknown</nb-option>
+        <nb-option value="newIntent">Create New Intent</nb-option>
+      </nb-select>
       <button mat-icon-button (click)="newIntent()" matTooltip="Create New Intent"><mat-icon>library_add</mat-icon></button>
-
-      <mat-form-field class="locale">
-        <mat-select placeholder="Language" [(ngModel)]="sentence.language"
-                    (selectionChange)="onLanguageChange($event.value)">
-          <mat-option *ngFor="let l of state.currentApplication.supportedLocales" [value]="l">
-            {{state.localeName(l)}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+      <nb-select status="primary" placeholder="Language" [(ngModel)]="sentence.language" size="small"
+                 (selectedChange)="onLanguageChange($event.value)">
+        <nb-option *ngFor="let l of state.currentApplication.supportedLocales" [value]="l">
+          {{state.localeName(l)}}
+        </nb-option>
+      </nb-select>
       <span *ngIf="displayStatus" class="status" [style.background]="sentence.statusColor()">
         {{sentence.statusDisplayed()}}
       </span>
@@ -50,12 +48,12 @@
       <span *ngIf="displayProbabilities" class="probability">
         <span
           *ngIf="displayProbabilities && sentence.classification.intentId && sentence.classification.hasIntentProbability()"
-          matTooltip="intent probability">
+          nbTooltip="intent probability">
            intent : {{sentence.classification.intentProbability | percent:'1.0-2'}}
         </span>
         <span *ngIf="displayProbabilities && displayEntities
         && sentence.classification.entities.length !== 0 && sentence.classification.hasEntitiesProbability()"
-              matTooltip="entities probability">
+              nbTooltip="entities probability">
            , entities : {{sentence.classification.entitiesProbability | percent:'1.0-2'}}
         </span>
         <span
@@ -63,12 +61,12 @@
                 <button *ngIf="!sentence.classification.displayOtherIntents"
                         (click)="sentence.classification.displayOtherIntents=true"
                         mat-icon-button
-                        matTooltip="Display probability for other intents & entities"><mat-icon>expand_more</mat-icon></button>
+                        nbTooltip="Display probability for other intents & entities"><mat-icon>expand_more</mat-icon></button>
                 <button
                   *ngIf="sentence.classification.displayOtherIntents"
                   mat-icon-button
                   (click)="sentence.classification.displayOtherIntents=false"
-                  matTooltip="Hide probabilities"><mat-icon>expand_less</mat-icon></button>
+                  nbTooltip="Hide probabilities"><mat-icon>expand_less</mat-icon></button>
         </span>
         <span *ngIf="displayProbabilities && sentence.classification.notRetainedEntities?.length !== 0">
           <span *ngIf="sentence.classification.displayOtherIntents" class="otherEntities">
@@ -84,7 +82,8 @@
                   Probability for other intents:
                   <ol style="overflow:auto">
                     <li *ngFor="let i of sentence.classification.otherIntentsProbabilities | mapToIterable">
-                      <div style="float:left">{{state.intentLabelByName(i.key)}}&nbsp;&nbsp;</div><div style="float:right">&nbsp;{{i.value | percent:'1.0-2'}}</div>
+                      <div style="float:left">{{state.intentLabelByName(i.key)}}&nbsp;&nbsp;</div><div
+                      style="float:right">&nbsp;{{i.value | percent:'1.0-2'}}</div>
                     </li>
                   </ol>
            </span>
@@ -101,14 +100,18 @@
         {{sentence.reviewComment}}
       </mat-card-content>
     </mat-card>
-  </mat-card-content>
-  <mat-card-actions class="sentence-analysis-content">
-    <button mat-raised-button color="warn" (click)="onDelete()">Delete</button>
-    <button mat-raised-button color="accent" (click)="onUnknown()" *ngIf="displayUnknownButton"
-            matTooltip="Set as unknown to use later">Unknown
+  </nb-card-body>
+  <nb-card-footer class="sentence-analysis-content">
+    <button nbButton status="danger" size="small" shape="semi-round" class="btn" (click)="onDelete()">Delete</button>
+    <button nbButton status="warning" size="small" shape="semi-round" class="btn" (click)="onUnknown()"
+            *ngIf="displayUnknownButton"
+            nbTooltip="Set as unknown to use later">
+      Unknown
     </button>
-    <button mat-raised-button class="validate" color="primary" (click)="onValidate()">Validate</button>
-    <button mat-raised-button class="validate" (click)="onReviewRequest()">Ask for Review</button>
+    <button nbButton status="primary" size="small" shape="semi-round" class="btn" (click)="onValidate()">Validate
+    </button>
+    <button nbButton outline status="primary" size="small" shape="semi-round" class="btn" (click)="onReviewRequest()">Ask for Review
+    </button>
     <a mat-button
        [routerLink]="[config.displayDialogUrl]"
        [queryParams]="{ text: this.sentence.text}"
@@ -119,5 +122,5 @@
     </a>
     <div *ngIf="sentence.qualifier" class="lastUpdate" matTooltip="Qualifier">{{sentence.qualifier}}</div>
     <div *ngIf="sentence.updateDate" class="lastUpdate" matTooltip="Last update">{{sentence.updateDate | amLocal | amDateFormat: 'HH:mm:ss YYYY/MM/DD'}}</div>
-  </mat-card-actions>
-</mat-card>
+  </nb-card-footer>
+</nb-card>

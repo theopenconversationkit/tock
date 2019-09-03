@@ -31,7 +31,7 @@ import {PaginatedQuery} from "../model/commons";
 export class ModelBuildsComponent implements OnInit, AfterViewInit {
 
   displayedColumns = ['date', 'type', 'intent', 'count', 'duration', 'error'];
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   dataSource: ModelBuildDataSource | null;
 
   constructor(private state: StateService,

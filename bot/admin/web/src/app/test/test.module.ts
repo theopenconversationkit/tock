@@ -26,6 +26,16 @@ import {TestService} from "./test.service";
 import {BotSharedModule} from "../shared/bot-shared.module";
 import {TestPlanComponent} from "./plan/test-plan.component";
 import {MomentModule} from "ngx-moment";
+import {
+  NbAccordionModule,
+  NbActionsModule,
+  NbButtonModule,
+  NbCardModule,
+  NbRouteTabsetModule,
+  NbSelectModule,
+  NbTooltipModule,
+  NbInputModule
+} from "@nebular/theme";
 
 const routes: Routes = [
   {
@@ -64,7 +74,15 @@ export class BotTestRoutingModule {
     SharedModule,
     BotTestRoutingModule,
     BotSharedModule,
-    MomentModule
+    MomentModule,
+    NbRouteTabsetModule,
+    NbCardModule,
+    NbButtonModule,
+    NbActionsModule,
+    NbSelectModule,
+    NbTooltipModule,
+    NbAccordionModule,
+    NbInputModule
   ],
   declarations: [
     TestTabsComponent,

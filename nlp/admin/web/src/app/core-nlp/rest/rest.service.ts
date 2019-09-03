@@ -133,8 +133,8 @@ export class RestService {
     console.error(error);
     let errMsg: string;
     const e = Array.isArray(error) ? error[0] : error;
-    if (e instanceof Response) {
-      if (e.status === 403) {
+    if (e instanceof HttpErrorResponse) {
+      if (e.status === 403 || e.status === 401) {
         rest.router.navigateByUrl("/login");
         return NEVER;
       }

@@ -14,9 +14,11 @@
   ~ limitations under the License.
   -->
 
-<mat-card>
-  <mat-card-subtitle *ngIf="treeControl && treeControl.dataNodes.length !== 0">The <span class="default_category">default</span> intent category is expanded by default.</mat-card-subtitle>
-  <mat-card-content>
+<nb-card>
+  <nb-card-header *ngIf="treeControl && treeControl.dataNodes.length !== 0">The <span class="default_category">default</span>
+    intent category is expanded by default.
+  </nb-card-header>
+  <nb-card-body>
     <mat-tree [treeControl]="treeControl" [dataSource]="intentsCategories">
       <mat-tree-node *matTreeNodeDef="let node" class="tree" [class.tree-open]="treeControl.isExpanded(node)">
         <button mat-icon-button matTreeNodeToggle
@@ -26,15 +28,17 @@
           </mat-icon>
         </button>
         <span class="category" matTreeNodeToggle>{{node.category}}</span>
-        <table *ngIf="treeControl.isExpanded(node)" border="1" class="table">
-          <thead>
-          <th>Intent</th>
-          <th>Id</th>
-          <th>Description</th>
-          <th>Entities</th>
-          <th>Shared Intents</th>
-          <th>Mandatory States</th>
-          <th>Actions</th>
+        <table *ngIf="treeControl.isExpanded(node)" border="1" class="table table-hover">
+          <thead style="text-align: center;" class="thead-light">
+          <tr>
+            <th scope="col">Intent</th>
+            <th scope="col">Id</th>
+            <th scope="col">Description</th>
+            <th scope="col">Entities</th>
+            <th scope="col">Shared Intents</th>
+            <th scope="col">Mandatory States</th>
+            <th scope="col">Actions</th>
+          </tr>
           </thead>
           <tr *ngFor="let i of node.intents">
             <td>
@@ -46,7 +50,7 @@
                 <mat-icon>share</mat-icon>
               </div>
             </td>
-            <td class="intent_id"><span >{{i.name}}</span></td>
+            <td class="intent_id"><span>{{i.name}}</span></td>
             <td class="intent_description">{{i.description}}</td>
             <td>
           <span *ngFor="let e of i.entities">
@@ -66,7 +70,8 @@
                           class="intent"
                           placeholder="Add shared intent"
                           (selectionChange)="addSharedIntent(i, $event.value)">
-                <mat-optgroup *ngFor="let category of state.currentIntentsCategories | async" [label]="category.category">
+                <mat-optgroup *ngFor="let category of state.currentIntentsCategories | async"
+                              [label]="category.category">
                   <mat-option *ngFor="let intent of category.intents" [value]="intent._id">
                     {{intent.intentLabel()}}
                   </mat-option>
@@ -96,7 +101,8 @@
                 <mat-chip-list *ngIf="!state.intentExistsInOtherApplication(i.name)"
                                matTooltip="Mandatory states - click to delete">
                   <br>
-                  <mat-chip *ngFor="let s of i.mandatoryStates" color="accent" selected="true" (click)="removeState(i, s)">
+                  <mat-chip *ngFor="let s of i.mandatoryStates" color="accent" selected="true"
+                            (click)="removeState(i, s)">
                     {{s}}
                   </mat-chip>
                 </mat-chip-list>
@@ -109,7 +115,9 @@
               </div>
             </td>
             <td class="actions">
-              <button mat-icon-button color="primary" matTooltip="Edit the intent" (click)="updateIntent(i)"><mat-icon>edit</mat-icon></button>
+              <button mat-icon-button color="primary" matTooltip="Edit the intent" (click)="updateIntent(i)">
+                <mat-icon>edit</mat-icon>
+              </button>
               <button *ngIf="state.hasRole(UserRole.admin)" (click)="downloadSentencesDump(i)" mat-icon-button
                       matTooltip="Download a sentences dump">
                 <mat-icon>cloud_download</mat-icon>
@@ -122,6 +130,6 @@
         </table>
       </mat-tree-node>
     </mat-tree>
-  </mat-card-content>
-</mat-card>
+  </nb-card-body>
+</nb-card>
 

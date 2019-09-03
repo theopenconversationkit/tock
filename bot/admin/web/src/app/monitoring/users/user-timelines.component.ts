@@ -35,6 +35,8 @@ import {PaginatedQuery} from "../../model/commons";
 export class UserTimelinesComponent extends ScrollComponent<UserReport> {
 
   filter: UserFilter = new UserFilter([], false);
+  fromDateOpen: boolean = false;
+  toDateOpen: boolean = false;
 
   constructor(state: StateService,
               private monitoring: MonitoringService,
@@ -134,6 +136,14 @@ export class UserTimelinesComponent extends ScrollComponent<UserReport> {
     }
     this.monitoring.addDialogToTestPlan(planId, dialog.id)
       .subscribe(_ => this.snackBar.open(`Dialog added to plan`, "Dialog Added", {duration: 3000}));
+  }
+
+  openFromCalendar(){
+    this.fromDateOpen = !this.fromDateOpen;
+  }
+
+  openToCalendar(){
+    this.toDateOpen = !this.toDateOpen;
   }
 
 }

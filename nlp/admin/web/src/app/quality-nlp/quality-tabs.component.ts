@@ -18,7 +18,7 @@ import {Component, OnInit} from "@angular/core";
 import {Router} from "@angular/router";
 
 class TabLink {
-  constructor(public link: string, public label: string) {
+  constructor(public route: string, public title: string) {
 
   }
 }
@@ -29,7 +29,7 @@ const tabs = [
   new TabLink("model-builds", "Model Builds"),
   new TabLink("test-builds", "Tests Trend"),
   new TabLink("test-intent-errors", "Intent Test Errors"),
-  new TabLink("test-entity-errors", "Entity Test Errors")
+  new TabLink("test-entity-errors", "Entity Test Errors"),
 ];
 
 @Component({

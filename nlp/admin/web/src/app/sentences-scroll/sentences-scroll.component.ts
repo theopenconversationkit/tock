@@ -49,7 +49,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
   tableView: boolean = false;
   advancedView: boolean = false;
   displayedColumns = [];
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   dataSource: SentencesDataSource | null;
   selection: SelectionModel<Sentence> = new SelectionModel<Sentence>(true, []);
 

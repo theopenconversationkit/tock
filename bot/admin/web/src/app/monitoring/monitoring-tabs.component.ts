@@ -17,7 +17,7 @@
 import {Component, OnInit} from "@angular/core";
 import {ActivatedRoute, Router, RouterState} from "@angular/router";
 class TabLink {
-  constructor(public link: string, public label: string) {
+  constructor(public route: string, public title: string) {
 
   }
 }

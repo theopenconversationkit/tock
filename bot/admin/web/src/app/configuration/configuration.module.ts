@@ -27,6 +27,15 @@ import {ApplicationsResolver} from "../applications/applications.resolver";
 import {CommonModule} from "@angular/common";
 import {BotSharedModule} from "../shared/bot-shared.module";
 import {BotConfigurationComponent} from "./bot/bot-configuration.component";
+import {
+  NbAccordionModule,
+  NbActionsModule,
+  NbButtonModule,
+  NbCardModule,
+  NbInputModule,
+  NbRouteTabsetModule, NbSpinnerModule,
+  NbTabsetModule, NbTooltipModule
+} from "@nebular/theme";
 import {NewBotComponent} from "./bot/new-bot.component";
 import {ReactiveFormsModule} from "@angular/forms";
 
@@ -104,7 +113,16 @@ export class BotConfigurationRoutingModule {
     BotSharedModule,
     ReactiveFormsModule,
     BotConfigurationRoutingModule,
-    ApplicationsModule
+    ApplicationsModule,
+    NbTabsetModule,
+    NbCardModule,
+    NbRouteTabsetModule,
+    NbButtonModule,
+    NbInputModule,
+    NbActionsModule,
+    NbTooltipModule,
+    NbSpinnerModule,
+    NbAccordionModule
   ],
   providers: [],
   bootstrap: []

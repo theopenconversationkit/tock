@@ -16,25 +16,25 @@
 
 import {Component, OnInit} from "@angular/core";
 import {Router} from "@angular/router";
-class TabLink {
-  constructor(public link: string, public label: string) {
-
-  }
-}
-
-const tabs = [
-  new TabLink("nlp", "NLU Applications"),
-  new TabLink("bot", "Bot Configurations"),
-];
 
 @Component({
   selector: 'tock-configuration-tabs',
   templateUrl: './configuration-tabs.component.html',
-  styleUrls: ['./configuration-tabs.component.css']
+  styleUrls: ['./configuration-tabs.component.css', './tabs.component.scss']
 })
 export class ConfigurationTabsComponent implements OnInit {
+  tabs = [
+    {
+      title: 'NLU Applications',
+      route: 'nlp'
+    },
+    {
+      title: 'Bot Configurations',
+      route: 'bot',
+    }
+  ];
 
-  configurationTabLinks = tabs;
+  configurationTabLinks = this.tabs;
 
   constructor(private router: Router) {
   }

@@ -29,7 +29,7 @@ export class SimpleAnswerComponent implements OnInit {
   newAnswer: string;
   newMedia: Media;
 
-  @ViewChild('newAnswerElement') newAnswerElement: ElementRef;
+  @ViewChild('newAnswerElement', {static: false}) newAnswerElement: ElementRef;
 
   constructor(private state: StateService,
               private bot: BotService,

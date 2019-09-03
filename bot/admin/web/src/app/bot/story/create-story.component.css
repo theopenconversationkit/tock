@@ -24,6 +24,7 @@
 .sentence-input {
   width:80%;
   font-size: x-large;
+  margin-right: 10px;
 }
 
 .sentence-input-hidden {
@@ -63,7 +64,13 @@
 
 .actions {
   margin-top: 20px;
+  text-align: right;
 }
 
 .story {
+}
+
+.phrase {
+  max-width: 30rem;
+  width: 30rem;
 }

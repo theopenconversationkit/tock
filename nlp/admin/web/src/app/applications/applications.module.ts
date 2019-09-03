@@ -25,6 +25,14 @@ import {ApplicationComponent} from "./application/application.component";
 import {ApplicationUploadComponent} from "./application-upload/application-upload.component";
 import {FileUploadModule} from "ng2-file-upload";
 import {ApplicationAdvancedOptionsComponent} from "./application-advanced-options/application-advanced-options.component";
+import {
+  NbActionsModule,
+  NbCardModule,
+  NbButtonModule,
+  NbTooltipModule,
+  NbCheckboxModule,
+  NbSelectModule, NbAccordionModule, NbSpinnerModule, NbRadioModule
+} from "@nebular/theme";
 
 const routes: Routes = [
   {
@@ -61,7 +69,16 @@ export class ApplicationsRoutingModule {
     CommonModule,
     SharedModule,
     ApplicationsRoutingModule,
-    FileUploadModule
+    FileUploadModule,
+    NbCardModule,
+    NbActionsModule,
+    NbButtonModule,
+    NbTooltipModule,
+    NbCheckboxModule,
+    NbSelectModule,
+    NbAccordionModule,
+    NbSpinnerModule,
+    NbRadioModule
   ],
   declarations: [
     ApplicationsComponent,

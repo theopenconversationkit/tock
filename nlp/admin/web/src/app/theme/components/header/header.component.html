@@ -1,0 +1,20 @@
+<div class="header-container"
+     [class.left]="position === 'normal'"
+     [class.right]="position === 'inverse'">
+  <div class="logo-containter">
+    <a (click)="toggleSidebar()" href="#" class="navigation"><i class="nb-menu"></i></a>
+    <img style="width: 45px;" src="/assets/images/Logo_Tock_White.svg"/>
+    <div class="logo" (click)="goToHome()">Tock Bot Administration</div>
+  </div>
+</div>
+
+<div class="header-container">
+
+  <nb-actions size="medium" style="cursor: pointer;">
+    <nb-action class="control-item"
+               *ngIf="auth.isLoggedIn() && !auth.isSSO()" (click)="auth.logout()"
+               nbTooltip="Logout">
+      <i class="material-icons tock-toolbar-menu" style="font-size: 30px;">exit_to_app</i>
+    </nb-action>
+  </nb-actions>
+</div>

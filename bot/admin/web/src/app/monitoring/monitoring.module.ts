@@ -28,6 +28,8 @@ import {BotSharedModule} from "../shared/bot-shared.module";
 import {MomentModule} from "ngx-moment";
 import {DialogsComponent} from "./dialogs/dialogs.component";
 import {MatDatepickerModule, MatNativeDateModule} from "@angular/material";
+import {NbCardModule, NbCheckboxModule, NbRouteTabsetModule, NbSpinnerModule, NbTooltipModule, NbButtonModule,
+NbInputModule, NbSelectModule, NbCalendarModule} from "@nebular/theme";
 
 
 const routes: Routes = [
@@ -70,7 +72,16 @@ export class MonitoringRoutingModule {
     MomentModule,
     BotSharedModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    NbRouteTabsetModule,
+    NbCheckboxModule,
+    NbCardModule,
+    NbTooltipModule,
+    NbSpinnerModule,
+    NbButtonModule,
+    NbInputModule,
+    NbSelectModule,
+    NbCalendarModule
   ],
   declarations: [
     MonitoringTabsComponent,
