@@ -39,14 +39,14 @@ Par exemple dans un projet [Maven](https://maven.apache.org/) :
         <dependency>
             <groupId>fr.vsct.tock</groupId>
             <artifactId>bot-toolkit</artifactId>
-            <version>19.3.2</version>
+            <version>19.3.3</version>
         </dependency>
 ```
 
 Ou dans un projet [Gradle](https://gradle.org/) :
 
 ```gradle
-      compile 'fr.vsct.tock:bot-toolkit:19.3.2'
+      compile 'fr.vsct.tock:bot-toolkit:19.3.3'
 ```
 
 ### Un bot est un ensemble de parcours (stories)
