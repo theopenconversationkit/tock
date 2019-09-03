@@ -118,6 +118,12 @@ export class EntitiesComponent implements OnInit {
     }
   }
 
+  updateDictionary() {
+    this.nlp.saveDictionary(this.selectedDictionary).subscribe(
+      _ => this.snackBar.open(`Configuration Updated`, "Update", {duration: 5000} as MatSnackBarConfig<any>)
+    );
+  }
+
   updatePredefinedValueName(predefinedValue: PredefinedValue, input: MatInput) {
     const newValue = input.value;
     const oldValue = predefinedValue.value;

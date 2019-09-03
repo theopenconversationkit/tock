@@ -38,7 +38,7 @@ import java.util.Formatter
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.LongAdder
 
 /**
  * The main entry class of translator module.
@@ -65,17 +65,17 @@ object Translator {
 
     private val cache: MutableMap<String, I18nLabel> = ConcurrentHashMap()
 
-    private val statsCache: Cache<I18nLabelStatKey, AtomicInteger> by lazy {
+    private val statsCache: Cache<I18nLabelStatKey, LongAdder> by lazy {
         val executor: Executor = injector.provide()
         executor.setPeriodic(Duration.ofMillis(longProperty("tock_i18n_stat_refresh_in_ms", 10000))) {
             if (statsCache.size() != 0L) {
                 logger.trace { "persist i18n stats" }
                 val stats = HashMap(statsCache.asMap())
                 statsCache.invalidateAll()
-                stats.forEach { i18nDAO.incrementLabelStat(I18nLabelStat(it.key, it.value.get())) }
+                stats.forEach { i18nDAO.incrementLabelStat(I18nLabelStat(it.key, it.value.toInt())) }
             }
         }
-        CacheBuilder.newBuilder().build<I18nLabelStatKey, AtomicInteger>()
+        CacheBuilder.newBuilder().build<I18nLabelStatKey, LongAdder>()
     }
 
     private val voiceTransformers: MutableList<VoiceTransformer> = CopyOnWriteArrayList()
@@ -125,7 +125,7 @@ object Translator {
         }
 
     private fun incrementStat(value: I18nLabelValue, context: I18nContext) {
-        statsCache.get(I18nLabelStatKey(value, context)) { AtomicInteger() }.getAndIncrement()
+        statsCache.get(I18nLabelStatKey(value, context)) { LongAdder() }.increment()
     }
 
     fun saveIfNotExist(value: I18nLabelValue): I18nLabel = saveIfNotExist(value, defaultLocale)

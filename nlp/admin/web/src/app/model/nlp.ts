@@ -175,7 +175,8 @@ export class Dictionary {
               public entityName: string,
               public values: PredefinedValue[],
               public onlyValues: boolean,
-              public minDistance: number) {
+              public minDistance: number,
+              public textSearch:boolean) {
   }
 
   static fromJSON(json?: any): Dictionary {
