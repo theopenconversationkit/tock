@@ -32,9 +32,10 @@
     <modules>
         <module>core/shared</module>
 
+        <module>entity-evaluator</module>
         <module>model</module>
         <module>core</module>
-        <module>entity-evaluator</module>
+
         <module>front</module>
 
         <module>admin</module>

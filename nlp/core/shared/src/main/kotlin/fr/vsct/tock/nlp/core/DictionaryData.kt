@@ -41,7 +41,11 @@ data class DictionaryData(
     /**
      * The minimum distance to be allowed.
      */
-    val minDistance: Double = 0.5
+    val minDistance: Double = 0.5,
+    /**
+     * If the text is contained by at least one label, the value is eligible.
+     */
+    val textSearch: Boolean = false
 ) {
 
     /**
@@ -49,4 +53,7 @@ data class DictionaryData(
      */
     fun getLabelsMap(locale: Locale): Map<PredefinedValue, List<String>?> =
         values.associateWith { v -> v.labels[locale] }
+
+    @Transient
+    val qualifiedName: String = "$namespace:$entityName"
 }

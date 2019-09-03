@@ -473,9 +473,12 @@ open class AdminVerticle : WebVerticle() {
         }
 
         blockingJsonPost("/dictionary", nlpUser)
-        { context, query: DictionaryData ->
-            if (context.organization == query.namespace) {
-                front.save(query)
+        { context, dictionary: DictionaryData ->
+            if (context.organization == dictionary.namespace) {
+                front.save(dictionary)
+                front.getEntityTypeByName(dictionary.qualifiedName)?.let {
+                    front.save(it.copy(dictionary = dictionary.values.isNotEmpty()))
+                }
             } else {
                 unauthorized()
             }

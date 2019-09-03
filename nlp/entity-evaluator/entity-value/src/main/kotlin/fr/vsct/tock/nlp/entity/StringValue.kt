@@ -16,7 +16,12 @@
 
 package fr.vsct.tock.nlp.entity
 
+data class ValueWithProbability(val value:String, val probability: Double)
+
 /**
- * A value that contains a String.
+ * A value that contains a String with optionally the list of other acceptable values.
  */
-data class StringValue(val value: String) : Value
+data class StringValue(
+    val value: String,
+    val candidates : List<ValueWithProbability>  = emptyList()
+) : Value

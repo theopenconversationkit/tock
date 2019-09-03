@@ -17,6 +17,8 @@
 package fr.vsct.tock.nlp.core.service.entity
 
 import fr.vsct.tock.nlp.core.PredefinedValue
+import fr.vsct.tock.nlp.entity.StringValue
+import fr.vsct.tock.nlp.entity.ValueWithProbability
 import fr.vsct.tock.nlp.model.EntityCallContextForEntity
 import org.simmetrics.metrics.StringMetrics
 import java.util.Locale
@@ -29,9 +31,9 @@ internal object DictionaryEntityTypeEvaluator : EntityTypeEvaluator {
         val dictionary = DictionaryRepositoryService.getDictionary(context.entityType)
 
         val value = dictionary?.let {
-            findValue(context.language, it.getLabelsMap(context.language), it.onlyValues, it.minDistance, text)
+            findValue(context.language, it.getLabelsMap(context.language), it.onlyValues, it.minDistance, text, it.textSearch)
         }
-        return EvaluationResult(true, value?.first?.value, value?.second ?: 0.0)
+        return EvaluationResult(true, value, value?.candidates?.firstOrNull()?.probability ?: 1.0)
     }
 
     private fun findValue(
@@ -39,31 +41,29 @@ internal object DictionaryEntityTypeEvaluator : EntityTypeEvaluator {
         predefinedValues: Map<PredefinedValue, List<String>?>,
         onlyValues: Boolean,
         minDistance: Double,
-        text: String
-    ): Pair<PredefinedValue?, Double> {
+        text: String,
+        textSearch: Boolean
+    ): StringValue? {
         val textToCompare = text.toLowerCase(locale)
         val values = predefinedValues.mapValues { l -> l.value?.map { s -> s.toLowerCase(locale) } ?: emptyList() }
         for (e in values) {
             val labels = e.value
             if (labels.any { s -> s.toLowerCase(locale) == textToCompare }) {
-                return e.key to 1.0
+                return StringValue(e.key.value)
             }
         }
         if (!onlyValues) {
-            var distance = 0F;
-            var key: PredefinedValue? = null
-            for (e in values) {
+            val acceptableValues = values.mapNotNull { e ->
                 val max = e.value.asSequence().map { levenshtein.compare(text, it) }.max()
-                if (max != null && max > distance) {
-                    distance = max
-                    key = e.key
+                if (max != null && (max > minDistance || (textSearch && e.value.any { textToCompare.contains(it) }))) {
+                    ValueWithProbability(e.key.value, max.toDouble())
+                } else {
+                    null
                 }
-            }
-            if (key != null && distance >= minDistance) {
-                return key to distance.toDouble()
-            }
+            }.sortedByDescending { it.probability }
+            return acceptableValues.firstOrNull()?.value?.let { StringValue(it, acceptableValues) }
         }
-        return null to 0.2
+        return null
     }
 
 }
