@@ -75,7 +75,12 @@ data class DirectMessageOutcomingEvent(
                     senderId = senderId,
                     messageData = MessageData(
                         text = text,
-                        quickReply = if (!options.isEmpty()) Options(options) else Options(optionsWithoutDescription)
+                        quickReply =
+                            if (!options.isEmpty())
+                                Options(options)
+                            else if (!optionsWithoutDescription.isEmpty())
+                                Options(optionsWithoutDescription)
+                            else null
                     )
                 )
             )
