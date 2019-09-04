@@ -53,12 +53,12 @@
   <nb-card-header>Predefined values for {{ selectedEntityType.name }}</nb-card-header>
   <nb-card-body>
       <div>
-        <mat-checkbox [(ngModel)]="selectedDictionary.onlyValues" class="no-model model"
+        <mat-checkbox [(ngModel)]="selectedDictionary.onlyValues" class="no-model model" (change)="updateDictionary()"
                       matTooltip="If selected, no model is used: only exact values are recognized/evaluated">No Model
         </mat-checkbox>
         <mat-form-field *ngIf="!selectedDictionary.onlyValues" class="model">
           <input matInput type="number" placeholder="Model Limit" [(ngModel)]="selectedDictionary.minDistance" min="0"
-                 max="1" matTooltip="Number between 0 and 1 - only probability above this value are evaluated">
+                 max="1" matTooltip="Number between 0 and 1 - only probability above this value are evaluated" (change)="updateDictionary()">
         </mat-form-field>
         <mat-checkbox [(ngModel)]="selectedDictionary.textSearch" class="no-model model" (change)="updateDictionary()"
                       matTooltip="If selected, all the values that contains the searched text are returned">Full Text

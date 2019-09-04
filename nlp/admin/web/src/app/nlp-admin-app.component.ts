@@ -21,6 +21,8 @@ import {RestService} from "./core-nlp/rest/rest.service";
 import {MatIconRegistry, MatSnackBar} from "@angular/material";
 import {UserRole} from "./model/auth";
 import {DomSanitizer} from "@angular/platform-browser";
+import {NbMenuItem} from "@nebular/theme";
+
 
 @Component({
   selector: 'tock-nlp-admin-root',
@@ -29,8 +31,10 @@ import {DomSanitizer} from "@angular/platform-browser";
 })
 export class NlpAdminAppComponent implements OnInit, OnDestroy {
 
-  private errorUnsuscriber: any;
   UserRole = UserRole;
+
+  private errorUnsuscriber: any;
+  public menu: NbMenuItem[];
 
   constructor(public auth: AuthService,
               public state: StateService,
@@ -46,19 +50,32 @@ export class NlpAdminAppComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.errorUnsuscriber = this.rest.errorEmitter.subscribe(e =>
       this.snackBar.open(e, "Error", {duration: 5000})
-    )
+    );
+    this.menu = [
+      {
+        title: 'Configuration',
+        icon: 'settings-outline',
+        link: '/applications',
+        hidden: this.state.hasRole(UserRole.admin)
+      },
+      {
+        title: 'NLU',
+        icon: 'settings-outline',
+        link: '/nlp',
+        hidden: this.state.hasRole(UserRole.nlpUser)
+      },
+      {
+        title: 'NLU QA',
+        icon: 'settings-outline',
+        link: '/quality',
+        hidden: this.state.hasRole(UserRole.nlpUser)
+      }
+
+    ];
   }
 
   ngOnDestroy(): void {
     this.errorUnsuscriber.unsubscribe();
-  }
-
-  changeApplication(newApplicationName: string) {
-    this.state.changeApplicationWithName(newApplicationName);
-  }
-
-  changeLocale(newLocale: string) {
-    this.state.changeLocale(newLocale);
   }
 
 }

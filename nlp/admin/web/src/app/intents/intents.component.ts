@@ -40,6 +40,7 @@ export class IntentsComponent implements OnInit {
   treeControl: FlatTreeControl<IntentsCategory>;
   intentsCategories: BehaviorSubject<IntentsCategory[]> = new BehaviorSubject([]);
   expandedCategories: Set<string> = new Set(["default"]);
+  display = true;
 
   constructor(public state: StateService,
               private nlp: NlpService,
@@ -78,7 +79,9 @@ export class IntentsComponent implements OnInit {
           }
       }
     );
+    this.display = false;
     dialogRef.afterClosed().subscribe(result => {
+      this.display = true;
       if (result.name) {
         this.captureExpanded();
         this.nlp
@@ -143,7 +146,9 @@ export class IntentsComponent implements OnInit {
         title: `Add a state for intent \"${intent.name}\"`
       }
     } as MatDialogConfig);
+    this.display = false;
     dialogRef.afterClosed().subscribe(result => {
+      this.display = true;
       if (result !== "cancel") {
         intent.mandatoryStates.push(result.name);
         this.nlp.saveIntent(intent).subscribe(

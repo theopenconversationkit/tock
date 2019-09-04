@@ -8,18 +8,13 @@ import {AuthService} from "../../../core-nlp/auth/auth.service";
   styleUrls: ['./one-column.layout.scss'],
   template: `
     <nb-layout>
+
       <nb-layout-header fixed *ngIf="auth.isLoggedIn()">
         <ngx-header></ngx-header>
       </nb-layout-header>
 
       <nb-sidebar class="menu-sidebar" tag="menu-sidebar" responsive *ngIf="auth.isLoggedIn()">
-        
         <ng-content select="nb-menu"></ng-content>
-        <nb-sidebar-header>
-          <a href="https://github.com/voyages-sncf-technologies/tock" target="_blank" class="btn btn-hero-success main-btn" style="margin-top: 0rem;">
-            <i class="ion ion-social-github"></i> <span>Support Us</span>
-          </a>
-        </nb-sidebar-header>
       </nb-sidebar>
 
       <nb-layout-column>

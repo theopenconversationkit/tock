@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-<nb-card>
+<nb-card *ngIf="display">
   <nb-card-header *ngIf="treeControl && treeControl.dataNodes.length !== 0">The <span class="default_category">default</span>
     intent category is expanded by default.
   </nb-card-header>

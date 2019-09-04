@@ -2,18 +2,19 @@ import { ModuleWithProviders, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   NbActionsModule,
-    NbLayoutModule,
-    NbMenuModule,
-    NbSearchModule,
-    NbSidebarModule,
-    NbUserModule,
-    NbContextMenuModule,
-    NbButtonModule,
-    NbSelectModule,
-    NbIconModule,
-    NbThemeModule
+  NbLayoutModule,
+  NbMenuModule,
+  NbSearchModule,
+  NbSidebarModule,
+  NbUserModule,
+  NbContextMenuModule,
+  NbButtonModule,
+  NbSelectModule,
+  NbIconModule,
+  NbThemeModule
 } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 import {
   FooterComponent,
@@ -26,19 +27,22 @@ import { DEFAULT_THEME } from './styles/theme.default';
 import { COSMIC_THEME } from './styles/theme.cosmic';
 import { CORPORATE_THEME } from './styles/theme.corporate';
 import { DARK_THEME } from './styles/theme.dark';
+import {FormsModule} from "@angular/forms";
 
 const NB_MODULES = [
   NbLayoutModule,
-    NbMenuModule,
-    NbUserModule,
-    NbActionsModule,
-    NbSearchModule,
-    NbSidebarModule,
-    NbContextMenuModule,
-    NbButtonModule,
-    NbSelectModule,
-    NbIconModule,
-    NbEvaIconsModule
+  FormsModule,
+  NbMenuModule,
+  NbUserModule,
+  NbActionsModule,
+  NbSearchModule,
+  NbSidebarModule,
+  NbContextMenuModule,
+  NbButtonModule,
+  NbSelectModule,
+  NbIconModule,
+  NbEvaIconsModule,
+  MatSlideToggleModule
 ];
 
 const COMPONENTS = [

@@ -1,15 +1,51 @@
-<div class="header-container"
-     [class.left]="position === 'normal'"
-     [class.right]="position === 'inverse'">
-  <div class="logo-containter">
-    <a (click)="toggleSidebar()" href="#" class="navigation"><i class="nb-menu"></i></a>
+<!--
+  ~ Copyright (C) 2017/2019 VSCT
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<div class="header-container">
+  <div class="logo-containter" style="    display: contents;">
+    <a (click)="toggleSidebar()" href="#" class="sidebar-toggle">
+      <nb-icon icon="menu-2-outline"></nb-icon>
+    </a>
     <img style="width: 45px;" src="/assets/images/Logo_Tock_White.svg"/>
-    <div class="logo" (click)="goToHome()">Tock Bot Administration</div>
+    <div class="logo" (click)="goToHome()">Tock Studio</div>
+    <i class="material-icons small">wb_sunny</i>
+    <mat-slide-toggle class="choice" [checked]="isDark" (change)="switchTheme()" color="primary"></mat-slide-toggle>
+    <i class="material-icons small">brightness_2</i>
   </div>
 </div>
 
 <div class="header-container">
 
+  <nb-select status="primary"
+             *ngIf="state.currentApplication"
+             (selectedChange)="changeApplication()"
+             [(ngModel)]="selectedApplication">
+    <nb-option *ngFor="let app of state.applications"
+               [value]="app.name">{{ app.name }}
+    </nb-option>
+  </nb-select>
+
+  <nb-select status="primary"
+             *ngIf="state.currentApplication"
+             (selectedChange)="changeLocale()"
+             [(ngModel)]="selectedLocale"
+             style="margin-left: 10px;">
+    <nb-option *ngFor="let l of state.currentApplication.supportedLocales"
+               [value]="l">{{ state.localeName(l) }}</nb-option>
+  </nb-select>
   <nb-actions size="medium" style="cursor: pointer;">
     <nb-action class="control-item"
                *ngIf="auth.isLoggedIn() && !auth.isSSO()" (click)="auth.logout()"

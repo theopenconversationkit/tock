@@ -19,9 +19,6 @@
     align-content: center;
   }
 
-  nb-user {
-    cursor: pointer;
-  }
 
   ::ng-deep nb-search button {
     padding: 0!important;
@@ -49,6 +46,9 @@
       @include nb-rtl(border-right, 1px solid nb-theme(divider-color));
       white-space: nowrap;
       text-decoration: none;
+    }
+    .small {
+      font-size: 20px;
     }
   }
 

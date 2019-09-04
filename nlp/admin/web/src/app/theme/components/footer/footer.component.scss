@@ -3,9 +3,7 @@
 @import '~bootstrap/scss/mixins/breakpoints';
 
 @include nb-install-component() {
-  width: 100%;
   display: flex;
-  justify-content: space-between;
   align-items: center;
 
   .socials {
