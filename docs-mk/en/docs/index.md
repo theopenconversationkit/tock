@@ -1,53 +1,55 @@
-# Bienvenue sur Tock : une plateforme conversationnelle ouverte
+# Welcome to Tock - open conversational platform
 
-**Tock** (*The Open Conversation Kit*) est une plateforme complète pour construire des agents conversationnels - souvent appelés _bots_. 
+<img alt="Tock logo" src="assets/images/logo.svg" style="width: 100px;">
 
-Contrairement à la plupart des solutions conversationnelles, Tock ne dépend pas d'API tierces, bien qu'il soit possible d'en intégrer.
-L'utilisateur choisit les composants qu'il embarque et peut ainsi conserver la maîtrise de ses modèles et données conversationnelles.
+**Tock** (*The Open Conversation Kit*) is a complete and open platform to build conversational agents - also known as _bots_. 
 
-> Tock est utilisé en production depuis plusieurs années par [OUI.sncf](https://www.oui.sncf/services/assistant) pour
-> proposer des assistants sur des canaux propres (Web, mobile), réseaux sociaux et enceintes connectées.
+Contrary to most conversational AI solutions, Tock does not depend on 3rd-party APIs, although it is possible to integrate with them.
+Users choose which components to embed and decide to keep (or share) ownership of conversational data and models.
 
-> L'ensemble du code source est disponible sur 
-> [GitHub](https://github.com/voyages-sncf-technologies/tock) 
-> sous une [licence Apache 2](https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE). 
+> Tock has been used in production for several years by [OUI.sncf](https://www.oui.sncf/services/assistant) to
+> propose various assistants over its own channels (Web, mobile), social networks, as well as smart speakers.
 
-## Fonctionnalités
+> The platform source code is available on [GitHub](https://github.com/voyages-sncf-technologies/tock) 
+> under the [Apache License, version 2.0](https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE). 
 
-* Bots _standalone_ ou intégrés à des sites Web, applications mobiles, réseaux sociaux, enceintes connectées etc.
-* Plateforme _NLU_ complète _(Natural Language Understanding)_, compatible avec différents algorithmes comme
+## Features
+
+* _Standalone_ bots or integrated with Web sites, mobile apps, social networks, smart speakers.
+* Full-featured _NLU_ _(Natural Language Understanding)_ platform, compatible with algorithms such as 
 [OpenNLP](https://opennlp.apache.org/), [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/), [Duckling](https://github.com/facebook/duckling),
-déployable seule si besoin (pour des usages comme l'[Internet des objets](https://fr.wikipedia.org/wiki/Internet_des_objets))
-* Interfaces _Tock Studio_ :
-    * Gestion des modèles, entraînement du bot
-    * Construction de parcours conversationnels sans code
-    * Support de l'internationalisation (_i18n_) pour les bots multilingues
-    * Suivi des conversations, performances et erreurs des modèles
-    * Analyse interactive des tendances / parcours utilisateurs (_Bot Flow_)
-* Frameworks pour développer des parcours complexes et intégrer des services tiers : <br/> _DSL_ en [Kotlin](https://kotlinlang.org/) et _API_ tous langages
-* Nombreux connecteurs pour [Messenger](https://www.messenger.com/), [WhatsApp](https://www.whatsapp.com/), 
+can be deployed alone (for use cases like the [Internet Of Things](https://fr.wikipedia.org/wiki/Internet_des_objets) for instance)
+* _Tock Studio_ user interfaces :
+    * Models management, bot training
+    * Conversational no-code story builder
+    * Internationalization (_i18n_) support for multilingual bots
+    * Conversations, performance et model errors monitoring
+    * Interactive trends / users flow analytics (_Bot Flow_)
+* Frameworks available to develop complex stories and integrate with 3rd-party services: <br/> [Kotlin](https://kotlinlang.org/) _DSL_ plus any-language _API_
+* Numerous connectors to [Messenger](https://www.messenger.com/), [WhatsApp](https://www.whatsapp.com/), 
 [Google Assistant / Home](https://assistant.google.com/), [Twitter](https://twitter.com/), [Alexa](https://alexa.amazon.com/), 
 [Business Chat / iMessage](https://www.apple.com/fr/ios/business-chat/), [Teams](https://products.office.com/fr-fr/microsoft-teams/), 
-[Slack](https://slack.com/)... (voir [connecteurs](utilisateur/channels.md))
-* Installation _cloud_ ou _on-premise_, avec ou sans [Docker](https://www.docker.com/), 
-bot _"embarqué"_ sans Internet 
+[Slack](https://slack.com/)... (see [connectors](utilisateur/channels.md))
+* _Cloud_ or _on-premise_ setups, with or without [Docker](https://www.docker.com/), 
+_"embedded"_ bots without Internet 
 
-![Interface d'admin NLP - qualification de phrase](img/tock-nlp-admin.png "Exemple de qualification de phrase")
+![NLU interface example - qualifying a sentence](img/tock-nlp-admin.png "NLU interface example - qualifying a sentence")
 
 ## Technologies
 
-La plateforme applicative est la [JVM](https://fr.wikipedia.org/wiki/Machine_virtuelle_Java). Le langage de référence est [Kotlin](https://kotlinlang.org/) mais d'autres langages de programmation peuvent être utilisés via les API mises à disposition.
+Tock runs on [JVM](https://fr.wikipedia.org/wiki/Machine_virtuelle_Java) platforms. The reference language is [Kotlin](https://kotlinlang.org/),
+ but other programming languages can be leveraged through the available APIs.
  
-Tock utilise [Vert.x](http://vertx.io/) et [MongoDB](https://www.mongodb.com ). 
-Des bibliothèques et algorithmes _NLU_ comme [Apache OpenNLP](https://opennlp.apache.org/) ou [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/)
-peuvent être utilisées, mais Tock n'en dépend pas directement.
+Tock relies on [Vert.x](http://vertx.io/) and [MongoDB](https://www.mongodb.com ). 
+Various _NLU_ libraries and algorithms can be used, such as [Apache OpenNLP](https://opennlp.apache.org/) or [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/),
+but Tock does not depend on them directly.
 
-Les interfaces graphiques _(Tock Studio)_ sont écrites avec [Angular](https://angular.io/) en [Typescript](https://www.typescriptlang.org/).
+Graphical interfaces _(Tock Studio)_ are made with [Angular](https://angular.io/) in [Typescript](https://www.typescriptlang.org/).
 
-## Démarrer...
+## Getting started...
 
-* [Table des matières](toc.md)
-* _[Guides](guide/studio.md)_ et [plateforme de démonstration](https://demotock-production-admin.vsct-prod.aws.vsct.fr/)
-* _Manuels [utilisateur](utilisateur/concepts.md)_, [développeur](dev/modes.md), [administrateur](admin/architecture.md)
-* _[Ressources (supports, video)](apropos/ressources.md)_ et _[exemples de code](dev/exemples-code.md)_
+* [Table of contents](toc.md)
+* [Guides](guide/studio.md) and running [demo/sandbox platform](https://demotock-production-admin.vsct-prod.aws.vsct.fr/)
+* [User](utilisateur/concepts.md), [developer](dev/modes.md) and [administrator/ops](admin/architecture.md) manuals
+* [Resources (slides, video)](apropos/ressources.md) and [code samples](dev/exemples-code.md)
 
