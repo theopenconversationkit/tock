@@ -34,7 +34,6 @@ import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import mu.KotlinLogging
 import oauth.signpost.http.HttpParameters
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -52,12 +51,12 @@ import retrofit2.http.Query
 import se.akerfeldt.okhttp.signpost.OkHttpOAuthConsumer
 import se.akerfeldt.okhttp.signpost.SigningInterceptor
 import java.net.URLDecoder
+import java.net.URLEncoder
 import java.util.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import fr.vsct.tock.bot.connector.twitter.model.Tweet as InputTweet
 import fr.vsct.tock.bot.connector.twitter.model.outcoming.Tweet as OutputTweet
-
 /**
  * Twitter client
  */
@@ -257,7 +256,7 @@ internal class TwitterClient(
     }
 
     private fun defaultUser(): User {
-        return User("", "", "", Date().time, null,null, null, "", "", false, false, 0, 0, 0, "", "")
+        return User("", "", "", Date().time, null, null, null, "", "", false, false, 0, 0, 0, "", "")
     }
 
     private fun Response<*>.logError() {
@@ -537,10 +536,15 @@ internal class TwitterClient(
         false
     }
 
-    fun sendTweet(tweet: fr.vsct.tock.bot.connector.twitter.model.outcoming.Tweet, threadId: Long?): Boolean = try {
+    fun sendTweet(tweet: OutputTweet, threadId: Long?): Boolean = try {
         val enableDM = tweet.dmRecipientID != null
-        val message = if(enableDM) {
-            tweet.text + " https://twitter.com/messages/compose?recipient_id=" + tweet.dmRecipientID
+        val enableWelcomeMessage = tweet.welcomeMessageID != null
+        val enableDefaultMessage = tweet.defaultMessage != null
+        val message = if (enableDM) {
+            tweet.text +
+                    " https://twitter.com/messages/compose?recipient_id=" + tweet.dmRecipientID +
+                    (if (enableWelcomeMessage) "&welcome_message_id=" + tweet.welcomeMessageID else "") +
+                    (if (enableDefaultMessage) "&text=" + URLEncoder.encode(tweet.defaultMessage, "UTF-8") else "")
         } else {
             tweet.text
         }
