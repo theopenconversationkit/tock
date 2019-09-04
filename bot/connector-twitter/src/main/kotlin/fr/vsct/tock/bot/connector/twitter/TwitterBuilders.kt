@@ -442,7 +442,8 @@ fun BotBus.tweet(message: CharSequence): Tweet {
 /**
  * Create a tweet with a link for DM to the account listened
  * @see https://developer.twitter.com/en/docs/tweets/post-and-engage/overview
+ * @see https://developer.twitter.com/en/docs/direct-messages/welcome-messages/guides/deeplinking-to-welcome-message
  */
-fun BotBus.tweetWithInviteForDM(message: CharSequence): Tweet {
-    return Tweet(translate(message).toString(), botId.id)
+fun BotBus.tweetWithInviteForDM(message: CharSequence, welcomeMessageID: String? = null, defaultMessage: String? = null): Tweet {
+    return Tweet(translate(message).toString(), botId.id, welcomeMessageID, defaultMessage)
 }
