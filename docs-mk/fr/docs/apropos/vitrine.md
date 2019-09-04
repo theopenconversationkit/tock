@@ -1,6 +1,4 @@
-# Vitrine / Utilisateurs
-
-Cette page présente différents assistants et produits construits avec Tock.
+# Vitrine utilisateurs
 
 Depuis sa création pour [OUI.sncf](https://www.oui.sncf/) en 2016, Tock est utilisé par de plus en plus
 d'équipes pour créer des bots conversationnels dédiés à des usages divers :
@@ -9,6 +7,8 @@ d'équipes pour créer des bots conversationnels dédiés à des usages divers :
 * distribution, transactionnel, paiement
 * assistance, _care_, _help desks_
 * FAQ et arbres de décision
+
+Cette page présente différents assistants et produits construits avec Tock.
 
 ## _OUIbot_, le bot OUI.sncf
 
@@ -115,7 +115,7 @@ Accessible via la page Facebook de la SNCF, l'_Agent virtuel_ est basé sur Tock
 
 ## _Eve_, le bot interne e-voyageurs
 
-_Eve_ est l'assistant interne des collaborateurs [e-voyageurs](https://www.sncf.com/fr/groupe/newsroom/e-voyageurs-sncf).
+_Eve_ est l'assistant interne des collaborateurs [e-voyageurs SNCF](https://www.sncf.com/fr/groupe/newsroom/e-voyageurs-sncf).
 
 > Le chatbot répond aux questions courantes, renvoie vers les bons contacts et outils collaboratifs de l'entreprise, 
 >automatise des demandes courantes au Support Informatique, Services Généraux, Direction Juridique, etc. 
@@ -128,7 +128,7 @@ _Eve_ est à l'écoute des collaborateurs dans l'entreprise et en mobilité sur 
 * **Date de naissance :** en production depuis 2019
 * **Domaine :** assistance en interne & B2B (FAQ, Support Informatique, RH, Juridique), automatisations DevOps (supervision, 
 déploiements, gestion de production, etc.)
-* **Canaux :** texte, en interne dans l'entreprise et en mobilité via Teams
+* **Canaux :** texte & voix, en interne dans l'entreprise et en mobilité via Teams
 
 ## Et vous ?
 

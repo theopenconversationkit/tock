@@ -47,7 +47,7 @@ Les interfaces graphiques _(Tock Studio)_ sont écrites avec [Angular](https://a
 ## Démarrer...
 
 * [Table des matières](toc.md)
-* _[Guides](guide/studio.md)_ et [plateforme de démonstration](https://demotock-production-admin.vsct-prod.aws.vsct.fr/)
-* _Manuels [utilisateur](utilisateur/concepts.md)_, [développeur](dev/modes.md), [administrateur](admin/architecture.md)
-* _[Ressources (supports, video)](apropos/ressources.md)_ et _[exemples de code](dev/exemples-code.md)_
+* [Guides](guide/studio.md) et [plateforme de démonstration](https://demotock-production-admin.vsct-prod.aws.vsct.fr/)
+* Manuels [utilisateur](utilisateur/concepts.md), [développeur](dev/modes.md), [administrateur](admin/architecture.md)
+* [Ressources (supports, video)](apropos/ressources.md) et [exemples de code](dev/exemples-code.md)
 
