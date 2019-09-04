@@ -62,8 +62,10 @@ interface ConnectorController {
         recipientId: PlayerId,
         intent: IntentAware,
         step: StoryStep<out StoryHandlerDefinition>? = null,
-        parameters: Map<String, String> = emptyMap()): Unit =
+        parameters: Map<String, String> = emptyMap()
+    ) {
         connector.notify(this, recipientId, intent, step, parameters)
+    }
 
     /**
      * Handles an event sent by the connector. the primary goal of this controller.

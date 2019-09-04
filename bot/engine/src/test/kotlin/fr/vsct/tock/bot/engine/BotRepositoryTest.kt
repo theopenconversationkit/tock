@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
+import fr.vsct.tock.bot.connector.NotifyBotStateModifier
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorProvider
@@ -291,7 +292,7 @@ class BotRepositoryTest : BotEngineTest() {
 
         val intent = Intent("a")
         val recipientId = PlayerId("user")
-        BotRepository.notify("test", recipientId, intent)
+        BotRepository.notify("test", recipientId, intent, stateModifier = NotifyBotStateModifier.KEEP_CURRENT_STATE)
 
         verify { connector.notify(any(), recipientId, intent, null, any()) }
     }

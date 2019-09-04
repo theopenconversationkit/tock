@@ -22,6 +22,7 @@ import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
+import fr.vsct.tock.bot.connector.NotifyBotStateModifier
 import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotAnswerInterceptor
@@ -39,6 +40,7 @@ import fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener
 import fr.vsct.tock.bot.engine.nlp.NlpController
 import fr.vsct.tock.bot.engine.nlp.NlpListener
 import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.bot.engine.user.UserTimelineDAO
 import fr.vsct.tock.nlp.api.client.NlpClient
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDefinition
 import fr.vsct.tock.shared.Executor
@@ -147,19 +149,58 @@ object BotRepository {
      * @param intent the notification intent
      * @param step the optional step target
      * @param parameters the optional parameters
+     * @param stateModifier allow the notification to bypass current user state
      */
     fun notify(
         applicationId: String,
         recipientId: PlayerId,
         intent: IntentAware,
         step: StoryStep<out StoryHandlerDefinition>? = null,
-        parameters: Map<String, String> = emptyMap()
+        parameters: Map<String, String> = emptyMap(),
+        stateModifier: NotifyBotStateModifier = NotifyBotStateModifier.KEEP_CURRENT_STATE
     ) {
         val conf = connectorControllerMap.keys.firstOrNull { it.applicationId == applicationId }
             ?: error("unknown application $applicationId")
-        connectorControllerMap.getValue(conf).notify(recipientId, intent, step, parameters)
+        connectorControllerMap.getValue(conf).notifyAndCheckState(recipientId, intent, step, parameters, stateModifier)
     }
 
+    /**
+     * Sends a notification to the connector.
+     * A [BotBus] is created and the corresponding story is called.
+     *
+     * @param applicationId the configuration connector id
+     * @param recipientId the recipient identifier
+     * @param intent the notification intent
+     * @param step the optional step target
+     * @param parameters the optional parameters
+     * @param stateModifier allow the notification to bypass current user state
+     */
+    private fun ConnectorController.notifyAndCheckState(
+        recipientId: PlayerId,
+        intent: IntentAware,
+        step: StoryStep<out StoryHandlerDefinition>?,
+        parameters: Map<String, String>,
+        stateModifier: NotifyBotStateModifier
+    ) {
+        val userTimelineDAO: UserTimelineDAO = injector.provide()
+        val userTimeline = userTimelineDAO.loadWithoutDialogs(recipientId)
+        val userState = userTimeline.userState
+        val currentState = userState.botDisabled
+
+        if (stateModifier == NotifyBotStateModifier.ACTIVATE_ONLY_FOR_THIS_NOTIFICATION
+            || stateModifier == NotifyBotStateModifier.REACTIVATE) {
+            userState.botDisabled = false
+            userTimelineDAO.save(userTimeline)
+        }
+
+        notify(recipientId, intent, step, parameters)
+
+        if (stateModifier == NotifyBotStateModifier.ACTIVATE_ONLY_FOR_THIS_NOTIFICATION) {
+            val userTimelineAfterNotification = userTimelineDAO.loadWithoutDialogs(recipientId)
+            userTimelineAfterNotification.userState.botDisabled = currentState
+            userTimelineDAO.save(userTimeline)
+        }
+    }
 
     /**
      * Registers a new [ConnectorProvider].

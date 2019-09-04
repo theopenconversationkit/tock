@@ -17,8 +17,11 @@ package fr.vsct.tock.bot.connector.messenger
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.singleton
 import fr.vsct.tock.bot.connector.messenger.model.subscription.SubscriptionsResponse
 import fr.vsct.tock.bot.connector.messenger.model.subscription.SuccessResponse
+import fr.vsct.tock.bot.engine.user.UserTimelineDAO
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.resourceAsStream
@@ -47,6 +50,7 @@ class MessengerConnectorTest {
     fun setUp() {
         injector.inject(Kodein {
             import(sharedModule)
+            bind<UserTimelineDAO>() with singleton { mockk<UserTimelineDAO>() }
         })
         every { messengerClient.deleteSubscribedApps(any(), any(), any()) } returns SuccessResponse(
             true
