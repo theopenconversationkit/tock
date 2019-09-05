@@ -27,6 +27,7 @@ import fr.vsct.tock.shared.resourceAsString
 internal object TwitterConnectorProvider : ConnectorProvider {
 
     private const val APP_ID = "appId"
+    private const val ACCOUNT_ID = "accountId"
     private const val ENVIRONMENT = "develop"
     private const val CONSUMER_KEY = "consumerKey"
     private const val CONSUMER_SECRET = "consumerSecret"
@@ -44,8 +45,10 @@ internal object TwitterConnectorProvider : ConnectorProvider {
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration) {
             val appId = parameters.getValue(APP_ID)
+            val accountId = parameters.getValue(ACCOUNT_ID)
             return TwitterConnector(
                 appId,
+                accountId,
                 getBaseUrl(),
                 path,
                 TwitterClient(
@@ -66,6 +69,11 @@ internal object TwitterConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "Application Id",
                     APP_ID,
+                    true
+                ),
+                ConnectorTypeConfigurationField(
+                    "Account Id",
+                    ACCOUNT_ID,
                     true
                 ),
                 ConnectorTypeConfigurationField(

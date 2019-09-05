@@ -32,13 +32,19 @@ import fr.vsct.tock.bot.connector.twitter.model.incoming.TweetIncomingEvent
 import fr.vsct.tock.bot.connector.twitter.model.outcoming.DirectMessageOutcomingEvent
 import fr.vsct.tock.bot.connector.twitter.model.outcoming.OutcomingEvent
 import fr.vsct.tock.bot.connector.twitter.model.outcoming.Tweet
+import fr.vsct.tock.bot.definition.IntentAware
+import fr.vsct.tock.bot.definition.StoryHandlerDefinition
+import fr.vsct.tock.bot.definition.StoryStep
+import fr.vsct.tock.bot.definition.bot
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.ActionVisibility
+import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.monitoring.logError
 import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.defaultLocale
@@ -52,6 +58,7 @@ import java.time.ZoneOffset
 
 internal class TwitterConnector internal constructor(
     val applicationId: String,
+    val accountId: String,
     val baseUrl: String,
     val path: String,
     val client: TwitterClient
@@ -211,6 +218,28 @@ internal class TwitterConnector internal constructor(
                 sendMessage(outcomingEvent, callback, delayInMs)
             }
         }
+    }
+
+    override fun notify(
+        controller: ConnectorController,
+        recipientId: PlayerId,
+        intent: IntentAware,
+        step: StoryStep<out StoryHandlerDefinition>?,
+        parameters: Map<String, String>
+    ) {
+        controller.handle(
+            SendChoice(
+                recipientId,
+                applicationId,
+                PlayerId(accountId, PlayerType.bot),
+                intent.wrappedIntent().name,
+                step,
+                parameters
+            ),
+            ConnectorData(
+                TwitterConnectorCallback(applicationId, ActionVisibility.private, null)
+            )
+        )
     }
 
     private fun sendMessage(message: ConnectorMessage, callback: TwitterConnectorCallback, delayInMs: Long) {
