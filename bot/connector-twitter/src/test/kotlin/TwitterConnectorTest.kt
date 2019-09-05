@@ -30,6 +30,7 @@ import java.util.*
 class TwitterConnectorTest {
 
     private val applicationId = "applicationId"
+    private val accountId = "accountId"
     private val consumerKey = "consumerKey"
     private val consumerSecret = "consumerSecret"
     private val token = "token"
@@ -47,7 +48,7 @@ class TwitterConnectorTest {
 
     private val twitterClient = mockk<TwitterClient>()
     private val twitterConnector =
-        TwitterConnector(applicationId, baseUrl, "path", twitterClient)
+        TwitterConnector(applicationId, accountId, baseUrl, "path", twitterClient)
 
     @BeforeEach
     fun setUp() {

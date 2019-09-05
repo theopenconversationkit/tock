@@ -1,10 +1,10 @@
 # Tock Twitter Connector
 
-This connector is quite basic, and does not yet support every feature available on Twitter API.
+This connector only supports:
 
-In fact this connector only supports Direct Message API.
-
-https://developer.twitter.com/en/docs/direct-messages/api-features
+ - Direct Message API (https://developer.twitter.com/en/docs/direct-messages/api-features)
+ - Post and engage API for posting Tweet only (https://developer.twitter.com/en/docs/tweets/post-and-engage/overview)
+ - Media API (https://developer.twitter.com/en/docs/media/upload-media/overview)
 
 ## Apply for a develop account
 
@@ -27,13 +27,14 @@ https://developer.twitter.com/en/account/environments
 You will be given:
 
  - Application ID
+ - Account Id (You can find it here > https://twitter.com/settings/your_twitter_data/account)
  - environment name
  - Consumer API Key
  - Consumer API Secret
  - Access Token
  - Access Token secret
  
- 
+
 Access token is associated to your developer account by default.
 
 * Then you can configure your connector for your bot: go to the Configuration -> Bot Configurations menu in the Tock Bot administration interface, and create a new configuration.
