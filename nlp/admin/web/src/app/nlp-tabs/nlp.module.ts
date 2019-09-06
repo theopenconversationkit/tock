@@ -44,8 +44,19 @@ import {EntityDetailsComponent} from "../entities/entity-details.component";
 import {MatDatepickerModule, MatNativeDateModule} from "@angular/material";
 import {FileUploadModule} from "ng2-file-upload";
 import {ReviewRequestDialogComponent} from "../sentence-analysis/review-request-dialog/review-request-dialog.component";
-import {NbTabsetModule, NbRouteTabsetModule,NbAccordionModule,NbCardModule,NbCheckboxModule,
-  NbSpinnerModule, NbActionsModule,NbSelectModule,NbButtonModule,NbTooltipModule,NbInputModule } from "@nebular/theme";
+import {
+  NbAccordionModule,
+  NbActionsModule,
+  NbButtonModule,
+  NbCardModule,
+  NbCheckboxModule,
+  NbInputModule,
+  NbRouteTabsetModule,
+  NbSelectModule,
+  NbSpinnerModule,
+  NbTabsetModule,
+  NbTooltipModule
+} from "@nebular/theme";
 import {ThemeModule} from "../theme/theme.module";
 
 const routes: Routes = [

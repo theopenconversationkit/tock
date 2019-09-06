@@ -16,16 +16,19 @@
 
 import {saveAs} from "file-saver";
 import {AfterViewInit, Component, EventEmitter, Input, Output, ViewChild, ViewEncapsulation} from "@angular/core";
-import {PaginatedResult, SearchQuery, Sentence, SentenceStatus} from "../model/nlp";
+import {PaginatedResult, SearchQuery, Sentence, SentenceStatus, UpdateSentencesQuery} from "../model/nlp";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {StateService} from "../core-nlp/state.service";
 import {ScrollComponent} from "../scroll/scroll.component";
 import {Entry, PaginatedQuery, SearchMark} from "../model/commons";
-import {Observable, BehaviorSubject} from "rxjs";
-import {MatPaginator, MatSnackBar} from "@angular/material";
+import {BehaviorSubject, Observable} from "rxjs";
+import {MatPaginator} from "@angular/material";
 import {UserRole} from "../model/auth";
 import {DataSource, SelectionModel} from "@angular/cdk/collections";
 import {Sort} from "@angular/material/sort/typings/sort";
+import {DialogService} from "../core-nlp/dialog.service";
+import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialog.component";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
   selector: 'tock-sentences-scroll',
@@ -52,15 +55,16 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   dataSource: SentencesDataSource | null;
   selection: SelectionModel<Sentence> = new SelectionModel<Sentence>(true, []);
+  sentenceToUpdate: Sentence;
 
   private sort: Sort[] = [];
 
   constructor(state: StateService,
               private nlp: NlpService,
-              private snackBar: MatSnackBar) {
+              private dialog: DialogService,
+              private matDialog: MatDialog) {
     super(state);
   }
-
 
   protected searchMark(t: Sentence): SearchMark {
     return new SearchMark(
@@ -72,15 +76,15 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
   private initColumns() {
     if (this.displayStatus) {
       if (this.advancedView) {
-        this.displayedColumns = ['select', 'text', 'currentIntent', 'status', 'lastUpdate', 'intentProbability', 'entitiesProbability', 'lastUsage', 'usageCount', 'unknownCount'];
+        this.displayedColumns = ['select', 'text', 'currentIntent', 'update', 'status', 'lastUpdate', 'intentProbability', 'entitiesProbability', 'lastUsage', 'usageCount', 'unknownCount'];
       } else {
-        this.displayedColumns = ['select', 'text', 'currentIntent', 'status'];
+        this.displayedColumns = ['select', 'text', 'currentIntent', 'update', 'status'];
       }
     } else {
       if (this.advancedView) {
-        this.displayedColumns = ['select', 'text', 'currentIntent', 'lastUpdate', 'intentProbability', 'entitiesProbability', 'lastUsage', 'usageCount', 'unknownCount'];
+        this.displayedColumns = ['select', 'text', 'currentIntent', 'update', 'lastUpdate', 'intentProbability', 'entitiesProbability', 'lastUsage', 'usageCount', 'unknownCount'];
       } else {
-        this.displayedColumns = ['select', 'text', 'currentIntent'];
+        this.displayedColumns = ['select', 'text', 'currentIntent', 'update'];
       }
     }
   }
@@ -150,7 +154,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
         this.state.hasRole(UserRole.technicalAdmin))
         .subscribe(blob => {
           saveAs(blob, this.state.currentApplication.name + "_sentences.json");
-          this.snackBar.open(`Dump provided`, "Dump", {duration: 1000});
+          this.dialog.notify(`Dump provided`, "Dump");
         })
     }, 1);
   }
@@ -219,6 +223,61 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
       this.selection.clear() :
       this.dataSource.getData().forEach(row => this.selection.select(row));
     this.fireSelectionChange();
+  }
+
+  onUpdate(sentence: Sentence) {
+    this.sentenceToUpdate = sentence;
+  }
+
+  onEndUpdate(sentence: Sentence) {
+    if (sentence) {
+      this.refresh();
+    }
+    this.sentenceToUpdate = undefined;
+  }
+
+  onDelete() {
+    let dialogRef = this.dialog.open(this.matDialog, ConfirmDialogComponent, {
+      data: {
+        title: "Delete the selected Sentences",
+        subtitle: "Are you sure?",
+        action: "Delete"
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+        if (result === "delete") {
+          this.update(SentenceStatus.deleted);
+        }
+      }
+    );
+  }
+
+  onValidate() {
+    this.update(SentenceStatus.validated);
+  }
+
+  private update(status: SentenceStatus) {
+    if (this.selection.selected.length === 0) {
+      this.dialog.notify("Please select at least one sentence first");
+    } else {
+      this.loading = true;
+      this.nlp.updateSentences(
+        new UpdateSentencesQuery(
+          this.state.currentApplication.namespace,
+          this.state.currentApplication.name,
+          this.state.currentLocale,
+          this.selection.selected,
+          null,
+          null,
+          null,
+          null,
+          status
+        ))
+        .subscribe(() => {
+          this.dialog.notify("Sentences updated", "Update");
+          this.refresh()
+        });
+    }
   }
 }
 

@@ -14,15 +14,25 @@
  * limitations under the License.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
+import {
+  ApplicationRef,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output
+} from "@angular/core";
 import {Intent, nameFromQualifiedName, Sentence, SentenceStatus} from "../model/nlp";
 import {StateService} from "../core-nlp/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {IntentDialogComponent} from "./intent-dialog/intent-dialog.component";
-import {MatDialog, MatSnackBar} from "@angular/material";
 import {ApplicationConfig} from "../core-nlp/application.config";
 import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialog.component";
 import {ReviewRequestDialogComponent} from "./review-request-dialog/review-request-dialog.component";
+import {DialogService} from "../core-nlp/dialog.service";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
   selector: 'tock-sentence-analysis',
@@ -36,43 +46,48 @@ export class SentenceAnalysisComponent implements OnInit {
   @Input() displayProbabilities: boolean = false;
   @Input() displayStatus: boolean = false;
   @Output() closed = new EventEmitter();
-  @Input() displayEntities: Boolean = true;
+  @Input() displayEntities: boolean = true;
+  @Input() minimalView: boolean = true;
+  @Input() displayClose: boolean = false;
   intentBeforeClassification: string;
 
   constructor(public state: StateService,
               private nlp: NlpService,
-              private snackBar: MatSnackBar,
-              private dialog: MatDialog,
-              public config: ApplicationConfig) {
+              private dialog: DialogService,
+              private matDialog: MatDialog,
+              public config: ApplicationConfig,
+              private applicationRef: ApplicationRef,
+              private changeDetectorRef: ChangeDetectorRef,
+              private elementRef: ElementRef) {
   }
 
   ngOnInit() {
-    this.intentBeforeClassification = this.sentence.classification.intentId
+    this.intentBeforeClassification = this.sentence.classification.intentId;
+    setTimeout(_ => {
+      this.changeDetectorRef.detach()
+    });
   }
 
-  onIntentChange(value) {
-    if (value === "newIntent") {
-      this.newIntent();
-    } else {
-      const oldSentence = this.sentence;
-      const newSentence = oldSentence.clone();
+  onIntentChange() {
+    const value = this.sentence.classification.intentId;
+    const oldSentence = this.sentence;
+    const newSentence = oldSentence.clone();
 
-      const classification = newSentence.classification;
-      classification.intentId = value;
-      const intent = this.state.findIntentById(value);
-      classification.entities =
-        oldSentence
-          .classification
-          .entities
-          .filter(e => intent && intent.containsEntity(e.type, e.role));
-      this.sentence = newSentence;
-    }
+    const classification = newSentence.classification;
+    classification.intentId = value;
+    const intent = this.state.findIntentById(value);
+    classification.entities =
+      oldSentence
+        .classification
+        .entities
+        .filter(e => intent && intent.containsEntity(e.type, e.role));
+    this.sentence = newSentence;
   }
 
   newIntent() {
     //cleanup entities
     this.sentence.classification.entities = [];
-    let dialogRef = this.dialog.open(IntentDialogComponent, {data: {create: true}});
+    let dialogRef = this.dialog.open(this.matDialog, IntentDialogComponent, {data: {create: true}});
     dialogRef.afterClosed().subscribe(result => {
       if (result.name) {
         if (this.createIntent(result.name, result.label, result.description, result.category)) {
@@ -80,11 +95,26 @@ export class SentenceAnalysisComponent implements OnInit {
         }
       }
       //we need to be sure the selected value has changed to avoid side effects
-      if (this.sentence.classification.intentId) {
-        this.sentence.classification.intentId = undefined;
-      } else {
-        this.onIntentChange(Intent.unknown);
+      if (!this.sentence.classification.intentId) {
+        this.sentence.classification.intentId = Intent.unknown;
+        this.onIntentChange();
       }
+    });
+  }
+
+  displayAllView() {
+    if (this.minimalView) {
+      this.changeDetectorRef.reattach();
+      this.minimalView = false;
+    }
+  }
+
+  focusOnIntentSelect() {
+    this.displayAllView();
+    setTimeout(_ => {
+      const e = this.elementRef.nativeElement.querySelector("nb-select");
+      e.click();
+      e.focus();
     });
   }
 
@@ -92,7 +122,7 @@ export class SentenceAnalysisComponent implements OnInit {
     this.sentence = this.sentence.clone();
   }
 
-  onLanguageChange(value) {
+  onLanguageChange() {
     //do nothing
   }
 
@@ -105,7 +135,7 @@ export class SentenceAnalysisComponent implements OnInit {
   private validate() {
     const intent = this.sentence.classification.intentId;
     if (!intent) {
-      this.snackBar.open(`Please select an intent first`, "Error", {duration: 3000});
+      this.dialog.notify(`Please select an intent first`);
     } else if (intent === Intent.unknown) {
       this.onUnknown();
     } else {
@@ -114,18 +144,20 @@ export class SentenceAnalysisComponent implements OnInit {
   }
 
   onReviewRequest() {
-    let dialogRef = this.dialog.open(ReviewRequestDialogComponent, {
-      data: {
-        beforeClassification: this.intentBeforeClassification,
-        reviewComment: this.sentence.reviewComment
-      }
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result && result.status === 'confirm') {
-        this.sentence.forReview = true;
-        this.sentence.reviewComment = result.description;
-        this.validate()
-      }
+    setTimeout(_ => {
+      let dialogRef = this.dialog.open(this.matDialog, ReviewRequestDialogComponent, {
+        data: {
+          beforeClassification: this.intentBeforeClassification,
+          reviewComment: this.sentence.reviewComment
+        }
+      });
+      dialogRef.afterClosed().subscribe(result => {
+        if (result && result.status === 'confirm') {
+          this.sentence.forReview = true;
+          this.sentence.reviewComment = result.description;
+          this.validate()
+        }
+      });
     });
   }
 
@@ -152,18 +184,18 @@ export class SentenceAnalysisComponent implements OnInit {
       s.status = SentenceStatus.deleted;
       this.nlp.updateSentence(s)
         .subscribe((s) => {
-          this.snackBar.open(`Language change to ${this.state.localeName(this.sentence.language)}`, "Language change", {duration: 1000})
+          this.dialog.notify(`Language change to ${this.state.localeName(this.sentence.language)}`, "Language change");
         });
     }
   }
 
   private createIntent(name: string, label: string, description: string, category: string): boolean {
     if (StateService.intentExistsInApp(this.state.currentApplication, name) || name === nameFromQualifiedName(Intent.unknown)) {
-      this.snackBar.open(`Intent ${name} already exists`, "Error", {duration: 5000});
+      this.dialog.notify(`Intent ${name} already exists`);
       return false
     } else {
       if (this.state.intentExistsInOtherApplication(name)) {
-        let dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        let dialogRef = this.dialog.open(this.matDialog, ConfirmDialogComponent, {
           data: {
             title: "This intent is already used in an other application",
             subtitle: "If you confirm the name, the intent will be shared between the two applications.",
@@ -199,9 +231,13 @@ export class SentenceAnalysisComponent implements OnInit {
       )
       .subscribe(intent => {
           this.state.addIntent(intent);
-          this.onIntentChange(intent._id);
+          this.sentence.classification.intentId = intent._id;
+          this.onIntentChange();
         },
-        _ => this.onIntentChange(Intent.unknown));
+        _ => {
+          this.sentence.classification.intentId = Intent.unknown;
+          this.onIntentChange();
+        });
   }
 
 }

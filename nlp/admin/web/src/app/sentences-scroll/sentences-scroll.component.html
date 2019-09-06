@@ -84,9 +84,19 @@
     </div>
   </div>
 
-  <div *ngIf="tableView">
+  <div *ngIf="tableView" class="table-container">
 
-    <mat-table #table matSort [dataSource]="dataSource" (matSortChange)="sortChange($event)">
+    <tock-sentence-analysis *ngIf="sentenceToUpdate"
+                            [sentence]="sentenceToUpdate"
+                            (closed)="onEndUpdate($event)"
+                            [displayClose]="true"
+                            [minimalView]="false"
+                            [displayUnknownButton]="displayUnknownButton"
+                            [displayProbabilities]="displayProbabilities"
+                            [displayStatus]="displayStatus"></tock-sentence-analysis>
+
+    <mat-table [hidden]="sentenceToUpdate" #table matSort [dataSource]="dataSource"
+               (matSortChange)="sortChange($event)">
 
       <ng-container matColumnDef="select">
         <mat-header-cell *matHeaderCellDef>
@@ -104,7 +114,14 @@
       </ng-container>
 
       <ng-container matColumnDef="text">
-        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Text</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">
+          <button nbButton status="danger" size="small" shape="semi-round" class="btn"
+                  (click)="onDelete();$event.stopPropagation()">Delete Selected
+          </button>
+          <button nbButton status="primary" size="small" shape="semi-round" class="btn"
+                  (click)="onValidate();$event.stopPropagation()">Validate Selected
+          </button>
+        </mat-header-cell>
         <mat-cell *matCellDef="let row">
           <tock-highlight [sentence]="row" [readOnly]="true" [displayActions]="false"></tock-highlight>
         </mat-cell>
@@ -113,6 +130,16 @@
       <ng-container matColumnDef="currentIntent">
         <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Intent</mat-header-cell>
         <mat-cell *matCellDef="let row"><span style="color:green">{{row.getIntentLabel(state)}}</span></mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="update">
+        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <button nbButton class="update-button" status="primary" size="small" shape="semi-round"
+                  (click)="onUpdate(row)">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="status" *ngIf="displayStatus">
@@ -127,6 +154,7 @@
         <mat-cell *matCellDef="let row"><span style="color:green">{{row.updateDate | date:'yyyy-MM-dd HH:mm'}}</span>
         </mat-cell>
       </ng-container>
+
 
       <ng-container matColumnDef="intentProbability" *ngIf="advancedView">
         <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Intent proba</mat-header-cell>
@@ -156,7 +184,7 @@
         <mat-cell *matCellDef="let row"><span style="color:green">{{row.classification.unknownCount}}</span></mat-cell>
       </ng-container>
 
-      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
       <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
     </mat-table>
 

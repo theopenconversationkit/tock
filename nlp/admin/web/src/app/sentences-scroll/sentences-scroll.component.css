@@ -77,6 +77,13 @@
 .mat-column-lastUsage {
   max-width: 128px;
 }
+.mat-column-update {
+  max-width: 48px;
+}
+
+.update-button {
+  max-width: 36px;
+}
 
 .mat-sort-header-container {
   display:flex;
@@ -89,4 +96,12 @@
 
 .loader {
   margin: auto;
+}
+
+.table-container {
+  overflow: auto;
+  height:600px;
+}
+.btn {
+  margin: 0 8px;
 }

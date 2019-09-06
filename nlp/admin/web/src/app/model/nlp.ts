@@ -176,7 +176,7 @@ export class Dictionary {
               public values: PredefinedValue[],
               public onlyValues: boolean,
               public minDistance: number,
-              public textSearch:boolean) {
+              public textSearch: boolean) {
   }
 
   static fromJSON(json?: any): Dictionary {
@@ -1093,7 +1093,8 @@ export class UpdateSentencesQuery extends ApplicationScopedQuery {
               public searchQuery?: SearchQuery,
               public newIntentId?: string,
               public oldEntity?: EntityDefinition,
-              public newEntity?: EntityDefinition) {
+              public newEntity?: EntityDefinition,
+              public newStatus?: SentenceStatus) {
     super(namespace, applicationName, language)
   }
 }

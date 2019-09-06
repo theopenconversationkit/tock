@@ -24,6 +24,7 @@ import {ApplicationService} from "./applications.service";
 import {ApplicationConfig} from "./application.config";
 import {ApplicationResolver} from "./application.resolver";
 import {UserRole} from "../model/auth";
+import {DialogService} from "./dialog.service";
 
 @NgModule({
   imports: [CommonModule, RestModule, AuthModule],
@@ -44,7 +45,8 @@ import {UserRole} from "../model/auth";
     SettingsService,
     StateService,
     ApplicationService,
-    ApplicationResolver
+    ApplicationResolver,
+    DialogService
   ],
   exports: []
 })

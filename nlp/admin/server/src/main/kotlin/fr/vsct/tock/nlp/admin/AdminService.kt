@@ -87,6 +87,9 @@ object AdminService {
         } else if (query.oldEntity != null && query.newEntity != null) {
             val nbUpdates = front.switchSentencesEntity(sentences, application, query.oldEntity, query.newEntity)
             UpdateSentencesReport(nbUpdates)
+        } else if (query.newStatus != null) {
+            front.switchSentencesStatus(sentences, query.newStatus)
+            UpdateSentencesReport(sentences.size)
         } else {
             UpdateSentencesReport()
         }

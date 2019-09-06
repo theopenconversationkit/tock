@@ -47,7 +47,7 @@
       </span>
       <br/>
       <span class="select">
-        <nb-select [(ngModel)]="selectedLayout" (selectedChange)="changeLayout($event.value)"
+        <nb-select [(ngModel)]="selectedLayout" (selectedChange)="changeLayout()"
         placeholder="Layout" status="primary" style="width: 10rem;">
           <nb-option *ngFor="let l of layouts" [value]="l.name">{{l.name}}</nb-option>
         </nb-select>

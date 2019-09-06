@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {ChangeDetectorRef, Component, OnDestroy, OnInit} from "@angular/core";
 import {AuthService} from "./core-nlp/auth/auth.service";
 import {StateService} from "./core-nlp/state.service";
+import {DialogService} from "./core-nlp/dialog.service";
 import {RestService} from "./core-nlp/rest/rest.service";
 import {MatIconRegistry, MatSnackBar} from "@angular/material";
 import {UserRole} from "./model/auth";
@@ -39,9 +40,12 @@ export class BotAdminAppComponent implements OnInit, OnDestroy {
   constructor(public auth: AuthService,
               public state: StateService,
               private rest: RestService,
+              private dialog: DialogService,
+              private changeDetectorRef: ChangeDetectorRef,
               private snackBar: MatSnackBar,
               iconRegistry: MatIconRegistry,
               sanitizer: DomSanitizer) {
+    dialog.setupRootChangeDetector(changeDetectorRef);
     iconRegistry.addSvgIcon(
       'logo',
       sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo.svg'));

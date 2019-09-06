@@ -36,12 +36,13 @@ import {
 } from "../../model/nlp";
 import {NlpService} from "../../nlp-tabs/nlp.service";
 import {StateService} from "../../core-nlp/state.service";
-import {MatDialog, MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {CreateEntityDialogComponent} from "../create-entity-dialog/create-entity-dialog.component";
 import {User} from "../../model/auth";
 import {ApplicationConfig} from "../../core-nlp/application.config";
 import {Router} from "@angular/router";
 import {isNullOrUndefined} from "../../model/commons";
+import {DialogService} from "../../core-nlp/dialog.service";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
   selector: 'tock-highlight',
@@ -69,8 +70,8 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
 
   constructor(private nlp: NlpService,
               public state: StateService,
-              private snackBar: MatSnackBar,
-              private dialog: MatDialog,
+              private dialog: DialogService,
+              private matDialog: MatDialog,
               private router: Router,
               public appConfig: ApplicationConfig) {
     this.editable = true;
@@ -188,7 +189,9 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   addEntity() {
-    let dialogRef = this.dialog.open(CreateEntityDialogComponent,
+    let dialogRef = this.dialog.open(
+      this.matDialog,
+      CreateEntityDialogComponent,
       {
         data: {
           entityProvider: this.entityProvider
@@ -204,7 +207,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
           const entity = new EntityDefinition(name, role);
           const result = this.entityProvider.addEntity(entity, this);
           if (result) {
-            this.snackBar.open(result, "Error", {duration: 1000} as MatSnackBarConfig);
+            this.dialog.notify(result);
           }
         } else {
           this.nlp.createEntityType(name).subscribe(e => {
@@ -215,10 +218,10 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
               this.state.entityTypes.next(entities);
               const result = this.entityProvider.addEntity(entity, this);
               if (result) {
-                this.snackBar.open(result, "Error", {duration: 1000} as MatSnackBarConfig);
+                this.dialog.notify(result);
               }
             } else {
-              this.snackBar.open(`Error when creating Entity Type ${name}`, "Error", {duration: 1000} as MatSnackBarConfig);
+              this.dialog.notify(`Error when creating Entity Type ${name}`);
             }
           });
         }
@@ -228,7 +231,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
 
   notifyAddEntity(entity: EntityDefinition) {
     this.onSelect(entity);
-    this.snackBar.open(`Entity Type ${entity.qualifiedRole} added`, "Entity added", {duration: 1000} as MatSnackBarConfig)
+    this.dialog.notify(`Entity Type ${entity.qualifiedRole} added`, "Entity added");
   }
 
   private rebuild() {
@@ -322,7 +325,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
       //do nothing
     }
     t.style.display = "none";
-    this.snackBar.open(successful ? `${text} copied to clipboard` : `Unable to copy to clipboard`, "Clipboard", {duration: 1000} as MatSnackBarConfig)
+    this.dialog.notify(successful ? `${text} copied to clipboard` : `Unable to copy to clipboard`, "Clipboard");
   }
 
 }
