@@ -29,7 +29,7 @@
         <dependency>
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-nlp-front-ioc</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.cloud</groupId>
