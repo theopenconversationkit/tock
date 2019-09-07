@@ -64,13 +64,13 @@ export class NlpAdminAppComponent implements OnInit, OnDestroy {
       },
       {
         title: 'NLU',
-        icon: 'settings-outline',
+        icon: 'list',
         link: '/nlp',
         hidden: this.state.hasRole(UserRole.nlpUser)
       },
       {
         title: 'NLU QA',
-        icon: 'settings-outline',
+        icon: 'bar-chart-outline',
         link: '/quality',
         hidden: this.state.hasRole(UserRole.nlpUser)
       }

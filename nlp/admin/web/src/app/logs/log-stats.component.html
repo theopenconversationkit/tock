@@ -16,21 +16,16 @@
 
 <nb-card class="search">
   <nb-card-body>
-      <span class="i18n-select nb-form-field-infix">
-      <nb-select placeholder="Intent" [(ngModel)]="intent" (selectedChange)="search()" class="search-input nb-select">
-        <nb-option value="">All</nb-option>
-        <nb-option-group *ngFor="let category of state.currentIntentsCategories | async" [title]="category.category">
-          <nb-option *ngFor="let intent of category.intents" [value]="intent.name">
-            {{intent.intentLabel()}}
-          </nb-option>
-        </nb-option-group>
-        <nb-option value="unknown">Unknown</nb-option>
-      </nb-select>
-      <span class="nb-form-field-label-wrapper">
-          <label class="label-title">Filter by category</label>
-        </span>
-      </span>
-    <button nbButton size="small" outline (click)="search()" class="btn">GO</button>
+    <nb-select placeholder="Intent" [(ngModel)]="intent" (selectedChange)="search()" class="search-input nb-select">
+      <nb-option value="_all_">All</nb-option>
+      <nb-option-group *ngFor="let category of state.currentIntentsCategories | async" [title]="category.category">
+        <nb-option *ngFor="let intent of category.intents" [value]="intent.name">
+          {{intent.intentLabel()}}
+        </nb-option>
+      </nb-option-group>
+      <nb-option value="tock:unknown">Unknown</nb-option>
+    </nb-select>
+    <nb-toggle class="search-input toggle" [(checked)]="onlyCurrentLocale" (checkedChange)="search()">Only current locale</nb-toggle>
   </nb-card-body>
 </nb-card>
 

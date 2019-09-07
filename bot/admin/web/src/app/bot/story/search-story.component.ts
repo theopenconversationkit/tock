@@ -34,7 +34,7 @@ export class SearchStoryComponent implements OnInit {
   filter: string = "";
   category: string = "";
   onlyConfigured: boolean = true;
-  loading: Boolean = false
+  loading: boolean = false;
 
   constructor(private nlp: NlpService,
               private state: StateService,
@@ -70,6 +70,7 @@ export class SearchStoryComponent implements OnInit {
   }
 
   search(story?: StoryDefinitionConfiguration) {
+    if (this.category === "_all_") this.category = "";
     if (story && this.categories.indexOf(story.category) === -1) {
       this.categories.push(story.category);
       this.categories.sort();

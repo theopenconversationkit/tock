@@ -63,9 +63,11 @@ export class SentenceAnalysisComponent implements OnInit {
 
   ngOnInit() {
     this.intentBeforeClassification = this.sentence.classification.intentId;
-    setTimeout(_ => {
-      this.changeDetectorRef.detach()
-    });
+    if (this.minimalView) {
+      setTimeout(_ => {
+        this.changeDetectorRef.detach()
+      });
+    }
   }
 
   onIntentChange() {

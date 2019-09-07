@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+.responses {
+  margin-top: 20px;
+}
+
 .fill-remaining-space {
   flex: 1 1 auto;
 }

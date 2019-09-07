@@ -14,9 +14,9 @@
   ~ limitations under the License.
   -->
 
-<div>
+<div class="builds">
 
-  <mat-table #table [dataSource]="dataSource">
+  <mat-table [dataSource]="dataSource" class="builds-table">
 
     <ng-container matColumnDef="date">
       <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
@@ -53,8 +53,7 @@
     <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
   </mat-table>
 
-  <mat-paginator #paginator
-                [length]="dataSource.size"
+  <mat-paginator [length]="dataSource.size"
                 [pageIndex]="0"
                 [pageSize]="10"
                 [pageSizeOptions]="[5, 10, 25, 100]">

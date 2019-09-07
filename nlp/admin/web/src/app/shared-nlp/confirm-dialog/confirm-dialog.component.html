@@ -15,8 +15,8 @@
   -->
 
 <h1 mat-dialog-title>{{data.title}}</h1>
-<div mat-dialog-content>{{data.subtitle}}</div>
+<div mat-dialog-content class="subtitle">{{data.subtitle}}</div>
 <div mat-dialog-actions>
-  <button mat-button (click)="dialogRef.close('cancel')">Cancel</button>
-  <button mat-button (click)="dialogRef.close(data.action.toLowerCase())">{{data.action}}</button>
+  <button nbButton status="primary" class="btn" (click)="dialogRef.close('cancel')">Cancel</button>
+  <button nbButton status="danger" class="btn" (click)="dialogRef.close(data.action.toLowerCase())">{{data.action}}</button>
 </div>

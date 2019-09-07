@@ -14,11 +14,11 @@
   ~ limitations under the License.
   -->
 
-<nb-card [nbSpinner]="loading" nbSpinnerStatus="primary">
+<nb-card [nbSpinner]="loading" nbSpinnerStatus="primary" class="stories">
   <nb-card-body>
     <span class="field">
       <nb-select placeholder="Category" [(ngModel)]="category" (selectedChange)="search()" status="primary">
-        <nb-option value="">All</nb-option>
+        <nb-option value="_all_">All</nb-option>
         <nb-option *ngFor="let c of categories" [value]="c">
           {{c}}
         </nb-option>

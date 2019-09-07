@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+.plans {
+  margin-top: 20px;
+  padding-top: 10px;
+  padding-left:10px;
+  min-height: 100px;
+}
+
 .input-text {
   width: 200px;
   margin-right: 10px;

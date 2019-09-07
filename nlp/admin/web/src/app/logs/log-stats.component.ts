@@ -104,7 +104,7 @@ export class LogStatsComponent implements OnInit {
   }
 
   search(): void {
-    let i = this.intent === "" ? null : this.intent;
+    let i = this.intent === "_all_" || this.intent === "" ? null : this.intent;
     this.quality.logStats(
       new LogStatsQuery(
         this.state.currentApplication.namespace,

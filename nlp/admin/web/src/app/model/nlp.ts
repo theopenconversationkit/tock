@@ -285,7 +285,7 @@ export abstract class EntityContainer {
 
 export class Intent {
 
-  public static unknown = "tock:unknown";
+  public static readonly unknown = "tock:unknown";
 
   constructor(public name: string,
               public namespace: string,

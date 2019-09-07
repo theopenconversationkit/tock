@@ -84,14 +84,15 @@
   <nb-accordion
   *ngIf="botSharedService.findConnectorConfiguration(configuration.connectorType) &&
         botSharedService.findConnectorConfiguration(configuration.connectorType).fields.length !== 0">
-      <nb-accordion-item>
-       <nb-accordion-item-header>Connector Custom Configuration    -   Parameters</nb-accordion-item-header>
+      <nb-accordion-item [expanded]="!configuration._id">
+       <nb-accordion-item-header>Connector Custom Configuration</nb-accordion-item-header>
        <nb-accordion-item-body>
           <mat-form-field class="bot-input" *ngIf="!botSharedService.configuration || !botSharedService.configuration.botApiSupport">
               <input matInput placeholder="Application base url" [(ngModel)]="configuration.baseUrl" title="optional">
             </mat-form-field>
             <mat-form-field class="long-text bot-input"
-                            *ngFor="let f of botSharedService.findConnectorConfiguration(configuration.connectorType).fields">
+                            *ngFor="let f of botSharedService.findConnectorConfiguration(configuration.connectorType).fields"
+                            [hideRequiredMarker]="!f.mandatory">
               <input matInput [placeholder]="f.label" [(ngModel)]="configuration.parameters[f.key]" required>
             </mat-form-field>
        </nb-accordion-item-body>

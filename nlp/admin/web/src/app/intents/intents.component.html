@@ -14,8 +14,9 @@
   ~ limitations under the License.
   -->
 
-<nb-card *ngIf="display">
-  <nb-card-header *ngIf="treeControl && treeControl.dataNodes.length !== 0">The <span class="default_category">default</span>
+<nb-card *ngIf="display" class="intents">
+  <nb-card-header *ngIf="treeControl && treeControl.dataNodes.length !== 0">The <span
+    class="default_category">default</span>
     intent category is expanded by default.
   </nb-card-header>
   <nb-card-body>
@@ -66,17 +67,20 @@
           </span>
             </td>
             <td class="shared">
-              <mat-select *ngIf="!state.intentExistsInOtherApplication(i.name)"
+              <button *ngIf="selectedIntent !== i" mat-button (click)="displaySharedIntent(i)">
+                <mat-icon>add_box</mat-icon>
+                Add shared intent
+              </button>
+              <nb-select *ngIf="selectedIntent === i && !state.intentExistsInOtherApplication(i.name)"
                           class="intent"
                           placeholder="Add shared intent"
-                          (selectionChange)="addSharedIntent(i, $event.value)">
-                <mat-optgroup *ngFor="let category of state.currentIntentsCategories | async"
-                              [label]="category.category">
-                  <mat-option *ngFor="let intent of category.intents" [value]="intent._id">
+                          (selectedChange)="addSharedIntent(i, $event)">
+                <nb-option-group *ngFor="let category of state.currentIntentsCategories | async" [title]="category.category">
+                  <nb-option *ngFor="let intent of category.intents" [value]="intent._id">
                     {{intent.intentLabel()}}
-                  </mat-option>
-                </mat-optgroup>
-              </mat-select>
+                  </nb-option>
+                </nb-option-group>
+              </nb-select>
               <div *ngIf="i.sharedIntents.length !== 0" class="shared_list">
                 <mat-chip-list *ngIf="!state.intentExistsInOtherApplication(i.name)"
                                matTooltip="Shared intent - click to remove">

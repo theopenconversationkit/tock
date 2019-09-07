@@ -7,7 +7,7 @@ import {
   StoryStep
 } from "../model/story";
 import {BotService} from "../bot-service";
-import {MatDialog, MatSnackBar} from "@angular/material";
+import {MatDialog} from "@angular/material";
 import {StateService} from "../../core-nlp/state.service";
 import {ConfirmDialogComponent} from "../../shared-nlp/confirm-dialog/confirm-dialog.component";
 import {StoryDialogComponent} from "./story-dialog.component";
@@ -15,6 +15,7 @@ import {MandatoryEntitiesDialogComponent} from "./mandatory-entities-dialog.comp
 import {StoryNode} from "../flow/node";
 import {StepDialogComponent} from "./step-dialog.component";
 import {AnswerController} from "./controller";
+import {DialogService} from "../../core-nlp/dialog.service";
 
 @Component({
   selector: 'tock-story',
@@ -55,8 +56,8 @@ export class StoryComponent implements OnInit, OnChanges {
 
   constructor(private state: StateService,
               private bot: BotService,
-              private dialog: MatDialog,
-              private snackBar: MatSnackBar) {
+              private dialog: DialogService,
+              private matDialog: MatDialog) {
   }
 
   ngOnInit(): void {
@@ -88,20 +89,23 @@ export class StoryComponent implements OnInit, OnChanges {
   }
 
   deleteStory() {
-    let dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        title: `Delete the story ${this.story.name}`,
-        subtitle: "Are you sure?",
-        action: "Remove"
-      }
-    });
+    let dialogRef = this.dialog.open(
+      this.matDialog,
+      ConfirmDialogComponent,
+      {
+        data: {
+          title: `Remove the story ${this.story.name}`,
+          subtitle: "Are you sure?",
+          action: "Remove"
+        }
+      });
     dialogRef.afterClosed().subscribe(result => {
       if (result === "remove") {
         this.bot.deleteStory(this.story._id)
           .subscribe(_ => {
             this.delete.emit(this.story._id);
             this.story = null;
-            this.snackBar.open(`Story deleted`, "Delete", {duration: 2000})
+            this.dialog.notify(`Story deleted`, "Delete")
           });
       }
     });
@@ -109,6 +113,7 @@ export class StoryComponent implements OnInit, OnChanges {
 
   editStory() {
     let dialogRef = this.dialog.open(
+      this.matDialog,
       StoryDialogComponent,
       {
         data:
@@ -144,13 +149,14 @@ export class StoryComponent implements OnInit, OnChanges {
     if (this.story._id) {
       this.bot.saveStory(this.story).subscribe(s => {
         this.state.resetConfiguration();
-        this.snackBar.open(`Story ${this.story.name} modified`, "Update", {duration: 3000});
+        this.dialog.notify(`Story ${this.story.name} modified`, "Update");
       })
     }
   }
 
   editEntities() {
     let dialogRef = this.dialog.open(
+      this.matDialog,
       MandatoryEntitiesDialogComponent,
       {
         data:
@@ -170,6 +176,7 @@ export class StoryComponent implements OnInit, OnChanges {
 
   editSteps() {
     let dialogRef = this.dialog.open(
+      this.matDialog,
       StepDialogComponent,
       {
         data:
@@ -206,7 +213,7 @@ export class StoryComponent implements OnInit, OnChanges {
   saveNewStory() {
     let invalidMessage = this.story.currentAnswer().invalidMessage();
     if (invalidMessage) {
-      this.snackBar.open(`Error: ${invalidMessage}`, "ERROR", {duration: 5000});
+      this.dialog.notify(`Error: ${invalidMessage}`);
     } else {
       this.bot.newStory(
         new CreateStoryRequest(
@@ -215,7 +222,7 @@ export class StoryComponent implements OnInit, OnChanges {
           []
         )
       ).subscribe(intent => {
-        this.snackBar.open(`New story ${this.story.name} created for language ${this.state.currentLocale}`, "New Story", {duration: 3000});
+        this.dialog.notify(`New story ${this.story.name} created for language ${this.state.currentLocale}`, "New Story");
         this.initStoryByBotIdAndIntent();
       });
     }

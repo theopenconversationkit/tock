@@ -84,3 +84,12 @@
 .removeEntity {
   transform: translateX(-8px);
 }
+
+.intents {
+  margin-top:20px;
+}
+
+button:focus {
+  outline: 1px dotted;
+  outline: 0px auto transparent;
+}

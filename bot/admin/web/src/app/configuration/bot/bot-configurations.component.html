@@ -14,11 +14,11 @@
   ~ limitations under the License.
   -->
 
-<nb-card *ngIf="configurations">
+<nb-card *ngIf="configurations" class="configurations">
   <nb-card-header>
     <div style="display: flex;">
-      <span style="font-size: x-large;">Bot Configurations</span>
-      <nb-actions size="medium" style="cursor: pointer;">
+      <span>Bot Configurations</span>
+      <nb-actions size="small" style="cursor: pointer;">
         <nb-action class="control-item" nbTooltip="Refresh" (click)="refresh()">
           <i class="material-icons tock-toolbar-menu">refresh</i>
         </nb-action>

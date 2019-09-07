@@ -239,7 +239,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
   onDelete() {
     let dialogRef = this.dialog.open(this.matDialog, ConfirmDialogComponent, {
       data: {
-        title: "Delete the selected Sentences",
+        title: "Delete Selected Sentences",
         subtitle: "Are you sure?",
         action: "Delete"
       }
