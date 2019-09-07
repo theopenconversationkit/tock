@@ -4,7 +4,7 @@ jdk:
 branches:
   only:
   - master
-script: mvn test -B -Dskip.npm -Dassembly.skipAssembly=true -U
+script: mvn test -B -Dskip.npm -Dassembly.skipAssembly=true -U -q
 cache:
   directories:
   - $HOME/.m2/repository
