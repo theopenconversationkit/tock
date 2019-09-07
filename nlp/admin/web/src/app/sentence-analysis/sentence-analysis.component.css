@@ -25,6 +25,7 @@
 
 .sentence-analysis-content {
   padding-top: 15px;
+  font-size: medium;
 }
 
 .entity-list {
@@ -60,6 +61,7 @@
   margin-right: 0.5em;
   border-radius: 25px;
   padding: 8px;
+  margin-left: 10px;
 }
 
 .validate {
@@ -77,4 +79,21 @@
 .reviewComment {
   white-space: pre-wrap;
   text-align: left;
+}
+
+.validate {
+  margin-left: 20px;
+}
+
+.minimal {
+   float:right;
+}
+
+.btn {
+  margin: 0 8px;
+}
+
+.intent-select {
+  margin-right: 10px;
+  width: 12rem;
 }

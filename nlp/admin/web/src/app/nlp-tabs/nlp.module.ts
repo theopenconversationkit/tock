@@ -44,6 +44,20 @@ import {EntityDetailsComponent} from "../entities/entity-details.component";
 import {MatDatepickerModule, MatNativeDateModule} from "@angular/material";
 import {FileUploadModule} from "ng2-file-upload";
 import {ReviewRequestDialogComponent} from "../sentence-analysis/review-request-dialog/review-request-dialog.component";
+import {
+  NbAccordionModule,
+  NbActionsModule,
+  NbButtonModule,
+  NbCardModule,
+  NbCheckboxModule,
+  NbInputModule,
+  NbRouteTabsetModule,
+  NbSelectModule,
+  NbSpinnerModule,
+  NbTabsetModule,
+  NbTooltipModule
+} from "@nebular/theme";
+import {ThemeModule} from "../theme/theme.module";
 
 const routes: Routes = [
   {
@@ -107,7 +121,20 @@ export class NlpRoutingModule {
     MomentModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    FileUploadModule
+    FileUploadModule,
+    MatNativeDateModule,
+    ThemeModule,
+    NbTabsetModule,
+    NbRouteTabsetModule,
+    NbAccordionModule,
+    NbCardModule,
+    NbCheckboxModule,
+    NbSpinnerModule,
+    NbActionsModule,
+    NbSelectModule,
+    NbButtonModule,
+    NbTooltipModule,
+    NbInputModule
   ],
   declarations: [
     NlpTabsComponent,

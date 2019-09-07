@@ -14,117 +14,112 @@
   ~ limitations under the License.
   -->
 
-<mat-card class="entities">
-  <mat-card-content>
-    <mat-card-title>Entity roles</mat-card-title>
+<nb-card class="entities">
+  <nb-card-header>Entity roles</nb-card-header>
+  <nb-card-body>
     <mat-list>
       <tock-entity-details *ngFor="let e of state.entities | async" [entity]="e"></tock-entity-details>
     </mat-list>
-  </mat-card-content>
-</mat-card>
+  </nb-card-body>
+</nb-card>
 <p></p>
-<mat-card class="entities">
-  <mat-card-content>
-    <mat-card-title>All Entity Types</mat-card-title>
-    <mat-chip-list>
-      <mat-chip *ngFor="let e of state.entityTypes | async"
-                [color]="e.dictionary ? 'primary' : (e === selectedEntityType ? 'accent' : 'secondary')"
-                [removable]="e.namespace() === state.currentApplication.namespace"
-                (removed)="deleteEntityType(e)"
-                (click)="selectEntityType(e)"
-                [selected]="true"
-                [selectable]="e.namespace() === state.currentApplication.namespace">
-        {{e.name}}
-        <mat-icon *ngIf="e.namespace() === state.currentApplication.namespace && !e.dictionary"
-                  class="add-predefined-list"
-                  matTooltip="add predefined values">playlist_add
-        </mat-icon>
-        <mat-icon *ngIf="e.namespace() === state.currentApplication.namespace && e.dictionary"
-                  class="predefined-list"
-                  matTooltip="update predefined values">playlist_add_check
-        </mat-icon>
-        <mat-icon *ngIf="e.namespace() === state.currentApplication.namespace"
-                  matChipRemove
-                  class="remove"
-                  matTooltip="delete entity type">cancel
-        </mat-icon>
-      </mat-chip>
-    </mat-chip-list>
-  </mat-card-content>
-</mat-card>
-<mat-card class="entities" *ngIf="selectedDictionary != null">
-  <mat-card-content>
-    <mat-card-title>Predefined values for {{ selectedEntityType.name }}</mat-card-title>
-    <div>
-      <mat-checkbox [(ngModel)]="selectedDictionary.onlyValues" class="no-model model" (change)="updateDictionary()"
-                    matTooltip="If selected, no model is used: only exact values are recognized/evaluated">No Model
-      </mat-checkbox>
-      <mat-form-field *ngIf="!selectedDictionary.onlyValues" class="model" (change)="updateDictionary()">
-        <input matInput type="number" placeholder="Model Limit" [(ngModel)]="selectedDictionary.minDistance" min="0"
-               max="1" matTooltip="Number between 0 and 1 - only probability above this value are evaluated">
-      </mat-form-field>
-      <mat-checkbox [(ngModel)]="selectedDictionary.textSearch" class="no-model model" (change)="updateDictionary()"
-                    matTooltip="If selected, all the values that contains the searched text are returned">Full Text
-      </mat-checkbox>
-      <div class="io">
-        <button mat-button (click)="downloadDictionary()" matTooltip="Download Dictionary" class="export">
-          <mat-icon>file_download</mat-icon>
-          Download Dictionary
-        </button>
-        <button mat-button (click)="file.hidden = false;$event.srcElement.setAttribute('style','display:none');"
-                matTooltip="Download Dictionary" class="export">
-          <mat-icon>file_upload</mat-icon>
-          Upload Dictionary
-        </button>
-        <input #file [hidden]="true" id="file" type="file" ng2FileSelect [uploader]="uploader"/>
+<nb-card class="entities">
+  <nb-card-header>All Entity Types</nb-card-header>
+  <nb-card-body>
+      <mat-chip-list>
+        <mat-chip *ngFor="let e of state.entityTypes | async"
+                  [color]="e.dictionary ? 'primary' : (e === selectedEntityType ? 'accent' : 'secondary')"
+                 [removable]="e.namespace() === state.currentApplication.namespace"
+                 (removed)="deleteEntityType(e)"
+                 (click)="selectEntityType(e)"
+                 [selected]="true"
+                 [selectable]="e.namespace() === state.currentApplication.namespace">
+          {{e.name}}
+          <mat-icon *ngIf="e.namespace() === state.currentApplication.namespace && !e.dictionary"
+                   class="add-predefined-list"
+                   matTooltip="add predefined values" >playlist_add</mat-icon>
+          <mat-icon *ngIf="e.namespace() === state.currentApplication.namespace && !e.dictionary"
+                   class="predefined-list"
+                   matTooltip="update predefined values">playlist_add_check</mat-icon>
+          <mat-icon *ngIf="e.namespace() === state.currentApplication.namespace"
+                   matChipRemove
+                   class="remove"
+                   matTooltip="delete entity type">cancel</mat-icon>
+        </mat-chip>
+      </mat-chip-list>
+  </nb-card-body>
+</nb-card>
+<nb-card class="entities" *ngIf="selectedDictionary != null">
+  <nb-card-header>Predefined values for {{ selectedEntityType.name }}</nb-card-header>
+  <nb-card-body>
+      <div>
+        <mat-checkbox [(ngModel)]="selectedDictionary.onlyValues" class="no-model model" (change)="updateDictionary()"
+                      matTooltip="If selected, no model is used: only exact values are recognized/evaluated">No Model
+        </mat-checkbox>
+        <mat-form-field *ngIf="!selectedDictionary.onlyValues" class="model">
+          <input matInput type="number" placeholder="Model Limit" [(ngModel)]="selectedDictionary.minDistance" min="0"
+                 max="1" matTooltip="Number between 0 and 1 - only probability above this value are evaluated" (change)="updateDictionary()">
+        </mat-form-field>
+        <mat-checkbox [(ngModel)]="selectedDictionary.textSearch" class="no-model model" (change)="updateDictionary()"
+                      matTooltip="If selected, all the values that contains the searched text are returned">Full Text
+        </mat-checkbox>
+        <div class="io">
+          <button mat-button (click)="downloadDictionary()" matTooltip="Download Dictionary" class="export">
+            <mat-icon>file_download</mat-icon>
+            Download Dictionary
+          </button>
+          <button mat-button (click)="file.hidden = false;$event.srcElement.setAttribute('style','display:none');"
+                  matTooltip="Download Dictionary" class="export">
+            <mat-icon>file_upload</mat-icon>
+            Upload Dictionary
+          </button>
+          <input #file [hidden]="true" id="file" type="file" ng2FileSelect [uploader]="uploader"/>
+        </div>
+
+        <mat-form-field>
+          <input matInput placeholder="Add new predefined value" #pv
+                 (keyup.enter)="createPredefinedValue(pv.value);pv.value ='';">
+        </mat-form-field>
+        <button mat-icon-button (click)="createPredefinedValue(pv.value)"><mat-icon>add</mat-icon></button>
       </div>
 
-      <mat-form-field>
-        <input matInput placeholder="Add new predefined value" #pv
-               (keyup.enter)="createPredefinedValue(pv.value);pv.value ='';">
-      </mat-form-field>
-      <button mat-icon-button (click)="createPredefinedValue(pv.value)">
-        <mat-icon>add</mat-icon>
-      </button>
-    </div>
-
-    <table class="values">
-      <thead>
-      <th [width]="'20%'">Predefined Value</th>
-      <th [width]="'50%'">Allowed labels</th>
-      <th [width]="'30%'">Actions</th>
-      </thead>
-      <tbody>
-      <tr *ngFor="let predefinedValue of selectedDictionary.values">
-        <td>
-          <mat-form-field>
-            <input matInput #pv [(value)]="predefinedValue.value"
-                   (blur)="updatePredefinedValueName(predefinedValue, pv)">
-          </mat-form-field>
-        </td>
-        <td>
-          <mat-chip-list>
-            <mat-chip *ngFor="let label of predefinedValue.labels.get(state.currentLocale)"
-                      [removable]="true">
-              {{ label }}
-              <mat-icon matChipRemove (click)="deleteLabel(predefinedValue, label)">cancel</mat-icon>
-            </mat-chip>
-          </mat-chip-list>
-        </td>
-        <td style="white-space:nowrap">
-          <mat-form-field>
-            <input matInput placeholder="Add label" #l (keyup.enter)="createLabel(predefinedValue, l.value)">
-          </mat-form-field>
-          <button mat-icon-button (click)="createLabel(predefinedValue, l.value)" matTooltip="Add Label">
-            <mat-icon>add</mat-icon>
-          </button>
-          <button mat-icon-button (click)="deletePredefinedValue(predefinedValue.value)" color="warn"
-                  matTooltip="Delete predefined value">
-            <mat-icon>remove</mat-icon>
-          </button>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </mat-card-content>
-</mat-card>
+      <table class="values">
+        <thead>
+          <th [width]="'20%'">Predefined Value</th>
+          <th [width]="'50%'">Allowed labels</th>
+          <th [width]="'30%'">Actions</th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let predefinedValue of selectedDictionary.values">
+            <td>
+              <mat-form-field>
+                <input matInput #pv [(value)]="predefinedValue.value"
+                       (blur)="updatePredefinedValueName(predefinedValue, pv)">
+              </mat-form-field>
+            </td>
+            <td>
+              <mat-chip-list>
+                <mat-chip *ngFor="let label of predefinedValue.labels.get(state.currentLocale)"
+                         [removable]="true">
+                  {{ label }}
+                  <mat-icon matChipRemove (click)="deleteLabel(predefinedValue, label)">cancel</mat-icon>
+                </mat-chip>
+              </mat-chip-list>
+            </td>
+            <td style="white-space:nowrap">
+              <mat-form-field>
+                <input matInput placeholder="Add label" #l (keyup.enter)="createLabel(predefinedValue, l.value)">
+              </mat-form-field>
+              <button mat-icon-button (click)="createLabel(predefinedValue, l.value)" matTooltip="Add Label">
+                <mat-icon>add</mat-icon>
+              </button>
+              <button mat-icon-button (click)="deletePredefinedValue(predefinedValue.value)" color="warn"
+                      matTooltip="Delete predefined value">
+                <mat-icon>remove</mat-icon>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+  </nb-card-body>
+</nb-card>

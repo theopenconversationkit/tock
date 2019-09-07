@@ -176,7 +176,7 @@ export class Dictionary {
               public values: PredefinedValue[],
               public onlyValues: boolean,
               public minDistance: number,
-              public textSearch:boolean) {
+              public textSearch: boolean) {
   }
 
   static fromJSON(json?: any): Dictionary {
@@ -285,7 +285,7 @@ export abstract class EntityContainer {
 
 export class Intent {
 
-  public static unknown = "tock:unknown";
+  public static readonly unknown = "tock:unknown";
 
   constructor(public name: string,
               public namespace: string,
@@ -420,7 +420,7 @@ export class Sentence extends EntityContainer {
       case SentenceStatus.inbox :
         return "lightblue";
       case SentenceStatus.model :
-        return "lightgreen";
+        return "#00d68f";
       case SentenceStatus.validated :
         return "mediumspringgreen ";
     }
@@ -1093,7 +1093,8 @@ export class UpdateSentencesQuery extends ApplicationScopedQuery {
               public searchQuery?: SearchQuery,
               public newIntentId?: string,
               public oldEntity?: EntityDefinition,
-              public newEntity?: EntityDefinition) {
+              public newEntity?: EntityDefinition,
+              public newStatus?: SentenceStatus) {
     super(namespace, applicationName, language)
   }
 }

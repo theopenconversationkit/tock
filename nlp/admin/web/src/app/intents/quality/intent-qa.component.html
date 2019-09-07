@@ -14,41 +14,42 @@
   ~ limitations under the License.
   -->
 
-<div>
+<nb-card class="intents">
 
-  <div id="intent-qa-update-container">
+  <nb-card-header id="intent-qa-update-container">
     <mat-form-field>
-      <input matInput placeholder="Filter Occurrences Less Than" type="number" [(ngModel)]="minOccurrences" (keyup.enter)="updateContent()"/>
+      <input matInput placeholder="Filter Occurrences Less Than" type="number" [(ngModel)]="minOccurrences"
+             (keyup.enter)="updateContent()"/>
     </mat-form-field>
     <button mat-button (click)="updateContent()" matTooltip="Refresh">
       <mat-icon>refresh</mat-icon>
     </button>
-  </div>
+  </nb-card-header>
+  <nb-card-body>
+    <mat-table #table [dataSource]="dataSource">
 
-  <mat-table #table [dataSource]="dataSource">
+      <ng-container matColumnDef="intent1">
+        <mat-header-cell *matHeaderCellDef>Intent 1</mat-header-cell>
+        <mat-cell *matCellDef="let row">{{row.intent1}}</mat-cell>
+      </ng-container>
 
-    <ng-container matColumnDef="intent1">
-      <mat-header-cell *matHeaderCellDef>Intent 1</mat-header-cell>
-      <mat-cell *matCellDef="let row">{{row.intent1}}</mat-cell>
-    </ng-container>
+      <ng-container matColumnDef="intent2">
+        <mat-header-cell *matHeaderCellDef>Intent 2</mat-header-cell>
+        <mat-cell *matCellDef="let row">{{row.intent2}}</mat-cell>
+      </ng-container>
 
-    <ng-container matColumnDef="intent2">
-      <mat-header-cell *matHeaderCellDef>Intent 2</mat-header-cell>
-      <mat-cell *matCellDef="let row">{{row.intent2}}</mat-cell>
-    </ng-container>
+      <ng-container matColumnDef="occurrences">
+        <mat-header-cell *matHeaderCellDef>Occurrences</mat-header-cell>
+        <mat-cell *matCellDef="let row">{{row.occurrences}}</mat-cell>
+      </ng-container>
 
-    <ng-container matColumnDef="occurrences">
-      <mat-header-cell *matHeaderCellDef>Occurrences</mat-header-cell>
-      <mat-cell *matCellDef="let row">{{row.occurrences}}</mat-cell>
-    </ng-container>
+      <ng-container matColumnDef="average">
+        <mat-header-cell *matHeaderCellDef>Average Diff</mat-header-cell>
+        <mat-cell *matCellDef="let row">{{row.average | number : '1.0-3'}}</mat-cell>
+      </ng-container>
 
-    <ng-container matColumnDef="average">
-      <mat-header-cell *matHeaderCellDef>Average Diff</mat-header-cell>
-      <mat-cell *matCellDef="let row">{{row.average | number : '1.0-3'}}</mat-cell>
-    </ng-container>
-
-    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-  </mat-table>
-
-</div>
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+  </nb-card-body>
+</nb-card>

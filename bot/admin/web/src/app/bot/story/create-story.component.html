@@ -14,18 +14,18 @@
   ~ limitations under the License.
   -->
 
-<mat-card class="sentence">
-  <mat-card-content>
+<nb-card class="sentence">
+  <nb-card-body>
     <tock-select-bot [(configurationId)]="botConfigurationId" [displayConnectorChoice]="false">
       <br>
-      <mat-form-field class="sentence-input" *ngIf="story">
-        <input matInput
+      <span class="sentence-input" *ngIf="story">
+        <input nbInput status="primary" class="phrase"
                [(ngModel)]="story.userSentence"
                placeholder="Enter a User Phrase"
                #newSentence
                (keyup.enter)="onSentence(newSentence.value)">
-      </mat-form-field>
-      <button *ngIf="story && story.userSentence.length !== 0" color="primary" mat-button
+      </span>
+      <button nbButton outline status="primary" [disabled]="!(story && story.userSentence.length !== 0)"
               (click)="onSentence()">
         Add
       </button>
@@ -35,12 +35,13 @@
         <tock-story class="story" [story]="story" [fullDisplay]="true" [displaySteps]="true" [submit]="submit"></tock-story>
       </div>
     </tock-select-bot>
-    <mat-card-actions *ngIf="displayStory" class="actions">
-      <button (click)="resetState()" mat-button>Cancel</button>
-      <button (click)="onReply()" mat-raised-button color="primary">Create Story</button>
-    </mat-card-actions>
-  </mat-card-content>
-</mat-card>
+  </nb-card-body>
+  <nb-card-footer *ngIf="displayStory" class="actions">
+    <button (click)="resetState()" nbButton outline size="small" status="danger" style="margin-right: 10px">Cancel</button>
+    <button (click)="onReply()" nbButton size="small" status="primary">Create Story</button>
+  </nb-card-footer>
+
+</nb-card>
 <br>
 <span *ngIf="displayStory" class="current-analysis">
   <br><br>

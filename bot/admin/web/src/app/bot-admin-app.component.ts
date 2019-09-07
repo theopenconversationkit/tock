@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {ChangeDetectorRef, Component, OnDestroy, OnInit} from "@angular/core";
 import {AuthService} from "./core-nlp/auth/auth.service";
 import {StateService} from "./core-nlp/state.service";
+import {DialogService} from "./core-nlp/dialog.service";
 import {RestService} from "./core-nlp/rest/rest.service";
 import {MatIconRegistry, MatSnackBar} from "@angular/material";
 import {UserRole} from "./model/auth";
 import {DomSanitizer} from "@angular/platform-browser";
+import {NbMenuItem} from "@nebular/theme";
 
 
 @Component({
@@ -31,14 +33,19 @@ import {DomSanitizer} from "@angular/platform-browser";
 export class BotAdminAppComponent implements OnInit, OnDestroy {
 
   UserRole = UserRole;
+
   private errorUnsuscriber: any;
+  public menu: NbMenuItem[];
 
   constructor(public auth: AuthService,
               public state: StateService,
               private rest: RestService,
+              private dialog: DialogService,
+              private changeDetectorRef: ChangeDetectorRef,
               private snackBar: MatSnackBar,
               iconRegistry: MatIconRegistry,
               sanitizer: DomSanitizer) {
+    dialog.setupRootChangeDetector(changeDetectorRef);
     iconRegistry.addSvgIcon(
       'logo',
       sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo.svg'));
@@ -47,19 +54,51 @@ export class BotAdminAppComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.errorUnsuscriber = this.rest.errorEmitter.subscribe(e =>
       this.snackBar.open(e, "Error", {duration: 5000})
-    )
+    );
+    this.menu = [
+      {
+        title: 'Configuration',
+        icon: 'settings-outline',
+        link: '/configuration',
+        hidden: this.state.hasRole(UserRole.admin)
+      },
+      {
+        title: 'NLU',
+        icon: 'list',
+        link: '/nlp',
+        hidden: this.state.hasRole(UserRole.nlpUser)
+      },
+      {
+        title: 'NLU QA',
+        icon: 'bar-chart-outline',
+        link: '/quality',
+        hidden: this.state.hasRole(UserRole.nlpUser)
+      },
+      {
+        title: 'Build',
+        icon: 'sync-outline',
+        link: '/build',
+        hidden: this.state.hasRole(UserRole.botUser)
+      },
+      {
+        title: 'Test',
+        icon: 'text-outline',
+        link: '/test',
+        hidden: this.state.hasRole(UserRole.botUser)
+      },
+      {
+        title: 'Monitoring',
+        icon: 'pie-chart-outline',
+        link: '/monitoring'
+        ,
+        hidden: this.state.hasRole(UserRole.botUser)
+      }
+
+    ];
   }
 
   ngOnDestroy(): void {
     this.errorUnsuscriber.unsubscribe();
-  }
-
-  changeApplication(newApplicationName: string) {
-    this.state.changeApplicationWithName(newApplicationName);
-  }
-
-  changeLocale(newLocale: string) {
-    this.state.changeLocale(newLocale);
   }
 
 }

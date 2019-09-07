@@ -1,5 +1,6 @@
 .input-text {
-  width: 400px;
+  width: 500px;
+  margin-right: 10px
 }
 
 .stats {
@@ -7,4 +8,8 @@
   float: left;
   margin-right: 20px;
   margin-top:-12px;
+}
+
+.dialog {
+  margin-top: 20px;
 }

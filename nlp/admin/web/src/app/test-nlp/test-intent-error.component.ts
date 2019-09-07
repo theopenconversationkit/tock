@@ -32,7 +32,7 @@ import {escapeRegex} from "../model/commons";
 export class TestIntentErrorComponent implements OnInit, AfterViewInit {
 
   displayedColumns = ['text', 'currentIntent', 'wrongIntent', 'count', 'percent', 'probability', 'firstErrorDate', 'actions'];
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   dataSource: TestIntentErrorDataSource | null;
 
   constructor(public state: StateService,

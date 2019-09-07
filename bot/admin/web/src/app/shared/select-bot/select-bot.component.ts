@@ -115,14 +115,14 @@ export class SelectBotComponent implements OnInit {
     }
   }
 
-  changeBotName(botName: string) {
-    this.changeConf(this.configurations.find(c => this.getName(c) === botName), this.configurations, this.allowNoConfigurationSelection)
+  changeBotName() {
+    this.changeConf(this.configurations.find(c => this.getName(c) === this.currentBotName), this.configurations, this.allowNoConfigurationSelection)
   }
 
-  changeConnectorType(connectorType: ConnectorType) {
+  changeConnectorType() {
     let conf = this.configurations.find(
       c => this.getName(c) === this.currentBotName
-        && c.ownConnectorType().id === connectorType.id);
+        && c.ownConnectorType().id === this.currentConnectorType.id);
     if (conf) {
       this.changeConf(conf, this.configurations, false);
     } else {

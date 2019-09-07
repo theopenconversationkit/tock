@@ -14,60 +14,59 @@
   ~ limitations under the License.
   -->
 
-<mat-expansion-panel>
-  <mat-expansion-panel-header>
-    <mat-panel-title>
-      Bot Flow
-    </mat-panel-title>
-    <mat-panel-description>
-      <span class="description">Layout options</span>
-      <mat-slide-toggle
-        class="mode-selection"
-        color="primary"
-        (click)="$event.stopPropagation();changeMode()">
-        Stats
-      </mat-slide-toggle>
-    </mat-panel-description>
-  </mat-expansion-panel-header>
-  <tock-select-bot [(configurationId)]="botConfigurationId" [displayConnectorChoice]="true"
-                   [allowNoConfigurationSelection]="true" [useRestConfiguration]="false"
-                   (selectionChange)="displayFlow($event)" class="select">
-  </tock-select-bot>
-  <mat-form-field class="select">
-    <mat-label>Story Focus</mat-label>
-    <mat-select [(value)]="selectedStoryId" (selectionChange)="update()">
-      <mat-option [value]="undefined">All</mat-option>
-      <mat-option *ngFor="let s of stories | keyvalue: valueAscOrder" [value]="s.key">{{s.value}}</mat-option>
-    </mat-select>
-  </mat-form-field>
-  <mat-form-field *ngIf="selectedStoryId" class="select">
-    <mat-label>Direction</mat-label>
-    <mat-select [(value)]="direction" (selectionChange)="update()">
-      <mat-option [value]="undefined">Both</mat-option>
-      <mat-option [value]="-1">Outcoming</mat-option>
-      <mat-option [value]="1">Incoming</mat-option>
-    </mat-select>
-  </mat-form-field>
-  <br/>
-  <mat-form-field class="select">
-    <mat-label>Layout</mat-label>
-    <mat-select [(value)]="selectedLayout" (selectionChange)="changeLayout($event.value)">
-      <mat-option *ngFor="let l of layouts" [value]="l.name">{{l.name}}</mat-option>
-    </mat-select>
-  </mat-form-field>
-  <span *ngIf="statsMode">
-  <mat-checkbox [(ngModel)]="recursive" (change)="update()" class="checkbox">Display Recursive</mat-checkbox>
-  <mat-checkbox [(ngModel)]="entity" (change)="update()" class="checkbox">Entity</mat-checkbox>
-  <mat-checkbox [(ngModel)]="step" (change)="update()" class="checkbox">Step</mat-checkbox>
-  <mat-checkbox [(ngModel)]="intent" (change)="update()" class="checkbox">Intent</mat-checkbox>
-  / Node Weight:
-  <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalNodeCount" [max]="maxNodeCount"
-              (change)="updateCount()"></mat-slider>
-  </span>
-  Transition Percentage:
-  <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalTransitionPercentage"
-              (change)="updateCount()"></mat-slider>
-</mat-expansion-panel>
+<nb-accordion class="flow">
+  <nb-accordion-item>
+    <nb-accordion-item-header>
+        Bot Flow    -    Layout options
+        <mat-slide-toggle
+          class="mode-selection"
+          color="primary"
+          (click)="$event.stopPropagation();changeMode()">
+          Stats
+        </mat-slide-toggle>
+    </nb-accordion-item-header>
+    <nb-accordion-item-body>
+      <tock-select-bot [(configurationId)]="botConfigurationId" [displayConnectorChoice]="true"
+                       [allowNoConfigurationSelection]="true" [useRestConfiguration]="false"
+                       (selectionChange)="displayFlow($event)" class="select">
+      </tock-select-bot>
+      <span class="select">
+        <nb-select [(ngModel)]="selectedStoryId" (selectionChange)="update()"
+                placeholder="Story Focus" status="primary">
+          <nb-option [value]="undefined">All</nb-option>
+          <nb-option *ngFor="let s of stories | keyvalue: valueAscOrder" [value]="s.key">{{s.value}}</nb-option>
+        </nb-select>
+      </span>
+      <span *ngIf="selectedStoryId" class="select">
+        <nb-select placeholder="Direction" status="primary"
+        [(ngModel)]="direction" (selectionChange)="update()">
+          <nb-option [value]="undefined">Both</nb-option>
+          <nb-option [value]="-1">Outcoming</nb-option>
+          <nb-option [value]="1">Incoming</nb-option>
+        </nb-select>
+      </span>
+      <br/>
+      <span class="select">
+        <nb-select [(ngModel)]="selectedLayout" (selectedChange)="changeLayout()"
+        placeholder="Layout" status="primary" style="width: 10rem;">
+          <nb-option *ngFor="let l of layouts" [value]="l.name">{{l.name}}</nb-option>
+        </nb-select>
+      </span>
+      <span *ngIf="statsMode">
+      <nb-checkbox [(ngModel)]="recursive" (change)="update()" class="checkbox">Display Recursive</nb-checkbox>
+      <nb-checkbox [(ngModel)]="entity" (change)="update()" class="checkbox">Entity</nb-checkbox>
+      <nb-checkbox [(ngModel)]="step" (change)="update()" class="checkbox">Step</nb-checkbox>
+      <nb-checkbox [(ngModel)]="intent" (change)="update()" class="checkbox">Intent</nb-checkbox>
+      / Node Weight:
+      <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalNodeCount" [max]="maxNodeCount"
+                  (change)="updateCount()"></mat-slider>
+      </span>
+      Transition Percentage:
+      <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalTransitionPercentage"
+                  (change)="updateCount()"></mat-slider>
+    </nb-accordion-item-body>
+  </nb-accordion-item>
+</nb-accordion>
 
 <div *ngIf="graphData" class="cytoscape">
   <tock-cytoscape [elements]="graphData" [layout]="layout" (selectedNode)="nodeChange($event)"
@@ -84,6 +83,6 @@
   </ul>
 </div>
 
-<div *ngIf="graphData && !selectedNode && !selectedEdge" class="selected-node">
-  <button mat-button color="primary" routerLink="/build/story-create">Add a New Story</button>
+<div *ngIf="graphData && !selectedNode && !selectedEdge" class="story-btn">
+  <button nbButton status="primary" routerLink="/build/story-create">Add a New Story</button>
 </div>

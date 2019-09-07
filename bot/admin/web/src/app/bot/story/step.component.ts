@@ -1,10 +1,11 @@
 import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {IntentName, StoryStep} from "../model/story";
-import {MatDialog, MatSnackBar} from "@angular/material";
+import {MatDialog} from "@angular/material";
 import {Intent, IntentsCategory, ParseQuery} from "../../model/nlp";
 import {StateService} from "../../core-nlp/state.service";
 import {IntentDialogComponent} from "../../sentence-analysis/intent-dialog/intent-dialog.component";
 import {NlpService} from "../../nlp-tabs/nlp.service";
+import {DialogService} from "../../core-nlp/dialog.service";
 
 @Component({
   selector: 'tock-step',
@@ -37,8 +38,8 @@ export class StepComponent implements OnInit {
 
   constructor(
     public state: StateService,
-    private snackBar: MatSnackBar,
-    private dialog: MatDialog,
+    private dialog: DialogService,
+    private matDialog: MatDialog,
     private nlp: NlpService) {
   }
 
@@ -83,6 +84,7 @@ export class StepComponent implements OnInit {
           }
         } else {
           let dialogRef = this.dialog.open(
+            this.matDialog,
             IntentDialogComponent,
             {
               data: {
@@ -138,7 +140,7 @@ export class StepComponent implements OnInit {
       invalidMessage = "Please choose an intent";
     }
     if (invalidMessage) {
-      this.snackBar.open(`Error: ${invalidMessage}`, "ERROR", {duration: 5000});
+      this.dialog.notify(`Error: ${invalidMessage}`);
     } else {
       this.step.new = false;
     }

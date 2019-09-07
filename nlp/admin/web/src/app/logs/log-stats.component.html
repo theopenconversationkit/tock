@@ -14,23 +14,20 @@
   ~ limitations under the License.
   -->
 
-<mat-card class="search">
-  <mat-card-content>
-    <mat-form-field class="intent">
-      <mat-select placeholder="Intent" [(ngModel)]="intent" (selectionChange)="search()" class="search-input">
-        <mat-option value="">All</mat-option>
-        <mat-optgroup *ngFor="let category of state.currentIntentsCategories | async" [label]="category.category">
-          <mat-option *ngFor="let intent of category.intents" [value]="intent.name">
-            {{intent.intentLabel()}}
-          </mat-option>
-        </mat-optgroup>
-        <mat-option value="unknown">Unknown</mat-option>
-      </mat-select>
-    </mat-form-field>
-    <mat-slide-toggle class="choice" [(ngModel)]="onlyCurrentLocale" (change)="search()">Only current locale</mat-slide-toggle>
-    <button mat-button (click)="search()">GO</button>
-  </mat-card-content>
-</mat-card>
+<nb-card class="search">
+  <nb-card-body>
+    <nb-select placeholder="Intent" [(ngModel)]="intent" (selectedChange)="search()" class="search-input nb-select">
+      <nb-option value="_all_">All</nb-option>
+      <nb-option-group *ngFor="let category of state.currentIntentsCategories | async" [title]="category.category">
+        <nb-option *ngFor="let intent of category.intents" [value]="intent.name">
+          {{intent.intentLabel()}}
+        </nb-option>
+      </nb-option-group>
+      <nb-option value="tock:unknown">Unknown</nb-option>
+    </nb-select>
+    <nb-toggle class="search-input toggle" [(checked)]="onlyCurrentLocale" (checkedChange)="search()">Only current locale</nb-toggle>
+  </nb-card-body>
+</nb-card>
 
 <h2 *ngIf="nodata" class="search">
   No Data

@@ -31,7 +31,7 @@ import {KeyValue} from "@angular/common";
 import {NodeTransition, StoryNode} from "./node";
 import {MatSnackBar} from "@angular/material";
 import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
-import {AnswerConfigurationType, StoryDefinitionConfiguration, StorySearchQuery, StoryStep} from "../model/story";
+import {StoryDefinitionConfiguration, StorySearchQuery, StoryStep} from "../model/story";
 
 @Component({
   selector: 'tock-flow',
@@ -162,7 +162,8 @@ export class FlowComponent implements OnInit {
     });
   }
 
-  changeLayout(layout: string) {
+  changeLayout() {
+    const layout = this.selectedLayout;
     this.layout = this.layouts.find(l => l.name === layout);
   }
 

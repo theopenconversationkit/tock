@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+.responses {
+  margin-top: 20px;
+}
+
 .fill-remaining-space {
   flex: 1 1 auto;
 }
@@ -21,4 +25,34 @@
 .i18n-select {
   font-size: small;
   padding-right: 10px;
+}
+
+.background {
+  background: inherit;
+}
+
+.nb-form-field-infix {
+  display: block;
+  position: relative;
+  flex: auto;
+  min-width: 0;
+  width: 180px;
+}
+.nb-select {
+  display: inline-block;
+  width: 100%;
+  outline: 0;
+}
+.nb-form-field-label-wrapper {
+  position: absolute;
+  left: 0;
+  pointer-events: none;
+  top: -5px;
+  left: -10px;
+}
+.label-title{
+  transform: translateY(-1.28125em) scale(.75) perspective(100px) translateZ(.001px);
+    -ms-transform: translateY(-1.28125em) scale(.75);
+    display: block;
+    top: -15px;
 }

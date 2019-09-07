@@ -27,11 +27,14 @@ import {BotSharedService} from "./bot-shared.service";
 import {DisplayDialogComponent} from "./bot-dialog/display-dialog.component";
 import {MomentModule} from "ngx-moment";
 import {SelectBotComponent} from "./select-bot/select-bot.component";
+import {NbCardModule, NbSelectModule} from "@nebular/theme";
 @NgModule({
   imports: [
     CommonModule,
     SharedModule,
     MomentModule,
+    NbCardModule,
+    NbSelectModule
   ],
   declarations: [
     BotMessageComponent,

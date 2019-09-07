@@ -12,6 +12,7 @@ import {StateService} from "../../core-nlp/state.service";
 import {AnswerDialogComponent} from "./answer-dialog.component";
 import {AnswerController} from "./controller";
 import {BotSharedService} from "../../shared/bot-shared.service";
+import {DialogService} from "../../core-nlp/dialog.service";
 
 @Component({
   selector: 'tock-answer',
@@ -43,7 +44,8 @@ export class AnswerComponent implements OnInit {
 
   constructor(private state: StateService,
               private bot: BotService,
-              private dialog: MatDialog,
+              private dialog: DialogService,
+              private matDialog: MatDialog,
               public shared: BotSharedService) {
   }
 
@@ -55,6 +57,7 @@ export class AnswerComponent implements OnInit {
 
   editAnswer() {
     this.dialog.open(
+      this.matDialog,
       AnswerDialogComponent,
       {
         data:

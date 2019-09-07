@@ -38,7 +38,7 @@ export class BotConfigurationsComponent implements OnInit {
   displayTestConfigurations: boolean = false;
 
   //used to copy to clipboard
-  @ViewChild('copy') tmpTextArea: ElementRef;
+  @ViewChild('copy', {static: false}) tmpTextArea: ElementRef;
 
   constructor(private state: StateService,
               private botConfiguration: BotConfigurationService,

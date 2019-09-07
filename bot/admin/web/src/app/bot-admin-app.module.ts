@@ -7,6 +7,16 @@ import {BotAdminAppComponent} from "./bot-admin-app.component";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {BotCoreModule} from "./core/bot-core.module";
 import {HttpClientModule} from "@angular/common/http";
+import {ThemeModule} from "./theme/theme.module";
+import {
+  NbDatepickerModule,
+  NbDialogModule,
+  NbMenuModule,
+  NbSidebarModule,
+  NbToastrModule,
+  NbWindowModule,
+  NbThemeModule
+} from '@nebular/theme';
 
 const routes: Routes = [
   {path: '', redirectTo: '/nlp/inbox', pathMatch: 'full'},
@@ -53,7 +63,20 @@ export class BotAdminAppRoutingModule {
     CoreModule,
     BotCoreModule,
     SharedModule,
-    BotAdminAppRoutingModule
+    BotAdminAppRoutingModule,
+
+    ThemeModule.forRoot(),
+
+    NbSidebarModule.forRoot(),
+    NbMenuModule.forRoot(),
+    NbDatepickerModule.forRoot(),
+    NbDialogModule.forRoot(),
+    NbWindowModule.forRoot(),
+    NbToastrModule.forRoot(),
+    NbThemeModule.forRoot(
+              {
+                name: 'default',
+              })
   ],
   providers: [],
   bootstrap: [BotAdminAppComponent]

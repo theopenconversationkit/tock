@@ -17,7 +17,7 @@
 import {Component, OnInit} from "@angular/core";
 import {Router} from "@angular/router";
 class TabLink {
-  constructor(public link: string, public label: string) {
+  constructor(public route: string, public title: string) {
 
   }
 }
@@ -26,7 +26,7 @@ const tabs = [
   new TabLink("story-create", "New Story"),
   new TabLink("story-search", "Search Stories"),
   new TabLink("flow", "Bot Flow"),
-  new TabLink("i18n", "i18n"),
+  new TabLink("i18n", "Responses"),
   new TabLink("feature-flipping", "Feature Flipping")
 ];
 

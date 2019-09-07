@@ -33,7 +33,6 @@
       <mat-datepicker-toggle matSuffix [for]="after"></mat-datepicker-toggle>
       <mat-datepicker #after (selectedChanged)="search()"></mat-datepicker>
     </mat-form-field>
-    <button mat-button (click)="search()">GO</button>
   </mat-card-content>
 </mat-card>
 <h2 *ngIf="nodata" class="search">

@@ -1,0 +1,40 @@
+<div class="header-container">
+  <div class="logo-containter" style="    display: contents;">
+    <a (click)="toggleSidebar()" href="#" class="sidebar-toggle">
+      <nb-icon icon="menu-2-outline"></nb-icon>
+    </a>
+    <img style="width: 45px;" src="/assets/images/Logo_Tock_White.svg"/>
+    <div class="logo" (click)="goToHome()">Tock Studio</div>
+    <i class="material-icons small">wb_sunny</i>
+    <mat-slide-toggle class="choice" [checked]="isDark" (change)="switchTheme()" color="primary"></mat-slide-toggle>
+    <i class="material-icons small">brightness_2</i>
+  </div>
+</div>
+
+<div class="header-container">
+
+  <nb-select status="primary"
+             *ngIf="state.currentApplication"
+             (selectedChange)="changeApplication()"
+             [(ngModel)]="selectedApplication">
+    <nb-option *ngFor="let app of state.applications"
+               [value]="app.name">{{ app.name }}
+    </nb-option>
+  </nb-select>
+
+  <nb-select status="primary"
+             *ngIf="state.currentApplication"
+             (selectedChange)="changeLocale()"
+             [(ngModel)]="selectedLocale"
+             style="margin-left: 10px;">
+    <nb-option *ngFor="let l of state.currentApplication.supportedLocales"
+               [value]="l">{{ state.localeName(l) }}</nb-option>
+  </nb-select>
+  <nb-actions size="medium" style="cursor: pointer;">
+    <nb-action class="control-item"
+               *ngIf="auth.isLoggedIn() && !auth.isSSO()" (click)="auth.logout()"
+               nbTooltip="Logout">
+      <i class="material-icons tock-toolbar-menu" style="font-size: 30px;">exit_to_app</i>
+    </nb-action>
+  </nb-actions>
+</div>

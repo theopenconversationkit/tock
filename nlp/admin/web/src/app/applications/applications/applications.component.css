@@ -15,6 +15,7 @@
  */
 
 .applications-applications {
+  margin-top:20px;
 }
 
 .applications-applications__item {
@@ -46,4 +47,8 @@
 
 .applications-applications__complex-actions .mat-button {
   font-size: 0.8em;
+}
+
+.btn {
+  margin: 0 8px;
 }

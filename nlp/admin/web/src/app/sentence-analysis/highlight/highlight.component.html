@@ -16,29 +16,45 @@
 
 <div class="highlight-block">
   <div class="highlight-text">
+    <div>
+      <nb-actions size="small" style="cursor: pointer;float: right">
+        <nb-action class="control-item" (click)="answerToSentence()" nbTooltip="Set a custom answer"
+                   style="padding: 0 0.25rem;"
+                   *ngIf="displayActions && appConfig.answerToSentenceUrl && isRootSentence()">
+          <i class="material-icons">question_answer</i>
+        </nb-action>
+        <nb-action class="control-item" (click)="copyToClipboard()" nbTooltip="Copy sentence to clipboard"
+                   style="padding: 0 0.25rem;"
+                   *ngIf="displayActions && isRootSentence()">
+          <i class="material-icons">content_copy</i>
+        </nb-action>
+      </nb-actions>
+    </div>
     <div *ngIf="tokens && !readOnly"
          class="tokens"
          (mouseup)="select()" (touchend)="select()"><span *ngFor="let t of tokens"
-                                     [style.font-size]="fontSize"
-                                     [style.background]="t.color()"
-                                     [id]="prefix + t.index">{{t.text}}</span></div>
+                                                          [style.font-size]="fontSize"
+                                                          [style.background]="t.color()"
+                                                          [id]="prefix + t.index">{{t.text}}</span>
+    </div>
     <div *ngIf="tokens && readOnly"
          class="tokens-readonly"><span *ngFor="let t of tokens"
-                              [style.font-size]="fontSize"
-                              [style.background]="t.color()"
-                              [id]="t.index"
-                              [matTooltip]="t.display(sentence, state.user)">{{t.text}}</span></div>
-    <button *ngIf="displayActions && appConfig.answerToSentenceUrl && isRootSentence()" mat-icon-button (click)="answerToSentence()" matTooltip="Create a Story" class="answer-button"><mat-icon>question_answer</mat-icon></button>
-    <button *ngIf="displayActions && isRootSentence()" mat-icon-button (click)="copyToClipboard()" matTooltip="Copy sentence to clipboard" class="copy-button"><mat-icon>content_copy</mat-icon></button>
+                                       [style.font-size]="fontSize"
+                                       [style.background]="t.color()"
+                                       [id]="t.index"
+                                       [matTooltip]="t.display(sentence, state.user)">{{t.text}}</span>
+    </div>
+
+
     <textarea *ngIf="displayActions && isRootSentence()" #copy class="copy"></textarea>
   </div>
   <div *ngIf="sentence && sentence.getEditedSubEntities().length !== 0" class="sub-entities">
     <div *ngFor="let e of sentence.getEditedSubEntities();let idx = index" [style.padding-left]="leftPadding+'px'">
       <mat-chip-list class="role-container">
         <mat-chip [style.background-color]="e.entityColor"
-                 [matTooltip]="e.qualifiedName(state.user)"
-                 selected="false"
-                 color="primary">
+                  [matTooltip]="e.qualifiedName(state.user)"
+                  selected="false"
+                  color="primary">
           {{e.role}}
         </mat-chip>
       </mat-chip-list>
@@ -54,20 +70,20 @@
   <div *ngIf="!readOnly && edited" class="highlight">
     <mat-chip-list *ngIf="entityProvider" class="inner-highlight">
       <mat-chip *ngFor="let entity of entityProvider.getEntities()"
-               matTooltip="Select {{entity.qualifiedName(state.user)}}"
-               selected="false"
-               (click)="onSelect(entity)"
-               [style.background-color]="entity.entityColor"
-               color="primary">
+                matTooltip="Select {{entity.qualifiedName(state.user)}}"
+                selected="false"
+                (click)="onSelect(entity)"
+                [style.background-color]="entity.entityColor"
+                color="primary">
         {{entity.qualifiedName(state.user)}}
       </mat-chip>
     </mat-chip-list>
     <div>
-      <button mat-button (click)="addEntity()">
+      <button nbButton ghost (click)="addEntity()">
         <mat-icon>add</mat-icon>
         Add New Entity
       </button>
-      <button mat-raised-button (click)="onClose()">
+      <button nbButton ghost (click)="onClose()">
         <mat-icon>close</mat-icon>
         Close Entity Selection
       </button>

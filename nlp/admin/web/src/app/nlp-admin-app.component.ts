@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {ChangeDetectorRef, Component, OnDestroy, OnInit} from "@angular/core";
 import {AuthService} from "./core-nlp/auth/auth.service";
 import {StateService} from "./core-nlp/state.service";
 import {RestService} from "./core-nlp/rest/rest.service";
 import {MatIconRegistry, MatSnackBar} from "@angular/material";
 import {UserRole} from "./model/auth";
 import {DomSanitizer} from "@angular/platform-browser";
+import {NbMenuItem} from "@nebular/theme";
+import {DialogService} from "./core-nlp/dialog.service";
+
 
 @Component({
   selector: 'tock-nlp-admin-root',
@@ -29,15 +32,20 @@ import {DomSanitizer} from "@angular/platform-browser";
 })
 export class NlpAdminAppComponent implements OnInit, OnDestroy {
 
-  private errorUnsuscriber: any;
   UserRole = UserRole;
+
+  private errorUnsuscriber: any;
+  public menu: NbMenuItem[];
 
   constructor(public auth: AuthService,
               public state: StateService,
               private rest: RestService,
               private snackBar: MatSnackBar,
+              private changeDetectorRef: ChangeDetectorRef,
+              private dialog: DialogService,
               iconRegistry: MatIconRegistry,
               sanitizer: DomSanitizer) {
+    dialog.setupRootChangeDetector(changeDetectorRef);
     iconRegistry.addSvgIcon(
       'logo',
       sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo.svg'));
@@ -46,19 +54,32 @@ export class NlpAdminAppComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.errorUnsuscriber = this.rest.errorEmitter.subscribe(e =>
       this.snackBar.open(e, "Error", {duration: 5000})
-    )
+    );
+    this.menu = [
+      {
+        title: 'Configuration',
+        icon: 'settings-outline',
+        link: '/applications',
+        hidden: this.state.hasRole(UserRole.admin)
+      },
+      {
+        title: 'NLU',
+        icon: 'list',
+        link: '/nlp',
+        hidden: this.state.hasRole(UserRole.nlpUser)
+      },
+      {
+        title: 'NLU QA',
+        icon: 'bar-chart-outline',
+        link: '/quality',
+        hidden: this.state.hasRole(UserRole.nlpUser)
+      }
+
+    ];
   }
 
   ngOnDestroy(): void {
     this.errorUnsuscriber.unsubscribe();
-  }
-
-  changeApplication(newApplicationName: string) {
-    this.state.changeApplicationWithName(newApplicationName);
-  }
-
-  changeLocale(newLocale: string) {
-    this.state.changeLocale(newLocale);
   }
 
 }

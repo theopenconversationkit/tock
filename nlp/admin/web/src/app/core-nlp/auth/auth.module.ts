@@ -22,6 +22,7 @@ import {AuthGuard} from "./auth.guard";
 import {RouterModule, Routes} from "@angular/router";
 import {CommonModule} from "@angular/common";
 import {RestModule} from "../rest/rest.module";
+import {NbCardModule, NbCheckboxModule} from "@nebular/theme";
 
 const authRoutes: Routes = [
   {
@@ -42,7 +43,9 @@ export class AuthRoutingModule {
     CommonModule,
     SharedModule,
     RestModule,
-    AuthRoutingModule
+    AuthRoutingModule,
+    NbCardModule,
+    NbCheckboxModule
   ],
   declarations: [
     LoginComponent

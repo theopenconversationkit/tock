@@ -36,3 +36,15 @@
   display: none;
 }
 
+.connector {
+  float:left;
+  padding-right: 5px;
+  margin-left: 5px;
+  width:24px;
+  height:24px;
+}
+
+.configurations {
+  margin-top: 20px;
+}
+

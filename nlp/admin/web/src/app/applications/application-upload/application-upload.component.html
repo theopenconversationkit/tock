@@ -14,24 +14,24 @@
   ~ limitations under the License.
   -->
 
-<mat-card *ngIf="configuration">
-  <mat-card-title>Upload a Dump</mat-card-title>
-  <mat-card-subtitle><mat-progress-bar mode="indeterminate" *ngIf="uploading"></mat-progress-bar></mat-card-subtitle>
-  <mat-card-content>
+<nb-card *ngIf="configuration" [nbSpinner]="uploading">
+  <nb-card-header>Upload a Dump</nb-card-header>
+  <nb-card-body>
     <div *ngIf="!report">
 
       <p>
-        <mat-radio-group [(ngModel)]="type">
-          <mat-radio-button *ngIf="state.hasRole(UserRole.technicalAdmin)" value="application" class="dump-type">
+        <nb-radio-group [(ngModel)]="type">
+          <nb-radio *ngIf="state.hasRole(UserRole.technicalAdmin)" value="application" class="dump-type">
             Application Dump
-          </mat-radio-button>
-          <mat-radio-button value="sentences" class="dump-type">
+          </nb-radio>
+          <nb-radio value="sentences" class="dump-type">
             Sentences Dump
-          </mat-radio-button>
-        </mat-radio-group>
+          </nb-radio>
+        </nb-radio-group>
       </p>
       <ul class="mention">
-        <li *ngIf="state.hasRole(UserRole.technicalAdmin)">The "Application Dump" format is an internal format, useful to copy application data across environments.
+        <li *ngIf="state.hasRole(UserRole.technicalAdmin)">The "Application Dump" format is an internal format, useful
+          to copy application data across environments.
         </li>
         <li>The "Sentences Dump" format is an agnostic format, used to share data with other systems.</li>
       </ul>
@@ -95,16 +95,19 @@
         </div>
       </div>
     </div>
-  </mat-card-content>
-  <button (click)="cancel()" *ngIf="!report" mat-button>
-    Cancel
-  </button>
-  <button (click)="upload()" *ngIf="!report" [disabled]="!uploader.getNotUploadedItems().length" mat-raised-button
-          color="primary">
-    Upload
-  </button>
-  <button (click)="close()" *ngIf="report" mat-raised-button color="primary">
-    Hide dump report
-  </button>
-</mat-card>
+  </nb-card-body>
+  <nb-card-footer>
+    <button nbButton outline status="primary" (click)="cancel()" *ngIf="!report">
+      Cancel
+    </button>
+    <button nbButton status="primary" (click)="upload()" *ngIf="!report"
+            [disabled]="!uploader.getNotUploadedItems().length"
+            style="margin: 10px">
+      Upload
+    </button>
+    <button nbButton outline status="primary" (click)="close()" *ngIf="report">
+      Hide dump report
+    </button>
+  </nb-card-footer>
+</nb-card>
 

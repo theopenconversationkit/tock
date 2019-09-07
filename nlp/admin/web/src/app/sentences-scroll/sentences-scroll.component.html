@@ -16,7 +16,7 @@
 
 <ng-content></ng-content>
 
-<div class="paginator">
+<div class="paginator" [nbSpinner]="loading" nbSpinnerStatus="primary">
   <div class="header" *ngIf="total === 0">
     <h4 class="title">No Data</h4>
     <button mat-button (click)="refresh()" class="button">
@@ -26,43 +26,44 @@
 
   <div class="header" *ngIf="total !== 0">
     <h4 class="title"></h4>
-    <button mat-icon-button (click)="refresh()" class="button" matTooltip="Refresh">
-      <mat-icon>refresh</mat-icon>
-    </button>
-    <button *ngIf="state.hasRole(UserRole.admin)"
-            mat-icon-button
-            (click)="downloadSentencesDump()"
-            matTooltip="Download a sentences dump of the current selection"
-            class="button">
-      <mat-icon>cloud_download</mat-icon>
-    </button>
-    <button *ngIf="tableView" mat-icon-button (click)="switchToScrollView()" class="button"
-            matTooltip="Switch to scroll view">
-      <mat-icon>grid_off</mat-icon>
-    </button>
-    <button *ngIf="tableView && !advancedView" mat-icon-button (click)="switchAdvancedView(true)" class="button"
-            matTooltip="Display additional stats">
-      <mat-icon>expand_more</mat-icon>
-    </button>
-    <button *ngIf="tableView && advancedView" mat-icon-button (click)="switchAdvancedView(false)" class="button"
-            matTooltip="Hide additional stats">
-      <mat-icon>expand_less</mat-icon>
-    </button>
-    <button *ngIf="!tableView" mat-icon-button (click)="switchToTableView()" class="button"
-            matTooltip="Switch to table view">
-      <mat-icon>grid_on</mat-icon>
-    </button>
+    <nb-actions size="medium" fullWidth style="cursor: pointer;">
 
-    <div class="loader-parent">
-    <mat-progress-spinner class="loader" mode="indeterminate" *ngIf="loading" [diameter]="28"></mat-progress-spinner>
-    </div>
-    </div>
+      <nb-action (click)="refresh()" nbTooltip="Refresh">
+        <mat-icon>refresh</mat-icon>
+      </nb-action>
 
-  <mat-paginator #paginator
-                [length]="total"
-                [pageIndex]="pageIndex"
-                [pageSize]="pageSize"
-                [pageSizeOptions]="[10, 25, 50, 100]">
+      <nb-action *ngIf="state.hasRole(UserRole.admin)" (click)="downloadSentencesDump()"
+                 nbTooltip="Download a sentences dump of the current selection">
+        <mat-icon>cloud_download</mat-icon>
+      </nb-action>
+
+      <nb-action *ngIf="tableView" (click)="switchToScrollView()"
+                 nbTooltip="Switch to scroll view">
+        <mat-icon>grid_off</mat-icon>
+      </nb-action>
+
+      <nb-action *ngIf="tableView && !advancedView" (click)="switchAdvancedView(true)"
+                 nbTooltip="Display additional stats">
+        <mat-icon>expand_more</mat-icon>
+      </nb-action>
+
+      <nb-action *ngIf="tableView && advancedView" (click)="switchAdvancedView(false)"
+                 nbTooltip="Hide additional stats">
+        <mat-icon>expand_less</mat-icon>
+      </nb-action>
+
+      <nb-action *ngIf="!tableView" (click)="switchToTableView()" nbTooltip="Switch to table view">
+        <mat-icon>grid_on</mat-icon>
+      </nb-action>
+
+    </nb-actions>
+  </div>
+
+  <mat-paginator #paginator class="background"
+                 [length]="total"
+                 [pageIndex]="pageIndex"
+                 [pageSize]="pageSize"
+                 [pageSizeOptions]="[10, 25, 50, 100]">
   </mat-paginator>
 </div>
 <p></p>
@@ -83,9 +84,19 @@
     </div>
   </div>
 
-  <div *ngIf="tableView">
+  <div *ngIf="tableView" class="table-container">
 
-    <mat-table #table matSort [dataSource]="dataSource" (matSortChange)="sortChange($event)">
+    <tock-sentence-analysis *ngIf="sentenceToUpdate"
+                            [sentence]="sentenceToUpdate"
+                            (closed)="onEndUpdate($event)"
+                            [displayClose]="true"
+                            [minimalView]="false"
+                            [displayUnknownButton]="displayUnknownButton"
+                            [displayProbabilities]="displayProbabilities"
+                            [displayStatus]="displayStatus"></tock-sentence-analysis>
+
+    <mat-table [hidden]="sentenceToUpdate" #table matSort [dataSource]="dataSource"
+               (matSortChange)="sortChange($event)">
 
       <ng-container matColumnDef="select">
         <mat-header-cell *matHeaderCellDef>
@@ -103,8 +114,17 @@
       </ng-container>
 
       <ng-container matColumnDef="text">
-        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Text</mat-header-cell>
-        <mat-cell *matCellDef="let row"> <tock-highlight [sentence]="row" [readOnly]="true" [displayActions]="false"></tock-highlight></mat-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">
+          <button nbButton status="danger" size="small" shape="semi-round" class="btn"
+                  (click)="onDelete();$event.stopPropagation()">Delete Selected
+          </button>
+          <button nbButton status="primary" size="small" shape="semi-round" class="btn"
+                  (click)="onValidate();$event.stopPropagation()">Validate Selected
+          </button>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <tock-highlight [sentence]="row" [readOnly]="true" [displayActions]="false"></tock-highlight>
+        </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="currentIntent">
@@ -112,29 +132,46 @@
         <mat-cell *matCellDef="let row"><span style="color:green">{{row.getIntentLabel(state)}}</span></mat-cell>
       </ng-container>
 
+      <ng-container matColumnDef="update">
+        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <button nbButton class="update-button" status="primary" size="small" shape="semi-round"
+                  (click)="onUpdate(row)">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </mat-cell>
+      </ng-container>
+
       <ng-container matColumnDef="status" *ngIf="displayStatus">
         <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Status</mat-header-cell>
-        <mat-cell *matCellDef="let row"><span class="status" [style.background]="row.statusColor()">{{row.statusDisplayed()}}</span></mat-cell>
+        <mat-cell *matCellDef="let row"><span class="status"
+                                              [style.background]="row.statusColor()">{{row.statusDisplayed()}}</span>
+        </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="lastUpdate" *ngIf="advancedView">
         <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Last update</mat-header-cell>
-        <mat-cell *matCellDef="let row"><span style="color:green">{{row.updateDate | date:'yyyy-MM-dd HH:mm'}}</span></mat-cell>
+        <mat-cell *matCellDef="let row"><span style="color:green">{{row.updateDate | date:'yyyy-MM-dd HH:mm'}}</span>
+        </mat-cell>
       </ng-container>
+
 
       <ng-container matColumnDef="intentProbability" *ngIf="advancedView">
         <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Intent proba</mat-header-cell>
-        <mat-cell *matCellDef="let row"><span style="color:green">{{row.classification.intentProbability | number:'1.1-2'}}</span></mat-cell>
+        <mat-cell *matCellDef="let row"><span
+          style="color:green">{{row.classification.intentProbability | number:'1.1-2'}}</span></mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="entitiesProbability" *ngIf="advancedView">
         <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Entities proba</mat-header-cell>
-        <mat-cell *matCellDef="let row"><span style="color:green">{{row.classification.entitiesProbability| number:'1.1-2'}}</span></mat-cell>
+        <mat-cell *matCellDef="let row"><span
+          style="color:green">{{row.classification.entitiesProbability| number:'1.1-2'}}</span></mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="lastUsage" *ngIf="advancedView">
         <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Last use</mat-header-cell>
-        <mat-cell *matCellDef="let row"><span style="color:green">{{row.classification.lastUsage| date:'yyyy-MM-dd HH:mm'}}</span></mat-cell>
+        <mat-cell *matCellDef="let row"><span
+          style="color:green">{{row.classification.lastUsage| date:'yyyy-MM-dd HH:mm'}}</span></mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="usageCount" *ngIf="advancedView">
@@ -147,7 +184,7 @@
         <mat-cell *matCellDef="let row"><span style="color:green">{{row.classification.unknownCount}}</span></mat-cell>
       </ng-container>
 
-      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
       <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
     </mat-table>
 

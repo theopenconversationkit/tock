@@ -5,8 +5,8 @@
       <mat-icon *ngIf="!storyNode && story.isBuiltIn()" class="story-type">build</mat-icon>
       <mat-icon *ngIf="!storyNode && story.isSimpleAnswer()" class="story-type">message</mat-icon>
       <mat-icon *ngIf="!storyNode && story.isScriptAnswer()" class="story-type">code</mat-icon>
-      <span *ngIf="!storyNode" matTooltip="Story name" class="answer-title">{{story.name}}</span>
-      <span *ngIf="storyNode" matTooltip="Story name" [matBadge]="storyNode.displayCount()"
+      <span *ngIf="!storyNode" nbTooltip="Story name" class="answer-title">{{story.name}}</span>
+      <span *ngIf="storyNode" nbTooltip="Story name" [matBadge]="storyNode.displayCount()"
             [matBadgeHidden]="!displayCount"
             matBadgeOverlap="false" class="answer-title">
         <div class="answer-title-right-panel">{{story.name}}</div></span>

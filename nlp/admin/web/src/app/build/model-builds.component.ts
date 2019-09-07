@@ -31,7 +31,7 @@ import {PaginatedQuery} from "../model/commons";
 export class ModelBuildsComponent implements OnInit, AfterViewInit {
 
   displayedColumns = ['date', 'type', 'intent', 'count', 'duration', 'error'];
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   dataSource: ModelBuildDataSource | null;
 
   constructor(private state: StateService,
@@ -40,7 +40,7 @@ export class ModelBuildsComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.dataSource = new ModelBuildDataSource(this.paginator, this.state, this.applicationService);
+    this.dataSource = new ModelBuildDataSource(this, this.state, this.applicationService);
   }
 
   ngAfterViewInit(): void {
@@ -61,9 +61,7 @@ export class ModelBuildsComponent implements OnInit, AfterViewInit {
     if (i) {
       return i;
     } else {
-      console.log(build.entityTypeName);
       const e = this.state.findEntityTypeByName(build.entityTypeName);
-      console.log(e);
       return e ? e.simpleName() : "";
     }
   }
@@ -75,7 +73,7 @@ export class ModelBuildDataSource extends DataSource<ModelBuild> {
   private refreshEvent = new EventEmitter();
   private subject = new BehaviorSubject<ModelBuild[]>([]);
 
-  constructor(private _paginator: MatPaginator,
+  constructor(private component: ModelBuildsComponent,
               private state: StateService,
               private  applicationService: ApplicationService) {
     super();
@@ -88,12 +86,12 @@ export class ModelBuildDataSource extends DataSource<ModelBuild> {
   /** Connect function called by the table to retrieve one stream containing the data to render. */
   connect(): Observable<ModelBuild[]> {
     const displayDataChanges = [
-      this._paginator.page,
+      this.component.paginator.page,
       this.refreshEvent
     ];
 
     merge(...displayDataChanges).subscribe(() => {
-      const startIndex = this._paginator.pageIndex * this._paginator.pageSize;
+      const startIndex = this.component.paginator.pageIndex * this.component.paginator.pageSize;
 
       this.applicationService.builds(
         new PaginatedQuery(
@@ -101,7 +99,7 @@ export class ModelBuildDataSource extends DataSource<ModelBuild> {
           this.state.currentApplication.name,
           this.state.currentLocale,
           startIndex,
-          this._paginator.pageSize
+          this.component.paginator.pageSize
         )
       ).subscribe(r => {
         this.size = r.total;

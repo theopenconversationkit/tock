@@ -1,4 +1,7 @@
-/*
+/*.btn {
+  margin: 0 8px;
+}
+
  * Copyright (C) 2017 VSCT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,14 +22,27 @@
 }
 
 .search {
-  height:100%;
-  width:80%;
   margin-left: auto;
   margin-right: auto;
-  margin-top:20px;
-  text-align:center;
+  margin-top: 20px;
+  text-align: center;
 }
 
 .search-input {
   font-size: large;
+  margin-right: 20px;
+}
+
+.btn {
+  margin: 0 8px;
+}
+
+.nb-select {
+  display: inline-block;
+  width: 100%;
+  outline: 0;
+}
+
+.toggle {
+  vertical-align: text-top;
 }

@@ -1,8 +1,5 @@
 import {Component, Input, OnInit} from "@angular/core";
 import {AnswerContainer, ScriptAnswerConfiguration} from "../model/story";
-import {BotService} from "../bot-service";
-import {MatDialog, MatSnackBar} from "@angular/material";
-import {StateService} from "../../core-nlp/state.service";
 
 @Component({
   selector: 'tock-script-answer',
@@ -16,10 +13,7 @@ export class ScriptAnswerComponent implements OnInit {
 
   answer: ScriptAnswerConfiguration;
 
-  constructor(private state: StateService,
-              private bot: BotService,
-              private dialog: MatDialog,
-              private snackBar: MatSnackBar) {
+  constructor() {
   }
 
   ngOnInit(): void {

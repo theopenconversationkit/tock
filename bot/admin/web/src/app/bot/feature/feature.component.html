@@ -14,20 +14,19 @@
   ~ limitations under the License.
   -->
 
-<mat-card>
-  <mat-card-title>
+<nb-card class="features">
+  <nb-card-header  style="display: flex;">
     Features
-    <button mat-button (click)="refresh()" matTooltip="Refresh">
-      <mat-icon>refresh</mat-icon>
-    </button>
-  </mat-card-title>
-  <mat-card-subtitle *ngIf="!create">
-    <button mat-button (click)="prepareCreate()" color="primary">
-      <mat-icon>add_box</mat-icon>
-      Add a new Feature
-    </button>
-  </mat-card-subtitle>
-  <mat-card-content>
+    <nb-actions size="small" style="cursor: pointer;">
+        <nb-action class="control-item" nbTooltip="Refresh" (click)="refresh()" *ngIf="!create">
+          <i class="material-icons tock-toolbar-menu">refresh</i>
+        </nb-action>
+        <nb-action class="control-item" nbTooltip="Add a new Feature" (click)="prepareCreate()" *ngIf="!create">
+            <i class="material-icons tock-toolbar-menu">add_box</i>
+          </nb-action>
+    </nb-actions>
+  </nb-card-header>
+  <nb-card-body>
     <div *ngIf="create">
       <mat-form-field>
         <input matInput placeholder="Category" [(ngModel)]="feature.category">
@@ -46,16 +45,15 @@
           <mat-slide-toggle color="primary" [checked]="f.enabled" (change)="toggle(f)">Status</mat-slide-toggle>
         </span>
         <span>
-          <button mat-button (click)="deleteFeature(f)" matTooltip="Delete"
-                  color="warn">
+          <button mat-button (click)="deleteFeature(f)" nbTooltip="Delete" color="warn">
             <mat-icon>delete_forever</mat-icon>
           </button>
         </span>
       </div>
     </div>
-  </mat-card-content>
-  <mat-card-actions *ngIf="create">
-    <button mat-button color="warn" (click)="cancelCreate()">Cancel</button>
-    <button mat-raised-button color="primary" (click)="addFeature()">Add</button>
-  </mat-card-actions>
-</mat-card>
+  </nb-card-body>
+  <nb-card-footer *ngIf="create">
+    <button nbButton size="small" status="danger" (click)="cancelCreate()">Cancel</button>
+    <button nbButton size="small" status="primary" style="margin-left: 20px" (click)="addFeature()">Add</button>
+  </nb-card-footer>
+</nb-card>

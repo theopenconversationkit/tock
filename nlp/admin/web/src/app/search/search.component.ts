@@ -49,8 +49,7 @@ export class SearchComponent implements OnInit {
   targetLocale: string;
 
   private firstSearch = false;
-
-  @ViewChild(SentencesScrollComponent) scroll;
+  @ViewChild(SentencesScrollComponent, {static: false}) scroll;
 
   constructor(public state: StateService,
               private nlp: NlpService,

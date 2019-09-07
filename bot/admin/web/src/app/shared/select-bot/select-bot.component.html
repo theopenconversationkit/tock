@@ -18,23 +18,26 @@
   No bot configuration detected &nbsp;
 </div>
 <div *ngIf="configurations && configurations.length !== 0">
-  <mat-form-field class="select-configuration" *ngIf="botNames && ((allowNoSelection || botNames.length > 1) || (displayConnectorChoice && connectorTypes.length > 1))">
-    <mat-select (selectionChange)="changeBotName($event.value)"
-                placeholder="Select a configuration"
-                [ngModel]="currentBotName">
-      <mat-option *ngIf="allowNoSelection" value="None">No configuration</mat-option>
-      <mat-option *ngFor="let n of botNames" [value]="n">{{ n }}</mat-option>
-    </mat-select>
-  </mat-form-field>
-  <mat-form-field *ngIf="displayConnectorChoice && currentBotName !== 'None' && connectorTypes.length > 1" class="select-configuration">
-    <mat-select (selectionChange)="changeConnectorType($event.value)"
-                placeholder="Select a connector"
-                [ngModel]="currentConnectorType">
-      <mat-option *ngIf="allowNoConfigurationSelection" value="">All</mat-option>
-      <mat-option *ngFor="let c of connectorTypes" [value]="c" class="connector">
+  <span class="select-configuration"
+        *ngIf="botNames && ((allowNoSelection || botNames.length > 1) || (displayConnectorChoice && connectorTypes.length > 1))">
+    <nb-select (selectedChange)="changeBotName()" status="primary"
+               placeholder="Select a configuration"
+               [ngModel]="currentBotName"
+               style="width: 10rem">
+      <nb-option *ngIf="allowNoSelection" value="None">No configuration</nb-option>
+      <nb-option *ngFor="let n of botNames" [value]="n">{{ n }}</nb-option>
+    </nb-select>
+  </span>
+  <span *ngIf="displayConnectorChoice && currentBotName !== 'None' && connectorTypes.length > 1"
+        class="select-configuration">
+    <nb-select (selectedChange)="changeConnectorType()" status="primary"
+               placeholder="Select a connector"
+               [ngModel]="currentConnectorType">
+      <nb-option *ngIf="allowNoConfigurationSelection" value="">All</nb-option>
+      <nb-option *ngFor="let c of connectorTypes" [value]="c">
         <img src="{{c.iconUrl()}}" class="connector-icon" [matTooltip]="c.label()"/>
-        {{ c.label() }}</mat-option>
-    </mat-select>
-  </mat-form-field>
+        {{ c.id }}</nb-option>
+    </nb-select>
+  </span>
   <ng-content></ng-content>
 </div>

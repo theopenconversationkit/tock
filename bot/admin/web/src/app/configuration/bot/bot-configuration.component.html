@@ -14,7 +14,8 @@
   ~ limitations under the License.
   -->
 
-<mat-card *ngIf="configuration" [ngClass]="{'conf': configuration._id, 'newConf': !configuration._id}">
+<nb-card *ngIf="configuration" [ngClass]="{'conf': configuration._id, 'newConf': !configuration._id}">
+  <nb-card-body>
   <mat-form-field class="bot-input">
     <input matInput placeholder="Configuration name" [(ngModel)]="configuration.name">
   </mat-form-field>
@@ -80,22 +81,31 @@
   <mat-form-field class="bot-input">
     <input matInput placeholder="Relative REST path" [(ngModel)]="configuration.path" title="e.g. /messenger">
   </mat-form-field>
-  <mat-expansion-panel>
-    <mat-expansion-panel-header>
-      <mat-panel-title>Connector Custom Configuration</mat-panel-title>
-      <mat-panel-description>Parameters</mat-panel-description>
-    </mat-expansion-panel-header>
-    <mat-form-field class="long-text bot-input" *ngIf="!botSharedService.configuration || !botSharedService.configuration.botApiSupport">
-      <input matInput placeholder="Application base url" [(ngModel)]="configuration.baseUrl" title="optional">
-    </mat-form-field>
-    <mat-form-field class="long-text bot-input"
-                    *ngFor="let f of botSharedService.findConnectorConfiguration(configuration.connectorType).fields"
-                    [hideRequiredMarker]="!f.mandatory">
-      <input matInput [placeholder]="f.label" [(ngModel)]="configuration.parameters[f.key]" required>
-    </mat-form-field>
-  </mat-expansion-panel>
-  <mat-card-actions>
-    <button mat-button color="warn" (click)="remove()">{{configuration._id ? 'Delete' : 'Cancel'}}</button>
-    <button mat-raised-button color="primary" (click)="update()">{{configuration._id ? 'Update' : 'Create'}}</button>
-  </mat-card-actions>
-</mat-card>
+  <nb-accordion
+  *ngIf="botSharedService.findConnectorConfiguration(configuration.connectorType) &&
+        botSharedService.findConnectorConfiguration(configuration.connectorType).fields.length !== 0">
+      <nb-accordion-item [expanded]="!configuration._id">
+       <nb-accordion-item-header>Connector Custom Configuration</nb-accordion-item-header>
+       <nb-accordion-item-body>
+          <mat-form-field class="bot-input" *ngIf="!botSharedService.configuration || !botSharedService.configuration.botApiSupport">
+              <input matInput placeholder="Application base url" [(ngModel)]="configuration.baseUrl" title="optional">
+            </mat-form-field>
+            <mat-form-field class="long-text bot-input"
+                            *ngFor="let f of botSharedService.findConnectorConfiguration(configuration.connectorType).fields"
+                            [hideRequiredMarker]="!f.mandatory">
+              <input matInput [placeholder]="f.label" [(ngModel)]="configuration.parameters[f.key]" required>
+            </mat-form-field>
+       </nb-accordion-item-body>
+      </nb-accordion-item>
+     </nb-accordion>
+</nb-card-body>
+
+  <nb-card-footer style="text-align: right;">
+    <button nbButton outline status="danger" size="small" (click)="remove()">
+      {{configuration._id ? 'Delete' : 'Cancel'}}
+    </button>
+    <button nbButton status="primary" (click)="update()" size="small"
+            style="margin-left: 20px;"
+    >{{configuration._id ? 'Update' : 'Create'}}</button>
+  </nb-card-footer>
+</nb-card>

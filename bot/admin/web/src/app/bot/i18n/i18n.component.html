@@ -13,97 +13,119 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<mat-toolbar>
-  <mat-form-field>
-    <input matInput placeholder="Search" [(ngModel)]="filterString" (keyup)="filter($event.target.value)">
-  </mat-form-field>
-  <button mat-button (click)="refresh()" matTooltip="Reload all">
-    <mat-icon>refresh</mat-icon>
-  </button>
-  <mat-form-field class="i18n-select">
-  <mat-select placeholder="Filter by category" [(ngModel)]="selectedCategory"
-             (selectionChange)="onSelectedCategoryChange()">
-    <mat-option *ngFor="let c of allCategories" [value]="c">{{c}}</mat-option>
-  </mat-select>
-  </mat-form-field>
-  <span class="fill-remaining-space"></span>
-  <mat-form-field class="i18n-select">
-  <mat-select placeholder="Filter by state" [(ngModel)]="filterOption"
-             (selectionChange)="filterValidatedChange()">
-    <mat-option value="">All</mat-option>
-    <mat-option value="not_validated">Only Not validated</mat-option>
-    <mat-option value="validated">Only validated</mat-option>
-  </mat-select>
-  </mat-form-field>
-  <span class="fill-remaining-space"></span>
-  <mat-form-field class="i18n-select">
-  <mat-select placeholder="Not used since" [(ngModel)]="notUsedFrom"
-             (selectionChange)="onNotUsedFromChange()">
-    <mat-option value="-1"></mat-option>
-    <mat-option value="1">last day</mat-option>
-    <mat-option value="7">last week</mat-option>
-    <mat-option value="30">last month</mat-option>
-  </mat-select>
-  </mat-form-field>
-  <span class="fill-remaining-space"></span>
-  <button mat-button (click)="validateAll()" matTooltip="Validate all existing labels">Validate all</button>
-  <button *ngIf="state.currentApplication.supportedLocales.length !== 1" mat-icon-button (click)="complete()" matTooltip="Translate All Missing Labels">
-    <mat-icon>translate</mat-icon>
-  </button>
+<nb-card class="responses">
+  <nb-card-body>
+    <mat-toolbar class="background">
+      <span>
+        <input nbInput status="primary" placeholder="Search" [(ngModel)]="filterString" (keyup)="filter($event.target.value)">
+      </span>
+      <nb-actions size="medium" style="cursor: pointer;">
+          <nb-action class="control-item" nbTooltip="Reload all" (click)="refresh()">
+            <i class="material-icons tock-toolbar-menu">refresh</i>
+          </nb-action>
+      </nb-actions>
+      <span class="i18n-select nb-form-field-infix">
+        <nb-select placeholder="Filter by category" [(ngModel)]="selectedCategory" class="nb-select" status="primary"
+                    (selectedChange)="onSelectedCategoryChange()">
+          <nb-option *ngFor="let c of allCategories" [value]="c">{{c}}</nb-option>
+        </nb-select>
+        <span class="nb-form-field-label-wrapper">
+          <label class="label-title">Filter by category</label>
+        </span>
+      </span >
+      <span class="fill-remaining-space"></span>
+      <span class="i18n-select nb-form-field-infix">
+        <nb-select placeholder="Filter by state" [(ngModel)]="filterOption" class="nb-select" status="primary"
+                    (selectedChange)="filterValidatedChange()">
+          <nb-option value="">All</nb-option>
+          <nb-option value="not_validated">Only Not validated</nb-option>
+          <nb-option value="validated">Only validated</nb-option>
+        </nb-select>
+        <span class="nb-form-field-label-wrapper">
+          <label class="label-title">Filter by state</label>
+        </span>
+        </span>
+      <span class="fill-remaining-space"></span>
+      <span class="i18n-select nb-form-field-infix">
+        <nb-select placeholder="Not used since" [(ngModel)]="notUsedFrom" class="nb-select" status="primary"
+                    (selectedChange)="onNotUsedFromChange()">
+          <nb-option value="-1"></nb-option>
+          <nb-option value="1">last day</nb-option>
+          <nb-option value="7">last week</nb-option>
+          <nb-option value="30">last month</nb-option>
+        </nb-select>
+      </span>
+      <span class="fill-remaining-space"></span>
+      <nb-actions size="medium" style="cursor: pointer;">
+          <nb-action class="control-item" nbTooltip="Validate all existing labels" (click)="validateAll()">
+            <i class="material-icons tock-toolbar-menu">done</i>
+          </nb-action>
+          <nb-action *ngIf="state.currentApplication.supportedLocales.length !== 1"
+                  class="control-item" nbTooltip="Translate All Missing Labels" (click)="complete()">
+            <i class="material-icons tock-toolbar-menu">translate</i>
+          </nb-action>
+          <nb-action class="control-item" nbTooltip="Import / Export" (click)="displayImportExport = true">
+              <i class="material-icons tock-toolbar-menu">import_export</i>
+            </nb-action>
+      </nb-actions>
+    </mat-toolbar>
+  </nb-card-body>
+</nb-card>
 
-  <button mat-icon-button (click)="displayImportExport = true" matTooltip="Import / Export">
-    <mat-icon>import_export</mat-icon>
-  </button>
-</mat-toolbar>
-
-<mat-card *ngIf="displayImportExport">
-  <mat-card-title>Import / Export</mat-card-title>
-
-  <button mat-button (click)="downloadCsv()" matTooltip="Download Csv">
-    <mat-icon>file_download</mat-icon>
-    Download CSV
-  </button>
-  <button mat-button (click)="prepareCsvUpload()" matTooltip="Upload Csv">
-    <mat-icon>file_upload</mat-icon>
-    Upload CSV
-  </button>
-  <button mat-button (click)="downloadJson()" matTooltip="Download JSON">
-    <mat-icon>file_download</mat-icon>
-    Download JSON
-  </button>
-  <button mat-button (click)="prepareJsonUpload()" matTooltip="Upload JSON">
-    <mat-icon>file_upload</mat-icon>
-    Upload JSON
-  </button>
-  <button mat-raised-button (click)="displayImportExport = false">Close</button>
-
-  <mat-card *ngIf="displayUpload">
-    <mat-card-title>Upload a {{uploadType}} File</mat-card-title>
-    <mat-card-content>
-      <p>
-        <label for="file">Please select a {{uploadType}} file:</label>
-        <input id="file" type="file" ng2FileSelect [uploader]="uploader"/>
-      </p>
-    </mat-card-content>
-    <button (click)="displayUpload = false" mat-button>
-      Cancel
+<nb-card *ngIf="displayImportExport">
+  <nb-card-header>Import / Export </nb-card-header>
+  <nb-card-body>
+    <button mat-button (click)="downloadCsv()" nbTooltip="Download Csv">
+      <mat-icon>file_download</mat-icon>
+      Download CSV
     </button>
-    <button (click)="upload()" [disabled]="!uploader.getNotUploadedItems().length" mat-raised-button
-            color="primary">
-      Upload
+    <button mat-button (click)="prepareCsvUpload()" nbTooltip="Upload Csv">
+      <mat-icon>file_upload</mat-icon>
+      Upload CSV
     </button>
-  </mat-card>
-</mat-card>
+    <button mat-button (click)="downloadJson()" nbTooltip="Download JSON">
+      <mat-icon>file_download</mat-icon>
+      Download JSON
+    </button>
+    <button mat-button (click)="prepareJsonUpload()" nbTooltip="Upload JSON">
+      <mat-icon>file_upload</mat-icon>
+      Upload JSON
+    </button>
+    <button mat-raised-button (click)="displayImportExport = false">Close</button>
 
-<mat-list dense *ngIf="!loading">
-  <div *ngFor="let i of pagedItems()">
-    <tock-i18n-label [i]="i" [i18nController]="controller()" [intent]="i.category" [localeBase]="localeBase"></tock-i18n-label>
-  </div>
-</mat-list>
+    <nb-card *ngIf="displayUpload">
+      <nb-card-header>Upload a {{uploadType}} File</nb-card-header>
+      <nb-card-body>
+        <p>
+          <label for="file">Please select a {{uploadType}} file:</label>
+          <input id="file" type="file" ng2FileSelect [uploader]="uploader"/>
+        </p>
+      </nb-card-body>
+      <button (click)="displayUpload = false" mat-button>
+        Cancel
+      </button>
+      <button (click)="upload()" [disabled]="!uploader.getNotUploadedItems().length" mat-raised-button
+              color="primary">
+        Upload
+      </button>
+    </nb-card>
+  </nb-card-body>
+</nb-card>
 
-<mat-paginator *ngIf="!loading"
-              [length]="filteredI18n.length"
-              [pageSize]="pageSize"
-              [pageSizeOptions]="pageSizeOptions"
-              (page)="pageEvent = $event">
-</mat-paginator>
+<nb-card [nbSpinner]="loading" nbSpinnerStatus="primary">
+  <nb-card-body>
+    <mat-list dense *ngIf="!loading">
+      <div *ngFor="let i of pagedItems()">
+        <tock-i18n-label [i]="i" [i18nController]="controller()" [intent]="i.category"
+                         [localeBase]="localeBase"></tock-i18n-label>
+      </div>
+    </mat-list>
+
+    <mat-paginator *ngIf="!loading" class="background"
+                   [length]="filteredI18n.length"
+                   [pageSize]="pageSize"
+                   [pageSizeOptions]="pageSizeOptions"
+                   (page)="pageEvent = $event">
+    </mat-paginator>
+  </nb-card-body>
+</nb-card>

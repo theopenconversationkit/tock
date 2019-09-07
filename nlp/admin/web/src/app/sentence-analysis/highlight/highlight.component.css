@@ -15,6 +15,7 @@
  */
 
 .highlight {
+  padding-top: 5px;
   text-align: center;
 }
 
@@ -24,12 +25,10 @@
 }
 
 .highlight-text {
-  font-size: x-large;
 }
 
 .tokens {
   width: 100%;
-  z-index: 100;
 }
 
 .tokens-readonly {

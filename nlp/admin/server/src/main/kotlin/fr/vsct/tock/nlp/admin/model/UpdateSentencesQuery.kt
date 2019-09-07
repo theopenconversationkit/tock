@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.admin.model
 
+import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import org.litote.kmongo.Id
@@ -28,5 +29,6 @@ data class UpdateSentencesQuery(
     val oldEntity: EntityDefinition?,
     val newEntity: EntityDefinition?,
     val searchQuery: SearchQuery?,
-    val selectedSentences: List<SentenceReport> = emptyList()
+    val selectedSentences: List<SentenceReport> = emptyList(),
+    val newStatus: ClassifiedSentenceStatus? = null
 ) : ApplicationScopedQuery()

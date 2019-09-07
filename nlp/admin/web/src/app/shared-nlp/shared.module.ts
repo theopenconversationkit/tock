@@ -52,6 +52,7 @@ import {
 } from "@angular/material";
 import {MapToIterablePipe} from "./map-to-iterable.pipe";
 import {ScrollComponent} from "../scroll/scroll.component";
+import {NbButtonModule, NbToggleModule} from "@nebular/theme";
 
 @NgModule({
   imports: [
@@ -84,7 +85,9 @@ import {ScrollComponent} from "../scroll/scroll.component";
     MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
-    MatTreeModule
+    MatTreeModule,
+
+    NbButtonModule
   ],
   declarations: [ConfirmDialogComponent, MapToIterablePipe, ScrollComponent],
   providers: [],
@@ -120,7 +123,10 @@ import {ScrollComponent} from "../scroll/scroll.component";
     MatTooltipModule,
     MatTreeModule,
     FormsModule,
-    MapToIterablePipe],
+    MapToIterablePipe,
+
+    NbToggleModule],
+
   entryComponents: [
     ConfirmDialogComponent
   ]

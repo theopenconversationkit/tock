@@ -14,69 +14,99 @@
   ~ limitations under the License.
   -->
 
-<mat-card>
-  <mat-card-title>
-    <span *ngIf="applications.length !== 0">NLU Application <span *ngIf="application && application?.name?.length !== 0">"{{application?.name}}"</span></span>
-  </mat-card-title>
-  <mat-card-content *ngIf="application">
-    <mat-card>
-      <mat-form-field>
-        <input #appName name="appName" matInput placeholder="New application name" [(ngModel)]="application.name"
-               (keyup.enter)="saveApplication()" autofocus>
-      </mat-form-field>
-      <mat-checkbox class="separator" [(ngModel)]="application.mergeEngineTypes" matTooltip="If selected, this option uses built-in entity models (like dates) in conjunction with standard NER">Use entity models</mat-checkbox>
-      <mat-checkbox class="separator" *ngIf="!application.mergeEngineTypes" [(ngModel)]="application.useEntityModels" matTooltip="If selected, built-in entity models results are provided only for info and potential entity disambiguation">Entity disambiguation only</mat-checkbox>
-      <mat-checkbox class="separator" [(ngModel)]="application.supportSubEntities" matTooltip="If selected, you can use subentities in your nlp models">Allow subentities</mat-checkbox>
-    </mat-card>
-    <mat-card *ngIf="state.locales">
-      <mat-card-content *ngIf="application.supportedLocales.length !== 0">
-      <mat-chip-list placeholder="Supported Locales">
-        <mat-chip *ngFor="let locale of application.supportedLocales"
-                 matTooltip="Delete locale"
-                 [selected]="true"
-                 (click)="removeLocale(locale)"
-                 [color]="accent">
-          {{state.localeName(locale)}}
-        </mat-chip>
-      </mat-chip-list>
-      </mat-card-content>
-      <mat-card-actions>
-        <mat-form-field class="locales">
-        <mat-select (selectionChange)="addLocale($event.value)" [ngModel]="newLocale" placeholder="Add new locale">
-          <mat-option *ngFor="let locale of state.locales"
-                     [value]="locale.first">{{ locale.second }}
-          </mat-option>
-        </mat-select>
+<nb-card>
+  <nb-card-header>
+    <div>
+      <div style="display: flex;">
+        <span *ngIf="applications.length !== 0">NLU Application <span
+          *ngIf="application && application?.name?.length !== 0">"{{application?.name}}"</span>
+        </span>
+        <nb-actions style="cursor: pointer;">
+          <nb-action *ngIf="newApplication" (click)="saveApplication()" nbTooltip="Create new application">
+            <i class="material-icons" style="color: #73a1ff;">add_box</i>
+          </nb-action>
+          <nb-action *ngIf="!newApplication" (click)="saveApplication()" nbTooltip="Update application">
+            <i class="material-icons">update</i>
+          </nb-action>
+          <nb-action *ngIf="applications.length !== 0" (click)="cancel()" nbTooltip="Cancel">
+            <i class="material-icons">cancel</i>
+          </nb-action>
+        </nb-actions>
+      </div>
+      <div>
+        <nb-actions size="small" style="cursor: pointer;float: right">
+          <nb-action *ngIf="!newApplication" (click)="deleteApplication()" nbTooltip="Delete application">
+            <i class="material-icons warn" style="color: #ff708d;">delete</i>
+          </nb-action>
+        </nb-actions>
+      </div>
+    </div>
+  </nb-card-header>
+  <nb-card-body *ngIf="application">
+    <nb-card>
+      <nb-card-body>
+        <mat-form-field>
+          <input #appName name="appName" matInput placeholder="New application name" [(ngModel)]="application.name"
+                 (keyup.enter)="saveApplication()" autofocus>
         </mat-form-field>
-      </mat-card-actions>
-    </mat-card>
-    <mat-card>
-      <label for="engines">NLU engine:&nbsp;</label>
-      <mat-radio-group id="engines" [(ngModel)]="nlpEngineType" (change)="changeNlpEngine($event.value)">
-        <mat-radio-button class="engine-type" *ngFor="let engine of state.supportedNlpEngines" [value]="engine.name">
-          {{engine.name}}
-        </mat-radio-button>
-      </mat-radio-group>
-    </mat-card>
+        <nb-checkbox class="separator" [(ngModel)]="application.mergeEngineTypes"
+                     nbTooltip="If selected, this option uses built-in entity models (like dates) in conjunction with standard NER">
+          Use entity models
+        </nb-checkbox>
+        <nb-checkbox class="separator" *ngIf="!application.mergeEngineTypes" [(ngModel)]="application.useEntityModels"
+                     nbTooltip="If selected, built-in entity models results are provided only for info and potential entity disambiguation">
+          Entity disambiguation only
+        </nb-checkbox>
+        <nb-checkbox class="separator" [(ngModel)]="application.supportSubEntities"
+                     nbTooltip="If selected, you can use subentities in your nlp models">Allow subentities
+        </nb-checkbox>
+      </nb-card-body>
+    </nb-card>
+    <nb-card *ngIf="state.locales">
+      <nb-card-header>Locales</nb-card-header>
+      <nb-card-body>
+        <mat-card-actions>
+          <nb-select status="primary" (selectedChange)="addLocale()" [(ngModel)]="newLocale"
+                     placeholder="Add new locale"
+                     style="margin-bottom: 10px">
+            <nb-option *ngFor="let locale of state.locales"
+                       [value]="locale.first">{{ locale.second }}
+            </nb-option>
+          </nb-select>
+        </mat-card-actions>
+        <mat-chip-list placeholder="Supported Locales" *ngIf="application.supportedLocales.length !== 0">
+          <mat-chip *ngFor="let locale of application.supportedLocales"
+                    nbTooltip="Delete locale"
+                    [selected]="true"
+                    (click)="removeLocale(locale)"
+                    style="background: #73a1ff;">
+            {{state.localeName(locale)}}
+          </mat-chip>
+        </mat-chip-list>
+      </nb-card-body>
+    </nb-card>
+    <nb-card>
+      <nb-card-header>NLU engine</nb-card-header>
+      <nb-card-body>
+        <nb-radio-group id="engines" [(ngModel)]="nlpEngineType" (change)="changeNlpEngine($event.value)">
+          <nb-radio class="engine-type" *ngFor="let engine of state.supportedNlpEngines" [value]="engine.name">
+            {{engine.name}}
+          </nb-radio>
+        </nb-radio-group>
+      </nb-card-body>
+    </nb-card>
 
     <div class="divider"></div>
 
     <tock-application-advanced-options
       *ngIf="!newApplication"
       [application]="application"
-      [nlpEngineTypeChange]="nlpEngineTypeChange"></tock-application-advanced-options>
+      [nlpEngineTypeChange]="nlpEngineTypeChange">
 
-  </mat-card-content>
-  <mat-card-actions>
-    <button *ngIf="applications.length !== 0" (click)="cancel()" mat-button>Cancel</button>
-    <button *ngIf="!newApplication" mat-raised-button (click)="deleteApplication()" color="warn">Delete Application
-    </button>
-    <button *ngIf="newApplication" mat-raised-button (click)="saveApplication()" color="primary"><mat-icon>create_new_folder</mat-icon> Create new Application
-    </button>
-    <button *ngIf="!newApplication" mat-raised-button (click)="saveApplication()" color="primary">Update Application
-    </button>
-  </mat-card-actions>
-</mat-card>
+    </tock-application-advanced-options>
+
+  </nb-card-body>
+</nb-card>
 
 
 

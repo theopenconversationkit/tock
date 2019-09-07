@@ -35,6 +35,7 @@ import {
   UpdateEntityDefinitionQuery
 } from "../model/nlp";
 import {BehaviorSubject, Observable} from "rxjs";
+import {ApplicationService} from "./applications.service";
 
 @Injectable()
 export class StateService implements AuthListener {
@@ -108,6 +109,12 @@ export class StateService implements AuthListener {
   changeLocale(locale: string) {
     this.currentLocale = locale;
     this.entities.next(this.currentApplication.allEntities());
+    this.currentLocaleEmitter.emit(locale);
+    this.settings.onLocaleChange(this.currentLocale);
+  }
+
+  loadLocale(locale: string) {
+    this.currentLocale = locale;
     this.currentLocaleEmitter.emit(locale);
     this.settings.onLocaleChange(this.currentLocale);
   }

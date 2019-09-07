@@ -14,14 +14,6 @@
   ~ limitations under the License.
   -->
 
-<nav mat-tab-nav-bar>
-  <a mat-tab-link
-     *ngFor="let link of configurationTabLinks"
-     [routerLink]="link.link"
-     routerLinkActive #rla="routerLinkActive"
-     [active]="rla.isActive">
-    {{link.label}}
-  </a>
-</nav>
+<nb-route-tabset [tabs]="configurationTabLinks"></nb-route-tabset>
 
-<router-outlet></router-outlet>
+

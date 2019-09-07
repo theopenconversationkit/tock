@@ -34,6 +34,7 @@ export class SearchStoryComponent implements OnInit {
   filter: string = "";
   category: string = "";
   onlyConfigured: boolean = true;
+  loading: boolean = false;
 
   constructor(private nlp: NlpService,
               private state: StateService,
@@ -41,6 +42,7 @@ export class SearchStoryComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loading = true;
     this.bot.getStories(
       new StorySearchQuery(
         this.state.currentApplication.namespace,
@@ -58,6 +60,7 @@ export class SearchStoryComponent implements OnInit {
         }
       });
       this.categories.sort();
+      this.loading = false;
     })
   }
 
@@ -67,6 +70,7 @@ export class SearchStoryComponent implements OnInit {
   }
 
   search(story?: StoryDefinitionConfiguration) {
+    if (this.category === "_all_") this.category = "";
     if (story && this.categories.indexOf(story.category) === -1) {
       this.categories.push(story.category);
       this.categories.sort();
