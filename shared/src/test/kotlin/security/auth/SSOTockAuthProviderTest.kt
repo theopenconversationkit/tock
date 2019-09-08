@@ -46,5 +46,9 @@ class SSOTockAuthProviderTest {
         }
         val excluded = sso.test(mockk(relaxed = true))
         assertTrue { excluded.any { it.matches("5.dc9d94109f8f028b46a1.js") } }
+        assertTrue { excluded.any { it.matches("Roboto-Medium.2741a14.woff2") } }
+        assertTrue { excluded.any { it.matches("Roboto-Medium.2741a14.woff") } }
+        assertTrue { excluded.any { it.matches("Roboto-Medium.2741a14.ttf") } }
+
     }
 }

@@ -62,7 +62,7 @@ internal abstract class SSOTockAuthProvider(val vertx: Vertx) : TockAuthProvider
     protected open fun excludedPaths(verticle: WebVerticle): Set<Regex> =
         listOfNotNull(
             verticle.healthcheckPath?.toRegex(),
-            ".*\\.(css|html|js|png|svg|gif|jpg|jpeg)".toRegex()
+            ".*\\.(css|html|js|png|svg|gif|jpg|jpeg|ico|woff2?|ttf)".toRegex()
         ).toSet()
 
     override fun protectPaths(
