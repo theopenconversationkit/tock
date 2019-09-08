@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.shared.security.auth
 
-import fr.vsct.tock.shared.mockedVertx
+import fr.vsct.tock.shared.VertxMock
 import fr.vsct.tock.shared.vertx.WebVerticle
 import io.mockk.mockk
 import io.vertx.core.AsyncResult
@@ -31,7 +31,7 @@ class SSOTockAuthProviderTest {
 
     @Test
     fun `excludedPaths match static files`() {
-        val sso = object : SSOTockAuthProvider(mockedVertx) {
+        val sso = object : SSOTockAuthProvider(VertxMock()) {
 
             fun test(verticle: WebVerticle): Set<Regex> {
                 return super.excludedPaths(verticle)
