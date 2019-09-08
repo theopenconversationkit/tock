@@ -109,7 +109,7 @@ fun retrofitBuilderWithTimeoutAndLogger(
         Retrofit.Builder().client(it)
             .apply {
 
-                takeIf { circuitBreaker }
+                takeIf { circuitBreaker && booleanProperty("tock_circuit_breaker", false) }
                     ?.addCallAdapterFactory(CircuitBreakerCallAdapter.of(CircuitBreaker.ofDefaults(logger.name)))
             }
     }
