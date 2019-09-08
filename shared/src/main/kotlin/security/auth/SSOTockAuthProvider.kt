@@ -31,12 +31,12 @@ import io.vertx.ext.web.handler.SessionHandler
 internal abstract class SSOTockAuthProvider(val vertx: Vertx) : TockAuthProvider {
 
     private class WithExcludedPathHandler(
-        val excluded: Set<String>,
+        val excluded: Set<Regex>,
         val handler: Handler<RoutingContext>
     ) : Handler<RoutingContext> {
 
         override fun handle(c: RoutingContext) {
-            if (excluded.contains(c.request().path())) {
+            if (excluded.any { it.matches(c.request().path()) }) {
                 c.next()
             } else {
                 handler.handle(c)
@@ -59,8 +59,11 @@ internal abstract class SSOTockAuthProvider(val vertx: Vertx) : TockAuthProvider
 
     abstract fun createAuthHandler(verticle: WebVerticle): AuthHandler
 
-    protected open fun excludedPaths(verticle: WebVerticle): Set<String> =
-        listOfNotNull(verticle.healthcheckPath).toSet()
+    protected open fun excludedPaths(verticle: WebVerticle): Set<Regex> =
+        listOfNotNull(
+            verticle.healthcheckPath?.toRegex(),
+            ".*\\.(css|html|js|png|svg|gif|jpg|jpeg)".toRegex()
+        ).toSet()
 
     override fun protectPaths(
         verticle: WebVerticle,

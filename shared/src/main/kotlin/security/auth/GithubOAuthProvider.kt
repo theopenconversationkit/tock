@@ -84,8 +84,8 @@ internal class GithubOAuthProvider(
         return authHandler
     }
 
-    override fun excludedPaths(verticle: WebVerticle): Set<String> =
-        super.excludedPaths(verticle) + callbackPath(verticle)
+    override fun excludedPaths(verticle: WebVerticle): Set<Regex> =
+        super.excludedPaths(verticle) + callbackPath(verticle).toRegex()
 
     private fun callbackPath(verticle: WebVerticle): String = "${verticle.basePath}/callback"
 
