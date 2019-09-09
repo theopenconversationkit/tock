@@ -62,7 +62,7 @@ internal abstract class SSOTockAuthProvider(val vertx: Vertx) : TockAuthProvider
     protected open fun excludedPaths(verticle: WebVerticle): Set<Regex> =
         listOfNotNull(
             verticle.healthcheckPath?.toRegex(),
-            ".*\\.(css|html|js|png|svg|gif|jpg|jpeg|ico|woff2?|ttf)".toRegex()
+            ".*\\.(css|html|js|png|svg|gif|jpg|jpeg|ico|woff2?|ttf|eot)".toRegex()
         ).toSet()
 
     override fun protectPaths(
@@ -73,7 +73,7 @@ internal abstract class SSOTockAuthProvider(val vertx: Vertx) : TockAuthProvider
         val authHandler = createAuthHandler(verticle)
         with(verticle) {
             val excluded = excludedPaths(verticle)
-            router.route("/*").handler(WithExcludedPathHandler(excluded, sessionHandler))
+            router.route("/*").handler(WithExcludedPathHandler(excluded, sessionHandler.setAuthProvider(this@SSOTockAuthProvider)))
             router.route("/*").handler(WithExcludedPathHandler(excluded, authHandler))
             router.route("/*").handler(AddSSOCookieHandler)
 
