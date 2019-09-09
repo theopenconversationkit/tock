@@ -21,4 +21,7 @@ De plus en plus d'acteurs, petites et grandes entreprises en France et à l'inte
 et ce besoin pour leurs propres projets.
 
 L'ensemble de la solution Tock est partagé avec la communauté opensource dans le but de fédérer et 
-mutualiser l'effort des créateurs d'assistants. 
+mutualiser l'effort des créateurs d'assistants.
+
+> Depuis 2019, Tock est préconisé en interne par le groupe SNCF 
+et plus largement par l'association [_TOSIT (The Open Source I Trust)_](http://tosit.fr/).

@@ -1,5 +1,8 @@
 # Bienvenue sur Tock : une plateforme conversationnelle ouverte
 
+<img alt="Logo Tock" src="assets/images/logo.svg" style="width: 100px;">
+
+
 **Tock** (*The Open Conversation Kit*) est une plateforme complète pour construire des agents conversationnels - souvent appelés _bots_. 
 
 Contrairement à la plupart des solutions conversationnelles, Tock ne dépend pas d'API tierces, bien qu'il soit possible d'en intégrer.
@@ -11,6 +14,9 @@ L'utilisateur choisit les composants qu'il embarque et peut ainsi conserver la m
 > L'ensemble du code source est disponible sur 
 > [GitHub](https://github.com/voyages-sncf-technologies/tock) 
 > sous une [licence Apache 2](https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE). 
+>
+> Tock est une solution soutenue par l'association [_TOSIT (The Open Source I Trust)_](http://tosit.fr/).
+
 
 ## Fonctionnalités
 
