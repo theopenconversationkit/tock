@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
+import {Component, ElementRef, OnInit, ViewChild} from "@angular/core";
 import {MatDialog, MatSnackBar} from "@angular/material";
 import {ActivatedRoute, Router} from "@angular/router";
 import {StateService} from "../../core-nlp/state.service";
@@ -38,6 +38,8 @@ export class ApplicationComponent implements OnInit {
   nlpEngineType: string;
   nlpEngineTypeChange: Subject<NlpEngineType> = new Subject();
 
+  @ViewChild('appName', {static: false}) appName: ElementRef;
+
   constructor(private route: ActivatedRoute,
               private snackBar: MatSnackBar,
               private dialog: MatDialog,
@@ -60,6 +62,11 @@ export class ApplicationComponent implements OnInit {
           this.application = new Application("", this.state.user.organization, [], [], StateService.DEFAULT_ENGINE, true, true, false);
         }
         this.nlpEngineType = this.application.nlpEngineType.name;
+        if (this.application) {
+          setTimeout(_ => {
+            this.appName.nativeElement.focus();
+          });
+        }
       }
     );
   }
@@ -77,8 +84,7 @@ export class ApplicationComponent implements OnInit {
           this.snackBar.open(`Application ${app.name} saved`, "Save Application", {duration: 1000});
           if (this.newApplication && this.state.applications.length === 1) {
             this.router.navigateByUrl("/nlp/try");
-          }
-          else {
+          } else {
             this.redirect();
           }
         }, error => {
@@ -113,6 +119,7 @@ export class ApplicationComponent implements OnInit {
           result => {
             if (result) {
               this.snackBar.open(`Application ${this.application.name} deleted`, "Delete Application", {duration: 1000});
+              this.state.resetConfiguration();
             } else {
               this.snackBar.open(`Delete Application ${this.application.name} failed`, "Error", {duration: 5000});
             }

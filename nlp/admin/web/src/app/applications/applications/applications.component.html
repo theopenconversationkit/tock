@@ -21,10 +21,10 @@
         Welcome! Please create your first NLU Application
       </span>
       <span *ngIf="state.applications.length !== 0">NLU Applications</span>
-      <nb-actions size="small" style="cursor: pointer;" *ngIf="!uploadDump">
-        <nb-action class="control-item" routerLink="create"
+      <nb-actions size="small" *ngIf="!uploadDump">
+        <nb-action class="control-item create" routerLink="create"
                    nbTooltip="Create new application">
-          <i class="material-icons tock-toolbar-menu" style="color: #73a1ff;">add_box</i>
+          <i class="material-icons tock-toolbar-menu">add_box</i>
         </nb-action>
         <nb-action class="control-item"
                    (click)="showUploadDumpPanel()"

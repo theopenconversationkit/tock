@@ -32,6 +32,7 @@
 .applications-applications__select-action {
   min-width: 0;
   padding: 0 10px;
+  cursor: pointer;
 }
 
 .applications-applications__datas {
@@ -51,4 +52,13 @@
 
 .btn {
   margin: 0 8px;
+}
+
+.create {
+  color: #1452d0;
+  cursor:pointer;
+}
+
+.tock-toolbar-menu {
+  cursor: pointer;
 }

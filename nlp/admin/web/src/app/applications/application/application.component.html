@@ -21,14 +21,11 @@
         <span *ngIf="applications.length !== 0">NLU Application <span
           *ngIf="application && application?.name?.length !== 0">"{{application?.name}}"</span>
         </span>
-        <nb-actions style="cursor: pointer;">
-          <nb-action *ngIf="newApplication" (click)="saveApplication()" nbTooltip="Create new application">
-            <i class="material-icons" style="color: #73a1ff;">add_box</i>
+        <nb-actions>
+          <nb-action class="save" (click)="saveApplication()" [nbTooltip]="newApplication ? 'Create New Application' : 'Update Application'">
+            <i class="material-icons">save</i>
           </nb-action>
-          <nb-action *ngIf="!newApplication" (click)="saveApplication()" nbTooltip="Update application">
-            <i class="material-icons">update</i>
-          </nb-action>
-          <nb-action *ngIf="applications.length !== 0" (click)="cancel()" nbTooltip="Cancel">
+          <nb-action class="cancel" *ngIf="applications.length !== 0" (click)="cancel()" nbTooltip="Cancel">
             <i class="material-icons">cancel</i>
           </nb-action>
         </nb-actions>
@@ -45,10 +42,8 @@
   <nb-card-body *ngIf="application">
     <nb-card>
       <nb-card-body>
-        <mat-form-field>
-          <input #appName name="appName" matInput placeholder="New application name" [(ngModel)]="application.name"
-                 (keyup.enter)="saveApplication()" autofocus>
-        </mat-form-field>
+          <input #appName name="appName" nbInput placeholder="New Application Name" [(ngModel)]="application.name"
+                 (keyup.enter)="saveApplication()" class="application-name">
         <nb-checkbox class="separator" [(ngModel)]="application.mergeEngineTypes"
                      nbTooltip="If selected, this option uses built-in entity models (like dates) in conjunction with standard NER">
           Use entity models
@@ -88,7 +83,7 @@
     <nb-card>
       <nb-card-header>NLU engine</nb-card-header>
       <nb-card-body>
-        <nb-radio-group id="engines" [(ngModel)]="nlpEngineType" (change)="changeNlpEngine($event.value)">
+        <nb-radio-group id="engines" [(ngModel)]="nlpEngineType" (valueChange)="changeNlpEngine($event)">
           <nb-radio class="engine-type" *ngFor="let engine of state.supportedNlpEngines" [value]="engine.name">
             {{engine.name}}
           </nb-radio>

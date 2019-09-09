@@ -28,6 +28,12 @@
   font-size: large;
 }
 
+.search-box {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 .search-criterion {
   padding-right: 5px;
+  padding-bottom: 5px;
 }

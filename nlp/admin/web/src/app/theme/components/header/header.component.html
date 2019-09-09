@@ -31,8 +31,8 @@
 
   <nb-select status="primary"
              *ngIf="state.currentApplication"
-             (selectedChange)="changeApplication()"
-             [(ngModel)]="selectedApplication">
+             (selectedChange)="changeApplication($event)"
+             [ngModel]="state.currentApplication.name">
     <nb-option *ngFor="let app of state.applications"
                [value]="app.name">{{ app.name }}
     </nb-option>
@@ -40,8 +40,8 @@
 
   <nb-select status="primary"
              *ngIf="state.currentApplication"
-             (selectedChange)="changeLocale()"
-             [(ngModel)]="selectedLocale"
+             (selectedChange)="changeLocale($event)"
+             [ngModel]="state.currentLocale"
              style="margin-left: 10px;">
     <nb-option *ngFor="let l of state.currentApplication.supportedLocales"
                [value]="l">{{ state.localeName(l) }}</nb-option>

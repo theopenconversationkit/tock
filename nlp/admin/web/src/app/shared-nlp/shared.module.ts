@@ -52,7 +52,7 @@ import {
 } from "@angular/material";
 import {MapToIterablePipe} from "./map-to-iterable.pipe";
 import {ScrollComponent} from "../scroll/scroll.component";
-import {NbButtonModule, NbToggleModule} from "@nebular/theme";
+import {NbButtonModule, NbDatepickerModule, NbInputModule, NbToggleModule} from "@nebular/theme";
 
 @NgModule({
   imports: [
@@ -125,6 +125,8 @@ import {NbButtonModule, NbToggleModule} from "@nebular/theme";
     FormsModule,
     MapToIterablePipe,
 
+    NbDatepickerModule,
+    NbInputModule,
     NbToggleModule],
 
   entryComponents: [

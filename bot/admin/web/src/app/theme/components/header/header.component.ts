@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017/2019 VSCT
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {Component, Input, OnInit} from '@angular/core';
 
 import {NbMenuService, NbSidebarService, NbThemeService} from '@nebular/theme';
@@ -16,20 +32,6 @@ export class HeaderComponent implements OnInit {
 
   @Input() position = 'normal';
 
-  selectedLocale: string;
-  selectedApplication: string;
-
-  themes = [
-    {
-      value: 'default',
-      name: 'Light',
-    },
-    {
-      value: 'dark',
-      name: 'Dark',
-    }
-  ];
-
   isDark = false;
   currentTheme = 'default';
   private destroy$: Subject<void> = new Subject<void>();
@@ -41,9 +43,6 @@ export class HeaderComponent implements OnInit {
               public settings: SettingsService,
               private themeService: NbThemeService,) {
 
-    this.selectedLocale = settings.currentLocale ? settings.currentLocale : state.currentLocale;
-    this.selectedApplication = settings.currentApplicationName ? settings.currentApplicationName : state.currentApplication.name;
-    this.state.loadLocale(this.selectedLocale);
   }
 
   ngOnInit() {
@@ -79,15 +78,15 @@ export class HeaderComponent implements OnInit {
     this.menuService.navigateHome();
   }
 
-  changeApplication() {
+  changeApplication(app) {
     setTimeout(_ => {
-      this.state.changeApplicationWithName(this.selectedApplication);
-      this.settings.onApplicationChange(this.selectedApplication);
+      this.state.changeApplicationWithName(app);
+      this.settings.onApplicationChange(app);
     });
   }
 
-  changeLocale() {
-    setTimeout(_ => this.state.changeLocale(this.selectedLocale));
+  changeLocale(locale) {
+    setTimeout(_ => this.state.changeLocale(locale));
   }
 
 }

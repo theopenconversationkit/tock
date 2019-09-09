@@ -37,3 +37,16 @@
 .engine-type {
   margin-left: 20px;
 }
+
+.application-name {
+  margin-right: 10px;
+}
+
+.save {
+  color: #1452d0;
+  cursor: pointer;
+}
+
+.cancel {
+  cursor: pointer;
+}

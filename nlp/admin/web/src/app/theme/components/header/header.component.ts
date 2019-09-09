@@ -16,20 +16,6 @@ export class HeaderComponent implements OnInit {
 
   @Input() position = 'normal';
 
-  selectedLocale: string;
-  selectedApplication: string;
-
-  themes = [
-    {
-      value: 'default',
-      name: 'Light',
-    },
-    {
-      value: 'dark',
-      name: 'Dark',
-    }
-  ];
-
   isDark = false;
   currentTheme = 'default';
   private destroy$: Subject<void> = new Subject<void>();
@@ -41,9 +27,6 @@ export class HeaderComponent implements OnInit {
               public settings: SettingsService,
               private themeService: NbThemeService,) {
 
-    this.selectedLocale = settings.currentLocale ? settings.currentLocale : state.currentLocale;
-    this.selectedApplication = settings.currentApplicationName ? settings.currentApplicationName : state.currentApplication.name;
-    this.state.loadLocale(this.selectedLocale);
   }
 
   ngOnInit() {
@@ -79,15 +62,15 @@ export class HeaderComponent implements OnInit {
     this.menuService.navigateHome();
   }
 
-  changeApplication() {
+  changeApplication(app) {
     setTimeout(_ => {
-      this.state.changeApplicationWithName(this.selectedApplication);
-      this.settings.onApplicationChange(this.selectedApplication);
+      this.state.changeApplicationWithName(app);
+      this.settings.onApplicationChange(app);
     });
   }
 
-  changeLocale() {
-    setTimeout(_ => this.state.changeLocale(this.selectedLocale));
+  changeLocale(locale) {
+    setTimeout(_ => this.state.changeLocale(locale));
   }
 
 }
