@@ -170,6 +170,7 @@ abstract class WebVerticle : AbstractVerticle() {
             .setCookieHttpOnlyFlag(https)
             .setCookieSecureFlag(https)
             .setSessionCookieName(authProvider.sessionCookieName)
+            .setAuthProvider(authProvider)
 
         authProvider.protectPaths(this, pathsToProtect, sessionHandler)
     }

@@ -73,7 +73,7 @@ internal abstract class SSOTockAuthProvider(val vertx: Vertx) : TockAuthProvider
         val authHandler = createAuthHandler(verticle)
         with(verticle) {
             val excluded = excludedPaths(verticle)
-            router.route("/*").handler(WithExcludedPathHandler(excluded, sessionHandler.setAuthProvider(this@SSOTockAuthProvider)))
+            router.route("/*").handler(WithExcludedPathHandler(excluded, sessionHandler))
             router.route("/*").handler(WithExcludedPathHandler(excluded, authHandler))
             router.route("/*").handler(AddSSOCookieHandler)
 
