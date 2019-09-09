@@ -44,10 +44,10 @@
     * [Cloud](admin/cloud.md)
 
 * About Tock :
-    * [Why Tock](apropos/why.md)
-    * [Showcase](apropos/vitrine.md)
-    * [Resources & press kit](apropos/ressources.md)
-    * [Contact us](apropos/contact.md)
-    * [Community](apropos/community.md)
-    * [Contribute](apropos/contribute.md)
-    * [Jobs](apropos/jobs.md)
+    * [Why Tock](about/why.md)
+    * [Showcase](about/showcase.md)
+    * [Resources & press kit](about/resources.md)
+    * [Contact us](about/contact.md)
+    * [Community](about/community.md)
+    * [Contribute](about/contribute.md)
+    * [Jobs](about/jobs.md)

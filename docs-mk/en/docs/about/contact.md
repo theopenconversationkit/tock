@@ -1,10 +1,8 @@
-# Nous contacter
+# Contact us
 
-Développeurs, utilisateurs ou juste curieux, n'hésitez pas à contacter les créateurs de la solution et 
-d'autres membres de la communauté pour échanger sur Tock.
+Developers, users and curious people are more than welcome to share about Tock with both its creators and the community.
 
-* Vous pouvez nous retrouver sur ***Gitter*** (la messagerie 
-instantannée pour GitHub) :<br />
+* Don't hesitate to join us on ***Gitter*** (the instant messaging service for GitHub):<br />
 [https://gitter.im/tockchat/Lobby](https://gitter.im/tockchat/Lobby)
 
 <a href="https://gitter.im/tockchat/Lobby"
@@ -14,7 +12,7 @@ src="https://lh3.googleusercontent.com/FtFJAWed4C9V_-IKFfQsMFcWJslJgqTqqjzxl0ueK
 style="width: 100px;">
 </a>
 
-* Les ***issues*** GitHub permettent aussi de remonter une anomalie ou proposer une évolution :<br />
+* GitHub ***issues*** can be used to keep track of bugs, enhancements or feature requests:<br />
 [https://github.com/voyages-sncf-technologies/tock/issues](https://github.com/voyages-sncf-technologies/tock/issues)
 
 <a href="https://github.com/voyages-sncf-technologies/tock/issues"

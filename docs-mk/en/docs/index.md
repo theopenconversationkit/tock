@@ -11,7 +11,9 @@ Users choose which components to embed and decide to keep (or share) ownership o
 > propose various assistants over its own channels (Web, mobile), social networks, as well as smart speakers.
 
 > The platform source code is available on [GitHub](https://github.com/voyages-sncf-technologies/tock) 
-> under the [Apache License, version 2.0](https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE). 
+> under the [Apache License, version 2.0](https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE).
+>
+> Tock is promoted and backed by the [_TOSIT (The Open Source I Trust)_](http://tosit.fr/) association.
 
 ## Features
 
@@ -19,7 +21,7 @@ Users choose which components to embed and decide to keep (or share) ownership o
 * Full-featured _NLU_ _(Natural Language Understanding)_ platform, compatible with algorithms such as 
 [OpenNLP](https://opennlp.apache.org/), [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/), [Duckling](https://github.com/facebook/duckling),
 can be deployed alone (for use cases like the [Internet Of Things](https://fr.wikipedia.org/wiki/Internet_des_objets) for instance)
-* _Tock Studio_ user interfaces :
+* _Tock Studio_ user interfaces:
     * Models management, bot training
     * Conversational no-code story builder
     * Internationalization (_i18n_) support for multilingual bots
@@ -51,5 +53,5 @@ Graphical interfaces _(Tock Studio)_ are made with [Angular](https://angular.io/
 * [Table of contents](toc.md)
 * [Guides](guide/studio.md) and running [demo/sandbox platform](https://demotock-production-admin.vsct-prod.aws.vsct.fr/)
 * [User](utilisateur/concepts.md), [developer](dev/modes.md) and [administrator/ops](admin/architecture.md) manuals
-* [Resources (slides, video)](apropos/ressources.md) and [code samples](dev/exemples-code.md)
+* [Resources (slides, video)](about/resources.md) and [code samples](dev/exemples-code.md)
 

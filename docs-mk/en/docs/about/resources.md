@@ -1,12 +1,11 @@
-# Ressources Tock
+# Tock resources
 
-Les différents supports et présentations ci-dessous donnent un aperçu de la solution Tock, 
-en complément des [guides](../guide/studio.md)
- pour tester soi-même la plateforme.
+This page lists various presentations of Tock, giving an overview of the solution 
+in addition to the main documentation and demo instance.
 
-## Conférences / video
+## Conferences / video (in French)
 
-* _[Développer un bot sur Messenger et Google Assistant en 30 minutes](https://www.youtube.com/watch?v=K4q8ZHw9TuI)_ 
+* _[Code a bot for Messenger and Google Assistant in 30 minutes](https://www.youtube.com/watch?v=K4q8ZHw9TuI)_ 
 <br/> @ _Devoxx France_ **2018** (live coding _"tools in action"_ 30 min)
 
 <a href="https://www.youtube.com/watch?v=K4q8ZHw9TuI"
@@ -17,7 +16,7 @@ style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rg
 </a>
 
 
-## Supports de présentation / meetup
+## Meetup / Slides (in French)
 
 * [Tock - _The Open Conversation Kit_](https://fr.slideshare.net/FrancoisN0/tock-the-open-conversation-kit-meetup-open-transport-161569957)
  @ _Meetup Open Transport_ **(2019)**
@@ -40,8 +39,12 @@ style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rg
 </a>
 
 
-> N'hésitez pas à [partager](contact.md) d'autres supports et liens autour de Tock.
+> Don't hesitate to [share with us](contact.md) more slides, documents and links about Tock.
 
-## Kit presse
+## Press kit
 
-> TODO : inclure le logo, typo Tock, etc.
+The Tock logo is provided under the [Apache 2 license](https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE).
+
+**Tock logo** (<a href="../../assets/images/logo.svg" download="">download</a>) :
+
+![Logo Tock](../../assets/images/logo.svg)
