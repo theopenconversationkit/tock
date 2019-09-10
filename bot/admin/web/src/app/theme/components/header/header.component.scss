@@ -19,6 +19,16 @@
     align-content: center;
   }
 
+  .app {
+    margin-left: 10px;
+    min-width: 150px;
+  }
+
+  .locale {
+    margin-left: 10px;
+    min-width: 100px;
+  }
+
 
   ::ng-deep nb-search button {
     padding: 0!important;
