@@ -42,7 +42,7 @@ export class ReviewRequestDialogComponent implements OnInit {
     } else {
       this.state.currentIntentsCategories.subscribe(c => {
         let intent = flatMap(c, cat => cat.intents).find(intent => intent._id === this.beforeClassification);
-        this.description = "Initial intent: " + intent.name + "\n\n";
+        this.description = "Initial intent: " + (intent ? intent.name : "") + "\n\n";
       });
     }
   }

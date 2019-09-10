@@ -147,12 +147,15 @@ export class SentenceAnalysisComponent implements OnInit {
 
   onReviewRequest() {
     setTimeout(_ => {
-      let dialogRef = this.dialog.open(this.matDialog, ReviewRequestDialogComponent, {
-        data: {
-          beforeClassification: this.intentBeforeClassification,
-          reviewComment: this.sentence.reviewComment
-        }
-      });
+      let dialogRef = this.dialog.open(
+        this.matDialog,
+        ReviewRequestDialogComponent,
+        {
+          data: {
+            beforeClassification: this.intentBeforeClassification,
+            reviewComment: this.sentence.reviewComment
+          }
+        });
       dialogRef.afterClosed().subscribe(result => {
         if (result && result.status === 'confirm') {
           this.sentence.forReview = true;

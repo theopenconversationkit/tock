@@ -51,6 +51,8 @@ export class DialogService {
 
   /**
    * Opens a modal dialog containing the given component.
+   *
+   * @param scopedDialog the original dialog
    * @param componentOrTemplateRef Type of the component to load into the dialog,
    *     or a TemplateRef to instantiate as the dialog content.
    * @param config Extra configuration options.
