@@ -46,21 +46,23 @@ internal object DictionaryEntityTypeEvaluator : EntityTypeEvaluator {
     ): StringValue? {
         val textToCompare = text.toLowerCase(locale)
         val values = predefinedValues.mapValues { l -> l.value?.map { s -> s.toLowerCase(locale) } ?: emptyList() }
-        for (e in values) {
-            val labels = e.value
-            if (labels.any { s -> s.toLowerCase(locale) == textToCompare }) {
-                return StringValue(e.key.value)
+        if (onlyValues) {
+            for (e in values) {
+                val labels = e.value
+                if (labels.any { s -> s.toLowerCase(locale) == textToCompare }) {
+                    return StringValue(e.key.value)
+                }
             }
-        }
-        if (!onlyValues) {
+        } else {
             val acceptableValues = values.mapNotNull { e ->
-                val max = e.value.asSequence().map { levenshtein.compare(text, it) }.max()
+                val max = e.value.asSequence().map { levenshtein.compare(textToCompare, it) }.max()
                 if (max != null && (max > minDistance || (textSearch && e.value.any { textToCompare.contains(it) }))) {
                     ValueWithProbability(e.key.value, max.toDouble())
                 } else {
                     null
                 }
             }.sortedByDescending { it.probability }
+
             return acceptableValues.firstOrNull()?.value?.let { StringValue(it, acceptableValues) }
         }
         return null

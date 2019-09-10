@@ -76,7 +76,7 @@ class PredefinedValuesEntityEvaluatorTest {
         val evaluationResult = DictionaryEntityTypeEvaluator.evaluate(context, "Quotidienne")
 
         assertTrue(evaluationResult.evaluated)
-        assertEquals(0.7272727489471436, evaluationResult.probability)
+        assertEquals(0.8181818127632141, evaluationResult.probability)
         assertEquals("Jour", (evaluationResult.value as StringValue).value)
 
     }
