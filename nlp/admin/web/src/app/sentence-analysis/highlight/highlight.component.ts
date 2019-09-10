@@ -68,6 +68,9 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
   //used to copy to clipboard
   @ViewChild('copy', {static: false}) tmpTextArea: ElementRef;
 
+  //the tokens container
+  @ViewChild('tokensContainer', {static: false}) tokensContainer: ElementRef;
+
   constructor(private nlp: NlpService,
               public state: StateService,
               private dialog: DialogService,
@@ -129,16 +132,26 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
         setTimeout(_ => {
           this.selectedStart = e.startSelection;
           this.selectedEnd = e.endSelection;
-          const r = document.createRange();
+
           const tokenMatch = this.tokens.find(t => t.start <= e.startSelection && t.end >= e.endSelection);
           if (!tokenMatch) {
             return;
           }
-          let token = document.getElementById(this.prefix + tokenMatch.index).firstChild;
-          r.setStart(token, this.selectedStart - tokenMatch.start);
-          r.setEnd(token, this.selectedEnd - tokenMatch.start);
-          window.getSelection().addRange(r);
-          this.select();
+          const r = document.createRange();
+          const tokenId = this.prefix + tokenMatch.index;
+          const c: Node = this.tokensContainer.nativeElement;
+
+          let token;
+          c.childNodes.forEach(s => {
+            if ((s as Element).id === tokenId) token = s.firstChild;
+          });
+          if (token) {
+            r.setStart(token, this.selectedStart - tokenMatch.start);
+            r.setEnd(token, this.selectedEnd - tokenMatch.start);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(r);
+            this.select();
+          }
         });
       }
     }
@@ -152,39 +165,42 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   select() {
-    const selection = window.getSelection().getRangeAt(0);
-    let start = selection.startOffset;
-    let end = selection.endOffset;
-    if (selection.startContainer !== selection.endContainer) {
-      if (!selection.startContainer.childNodes[0]) {
+    const windowsSelection = window.getSelection();
+    if (windowsSelection.rangeCount > 0) {
+      const selection = windowsSelection.getRangeAt(0);
+      let start = selection.startOffset;
+      let end = selection.endOffset;
+      if (selection.startContainer !== selection.endContainer) {
+        if (!selection.startContainer.childNodes[0]) {
+          return;
+        }
+        end = selection.startContainer.childNodes[0].textContent.length - start;
+      } else {
+        if (start > end) {
+          const tmp = start;
+          start = end;
+          end = tmp;
+        }
+      }
+      if (start === end) {
         return;
       }
-      end = selection.startContainer.childNodes[0].textContent.length - start;
-    } else {
-      if (start > end) {
-        const tmp = start;
-        start = end;
-        end = tmp;
-      }
-    }
-    if (start === end) {
-      return;
-    }
-    const span = selection.startContainer.parentElement;
-    this.selectedStart = -1;
-    this.selectedEnd = -1;
-    this.findSelected(span.parentNode, new SelectedResult(span, start, end));
+      const span = selection.startContainer.parentElement;
+      this.selectedStart = -1;
+      this.selectedEnd = -1;
+      this.findSelected(span.parentNode, new SelectedResult(span, start, end));
 
-    const overlap = this.sentence.overlappedEntity(this.selectedStart, this.selectedEnd);
-    if (overlap) {
-      if (this.state.currentApplication.supportSubEntities) {
-        this.sentence
-          .addEditedSubEntities(overlap)
-          .setSelection(this.selectedStart - overlap.start, this.selectedEnd - overlap.start);
+      const overlap = this.sentence.overlappedEntity(this.selectedStart, this.selectedEnd);
+      if (overlap) {
+        if (this.state.currentApplication.supportSubEntities) {
+          this.sentence
+            .addEditedSubEntities(overlap)
+            .setSelection(this.selectedStart - overlap.start, this.selectedEnd - overlap.start);
+        }
+        window.getSelection().removeAllRanges();
+      } else if (this.entityProvider.isValid()) {
+        this.edited = true;
       }
-      window.getSelection().removeAllRanges();
-    } else if (this.entityProvider.isValid()) {
-      this.edited = true;
     }
   }
 

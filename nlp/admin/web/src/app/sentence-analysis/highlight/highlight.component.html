@@ -31,6 +31,7 @@
       </nb-actions>
     </div>
     <div *ngIf="tokens && !readOnly"
+         #tokensContainer
          class="tokens"
          (mouseup)="select()" (touchend)="select()"><span *ngFor="let t of tokens"
                                                           [style.font-size]="fontSize"
