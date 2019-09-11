@@ -14,33 +14,33 @@ essentiellement développées en <em>blocking IO</em>, mais pour la suite l’ap
 <h3 id="les-depots">Les dépôts<a class="headerlink" href="#les-depots" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
-<p><a href="https://github.com/voyages-sncf-technologies/tock">tock</a> : dépôt principal comprend le framework et les composants 
+<p><a href="https://github.com/voyages-sncf-technologies/tock"><code>tock</code></a> : dépôt principal comprend le framework et les composants 
 de la plateforme sous <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE">licence Apache 2</a>. </p>
 </li>
 <li>
-<p><a href="https://github.com/voyages-sncf-technologies/tock-corenlp">tock-corenlp</a> : code utilisant une dépendance optionnelle à 
+<p><a href="https://github.com/voyages-sncf-technologies/tock-corenlp"><code>tock-corenlp</code></a> : code utilisant une dépendance optionnelle à 
 <a href="https://stanfordnlp.github.io/CoreNLP/">Stanford CoreNLP</a> (à la place d'<a href="https://opennlp.apache.org/">Apache OpenNLP</a>), 
 sous licence <a href="https://fr.wikipedia.org/wiki/Licence_publique_g%C3%A9n%C3%A9rale_GNU">GPL</a>. </p>
 </li>
 <li>
-<p><a href="https://github.com/voyages-sncf-technologies/tock-docker">tock-docker</a> : des images <a href="https://www.docker.com/">Docker</a> 
+<p><a href="https://github.com/voyages-sncf-technologies/tock-docker"><code>tock-docker</code></a> : des images <a href="https://www.docker.com/">Docker</a> 
 et <a href="https://docs.docker.com/compose/">Docker Compose</a>, pour faciliter la prise en main et le déploiement de la plateforme dans différentes configurations.</p>
 </li>
 <li>
-<p><a href="">tock-bot-samples</a> : des exemples de code notamment pour programmer des parcours en mode <em>WebHook</em> ou <em>WebSocket</em> 
+<p><a href=""><code>tock-bot-samples</code></a> : des exemples de code notamment pour programmer des parcours en mode <em>WebHook</em> ou <em>WebSocket</em> 
 comme dans les <a href="../../guide/api/">guides Tock</a>.</p>
 </li>
 <li>
-<p><a href="https://github.com/voyages-sncf-technologies/tock-bot-open-data">tock-bot-open-data</a> : un exemple de bot basé 
+<p><a href="https://github.com/voyages-sncf-technologies/tock-bot-open-data"><code>tock-bot-open-data</code></a> : un exemple de bot basé 
 sur les <a href="https://www.digital.sncf.com/startup/api">API <em>Open Data</em> de la SNCF</a>, implémentant également des bases pour 
 l'internationalisation avec deux langues proposées.</p>
 </li>
 </ul>
-<h3 id="le-depot-tock">Le dépôt tock<a class="headerlink" href="#le-depot-tock" title="Permanent link">&para;</a></h3>
+<h3 id="le-depot-tock">Le dépôt <code>tock</code><a class="headerlink" href="#le-depot-tock" title="Permanent link">&para;</a></h3>
 <blockquote>
 <p>TODO : détailler les modules et la structure du repo</p>
 </blockquote>
-<h3 id="le-depot-tock-docker">Le dépôt tock-docker<a class="headerlink" href="#le-depot-tock-docker" title="Permanent link">&para;</a></h3>
+<h3 id="le-depot-tock-docker">Le dépôt <code>tock-docker</code><a class="headerlink" href="#le-depot-tock-docker" title="Permanent link">&para;</a></h3>
 <blockquote>
 <p>TODO : détailler les modules et la structure du repo, le fonctionnement des builds Maven et Docker, etc.</p>
 </blockquote>
@@ -51,7 +51,7 @@ l'internationalisation avec deux langues proposées.</p>
 <p><code>$ mvn package</code></p>
 <p>Un build d'intégration continue est disponible sur <a href="https://travis-ci.org/voyages-sncf-technologies/tock">Travis</a>.</p>
 <h3 id="images-docker">Images Docker<a class="headerlink" href="#images-docker" title="Permanent link">&para;</a></h3>
-<p>Les images Docker de Tock peuvent être reconstruites à partir des sources du dépôt <a href="https://github.com/voyages-sncf-technologies/tock-docker">tock-docker</a>.
+<p>Les images Docker de Tock peuvent être reconstruites à partir des sources du dépôt <a href="https://github.com/voyages-sncf-technologies/tock-docker"><code>tock-docker</code></a>.
 Pour cela, utilisez <a href="https://maven.apache.org/">Maven</a> qui déclenchera le build <a href="https://www.docker.com/">Docker</a> :</p>
 <p><code>$ mvn docker:build</code></p>
 <p>Vous pouvez ensuite instancier ces images via Docker ou les stacks Docker Compose avec les descripteurs à la racine du dépôt.</p>
