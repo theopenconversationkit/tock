@@ -61,8 +61,8 @@ data class EntityStateValue(
     constructor(entity: Entity, value: Value) : this(EntityValue(entity, value))
 
     init {
-        if (value != null) {
-            currentHistory.add(ArchivedEntityValue(value, null, updated))
+        if (currentValue != null) {
+            currentHistory.add(ArchivedEntityValue(currentValue, null, updated))
         }
     }
 
