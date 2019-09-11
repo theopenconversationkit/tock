@@ -17,7 +17,7 @@ fournies, vous pouvez retrouver cette documentation en ligne à l'adresse [http:
 
 ## _Tock Studio API_
 
-De même, la documentation de l'API _Tock Studio_ est disponible dans [/api/admin](../../../api/admin). 
+De même, la documentation de l'API _Tock Studio_ est disponible dans [/api/admin](../../../api/admin.html). 
 
 Vous pouvez retrouver cette documentation sur la plateforme de démonstration Tock, à l'adresse
 [https://demotock-production-admin.vsct-prod.aws.vsct.fr/doc/admin.html](https://demotock-production-admin.vsct-prod.aws.vsct.fr/doc/admin.html).

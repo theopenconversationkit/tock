@@ -1,40 +1,41 @@
-# Vitrine utilisateurs
+# User showcase
 
-Depuis sa création pour [OUI.sncf](https://www.oui.sncf/) en 2016, Tock est utilisé par de plus en plus
-d'équipes pour créer des bots conversationnels dédiés à des usages divers :
+Since its creation for [OUI.sncf](https://www.oui.sncf/) in 2016, Tock has been used by more and more teams to 
+design and build conversational bots dedicated to various use cases :
 
-* _business to customer_ et _business to business_ 
-* distribution, transactionnel, paiement
-* assistance, _care_, _help desks_
-* FAQ et arbres de décision
+* _business to customer_ and _business to business_ 
+* e-commerce, transactions, payment
+* assistance, care, help desks
+* FAQ and decision trees
 
-Cette page présente différents assistants et produits construits avec Tock.
+This page presents various assistants and products built with Tock.
 
-## _OUIbot_, le bot OUI.sncf
+## _OUIbot_, the OUI.sncf bot
 
-_[OUIbot](https://www.oui.sncf/services/assistant)_ est l'assistant conversationnel de OUI.sncf. Disponible depuis 2016 
-sur le réseau social Facebook Messenger, _OUIbot_ s'est construit avec les premières versions de Tock.
+_[OUIbot](https://www.oui.sncf/services/assistant)_ is the conversational assistant from OUI.sncf. Available since 2016 
+on Facebook Messenger, _OUIbot_ was built along with the first versions of Tock.
 
 > _Avec OUIbot, réserver un billet de train n'a jamais été aussi simple ! Il vous assiste dans la préparation de vos 
 voyages, permet d'effectuer rapidement et simplement une réservation complète, de la recherche à l'achat (paiement inclus), 
 et vous accompagne durant votre voyage._
 
-Grâce aux nombreux connecteurs Tock, _OUIbot_ répond présent sur de nombreux canaux conversationnels :
- site [www.oui.sncf](https://www.oui.sncf/bot), réseaux sociaux, assistants vocaux, enceintes connectées et même 
- [IAffiches avec JCDecaux](https://ouitalk.oui.sncf/blog/innovation/oui-sncf-signe-une-campagne-d-affichage-pilotee-par-une-intelligence-artificielle).
+Thanks to the numerous connectors, _OUIbot_ is now available on multiple conversational channels, such as the company 
+Website [www.oui.sncf](https://www.oui.sncf/bot), social networks, voice assistants, smart display and even 
+ [SmartBrics with JCDecaux](https://ouitalk.oui.sncf/blog/innovation/oui-sncf-signe-une-campagne-d-affichage-pilotee-par-une-intelligence-artificielle)
+ devices.
 
-En 2019, _OUIbot_ accompagne près de 10 000 utilisateurs par jour. Il a été élu _[Best Robot Experience](https://www.sensduclient.com/2018/04/ouibot-ouisncf-est-le-gagnant-de-best.html)_
- pour la deuxième année consécutive.
+In 2019, _OUIbot_ answers approximately 10.000 users a day. It has been awarded _[Best Robot Experience](https://www.sensduclient.com/2018/04/ouibot-ouisncf-est-le-gagnant-de-best.html)_
+ for the second year in a row.
 
-<img alt="Recompense OUIbot 2019" 
+<img alt="OUIbot award 2019" 
 src="https://blog-cultures-services.com/wp-content/uploads/2019/06/Blog-768x512.png" 
 style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
  
-* **Nom :** _[OUIbot](https://www.oui.sncf/services/assistant)_
-* **Date de naissance :** en production depuis 2016
-* **Domaine :** distribution, transactionnel (réservations, paiements), alertes & push notifications, relai vers un agent
-* **Canaux :** texte & voix, sur le site Web entreprise, Messenger, WhatsApp, Business Chat (Messages), Google Assistant, 
-Google Home, Alexa, IAffiches JCDecaux
+* **Name:** _[OUIbot](https://www.oui.sncf/services/assistant)_
+* **Birthdate:** in production since 2016
+* **Domain:** e-commerce/travel, transactions (booking, payment), alerts & push notifications, push messages to an agent
+* **Channels:** text & voice, on the company Website, Messenger, WhatsApp, Business Chat (Messages), Google Assistant, 
+Google Home, Alexa, JCDecaux SmartBrics
 
 ## _L'Assistant SNCF_
 
@@ -56,7 +57,7 @@ style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.
 * **Domaine :** voyage & transport (recherche itinéraires en multi-modal, etc.)
 * **Canaux :** vocal, sur l'application mobile SNCF pour Android et iOS
 
-## _Tilien_, le chatbot Transilien
+## _Tilien_, the Transilien chatbot
 
 _[Tilien](https://www.facebook.com/botsncftransilien/)_ est le chatbot Transilien sur Messenger.
 
@@ -113,7 +114,7 @@ Accessible via la page Facebook de la SNCF, l'_Agent virtuel_ est basé sur Tock
 * **Domaine :** voyage & transport (état du trafic, travaux, prochains départs), relai vers un agent
 * **Canaux :** texte, sur Messenger (page Facebook _SNCF_)
 
-## _Eve_, le bot interne e-voyageurs
+## _Eve_, the e-voyageurs internal assistant
 
 _Eve_ est l'assistant interne des collaborateurs [e-voyageurs SNCF](https://www.sncf.com/fr/groupe/newsroom/e-voyageurs-sncf).
 
@@ -130,10 +131,10 @@ _Eve_ est à l'écoute des collaborateurs dans l'entreprise et en mobilité sur 
 déploiements, gestion de production, etc.)
 * **Canaux :** texte & voix, en interne dans l'entreprise et en mobilité via Teams
 
-## Et vous ?
+## What about you?
 
-La plateforme est suffisamment générique pour permettre de nombreux usages et l'intégration de canaux 
-internes ou externes. Si vous avez un doute sur les possibilités de Tock ou la faisabilité d'un nouveau projet, vous pouvez 
-[nous contacter](contact.md) pour en parler.
+As a generic platform, Tock enables numerous use cases and integration of internal as well as external channels.
+Please feel free to [contact us](contact.md) in case of doubts or questions about Tock features or possibilities for a new project 
+of your own.
 
-_Quant à vos propres réalisations, n'hésitez pas à les partager ! 🙂_
+_And don't hesitate to share your achievements with the community! 🙂_

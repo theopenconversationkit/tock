@@ -6,18 +6,42 @@ repo_name: 'tock'
 repo_url: 'https://github.com/voyages-sncf-technologies/tock'
 edit_uri: ''
 nav:
-    - Introduction: index.md
-    - Getting Started: getting-started.md
-    - Build NLP model: build-nlp-model.md
-    - Evaluate the model: evaluate-the-model.md
-    - Tock APIs: api.md
-    - The Open Data Bot: the-open-data-bot.md
-    - Code a bot: code-a-bot.md
-    - Test the bot: test-the-bot.md
-    - i18n: i18n.md
-    - KDoc: kdoc.md
-    - Contribute: contribute.md
-    - 'Contact us': 'contact.md'
+  - 'Overview': 'index.md'
+  - 'Table of contents': 'toc.md'
+  - 'Try Tock': # Guides / Découvrir
+      - 'Create your first bot': 'guide/studio.md'
+      - 'Configure Slack': 'guide/slack.md'
+      - 'Configure Messenger': 'guide/messenger.md'
+      - 'Program stories': 'guide/api.md'
+      - 'Deploy with Docker': 'guide/platform.md'
+  - 'Use Tock':
+      - 'Concepts': 'utilisateur/concepts.md'
+      - 'Tock Studio': 'utilisateur/studio.md'
+      - 'Multichannel bot': 'utilisateur/channels.md'
+      - 'Multilingual bot': 'utilisateur/i18n.md'
+  - 'Develop with Tock':
+      - 'Availables modes': 'dev/modes.md'
+      - 'Tock Bot API': 'dev/bot-api.md'
+      - 'Tock Integrated Bot': 'dev/integrated-bot.md'
+      - 'Connectors': 'dev/connecteurs.md'
+      - 'i18n': 'dev/i18n.md'
+      - 'APIs': 'dev/api.md'
+      - 'Code samples': 'dev/exemples-code.md'
+  - 'Run Tock':
+      - 'Architecture': 'admin/architecture.md'
+      - 'Installation': 'admin/installation.md'
+      - 'Security': 'admin/security.md'
+      - 'Availability': 'admin/availability.md'
+      - 'Monitoring': 'admin/monitoring.md'
+      - 'Cloud': 'admin/cloud.md'
+  - 'About':
+      - 'Why Tock': 'about/why.md'
+      - 'Showcase': 'about/showcase.md'
+      - 'Resources': 'about/resources.md'
+      - 'Contact us': 'about/contact.md'
+      - 'Community': 'about/community.md'
+      - 'Contribute': 'about/contribute.md'
+      - 'Jobs': 'about/jobs.md'
 theme:
   name: 'material'
   logo: 'assets/images/logo.svg'

@@ -21,28 +21,28 @@ Les interfaces graphiques _(Tock Studio)_ sont écrites avec [Angular](https://a
 
 ### Les dépôts
 
-* [tock](https://github.com/voyages-sncf-technologies/tock) : dépôt principal comprend le framework et les composants 
+* [`tock`](https://github.com/voyages-sncf-technologies/tock) : dépôt principal comprend le framework et les composants 
 de la plateforme sous [licence Apache 2](https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE). 
 
-* [tock-corenlp](https://github.com/voyages-sncf-technologies/tock-corenlp) : code utilisant une dépendance optionnelle à 
+* [`tock-corenlp`](https://github.com/voyages-sncf-technologies/tock-corenlp) : code utilisant une dépendance optionnelle à 
 [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/) (à la place d'[Apache OpenNLP](https://opennlp.apache.org/)), 
 sous licence [GPL](https://fr.wikipedia.org/wiki/Licence_publique_g%C3%A9n%C3%A9rale_GNU). 
 
-* [tock-docker](https://github.com/voyages-sncf-technologies/tock-docker) : des images [Docker](https://www.docker.com/) 
+* [`tock-docker`](https://github.com/voyages-sncf-technologies/tock-docker) : des images [Docker](https://www.docker.com/) 
 et [Docker Compose](https://docs.docker.com/compose/), pour faciliter la prise en main et le déploiement de la plateforme dans différentes configurations.
 
-* [tock-bot-samples]() : des exemples de code notamment pour programmer des parcours en mode _WebHook_ ou _WebSocket_ 
+* [`tock-bot-samples`]() : des exemples de code notamment pour programmer des parcours en mode _WebHook_ ou _WebSocket_ 
 comme dans les [guides Tock](../guide/api.md).
  
-* [tock-bot-open-data](https://github.com/voyages-sncf-technologies/tock-bot-open-data) : un exemple de bot basé 
+* [`tock-bot-open-data`](https://github.com/voyages-sncf-technologies/tock-bot-open-data) : un exemple de bot basé 
 sur les [API _Open Data_ de la SNCF](https://www.digital.sncf.com/startup/api), implémentant également des bases pour 
 l'internationalisation avec deux langues proposées.
 
-### Le dépôt tock
+### Le dépôt `tock`
 
 > TODO : détailler les modules et la structure du repo
 
-### Le dépôt tock-docker
+### Le dépôt `tock-docker`
 
 > TODO : détailler les modules et la structure du repo, le fonctionnement des builds Maven et Docker, etc.
 
@@ -59,7 +59,7 @@ Un build d'intégration continue est disponible sur [Travis](https://travis-ci.o
 
 ### Images Docker
 
-Les images Docker de Tock peuvent être reconstruites à partir des sources du dépôt [tock-docker](https://github.com/voyages-sncf-technologies/tock-docker).
+Les images Docker de Tock peuvent être reconstruites à partir des sources du dépôt [`tock-docker`](https://github.com/voyages-sncf-technologies/tock-docker).
 Pour cela, utilisez [Maven](https://maven.apache.org/) qui déclenchera le build [Docker](https://www.docker.com/) :
 
 `$ mvn docker:build`

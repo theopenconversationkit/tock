@@ -1,5 +1,8 @@
 # Bienvenue sur Tock : une plateforme conversationnelle ouverte
 
+<img alt="Logo Tock" src="assets/images/logo.svg" style="width: 100px;">
+
+
 **Tock** (*The Open Conversation Kit*) est une plateforme complète pour construire des agents conversationnels - souvent appelés _bots_. 
 
 Contrairement à la plupart des solutions conversationnelles, Tock ne dépend pas d'API tierces, bien qu'il soit possible d'en intégrer.
@@ -11,6 +14,9 @@ L'utilisateur choisit les composants qu'il embarque et peut ainsi conserver la m
 > L'ensemble du code source est disponible sur 
 > [GitHub](https://github.com/voyages-sncf-technologies/tock) 
 > sous une [licence Apache 2](https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE). 
+>
+> Tock est une solution soutenue par l'association [_TOSIT (The Open Source I Trust)_](http://tosit.fr/).
+
 
 ## Fonctionnalités
 
@@ -47,7 +53,7 @@ Les interfaces graphiques _(Tock Studio)_ sont écrites avec [Angular](https://a
 ## Démarrer...
 
 * [Table des matières](toc.md)
-* _[Guides](guide/studio.md)_ et [plateforme de démonstration](https://demotock-production-admin.vsct-prod.aws.vsct.fr/)
-* _Manuels [utilisateur](utilisateur/concepts.md)_, [développeur](dev/modes.md), [administrateur](admin/architecture.md)
-* _[Ressources (supports, video)](apropos/ressources.md)_ et _[exemples de code](dev/exemples-code.md)_
+* [Guides](guide/studio.md) et [plateforme de démonstration](https://demotock-production-admin.vsct-prod.aws.vsct.fr/)
+* Manuels [utilisateur](utilisateur/concepts.md), [développeur](dev/modes.md), [administrateur](admin/architecture.md)
+* [Ressources (supports, video)](apropos/ressources.md) et [exemples de code](dev/exemples-code.md)
 
