@@ -131,6 +131,9 @@
               <directory>dist</directory>
             </fileset>
             <fileset>
+              <directory>node</directory>
+            </fileset>
+            <fileset>
               <directory>src/app</directory>
               <includes>
                 <include>applications</include>

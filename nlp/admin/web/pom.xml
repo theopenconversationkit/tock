@@ -94,6 +94,9 @@
             <fileset>
               <directory>dist</directory>
             </fileset>
+            <fileset>
+              <directory>node</directory>
+            </fileset>
           </filesets>
         </configuration>
       </plugin>

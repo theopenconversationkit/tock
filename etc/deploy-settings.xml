@@ -21,6 +21,11 @@
             <username>${env.OSSRH_USER}</username>
             <password>${env.OSSRH_PASS}</password>
         </server>
+        <server>
+            <id>bintray-tock</id>
+            <username>${env.BINTRAY_USER}</username>
+            <password>${env.BINTRAY_PASS}</password>
+        </server>
     </servers>
 
     <profiles>
