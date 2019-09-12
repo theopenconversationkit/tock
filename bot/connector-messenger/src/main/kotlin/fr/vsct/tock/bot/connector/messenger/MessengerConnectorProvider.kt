@@ -41,6 +41,7 @@ internal object MessengerConnectorProvider : ConnectorProvider {
         with(connectorConfiguration) {
             val appId = parameters[APP_ID]?.takeIf { it.isNotBlank() } ?: connectorId
             return MessengerConnector(
+                connectorId,
                 appId,
                 path,
                 parameters.getValue(PAGE_ID),

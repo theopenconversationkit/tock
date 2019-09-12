@@ -89,12 +89,13 @@ import javax.crypto.spec.SecretKeySpec
  * Contains built-in checks to ensure that two [MessageRequest] for the same recipient are sent sequentially.
  */
 class MessengerConnector internal constructor(
-    val applicationId: String,
-    val path: String,
-    val pageId: String,
-    val appToken: String,
-    val token: String,
-    val verifyToken: String?,
+    connectorId: String,
+    private val applicationId: String,
+    private val path: String,
+    private val pageId: String,
+    private val appToken: String,
+    private val token: String,
+    private val verifyToken: String?,
     internal val client: MessengerClient,
     @Volatile
     private var subscriptionCheck: Boolean = webhookSubscriptionCheckEnabled
@@ -104,12 +105,14 @@ class MessengerConnector internal constructor(
 
     companion object {
         private val logger = KotlinLogging.logger {}
-        private val pageApplicationMap: MutableMap<String, String> = ConcurrentHashMap()
-        private val applicationTokenMap: MutableMap<String, String> = ConcurrentHashMap()
+        private val pageConnectorIdMap: MutableMap<String, String> = ConcurrentHashMap()
+        private val connectorIdTokenMap: MutableMap<String, String> = ConcurrentHashMap()
+        private val connectorIdApplicationIdMap: MutableMap<String, String> = ConcurrentHashMap()
         private val connectors: MutableSet<MessengerConnector> = CopyOnWriteArraySet<MessengerConnector>()
         private val webhookSubscriptionCheckPeriod = property("tock_messenger_webhook_check_period", "600").toLong()
         private val webhookSubscriptionCheckEnabled =
             booleanProperty("tock_messenger_webhook_check_subscription", false)
+        private val oldConnectorIdBehaviour = booleanProperty("tock_messenger_old_connector_id_behaviour", false)
 
         fun getConnectorByPageId(pageId: String): MessengerConnector? {
             return connectors.find { it.pageId == pageId }
@@ -123,8 +126,9 @@ class MessengerConnector internal constructor(
     }
 
     init {
-        pageApplicationMap[pageId] = applicationId
-        applicationTokenMap[applicationId] = token
+        pageConnectorIdMap[pageId] = connectorId
+        connectorIdTokenMap[connectorId] = token
+        connectorIdApplicationIdMap[connectorId] = applicationId
         connectors.add(this)
     }
 
@@ -133,6 +137,8 @@ class MessengerConnector internal constructor(
         CacheBuilder.newBuilder()
             .expireAfterAccess(1, TimeUnit.MINUTES)
             .build()
+    private val realConnectorId: String =
+        if (oldConnectorIdBehaviour) applicationId else connectorId
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
@@ -177,7 +183,14 @@ class MessengerConnector internal constructor(
                                         try {
                                             if (entry.messaging?.isNotEmpty() == true) {
 
-                                                val applicationId = pageApplicationMap.getValue(entry.id)
+                                                val applicationId = pageConnectorIdMap.getValue(entry.id)
+                                                    .let {
+                                                        if (oldConnectorIdBehaviour) {
+                                                            connectorIdApplicationIdMap.getValue(it)
+                                                        } else {
+                                                            it
+                                                        }
+                                                    }
                                                 entry.messaging.forEach { m ->
                                                     if (m != null) {
                                                         try {
@@ -290,31 +303,27 @@ class MessengerConnector internal constructor(
                         val attachmentId =
                             getAttachmentId(event.applicationId, url)
                                 .let {
-                                    if (it == null) {
-                                        client.sendAttachment(
-                                            token,
-                                            AttachmentRequest(
-                                                AttachmentMessage(
-                                                    Attachment(
-                                                        AttachmentType.fromTockAttachmentType(
-                                                            firstElement.mediaType.toAttachmentType()
-                                                        ),
-                                                        UrlPayload(
-                                                            url,
-                                                            null,
-                                                            true
-                                                        )
+                                    it ?: client.sendAttachment(
+                                        token,
+                                        AttachmentRequest(
+                                            AttachmentMessage(
+                                                Attachment(
+                                                    AttachmentType.fromTockAttachmentType(
+                                                        firstElement.mediaType.toAttachmentType()
+                                                    ),
+                                                    UrlPayload(
+                                                        url,
+                                                        null,
+                                                        true
                                                     )
                                                 )
                                             )
-                                        )!!
-                                            .apply {
-                                                setAttachmentId(event.applicationId, url, attachmentId!!)
-                                            }
-                                            .attachmentId!!
-                                    } else {
-                                        it
-                                    }
+                                        )
+                                    )!!
+                                        .apply {
+                                            setAttachmentId(event.applicationId, url, attachmentId!!)
+                                        }
+                                        .attachmentId!!
                                 }
                         message = message.copy(
                             message = AttachmentMessage(
@@ -405,19 +414,19 @@ class MessengerConnector internal constructor(
      * @param userId the user id you would like to known
      * @return null if the app does may not known the owner, the app id owner either
      */
-    fun getThreadOwner(userId: PlayerId): String? = client.getThreadOwnerId(getToken(applicationId), userId.id)
+    fun getThreadOwner(userId: PlayerId): String? = client.getThreadOwnerId(token, userId.id)
 
     /**
      * Returns the secondary receivers (handover protocol) if the app is the primary receiver, null either.
      */
-    fun getSecondaryReceivers(): List<SecondaryReceiverData>? = client.getSecondaryReceivers(getToken(applicationId))
+    fun getSecondaryReceivers(): List<SecondaryReceiverData>? = client.getSecondaryReceivers(token)
 
     /**
      * Sends a request to get thread control.
      */
     fun requestThreadControl(userId: PlayerId, metadata: String? = null): SendResponse? =
         client.requestThreadControl(
-            getToken(applicationId),
+            token,
             RequestThreadControlRequest(Recipient(userId.id), metadata)
         )
 
@@ -426,7 +435,7 @@ class MessengerConnector internal constructor(
      */
     fun takeThreadControl(userId: PlayerId, metadata: String? = null): SendResponse? =
         client.takeThreadControl(
-            getToken(applicationId),
+            token,
             TakeThreadControlRequest(Recipient(userId.id), metadata)
         )
 
@@ -435,7 +444,7 @@ class MessengerConnector internal constructor(
      */
     fun passThreadControl(userId: PlayerId, targetAppId: String, metadata: String? = null): SendResponse? =
         client.passThreadControl(
-            getToken(applicationId),
+            token,
             PassThreadControlRequest(Recipient(userId.id), targetAppId, metadata)
         )
 
@@ -541,7 +550,7 @@ class MessengerConnector internal constructor(
     override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences {
         try {
             val userProfile =
-                client.getUserProfile(applicationTokenMap.getValue(callback.applicationId), Recipient(userId.id))
+                client.getUserProfile(connectorIdTokenMap.getValue(callback.applicationId), Recipient(userId.id))
             logger.debug { "User profile : $userProfile for $userId" }
             return UserPreferences(
                 userProfile.firstName,
@@ -580,14 +589,15 @@ class MessengerConnector internal constructor(
 
     private fun getToken(event: Event): String = getToken(event.applicationId)
 
-    private fun getToken(appId: String): String =
-        applicationTokenMap[appId]
+    private fun getToken(connectorId: String): String =
+        connectorIdTokenMap[connectorId]
         //TODO remove this when backward compatibility is no more assured
-            ?: pageApplicationMap[appId]?.let {
-                logger.warn { "use pageId as appId for $appId" }
-                applicationTokenMap[it]
+            ?: pageConnectorIdMap[connectorId]?.let {
+                logger.warn { "use pageId as connectorId for $connectorId" }
+                connectorIdTokenMap[it]
             }
-            ?: error("$appId not found")
+            ?: connectors.find { it.applicationId == connectorId }?.appToken
+            ?: error("$connectorId not found")
 
     private fun isSignedByFacebook(payload: String, facebookSignature: String): Boolean {
         return "sha1=${sha1(payload, client.secretKey)}" == facebookSignature
@@ -654,14 +664,14 @@ class MessengerConnector internal constructor(
         controller.handle(
             SendChoice(
                 recipientId,
-                applicationId,
+                realConnectorId,
                 PlayerId(pageId, bot),
                 intent.wrappedIntent().name,
                 step,
                 parameters
             ),
             ConnectorData(
-                MessengerConnectorCallback(applicationId)
+                MessengerConnectorCallback(realConnectorId)
             )
         )
     }

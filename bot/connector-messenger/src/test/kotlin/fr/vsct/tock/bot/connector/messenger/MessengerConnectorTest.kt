@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test
 
 class MessengerConnectorTest {
 
+    private val connectorId = "connectorId"
     private val appId = "appId"
     private val pageId = "pageId"
     private val appToken = "appToken"
@@ -41,7 +42,7 @@ class MessengerConnectorTest {
     private val verifyToken = "verifyToken"
     private val messengerClient = mockk<MessengerClient>()
     private val messengerConnector =
-        MessengerConnector(appId, "path", pageId, appToken, token, verifyToken, messengerClient, true)
+        MessengerConnector(connectorId, appId, "path", pageId, appToken, token, verifyToken, messengerClient, true)
 
     private val expectedFields = "messages,messaging_postbacks,messaging_optins,messaging_account_linking"
     private val expectedCallbackUrl = "https://bot.oui.sncf/messenger"
