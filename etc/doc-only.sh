@@ -1,14 +1,7 @@
 #!/usr/bin/env bash
-cd docs-mk/en
-rm -rf site
-mkdocs build
-cd ../fr
-rm -rf site
-mkdocs build
 
-cd ../..
-
-rm -rf docs/en/*
-cp -rf docs-mk/en/site/* docs/en
 rm -rf docs/fr/*
-cp -rf docs-mk/fr/site/* docs/fr
+rm -rf docs/en/*
+
+mkdocs build -d ../../docs/fr/ -f docs-mk/fr/mkdocs.yml
+mkdocs build -d ../../docs/en/ -f docs-mk/en/mkdocs.yml
