@@ -31,8 +31,10 @@ data class SearchQuery(
     val intentId: Id<IntentDefinition>?,
     val status: Set<ClassifiedSentenceStatus> = emptySet(),
     val entityType: String? = null,
-    val entityRole: String? = null,
+    val entityRolesToInclude: List<String> = emptyList(),
+    val entityRolesToExclude: List<String> = emptyList(),
     val modifiedAfter: ZonedDateTime? = null,
+    val modifiedBefore: ZonedDateTime? = null,
     val onlyToReview: Boolean = false,
     /**
      * Search the sub entities in the whole entity tree.
@@ -50,8 +52,10 @@ data class SearchQuery(
             intentId,
             status,
             entityType = entityType,
-            entityRole = entityRole,
+            entityRolesToInclude = entityRolesToInclude,
+            entityRolesToExclude = entityRolesToExclude,
             modifiedAfter = modifiedAfter,
+            modifiedBefore = modifiedBefore,
             searchMark = searchMark,
             sort = sort ?: emptyList(),
             onlyToReview = onlyToReview,

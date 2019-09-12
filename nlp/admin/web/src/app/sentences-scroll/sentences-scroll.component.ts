@@ -128,8 +128,10 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
       this.filter.intentId,
       this.filter.status,
       !this.filter.entityType || this.filter.entityType.length === 0 ? null : this.filter.entityType,
-      !this.filter.entityRole || this.filter.entityRole.length === 0 ? null : this.filter.entityRole,
+      !this.filter.entityRolesToInclude || this.filter.entityRolesToInclude.length === 0 ? [] : this.filter.entityRolesToInclude,
+      !this.filter.entityRolesToExclude || this.filter.entityRolesToExclude.length === 0 ? [] : this.filter.entityRolesToExclude,
       this.filter.modifiedAfter,
+      this.filter.modifiedBefore,
       this.tableView && this.sort.length !== 0
         ? this.sort.map(s => new Entry<string, boolean>(s.active, s.direction === 'asc'))
         : null,
@@ -286,14 +288,16 @@ export class SentenceFilter {
               public intentId?: string,
               public status?: SentenceStatus[],
               public entityType?: string,
-              public entityRole?: string,
+              public entityRolesToInclude: string[] = [],
+              public entityRolesToExclude: string[] = [],
               public modifiedAfter?: Date,
+              public modifiedBefore?: Date,
               public onlyToReview: boolean = false,
               public searchSubEntities: boolean = false) {
   }
 
   clone(): SentenceFilter {
-    return new SentenceFilter(this.search, this.intentId, this.status, this.entityType, this.entityRole, this.modifiedAfter, this.onlyToReview, this.searchSubEntities);
+    return new SentenceFilter(this.search, this.intentId, this.status, this.entityType, this.entityRolesToInclude, this.entityRolesToInclude, this.modifiedAfter, this.modifiedBefore, this.onlyToReview, this.searchSubEntities);
   }
 }
 

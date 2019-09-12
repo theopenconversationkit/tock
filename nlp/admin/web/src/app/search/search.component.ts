@@ -43,7 +43,8 @@ export class SearchComponent implements OnInit {
   filter: SentenceFilter = new SentenceFilter();
   status: string;
   entityTypes: EntityType[];
-  entityRoles: string[];
+  entityRolesToInlude: string[];
+  entityRolesToExclude: string[];
   selectedSentences: Sentence[];
   update: SentencesUpdate = new SentencesUpdate();
   targetLocale: string;
@@ -93,15 +94,19 @@ export class SearchComponent implements OnInit {
       .subscribe(entities => {
           if (!this.filter.intentId || this.filter.intentId === "-1") {
             this.entityTypes = entities;
-            this.entityRoles = getRoles(this.state.currentIntents.value, entities, this.filter.entityType);
+            this.entityRolesToInlude = getRoles(this.state.currentIntents.value, entities, this.filter.entityType);
+            this.entityRolesToExclude = getRoles(this.state.currentIntents.value, entities, this.filter.entityType);
           } else {
             const intent = this.state.findIntentById(this.filter.intentId);
             if (intent) {
               this.entityTypes = this.findEntitiesAndSubEntities(entities, intent);
-              this.entityRoles = getRoles([intent], entities, this.filter.entityType);
+              this.entityRolesToInlude = getRoles([intent], entities, this.filter.entityType);
+              this.entityRolesToExclude = getRoles([intent], entities, this.filter.entityType);
+
             } else {
               this.entityTypes = [];
-              this.entityRoles = [];
+              this.entityRolesToInlude = [];
+              this.entityRolesToExclude = [];
             }
           }
           if (this.filter.entityType) {
@@ -110,8 +115,11 @@ export class SearchComponent implements OnInit {
           } else {
             this.filter.searchSubEntities = false;
           }
-          if (!this.filter.searchSubEntities && this.filter.entityRole) {
-            this.filter.searchSubEntities = entities.find(e => e.subEntities.find(s => s.role === this.filter.entityRole) != undefined) != undefined;
+          if (!this.filter.searchSubEntities && this.filter.entityRolesToInclude.length > 0) {
+            this.filter.searchSubEntities = entities.find(e => e.subEntities.find(s => this.filter.entityRolesToInclude.includes(s.role)) != undefined) != undefined;
+          }
+          if (!this.filter.searchSubEntities && this.filter.entityRolesToExclude.length > 0) {
+            this.filter.searchSubEntities = entities.find(e => e.subEntities.find(s => this.filter.entityRolesToExclude.includes(s.role )) != undefined) != undefined;
           }
         }
       );
@@ -123,7 +131,8 @@ export class SearchComponent implements OnInit {
   }
 
   changeEntityType() {
-    this.filter.entityRole = "";
+    this.filter.entityRolesToInclude = [];
+    this.filter.entityRolesToExclude = [];
     this.search();
   }
 
