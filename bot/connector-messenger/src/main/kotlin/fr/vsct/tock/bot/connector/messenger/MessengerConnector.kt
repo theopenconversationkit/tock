@@ -280,6 +280,7 @@ class MessengerConnector internal constructor(
      * @param postMessage method (with token parameter) launched after successful [MessageRequest] call - default do nothing
      * @param transformActionRequest method to transform the [ActionRequest] before sending - default is identity
      */
+    @Deprecated("do not use directly MessengerConnector.sendEvent method anymore")
     fun sendEvent(
         event: Event,
         transformMessageRequest: (MessageRequest) -> MessageRequest = { it },
@@ -454,6 +455,7 @@ class MessengerConnector internal constructor(
      * @param event the event
      * @param transformActionRequest method to transform the [ActionRequest] before sending - default is identity
      */
+    @Deprecated("do not use directly MessengerConnector.sendSimpleEvent method anymore")
     fun sendSimpleEvent(
         event: Event,
         transformActionRequest: (ActionRequest) -> ActionRequest = { it }
