@@ -16,20 +16,22 @@
 
 <div class="highlight-block">
   <div class="highlight-text">
-    <div>
-      <nb-actions size="small" style="cursor: pointer;float: right">
-        <nb-action class="control-item" (click)="answerToSentence()" nbTooltip="Set a custom answer"
-                   style="padding: 0 0.25rem;"
-                   *ngIf="displayActions && appConfig.answerToSentenceUrl && isRootSentence()">
-          <i class="material-icons">question_answer</i>
-        </nb-action>
-        <nb-action class="control-item" (click)="copyToClipboard()" nbTooltip="Copy sentence to clipboard"
-                   style="padding: 0 0.25rem;"
-                   *ngIf="displayActions && isRootSentence()">
-          <i class="material-icons">content_copy</i>
-        </nb-action>
-      </nb-actions>
-    </div>
+    <nb-actions size="small" style="cursor: pointer;float: right">
+      <nb-action class="control-item" nbTooltip="Display conversations using this sentence"
+         *ngIf="appConfig.displayDialogUrl">
+        <a class="control-item" [routerLink]="[appConfig.displayDialogUrl]"
+            [queryParams]="{ text: this.sentence.text}"><i class="material-icons">format_quote</i></a>
+      </nb-action>
+      <nb-action class="control-item" (click)="answerToSentence()" nbTooltip="Set a custom answer"
+                 *ngIf="displayActions && appConfig.answerToSentenceUrl && isRootSentence()">
+        <i class="material-icons">question_answers</i>
+      </nb-action>
+      <nb-action class="control-item" (click)="copyToClipboard()" nbTooltip="Copy sentence to clipboard"
+                 *ngIf="displayActions && isRootSentence()">
+        <i class="material-icons">content_copy</i>
+      </nb-action>
+    </nb-actions>
+
     <div *ngIf="tokens && !readOnly"
          #tokensContainer
          class="tokens"
