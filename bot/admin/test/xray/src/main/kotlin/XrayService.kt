@@ -89,7 +89,7 @@ class XrayService(
      */
     fun executePlans(namespace: String): XRayPlanExecutionResult {
         logger.info { "execute plans with namespace $namespace" }
-        val jiraProject = getProjectFromIssue(testKeys.get(0))
+        val jiraProject = getProjectFromIssue(testPlanKeys.get(0))
 
         return try {
             // getBotConfiguration retrieves all configuration for the selected namespace
