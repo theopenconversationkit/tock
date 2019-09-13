@@ -127,7 +127,6 @@ export class FlowComponent implements OnInit {
   graphData;
 
   botConfigurationId: string;
-  lastBotId: string;
   lastBotSelection: SelectBotEvent;
   flow: ApplicationDialogFlow;
 
@@ -246,23 +245,15 @@ export class FlowComponent implements OnInit {
   displayFlow(event?: SelectBotEvent) {
     if (!event || !event.equals(this.lastBotSelection)) {
       this.lastBotSelection = event;
-      const c = this.botConfiguration.configurations.getValue();
-      const all = event ? event.all : false;
-      const conf = c.find(c => c._id === (event ? event.configurationId : this.botConfigurationId));
-      if (conf || (all && c.length !== 0)) {
-        if (!all) {
-          this.lastBotId = conf.botId;
-        } else {
-          this.lastBotId = c[0].botId
-        }
+      if (event && (event.all || event.configurationName)) {
         this.bot.getApplicationFlow(
           new DialogFlowRequest(
             this.state.currentApplication.namespace,
             this.state.currentApplication.name,
             this.state.currentLocale,
-            this.lastBotId,
+            this.state.currentApplication.name,
             event.configurationName,
-            conf ? conf._id : null
+            event.configurationId
           )
         ).subscribe(f => {
           this.flow = f;

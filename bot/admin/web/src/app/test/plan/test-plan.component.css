@@ -47,3 +47,17 @@
   color:brown;
 }
 
+.new-plan {
+  display:flex;
+  padding-bottom: 10px;
+}
+
+.input-new-plan {
+  width: 200px;
+  margin-right: 10px;
+}
+
+.create {
+  color: #3366ff;
+}
+

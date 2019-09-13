@@ -25,7 +25,7 @@ export class BotConfiguration {
     public nlpModel: string,
     public configurations?: BotApplicationConfiguration[],
     public webhookUrl?: string,
-    public apiKey?:string
+    public apiKey?: string
   ) {
 
   }
@@ -56,7 +56,24 @@ export class BotApplicationConfiguration {
               public _id?: string,
               public ownerConnectorType?: ConnectorType,
               public path?: string,
-              public fillMandatoryValues?:boolean) {
+              public fillMandatoryValues?: boolean) {
+  }
+
+  static isFirstLevelConfiguration(allConfs: BotApplicationConfiguration[], conf: BotApplicationConfiguration): boolean {
+    if (!conf.connectorType.isRest()) {
+      return true;
+    }
+    const targetName = conf.applicationId.replace(new RegExp(/test-|rest-/), "");
+    return allConfs.findIndex(c => c.applicationId === targetName && c !== conf) === -1;
+  }
+
+  static getRestConfiguration(allConfs: BotApplicationConfiguration[], conf: BotApplicationConfiguration): BotApplicationConfiguration {
+    if (conf.connectorType.isRest()) {
+      return conf;
+    }
+    const t1 = "rest-" + conf.applicationId;
+    const t2 = "test-" + conf.applicationId;
+    return allConfs.find(c => c.applicationId === t1 || c.applicationId === t2);
   }
 
   ownConnectorType(): ConnectorType {
@@ -85,7 +102,7 @@ export class ConnectorType {
               public userInterfaceType: UserInterfaceType) {
   }
 
-  public label() : string {
+  public label(): string {
     return this.isRest() ? "test" : this.id;
   }
 
@@ -95,22 +112,6 @@ export class ConnectorType {
 
   isRest(): boolean {
     return this.id === "rest";
-  }
-
-  isMessenger(): boolean {
-    return this.id === "messenger";
-  }
-
-  isGa(): boolean {
-    return this.id === "ga";
-  }
-
-  isSlack(): boolean {
-    return this.id === "slack";
-  }
-
-  isAlexa(): boolean {
-    return this.id === "alexa";
   }
 
   static fromJSON(json?: any): ConnectorType {

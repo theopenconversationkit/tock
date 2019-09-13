@@ -79,7 +79,6 @@ export class TestPlanComponent implements OnInit {
   }
 
   changeBotConfiguration(event: SelectBotEvent) {
-    console.log(event);
     this.xrayBotConfigurationId = event ? event.configurationId : undefined;
   }
 
@@ -88,7 +87,6 @@ export class TestPlanComponent implements OnInit {
       this.snackBar.open(`Please specify a plan key`, "Error", {duration: 2000})
     } else {
       this.executeXray = true;
-      console.log(this.xrayBotConfigurationId)
       this.botConfiguration.restConfigurations.subscribe(c => {
         const conf = c.find(i => i._id === this.xrayBotConfigurationId);
         this.xray.configurationId = this.xrayBotConfigurationId;

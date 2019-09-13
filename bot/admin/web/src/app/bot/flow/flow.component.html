@@ -26,20 +26,19 @@
         </mat-slide-toggle>
     </nb-accordion-item-header>
     <nb-accordion-item-body>
-      <tock-select-bot [(configurationId)]="botConfigurationId" [displayConnectorChoice]="true"
-                       [allowNoConfigurationSelection]="true" [useRestConfiguration]="false"
+      <tock-select-bot [(configurationId)]="botConfigurationId"
+                       [allowNoConfigurationSelection]="true"
                        (selectionChange)="displayFlow($event)" class="select">
       </tock-select-bot>
       <span class="select">
-        <nb-select [(ngModel)]="selectedStoryId" (selectionChange)="update()"
+        <nb-select [(ngModel)]="selectedStoryId" (selectedChange)="update()"
                 placeholder="Story Focus" status="primary">
           <nb-option [value]="undefined">All</nb-option>
           <nb-option *ngFor="let s of stories | keyvalue: valueAscOrder" [value]="s.key">{{s.value}}</nb-option>
         </nb-select>
       </span>
       <span *ngIf="selectedStoryId" class="select">
-        <nb-select placeholder="Direction" status="primary"
-        [(ngModel)]="direction" (selectionChange)="update()">
+        <nb-select placeholder="Direction" status="primary" [(ngModel)]="direction" (selectedChange)="update()">
           <nb-option [value]="undefined">Both</nb-option>
           <nb-option [value]="-1">Outcoming</nb-option>
           <nb-option [value]="1">Incoming</nb-option>
@@ -74,7 +73,7 @@
 </div>
 
 <div *ngIf="graphData && selectedNode" class="selected-node">
-  <tock-story [storyNode]="selectedNode" [botId]="lastBotId" [displayCount]="statsMode"></tock-story>
+  <tock-story [storyNode]="selectedNode" [botId]="state.currentApplication.name" [displayCount]="statsMode"></tock-story>
 </div>
 
 <div *ngIf="graphData && selectedEdge" class="selected-edge">

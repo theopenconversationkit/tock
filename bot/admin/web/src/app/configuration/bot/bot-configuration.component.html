@@ -19,7 +19,9 @@
   <mat-form-field class="bot-input">
     <input matInput placeholder="Configuration name" [(ngModel)]="configuration.name">
   </mat-form-field>
-  <img *ngIf="configuration._id" src="{{configuration.connectorType.iconUrl()}}" class="connector-icon"
+  <img *ngIf="configuration._id"
+       src="{{configuration.connectorType.iconUrl()}}"
+       class="connector-icon"
        [matTooltip]="configuration.connectorType.label()"/>
   <mat-form-field *ngIf="configuration._id" class="bot-input">
     <input matInput
@@ -54,14 +56,14 @@
                   class="bot-input">
 
     <input matInput
-           placeholder="Owner connector type"
+           placeholder="Target connector type"
            class="connector"
            [ngModel]="configuration.ownerConnectorType?.label()"
            [disabled]="true">
   </mat-form-field>
 
   <mat-form-field class="bot-input" *ngIf="!configuration._id && configuration.connectorType.isRest()">
-    <mat-select placeholder="Owner connector type"
+    <mat-select placeholder="Target connector type"
                 [(ngModel)]="configuration.ownerConnectorType" #owner>
       <mat-select-trigger>
             <span *ngIf="owner.value" class="connector">
@@ -81,7 +83,7 @@
   <mat-form-field class="bot-input">
     <input matInput placeholder="Relative REST path" [(ngModel)]="configuration.path" title="e.g. /messenger">
   </mat-form-field>
-  <span *ngIf="botSharedService.configuration.botApiSupport" class="targetUrl">Connector url: {{botSharedService.configuration.botApiBaseUrl}}{{configuration.path}}</span>
+  <span *ngIf="botSharedService.configuration && botSharedService.configuration.botApiSupport" class="targetUrl">Connector url: {{botSharedService.configuration.botApiBaseUrl}}{{configuration.path}}</span>
   <nb-accordion
   *ngIf="botSharedService.findConnectorConfiguration(configuration.connectorType) &&
         botSharedService.findConnectorConfiguration(configuration.connectorType).fields.length !== 0">

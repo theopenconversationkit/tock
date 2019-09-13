@@ -20,7 +20,7 @@
   <nb-card-body>
     <br>
     <div>
-      <tock-select-bot [(configurationId)]="currentConfigurationId"
+      <tock-select-bot [(configurationId)]="currentConfigurationId" [returnsRestConfiguration]="true"
                        (selectionChange)="changeConfiguration($event)">
         <button *ngIf="messages.length !== 0" mat-icon-button matTooltip="Clear conversation" (click)="clear()" color="primary"><mat-icon>clear_all</mat-icon></button>
         <br><br><br>

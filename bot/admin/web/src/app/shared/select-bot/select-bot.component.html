@@ -19,7 +19,7 @@
 </div>
 <div *ngIf="configurations && configurations.length !== 0">
   <span class="select-configuration"
-        *ngIf="botNames && ((allowNoSelection || botNames.length > 1) || (displayConnectorChoice && connectorTypes.length > 1))">
+        *ngIf="botNames && (allowNoSelection || botNames.length > 1)">
     <nb-select (selectedChange)="changeBotName()" status="primary"
                placeholder="Select a configuration"
                [(ngModel)]="currentBotName" class="select-width">
@@ -27,15 +27,15 @@
       <nb-option *ngFor="let n of botNames" [value]="n">{{ n }}</nb-option>
     </nb-select>
   </span>
-  <span *ngIf="displayConnectorChoice && currentBotName !== 'None' && connectorTypes.length > 1"
+  <span *ngIf="displayConnectorChoice && currentBotName !== 'None'"
         class="select-configuration">
     <nb-select (selectedChange)="changeConnectorType()" status="primary"
                placeholder="Select a connector"
-               [(ngModel)]="currentConnectorType" class="select-width">
+               [(ngModel)]="currentConfiguration" class="select-width">
       <nb-option *ngIf="allowNoConfigurationSelection" value="">All</nb-option>
-      <nb-option *ngFor="let c of connectorTypes" [value]="c">
-        <img src="{{c.iconUrl()}}" class="connector-icon" [matTooltip]="c.label()"/>
-        {{ c.id }}</nb-option>
+      <nb-option *ngFor="let c of currentConfigurations" [value]="c">
+        <img src="{{c.connectorType.iconUrl()}}" class="connector-icon"/>
+        {{ c.connectorType.label() }} ( {{ c.applicationId }})</nb-option>
     </nb-select>
   </span>
   <ng-content></ng-content>

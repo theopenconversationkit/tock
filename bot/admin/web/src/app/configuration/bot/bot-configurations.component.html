@@ -60,10 +60,10 @@
             <nb-accordion-item-header>
               {{a.name}}
               <div *ngFor="let conf of a.configurations">
-                <img *ngIf="!conf.connectorType.isRest()"
+                <img *ngIf="isFirstLevelConfiguration(a, conf)"
                      src="{{conf.connectorType.iconUrl()}}"
                      class="connector"
-                     [matTooltip]="conf.connectorType.id"/>
+                     [matTooltip]="conf.connectorType.label()"/>
               </div>
             </nb-accordion-item-header>
             <nb-accordion-item-body>
@@ -84,7 +84,7 @@
               <h5>Connectors</h5>
               <div *ngFor="let conf of a.configurations">
                 <tock-bot-configuration
-                  *ngIf="!conf.connectorType.isRest() || displayTestConfigurations"
+                  *ngIf="displayTestConfigurations || isFirstLevelConfiguration(a, conf)"
                   [configuration]="conf"
                   (onRemove)="remove(conf)"
                   (onValidate)="update(conf)">

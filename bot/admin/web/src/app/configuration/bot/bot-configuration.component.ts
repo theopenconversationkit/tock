@@ -52,7 +52,7 @@ export class BotConfigurationComponent implements OnInit {
       .subscribe(
         confConf => {
           const c = confConf.map(it => it.connectorType).sort((a, b) => a.id.localeCompare(b.id));
-          this.connectorTypes = c;
+          this.connectorTypes = c.filter(conn => !conn.isRest());
           const rest = c.find(conn => conn.isRest());
           this.connectorTypesAndRestType = c.filter(conn => !conn.isRest());
           this.connectorTypesAndRestType.push(rest);
