@@ -19,7 +19,7 @@
   padding-right: 10px;
 }
 .select-width {
-  width: 12rem;
+  min-width: 12rem;
 }
 
 .connector-icon {

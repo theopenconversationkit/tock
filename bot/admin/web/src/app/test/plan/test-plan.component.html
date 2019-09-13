@@ -21,16 +21,15 @@
 <nb-card *ngIf="xray" class="plans">
   <nb-card-header>Execute XRay plan</nb-card-header>
   <nb-card-body>
-    <tock-select-bot [(configurationId)]="xrayBotConfigurationId"
-                     (selectionChange)="xrayBotConfigurationId=$event ? $event.configurationId : undefined"
+    <tock-select-bot [configurationId]="xrayBotConfigurationId"
+                     (selectionChange)="changeBotConfiguration($event)"
                      [allowNoSelection]="true"></tock-select-bot>
 
-    <mat-form-field class="input-text">
-      <input matInput
-             placeholder="JIRA Test Plan"
-             [(ngModel)]="xray.testPlanKey"
-             (keyup.enter)="executeXRay()">
-    </mat-form-field>
+    <input nbInput
+           class="input-text"
+           placeholder="JIRA Test Plan"
+           [(ngModel)]="xray.testPlanKey"
+           (keyup.enter)="executeXRay()">
 
     <button mat-button (click)="executeXRay()" color="primary">Create</button>
     <div *ngIf="executeXray"><br>
@@ -43,7 +42,7 @@
   <nb-card-header style="display: flex;">Test Plans
     <nb-actions size="small" style="cursor: pointer;">
       <nb-action class="control-item" (click)="prepareCreateTestPlan()"
-      *ngIf="!testPlanCreation"
+                 *ngIf="!testPlanCreation"
                  nbTooltip="Create a new Test Plan">
         <i class="material-icons tock-toolbar-menu">add_box</i>
       </nb-action>
@@ -52,9 +51,9 @@
   <nb-card-body style="background: #dadfe638;">
     <div *ngIf="testPlanCreation" style="display: flex">
       <input nbInput class="input-text"
-              placeholder="Test Plan name" status="primary"
-              [(ngModel)]="testPlanName"
-              (keyup.enter)="createTestPlan()">
+             placeholder="Test Plan name" status="primary"
+             [(ngModel)]="testPlanName"
+             (keyup.enter)="createTestPlan()">
       <nb-select placeholder="Select a bot" outline status="primary"
                  [(ngModel)]="testBotConfigurationId">
         <nb-option *ngFor="let conf of (botConfiguration.restConfigurations|async)"

@@ -22,8 +22,7 @@
         *ngIf="botNames && ((allowNoSelection || botNames.length > 1) || (displayConnectorChoice && connectorTypes.length > 1))">
     <nb-select (selectedChange)="changeBotName()" status="primary"
                placeholder="Select a configuration"
-               [ngModel]="currentBotName"
-               style="width: 10rem">
+               [(ngModel)]="currentBotName" class="select-width">
       <nb-option *ngIf="allowNoSelection" value="None">No configuration</nb-option>
       <nb-option *ngFor="let n of botNames" [value]="n">{{ n }}</nb-option>
     </nb-select>
@@ -32,7 +31,7 @@
         class="select-configuration">
     <nb-select (selectedChange)="changeConnectorType()" status="primary"
                placeholder="Select a connector"
-               [ngModel]="currentConnectorType">
+               [(ngModel)]="currentConnectorType" class="select-width">
       <nb-option *ngIf="allowNoConfigurationSelection" value="">All</nb-option>
       <nb-option *ngFor="let c of connectorTypes" [value]="c">
         <img src="{{c.iconUrl()}}" class="connector-icon" [matTooltip]="c.label()"/>

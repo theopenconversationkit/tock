@@ -22,6 +22,7 @@ import {MatSnackBar} from "@angular/material";
 import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {DialogReport} from "../../shared/model/dialog-data";
 import {BotSharedService} from "../../shared/bot-shared.service";
+import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
 
 @Component({
   selector: 'tock-bot-test-plan',
@@ -77,26 +78,33 @@ export class TestPlanComponent implements OnInit {
       });
   }
 
+  changeBotConfiguration(event: SelectBotEvent) {
+    console.log(event);
+    this.xrayBotConfigurationId = event ? event.configurationId : undefined;
+  }
+
   executeXRay() {
     if (this.xray.testPlanKey.trim().length === 0) {
       this.snackBar.open(`Please specify a plan key`, "Error", {duration: 2000})
     } else {
       this.executeXray = true;
+      console.log(this.xrayBotConfigurationId)
       this.botConfiguration.restConfigurations.subscribe(c => {
         const conf = c.find(i => i._id === this.xrayBotConfigurationId);
         this.xray.configurationId = this.xrayBotConfigurationId;
         this.xray.testedBotId = conf ? conf.botId : c[0].botId;
         this.test.executeXRay(this.xray).subscribe(r => {
-          this.executeXray = false;
-          this.reload();
-          if (r.total === 0) {
-            this.snackBar.open(`No tests executed for Plan ${this.xray.testPlanKey}`, "Execution", {duration: 2000})
-          } else if (r.total === r.success) {
-            this.snackBar.open(`${r.total} tests for Plan ${this.xray.testPlanKey} executed with success`, "Execution", {duration: 2000})
-          } else {
-            this.snackBar.open(`Plan ${this.xray.testPlanKey} executed with ${r.success} successful tests / ${r.total}`, "Execution", {duration: 2000})
-          }
-        });
+            this.executeXray = false;
+            this.reload();
+            if (r.total === 0) {
+              this.snackBar.open(`No tests executed for Plan ${this.xray.testPlanKey}`, "Execution", {duration: 2000})
+            } else if (r.total === r.success) {
+              this.snackBar.open(`${r.total} tests for Plan ${this.xray.testPlanKey} executed with success`, "Execution", {duration: 2000})
+            } else {
+              this.snackBar.open(`Plan ${this.xray.testPlanKey} executed with ${r.success} successful tests / ${r.total}`, "Execution", {duration: 2000})
+            }
+          },
+          _ => this.executeXray = false);
       });
     }
   }
