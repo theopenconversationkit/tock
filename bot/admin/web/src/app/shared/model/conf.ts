@@ -18,7 +18,8 @@ export class AdminConfiguration {
 
   constructor(public botApiSupport: boolean,
               public compilerAvailable: boolean,
-              public xrayAvailable: boolean) {
+              public xrayAvailable: boolean,
+              public botApiBaseUrl:string) {
   }
 
   static fromJSON(json?: any): AdminConfiguration {

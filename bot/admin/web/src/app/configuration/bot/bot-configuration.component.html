@@ -81,6 +81,7 @@
   <mat-form-field class="bot-input">
     <input matInput placeholder="Relative REST path" [(ngModel)]="configuration.path" title="e.g. /messenger">
   </mat-form-field>
+  <span *ngIf="botSharedService.configuration.botApiSupport" class="targetUrl">Connector url: {{botSharedService.configuration.botApiBaseUrl}}{{configuration.path}}</span>
   <nb-accordion
   *ngIf="botSharedService.findConnectorConfiguration(configuration.connectorType) &&
         botSharedService.findConnectorConfiguration(configuration.connectorType).fields.length !== 0">

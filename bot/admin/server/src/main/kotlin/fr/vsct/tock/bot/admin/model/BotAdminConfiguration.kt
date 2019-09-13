@@ -16,12 +16,14 @@
 
 package fr.vsct.tock.bot.admin.model
 
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration.Companion.defaultBaseUrl
 import fr.vsct.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
 import fr.vsct.tock.bot.admin.test.xray.XrayConfiguration
 import fr.vsct.tock.shared.booleanProperty
 
 data class BotAdminConfiguration(
-    val botApiSupport:Boolean = booleanProperty("tock_bot_api", false),
-    val compilerAvailable:Boolean = !KotlinCompilerClient.compilerDisabled,
-    val xrayAvailable:Boolean = XrayConfiguration.isXrayAvailable()
+    val botApiSupport: Boolean = booleanProperty("tock_bot_api", false),
+    val compilerAvailable: Boolean = !KotlinCompilerClient.compilerDisabled,
+    val xrayAvailable: Boolean = XrayConfiguration.isXrayAvailable(),
+    val botApiBaseUrl: String = defaultBaseUrl
 )
