@@ -183,6 +183,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                         indexOptions = IndexOptions()
                             .expireAfter(ttl.toLong(), DAYS)
                             .partialFilterExpression(Status eq inbox)
+                            .name("ttl_sentences_cleanup_index")
                     )
                 }
 
