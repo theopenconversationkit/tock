@@ -27,6 +27,16 @@
 .highlight-text {
 }
 
+.highlight-block .control-item {
+  max-width: 3rem;
+  padding-right: 1rem;
+}
+
+/* HACK Waiting sass + theme nebular on Tock component */
+.highlight-block a.control-item {
+  color: #000;
+}
+
 .tokens {
   width: 100%;
 }
