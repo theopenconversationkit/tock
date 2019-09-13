@@ -50,6 +50,7 @@
     }
 
     .logo {
+      cursor: pointer;
       padding: 0 1.25rem;
       font-size: 1.75rem;
       @include nb-ltr(border-left, 1px solid nb-theme(divider-color));
@@ -57,6 +58,12 @@
       white-space: nowrap;
       text-decoration: none;
     }
+
+    .logo-img {
+      width: 45px;
+      filter: nb-theme(img-revert);
+    }
+
     .small {
       font-size: 20px;
     }
