@@ -68,7 +68,6 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.find
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.gt
-import org.litote.kmongo.gte
 import org.litote.kmongo.inc
 import org.litote.kmongo.json
 import org.litote.kmongo.lt
@@ -80,8 +79,8 @@ import org.litote.kmongo.orderBy
 import org.litote.kmongo.pullByFilter
 import org.litote.kmongo.regex
 import org.litote.kmongo.replaceOneWithFilter
-import org.litote.kmongo.set
 import org.litote.kmongo.setTo
+import org.litote.kmongo.setValue
 import org.litote.kmongo.updateMany
 import java.time.Instant
 import java.time.Instant.now
@@ -166,7 +165,6 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
             c.ensureUniqueIndex(Text, Language, ApplicationId)
             c.ensureIndex(Language, ApplicationId, Status)
             c.ensureIndex(Status)
-            c.ensureIndex(UpdateDate)
             c.ensureIndex(orderBy(mapOf(ApplicationId to true, Language to true, UpdateDate to false)))
             c.ensureIndex(Language, ApplicationId, UsageCount)
             c.ensureIndex(Language, ApplicationId, UnknownCount)
@@ -186,6 +184,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                             .name("ttl_sentences_cleanup_index")
                     )
                 }
+                ?: c.ensureIndex(UpdateDate)
 
         } catch (e: Exception) {
             logger.error(e)
@@ -250,6 +249,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                     filterEntityType(),
                     filterEntityRolesToInclude(),
                     filterEntityRoleToExclude(),
+                    filterSearchMark(),
                     filterModifiedAfter(),
                     filterModifiedBefore(),
                     filterReviewOnly()
@@ -311,22 +311,19 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
 
     private fun SentencesQuery.filterReviewOnly() = if (onlyToReview) ForReview eq true else null
 
-    private fun SentencesQuery.filterModifiedAfter(): Bson? = when {
-        modifiedAfter == null -> if (searchMark == null) null else UpdateDate lte searchMark!!.date
-        searchMark == null -> UpdateDate gt modifiedAfter?.toInstant()
-        else -> and(UpdateDate lte searchMark!!.date, UpdateDate gt modifiedAfter?.toInstant())
-    }
+    private fun SentencesQuery.filterSearchMark(): Bson? =
+        if (searchMark == null) null else UpdateDate lte searchMark?.date
 
-    private fun SentencesQuery.filterModifiedBefore(): Bson? = when {
-        modifiedBefore == null -> if (searchMark == null) null else UpdateDate gte searchMark!!.date
-        searchMark == null -> UpdateDate lt modifiedBefore?.toInstant()
-        else -> and(UpdateDate gte searchMark!!.date, UpdateDate lt modifiedBefore?.toInstant())
-    }
+    private fun SentencesQuery.filterModifiedAfter(): Bson? =
+        if (modifiedAfter == null) null else UpdateDate gt modifiedAfter?.toInstant()
+
+    private fun SentencesQuery.filterModifiedBefore(): Bson? =
+        if (modifiedBefore == null) null else UpdateDate lt modifiedBefore?.toInstant()
 
     private fun SentencesQuery.filterEntityRoleToExclude(): Bson? = when {
         entityRolesToExclude.isEmpty() -> null
         searchSubEntities -> subEntityRoleQueryToExclude(entityRolesToExclude)
-        else -> Classification_.entities.role `nin` entityRolesToExclude
+        else -> Classification_.entities.role nin entityRolesToExclude
     }
 
     private fun SentencesQuery.filterEntityRolesToInclude(): Bson? = when {
@@ -510,10 +507,10 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
             ),
             combine(
                 listOfNotNull(
-                    stat.intentProbability?.let { set(LastIntentProbability, it) },
-                    stat.entitiesProbability?.let { set(LastEntityProbability, it) },
-                    set(LastUsage, stat.lastUsage),
-                    set(UsageCount, stat.count)
+                    stat.intentProbability?.let { setValue(LastIntentProbability, it) },
+                    stat.entitiesProbability?.let { setValue(LastEntityProbability, it) },
+                    setValue(LastUsage, stat.lastUsage),
+                    setValue(UsageCount, stat.count)
                 )
             )
         )
