@@ -18,7 +18,7 @@
   <div class="highlight-text">
     <nb-actions size="small" style="cursor: pointer;float: right">
       <nb-action class="control-item" nbTooltip="Display conversations using this sentence"
-         *ngIf="appConfig.displayDialogUrl">
+         *ngIf="displayActions && appConfig.displayDialogUrl && isRootSentence()">
         <a class="control-item" [routerLink]="[appConfig.displayDialogUrl]"
             [queryParams]="{ text: this.sentence.text}"><i class="material-icons">format_quote</i></a>
       </nb-action>
