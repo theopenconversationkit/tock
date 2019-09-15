@@ -24,7 +24,7 @@
                        (selectionChange)="changeConfiguration($event)">
         <button *ngIf="messages.length !== 0" mat-icon-button matTooltip="Clear conversation" (click)="clear()" color="primary"><mat-icon>clear_all</mat-icon></button>
         <br><br><br>
-        <table *ngIf="messages.length !== 0">
+        <table *ngIf="messages.length !== 0" class="messages">
           <tr *ngFor="let m of messages">
             <td *ngIf="m.bot">
               &nbsp;

@@ -63,9 +63,9 @@
           [routerLink]="[config.displayDialogUrl]"
           [queryParams]="{
             dialogId: d.dialogId,
-            text: d.error ? d.textRequest() : d.sentence.text
+            text: d.textRequest()
           }"
-          *ngIf="config.displayDialogUrl" mat-icon-button matTooltip="Display Conversation" color="primary"><mat-icon>speaker_notes</mat-icon></a>
+          *ngIf="d.error && config.displayDialogUrl" mat-icon-button matTooltip="Display Conversation" color="primary"><mat-icon>speaker_notes</mat-icon></a>
         <button mat-icon-button (click)="displayFullLog(d)" nbTooltip="View Full Log"><mat-icon>visibility</mat-icon></button>
       </nb-card-body>
     </nb-card>
