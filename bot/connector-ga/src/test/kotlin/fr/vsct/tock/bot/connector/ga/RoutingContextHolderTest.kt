@@ -27,6 +27,8 @@ import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
+import fr.vsct.tock.translator.EMPTY_TRANSLATED_STRING
+import fr.vsct.tock.translator.raw
 import io.mockk.every
 import io.mockk.mockk
 import io.vertx.ext.web.RoutingContext
@@ -45,8 +47,10 @@ class RoutingContextHolderTest {
 
     @BeforeEach
     fun init() {
-        every { bus.translate(any<CharSequence>()) } answers { firstArg() }
-        every { bus.translateAndReturnBlankAsNull(any()) } answers { firstArg() }
+        every { bus.translate(any<CharSequence>()) } answers { firstArg<CharSequence>().raw }
+        every { bus.translateAndReturnBlankAsNull(any()) } answers {
+            firstArg<CharSequence?>()?.raw ?: EMPTY_TRANSLATED_STRING
+        }
         every { context.response() } returns mockk(relaxed = true)
     }
 

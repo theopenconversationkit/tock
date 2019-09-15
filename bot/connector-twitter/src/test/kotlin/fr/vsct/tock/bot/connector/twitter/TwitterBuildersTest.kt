@@ -23,6 +23,7 @@ import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.sharedTestModule
 import fr.vsct.tock.shared.tockInternalInjector
+import fr.vsct.tock.translator.raw
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
@@ -46,7 +47,7 @@ class TwitterBuildersTest {
         every { bus.userId } returns PlayerId("userId")
         every { bus.botId } returns PlayerId("botId")
         every { bus.userPreferences } returns UserPreferences()
-        every { bus.translate(allAny()) } answers { firstArg() ?: "" }
+        every { bus.translate(allAny()) } answers { firstArg() ?: "".raw }
     }
 
     @Test

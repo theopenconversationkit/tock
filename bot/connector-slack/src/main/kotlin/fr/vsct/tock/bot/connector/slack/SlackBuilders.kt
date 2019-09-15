@@ -116,7 +116,7 @@ fun I18nTranslator.slackAttachment(
     fallback: String = translate(text).toString(),
     vararg fields: AttachmentField
 ): SlackMessageAttachment =
-    SlackMessageAttachment(buttons, fields.toList(), fallback, color, translateAndReturnBlankAsNull(text), pretext)
+    SlackMessageAttachment(buttons, fields.toList(), fallback, color, translateAndReturnBlankAsNull(text)?.toString(), pretext)
 
 
 fun I18nTranslator.attachmentField(title: String, value: String, short: Boolean = true): AttachmentField =

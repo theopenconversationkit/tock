@@ -43,9 +43,11 @@ import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.entity.Value
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.translator.I18nContext
+import fr.vsct.tock.translator.TranslatedSequence
 import fr.vsct.tock.translator.Translator
 import fr.vsct.tock.translator.UserInterfaceType.textAndVoiceAssistant
 import fr.vsct.tock.translator.UserInterfaceType.textChat
+import fr.vsct.tock.translator.raw
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -168,15 +170,15 @@ fun mockTockCommon(bus: BotBus) {
     every { botDefinition.defaultDelay(any()) } returns 0
     every { bus.resetDialogState() } returns Unit
 
-    every { bus.translate(any()) } answers { args[0] as CharSequence }
+    every { bus.translate(any()) } answers { args[0] as TranslatedSequence }
     every { bus.translate(any(), *anyVararg()) } answers {
         Translator.formatMessage(
             args[0] as String,
             I18nContext(defaultLocale, textChat, null),
             args.subList(1, args.size)
-        )
+        ).raw
     }
-    every { bus.defaultDelay(any())} returns 0
+    every { bus.defaultDelay(any()) } returns 0
 
     mockkObject(SendChoice.Companion)
     every {

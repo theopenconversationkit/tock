@@ -416,7 +416,7 @@ fun I18nTranslator.genericElement(
     return Element(
         t.toString(),
         imageUrl,
-        s,
+        s?.toString(),
         buttons
     )
 }
@@ -443,7 +443,7 @@ fun I18nTranslator.listElement(
     return Element(
         t.toString(),
         imageUrl,
-        s,
+        s?.toString(),
         if (button == null) null else listOf(button)
     )
 }

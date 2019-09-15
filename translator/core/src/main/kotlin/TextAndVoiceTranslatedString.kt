@@ -16,12 +16,18 @@
 
 package fr.vsct.tock.translator
 
+import mu.KotlinLogging
+
 /**
  * A [TranslatedString] that has also a "voice" version.
  */
 data class TextAndVoiceTranslatedString(
-        val text: CharSequence,
-        val voice: CharSequence) : TranslatedString(text) {
+    val text: CharSequence,
+    val voice: CharSequence) : TranslatedString(text) {
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
     fun isSSML(): Boolean = voice.isSSML()
 
@@ -35,15 +41,20 @@ data class TextAndVoiceTranslatedString(
         val voiceSplit = voice.split(*delimiters, ignoreCase = ignoreCase, limit = limit)
         return textSplit.mapIndexed { i, s ->
             TextAndVoiceTranslatedString(
-                    s,
-                    voiceSplit.getOrNull(i) ?: s
+                s,
+                voiceSplit.getOrNull(i) ?: s
             )
         }
     }
 
-    override fun subSequence(startIndex: Int, endIndex: Int): CharSequence {
+    override fun subSequence(startIndex: Int, endIndex: Int): TranslatedSequence {
         return TextAndVoiceTranslatedString(
-                text.subSequence(startIndex, endIndex),
-                voice.subSequence(startIndex, endIndex))
+            text.subSequence(startIndex, endIndex),
+            voice.subSequence(startIndex, endIndex))
+    }
+
+    override fun plus(other: Any?): TranslatedSequence {
+        logger.warn { "adding a String to a TranslatedSequence is not recommended - please use message format pattern" }
+        return TextAndVoiceTranslatedString(text.toString() + other.toString(), text.toString() + other.toString())
     }
 }

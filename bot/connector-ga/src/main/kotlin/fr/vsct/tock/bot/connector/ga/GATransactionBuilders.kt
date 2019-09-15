@@ -182,7 +182,7 @@ fun I18nTranslator.lineItemTemplate(
     price: GAPrice? = null,
     reason: CharSequence? = null
 ): GALineItemUpdate =
-    GALineItemUpdate(orderState, price, translateAndReturnBlankAsNull(reason))
+    GALineItemUpdate(orderState, price, translateAndReturnBlankAsNull(reason)?.toString())
 
 /**
  * Build an [GATransactionDecisionValueSpec] message.

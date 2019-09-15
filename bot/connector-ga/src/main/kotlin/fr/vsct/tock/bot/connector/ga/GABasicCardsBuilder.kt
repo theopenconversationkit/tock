@@ -36,7 +36,7 @@ fun I18nTranslator.basicCard(
     val s = translateAndReturnBlankAsNull(subtitle)
     val f = translateAndReturnBlankAsNull(formattedText)
 
-    return GABasicCard(t ?: "", s ?: "", f, image, buttons)
+    return GABasicCard(t?.toString() ?: "", s?.toString() ?: "", f?.toString(), image, buttons)
 }
 
 /**

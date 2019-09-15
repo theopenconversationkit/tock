@@ -5,15 +5,15 @@ import java.time.temporal.TemporalAccessor
 import java.util.Locale
 
 internal class DefaultDateTemplate(
-        private val date: TemporalAccessor?,
-        private val formatterProvider: DateTimeFormatterProvider) : DateTemplate {
+    private val date: TemporalAccessor?,
+    private val formatterProvider: DateTimeFormatterProvider) : DateTemplate {
 
     constructor(date: TemporalAccessor?, dateFormatter: DateTimeFormatter) :
-            this(
-                    date,
-                    object : DateTimeFormatterProvider {
-                        override fun provide(locale: Locale): DateTimeFormatter = dateFormatter.withLocale(locale)
-                    })
+        this(
+            date,
+            object : DateTimeFormatterProvider {
+                override fun provide(locale: Locale): DateTimeFormatter = dateFormatter.withLocale(locale)
+            })
 
     override fun format(locale: Locale): String {
         return date?.let {
@@ -24,7 +24,7 @@ internal class DefaultDateTemplate(
     /**
      * To immediately format this date with the given locale.
      */
-    internal fun formatTo(locale: Locale): RawString = format(locale).raw
+    internal fun formatTo(locale: Locale): TranslatedSequence = format(locale).raw
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

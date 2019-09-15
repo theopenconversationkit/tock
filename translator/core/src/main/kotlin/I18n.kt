@@ -50,9 +50,10 @@ fun TemporalAccessor?.formatWith(formatterProvider: DateTimeFormatterProvider, l
 
 
 /**
- * Transform this char sequence in a [RawString] - ie a not-to-translate String.
+ * Transforms this char sequence in a not-to-translate [TranslatedSequence] - ie a "raw" String.
  */
-val CharSequence.raw: RawString get() = RawString(this)
+val CharSequence.raw: TranslatedSequence
+    get() = if (this is TranslatedSequence) this else RawString(this)
 
 /**
  * Is this char sequence containing SSML?
@@ -161,7 +162,7 @@ private fun CharSequence.findAnyOf(strings: Collection<String>, startIndex: Int,
 
 internal fun CharSequence.regionMatchesImpl(thisOffset: Int, other: CharSequence, otherOffset: Int, length: Int, ignoreCase: Boolean): Boolean {
     if ((otherOffset < 0) || (thisOffset < 0) || (thisOffset > this.length - length)
-            || (otherOffset > other.length - length)) {
+        || (otherOffset > other.length - length)) {
         return false
     }
 

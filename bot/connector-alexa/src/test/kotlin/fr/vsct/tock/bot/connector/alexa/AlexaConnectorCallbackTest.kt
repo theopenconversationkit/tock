@@ -21,6 +21,7 @@ import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.I18nTranslator
 import fr.vsct.tock.translator.I18nLabelValue
+import fr.vsct.tock.translator.raw
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
@@ -40,7 +41,7 @@ class AlexaConnectorCallbackTest {
         every { controller.botDefinition } returns botDefinition
         every { botDefinition.i18nTranslator(any(), any(), any()) } returns i18nTranslator
         every { botDefinition.defaultUnknownAnswer } returns unknownAnswer
-        every { i18nTranslator.translate(any<I18nLabelValue>()) } returns unknownAnswer
+        every { i18nTranslator.translate(any()) } returns unknownAnswer.raw
         val callback = AlexaConnectorCallback(
             "id",
             controller,

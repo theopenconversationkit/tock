@@ -30,6 +30,7 @@ import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.sharedTestModule
 import fr.vsct.tock.shared.tockInternalInjector
+import fr.vsct.tock.translator.raw
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -56,7 +57,7 @@ class MessengerBuildersTest {
         every { bus.targetConnectorType } returns messengerConnectorType
         every { bus.applicationId } returns "appId"
         every { bus.userPreferences } returns UserPreferences()
-        every { bus.translate(allAny()) } answers { firstArg() ?: "" }
+        every { bus.translate(allAny()) } answers { firstArg() ?: "".raw }
     }
 
     @Test

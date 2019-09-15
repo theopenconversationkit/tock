@@ -47,7 +47,7 @@ fun I18nTranslator.flexibleSimpleResponse(
     val s = translateAndReturnBlankAsNull(ssml)
     val d = translateAndReturnBlankAsNull(displayText)
 
-    return simpleResponse(t, s, d)
+    return simpleResponse(t?.toString(), s?.toString(), d?.toString())
 }
 
 

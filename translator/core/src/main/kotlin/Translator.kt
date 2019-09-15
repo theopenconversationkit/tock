@@ -422,7 +422,7 @@ object Translator {
         category: String,
         defaultLabel: CharSequence,
         context: I18nContext
-    ): CharSequence {
+    ): TranslatedSequence {
         return translate(
             I18nLabelValue(
                 key.toLowerCase(),

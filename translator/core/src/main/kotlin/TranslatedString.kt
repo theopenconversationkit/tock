@@ -16,18 +16,21 @@
 
 package fr.vsct.tock.translator
 
+import mu.KotlinLogging
+
 /**
  * A [CharSequence] flagged as translated.
  */
-open class TranslatedString(private val wrapped: CharSequence) : CharSequence by wrapped {
+open class TranslatedString(private val wrapped: CharSequence) : CharSequence by wrapped, TranslatedSequence {
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is TranslatedString) return false
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
-        if (wrapped != other.wrapped) return false
-
-        return true
+    override fun equals(other: Any?): Boolean = when {
+        this === other -> true
+        other is TranslatedString -> wrapped == other.wrapped
+        else -> false
     }
 
     override fun hashCode(): Int {
@@ -38,8 +41,13 @@ open class TranslatedString(private val wrapped: CharSequence) : CharSequence by
         return wrapped.toString()
     }
 
-    override fun subSequence(startIndex: Int, endIndex: Int): CharSequence {
+    override fun subSequence(startIndex: Int, endIndex: Int): TranslatedSequence {
         return TranslatedString(wrapped.subSequence(startIndex, endIndex))
+    }
+
+    override fun plus(other: Any?): TranslatedSequence {
+        logger.warn { "adding a String to a TranslatedSequence is not recommended - please use message format pattern" }
+        return TranslatedString(toString() + other.toString())
     }
 
 }

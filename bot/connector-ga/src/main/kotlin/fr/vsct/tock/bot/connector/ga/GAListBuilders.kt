@@ -110,7 +110,7 @@ fun I18nTranslator.expectedIntentForList(items: List<GAListItem>, title: CharSeq
             GAIntent.option,
             optionValueSpec(
                 listSelect = GAListSelect(
-                    t,
+                    t?.toString(),
                     if (items.size > 30) {
                         logger.warn { "too many items $items - keep only first 30" }
                         items.subList(0, 30)
@@ -213,7 +213,7 @@ fun <T : Bus<T>> T.listItem(
             *parameters
         ),
         t.toString(),
-        d,
+        d?.toString(),
         if (imageUrl == null) null else GAImage(imageUrl, t.toString())
     )
 }

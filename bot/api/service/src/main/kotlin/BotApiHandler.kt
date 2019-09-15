@@ -50,7 +50,9 @@ import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.translator.I18nContext
+import fr.vsct.tock.translator.TranslatedSequence
 import fr.vsct.tock.translator.Translator
+import fr.vsct.tock.translator.raw
 import mu.KotlinLogging
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit.SECONDS
@@ -319,7 +321,7 @@ internal class BotApiHandler(
 
 }
 
-private fun BotBus.translateText(i18n: I18nText?): CharSequence? =
+private fun BotBus.translateText(i18n: I18nText?): TranslatedSequence? =
     when {
         i18n == null -> null
         i18n.toBeTranslated -> translate(i18n.text, i18n.args)
@@ -330,5 +332,5 @@ private fun BotBus.translateText(i18n: I18nText?): CharSequence? =
                 targetConnectorType.id,
                 contextId),
             i18n.args
-        )
+        ).raw
     }

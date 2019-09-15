@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.connector.slack
 
 import fr.vsct.tock.bot.connector.slack.model.AttachmentField
 import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.translator.raw
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
@@ -31,8 +32,8 @@ class SlackBuildersTest {
 
     @BeforeEach
     fun init() {
-        every { bus.translate(any<CharSequence>()) } answers { firstArg() }
-        every { bus.translateAndReturnBlankAsNull(any()) } answers { firstArg() }
+        every { bus.translate(any<CharSequence>()) } answers { firstArg<CharSequence>().raw }
+        every { bus.translateAndReturnBlankAsNull(any()) } answers { firstArg<CharSequence?>()?.raw }
     }
 
     @Test

@@ -16,12 +16,24 @@
 
 package fr.vsct.tock.bot.api.model.message.bot
 
+import fr.vsct.tock.translator.TranslatedSequence
+import mu.KotlinLogging
+
 data class I18nText(
     val text: String,
     val args: List<String?> = emptyList(),
     val toBeTranslated: Boolean = true,
-    val key: String? = null) : CharSequence by text {
+    val key: String? = null) : CharSequence by text, TranslatedSequence {
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
     override fun toString(): String = text
+
+    override fun plus(other: Any?): I18nText {
+        logger.warn { "adding a String to a TranslatedSequence is not recommended - please use message format pattern" }
+        return copy(text = toString() + other.toString())
+    }
 
 }

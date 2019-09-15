@@ -42,12 +42,15 @@ import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.entity.Value
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.provide
+import fr.vsct.tock.translator.EMPTY_TRANSLATED_STRING
 import fr.vsct.tock.translator.I18nContext
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelValue
+import fr.vsct.tock.translator.TranslatedSequence
 import fr.vsct.tock.translator.Translator
 import fr.vsct.tock.translator.TranslatorEngine
 import fr.vsct.tock.translator.UserInterfaceType
+import fr.vsct.tock.translator.raw
 import mu.KotlinLogging
 import java.util.Locale
 
@@ -384,8 +387,8 @@ open class BotBusMock(
         userPreferences.fillWith(context.initialUserPreferences)
     }
 
-    override fun translate(key: I18nLabelValue?): CharSequence =
-        if (key == null) ""
+    override fun translate(key: I18nLabelValue?): TranslatedSequence =
+        if (key == null) EMPTY_TRANSLATED_STRING
         else Translator.formatMessage(
             translator.translate(
                 key.defaultLabel.toString(),
@@ -399,7 +402,7 @@ open class BotBusMock(
                 dialog.id.toString()
             ),
             key.args
-        )
+        ).raw
 
     override fun markAsUnknown() {
         //do nothing
