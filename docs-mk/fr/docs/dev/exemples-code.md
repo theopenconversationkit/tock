@@ -2,12 +2,12 @@
 
 ## Les exemples dans _Bot Samples_
 
-Le dépôt github [tock-bot-samples]() contient des exemples de code, notamment ceux utilisés dans 
+Le dépôt [tock-bot-samples]() contient des exemples de code, notamment ceux utilisés dans 
 [la documentation Tock](../guide/api.md) pour programmer des parcours en modes _WebHook_ ou _WebSocket_.
 
 ## Le bot _Open Data_
 
-Le dépôt github [tock-bot-open-data](https://github.com/voyages-sncf-technologies/tock-bot-open-data) contient un 
+Le dépôt [tock-bot-open-data](https://github.com/voyages-sncf-technologies/tock-bot-open-data) contient un 
 exemple d'implémentation de bot basé sur les [API _Open Data_ de la SNCF](https://www.digital.sncf.com/startup/api).
 
 Ce bot utilise le framework Kotlin pour Tock (et pas le mode _Bot API_ via _Webhook_ ou _WebSocket_). 

@@ -14,7 +14,7 @@ Of course, as the model is not big, the quality of the bot is low, but still it'
 
 Docker images are available in the [Docker Hub](https://hub.docker.com/r/tock/).
 
-The source code used to build these images, as well as the docker-compose files used to start the Tock toolkit, are available in the github repository [https://github.com/voyages-sncf-technologies/tock-docker](https://github.com/voyages-sncf-technologies/tock-docker).
+The source code used to build these images, as well as the docker-compose files used to start the Tock toolkit, are available in the GitHub repository [https://github.com/voyages-sncf-technologies/tock-docker](https://github.com/voyages-sncf-technologies/tock-docker).
 
 ### Start the NLP stack
 

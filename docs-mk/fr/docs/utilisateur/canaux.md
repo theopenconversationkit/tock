@@ -32,7 +32,7 @@ Le guide [Connecter son bot à Messenger](../guide/messenger.md) explique commen
 Tock avec une page Facebook / [Messenger](https://www.messenger.com/).
 
 Pour en savoir plus sur ce connecteur, vous pouvez aussi vous rendre dans le dossier 
-[connector-messenger](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-messenger) sur github, 
+[connector-messenger](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-messenger) sur GitHub, 
 où vous retrouverez les sources et le _README_ du connecteur.
 
 ### Slack
@@ -49,7 +49,7 @@ Le guide [Connecter son bot à Slack](../guide/slack.md) explique comment intég
 Tock avec une _chaîne_ [Slack](https://slack.com/).
 
 Pour en savoir plus sur ce connecteur, vous pouvez aussi vous rendre dans le dossier 
-[connector-slack](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-slack) sur github, 
+[connector-slack](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-slack) sur GitHub, 
 où vous retrouverez les sources et le _README_ du connecteur.
 
 ### Google Assistant / Google Home
@@ -63,7 +63,7 @@ style="width: 100px;">
 * **Status** : connecteur Tock utilisé en production depuis 2017
 
 Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
-[connector-ga](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-ga) sur github.
+[connector-ga](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-ga) sur GitHub.
 
 ### Alexa / Echo
 
@@ -79,7 +79,7 @@ Remarque importante : dans le cas d'Alexa, le modèle NLP est forcément constru
 Seul la partie framework conversationel de Tock peut être utilisée.
 
 Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
-[connector-alexa](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-alexa) sur github.
+[connector-alexa](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-alexa) sur GitHub.
 
 ### Rocket.Chat
 
@@ -92,7 +92,7 @@ style="width: 100px;">
 * **Status** : à préciser
 
 Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
-[connector-rocketchat](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-rocketchat) sur github.
+[connector-rocketchat](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-rocketchat) sur GitHub.
 
 ### WhatsApp
 
@@ -105,7 +105,7 @@ style="width: 100px;">
 * **Status** : connecteur Tock utilisé en production depuis 2019
 
 Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
-[connector-whatsapp](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-whatsapp) sur github.
+[connector-whatsapp](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-whatsapp) sur GitHub.
 
 ### Teams
 
@@ -118,7 +118,7 @@ style="width: 100px;">
 * **Status** : connecteur Tock utilisé en production depuis 2019
 
 Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
-[connector-teams](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-teams) sur github.
+[connector-teams](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-teams) sur GitHub.
 
 ### Business Chat / Messages
 
@@ -131,7 +131,7 @@ style="width: 100px;">
 * **Status** : connecteur Tock utilisé en production depuis 2019
 
 Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
-[connector-businesschat](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-businesschat) sur github.
+[connector-businesschat](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-businesschat) sur GitHub.
 
 ### Twitter
 
@@ -144,7 +144,7 @@ style="width: 100px;">
 * **Status** : connecteur Tock en développement
 
 Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
-[connector-twitter](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-twitter) sur github.
+[connector-twitter](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-twitter) sur GitHub.
 
 ### Web
 

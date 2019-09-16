@@ -18,7 +18,7 @@ est possible de créer et tester un assistant en quelques minutes sans écrire d
 
 * Entre 5 et 15 minutes environ (en lisant les commentaires)
 
-* Un compte github pour se connecter à la plateforme de démonstration
+* Un compte GitHub pour se connecter à la plateforme de démonstration
 
 ## Connexion à la plateforme démo
 
@@ -27,8 +27,8 @@ Ouvrez [ce lien](https://demotock-production-admin.vsct-prod.aws.vsct.fr/) pour 
 > **Remarque importante** : Cette plateforme n'a pas vocation à accueillir de véritables bots en production. 
 >C'est un moyen de tester et prendre en main la solution Tock sans avoir à l'installer.
 
-Une invite apparaît pour vous identifier avec votre compte github. Après cela, vous devez accepter que Tock accède 
-à votre compte - seul l'identifiant de votre compte github sera lu.
+Une invite apparaît pour vous identifier avec votre compte GitHub. Après cela, vous devez accepter que Tock accède 
+à votre compte - seul l'identifiant de votre compte GitHub sera lu.
 
 ## Créer une application Tock
 
@@ -120,7 +120,7 @@ Il est maintenant temps de tester le bot et votre premier parcours!
 
 * Allez dans _Test_ > _Test the bot_
 
-* Dites "bonjour" 🙋, le bot vous répond 🤖
+* Dites "bonjour"🙋, le bot vous répond 🤖
 
 > Si le bot répond qu'il n'a pas compris, c'est certainement un problème de qualification. Vous pouvez vérifier que la 
 >_story_ et/ou l'_intention_ ont bien été créés en allant dans _Build_ > _Search Stories_.
