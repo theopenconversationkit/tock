@@ -187,7 +187,8 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
                         size = Integer.MAX_VALUE,
                         status = setOf(ClassifiedSentenceStatus.model),
                         entityType = entityTypeDefinition.name,
-                        searchSubEntities = true
+                        searchSubEntities = true,
+                        wholeNamespace = true
                     )
                 )
                 val samples = (modelSentences.sentences + validatedSentences).map { s ->

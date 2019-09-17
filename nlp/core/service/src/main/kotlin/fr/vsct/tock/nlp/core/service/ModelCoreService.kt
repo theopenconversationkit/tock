@@ -43,7 +43,6 @@ import fr.vsct.tock.shared.injector
 import mu.KotlinLogging
 import java.time.Duration
 import java.time.Instant
-import java.util.Collections
 
 /**
  *
@@ -116,7 +115,7 @@ internal object ModelCoreService : ModelCore {
             error("at least 100 expressions needed")
         }
         val shuffle = expressions.toMutableList()
-        Collections.shuffle(shuffle)
+        shuffle.shuffle()
         val limit = (expressions.size * context.threshold).toInt()
         val modelExpressions = shuffle.subList(0, limit)
         val testedExpressions = shuffle.subList(limit, shuffle.size)
@@ -186,7 +185,7 @@ internal object ModelCoreService : ModelCore {
                 )
             }
         }
-                || entities.any {
+            || entities.any {
             expectedEntities.none { e ->
                 it.role == e.definition.role && it.entityType == e.definition.entityType && it.isSameRange(
                     e

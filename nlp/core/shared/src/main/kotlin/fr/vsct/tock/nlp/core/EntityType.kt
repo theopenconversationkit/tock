@@ -42,4 +42,8 @@ data class EntityType(
     fun hasSubEntities(): Boolean = subEntities.isNotEmpty()
 
     fun findSubEntity(role: String): Entity? = subEntities.first { it.role == role }
+
+    override fun equals(other: Any?): Boolean = name == (other as? EntityType)?.name
+
+    override fun hashCode(): Int = name.hashCode()
 }

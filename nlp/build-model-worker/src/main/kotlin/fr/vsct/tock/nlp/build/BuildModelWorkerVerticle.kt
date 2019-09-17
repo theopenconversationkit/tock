@@ -29,6 +29,7 @@ import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.listProperty
+import fr.vsct.tock.shared.namespace
 import io.vertx.core.AbstractVerticle
 import mu.KotlinLogging
 import org.litote.kmongo.Id
@@ -127,16 +128,20 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
         ) {
             front.getEntityTypes()
                 .filter { it.subEntities.isNotEmpty() }
+                .filter { it.name.namespace() == app.namespace }
                 .forEach { entityType ->
-                    logger.info { "start model update for ${app.name}, entity type $entityType and $locale" }
-                    front.updateEntityModelForEntityType(
-                        sentences.filter { s -> s.classification.entities.any { it.type == entityType.name } },
-                        app,
-                        entityType,
-                        locale,
-                        app.nlpEngineType,
-                        onlyIfNotExists
-                    )
+                    val sentencesWithEntity = sentences.filter { s -> s.classification.containsEntityOrSubEntity(entityType.name) }
+                    if (sentencesWithEntity.isNotEmpty()) {
+                        logger.info { "start model update for ${app.name}, entity type $entityType and $locale" }
+                        front.updateEntityModelForEntityType(
+                            sentencesWithEntity,
+                            app,
+                            entityType,
+                            locale,
+                            app.nlpEngineType,
+                            onlyIfNotExists
+                        )
+                    }
                 }
 
         }
@@ -177,7 +182,7 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
                     } else {
                         val triggers = front.getTriggers()
                         if (triggers.isNotEmpty()) {
-                            triggers.forEach { trigger ->
+                            triggers[0].let { trigger ->
                                 logger.info { "use trigger $trigger" }
                                 front.deleteTrigger(trigger)
                                 front.getApplicationById(trigger.applicationId)?.let {
@@ -186,15 +191,14 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
                                     "unknown application id trigger ${trigger} - skipped"
                                 }
                             }
-
                         } else {
                             //test model each 10 minutes if it's in the time frame
                             if (testModelEnabled
                                 && LocalTime.now()
                                     .run {
                                         hour >= testModelTimeframe[0]
-                                                && hour <= testModelTimeframe[1]
-                                                && minute % 10 == 0
+                                            && hour <= testModelTimeframe[1]
+                                            && minute % 1 == 0
                                     }
                             ) {
                                 logger.info { "Start testing models" }
@@ -213,12 +217,12 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
         }
 
         if (completeModelEnabled) {
-            executor.setPeriodic(ofHours(1), {
+            executor.setPeriodic(ofHours(1)) {
                 logger.info { "trigger build to check not existing models" }
                 front.getApplications().forEach {
                     front.triggerBuild(ModelBuildTrigger(it._id, true, true))
                 }
-            })
+            }
         }
     }
 

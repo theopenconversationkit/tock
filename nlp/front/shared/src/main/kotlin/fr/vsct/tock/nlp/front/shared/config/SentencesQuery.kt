@@ -47,5 +47,10 @@ data class SentencesQuery(
     /**
      * Search the sub entities in the whole entity tree.
      */
-    val searchSubEntities: Boolean = false
+    val searchSubEntities: Boolean = false,
+    /**
+     * Is the search should be extended to the whole app namespace ?
+     */
+    val wholeNamespace: Boolean = false
+
 )

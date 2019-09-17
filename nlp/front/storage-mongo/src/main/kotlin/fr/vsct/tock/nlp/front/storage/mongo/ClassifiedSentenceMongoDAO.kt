@@ -33,6 +33,8 @@ import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.nlp.front.shared.config.SentencesQueryResult
+import fr.vsct.tock.nlp.front.storage.mongo.ApplicationDefinitionMongoDAO.getApplicationById
+import fr.vsct.tock.nlp.front.storage.mongo.ApplicationDefinitionMongoDAO.getApplicationsByNamespace
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.ApplicationId
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.ForReview
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.FullText
@@ -241,7 +243,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         with(query) {
             val filterBase =
                 and(
-                    ApplicationId eq applicationId,
+                    filterApplication(),
                     filterLanguage(),
                     filterText(),
                     filterIntent(),
@@ -308,6 +310,12 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
             }
         }
     }
+
+    private fun SentencesQuery.filterApplication() =
+        if (wholeNamespace) ApplicationId `in`
+            (getApplicationById(applicationId)?.namespace?.let { n -> getApplicationsByNamespace(n).map { it._id } }
+                ?: emptyList())
+        else ApplicationId eq applicationId
 
     private fun SentencesQuery.filterReviewOnly() = if (onlyToReview) ForReview eq true else null
 

@@ -37,4 +37,9 @@ data class Classification(
         intentId,
         query.entities.map { ClassifiedEntity(it) }
     )
+
+    /**
+     * Does this classification contains the specified entity type ?
+     */
+    fun containsEntityOrSubEntity(entityType: String): Boolean = entities.any { it.containsEntityOrSubEntity(entityType) }
 }

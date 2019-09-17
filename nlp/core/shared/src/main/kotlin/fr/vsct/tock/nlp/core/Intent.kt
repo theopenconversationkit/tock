@@ -39,4 +39,7 @@ data class Intent(
 
     fun getEntity(role: String): Entity = entities.firstOrNull { it.role == role } ?: error("Unknown entity $role")
 
+    override fun equals(other: Any?): Boolean = name == (other as? Intent)?.name
+
+    override fun hashCode(): Int = name.hashCode()
 }

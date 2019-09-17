@@ -79,4 +79,10 @@ data class ClassifiedEntity(
         toEntityValue(entityProvider)?.run { EntityRecognition(this, 1.0) }
 
     fun toEntity(entityProvider: (String, String) -> Entity?): Entity? = entityProvider.invoke(type, role)
+
+    /**
+     * Does this entity contains the specified entity type ?
+     */
+    fun containsEntityOrSubEntity(entityType: String): Boolean = type == entityType || subEntities.any { it.containsEntityOrSubEntity(entityType) }
+
 }
