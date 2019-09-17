@@ -21,6 +21,7 @@ import fr.vsct.tock.bot.connector.whatsapp.model.common.WhatsAppTextBody
 import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotAttachment
 import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotImageMessage
 import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotMessage
+import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotRecipientType
 import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotTextMessage
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.Bus
@@ -79,10 +80,10 @@ fun BotBus.whatsAppText(
     previewUrl: Boolean = false
 ): WhatsAppBotTextMessage =
     WhatsAppBotTextMessage(
-        WhatsAppTextBody(translate(text).toString()),
-        (connectorData.callback as WhatsAppConnectorCallback).recipientType,
-        userId.id,
-        previewUrl
+        text = WhatsAppTextBody(translate(text).toString()),
+        recipientType = (connectorData.callback as? WhatsAppConnectorCallback)?.recipientType ?: WhatsAppBotRecipientType.individual,
+        to = userId.id,
+        previewUrl = previewUrl
     )
 
 /**
@@ -94,11 +95,11 @@ fun BotBus.whatsAppImage(
     caption: CharSequence? = null
 ): WhatsAppBotImageMessage =
     WhatsAppBotImageMessage(
-        WhatsAppBotAttachment(
+        image = WhatsAppBotAttachment(
             byteImages,
             contentType,
             caption?.let { translate(it).toString() }
         ),
-        (connectorData.callback as WhatsAppConnectorCallback).recipientType,
-        userId.id
+        recipientType = (connectorData.callback as? WhatsAppConnectorCallback)?.recipientType ?: WhatsAppBotRecipientType.individual,
+        to = userId.id
     )
