@@ -69,6 +69,7 @@ export class TestPlanComponent implements OnInit {
             if (conf) {
               plan.botName = conf.name;
             }
+            this.showExecutions(plan)
           });
           this.testPlans = p;
 
