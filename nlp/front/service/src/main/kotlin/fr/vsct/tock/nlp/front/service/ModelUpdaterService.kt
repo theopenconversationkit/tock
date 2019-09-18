@@ -87,7 +87,10 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
         } finally {
             try {
                 if (build.error || build.nbSentences != 0) {
+                    logger.info { "build saved: $build" }
                     triggerDAO.save(build.copy(duration = Duration.between(build.date, Instant.now())))
+                } else {
+                    logger.info { "do not save build - no sentence included: $build" }
                 }
             } catch (e: Exception) {
                 logger.error(e)
@@ -106,8 +109,7 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
             val intentCache = mutableMapOf<Id<IntentDefinition>, Intent>()
             val modelSentences = config.getSentences(application.intents, language, ClassifiedSentenceStatus.model)
             val samples = (modelSentences + validatedSentences).map { s ->
-                s.toSampleExpression({ config.toIntent(it, intentCache) },
-                    { entityTypeByName(it) })
+                s.toSampleExpression({ config.toIntent(it, intentCache) }, { entityTypeByName(it) })
             }
             model.updateIntentModel(
                 BuildContext(toApplication(application), language, engineType, onlyIfNotExists),
