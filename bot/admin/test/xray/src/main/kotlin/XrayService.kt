@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.admin.test.xray
 
 import fr.vsct.tock.bot.admin.dialog.DialogReport
 import fr.vsct.tock.bot.admin.test.*
+import fr.vsct.tock.bot.admin.test.TestPlanService.saveTestPlanExecution
 import fr.vsct.tock.bot.admin.test.xray.XrayClient.getProjectFromIssue
 import fr.vsct.tock.bot.admin.test.xray.model.*
 import fr.vsct.tock.bot.admin.test.xray.model.XrayStatus.FAIL
@@ -28,15 +29,12 @@ import fr.vsct.tock.bot.engine.message.parser.MessageParser
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType.bot
 import fr.vsct.tock.bot.engine.user.PlayerType.user
-import fr.vsct.tock.shared.defaultLocale
-import fr.vsct.tock.shared.defaultZoneId
-import fr.vsct.tock.shared.error
-import fr.vsct.tock.shared.listProperty
-import fr.vsct.tock.shared.mapListProperty
-import fr.vsct.tock.shared.property
+import fr.vsct.tock.shared.*
 import fr.vsct.tock.translator.UserInterfaceType
 import mu.KotlinLogging
+import org.litote.kmongo.Id
 import org.litote.kmongo.toId
+import java.time.Duration
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.OffsetDateTime.ofInstant
@@ -90,6 +88,7 @@ class XrayService(
     fun executePlans(namespace: String): XRayPlanExecutionResult {
         logger.info { "execute plans with namespace $namespace" }
         val jiraProject = getProjectFromIssue(testPlanKeys.get(0))
+        val executionId = Dice.newId()
 
         return try {
             // getBotConfiguration retrieves all configuration for the selected namespace
@@ -103,7 +102,7 @@ class XrayService(
                     }
                     // test plan execution
                     .flatMap {
-                        exec(XrayExecutionConfiguration(it, testPlanKeys, jiraProject))
+                        exec(XrayExecutionConfiguration(it, testPlanKeys, jiraProject), executionId.toId())
                     }
                     .let {
                         sendToXray(it)
@@ -122,6 +121,7 @@ class XrayService(
     fun executeTests(namespace: String): XRayPlanExecutionResult {
         val dummyTestPlan = listOf("MOCK")
         val jiraProject = getProjectFromIssue(testKeys[0])
+        val executionId = Dice.newId()
 
         logger.info { "Execute tests with namespace $namespace" }
         return try {
@@ -136,7 +136,7 @@ class XrayService(
                     }
                     // test execution of a dummy test plan
                     .flatMap {
-                        execTestsOnly(XrayExecutionConfiguration(it, dummyTestPlan, jiraProject), dummyTestPlan[0], testKeys)
+                        execTestsOnly(XrayExecutionConfiguration(it, dummyTestPlan, jiraProject), dummyTestPlan[0], testKeys, executionId.toId())
                     }
                     .let {
                         sendToXray(it)
@@ -313,17 +313,27 @@ class XrayService(
      * @param configuration is the configuration to execute the test plan.
      * @return the list of all tests plan that have been executed and their execution results.
      */
-    private fun exec(configuration: XrayExecutionConfiguration): List<TestPlanExecutionReport> {
+    private fun exec(configuration: XrayExecutionConfiguration, executionId: Id<TestPlanExecution>): List<TestPlanExecutionReport> {
         return configuration
                 .xrayTestPlanKeys
                 .mapNotNull { xrayPlanKey ->
                     logger.info { "Start plan $xrayPlanKey execution" }
                     try {
+                        val exec = TestPlanExecution(
+                                (xrayPlanKey + "_" + configuration.botConfiguration.applicationId).toId(),
+                                mutableListOf(),
+                                0,
+                                duration = Duration.between(Instant.now(), Instant.now()),
+                                _id = executionId,
+                                status = TestPlanExecutionStatus.PENDING)
+                        // save the test plan execution into the database
+                        saveTestPlanExecution(exec)
+
                         // retrieve the Xray issue with associated tests for the current test plan
                         val xrayTestPlan = getTestPlanFromXray(configuration, xrayPlanKey)
                         // if the current test plan has dialogs to send, then execute it, otherwise skip it and jump to the next one
                         if (xrayTestPlan.dialogs.isNotEmpty()) {
-                            executePlan(configuration, xrayPlanKey, xrayTestPlan)
+                            executePlan(configuration, xrayPlanKey, xrayTestPlan, executionId)
                         } else {
                             logger.info { "Empty test plan for $configuration - skipped" }
                             null
@@ -334,7 +344,11 @@ class XrayService(
                 }
     }
 
-    private fun execTestsOnly(configuration: XrayExecutionConfiguration, planKey: String, testKeys: List<String>): List<TestPlanExecutionReport> {
+    private fun execTestsOnly(
+            configuration: XrayExecutionConfiguration,
+            planKey: String,
+            testKeys: List<String>,
+            executionId: Id<TestPlanExecution>): List<TestPlanExecutionReport> {
 
         return configuration
                 .xrayTestPlanKeys
@@ -345,7 +359,7 @@ class XrayService(
                         val testPlan = createTestPlanWithTests(configuration, planKey, testKeys)
                         // if the current test plan has dialogs to send, then execute it, otherwise skip it and jump to the next one
                         if (testPlan.dialogs.isNotEmpty()) {
-                            executePlan(configuration, testPlan.name, testPlan)
+                            executePlan(configuration, testPlan.name, testPlan, executionId)
                         } else {
                             logger.info { "Empty test plan for $configuration - skipped" }
                             null
@@ -367,10 +381,11 @@ class XrayService(
     private fun executePlan(
             configuration: XrayExecutionConfiguration,
             xrayTestPlanKey: String,
-            testPlan: TestPlan
+            testPlan: TestPlan,
+            executionId: Id<TestPlanExecution>
     ): TestPlanExecutionReport {
         logger.debug { "Execute test plan $testPlan" }
-        val execution = findTestClient().saveAndExecuteTestPlan(testPlan)
+        val execution = findTestClient().saveAndExecuteTestPlan(testPlan, executionId)
         logger.debug { "Test plan execution $execution" }
         return TestPlanExecutionReport(
                 configuration,

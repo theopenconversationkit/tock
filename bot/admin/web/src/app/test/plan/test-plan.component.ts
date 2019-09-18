@@ -36,6 +36,7 @@ export class TestPlanComponent implements OnInit {
   testPlanCreation: boolean;
   testPlanName: string;
   testBotConfigurationId: string;
+  testPlanId: string = "";
 
   executePlan: boolean;
 
@@ -50,8 +51,12 @@ export class TestPlanComponent implements OnInit {
               private shared: BotSharedService) {
   }
 
+  // loop to check test plan executions status
   ngOnInit(): void {
     this.reload();
+    setInterval(_ => {
+      console.log("planId : " + this.testPlanId);
+    }, 2000)
   }
 
   private reload() {
@@ -154,7 +159,8 @@ export class TestPlanComponent implements OnInit {
         this.executePlan = false;
         this.showExecutions(plan);
         this.snackBar.open(`Plan ${plan.name} executed with ${execution.nbErrors === 0 ? 'success' : execution.nbErrors + ' errors'}`, "Execution", {duration: 2000})
-      })
+      });
+    this.testPlanId = plan._id;
   }
 
   removeDialog(plan: TestPlan, dialog: DialogReport) {

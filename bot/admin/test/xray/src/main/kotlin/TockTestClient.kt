@@ -26,6 +26,7 @@ import fr.vsct.tock.shared.create
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import org.litote.kmongo.Id
 
 /**
  *
@@ -49,7 +50,7 @@ internal object TockTestClient : TestClientService {
                 .create()
     }
 
-    override fun saveAndExecuteTestPlan(testPlan: TestPlan): TestPlanExecution {
+    override fun saveAndExecuteTestPlan(testPlan: TestPlan, executionId: Id<TestPlanExecution>): TestPlanExecution {
         return tock.executeTestPlan(testPlan).execute().body() ?: TestPlanExecution(testPlan._id, emptyList(), 1)
     }
 

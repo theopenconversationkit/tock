@@ -38,6 +38,7 @@ import fr.vsct.tock.bot.admin.model.TestPlanUpdate
 import fr.vsct.tock.bot.admin.model.UserSearchQuery
 import fr.vsct.tock.bot.admin.model.XRayPlanExecutionConfiguration
 import fr.vsct.tock.bot.admin.test.TestPlan
+import fr.vsct.tock.bot.admin.test.TestPlanExecutionStatus
 import fr.vsct.tock.bot.admin.test.TestPlanService
 import fr.vsct.tock.bot.admin.test.xray.XrayService
 import fr.vsct.tock.bot.connector.ConnectorType.Companion.rest
@@ -50,6 +51,7 @@ import fr.vsct.tock.nlp.admin.AdminVerticle
 import fr.vsct.tock.nlp.admin.model.ApplicationScopedQuery
 import fr.vsct.tock.nlp.admin.model.TranslateReport
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import fr.vsct.tock.shared.Dice
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.provide
@@ -64,6 +66,7 @@ import io.vertx.core.http.HttpMethod.GET
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
+import org.litote.kmongo.newId
 
 /**
  *
@@ -213,6 +216,12 @@ open class BotAdminVerticle : AdminVerticle() {
             dialogReportDAO.getNlpCallStats(context.pathId("actionId"), context.organization)
         }
 
+
+        /**
+         * --------------------------------------------------------------------------------------
+         *                                       TEST PART
+         * --------------------------------------------------------------------------------------
+         */
         blockingJsonGet("/test/plans", botUser) { context ->
             TestPlanService.getTestPlansByNamespace(context.organization)
         }
@@ -245,22 +254,35 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonPost("/test/plan/execute", botUser) { context, testPlan: TestPlan ->
-            BotAdminService.saveAndExecuteTestPlan(context.organization, testPlan)
+            BotAdminService.saveAndExecuteTestPlan(context.organization, testPlan, newId())
         }
 
+        /**
+         * Triggered on click on "Laucnh" button.
+         */
         blockingJsonPost("/test/plan/:planId/run", botUser) { context, _: ApplicationScopedQuery ->
             context.loadTestPlan().run {
-                TestPlanService.runTestPlan(
-                    BotAdminService.getRestClient(
-                        BotAdminService.getBotConfiguration(
-                            botApplicationConfigurationId,
-                            namespace
-                        )
-                    ),
-                    this
-                )
+                BotAdminService.executeTestPlan(this)
             }
         }
+
+        /**
+         * Triggered on "Create" button, after providing connector and test plan key.
+         */
+        blockingJsonPost("/xray/execute", botUser) { context, configuration: XRayPlanExecutionConfiguration ->
+            XrayService(
+                    listOfNotNull(configuration.configurationId),
+                    listOf(configuration.testPlanKey),
+                    listOf(),
+                    configuration.testedBotId
+            ).executePlans(context.organization)
+        }
+        /**
+         * --------------------------------------------------------------------------------------
+         *                                     END TEST PART
+         * --------------------------------------------------------------------------------------
+         */
+
 
         blockingJsonGet("/feature/:applicationId", botUser) { context ->
             val applicationId = context.path("applicationId")
@@ -424,15 +446,6 @@ open class BotAdminVerticle : AdminVerticle() {
                 ?: ""
         }
 
-        blockingJsonPost("/xray/execute", botUser) { context, configuration: XRayPlanExecutionConfiguration ->
-            XrayService(
-                listOfNotNull(configuration.configurationId),
-                listOf(configuration.testPlanKey),
-                listOf(),
-                configuration.testedBotId
-            ).executePlans(context.organization)
-        }
-
         blockingJsonGet("/configuration") {
             BotAdminConfiguration()
         }
@@ -460,6 +473,10 @@ open class BotAdminVerticle : AdminVerticle() {
                 this
             }
         } ?: notFound()
+    }
+
+    fun getTestPlanStatus(testPlanId: String): TestPlanExecutionStatus {
+        return TestPlanService.getTestPlanExecutionStatus(testPlanId) ?: TestPlanExecutionStatus.UNKNOWN
     }
 
 }
