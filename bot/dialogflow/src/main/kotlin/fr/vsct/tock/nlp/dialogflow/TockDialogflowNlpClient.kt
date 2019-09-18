@@ -32,7 +32,7 @@ internal class TockDialogflowNlpClient : NlpClient {
     }
 
     override fun healthcheck(): Boolean {
-        return DialogflowService.getAgent(projectId) != null
+        return true
     }
 
     override fun evaluateEntities(query: EntityEvaluationQuery): EntityEvaluationResult? = null
