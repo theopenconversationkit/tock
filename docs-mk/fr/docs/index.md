@@ -23,7 +23,7 @@ L'utilisateur choisit les composants qu'il embarque et peut ainsi conserver la m
 * Assitants _embarqués_ ou intégrés à des sites Web, applications mobiles, réseaux sociaux, enceintes connectées etc.
 * Plateforme _NLU_ complète _(Natural Language Understanding - ou TALN en français (Traitement automatique du langage))_, qui utilise différentes librairies open-source comme
 [OpenNLP](https://opennlp.apache.org/), [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/), [Duckling](https://github.com/facebook/duckling),
-(et demain [Spacy](http://TODO), [Rasa](http://TODO), ...)
+(et demain [Spacy](https://spacy.io/), [Rasa](https://rasa.com/), ...)
 déployable seule si besoin (pour des usages comme l'[Internet des objets](https://fr.wikipedia.org/wiki/Internet_des_objets))
 * Interfaces _Tock Studio_ :
     * Gestion des modèles, entraînement du bot
@@ -31,7 +31,7 @@ déployable seule si besoin (pour des usages comme l'[Internet des objets](https
     * Support de l'internationalisation (_i18n_) pour les bots multilingues
     * Suivi des conversations, performances et erreurs des modèles
     * Analyse interactive des tendances / parcours utilisateurs (_Bot Flow_)
-* Frameworks pour développer des parcours complexes et intégrer des services tiers : <br/> _DSL_ en [Kotlin](https://kotlinlang.org/) ou [Node](http://TODO) et _API_ tous langages
+* Frameworks pour développer des parcours complexes et intégrer des services tiers : <br/> _DSL_ en [Kotlin](https://kotlinlang.org/) ou [Node](https://nodejs.org) et _API_ tous langages
 * Nombreux connecteurs pour [Messenger](https://www.messenger.com/), [WhatsApp](https://www.whatsapp.com/), 
 [Google Assistant / Home](https://assistant.google.com/), [Twitter](https://twitter.com/), [Alexa](https://alexa.amazon.com/), 
 [Business Chat / iMessage](https://www.apple.com/fr/ios/business-chat/), [Teams](https://products.office.com/fr-fr/microsoft-teams/), 
@@ -43,7 +43,7 @@ bot _"embarqué"_ sans Internet
 
 ## Technologies
 
-L'ensemble de la plateforme est _containerisée_ avec [Docker](http://TODO). 
+L'ensemble de la plateforme est _containerisée_ avec [Docker](https://www.docker.com/). 
 
 La plateforme applicative par défaut est la [JVM](https://fr.wikipedia.org/wiki/Machine_virtuelle_Java).
  
@@ -53,7 +53,7 @@ Tock utilise notamment [Vert.x](http://vertx.io/) et [MongoDB](https://www.mongo
 
 Les interfaces graphiques _(Tock Studio)_ sont écrites avec [Angular](https://angular.io/) en [Typescript](https://www.typescriptlang.org/).
 
-Un widget [React](http://TODO) de base est disponible pour les interfaces Web.
+Un widget [React](https://reactjs.org) de base est disponible pour les interfaces Web.
 
 ## Démarrer...
 
