@@ -62,6 +62,7 @@ export class TestPlanComponent implements OnInit {
       if ((null != this.testPlanId && null != this.testExecutionId) && "COMPLETE" !== this.testExecutionStatus) {
         this.getExecutionStatus(this.testPlanId, this.testExecutionId);
       }
+      // if the test execution is complete
       if("COMPLETE" === this.testExecutionStatus) {
         this.executePlan = false;
       }
