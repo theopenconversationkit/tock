@@ -50,8 +50,9 @@ export class TestService {
     return this.rest.post(`/test/plan`, plan);
   }
 
-  runTestPlan(planId: string): Observable<TestPlanExecution> {
-    return this.rest.post(`/test/plan/${planId}/run`, this.state.createApplicationScopedQuery(), TestPlanExecution.fromJSON);
+  // REST service called when "Launch" button is pressed
+  runTestPlan(planId: string): Observable<string> {
+    return this.rest.post(`/test/plan/${planId}/run`, this.state.createApplicationScopedQuery());
   }
 
   removeTestPlan(planId: string): Observable<boolean> {

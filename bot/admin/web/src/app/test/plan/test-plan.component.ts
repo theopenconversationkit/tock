@@ -37,6 +37,7 @@ export class TestPlanComponent implements OnInit {
   testPlanName: string;
   testBotConfigurationId: string;
   testPlanId: string = "";
+  testExecutionId: string = "";
 
   executePlan: boolean;
 
@@ -56,6 +57,8 @@ export class TestPlanComponent implements OnInit {
     this.reload();
     setInterval(_ => {
       console.log("planId : " + this.testPlanId);
+      console.log("testExecutionId : " + this.testExecutionId);
+      console.log("execution status : " );
     }, 2000)
   }
 
@@ -157,9 +160,10 @@ export class TestPlanComponent implements OnInit {
     this.executePlan = true;
     this.test.runTestPlan(plan._id).subscribe(
       execution => {
+        this.testExecutionId = execution
         this.executePlan = false;
         this.showExecutions(plan);
-        this.snackBar.open(`Plan ${plan.name} executed with ${execution.nbErrors === 0 ? 'success' : execution.nbErrors + ' errors'}`, "Execution", {duration: 2000})
+        this.snackBar.open(`Plan ${plan.name} is runing`, "Execution", {duration: 2000})
       });
     this.testPlanId = plan._id;
   }
