@@ -465,23 +465,19 @@ interface BotBus : Bus<BotBus> {
         i18nProvider.i18n(defaultLabel, args)
 
     /**
-     * Gets I18nKey with specified key.
+     * Gets an i18n label with the specified key.
      */
     fun i18nKey(key: String, defaultLabel: CharSequence, vararg args: Any?): I18nLabelValue =
         story.definition.storyHandler.let {
-            if (it is StoryHandlerBase<*>) {
-                it.i18nKey(key, defaultLabel, *args)
-            } else {
-                I18nLabelValue(
+            (it as? StoryHandlerBase<*>)?.i18nKey(key, defaultLabel, *args)
+                ?: I18nLabelValue(
                     key,
                     botDefinition.namespace,
                     botDefinition.botId,
                     defaultLabel,
                     args.toList()
                 )
-            }
         }
-
 
     //I18nTranslator implementation
     override val contextId: String? get() = dialog.id.toString()

@@ -19,8 +19,12 @@ package fr.vsct.tock.bot.connector
 
 /**
  * Provides a [ConnectorMessage].
+ * Used mainly to allow nice expressions with Bus.end{} and Bus.send{}.
  */
 interface ConnectorMessageProvider {
 
+    /**
+     * Provides the [ConnectorMessage].
+     */
     fun toConnectorMessage(): ConnectorMessage
 }

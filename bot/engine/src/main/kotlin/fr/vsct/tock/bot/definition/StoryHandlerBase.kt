@@ -143,7 +143,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     }
 
     /**
-     * Gets I18nKey with specified key. Current namespace is used.
+     * Gets an i18n label with the specified key. Current namespace is used for the categorization.
      */
     fun i18nKey(key: String, defaultLabel: CharSequence, vararg args: Any?): I18nLabelValue {
         val category = i18nKeyCategory()

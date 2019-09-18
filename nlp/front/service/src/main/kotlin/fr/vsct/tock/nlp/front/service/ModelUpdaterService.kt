@@ -87,8 +87,9 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
         } finally {
             try {
                 if (build.error || build.nbSentences != 0) {
-                    logger.info { "build saved: $build" }
-                    triggerDAO.save(build.copy(duration = Duration.between(build.date, Instant.now())))
+                    val buildToSave = build.copy(duration = Duration.between(build.date, Instant.now()))
+                    logger.info { "build saved: $buildToSave" }
+                    triggerDAO.save(buildToSave)
                 } else {
                     logger.info { "do not save build - no sentence included: $build" }
                 }
