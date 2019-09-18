@@ -58,9 +58,11 @@ export class TestPlanComponent implements OnInit {
     this.reload();
     setInterval(_ => {
       // if path params exist and if the current test execution is not complete, then get the execution status
-      if ((null !=this.testPlanId && null != this.testExecutionId) && "COMPLETE" != this.testExecutionStatus) {
+      if ((null != this.testPlanId && null != this.testExecutionId) && "COMPLETE" != this.testExecutionStatus) {
         this.getExecutionStatus(this.testPlanId, this.testExecutionId)
         console.log("execution status : " + this.testExecutionStatus);
+      } else if ("COMPLETE" == this.testExecutionStatus) {
+        this.executePlan = false;
       }
     }, 2000);
   }
@@ -164,7 +166,6 @@ export class TestPlanComponent implements OnInit {
     this.test.runTestPlan(plan._id).subscribe(
       execution => {
         this.testExecutionId = execution
-        this.executePlan = false;
         this.showExecutions(plan);
         this.snackBar.open(`Plan ${plan.name} is running.`, "Execution", {duration: 2000})
       });

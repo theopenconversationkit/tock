@@ -39,7 +39,11 @@ export class TestService {
   }
 
   getTestPlans(): Observable<TestPlan[]> {
-    return this.rest.get("/test/plans", TestPlan.fromJSONArray);
+    return this.rest.get("/test/plans/", TestPlan.fromJSONArray);
+  }
+
+  getTestPlan(testPlanId: string): Observable<TestPlan> {
+    return this.rest.get(`/test/plan/${testPlanId}`, TestPlan.fromJSON);
   }
 
   getTestPlanExecutions(planId: string): Observable<TestPlanExecution[]> {
