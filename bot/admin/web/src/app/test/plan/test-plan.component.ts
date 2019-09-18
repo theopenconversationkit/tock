@@ -32,6 +32,7 @@ import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
 export class TestPlanComponent implements OnInit {
 
   testPlans: TestPlan[];
+  runningTestPlan: TestPlan;
 
   testPlanCreation: boolean;
   testPlanName: string;
@@ -163,6 +164,7 @@ export class TestPlanComponent implements OnInit {
 
   exec(plan: TestPlan) {
     this.executePlan = true;
+    this.runningTestPlan = plan;
     this.test.runTestPlan(plan._id).subscribe(
       execution => {
         this.testExecutionId = execution

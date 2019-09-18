@@ -78,6 +78,9 @@
                     style="color:#73a1ff" matTooltip="Launch">
               <mat-icon>launch</mat-icon>
             </button>
+            <div *ngIf="executePlan && p == this.runningTestPlan"><br>
+              <img src="/assets/images/loading.gif" width="40px" height="40px"/>
+            </div>
             <nb-actions size="small" style="cursor: pointer;float: right">
               <nb-action class="control-item" (click)="deleteTestPlan(p)" nbTooltip="Delete" style="color: #ff708d;">
                 <i class="material-icons">delete_forever</i>
@@ -127,9 +130,6 @@
               <tock-display-dialog *ngIf="d.displayActions" [dialog]="d.toDialogReport()"></tock-display-dialog>
             </li>
           </ol>
-          <div *ngIf="executePlan"><br>
-            <img src="/assets/images/loading.gif" width="40px" height="40px"/>
-          </div>
 
           <nb-accordion *ngIf="p.testPlanExecutions && p.testPlanExecutions.length > 0">
             <nb-accordion-item>
