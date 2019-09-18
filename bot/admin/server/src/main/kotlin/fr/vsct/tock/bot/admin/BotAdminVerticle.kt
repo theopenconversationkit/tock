@@ -226,6 +226,10 @@ open class BotAdminVerticle : AdminVerticle() {
             TestPlanService.getTestPlansByNamespace(context.organization)
         }
 
+        blockingJsonGet("/test/plan/:planId", botUser) { context ->
+            TestPlanService.getTestPlan(context.pathId("planId"))
+        }
+
         blockingJsonGet("/test/plan/:planId/executions", botUser) { context ->
             TestPlanService.getPlanExecutions(context.loadTestPlan())
         }

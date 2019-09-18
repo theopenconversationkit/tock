@@ -133,7 +133,16 @@
 
           <nb-accordion *ngIf="p.testPlanExecutions && p.testPlanExecutions.length > 0">
             <nb-accordion-item>
-              <nb-accordion-item-header>{{p.testPlanExecutions.length}} Executions</nb-accordion-item-header>
+              <nb-accordion-item-header>
+                {{p.testPlanExecutions.length}} Executions
+                <span class="last-execution-status">&nbsp;- last execution status :</span>
+                <span *ngIf="p.testPlanExecutions[0].nbErrors === 0">
+                <mat-icon style="height:auto" class="success">check_circle</mat-icon>
+              </span>
+                <span *ngIf="p.testPlanExecutions[0].nbErrors !== 0">
+                <mat-icon class="error">error</mat-icon>
+              </span>
+              </nb-accordion-item-header>
               <nb-accordion-item-body>
                 <ol>
                   <li *ngFor="let e of p.testPlanExecutions">
