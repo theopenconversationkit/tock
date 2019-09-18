@@ -55,6 +55,7 @@ import fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationStep
 import fr.vsct.tock.bot.admin.test.TestPlan
 import fr.vsct.tock.bot.admin.test.TestPlanExecution
+import fr.vsct.tock.bot.admin.test.TestPlanExecutionStatus
 import fr.vsct.tock.bot.admin.test.TestPlanService
 import fr.vsct.tock.bot.admin.test.toClientConnectorType
 import fr.vsct.tock.bot.admin.test.toClientMessage
@@ -79,6 +80,7 @@ import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.shared.Dice
+import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.property
@@ -91,6 +93,7 @@ import fr.vsct.tock.translator.Translator
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
+import java.time.Duration
 import java.time.Instant
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
@@ -104,13 +107,14 @@ object BotAdminService {
 
     private val defaultRestConnectorBaseUrl =
         property("tock_bot_admin_rest_default_base_url", "please set base url of the bot")
-    private val userReportDAO: UserReportDAO  by injector.instance()
-    internal val dialogReportDAO: DialogReportDAO  by injector.instance()
-    private val applicationConfigurationDAO: BotApplicationConfigurationDAO  by injector.instance()
+    private val userReportDAO: UserReportDAO by injector.instance()
+    internal val dialogReportDAO: DialogReportDAO by injector.instance()
+    private val applicationConfigurationDAO: BotApplicationConfigurationDAO by injector.instance()
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO by injector.instance()
     private val featureDAO: FeatureDAO by injector.instance()
     private val dialogFlowDAO: DialogFlowDAO get() = injector.provide()
     private val restConnectorClientCache: MutableMap<String, ConnectorRestClient> = ConcurrentHashMap()
+    private val executor: Executor get() = injector.provide()
     private val front = FrontClient
 
     fun getRestClient(conf: BotApplicationConfiguration): ConnectorRestClient {
@@ -615,25 +619,13 @@ object BotAdminService {
      * executes all test contained in the common test plan.
      *
      */
-    fun saveAndExecuteTestPlan(namespace: String, testPlan: TestPlan): TestPlanExecution =
+    fun saveAndExecuteTestPlan(namespace: String, testPlan: TestPlan, executionId: Id<TestPlanExecution>): TestPlanExecution =
         getBotConfiguration(testPlan.botApplicationConfigurationId, namespace)
             .let {
                 TestPlanService.saveAndRunTestPlan(
                     getRestClient(it),
-                    testPlan
-                )
-            }
-
-    /**
-     * This function only executes all test contained in the common test plan.
-     *
-     */
-    fun executeTestPlan(namespace: String, testPlan: TestPlan): TestPlanExecution =
-        getBotConfiguration(testPlan.botApplicationConfigurationId, namespace)
-            .let {
-                TestPlanService.runTestPlan(
-                    getRestClient(it),
-                    testPlan
+                    testPlan,
+                    executionId
                 )
             }
 
@@ -674,5 +666,33 @@ object BotAdminService {
         ).forEach {
             storyDefinitionDAO.save(it.copy(botId = newApp.name))
         }
+    }
+
+    fun executeTestPlan(testPlan: TestPlan): Id<TestPlanExecution> {
+        val executionId = Dice.newId()
+        val exec = TestPlanExecution(
+            testPlan._id,
+            mutableListOf(),
+            0,
+            duration = Duration.between(Instant.now(), Instant.now()),
+            _id = executionId.toId(),
+            status = TestPlanExecutionStatus.PENDING
+        )
+        // save the test plan execution into the database
+        TestPlanService.saveTestPlanExecution(exec)
+
+        executor.executeBlocking {
+            TestPlanService.runTestPlan(
+                getRestClient(
+                    getBotConfiguration(
+                        testPlan.botApplicationConfigurationId,
+                        testPlan.namespace
+                    )
+                ),
+                testPlan,
+                executionId.toId()
+            )
+        }
+        return executionId.toId()
     }
 }

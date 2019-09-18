@@ -18,7 +18,7 @@ package fr.vsct.tock.bot.connector.twitter.model
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.*
+import java.util.Date
 
 internal data class Webhook(
     val id: String,

@@ -48,5 +48,9 @@ data class TestPlanExecution(
     /**
      * The execution identifier.
      */
-    val _id: Id<TestPlanExecution> = newId()
+    val _id: Id<TestPlanExecution> = newId(),
+    /**
+     * The status of the test plan execution
+     */
+    var status:TestPlanExecutionStatus = TestPlanExecutionStatus.PENDING
 )

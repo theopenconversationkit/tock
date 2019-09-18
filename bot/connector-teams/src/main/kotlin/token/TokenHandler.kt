@@ -2,12 +2,16 @@ package fr.vsct.tock.bot.connector.teams.token
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
-import fr.vsct.tock.shared.*
+import fr.vsct.tock.shared.Level
+import fr.vsct.tock.shared.addJacksonConverter
+import fr.vsct.tock.shared.create
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.longProperty
+import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import mu.KotlinLogging
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.Timer
 import kotlin.concurrent.fixedRateTimer
 
 /**
@@ -23,7 +27,11 @@ class TokenHandler(private val appId: String, private val password: String) {
     @Volatile
     private var tokenExpiration: Instant? = null
 
-    private val logLevel = if (logger.isDebugEnabled) {Level.BODY} else {Level.BASIC}
+    private val logLevel = if (logger.isDebugEnabled) {
+        Level.BODY
+    } else {
+        Level.BASIC
+    }
 
     val teamsMapper: ObjectMapper = mapper.copy().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
     @Volatile
@@ -67,7 +75,7 @@ class TokenHandler(private val appId: String, private val password: String) {
         tokenExpiration = Instant.now().plus(response.body()?.expiresIn!!, ChronoUnit.SECONDS)
     }
 
-    fun launchTokenCollector(connectorId: String, msInterval: Long =60 * 60 * 1000L) {
+    fun launchTokenCollector(connectorId: String, msInterval: Long = 60 * 60 * 1000L) {
         tokenTimerTask = fixedRateTimer(name = "microsoft-api-token-handling-$connectorId", initialDelay = 0L, period = msInterval) {
             checkToken()
         }

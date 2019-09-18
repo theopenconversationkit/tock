@@ -2,6 +2,7 @@ package fr.vsct.tock.bot.admin.test
 
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.shared.Loader
+import org.litote.kmongo.Id
 
 /**
  * Retrieve a test client from [ServiceLoader].
@@ -15,7 +16,7 @@ fun findTestClient(): TestClientService =
  */
 interface TestClientService {
 
-    fun saveAndExecuteTestPlan(testPlan: TestPlan): TestPlanExecution
+    fun saveAndExecuteTestPlan(testPlan: TestPlan, executionId: Id<TestPlanExecution>): TestPlanExecution
 
     fun getBotConfigurations(namespace:String, botId: String): List<BotApplicationConfiguration>
 

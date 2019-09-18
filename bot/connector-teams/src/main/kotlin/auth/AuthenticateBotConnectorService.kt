@@ -30,7 +30,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import java.time.Instant
-import java.util.*
+import java.util.Date
 
 
 @Suppress("PropertyName")
@@ -140,7 +140,7 @@ internal class AuthenticateBotConnectorService(
             checkValidity(signedJWT)
             checkSignature(signedJWT, jwkHandler)
             if ((signedJWT.jwtClaimsSet.getClaim("serviceurl")
-                        ?: throw ForbiddenException("Token doesn't contains any serviceUrl Claims")) != activity.serviceUrl()
+                    ?: throw ForbiddenException("Token doesn't contains any serviceUrl Claims")) != activity.serviceUrl()
             ) {
                 throw ForbiddenException("ServiceUrl in token Authorization and in activity doesn't match")
             }

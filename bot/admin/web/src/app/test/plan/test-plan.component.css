@@ -61,3 +61,7 @@
   color: #3366ff;
 }
 
+span.last-execution-status {
+  font-weight: 400;
+  font-size: 0.833rem;
+}

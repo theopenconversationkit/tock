@@ -121,7 +121,8 @@ export class TestPlanExecution {
               public nbErrors: number,
               public date: Date,
               public duration: Date,
-              public _id?: string) {
+              public status: string,
+              public _id: string) {
   }
 
   static fromJSON(json?: any): TestPlanExecution {
@@ -137,7 +138,6 @@ export class TestPlanExecution {
   static fromJSONArray(json?: Array<any>): TestPlanExecution[] {
     return json ? json.map(TestPlanExecution.fromJSON) : [];
   }
-
 }
 
 export class DialogExecutionReport {

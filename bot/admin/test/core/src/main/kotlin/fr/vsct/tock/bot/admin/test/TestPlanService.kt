@@ -36,6 +36,7 @@ import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.provide
 import mu.KotlinLogging
 import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 import java.time.Duration
 import java.time.Instant
 
@@ -90,6 +91,14 @@ object TestPlanService {
         return testPlanDAO.getPlan(planId)
     }
 
+    fun getTestPlanExecution(testPlan: TestPlan, testExecutionId: Id<TestPlanExecution>) : TestPlanExecution? {
+        return testPlanDAO.getTestPlanExecution(testPlan, testExecutionId);
+    }
+
+    fun saveTestPlanExecution(testPlanExecution: TestPlanExecution) {
+        testPlanDAO.saveTestExecution(testPlanExecution)
+    }
+
     /**
      * This function saves the given test plan in the mongo database and then run the test plan.
      *
@@ -97,9 +106,9 @@ object TestPlanService {
      * @param plan is the common test plan to run.
      * @return the results of the test plan execution as a TestPlanExecution object.
      */
-    fun saveAndRunTestPlan(client: ConnectorRestClient, plan: TestPlan): TestPlanExecution {
+    fun saveAndRunTestPlan(client: ConnectorRestClient, plan: TestPlan, executionId: Id<TestPlanExecution>): TestPlanExecution {
         testPlanDAO.saveTestPlan(plan)
-        return runTestPlan(client, plan)
+        return runTestPlan(client, plan, executionId)
     }
 
     /**
@@ -110,10 +119,23 @@ object TestPlanService {
      * @param plan is the common test plan to run.
      * @return the results of the test plan execution as a TestPlanExecution object.
      */
-    fun runTestPlan(client: ConnectorRestClient, plan: TestPlan): TestPlanExecution {
+    fun runTestPlan(client: ConnectorRestClient, plan: TestPlan, executionId: Id<TestPlanExecution>): TestPlanExecution {
         val start = Instant.now()
         val dialogs: MutableList<DialogExecutionReport> = mutableListOf()
         var nbErrors: Int = 0
+
+        // store the test plan execution into the right Object
+        val exec = TestPlanExecution(
+                plan._id,
+                dialogs,
+                nbErrors,
+                duration = Duration.between(start, Instant.now()),
+                _id = executionId,
+                status = TestPlanExecutionStatus.PENDING
+        )
+        // save the test plan execution into the database
+        testPlanDAO.saveTestExecution(exec)
+
         // run all the steps as dialog, one by one
         plan.dialogs.forEach {
             runDialog(client, plan, it).run {
@@ -123,15 +145,9 @@ object TestPlanService {
                 }
             }
         }
-        // store the test plan execution into the right Object
-        val exec = TestPlanExecution(
-                plan._id,
-                dialogs,
-                nbErrors,
-                duration = Duration.between(start, Instant.now())
-        )
+
         // save the test plan execution into the database
-        testPlanDAO.saveTestExecution(exec)
+        testPlanDAO.saveTestExecution(exec.copy(status=TestPlanExecutionStatus.COMPLETE))
         // return the completed test execution
         return exec
     }

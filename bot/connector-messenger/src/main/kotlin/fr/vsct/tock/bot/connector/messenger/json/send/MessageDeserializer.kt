@@ -18,7 +18,11 @@ package fr.vsct.tock.bot.connector.messenger.json.send
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
-import fr.vsct.tock.bot.connector.messenger.model.send.*
+import fr.vsct.tock.bot.connector.messenger.model.send.Attachment
+import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentMessage
+import fr.vsct.tock.bot.connector.messenger.model.send.Message
+import fr.vsct.tock.bot.connector.messenger.model.send.QuickReply
+import fr.vsct.tock.bot.connector.messenger.model.send.TextMessage
 import fr.vsct.tock.shared.jackson.JacksonDeserializer
 import fr.vsct.tock.shared.jackson.read
 import fr.vsct.tock.shared.jackson.readListValues
@@ -36,9 +40,9 @@ internal class MessageDeserializer : JacksonDeserializer<Message>() {
 
     override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Message? {
         data class MessageFields(
-                var text: String? = null,
-                var attachment: Attachment? = null,
-                var quickReplies:List<QuickReply>? = null)
+            var text: String? = null,
+            var attachment: Attachment? = null,
+            var quickReplies: List<QuickReply>? = null)
 
         val (text, attachment, quickReplies) = jp.read<MessageFields> { fields, name ->
             with(fields) {

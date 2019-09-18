@@ -7,7 +7,7 @@ import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
-import java.util.*
+import java.util.UUID
 
 object MockServer {
 
@@ -22,7 +22,7 @@ object MockServer {
     fun getMicrosoftMockServer(): MockWebServer {
         val server = MockWebServer()
 
-        val dispatcher = object: Dispatcher() {
+        val dispatcher = object : Dispatcher() {
             @Throws(InterruptedException::class)
             override fun dispatch(request: RecordedRequest): MockResponse {
 
@@ -47,11 +47,11 @@ object MockServer {
                                 "\"token_endpoint_auth_methods_supported\":[\"private_key_jwt\"]}"
                         )
                         .setResponseCode(200)
-                    request.path == "/"                                 -> MockResponse()
+                    request.path == "/" -> MockResponse()
                         .addHeader("Content-Type", "application/json")
                         .setBody(jwks)
                         .setResponseCode(200)
-                    else                                                -> MockResponse().setResponseCode(404)
+                    else -> MockResponse().setResponseCode(404)
                 }
             }
         }

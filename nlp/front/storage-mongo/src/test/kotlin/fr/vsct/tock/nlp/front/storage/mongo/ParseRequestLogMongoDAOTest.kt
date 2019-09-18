@@ -16,8 +16,7 @@
 
 package fr.vsct.tock.nlp.front.storage.mongo
 
-import com.mongodb.ReadPreference
-import com.mongodb.ReadPreference.*
+import com.mongodb.ReadPreference.primary
 import com.mongodb.client.MongoCollection
 import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.EntityType
@@ -128,7 +127,7 @@ internal class ParseRequestLogMongoDAOTest : AbstractTest() {
         ParseRequestLogMongoDAO.save(log2)
         val intentStatCol2 = intentStatsCol.findOne()
         assertNotNull(intentStatCol2)
-        assertEquals(intentStatCol2.averageDiff, (0.6+0.5)/2)
+        assertEquals(intentStatCol2.averageDiff, (0.6 + 0.5) / 2)
         assertEquals(intentStatCol2.count, 2)
     }
 

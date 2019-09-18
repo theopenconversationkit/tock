@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.mongo
 import fr.vsct.tock.bot.admin.test.TestPlan
 import fr.vsct.tock.bot.admin.test.TestPlanDAO
 import fr.vsct.tock.bot.admin.test.TestPlanExecution
+import fr.vsct.tock.bot.admin.test.TestPlanExecutionStatus
 import fr.vsct.tock.bot.admin.test.TestPlanExecution_.Companion.Date
 import fr.vsct.tock.bot.admin.test.TestPlanExecution_.Companion.TestPlanId
 import fr.vsct.tock.bot.admin.test.TestPlan_.Companion.ApplicationId
@@ -68,8 +69,17 @@ internal object TestPlanMongoDAO : TestPlanDAO {
         testPlanExecutionCol.save(testPlanExecution)
     }
 
+    override fun updateTestPlanExecution(executionId: Id<TestPlanExecution>, status: TestPlanExecutionStatus) {
+        val tmpTestPlanExecution = testPlanExecutionCol.findOneById(executionId)
+        if (tmpTestPlanExecution != null) tmpTestPlanExecution.status = status else TestPlanExecutionStatus.COMPLETE
+    }
+
     override fun getPlan(testPlanId: Id<TestPlan>): TestPlan? {
         return testPlanCol.findOneById(testPlanId)
+    }
+
+    override fun getTestPlanExecution(testPlan: TestPlan, testPlanExecutionId: Id<TestPlanExecution>): TestPlanExecution? {
+        return testPlanExecutionCol.findOneById(testPlanExecutionId)
     }
 
     override fun getPlansByApplicationId(applicationId: String): List<TestPlan> {
@@ -82,5 +92,9 @@ internal object TestPlanMongoDAO : TestPlanDAO {
 
     override fun getPlanExecutions(testPlanId: Id<TestPlan>): List<TestPlanExecution> {
         return testPlanExecutionCol.find(TestPlanId eq testPlanId).descendingSort(Date).toList()
+    }
+
+    override fun getPlanExecution(testPlanId: Id<TestPlan>): TestPlanExecution? {
+        return testPlanExecutionCol.findOneById(testPlanId)
     }
 }

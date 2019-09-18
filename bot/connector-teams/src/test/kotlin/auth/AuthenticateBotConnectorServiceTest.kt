@@ -24,7 +24,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle
 import java.lang.Thread.sleep
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.UUID
 import kotlin.test.assertFailsWith
 
 @NotThreadSafe
@@ -39,23 +39,23 @@ class AuthenticateBotConnectorServiceTest {
     private val expirationDate = Instant.now().plus(60, ChronoUnit.SECONDS)
     private val validJsonPayload: JSONObject = JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(
         "{\"iss\":\"https://api.botframework.com\"," +
-                "\"iat\":${notBefore.epochSecond}," +
-                "\"nbf\":${notBefore.epochSecond}" +
-                ",\"exp\":${expirationDate.epochSecond}," +
-                "\"aud\":\"fakeAppId\"," +
-                "\"sub\":\"test\"," +
-                "\"serviceurl\": \"https://serviceurl\"}"
+            "\"iat\":${notBefore.epochSecond}," +
+            "\"nbf\":${notBefore.epochSecond}" +
+            ",\"exp\":${expirationDate.epochSecond}," +
+            "\"aud\":\"fakeAppId\"," +
+            "\"sub\":\"test\"," +
+            "\"serviceurl\": \"https://serviceurl\"}"
     ) as JSONObject
 
     private val validJsonPayloadFromBotFwkEmulator: JSONObject = JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(
         "{\"iss\":\"https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0\"," +
-                "\"iat\":${notBefore.epochSecond}," +
-                "\"nbf\":${notBefore.epochSecond}" +
-                ",\"exp\":${expirationDate.epochSecond}," +
-                "\"aud\":\"fakeAppId\"," +
-                "\"azp\":\"fakeAppId\"," +
-                "\"sub\":\"test\"," +
-                "\"serviceurl\": \"https://serviceurl\"}"
+            "\"iat\":${notBefore.epochSecond}," +
+            "\"nbf\":${notBefore.epochSecond}" +
+            ",\"exp\":${expirationDate.epochSecond}," +
+            "\"aud\":\"fakeAppId\"," +
+            "\"azp\":\"fakeAppId\"," +
+            "\"sub\":\"test\"," +
+            "\"serviceurl\": \"https://serviceurl\"}"
     ) as JSONObject
 
     private lateinit var server: MockWebServer

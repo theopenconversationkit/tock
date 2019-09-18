@@ -42,7 +42,7 @@ import fr.vsct.tock.shared.resourceAsStream
 import mu.KotlinLogging
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import java.util.*
+import java.util.Date
 
 internal class IncomingEventDeserializationTest {
 

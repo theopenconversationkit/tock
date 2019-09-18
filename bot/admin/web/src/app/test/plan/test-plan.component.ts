@@ -32,10 +32,14 @@ import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
 export class TestPlanComponent implements OnInit {
 
   testPlans: TestPlan[];
+  runningTestPlan: TestPlan;
 
   testPlanCreation: boolean;
   testPlanName: string;
   testBotConfigurationId: string;
+  testPlanId: string;
+  testExecutionId: string;
+  testExecutionStatus: string;
 
   executePlan: boolean;
 
@@ -50,8 +54,19 @@ export class TestPlanComponent implements OnInit {
               private shared: BotSharedService) {
   }
 
+  // loop to check test plan executions status
   ngOnInit(): void {
     this.reload();
+    setInterval(_ => {
+      // if path params exist and if the current test execution is not complete, then get the execution status
+      if ((null != this.testPlanId && null != this.testExecutionId) && "COMPLETE" !== this.testExecutionStatus) {
+        this.getExecutionStatus(this.testPlanId, this.testExecutionId);
+      }
+      // if the test execution is complete
+      if("COMPLETE" === this.testExecutionStatus) {
+        this.executePlan = false;
+      }
+    }, 2000);
   }
 
   private reload() {
@@ -64,6 +79,7 @@ export class TestPlanComponent implements OnInit {
             if (conf) {
               plan.botName = conf.name;
             }
+            this.showExecutions(plan)
           });
           this.testPlans = p;
 
@@ -149,12 +165,16 @@ export class TestPlanComponent implements OnInit {
 
   exec(plan: TestPlan) {
     this.executePlan = true;
+    this.testExecutionStatus = "PENDING";
+    this.runningTestPlan = plan;
     this.test.runTestPlan(plan._id).subscribe(
       execution => {
-        this.executePlan = false;
+        this.testExecutionId = execution
         this.showExecutions(plan);
-        this.snackBar.open(`Plan ${plan.name} executed with ${execution.nbErrors === 0 ? 'success' : execution.nbErrors + ' errors'}`, "Execution", {duration: 2000})
-      })
+        this.snackBar.open(`Plan ${plan.name} is running.`, "Execution", {duration: 2000})
+        this.getExecutionStatus(this.testPlanId, this.testExecutionId)
+      });
+    this.testPlanId = plan._id;
   }
 
   removeDialog(plan: TestPlan, dialog: DialogReport) {
@@ -182,6 +202,20 @@ export class TestPlanComponent implements OnInit {
         e.forEach(e => e.dialogs.forEach(d => plan.fillDialogExecutionReport(d)));
         plan.displayExecutions = true;
       });
+  }
+
+  /**
+   * Retrieve the status of the given test execution and store the status into the variable testExecutionStatus
+   * which is used at the beginning of the file.
+   *
+   * @param testPlanId - Identifier of the running test plan
+   * @param testExecutionId - Identifier of the test plan execution
+   */
+  getExecutionStatus(testPlanId: string, testExecutionId: string) {
+    this.test.getTestPlanExecutionStatus(testPlanId, testExecutionId).subscribe(
+      e =>
+        this.testExecutionStatus = e.status
+    )
   }
 
   hideExecutions(plan: TestPlan) {

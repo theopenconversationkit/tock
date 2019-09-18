@@ -9,11 +9,8 @@ import fr.vsct.tock.shared.devEnvironment
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
-import kotlinx.coroutines.NonCancellable.cancel
 import mu.KotlinLogging
-import java.io.IOException
-import java.util.*
-import kotlin.collections.ArrayList
+import java.util.Timer
 import kotlin.concurrent.fixedRateTimer
 
 /**
@@ -30,7 +27,11 @@ class JWKHandler {
 
     private val logger = KotlinLogging.logger {}
 
-    private val logLevel = if (logger.isDebugEnabled) {Level.BODY} else {Level.BASIC}
+    private val logLevel = if (logger.isDebugEnabled) {
+        Level.BODY
+    } else {
+        Level.BASIC
+    }
 
     private val teamsMapper: ObjectMapper = mapper.copy().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
     private lateinit var jwkTimerTask: Timer
@@ -51,7 +52,7 @@ class JWKHandler {
         .build()
         .create()
 
-    private var microsoftOpenIdMetadataApi: MicrosoftOpenIdMetadataApi  = retrofitBuilderWithTimeoutAndLogger(
+    private var microsoftOpenIdMetadataApi: MicrosoftOpenIdMetadataApi = retrofitBuilderWithTimeoutAndLogger(
         longProperty("tock_microsoft_request_timeout", 5000),
         logger,
         logLevel
@@ -155,8 +156,8 @@ class JWKHandler {
             longProperty("tock_microsoft_request_timeout", 5000),
             this.logger,
             level = Level.BASIC
-            )
-        .baseUrl(JKS_BASE_LOCATION)
+        )
+            .baseUrl(JKS_BASE_LOCATION)
             .addJacksonConverter(teamsMapper)
             .build()
             .create()

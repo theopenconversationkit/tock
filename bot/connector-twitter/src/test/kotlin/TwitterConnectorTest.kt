@@ -25,7 +25,7 @@ import fr.vsct.tock.shared.sharedModule
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
-import java.util.*
+import java.util.Date
 
 class TwitterConnectorTest {
 

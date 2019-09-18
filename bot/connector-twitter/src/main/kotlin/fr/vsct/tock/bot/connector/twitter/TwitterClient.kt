@@ -52,11 +52,14 @@ import se.akerfeldt.okhttp.signpost.OkHttpOAuthConsumer
 import se.akerfeldt.okhttp.signpost.SigningInterceptor
 import java.net.URLDecoder
 import java.net.URLEncoder
-import java.util.*
+import java.util.Base64
+import java.util.Date
+import java.util.LinkedHashMap
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import fr.vsct.tock.bot.connector.twitter.model.Tweet as InputTweet
 import fr.vsct.tock.bot.connector.twitter.model.outcoming.Tweet as OutputTweet
+
 /**
  * Twitter client
  */
@@ -542,9 +545,9 @@ internal class TwitterClient(
         val enableDefaultMessage = tweet.defaultMessage != null
         val message = if (enableDM) {
             tweet.text +
-                    " https://twitter.com/messages/compose?recipient_id=" + tweet.dmRecipientID +
-                    (if (enableWelcomeMessage) "&welcome_message_id=" + tweet.welcomeMessageID else "") +
-                    (if (enableDefaultMessage) "&text=" + URLEncoder.encode(tweet.defaultMessage, "UTF-8") else "")
+                " https://twitter.com/messages/compose?recipient_id=" + tweet.dmRecipientID +
+                (if (enableWelcomeMessage) "&welcome_message_id=" + tweet.welcomeMessageID else "") +
+                (if (enableDefaultMessage) "&text=" + URLEncoder.encode(tweet.defaultMessage, "UTF-8") else "")
         } else {
             tweet.text
         }

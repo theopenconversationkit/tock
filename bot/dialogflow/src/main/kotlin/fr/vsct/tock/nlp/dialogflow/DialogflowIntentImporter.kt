@@ -22,7 +22,7 @@ import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelValue
 import fr.vsct.tock.translator.Translator
 import mu.KotlinLogging
-import java.util.*
+import java.util.Locale
 
 /**
  * Intent Importer from Dialogflow
