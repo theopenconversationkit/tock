@@ -121,6 +121,7 @@ export class TestPlanExecution {
               public nbErrors: number,
               public date: Date,
               public duration: Date,
+              public status: string,
               public _id: string) {
   }
 

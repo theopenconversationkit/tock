@@ -230,6 +230,10 @@ open class BotAdminVerticle : AdminVerticle() {
             TestPlanService.getPlanExecutions(context.loadTestPlan())
         }
 
+        blockingJsonGet("/test/plan/:planId/executions/:executionId", botUser) { context ->
+            TestPlanService.getTestPlanExecution(context.loadTestPlan(), context.pathId("executionId"))
+        }
+
         blockingJsonPost("/test/plan", botUser) { context, plan: TestPlanUpdate ->
             if (context.organization == plan.namespace) {
                 TestPlanService.saveTestPlan(plan.toTestPlan())
@@ -473,10 +477,6 @@ open class BotAdminVerticle : AdminVerticle() {
                 this
             }
         } ?: notFound()
-    }
-
-    fun getTestPlanStatus(testPlanId: String): TestPlanExecutionStatus {
-        return TestPlanService.getTestPlanExecutionStatus(testPlanId) ?: TestPlanExecutionStatus.UNKNOWN
     }
 
 }

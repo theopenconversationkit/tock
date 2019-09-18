@@ -78,8 +78,8 @@ internal object TestPlanMongoDAO : TestPlanDAO {
         return testPlanCol.findOneById(testPlanId)
     }
 
-    override fun getTestPlanExecutionStatus(testPlanExecutionId: String): TestPlanExecutionStatus? {
-        return testPlanExecutionCol.findOneById(testPlanExecutionId)?.status
+    override fun getTestPlanExecution(testPlan: TestPlan, testPlanExecutionId: Id<TestPlanExecution>): TestPlanExecution? {
+        return testPlanExecutionCol.findOneById(testPlanExecutionId)
     }
 
     override fun getPlansByApplicationId(applicationId: String): List<TestPlan> {

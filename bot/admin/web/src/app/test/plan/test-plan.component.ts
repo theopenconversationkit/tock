@@ -36,8 +36,9 @@ export class TestPlanComponent implements OnInit {
   testPlanCreation: boolean;
   testPlanName: string;
   testBotConfigurationId: string;
-  testPlanId: string = "";
-  testExecutionId: string = "";
+  testPlanId: string;
+  testExecutionId: string;
+  testExecutionStatus: string;
 
   executePlan: boolean;
 
@@ -56,10 +57,12 @@ export class TestPlanComponent implements OnInit {
   ngOnInit(): void {
     this.reload();
     setInterval(_ => {
-      console.log("planId : " + this.testPlanId);
-      console.log("testExecutionId : " + this.testExecutionId);
-      console.log("execution status : " );
-    }, 2000)
+      // if path params exist and if the current test execution is not complete, then get the execution status
+      if ((null !=this.testPlanId && null != this.testExecutionId) && "COMPLETE" != this.testExecutionStatus) {
+        this.getExecutionStatus(this.testPlanId, this.testExecutionId)
+        console.log("execution status : " + this.testExecutionStatus);
+      }
+    }, 2000);
   }
 
   private reload() {
@@ -163,7 +166,7 @@ export class TestPlanComponent implements OnInit {
         this.testExecutionId = execution
         this.executePlan = false;
         this.showExecutions(plan);
-        this.snackBar.open(`Plan ${plan.name} is runing`, "Execution", {duration: 2000})
+        this.snackBar.open(`Plan ${plan.name} is running.`, "Execution", {duration: 2000})
       });
     this.testPlanId = plan._id;
   }
@@ -193,6 +196,20 @@ export class TestPlanComponent implements OnInit {
         e.forEach(e => e.dialogs.forEach(d => plan.fillDialogExecutionReport(d)));
         plan.displayExecutions = true;
       });
+  }
+
+  /**
+   * Retrieve the status of the given test execution and store the status into the variable testExecutionStatus
+   * which is used at the beginning of the file.
+   *
+   * @param testPlanId - Identifier of the running test plan
+   * @param testExecutionId - Identifier of the test plan execution
+   */
+  getExecutionStatus(testPlanId: string, testExecutionId: string) {
+    this.test.getTestPlanExecutionStatus(testPlanId, testExecutionId).subscribe(
+      e =>
+        this.testExecutionStatus = e.status
+    )
   }
 
   hideExecutions(plan: TestPlan) {

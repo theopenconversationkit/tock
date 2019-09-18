@@ -46,6 +46,10 @@ export class TestService {
     return this.rest.get(`/test/plan/${planId}/executions`, TestPlanExecution.fromJSONArray);
   }
 
+  getTestPlanExecutionStatus(planId: string, executionId: string): Observable<TestPlanExecution> {
+    return this.rest.get(`/test/plan/${planId}/executions/${executionId}`, TestPlanExecution.fromJSON);
+  }
+
   saveTestPlan(plan: TestPlan): Observable<boolean> {
     return this.rest.post(`/test/plan`, plan);
   }

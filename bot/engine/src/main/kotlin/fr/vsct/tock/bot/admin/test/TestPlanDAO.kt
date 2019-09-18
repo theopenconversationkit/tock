@@ -50,11 +50,11 @@ interface TestPlanDAO {
 
     fun getPlan(testPlanId: Id<TestPlan>): TestPlan?
 
-    fun getTestPlanExecutionStatus(testPlanExecutionId: String): TestPlanExecutionStatus?
-
     fun getPlansByApplicationId(applicationId: String): List<TestPlan>
 
     fun getPlanExecutions(testPlanId: Id<TestPlan>): List<TestPlanExecution>
 
     fun getPlanExecution(testPlanId: Id<TestPlan>): TestPlanExecution?
+
+    fun getTestPlanExecution(testPlan: TestPlan, testPlanExecutionId: Id<TestPlanExecution>): TestPlanExecution?
 }

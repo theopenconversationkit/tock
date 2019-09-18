@@ -91,8 +91,8 @@ object TestPlanService {
         return testPlanDAO.getPlan(planId)
     }
 
-    fun getTestPlanExecutionStatus(testPlanExecutionId: String) : TestPlanExecutionStatus? {
-        return testPlanDAO.getTestPlanExecutionStatus(testPlanExecutionId)
+    fun getTestPlanExecution(testPlan: TestPlan, testExecutionId: Id<TestPlanExecution>) : TestPlanExecution? {
+        return testPlanDAO.getTestPlanExecution(testPlan, testExecutionId);
     }
 
     fun saveTestPlanExecution(testPlanExecution: TestPlanExecution) {
