@@ -18,6 +18,8 @@ import mu.KotlinLogging
 
 internal object DialogflowService {
 
+    private const val DIALOGFLOW_MAX_TEXT_LENGTH = 256
+
     private val logger = KotlinLogging.logger {}
 
     /**
@@ -43,8 +45,16 @@ internal object DialogflowService {
             val session = SessionName.of(projectId, sessionId)
             logger.debug("Session Path: $session")
 
+            val dialogflowText = if (text.length > DIALOGFLOW_MAX_TEXT_LENGTH) {
+                text.substring(0, DIALOGFLOW_MAX_TEXT_LENGTH).also {
+                    logger.warn { "Text sent to Dialogflow too long : More than ${text.length} characters. Truncated to $DIALOGFLOW_MAX_TEXT_LENGTH characters." }
+                }
+            } else {
+                text
+            }
+
             // Set the text (hello) and language code (en-US) for the query
-            TextInput.newBuilder().setText(text).setLanguageCode(languageCode)
+            TextInput.newBuilder().setText(dialogflowText).setLanguageCode(languageCode)
                 .apply {
                     QueryInput.newBuilder().setText(this).build().apply {
                         it.detectIntent(session, this).apply {
