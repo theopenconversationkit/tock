@@ -949,7 +949,7 @@ du <a href="https://jdk.java.net/">JDK</a> et de <a href="https://maven.apache.o
 <p>D'autres modes que Kotlin et <em>WebSocket</em> sont présentés dans le <a href="../../toc/">manuel utilisateur Tock</a>.</p>
 </blockquote>
 <h2 id="deployer-une-plateforme-tock-sans-les-sources">Déployer une plateforme Tock - sans les sources<a class="headerlink" href="#deployer-une-plateforme-tock-sans-les-sources" title="Permanent link">&para;</a></h2>
-<p>Il est possible de récupérer seulement quelques fichiers du dépôt github, sans télécharger toutes les sources Tock. 
+<p>Il est possible de récupérer seulement quelques fichiers du dépôt GitHub, sans télécharger toutes les sources Tock. 
  En quelques lignes de commande, la plateforme est opérationnelle.</p>
 <p>Il est cependant indispensable d'avoir des versions récentes de 
  <a href="https://www.docker.com/">Docker</a> et <a href="https://docs.docker.com/compose/">Docker Compose</a>.</p>
@@ -957,11 +957,11 @@ du <a href="https://jdk.java.net/">JDK</a> et de <a href="https://maven.apache.o
 <p>Pour démarrer depuis les sources du dépôt Tock Docker, passez plutôt au 
 <a href="#deployer-une-plateforme-tock-depuis-les-sources">paragraphe suivant</a>.</p>
 </blockquote>
-<div class="codehilite"><pre><span></span><span class="c1"># Get the lastest docker-compose from github (including Bot API)</span>
+<div class="codehilite"><pre><span></span><span class="c1"># Get the lastest docker-compose from GitHub (including Bot API)</span>
 $ curl -o docker-compose.yml https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/docker-compose-bot.yml
-<span class="c1"># Get the lastest database-init script from github</span>
+<span class="c1"># Get the lastest database-init script from GitHub</span>
 $ mkdir -p scripts <span class="o">&amp;&amp;</span> curl -o scripts/setup.sh https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/scripts/setup.sh <span class="o">&amp;&amp;</span> chmod +x scripts/setup.sh
-<span class="c1"># Get the lastest Tock version/tag from github</span>
+<span class="c1"># Get the lastest Tock version/tag from GitHub</span>
 $ curl -o .env https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/.env
 
 <span class="c1"># Run the stack</span>
@@ -974,12 +974,12 @@ $ docker-compose up
  <a href="https://github.com/voyages-sncf-technologies/tock-docker">Tock Docker</a>. </p>
 <p>Il vous faut, en plus de <a href="https://www.docker.com/">Docker</a> et <a href="https://docs.docker.com/compose/">Docker Compose</a>, 
   soit un client <a href="https://git-scm.com/">Git</a> pour récupérer les sources (commande <code>git clone</code>) soit avoir déjà copié 
-  les sources de github en local.</p>
+  les sources de GitHub en local.</p>
 <blockquote>
 <p>Pour démarrer sans Git ni les sources du dépôt en local, suivez le 
 <a href="#deployer-une-plateforme-tock-sans-les-sources">paragraphe précédent</a>.</p>
 </blockquote>
-<div class="codehilite"><pre><span></span><span class="c1"># Get the lastest sources from github</span>
+<div class="codehilite"><pre><span></span><span class="c1"># Get the lastest sources from GitHub</span>
 $ git clone https://github.com/voyages-sncf-technologies/tock-docker.git <span class="o">&amp;&amp;</span> <span class="nb">cd</span> tock-docker
 <span class="c1"># Make the database-init script executable</span>
 $ chmod +x scripts/setup.sh
