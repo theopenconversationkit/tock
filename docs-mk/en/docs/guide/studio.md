@@ -1,209 +1,206 @@
-# Créer son premier bot avec Tock Studio
+# Create your first bot with Tock Studio
 
-Un bon moyen de tester Tock est certainement de créer son premier bot conversationnel dans _Tock Studio_ (l'interface 
-graphiques fournie avec la plateforme).
+The best way to try Tock is probably to create a first conversational bot using _Tock Studio_ (the graphical user 
+interface provided with the platform).
  
-En se connectant à la [plateforme de démonstration](https://demotock-production-admin.vsct-prod.aws.vsct.fr/) Tock, il 
-est possible de créer et tester un assistant en quelques minutes sans écrire de code.
+By connecting to the Tock [demonstration platform](https://demotock-production-admin.vsct-prod.aws.vsct.fr/), it is 
+possible to both design and test a conversational assistant in a few minutes, without having to write code.
 
-## Ce que vous allez créer
+## What you will build
 
-* Une _application_ et un _connecteur_ sur la plateforme de démonstration Tock
+* An _application_ and a _connector_ on the Tock demo platform
 
-* Une _story_ : phrase utilisateur / réponse du bot, testable dans l'interface _Tock Studio_
+* A _story_: user sentence / bot answer, testable through the _Tock Studio_ interface
 
-* Un assistant qui répond quand vous lui dites "bonjour" ! 🙂
+* An assistant who answers, when you say "hello"! 🙂
 
-## Pré-requis
+## What you need
 
-* Entre 5 et 15 minutes environ (en lisant les commentaires)
+* About 5 to 15 minutes (reading the additional notes)
 
-* Un compte github pour se connecter à la plateforme de démonstration
+* A GitHub account, to connect to the demo platform
 
-## Connexion à la plateforme démo
+## Connect to the demo platform
 
-Ouvrez [ce lien](https://demotock-production-admin.vsct-prod.aws.vsct.fr/) pour accéder à la plateforme de démonstration Tock.
+Open [this link](https://demotock-production-admin.vsct-prod.aws.vsct.fr/) to access the Tock demonstration platform.
 
-> **Remarque importante** : Cette plateforme n'a pas vocation à accueillir de véritables bots en production. 
->C'est un moyen de tester et prendre en main la solution Tock sans avoir à l'installer.
+> **Important**: this platform is not supposed to host bots in production. 
+>This is merely a sandbox instance, in order to try the Tock solution without installing it.
 
-Une invite apparaît pour vous identifier avec votre compte github. Après cela, vous devez accepter que Tock accède 
-à votre compte - seul l'identifiant de votre compte github sera lu.
+A login dialog invites you to connect with GitHub. Then, you have to accept that Tock gets info from your account - 
+only your account ID will be read from GitHub.
 
-## Créer une application Tock
+## Create a Tock application
 
-Au premier accès à la plateforme de démonstration, un assistant invite à créer une _application_ :
+When accessing the demo platform for the first time, a wizard helps to create the first _application_:
 
-* Saisissez un nom pour l'application
+* Enter a name for the application
 
-* Sélectionnez une langue - vous pourrez en ajouter d'autres par la suite
+* Select a language - other languages can be added later
 
-* Validez pour créer l'application
+* Validate to create the application
 
-> Vous pouvez retrouver l'application créée dans le menu : _Configuration_ > _NLU Applications_.
+> The just-created application is now visible from the menu: _Configuration_ > _NLU Applications_.
 >
-> Si vous aviez déjà créé une ou plusieurs applications, vous pouvez en créer de nouvelles en revenant à cet écran puis _Create New Application_.
+> Once the first application has been created, more can be added by going back to this interface, then _Create New Application_.
 
-## Ajouter un connecteur
+## Add a connector
 
-Pour intéragir avec le bot, il faut utiliser un _connecteur_ afin de l'exposer à un canal de communication. 
-De nombreux connecteurs existent pour Tock : [Messenger](https://www.messenger.com/), [WhatsApp](https://www.whatsapp.com/),
-[Google Assistant](https://assistant.google.com/) et [Google Home](https://store.google.com/fr/product/google_home),
+To interact with the bot (through a communication channel), a _connector_ must be used. 
+Numerous connectors are provided with Tock: [Messenger](https://www.messenger.com/), [WhatsApp](https://www.whatsapp.com/),
+[Google Assistant](https://assistant.google.com/) and [Google Home](https://store.google.com/fr/product/google_home),
 [Twitter](https://twitter.com/), [Alexa](https://alexa.amazon.com/), [Business Chat](https://www.apple.com/fr/ios/business-chat/), 
 [Teams](https://products.office.com/fr-fr/microsoft-teams/), [Slack](https://slack.com/), 
 [Rocket.Chat](https://rocket.chat/)... 
-Il est même possible de développer ses propres connecteurs pour ouvrir le bot à de nouveaux canaux.
+It is even possible to implement your own connectors to integrate with more channels.
 
-> Pour ce tutoriel, vous allez configurer un connecteur pour [Slack](https://slack.com/). 
-Dans un premier temps, vous testerez le bot en restant dans l'interface _Tock Studio_, et n'aurez pas besoin d'utiliser Slack.
+> In this tutorial, you will configure a connector for [Slack](https://slack.com/) - the collaborative and instant 
+>messaging platform. 
+>It will be possible to try the bot using the _Tock Studio_ interface - no need to use Slack or get an account.
 >
->Dans la section suivante [Configurer Slack](slack.md),
-vous pourrez compléter la configuration côté Slack et côté Tock afin que le bot soit fonctionnel sur cette plateforme collaborative.
+>The following section [Configure Slack](slack.md) will present, how to configure both Slack and the Tock 
+>application/connector, to integrate and try the bot live on Slack.
 >
-> De même, la section [Configurer Messenger](messenger.md) vous montrera comment activer le même bot sur la messagerie du réseau social Facebook.
+> Similarly the [Configure Messenger](messenger.md) guide shows, how to deploy the bot to another channel, 
+>the Facebook messaging service.
 
-Créez un premier connecteur pour votre application :
+Create the first connector for your application:
 
-* Allez dans _Configuration_ > _Bot Configurations_
+* Go to _Configuration_ > _Bot Configurations_
  
  * _Create a new Configuration_
  
- * Sélectionnez le type de connecteur _Slack_
+ * Select the connector type _Slack_
  
  * _Create_
 
-> Notez qu'une _API Key_ a été automatiquement générée pour votre application à la création du premier connecteur. 
->Celle-ci vous servira à vous connecter à l'API du bot si vous essayez le mode _WebHook_ ou _WebSocket_ dans le guide 
->_[Programmer des parcours](api.md)_.
+> Note that an _API Key_ is automatically generated for the application, once the first connector is created. 
+>This key is required to connect to the bot API, in order to leverage the _WebHook_ or _WebSocket_ modes described in 
+>_[Program stories](api.md)_.
 
-> Si vous cliquez sur _Display test configurations_, vous pouvez voir qu'une seconde configuration est créée. 
->Ce connecteur spécial sera utilisé pour tester le bot directement depuis l'interface _Tock Studio_. 
->Grâce à lui, vous pourrez parler au bot sans passer par Slack.
-
-
-## Créer un parcours
-
-Un bot conversationnel analyse les phrases des utilisateurs en langage naturel, pour en déterminer l'_intention_ et 
-éventuellement des _entités_.
-
-> Exemple : dans la phrase "Quel temps fera-t-il demain ?", le moteur _NLU (Natural Language Understanding)_ de Tock va
-reconnaître une intention "météo" et une entité "demain" venant préciser/paramétrer cette intention.
-
-Encore faut-il avoir déclaré les intentions et entités possibles, puis qualifié des phrases pour apprendre au bot à 
-les détecter. Le menu _NLU_ de Tock permet de gérer intentions et entités, qualifier les phrases 
-et ainsi superviser l'apprentissage du bot : **plus on qualifie de phrases, plus le bot devient pertinent** dans sa compréhension du langage.
-
-Mais laissons intentions et entités de côté pour le moment...
-
-Le mode _Stories_ de Tock permet en quelques clics de créer automatiquement des intentions ainsi que les réponses à fournir. 
-Ainsi, sans quitter l'interface _Tock Studio_, vous allez créer un premier parcours de question(s)-réponse(s).
-
-* Allez dans _Build_ > _New Story_
-
-* Saisissez une phrase utilisateur par exemple "bonjour"
-
-Un formulaire s'ouvre vous permettant de configurer la création de la _story_, l'intention qui sera également créée, le 
-type de réponse, etc.
-
-* Dans le champs _Add new Answer_, saisissez une réponse par exemple "quelle belle journée!"
-
-* Terminez avec _Create Story_
-
-> Il est possible de répondre par plusieurs messages, ou des messages plus évolués comme des images, des liens, des 
->boutons d'_Action_ de manière à continuer le dialogue, etc. La section [Tock Studio](../utilisateur/studio.md) du manuel
->utilisateur Tock vous en apprendra plus.
+> Clicking on _Display test configurations_, you can see another configuration has been created. 
+>This connector is special, it is used when the bot is tested directly through the _Tock Studio_ interface. 
+>It allows to try the bot without having Slack, for instance.
 
 
-## Tester le bot
+## Create a story
 
-Il est maintenant temps de tester le bot et votre premier parcours!
+A conversational bot receives and understands user sentences, using natural-language techniques to identify an _intent_ 
+and possibly _entities_.
 
-* Allez dans _Test_ > _Test the bot_
+> Example: from the sentence "What will the weather be like tomorrow?", the Tock _NLU (Natural Language Understanding)_ 
+>engine should detect a "weather" intent and a "tomorrow" date/time entity precising the question 
+>(like a kind of intent variable/parameter).
 
-* Dites "bonjour" 🙋, le bot vous répond 🤖
+In order to detect intents and entities, sentences must first be added and qualified - so that the bot learns. 
+The Tock _NLU_ menu permits to manage intents and entities, qualify sentences and supervise the bot training:
+**the more qualified sentences, the more relevant is the bot** (the more it understands natural language).
 
-> Si le bot répond qu'il n'a pas compris, c'est certainement un problème de qualification. Vous pouvez vérifier que la 
->_story_ et/ou l'_intention_ ont bien été créés en allant dans _Build_ > _Search Stories_.
+Nevertheless, let's leave intents and entities for now...
+
+The Tock _Stories_ mode allows to create intents automatically in a few minutes, as well as the expected asnwers.
+  You will now create a first template of a conversation, using the _Tock Studio_ graphical tools:
+
+* Go to _Build_ > _New Story_
+
+* Enter a new user sentence - for instance "hello"
+
+A form now opens to configure the new _story_ creation, the intent, the type of response, etc.
+
+* In the _Add new Answer_ field, enter the answer - for instance "what a nice day!"
+
+* End with _Create Story_
+
+> It is possible to answer more messages, or more advanced messages including images, links, 
+>_Actions_ and buttons to continue within the conversation, etc. To known more, please refer to the 
+>[Tock Studio](../utilisateur/studio.md) section from the Tock user manual.
+
+
+## Test the bot
+
+It is time to try the bot and its first story!
+
+* Go to _Test_ > _Test the bot_
+
+* Say "hello", the bot answers
+
+> In case the bot answers it did not understand, that is probably a qualification issue. You can check that 
+>the _story_ and/or _intent_ are created by looking at _Build_ > _Search Stories_.
 >
-> Vérifiez aussi que vous êtes sur la bonne application et la bonne lanque (au cas où vous en auriez créé plusieurs) 
->pour faire le test : ils sont visibles en haut à droite de l'interface.
+> Please check that the correct application and language are selected (in case there are more than one) 
+>when testing: they are visible in the top-right corner of the interface.
 >
-> Si malgré tout le bot répond qu'il ne comprend pas, peut-être n'avez-vous pas saisi exactement la phrase utilisée à 
->la création de la _story_, et le bot ne fait pas encore le lien avec cette seconde phrase. Dans le paragraphe suivant, 
->vous verrez comment améliorer la compréhension du bot en qualifiant plus de phrases utilisateur.
+> If the bot still does not understand, maybe the sentence entered is not exactly the one entered with the _story_ creation,
+> then the bot does not make the connection. In the next section, you will learn how to improve bot understanding
+>by qualifying more user sentences.
 >
-> Si vous obtenez un message d'erreur technique, il s'agit probablement d'une erreur de configuration du connecteur.
+> When a technical error message occurs, it must be a connector configuration problem.
 
-## Améliorer la compréhension
+## Improve the understanding
 
-En saisissant des phrases un peu différentes dans l'écran _Test the bot_, vous pouvez constater qu'il ne comprend pas encore
-très bien votre langage - même lorsque les phrases sont proches de celle saisie à la création de la _story_.
+By entering various sentences through the _Test the bot_ interface, you can see it does not understand much
+your natural language - even with sentences very similar to the one at _story_ creation.
 
-C'est normal.
+That is normal.
 
-Le modèle conversationnel et la partie _NLU_ de Tock s'enrichissent progressivement de _phrases qualifiées_ pour alimenter
-les algorithmes et donner des résultats de plus en plus pertinents.
+The conversational model and the Tock _NLU_ engine must be trained and improved by progressively adding 
+ user _qualified sentences_ to feed underlying algorithms and give more and more relevant results.
 
-> Les premiers essais peuvent être décevants, mais souvent après quelques qualifications, voire une ou deux dizaines 
->de phrases qualifiées si besoin, votre bot vous comprend déjà bien mieux.
+> Although first tries can be deceiving, several qualified sentences (one or two dozens if necessary) usually make a 
+>difference and the bot gets more relevant.
 
-* Allez dans _NLU_ > _Inbox_
+* Go to _NLU_ > _Inbox_
 
-Vous voyez les phrases que vous avez saisies, et comment le bot les a interprêtées. Pour chacune s'affichent
-l'intention reconnue, la langue ainsi que le score (que se donnent les algorithmes selon leur niveau de confiance sur cette phrase).
+Here you can see the previously entered sentences, and more interestingly how the bot qualified them. For each sentence,
+Tock shows the detected intent, the language, as well as the scores (given by the algorithms according to their 
+level of confidence for the sentence).
 
-* Choisissez quelques phrases, pour chacune sélectionnez la bonne intention puis _Validate_
+* Choose several sentences, for each one: select the correct intent then _Validate_
 
-* Retournez dans _Test_ > _Test the bot_
+* Return to _Test_ > _Test the bot_
 
-* Vérifiez que le bot comprend mieux ces phrases, et mêmes d'autres un peu différentes alors que vous ne les avez pas
- qualifiées explicitement!
+* Check the bot now understands these sentences correctly, as well as slightly-different ones you have never entered!
 
 
-## Créer d'autres parcours (optionnel)
+## Create more stories (optional)
 
-Pour aller un peu plus loin avec les _stories_ Tock, vous pouvez créer d'autres parcours et les tester directement 
-dans _Tock Studio_.
+To go a little further with Tock _stories_, you could create more stories and test them directly from _Tock Studio_.
 
-Le bot vous répond alors selon l'intention déclenchée, sans autre forme de navigation que le fil que 
-vous donnez à la conversation. C'est la magie du conversationnel : le langage naturel est la seule navigation, et 
-l'utilisateur est soustrait aux liens et menus traditionnellement imposés par les interfaces Web ou mobiles.
+Each bot response comes from the intent detected/triggered, without another form of navigation than the thread of YOUR 
+sentences. Conversational is magic: natural language is the navigation, users are not forced to use traditional 
+links and menus anymore (contrary to Websites and mobile apps).
 
-> Remarque : si vous preniez le temps de créer de très nombreuses _stories_, vous contasteriez peut-être 
-quelques effets indésirables propres au mode de fonctionnement des modèles et algorithmes _NLU_.
+> For curious users, let's have a word about managing numerous _stories_ and the possible impact on understanding.
 >
-> Par exemple, un très grand nombre d'intentions et d'entités peut rendre plus difficile leur détection. 
-> On recommande souvent de commencer par créer des bots dédiés à un domaine fonctionnel 
->limité, facilitant son apprentissage en focalisant le modèle sur ce domaine. 
-> Qualifier beaucoup de phrases permet en général d'améliorer la compréhension, mais 
->à l'inverse qualifier trop de phrases (ou trop proches) peut sur-entraîner le modèle pour une intention, avec 
->pour effet de réduire la reconnaissance des phrases un peu différentes.
+> If you take time and create many _stories_, you may experience unintended effects with how work _NLU_ models and 
+>algorithms. As an example, numerous intents and entities can make detection difficult (or more random). 
+>A general recommendation is to create bots, dedicated to a limited functional perimeter. It makes it easier to train 
+>each bot and focus on the model for its own domain. Qualifying a lot of sentences generally improves the bot understanding,
+>however too many sentences (or too similar) can over-train the model for an intent, resulting in degraded performance.
 >
-> Retenez que la conception et la maintenance des modèles conversationnels est un sujet complexe qui nécessite de 
->l'apprentissage (du bot mais aussi de ceux qui le construisent), de ré-évaluer et ré-adapter régulièrement ces modèles 
->aux besoins et aux nouvelles demandes des utilisateurs.
+> As a conclusion, remember the design and maintenance of conversational models is complex, it requires training 
+>(the bot, as well as people building it), qualifying and adapting the models on a regular basis to user needs and language.
  
 
-## Félicitations!
+## Congratulations!
 
-Vous venez de créer votre premier bot conversationnel avec Tock.
+You have just created your first conversational application with Tock.
 
-Comme vous avez pu vous en apercevoir, quelques minutes suffisent, sans connaissances techniques approfondies,
-pour créer des parcours conversationnels simples sans écrire ni déployer de code.
+With a few minutes and no particular knowledge or skill, more importantly without writing or deploying code, 
+you have been able to create a simple conversational workflow and test it online.
 
 
-## Continuer...
+## To be continued...
 
-Dans les sections suivantes vous apprendez à :
+In the next sections you will learn how to:
 
-* [Configurer le bot pour le canal Slack](slack.md) (requiert un compte Slack)
+* [Configure the bot for Slack](slack.md) (requires a Slack account)
 
-* [Configurer le bot pour le canal Messenger](messenger.md) (requiert un compte Facebook)
+* [Configure the bot for Messenger](messenger.md) (requires a Facebook developer account)
 
-* [Créer des parcours programmés en Kotlin](api.md), ouvrant la voie à des comportements complexes et 
-l'intégration d'API tierces si besoin
+* [Create more stories, written in Kotlin](api.md), making it possible to implement complex behaviours and features, 
+ possibly integrating 3rd party APIs
 
-* [Déployer une plateforme Tock](platform.md) en quelques minutes avec Docker
+* [Deploy a (standalone) Tock platform](platform.md) in minutes with Docker
 
-Pour en savoir plus sur _Tock Studio_, les fonctionnalités et les modes de déploiement de Tock, vous pouvez aussi 
-parcourir le [manuel utilisateur](../toc.md), plus complet.
+To find more about _Tock Studio_, its features and deployment modes, you can also browse the complete Tock [user manual](../toc.md).

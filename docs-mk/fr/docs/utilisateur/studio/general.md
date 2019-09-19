@@ -9,8 +9,8 @@ Les pages suivantes couvrent les différents menus de l'application et différen
 Un navigateur standard suffit pour accéder à _Tock Studio_. L'utilisateur est invité à s'authentifier :
 
  * Sur la [plateforme Tock de démonstration](https://demotock-production-admin.vsct-prod.aws.vsct.fr/),
- l'utilisateur est invité à s'authentifier via son compte github. Celui-ci doit alors accepter que Tock accède 
-à son compte - seul l'identifiant du compte github est lu par Tock.
+ l'utilisateur est invité à s'authentifier via son compte GitHub. Celui-ci doit alors accepter que Tock accède 
+à son compte - seul l'identifiant du compte GitHub est lu par Tock.
 
 * Sur une plateforme Tock par défaut, les identifiants sont `admin@app.com` / `password`.<br/>Les identifiants par défaut 
 sont définis dans fichier source `bot/admin/web/src/environments/environment.ts` et il est recommandé de les modifier.

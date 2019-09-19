@@ -41,7 +41,7 @@ du [JDK](https://jdk.java.net/) et de [Maven](https://maven.apache.org/)
 
 ## Déployer une plateforme Tock - sans les sources
 
-Il est possible de récupérer seulement quelques fichiers du dépôt github, sans télécharger toutes les sources Tock. 
+Il est possible de récupérer seulement quelques fichiers du dépôt GitHub, sans télécharger toutes les sources Tock. 
  En quelques lignes de commande, la plateforme est opérationnelle.
  
  Il est cependant indispensable d'avoir des versions récentes de 
@@ -51,11 +51,11 @@ Il est possible de récupérer seulement quelques fichiers du dépôt github, sa
 [paragraphe suivant](#deployer-une-plateforme-tock-depuis-les-sources).
 
 ```shell
-# Get the lastest docker-compose from github (including Bot API)
+# Get the lastest docker-compose from GitHub (including Bot API)
 $ curl -o docker-compose.yml https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/docker-compose-bot.yml
-# Get the lastest database-init script from github
+# Get the lastest database-init script from GitHub
 $ mkdir -p scripts && curl -o scripts/setup.sh https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/scripts/setup.sh && chmod +x scripts/setup.sh
-# Get the lastest Tock version/tag from github
+# Get the lastest Tock version/tag from GitHub
 $ curl -o .env https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/.env
 
 # Run the stack
@@ -70,13 +70,13 @@ Ceci est une manière alternative de démarrer Tock, à partir du dépôt
  
 Il vous faut, en plus de [Docker](https://www.docker.com/) et [Docker Compose](https://docs.docker.com/compose/), 
   soit un client [Git](https://git-scm.com/) pour récupérer les sources (commande `git clone`) soit avoir déjà copié 
-  les sources de github en local.
+  les sources de GitHub en local.
  
 > Pour démarrer sans Git ni les sources du dépôt en local, suivez le 
 [paragraphe précédent](#deployer-une-plateforme-tock-sans-les-sources).
 
 ```shell
-# Get the lastest sources from github
+# Get the lastest sources from GitHub
 $ git clone https://github.com/voyages-sncf-technologies/tock-docker.git && cd tock-docker
 # Make the database-init script executable
 $ chmod +x scripts/setup.sh
