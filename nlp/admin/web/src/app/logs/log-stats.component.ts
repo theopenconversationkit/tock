@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {QualityService} from "../quality-nlp/quality.service";
 import {StateService} from "../core-nlp/state.service";
 import {LogStatsQuery} from "../model/nlp";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'tock-log-stats',
   templateUrl: './log-stats.component.html',
   styleUrls: ['./log-stats.component.css']
 })
-export class LogStatsComponent implements OnInit {
+export class LogStatsComponent implements OnInit, OnDestroy {
 
   public stats: Array<any>;
   public probability: Array<any>;
@@ -94,6 +95,7 @@ export class LogStatsComponent implements OnInit {
   public intent: string = "";
   public nodata: boolean = false;
   onlyCurrentLocale: boolean = false;
+  private subscription: Subscription;
 
   constructor(public state: StateService, private quality: QualityService) {
 
@@ -101,6 +103,11 @@ export class LogStatsComponent implements OnInit {
 
   ngOnInit(): void {
     this.search();
+    this.subscription = this.state.configurationChange.subscribe(_ => this.search());
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
   search(): void {

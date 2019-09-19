@@ -17,15 +17,14 @@
 import {Injectable, OnDestroy, OnInit} from "@angular/core";
 import {RestService} from "../core-nlp/rest/rest.service";
 import {StateService} from "../core-nlp/state.service";
-import {BehaviorSubject, Observable} from "rxjs";
+import {BehaviorSubject, Observable, Subscription} from "rxjs";
 import {ApplicationScopedQuery} from "../model/commons";
 import {BotApplicationConfiguration, BotConfiguration, ConnectorType} from "./model/configuration";
 
 @Injectable()
 export class BotConfigurationService implements OnInit, OnDestroy {
 
-  private currentApplicationUnsuscriber: any;
-  private currentLocaleUnsuscriber: any;
+  private subscription: Subscription;
 
   //only rest configurations
   readonly restConfigurations: BehaviorSubject<BotApplicationConfiguration[]> = new BehaviorSubject([]);
@@ -40,8 +39,7 @@ export class BotConfigurationService implements OnInit, OnDestroy {
 
   constructor(private rest: RestService,
               private state: StateService) {
-    this.currentApplicationUnsuscriber = this.state.currentApplicationEmitter.subscribe(_ => this.updateConfigurations());
-    this.currentLocaleUnsuscriber = this.state.currentLocaleEmitter.subscribe(_ => this.updateConfigurations());
+    this.subscription = this.state.configurationChange.subscribe(_ => this.updateConfigurations());
     this.updateConfigurations();
   }
 
@@ -49,8 +47,7 @@ export class BotConfigurationService implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.currentApplicationUnsuscriber.unsubscribe();
-    this.currentLocaleUnsuscriber.unsubscribe();
+    this.subscription.unsubscribe();
   }
 
   updateConfigurations() {

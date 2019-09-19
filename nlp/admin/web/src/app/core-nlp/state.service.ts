@@ -34,8 +34,7 @@ import {
   PredefinedValueQuery,
   UpdateEntityDefinitionQuery
 } from "../model/nlp";
-import {BehaviorSubject, Observable} from "rxjs";
-import {ApplicationService} from "./applications.service";
+import {BehaviorSubject, Observable, Subject} from "rxjs";
 
 @Injectable()
 export class StateService implements AuthListener {
@@ -48,16 +47,16 @@ export class StateService implements AuthListener {
 
   user: User;
   applications: Application[];
-  entityTypes: BehaviorSubject<EntityType[]> = new BehaviorSubject([]);
-  entities: BehaviorSubject<EntityDefinition[]> = new BehaviorSubject([]);
-  currentIntents: BehaviorSubject<Intent[]> = new BehaviorSubject([]);
-  currentIntentsCategories: BehaviorSubject<IntentsCategory[]> = new BehaviorSubject([]);
+  readonly entityTypes: BehaviorSubject<EntityType[]> = new BehaviorSubject([]);
+  readonly entities: BehaviorSubject<EntityDefinition[]> = new BehaviorSubject([]);
+  readonly currentIntents: BehaviorSubject<Intent[]> = new BehaviorSubject([]);
+  readonly currentIntentsCategories: BehaviorSubject<IntentsCategory[]> = new BehaviorSubject([]);
+  readonly configurationChange: Subject<boolean> = new Subject();
 
   currentApplication: Application;
   currentLocale: string = StateService.DEFAULT_LOCALE;
 
   readonly currentApplicationEmitter: EventEmitter<Application> = new EventEmitter();
-  readonly currentLocaleEmitter: EventEmitter<string> = new EventEmitter();
   readonly resetConfigurationEmitter: EventEmitter<boolean> = new EventEmitter();
 
   static intentExistsInApp(app: Application, intentName: string): boolean {
@@ -81,24 +80,20 @@ export class StateService implements AuthListener {
     this.resetConfigurationEmitter.emit(true);
   }
 
-  refreshIntentsAndEntities() {
-    this.changeApplication(this.currentApplication);
-  }
-
-  currentEngine(): NlpEngineType {
-    return this.currentApplication.nlpEngineType;
-  }
-
   changeApplication(application: Application) {
     if (application) {
-      this.currentApplication = application;
-      this.currentApplicationEmitter.emit(application);
-      this.sortIntents();
-      this.entities.next(application.allEntities());
-      if (application.supportedLocales.indexOf(this.currentLocale) === -1) {
-        this.changeLocale(application.supportedLocales[0])
+      if (this.currentApplication !== application) {
+        this.currentApplication = application;
+        this.currentApplicationEmitter.emit(application);
+        this.sortIntents();
+        if (application.supportedLocales.indexOf(this.currentLocale) === -1) {
+          this.changeLocale(application.supportedLocales[0])
+        } else {
+          this.entities.next(application.allEntities());
+          this.configurationChange.next(true);
+        }
+        this.settings.onApplicationChange(this.currentApplication.name);
       }
-      this.settings.onApplicationChange(this.currentApplication.name);
     }
   }
 
@@ -107,16 +102,12 @@ export class StateService implements AuthListener {
   }
 
   changeLocale(locale: string) {
-    this.currentLocale = locale;
-    this.entities.next(this.currentApplication.allEntities());
-    this.currentLocaleEmitter.emit(locale);
-    this.settings.onLocaleChange(this.currentLocale);
-  }
-
-  loadLocale(locale: string) {
-    this.currentLocale = locale;
-    this.currentLocaleEmitter.emit(locale);
-    this.settings.onLocaleChange(this.currentLocale);
+    if (this.currentLocale !== locale) {
+      this.currentLocale = locale;
+      this.entities.next(this.currentApplication.allEntities());
+      this.configurationChange.next(true);
+      this.settings.onLocaleChange(this.currentLocale);
+    }
   }
 
   private sortIntents() {

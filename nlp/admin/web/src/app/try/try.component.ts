@@ -19,6 +19,7 @@ import {ParseQuery, Sentence} from "../model/nlp";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {StateService} from "../core-nlp/state.service";
 import {MatSnackBar} from "@angular/material";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'tock-try',
@@ -29,9 +30,8 @@ export class TryComponent implements OnInit, OnDestroy {
 
   sentence: Sentence;
   skipCache: boolean = false;
-  advanced: boolean = false;
   queryState: string;
-  subscribers: any[] = [];
+  private subscription: Subscription;
 
   constructor(private nlp: NlpService,
               private state: StateService,
@@ -39,12 +39,11 @@ export class TryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.subscribers.push(this.state.currentApplicationEmitter.subscribe(a => this.onClose()));
-    this.subscribers.push(this.state.currentLocaleEmitter.subscribe(_ => this.onClose()));
+    this.subscription = this.state.configurationChange.subscribe(_ => this.onClose());
   }
 
   ngOnDestroy(): void {
-    this.subscribers.forEach(s => s.unsubscribe());
+    this.subscription.unsubscribe();
   }
 
   onTry(value: string) {

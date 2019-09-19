@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {BotService} from "../bot-service";
 import {NlpService} from "../../nlp-tabs/nlp.service";
 import {StateService} from "../../core-nlp/state.service";
 import {StoryDefinitionConfiguration, StorySearchQuery} from "../model/story";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'tock-search-story',
   templateUrl: './search-story.component.html',
   styleUrls: ['./search-story.component.css']
 })
-export class SearchStoryComponent implements OnInit {
+export class SearchStoryComponent implements OnInit, OnDestroy {
 
   loadedStories: StoryDefinitionConfiguration[];
   stories: StoryDefinitionConfiguration[];
@@ -36,12 +37,23 @@ export class SearchStoryComponent implements OnInit {
   onlyConfigured: boolean = true;
   loading: boolean = false;
 
+  private subscription: Subscription;
+
   constructor(private nlp: NlpService,
               private state: StateService,
               private bot: BotService) {
   }
 
   ngOnInit(): void {
+    this.load();
+    this.subscription = this.state.configurationChange.subscribe(_ => this.load());
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
+  private load() {
     this.loading = true;
     this.bot.getStories(
       new StorySearchQuery(
@@ -61,7 +73,7 @@ export class SearchStoryComponent implements OnInit {
       });
       this.categories.sort();
       this.loading = false;
-    })
+    });
   }
 
   delete(storyDefinitionId: string) {

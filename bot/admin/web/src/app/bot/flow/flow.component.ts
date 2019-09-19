@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {BotService} from "../bot-service";
 import {NlpService} from "../../nlp-tabs/nlp.service";
 import {StateService} from "../../core-nlp/state.service";
@@ -32,13 +32,14 @@ import {NodeTransition, StoryNode} from "./node";
 import {MatSnackBar} from "@angular/material";
 import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
 import {StoryDefinitionConfiguration, StorySearchQuery, StoryStep} from "../model/story";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'tock-flow',
   templateUrl: './flow.component.html',
   styleUrls: ['./flow.component.css']
 })
-export class FlowComponent implements OnInit {
+export class FlowComponent implements OnInit, OnDestroy {
 
   layouts = [
     {
@@ -135,6 +136,8 @@ export class FlowComponent implements OnInit {
   configuredFlow: ApplicationDialogFlow;
   statsMode: boolean = false;
 
+  private subscription: Subscription;
+
   valueAscOrder = (a: KeyValue<string, string>, b: KeyValue<string, string>): number => {
     return a.value.localeCompare(b.value);
   };
@@ -147,6 +150,11 @@ export class FlowComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.reload();
+    this.subscription = this.state.configurationChange.subscribe(_ => this.reload());
+  }
+
+  private reload() {
     this.bot.getStories(
       new StorySearchQuery(
         this.state.currentApplication.namespace,
@@ -159,6 +167,10 @@ export class FlowComponent implements OnInit {
       this.configuredStories = s.filter(story => !story.isBuiltIn());
       this.fillConfiguration();
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
   changeLayout() {

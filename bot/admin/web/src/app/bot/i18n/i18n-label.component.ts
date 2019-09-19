@@ -66,7 +66,7 @@ export class I18nLabelComponent implements OnInit {
 
     if (!this.i18nController) {
       this.i18nController = new I18nController(this.state, [this.i], this.localeBase);
-      this.i18nController.sortLabels();
+      this.i18nController.fillLabels();
     }
   }
 
@@ -103,7 +103,7 @@ export class I18nLabelComponent implements OnInit {
   addLocalizedLabelForConnector(i18n: I18nLabel, label: I18nLocalizedLabel, connectorId: string) {
     i18n.i18n.push(new I18nLocalizedLabel(label.locale, label.interfaceType, "", false, connectorId, []));
     this.save(i18n);
-    this.i18nController.sortLabels();
+    this.i18nController.fillLabels();
   }
 
   addAlternative(i18n: I18nLabel, label: I18nLocalizedLabel, index: number, value: string) {
@@ -123,14 +123,17 @@ export class I18nLabelComponent implements OnInit {
 
 export class I18nController {
 
-  constructor(public state: StateService, public i18n: I18nLabel[], public localeBase: string) {
+  constructor(
+    public state: StateService,
+    public i18n: I18nLabel[],
+    public localeBase: string) {
   }
 
   deleteLabel(label: I18nLabel) {
     //do nothing
   }
 
-  sortLabels() {
+  fillLabels() {
     const locales = this.state.currentApplication.supportedLocales;
     this.i18n.forEach(i => {
         //add non present i18n
@@ -149,8 +152,7 @@ export class I18nController {
               } else {
                 return a.interfaceType - b.interfaceType;
               }
-            }
-            else return a.locale === this.localeBase ? -1 : (b.locale === this.localeBase ? 1 : (b.locale < a.locale ? 1 : -1));
+            } else return a.locale === this.localeBase ? -1 : (b.locale === this.localeBase ? 1 : (b.locale < a.locale ? 1 : -1));
           }
         );
       }

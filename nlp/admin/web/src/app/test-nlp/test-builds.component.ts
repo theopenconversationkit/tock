@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {StateService} from "../core-nlp/state.service";
 import * as moment from 'moment';
 import {QualityService} from "../quality-nlp/quality.service";
 import {TestErrorQuery} from "../model/nlp";
+import {Subscription} from "rxjs";
 
 let maxDurationUnit: string = "ms";
 
@@ -54,7 +55,7 @@ function displayDuration(d): string {
   templateUrl: './test-builds.component.html',
   styleUrls: ['./test-builds.component.css']
 })
-export class TestBuildsComponent implements OnInit {
+export class TestBuildsComponent implements OnInit, OnDestroy {
 
   public errors: Array<any>;
   public durations: Array<any>;
@@ -133,11 +134,18 @@ export class TestBuildsComponent implements OnInit {
   public intent: string = "";
   public modifiedAfter?: Date;
 
+  private subscription: Subscription;
+
   constructor(public state: StateService, private quality: QualityService) {
   }
 
   ngOnInit(): void {
     this.search();
+    this.subscription = this.state.configurationChange.subscribe(_ => this.search());
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
   search(): void {
@@ -145,6 +153,7 @@ export class TestBuildsComponent implements OnInit {
       TestErrorQuery.createWithoutSize(this.state, this.intent === "" ? undefined : this.intent, this.modifiedAfter)
     )
       .subscribe(result => {
+        console.log("ok");
         if (result.length === 0) {
           this.nodata = true;
           return;

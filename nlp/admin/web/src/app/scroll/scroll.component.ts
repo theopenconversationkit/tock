@@ -18,7 +18,7 @@ import {PaginatedResult} from "../model/nlp";
 import {StateService} from "../core-nlp/state.service";
 import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {PaginatedQuery, SearchMark} from "../model/commons";
-import {Observable} from "rxjs";
+import {Observable, Subscription} from "rxjs";
 
 @Component({
   selector: 'tock-scroll',
@@ -28,33 +28,30 @@ import {Observable} from "rxjs";
 export class ScrollComponent<T> implements OnInit, OnDestroy {
 
   @Input() title: string;
-  @Input() loadOnInit:boolean = true;
+  @Input() loadOnInit: boolean = true;
 
   cursor: number = 0;
   pageSize: number = 10;
   total: number = -1;
   loading: boolean = false;
   data: Array<T> = [];
-  add:boolean = true;
-  mark:SearchMark;
+  add: boolean = true;
+  mark: SearchMark;
 
-  private currentApplicationUnsuscriber: any;
-  private currentLocaleUnsuscriber: any;
+  private subscription: Subscription;
 
   constructor(protected state: StateService) {
   }
 
   ngOnInit() {
-    if(this.loadOnInit) {
+    if (this.loadOnInit) {
       this.load();
     }
-    this.currentApplicationUnsuscriber = this.state.currentApplicationEmitter.subscribe(_ => this.refresh());
-    this.currentLocaleUnsuscriber = this.state.currentLocaleEmitter.subscribe(_ => this.refresh());
+    this.subscription = this.state.configurationChange.subscribe(_ => this.refresh());
   }
 
   ngOnDestroy() {
-    this.currentApplicationUnsuscriber.unsubscribe();
-    this.currentLocaleUnsuscriber.unsubscribe();
+    this.subscription.unsubscribe();
   }
 
   reset() {
@@ -91,12 +88,12 @@ export class ScrollComponent<T> implements OnInit, OnDestroy {
     return this.state.createPaginatedQuery(this.cursor, this.pageSize, this.mark);
   }
 
-  protected loadResults(result: PaginatedResult<T>, init: boolean) : boolean {
+  protected loadResults(result: PaginatedResult<T>, init: boolean): boolean {
     //skip parallel initialization
     if (init && this.data.length !== 0) {
       return false;
     }
-    if(this.add) {
+    if (this.add) {
       Array.prototype.push.apply(this.data, result.rows);
     } else {
       this.data = result.rows;
@@ -127,8 +124,8 @@ export class ScrollComponent<T> implements OnInit, OnDestroy {
     this.data.splice(this.data.indexOf(r), 1);
     this.total -= 1;
     this.cursor -= 1;
-    if(this.total !== 0 && this.data.length === 0) {
-       this.load();
+    if (this.total !== 0 && this.data.length === 0) {
+      this.load();
     }
   }
 

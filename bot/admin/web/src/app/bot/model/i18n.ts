@@ -41,6 +41,7 @@ export class I18nLabels {
 export class I18nLabel {
 
   firstCategory: boolean;
+  defaultLocale: string;
 
   constructor(public _id: string,
               public category: string,
@@ -68,7 +69,10 @@ export class I18nLabel {
   }
 
   defaultLocalizedLabel(): I18nLocalizedLabel {
-    const d = this.label(this.i18n[0].locale, defaultUserInterfaceType);
+    if (!this.defaultLocale) {
+      this.defaultLocale = this.i18n[0].locale;
+    }
+    const d = this.label(this.defaultLocale, defaultUserInterfaceType);
     return d ? d : this.i18n[0];
   }
 

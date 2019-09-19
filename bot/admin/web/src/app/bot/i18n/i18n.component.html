@@ -17,26 +17,27 @@
   <nb-card-body>
     <mat-toolbar class="background">
       <span>
-        <input nbInput status="primary" placeholder="Search" [(ngModel)]="filterString" (keyup)="filter($event.target.value)">
+        <input nbInput status="primary" placeholder="Search" [(ngModel)]="filterString"
+               (keyup)="filter($event.target.value)">
       </span>
       <nb-actions size="medium" style="cursor: pointer;">
-          <nb-action class="control-item" nbTooltip="Reload all" (click)="refresh()">
-            <i class="material-icons tock-toolbar-menu">refresh</i>
-          </nb-action>
+        <nb-action class="control-item" nbTooltip="Reload all" (click)="refresh()">
+          <i class="material-icons tock-toolbar-menu">refresh</i>
+        </nb-action>
       </nb-actions>
       <span class="i18n-select nb-form-field-infix">
         <nb-select placeholder="Filter by category" [(ngModel)]="selectedCategory" class="nb-select" status="primary"
-                    (selectedChange)="onSelectedCategoryChange()">
+                   (selectedChange)="onSelectedCategoryChange()">
           <nb-option *ngFor="let c of allCategories" [value]="c">{{c}}</nb-option>
         </nb-select>
         <span class="nb-form-field-label-wrapper">
           <label class="label-title">Filter by category</label>
         </span>
-      </span >
+      </span>
       <span class="fill-remaining-space"></span>
       <span class="i18n-select nb-form-field-infix">
         <nb-select placeholder="Filter by state" [(ngModel)]="filterOption" class="nb-select" status="primary"
-                    (selectedChange)="filterValidatedChange()">
+                   (selectedChange)="filterValidatedChange()">
           <nb-option value="">All</nb-option>
           <nb-option value="not_validated">Only Not validated</nb-option>
           <nb-option value="validated">Only validated</nb-option>
@@ -48,7 +49,7 @@
       <span class="fill-remaining-space"></span>
       <span class="i18n-select nb-form-field-infix">
         <nb-select placeholder="Not used since" [(ngModel)]="notUsedFrom" class="nb-select" status="primary"
-                    (selectedChange)="onNotUsedFromChange()">
+                   (selectedChange)="onNotUsedFromChange()">
           <nb-option value="-1"></nb-option>
           <nb-option value="1">last day</nb-option>
           <nb-option value="7">last week</nb-option>
@@ -57,24 +58,25 @@
       </span>
       <span class="fill-remaining-space"></span>
       <nb-actions size="medium" style="cursor: pointer;">
-          <nb-action class="control-item" nbTooltip="Validate all existing labels" (click)="validateAll()">
-            <i class="material-icons tock-toolbar-menu">done</i>
-          </nb-action>
-          <nb-action *ngIf="state.currentApplication.supportedLocales.length !== 1"
-                  class="control-item" nbTooltip="Translate All Missing Labels" (click)="complete()">
-            <i class="material-icons tock-toolbar-menu">translate</i>
-          </nb-action>
-          <nb-action class="control-item" nbTooltip="Import / Export" (click)="displayImportExport = true">
-              <i class="material-icons tock-toolbar-menu">import_export</i>
-            </nb-action>
+        <nb-action class="control-item" nbTooltip="Validate all existing labels" (click)="validateAll()">
+          <i class="material-icons tock-toolbar-menu">done</i>
+        </nb-action>
+        <nb-action *ngIf="state.currentApplication.supportedLocales.length !== 1"
+                   class="control-item" nbTooltip="Translate All Missing Labels" (click)="complete()">
+          <i class="material-icons tock-toolbar-menu">translate</i>
+        </nb-action>
+        <nb-action class="control-item" nbTooltip="Import / Export" (click)="displayImportExport = true">
+          <i class="material-icons tock-toolbar-menu">import_export</i>
+        </nb-action>
       </nb-actions>
     </mat-toolbar>
   </nb-card-body>
 </nb-card>
 
 <nb-card *ngIf="displayImportExport">
-  <nb-card-header>Import / Export </nb-card-header>
+  <nb-card-header>Import / Export</nb-card-header>
   <nb-card-body>
+    Only validated labels are imported.
     <button mat-button (click)="downloadCsv()" nbTooltip="Download Csv">
       <mat-icon>file_download</mat-icon>
       Download CSV

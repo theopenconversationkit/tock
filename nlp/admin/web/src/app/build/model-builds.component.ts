@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import {AfterViewInit, Component, EventEmitter, OnInit, ViewChild} from "@angular/core";
+import {AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, ViewChild} from "@angular/core";
 import {StateService} from "../core-nlp/state.service";
 import {ApplicationService} from "../core-nlp/applications.service";
 import {MatPaginator} from "@angular/material";
 import {DataSource} from "@angular/cdk/collections";
 import {ModelBuild} from "../model/application";
-import {BehaviorSubject, merge, Observable} from "rxjs";
+import {BehaviorSubject, merge, Observable, Subscription} from "rxjs";
 import {PaginatedQuery} from "../model/commons";
 
 @Component({
@@ -28,11 +28,13 @@ import {PaginatedQuery} from "../model/commons";
   templateUrl: './model-builds.component.html',
   styleUrls: ['./model-builds.component.css']
 })
-export class ModelBuildsComponent implements OnInit, AfterViewInit {
+export class ModelBuildsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   displayedColumns = ['date', 'type', 'intent', 'count', 'duration', 'error'];
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   dataSource: ModelBuildDataSource | null;
+
+  private subscription: Subscription;
 
   constructor(private state: StateService,
               private applicationService: ApplicationService) {
@@ -41,10 +43,15 @@ export class ModelBuildsComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.dataSource = new ModelBuildDataSource(this, this.state, this.applicationService);
+    this.subscription = this.state.configurationChange.subscribe(_ => this.dataSource.refresh());
   }
 
   ngAfterViewInit(): void {
     this.dataSource.refresh();
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
   intentName(build: ModelBuild): string {

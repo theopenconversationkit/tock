@@ -97,7 +97,7 @@ export class I18nComponent extends I18nController implements OnInit {
       this.originalI18n = r.labels;
       this.filterBySupportedLocales();
       this.initCategories(this.i18n);
-      this.sortLabels();
+      this.fillLabels();
 
       this.i18n.sort((a, b) => {
           return a.category.localeCompare(b.category);

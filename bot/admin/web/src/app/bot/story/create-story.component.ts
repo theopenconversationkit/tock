@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, ElementRef, OnInit, ViewChild} from "@angular/core";
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from "@angular/core";
 import {MatSnackBar} from "@angular/material";
 import {NlpService} from "../../nlp-tabs/nlp.service";
 import {StateService} from "../../core-nlp/state.service";
@@ -31,13 +31,14 @@ import {
 import {ActivatedRoute} from "@angular/router";
 import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {AnswerController} from "./controller";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'tock-create-story',
   templateUrl: './create-story.component.html',
   styleUrls: ['./create-story.component.css']
 })
-export class CreateStoryComponent implements OnInit {
+export class CreateStoryComponent implements OnInit, OnDestroy {
 
   sentence: Sentence;
   displayStory: boolean = false;
@@ -52,6 +53,8 @@ export class CreateStoryComponent implements OnInit {
 
   private stories: StoryDefinitionConfiguration[] = [];
 
+  private subscription: Subscription;
+
   constructor(private nlp: NlpService,
               public state: StateService,
               private botConfiguration: BotConfigurationService,
@@ -61,6 +64,17 @@ export class CreateStoryComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.load();
+    this.subscription = this.state.configurationChange.subscribe(_ => this.load());
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
+  private load() {
+    this.sentence = undefined;
+    this.displayStory = false;
     this.createStory();
     const _this = this;
     this.submit.submitListener = _ => _this.onReply();
@@ -73,7 +87,7 @@ export class CreateStoryComponent implements OnInit {
         10000
       )).subscribe(s => {
       this.stories = s;
-    })
+    });
   }
 
   onSentence(value?: string) {

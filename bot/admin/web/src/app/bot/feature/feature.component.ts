@@ -36,9 +36,7 @@ export class FeatureComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.currentApplicationUnsuscriber = this.state.currentApplicationEmitter.subscribe(a => {
-      this.refresh();
-    });
+    this.currentApplicationUnsuscriber = this.state.currentApplicationEmitter.subscribe(a => this.refresh());
     this.refresh();
   }
 
@@ -73,7 +71,7 @@ export class FeatureComponent implements OnInit {
     this.botService.toggleFeature(this.state.currentApplication.name, f.category, f.name).subscribe();
   }
 
-  deleteFeature(f:Feature) {
+  deleteFeature(f: Feature) {
     this.botService.deleteFeature(this.state.currentApplication.name, f.category, f.name)
       .subscribe(_ => this.refresh());
   }

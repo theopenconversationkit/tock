@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import {AfterViewInit, Component, EventEmitter, OnInit, ViewChild} from "@angular/core";
+import {AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, ViewChild} from "@angular/core";
 import {MatPaginator, MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {DataSource} from "@angular/cdk/collections";
-import {BehaviorSubject, merge, Observable} from "rxjs";
+import {BehaviorSubject, merge, Observable, Subscription} from "rxjs";
 import {EntityTestError, TestErrorQuery} from "../model/nlp";
 import {StateService} from "../core-nlp/state.service";
 import {Router} from "@angular/router";
@@ -29,11 +29,12 @@ import {escapeRegex} from "../model/commons";
   templateUrl: './test-entity-error.component.html',
   styleUrls: ['./test-entity-error.component.css']
 })
-export class TestEntityErrorComponent implements OnInit, AfterViewInit {
+export class TestEntityErrorComponent implements OnInit, AfterViewInit, OnDestroy {
 
   displayedColumns = ['text', 'intent', 'error', 'count', 'percent', 'probability', 'firstErrorDate', 'actions'];
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   dataSource: TestEntityErrorDataSource | null;
+  private subscription: Subscription;
 
   constructor(public state: StateService,
               private quality: QualityService,
@@ -43,11 +44,17 @@ export class TestEntityErrorComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.dataSource = new TestEntityErrorDataSource(this.paginator, this.state, this.quality);
+    this.subscription = this.state.configurationChange.subscribe(_ => this.search());
   }
 
   ngAfterViewInit(): void {
     this.search();
   }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
 
   search() {
     this.dataSource.refresh();

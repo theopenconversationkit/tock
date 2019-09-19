@@ -89,7 +89,7 @@ export abstract class AnswerContainer {
     return this.currentType === AnswerConfigurationType.script;
   }
 
-  isBuiltIn() : boolean {
+  isBuiltIn(): boolean {
     return this.currentType === AnswerConfigurationType.builtin;
   }
 
@@ -109,8 +109,10 @@ export abstract class AnswerContainer {
     return this.answers.find(c => c.answerType === type)
   }
 
-  simpleTextView(wide:boolean): string {
-    return this.currentAnswer().simpleTextView(wide);
+  simpleTextView(wide: boolean): string {
+    const current = this.currentAnswer();
+    if (current) return current.simpleTextView(wide);
+    return "";
   }
 
 }
@@ -320,7 +322,7 @@ export abstract class AnswerConfiguration {
   protected constructor(public answerType: AnswerConfigurationType) {
   }
 
-  abstract simpleTextView(wide:boolean): string
+  abstract simpleTextView(wide: boolean): string
 
   invalidMessage(): string {
     return null;
@@ -366,7 +368,7 @@ export class SimpleAnswerConfiguration extends AnswerConfiguration {
     return this.answers.length === 0;
   }
 
-  simpleTextView(wide:boolean): string {
+  simpleTextView(wide: boolean): string {
     const r = this.answers && this.answers.length > 0 ? this.answers[0].label.defaultLocalizedLabel().label : "[no text yet]";
     const limit = wide ? 80 : 25;
     return r.substring(0, Math.min(r.length, limit)) + (r.length > limit || this.answers.length > 1 ? "..." : "");
@@ -572,7 +574,7 @@ export class ScriptAnswerConfiguration extends AnswerConfiguration {
     }
   }
 
-  simpleTextView(wide:boolean): string {
+  simpleTextView(wide: boolean): string {
     return "[Script]";
   }
 
@@ -625,7 +627,7 @@ export class BuiltinAnswerConfiguration extends AnswerConfiguration {
     return null;
   }
 
-  simpleTextView(wide:boolean): string {
+  simpleTextView(wide: boolean): string {
     return "[Built in]";
   }
 
@@ -641,8 +643,7 @@ export class BuiltinAnswerConfiguration extends AnswerConfiguration {
 
   static fromJSON(json: any): BuiltinAnswerConfiguration {
     const value = Object.create(BuiltinAnswerConfiguration.prototype);
-    const result = Object.assign(value, json, {
-    });
+    const result = Object.assign(value, json, {});
     return result;
   }
 }
