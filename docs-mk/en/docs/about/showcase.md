@@ -1,23 +1,23 @@
 # User showcase
 
 Since its creation for [OUI.sncf](https://www.oui.sncf/) in 2016, Tock has been used by more and more teams to 
-design and build conversational bots dedicated to various use cases :
+build conversational bots dedicated to various use cases :
 
 * _business to customer_ and _business to business_ 
 * e-commerce, transactions, payment
 * assistance, care, help desks
 * FAQ and decision trees
 
-This page presents various assistants and products built with Tock.
+This page presents various assistants and products built and powered by Tock.
 
 ## _OUIbot_, the OUI.sncf bot
 
 _[OUIbot](https://www.oui.sncf/services/assistant)_ is the conversational assistant from OUI.sncf. Available since 2016 
 on Facebook Messenger, _OUIbot_ was built along with the first versions of Tock.
 
-> _Avec OUIbot, réserver un billet de train n'a jamais été aussi simple ! Il vous assiste dans la préparation de vos 
-voyages, permet d'effectuer rapidement et simplement une réservation complète, de la recherche à l'achat (paiement inclus), 
-et vous accompagne durant votre voyage._
+> _With OUIbot, booking a train ticket has never been easier!_ It assists you in the preparation of your trips,
+>allows you to make a complete reservation quickly and easily, from research to purchase (payment included),
+>and accompanies you during your trip.
 
 Thanks to the numerous connectors, _OUIbot_ is now available on multiple conversational channels, such as the company 
 Website [www.oui.sncf](https://www.oui.sncf/bot), social networks, voice assistants, smart display and even 
@@ -32,104 +32,103 @@ src="https://blog-cultures-services.com/wp-content/uploads/2019/06/Blog-768x512.
 style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
  
 * **Name:** _[OUIbot](https://www.oui.sncf/services/assistant)_
-* **Birthdate:** in production since 2016
-* **Domain:** e-commerce/travel, transactions (booking, payment), alerts & push notifications, push messages to an agent
+* **Date of birth:** in production since 2016
+* **Field:** e-commerce/travel, transactions (booking, payment), alerts & push notifications, push messages to an agent
 * **Channels:** text & voice, on the company Website, Messenger, WhatsApp, Business Chat (Messages), Google Assistant, 
 Google Home, Alexa, JCDecaux SmartBrics
 
 ## _L'Assistant SNCF_
 
-_[L'Assistant SNCF](https://www.sncf.com/fr/itineraire-reservation/informations-trafic/application-sncf)_ est 
-l'application mobile des voyageurs SNCF sur Android et iOS, couvrant le train mais aussi d'autres modes de transport.
+_[L' Assistant SNCF](https://www.sncf.com/fr/itineraire-reservation/informations-trafic/application-sncf)_ is 
+the mobile application for SNCF passengers on Android and iOS, covering both trains and other modes of transport.
 
-> Avec l’_Assistant SNCF_, vous pouvez calculer votre itinéraire, rester informé en temps réel, acheter directement vos 
->tickets de transport ou encore réserver votre course en VTC. En attendant de nouvelles fonctionnalités à venir.
+> With _L' Assistant_ (the SNCF Assistant), you can plan your itinerary, stay informed in real time, buy your transport tickets
+>directly or book a taxi ride. More features are yet to come.
 
-Accessible via le "microphone" dans l'application mobile, le bot conversationnel de l'_Assistant SNCF_ est construit 
-avec Tock et les fonctions _speech-to-text_ Android et iOS.
+Accessible via the "microphone" in the mobile application, le SNCF Assistant's conversational bot is built with Tock
+  plus the speech-to-text Android and iOS functions.
 
-<img alt="Application mobile l'Assistant SNCF" 
+<img alt="SNCF Assistant mobile app" 
 src="https://www.sncf.com/sites/default/files/styles/crop_header_edito/public/2019-06/Assistant_incrustation_2B.jpg?h=fba073f2&itok=KVCTbuOc" 
 style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
 
-* **Nom :** _[L'Assistant SNCF](https://www.sncf.com/fr/itineraire-reservation/informations-trafic/application-sncf)_
-* **Date de naissance :** en production, fonction vocale Tock depuis 2019
-* **Domaine :** voyage & transport (recherche itinéraires en multi-modal, etc.)
-* **Canaux :** vocal, sur l'application mobile SNCF pour Android et iOS
+* **Name:** _[L' Assistant SNCF](https://www.sncf.com/fr/itineraire-reservation/informations-trafic/application-sncf)_
+* **Date of birth:** in production, featuring Tock voice function since 2019
+* **Field:** travel & transport (multi-modal route research, etc.)
+* **Channels:** voice, on the SNCF mobile application for Android and iOS
 
 ## _Tilien_, the Transilien chatbot
 
-_[Tilien](https://www.facebook.com/botsncftransilien/)_ est le chatbot Transilien sur Messenger.
+_[Tilien](https://www.facebook.com/botsncftransilien/)_ is the Transilien chatbot on Messenger.
 
-> Conçu comme un compagnon de voyage personnel et amical, il informe des prochains départs, l'état du trafic, les travaux 
->en cours et à venir, propose des itinéraires et bien d'autres choses (plans des lignes, fiches horaires, etc.) sur 
->l'ensemble du réseau ferré Ile-De-France : Métro, RER, Transilien, Tram.
+> Designed as a personal and friendly travel companion, it informs you about upcoming departures, the service status, 
+>current and future works, itineraries and much more (route plans, timetables, etc.) on the entire Ile-De-France 
+>rail network: Metro, RER, Transilien, Tram.
 
-Motorisé par Tock, le chatbot vous attend sur Facebook Messenger pour offrir ses services.
+Powered by Tock, the chatbot is waiting for you on Facebook Messenger.
 
-<img alt="Tilien le chatbot Transilien" 
+<img alt="Tilien the Transilien chatbot" 
 src="https://i2.wp.com/www.lechotouristique.com/wp-content/uploads/2019/03/sncf.jpg?fit=960%2C640&ssl=1" 
 style="width: 500px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
 
-* **Nom :** _[Tilien](https://www.facebook.com/botsncftransilien/)_
-* **Date de naissance :** en production, depuis 2018 sur Tock
-* **Domaine :** transport & assistance (recherche itinéraires, plans des lignes, état du trafic, etc.)
-* **Canaux :** texte, sur Messenger
+* **Name:** _[Tilien](https://www.facebook.com/botsncftransilien/)_
+* **Date of birth:** in production, since 2018 with Tock
+* **Field:** transport & assistance (route research, route plans, traffic conditions, etc.)
+* **Channels:** text, on Messenger
 
 ## _Mon Assistant TGV INOUI_
 
-_[Mon Assistant](https://www.facebook.com/TGVINOUI/)_ informe les clients et voyageurs de la marque TGV INOUI avant, 
-pendant et après leur trajet.
+_[Mon Assistant](https://www.facebook.com/TGVINOUI/)_ advises customers and travellers of the TGV INOUI brand before, 
+during and after their journey.
 
-> Le chatbot est capable de donner l'état du trafic, le quai de départ d'un train, la ou les places du client, les 
->services à bord (le bar, les prises électriques, etc.). Il permet aussi de parler avec un agent SNCF tout 
->en restant dans la même conversation.
+> The chatbot can tell you all about the service status, train departure platforms, customer seats, onboard services 
+>(bar, electrical outlets, etc.). It also allows you to talk with a SNCF agents while remaining in the same conversation.
 
-Présent sur la page Facebook _TGV INOUI_, l'assistant qui s'appuie sur Tock est également accessible depuis le 
-SMS de rappel E-Billet ou directement depuis l'application.
+Located on the _TGV INOUI_ Facebook page, the assistant based on Tock is also accessible from the E-Ticket reminder SMS 
+ or directly from the application.
 
 <img alt="Mon Assistant TGV INOUI" 
 src="https://www.thetrainline.com/cmsmedia/cms/10783/tgv-inoui-interieur.jpg?width=500&height=333.5" 
 style="width: 500px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
 
-* **Nom :** _[Mon Assistant TGV INOUI](https://www.facebook.com/TGVINOUI/)_
-* **Date de naissance :** en production depuis 2019
-* **Domaine :** assistance & info voyageur (info quai, infos voyage en cours, services à bord), relai vers un agent
-* **Canaux :** texte, sur Messenger (page Facebook _TGV INOUI_)
+* **Name:** _[Mon Assistant TGV INOUI](https://www.facebook.com/TGVINOUI/)_
+* **Date of birth:** in production since 2019
+* **Field:** assistance & passenger information (dock information, current travel information, on-board services), 
+relay to an agent
+* **Channels:** text, on Messenger (Facebook _TGV INOUI_ page)
 
-## _L'Agent virtuel SNCF_
+## _L' Agent virtuel SNCF_
 
-L'_[Agent virtuel SNCF](https://www.facebook.com/SNCFOFFICIEL/)_ présente de manière conversationnelle l'information 
-voyageur et les éventuelles perturbations sur tous les trains (TGV, IC, TER, Eurostar...).
+L' _[Agent virtuel SNCF](https://www.facebook.com/SNCFOFFICIEL/)_ (SNCF Virtual Assistant) presents passenger information 
+and any disruptions on all trains (TGV, Intercites, TER, Eurostar, etc.) in a conversational manner.
 
-> On peut interroger le bot par numéro de train, dossier voyageur, prochains départs, etc. pour obtenir les dernières 
->informations et l'état du trafic.
+> Query the bot by train number, passenger file, next departures, etc. to get the latest information and traffic status.
 
-Accessible via la page Facebook de la SNCF, l'_Agent virtuel_ est basé sur Tock.
+Accessible via the SNCF Facebook page, the _Agent virtuel_ is based on Tock.
 
 ![L'Agent virtuel SNCF](https://pbs.twimg.com/media/D_HqJrjXYAEOrhE.jpg:large)
 
-* **Nom :** _[Agent virtuel SNCF](https://www.facebook.com/SNCFOFFICIEL/)_
-* **Date de naissance :** en production depuis 2019
-* **Domaine :** voyage & transport (état du trafic, travaux, prochains départs), relai vers un agent
-* **Canaux :** texte, sur Messenger (page Facebook _SNCF_)
+* **Name:** _[Agent virtuel SNCF](https://www.facebook.com/SNCFOFFICIEL/)_
+* **Date of birth:** in production since 2019
+* **Field:** travel & transport (traffic situation, works, next departures), relay to an agent
+* **Channels:** text, on Messenger (_SNCF_ Facebook page)
 
 ## _Eve_, the e-voyageurs internal assistant
 
-_Eve_ est l'assistant interne des collaborateurs [e-voyageurs SNCF](https://www.sncf.com/fr/groupe/newsroom/e-voyageurs-sncf).
+_Eve_ is the internal assistant of [e-voyageurs SNCF](https://www.sncf.com/fr/groupe/newsroom/e-voyageurs-sncf) employees.
 
-> Le chatbot répond aux questions courantes, renvoie vers les bons contacts et outils collaboratifs de l'entreprise, 
->automatise des demandes courantes au Support Informatique, Services Généraux, Direction Juridique, etc. 
->Les équipes Devops peuvent aussi lui demander l'état de la production, les prochaines interventions, voire d'effectuer 
->directement certaines opérations pour plus de simplicité et de réactivité.
+> The chatbot answers common questions, refers to the right interlocutors and collaborative tools of the company, 
+>automates common requests to IT Support, General Services, Legal Department, etc. DevOps teams can also ask it for 
+>production status, next planned operations, or even to manage certain operations directly for greater simplicity 
+>and reactivity.
 
-_Eve_ est à l'écoute des collaborateurs dans l'entreprise et en mobilité sur Teams avec Tock.
+_Eve_ is always listening to the employees, both within the offices and on-the-go using Teams applications with Tock.
 
-* **Nom :** _Eve_
-* **Date de naissance :** en production depuis 2019
-* **Domaine :** assistance en interne & B2B (FAQ, Support Informatique, RH, Juridique), automatisations DevOps (supervision, 
-déploiements, gestion de production, etc.)
-* **Canaux :** texte & voix, en interne dans l'entreprise et en mobilité via Teams
+* **Name:** _Eve_
+* **Date of birth:** in production since 2019
+* **Field:** internal & B2B support (FAQ, IT Support, HR, Legal), DevOps automation (monitoring, 
+deployments, production management, etc.)
+* **Channels:** text & voice, internally within the offices and on-the-go via Teams
 
 ## What about you?
 
