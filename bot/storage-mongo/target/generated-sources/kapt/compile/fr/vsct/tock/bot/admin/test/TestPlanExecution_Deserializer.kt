@@ -38,6 +38,8 @@ internal class TestPlanExecution_Deserializer : JsonDeserializer<TestPlanExecuti
             var _duration_set : Boolean = false
             var __id_: Id<TestPlanExecution>? = null
             var __id_set : Boolean = false
+            var _status_: TestPlanExecutionStatus? = null
+            var _status_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -78,6 +80,11 @@ internal class TestPlanExecution_Deserializer : JsonDeserializer<TestPlanExecuti
                              else p.readValueAs(__id__reference);
                             __id_set = true
                             }
+                    "status" -> {
+                            _status_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(TestPlanExecutionStatus::class.java);
+                            _status_set = true
+                            }
                     else -> {
                             if (_token_?.isStructStart == true)
                             p.skipChildren()
@@ -87,9 +94,10 @@ internal class TestPlanExecution_Deserializer : JsonDeserializer<TestPlanExecuti
                 _token_ = currentToken
                         } 
             return if(_testPlanId_set && _dialogs_set && _nbErrors_set && _date_set && _duration_set
-                    && __id_set)
+                    && __id_set && _status_set)
                     TestPlanExecution(testPlanId = _testPlanId_!!, dialogs = _dialogs_!!, nbErrors =
-                            _nbErrors_!!, date = _date_!!, duration = _duration_!!, _id = __id_!!)
+                            _nbErrors_!!, date = _date_!!, duration = _duration_!!, _id = __id_!!,
+                            status = _status_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_testPlanId_set)
@@ -103,7 +111,9 @@ internal class TestPlanExecution_Deserializer : JsonDeserializer<TestPlanExecuti
                     if(_duration_set)
                     map[parameters.getValue("duration")] = _duration_
                     if(__id_set)
-                    map[parameters.getValue("_id")] = __id_ 
+                    map[parameters.getValue("_id")] = __id_
+                    if(_status_set)
+                    map[parameters.getValue("status")] = _status_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -121,7 +131,8 @@ internal class TestPlanExecution_Deserializer : JsonDeserializer<TestPlanExecuti
                 primaryConstructor.findParameterByName("nbErrors")!!, "date" to
                 primaryConstructor.findParameterByName("date")!!, "duration" to
                 primaryConstructor.findParameterByName("duration")!!, "_id" to
-                primaryConstructor.findParameterByName("_id")!!) }
+                primaryConstructor.findParameterByName("_id")!!, "status" to
+                primaryConstructor.findParameterByName("status")!!) }
 
         private val _testPlanId__reference: TypeReference<Id<TestPlan>> = object :
                 TypeReference<Id<TestPlan>>() {}

@@ -30,8 +30,18 @@ data class I18nLabel(
     val category: String,
     val i18n: LinkedHashSet<I18nLocalizedLabel>,
     val defaultLabel: String? = null,
+    val defaultLocale: Locale = findDefaultLabelLocale(defaultLabel, i18n),
     val version: Int = 0
 ) {
+
+    companion object {
+        fun findDefaultLabelLocale(defaultLabel: String?, i18n: MutableSet<I18nLocalizedLabel>): Locale =
+            if (defaultLabel == null) {
+                defaultLocale
+            } else {
+                i18n.firstOrNull { defaultLabel == it.label }?.locale ?: defaultLocale
+            }
+    }
 
     fun findLabel(locale: Locale, userInterfaceType: UserInterfaceType, connectorId: String?): I18nLocalizedLabel? =
         i18n.firstOrNull { it.locale == locale && it.interfaceType == userInterfaceType && it.connectorId == connectorId }

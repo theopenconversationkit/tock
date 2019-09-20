@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import java.util.LinkedHashSet
+import java.util.Locale
 import kotlin.Int
 import kotlin.String
 import kotlin.collections.Map
@@ -32,6 +33,8 @@ internal class I18nLabel_Deserializer : JsonDeserializer<I18nLabel>(), JacksonMo
             var _i18n_set : Boolean = false
             var _defaultLabel_: String? = null
             var _defaultLabel_set : Boolean = false
+            var _defaultLocale_: Locale? = null
+            var _defaultLocale_set : Boolean = false
             var _version_: Int? = null
             var _version_set : Boolean = false
             var _token_ : JsonToken? = currentToken
@@ -69,6 +72,11 @@ internal class I18nLabel_Deserializer : JsonDeserializer<I18nLabel>(), JacksonMo
                              else p.text;
                             _defaultLabel_set = true
                             }
+                    "defaultLocale" -> {
+                            _defaultLocale_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(Locale::class.java);
+                            _defaultLocale_set = true
+                            }
                     "version" -> {
                             _version_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.intValue;
@@ -83,9 +91,10 @@ internal class I18nLabel_Deserializer : JsonDeserializer<I18nLabel>(), JacksonMo
                 _token_ = currentToken
                         } 
             return if(__id_set && _namespace_set && _category_set && _i18n_set && _defaultLabel_set
-                    && _version_set)
+                    && _defaultLocale_set && _version_set)
                     I18nLabel(_id = __id_!!, namespace = _namespace_!!, category = _category_!!,
-                            i18n = _i18n_!!, defaultLabel = _defaultLabel_, version = _version_!!)
+                            i18n = _i18n_!!, defaultLabel = _defaultLabel_, defaultLocale =
+                            _defaultLocale_!!, version = _version_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(__id_set)
@@ -98,6 +107,8 @@ internal class I18nLabel_Deserializer : JsonDeserializer<I18nLabel>(), JacksonMo
                     map[parameters.getValue("i18n")] = _i18n_
                     if(_defaultLabel_set)
                     map[parameters.getValue("defaultLabel")] = _defaultLabel_
+                    if(_defaultLocale_set)
+                    map[parameters.getValue("defaultLocale")] = _defaultLocale_
                     if(_version_set)
                     map[parameters.getValue("version")] = _version_ 
                     primaryConstructor.callBy(map) 
@@ -114,7 +125,8 @@ internal class I18nLabel_Deserializer : JsonDeserializer<I18nLabel>(), JacksonMo
                 "namespace" to primaryConstructor.findParameterByName("namespace")!!, "category" to
                 primaryConstructor.findParameterByName("category")!!, "i18n" to
                 primaryConstructor.findParameterByName("i18n")!!, "defaultLabel" to
-                primaryConstructor.findParameterByName("defaultLabel")!!, "version" to
+                primaryConstructor.findParameterByName("defaultLabel")!!, "defaultLocale" to
+                primaryConstructor.findParameterByName("defaultLocale")!!, "version" to
                 primaryConstructor.findParameterByName("version")!!) }
 
         private val __id__reference: TypeReference<Id<I18nLabel>> = object :

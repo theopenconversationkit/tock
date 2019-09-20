@@ -23,6 +23,7 @@ import fr.vsct.tock.translator.I18nLocalizedLabel
 import fr.vsct.tock.translator.UserInterfaceType.textChat
 import org.litote.kmongo.Id
 import java.time.Instant
+import java.util.Locale
 
 /**
  * [I18nLabel] dto.
@@ -33,10 +34,11 @@ data class BotI18nLabel(
     val category: String,
     val i18n: LinkedHashSet<BotI18nLocalizedLabel>,
     val defaultLabel: String? = null,
+    val defaultLocale: Locale = fr.vsct.tock.shared.defaultLocale,
     val statCount: Int = 0,
     val lastUpdate: Instant? = null,
     val unhandledLocaleStats: List<I18nLabelStat> = emptyList(),
-    val version:Int = 0
+    val version: Int = 0
 ) {
 
     companion object {
@@ -47,25 +49,26 @@ data class BotI18nLabel(
         ): List<I18nLabelStat> =
             stats.filter { s ->
                 s.hasSameLanguage(label)
-                        && (
-                        (label.interfaceType == s.interfaceType && s.connectorId == label.connectorId) ||
-                                (label.connectorId == null && label.interfaceType == s.interfaceType && labels.none { it != label && it.label.isNotBlank() && s.hasSameLanguage(it) && it.interfaceType == s.interfaceType && it.connectorId == s.connectorId }) ||
-                                (label.connectorId == null && label.interfaceType == textChat && labels.none { it != label && it.label.isNotBlank() && s.hasSameLanguage(it) && it.interfaceType == s.interfaceType})
-                        )
+                    && (
+                    (label.interfaceType == s.interfaceType && s.connectorId == label.connectorId) ||
+                        (label.connectorId == null && label.interfaceType == s.interfaceType && labels.none { it != label && it.label.isNotBlank() && s.hasSameLanguage(it) && it.interfaceType == s.interfaceType && it.connectorId == s.connectorId }) ||
+                        (label.connectorId == null && label.interfaceType == textChat && labels.none { it != label && it.label.isNotBlank() && s.hasSameLanguage(it) && it.interfaceType == s.interfaceType })
+                    )
             }
     }
 
     constructor(label: I18nLabel, stats: List<I18nLabelStat>) :
-            this(
-                label._id,
-                label.namespace,
-                label.category,
-                label.i18n.mapTo(LinkedHashSet()) { BotI18nLocalizedLabel(it, selectStats(it, label.i18n, stats)) },
-                label.defaultLabel,
-                stats.sumBy { it.count },
-                stats.maxBy { it.lastUpdate }?.lastUpdate,
-                stats.filter { label.i18n.none { l -> it.hasSameLanguage(l)} },
-                label.version
-            )
+        this(
+            label._id,
+            label.namespace,
+            label.category,
+            label.i18n.mapTo(LinkedHashSet()) { BotI18nLocalizedLabel(it, selectStats(it, label.i18n, stats)) },
+            label.defaultLabel,
+            label.defaultLocale,
+            stats.sumBy { it.count },
+            stats.maxBy { it.lastUpdate }?.lastUpdate,
+            stats.filter { label.i18n.none { l -> it.hasSameLanguage(l) } },
+            label.version
+        )
 
 }

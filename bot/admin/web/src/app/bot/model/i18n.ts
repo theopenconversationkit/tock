@@ -41,13 +41,13 @@ export class I18nLabels {
 export class I18nLabel {
 
   firstCategory: boolean;
-  defaultLocale: string;
 
   constructor(public _id: string,
               public category: string,
               public namespace: string,
               public i18n: I18nLocalizedLabel[],
               public defaultLabel?: string,
+              public defaultLocale?: string,
               public statCount?: number,
               public lastUpdate?: Date,
               public unhandledLocaleStats?: I18nLabelStat[],
@@ -61,6 +61,7 @@ export class I18nLabel {
       this.namespace,
       this.i18n.map(i => i.clone()),
       this.defaultLabel,
+      this.defaultLocale,
       this.statCount,
       this.lastUpdate,
       this.unhandledLocaleStats,
@@ -69,9 +70,6 @@ export class I18nLabel {
   }
 
   defaultLocalizedLabel(): I18nLocalizedLabel {
-    if (!this.defaultLocale) {
-      this.defaultLocale = this.i18n[0].locale;
-    }
     const d = this.label(this.defaultLocale, defaultUserInterfaceType);
     return d ? d : this.i18n[0];
   }

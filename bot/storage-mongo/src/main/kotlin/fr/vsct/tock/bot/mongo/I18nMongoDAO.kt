@@ -57,7 +57,7 @@ import org.litote.kmongo.inc
 import org.litote.kmongo.include
 import org.litote.kmongo.reactivestreams.getCollection
 import org.litote.kmongo.save
-import org.litote.kmongo.set
+import org.litote.kmongo.setValue
 import org.litote.kmongo.toId
 import org.litote.kmongo.upsert
 import org.litote.kmongo.withDocumentClass
@@ -92,7 +92,7 @@ internal object I18nMongoDAO : I18nDAO {
     private fun sortLabels(list: List<I18nLabel>): List<I18nLabel> =
         list.sortedWith(compareBy({ it.category }, { it.findLabel(defaultLocale, null)?.label ?: "" }))
 
-    private fun sortLocalizedLabels(list: LinkedHashSet<I18nLocalizedLabel>): LinkedHashSet<I18nLocalizedLabel> =
+    private fun sortLocalizedLabels(list: MutableSet<I18nLocalizedLabel>): LinkedHashSet<I18nLocalizedLabel> =
         LinkedHashSet(list.sortedWith(compareBy({ it.locale.language }, { it.interfaceType }, { it.connectorId })))
 
     private fun sortLocalizedLabels(label: I18nLabel): I18nLabel =
@@ -100,7 +100,7 @@ internal object I18nMongoDAO : I18nDAO {
 
     override fun listenI18n(listener: (Id<I18nLabel>) -> Unit) {
         asyncCol.watch {
-            listener((it.documentKey["_id"] as BsonString).value.toId())
+            it.documentKey?.get("_id")?.let { id -> listener((id as BsonString).value.toId()) }
         }
     }
 
@@ -188,7 +188,7 @@ internal object I18nMongoDAO : I18nDAO {
                 combine(
                     inc(Count, stat.count),
                     currentDate(LastUpdate),
-                    set(Namespace, stat.namespace)
+                    setValue(Namespace, stat.namespace)
                 ),
                 upsert()
             )

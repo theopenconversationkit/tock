@@ -27,6 +27,8 @@ private val __Duration: KProperty1<TestPlanExecution, Duration?>
     get() = TestPlanExecution::duration
 private val ___id: KProperty1<TestPlanExecution, Id<TestPlanExecution>?>
     get() = TestPlanExecution::_id
+private val __Status: KProperty1<TestPlanExecution, TestPlanExecutionStatus?>
+    get() = TestPlanExecution::status
 class TestPlanExecution_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         TestPlanExecution?>) : KPropertyPath<T, TestPlanExecution?>(previous,property) {
     val testPlanId: KPropertyPath<T, Id<TestPlan>?>
@@ -47,6 +49,9 @@ class TestPlanExecution_<T>(previous: KPropertyPath<T, *>?, property: KProperty1
     val _id: KPropertyPath<T, Id<TestPlanExecution>?>
         get() = KPropertyPath(this,___id)
 
+    val status: KPropertyPath<T, TestPlanExecutionStatus?>
+        get() = KPropertyPath(this,__Status)
+
     companion object {
         val TestPlanId: KProperty1<TestPlanExecution, Id<TestPlan>?>
             get() = __TestPlanId
@@ -59,7 +64,9 @@ class TestPlanExecution_<T>(previous: KPropertyPath<T, *>?, property: KProperty1
         val Duration: KProperty1<TestPlanExecution, Duration?>
             get() = __Duration
         val _id: KProperty1<TestPlanExecution, Id<TestPlanExecution>?>
-            get() = ___id}
+            get() = ___id
+        val Status: KProperty1<TestPlanExecution, TestPlanExecutionStatus?>
+            get() = __Status}
 }
 
 class TestPlanExecution_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -82,6 +89,9 @@ class TestPlanExecution_Col<T>(previous: KPropertyPath<T, *>?, property: KProper
 
     val _id: KPropertyPath<T, Id<TestPlanExecution>?>
         get() = KPropertyPath(this,___id)
+
+    val status: KPropertyPath<T, TestPlanExecutionStatus?>
+        get() = KPropertyPath(this,__Status)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): TestPlanExecution_<T> =
@@ -107,6 +117,9 @@ class TestPlanExecution_Map<T, K>(previous: KPropertyPath<T, *>?, property: KPro
 
     val _id: KPropertyPath<T, Id<TestPlanExecution>?>
         get() = KPropertyPath(this,___id)
+
+    val status: KPropertyPath<T, TestPlanExecutionStatus?>
+        get() = KPropertyPath(this,__Status)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): TestPlanExecution_<T> =

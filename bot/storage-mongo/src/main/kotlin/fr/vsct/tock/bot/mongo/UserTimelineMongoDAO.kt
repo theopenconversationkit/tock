@@ -94,7 +94,7 @@ import org.litote.kmongo.pull
 import org.litote.kmongo.regex
 import org.litote.kmongo.replaceOneWithFilter
 import org.litote.kmongo.save
-import org.litote.kmongo.set
+import org.litote.kmongo.setValue
 import org.litote.kmongo.sort
 import org.litote.kmongo.toId
 import org.litote.kmongo.updateOneById
@@ -272,7 +272,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     }
 
     override fun updatePlayerId(oldPlayerId: PlayerId, newPlayerId: PlayerId) {
-        userTimelineCol.updateOneById(oldPlayerId.id, set(UserTimelineCol_.PlayerId, newPlayerId))
+        userTimelineCol.updateOneById(oldPlayerId.id, setValue(UserTimelineCol_.PlayerId, newPlayerId))
         dialogCol.updateMany(
             PlayerIds contains oldPlayerId,
             addToSet(PlayerIds, newPlayerId)
@@ -307,7 +307,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             connectorMessageCol.findOneById(ConnectorMessageColId(actionId, dialogId))
                 ?.messages
                 ?.mapNotNull { it?.value as? ConnectorMessage }
-                    ?: emptyList()
+                ?: emptyList()
         } catch (e: Exception) {
             logger.error(e)
             emptyList()
@@ -601,7 +601,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         return try {
             archivedEntityValuesCol.findOneById(stateValueId)
                 ?.values?.map { it.toArchivedEntityValue(oldActionsMap) }
-                    ?: emptyList()
+                ?: emptyList()
         } catch (e: Exception) {
             logger.error(e)
             emptyList()

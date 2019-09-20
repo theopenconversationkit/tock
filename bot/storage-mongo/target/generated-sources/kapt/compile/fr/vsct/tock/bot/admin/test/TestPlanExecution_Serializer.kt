@@ -43,6 +43,9 @@ internal class TestPlanExecution_Serializer :
         gen.writeFieldName("_id")
         val __id_ = value._id
         serializers.defaultSerializeValue(__id_, gen)
+        gen.writeFieldName("status")
+        val _status_ = value.status
+        serializers.defaultSerializeValue(_status_, gen)
         gen.writeEndObject()
     }
 }

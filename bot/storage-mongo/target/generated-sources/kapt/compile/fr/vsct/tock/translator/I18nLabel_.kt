@@ -1,6 +1,7 @@
 package fr.vsct.tock.translator
 
 import java.util.LinkedHashSet
+import java.util.Locale
 import kotlin.Int
 import kotlin.String
 import kotlin.Suppress
@@ -23,6 +24,8 @@ private val __I18n: KProperty1<I18nLabel, LinkedHashSet<I18nLocalizedLabel>?>
     get() = I18nLabel::i18n
 private val __DefaultLabel: KProperty1<I18nLabel, String?>
     get() = I18nLabel::defaultLabel
+private val __DefaultLocale: KProperty1<I18nLabel, Locale?>
+    get() = I18nLabel::defaultLocale
 private val __Version: KProperty1<I18nLabel, Int?>
     get() = I18nLabel::version
 class I18nLabel_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, I18nLabel?>) :
@@ -42,6 +45,9 @@ class I18nLabel_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, I18n
     val defaultLabel: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__DefaultLabel)
 
+    val defaultLocale: KPropertyPath<T, Locale?>
+        get() = KPropertyPath(this,__DefaultLocale)
+
     val version: KPropertyPath<T, Int?>
         get() = KPropertyPath(this,__Version)
 
@@ -56,6 +62,8 @@ class I18nLabel_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, I18n
             get() = KCollectionSimplePropertyPath(null, __I18n)
         val DefaultLabel: KProperty1<I18nLabel, String?>
             get() = __DefaultLabel
+        val DefaultLocale: KProperty1<I18nLabel, Locale?>
+            get() = __DefaultLocale
         val Version: KProperty1<I18nLabel, Int?>
             get() = __Version}
 }
@@ -77,6 +85,9 @@ class I18nLabel_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
 
     val defaultLabel: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__DefaultLabel)
+
+    val defaultLocale: KPropertyPath<T, Locale?>
+        get() = KPropertyPath(this,__DefaultLocale)
 
     val version: KPropertyPath<T, Int?>
         get() = KPropertyPath(this,__Version)
@@ -101,6 +112,9 @@ class I18nLabel_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*
 
     val defaultLabel: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__DefaultLabel)
+
+    val defaultLocale: KPropertyPath<T, Locale?>
+        get() = KPropertyPath(this,__DefaultLocale)
 
     val version: KPropertyPath<T, Int?>
         get() = KPropertyPath(this,__Version)

@@ -41,6 +41,9 @@ internal class I18nLabel_Serializer : StdSerializer<I18nLabel>(I18nLabel::class.
         if(_defaultLabel_ == null) { gen.writeNull() } else {
                 gen.writeString(_defaultLabel_)
                 }
+        gen.writeFieldName("defaultLocale")
+        val _defaultLocale_ = value.defaultLocale
+        serializers.defaultSerializeValue(_defaultLocale_, gen)
         gen.writeFieldName("version")
         val _version_ = value.version
         gen.writeNumber(_version_)

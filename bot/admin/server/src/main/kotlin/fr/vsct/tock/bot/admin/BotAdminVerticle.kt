@@ -38,7 +38,6 @@ import fr.vsct.tock.bot.admin.model.TestPlanUpdate
 import fr.vsct.tock.bot.admin.model.UserSearchQuery
 import fr.vsct.tock.bot.admin.model.XRayPlanExecutionConfiguration
 import fr.vsct.tock.bot.admin.test.TestPlan
-import fr.vsct.tock.bot.admin.test.TestPlanExecutionStatus
 import fr.vsct.tock.bot.admin.test.TestPlanService
 import fr.vsct.tock.bot.admin.test.xray.XrayService
 import fr.vsct.tock.bot.connector.ConnectorType.Companion.rest
@@ -51,7 +50,6 @@ import fr.vsct.tock.nlp.admin.AdminVerticle
 import fr.vsct.tock.nlp.admin.model.ApplicationScopedQuery
 import fr.vsct.tock.nlp.admin.model.TranslateReport
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
-import fr.vsct.tock.shared.Dice
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.provide
@@ -279,10 +277,10 @@ open class BotAdminVerticle : AdminVerticle() {
          */
         blockingJsonPost("/xray/execute", botUser) { context, configuration: XRayPlanExecutionConfiguration ->
             XrayService(
-                    listOfNotNull(configuration.configurationId),
-                    listOf(configuration.testPlanKey),
-                    listOf(),
-                    configuration.testedBotId
+                listOfNotNull(configuration.configurationId),
+                listOf(configuration.testPlanKey),
+                listOf(),
+                configuration.testedBotId
             ).executePlans(context.organization)
         }
         /**
