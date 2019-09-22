@@ -48,6 +48,8 @@ import {MediaDialogComponent} from "./story/media/media-dialog.component";
 import {ThemeModule} from "../theme/theme.module";
 import {NbRouteTabsetModule, NbCardModule, NbSpinnerModule, NbCheckboxModule, NbAccordionModule, NbSelectModule,
   NbButtonModule, NbTooltipModule, NbActionsModule, NbInputModule, NbRadioModule } from "@nebular/theme";
+import {ApplicationFeatureComponent} from "./feature/application-feature.component";
+import {StoryRuleComponent} from "./feature/story-rule.component";
 
 const routes: Routes = [
   {
@@ -79,7 +81,7 @@ const routes: Routes = [
         component: I18nComponent
       },
       {
-        path: 'feature-flipping',
+        path: 'story-rules',
         component: FeatureComponent
       }
     ]
@@ -135,7 +137,9 @@ export class BotRoutingModule {
     StepDialogComponent,
     StepComponent,
     StepsComponent,
-    MediaDialogComponent
+    MediaDialogComponent,
+    ApplicationFeatureComponent,
+    StoryRuleComponent
   ],
   exports: [],
   providers: [

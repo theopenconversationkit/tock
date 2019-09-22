@@ -73,7 +73,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
     override val logger: KLogger = KotlinLogging.logger {}
 
-    val i18n: I18nDAO by injector.instance()
+    private val i18n: I18nDAO by injector.instance()
 
     override fun configureServices() {
         initTranslator()

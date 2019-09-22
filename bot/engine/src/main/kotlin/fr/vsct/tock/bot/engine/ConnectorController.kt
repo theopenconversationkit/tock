@@ -22,6 +22,7 @@ import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.IntentAware
+import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.action.Action
@@ -107,4 +108,9 @@ interface ConnectorController {
         errorAction.metadata.lastAnswer = true
         return errorAction
     }
+
+    /**
+     * Return a story definition provider for this controller.
+     */
+    fun storyDefinitionLoader(): (String) -> StoryDefinition = { botDefinition.findStoryDefinition(it) }
 }

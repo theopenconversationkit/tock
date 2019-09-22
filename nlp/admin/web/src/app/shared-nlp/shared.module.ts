@@ -52,7 +52,8 @@ import {
 } from "@angular/material";
 import {MapToIterablePipe} from "./map-to-iterable.pipe";
 import {ScrollComponent} from "../scroll/scroll.component";
-import {NbButtonModule, NbDatepickerModule, NbInputModule, NbToggleModule} from "@nebular/theme";
+import { NbEvaIconsModule } from '@nebular/eva-icons';
+import {NbButtonModule, NbDatepickerModule, NbInputModule, NbToggleModule, NbIconModule} from "@nebular/theme";
 
 @NgModule({
   imports: [
@@ -87,6 +88,8 @@ import {NbButtonModule, NbDatepickerModule, NbInputModule, NbToggleModule} from 
     MatTooltipModule,
     MatTreeModule,
 
+    NbEvaIconsModule,
+    NbIconModule,
     NbButtonModule
   ],
   declarations: [ConfirmDialogComponent, MapToIterablePipe, ScrollComponent],
@@ -125,6 +128,8 @@ import {NbButtonModule, NbDatepickerModule, NbInputModule, NbToggleModule} from 
     FormsModule,
     MapToIterablePipe,
 
+    NbEvaIconsModule,
+    NbIconModule,
     NbDatepickerModule,
     NbInputModule,
     NbToggleModule],

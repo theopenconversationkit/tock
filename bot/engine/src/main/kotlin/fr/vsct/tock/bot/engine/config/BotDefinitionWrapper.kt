@@ -59,8 +59,24 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
         return findStoryDefinition(intent?.wrappedIntent()?.name)
     }
 
-    override fun findStoryDefinition(intent: String?): StoryDefinition =
-        intent?.let { i -> configuredStories[i]?.firstOrNull() } ?: super.findStoryDefinition(intent)
+    override fun findStoryDefinition(intent: String?, applicationId: String?): StoryDefinition =
+        intent?.let { i ->
+            configuredStories[i]
+                ?.firstOrNull()
+                //does not take if story is disabled
+                ?.takeUnless { it.configuration.hasOnlyDisabledFeature(applicationId) }
+        }
+            ?: BotDefinition.findStoryDefinition(
+                stories.filter {
+                    when (it) {
+                        is ConfiguredStoryDefinition -> !it.configuration.hasOnlyDisabledFeature(applicationId)
+                        else -> true
+                    }
+                },
+                intent,
+                unknownStory,
+                keywordStory
+            )
 
     override fun toString(): String {
         return "Wrapper($botDefinition)"

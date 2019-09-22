@@ -124,7 +124,8 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
           [],
           "build",
           "",
-          ""
+          "",
+          []
         );
         if (!this.textRetrieved) {
           this.route.queryParams.subscribe(params => {

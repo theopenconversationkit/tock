@@ -145,8 +145,9 @@ internal class TockConnectorController constructor(
                         userTimelineDAO.loadWithLastValidDialog(
                             action.playerId,
                             data.priorUserId,
-                            data.groupId
-                        ) { bot.botDefinition.findStoryDefinition(it) }
+                            data.groupId,
+                            storyDefinitionLoader()
+                        )
 
                     val transformedAction = tryToParseVoiceAudio(action, userTimeline)
 
@@ -184,8 +185,9 @@ internal class TockConnectorController constructor(
                 userTimelineDAO.loadWithLastValidDialog(
                     action.playerId,
                     data.priorUserId,
-                    data.groupId
-                ) { bot.botDefinition.findStoryDefinition(it) }
+                    data.groupId,
+                    storyDefinitionLoader()
+                )
             bot.support(action, userTimeline, this, data)
         } catch (t: Throwable) {
             callback.exceptionThrown(action, t)

@@ -22,6 +22,7 @@ import fr.vsct.tock.bot.admin.answer.BuiltInAnswerConfiguration
 import fr.vsct.tock.bot.admin.answer.ScriptAnswerConfiguration
 import fr.vsct.tock.bot.admin.answer.SimpleAnswerConfiguration
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration
+import fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationFeature
 import fr.vsct.tock.bot.definition.Intent
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
@@ -55,6 +56,8 @@ data class BotStoryDefinitionConfiguration(
      * The user sentence sample.
      */
     val userSentence: String = "",
+    val configurationName: String? = null,
+    val features: List<StoryDefinitionConfigurationFeature> = emptyList(),
     val _id: Id<StoryDefinitionConfiguration> = newId()
 ) {
 
@@ -71,6 +74,8 @@ data class BotStoryDefinitionConfiguration(
         story.category,
         story.description,
         story.userSentence,
+        story.configurationName,
+        story.features,
         story._id
     )
 

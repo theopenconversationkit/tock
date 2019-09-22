@@ -54,7 +54,7 @@ interface BotDefinition : I18nKeyProvider {
          */
         fun findIntent(stories: List<StoryDefinition>, intent: String): Intent {
             return stories.flatMap { it.intents }.find { it.name == intent }
-                    ?: if (intent == keyword.name) keyword else unknown
+                ?: if (intent == keyword.name) keyword else unknown
         }
 
         /**
@@ -62,17 +62,17 @@ interface BotDefinition : I18nKeyProvider {
          * Is no valid [StoryDefinition] found, returns the [unknownStory].
          */
         fun findStoryDefinition(
-                stories: List<StoryDefinition>,
-                intent: String?,
-                unknownStory: StoryDefinition,
-                keywordStory: StoryDefinition
+            stories: List<StoryDefinition>,
+            intent: String?,
+            unknownStory: StoryDefinition,
+            keywordStory: StoryDefinition
         ): StoryDefinition {
             return if (intent == null) {
                 unknownStory
             } else {
                 val i = findIntent(stories, intent)
                 stories.find { it.isStarterIntent(i) }
-                        ?: if (intent == keyword.name) keywordStory else unknownStory
+                    ?: if (intent == keyword.name) keywordStory else unknownStory
             }
         }
     }
@@ -117,8 +117,11 @@ interface BotDefinition : I18nKeyProvider {
 
     /**
      * Finds a [StoryDefinition] from an intent name.
+     *
+     * @param intent the intent name
+     * @param applicationId the optional applicationId
      */
-    fun findStoryDefinition(intent: String?): StoryDefinition {
+    fun findStoryDefinition(intent: String?, applicationId: String? = null): StoryDefinition {
         return findStoryDefinition(stories, intent, unknownStory, keywordStory)
     }
 
@@ -172,10 +175,10 @@ interface BotDefinition : I18nKeyProvider {
      */
     fun errorAction(playerId: PlayerId, applicationId: String, recipientId: PlayerId): Action {
         return SendSentence(
-                playerId,
-                applicationId,
-                recipientId,
-                property("tock_technical_error", "Technical error :( sorry!")
+            playerId,
+            applicationId,
+            recipientId,
+            property("tock_technical_error", "Technical error :( sorry!")
         )
     }
 
@@ -189,7 +192,7 @@ interface BotDefinition : I18nKeyProvider {
      * Is this intent disable the bot?
      */
     fun isBotDisabledIntent(intent: Intent?): Boolean =
-            intent != null && botDisabledStory?.isStarterIntent(intent) ?: false
+        intent != null && botDisabledStory?.isStarterIntent(intent) ?: false
 
     /**
      * To manage reactivation.
@@ -200,7 +203,7 @@ interface BotDefinition : I18nKeyProvider {
      * Is this intent is reactivating the bot?
      */
     fun isBotEnabledIntent(intent: Intent?): Boolean =
-            intent != null && botEnabledStory?.isStarterIntent(intent) ?: false
+        intent != null && botEnabledStory?.isStarterIntent(intent) ?: false
 
     /**
      *  Listener invoked when bot is enabled.
@@ -215,11 +218,11 @@ interface BotDefinition : I18nKeyProvider {
     override fun i18n(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue {
         val category = javaClass.kotlin.simpleName?.replace("Definition", "") ?: ""
         return I18nLabelValue(
-                I18nKeyProvider.generateKey(namespace, category, defaultLabel),
-                namespace,
-                category,
-                defaultLabel,
-                args
+            I18nKeyProvider.generateKey(namespace, category, defaultLabel),
+            namespace,
+            category,
+            defaultLabel,
+            args
         )
     }
 
@@ -227,30 +230,30 @@ interface BotDefinition : I18nKeyProvider {
      * Returns the entity with the specified name and optional role.
      */
     fun entity(name: String, role: String? = null): Entity =
-            Entity(
-                    EntityType(name.withNamespace(namespace)),
-                    role ?: name.withoutNamespace(namespace)
-            )
+        Entity(
+            EntityType(name.withNamespace(namespace)),
+            role ?: name.withoutNamespace(namespace)
+        )
 
     /**
      * Returns an [I18nTranslator] for the specified [userLocale] and [connectorType].
      */
     fun i18nTranslator(
-            userLocale: Locale,
-            connectorType: ConnectorType,
-            userInterfaceType: UserInterfaceType = connectorType.userInterfaceType,
-            contextId: String? = null
+        userLocale: Locale,
+        connectorType: ConnectorType,
+        userInterfaceType: UserInterfaceType = connectorType.userInterfaceType,
+        contextId: String? = null
     ): I18nTranslator =
-            object : I18nTranslator {
-                override val userLocale: Locale get() = userLocale
-                override val userInterfaceType: UserInterfaceType get() = userInterfaceType
-                override val targetConnectorType: ConnectorType get() = connectorType
-                override val contextId: String? get() = contextId
+        object : I18nTranslator {
+            override val userLocale: Locale get() = userLocale
+            override val userInterfaceType: UserInterfaceType get() = userInterfaceType
+            override val targetConnectorType: ConnectorType get() = connectorType
+            override val contextId: String? get() = contextId
 
-                override fun i18n(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue {
-                    return this@BotDefinition.i18n(defaultLabel, args)
-                }
+            override fun i18n(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue {
+                return this@BotDefinition.i18n(defaultLabel, args)
             }
+        }
 
     /**
      * Get the default delay between two answers.

@@ -23,6 +23,7 @@ import fr.vsct.tock.bot.admin.answer.BuiltInAnswerConfiguration
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.StoryDefinition
+import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.shared.defaultNamespace
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
@@ -88,6 +89,10 @@ data class StoryDefinitionConfiguration(
      */
     val configurationName: String? = null,
     /**
+     * The optional supported
+     */
+    val features: List<StoryDefinitionConfigurationFeature> = emptyList(),
+    /**
      * The configuration identifier.
      */
     val _id: Id<StoryDefinitionConfiguration> = newId()
@@ -107,4 +112,27 @@ data class StoryDefinitionConfiguration(
 
     override fun findNextSteps(story: StoryDefinitionConfiguration): List<String> =
         steps.map { it.userSentence }
+
+    internal fun hasOnlyDisabledFeature(applicationId: String?): Boolean =
+        when {
+            features.isEmpty() -> false
+            applicationId == null -> features.none { it.botApplicationConfigurationId == null && it.enabled }
+            else -> {
+                val app = BotRepository.getConfigurationByApplicationId(applicationId)
+                features.none {
+                    it.enabled && (it.botApplicationConfigurationId == null || it.botApplicationConfigurationId == app?._id)
+                }
+            }
+        }
+
+    internal fun findEnabledFeature(applicationId: String?): StoryDefinitionConfigurationFeature? =
+        when {
+            features.isEmpty() -> null
+            applicationId == null -> findDefaultEnabledFeature()
+            else -> BotRepository.getConfigurationByApplicationId(applicationId)?.let { conf ->
+                features.find { it.enabled && it.botApplicationConfigurationId == conf._id }
+            } ?: findDefaultEnabledFeature()
+        }
+
+    private fun findDefaultEnabledFeature(): StoryDefinitionConfigurationFeature? = features.find { it.botApplicationConfigurationId == null && it.enabled }
 }

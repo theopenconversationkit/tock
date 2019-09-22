@@ -22,9 +22,9 @@ import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
-import fr.vsct.tock.bot.connector.NotifyBotStateModifier
 import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.NotifyBotStateModifier
 import fr.vsct.tock.bot.definition.BotAnswerInterceptor
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.BotProvider
@@ -84,7 +84,10 @@ object BotRepository {
         }
     )
 
-    private val connectorControllerMap: MutableMap<BotApplicationConfiguration, ConnectorController> =
+    private val connectorControllerMap: ConcurrentHashMap<BotApplicationConfiguration, ConnectorController> =
+        ConcurrentHashMap()
+
+    private val applicationIdBotApplicationConfigurationMap: ConcurrentHashMap<String, BotApplicationConfiguration> =
         ConcurrentHashMap()
 
     @Volatile
@@ -159,8 +162,7 @@ object BotRepository {
         parameters: Map<String, String> = emptyMap(),
         stateModifier: NotifyBotStateModifier = NotifyBotStateModifier.KEEP_CURRENT_STATE
     ) {
-        val conf = connectorControllerMap.keys.firstOrNull { it.applicationId == applicationId }
-            ?: error("unknown application $applicationId")
+        val conf = getConfigurationByApplicationId(applicationId) ?: error("unknown application $applicationId")
         connectorControllerMap.getValue(conf).notifyAndCheckState(recipientId, intent, step, parameters, stateModifier)
     }
 
@@ -253,6 +255,9 @@ object BotRepository {
     fun registerNlpListener(listener: NlpListener) {
         nlpListeners.add(listener)
     }
+
+    internal fun getConfigurationByApplicationId(applicationId: String): BotApplicationConfiguration? =
+        applicationIdBotApplicationConfigurationMap[applicationId]
 
     /**
      * Returns the current [ConnectorController] for a given predicate.
@@ -432,6 +437,7 @@ object BotRepository {
                 StoryConfigurationMonitor.monitor(bot)
                 //register connector controller map
                 connectorControllerMap[this] = controller
+                applicationIdBotApplicationConfigurationMap[this.applicationId] = this
             }
     }
 

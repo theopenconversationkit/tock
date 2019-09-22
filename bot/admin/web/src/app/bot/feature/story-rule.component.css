@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 VSCT
+ * Copyright (C) 2017/2019 VSCT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -7,9 +7,9 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing, software
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -25,26 +25,24 @@
 .feature {
   width: 100%;
   display: table-row;
-  max-width: 800px;
   margin-bottom: 20px;
   padding: 0 20px;
 }
 
-.name {
+.category {
   float: left;
-  width: 150px;
+  width: 200px;
+  font-size: small;
   line-height: 36px;
 }
 
-.category {
-  float: left;
-  width: 400px;
-  font-size: medium;
-  line-height: 36px;
+.new-toggle {
+  vertical-align: middle;
 }
 
 .toggle {
   line-height: 36px;
+  vertical-align: bottom;
 }
 
 .i18n-label__title__delete {
@@ -56,11 +54,29 @@
 }
 
 .delete {
-  vertical-align: text-bottom;
-  margin-left:100px;
+  vertical-align: bottom;
+  margin-bottom: 10px;
+  margin-left: 20px;
 }
 
 .new {
   margin-right: 20px;
+}
+
+.story-type {
+  margin-right: 10px;
+}
+
+.story {
+  width: 400px;
+  margin-top: 20px;
+}
+
+.story-label {
+  vertical-align: super;
+}
+
+.connector {
+  height: 24px;
 }
 

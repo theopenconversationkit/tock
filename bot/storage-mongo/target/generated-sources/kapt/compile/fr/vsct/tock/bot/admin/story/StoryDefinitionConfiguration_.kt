@@ -47,6 +47,9 @@ private val __UserSentence: KProperty1<StoryDefinitionConfiguration, String?>
     get() = StoryDefinitionConfiguration::userSentence
 private val __ConfigurationName: KProperty1<StoryDefinitionConfiguration, String?>
     get() = StoryDefinitionConfiguration::configurationName
+private val __Features: KProperty1<StoryDefinitionConfiguration,
+        List<StoryDefinitionConfigurationFeature>?>
+    get() = StoryDefinitionConfiguration::features
 private val ___id: KProperty1<StoryDefinitionConfiguration, Id<StoryDefinitionConfiguration>?>
     get() = StoryDefinitionConfiguration::_id
 class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -95,6 +98,9 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
     val configurationName: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__ConfigurationName)
 
+    val features: KCollectionSimplePropertyPath<T, StoryDefinitionConfigurationFeature?>
+        get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::features)
+
     val _id: KPropertyPath<T, Id<StoryDefinitionConfiguration>?>
         get() = KPropertyPath(this,___id)
 
@@ -130,6 +136,9 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
             get() = __UserSentence
         val ConfigurationName: KProperty1<StoryDefinitionConfiguration, String?>
             get() = __ConfigurationName
+        val Features: KCollectionSimplePropertyPath<StoryDefinitionConfiguration,
+                StoryDefinitionConfigurationFeature?>
+            get() = KCollectionSimplePropertyPath(null, __Features)
         val _id: KProperty1<StoryDefinitionConfiguration, Id<StoryDefinitionConfiguration>?>
             get() = ___id}
 }
@@ -179,6 +188,9 @@ class StoryDefinitionConfiguration_Col<T>(previous: KPropertyPath<T, *>?, proper
 
     val configurationName: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__ConfigurationName)
+
+    val features: KCollectionSimplePropertyPath<T, StoryDefinitionConfigurationFeature?>
+        get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::features)
 
     val _id: KPropertyPath<T, Id<StoryDefinitionConfiguration>?>
         get() = KPropertyPath(this,___id)
@@ -232,6 +244,9 @@ class StoryDefinitionConfiguration_Map<T, K>(previous: KPropertyPath<T, *>?, pro
 
     val configurationName: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__ConfigurationName)
+
+    val features: KCollectionSimplePropertyPath<T, StoryDefinitionConfigurationFeature?>
+        get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::features)
 
     val _id: KPropertyPath<T, Id<StoryDefinitionConfiguration>?>
         get() = KPropertyPath(this,___id)

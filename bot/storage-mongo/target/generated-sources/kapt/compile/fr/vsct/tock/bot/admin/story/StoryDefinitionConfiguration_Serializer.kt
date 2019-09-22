@@ -86,6 +86,17 @@ internal class StoryDefinitionConfiguration_Serializer :
         if(_configurationName_ == null) { gen.writeNull() } else {
                 gen.writeString(_configurationName_)
                 }
+        gen.writeFieldName("features")
+        val _features_ = value.features
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.List::class.java,
+                serializers.config.typeFactory.constructType(fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationFeature::class.java)
+                ),
+                true,
+                null
+                )
+                .serialize(_features_, gen, serializers)
         gen.writeFieldName("_id")
         val __id_ = value._id
         serializers.defaultSerializeValue(__id_, gen)

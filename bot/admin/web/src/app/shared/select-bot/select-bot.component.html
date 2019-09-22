@@ -23,7 +23,7 @@
     <nb-select (selectedChange)="changeBotName()" status="primary"
                placeholder="Select a configuration"
                [(ngModel)]="currentBotName" class="select-width">
-      <nb-option *ngIf="allowNoSelection" value="None">No configuration</nb-option>
+      <nb-option *ngIf="allowNoSelection" value="None">{{noConfigurationLabel}}</nb-option>
       <nb-option *ngFor="let n of botNames" [value]="n">{{ n }}</nb-option>
     </nb-select>
   </span>

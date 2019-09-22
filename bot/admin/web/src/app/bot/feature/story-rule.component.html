@@ -1,0 +1,95 @@
+<!--
+  ~ Copyright (C) 2017/2019 VSCT
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<nb-card *ngIf="stories.length !== 0" class="features" [nbSpinner]="loadingStoryRules" nbSpinnerStatus="primary">
+  <nb-card-header style="display: flex;">
+    Story Rules
+    <nb-actions size="small" style="cursor: pointer;">
+      <nb-action class="control-item" nbTooltip="Refresh" (click)="refresh()" *ngIf="!create">
+        <i class="material-icons tock-toolbar-menu">refresh</i>
+      </nb-action>
+      <nb-action class="control-item" nbTooltip="Add a new Story Rule" (click)="prepareCreate()" *ngIf="!create">
+        <i class="material-icons tock-toolbar-menu">add_box</i>
+      </nb-action>
+    </nb-actions>
+  </nb-card-header>
+  <nb-card-body>
+    <div *ngIf="create">
+      <tock-select-bot [(configurationId)]="feature.botApplicationConfigurationId" [allowNoSelection]="true"
+                       noConfigurationLabel="All Configurations">
+        <br>
+        <nb-select outline status="primary" [(selected)]="feature.story" class="story new" nbTooltip="Story">
+          <nb-select-label *ngIf="feature && feature.story">
+            <mat-icon *ngIf="feature.story.isBuiltIn()" class="story-type">build</mat-icon>
+            <mat-icon *ngIf="feature.story.isSimpleAnswer()" class="story-type">message</mat-icon>
+            <mat-icon *ngIf="feature.story.isScriptAnswer()" class="story-type">code</mat-icon>
+            <span class="story-label">{{feature.story.name}}</span>
+          </nb-select-label>
+          <nb-option *ngFor="let s of stories" [value]="s" class="story-label">{{s.name}}</nb-option>
+        </nb-select>
+        <nb-select outline status="primary" placeholder="Story Redirection" [(selected)]="feature.switchToStoryId"
+                   class="story new" nbTooltip="Story Redirection" (selectedChange)="onSwitchStoryChange()">
+          <nb-select-label *ngIf="feature && feature.switchToStory">
+            <mat-icon *ngIf="feature.switchToStory.isBuiltIn()" class="story-type">build</mat-icon>
+            <mat-icon *ngIf="feature.switchToStory.isSimpleAnswer()" class="story-type">message</mat-icon>
+            <mat-icon *ngIf="feature.switchToStory.isScriptAnswer()" class="story-type">code</mat-icon>
+            <span class="story-label">{{feature.switchToStory.name}}</span>
+          </nb-select-label>
+          <nb-option>No Redirection</nb-option>
+          <nb-option *ngFor="let s of stories" [value]="s.storyId" class="story-label">{{s.name}}</nb-option>
+        </nb-select>
+        <nb-toggle class="new-toggle" status="primary" [checked]="feature.enabled"
+                   (checkedChange)="toggleNew($event)"
+                   nbTooltip="Story Enabled"></nb-toggle>
+      </tock-select-bot>
+    </div>
+
+    <div *ngIf="!create" class="features-table">
+      <div *ngFor="let f of features" class="feature">
+        <div class="category cell" nbTooltip="Story">{{f.story.name}}</div>
+        <div class="category cell" *ngIf="f.conf">
+          <img src="{{f.conf.connectorType.iconUrl()}}"
+               class="connector"
+               [matTooltip]="f.conf.connectorType.label()"/>
+          {{ f.conf.connectorType.label() }} ( {{ f.conf.applicationId }})
+        </div>
+        <div class="category cell" *ngIf="!f.conf">All Configurations</div>
+        <div class="category cell" nbTooltip="Switch to Story" *ngIf="!f.switchToStory"></div>
+        <div class="category cell" nbTooltip="Switch to Story" *ngIf="f.switchToStory">
+          <mat-icon *ngIf="f.switchToStory.isBuiltIn()" class="story-type">build</mat-icon>
+          <mat-icon *ngIf="f.switchToStory.isSimpleAnswer()" class="story-type">message</mat-icon>
+          <mat-icon *ngIf="f.switchToStory.isScriptAnswer()" class="story-type">code</mat-icon>
+          <span class="story-label">{{f.switchToStory.name}}</span>
+        </div>
+        <div class="toggle cell">
+          <nb-toggle status="primary" [checked]="f.enabled" (checkedChange)="toggle(f, $event)"
+                     nbTooltip="Status"></nb-toggle>
+        </div>
+        <div class="cell">
+          <button nbButton (click)="deleteFeature(f)" nbTooltip="Delete" outline status="danger" size="small"
+                  class="delete">
+            <nb-icon icon="trash-2-outline"></nb-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nb-card-body>
+  <nb-card-footer *ngIf="create">
+    <button nbButton size="small" status="danger" (click)="cancelCreate()">Cancel</button>
+    <button nbButton size="small" status="primary" style="margin-left: 20px" (click)="addFeature()">Add</button>
+  </nb-card-footer>
+</nb-card>
+

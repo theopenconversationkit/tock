@@ -134,6 +134,7 @@ internal class GAAccountLinkingTest {
         } answers {}
 
         val controller: ConnectorController = mockk()
+        every { controller.storyDefinitionLoader() } returns { mockk() }
 
         switchTimeLine(newUserId, previousUserId, controller)
 

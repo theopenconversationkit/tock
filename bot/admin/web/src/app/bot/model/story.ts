@@ -19,7 +19,7 @@ import {EntityDefinition, Intent, Sentence} from "../../model/nlp";
 import {I18nLabel} from "./i18n";
 import {BotService} from "../bot-service";
 import {Observable, of} from "rxjs";
-import {AttachmentType} from "../../core/model/configuration";
+import {AttachmentType, BotApplicationConfiguration} from "../../core/model/configuration";
 
 export class CreateStoryRequest {
 
@@ -123,7 +123,6 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
   public mandatoryEntities: MandatoryEntity[] = [];
   public steps: StoryStep[] = [];
   public description: string = "";
-  public _id: string;
   public hideDetails: boolean = false;
 
   constructor(public storyId: string,
@@ -134,7 +133,10 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
               answers: AnswerConfiguration[] = [],
               category: string = "default",
               public name: string = storyId,
-              public userSentence: string = ""
+              public userSentence: string = "",
+              public features: StoryFeature[],
+              public configurationName?: string,
+              public _id?:string
   ) {
     super(currentType, answers, category);
   }
@@ -143,6 +145,22 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
     return this.storyId;
   }
 
+  prepareBeforeSend(): StoryDefinitionConfiguration {
+    return new StoryDefinitionConfiguration(
+      this.storyId,
+      this.botId,
+      this.intent,
+      this.currentType,
+      this.namespace,
+      this.answers,
+      this.category,
+      this.name,
+      this.userSentence,
+      this.features.map(f => new StoryFeature(f.botApplicationConfigurationId, f.enabled, f.switchToStoryId)),
+      this.configurationName,
+      this._id
+    );
+  }
 
   save(bot: BotService): Observable<AnswerContainer> {
     return bot.saveStory(this)
@@ -155,7 +173,8 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
       currentType: AnswerConfigurationType[json.currentType],
       answers: AnswerConfiguration.fromJSONArray(json.answers),
       mandatoryEntities: MandatoryEntity.fromJSONArray(json.mandatoryEntities),
-      steps: StoryStep.fromJSONArray(json.steps)
+      steps: StoryStep.fromJSONArray(json.steps),
+      features: StoryFeature.fromJSONArray(json.features)
     });
 
     return result;
@@ -645,5 +664,29 @@ export class BuiltinAnswerConfiguration extends AnswerConfiguration {
     const value = Object.create(BuiltinAnswerConfiguration.prototype);
     const result = Object.assign(value, json, {});
     return result;
+  }
+}
+
+export class StoryFeature {
+
+  public story: StoryDefinitionConfiguration;
+  public conf: BotApplicationConfiguration;
+  public switchToStory:StoryDefinitionConfiguration;
+
+  constructor(public botApplicationConfigurationId: string,
+              public enabled: boolean,
+              public switchToStoryId: string
+  ) {
+  }
+
+  static fromJSON(json: any): StoryFeature {
+    const value = Object.create(StoryFeature.prototype);
+    const result = Object.assign(value, json, {});
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): StoryFeature[] {
+    return json ? json.map(StoryFeature.fromJSON) : [];
   }
 }

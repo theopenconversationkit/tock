@@ -40,6 +40,17 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
     }
 
     override fun handle(bus: BotBus) {
+        configuration.findEnabledFeature(bus.applicationId)?.let { feature ->
+            if (feature.switchToStoryId != null) {
+                bus.botDefinition
+                    .stories.find { it.id == feature.switchToStoryId || (it as? ConfiguredStoryDefinition)?.configuration?.storyId == feature.switchToStoryId}
+                    ?.apply {
+                        bus.handleAndSwitchStory(this)
+                        return@handle
+                    }
+            }
+        }
+
         configuration.mandatoryEntities.forEach { entity ->
             if (bus.entityValueDetails(entity.role) == null && entity.hasCurrentAnwser()) {
                 entity.send(bus)
@@ -52,7 +63,7 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
             ?.also { step ->
                 step.send(bus)
                 bus.botDefinition
-                    .findStoryDefinition(step.targetIntent)
+                    .findStoryDefinition(step.targetIntent?.name, bus.applicationId)
                     .takeUnless { it == bus.botDefinition.unknownStory }
                     ?.apply { bus.handleAndSwitchStory(this) }
                 return@handle

@@ -51,7 +51,7 @@ export class BotConfigurationService implements OnInit, OnDestroy {
   }
 
   updateConfigurations() {
-    if(this.state.currentApplication) {
+    if (this.state.currentApplication) {
       this.getBots(this.state.currentApplication.name).subscribe(bots => {
         this.bots.next(bots);
         this.getConfigurations(this.state.createApplicationScopedQuery())
@@ -86,6 +86,15 @@ export class BotConfigurationService implements OnInit, OnDestroy {
 
   private getBots(botId: string): Observable<BotConfiguration[]> {
     return this.rest.get(`/bots/${botId}`, BotConfiguration.fromJSONArray);
+  }
+
+  findApplicationConfigurationById(id: string): BotApplicationConfiguration {
+    const i = this.configurations.getValue().filter(c => c._id === id);
+    if (i.length === 0) {
+      return null;
+    } else {
+      return i[0];
+    }
   }
 
   saveBot(conf: BotConfiguration): Observable<any> {

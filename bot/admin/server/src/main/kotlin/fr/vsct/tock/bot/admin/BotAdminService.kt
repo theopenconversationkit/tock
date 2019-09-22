@@ -516,7 +516,9 @@ object BotAdminService {
                     answers = story.answers.mapNotNull { it.toStoryConfiguration(botConf.botId, storyDefinition) },
                     mandatoryEntities = story.mandatoryEntities.map { it.toEntityConfiguration(application, botConf.botId, storyDefinition) },
                     steps = story.steps.map { it.toStepConfiguration(application, botConf.botId, storyDefinition) },
-                    userSentence = story.userSentence
+                    userSentence = story.userSentence,
+                    configurationName = story.configurationName,
+                    features = story.features
                 )
             } else {
                 StoryDefinitionConfiguration(
@@ -532,7 +534,9 @@ object BotAdminService {
                     story.name,
                     story.category,
                     story.description,
-                    story.userSentence
+                    story.userSentence,
+                    story.configurationName,
+                    story.features
                 )
             }
 

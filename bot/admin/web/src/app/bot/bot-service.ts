@@ -39,7 +39,7 @@ export class BotService {
   }
 
   saveStory(story: StoryDefinitionConfiguration): Observable<StoryDefinitionConfiguration> {
-    return this.rest.post("/bot/story", story, StoryDefinitionConfiguration.fromJSON)
+    return this.rest.post("/bot/story", story.prepareBeforeSend(), StoryDefinitionConfiguration.fromJSON)
   }
 
   findStory(storyDefinitionId: string): Observable<StoryDefinitionConfiguration> {

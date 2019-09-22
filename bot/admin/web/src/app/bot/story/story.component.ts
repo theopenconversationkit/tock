@@ -206,7 +206,9 @@ export class StoryComponent implements OnInit, OnChanges {
       this.state.user.organization,
       [],
       "build",
-      intent.name
+      intent.name,
+      "",
+      []
     );
   }
 
