@@ -34,6 +34,8 @@ import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryHandlerListener
 import fr.vsct.tock.bot.definition.StoryStep
+import fr.vsct.tock.bot.engine.action.ActionNotificationType
+import fr.vsct.tock.bot.engine.action.ActionNotificationType.newFeatureFunctionality
 import fr.vsct.tock.bot.engine.config.StoryConfigurationMonitor
 import fr.vsct.tock.bot.engine.monitoring.RequestTimer
 import fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener
@@ -160,10 +162,11 @@ object BotRepository {
         intent: IntentAware,
         step: StoryStep<out StoryHandlerDefinition>? = null,
         parameters: Map<String, String> = emptyMap(),
-        stateModifier: NotifyBotStateModifier = NotifyBotStateModifier.KEEP_CURRENT_STATE
+        stateModifier: NotifyBotStateModifier = NotifyBotStateModifier.KEEP_CURRENT_STATE,
+        notificationType: ActionNotificationType = newFeatureFunctionality
     ) {
         val conf = getConfigurationByApplicationId(applicationId) ?: error("unknown application $applicationId")
-        connectorControllerMap.getValue(conf).notifyAndCheckState(recipientId, intent, step, parameters, stateModifier)
+        connectorControllerMap.getValue(conf).notifyAndCheckState(recipientId, intent, step, parameters, stateModifier, notificationType)
     }
 
     /**
@@ -182,7 +185,8 @@ object BotRepository {
         intent: IntentAware,
         step: StoryStep<out StoryHandlerDefinition>?,
         parameters: Map<String, String>,
-        stateModifier: NotifyBotStateModifier
+        stateModifier: NotifyBotStateModifier,
+        notificationType: ActionNotificationType
     ) {
         val userTimelineDAO: UserTimelineDAO = injector.provide()
         val userTimeline = userTimelineDAO.loadWithoutDialogs(recipientId)
@@ -195,7 +199,7 @@ object BotRepository {
             userTimelineDAO.save(userTimeline)
         }
 
-        notify(recipientId, intent, step, parameters)
+        notify(recipientId, intent, step, parameters, notificationType)
 
         if (stateModifier == NotifyBotStateModifier.ACTIVATE_ONLY_FOR_THIS_NOTIFICATION) {
             val userTimelineAfterNotification = userTimelineDAO.loadWithoutDialogs(recipientId)

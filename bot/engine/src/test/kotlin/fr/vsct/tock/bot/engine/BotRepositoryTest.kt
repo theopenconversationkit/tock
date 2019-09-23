@@ -294,6 +294,6 @@ class BotRepositoryTest : BotEngineTest() {
         val recipientId = PlayerId("user")
         BotRepository.notify("test", recipientId, intent, stateModifier = NotifyBotStateModifier.KEEP_CURRENT_STATE)
 
-        verify { connector.notify(any(), recipientId, intent, null, any()) }
+        verify { connector.notify(any(), recipientId, intent, null, any(), any()) }
     }
 }

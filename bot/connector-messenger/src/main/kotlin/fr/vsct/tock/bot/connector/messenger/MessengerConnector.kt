@@ -54,6 +54,7 @@ import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.BotRepository.requestTimer
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.action.ActionNotificationType
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.event.MarkSeenEvent
@@ -486,6 +487,11 @@ class MessengerConnector internal constructor(
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
         val delay = Duration.ofMillis(delayInMs)
         if (event is Action) {
+            (callback as? MessengerConnectorCallback)?.notificationType?.also {
+                if (event.metadata.notificationType == null) {
+                    event.metadata.notificationType = it
+                }
+            }
             val id = event.recipientId.id.intern()
             val action = ActionWithTimestamp(event, System.currentTimeMillis() + delayInMs)
             val queue = messagesByRecipientMap
@@ -661,7 +667,8 @@ class MessengerConnector internal constructor(
         recipientId: PlayerId,
         intent: IntentAware,
         step: StoryStep<out StoryHandlerDefinition>?,
-        parameters: Map<String, String>
+        parameters: Map<String, String>,
+        notificationType: ActionNotificationType
     ) {
         controller.handle(
             SendChoice(
@@ -673,7 +680,7 @@ class MessengerConnector internal constructor(
                 parameters
             ),
             ConnectorData(
-                MessengerConnectorCallback(realConnectorId)
+                MessengerConnectorCallback(realConnectorId, notificationType)
             )
         )
     }

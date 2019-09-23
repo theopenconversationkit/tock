@@ -22,6 +22,7 @@ import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.ConnectorController
+import fr.vsct.tock.bot.engine.action.ActionNotificationType
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserPreferences
@@ -75,7 +76,8 @@ interface Connector {
         recipientId: PlayerId,
         intent: IntentAware,
         step: StoryStep<out StoryHandlerDefinition>? = null,
-        parameters: Map<String, String> = emptyMap()
+        parameters: Map<String, String> = emptyMap(),
+        notificationType: ActionNotificationType
     ): Unit =
         throw UnsupportedOperationException("Connector $connectorType does not support notification")
 

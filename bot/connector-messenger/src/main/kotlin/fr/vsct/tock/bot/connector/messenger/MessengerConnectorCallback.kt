@@ -17,10 +17,12 @@
 package fr.vsct.tock.bot.connector.messenger
 
 import fr.vsct.tock.bot.connector.ConnectorCallbackBase
+import fr.vsct.tock.bot.engine.action.ActionNotificationType
 
 /**
  * The messenger [ConnectorCallback].
  */
-class MessengerConnectorCallback(
-    applicationId: String
+internal class MessengerConnectorCallback(
+    applicationId: String,
+    val notificationType: ActionNotificationType? = null
 ) : ConnectorCallbackBase(applicationId, messengerConnectorType)

@@ -26,6 +26,7 @@ import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.action.ActionNotificationType
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
 import io.vertx.ext.web.Router
@@ -63,9 +64,10 @@ interface ConnectorController {
         recipientId: PlayerId,
         intent: IntentAware,
         step: StoryStep<out StoryHandlerDefinition>? = null,
-        parameters: Map<String, String> = emptyMap()
+        parameters: Map<String, String> = emptyMap(),
+        notificationType: ActionNotificationType
     ) {
-        connector.notify(this, recipientId, intent, step, parameters)
+        connector.notify(this, recipientId, intent, step, parameters, notificationType)
     }
 
     /**
