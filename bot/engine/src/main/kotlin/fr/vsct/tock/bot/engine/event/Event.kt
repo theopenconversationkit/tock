@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.engine.event
 
+import fr.vsct.tock.bot.engine.dialog.EntityValue
 import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.shared.security.StringObfuscatorMode
 import org.litote.kmongo.Id
@@ -32,7 +33,11 @@ abstract class Event(
         val state: EventState = EventState()
 ) {
     fun hasEntity(role: String): Boolean {
-        return state.getEntity(role).isNotEmpty()
+        return hasSubEntity(state.entityValues, role)
+    }
+
+    private fun hasSubEntity(entities: List<EntityValue>, role: String): Boolean {
+        return entities.any { it.entity.role == role } || entities.any { hasSubEntity(it.subEntities, role) }
     }
 
     /**
