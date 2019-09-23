@@ -47,6 +47,8 @@ internal class BotApplicationConfiguration_Deserializer :
             var _path_set : Boolean = false
             var __id_: Id<BotApplicationConfiguration>? = null
             var __id_set : Boolean = false
+            var _targetConfigurationId_: Id<BotApplicationConfiguration>? = null
+            var _targetConfigurationId_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -112,6 +114,11 @@ internal class BotApplicationConfiguration_Deserializer :
                              else p.readValueAs(__id__reference);
                             __id_set = true
                             }
+                    "targetConfigurationId" -> {
+                            _targetConfigurationId_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_targetConfigurationId__reference);
+                            _targetConfigurationId_set = true
+                            }
                     else -> {
                             if (_token_?.isStructStart == true)
                             p.skipChildren()
@@ -122,12 +129,13 @@ internal class BotApplicationConfiguration_Deserializer :
                         } 
             return if(_applicationId_set && _botId_set && _namespace_set && _nlpModel_set &&
                     _connectorType_set && _ownerConnectorType_set && _name_set && _baseUrl_set &&
-                    _parameters_set && _path_set && __id_set)
+                    _parameters_set && _path_set && __id_set && _targetConfigurationId_set)
                     BotApplicationConfiguration(applicationId = _applicationId_!!, botId =
                             _botId_!!, namespace = _namespace_!!, nlpModel = _nlpModel_!!,
                             connectorType = _connectorType_!!, ownerConnectorType =
                             _ownerConnectorType_, name = _name_!!, baseUrl = _baseUrl_, parameters =
-                            _parameters_!!, path = _path_, _id = __id_!!)
+                            _parameters_!!, path = _path_, _id = __id_!!, targetConfigurationId =
+                            _targetConfigurationId_)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_applicationId_set)
@@ -151,7 +159,9 @@ internal class BotApplicationConfiguration_Deserializer :
                     if(_path_set)
                     map[parameters.getValue("path")] = _path_
                     if(__id_set)
-                    map[parameters.getValue("_id")] = __id_ 
+                    map[parameters.getValue("_id")] = __id_
+                    if(_targetConfigurationId_set)
+                    map[parameters.getValue("targetConfigurationId")] = _targetConfigurationId_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -174,12 +184,17 @@ internal class BotApplicationConfiguration_Deserializer :
                 primaryConstructor.findParameterByName("baseUrl")!!, "parameters" to
                 primaryConstructor.findParameterByName("parameters")!!, "path" to
                 primaryConstructor.findParameterByName("path")!!, "_id" to
-                primaryConstructor.findParameterByName("_id")!!) }
+                primaryConstructor.findParameterByName("_id")!!, "targetConfigurationId" to
+                primaryConstructor.findParameterByName("targetConfigurationId")!!) }
 
         private val _parameters__reference: TypeReference<Map<String, String>> = object :
                 TypeReference<Map<String, String>>() {}
 
         private val __id__reference: TypeReference<Id<BotApplicationConfiguration>> = object :
+                TypeReference<Id<BotApplicationConfiguration>>() {}
+
+        private val _targetConfigurationId__reference:
+                TypeReference<Id<BotApplicationConfiguration>> = object :
                 TypeReference<Id<BotApplicationConfiguration>>() {}
     }
 }

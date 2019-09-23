@@ -70,7 +70,11 @@ data class BotApplicationConfiguration(
     /**
      * The configuration identifier.
      */
-    val _id: Id<BotApplicationConfiguration> = newId()
+    val _id: Id<BotApplicationConfiguration> = newId(),
+    /**
+     * The target configuration identifier (test case).
+     */
+    val targetConfigurationId: Id<BotApplicationConfiguration>? = null
 ) {
 
     companion object {

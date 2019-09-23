@@ -77,7 +77,7 @@ export class BotConfigurationsComponent implements OnInit {
   }
 
   isFirstLevelConfiguration(bot: BotConfiguration, conf: BotApplicationConfiguration): boolean {
-    return BotApplicationConfiguration.isFirstLevelConfiguration(bot.configurations, conf);
+    return conf.targetConfigurationId === null;
   }
 
   prepareCreate() {

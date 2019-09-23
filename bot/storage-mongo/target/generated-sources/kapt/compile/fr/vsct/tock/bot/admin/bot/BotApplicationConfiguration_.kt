@@ -35,6 +35,9 @@ private val __Path: KProperty1<BotApplicationConfiguration, String?>
     get() = BotApplicationConfiguration::path
 private val ___id: KProperty1<BotApplicationConfiguration, Id<BotApplicationConfiguration>?>
     get() = BotApplicationConfiguration::_id
+private val __TargetConfigurationId: KProperty1<BotApplicationConfiguration,
+        Id<BotApplicationConfiguration>?>
+    get() = BotApplicationConfiguration::targetConfigurationId
 class BotApplicationConfiguration_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         BotApplicationConfiguration?>) : KPropertyPath<T,
         BotApplicationConfiguration?>(previous,property) {
@@ -71,6 +74,9 @@ class BotApplicationConfiguration_<T>(previous: KPropertyPath<T, *>?, property: 
     val _id: KPropertyPath<T, Id<BotApplicationConfiguration>?>
         get() = KPropertyPath(this,___id)
 
+    val targetConfigurationId: KPropertyPath<T, Id<BotApplicationConfiguration>?>
+        get() = KPropertyPath(this,__TargetConfigurationId)
+
     companion object {
         val ApplicationId: KProperty1<BotApplicationConfiguration, String?>
             get() = __ApplicationId
@@ -93,7 +99,10 @@ class BotApplicationConfiguration_<T>(previous: KPropertyPath<T, *>?, property: 
         val Path: KProperty1<BotApplicationConfiguration, String?>
             get() = __Path
         val _id: KProperty1<BotApplicationConfiguration, Id<BotApplicationConfiguration>?>
-            get() = ___id}
+            get() = ___id
+        val TargetConfigurationId: KProperty1<BotApplicationConfiguration,
+                Id<BotApplicationConfiguration>?>
+            get() = __TargetConfigurationId}
 }
 
 class BotApplicationConfiguration_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -131,6 +140,9 @@ class BotApplicationConfiguration_Col<T>(previous: KPropertyPath<T, *>?, propert
 
     val _id: KPropertyPath<T, Id<BotApplicationConfiguration>?>
         get() = KPropertyPath(this,___id)
+
+    val targetConfigurationId: KPropertyPath<T, Id<BotApplicationConfiguration>?>
+        get() = KPropertyPath(this,__TargetConfigurationId)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): BotApplicationConfiguration_<T> =
@@ -171,6 +183,9 @@ class BotApplicationConfiguration_Map<T, K>(previous: KPropertyPath<T, *>?, prop
 
     val _id: KPropertyPath<T, Id<BotApplicationConfiguration>?>
         get() = KPropertyPath(this,___id)
+
+    val targetConfigurationId: KPropertyPath<T, Id<BotApplicationConfiguration>?>
+        get() = KPropertyPath(this,__TargetConfigurationId)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): BotApplicationConfiguration_<T> =

@@ -35,10 +35,10 @@ import fr.vsct.tock.bot.connector.twitter.model.outcoming.Tweet
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
-import fr.vsct.tock.bot.definition.bot
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.action.ActionNotificationType
 import fr.vsct.tock.bot.engine.action.ActionVisibility
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.event.Event
@@ -210,7 +210,7 @@ internal class TwitterConnector internal constructor(
         callback as TwitterConnectorCallback
         logger.debug { "event: $event" }
         if (event is Action) {
-            if(event.metadata.visibility == ActionVisibility.unknown) {
+            if (event.metadata.visibility == ActionVisibility.unknown) {
                 event.metadata.visibility = callback.visibility
             }
             val outcomingEvent = TwitterMessageConverter.toEvent(event)
@@ -225,7 +225,8 @@ internal class TwitterConnector internal constructor(
         recipientId: PlayerId,
         intent: IntentAware,
         step: StoryStep<out StoryHandlerDefinition>?,
-        parameters: Map<String, String>
+        parameters: Map<String, String>,
+        notificationType: ActionNotificationType
     ) {
         controller.handle(
             SendChoice(

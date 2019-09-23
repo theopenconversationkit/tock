@@ -47,6 +47,11 @@ interface BotApplicationConfigurationDAO {
      */
     fun getConfigurationByPath(path: String): BotApplicationConfiguration?
 
+    /**
+     * Get configuration by target application identifier.
+     */
+    fun getConfigurationByTargetId(id: Id<BotApplicationConfiguration>): BotApplicationConfiguration?
+
     fun delete(conf: BotApplicationConfiguration)
 
     /**

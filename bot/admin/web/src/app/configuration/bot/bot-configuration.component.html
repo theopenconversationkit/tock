@@ -35,12 +35,11 @@
     <mat-select
       placeholder="Connector type"
       [(ngModel)]="configuration.connectorType"
-      (selectionChange)="changeConnectorType()"
-      #type>
+      (selectionChange)="changeConnectorType()">
       <mat-select-trigger>
-            <span *ngIf="type.value" class="connector">
-              <img src="{{type.value.iconUrl()}}" class="connector-icon"
-                   [matTooltip]="type.value.label()"/> {{ type.value.label() }}
+            <span *ngIf="configuration.connectorType" class="connector">
+              <img src="{{configuration.connectorType.iconUrl()}}" class="connector-icon"
+                   [matTooltip]="configuration.connectorType.label()"/> {{ configuration.connectorType.label() }}
             </span>
       </mat-select-trigger>
       <mat-option *ngFor="let c of connectorTypesAndRestType"

@@ -66,6 +66,11 @@ internal class BotApplicationConfiguration_Serializer :
         gen.writeFieldName("_id")
         val __id_ = value._id
         serializers.defaultSerializeValue(__id_, gen)
+        gen.writeFieldName("targetConfigurationId")
+        val _targetConfigurationId_ = value.targetConfigurationId
+        if(_targetConfigurationId_ == null) { gen.writeNull() } else {
+                serializers.defaultSerializeValue(_targetConfigurationId_, gen)
+                }
         gen.writeEndObject()
     }
 }

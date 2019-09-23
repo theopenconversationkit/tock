@@ -56,24 +56,16 @@ export class BotApplicationConfiguration {
               public _id?: string,
               public ownerConnectorType?: ConnectorType,
               public path?: string,
-              public fillMandatoryValues?: boolean) {
-  }
-
-  static isFirstLevelConfiguration(allConfs: BotApplicationConfiguration[], conf: BotApplicationConfiguration): boolean {
-    if (!conf.connectorType.isRest()) {
-      return true;
-    }
-    const targetName = conf.applicationId.replace(new RegExp(/test-|rest-/), "");
-    return allConfs.findIndex(c => c.applicationId === targetName && c !== conf) === -1;
+              public fillMandatoryValues?: boolean,
+              public targetConfigurationId?: string) {
   }
 
   static getRestConfiguration(allConfs: BotApplicationConfiguration[], conf: BotApplicationConfiguration): BotApplicationConfiguration {
     if (conf.connectorType.isRest()) {
       return conf;
     }
-    const t1 = "rest-" + conf.applicationId;
-    const t2 = "test-" + conf.applicationId;
-    return allConfs.find(c => c.applicationId === t1 || c.applicationId === t2);
+
+    return allConfs.find(c => c.targetConfigurationId === conf._id);
   }
 
   ownConnectorType(): ConnectorType {

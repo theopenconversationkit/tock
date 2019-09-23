@@ -25,6 +25,7 @@ import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Namespa
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.NlpModel
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Parameters
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Path
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.TargetConfigurationId
 import fr.vsct.tock.bot.admin.bot.BotConfiguration
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
@@ -67,6 +68,22 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
         col.ensureIndex(ApplicationId, BotId)
         col.ensureIndex(Namespace, BotId)
         botCol.ensureUniqueIndex(Name, BotId, Namespace)
+
+        //TODO remove this in 20.3
+        try {
+            val apps = col.find().toList()
+            apps.filter { it.connectorType.id == "rest" && it.targetConfigurationId == null }
+                .forEach { conf ->
+                    val targetApplicationId = conf.applicationId.replace("test-|rest-".toRegex(), "")
+                    apps.find { it.connectorType.id != "rest" && it.applicationId == targetApplicationId }
+                        ?.also {
+                            save(conf.copy(targetConfigurationId = it._id))
+                        }
+                        ?: logger.debug { "rest conf without target: $conf" }
+                }
+        } catch (e: Exception) {
+            logger.error(e)
+        }
     }
 
     override fun listenBotChanges(listener: () -> Unit) {
@@ -90,7 +107,7 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
         return col.findOne(Namespace eq namespace, ApplicationId eq applicationId, BotId eq botId)
     }
 
-    //TODO remove this in 19.9
+    //TODO remove this in 20.3
     fun getHackedConfigurationByApplicationIdAndBot(
         namespace: String,
         applicationId: String,
@@ -110,6 +127,10 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
 
     override fun getConfigurationByPath(path: String): BotApplicationConfiguration? {
         return col.findOne(Path eq path)
+    }
+
+    override fun getConfigurationByTargetId(id: Id<BotApplicationConfiguration>): BotApplicationConfiguration? {
+        return col.findOne(TargetConfigurationId eq id)
     }
 
     override fun save(conf: BotApplicationConfiguration): BotApplicationConfiguration {

@@ -155,6 +155,7 @@ object BotRepository {
      * @param step the optional step target
      * @param parameters the optional parameters
      * @param stateModifier allow the notification to bypass current user state
+     * @param notificationType the notification category
      */
     fun notify(
         applicationId: String,
@@ -173,7 +174,6 @@ object BotRepository {
      * Sends a notification to the connector.
      * A [BotBus] is created and the corresponding story is called.
      *
-     * @param applicationId the configuration connector id
      * @param recipientId the recipient identifier
      * @param intent the notification intent
      * @param step the optional step target

@@ -177,7 +177,8 @@ open class BotAdminVerticle : AdminVerticle() {
                                     ownerConnectorType,
                                     getName(),
                                     getBaseUrl(),
-                                    path = path
+                                    path = path,
+                                    targetConfigurationId = conf._id
                                 )
                             )
                         }

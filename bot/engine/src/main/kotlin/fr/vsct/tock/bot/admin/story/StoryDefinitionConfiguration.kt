@@ -120,7 +120,12 @@ data class StoryDefinitionConfiguration(
             else -> {
                 val app = BotRepository.getConfigurationByApplicationId(applicationId)
                 features.none {
-                    it.enabled && (it.botApplicationConfigurationId == null || it.botApplicationConfigurationId == app?._id)
+                    it.enabled &&
+                        (
+                            it.botApplicationConfigurationId == null
+                                || it.botApplicationConfigurationId == app?._id
+                                || it.botApplicationConfigurationId == app?.targetConfigurationId
+                            )
                 }
             }
         }
@@ -130,7 +135,10 @@ data class StoryDefinitionConfiguration(
             features.isEmpty() -> null
             applicationId == null -> findDefaultEnabledFeature()
             else -> BotRepository.getConfigurationByApplicationId(applicationId)?.let { conf ->
-                features.find { it.enabled && it.botApplicationConfigurationId == conf._id }
+                features.find {
+                    it.enabled &&
+                        (it.botApplicationConfigurationId == conf._id || it.botApplicationConfigurationId == conf.targetConfigurationId)
+                }
             } ?: findDefaultEnabledFeature()
         }
 
