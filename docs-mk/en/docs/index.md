@@ -51,7 +51,7 @@ Graphical interfaces _(Tock Studio)_ are made with [Angular](https://angular.io/
 ## Getting started...
 
 * [Table of contents](toc.md)
-* [Guides](guide/studio.md) and running [demo/sandbox platform](https://demotock-production-admin.vsct-prod.aws.vsct.fr/)
+* [Guides](guide/studio.md) and running [demo/sandbox platform](https://demo.tock.ai/)
 * [User](utilisateur/concepts.md), [developer](dev/modes.md) and [administrator/ops](admin/architecture.md) manuals
 * [Resources (slides, video)](about/resources.md) and [code samples](dev/exemples-code.md)
 

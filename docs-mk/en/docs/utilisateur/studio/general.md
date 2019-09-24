@@ -8,7 +8,7 @@ Les pages suivantes couvrent les différents menus de l'application et différen
 
 Un navigateur standard suffit pour accéder à _Tock Studio_. L'utilisateur est invité à s'authentifier :
 
- * Sur la [plateforme Tock de démonstration](https://demotock-production-admin.vsct-prod.aws.vsct.fr/),
+ * Sur la [plateforme Tock de démonstration](https://demo.tock.ai/),
  l'utilisateur est invité à s'authentifier via son compte GitHub. Celui-ci doit alors accepter que Tock accède 
 à son compte - seul l'identifiant du compte GitHub est lu par Tock.
 

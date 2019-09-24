@@ -10,7 +10,7 @@ modèle conversationnel et d'analyser une phrase.
 La documentation de l'API Tock NLU est disponible dans [/api](../../../api/).
 
 Vous pouvez retrouver cette documentation sur la plateforme de démonstration Tock, à l'adresse
-[https://demotock-production-admin.vsct-prod.aws.vsct.fr/doc/](https://demotock-production-admin.vsct-prod.aws.vsct.fr/doc/).
+[https://demo.tock.ai/doc/](https://demo.tock.ai/doc/).
 
 Si vous avez déployé une plateforme Tock en local avec les [images docker](https://github.com/voyages-sncf-technologies/tock-docker) 
 fournies, vous pouvez retrouver cette documentation en ligne à l'adresse [http://localhost/doc/index.html](http://localhost/doc/index.html).
@@ -20,7 +20,7 @@ fournies, vous pouvez retrouver cette documentation en ligne à l'adresse [http:
 De même, la documentation de l'API _Tock Studio_ est disponible dans [/api/admin](../../../api/admin). 
 
 Vous pouvez retrouver cette documentation sur la plateforme de démonstration Tock, à l'adresse
-[https://demotock-production-admin.vsct-prod.aws.vsct.fr/doc/admin.html](https://demotock-production-admin.vsct-prod.aws.vsct.fr/doc/admin.html).
+[https://demo.tock.ai/doc/admin.html](https://demo.tock.ai/doc/admin.html).
 
 Si vous avez déployé une plateforme Tock en local avec les [images docker](https://github.com/voyages-sncf-technologies/tock-docker) 
 fournies, vous pouvez retrouver cette documentation en ligne à l'adresse [http://localhost/doc/admin.html](http://localhost/doc/admin.html).

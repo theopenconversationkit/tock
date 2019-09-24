@@ -3,7 +3,7 @@
 Un bon moyen de tester Tock est certainement de créer son premier bot conversationnel dans _Tock Studio_ (l'interface 
 graphiques fournie avec la plateforme).
  
-En se connectant à la [plateforme de démonstration](https://demotock-production-admin.vsct-prod.aws.vsct.fr/) Tock, il 
+En se connectant à la [plateforme de démonstration](https://demo.tock.ai/) Tock, il 
 est possible de créer et tester un assistant en quelques minutes sans écrire de code.
 
 ## Ce que vous allez créer
@@ -22,7 +22,7 @@ est possible de créer et tester un assistant en quelques minutes sans écrire d
 
 ## Connexion à la plateforme démo
 
-Ouvrez [ce lien](https://demotock-production-admin.vsct-prod.aws.vsct.fr/) pour accéder à la plateforme de démonstration Tock.
+Ouvrez [ce lien](https://demo.tock.ai/) pour accéder à la plateforme de démonstration Tock.
 
 > **Remarque importante** : Cette plateforme n'a pas vocation à accueillir de véritables bots en production. 
 >C'est un moyen de tester et prendre en main la solution Tock sans avoir à l'installer.
@@ -69,6 +69,8 @@ Créez un premier connecteur pour votre application :
  * _Create a new Configuration_
  
  * Sélectionnez le type de connecteur _Slack_
+ 
+ * Entrez `token` dans les champs _Token_ (pour le moment)
  
  * _Create_
 

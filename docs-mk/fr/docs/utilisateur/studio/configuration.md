@@ -10,7 +10,7 @@ Cet écran permet de créer, modifier, supprimer des applications conversationne
 
 ![schéma Tock](../../img/applications.png "Liste des applications")
 
-> Lors de la première connexion à la [plateforme de démonstration](https://demotock-production-admin.vsct-prod.aws.vsct.fr/),
+> Lors de la première connexion à la [plateforme de démonstration](https://demo.tock.ai/),
 >un assistant simplifié permet de créer la première application (le premier bot). Par la suite, vous pouvez passer par 
 >cet écran pour ajouter d'autres applications.
 
