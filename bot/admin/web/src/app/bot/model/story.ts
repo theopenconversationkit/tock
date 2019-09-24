@@ -119,11 +119,7 @@ export abstract class AnswerContainer {
 
 export class StoryDefinitionConfiguration extends AnswerContainer {
 
-  public version: number = 0;
-  public mandatoryEntities: MandatoryEntity[] = [];
-  public steps: StoryStep[] = [];
-  public description: string = "";
-  public hideDetails: boolean = false;
+  public hideDetails: boolean = false
 
   constructor(public storyId: string,
               public botId: string,
@@ -136,7 +132,11 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
               public userSentence: string = "",
               public features: StoryFeature[],
               public configurationName?: string,
-              public _id?:string
+              public _id?: string,
+              public version: number = 0,
+              public mandatoryEntities: MandatoryEntity[] = [],
+              public steps: StoryStep[] = [],
+              public description: string = ""
   ) {
     super(currentType, answers, category);
   }
@@ -158,7 +158,11 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
       this.userSentence,
       this.features.map(f => new StoryFeature(f.botApplicationConfigurationId, f.enabled, f.switchToStoryId)),
       this.configurationName,
-      this._id
+      this._id,
+      this.version,
+      this.mandatoryEntities,
+      this.steps,
+      this.description
     );
   }
 
@@ -671,7 +675,7 @@ export class StoryFeature {
 
   public story: StoryDefinitionConfiguration;
   public conf: BotApplicationConfiguration;
-  public switchToStory:StoryDefinitionConfiguration;
+  public switchToStory: StoryDefinitionConfiguration;
 
   constructor(public botApplicationConfigurationId: string,
               public enabled: boolean,
