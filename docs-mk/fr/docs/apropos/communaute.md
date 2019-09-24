@@ -52,7 +52,7 @@ sous [licence Apache 2](https://github.com/voyages-sncf-technologies/tock/blob/m
 * [Issues](https://github.com/voyages-sncf-technologies/tock/issues)
 * [Contributeurs](https://github.com/voyages-sncf-technologies/tock/graphs/contributors)
 * [Gitter](https://gitter.im/tockchat/Lobby)
-* [Démo](https://demotock-production-admin.vsct-prod.aws.vsct.fr/) 
+* [Démo](https://demo.tock.ai/) 
 
 
 Pour en savoir plus sur l'organisation des dépôts, les conventions de code, etc. voir la section 

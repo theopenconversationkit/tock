@@ -46,6 +46,14 @@ style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rg
 
 Comme le reste des sources Tock, les logos sont disponibles sous [licence Apache 2](https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE).
 
-**Logo Tock** (<a href="../../assets/images/logo.svg" download="">télécharger</a>) :
+**Logo Tock - couleurs / transparent** (<a href="../../assets/images/logo.svg" download="">télécharger</a>) :
 
-![Logo Tock](../../assets/images/logo.svg)
+<img alt="Logo Tock couleurs" src="../../assets/images/logo.svg" style="width: 150px;">
+
+**Logo Tock - noir / transparent** (<a href="../../assets/images/logo-black.svg" download="">télécharger</a>) :
+
+<img alt="Logo Tock noir" src="../../assets/images/logo-black.svg" style="width: 150px;">
+
+**Logo Tock - blanc / transparent** (<a href="../../assets/images/Logo_Tock_White.svg" download="">télécharger</a>) :
+
+<img alt="Logo Tock blanc" src="../../assets/images/Logo_Tock_White.svg" style="width: 150px; background-color: black;">

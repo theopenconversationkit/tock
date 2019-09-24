@@ -70,7 +70,7 @@ ou passer directement à [la suite](api.md).
 * Entrez dans le champ _Request URL_ l'adresse complète de votre connecteur Slack dans Tock.
 
 > Sur la plateforme de démonstration Tock, cette adresse sera du type 
->https://demotock-production-admin.vsct-prod.aws.vsct.fr/{chemin_relatif_du_connecteur_slack}
+>https://demo.tock.ai/{chemin_relatif_du_connecteur_slack}
 
 > Le chemin relatif du connecteur est indiqué dans la page _Bot Configurations_. Sur la ligne correspondant à votre
 >connecteur Slack, il s'agit du champ _Relative REST path_
