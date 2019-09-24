@@ -8,7 +8,7 @@ couplée car n'ayant pas accès à la base de données (MongoDB), contrairement 
 C'est donc le mode de développement Tock recommandé pour démarrer, ainsi que dans des scenarios ou l'accès partagé à la 
 base de données serait un problème.
 
-> Par exemple, seul le mode _Bot API_ est autorisé sur la [plateforme de démonstration](https://demotock-production-admin.vsct-prod.aws.vsct.fr/)
+> Par exemple, seul le mode _Bot API_ est autorisé sur la [plateforme de démonstration](https://demo.tock.ai/)
 >publique Tock (pour des raisons de sécurité évidentes).
 
 Cette page présente le développement de bots Tock en mode _Bot API_ en [Kotlin](https://kotlinlang.org/). 
@@ -29,7 +29,7 @@ Pour utiliser le mode _Bot API_ de Tock, un module spécifique doit être déplo
 Le guide [Déployer Tock avec Docker](../guide/plateforme.md) ou encore le chapitre 
 [Installation](../admin/installation.md) montrent comment déployer ce module si nécessaire.
 
-> Le module `bot-api` est déjà déployé sur la [plateforme de démonstration Tock](https://demotock-production-admin.vsct-prod.aws.vsct.fr/).
+> Le module `bot-api` est déjà déployé sur la [plateforme de démonstration Tock](https://demo.tock.ai/).
 
 ### Activer le mode WebSocket
 
@@ -131,7 +131,7 @@ fun main() {
 ### Tester avec la plateforme de démonstration
 
 Plutôt que déployer se propre plateforme Tock, il est possible de tester le mode _WebSocket_ directement sur la
-[plateforme de démonstration Tock](https://demotock-production-admin.vsct-prod.aws.vsct.fr/). 
+[plateforme de démonstration Tock](https://demo.tock.ai/). 
 
 Pour cela, il suffit de remplacer la méthode `start` par `startWithDemo` (sans préciser l'adresse de la plateforme).
 

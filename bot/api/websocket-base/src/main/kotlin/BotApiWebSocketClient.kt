@@ -43,7 +43,7 @@ private val logger = KotlinLogging.logger {}
  * Starts a bot using the demo server.
  */
 fun startWithDemo(botDefinition: ClientBotDefinition) {
-    start(botDefinition, "https://demotock-prod-bot.vsct-prod.aws.vsct.fr")
+    start(botDefinition, "https://demo-bot.tock.ai")
 }
 
 /**

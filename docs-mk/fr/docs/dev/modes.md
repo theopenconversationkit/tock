@@ -12,7 +12,7 @@ ou un autre langage à travers l'API conversationnelle de Tock :
 
 ![BOT API](../img/bot_api.png "BOT API")
 
-Ce mode est le seul disponible sur la [plateforme de démonstration Tock](https://demotock-production-admin.vsct-prod.aws.vsct.fr/). 
+Ce mode est le seul disponible sur la [plateforme de démonstration Tock](https://demo.tock.ai/). 
 C'est aussi le seul mode permettant de développer dans n'importe quel langage de programmation, via l'API.
 
 Pour en savoir plus, voir la page [_Bot API_](bot-api.md).

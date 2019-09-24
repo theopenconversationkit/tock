@@ -8,7 +8,7 @@ installation en production ainsi que partager quelques retours d'expérience sur
 la capacité de Tock à monter en charge, les déploiementsde type _Cloud_, la supervision, etc.
 
 > Si vous cherchez seulement à tester Tock avec des données non sensibles, vous pouvez préférer utiliser la 
->[plateforme de démonstration Tock](https://demotock-production-admin.vsct-prod.aws.vsct.fr).
+>[plateforme de démonstration Tock](https://demo.tock.ai).
 
 ## Installation avec Docker
 

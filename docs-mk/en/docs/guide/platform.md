@@ -1,7 +1,7 @@
 # Déployer une plateforme avec Docker
 
 Dans les sections précédentes pour découvrir et tester Tock, vous avez utilisé la 
-[plateforme de démonstration](https://demotock-production-admin.vsct-prod.aws.vsct.fr/). Cela vous a permis de découvrir 
+[plateforme de démonstration](https://demo.tock.ai/). Cela vous a permis de découvrir 
 la construction et la configuration des bots Tock sans avoir à installer la plateforme au préalable. 
 
 Dans ce guide, vous allez apprendre à déployer une plateforme complète Tock en quelques minutes, grâce 

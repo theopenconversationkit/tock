@@ -58,7 +58,7 @@ Un widget [React](https://reactjs.org) de base est disponible pour les interface
 ## Démarrer...
 
 * [Table des matières](toc.md)
-* [Guides](guide/studio.md) et [plateforme de démonstration](https://demotock-production-admin.vsct-prod.aws.vsct.fr/)
+* [Guides](guide/studio.md) et [plateforme de démonstration](https://demo.tock.ai/)
 * Manuels [utilisateur](utilisateur/concepts.md), [développeur](dev/modes.md), [administrateur](admin/architecture.md)
 * [Ressources (supports, video)](apropos/ressources.md) et [exemples de code](dev/exemples-code.md)
 

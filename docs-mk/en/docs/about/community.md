@@ -43,7 +43,7 @@ under the [Apache 2 license](https://github.com/voyages-sncf-technologies/tock/b
 * [Issues](https://github.com/voyages-sncf-technologies/tock/issues)
 * [Contributors](https://github.com/voyages-sncf-technologies/tock/graphs/contributors)
 * [Gitter](https://gitter.im/tockchat/Lobby)
-* [Demo](https://demotock-production-admin.vsct-prod.aws.vsct.fr/) 
+* [Demo](https://demo.tock.ai/) 
 
 
 To know more about repository structure, coding conventions, etc. refer to the [contribute to Tock](contribute.md) section.
