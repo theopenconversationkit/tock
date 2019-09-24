@@ -75,7 +75,7 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
             apps.filter { it.connectorType.id == "rest" && it.targetConfigurationId == null }
                 .forEach { conf ->
                     val targetApplicationId = conf.applicationId.replace("test-|rest-".toRegex(), "")
-                    apps.find { it.connectorType.id != "rest" && it.applicationId == targetApplicationId }
+                    apps.find { it.namespace == conf.namespace && it.connectorType.id != "rest" && it.applicationId == targetApplicationId }
                         ?.also {
                             save(conf.copy(targetConfigurationId = it._id))
                         }
