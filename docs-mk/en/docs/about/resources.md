@@ -43,8 +43,16 @@ style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rg
 
 ## Press kit
 
-The Tock logo is provided under the [Apache 2 license](https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE).
+Tock logos are provided under the [Apache 2 license](https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE).
 
-**Tock logo** (<a href="../../assets/images/logo.svg" download="">download</a>) :
+**Tock logo - colors / transparent** (<a href="../../assets/images/logo.svg" download="">download</a>) :
 
-![Logo Tock](../../assets/images/logo.svg)
+<img alt="Tock colors logo" src="../../assets/images/logo.svg" style="width: 150px;">
+
+**Tock logo - black / transparent** (<a href="../../assets/images/logo-black.svg" download="">download</a>) :
+
+<img alt="Tock black logo" src="../../assets/images/logo-black.svg" style="width: 150px;">
+
+**Tock logo - white / transparent** (<a href="../../assets/images/Logo_Tock_White.svg" download="">download</a>) :
+
+<img alt="Tock white logo" src="../../assets/images/Logo_Tock_White.svg" style="width: 150px; background-color: black;">
