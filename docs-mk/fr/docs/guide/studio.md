@@ -22,7 +22,7 @@ est possible de créer et tester un assistant en quelques minutes sans écrire d
 
 ## Connexion à la plateforme démo
 
-Ouvrez [ce lien](https://demo.tock.ai/) pour accéder à la plateforme de démonstration Tock.
+Rendez-vous sur [https://demo.tock.ai/](https://demo.tock.ai/) pour accéder à la plateforme de démonstration Tock.
 
 > **Remarque importante** : Cette plateforme n'a pas vocation à accueillir de véritables bots en production. 
 >C'est un moyen de tester et prendre en main la solution Tock sans avoir à l'installer.

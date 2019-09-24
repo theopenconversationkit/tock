@@ -6,12 +6,9 @@ Tock has been designed to remain an open platform shared with the community.<br/
 
 This lists the next planed events related to Tock, as well as groups identified to share with the community:
 
-* _September:_
-    * We will attend the next [***Paris NLP*** (season 4 meetup #1)](https://www.meetup.com/fr-FR/Paris-NLP/events/lkmbhqyzmbhc/)
-
 * _November:_
-    * We might present Tock at the following [***Paris NLP*** (season 4 meetup #2)](https://www.meetup.com/fr-FR/Paris-NLP/events/lkmbhqyzpbkc/)
-    * 2-day public ***Hackathon*** event in Paris around conversational AI with Tock (to be confirmed)
+    * We should present Tock at the following [***Paris NLP*** (season 4 meetup #2)](https://www.meetup.com/fr-FR/Paris-NLP/events/lkmbhqyzpbkc/)
+    * An open ***Hackathon*** event will take place in Paris the 21-22 of November around conversational AI with Tock (+ info very soon)
 
 * _December:_
     * A talk about open conversational AI platforms has been submitted to the 
@@ -25,7 +22,7 @@ Tock has been selected as a reference solution supported by the _TOSIT (The Open
 > Founded by Carrefour, EDF, Enedis, Orange, Pôle Emploi and SNCF, TOSIT now gathers other important members,
 >such as the (French) Ministère des Armées, Société Générale or MAIF for instance.
 
-Tock refers to _Chatbots_ "Groupe de Travail" at TOSIT.
+Tock refers to _Chatbots_ Work Group at TOSIT.
 
 To know more about TOSIT, please visit [http://tosit.fr/](http://tosit.fr/)
 

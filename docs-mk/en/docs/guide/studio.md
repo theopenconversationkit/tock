@@ -22,7 +22,7 @@ possible to both design and test a conversational assistant in a few minutes, wi
 
 ## Connect to the demo platform
 
-Open [this link](https://demo.tock.ai/) to access the Tock demonstration platform.
+Open [https://demo.tock.ai/](https://demo.tock.ai/) to access the Tock demonstration platform.
 
 > **Important**: this platform is not supposed to host bots in production. 
 >This is merely a sandbox instance, in order to try the Tock solution without installing it.
