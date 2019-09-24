@@ -23,13 +23,23 @@ import com.microsoft.bot.schema.models.ActivityTypes
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorData
+import fr.vsct.tock.bot.connector.ConnectorMessage
+import fr.vsct.tock.bot.connector.media.MediaCard
+import fr.vsct.tock.bot.connector.media.MediaMessage
 import fr.vsct.tock.bot.connector.teams.auth.AuthenticateBotConnectorService
 import fr.vsct.tock.bot.connector.teams.auth.ForbiddenException
 import fr.vsct.tock.bot.connector.teams.auth.JWKHandler
 import fr.vsct.tock.bot.connector.teams.messages.SendActionConverter
+import fr.vsct.tock.bot.connector.teams.messages.cardImage
+import fr.vsct.tock.bot.connector.teams.messages.nlpCardAction
+import fr.vsct.tock.bot.connector.teams.messages.teamsHeroCard
+import fr.vsct.tock.bot.connector.teams.messages.teamsMessageWithButtonCard
+import fr.vsct.tock.bot.connector.teams.messages.urlCardAction
 import fr.vsct.tock.bot.connector.teams.token.TokenHandler
+import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
+import fr.vsct.tock.bot.engine.action.SendAttachment.AttachmentType.image
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.monitoring.logError
@@ -146,6 +156,40 @@ internal class TeamsConnector(
             executor.executeBlocking(delay) {
                 client.sendMessage(callback.activity, teamsMessage)
             }
+        }
+    }
+
+    override fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
+        teamsMessageWithButtonCard(text, suggestions.map { nlpCardAction(it) })
+    }
+
+    override fun addSuggestions(message: ConnectorMessage, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
+        //TODO support complex cards
+        message
+    }
+
+    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
+        when (message) {
+            is MediaCard -> {
+                listOf(teamsHeroCard(
+                    message.title ?: message.subTitle ?: "",
+                    null,
+                    message.subTitle ?: message.title ?: "",
+                    listOfNotNull(
+                        message.file?.takeIf { it.type == image }?.let { cardImage(it.url) }
+                    ),
+                    message.actions.map {
+                        val url = it.url
+                        if (url == null) {
+                            nlpCardAction(it.title)
+                        } else {
+                            urlCardAction(it.title, url)
+                        }
+                    }
+                )
+                )
+            }
+            else -> emptyList()
         }
     }
 }

@@ -1,5 +1,7 @@
 package fr.vsct.tock.bot.connector.teams.messages
 
+import com.microsoft.bot.schema.models.ActionTypes.MESSAGE_BACK
+import com.microsoft.bot.schema.models.ActionTypes.OPEN_URL
 import com.microsoft.bot.schema.models.CardAction
 import com.microsoft.bot.schema.models.CardImage
 import fr.vsct.tock.bot.connector.teams.teamsConnectorType
@@ -11,23 +13,49 @@ fun <T : Bus<T>> T.withTeams(messageProvider: () -> TeamsBotMessage): T {
 }
 
 fun I18nTranslator.teamsMessage(
-    text: String
-): TeamsBotTextMessage = TeamsBotTextMessage(text)
+    text: CharSequence
+): TeamsBotTextMessage = TeamsBotTextMessage(translate(text).toString())
 
 fun I18nTranslator.teamsMessageWithButtonCard(
-    urlText: String,
+    urlText: CharSequence,
     links: List<CardAction>
-): TeamsCardAction = TeamsCardAction(urlText, links)
+): TeamsCardAction = TeamsCardAction(translate(urlText).toString(), links)
 
 fun I18nTranslator.teamsHeroCard(
-    title: String,
-    subtitle: String? = null,
-    attachmentContent: String,
+    title: CharSequence,
+    subtitle: CharSequence? = null,
+    attachmentContent: CharSequence,
     images: List<CardImage>? = null,
     buttons: List<CardAction>? = null,
     tap: CardAction? = null
-): TeamsHeroCard = TeamsHeroCard(title, subtitle, attachmentContent, images, buttons, tap)
+): TeamsHeroCard = TeamsHeroCard(
+    translate(title).toString(),
+    subtitle?.let { translate(subtitle).toString() },
+    translate(attachmentContent).toString(),
+    images,
+    buttons,
+    tap
+)
 
 fun I18nTranslator.teamsCarousel(
     carouselContent: List<TeamsBotMessage>
 ): TeamsCarousel = TeamsCarousel(carouselContent)
+
+
+fun cardImage(url: String): CardImage = CardImage().withUrl(url)
+
+fun <T : Bus<T>> T.nlpCardAction(
+    title: CharSequence
+): CardAction =
+    translate(title).toString().let { t ->
+        CardAction().withTitle(t).withType(MESSAGE_BACK).withDisplayText(t).withText(t)
+    }
+
+fun <T : Bus<T>> T.urlCardAction(
+    title: CharSequence,
+    url: String
+): CardAction =
+    translate(title).toString().let { t ->
+        CardAction().withTitle(t).withType(OPEN_URL).withText(t).withValue(url)
+    }
+
