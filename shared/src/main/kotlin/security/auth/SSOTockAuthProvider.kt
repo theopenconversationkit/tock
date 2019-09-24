@@ -30,20 +30,6 @@ import io.vertx.ext.web.handler.SessionHandler
  */
 internal abstract class SSOTockAuthProvider(val vertx: Vertx) : TockAuthProvider {
 
-    private class WithExcludedPathHandler(
-        val excluded: Set<Regex>,
-        val handler: Handler<RoutingContext>
-    ) : Handler<RoutingContext> {
-
-        override fun handle(c: RoutingContext) {
-            if (excluded.any { it.matches(c.request().path()) }) {
-                c.next()
-            } else {
-                handler.handle(c)
-            }
-        }
-    }
-
     private object AddSSOCookieHandler : Handler<RoutingContext> {
 
         override fun handle(c: RoutingContext) {
@@ -58,12 +44,6 @@ internal abstract class SSOTockAuthProvider(val vertx: Vertx) : TockAuthProvider
     override val sessionCookieName: String get() = "tock-sso-session"
 
     abstract fun createAuthHandler(verticle: WebVerticle): AuthHandler
-
-    protected open fun excludedPaths(verticle: WebVerticle): Set<Regex> =
-        listOfNotNull(
-            verticle.healthcheckPath?.toRegex(),
-            ".*\\.(css|html|js|png|svg|gif|jpg|jpeg|ico|woff2?|ttf|eot)".toRegex()
-        ).toSet()
 
     override fun protectPaths(
         verticle: WebVerticle,

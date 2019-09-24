@@ -68,12 +68,13 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
     ): AuthHandler {
         val authHandler = BasicAuthHandler.create(this)
         with(verticle) {
+            val excluded = excludedPaths(verticle)
             (pathsToProtect + logoutPath + authenticatePath).forEach { protectedPath ->
-                router.route(protectedPath).handler(sessionHandler)
+                router.route(protectedPath).handler(WithExcludedPathHandler(excluded, sessionHandler))
             }
 
             pathsToProtect.forEach { protectedPath ->
-                router.route(protectedPath).handler(authHandler)
+                router.route(protectedPath).handler(WithExcludedPathHandler(excluded, authHandler))
             }
 
             router.post(authenticatePath).handler { context ->

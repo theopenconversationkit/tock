@@ -34,6 +34,15 @@ interface TockAuthProvider : AuthProvider {
     val sessionCookieName: String get() = "tock-session"
 
     /**
+     * Paths to exclude from the [AuthProvider].
+     */
+    fun excludedPaths(verticle: WebVerticle): Set<Regex> =
+        listOfNotNull(
+            verticle.healthcheckPath?.toRegex(),
+            ".*\\.(css|html|js|png|svg|gif|jpg|jpeg|ico|woff2?|ttf|eot)".toRegex()
+        ).toSet()
+
+    /**
      * Protect paths for the specified verticle.
      * @return the [AuthHandler].
      */
@@ -43,5 +52,8 @@ interface TockAuthProvider : AuthProvider {
         sessionHandler: SessionHandler
     ): AuthHandler
 
+    /**
+     * Gets a [TockUser] from current vert.x state.
+     */
     fun toTockUser(context: RoutingContext): TockUser = context.user() as TockUser
 }
