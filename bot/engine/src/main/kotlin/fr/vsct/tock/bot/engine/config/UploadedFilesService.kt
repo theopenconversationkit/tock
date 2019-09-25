@@ -21,7 +21,6 @@ import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.TockBotBus
 import fr.vsct.tock.bot.engine.action.SendAttachment.AttachmentType
 import fr.vsct.tock.bot.engine.action.SendAttachment.AttachmentType.file
-import fr.vsct.tock.shared.Dice
 import fr.vsct.tock.shared.cache.getFromCache
 import fr.vsct.tock.shared.cache.putInCache
 import fr.vsct.tock.shared.property
@@ -30,6 +29,7 @@ import io.vertx.core.buffer.Buffer
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import org.litote.kmongo.toId
+import java.util.UUID
 
 /**
  * To manage uploaded files.
@@ -57,7 +57,7 @@ object UploadedFilesService {
         }
 
     fun uploadFile(namespace: String, fileName: String, bytes: ByteArray): MediaFileDescriptor? {
-        val id = (namespace + Dice.newId()).toLowerCase()
+        val id = (namespace + UUID.randomUUID().toString()).toLowerCase()
         val name = fileName.trim().toLowerCase()
         val lastDot = name.lastIndexOf(".")
         if (lastDot == -1 || lastDot == name.length - 1) {
@@ -74,33 +74,47 @@ object UploadedFilesService {
         downloadFile(context, "$id.$suffix")
     }
 
-    internal fun botFilePath(bus: BotBus, id: String, suffix: String) : String =
+    internal fun botFilePath(bus: BotBus, id: String, suffix: String): String =
         (bus as? TockBotBus)?.connector?.getBaseUrl() + basePath + id + "." + suffix
+
+    fun getFileContentFromUrl(url: String): ByteArray? =
+        url.run {
+            val start = url.lastIndexOf('/')
+            val end = url.lastIndexOf('.')
+            if (start == -1 || end == -1 || start >= end) {
+                null
+            } else {
+                getFromCache(url.substring(start, end).toId(), UPLOADED_TYPE)
+            }
+        }
+
 
     private fun downloadFile(context: RoutingContext, id: String) {
         val bytes: ByteArray? = getFromCache(id.toId(), UPLOADED_TYPE)
         if (bytes != null) {
-            context.response().putHeader(
-                "Content-Type",
-                when {
-                    id.endsWith(".png") -> "image/png"
-                    id.endsWith(".jpg") || id.endsWith(".jpeg") -> "image/jpeg"
-                    id.endsWith(".gif") -> "image/gif"
-                    id.endsWith(".svg") -> "image/svg+xml"
-                    id.endsWith(".ogg") || id.endsWith(".oga") -> "audio/ogg"
-                    id.endsWith(".ogv") -> "video/ogg"
-                    id.endsWith(".mp3") -> "audio/mpeg"
-                    id.endsWith(".mp4") -> "video/mp4"
-                    id.endsWith(".pdf") -> "application/pdf"
-                    id.endsWith(".zip") -> "application/zip"
-                    else -> "application/octet-stream"
-                }
-            )
+            context.response().putHeader("Content-Type", guessContentType(id))
                 .end(Buffer.buffer(bytes))
         } else {
             context.response().setStatusCode(404).end()
         }
     }
+
+    fun guessContentType(fileName: String): String =
+        fileName.toLowerCase().let { id ->
+            when {
+                id.endsWith(".png") -> "image/png"
+                id.endsWith(".jpg") || id.endsWith(".jpeg") -> "image/jpeg"
+                id.endsWith(".gif") -> "image/gif"
+                id.endsWith(".svg") -> "image/svg+xml"
+                id.endsWith(".ogg") || id.endsWith(".oga") -> "audio/ogg"
+                id.endsWith(".ogv") -> "video/ogg"
+                id.endsWith(".mp3") -> "audio/mpeg"
+                id.endsWith(".mp4") -> "video/mp4"
+                id.endsWith(".pdf") -> "application/pdf"
+                id.endsWith(".zip") -> "application/zip"
+                else -> "application/octet-stream"
+            }
+        }
 
     internal fun configure(): (Router) -> Unit {
         return { router ->

@@ -36,6 +36,7 @@ import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.Bus
+import fr.vsct.tock.bot.engine.I18nTranslator
 import fr.vsct.tock.bot.engine.action.ActionVisibility
 import fr.vsct.tock.bot.engine.action.SendChoice
 import mu.KotlinLogging
@@ -384,7 +385,7 @@ private fun <T : Bus<T>> T.option(
 ): Option = Option.of(translate(label).toString(), translate(description).toString(), metadataEncoder.invoke(targetIntent, step, parameters))
 
 /**
- * Creates an Option Quick Reply witout description
+ * Creates an Option Quick Reply without description
  * @see https://developer.twitter.com/en/docs/direct-messages/quick-replies/overview
  */
 private fun <T : Bus<T>> T.option(
@@ -394,6 +395,25 @@ private fun <T : Bus<T>> T.option(
     parameters: Map<String, String>,
     metadataEncoder: (IntentAware, StoryStep<out StoryHandlerDefinition>?, Map<String, String>) -> String
 ): OptionWithoutDescription = OptionWithoutDescription.of(translate(label).toString(), metadataEncoder.invoke(targetIntent, step, parameters))
+
+/**
+ * Creates a NLP Option Quick Reply without description
+ * @see https://developer.twitter.com/en/docs/direct-messages/quick-replies/overview
+ */
+fun I18nTranslator.nlpOption(label: CharSequence): OptionWithoutDescription {
+    val l = translate(label).toString()
+    return OptionWithoutDescription.of(l, SendChoice.encodeNlpChoiceId(l))
+}
+
+/**
+ * Creates a NLP Option Quick Reply without description
+ * @see https://developer.twitter.com/en/docs/direct-messages/quick-replies/overview
+ */
+fun I18nTranslator.nlpOption(label: CharSequence, description: CharSequence): Option {
+    val l = translate(label).toString()
+    val d = translate(description).toString()
+    return Option.of(l, SendChoice.encodeNlpChoiceId(l), d)
+}
 
 /**
  * Adds a Twitter [ConnectorMessage] if the current connector is Twitter and the interface is not public.
@@ -447,3 +467,4 @@ fun BotBus.tweet(message: CharSequence): Tweet {
 fun BotBus.tweetWithInviteForDM(message: CharSequence, welcomeMessageID: String? = null, defaultMessage: String? = null): Tweet {
     return Tweet(translate(message).toString(), botId.id, welcomeMessageID, defaultMessage)
 }
+

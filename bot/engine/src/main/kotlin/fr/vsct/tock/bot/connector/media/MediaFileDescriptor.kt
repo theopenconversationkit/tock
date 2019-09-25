@@ -34,5 +34,5 @@ data class MediaFileDescriptor(
      * Creates a [MediaMessage] for the specified [BotBus].
      */
     fun toMessage(bus: BotBus): MediaFile =
-        MediaFile(UploadedFilesService.botFilePath(bus, id, suffix), name)
+        MediaFile(UploadedFilesService.botFilePath(bus, id, suffix), name, type)
 }

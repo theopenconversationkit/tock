@@ -22,6 +22,8 @@ import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.ConnectorMessage
+import fr.vsct.tock.bot.connector.media.MediaCard
+import fr.vsct.tock.bot.connector.media.MediaMessage
 import fr.vsct.tock.bot.connector.twitter.model.Attachment
 import fr.vsct.tock.bot.connector.twitter.model.MediaCategory
 import fr.vsct.tock.bot.connector.twitter.model.MessageCreate
@@ -32,15 +34,19 @@ import fr.vsct.tock.bot.connector.twitter.model.incoming.TweetIncomingEvent
 import fr.vsct.tock.bot.connector.twitter.model.outcoming.DirectMessageOutcomingEvent
 import fr.vsct.tock.bot.connector.twitter.model.outcoming.OutcomingEvent
 import fr.vsct.tock.bot.connector.twitter.model.outcoming.Tweet
+import fr.vsct.tock.bot.connector.twitter.model.toMediaCategory
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
+import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.ActionNotificationType
 import fr.vsct.tock.bot.engine.action.ActionVisibility
 import fr.vsct.tock.bot.engine.action.SendChoice
+import fr.vsct.tock.bot.engine.config.UploadedFilesService
+import fr.vsct.tock.bot.engine.config.UploadedFilesService.getFileContentFromUrl
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.monitoring.logError
 import fr.vsct.tock.bot.engine.user.PlayerId
@@ -51,6 +57,7 @@ import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.translator.raw
 import mu.KotlinLogging
 import org.apache.commons.lang3.LocaleUtils
 import java.time.Duration
@@ -317,5 +324,50 @@ internal class TwitterConnector internal constructor(
         return "sha256=${client.b64HmacSHA256(payload)}" == twitterSignature
     }
 
+    override fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
+        directMessageWithOptions(text, *suggestions.map { nlpOption(it) }.toTypedArray())
+    }
 
+    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
+        when (message) {
+            is MediaCard -> {
+                val f = message.file
+                val type = f?.toMediaCategory()
+                val content = f?.url?.takeUnless { type == null }?.let { getFileContentFromUrl(it) }
+                val title = message.title
+                val subTitle = message.subTitle
+                when {
+                    type != null && content != null -> {
+                        listOf(
+                            directMessageWithAttachment(
+                                title ?: subTitle ?: "".raw,
+                                type,
+                                UploadedFilesService.guessContentType(f.url),
+                                content,
+                                *message.actions.filter { it.url != null }.map { nlpOption(it.title) }.toTypedArray()
+                            )
+                        )
+                    }
+                    title != null || subTitle != null -> {
+                        val firstText = title ?: subTitle!!
+                        listOfNotNull(
+                            if (message.actions.any { it.url != null }) {
+                                directMessageWithButtons(
+                                    firstText,
+                                    *message.actions.filter { it.url != null }.map { webUrl(it.title, it.url!!) }.toTypedArray()
+                                )
+                            } else {
+                                directMessageWithOptions(
+                                    firstText,
+                                    *message.actions.map { nlpOption(it.title) }.toTypedArray()
+                                )
+                            }
+                        )
+                    }
+                    else -> emptyList()
+                }
+            }
+            else -> emptyList()
+        }
+    }
 }
