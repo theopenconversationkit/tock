@@ -49,6 +49,7 @@ import fr.vsct.tock.bot.engine.config.UploadedFilesService.downloadFile
 import fr.vsct.tock.nlp.admin.AdminVerticle
 import fr.vsct.tock.nlp.admin.model.ApplicationScopedQuery
 import fr.vsct.tock.nlp.admin.model.TranslateReport
+import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
@@ -103,7 +104,12 @@ open class BotAdminVerticle : AdminVerticle() {
             BotAdminService.getBots(context.organization, context.path("botId"))
         }
 
-        blockingJsonPost("/bot") { context, bot: BotConfiguration ->
+        blockingJsonPost(
+            "/bot",
+            logger = logger<BotConfiguration>(" Create or Update Bot Configuration") { _, c ->
+                c?.let { FrontClient.getApplicationByNamespaceAndName(it.namespace, it.nlpModel)?._id }
+            }
+        ) { context, bot: BotConfiguration ->
             if (context.organization == bot.namespace) {
                 BotAdminService.save(bot)
             } else {
@@ -123,7 +129,12 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonPost("/configuration/bot") { context, bot: BotConnectorConfiguration ->
+        blockingJsonPost(
+            "/configuration/bot",
+            logger = logger<BotConnectorConfiguration>("Create or Update Bot Connector Configuration") { _, c ->
+                c?.let { FrontClient.getApplicationByNamespaceAndName(it.namespace, it.nlpModel)?._id }
+            }
+        ) { context, bot: BotConnectorConfiguration ->
             if (context.organization == bot.namespace) {
                 if (bot._id != null) {
                     val conf = BotAdminService.getBotConfigurationById(bot._id)
@@ -191,7 +202,11 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonDelete("/configuration/bot/:confId", admin) { context ->
+        blockingJsonDelete(
+            "/configuration/bot/:confId",
+            admin,
+            simpleLogger("Delete Bot Configuration", { it.path("confId") to true })
+        ) { context ->
             BotAdminService.getBotConfigurationById(context.pathId("confId"))
                 ?.let {
                     if (context.organization == it.namespace) {
@@ -237,7 +252,13 @@ open class BotAdminVerticle : AdminVerticle() {
             TestPlanService.getTestPlanExecution(context.loadTestPlan(), context.pathId("executionId"))
         }
 
-        blockingJsonPost("/test/plan", botUser) { context, plan: TestPlanUpdate ->
+        blockingJsonPost(
+            "/test/plan",
+            botUser,
+            logger<TestPlanUpdate>("Update Test Plan") { _, p ->
+                p?.let { FrontClient.getApplicationByNamespaceAndName(it.namespace, it.nlpModel)?._id }
+            }
+        ) { context, plan: TestPlanUpdate ->
             if (context.organization == plan.namespace) {
                 TestPlanService.saveTestPlan(plan.toTestPlan())
             } else {
@@ -245,15 +266,27 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingDelete("/test/plan/:planId", botUser) { context ->
+        blockingDelete(
+            "/test/plan/:planId",
+            botUser,
+            simpleLogger("Delete Test Plan", { it.path("planId") to true })
+        ) { context ->
             TestPlanService.removeTestPlan(context.loadTestPlan())
         }
 
-        blockingJsonPost("/test/plan/:planId/dialog/:dialogId", botUser) { context, _: ApplicationScopedQuery ->
+        blockingJsonPost(
+            "/test/plan/:planId/dialog/:dialogId",
+            botUser,
+            simpleLogger("Add Dialog to Test Plan", { it.path("planId") to it.path("dialogId") })
+        ) { context, _: ApplicationScopedQuery ->
             TestPlanService.addDialogToTestPlan(context.loadTestPlan(), context.pathId("dialogId"))
         }
 
-        blockingJsonPost("/test/plan/:planId/dialog/delete/:dialogId", botUser) { context, _: ApplicationScopedQuery ->
+        blockingJsonPost(
+            "/test/plan/:planId/dialog/delete/:dialogId",
+            botUser,
+            simpleLogger("Remove Dialog from Test Plan", { it.path("planId") to it.path("dialogId") })
+        ) { context, _: ApplicationScopedQuery ->
             TestPlanService.removeDialogFromTestPlan(
                 context.loadTestPlan(),
                 context.pathId("dialogId")
@@ -265,7 +298,7 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         /**
-         * Triggered on click on "Laucnh" button.
+         * Triggered on click on "Launch" button.
          */
         blockingJsonPost("/test/plan/:planId/run", botUser) { context, _: ApplicationScopedQuery ->
             context.loadTestPlan().run {
@@ -296,14 +329,23 @@ open class BotAdminVerticle : AdminVerticle() {
             BotAdminService.getFeatures(applicationId, context.organization)
         }
 
-        blockingPost("/feature/:applicationId/toggle/:category/:name", botUser) { context ->
+        blockingPost(
+            "/feature/:applicationId/toggle/:category/:name",
+            botUser,
+            simpleLogger("Toogle Application Feature", { it.path("category") to it.path("name") })
+        )
+        { context ->
             val applicationId = context.path("applicationId")
             val category = context.path("category")
             val name = context.path("name")
             BotAdminService.toggleFeature(applicationId, context.organization, category, name)
         }
 
-        blockingPost("/feature/:applicationId/add/:category/:name/:enabled", botUser) { context ->
+        blockingPost(
+            "/feature/:applicationId/add/:category/:name/:enabled",
+            botUser,
+            simpleLogger("Create Application Feature", { Triple(it.path("category"), it.path("name"), it.path("enabled")) })
+        ) { context ->
             val applicationId = context.path("applicationId")
             val category = context.path("category")
             val name = context.path("name")
@@ -311,7 +353,11 @@ open class BotAdminVerticle : AdminVerticle() {
             BotAdminService.addFeature(applicationId, context.organization, enabled, category, name)
         }
 
-        blockingDelete("/feature/:applicationId/:category/:name", botUser) { context ->
+        blockingDelete(
+            "/feature/:applicationId/:category/:name",
+            botUser,
+            simpleLogger("Delete Application Feature", { it.path("name") to it.path("enabled") })
+        ) { context ->
             val applicationId = context.path("applicationId")
             val category = context.path("category")
             val name = context.path("name")
@@ -331,11 +377,28 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonPost("/bot/story/new", botUser) { context, query: CreateStoryRequest ->
+        blockingJsonPost(
+            "/bot/story/new",
+            botUser,
+            logger<CreateStoryRequest>("Create Story") { context, r ->
+                r?.story?.let { s ->
+                    BotAdminService.getBotConfigurationsByNamespaceAndBotId(context.organization, s.botId)
+                        .firstOrNull()?.let { FrontClient.getApplicationByNamespaceAndName(context.organization, it.nlpModel)?._id }
+                }
+            }
+        ) { context, query: CreateStoryRequest ->
             BotAdminService.createStory(context.organization, query) ?: unauthorized()
         }
 
-        blockingJsonPost("/bot/story", botUser) { context, story: BotStoryDefinitionConfiguration ->
+        blockingJsonPost(
+            "/bot/story",
+            botUser,
+            logger<BotStoryDefinitionConfiguration>("Update Story") { context, r ->
+                r?.let { s ->
+                    BotAdminService.getBotConfigurationsByNamespaceAndBotId(context.organization, s.botId)
+                        .firstOrNull()?.let { FrontClient.getApplicationByNamespaceAndName(context.organization, it.nlpModel)?._id }
+                }
+            }) { context, story: BotStoryDefinitionConfiguration ->
             BotAdminService.saveStory(context.organization, story) ?: unauthorized()
         }
 
@@ -355,7 +418,10 @@ open class BotAdminVerticle : AdminVerticle() {
             BotAdminService.findStoryByBotIdAndIntent(context.organization, context.path("botId"), context.path("intent"))
         }
 
-        blockingJsonDelete("/bot/story/:storyId", botUser) { context ->
+        blockingJsonDelete(
+            "/bot/story/:storyId",
+            botUser,
+            simpleLogger("Delete Story", { it.path("storyId") })) { context ->
             BotAdminService.deleteStory(context.organization, context.path("storyId"))
         }
 
@@ -379,18 +445,28 @@ open class BotAdminVerticle : AdminVerticle() {
                 })
         }
 
-        blockingJsonPost("/i18n/complete", botUser) { context, labels: List<I18nLabel> ->
+        blockingJsonPost(
+            "/i18n/complete",
+            botUser,
+            simpleLogger("Complete Responses Labels")) { context, labels: List<I18nLabel> ->
             if (!injector.provide<TranslatorEngine>().supportAdminTranslation) {
                 badRequest("Translation is not activated for this account")
             }
             TranslateReport(Translator.completeAllLabels(labels.filter { it.namespace == context.organization }))
         }
 
-        blockingJsonPost("/i18n/saveAll", botUser) { context, labels: List<I18nLabel> ->
+        blockingJsonPost(
+            "/i18n/saveAll",
+            botUser,
+            simpleLogger("Save Responses Labels")) { context, labels: List<I18nLabel> ->
             i18n.save(labels.filter { it.namespace == context.organization })
         }
 
-        blockingJsonPost("/i18n/save", botUser) { context, label: I18nLabel ->
+        blockingJsonPost(
+            "/i18n/save",
+            botUser,
+            simpleLogger("Save Response Label")
+        ) { context, label: I18nLabel ->
             if (label.namespace == context.organization) {
                 i18n.save(label)
             } else {
@@ -398,11 +474,19 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonPost("/i18n/create", botUser) { context, request: CreateI18nLabelRequest ->
+        blockingJsonPost(
+            "/i18n/create",
+            botUser,
+            simpleLogger("Create Response Label")
+        ) { context, request: CreateI18nLabelRequest ->
             createI18nRequest(context.organization, request)
         }
 
-        blockingDelete("/i18n/:id", botUser) { context ->
+        blockingDelete(
+            "/i18n/:id",
+            botUser,
+            simpleLogger("Delete Response Label", { it.path("id") })
+        ) { context ->
             i18n.deleteByNamespaceAndId(context.organization, context.pathId("id"))
         }
 
@@ -410,7 +494,10 @@ open class BotAdminVerticle : AdminVerticle() {
             I18nCsvCodec.exportCsv(context.organization)
         }
 
-        blockingUploadPost("/i18n/import/csv", botUser) { context, content ->
+        blockingUploadPost(
+            "/i18n/import/csv",
+            botUser,
+            simpleLogger("CSV Import Response Labels")) { context, content ->
             I18nCsvCodec.importCsv(context.organization, content)
         }
 
@@ -418,7 +505,10 @@ open class BotAdminVerticle : AdminVerticle() {
             mapper.writeValueAsString(i18n.getLabels(context.organization))
         }
 
-        blockingUploadPost("/i18n/import/json", botUser) { context, content ->
+        blockingUploadPost(
+            "/i18n/import/json",
+            botUser,
+            simpleLogger("JSON Import Response Labels")) { context, content ->
             val labels: List<I18nLabel> = mapper.readValue(content)
             i18n.save(labels.filter { it.namespace == context.organization })
         }

@@ -57,7 +57,6 @@ import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
 import java.io.File
-import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -76,6 +75,15 @@ abstract class WebVerticle : AbstractVerticle() {
         fun notFound(): Nothing = throw NotFoundException()
 
         fun badRequest(message: String): Nothing = throw BadRequestException(message)
+
+        /**
+         * Default request logger does nothing.
+         */
+        val defaultRequestLogger: RequestLogger = object : RequestLogger {
+            override fun log(context: RoutingContext, data: Any?, error: Boolean) {
+                //do nothing
+            }
+        }
     }
 
     protected open val logger: KLogger = KotlinLogging.logger {}
@@ -278,13 +286,23 @@ abstract class WebVerticle : AbstractVerticle() {
         method: HttpMethod,
         path: String,
         role: TockUserRole?,
+        logger: RequestLogger = defaultRequestLogger,
         crossinline handler: (RoutingContext, I) -> O
     ) {
         blocking(method, path, role) { context ->
-            val input = context.readJson<I>()
+            var input: I? = null
+            try {
+                input = context.readJson()
 
-            val result = handler.invoke(context, input)
-            context.endJson(result)
+                val result = handler.invoke(context, input)
+                context.endJson(result)
+                logger.log(context, input)
+            } catch (t: Throwable) {
+                if (t !is UnauthorizedException) {
+                    logger.log(context, input, true)
+                }
+                throw t
+            }
         }
     }
 
@@ -311,10 +329,22 @@ abstract class WebVerticle : AbstractVerticle() {
         }
     }
 
-    protected fun blockingPost(path: String, role: TockUserRole? = defaultRole(), handler: (RoutingContext) -> Unit) {
+    protected fun blockingPost(
+        path: String,
+        role: TockUserRole? = defaultRole(),
+        logger: RequestLogger = defaultRequestLogger,
+        handler: (RoutingContext) -> Unit) {
         blocking(POST, path, role) { context ->
-            handler.invoke(context)
-            context.success()
+            try {
+                handler.invoke(context)
+                context.success()
+                logger.log(context, null)
+            } catch (t: Throwable) {
+                if (t !is UnauthorizedException) {
+                    logger.log(context, null, true)
+                }
+                throw t
+            }
         }
     }
 
@@ -332,26 +362,45 @@ abstract class WebVerticle : AbstractVerticle() {
     protected inline fun <reified F : Any, O> blockingUploadJsonPost(
         path: String,
         role: TockUserRole? = defaultRole(),
+        logger: RequestLogger = defaultRequestLogger,
         crossinline handler: (RoutingContext, F) -> O
     ) {
         blocking(POST, path, role) { context ->
             val upload = context.fileUploads().first()
-            val f = readJson<F>(upload)
-            val result = handler.invoke(context, f)
-            context.endJson(result)
+            var f: F? = null
+            try {
+                f = readJson(upload)
+                val result = handler.invoke(context, f)
+                context.endJson(result)
+                logger.log(context, f)
+            } catch (t: Throwable) {
+                if (t !is UnauthorizedException) {
+                    logger.log(context, f, true)
+                }
+                throw t
+            }
         }
     }
 
     protected inline fun <O> blockingUploadPost(
         path: String,
         role: TockUserRole? = defaultRole(),
+        logger: RequestLogger = defaultRequestLogger,
         crossinline handler: (RoutingContext, String) -> O
     ) {
         blocking(POST, path, role) { context ->
             val upload = context.fileUploads().first()
-            val f = readString(upload)
-            val result = handler.invoke(context, f)
-            context.endJson(result)
+            try {
+                val f = readString(upload)
+                val result = handler.invoke(context, f)
+                context.endJson(result)
+                logger.log(context, upload)
+            } catch (t: Throwable) {
+                if (t !is UnauthorizedException) {
+                    logger.log(context, upload, true)
+                }
+                throw t
+            }
         }
     }
 
@@ -370,22 +419,36 @@ abstract class WebVerticle : AbstractVerticle() {
     protected inline fun <reified I : Any, O> blockingJsonPost(
         path: String,
         role: TockUserRole? = defaultRole(),
+        logger: RequestLogger = defaultRequestLogger,
         crossinline handler: (RoutingContext, I) -> O
     ) {
-        blockingWithBodyJson(POST, path, role, handler)
+        blockingWithBodyJson(POST, path, role, logger, handler)
     }
 
     protected inline fun <reified I : Any, O> blockingJsonPut(
         path: String,
         role: TockUserRole? = defaultRole(),
+        logger: RequestLogger = defaultRequestLogger,
         crossinline handler: (RoutingContext, I) -> O
     ) {
-        blockingWithBodyJson(PUT, path, role, handler)
+        blockingWithBodyJson(PUT, path, role, logger, handler)
     }
 
-    protected fun blockingDelete(path: String, role: TockUserRole? = defaultRole(), handler: (RoutingContext) -> Unit) {
+    protected fun blockingDelete(
+        path: String,
+        role: TockUserRole? = defaultRole(),
+        logger: RequestLogger = defaultRequestLogger,
+        handler: (RoutingContext) -> Unit) {
         blocking(DELETE, path, role) { context ->
-            handler.invoke(context)
+            try {
+                handler.invoke(context)
+                logger.log(context, null)
+            } catch (t: Throwable) {
+                if (t !is UnauthorizedException) {
+                    logger.log(context, null, false)
+                }
+                throw t
+            }
             context.success()
         }
     }
@@ -393,9 +456,20 @@ abstract class WebVerticle : AbstractVerticle() {
     protected fun blockingJsonDelete(
         path: String,
         role: TockUserRole? = defaultRole(),
+        logger: RequestLogger = defaultRequestLogger,
         handler: (RoutingContext) -> Boolean
     ) {
-        blockingWithoutBodyJson(DELETE, path, role, { BooleanResponse(handler.invoke(it)) })
+        blockingWithoutBodyJson(DELETE, path, role) { context ->
+            try {
+                BooleanResponse(handler.invoke(context))
+                logger.log(context, null)
+            } catch (t: Throwable) {
+                if (t !is UnauthorizedException) {
+                    logger.log(context, null, false)
+                }
+                throw t
+            }
+        }
     }
 
     //non blocking methods

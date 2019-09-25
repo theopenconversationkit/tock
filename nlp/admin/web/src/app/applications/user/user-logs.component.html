@@ -1,0 +1,64 @@
+<!--
+  ~ Copyright (C) 2017/2019 VSCT
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<div class="builds">
+
+  <mat-table [dataSource]="dataSource" class="builds-table">
+
+    <ng-container matColumnDef="date">
+      <mat-header-cell *matHeaderCellDef> Date</mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.date | amDateFormat: 'YYYY-MM-DD HH:mm' }}
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="type">
+      <mat-header-cell *matHeaderCellDef> Type</mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.actionType}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="user">
+      <mat-header-cell *matHeaderCellDef> User</mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.login}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="application">
+      <mat-header-cell *matHeaderCellDef> Application</mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{appName(row.applicationId)}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="data">
+      <mat-header-cell *matHeaderCellDef class="width"> Data</mat-header-cell>
+      <mat-cell *matCellDef="let row" class="width">
+        <button *ngIf="row.newData" nbButton outline shape="round" (click)="displayData(row)">Display</button>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="error">
+      <mat-header-cell *matHeaderCellDef class="error"> Error</mat-header-cell>
+      <mat-cell *matCellDef="let row" class="error"><span *ngIf="row.error"><mat-icon
+        style="color: red">error</mat-icon></span></mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+
+  <mat-paginator [length]="dataSource.size"
+                 [pageIndex]="0"
+                 [pageSize]="10"
+                 [pageSizeOptions]="[5, 10, 25, 100]">
+  </mat-paginator>
+</div>

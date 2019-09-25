@@ -77,7 +77,7 @@ export class LogsComponent extends ScrollComponent<Log> {
         request: log.requestDetails(),
         response: log.responseDetails()
       }
-    })
+    });
   }
 
   downloadDump() {

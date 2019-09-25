@@ -39,29 +39,15 @@
 
 .add-predefined-list {
   color: blue;
-  font-size: 18px;
-  margin-right: -4px;
-  margin-left: 6px;
-  cursor: pointer;
-  opacity: 0.54;
 }
 
 .predefined-list {
   color: green;
-  font-size: 18px;
-  margin-right: -4px;
-  margin-left: 6px;
-  cursor: pointer;
-  opacity: 0.54;
 }
 
 .remove {
-  color: red;
-  font-size: 18px;
-  margin-right: -4px;
-  margin-left: 6px;
-  cursor: pointer;
-  opacity: 0.54;
+  color: red !important;
+  opacity: 1 !important;
 }
 
 .values {

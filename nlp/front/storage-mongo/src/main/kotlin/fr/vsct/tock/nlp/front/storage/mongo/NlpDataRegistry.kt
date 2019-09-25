@@ -26,6 +26,7 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedEntity
 import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
+import fr.vsct.tock.nlp.front.shared.monitoring.UserActionLog
 import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 import fr.vsct.tock.nlp.front.shared.parser.QueryContext
@@ -75,7 +76,8 @@ import org.litote.kmongo.DataRegistry
         IntentTestError::class,
         TestBuild::class,
         PredefinedValue::class,
-        DictionaryData::class
+        DictionaryData::class,
+    UserActionLog::class
     ]
 )
 internal object NlpDataRegistry

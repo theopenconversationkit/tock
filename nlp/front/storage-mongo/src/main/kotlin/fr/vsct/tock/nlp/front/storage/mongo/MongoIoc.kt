@@ -27,6 +27,7 @@ import fr.vsct.tock.nlp.front.service.storage.IntentDefinitionDAO
 import fr.vsct.tock.nlp.front.service.storage.ModelBuildTriggerDAO
 import fr.vsct.tock.nlp.front.service.storage.ParseRequestLogDAO
 import fr.vsct.tock.nlp.front.service.storage.TestModelDAO
+import fr.vsct.tock.nlp.front.service.storage.UserActionLogDAO
 import fr.vsct.tock.shared.getAsyncDatabase
 import fr.vsct.tock.shared.getDatabase
 
@@ -42,5 +43,6 @@ val frontMongoModule = Kodein.Module {
     bind<ModelBuildTriggerDAO>() with provider { ModelBuildTriggerMongoDAO }
     bind<ParseRequestLogDAO>() with provider { ParseRequestLogMongoDAO }
     bind<TestModelDAO>() with provider { TestModelMongoDAO }
+    bind<UserActionLogDAO>() with provider { UserActionLogMongoDAO }
 }
 

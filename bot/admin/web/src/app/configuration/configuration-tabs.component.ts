@@ -16,6 +16,8 @@
 
 import {Component, OnInit} from "@angular/core";
 import {Router} from "@angular/router";
+import {StateService} from "../core-nlp/state.service";
+import {UserRole} from "../../../../../../nlp/admin/web/src/app/model/auth";
 
 @Component({
   selector: 'tock-configuration-tabs',
@@ -31,16 +33,23 @@ export class ConfigurationTabsComponent implements OnInit {
     {
       title: 'Bot Configurations',
       route: 'bot',
+    },
+    {
+      title: 'User Logs',
+      route: 'users/logs',
     }
   ];
 
   configurationTabLinks = this.tabs;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private state: StateService) {
+    if (!state.hasRole(UserRole.technicalAdmin)) {
+      this.tabs = this.tabs.filter(t => t.route !== 'users/logs')
+    }
   }
 
   ngOnInit() {
-    if(this.router.routerState.snapshot.url.endsWith("/configuration")) {
+    if (this.router.routerState.snapshot.url.endsWith("/configuration")) {
       this.router.navigateByUrl("/configuration/nlp");
     }
   }

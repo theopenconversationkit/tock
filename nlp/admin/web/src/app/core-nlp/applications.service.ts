@@ -22,7 +22,8 @@ import {
   Application,
   ApplicationImportConfiguration,
   ModelBuildQueryResult,
-  NlpApplicationConfiguration
+  NlpApplicationConfiguration,
+  UserLogQueryResult
 } from "../model/application";
 import {RestService} from "./rest/rest.service";
 import {StateService} from "./state.service";
@@ -116,8 +117,7 @@ export class ApplicationService implements OnDestroy {
   retrieveCurrentApplication(): Observable<Application> {
     if (this.state.applications) {
       return of(this.state.findCurrentApplication());
-    }
-    else {
+    } else {
       return this.getApplications().pipe(map(apps => {
         this.state.applications = apps;
         return this.state.findCurrentApplication();
@@ -137,7 +137,7 @@ export class ApplicationService implements OnDestroy {
     return this.rest.get(`/sentences/dump/${full ? 'full/' : ''}${application._id}`, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
   }
 
-  getSentencesDumpForIntent(application: Application, intent: Intent, locale:string, full: boolean): Observable<Blob> {
+  getSentencesDumpForIntent(application: Application, intent: Intent, locale: string, full: boolean): Observable<Blob> {
     return this.rest.get(`/sentences/dump/${full ? 'full/' : ''}${application._id}/${encodeURIComponent(intent.qualifiedName())}/${locale}`, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
   }
 
@@ -171,5 +171,9 @@ export class ApplicationService implements OnDestroy {
 
   updateModelConfiguration(applicationId: string, engineType: NlpEngineType, conf: NlpApplicationConfiguration): Observable<NlpApplicationConfiguration> {
     return this.rest.post(`/application/${applicationId}/model/${engineType.name}/configuration`, conf);
+  }
+
+  searchUserLogs(query: PaginatedQuery): Observable<UserLogQueryResult> {
+    return this.rest.post(`/users/logs/search`, query, UserLogQueryResult.fromJSON);
   }
 }

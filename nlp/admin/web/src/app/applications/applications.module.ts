@@ -26,13 +26,18 @@ import {ApplicationUploadComponent} from "./application-upload/application-uploa
 import {FileUploadModule} from "ng2-file-upload";
 import {ApplicationAdvancedOptionsComponent} from "./application-advanced-options/application-advanced-options.component";
 import {
+  NbAccordionModule,
   NbActionsModule,
-  NbCardModule,
   NbButtonModule,
-  NbTooltipModule,
+  NbCardModule,
   NbCheckboxModule,
-  NbSelectModule, NbAccordionModule, NbSpinnerModule, NbRadioModule
+  NbRadioModule,
+  NbSelectModule,
+  NbSpinnerModule,
+  NbTooltipModule
 } from "@nebular/theme";
+import {DisplayUserDataComponent, UserLogsComponent} from "./user/user-logs.component";
+import {MomentModule} from "ngx-moment";
 
 const routes: Routes = [
   {
@@ -53,6 +58,10 @@ const routes: Routes = [
       {
         path: 'create',
         component: ApplicationComponent
+      },
+      {
+        path: 'users/logs',
+        component: UserLogsComponent
       }]
   }
 ];
@@ -68,6 +77,7 @@ export class ApplicationsRoutingModule {
   imports: [
     CommonModule,
     SharedModule,
+    MomentModule,
     ApplicationsRoutingModule,
     FileUploadModule,
     NbCardModule,
@@ -84,12 +94,14 @@ export class ApplicationsRoutingModule {
     ApplicationsComponent,
     ApplicationComponent,
     ApplicationAdvancedOptionsComponent,
-    ApplicationUploadComponent
+    ApplicationUploadComponent,
+    UserLogsComponent,
+    DisplayUserDataComponent
   ],
   providers: [
     ApplicationsResolver
   ],
-  entryComponents: []
+  entryComponents: [DisplayUserDataComponent]
 })
 export class ApplicationsModule {
 

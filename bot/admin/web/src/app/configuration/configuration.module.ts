@@ -33,11 +33,14 @@ import {
   NbButtonModule,
   NbCardModule,
   NbInputModule,
-  NbRouteTabsetModule, NbSpinnerModule,
-  NbTabsetModule, NbTooltipModule
+  NbRouteTabsetModule,
+  NbSpinnerModule,
+  NbTabsetModule,
+  NbTooltipModule
 } from "@nebular/theme";
 import {NewBotComponent} from "./bot/new-bot.component";
 import {ReactiveFormsModule} from "@angular/forms";
+import {UserLogsComponent} from "../applications/user/user-logs.component";
 
 const routes: Routes = [
   {
@@ -88,6 +91,10 @@ const routes: Routes = [
         resolve: {
           application: ApplicationsResolver
         }
+      },
+      {
+        path: 'users/logs',
+        component: UserLogsComponent
       }
     ]
   }

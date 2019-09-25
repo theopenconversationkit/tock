@@ -1,0 +1,16 @@
+.builds {
+  margin-top: 20px;
+}
+
+.builds-table {
+  width: 100%;
+}
+
+.data {
+  max-width: 50px;
+}
+
+.error {
+  max-width: 50px;
+}
+

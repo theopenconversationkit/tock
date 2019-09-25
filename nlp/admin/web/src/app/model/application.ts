@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {EntityDefinition, Intent, NlpEngineType} from "./nlp";
+import {EntityDefinition, Intent, NlpEngineType, Sentence} from "./nlp";
 import {flatMap, JsonUtils} from "./commons";
 
 export class Application {
@@ -231,6 +231,52 @@ export class NlpModelConfiguration {
     const value = Object.create(NlpModelConfiguration.prototype);
     const result = Object.assign(value, json, {
       properties: JsonUtils.jsonToMap(json.properties)
+    });
+    return result;
+  }
+
+}
+
+export class UserLog {
+
+  constructor(public namespace: string,
+              public applicationId: string,
+              public login: string,
+              public actionType: string,
+              public newData: any,
+              public date: Date,
+              public error: boolean) {
+  }
+
+  data(): string {
+    return this.newData ? JSON.stringify(this.newData, null, 2) : "";
+  }
+
+  static fromJSON(json?: any): UserLog {
+    const value = Object.create(UserLog.prototype);
+
+    const result = Object.assign(value, json, {
+      sentence: json.sentence ? Sentence.fromJSON(json.sentence) : null,
+    });
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): UserLog[] {
+    return json ? json.map(UserLog.fromJSON) : [];
+  }
+}
+
+export class UserLogQueryResult {
+
+  constructor(public total: number,
+              public logs: UserLog[]) {
+  }
+
+  static fromJSON(json: any): UserLogQueryResult {
+    const value = Object.create(UserLogQueryResult.prototype);
+    const result = Object.assign(value, json, {
+      logs: UserLog.fromJSONArray(json.logs)
     });
     return result;
   }

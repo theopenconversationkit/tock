@@ -18,13 +18,14 @@ package fr.vsct.tock.nlp.front.service
 
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.front.service.storage.ParseRequestLogDAO
+import fr.vsct.tock.nlp.front.service.storage.UserActionLogDAO
 import fr.vsct.tock.nlp.front.shared.ApplicationMonitor
 import fr.vsct.tock.shared.injector
 
 val logDAO: ParseRequestLogDAO by injector.instance()
+val userLogDAO: UserActionLogDAO by injector.instance()
 
 /**
  *
  */
-internal object ApplicationMonitorService : ApplicationMonitor, ParseRequestLogDAO by logDAO {
-}
+internal object ApplicationMonitorService : ApplicationMonitor, ParseRequestLogDAO by logDAO, UserActionLogDAO by userLogDAO

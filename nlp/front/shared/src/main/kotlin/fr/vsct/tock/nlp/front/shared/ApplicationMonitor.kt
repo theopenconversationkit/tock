@@ -23,6 +23,9 @@ import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQuery
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQueryResult
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogStat
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogStatQuery
+import fr.vsct.tock.nlp.front.shared.monitoring.UserActionLog
+import fr.vsct.tock.nlp.front.shared.monitoring.UserActionLogQuery
+import fr.vsct.tock.nlp.front.shared.monitoring.UserActionLogQueryResult
 import org.litote.kmongo.Id
 import java.util.Locale
 
@@ -38,4 +41,8 @@ interface ApplicationMonitor {
     fun intentStats(query: ParseRequestLogStatQuery): List<ParseRequestLogIntentStat>
 
     fun export(applicationId: Id<ApplicationDefinition>, language: Locale): List<ParseRequestExportLog>
+
+    fun save(log: UserActionLog)
+
+    fun search(query: UserActionLogQuery): UserActionLogQueryResult
 }
