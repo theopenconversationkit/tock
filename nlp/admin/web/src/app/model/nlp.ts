@@ -198,6 +198,10 @@ export abstract class EntityContainer {
 
   private editedSubEntities: EntityWithSubEntities[];
 
+  cleanupEditedSubEntities() {
+    this.editedSubEntities = null;
+  }
+
   getEditedSubEntities(): EntityWithSubEntities[] {
     if (!this.editedSubEntities) {
       this.editedSubEntities =

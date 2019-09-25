@@ -64,6 +64,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
   editable: boolean;
   edited: boolean;
   tokens: Token[];
+  currentDblClick: boolean;
 
   //used to copy to clipboard
   @ViewChild('copy', {static: false}) tmpTextArea: ElementRef;
@@ -164,44 +165,58 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
+  remove(token: Token) {
+    if (token.entity) {
+      this.currentDblClick = true;
+      this.sentence.removeEntity(token.entity);
+      setTimeout(_ => {
+        this.sentence.cleanupEditedSubEntities();
+        this.rebuild();
+        this.currentDblClick = false;
+      });
+    }
+  }
+
   select() {
-    const windowsSelection = window.getSelection();
-    if (windowsSelection.rangeCount > 0) {
-      const selection = windowsSelection.getRangeAt(0);
-      let start = selection.startOffset;
-      let end = selection.endOffset;
-      if (selection.startContainer !== selection.endContainer) {
-        if (!selection.startContainer.childNodes[0]) {
+    setTimeout(_ => {
+      const windowsSelection = window.getSelection();
+      if (windowsSelection.rangeCount > 0 && !this.currentDblClick) {
+        const selection = windowsSelection.getRangeAt(0);
+        let start = selection.startOffset;
+        let end = selection.endOffset;
+        if (selection.startContainer !== selection.endContainer) {
+          if (!selection.startContainer.childNodes[0]) {
+            return;
+          }
+          end = selection.startContainer.childNodes[0].textContent.length - start;
+        } else {
+          if (start > end) {
+            const tmp = start;
+            start = end;
+            end = tmp;
+          }
+        }
+        if (start === end) {
           return;
         }
-        end = selection.startContainer.childNodes[0].textContent.length - start;
-      } else {
-        if (start > end) {
-          const tmp = start;
-          start = end;
-          end = tmp;
-        }
-      }
-      if (start === end) {
-        return;
-      }
-      const span = selection.startContainer.parentElement;
-      this.selectedStart = -1;
-      this.selectedEnd = -1;
-      this.findSelected(span.parentNode, new SelectedResult(span, start, end));
+        const span = selection.startContainer.parentElement;
+        this.selectedStart = -1;
+        this.selectedEnd = -1;
+        this.findSelected(span.parentNode, new SelectedResult(span, start, end));
 
-      const overlap = this.sentence.overlappedEntity(this.selectedStart, this.selectedEnd);
-      if (overlap) {
-        if (this.state.currentApplication.supportSubEntities) {
-          this.sentence
-            .addEditedSubEntities(overlap)
-            .setSelection(this.selectedStart - overlap.start, this.selectedEnd - overlap.start);
+        const overlap = this.sentence.overlappedEntity(this.selectedStart, this.selectedEnd);
+        if (overlap) {
+          if (this.state.currentApplication.supportSubEntities) {
+            this.sentence
+              .addEditedSubEntities(overlap)
+              .setSelection(this.selectedStart - overlap.start, this.selectedEnd - overlap.start);
+          }
+          window.getSelection().removeAllRanges();
+        } else if (this.entityProvider.isValid()) {
+          this.edited = true;
         }
-        window.getSelection().removeAllRanges();
-      } else if (this.entityProvider.isValid()) {
-        this.edited = true;
       }
-    }
+    });
   }
 
   addEntity() {

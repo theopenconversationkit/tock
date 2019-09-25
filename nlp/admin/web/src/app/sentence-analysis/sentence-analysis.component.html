@@ -20,7 +20,12 @@
   </nb-card-header>
   <nb-card-body (click)="displayAllView()">
     <div *ngIf="minimalView" class="minimal">
-      <span style="cursor:pointer" title="Modify the Intent" (click)="focusOnIntentSelect();$event.stopPropagation();">{{sentence.getIntentLabel(this.state)}}</span>
+      <span class="update-intent" title="Modify the Intent" (click)="focusOnIntentSelect();$event.stopPropagation();">{{sentence.getIntentLabel(this.state)}}
+        <nb-icon icon="edit-2-outline"></nb-icon>
+      </span>
+      <span *ngIf="displayStatus" class="status status-header" [style.background]="sentence.statusColor()">
+        {{sentence.statusDisplayed()}}
+      </span>
       <button nbButton outline status="primary" size="small" shape="semi-round" class="btn" (click)="displayAllView();$event.stopPropagation();">Details
       </button>
       <button nbButton status="primary" size="small" shape="semi-round" class="btn" (click)="onValidate();$event.stopPropagation();">Validate

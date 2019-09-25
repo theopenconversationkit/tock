@@ -64,6 +64,10 @@
   margin-left: 10px;
 }
 
+.status-header {
+  font-size: small;
+}
+
 .validate {
   margin-left: 20px;
 }
@@ -96,4 +100,9 @@
 .intent-select {
   margin-right: 10px;
   width: 12rem;
+}
+
+.update-intent {
+  cursor:pointer;
+  margin-right: 20px;
 }
