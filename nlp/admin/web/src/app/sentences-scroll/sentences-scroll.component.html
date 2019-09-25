@@ -16,15 +16,22 @@
 
 <ng-content></ng-content>
 
-<div class="paginator" [nbSpinner]="loading" nbSpinnerStatus="primary">
-  <div class="header" *ngIf="total === 0">
-    <h4 class="title">No Data</h4>
-    <button mat-button (click)="refresh()" class="button">
-      <mat-icon>refresh</mat-icon>
-    </button>
-  </div>
+<nb-card *ngIf="total === 0">
+  <nb-card-body>
+    <div style="text-align: left;">
+      <h4 class="title">No Sentence found</h4>
+      <button mat-button (click)="refresh()" class="button">
+        <mat-icon>refresh</mat-icon>
+      </button>
+      <p>To add Sentences, start from <em>Try it</em> or <em>Test the Bot</em> in Tock Studio,
+        or talk to the bot on any connected channel.</p>
+    </div>
+  </nb-card-body>
+</nb-card>
 
-  <div class="header" *ngIf="total !== 0">
+<div class="paginator" [nbSpinner]="loading" nbSpinnerStatus="primary" *ngIf="total !== 0">
+
+  <div class="header">
     <h4 class="title"></h4>
     <nb-actions size="medium" fullWidth style="cursor: pointer;">
 

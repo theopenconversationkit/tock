@@ -45,9 +45,13 @@ style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rg
 
 Tock logos are provided under the [Apache 2 license](https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE).
 
-**Tock logo - colors / transparent** (<a href="../../assets/images/logo.svg" download="">download</a>) :
+**Tock logo - default colors / transparent** (<a href="../../assets/images/logo.svg" download="">download</a>) :
 
-<img alt="Tock colors logo" src="../../assets/images/logo.svg" style="width: 150px;">
+<img alt="Tock default logo" src="../../assets/images/logo.svg" style="width: 150px;">
+
+**Tock logo - blue / transparent** (<a href="../../assets/images/Logo_Tock_Blue.svg" download="">download</a>) :
+
+<img alt="Tock blue logo" src="../../assets/images/Logo_Tock_Blue.svg" style="width: 110px; margin-left: 20px;">
 
 **Tock logo - black / transparent** (<a href="../../assets/images/logo-black.svg" download="">download</a>) :
 
