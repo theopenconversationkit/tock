@@ -94,7 +94,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
             }
 
             if (!bus.connectorData.skipAnswer && bus.story.lastAction?.metadata?.lastAnswer != true) {
-                logger.warn { "Bus.end not called" }
+                logger.warn { "Bus.end not called for story ${bus.story.definition.id} and user ${bus.userId.id}" }
             }
         }
     }
