@@ -80,11 +80,10 @@ object UploadedFilesService {
     fun getFileContentFromUrl(url: String): ByteArray? =
         url.run {
             val start = url.lastIndexOf('/')
-            val end = url.lastIndexOf('.')
-            if (start == -1 || end == -1 || start >= end) {
+            if (start == -1) {
                 null
             } else {
-                getFromCache(url.substring(start, end).toId(), UPLOADED_TYPE)
+                getFromCache(url.substring(start+1).toId(), UPLOADED_TYPE)
             }
         }
 
