@@ -18,4 +18,6 @@ if [ "$TRAVIS_BRANCH" = 'master' ] && [ "$TRAVIS_PULL_REQUEST" = 'false' ]; then
       mvn deploy -Dmilestone --settings etc/deploy-settings.xml
     fi
   fi
+  else
+    mvn test -B -Dskip.npm -Dassembly.skipAssembly=true -U -q
 fi

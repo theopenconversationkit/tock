@@ -4,7 +4,7 @@ jdk:
 branches:
   only:
   - master
-script: mvn test -B -Dskip.npm -Dassembly.skipAssembly=true -U -q
+script: ./etc/deploy.sh
 cache:
   directories:
   - $HOME/.m2/repository
@@ -20,5 +20,4 @@ env:
     - secure: "HLbmch4aIEzGhnS2AI+Z6jfjIfARaD038p/jPfIhZ1g1VaDmWJR/UwiA+pnmOD2w1gPEPwTG+7FXwouaIx4AhDauVUpF3rJiPRkb/vRO2PfkHfhybbedjMLryvjeuJvID8SQvCaXyX6dJyPWV+g+s3p8Er4ZQAgATYvE5SyLgrkCDdY6acDb+5qZjpoOQrVDmN+djV0QByAU1a7zgGPHXK7zXp6EE/roi3zUYAKmIgia39cwum47fgzip/61oSprzHoI/i3B5MNbz+ffpfSrWcou6O1CpjP+so80Jc83ACI34oY4WoIjQkdgWht7aPGzahdV8fnKIu7AMagBufhr6C2kCMSOhfaOJY3feAWqVg5jR+4o44QpE6ppbvDUP9CIUlXM63Ps1xmFxAhOku7kp4zHr4wFQ/Z3Aho0WeKH3ssLH5FJ4993V1WhHr5ZY3XIrN5c0k/yaRmysEJ3Ql30w5CzpzSq7FCZtgZikXPgDcj77q7p3wiPyLlMl0gESBGuWgAixhki7XjjVlZYIseJW7UEpfw/CYwVHDpBBQt31y9l18+AZjZMXedZSEDFj/mGrlxhJ1Ke3xlsrnrV2GLwKzpQdQ2e5Yog/YDtaAZXBAlMuro0u4HlfxRiEaV6y2lPuDlDMSfStBOIBx9S/IuxlA3tSDhOGm/sxURNCafZRXI="
     - secure: "cEIVcb1kJoS1wxckNx3cOzRHw1KF2BWF80JzE4tSj/2qaRSCd3S9A9KOOJ1umAazeh1hX8WJt7wayTrpRvLgJyDKkYiDu6l3cx8JBXS6ACgUAMIFJUAw+TSPRYEQxpdAwZrXL4ULdHsc9yCQOycA2OeZ+qifgZF5Qb7pkcPC/FkJYZvyn1XI8yVwrw6VPRXbKXW/5WcCbjX/cEtzi6MOdRhj++MtQo6KLpOgjOLA6DTSh6KfQbCkUf2vz9XHYLu2ntEBBCi9LaCHie9OqJH/rbbr4O7h0y4Ak7Ed+1xVfejDo8TwxWnklSM7QjaSHjrCRXqsVoYocsfl68Mp5vHaZ2B7muYimTXdquQ7egdWd+wk7zjY9Q9LSMs9hyjngmeqKZ3cWVk1gAPqJJgWz0vSkybcDAuqDyZUoiZ9GgGb6JM4FxcDcWTF6EwakIl7VYELnwccSMBNC/6J+IBV+CuS1bHqu68K6+pvjyZitn47syyuOESr5QnLQsS//zzlE8C7lBHNcbWMJpJf3KQAvSvbIZiiwa1CHkkEbaSDqIJBPPmmgLWTN1lUXJk8oKWGZR+TvfyAT9pFXswfUvI32xIsnJcIBdmYeoxVUMBheYS2qtln9f6K1CJeVmd3UeQiYHe3DzJJVAo4na+ByABHHaq9hWkyh7Nedk8m6NgaTYUsVTk="
 after_success:
-  - ./etc/deploy.sh
   - ./etc/trigger-travis.sh
