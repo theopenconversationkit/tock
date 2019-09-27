@@ -42,6 +42,7 @@ nav:
       - 'Communauté': 'apropos/communaute.md'
       - 'Contribuer': 'apropos/contribuer.md'
       - 'Emploi': 'apropos/emploi.md'
+  - '🇫🇷 🇬🇧': 'https://theopenconversationkit.github.io/tock/en/'
 
 theme:
   name: 'material'
