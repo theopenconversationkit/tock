@@ -19,9 +19,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>fr.vsct.tock</groupId>
+        <groupId>ai.tock</groupId>
         <artifactId>tock-bot</artifactId>
-        <version>19.3.5-SNAPSHOT</version>
+        <version>19.9.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>bot-test</artifactId>
@@ -30,11 +30,11 @@
 
     <dependencies>
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
+            <groupId>ai.tock</groupId>
             <artifactId>bot-toolkit</artifactId>
         </dependency>
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
+            <groupId>ai.tock</groupId>
             <artifactId>bot-test-base</artifactId>
         </dependency>
     </dependencies>

@@ -80,7 +80,7 @@ la dépendance `tock-bot-api-websocket` incluse :
 
     <dependencies>
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
+            <groupId>ai.tock</groupId>
             <artifactId>tock-bot-api-websocket</artifactId>
             <version>${lib.tock.version}</version>
         </dependency>

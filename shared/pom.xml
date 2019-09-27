@@ -19,9 +19,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>fr.vsct.tock</groupId>
+        <groupId>ai.tock</groupId>
         <artifactId>tock-root</artifactId>
-        <version>19.3.5-SNAPSHOT</version>
+        <version>19.9.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-shared</artifactId>

@@ -19,9 +19,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>fr.vsct.tock</groupId>
+        <groupId>ai.tock</groupId>
         <artifactId>tock-bot</artifactId>
-        <version>19.3.5-SNAPSHOT</version>
+        <version>19.9.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-bot-engine</artifactId>
@@ -30,19 +30,19 @@
 
     <dependencies>
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
+            <groupId>ai.tock</groupId>
             <artifactId>tock-shared</artifactId>
         </dependency>
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
+            <groupId>ai.tock</groupId>
             <artifactId>nlp-api-client</artifactId>
         </dependency>
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
+            <groupId>ai.tock</groupId>
             <artifactId>tock-translator-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
+            <groupId>ai.tock</groupId>
             <artifactId>tock-stt-core</artifactId>
         </dependency>
 
@@ -52,7 +52,7 @@
         </dependency>
 
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
+            <groupId>ai.tock</groupId>
             <artifactId>tock-shared</artifactId>
             <type>test-jar</type>
         </dependency>

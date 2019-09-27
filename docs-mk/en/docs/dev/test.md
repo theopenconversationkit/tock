@@ -8,7 +8,7 @@ Avec Maven :
 
 ```xml
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
+            <groupId>ai.tock</groupId>
             <artifactId>bot-test</artifactId>
             <version>19.3.3</version>
             <scope>test</scope>

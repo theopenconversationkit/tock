@@ -5,7 +5,7 @@ To use Dialogflow as NLP in a Tock bot :
 - Add the module dependency to your pom.xml
 
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
+            <groupId>ai.tock</groupId>
             <artifactId>tock-nlp-dialogflow</artifactId>
             <version>${tock}</version>
         </dependency>

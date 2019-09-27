@@ -119,7 +119,7 @@ export abstract class AnswerContainer {
 
 export class StoryDefinitionConfiguration extends AnswerContainer {
 
-  public hideDetails: boolean = false
+  public hideDetails: boolean = false;
 
   constructor(public storyId: string,
               public botId: string,

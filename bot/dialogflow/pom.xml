@@ -3,9 +3,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>fr.vsct.tock</groupId>
+        <groupId>ai.tock</groupId>
         <artifactId>tock-bot</artifactId>
-        <version>19.3.5-SNAPSHOT</version>
+        <version>19.9.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-nlp-dialogflow</artifactId>
@@ -19,15 +19,15 @@
 
     <dependencies>
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
+            <groupId>ai.tock</groupId>
             <artifactId>tock-bot-engine</artifactId>
         </dependency>
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
+            <groupId>ai.tock</groupId>
             <artifactId>tock-bot-storage-mongo</artifactId>
         </dependency>
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
+            <groupId>ai.tock</groupId>
             <artifactId>tock-nlp-front-ioc</artifactId>
             <version>${project.version}</version>
         </dependency>

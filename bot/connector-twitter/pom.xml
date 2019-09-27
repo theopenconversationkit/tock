@@ -18,8 +18,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>tock-bot</artifactId>
-        <groupId>fr.vsct.tock</groupId>
-        <version>19.3.5-SNAPSHOT</version>
+        <groupId>ai.tock</groupId>
+        <version>19.9.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -29,11 +29,11 @@
 
     <dependencies>
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
+            <groupId>ai.tock</groupId>
             <artifactId>tock-bot-engine-jackson</artifactId>
         </dependency>
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
+            <groupId>ai.tock</groupId>
             <artifactId>tock-stt-core</artifactId>
         </dependency>
 
@@ -92,7 +92,7 @@
         </dependency>
 
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
+            <groupId>ai.tock</groupId>
             <artifactId>tock-shared</artifactId>
             <type>test-jar</type>
             <scope>test</scope>

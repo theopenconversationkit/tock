@@ -12,7 +12,7 @@ With Maven:
 
 ```xml
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
+            <groupId>ai.tock</groupId>
             <artifactId>bot-toolkit</artifactId>
             <version>19.3.3</version>
         </dependency>

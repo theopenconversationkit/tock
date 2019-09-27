@@ -41,7 +41,7 @@ Par exemple dans un projet [Maven](https://maven.apache.org/) :
 
 ```xml
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
+            <groupId>ai.tock</groupId>
             <artifactId>tock-bot-api-websocket</artifactId>
             <version>19.3.3</version>
         </dependency>
@@ -61,7 +61,7 @@ Par exemple dans un projet [Maven](https://maven.apache.org/) :
 
 ```xml
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
+            <groupId>ai.tock</groupId>
             <artifactId>tock-bot-api-webhook</artifactId>
             <version>19.3.3</version>
         </dependency>

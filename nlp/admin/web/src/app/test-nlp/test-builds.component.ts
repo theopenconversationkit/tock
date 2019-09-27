@@ -153,7 +153,6 @@ export class TestBuildsComponent implements OnInit, OnDestroy {
       TestErrorQuery.createWithoutSize(this.state, this.intent === "" ? undefined : this.intent, this.modifiedAfter)
     )
       .subscribe(result => {
-        console.log("ok");
         if (result.length === 0) {
           this.nodata = true;
           return;

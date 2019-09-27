@@ -19,9 +19,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>fr.vsct.tock</groupId>
+        <groupId>ai.tock</groupId>
         <artifactId>tock-root</artifactId>
-        <version>19.3.5-SNAPSHOT</version>
+        <version>19.9.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-nlp</artifactId>
@@ -49,93 +49,93 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>fr.vsct.tock</groupId>
+                <groupId>ai.tock</groupId>
                 <artifactId>tock-nlp-model-shared</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>fr.vsct.tock</groupId>
+                <groupId>ai.tock</groupId>
                 <artifactId>tock-nlp-model-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>fr.vsct.tock</groupId>
+                <groupId>ai.tock</groupId>
                 <artifactId>tock-nlp-model-service</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>fr.vsct.tock</groupId>
+                <groupId>ai.tock</groupId>
                 <artifactId>tock-nlp-core-shared</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>fr.vsct.tock</groupId>
+                <groupId>ai.tock</groupId>
                 <artifactId>tock-nlp-core-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>fr.vsct.tock</groupId>
+                <groupId>ai.tock</groupId>
                 <artifactId>tock-nlp-opennlp</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>fr.vsct.tock</groupId>
+                <groupId>ai.tock</groupId>
                 <artifactId>tock-nlp-core-service</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>fr.vsct.tock</groupId>
+                <groupId>ai.tock</groupId>
                 <artifactId>tock-nlp-entity-value</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>fr.vsct.tock</groupId>
+                <groupId>ai.tock</groupId>
                 <artifactId>tock-nlp-model-mongo-storage</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>fr.vsct.tock</groupId>
+                <groupId>ai.tock</groupId>
                 <artifactId>tock-nlp-model-opennlp</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>fr.vsct.tock</groupId>
+                <groupId>ai.tock</groupId>
                 <artifactId>tock-nlp-model-storage-mongo</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>fr.vsct.tock</groupId>
+                <groupId>ai.tock</groupId>
                 <artifactId>tock-nlp-front-shared</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>fr.vsct.tock</groupId>
+                <groupId>ai.tock</groupId>
                 <artifactId>tock-nlp-front-service</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>fr.vsct.tock</groupId>
+                <groupId>ai.tock</groupId>
                 <artifactId>tock-nlp-front-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>fr.vsct.tock</groupId>
+                <groupId>ai.tock</groupId>
                 <artifactId>tock-nlp-front-storage-mongo</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>fr.vsct.tock</groupId>
+                <groupId>ai.tock</groupId>
                 <artifactId>tock-nlp-duckling-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>fr.vsct.tock</groupId>
+                <groupId>ai.tock</groupId>
                 <artifactId>tock-nlp-front-ioc</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>fr.vsct.tock</groupId>
+                <groupId>ai.tock</groupId>
                 <artifactId>tock-nlp-dialogflow</artifactId>
                 <version>${project.version}</version>
             </dependency>
