@@ -769,7 +769,7 @@
 <p>To use them, you need to add the <em>bot-test</em> dependency to your project.</p>
 <p>With Maven :</p>
 <div class="codehilite"><pre><span></span>        <span class="nt">&lt;dependency&gt;</span>
-            <span class="nt">&lt;groupId&gt;</span>fr.vsct.tock<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>ai.tock<span class="nt">&lt;/groupId&gt;</span>
             <span class="nt">&lt;artifactId&gt;</span>bot-test<span class="nt">&lt;/artifactId&gt;</span>
             <span class="nt">&lt;version&gt;</span>19.3.3<span class="nt">&lt;/version&gt;</span>
             <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
@@ -778,7 +778,7 @@
 
 
 <p>With Gradle :</p>
-<div class="codehilite"><pre><span></span>      <span class="n">testCompile</span> <span class="s1">&#39;fr.vsct.tock:bot-test:19.3.3&#39;</span>
+<div class="codehilite"><pre><span></span>      <span class="n">testCompile</span> <span class="s1">&#39;ai.tock:bot-test:19.3.3&#39;</span>
 </pre></div>
 
 
@@ -797,7 +797,7 @@ A dedicated extension for Tock is <a href="../../dokka/tock/fr.vsct.tock.bot.tes
     <span class="k">fun</span> <span class="nf">`greetings story displays welcome message`</span><span class="p">()</span> <span class="p">{</span>
         <span class="n">ext</span><span class="p">.</span><span class="n">send</span> <span class="p">{</span>
             <span class="n">firstAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Welcome to the Tock Open Data Bot! :)&quot;</span><span class="p">)</span>
-            <span class="n">secondAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;This is a Tock framework demonstration bot: https://github.com/voyages-sncf-technologies/tock&quot;</span><span class="p">)</span>
+            <span class="n">secondAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;This is a Tock framework demonstration bot: https://github.com/theopenconversationkit/tock&quot;</span><span class="p">)</span>
         <span class="p">}</span>
     <span class="p">}</span>
 </pre></div>
@@ -826,7 +826,7 @@ A dedicated extension for Tock is <a href="../../dokka/tock/fr.vsct.tock.bot.tes
     <span class="k">fun</span> <span class="nf">`greetings story displays welcome message with GA dedicated message WHEN context contains GA connector`</span><span class="p">()</span> <span class="p">{</span>
         <span class="n">ext</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="n">connectorType</span> <span class="p">=</span> <span class="n">gaConnectorType</span><span class="p">)</span> <span class="p">{</span>
             <span class="n">firstAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Welcome to the Tock Open Data Bot! :)&quot;</span><span class="p">)</span>
-            <span class="n">secondAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;This is a Tock framework demonstration bot: https://github.com/voyages-sncf-technologies/tock&quot;</span><span class="p">)</span>
+            <span class="n">secondAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;This is a Tock framework demonstration bot: https://github.com/theopenconversationkit/tock&quot;</span><span class="p">)</span>
             <span class="n">lastAnswer</span><span class="p">.</span><span class="n">assertMessage</span><span class="p">(</span>
                 <span class="n">gaMessage</span><span class="p">(</span>
                     <span class="s">&quot;The bot is very limited, but ask him a route or the next departures from a station in France, and see the result! :)&quot;</span><span class="p">,</span>

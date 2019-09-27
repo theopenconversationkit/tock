@@ -852,13 +852,13 @@ Il utilise les librairies <a href="https://vertx.io/docs/vertx-auth-common/java/
 <ul>
 <li>
 <p>Un modèle par "propriétés", utilisé par défaut.
-Le code est disponible dans la classe <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/shared/src/main/kotlin/security/auth/PropertyBasedAuthProvider.kt#L61"><code>PropertyBasedAuthProvider</code></a></p>
+Le code est disponible dans la classe <a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/PropertyBasedAuthProvider.kt#L61"><code>PropertyBasedAuthProvider</code></a></p>
 </li>
 <li>
-<p>Un modèle <a href="https://oauth.net/2/"><em>OAuth2</em></a> dont un exemple est donné par <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/shared/src/main/kotlin/security/auth/GithubOAuthProvider.kt"><code>GithubOAuthProvider</code></a></p>
+<p>Un modèle <a href="https://oauth.net/2/"><em>OAuth2</em></a> dont un exemple est donné par <a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/GithubOAuthProvider.kt"><code>GithubOAuthProvider</code></a></p>
 </li>
 <li>
-<p>Un modèle basé sur des jetons <a href="https://jwt.io/"><em>JWT</em></a>, dont une implémentation pour AWS est disponible dans <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/shared/src/main/kotlin/security/auth/AWSJWTAuthProvider.kt"><code>AWSJWTAuthProvider</code></a>    </p>
+<p>Un modèle basé sur des jetons <a href="https://jwt.io/"><em>JWT</em></a>, dont une implémentation pour AWS est disponible dans <a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/AWSJWTAuthProvider.kt"><code>AWSJWTAuthProvider</code></a>    </p>
 </li>
 </ul>
 <p>Si ces modèles ne correspondent pas à votre besoin, il est relativement simple d'en développer d'autres
@@ -870,13 +870,13 @@ en se basant sur les exemples ci-dessus. N'hésitez pas à contribuer au projet 
 <p>C'est le rôle de la propriété <code>tock_encrypt_pass</code> qui permet d'indiquer un mot de passe
 pour chiffrer et déchiffrer ces champs. Par défaut, Tock chiffre toutes les données utilisateurs
 jugées sensibles à condition que ce mot de passe soit spécifié. 
-Pour plus de détails, vous pouvez vous réferrer au <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/shared/src/main/kotlin/security/Encryptors.kt">code source</a>.</p>
+Pour plus de détails, vous pouvez vous réferrer au <a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/Encryptors.kt">code source</a>.</p>
 <h3 id="anonymisation">Anonymisation<a class="headerlink" href="#anonymisation" title="Permanent link">&para;</a></h3>
 <p>Il est souvent souhaitable que certaines phrases soient anonymisées que ce soit dans les <em>logs</em> (journalisation)
  ou dans l'interface (<em>Tock Studio</em>). Par exemple, des coordonnées, numéros de cartes de fidélité, etc.
    ne devraient être lus ni par les utilisateurs de <em>Tock Studio</em> ni par les administrateurs de la plateforme.</p>
 <p>Pour anonymiser ces données, Tock met à disposition dans son framework une solution basée sur des 
-<em>expressions régulières (RegExp)</em> dont l'interface de base est <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/shared/src/main/kotlin/security/StringObfuscator.kt"><code>StringObfuscator</code></a>.</p>
+<em>expressions régulières (RegExp)</em> dont l'interface de base est <a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/StringObfuscator.kt"><code>StringObfuscator</code></a>.</p>
                 
                   
                 

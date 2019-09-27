@@ -786,20 +786,20 @@
                 
                 <h1 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h1>
 <h2 id="a-sample-bot">A Sample Bot<a class="headerlink" href="#a-sample-bot" title="Permanent link">&para;</a></h2>
-<p>A sample bot using Tock is available: <a href="https://github.com/voyages-sncf-technologies/tock-bot-open-data">https://github.com/voyages-sncf-technologies/tock-bot-open-data</a>.</p>
+<p>A sample bot using Tock is available: <a href="https://github.com/theopenconversationkit/tock-bot-open-data">https://github.com/theopenconversationkit/tock-bot-open-data</a>.</p>
 <p>It uses <a href="https://data.sncf.com/">Open Data SNCF API</a> (french trainlines itineraries).</p>
 <p>This is a good starting point, since it also includes a very simple NLP model.
 Of course, as the model is not big, the quality of the bot is low, but still it's enough to demonstrate the use of the toolkit.</p>
 <h2 id="docker-images">Docker Images<a class="headerlink" href="#docker-images" title="Permanent link">&para;</a></h2>
 <p>Docker images are available in the <a href="https://hub.docker.com/r/tock/">Docker Hub</a>.</p>
-<p>The source code used to build these images, as well as the docker-compose files used to start the Tock toolkit, are available in the GitHub repository <a href="https://github.com/voyages-sncf-technologies/tock-docker">https://github.com/voyages-sncf-technologies/tock-docker</a>.</p>
+<p>The source code used to build these images, as well as the docker-compose files used to start the Tock toolkit, are available in the GitHub repository <a href="https://github.com/theopenconversationkit/tock-docker">https://github.com/theopenconversationkit/tock-docker</a>.</p>
 <h3 id="start-the-nlp-stack">Start the NLP stack<a class="headerlink" href="#start-the-nlp-stack" title="Permanent link">&para;</a></h3>
 <div class="codehilite"><pre><span></span>    <span class="c1">#get the last docker-compose file</span>
-    curl -o docker-compose.yml https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/docker-compose.yml
+    curl -o docker-compose.yml https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/docker-compose.yml
     <span class="c1">#get the script to start mongo in replicaset mode</span>
-    mkdir -p scripts <span class="o">&amp;&amp;</span> curl -o scripts/setup.sh https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/scripts/setup.sh <span class="o">&amp;&amp;</span> chmod +x scripts/setup.sh
+    mkdir -p scripts <span class="o">&amp;&amp;</span> curl -o scripts/setup.sh https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/scripts/setup.sh <span class="o">&amp;&amp;</span> chmod +x scripts/setup.sh
     <span class="c1">#get the last tag</span>
-    curl -o .env https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/.env
+    curl -o .env https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/.env
     <span class="c1">#launch the stack</span>
     docker-compose up
 </pre></div>
@@ -808,7 +808,7 @@ Of course, as the model is not big, the quality of the bot is low, but still it'
 <p>The admin webapp is now available on port 80: <a href="http://localhost">http://localhost</a></p>
 <p>The default login is <em>admin@app.com</em> and the password is <em>password</em>.</p>
 <h3 id="sample-bot-based-on-open-data-apis">Sample bot based on Open Data APIs<a class="headerlink" href="#sample-bot-based-on-open-data-apis" title="Permanent link">&para;</a></h3>
-<p>A docker image is available to launch it directly. The instructions are specified in the <a href="https://github.com/voyages-sncf-technologies/tock-docker#user-content-run-the-open-data-bot-example">github project containing the docker images</a>.</p>
+<p>A docker image is available to launch it directly. The instructions are specified in the <a href="https://github.com/theopenconversationkit/tock-docker#user-content-run-the-open-data-bot-example">github project containing the docker images</a>.</p>
 <h2 id="administration-interface-menu">Administration Interface Menu<a class="headerlink" href="#administration-interface-menu" title="Permanent link">&para;</a></h2>
 <p>The <strong>Configuration</strong> menu allows you to create new models and configure them.</p>
 <p>The <strong>NLP</strong> and <strong>NLP QA</strong> menus are dedicated to building NLP models.</p>

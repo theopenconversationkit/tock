@@ -922,9 +922,9 @@ However, if you want to avoid any risk, you can use the <em>i18nKey</em> method:
 
 <h3 id="test-internationalization">Test internationalization<a class="headerlink" href="#test-internationalization" title="Permanent link">&para;</a></h3>
 <p>An example of an i18n test is available in the
-<a href="https://github.com/voyages-sncf-technologies/tock-bot-open-data/tree/master/src/test/kotlin/fr/vsct/tock/bot/open/data/rule">open data bot source code</a>.
-You need to use a custom <a href="https://github.com/voyages-sncf-technologies/tock-bot-open-data/blob/master/src/test/kotlin/fr/vsct/tock/bot/open/data/rule/OpenDataJUnitExtension.kt">test extension</a>
-to indicate the <a href="https://github.com/voyages-sncf-technologies/tock-bot-open-data/blob/master/src/test/kotlin/fr/vsct/tock/bot/open/data/rule/TranslatorEngineMock.kt">label translations</a>.</p>
+<a href="https://github.com/theopenconversationkit/tock-bot-open-data/tree/master/src/test/kotlin/fr/vsct/tock/bot/open/data/rule">open data bot source code</a>.
+You need to use a custom <a href="https://github.com/theopenconversationkit/tock-bot-open-data/blob/master/src/test/kotlin/fr/vsct/tock/bot/open/data/rule/OpenDataJUnitExtension.kt">test extension</a>
+to indicate the <a href="https://github.com/theopenconversationkit/tock-bot-open-data/blob/master/src/test/kotlin/fr/vsct/tock/bot/open/data/rule/TranslatorEngineMock.kt">label translations</a>.</p>
 <p>And the test looks like:</p>
 <div class="codehilite"><pre><span></span>    <span class="n">@Test</span>
     <span class="k">fun</span> <span class="nf">`search story asks for departure date WHEN there is a destination and an origin but no departure date in context`</span><span class="p">()</span> <span class="p">{</span>

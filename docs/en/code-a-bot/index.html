@@ -861,7 +861,7 @@ developed in <a href="https://kotlinlang.org/">Kotlin</a>.</p>
 <p>The bot-toolkit dependency is required:</p>
 <p>With Maven:</p>
 <div class="codehilite"><pre><span></span>        <span class="nt">&lt;dependency&gt;</span>
-            <span class="nt">&lt;groupId&gt;</span>fr.vsct.tock<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>ai.tock<span class="nt">&lt;/groupId&gt;</span>
             <span class="nt">&lt;artifactId&gt;</span>bot-toolkit<span class="nt">&lt;/artifactId&gt;</span>
             <span class="nt">&lt;version&gt;</span>19.3.3<span class="nt">&lt;/version&gt;</span>
         <span class="nt">&lt;/dependency&gt;</span>
@@ -869,7 +869,7 @@ developed in <a href="https://kotlinlang.org/">Kotlin</a>.</p>
 
 
 <p>With Gradle:</p>
-<div class="codehilite"><pre><span></span>      <span class="n">compile</span> <span class="s1">&#39;fr.vsct.tock:bot-toolkit:19.3.3&#39;</span>
+<div class="codehilite"><pre><span></span>      <span class="n">compile</span> <span class="s1">&#39;ai.tock:bot-toolkit:19.3.3&#39;</span>
 </pre></div>
 
 
@@ -898,12 +898,12 @@ Greetings is also set (<em>hello = greetings</em>) as the default story used for
 <p>How do you define a story? Here is a first simplified version of the story <em>greetings</em>:</p>
 <div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">greetings</span> <span class="p">=</span> <span class="n">story</span><span class="p">(</span><span class="s">&quot;greetings&quot;</span><span class="p">)</span> <span class="p">{</span> 
         <span class="n">send</span><span class="p">(</span><span class="s">&quot;Welcome to the Tock Open Data Bot! :)&quot;</span><span class="p">)</span>
-        <span class="n">end</span><span class="p">(</span><span class="s">&quot;This is a Tock framework demonstration bot: https://github.com/voyages-sncf-technologies/tock&quot;</span><span class="p">)</span>
+        <span class="n">end</span><span class="p">(</span><span class="s">&quot;This is a Tock framework demonstration bot: https://github.com/theopenconversationkit/tock&quot;</span><span class="p">)</span>
 <span class="p">}</span>
 </pre></div>
 
 
-<p>Note that in the body of the function, <em>this</em> has a <a href="https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.engine/-bot-bus/index.html">BotBus</a> type.
+<p>Note that in the body of the function, <em>this</em> has a <a href="https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.engine/-bot-bus/index.html">BotBus</a> type.
 From which you can interact with the user, and which also allows you to access
 to all available contextual elements.</p>
 <p>When the intention <em>greetings</em> will be detected by the NLP model, 
@@ -916,7 +916,7 @@ the last sentence of his answer using a <em>bus.end()</em>.</p>
     <span class="n">resetDialogState</span><span class="p">()</span>
 
     <span class="n">send</span><span class="p">(</span><span class="s">&quot;Welcome to the Tock Open Data Bot! :)&quot;</span><span class="p">)</span>
-    <span class="n">send</span><span class="p">(</span><span class="s">&quot;This is a Tock framework demonstration bot: https://github.com/voyages-sncf-technologies/tock&quot;</span><span class="p">)</span>
+    <span class="n">send</span><span class="p">(</span><span class="s">&quot;This is a Tock framework demonstration bot: https://github.com/theopenconversationkit/tock&quot;</span><span class="p">)</span>
 
     <span class="n">withMessenger</span> <span class="p">{</span>
         <span class="n">buttonsTemplate</span><span class="p">(</span>
@@ -961,14 +961,14 @@ in the web administration interface: Configuration -&gt; Bot Configurations -&gt
 <p>The documentation for each connector is in the README file of the corresponding sub-projects. </p>
 <p>Five are available by default:</p>
 <ul>
-<li><a href="https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-messenger">Messenger</a></li>
-<li><a href="https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-ga">Google Assistant</a></li>
-<li><a href="https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-slack">Slack</a></li>
-<li><a href="https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-rocketchat">RocketChat</a></li>
-<li><a href="https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-alexa">Twitter</a> </li>
-<li><a href="https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-whatsapp">WhatsApp</a></li>
-<li><a href="https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-teams">Teams</a> </li>
-<li><a href="https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-alexa">Alexa</a> - for Alexa, the NLP model is necessarily managed on Amazon side. So only the conversational framework of Tock can be used with this connector.</li>
+<li><a href="https://github.com/theopenconversationkit/tock/tree/master/bot/connector-messenger">Messenger</a></li>
+<li><a href="https://github.com/theopenconversationkit/tock/tree/master/bot/connector-ga">Google Assistant</a></li>
+<li><a href="https://github.com/theopenconversationkit/tock/tree/master/bot/connector-slack">Slack</a></li>
+<li><a href="https://github.com/theopenconversationkit/tock/tree/master/bot/connector-rocketchat">RocketChat</a></li>
+<li><a href="https://github.com/theopenconversationkit/tock/tree/master/bot/connector-alexa">Twitter</a> </li>
+<li><a href="https://github.com/theopenconversationkit/tock/tree/master/bot/connector-whatsapp">WhatsApp</a></li>
+<li><a href="https://github.com/theopenconversationkit/tock/tree/master/bot/connector-teams">Teams</a> </li>
+<li><a href="https://github.com/theopenconversationkit/tock/tree/master/bot/connector-alexa">Alexa</a> - for Alexa, the NLP model is necessarily managed on Amazon side. So only the conversational framework of Tock can be used with this connector.</li>
 </ul>
 <h2 id="advanced-options">Advanced options<a class="headerlink" href="#advanced-options" title="Permanent link">&para;</a></h2>
 <p>Of course, the <em>StoryHandler</em> of <em>greetings</em> does not depend on the context: the answer is always the same.</p>
@@ -1192,7 +1192,7 @@ in the current story. For this, Tock provides the concept of <em>StoryStep</em>.
 </pre></div>
 
 
-<p>More configuration options are available. Check out the description of <a href="https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.definition/-story-step/index.html">StoryStep</a>. </p>
+<p>More configuration options are available. Check out the description of <a href="https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.definition/-story-step/index.html">StoryStep</a>. </p>
 <h3 id="postback-buttons-quick-replies">Postback buttons &amp; quick replies<a class="headerlink" href="#postback-buttons-quick-replies" title="Permanent link">&para;</a></h3>
 <p>Messenger provides this type of button, as most connectors with GUI.</p>
 <p>With Tock, you can easily define the action performed after clicking on these buttons. </p>
@@ -1236,7 +1236,7 @@ in the current story. For this, Tock provides the concept of <em>StoryStep</em>.
 
 <h3 id="define-your-own-connector">Define your own connector<a class="headerlink" href="#define-your-own-connector" title="Permanent link">&para;</a></h3>
 <p>It is possible to develop its own connector.</p>
-<p>1) Implement the interface <a href="https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector/-connector/index.html">Connector</a> </p>
+<p>1) Implement the interface <a href="https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector/-connector/index.html">Connector</a> </p>
 <p>Here is an example of implementation:</p>
 <div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">testConnectorType</span> <span class="p">=</span> <span class="n">ConnectorType</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">)</span>
 
@@ -1296,7 +1296,7 @@ in the current story. For this, Tock provides the concept of <em>StoryStep</em>.
 </pre></div>
 
 
-<p>2) Implement the interface <a href="https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector/-connector-provider/index.html">ConnectorProvider</a></p>
+<p>2) Implement the interface <a href="https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector/-connector-provider/index.html">ConnectorProvider</a></p>
 <p>Here is an example of implementation:</p>
 <div class="codehilite"><pre><span></span><span class="k">object</span> <span class="nc">TestConnectorProvider</span> <span class="p">:</span> <span class="n">ConnectorProvider</span> <span class="p">{</span>
 

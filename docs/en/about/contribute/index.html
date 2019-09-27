@@ -971,16 +971,16 @@ In the future, <em><a href="http://docs.paralleluniverse.co/quasar/">fibers</a><
 <h3 id="repositories">Repositories<a class="headerlink" href="#repositories" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
-<p><a href="https://github.com/voyages-sncf-technologies/tock"><code>tock</code></a>: main source repository, including the framework 
-and platform components under the <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE">Apache 2 license</a>.</p>
+<p><a href="https://github.com/theopenconversationkit/tock"><code>tock</code></a>: main source repository, including the framework 
+and platform components under the <a href="https://github.com/theopenconversationkit/tock/blob/master/LICENSE">Apache 2 license</a>.</p>
 </li>
 <li>
-<p><a href="https://github.com/voyages-sncf-technologies/tock-corenlp"><code>tock-corenlp</code></a>: optional module, leveraging a dependency to
+<p><a href="https://github.com/theopenconversationkit/tock-corenlp"><code>tock-corenlp</code></a>: optional module, leveraging a dependency to
 <a href="https://stanfordnlp.github.io/CoreNLP/">Stanford CoreNLP</a> (instead of <a href="https://opennlp.apache.org/">Apache OpenNLP</a>), 
 under <a href="https://fr.wikipedia.org/wiki/Licence_publique_g%C3%A9n%C3%A9rale_GNU">GPL license</a>.</p>
 </li>
 <li>
-<p><a href="https://github.com/voyages-sncf-technologies/tock-docker"><code>tock-docker</code></a>: <a href="https://www.docker.com/">Docker</a> 
+<p><a href="https://github.com/theopenconversationkit/tock-docker"><code>tock-docker</code></a>: <a href="https://www.docker.com/">Docker</a> 
 and <a href="https://docs.docker.com/compose/">Docker Compose</a> images/descriptors, for platform hands-on and fast deployment
 of various configuations.</p>
 </li>
@@ -989,7 +989,7 @@ of various configuations.</p>
 <a href="../../guide/api/">Tock programing guides</a>.</p>
 </li>
 <li>
-<p><a href="https://github.com/voyages-sncf-technologies/tock-bot-open-data"><code>tock-bot-open-data</code></a>: a bot example, based on 
+<p><a href="https://github.com/theopenconversationkit/tock-bot-open-data"><code>tock-bot-open-data</code></a>: a bot example, based on 
 the <a href="https://www.digital.sncf.com/startup/api">SNCF <em>Open Data</em> API</a>, also implementing basic internationalization (<em>i18n</em>)
  mecanisms with two distinct languages.</p>
 </li>
@@ -1009,7 +1009,7 @@ the <a href="https://www.digital.sncf.com/startup/api">SNCF <em>Open Data</em> A
 <p><code>$ mvn package</code></p>
 <p>Continuous integration build jobs are available on <a href="https://travis-ci.org/voyages-sncf-technologies/tock">Travis</a>.</p>
 <h3 id="docker-images">Docker images<a class="headerlink" href="#docker-images" title="Permanent link">&para;</a></h3>
-<p>Tock Docker images can be rebuilt from sources, included in repository <a href="https://github.com/voyages-sncf-technologies/tock-docker"><code>tock-docker</code></a>.
+<p>Tock Docker images can be rebuilt from sources, included in repository <a href="https://github.com/theopenconversationkit/tock-docker"><code>tock-docker</code></a>.
 One can use <a href="https://maven.apache.org/">Maven</a> to trigger the <a href="https://www.docker.com/">Docker</a> build:</p>
 <p><code>$ mvn docker:build</code></p>
 <p>Docker containers can then be instantiated from images, or Docker Compose stacks from the various descriptors 
@@ -1020,24 +1020,24 @@ at the root of the repository.</p>
 </blockquote>
 <p>Tock components (NLU, Studio, bot...) can run in an IDE, such as<br />
 <a href="https://www.jetbrains.com/idea/">IntelliJ</a>, <a href="https://www.eclipse.org/">Eclipse</a> or <a href="https://code.visualstudio.com/">Visual Studio Code</a> for instance.</p>
-<p>Beside the <a href="https://github.com/voyages-sncf-technologies/tock-docker/blob/master/docker-compose.yml">Docker images</a>,
+<p>Beside the <a href="https://github.com/theopenconversationkit/tock-docker/blob/master/docker-compose.yml">Docker images</a>,
 IntelliJ configurations are provided with Tock sources:</p>
 <ul>
-<li>The <em>Tock Studio</em> interfaces/server: <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/.idea/runConfigurations/BotAdmin.xml">BotAdmin</a> </li>
-<li>The alternative standalone NLU interfaces/server: <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/.idea/runConfigurations/Admin.xml">Admin</a> </li>
-<li>The NLU service: <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/.idea/runConfigurations/NlpService.xml">NlpService</a></li>
-<li>The Duckling entity-recognition service: <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/.idea/runConfigurations/Duckling.xml">Duckling</a></li>
-<li>The NLU model-builder service: <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/.idea/runConfigurations/BuildWorker.xml">BuildWorker</a></li>
-<li>The script compilation service: <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/.idea/runConfigurations/KotlinCompilerServer.xml">KotlinCompilerServer</a></li>
+<li>The <em>Tock Studio</em> interfaces/server: <a href="https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/BotAdmin.xml">BotAdmin</a> </li>
+<li>The alternative standalone NLU interfaces/server: <a href="https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/Admin.xml">Admin</a> </li>
+<li>The NLU service: <a href="https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/NlpService.xml">NlpService</a></li>
+<li>The Duckling entity-recognition service: <a href="https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/Duckling.xml">Duckling</a></li>
+<li>The NLU model-builder service: <a href="https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/BuildWorker.xml">BuildWorker</a></li>
+<li>The script compilation service: <a href="https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/KotlinCompilerServer.xml">KotlinCompilerServer</a></li>
 </ul>
 <p>The <em>OpenDataBot</em> example also has a run configuration available:</p>
 <ul>
-<li><a href="https://github.com/voyages-sncf-technologies/tock-bot-open-data/blob/master/.idea/runConfigurations/OpenDataBot.xml">OpenDataBot</a></li>
+<li><a href="https://github.com/theopenconversationkit/tock-bot-open-data/blob/master/.idea/runConfigurations/OpenDataBot.xml">OpenDataBot</a></li>
 </ul>
 <p>To start the <em>Tock Studio</em> interfaces, please refer to the commands described in the following pages:</p>
 <ul>
-<li><a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/admin/web/README.md">Full <em>Tock Studio</em> server commands</a></li>
-<li><a href="https://github.com/voyages-sncf-technologies/tock/blob/master/nlp/admin/web/README.md">Standalone NLU server commands</a></li>
+<li><a href="https://github.com/theopenconversationkit/tock/blob/master/bot/admin/web/README.md">Full <em>Tock Studio</em> server commands</a></li>
+<li><a href="https://github.com/theopenconversationkit/tock/blob/master/nlp/admin/web/README.md">Standalone NLU server commands</a></li>
 </ul>
 <h2 id="conventions">Conventions<a class="headerlink" href="#conventions" title="Permanent link">&para;</a></h2>
 <p><a href="https://kotlinlang.org/docs/reference/coding-conventions.html">Kotlin Code Conventions</a> are used to develop Tock.</p>

@@ -769,7 +769,7 @@
 <p>Pour les utiliser, il est nécessaire d'ajouter la librairie <em>bot-test</em> à votre projet.</p>
 <p>Avec Maven :</p>
 <div class="codehilite"><pre><span></span>        <span class="nt">&lt;dependency&gt;</span>
-            <span class="nt">&lt;groupId&gt;</span>fr.vsct.tock<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>ai.tock<span class="nt">&lt;/groupId&gt;</span>
             <span class="nt">&lt;artifactId&gt;</span>bot-test<span class="nt">&lt;/artifactId&gt;</span>
             <span class="nt">&lt;version&gt;</span>19.3.3<span class="nt">&lt;/version&gt;</span>
             <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
@@ -778,7 +778,7 @@
 
 
 <p>ou Gradle :</p>
-<div class="codehilite"><pre><span></span>      <span class="n">testCompile</span> <span class="s1">&#39;fr.vsct.tock:bot-test:19.3.3&#39;</span>
+<div class="codehilite"><pre><span></span>      <span class="n">testCompile</span> <span class="s1">&#39;ai.tock:bot-test:19.3.3&#39;</span>
 </pre></div>
 
 
@@ -798,7 +798,7 @@ Une extension dédiée à Tock et JUnit5 est <a href="../../dokka/tock/fr.vsct.t
     <span class="k">fun</span> <span class="nf">`greetings story displays welcome message WHEN locale is fr`</span><span class="p">()</span> <span class="p">{</span>
         <span class="n">ext</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="n">locale</span> <span class="p">=</span> <span class="n">Locale</span><span class="p">.</span><span class="n">FRENCH</span><span class="p">)</span> <span class="p">{</span>
             <span class="n">firstAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Bienvenue chez le Bot Open Data Sncf! :)&quot;</span><span class="p">)</span>
-            <span class="n">secondAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Il s&#39;agit d&#39;un bot de démonstration du framework Tock : https://github.com/voyages-sncf-technologies/tock&quot;</span><span class="p">)</span>
+            <span class="n">secondAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Il s&#39;agit d&#39;un bot de démonstration du framework Tock : https://github.com/theopenconversationkit/tock&quot;</span><span class="p">)</span>
         <span class="p">}</span>
     <span class="p">}</span>
 </pre></div>
@@ -820,7 +820,7 @@ Une extension dédiée à Tock et JUnit5 est <a href="../../dokka/tock/fr.vsct.t
  il est nécessaire de spécifier le connecteur que l'on souhaite tester :</p>
 <div class="codehilite"><pre><span></span>    <span class="n">ext</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="n">connectorType</span> <span class="p">=</span> <span class="n">gaConnectorType</span><span class="p">,</span> <span class="n">locale</span> <span class="p">=</span> <span class="n">Locale</span><span class="p">.</span><span class="n">FRENCH</span><span class="p">)</span> <span class="p">{</span>
             <span class="n">firstAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Bienvenue chez le Bot Open Data Sncf! :)&quot;</span><span class="p">)</span>
-            <span class="n">secondAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Il s&#39;agit d&#39;un bot de démonstration du framework Tock : https://github.com/voyages-sncf-technologies/tock&quot;</span><span class="p">)</span>
+            <span class="n">secondAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Il s&#39;agit d&#39;un bot de démonstration du framework Tock : https://github.com/theopenconversationkit/tock&quot;</span><span class="p">)</span>
             <span class="n">lastAnswer</span><span class="p">.</span><span class="n">assertMessage</span><span class="p">(</span>
                 <span class="n">gaMessage</span><span class="p">(</span>
                     <span class="s">&quot;Il est volontairement très limité, mais demandez lui un itinéraire ou les départs à partir d&#39;une gare et constatez le résultat! :)&quot;</span><span class="p">,</span>
