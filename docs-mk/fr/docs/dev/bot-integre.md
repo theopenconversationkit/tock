@@ -46,7 +46,7 @@ Par exemple dans un projet [Maven](https://maven.apache.org/) :
 Ou dans un projet [Gradle](https://gradle.org/) :
 
 ```gradle
-      compile 'fr.vsct.tock:bot-toolkit:19.3.3'
+      compile 'ai.tock:bot-toolkit:19.3.3'
 ```
 
 ### Un bot est un ensemble de parcours (stories)

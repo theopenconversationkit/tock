@@ -18,7 +18,7 @@ Avec Maven :
 ou Gradle :
 
 ```gradle
-      testCompile 'fr.vsct.tock:bot-test:19.3.3'
+      testCompile 'ai.tock:bot-test:19.3.3'
 ``` 
 
 L'ensemble de ce framework est documenté au format KDoc [ici](../../dokka/tock/fr.vsct.tock.bot.test).
