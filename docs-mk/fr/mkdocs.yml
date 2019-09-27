@@ -1,9 +1,9 @@
 site_name: 'Tock'
 site_description: 'Pour construire aisément vos prochains bots'
-site_author: 'VSCT'
-site_url: 'https://voyages-sncf-technologies.github.io/tock/fr'
+site_author: 'Tock'
+site_url: 'https://theopenconversationkit.github.io/tock/fr'
 repo_name: 'tock'
-repo_url: 'https://github.com/voyages-sncf-technologies/tock'
+repo_url: 'https://github.com/theopenconversationkit/tock'
 edit_uri: ''
 nav:
   - 'Vue d`ensemble': 'index.md'
@@ -54,10 +54,10 @@ markdown_extensions:
   - codehilite
   - toc:
       permalink: true
-copyright: 'Copyright &copy; 2017/2019 VSCT'
+copyright: 'Copyright &copy; 2017/2019 Tock'
 extra:
   social:
     - type: 'github'
-      link: 'https://github.com/voyages-sncf-technologies/tock'
+      link: 'https://github.com/theopenconversationkit/tock'
   search:
     language: 'fr'
