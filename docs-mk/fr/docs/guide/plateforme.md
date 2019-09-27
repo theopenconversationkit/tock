@@ -52,11 +52,11 @@ Il est possible de récupérer seulement quelques fichiers du dépôt GitHub, sa
 
 ```shell
 # Get the lastest docker-compose from GitHub (including Bot API)
-$ curl -o docker-compose.yml https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/docker-compose-bot.yml
+$ curl -o docker-compose.yml https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/docker-compose-bot.yml
 # Get the lastest database-init script from GitHub
-$ mkdir -p scripts && curl -o scripts/setup.sh https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/scripts/setup.sh && chmod +x scripts/setup.sh
+$ mkdir -p scripts && curl -o scripts/setup.sh https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/scripts/setup.sh && chmod +x scripts/setup.sh
 # Get the lastest Tock version/tag from GitHub
-$ curl -o .env https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/.env
+$ curl -o .env https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/.env
 
 # Run the stack
 $ docker-compose up
@@ -66,7 +66,7 @@ $ docker-compose up
 ## Déployer une plateforme Tock - depuis les sources
 
 Ceci est une manière alternative de démarrer Tock, à partir du dépôt 
- [Tock Docker](https://github.com/voyages-sncf-technologies/tock-docker). 
+ [Tock Docker](https://github.com/theopenconversationkit/tock-docker). 
  
 Il vous faut, en plus de [Docker](https://www.docker.com/) et [Docker Compose](https://docs.docker.com/compose/), 
   soit un client [Git](https://git-scm.com/) pour récupérer les sources (commande `git clone`) soit avoir déjà copié 
@@ -77,7 +77,7 @@ Il vous faut, en plus de [Docker](https://www.docker.com/) et [Docker Compose](h
 
 ```shell
 # Get the lastest sources from GitHub
-$ git clone https://github.com/voyages-sncf-technologies/tock-docker.git && cd tock-docker
+$ git clone https://github.com/theopenconversationkit/tock-docker.git && cd tock-docker
 # Make the database-init script executable
 $ chmod +x scripts/setup.sh
 

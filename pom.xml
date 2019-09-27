@@ -24,7 +24,7 @@
     <packaging>pom</packaging>
     <name>Tock</name>
     <description>Tock, The Open Conversation Kit</description>
-    <url>https://voyages-sncf-technologies.github.io/tock</url>
+    <url>https://theopenconversationkit.github.io/tock</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -707,7 +707,7 @@
 
     <inceptionYear>2017</inceptionYear>
     <organization>
-        <name>voyages-sncf-technologies</name>
+        <name>Tock.ai</name>
     </organization>
     <developers>
         <developer>
@@ -728,9 +728,9 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git@github.com:voyages-sncf-technologies/tock.git</connection>
-        <developerConnection>scm:git:git@github.com:voyages-sncf-technologies/tock.git</developerConnection>
-        <url>git@github.com:voyages-sncf-technologies/tock.git</url>
+        <connection>scm:git:git@github.com:theopenconversationkit/tock.git</connection>
+        <developerConnection>scm:git:git@github.com:theopenconversationkit/tock.git</developerConnection>
+        <url>git@github.com:theopenconversationkit/tock.git</url>
         <tag>tock-${project.version}</tag>
     </scm>
     <distributionManagement>

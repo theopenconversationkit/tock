@@ -22,21 +22,21 @@ Graphical interfaces (namely _Tock Studio_) are powered by [Angular](https://ang
 
 ### Repositories
 
-* [`tock`](https://github.com/voyages-sncf-technologies/tock): main source repository, including the framework 
-and platform components under the [Apache 2 license](https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE).
+* [`tock`](https://github.com/theopenconversationkit/tock): main source repository, including the framework 
+and platform components under the [Apache 2 license](https://github.com/theopenconversationkit/tock/blob/master/LICENSE).
 
-* [`tock-corenlp`](https://github.com/voyages-sncf-technologies/tock-corenlp): optional module, leveraging a dependency to
+* [`tock-corenlp`](https://github.com/theopenconversationkit/tock-corenlp): optional module, leveraging a dependency to
 [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/) (instead of [Apache OpenNLP](https://opennlp.apache.org/)), 
 under [GPL license](https://fr.wikipedia.org/wiki/Licence_publique_g%C3%A9n%C3%A9rale_GNU).
 
-* [`tock-docker`](https://github.com/voyages-sncf-technologies/tock-docker): [Docker](https://www.docker.com/) 
+* [`tock-docker`](https://github.com/theopenconversationkit/tock-docker): [Docker](https://www.docker.com/) 
 and [Docker Compose](https://docs.docker.com/compose/) images/descriptors, for platform hands-on and fast deployment
 of various configuations.
 
 * [`tock-bot-samples`](): code samples, in particular the _WebHook_ and _WebSocket_ modes examples from 
 [Tock programing guides](../guide/api.md).
  
-* [`tock-bot-open-data`](https://github.com/voyages-sncf-technologies/tock-bot-open-data): a bot example, based on 
+* [`tock-bot-open-data`](https://github.com/theopenconversationkit/tock-bot-open-data): a bot example, based on 
 the [SNCF _Open Data_ API](https://www.digital.sncf.com/startup/api), also implementing basic internationalization (_i18n_)
  mecanisms with two distinct languages.
 
@@ -61,7 +61,7 @@ Continuous integration build jobs are available on [Travis](https://travis-ci.or
 
 ### Docker images
 
-Tock Docker images can be rebuilt from sources, included in repository [`tock-docker`](https://github.com/voyages-sncf-technologies/tock-docker).
+Tock Docker images can be rebuilt from sources, included in repository [`tock-docker`](https://github.com/theopenconversationkit/tock-docker).
 One can use [Maven](https://maven.apache.org/) to trigger the [Docker](https://www.docker.com/) build:
 
 `$ mvn docker:build`
@@ -76,24 +76,24 @@ at the root of the repository.
 Tock components (NLU, Studio, bot...) can run in an IDE, such as  
 [IntelliJ](https://www.jetbrains.com/idea/), [Eclipse](https://www.eclipse.org/) or [Visual Studio Code](https://code.visualstudio.com/) for instance.
 
-Beside the [Docker images](https://github.com/voyages-sncf-technologies/tock-docker/blob/master/docker-compose.yml),
+Beside the [Docker images](https://github.com/theopenconversationkit/tock-docker/blob/master/docker-compose.yml),
 IntelliJ configurations are provided with Tock sources:
 
-- The _Tock Studio_ interfaces/server: [BotAdmin](https://github.com/voyages-sncf-technologies/tock/blob/master/.idea/runConfigurations/BotAdmin.xml) 
-- The alternative standalone NLU interfaces/server: [Admin](https://github.com/voyages-sncf-technologies/tock/blob/master/.idea/runConfigurations/Admin.xml) 
-- The NLU service: [NlpService](https://github.com/voyages-sncf-technologies/tock/blob/master/.idea/runConfigurations/NlpService.xml)
-- The Duckling entity-recognition service: [Duckling](https://github.com/voyages-sncf-technologies/tock/blob/master/.idea/runConfigurations/Duckling.xml)
-- The NLU model-builder service: [BuildWorker](https://github.com/voyages-sncf-technologies/tock/blob/master/.idea/runConfigurations/BuildWorker.xml)
-- The script compilation service: [KotlinCompilerServer](https://github.com/voyages-sncf-technologies/tock/blob/master/.idea/runConfigurations/KotlinCompilerServer.xml)
+- The _Tock Studio_ interfaces/server: [BotAdmin](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/BotAdmin.xml) 
+- The alternative standalone NLU interfaces/server: [Admin](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/Admin.xml) 
+- The NLU service: [NlpService](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/NlpService.xml)
+- The Duckling entity-recognition service: [Duckling](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/Duckling.xml)
+- The NLU model-builder service: [BuildWorker](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/BuildWorker.xml)
+- The script compilation service: [KotlinCompilerServer](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/KotlinCompilerServer.xml)
 
 The _OpenDataBot_ example also has a run configuration available:
 
-- [OpenDataBot](https://github.com/voyages-sncf-technologies/tock-bot-open-data/blob/master/.idea/runConfigurations/OpenDataBot.xml)
+- [OpenDataBot](https://github.com/theopenconversationkit/tock-bot-open-data/blob/master/.idea/runConfigurations/OpenDataBot.xml)
 
 To start the _Tock Studio_ interfaces, please refer to the commands described in the following pages:
 
-- [Full _Tock Studio_ server commands](https://github.com/voyages-sncf-technologies/tock/blob/master/bot/admin/web/README.md)
-- [Standalone NLU server commands](https://github.com/voyages-sncf-technologies/tock/blob/master/nlp/admin/web/README.md)
+- [Full _Tock Studio_ server commands](https://github.com/theopenconversationkit/tock/blob/master/bot/admin/web/README.md)
+- [Standalone NLU server commands](https://github.com/theopenconversationkit/tock/blob/master/nlp/admin/web/README.md)
 
 ## Conventions
 

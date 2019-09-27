@@ -114,5 +114,5 @@ val story = story("story") { bus ->
 
 ### Other options
 
-Look at [KDoc](https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector.slack/index.html)
+Look at [KDoc](https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector.slack/index.html)
  for other options

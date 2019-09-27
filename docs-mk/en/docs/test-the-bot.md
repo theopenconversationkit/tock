@@ -43,7 +43,7 @@ To test the **greetings** story of the Open Data bot, just use the *ext.send()* 
     fun `greetings story displays welcome message`() {
         ext.send {
             firstAnswer.assertText("Welcome to the Tock Open Data Bot! :)")
-            secondAnswer.assertText("This is a Tock framework demonstration bot: https://github.com/voyages-sncf-technologies/tock")
+            secondAnswer.assertText("This is a Tock framework demonstration bot: https://github.com/theopenconversationkit/tock")
         }
     }
 ```
@@ -74,7 +74,7 @@ To test the message specific to Google Assistant (or any other connector),
     fun `greetings story displays welcome message with GA dedicated message WHEN context contains GA connector`() {
         ext.send(connectorType = gaConnectorType) {
             firstAnswer.assertText("Welcome to the Tock Open Data Bot! :)")
-            secondAnswer.assertText("This is a Tock framework demonstration bot: https://github.com/voyages-sncf-technologies/tock")
+            secondAnswer.assertText("This is a Tock framework demonstration bot: https://github.com/theopenconversationkit/tock")
             lastAnswer.assertMessage(
                 gaMessage(
                     "The bot is very limited, but ask him a route or the next departures from a station in France, and see the result! :)",

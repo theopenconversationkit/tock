@@ -34,4 +34,4 @@ npm install -g @angular/cli
 ng serve
 ```
 
-Of course you need also to start the [Bot Admin server](https://github.com/voyages-sncf-technologies/tock/blob/master/.idea/runConfigurations/BotAdmin.xml).
+Of course you need also to start the [Bot Admin server](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/BotAdmin.xml).

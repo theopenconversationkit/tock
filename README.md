@@ -9,7 +9,7 @@ Build assistants & chatbots with ease.
 * NLP (Natural Language Processing) open source stack
 * Optional open source conversational DSL provided with built-in connectors (Messenger, Google Assistant, Slack, etc.)
  
-Full documentation: [https://voyages-sncf-technologies.github.io/tock](https://voyages-sncf-technologies.github.io/tock/index.html)
+Full documentation: [https://theopenconversationkit.github.io/tock](https://theopenconversationkit.github.io/tock/index.html)
   
-Docker images: [https://github.com/voyages-sncf-technologies/tock-docker](https://github.com/voyages-sncf-technologies/tock-docker)
+Docker images: [https://github.com/theopenconversationkit/tock-docker](https://github.com/theopenconversationkit/tock-docker)
  

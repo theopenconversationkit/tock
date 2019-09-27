@@ -130,7 +130,7 @@ l'intégration d'API tierces si besoin
 * [Déployer une plateforme Tock](platform.md) en quelques minutes avec Docker
 
 Pour en savoir plus sur le connecteur Slack fourni avec Tock, rendez-vous dans le dossier 
-[connector-slack](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-slack) sur GitHub, 
+[connector-slack](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-slack) sur GitHub, 
 où vous retrouverez les sources et le _README_ du connecteur.
 
 Pour en savoir plus sur _Tock Studio_, les fonctionnalités et les modes de déploiement de Tock, vous pouvez aussi 

@@ -43,14 +43,14 @@ Pour en savoir plus, voir le site de l'association : [http://tosit.fr/](http://t
 ## GitHub & Gitter
 
 L'ensemble de la plateforme et des outils est partagé sur 
-[https://github.com/voyages-sncf-technologies/tock](https://github.com/voyages-sncf-technologies/tock)
-sous [licence Apache 2](https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE).
+[https://github.com/theopenconversationkit/tock](https://github.com/theopenconversationkit/tock)
+sous [licence Apache 2](https://github.com/theopenconversationkit/tock/blob/master/LICENSE).
 
-* [Sources](https://github.com/voyages-sncf-technologies/tock)
-* [Licence](https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE)
-* [Versions](https://github.com/voyages-sncf-technologies/tock/releases)
-* [Issues](https://github.com/voyages-sncf-technologies/tock/issues)
-* [Contributeurs](https://github.com/voyages-sncf-technologies/tock/graphs/contributors)
+* [Sources](https://github.com/theopenconversationkit/tock)
+* [Licence](https://github.com/theopenconversationkit/tock/blob/master/LICENSE)
+* [Versions](https://github.com/theopenconversationkit/tock/releases)
+* [Issues](https://github.com/theopenconversationkit/tock/issues)
+* [Contributeurs](https://github.com/theopenconversationkit/tock/graphs/contributors)
 * [Gitter](https://gitter.im/tockchat/Lobby)
 * [Démo](https://demo.tock.ai/) 
 

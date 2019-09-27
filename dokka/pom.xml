@@ -60,96 +60,96 @@
                     <sourceLinks>
                         <link>
                             <dir>${project.basedir}/../shared/src/main/kotlin</dir>
-                            <url>https://github.com/voyages-sncf-technologies/tock/blob/master/shared/src/main/kotlin
+                            <url>https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin
                             </url>
                             <urlSuffix>#L</urlSuffix>
                         </link>
                         <link>
                             <dir>${project.basedir}/../bot/toolkit-base/src/main/kotlin</dir>
                             <url>
-                                https://github.com/voyages-sncf-technologies/tock/blob/master/bot/toolkit-base/src/main/kotlin
+                                https://github.com/theopenconversationkit/tock/blob/master/bot/toolkit-base/src/main/kotlin
                             </url>
                             <urlSuffix>#L</urlSuffix>
                         </link>
                         <link>
                             <dir>${project.basedir}/../bot/toolkit/src/main/kotlin</dir>
                             <url>
-                                https://github.com/voyages-sncf-technologies/tock/blob/master/bot/toolkit/src/main/kotlin
+                                https://github.com/theopenconversationkit/tock/blob/master/bot/toolkit/src/main/kotlin
                             </url>
                             <urlSuffix>#L</urlSuffix>
                         </link>
                         <link>
                             <dir>${project.basedir}/../bot/engine/src/main/kotlin</dir>
                             <url>
-                                https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin
+                                https://github.com/theopenconversationkit/tock/blob/master/bot/engine/src/main/kotlin
                             </url>
                             <urlSuffix>#L</urlSuffix>
                         </link>
                         <link>
                             <dir>${project.basedir}/../bot/connector-ga/src/main/kotlin</dir>
                             <url>
-                                https://github.com/voyages-sncf-technologies/tock/blob/master/bot/connector-ga/src/main/kotlin
+                                https://github.com/theopenconversationkit/tock/blob/master/bot/connector-ga/src/main/kotlin
                             </url>
                             <urlSuffix>#L</urlSuffix>
                         </link>
                         <link>
                             <dir>${project.basedir}/../bot/connector-messenger/src/main/kotlin</dir>
                             <url>
-                                https://github.com/voyages-sncf-technologies/tock/blob/master/bot/connector-messenger/src/main/kotlin
+                                https://github.com/theopenconversationkit/tock/blob/master/bot/connector-messenger/src/main/kotlin
                             </url>
                             <urlSuffix>#L</urlSuffix>
                         </link>
                         <link>
                             <dir>${project.basedir}/../bot/connector-slack/src/main/kotlin</dir>
                             <url>
-                                https://github.com/voyages-sncf-technologies/tock/blob/master/bot/connector-slack/src/main/kotlin
+                                https://github.com/theopenconversationkit/tock/blob/master/bot/connector-slack/src/main/kotlin
                             </url>
                             <urlSuffix>#L</urlSuffix>
                         </link>
                         <link>
                             <dir>${project.basedir}/../bot/connector-rocketchat/src/main/kotlin</dir>
                             <url>
-                                https://github.com/voyages-sncf-technologies/tock/blob/master/bot/connector-rocketchat/src/main/kotlin
+                                https://github.com/theopenconversationkit/tock/blob/master/bot/connector-rocketchat/src/main/kotlin
                             </url>
                             <urlSuffix>#L</urlSuffix>
                         </link>
                         <link>
                             <dir>${project.basedir}/../bot/connector-alexa/src/main/kotlin</dir>
                             <url>
-                                https://github.com/voyages-sncf-technologies/tock/blob/master/bot/connector-alexa/src/main/kotlin
+                                https://github.com/theopenconversationkit/tock/blob/master/bot/connector-alexa/src/main/kotlin
                             </url>
                             <urlSuffix>#L</urlSuffix>
                         </link>
                         <link>
                             <dir>${project.basedir}/../bot/connector-teams/src/main/kotlin</dir>
                             <url>
-                                https://github.com/voyages-sncf-technologies/tock/blob/master/bot/connector-teams/src/main/kotlin
+                                https://github.com/theopenconversationkit/tock/blob/master/bot/connector-teams/src/main/kotlin
                             </url>
                             <urlSuffix>#L</urlSuffix>
                         </link>
                         <link>
                             <dir>${project.basedir}/../bot/connector-whatsapp/src/main/kotlin</dir>
                             <url>
-                                https://github.com/voyages-sncf-technologies/tock/blob/master/bot/connector-whatsapp/src/main/kotlin
+                                https://github.com/theopenconversationkit/tock/blob/master/bot/connector-whatsapp/src/main/kotlin
                             </url>
                             <urlSuffix>#L</urlSuffix>
                         </link>
                         <link>
                             <dir>${project.basedir}/../bot/connector-alexa/src/main/kotlin</dir>
                             <url>
-                                https://github.com/voyages-sncf-technologies/tock/blob/master/bot/connector-alexa/src/main/kotlin
+                                https://github.com/theopenconversationkit/tock/blob/master/bot/connector-alexa/src/main/kotlin
                             </url>
                             <urlSuffix>#L</urlSuffix>
                         </link>
                         <link>
                             <dir>${project.basedir}/../bot/test-base/src/main/kotlin</dir>
-                            <url>https://github.com/voyages-sncf-technologies/tock/blob/master/bot/test-base/src/main/kotlin
+                            <url>https://github.com/theopenconversationkit/tock/blob/master/bot/test-base/src/main/kotlin
                             </url>
                             <urlSuffix>#L</urlSuffix>
                         </link>
                         <link>
                             <dir>${project.basedir}/../bot/test/src/main/kotlin</dir>
-                            <url>https://github.com/voyages-sncf-technologies/tock/blob/master/bot/test/src/main/kotlin
+                            <url>https://github.com/theopenconversationkit/tock/blob/master/bot/test/src/main/kotlin
                             </url>
                             <urlSuffix>#L</urlSuffix>
                         </link>

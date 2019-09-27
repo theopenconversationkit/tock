@@ -44,7 +44,7 @@ style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rg
 
 ## Kit presse
 
-Comme le reste des sources Tock, les logos sont disponibles sous [licence Apache 2](https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE).
+Comme le reste des sources Tock, les logos sont disponibles sous [licence Apache 2](https://github.com/theopenconversationkit/tock/blob/master/LICENSE).
 
 **Logo Tock - couleurs par défaut / transparent** (<a href="../../assets/images/logo.svg" download="">télécharger</a>) :
 

@@ -15,9 +15,9 @@ style="width: 100px;">
 </a>
 
 * Les ***issues*** GitHub permettent aussi de remonter une anomalie ou proposer une évolution :<br />
-[https://github.com/voyages-sncf-technologies/tock/issues](https://github.com/voyages-sncf-technologies/tock/issues)
+[https://github.com/theopenconversationkit/tock/issues](https://github.com/theopenconversationkit/tock/issues)
 
-<a href="https://github.com/voyages-sncf-technologies/tock/issues"
+<a href="https://github.com/theopenconversationkit/tock/issues"
 target="issues">
 <img alt="GitHub issues" 
 src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" 

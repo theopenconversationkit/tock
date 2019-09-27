@@ -2,7 +2,7 @@
 
 ## The Open Data Bot
 
-A good starting point is the source code of the [Open Data Bot](https://github.com/voyages-sncf-technologies/tock-bot-open-data) 
+A good starting point is the source code of the [Open Data Bot](https://github.com/theopenconversationkit/tock-bot-open-data) 
 
 Follow the instructions of the README file of the project, to start the bot in the IDE (do not configure Messenger or Google Assistant at this point),
 then connect to the administration interface. The bot is already testable.

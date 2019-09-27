@@ -25,8 +25,8 @@ et d'une base de donnée [MongoDB](https://www.mongodb.com).
 > Les descripteurs [Docker](https://www.docker.com/) et [Docker Compose](https://docs.docker.com/compose/) fournis 
 (ie. les `Dockerfile` et `docker-compose.yml`) décrivent l'architecture de Tock.
 >
->Un exemple complet se trouve dans le fichier [`docker-compose-bot-open-data.yml`](https://github.com/voyages-sncf-technologies/tock-docker/blob/master/docker-compose-bot-open-data.yml) 
->disponible dans le dépôt [`tock-docker`](https://github.com/voyages-sncf-technologies/tock-docker). 
+>Un exemple complet se trouve dans le fichier [`docker-compose-bot-open-data.yml`](https://github.com/theopenconversationkit/tock-docker/blob/master/docker-compose-bot-open-data.yml) 
+>disponible dans le dépôt [`tock-docker`](https://github.com/theopenconversationkit/tock-docker). 
 
 
 ### Base de données MongoDB
@@ -61,7 +61,7 @@ Un dernier composant, le bot lui-même, doit être ajouté et rendu accessible a
 
 > Bien entendu l'implémentation du bot n'est pas fournie avec Tock (chacun implémente ses fonctionnalités propres pour son besoin) 
 >mais un exemple est disponible dans 
-[`docker-compose-bot-open-data.yml`](https://github.com/voyages-sncf-technologies/tock-docker/blob/master/docker-compose-bot-open-data.yml).
+[`docker-compose-bot-open-data.yml`](https://github.com/theopenconversationkit/tock-docker/blob/master/docker-compose-bot-open-data.yml).
 
 ### Modes de déploiement
 

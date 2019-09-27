@@ -13,49 +13,49 @@ nouveaux connecteurs.
 ## Messenger
 
 Pour en savoir plus sur ce connecteur, vous pouvez aussi vous rendre dans le dossier 
-[connector-messenger](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-messenger) sur GitHub, 
+[connector-messenger](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-messenger) sur GitHub, 
 où vous retrouverez les sources et le _README_ du connecteur.
 
 ### Slack
 
 Pour en savoir plus sur ce connecteur, vous pouvez aussi vous rendre dans le dossier 
-[connector-slack](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-slack) sur GitHub, 
+[connector-slack](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-slack) sur GitHub, 
 où vous retrouverez les sources et le _README_ du connecteur.
 
 ### Google Assistant / Google Home
 
 Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
-[connector-ga](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-ga) sur GitHub.
+[connector-ga](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-ga) sur GitHub.
 
 ### Alexa / Echo
 
 Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
-[connector-alexa](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-alexa) sur GitHub.
+[connector-alexa](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-alexa) sur GitHub.
 
 ### Rocket.Chat
 
 Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
-[connector-rocketchat](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-rocketchat) sur GitHub.
+[connector-rocketchat](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-rocketchat) sur GitHub.
 
 ### WhatsApp
 
 Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
-[connector-whatsapp](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-whatsapp) sur GitHub.
+[connector-whatsapp](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-whatsapp) sur GitHub.
 
 ### Teams
 
 Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
-[connector-teams](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-teams) sur GitHub.
+[connector-teams](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-teams) sur GitHub.
 
 ### Business Chat / Messages
 
 Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
-[connector-businesschat](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-businesschat) sur GitHub.
+[connector-businesschat](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-businesschat) sur GitHub.
 
 ### Twitter
 
 Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
-[connector-twitter](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-twitter) sur GitHub.
+[connector-twitter](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-twitter) sur GitHub.
 
 ### Web
 
@@ -69,7 +69,7 @@ s'ouvre aux bots conversationnels et que le connecteur Tock n'existe pas encore.
 
 Pour cela quatres étapes sont nécessaires :
 
-1) Implémenter l'interface [`Connector`](https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector/-connector/index.html) 
+1) Implémenter l'interface [`Connector`](https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector/-connector/index.html) 
 
 Voici un exemple d'implémentation :
 
@@ -133,7 +133,7 @@ class TestConnectorCallback(
 
 ```
 
-2) Implémenter l'interface [`ConnectorProvider`](https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector/-connector-provider/index.html)
+2) Implémenter l'interface [`ConnectorProvider`](https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector/-connector-provider/index.html)
 
 Voici un exemple d'implémentation :
 

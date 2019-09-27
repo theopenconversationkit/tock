@@ -186,7 +186,7 @@ A ce stade, le parcours existe bien dans Tock, mais l'_intention_ n'a pas été 
 Vous pouvez le vérifier en regardant la liste des intentions disponibles dans _NLU_ > _Intents_ > _build_ 
 (la catégorie par défaut).
 
-> TODO : fix [#533](https://github.com/voyages-sncf-technologies/tock/issues/533)
+> TODO : fix [#533](https://github.com/theopenconversationkit/tock/issues/533)
 
 * Allez dans _NLU_ > _Inbox_, pour la dernière phrase que vous venez de saisir :
 

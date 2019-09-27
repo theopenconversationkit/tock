@@ -68,7 +68,7 @@ Les [propriétés système Java](https://docs.oracle.com/javase/8/docs/technotes
 ### Packaging du bot
 
 Un exemple de bot en mode [_Tock Bot intégré_](../dev/integrated-bot.md) est disponible dans 
-[`docker-compose-bot-open-data.yml`](https://github.com/voyages-sncf-technologies/tock-docker/blob/master/docker-compose-bot-open-data.yml).
+[`docker-compose-bot-open-data.yml`](https://github.com/theopenconversationkit/tock-docker/blob/master/docker-compose-bot-open-data.yml).
 
 Des exemples et indications pour packager des bots en mode [_Tock Bot API_](../dev/bot-api.md) (_WebHooks_, _WebSockets_) seront bientôt disponibles.
 

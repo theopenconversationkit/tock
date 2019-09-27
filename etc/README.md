@@ -2,7 +2,7 @@
 
 ## Local configuration
 
-Copy/paste the contents of [etc/deploy-settings.xml](https://github.com/voyages-sncf-technologies/tock/blob/master/etc/deploy-settings.xml)
+Copy/paste the contents of [etc/deploy-settings.xml](https://github.com/theopenconversationkit/tock/blob/master/etc/deploy-settings.xml)
  in your .m2/settings.xml - set the login/password of your sonatype account
  and the keyname and passpharse of your gpg key
 

@@ -6,4 +6,4 @@ npm install -g @angular/cli
 ng serve
 ```
 
-Of course you need also to start the [NLP Admin server](https://github.com/voyages-sncf-technologies/tock/blob/master/.idea/runConfigurations/Admin.xml).
+Of course you need also to start the [NLP Admin server](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/Admin.xml).

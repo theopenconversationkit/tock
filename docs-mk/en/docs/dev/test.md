@@ -45,7 +45,7 @@ Afin de tester la story **greetings** du bot Open Data, il suffit d'utiliser la 
     fun `greetings story displays welcome message WHEN locale is fr`() {
         ext.send(locale = Locale.FRENCH) {
             firstAnswer.assertText("Bienvenue chez le Bot Open Data Sncf! :)")
-            secondAnswer.assertText("Il s'agit d'un bot de démonstration du framework Tock : https://github.com/voyages-sncf-technologies/tock")
+            secondAnswer.assertText("Il s'agit d'un bot de démonstration du framework Tock : https://github.com/theopenconversationkit/tock")
         }
     }
 ```
@@ -70,7 +70,7 @@ Pour tester le message spécifique à Google Assistant (ou tout autre connecteur
 ```kotlin
     ext.send(connectorType = gaConnectorType, locale = Locale.FRENCH) {
             firstAnswer.assertText("Bienvenue chez le Bot Open Data Sncf! :)")
-            secondAnswer.assertText("Il s'agit d'un bot de démonstration du framework Tock : https://github.com/voyages-sncf-technologies/tock")
+            secondAnswer.assertText("Il s'agit d'un bot de démonstration du framework Tock : https://github.com/theopenconversationkit/tock")
             lastAnswer.assertMessage(
                 gaMessage(
                     "Il est volontairement très limité, mais demandez lui un itinéraire ou les départs à partir d'une gare et constatez le résultat! :)",

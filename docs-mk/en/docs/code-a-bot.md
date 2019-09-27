@@ -57,11 +57,11 @@ How do you define a story? Here is a first simplified version of the story *gree
 ```kotlin
 val greetings = story("greetings") { 
         send("Welcome to the Tock Open Data Bot! :)")
-        end("This is a Tock framework demonstration bot: https://github.com/voyages-sncf-technologies/tock")
+        end("This is a Tock framework demonstration bot: https://github.com/theopenconversationkit/tock")
 }
 ```
 
-Note that in the body of the function, *this* has a [BotBus](https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.engine/-bot-bus/index.html) type.
+Note that in the body of the function, *this* has a [BotBus](https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.engine/-bot-bus/index.html) type.
 From which you can interact with the user, and which also allows you to access
 to all available contextual elements.
 
@@ -80,7 +80,7 @@ val greetings = story("greetings") {
     resetDialogState()
 
     send("Welcome to the Tock Open Data Bot! :)")
-    send("This is a Tock framework demonstration bot: https://github.com/voyages-sncf-technologies/tock")
+    send("This is a Tock framework demonstration bot: https://github.com/theopenconversationkit/tock")
 
     withMessenger {
         buttonsTemplate(
@@ -126,14 +126,14 @@ The documentation for each connector is in the README file of the corresponding 
 
 Five are available by default:
 
-* [Messenger](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-messenger)
-* [Google Assistant](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-ga)
-* [Slack](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-slack)
-* [RocketChat](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-rocketchat)
-* [Twitter](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-alexa) 
-* [WhatsApp](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-whatsapp)
-* [Teams](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-teams) 
-* [Alexa](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-alexa) - for Alexa, the NLP model is necessarily managed on Amazon side. So only the conversational framework of Tock can be used with this connector.
+* [Messenger](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-messenger)
+* [Google Assistant](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-ga)
+* [Slack](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-slack)
+* [RocketChat](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-rocketchat)
+* [Twitter](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-alexa) 
+* [WhatsApp](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-whatsapp)
+* [Teams](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-teams) 
+* [Alexa](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-alexa) - for Alexa, the NLP model is necessarily managed on Amazon side. So only the conversational framework of Tock can be used with this connector.
 
 ## Advanced options
 
@@ -400,7 +400,7 @@ enum class MySteps : StoryStep<MyHandlerDef> {
 }
 ```
 
-More configuration options are available. Check out the description of [StoryStep](https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.definition/-story-step/index.html). 
+More configuration options are available. Check out the description of [StoryStep](https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.definition/-story-step/index.html). 
 
 ### Postback buttons & quick replies
 
@@ -454,7 +454,7 @@ To retrieve the parameters of the button that was clicked:
 
 It is possible to develop its own connector.
 
-1) Implement the interface [Connector](https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector/-connector/index.html) 
+1) Implement the interface [Connector](https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector/-connector/index.html) 
 
 Here is an example of implementation:
 
@@ -518,7 +518,7 @@ class TestConnectorCallback(
 
 ```
 
-2) Implement the interface [ConnectorProvider](https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector/-connector-provider/index.html)
+2) Implement the interface [ConnectorProvider](https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector/-connector-provider/index.html)
 
 Here is an example of implementation:
 

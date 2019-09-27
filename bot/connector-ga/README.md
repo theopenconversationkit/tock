@@ -7,10 +7,10 @@ In order to connect your bot with a Google Assistant application,
     ngrok http 8080
 ``` 
 
-* A sample action project configuration is available here : [google_actions_en.json](https://raw.githubusercontent.com/voyages-sncf-technologies/tock-bot-open-data/master/src/main/resources/google_actions_en.json)- you will need to set the ngrok host in dev mode and to replace to bot_open_data id with your bot id (*app* by default).
+* A sample action project configuration is available here : [google_actions_en.json](https://raw.githubusercontent.com/theopenconversationkit/tock-bot-open-data/master/src/main/resources/google_actions_en.json)- you will need to set the ngrok host in dev mode and to replace to bot_open_data id with your bot id (*app* by default).
 
 * Then go to the Configuration -> Bot Configurations menu in the Tock Bot administration interface, and create a new configuration
 
-* A Google Assistant integration sample is available in the [open data Bot](https://github.com/voyages-sncf-technologies/tock-bot-open-data) source code
+* A Google Assistant integration sample is available in the [open data Bot](https://github.com/theopenconversationkit/tock-bot-open-data) source code
 
-* The documentation of the google assistant builders is available in [KDoc format](https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector.ga/index.html)
+* The documentation of the google assistant builders is available in [KDoc format](https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector.ga/index.html)

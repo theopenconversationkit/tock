@@ -10,8 +10,8 @@ Users choose which components to embed and decide to keep (or share) ownership o
 > Tock has been used in production for several years by [OUI.sncf](https://www.oui.sncf/services/assistant) to
 > propose various assistants over its own channels (Web, mobile), social networks, as well as smart speakers.
 
-> The platform source code is available on [GitHub](https://github.com/voyages-sncf-technologies/tock) 
-> under the [Apache License, version 2.0](https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE).
+> The platform source code is available on [GitHub](https://github.com/theopenconversationkit/tock) 
+> under the [Apache License, version 2.0](https://github.com/theopenconversationkit/tock/blob/master/LICENSE).
 >
 > Tock is promoted and backed by the [_TOSIT (The Open Source I Trust)_](http://tosit.fr/) association.
 

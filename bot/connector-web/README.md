@@ -12,7 +12,7 @@ response:
       "text": "Welcome to the Tock Open Data Bot! :)"
     },
     {
-      "text": "This is a Tock framework demonstration bot: https://github.com/voyages-sncf-technologies/tock"
+      "text": "This is a Tock framework demonstration bot: https://github.com/theopenconversationkit/tock"
     },
     {
       "text": "Hey!",

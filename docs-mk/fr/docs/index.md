@@ -12,8 +12,8 @@ L'utilisateur choisit les composants qu'il embarque et peut ainsi conserver la m
 > proposer des assistants sur des canaux propres (Web, mobile), réseaux sociaux et enceintes connectées.
 
 > L'ensemble du code source est disponible sur 
-> [GitHub](https://github.com/voyages-sncf-technologies/tock) 
-> sous une [licence Apache 2](https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE). 
+> [GitHub](https://github.com/theopenconversationkit/tock) 
+> sous une [licence Apache 2](https://github.com/theopenconversationkit/tock/blob/master/LICENSE). 
 >
 > Tock est une solution soutenue par l'association [_TOSIT (The Open Source I Trust)_](http://tosit.fr/).
 

@@ -17,7 +17,7 @@ une véritable interface utilisateur ni même un rendu identique à celui de tel
 >les connecteurs doivent respecter certaines règles d'implémentation.
 >
 > Si vous constatez qu'un certain type de message pour un connecteur donné n'est pas bien géré dans cette
->interface, n'hésitez pas à remonter une [_issue_ GitHub](https://github.com/voyages-sncf-technologies/tock/issues). 
+>interface, n'hésitez pas à remonter une [_issue_ GitHub](https://github.com/theopenconversationkit/tock/issues). 
 
 Pour parler à un bot dans l'interface, une fois dans _Test_ > _Test the bot_ :
 

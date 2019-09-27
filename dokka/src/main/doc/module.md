@@ -1,6 +1,6 @@
 # Module 
 
-Welcome to the [Tock](https://voyages-sncf-technologies.github.io/tock) KDoc documentation!
+Welcome to the [Tock](https://theopenconversationkit.github.io/tock) KDoc documentation!
 
 # Package fr.vsct.tock.bot
 

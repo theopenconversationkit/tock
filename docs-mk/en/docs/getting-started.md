@@ -2,7 +2,7 @@
 
 ## A Sample Bot
 
-A sample bot using Tock is available: [https://github.com/voyages-sncf-technologies/tock-bot-open-data](https://github.com/voyages-sncf-technologies/tock-bot-open-data).
+A sample bot using Tock is available: [https://github.com/theopenconversationkit/tock-bot-open-data](https://github.com/theopenconversationkit/tock-bot-open-data).
  
 It uses [Open Data SNCF API](https://data.sncf.com/) (french trainlines itineraries).
 
@@ -14,17 +14,17 @@ Of course, as the model is not big, the quality of the bot is low, but still it'
 
 Docker images are available in the [Docker Hub](https://hub.docker.com/r/tock/).
 
-The source code used to build these images, as well as the docker-compose files used to start the Tock toolkit, are available in the GitHub repository [https://github.com/voyages-sncf-technologies/tock-docker](https://github.com/voyages-sncf-technologies/tock-docker).
+The source code used to build these images, as well as the docker-compose files used to start the Tock toolkit, are available in the GitHub repository [https://github.com/theopenconversationkit/tock-docker](https://github.com/theopenconversationkit/tock-docker).
 
 ### Start the NLP stack
 
 ```sh 
     #get the last docker-compose file
-    curl -o docker-compose.yml https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/docker-compose.yml
+    curl -o docker-compose.yml https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/docker-compose.yml
     #get the script to start mongo in replicaset mode
-    mkdir -p scripts && curl -o scripts/setup.sh https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/scripts/setup.sh && chmod +x scripts/setup.sh
+    mkdir -p scripts && curl -o scripts/setup.sh https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/scripts/setup.sh && chmod +x scripts/setup.sh
     #get the last tag
-    curl -o .env https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/.env
+    curl -o .env https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/.env
     #launch the stack
     docker-compose up
 ``` 
@@ -35,7 +35,7 @@ The default login is *admin@app.com* and the password is *password*.
 
 ### Sample bot based on Open Data APIs
 
-A docker image is available to launch it directly. The instructions are specified in the [github project containing the docker images](https://github.com/voyages-sncf-technologies/tock-docker#user-content-run-the-open-data-bot-example).
+A docker image is available to launch it directly. The instructions are specified in the [github project containing the docker images](https://github.com/theopenconversationkit/tock-docker#user-content-run-the-open-data-bot-example).
 
 ## Administration Interface Menu
 

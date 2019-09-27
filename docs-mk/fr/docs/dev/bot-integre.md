@@ -86,11 +86,11 @@ Voici une première version simplifiée du parcours `greetings` :
 ```kotlin
 val greetings = story("greetings") {
     send("Bienvenue chez le Bot Open Data Sncf! :)")
-    end("Il s'agit d'un bot de démonstration du framework Tock : https://github.com/voyages-sncf-technologies/tock")
+    end("Il s'agit d'un bot de démonstration du framework Tock : https://github.com/theopenconversationkit/tock")
 }
 ```
 
-Notez que dans le corps de la fonction, `this` est de type [`BotBus`](https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.engine/-bot-bus/index.html),
+Notez que dans le corps de la fonction, `this` est de type [`BotBus`](https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.engine/-bot-bus/index.html),
 à partir duquel vous pouvez interagir avec l'utilisateur, et qui permet également d'accèder
 à tous les élements contextuels disponibles.
 
@@ -107,7 +107,7 @@ val greetings = story("greetings") {
     resetDialogState()
 
     send("Bienvenue chez le Bot Open Data Sncf! :)")
-    send("Il s'agit d'un bot de démonstration du framework Tock : https://github.com/voyages-sncf-technologies/tock")
+    send("Il s'agit d'un bot de démonstration du framework Tock : https://github.com/theopenconversationkit/tock")
 
     withMessenger {
         buttonsTemplate(
@@ -416,7 +416,7 @@ enum class MySteps : StoryStep<MyHandlerDef> {
 ```
 
 Davantage d'options de configuration sont disponibles. Consultez la description de 
-[`StoryStep`](https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.definition/-story-step/index.html). 
+[`StoryStep`](https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.definition/-story-step/index.html). 
 
 ### _Postback buttons_ & _quick replies_
 

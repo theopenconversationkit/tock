@@ -43,7 +43,7 @@ style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rg
 
 ## Press kit
 
-Tock logos are provided under the [Apache 2 license](https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE).
+Tock logos are provided under the [Apache 2 license](https://github.com/theopenconversationkit/tock/blob/master/LICENSE).
 
 **Tock logo - default colors / transparent** (<a href="../../assets/images/logo.svg" download="">download</a>) :
 
