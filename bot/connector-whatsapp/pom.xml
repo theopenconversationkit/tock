@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-bot</artifactId>
-        <version>19.9.0-SNAPSHOT</version>
+        <version>19.9.0</version>
     </parent>
 
     <artifactId>tock-bot-connector-whatsapp</artifactId>
