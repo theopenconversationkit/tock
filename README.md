@@ -1,5 +1,5 @@
 [![Gitter](https://badges.gitter.im/tockchat/Lobby.svg)](https://gitter.im/tockchat/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge)
-[![Build Status](https://travis-ci.org/voyages-sncf-technologies/tock.png)](https://travis-ci.org/voyages-sncf-technologies/tock)
+[![Build Status](https://travis-ci.org/theopenconversationkit/tock.png)](https://travis-ci.org/theopenconversationkit/tock)
 [![Maven Central](https://img.shields.io/maven-central/v/fr.vsct.tock/tock-root.svg)](https://search.maven.org/search?q=tock)
 
 # Tock - The Open Conversation Kit
