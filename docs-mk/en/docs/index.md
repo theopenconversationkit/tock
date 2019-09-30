@@ -13,7 +13,7 @@ Users choose which components to embed and decide to keep (or share) ownership o
 > The platform source code is available on [GitHub](https://github.com/theopenconversationkit/tock) 
 > under the [Apache License, version 2.0](https://github.com/theopenconversationkit/tock/blob/master/LICENSE).
 >
-> Tock is promoted and backed by the [_TOSIT (The Open Source I Trust)_](http://tosit.fr/) association.
+> Tock is promoted by the [_TOSIT (The Open Source I Trust)_](http://tosit.fr/) association.
 
 ## Features
 

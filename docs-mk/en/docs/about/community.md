@@ -16,13 +16,15 @@ This lists the next planed events related to Tock, as well as groups identified 
 
 ## TOSIT association
 
-Tock has been selected as a reference solution supported by the _TOSIT (The Open Source I Trust)_,
+The Tock solution is promoted by the _TOSIT (The Open Source I Trust)_,
  an association dedicated to support Open Source and Free Software.
 
 > Founded by Carrefour, EDF, Enedis, Orange, Pôle Emploi and SNCF, TOSIT now gathers other important members,
 >such as the (French) Ministère des Armées, Société Générale or MAIF for instance.
 
 Tock refers to _Chatbots_ Work Group at TOSIT.
+
+It has already been selected as a reference solution by SNCF and several TOSIT members.
 
 To know more about TOSIT, please visit [http://tosit.fr/](http://tosit.fr/)
 
