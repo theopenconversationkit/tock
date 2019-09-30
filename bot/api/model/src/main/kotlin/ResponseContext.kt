@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.model
+package ai.tock.bot.api.model
 
 import java.time.Instant
 import java.time.Instant.now

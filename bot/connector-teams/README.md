@@ -41,7 +41,7 @@ class TeamsCarousel(val listMessage: List<TeamsBotMessage>)
 //use extension bus.teamsCarousel(...)
 ```
 
-Look at [Dokka documentation](https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector.teams.messages/index.html)
+Look at [Dokka documentation](https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.connector.teams.messages/index.html)
 for more information.
 
 ## Deploy your bot on localhost (Tock Integrated Bot version)

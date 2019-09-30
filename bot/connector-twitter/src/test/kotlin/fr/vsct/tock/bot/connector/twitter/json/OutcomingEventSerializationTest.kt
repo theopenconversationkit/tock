@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.twitter.fr.vsct.tock.bot.connector.twitter.json
+package ai.tock.bot.connector.twitter.ai.tock.bot.connector.twitter.json
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import fr.vsct.tock.bot.connector.twitter.model.MessageCreate
-import fr.vsct.tock.bot.connector.twitter.model.MessageData
-import fr.vsct.tock.bot.connector.twitter.model.Recipient
-import fr.vsct.tock.bot.connector.twitter.model.outcoming.DirectMessageOutcomingEvent
-import fr.vsct.tock.bot.connector.twitter.model.outcoming.OutcomingEvent
-import fr.vsct.tock.shared.jackson.mapper
-import fr.vsct.tock.shared.resourceAsStream
+import ai.tock.bot.connector.twitter.model.MessageCreate
+import ai.tock.bot.connector.twitter.model.MessageData
+import ai.tock.bot.connector.twitter.model.Recipient
+import ai.tock.bot.connector.twitter.model.outcoming.DirectMessageOutcomingEvent
+import ai.tock.bot.connector.twitter.model.outcoming.OutcomingEvent
+import ai.tock.shared.jackson.mapper
+import ai.tock.shared.resourceAsStream
 import org.junit.jupiter.api.Test
 
 internal class OutcomingEventSerializationTest {

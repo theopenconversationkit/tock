@@ -29,11 +29,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.vsct.tock.translator
+package ai.tock.translator
 
-import fr.vsct.tock.shared.defaultLocale
-import fr.vsct.tock.shared.defaultNamespace
-import fr.vsct.tock.translator.UserInterfaceType.textChat
+import ai.tock.shared.defaultLocale
+import ai.tock.shared.defaultNamespace
+import ai.tock.translator.UserInterfaceType.textChat
 import io.mockk.every
 import io.mockk.verify
 import org.junit.jupiter.api.Test

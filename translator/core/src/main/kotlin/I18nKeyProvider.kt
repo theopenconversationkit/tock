@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.translator
+package ai.tock.translator
 
 /**
  * An i18n key generator. Used to generate an unique id from a default label.

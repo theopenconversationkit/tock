@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.test.xray
+package ai.tock.bot.admin.test.xray
 
-import fr.vsct.tock.shared.defaultNamespace
+import ai.tock.shared.defaultNamespace
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}

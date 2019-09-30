@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.vsct.tock.stt
+package ai.tock.stt
 
-import fr.vsct.tock.shared.defaultLocale
+import ai.tock.shared.defaultLocale
 import java.util.Locale
 
 

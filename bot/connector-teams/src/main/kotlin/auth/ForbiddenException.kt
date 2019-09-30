@@ -13,6 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.vsct.tock.bot.connector.teams.auth
+package ai.tock.bot.connector.teams.auth
 
 internal class ForbiddenException(message: String) : Exception(message)

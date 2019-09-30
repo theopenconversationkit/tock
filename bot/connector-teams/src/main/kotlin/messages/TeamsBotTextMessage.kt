@@ -1,14 +1,14 @@
-package fr.vsct.tock.bot.connector.teams.messages
+package ai.tock.bot.connector.teams.messages
 
 import com.microsoft.bot.schema.models.CardAction
 import com.microsoft.bot.schema.models.CardImage
-import fr.vsct.tock.bot.engine.action.SendAttachment
-import fr.vsct.tock.bot.engine.message.Attachment
-import fr.vsct.tock.bot.engine.message.Choice
-import fr.vsct.tock.bot.engine.message.GenericElement
-import fr.vsct.tock.bot.engine.message.GenericMessage
-import fr.vsct.tock.bot.engine.message.GenericMessage.Companion.TITLE_PARAM
-import fr.vsct.tock.shared.mapNotNullValues
+import ai.tock.bot.engine.action.SendAttachment
+import ai.tock.bot.engine.message.Attachment
+import ai.tock.bot.engine.message.Choice
+import ai.tock.bot.engine.message.GenericElement
+import ai.tock.bot.engine.message.GenericMessage
+import ai.tock.bot.engine.message.GenericMessage.Companion.TITLE_PARAM
+import ai.tock.shared.mapNotNullValues
 
 class TeamsCarousel(val listMessage: List<TeamsBotMessage>) : TeamsBotMessage(null) {
     override fun toGenericMessage(): GenericMessage? {

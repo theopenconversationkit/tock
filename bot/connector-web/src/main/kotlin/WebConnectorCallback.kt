@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.web
+package ai.tock.bot.connector.web
 
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
-import fr.vsct.tock.bot.connector.ConnectorCallbackBase
-import fr.vsct.tock.bot.engine.action.Action
-import fr.vsct.tock.bot.engine.action.SendSentence
-import fr.vsct.tock.bot.engine.event.Event
-import fr.vsct.tock.shared.jackson.mapper
+import ai.tock.bot.connector.ConnectorCallbackBase
+import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.event.Event
+import ai.tock.shared.jackson.mapper
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import java.util.Locale

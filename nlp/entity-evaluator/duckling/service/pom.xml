@@ -74,7 +74,7 @@
                             <archive>
                                 <manifest>
                                     <mainClass>
-                                        fr.vsct.tock.duckling.service.StartServerKt
+                                        ai.tock.duckling.service.StartServerKt
                                     </mainClass>
                                 </manifest>
                             </archive>

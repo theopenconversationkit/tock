@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared.security.auth
+package ai.tock.shared.security.auth
 
 import io.vertx.core.Handler
 import io.vertx.ext.web.RoutingContext

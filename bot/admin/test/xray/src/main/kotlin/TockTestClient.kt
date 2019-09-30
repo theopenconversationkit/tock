@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.test.xray
+package ai.tock.bot.admin.test.xray
 
-import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
-import fr.vsct.tock.bot.admin.test.TestClientService
-import fr.vsct.tock.bot.admin.test.TestPlan
-import fr.vsct.tock.bot.admin.test.TestPlanExecution
-import fr.vsct.tock.shared.addJacksonConverter
-import fr.vsct.tock.shared.basicAuthInterceptor
-import fr.vsct.tock.shared.create
-import fr.vsct.tock.shared.longProperty
-import fr.vsct.tock.shared.property
-import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import ai.tock.bot.admin.bot.BotApplicationConfiguration
+import ai.tock.bot.admin.test.TestClientService
+import ai.tock.bot.admin.test.TestPlan
+import ai.tock.bot.admin.test.TestPlanExecution
+import ai.tock.shared.addJacksonConverter
+import ai.tock.shared.basicAuthInterceptor
+import ai.tock.shared.create
+import ai.tock.shared.longProperty
+import ai.tock.shared.property
+import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import org.litote.kmongo.Id
 
 /**

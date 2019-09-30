@@ -1,4 +1,4 @@
-package fr.vsct.tock.bot.connector.teams
+package ai.tock.bot.connector.teams
 
 import com.microsoft.bot.schema.models.Activity
 import com.microsoft.bot.schema.models.ActivityTypes
@@ -7,16 +7,16 @@ import com.microsoft.bot.schema.models.AttachmentLayoutTypes
 import com.microsoft.bot.schema.models.HeroCard
 import com.microsoft.bot.schema.models.TextFormatTypes
 import com.microsoft.bot.schema.models.ThumbnailCard
-import fr.vsct.tock.bot.connector.teams.messages.MarkdownHelper.activeLink
-import fr.vsct.tock.bot.connector.teams.messages.TeamsBotMessage
-import fr.vsct.tock.bot.connector.teams.messages.TeamsCardAction
-import fr.vsct.tock.bot.connector.teams.messages.TeamsCarousel
-import fr.vsct.tock.bot.connector.teams.messages.TeamsHeroCard
-import fr.vsct.tock.bot.connector.teams.token.TokenHandler
-import fr.vsct.tock.shared.addJacksonConverter
-import fr.vsct.tock.shared.create
-import fr.vsct.tock.shared.longProperty
-import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import ai.tock.bot.connector.teams.messages.MarkdownHelper.activeLink
+import ai.tock.bot.connector.teams.messages.TeamsBotMessage
+import ai.tock.bot.connector.teams.messages.TeamsCardAction
+import ai.tock.bot.connector.teams.messages.TeamsCarousel
+import ai.tock.bot.connector.teams.messages.TeamsHeroCard
+import ai.tock.bot.connector.teams.token.TokenHandler
+import ai.tock.shared.addJacksonConverter
+import ai.tock.shared.create
+import ai.tock.shared.longProperty
+import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import mu.KotlinLogging
 import okhttp3.Interceptor
 import okhttp3.Response

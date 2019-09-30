@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.whatsapp.model.webhook
+package ai.tock.bot.connector.whatsapp.model.webhook
 
-import fr.vsct.tock.bot.connector.whatsapp.model.common.WhatsAppTextBody
+import ai.tock.bot.connector.whatsapp.model.common.WhatsAppTextBody
 
 /**
  *

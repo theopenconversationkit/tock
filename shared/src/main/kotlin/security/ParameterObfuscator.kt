@@ -1,4 +1,4 @@
-package fr.vsct.tock.shared.security
+package ai.tock.shared.security
 
 interface ParameterObfuscator {
 

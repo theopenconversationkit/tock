@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.model.message.user
+package ai.tock.bot.api.model.message.user
 
 data class Text(val text: String) : UserMessage {
     override fun toString(): String = text

@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.vsct.tock.bot.api.client
+package ai.tock.bot.api.client
 
-import fr.vsct.tock.bot.api.model.context.Entity
-import fr.vsct.tock.bot.api.model.message.bot.Action
-import fr.vsct.tock.bot.api.model.message.bot.Attachment
-import fr.vsct.tock.bot.api.model.message.bot.AttachmentType
-import fr.vsct.tock.bot.api.model.message.bot.Card
-import fr.vsct.tock.bot.api.model.message.bot.Carousel
-import fr.vsct.tock.bot.api.model.message.bot.I18nText
-import fr.vsct.tock.bot.api.model.message.user.UserMessage
-import fr.vsct.tock.bot.engine.Bus
-import fr.vsct.tock.nlp.entity.Value
-import fr.vsct.tock.translator.I18nLabelValue
-import fr.vsct.tock.translator.RawString
-import fr.vsct.tock.translator.TranslatedString
+import ai.tock.bot.api.model.context.Entity
+import ai.tock.bot.api.model.message.bot.Action
+import ai.tock.bot.api.model.message.bot.Attachment
+import ai.tock.bot.api.model.message.bot.AttachmentType
+import ai.tock.bot.api.model.message.bot.Card
+import ai.tock.bot.api.model.message.bot.Carousel
+import ai.tock.bot.api.model.message.bot.I18nText
+import ai.tock.bot.api.model.message.user.UserMessage
+import ai.tock.bot.engine.Bus
+import ai.tock.nlp.entity.Value
+import ai.tock.translator.I18nLabelValue
+import ai.tock.translator.RawString
+import ai.tock.translator.TranslatedString
 
 /**
  * A new bus instance is created for each user request.

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.whatsapp.model.send
+package ai.tock.bot.connector.whatsapp.model.send
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import fr.vsct.tock.bot.connector.ConnectorMessage
-import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.connector.whatsapp.whatsAppConnectorType
+import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.whatsapp.whatsAppConnectorType
 
 /**
  *

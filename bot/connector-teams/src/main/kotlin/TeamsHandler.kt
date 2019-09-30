@@ -1,7 +1,7 @@
-package fr.vsct.tock.bot.connector.teams
+package ai.tock.bot.connector.teams
 
-import fr.vsct.tock.bot.connector.ConnectorHandler
-import fr.vsct.tock.bot.definition.ConnectorStoryHandler
+import ai.tock.bot.connector.ConnectorHandler
+import ai.tock.bot.definition.ConnectorStoryHandler
 import kotlin.reflect.KClass
 
 

@@ -14,4 +14,4 @@
 # limitations under the License.
 #
 
-fr.vsct.tock.bot.jackson.BotTockEngineKMongoJacksonModuleServiceLoader
+ai.tock.bot.jackson.BotTockEngineKMongoJacksonModuleServiceLoader

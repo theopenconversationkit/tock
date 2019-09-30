@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.service
+package ai.tock.bot.api.service
 
-import fr.vsct.tock.bot.BotIoc
-import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
-import fr.vsct.tock.bot.engine.BotRepository
-import fr.vsct.tock.shared.injector
-import fr.vsct.tock.shared.provide
-import fr.vsct.tock.translator.Translator
+import ai.tock.bot.BotIoc
+import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import ai.tock.bot.engine.BotRepository
+import ai.tock.shared.injector
+import ai.tock.shared.provide
+import ai.tock.translator.Translator
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}

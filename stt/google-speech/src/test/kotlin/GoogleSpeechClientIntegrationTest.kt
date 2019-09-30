@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.vsct.tock.stt.google
+package ai.tock.stt.google
 
-import fr.vsct.tock.shared.property
+import ai.tock.shared.property
 import org.junit.jupiter.api.Test
 import java.nio.file.Files
 import java.nio.file.Paths

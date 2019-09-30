@@ -14,4 +14,4 @@
 # limitations under the License.
 #
 
-fr.vsct.tock.shared.LogbackConfigurator
+ai.tock.shared.LogbackConfigurator

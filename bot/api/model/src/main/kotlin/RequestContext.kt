@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.model
+package ai.tock.bot.api.model
 
-import fr.vsct.tock.bot.api.model.context.UserData
-import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.translator.UserInterfaceType
+import ai.tock.bot.api.model.context.UserData
+import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.engine.user.PlayerId
+import ai.tock.translator.UserInterfaceType
 import java.util.Locale
 
 data class RequestContext(

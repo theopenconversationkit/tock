@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.stt
+package ai.tock.stt
 
 /**
  * Codec audio for STT input stream.

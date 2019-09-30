@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.translator.google
+package ai.tock.translator.google
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import fr.vsct.tock.translator.TranslatorEngine
+import ai.tock.translator.TranslatorEngine
 
 val googleTranslatorModule = Kodein.Module {
     bind<TranslatorEngine>(overrides = true) with provider { GoogleTranslatorEngine }

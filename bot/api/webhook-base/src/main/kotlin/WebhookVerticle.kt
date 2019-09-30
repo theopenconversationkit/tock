@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.webhook
+package ai.tock.bot.api.webhook
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import fr.vsct.tock.bot.api.client.ClientBotDefinition
-import fr.vsct.tock.bot.api.client.TockClientBus
-import fr.vsct.tock.bot.api.client.toConfiguration
-import fr.vsct.tock.bot.api.model.websocket.RequestData
-import fr.vsct.tock.bot.api.model.websocket.ResponseData
-import fr.vsct.tock.shared.jackson.mapper
-import fr.vsct.tock.shared.vertx.WebVerticle
+import ai.tock.bot.api.client.ClientBotDefinition
+import ai.tock.bot.api.client.TockClientBus
+import ai.tock.bot.api.client.toConfiguration
+import ai.tock.bot.api.model.websocket.RequestData
+import ai.tock.bot.api.model.websocket.ResponseData
+import ai.tock.shared.jackson.mapper
+import ai.tock.shared.vertx.WebVerticle
 import io.vertx.core.http.HttpMethod
 import io.vertx.ext.web.RoutingContext
 

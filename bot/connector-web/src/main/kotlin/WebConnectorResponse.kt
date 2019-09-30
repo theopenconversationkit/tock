@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.web
+package ai.tock.bot.connector.web
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY
-import fr.vsct.tock.bot.connector.ConnectorMessage
-import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.connector.media.MediaCard
-import fr.vsct.tock.bot.connector.media.MediaCarousel
-import fr.vsct.tock.bot.engine.action.SendChoice
-import fr.vsct.tock.bot.engine.message.Choice
-import fr.vsct.tock.bot.engine.message.GenericMessage
-import fr.vsct.tock.bot.engine.message.GenericMessage.Companion.TEXT_PARAM
-import fr.vsct.tock.shared.mapNotNullValues
+import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.media.MediaCard
+import ai.tock.bot.connector.media.MediaCarousel
+import ai.tock.bot.engine.action.SendChoice
+import ai.tock.bot.engine.message.Choice
+import ai.tock.bot.engine.message.GenericMessage
+import ai.tock.bot.engine.message.GenericMessage.Companion.TEXT_PARAM
+import ai.tock.shared.mapNotNullValues
 
 data class WebButton(val title: String, val payload: String? = null) {
 

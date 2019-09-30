@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared.cache
+package ai.tock.shared.cache
 
 import org.litote.kmongo.Id
 

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared.security
+package ai.tock.shared.security
 
-import fr.vsct.tock.shared.Loader
-import fr.vsct.tock.shared.error
+import ai.tock.shared.Loader
+import ai.tock.shared.error
 import mu.KotlinLogging
 import java.util.concurrent.CopyOnWriteArrayList
 

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared
+package ai.tock.shared
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import fr.vsct.tock.shared.jackson.mapper
+import ai.tock.shared.jackson.mapper
 import io.github.resilience4j.circuitbreaker.CircuitBreaker
 import io.github.resilience4j.retrofit.CircuitBreakerCallAdapter
 import mu.KLogger

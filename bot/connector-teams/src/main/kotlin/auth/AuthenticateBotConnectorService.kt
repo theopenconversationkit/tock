@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.vsct.tock.bot.connector.teams.auth
+package ai.tock.bot.connector.teams.auth
 
 import com.microsoft.bot.schema.models.Activity
 import com.nimbusds.jose.JOSEException
@@ -23,7 +23,7 @@ import com.nimbusds.jose.crypto.RSASSAVerifier
 import com.nimbusds.jose.jwk.ECKey
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.SignedJWT
-import fr.vsct.tock.shared.devEnvironment
+import ai.tock.shared.devEnvironment
 import io.vertx.core.MultiMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async

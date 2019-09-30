@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared
+package ai.tock.shared
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
@@ -23,11 +23,11 @@ import com.github.salomonbrys.kodein.provider
 import com.github.salomonbrys.kodein.providerOrNull
 import com.github.salomonbrys.kodein.singleton
 import com.mongodb.MongoClient
-import fr.vsct.tock.shared.cache.TockCache
-import fr.vsct.tock.shared.cache.mongo.MongoCache
-import fr.vsct.tock.shared.vertx.TockVertxProvider
-import fr.vsct.tock.shared.vertx.VertxProvider
-import fr.vsct.tock.shared.vertx.vertxExecutor
+import ai.tock.shared.cache.TockCache
+import ai.tock.shared.cache.mongo.MongoCache
+import ai.tock.shared.vertx.TockVertxProvider
+import ai.tock.shared.vertx.VertxProvider
+import ai.tock.shared.vertx.vertxExecutor
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}

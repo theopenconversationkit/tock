@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.whatsapp
+package ai.tock.bot.connector.whatsapp
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import fr.vsct.tock.shared.property
-import fr.vsct.tock.shared.provide
-import fr.vsct.tock.stt.AudioCodec.ogg
-import fr.vsct.tock.stt.STT
-import fr.vsct.tock.stt.google.googleSTTModule
+import ai.tock.shared.property
+import ai.tock.shared.provide
+import ai.tock.stt.AudioCodec.ogg
+import ai.tock.stt.STT
+import ai.tock.stt.google.googleSTTModule
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
 

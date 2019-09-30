@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.translator
+package ai.tock.translator
 
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
-import fr.vsct.tock.shared.Executor
-import fr.vsct.tock.shared.booleanProperty
-import fr.vsct.tock.shared.defaultLocale
-import fr.vsct.tock.shared.defaultNamespace
-import fr.vsct.tock.shared.error
-import fr.vsct.tock.shared.injector
-import fr.vsct.tock.shared.longProperty
-import fr.vsct.tock.shared.provide
-import fr.vsct.tock.translator.UserInterfaceType.textAndVoiceAssistant
-import fr.vsct.tock.translator.UserInterfaceType.textChat
-import fr.vsct.tock.translator.UserInterfaceType.voiceAssistant
+import ai.tock.shared.Executor
+import ai.tock.shared.booleanProperty
+import ai.tock.shared.defaultLocale
+import ai.tock.shared.defaultNamespace
+import ai.tock.shared.error
+import ai.tock.shared.injector
+import ai.tock.shared.longProperty
+import ai.tock.shared.provide
+import ai.tock.translator.UserInterfaceType.textAndVoiceAssistant
+import ai.tock.translator.UserInterfaceType.textChat
+import ai.tock.translator.UserInterfaceType.voiceAssistant
 import mu.KotlinLogging
 import org.litote.kmongo.toId
 import java.text.ChoiceFormat

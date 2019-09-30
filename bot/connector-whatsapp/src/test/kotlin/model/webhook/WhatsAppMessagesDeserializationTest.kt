@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.vsct.tock.bot.connector.whatsapp.model.webhook
+package ai.tock.bot.connector.whatsapp.model.webhook
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import fr.vsct.tock.bot.connector.whatsapp.model.common.WhatsAppError
-import fr.vsct.tock.bot.connector.whatsapp.model.common.WhatsAppTextBody
-import fr.vsct.tock.shared.jackson.mapper
-import fr.vsct.tock.shared.resource
+import ai.tock.bot.connector.whatsapp.model.common.WhatsAppError
+import ai.tock.bot.connector.whatsapp.model.common.WhatsAppTextBody
+import ai.tock.shared.jackson.mapper
+import ai.tock.shared.resource
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 

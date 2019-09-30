@@ -25,4 +25,4 @@ In order to connect your bot with a messenger bot application, you need a Messen
 
 * A Messenger integration sample is available in the [open data Bot](https://github.com/theopenconversationkit/tock-bot-open-data) source code
 
-* The documentation of the messenger builders is available in [KDoc format](https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector.messenger/index.html)
+* The documentation of the messenger builders is available in [KDoc format](https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.connector.messenger/index.html)

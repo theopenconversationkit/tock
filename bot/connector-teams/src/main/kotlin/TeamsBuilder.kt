@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.vsct.tock.bot.connector.teams
+package ai.tock.bot.connector.teams
 
-import fr.vsct.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.ConnectorType
 
 internal const val TEAMS_CONNECTOR_TYPE_ID = "teams"
 

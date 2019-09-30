@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.vsct.tock.bot.connector.rocketchat
+package ai.tock.bot.connector.rocketchat
 
-import fr.vsct.tock.bot.connector.ConnectorData
-import fr.vsct.tock.bot.engine.ConnectorController
-import fr.vsct.tock.bot.engine.action.SendSentence
+import ai.tock.bot.connector.ConnectorData
+import ai.tock.bot.engine.ConnectorController
+import ai.tock.bot.engine.action.SendSentence
 import io.mockk.every
 import io.mockk.mockk
 import kotlin.test.Test

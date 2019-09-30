@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared.cache
+package ai.tock.shared.cache
 
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
-import fr.vsct.tock.shared.error
-import fr.vsct.tock.shared.injector
-import fr.vsct.tock.shared.longProperty
-import fr.vsct.tock.shared.provide
+import ai.tock.shared.error
+import ai.tock.shared.injector
+import ai.tock.shared.longProperty
+import ai.tock.shared.provide
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import java.util.concurrent.TimeUnit

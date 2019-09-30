@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared.security
+package ai.tock.shared.security
 
 /**
  * Simple implementation for [StringObfuscator].

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.web
+package ai.tock.bot.connector.web
 
-import fr.vsct.tock.bot.connector.ConnectorMessage
-import fr.vsct.tock.bot.connector.media.MediaCard
-import fr.vsct.tock.bot.connector.media.MediaCarousel
-import fr.vsct.tock.bot.definition.IntentAware
-import fr.vsct.tock.bot.definition.Parameters
-import fr.vsct.tock.bot.definition.StoryHandlerDefinition
-import fr.vsct.tock.bot.definition.StoryStep
-import fr.vsct.tock.bot.engine.Bus
-import fr.vsct.tock.bot.engine.I18nTranslator
-import fr.vsct.tock.bot.engine.action.SendChoice
+import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.connector.media.MediaCard
+import ai.tock.bot.connector.media.MediaCarousel
+import ai.tock.bot.definition.IntentAware
+import ai.tock.bot.definition.Parameters
+import ai.tock.bot.definition.StoryHandlerDefinition
+import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.engine.Bus
+import ai.tock.bot.engine.I18nTranslator
+import ai.tock.bot.engine.action.SendChoice
 
 /**
  * Adds a Web [ConnectorMessage] if the current connector is Web.

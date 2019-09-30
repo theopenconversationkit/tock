@@ -1,13 +1,13 @@
-package fr.vsct.tock.bot.connector.teams.token
+package ai.tock.bot.connector.teams.token
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
-import fr.vsct.tock.shared.Level
-import fr.vsct.tock.shared.addJacksonConverter
-import fr.vsct.tock.shared.create
-import fr.vsct.tock.shared.jackson.mapper
-import fr.vsct.tock.shared.longProperty
-import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import ai.tock.shared.Level
+import ai.tock.shared.addJacksonConverter
+import ai.tock.shared.create
+import ai.tock.shared.jackson.mapper
+import ai.tock.shared.longProperty
+import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import mu.KotlinLogging
 import java.time.Instant
 import java.time.temporal.ChronoUnit

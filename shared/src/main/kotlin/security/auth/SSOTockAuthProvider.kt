@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared.security.auth
+package ai.tock.shared.security.auth
 
-import fr.vsct.tock.shared.jackson.mapper
-import fr.vsct.tock.shared.vertx.WebVerticle
+import ai.tock.shared.jackson.mapper
+import ai.tock.shared.vertx.WebVerticle
 import io.vertx.core.Handler
 import io.vertx.core.Vertx
 import io.vertx.core.http.Cookie

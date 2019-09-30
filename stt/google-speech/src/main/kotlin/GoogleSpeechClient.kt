@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.stt.google
+package ai.tock.stt.google
 
 import com.google.cloud.speech.v1.RecognitionAudio
 import com.google.cloud.speech.v1.RecognitionConfig
 import com.google.cloud.speech.v1.SpeechClient
 import com.google.protobuf.ByteString
-import fr.vsct.tock.shared.error
-import fr.vsct.tock.stt.AudioCodec
-import fr.vsct.tock.stt.AudioCodec.unknown
-import fr.vsct.tock.stt.AudioCodec.ogg
-import fr.vsct.tock.stt.STT
+import ai.tock.shared.error
+import ai.tock.stt.AudioCodec
+import ai.tock.stt.AudioCodec.unknown
+import ai.tock.stt.AudioCodec.ogg
+import ai.tock.stt.STT
 import mu.KotlinLogging
 import ws.schild.jave.AudioAttributes
 import ws.schild.jave.Encoder

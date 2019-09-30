@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.service
+package ai.tock.bot.api.service
 
-import fr.vsct.tock.bot.api.model.websocket.RequestData
-import fr.vsct.tock.bot.api.model.websocket.ResponseData
-import fr.vsct.tock.shared.addJacksonConverter
-import fr.vsct.tock.shared.create
-import fr.vsct.tock.shared.error
-import fr.vsct.tock.shared.longProperty
-import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import ai.tock.bot.api.model.websocket.RequestData
+import ai.tock.bot.api.model.websocket.ResponseData
+import ai.tock.shared.addJacksonConverter
+import ai.tock.shared.create
+import ai.tock.shared.error
+import ai.tock.shared.longProperty
+import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import mu.KotlinLogging
 
 internal class BotApiClient(baseUrl: String) {

@@ -55,7 +55,7 @@
     },
     "context": {
       "currentStops": {
-        "klass": "[Lfr.vsct.tock.bot.open.data.client.sncf.model.StationStop;",
+        "klass": "[Lai.tock.bot.open.data.client.sncf.model.StationStop;",
         "value": [
           {
             "display_informations": {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.model.configuration
+package ai.tock.bot.api.model.configuration
 
 data class StoryConfiguration(
     val mainIntent: String,

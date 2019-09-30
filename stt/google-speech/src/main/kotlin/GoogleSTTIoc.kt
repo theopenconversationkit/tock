@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.stt.google
+package ai.tock.stt.google
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import fr.vsct.tock.stt.STT
+import ai.tock.stt.STT
 
 /**
  *

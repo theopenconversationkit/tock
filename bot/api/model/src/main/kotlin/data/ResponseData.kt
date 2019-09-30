@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.model.websocket
+package ai.tock.bot.api.model.websocket
 
-import fr.vsct.tock.bot.api.model.BotResponse
-import fr.vsct.tock.bot.api.model.configuration.ClientConfiguration
+import ai.tock.bot.api.model.BotResponse
+import ai.tock.bot.api.model.configuration.ClientConfiguration
 
 data class ResponseData(
     val requestId:String,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared
+package ai.tock.shared
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger

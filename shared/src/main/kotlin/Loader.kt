@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared
+package ai.tock.shared
 
 import java.util.ServiceLoader
 

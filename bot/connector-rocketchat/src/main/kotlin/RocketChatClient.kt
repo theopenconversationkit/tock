@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.rocketchat
+package ai.tock.bot.connector.rocketchat
 
 import chat.rocket.common.model.Token
 import chat.rocket.common.util.PlatformLogger
@@ -27,8 +27,8 @@ import chat.rocket.core.internal.rest.joinChat
 import chat.rocket.core.internal.rest.login
 import chat.rocket.core.internal.rest.sendMessage
 import chat.rocket.core.model.Room
-import fr.vsct.tock.shared.Dice
-import fr.vsct.tock.shared.error
+import ai.tock.shared.Dice
+import ai.tock.shared.error
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.launch

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared.security.auth
+package ai.tock.shared.security.auth
 
-import fr.vsct.tock.shared.Executor
-import fr.vsct.tock.shared.injector
-import fr.vsct.tock.shared.property
-import fr.vsct.tock.shared.provide
-import fr.vsct.tock.shared.security.TockUser
-import fr.vsct.tock.shared.security.TockUserRole
-import fr.vsct.tock.shared.vertx.WebVerticle
+import ai.tock.shared.Executor
+import ai.tock.shared.injector
+import ai.tock.shared.property
+import ai.tock.shared.provide
+import ai.tock.shared.security.TockUser
+import ai.tock.shared.security.TockUserRole
+import ai.tock.shared.vertx.WebVerticle
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.ext.auth.oauth2.OAuth2Auth

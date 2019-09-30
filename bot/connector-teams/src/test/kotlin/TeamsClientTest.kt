@@ -1,12 +1,12 @@
-package fr.vsct.tock.bot.connector.teams
+package ai.tock.bot.connector.teams
 
 import com.microsoft.bot.schema.models.Activity
-import fr.vsct.tock.bot.connector.teams.messages.TeamsBotTextMessage
-import fr.vsct.tock.bot.connector.teams.token.TokenHandler
-import fr.vsct.tock.shared.addJacksonConverter
-import fr.vsct.tock.shared.create
-import fr.vsct.tock.shared.longProperty
-import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import ai.tock.bot.connector.teams.messages.TeamsBotTextMessage
+import ai.tock.bot.connector.teams.token.TokenHandler
+import ai.tock.shared.addJacksonConverter
+import ai.tock.shared.create
+import ai.tock.shared.longProperty
+import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import mu.KotlinLogging
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer

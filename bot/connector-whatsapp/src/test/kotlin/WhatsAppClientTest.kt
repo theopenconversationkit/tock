@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.whatsapp
+package ai.tock.bot.connector.whatsapp
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import fr.vsct.tock.bot.connector.whatsapp.WhatsAppClient.LoginResponse
+import ai.tock.bot.connector.whatsapp.WhatsAppClient.LoginResponse
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.time.OffsetDateTime

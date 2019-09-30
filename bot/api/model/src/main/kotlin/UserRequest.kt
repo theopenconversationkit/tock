@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.model
+package ai.tock.bot.api.model
 
-import fr.vsct.tock.bot.api.model.context.Entity
-import fr.vsct.tock.bot.api.model.message.user.UserMessage
+import ai.tock.bot.api.model.context.Entity
+import ai.tock.bot.api.model.message.user.UserMessage
 
 data class UserRequest(
     val intent: String?,

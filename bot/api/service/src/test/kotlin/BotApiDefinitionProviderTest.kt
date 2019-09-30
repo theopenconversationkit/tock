@@ -1,5 +1,5 @@
-import fr.vsct.tock.bot.admin.bot.BotConfiguration
-import fr.vsct.tock.bot.api.service.BotApiDefinitionProvider
+import ai.tock.bot.admin.bot.BotConfiguration
+import ai.tock.bot.api.service.BotApiDefinitionProvider
 import org.junit.jupiter.api.Test
 import kotlin.test.assertNotEquals
 

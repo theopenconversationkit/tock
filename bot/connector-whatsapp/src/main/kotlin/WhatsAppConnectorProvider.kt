@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.vsct.tock.bot.connector.whatsapp
+package ai.tock.bot.connector.whatsapp
 
-import fr.vsct.tock.bot.connector.Connector
-import fr.vsct.tock.bot.connector.ConnectorConfiguration
-import fr.vsct.tock.bot.connector.ConnectorProvider
-import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.connector.ConnectorTypeConfiguration
-import fr.vsct.tock.bot.connector.ConnectorTypeConfigurationField
-import fr.vsct.tock.shared.resourceAsString
+import ai.tock.bot.connector.Connector
+import ai.tock.bot.connector.ConnectorConfiguration
+import ai.tock.bot.connector.ConnectorProvider
+import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.ConnectorTypeConfiguration
+import ai.tock.bot.connector.ConnectorTypeConfigurationField
+import ai.tock.shared.resourceAsString
 
 internal object WhatsAppConnectorProvider : ConnectorProvider {
 

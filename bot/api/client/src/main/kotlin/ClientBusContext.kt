@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.client
+package ai.tock.bot.api.client
 
-import fr.vsct.tock.bot.connector.ConnectorMessage
-import fr.vsct.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.connector.ConnectorType
 
 internal class ClientBusContext(val connectorMessages: MutableMap<ConnectorType, ConnectorMessage> = mutableMapOf()) {
 }

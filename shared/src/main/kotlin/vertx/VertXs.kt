@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared.vertx
+package ai.tock.shared.vertx
 
-import fr.vsct.tock.shared.Executor
-import fr.vsct.tock.shared.debug
-import fr.vsct.tock.shared.devEnvironment
-import fr.vsct.tock.shared.error
-import fr.vsct.tock.shared.injector
-import fr.vsct.tock.shared.provideOrDefault
+import ai.tock.shared.Executor
+import ai.tock.shared.debug
+import ai.tock.shared.devEnvironment
+import ai.tock.shared.error
+import ai.tock.shared.injector
+import ai.tock.shared.provideOrDefault
 import io.vertx.core.AsyncResult
 import io.vertx.core.Promise
 import io.vertx.core.Vertx

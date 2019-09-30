@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.test.xray.model
+package ai.tock.bot.admin.test.xray.model
 
 /**
  * see (https://confluence.xpand-addons.com/display/XRAY/Tests+-+REST)

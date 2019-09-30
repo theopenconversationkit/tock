@@ -1,5 +1,5 @@
-import fr.vsct.tock.shared.jackson.mapper
-import fr.vsct.tock.shared.longProperty
+import ai.tock.shared.jackson.mapper
+import ai.tock.shared.longProperty
 import okhttp3.OkHttpClient.Builder
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit

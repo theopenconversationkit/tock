@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.web
+package ai.tock.bot.connector.web
 
-import fr.vsct.tock.bot.connector.Connector
-import fr.vsct.tock.bot.connector.ConnectorConfiguration
-import fr.vsct.tock.bot.connector.ConnectorProvider
-import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.connector.ConnectorTypeConfiguration
-import fr.vsct.tock.shared.resourceAsString
+import ai.tock.bot.connector.Connector
+import ai.tock.bot.connector.ConnectorConfiguration
+import ai.tock.bot.connector.ConnectorProvider
+import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.ConnectorTypeConfiguration
+import ai.tock.shared.resourceAsString
 
 internal object WebConnectorProvider : ConnectorProvider {
 
@@ -43,5 +43,5 @@ internal object WebConnectorProvider : ConnectorProvider {
         )
 }
 
-//used in file META-INF/services/fr.vsct.tock.bot.connector.ConnectorProvider
+//used in file META-INF/services/ai.tock.bot.connector.ConnectorProvider
 internal class WebConnectorProviderService : ConnectorProvider by WebConnectorProvider

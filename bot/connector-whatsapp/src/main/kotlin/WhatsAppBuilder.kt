@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.vsct.tock.bot.connector.whatsapp
+package ai.tock.bot.connector.whatsapp
 
-import fr.vsct.tock.bot.connector.ConnectorMessage
-import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.connector.whatsapp.model.common.WhatsAppTextBody
-import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotAttachment
-import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotImageMessage
-import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotMessage
-import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotRecipientType
-import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotTextMessage
-import fr.vsct.tock.bot.engine.BotBus
-import fr.vsct.tock.bot.engine.Bus
+import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.whatsapp.model.common.WhatsAppTextBody
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotAttachment
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotImageMessage
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotMessage
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotRecipientType
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotTextMessage
+import ai.tock.bot.engine.BotBus
+import ai.tock.bot.engine.Bus
 
 internal const val WHATS_APP_CONNECTOR_TYPE_ID = "whatsapp"
 

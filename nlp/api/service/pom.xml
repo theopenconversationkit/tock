@@ -80,7 +80,7 @@
                             <archive>
                                 <manifest>
                                     <mainClass>
-                                        fr.vsct.tock.nlp.api.StartNlpServiceKt
+                                        ai.tock.nlp.api.StartNlpServiceKt
                                     </mainClass>
                                 </manifest>
                             </archive>

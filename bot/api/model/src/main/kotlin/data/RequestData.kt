@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.model.websocket
+package ai.tock.bot.api.model.websocket
 
-import fr.vsct.tock.bot.api.model.UserRequest
-import fr.vsct.tock.shared.Dice
+import ai.tock.bot.api.model.UserRequest
+import ai.tock.shared.Dice
 
 data class RequestData(
     val botRequest: UserRequest? = null,

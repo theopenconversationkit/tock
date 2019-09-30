@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared.security.auth
+package ai.tock.shared.security.auth
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import fr.vsct.tock.shared.defaultNamespace
-import fr.vsct.tock.shared.jackson.mapper
-import fr.vsct.tock.shared.listProperty
-import fr.vsct.tock.shared.property
-import fr.vsct.tock.shared.security.TockUser
-import fr.vsct.tock.shared.security.TockUserRole
-import fr.vsct.tock.shared.security.TockUserRole.admin
-import fr.vsct.tock.shared.security.TockUserRole.botUser
-import fr.vsct.tock.shared.security.TockUserRole.nlpUser
-import fr.vsct.tock.shared.security.TockUserRole.technicalAdmin
-import fr.vsct.tock.shared.security.TockUserRole.values
-import fr.vsct.tock.shared.security.auth.PropertyBasedAuthProvider.authenticate
-import fr.vsct.tock.shared.vertx.WebVerticle
+import ai.tock.shared.defaultNamespace
+import ai.tock.shared.jackson.mapper
+import ai.tock.shared.listProperty
+import ai.tock.shared.property
+import ai.tock.shared.security.TockUser
+import ai.tock.shared.security.TockUserRole
+import ai.tock.shared.security.TockUserRole.admin
+import ai.tock.shared.security.TockUserRole.botUser
+import ai.tock.shared.security.TockUserRole.nlpUser
+import ai.tock.shared.security.TockUserRole.technicalAdmin
+import ai.tock.shared.security.TockUserRole.values
+import ai.tock.shared.security.auth.PropertyBasedAuthProvider.authenticate
+import ai.tock.shared.vertx.WebVerticle
 import io.vertx.core.AsyncResult
 import io.vertx.core.Future
 import io.vertx.core.Handler

@@ -1,7 +1,7 @@
-package fr.vsct.tock.bot.connector.teams
+package ai.tock.bot.connector.teams
 
 import com.microsoft.bot.schema.models.Activity
-import fr.vsct.tock.bot.connector.ConnectorCallbackBase
+import ai.tock.bot.connector.ConnectorCallbackBase
 
 class TeamsConnectorCallback(
         applicationId: String,

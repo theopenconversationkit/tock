@@ -1,4 +1,4 @@
-package fr.vsct.tock.bot.connector.teams.auth
+package ai.tock.bot.connector.teams.auth
 
 import com.google.gson.Gson
 import retrofit2.Call

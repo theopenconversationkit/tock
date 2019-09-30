@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.translator.noop
+package ai.tock.translator.noop
 
-import fr.vsct.tock.translator.TranslatorEngine
+import ai.tock.translator.TranslatorEngine
 import java.util.Locale
 
 

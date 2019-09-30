@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.translator.google
+package ai.tock.translator.google
 
 import org.junit.jupiter.api.Test
 import java.util.Locale

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared.security.auth
+package ai.tock.shared.security.auth
 
-import fr.vsct.tock.shared.addJacksonConverter
-import fr.vsct.tock.shared.create
-import fr.vsct.tock.shared.longProperty
-import fr.vsct.tock.shared.property
-import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import ai.tock.shared.addJacksonConverter
+import ai.tock.shared.create
+import ai.tock.shared.longProperty
+import ai.tock.shared.property
+import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import mu.KotlinLogging
 import okhttp3.ResponseBody
 import retrofit2.Call

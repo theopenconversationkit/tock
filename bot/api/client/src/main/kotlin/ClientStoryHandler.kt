@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.client
+package ai.tock.bot.api.client
 
 interface ClientStoryHandler {
 

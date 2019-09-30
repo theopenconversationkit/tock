@@ -14,32 +14,32 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.test.xray
+package ai.tock.bot.admin.test.xray
 
 import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Klaxon
 import com.beust.klaxon.Parser
-import fr.vsct.tock.bot.admin.test.xray.XrayConfiguration.xrayUrl
-import fr.vsct.tock.bot.admin.test.xray.model.JiraAttachment
-import fr.vsct.tock.bot.admin.test.xray.model.JiraIssue
-import fr.vsct.tock.bot.admin.test.xray.model.JiraIssueLink
-import fr.vsct.tock.bot.admin.test.xray.model.JiraKey
-import fr.vsct.tock.bot.admin.test.xray.model.JiraTest
-import fr.vsct.tock.bot.admin.test.xray.model.JiraTestProject
-import fr.vsct.tock.bot.admin.test.xray.model.JiraType
-import fr.vsct.tock.bot.admin.test.xray.model.XrayAttachment
-import fr.vsct.tock.bot.admin.test.xray.model.XrayBuildTestStep
-import fr.vsct.tock.bot.admin.test.xray.model.XrayTest
-import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecution
-import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecutionCreation
-import fr.vsct.tock.bot.admin.test.xray.model.XrayTestStep
-import fr.vsct.tock.bot.admin.test.xray.model.XrayUpdateTest
-import fr.vsct.tock.shared.addJacksonConverter
-import fr.vsct.tock.shared.basicAuthInterceptor
-import fr.vsct.tock.shared.create
-import fr.vsct.tock.shared.longProperty
-import fr.vsct.tock.shared.property
-import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import ai.tock.bot.admin.test.xray.XrayConfiguration.xrayUrl
+import ai.tock.bot.admin.test.xray.model.JiraAttachment
+import ai.tock.bot.admin.test.xray.model.JiraIssue
+import ai.tock.bot.admin.test.xray.model.JiraIssueLink
+import ai.tock.bot.admin.test.xray.model.JiraKey
+import ai.tock.bot.admin.test.xray.model.JiraTest
+import ai.tock.bot.admin.test.xray.model.JiraTestProject
+import ai.tock.bot.admin.test.xray.model.JiraType
+import ai.tock.bot.admin.test.xray.model.XrayAttachment
+import ai.tock.bot.admin.test.xray.model.XrayBuildTestStep
+import ai.tock.bot.admin.test.xray.model.XrayTest
+import ai.tock.bot.admin.test.xray.model.XrayTestExecution
+import ai.tock.bot.admin.test.xray.model.XrayTestExecutionCreation
+import ai.tock.bot.admin.test.xray.model.XrayTestStep
+import ai.tock.bot.admin.test.xray.model.XrayUpdateTest
+import ai.tock.shared.addJacksonConverter
+import ai.tock.shared.basicAuthInterceptor
+import ai.tock.shared.create
+import ai.tock.shared.longProperty
+import ai.tock.shared.property
+import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import mu.KotlinLogging
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody

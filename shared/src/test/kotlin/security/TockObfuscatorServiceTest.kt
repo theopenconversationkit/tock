@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared.security
+package ai.tock.shared.security
 
-import fr.vsct.tock.shared.security.StringObfuscatorMode.display
-import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
+import ai.tock.shared.security.StringObfuscatorMode.display
+import ai.tock.shared.security.TockObfuscatorService.obfuscate
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

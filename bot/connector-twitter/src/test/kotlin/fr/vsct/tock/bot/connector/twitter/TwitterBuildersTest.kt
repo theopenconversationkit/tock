@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.twitter
+package ai.tock.bot.connector.twitter
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
-import fr.vsct.tock.bot.engine.BotBus
-import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.bot.engine.user.UserPreferences
-import fr.vsct.tock.shared.sharedTestModule
-import fr.vsct.tock.shared.tockInternalInjector
-import fr.vsct.tock.translator.raw
+import ai.tock.bot.engine.BotBus
+import ai.tock.bot.engine.user.PlayerId
+import ai.tock.bot.engine.user.UserPreferences
+import ai.tock.shared.sharedTestModule
+import ai.tock.shared.tockInternalInjector
+import ai.tock.translator.raw
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach

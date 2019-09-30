@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.service
+package ai.tock.bot.api.service
 
-import fr.vsct.tock.bot.api.model.RequestContext
-import fr.vsct.tock.bot.api.model.UserRequest
-import fr.vsct.tock.bot.api.model.context.Entity
-import fr.vsct.tock.bot.api.model.context.UserData
-import fr.vsct.tock.bot.api.model.message.user.Choice
-import fr.vsct.tock.bot.api.model.message.user.Text
-import fr.vsct.tock.bot.api.model.message.user.UserMessage
-import fr.vsct.tock.bot.engine.BotBus
-import fr.vsct.tock.bot.engine.action.Action
-import fr.vsct.tock.bot.engine.action.SendChoice
-import fr.vsct.tock.bot.engine.action.SendSentence
-import fr.vsct.tock.bot.engine.dialog.EntityValue
-import fr.vsct.tock.bot.engine.user.UserPreferences
+import ai.tock.bot.api.model.RequestContext
+import ai.tock.bot.api.model.UserRequest
+import ai.tock.bot.api.model.context.Entity
+import ai.tock.bot.api.model.context.UserData
+import ai.tock.bot.api.model.message.user.Choice
+import ai.tock.bot.api.model.message.user.Text
+import ai.tock.bot.api.model.message.user.UserMessage
+import ai.tock.bot.engine.BotBus
+import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.action.SendChoice
+import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.dialog.EntityValue
+import ai.tock.bot.engine.user.UserPreferences
 
 internal fun BotBus.toUserRequest(): UserRequest =
     UserRequest(

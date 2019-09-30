@@ -29,26 +29,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.vsct.tock.bot.connector.whatsapp
+package ai.tock.bot.connector.whatsapp
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
-import fr.vsct.tock.bot.connector.ConnectorBase
-import fr.vsct.tock.bot.connector.ConnectorCallback
-import fr.vsct.tock.bot.connector.ConnectorData
-import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotRecipientType.group
-import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotRecipientType.individual
-import fr.vsct.tock.bot.connector.whatsapp.model.webhook.WhatsAppMessages
-import fr.vsct.tock.bot.engine.BotRepository
-import fr.vsct.tock.bot.engine.ConnectorController
-import fr.vsct.tock.bot.engine.action.Action
-import fr.vsct.tock.bot.engine.event.Event
-import fr.vsct.tock.bot.engine.monitoring.logError
-import fr.vsct.tock.shared.Executor
-import fr.vsct.tock.shared.error
-import fr.vsct.tock.shared.injector
-import fr.vsct.tock.shared.jackson.mapper
-import fr.vsct.tock.shared.security.RequestFilter
+import ai.tock.bot.connector.ConnectorBase
+import ai.tock.bot.connector.ConnectorCallback
+import ai.tock.bot.connector.ConnectorData
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotRecipientType.group
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotRecipientType.individual
+import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppMessages
+import ai.tock.bot.engine.BotRepository
+import ai.tock.bot.engine.ConnectorController
+import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.event.Event
+import ai.tock.bot.engine.monitoring.logError
+import ai.tock.shared.Executor
+import ai.tock.shared.error
+import ai.tock.shared.injector
+import ai.tock.shared.jackson.mapper
+import ai.tock.shared.security.RequestFilter
 import mu.KotlinLogging
 import java.time.Duration
 

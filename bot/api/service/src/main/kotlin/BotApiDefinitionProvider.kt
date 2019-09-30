@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.service
+package ai.tock.bot.api.service
 
-import fr.vsct.tock.bot.admin.bot.BotConfiguration
-import fr.vsct.tock.bot.api.model.configuration.ClientConfiguration
-import fr.vsct.tock.bot.definition.BotDefinition
-import fr.vsct.tock.bot.definition.BotProvider
-import fr.vsct.tock.bot.definition.BotProviderId
-import fr.vsct.tock.bot.engine.BotRepository
+import ai.tock.bot.admin.bot.BotConfiguration
+import ai.tock.bot.api.model.configuration.ClientConfiguration
+import ai.tock.bot.definition.BotDefinition
+import ai.tock.bot.definition.BotProvider
+import ai.tock.bot.definition.BotProviderId
+import ai.tock.bot.engine.BotRepository
 import mu.KotlinLogging
 
 internal class BotApiDefinitionProvider(private val configuration: BotConfiguration) : BotProvider {

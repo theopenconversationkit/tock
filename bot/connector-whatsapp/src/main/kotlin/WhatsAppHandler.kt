@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.whatsapp
+package ai.tock.bot.connector.whatsapp
 
-import fr.vsct.tock.bot.connector.ConnectorHandler
-import fr.vsct.tock.bot.definition.ConnectorStoryHandler
+import ai.tock.bot.connector.ConnectorHandler
+import ai.tock.bot.definition.ConnectorStoryHandler
 import kotlin.reflect.KClass
 
 /**

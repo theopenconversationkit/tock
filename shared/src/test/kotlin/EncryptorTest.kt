@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared
+package ai.tock.shared
 
-import fr.vsct.tock.shared.security.decrypt
-import fr.vsct.tock.shared.security.encrypt
+import ai.tock.shared.security.decrypt
+import ai.tock.shared.security.encrypt
 import org.junit.jupiter.api.Test
 import java.security.SecureRandom
 import kotlin.test.assertEquals

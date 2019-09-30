@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.client
+package ai.tock.bot.api.client
 
-import fr.vsct.tock.bot.api.model.configuration.ClientConfiguration
-import fr.vsct.tock.bot.api.model.configuration.StoryConfiguration
-import fr.vsct.tock.bot.api.model.configuration.StepConfiguration
+import ai.tock.bot.api.model.configuration.ClientConfiguration
+import ai.tock.bot.api.model.configuration.StoryConfiguration
+import ai.tock.bot.api.model.configuration.StepConfiguration
 
 fun ClientBotDefinition.toConfiguration(): ClientConfiguration =
     ClientConfiguration(

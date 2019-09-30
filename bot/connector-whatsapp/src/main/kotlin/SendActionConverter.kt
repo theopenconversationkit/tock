@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.whatsapp
+package ai.tock.bot.connector.whatsapp
 
-import fr.vsct.tock.bot.connector.whatsapp.model.common.WhatsAppTextBody
-import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotMessage
-import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotRecipientType.individual
-import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotTextMessage
-import fr.vsct.tock.bot.engine.action.Action
-import fr.vsct.tock.bot.engine.action.SendSentence
+import ai.tock.bot.connector.whatsapp.model.common.WhatsAppTextBody
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotMessage
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotRecipientType.individual
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotTextMessage
+import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.action.SendSentence
 
 /**
  *

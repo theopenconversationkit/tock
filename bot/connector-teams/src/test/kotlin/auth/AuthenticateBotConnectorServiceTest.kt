@@ -1,4 +1,4 @@
-package fr.vsct.tock.bot.connector.teams.auth
+package ai.tock.bot.connector.teams.auth
 
 import com.microsoft.bot.schema.models.Activity
 import com.nimbusds.jose.JWSAlgorithm
@@ -8,8 +8,8 @@ import com.nimbusds.jose.Payload
 import com.nimbusds.jose.crypto.RSASSASigner
 import com.nimbusds.jose.jwk.KeyUse
 import com.nimbusds.jose.jwk.gen.RSAKeyGenerator
-import fr.vsct.tock.bot.connector.teams.auth.MockServer.getMicrosoftMockServer
-import fr.vsct.tock.bot.connector.teams.auth.MockServer.jwk
+import ai.tock.bot.connector.teams.auth.MockServer.getMicrosoftMockServer
+import ai.tock.bot.connector.teams.auth.MockServer.jwk
 import io.vertx.core.MultiMap
 import io.vertx.core.http.CaseInsensitiveHeaders
 import net.jcip.annotations.NotThreadSafe

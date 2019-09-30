@@ -14,31 +14,31 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.twitter.fr.vsct.tock.bot.connector.twitter.json
+package ai.tock.bot.connector.twitter.ai.tock.bot.connector.twitter.json
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import fr.vsct.tock.bot.connector.twitter.model.Application
-import fr.vsct.tock.bot.connector.twitter.model.DirectMessage
-import fr.vsct.tock.bot.connector.twitter.model.DirectMessageIndicateTyping
-import fr.vsct.tock.bot.connector.twitter.model.Entities
-import fr.vsct.tock.bot.connector.twitter.model.Hashtag
-import fr.vsct.tock.bot.connector.twitter.model.Mention
-import fr.vsct.tock.bot.connector.twitter.model.MessageCreate
-import fr.vsct.tock.bot.connector.twitter.model.MessageData
-import fr.vsct.tock.bot.connector.twitter.model.Option
-import fr.vsct.tock.bot.connector.twitter.model.OptionWithoutDescription
-import fr.vsct.tock.bot.connector.twitter.model.Options
-import fr.vsct.tock.bot.connector.twitter.model.Recipient
-import fr.vsct.tock.bot.connector.twitter.model.Symbol
-import fr.vsct.tock.bot.connector.twitter.model.Tweet
-import fr.vsct.tock.bot.connector.twitter.model.Url
-import fr.vsct.tock.bot.connector.twitter.model.User
-import fr.vsct.tock.bot.connector.twitter.model.incoming.DirectMessageIncomingEvent
-import fr.vsct.tock.bot.connector.twitter.model.incoming.DirectMessageIndicateTypingIncomingEvent
-import fr.vsct.tock.bot.connector.twitter.model.incoming.IncomingEvent
-import fr.vsct.tock.bot.connector.twitter.model.incoming.TweetIncomingEvent
-import fr.vsct.tock.shared.jackson.mapper
-import fr.vsct.tock.shared.resourceAsStream
+import ai.tock.bot.connector.twitter.model.Application
+import ai.tock.bot.connector.twitter.model.DirectMessage
+import ai.tock.bot.connector.twitter.model.DirectMessageIndicateTyping
+import ai.tock.bot.connector.twitter.model.Entities
+import ai.tock.bot.connector.twitter.model.Hashtag
+import ai.tock.bot.connector.twitter.model.Mention
+import ai.tock.bot.connector.twitter.model.MessageCreate
+import ai.tock.bot.connector.twitter.model.MessageData
+import ai.tock.bot.connector.twitter.model.Option
+import ai.tock.bot.connector.twitter.model.OptionWithoutDescription
+import ai.tock.bot.connector.twitter.model.Options
+import ai.tock.bot.connector.twitter.model.Recipient
+import ai.tock.bot.connector.twitter.model.Symbol
+import ai.tock.bot.connector.twitter.model.Tweet
+import ai.tock.bot.connector.twitter.model.Url
+import ai.tock.bot.connector.twitter.model.User
+import ai.tock.bot.connector.twitter.model.incoming.DirectMessageIncomingEvent
+import ai.tock.bot.connector.twitter.model.incoming.DirectMessageIndicateTypingIncomingEvent
+import ai.tock.bot.connector.twitter.model.incoming.IncomingEvent
+import ai.tock.bot.connector.twitter.model.incoming.TweetIncomingEvent
+import ai.tock.shared.jackson.mapper
+import ai.tock.shared.resourceAsStream
 import mu.KotlinLogging
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

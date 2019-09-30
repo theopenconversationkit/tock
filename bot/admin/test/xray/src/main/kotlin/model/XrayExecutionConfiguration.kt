@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.test.xray.model
+package ai.tock.bot.admin.test.xray.model
 
-import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
-import fr.vsct.tock.shared.property
+import ai.tock.bot.admin.bot.BotApplicationConfiguration
+import ai.tock.shared.property
 
 /**
  *

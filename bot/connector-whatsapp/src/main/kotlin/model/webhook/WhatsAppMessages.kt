@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.whatsapp.model.webhook
+package ai.tock.bot.connector.whatsapp.model.webhook
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import fr.vsct.tock.bot.connector.ConnectorMessage
-import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.connector.whatsapp.model.common.WhatsAppError
-import fr.vsct.tock.bot.connector.whatsapp.whatsAppConnectorType
+import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.whatsapp.model.common.WhatsAppError
+import ai.tock.bot.connector.whatsapp.whatsAppConnectorType
 
 /**
  * See https://developers.facebook.com/docs/whatsapp/api/webhooks/inbound#message-obj.

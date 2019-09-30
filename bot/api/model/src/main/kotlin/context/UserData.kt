@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.model.context
+package ai.tock.bot.api.model.context
 
 import java.time.ZoneId
 import java.util.Locale

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.whatsapp.model.common
+package ai.tock.bot.connector.whatsapp.model.common
 
 /**
  *

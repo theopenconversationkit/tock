@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.model.message.bot
+package ai.tock.bot.api.model.message.bot
 
 data class Suggestion(val title: I18nText)

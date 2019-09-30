@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.translator
+package ai.tock.translator
 
-import fr.vsct.tock.shared.Dice.newInt
+import ai.tock.shared.Dice.newInt
 import mu.KotlinLogging
 import java.util.Locale
 

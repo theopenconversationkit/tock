@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.translator
+package ai.tock.translator
 
 import java.time.temporal.TemporalAccessor
 import java.util.Formattable

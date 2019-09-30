@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.whatsapp
+package ai.tock.bot.connector.whatsapp
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.datatype.jsr310.deser.InstantDeserializer
-import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotImageMessage
-import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotMessage
-import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotTextMessage
-import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppResponse
-import fr.vsct.tock.shared.addJacksonConverter
-import fr.vsct.tock.shared.basicAuthInterceptor
-import fr.vsct.tock.shared.create
-import fr.vsct.tock.shared.error
-import fr.vsct.tock.shared.jackson.addDeserializer
-import fr.vsct.tock.shared.jackson.mapper
-import fr.vsct.tock.shared.longProperty
-import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotImageMessage
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotMessage
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotTextMessage
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppResponse
+import ai.tock.shared.addJacksonConverter
+import ai.tock.shared.basicAuthInterceptor
+import ai.tock.shared.create
+import ai.tock.shared.error
+import ai.tock.shared.jackson.addDeserializer
+import ai.tock.shared.jackson.mapper
+import ai.tock.shared.longProperty
+import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import mu.KotlinLogging
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType

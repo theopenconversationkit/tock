@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.test.xray
+package ai.tock.bot.admin.test.xray
 
 /**
  * A Xray test plan execution result.

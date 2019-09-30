@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared.security
+package ai.tock.shared.security
 
-import fr.vsct.tock.shared.devEnvironment
-import fr.vsct.tock.shared.error
-import fr.vsct.tock.shared.property
-import fr.vsct.tock.shared.propertyExists
+import ai.tock.shared.devEnvironment
+import ai.tock.shared.error
+import ai.tock.shared.property
+import ai.tock.shared.propertyExists
 import mu.KotlinLogging
 import org.jasypt.util.text.BasicTextEncryptor
 

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.whatsapp
+package ai.tock.bot.connector.whatsapp
 
-import fr.vsct.tock.bot.connector.ConnectorCallbackBase
-import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotRecipientType
+import ai.tock.bot.connector.ConnectorCallbackBase
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotRecipientType
 
 /**
  * The WhatsApp [ConnectorCallback].

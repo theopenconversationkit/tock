@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.translator
+package ai.tock.translator
 
-import fr.vsct.tock.shared.defaultLocale
-import fr.vsct.tock.shared.defaultNamespace
+import ai.tock.shared.defaultLocale
+import ai.tock.shared.defaultNamespace
 import org.litote.kmongo.Id
 import java.util.Locale
 

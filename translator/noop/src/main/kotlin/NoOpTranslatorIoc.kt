@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.translator.noop
+package ai.tock.translator.noop
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import fr.vsct.tock.translator.TranslatorEngine
+import ai.tock.translator.TranslatorEngine
 
 val noOpTranslatorModule = Kodein.Module {
     bind<TranslatorEngine>() with provider { NoOpTranslatorEngine }

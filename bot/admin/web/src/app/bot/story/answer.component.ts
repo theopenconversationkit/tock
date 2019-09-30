@@ -83,7 +83,7 @@ export class AnswerComponent implements OnInit {
       }
     } else if (value === AnswerConfigurationType.script) {
       if (!this.answer.scriptAnswer()) {
-        const s = "import fr.vsct.tock.bot.definition.story\n" +
+        const s = "import ai.tock.bot.definition.story\n" +
           "\n" +
           "val s = story(\"" + this.answer.containerId() + "\") { \n" +
           "           end(\"Hello World! :)\")\n" +

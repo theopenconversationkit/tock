@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared.jackson
+package ai.tock.shared.jackson
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
@@ -24,8 +24,8 @@ import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import fr.vsct.tock.shared.jackson.AnyValueWrapper.AnyValueDeserializer
-import fr.vsct.tock.shared.jackson.AnyValueWrapper.AnyValueSerializer
+import ai.tock.shared.jackson.AnyValueWrapper.AnyValueDeserializer
+import ai.tock.shared.jackson.AnyValueWrapper.AnyValueSerializer
 import mu.KotlinLogging
 import kotlin.reflect.KClass
 

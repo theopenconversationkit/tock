@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.service
+package ai.tock.bot.api.service
 
-import fr.vsct.tock.bot.admin.bot.BotConfiguration
-import fr.vsct.tock.bot.api.model.configuration.ClientConfiguration
-import fr.vsct.tock.bot.api.model.configuration.StepConfiguration
-import fr.vsct.tock.bot.definition.BotDefinitionBase
-import fr.vsct.tock.bot.definition.Intent
-import fr.vsct.tock.bot.definition.IntentAware
-import fr.vsct.tock.bot.definition.SimpleStoryDefinition
-import fr.vsct.tock.bot.definition.SimpleStoryHandlerBase
-import fr.vsct.tock.bot.definition.StoryDefinition
-import fr.vsct.tock.bot.definition.StoryHandlerDefinition
-import fr.vsct.tock.bot.definition.StoryStep
-import fr.vsct.tock.bot.engine.BotBus
-import fr.vsct.tock.shared.error
+import ai.tock.bot.admin.bot.BotConfiguration
+import ai.tock.bot.api.model.configuration.ClientConfiguration
+import ai.tock.bot.api.model.configuration.StepConfiguration
+import ai.tock.bot.definition.BotDefinitionBase
+import ai.tock.bot.definition.Intent
+import ai.tock.bot.definition.IntentAware
+import ai.tock.bot.definition.SimpleStoryDefinition
+import ai.tock.bot.definition.SimpleStoryHandlerBase
+import ai.tock.bot.definition.StoryDefinition
+import ai.tock.bot.definition.StoryHandlerDefinition
+import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.engine.BotBus
+import ai.tock.shared.error
 import mu.KotlinLogging
 
 internal class FallbackStoryHandler(

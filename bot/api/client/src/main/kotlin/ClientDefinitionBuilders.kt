@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.client
+package ai.tock.bot.api.client
 
-import fr.vsct.tock.bot.definition.Intent
-import fr.vsct.tock.bot.definition.IntentAware
+import ai.tock.bot.definition.Intent
+import ai.tock.bot.definition.IntentAware
 
 private fun defaultUnknownStory() = unknownStory { end("Sorry I didn't understand") }
 

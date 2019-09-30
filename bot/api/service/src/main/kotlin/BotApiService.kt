@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.vsct.tock.bot.api.service
+package ai.tock.bot.api.service
 
-import fr.vsct.tock.bot.api.model.websocket.RequestData
-import fr.vsct.tock.bot.api.model.websocket.ResponseData
+import ai.tock.bot.api.model.websocket.RequestData
+import ai.tock.bot.api.model.websocket.ResponseData
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST

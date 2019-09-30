@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.translator
+package ai.tock.translator
 
 /**
  * A Translated sequence is a [CharSequence] that is already translated.

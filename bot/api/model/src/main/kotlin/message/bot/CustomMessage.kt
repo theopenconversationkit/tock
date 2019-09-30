@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.model.message.bot
+package ai.tock.bot.api.model.message.bot
 
-import fr.vsct.tock.shared.jackson.AnyValueWrapper
+import ai.tock.shared.jackson.AnyValueWrapper
 
 class CustomMessage(
     val message: AnyValueWrapper,

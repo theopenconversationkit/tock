@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.web
+package ai.tock.bot.connector.web
 
-import fr.vsct.tock.bot.engine.action.SendChoice
-import fr.vsct.tock.bot.engine.action.SendSentence
-import fr.vsct.tock.bot.engine.event.Event
-import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.bot.engine.user.PlayerType.bot
-import fr.vsct.tock.shared.defaultLocale
+import ai.tock.bot.engine.action.SendChoice
+import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.event.Event
+import ai.tock.bot.engine.user.PlayerId
+import ai.tock.bot.engine.user.PlayerType.bot
+import ai.tock.shared.defaultLocale
 import java.util.Locale
 
 data class WebConnectorRequest(val query: String? = null, val payload: String? = null, val userId: String, val locale: Locale = defaultLocale) {

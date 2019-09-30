@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.rocketchat
+package ai.tock.bot.connector.rocketchat
 
-import fr.vsct.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.ConnectorType
 
 
 /**

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.model
+package ai.tock.bot.api.model
 
-import fr.vsct.tock.bot.api.model.context.Entity
-import fr.vsct.tock.bot.api.model.message.bot.BotMessage
+import ai.tock.bot.api.model.context.Entity
+import ai.tock.bot.api.model.message.bot.BotMessage
 
 data class BotResponse(
     val messages: List<BotMessage> = emptyList(),

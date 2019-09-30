@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared
+package ai.tock.shared
 
 import org.junit.jupiter.api.Test
 import kotlin.test.assertTrue

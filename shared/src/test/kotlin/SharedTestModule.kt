@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared
+package ai.tock.shared
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import com.github.salomonbrys.kodein.singleton
 import com.mongodb.MongoClient
-import fr.vsct.tock.shared.cache.TockCache
-import fr.vsct.tock.shared.vertx.VertxProvider
+import ai.tock.shared.cache.TockCache
+import ai.tock.shared.vertx.VertxProvider
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk

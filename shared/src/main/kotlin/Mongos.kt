@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared
+package ai.tock.shared
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonTokenId
@@ -35,9 +35,9 @@ import com.mongodb.client.model.changestream.FullDocument
 import com.mongodb.connection.netty.NettyStreamFactoryFactory
 import com.mongodb.reactivestreams.client.MongoCollection
 import de.undercouch.bson4jackson.types.Decimal128
-import fr.vsct.tock.shared.jackson.addDeserializer
-import fr.vsct.tock.shared.jackson.addSerializer
-import fr.vsct.tock.shared.jackson.jacksonAdditionalModules
+import ai.tock.shared.jackson.addDeserializer
+import ai.tock.shared.jackson.addSerializer
+import ai.tock.shared.jackson.jacksonAdditionalModules
 import mu.KotlinLogging
 import org.litote.kmongo.KMongo
 import org.litote.kmongo.id.IdGenerator

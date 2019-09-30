@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.rocketchat
+package ai.tock.bot.connector.rocketchat
 
 import chat.rocket.common.model.RoomType
-import fr.vsct.tock.bot.connector.ConnectorBase
-import fr.vsct.tock.bot.connector.ConnectorCallback
-import fr.vsct.tock.bot.connector.ConnectorData
-import fr.vsct.tock.bot.engine.BotRepository
-import fr.vsct.tock.bot.engine.ConnectorController
-import fr.vsct.tock.bot.engine.action.SendSentence
-import fr.vsct.tock.bot.engine.event.Event
-import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.bot.engine.user.PlayerType
-import fr.vsct.tock.shared.error
+import ai.tock.bot.connector.ConnectorBase
+import ai.tock.bot.connector.ConnectorCallback
+import ai.tock.bot.connector.ConnectorData
+import ai.tock.bot.engine.BotRepository
+import ai.tock.bot.engine.ConnectorController
+import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.event.Event
+import ai.tock.bot.engine.user.PlayerId
+import ai.tock.bot.engine.user.PlayerType
+import ai.tock.shared.error
 import mu.KotlinLogging
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.CopyOnWriteArraySet

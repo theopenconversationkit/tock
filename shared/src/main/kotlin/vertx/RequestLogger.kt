@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared.vertx
+package ai.tock.shared.vertx
 
 import io.vertx.ext.web.RoutingContext
 

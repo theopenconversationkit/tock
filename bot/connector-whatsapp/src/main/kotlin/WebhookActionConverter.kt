@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.whatsapp
+package ai.tock.bot.connector.whatsapp
 
 import com.github.salomonbrys.kodein.instance
-import fr.vsct.tock.bot.connector.whatsapp.model.webhook.WhatsAppMessage
-import fr.vsct.tock.bot.connector.whatsapp.model.webhook.WhatsAppTextMessage
-import fr.vsct.tock.bot.connector.whatsapp.model.webhook.WhatsAppVoiceMessage
-import fr.vsct.tock.bot.engine.action.SendSentence
-import fr.vsct.tock.bot.engine.event.Event
-import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.bot.engine.user.PlayerType
-import fr.vsct.tock.shared.injector
-import fr.vsct.tock.stt.AudioCodec
-import fr.vsct.tock.stt.STT
+import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppMessage
+import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppTextMessage
+import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppVoiceMessage
+import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.event.Event
+import ai.tock.bot.engine.user.PlayerId
+import ai.tock.bot.engine.user.PlayerType
+import ai.tock.shared.injector
+import ai.tock.stt.AudioCodec
+import ai.tock.stt.STT
 
 /**
  *

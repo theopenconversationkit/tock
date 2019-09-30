@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.test.xray
+package ai.tock.bot.admin.test.xray
 
-import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
-import fr.vsct.tock.bot.admin.test.TestPlan
-import fr.vsct.tock.bot.admin.test.TestPlanExecution
+import ai.tock.bot.admin.bot.BotApplicationConfiguration
+import ai.tock.bot.admin.test.TestPlan
+import ai.tock.bot.admin.test.TestPlanExecution
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET

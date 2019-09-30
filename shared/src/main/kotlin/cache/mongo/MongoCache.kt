@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared.cache.mongo
+package ai.tock.shared.cache.mongo
 
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.ReplaceOptions
-import fr.vsct.tock.shared.cache.TockCache
-import fr.vsct.tock.shared.cache.mongo.MongoCacheData_.Companion.Type
-import fr.vsct.tock.shared.error
-import fr.vsct.tock.shared.getDatabase
+import ai.tock.shared.cache.TockCache
+import ai.tock.shared.cache.mongo.MongoCacheData_.Companion.Type
+import ai.tock.shared.error
+import ai.tock.shared.getDatabase
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.and

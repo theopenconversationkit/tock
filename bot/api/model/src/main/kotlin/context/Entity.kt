@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.model.context
+package ai.tock.bot.api.model.context
 
-import fr.vsct.tock.nlp.entity.Value
+import ai.tock.nlp.entity.Value
 
 data class Entity(
     /**

@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared
+package ai.tock.shared
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import fr.vsct.tock.shared.vertx.TockVertxProvider
-import fr.vsct.tock.shared.vertx.VertxProvider
-import fr.vsct.tock.shared.vertx.defaultVertxOptions
-import fr.vsct.tock.shared.vertx.vertx
+import ai.tock.shared.vertx.TockVertxProvider
+import ai.tock.shared.vertx.VertxProvider
+import ai.tock.shared.vertx.defaultVertxOptions
+import ai.tock.shared.vertx.vertx
 import io.vertx.core.VertxOptions
 import io.vertx.core.impl.VertxInternal
 import org.junit.jupiter.api.AfterEach

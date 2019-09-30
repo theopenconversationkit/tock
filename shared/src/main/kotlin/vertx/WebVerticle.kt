@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared.vertx
+package ai.tock.shared.vertx
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.readValue
-import fr.vsct.tock.shared.booleanProperty
-import fr.vsct.tock.shared.devEnvironment
-import fr.vsct.tock.shared.error
-import fr.vsct.tock.shared.intProperty
-import fr.vsct.tock.shared.jackson.mapper
-import fr.vsct.tock.shared.longProperty
-import fr.vsct.tock.shared.property
-import fr.vsct.tock.shared.security.TockUser
-import fr.vsct.tock.shared.security.TockUserRole
-import fr.vsct.tock.shared.security.auth.AWSJWTAuthProvider
-import fr.vsct.tock.shared.security.auth.GithubOAuthProvider
-import fr.vsct.tock.shared.security.auth.PropertyBasedAuthProvider
-import fr.vsct.tock.shared.security.auth.TockAuthProvider
+import ai.tock.shared.booleanProperty
+import ai.tock.shared.devEnvironment
+import ai.tock.shared.error
+import ai.tock.shared.intProperty
+import ai.tock.shared.jackson.mapper
+import ai.tock.shared.longProperty
+import ai.tock.shared.property
+import ai.tock.shared.security.TockUser
+import ai.tock.shared.security.TockUserRole
+import ai.tock.shared.security.auth.AWSJWTAuthProvider
+import ai.tock.shared.security.auth.GithubOAuthProvider
+import ai.tock.shared.security.auth.PropertyBasedAuthProvider
+import ai.tock.shared.security.auth.TockAuthProvider
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.AsyncResult
 import io.vertx.core.Future

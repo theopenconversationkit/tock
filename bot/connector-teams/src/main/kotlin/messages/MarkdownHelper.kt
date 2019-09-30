@@ -1,4 +1,4 @@
-package fr.vsct.tock.bot.connector.teams.messages
+package ai.tock.bot.connector.teams.messages
 
 internal object MarkdownHelper {
 

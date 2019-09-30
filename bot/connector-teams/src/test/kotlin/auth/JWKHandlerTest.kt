@@ -1,6 +1,6 @@
-package fr.vsct.tock.bot.connector.teams.auth
+package ai.tock.bot.connector.teams.auth
 
-import fr.vsct.tock.bot.connector.teams.auth.MockServer.getMicrosoftMockServer
+import ai.tock.bot.connector.teams.auth.MockServer.getMicrosoftMockServer
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Before
 import org.junit.jupiter.api.BeforeAll

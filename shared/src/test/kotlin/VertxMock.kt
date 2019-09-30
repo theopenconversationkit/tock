@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared
+package ai.tock.shared
 
 import io.mockk.mockk
 import io.netty.channel.EventLoopGroup

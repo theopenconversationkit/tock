@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.model.message.bot
+package ai.tock.bot.api.model.message.bot
 
 enum class AttachmentType {
     image, audio, video, file

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared.cache.mongo
+package ai.tock.shared.cache.mongo
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import fr.vsct.tock.shared.jackson.AnyValueWrapper
-import fr.vsct.tock.shared.jackson.mapper
+import ai.tock.shared.jackson.AnyValueWrapper
+import ai.tock.shared.jackson.mapper
 import org.junit.jupiter.api.Test
 import java.util.Arrays
 import kotlin.test.assertEquals

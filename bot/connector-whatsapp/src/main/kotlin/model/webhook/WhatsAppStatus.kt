@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.whatsapp.model.webhook
+package ai.tock.bot.connector.whatsapp.model.webhook
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import fr.vsct.tock.bot.connector.whatsapp.model.common.WhatsAppError
+import ai.tock.bot.connector.whatsapp.model.common.WhatsAppError
 
 data class WhatsAppStatus(
     val id: String,

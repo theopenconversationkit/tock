@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.model.message.bot
+package ai.tock.bot.api.model.message.bot
 
-import fr.vsct.tock.translator.TranslatedSequence
+import ai.tock.translator.TranslatedSequence
 import mu.KotlinLogging
 
 data class I18nText(

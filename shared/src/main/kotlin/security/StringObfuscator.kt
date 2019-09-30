@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared.security
+package ai.tock.shared.security
 
-import fr.vsct.tock.shared.security.StringObfuscatorMode.display
-import fr.vsct.tock.shared.security.StringObfuscatorMode.normal
+import ai.tock.shared.security.StringObfuscatorMode.display
+import ai.tock.shared.security.StringObfuscatorMode.normal
 
 /**
  * Replaces a string by an other String.

@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.web
+package ai.tock.bot.connector.web
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import fr.vsct.tock.bot.connector.ConnectorBase
-import fr.vsct.tock.bot.connector.ConnectorCallback
-import fr.vsct.tock.bot.connector.ConnectorData
-import fr.vsct.tock.bot.connector.ConnectorMessage
-import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.connector.media.MediaCard
-import fr.vsct.tock.bot.connector.media.MediaCarousel
-import fr.vsct.tock.bot.connector.media.MediaMessage
-import fr.vsct.tock.bot.engine.BotBus
-import fr.vsct.tock.bot.engine.BotRepository
-import fr.vsct.tock.bot.engine.ConnectorController
-import fr.vsct.tock.bot.engine.action.Action
-import fr.vsct.tock.bot.engine.event.Event
-import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.bot.engine.user.UserPreferences
-import fr.vsct.tock.shared.Executor
-import fr.vsct.tock.shared.injector
-import fr.vsct.tock.shared.jackson.mapper
-import fr.vsct.tock.shared.provide
+import ai.tock.bot.connector.ConnectorBase
+import ai.tock.bot.connector.ConnectorCallback
+import ai.tock.bot.connector.ConnectorData
+import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.media.MediaCard
+import ai.tock.bot.connector.media.MediaCarousel
+import ai.tock.bot.connector.media.MediaMessage
+import ai.tock.bot.engine.BotBus
+import ai.tock.bot.engine.BotRepository
+import ai.tock.bot.engine.ConnectorController
+import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.event.Event
+import ai.tock.bot.engine.user.PlayerId
+import ai.tock.bot.engine.user.UserPreferences
+import ai.tock.shared.Executor
+import ai.tock.shared.injector
+import ai.tock.shared.jackson.mapper
+import ai.tock.shared.provide
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 

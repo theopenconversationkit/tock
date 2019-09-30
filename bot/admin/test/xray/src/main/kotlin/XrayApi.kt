@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.test.xray
+package ai.tock.bot.admin.test.xray
 
-import fr.vsct.tock.bot.admin.test.xray.model.JiraAttachment
-import fr.vsct.tock.bot.admin.test.xray.model.JiraIssue
-import fr.vsct.tock.bot.admin.test.xray.model.JiraIssueLink
-import fr.vsct.tock.bot.admin.test.xray.model.JiraTest
-import fr.vsct.tock.bot.admin.test.xray.model.XrayBuildTestStep
-import fr.vsct.tock.bot.admin.test.xray.model.XrayTest
-import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecution
-import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecutionCreation
-import fr.vsct.tock.bot.admin.test.xray.model.XrayTestStep
-import fr.vsct.tock.bot.admin.test.xray.model.XrayUpdateTest
+import ai.tock.bot.admin.test.xray.model.JiraAttachment
+import ai.tock.bot.admin.test.xray.model.JiraIssue
+import ai.tock.bot.admin.test.xray.model.JiraIssueLink
+import ai.tock.bot.admin.test.xray.model.JiraTest
+import ai.tock.bot.admin.test.xray.model.XrayBuildTestStep
+import ai.tock.bot.admin.test.xray.model.XrayTest
+import ai.tock.bot.admin.test.xray.model.XrayTestExecution
+import ai.tock.bot.admin.test.xray.model.XrayTestExecutionCreation
+import ai.tock.bot.admin.test.xray.model.XrayTestStep
+import ai.tock.bot.admin.test.xray.model.XrayUpdateTest
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call

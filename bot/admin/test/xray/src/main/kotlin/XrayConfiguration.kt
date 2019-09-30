@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.test.xray
+package ai.tock.bot.admin.test.xray
 
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer
-import fr.vsct.tock.shared.jackson.addSerializer
-import fr.vsct.tock.shared.jackson.mapper
-import fr.vsct.tock.shared.property
+import ai.tock.shared.jackson.addSerializer
+import ai.tock.shared.jackson.mapper
+import ai.tock.shared.property
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 

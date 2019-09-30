@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared.security.auth
+package ai.tock.shared.security.auth
 
 import com.google.common.io.BaseEncoding
-import fr.vsct.tock.shared.mapProperty
-import fr.vsct.tock.shared.property
-import fr.vsct.tock.shared.security.TockUser
-import fr.vsct.tock.shared.security.TockUserRole
-import fr.vsct.tock.shared.vertx.WebVerticle
+import ai.tock.shared.mapProperty
+import ai.tock.shared.property
+import ai.tock.shared.security.TockUser
+import ai.tock.shared.security.TockUserRole
+import ai.tock.shared.vertx.WebVerticle
 import io.vertx.core.AsyncResult
 import io.vertx.core.Future
 import io.vertx.core.Handler

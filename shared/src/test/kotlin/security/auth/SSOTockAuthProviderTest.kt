@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared.security.auth
+package ai.tock.shared.security.auth
 
-import fr.vsct.tock.shared.VertxMock
-import fr.vsct.tock.shared.vertx.WebVerticle
+import ai.tock.shared.VertxMock
+import ai.tock.shared.vertx.WebVerticle
 import io.mockk.mockk
 import io.vertx.core.AsyncResult
 import io.vertx.core.Handler

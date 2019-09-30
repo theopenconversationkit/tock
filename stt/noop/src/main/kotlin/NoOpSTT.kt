@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.vsct.tock.stt.noop
+package ai.tock.stt.noop
 
-import fr.vsct.tock.stt.AudioCodec
-import fr.vsct.tock.stt.STT
+import ai.tock.stt.AudioCodec
+import ai.tock.stt.STT
 import java.util.Locale
 
 /**

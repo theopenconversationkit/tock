@@ -15,44 +15,44 @@
  */
 
 import com.github.salomonbrys.kodein.Kodein
-import fr.vsct.tock.bot.test.TestContext
-import fr.vsct.tock.translator.TranslatorEngine
+import ai.tock.bot.test.TestContext
+import ai.tock.translator.TranslatorEngine
 
 
 /**
  * Module containing [TranslatorEngine].
  */
 @Deprecated(
-    "Use same var with fr.vsct.tock.bot.test package",
-    replaceWith = ReplaceWith("testTranslatorModule", "fr.vsct.tock.bot.test.testTranslatorModule")
+    "Use same var with ai.tock.bot.test package",
+    replaceWith = ReplaceWith("testTranslatorModule", "ai.tock.bot.test.testTranslatorModule")
 )
 var testTranslatorModule: Kodein.Module
-    get() = fr.vsct.tock.bot.test.testTranslatorModule
+    get() = ai.tock.bot.test.testTranslatorModule
     set(v) {
-        fr.vsct.tock.bot.test.testTranslatorModule = v
+        ai.tock.bot.test.testTranslatorModule = v
     }
 
 /**
  * Test modules injected in [testInjector].
  */
 @Deprecated(
-    "Use same val with fr.vsct.tock.bot.test package",
-    replaceWith = ReplaceWith("testModules", "fr.vsct.tock.bot.test.testModules")
+    "Use same val with ai.tock.bot.test package",
+    replaceWith = ReplaceWith("testModules", "ai.tock.bot.test.testModules")
 )
 val testModules: MutableList<Kodein.Module>
-    get() = fr.vsct.tock.bot.test.testModules
+    get() = ai.tock.bot.test.testModules
 
 /**
  * The current [TestContext] used when test parallelism is not a requirement.
  */
 @Deprecated(
-    "Use same var with fr.vsct.tock.bot.test package",
-    replaceWith = ReplaceWith("currentTestContext", "fr.vsct.tock.bot.test.currentTestContext")
+    "Use same var with ai.tock.bot.test package",
+    replaceWith = ReplaceWith("currentTestContext", "ai.tock.bot.test.currentTestContext")
 )
 var currentTestContext: TestContext
-    get() = fr.vsct.tock.bot.test.currentTestContext
+    get() = ai.tock.bot.test.currentTestContext
     set(v) {
-        fr.vsct.tock.bot.test.currentTestContext = v
+        ai.tock.bot.test.currentTestContext = v
     }
 
 

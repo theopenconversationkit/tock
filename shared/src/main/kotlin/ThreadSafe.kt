@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared
+package ai.tock.shared
 
 /**
  * A class annotated with [ThreadSafe] is supposed to be thread safe (surprisingly).

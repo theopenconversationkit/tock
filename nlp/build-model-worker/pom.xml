@@ -82,7 +82,7 @@
                             <archive>
                                 <manifest>
                                     <mainClass>
-                                        fr.vsct.tock.nlp.build.StartBuildWorkerKt
+                                        ai.tock.nlp.build.StartBuildWorkerKt
                                     </mainClass>
                                 </manifest>
                             </archive>

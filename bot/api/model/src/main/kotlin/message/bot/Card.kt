@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.model.message.bot
+package ai.tock.bot.api.model.message.bot
 
 data class Card(val title: I18nText? = null,
                 val subTitle: I18nText? = null,

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.test.xray.model
+package ai.tock.bot.admin.test.xray.model
 
-import fr.vsct.tock.shared.property
-import fr.vsct.tock.translator.UserInterfaceType
-import fr.vsct.tock.translator.UserInterfaceType.textAndVoiceAssistant
-import fr.vsct.tock.translator.UserInterfaceType.textChat
-import fr.vsct.tock.translator.UserInterfaceType.valueOf
-import fr.vsct.tock.translator.UserInterfaceType.voiceAssistant
+import ai.tock.shared.property
+import ai.tock.translator.UserInterfaceType
+import ai.tock.translator.UserInterfaceType.textAndVoiceAssistant
+import ai.tock.translator.UserInterfaceType.textChat
+import ai.tock.translator.UserInterfaceType.valueOf
+import ai.tock.translator.UserInterfaceType.voiceAssistant
 
 /**
  *

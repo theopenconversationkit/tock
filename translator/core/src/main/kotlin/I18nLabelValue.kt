@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.translator
+package ai.tock.translator
 
 /**
  * A label value contains an unique key used to retrieve the translations from the database.

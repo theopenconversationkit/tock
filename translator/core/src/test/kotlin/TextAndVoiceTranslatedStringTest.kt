@@ -29,7 +29,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.vsct.tock.translator
+package ai.tock.translator
 
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals

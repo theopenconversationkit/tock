@@ -1,12 +1,12 @@
-package fr.vsct.tock.bot.connector.teams.messages
+package ai.tock.bot.connector.teams.messages
 
 import com.microsoft.bot.schema.models.ActionTypes.MESSAGE_BACK
 import com.microsoft.bot.schema.models.ActionTypes.OPEN_URL
 import com.microsoft.bot.schema.models.CardAction
 import com.microsoft.bot.schema.models.CardImage
-import fr.vsct.tock.bot.connector.teams.teamsConnectorType
-import fr.vsct.tock.bot.engine.Bus
-import fr.vsct.tock.bot.engine.I18nTranslator
+import ai.tock.bot.connector.teams.teamsConnectorType
+import ai.tock.bot.engine.Bus
+import ai.tock.bot.engine.I18nTranslator
 
 fun <T : Bus<T>> T.withTeams(messageProvider: () -> TeamsBotMessage): T {
     return withMessage(teamsConnectorType, messageProvider)

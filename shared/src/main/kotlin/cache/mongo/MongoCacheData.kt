@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared.cache.mongo
+package ai.tock.shared.cache.mongo
 
-import fr.vsct.tock.shared.jackson.AnyValueWrapper
+import ai.tock.shared.jackson.AnyValueWrapper
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.jackson.data.JacksonData

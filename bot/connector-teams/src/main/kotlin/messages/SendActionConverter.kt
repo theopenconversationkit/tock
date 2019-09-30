@@ -1,8 +1,8 @@
-package fr.vsct.tock.bot.connector.teams.messages
+package ai.tock.bot.connector.teams.messages
 
-import fr.vsct.tock.bot.connector.teams.teamsConnectorType
-import fr.vsct.tock.bot.engine.action.Action
-import fr.vsct.tock.bot.engine.action.SendSentence
+import ai.tock.bot.connector.teams.teamsConnectorType
+import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.action.SendSentence
 
 internal object SendActionConverter {
 

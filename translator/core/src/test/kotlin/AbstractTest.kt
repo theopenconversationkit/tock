@@ -29,14 +29,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.vsct.tock.translator
+package ai.tock.translator
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import fr.vsct.tock.shared.sharedTestModule
-import fr.vsct.tock.shared.tockInternalInjector
+import ai.tock.shared.sharedTestModule
+import ai.tock.shared.tockInternalInjector
 import io.mockk.mockk
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach

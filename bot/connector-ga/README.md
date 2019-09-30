@@ -13,4 +13,4 @@ In order to connect your bot with a Google Assistant application,
 
 * A Google Assistant integration sample is available in the [open data Bot](https://github.com/theopenconversationkit/tock-bot-open-data) source code
 
-* The documentation of the google assistant builders is available in [KDoc format](https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector.ga/index.html)
+* The documentation of the google assistant builders is available in [KDoc format](https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.connector.ga/index.html)

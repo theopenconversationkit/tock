@@ -1,5 +1,5 @@
-import fr.vsct.tock.bot.api.client.newBot
-import fr.vsct.tock.bot.api.client.newStory
+import ai.tock.bot.api.client.newBot
+import ai.tock.bot.api.client.newStory
 
 /*
  * Copyright (C) 2017/2019 VSCT

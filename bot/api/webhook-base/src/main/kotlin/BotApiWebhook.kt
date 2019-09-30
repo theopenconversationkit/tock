@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.webhook
+package ai.tock.bot.api.webhook
 
-import fr.vsct.tock.bot.api.client.ClientBotDefinition
-import fr.vsct.tock.shared.vertx.vertx
+import ai.tock.bot.api.client.ClientBotDefinition
+import ai.tock.shared.vertx.vertx
 
 /*
  * Copyright (C) 2017/2019 VSCT

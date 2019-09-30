@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.translator.google
+package ai.tock.translator.google
 
 import com.google.cloud.translate.Translate.TranslateOption
 import com.google.cloud.translate.TranslateOptions
-import fr.vsct.tock.translator.TranslatorEngine
+import ai.tock.translator.TranslatorEngine
 import java.util.Locale
 
 

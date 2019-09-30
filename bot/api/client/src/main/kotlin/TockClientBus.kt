@@ -14,31 +14,31 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.api.client
+package ai.tock.bot.api.client
 
-import fr.vsct.tock.bot.api.model.BotResponse
-import fr.vsct.tock.bot.api.model.ResponseContext
-import fr.vsct.tock.bot.api.model.UserRequest
-import fr.vsct.tock.bot.api.model.context.Entity
-import fr.vsct.tock.bot.api.model.message.bot.BotMessage
-import fr.vsct.tock.bot.api.model.message.bot.Card
-import fr.vsct.tock.bot.api.model.message.bot.Carousel
-import fr.vsct.tock.bot.api.model.message.bot.CustomMessage
-import fr.vsct.tock.bot.api.model.message.bot.I18nText
-import fr.vsct.tock.bot.api.model.message.bot.Sentence
-import fr.vsct.tock.bot.api.model.message.user.UserMessage
-import fr.vsct.tock.bot.api.model.websocket.RequestData
-import fr.vsct.tock.bot.connector.ConnectorMessage
-import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.definition.Intent
-import fr.vsct.tock.bot.definition.IntentAware
-import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.shared.jackson.AnyValueWrapper
-import fr.vsct.tock.translator.I18nKeyProvider
-import fr.vsct.tock.translator.I18nLabelValue
-import fr.vsct.tock.translator.RawString
-import fr.vsct.tock.translator.TranslatedString
-import fr.vsct.tock.translator.UserInterfaceType
+import ai.tock.bot.api.model.BotResponse
+import ai.tock.bot.api.model.ResponseContext
+import ai.tock.bot.api.model.UserRequest
+import ai.tock.bot.api.model.context.Entity
+import ai.tock.bot.api.model.message.bot.BotMessage
+import ai.tock.bot.api.model.message.bot.Card
+import ai.tock.bot.api.model.message.bot.Carousel
+import ai.tock.bot.api.model.message.bot.CustomMessage
+import ai.tock.bot.api.model.message.bot.I18nText
+import ai.tock.bot.api.model.message.bot.Sentence
+import ai.tock.bot.api.model.message.user.UserMessage
+import ai.tock.bot.api.model.websocket.RequestData
+import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.definition.Intent
+import ai.tock.bot.definition.IntentAware
+import ai.tock.bot.engine.user.PlayerId
+import ai.tock.shared.jackson.AnyValueWrapper
+import ai.tock.translator.I18nKeyProvider
+import ai.tock.translator.I18nLabelValue
+import ai.tock.translator.RawString
+import ai.tock.translator.TranslatedString
+import ai.tock.translator.UserInterfaceType
 import java.util.Locale
 import java.util.concurrent.CopyOnWriteArrayList
 
