@@ -16,6 +16,8 @@
 
 package ai.tock.shared.jackson
 
+import ai.tock.shared.jackson.AnyValueWrapper.AnyValueDeserializer
+import ai.tock.shared.jackson.AnyValueWrapper.AnyValueSerializer
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
@@ -24,8 +26,6 @@ import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import ai.tock.shared.jackson.AnyValueWrapper.AnyValueDeserializer
-import ai.tock.shared.jackson.AnyValueWrapper.AnyValueSerializer
 import mu.KotlinLogging
 import kotlin.reflect.KClass
 
@@ -58,7 +58,8 @@ data class AnyValueWrapper(val klass: String, val value: Any?) {
             if (fieldName != null) {
                 val classValue: Class<*>? =
                     try {
-                        Class.forName(jp.text)
+                        //TODO remove replace in 20.3
+                        Class.forName(jp.text.replace("fr.vsct.tock", "ai.tock"))
                     } catch (e: Exception) {
                         logger.warn("deserialization error for class ${e.message}")
                         null

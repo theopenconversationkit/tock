@@ -3,7 +3,7 @@ info:
   description: "This is the Tock NLP API. You can parse text with it!"
   version: "19.3.0"
   title: "Tock NLP API"
-  termsOfService: "https://voyages-sncf-technologies.github.io/tock/fr/"
+  termsOfService: "https://doc.tock.ai"
   license:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"

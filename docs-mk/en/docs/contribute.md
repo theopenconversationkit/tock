@@ -6,7 +6,7 @@ The project uses [Maven](https://maven.apache.org/).
 
 ``` mvn package ```
 
-A CI build is available on [Travis](https://travis-ci.org/voyages-sncf-technologies/tock).
+A CI build is available on [Travis](https://travis-ci.org/theopenconversationkit/tock).
 
 ## Start the project in the IDE
 

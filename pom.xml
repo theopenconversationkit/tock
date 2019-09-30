@@ -714,8 +714,8 @@
             <id>jburet_vsct</id>
             <name>Julien Buret</name>
             <email>jburet@voyages-sncf.com</email>
-            <organization>voyages-sncf-technologies</organization>
-            <organizationUrl>https://www.voyages-sncf.com/</organizationUrl>
+            <organization>theopenconversationkit</organization>
+            <organizationUrl>https://doc.tock.ai</organizationUrl>
         </developer>
     </developers>
     <licenses>

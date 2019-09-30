@@ -55,7 +55,7 @@ Le projet est construit avec [Maven](https://maven.apache.org/), y compris les m
  
 `$ mvn package`
 
-Un build d'intégration continue est disponible sur [Travis](https://travis-ci.org/voyages-sncf-technologies/tock).
+Un build d'intégration continue est disponible sur [Travis](https://travis-ci.org/theopenconversationkit/tock).
 
 ### Images Docker
 

@@ -57,7 +57,7 @@ Tock is built with [Maven](https://maven.apache.org/), including the Web modules
  
 `$ mvn package`
 
-Continuous integration build jobs are available on [Travis](https://travis-ci.org/voyages-sncf-technologies/tock).
+Continuous integration build jobs are available on [Travis](https://travis-ci.org/theopenconversationkit/tock).
 
 ### Docker images
 

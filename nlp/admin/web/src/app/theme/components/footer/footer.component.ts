@@ -5,7 +5,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./footer.component.scss'],
   template: `
     <div class="socials">
-      <a href="https://github.com/voyages-sncf-technologies/tock" target="_blank" class="ion ion-social-github"></a>
+      <a href="https://github.com/theopenconversationkit/tock" target="_blank" class="ion ion-social-github"></a>
     </div>
   `,
 })

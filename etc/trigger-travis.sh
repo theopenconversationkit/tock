@@ -18,6 +18,6 @@ function travis-api {
 }
 
 if [ "$TRAVIS_BRANCH" = 'master' ] && [ "$TRAVIS_PULL_REQUEST" = 'false' ] && [ "$TRAVIS_TAG" = '' ]; then
-  travis-api "voyages-sncf-technologies" "tock-corenlp"
-  travis-api "voyages-sncf-technologies" "tock-bot-open-data"
+  travis-api "theopenconversationkit" "tock-corenlp"
+  travis-api "theopenconversationkit" "tock-bot-open-data"
 fi
