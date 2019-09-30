@@ -11,7 +11,7 @@ cache:
   - nlp/admin/web/node_modules
   - bot/admin/web/node_modules
 before_cache:
-  - rm -rf $HOME/.m2/repository/fr/vsct/tock
+  - rm -rf $HOME/.m2/repository/ai/tock
   - rm -rf bot/admin/web/node_modules/tock-nlp-admin
 env:
   global:
