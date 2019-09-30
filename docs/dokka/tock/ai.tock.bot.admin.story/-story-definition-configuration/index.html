@@ -1,0 +1,189 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>StoryDefinitionConfiguration - tock</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">ai.tock.bot.admin.story</a>&nbsp;/&nbsp;<a href="./index.html">StoryDefinitionConfiguration</a><br/>
+<br/>
+<h1>StoryDefinitionConfiguration</h1>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">StoryDefinitionConfiguration</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">StoryDefinitionAnswersContainer</span></code> <a href="https://github.com/theopenconversationkit/tock/blob/master/bot/engine/src/main/kotlin/admin/story/StoryDefinitionConfiguration.kt#L34">(source)</a>
+<p>A <a href="../../ai.tock.bot.definition/-story-definition/index.html">StoryDefinition</a> defined at runtime.</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">StoryDefinitionConfiguration</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.admin.story.StoryDefinitionConfiguration$<init>(ai.tock.bot.definition.BotDefinition, ai.tock.bot.definition.StoryDefinition, kotlin.String)/botDefinition">botDefinition</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.definition/-bot-definition/index.html"><span class="identifier">BotDefinition</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.admin.story.StoryDefinitionConfiguration$<init>(ai.tock.bot.definition.BotDefinition, ai.tock.bot.definition.StoryDefinition, kotlin.String)/storyDefinition">storyDefinition</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.definition/-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.admin.story.StoryDefinitionConfiguration$<init>(ai.tock.bot.definition.BotDefinition, ai.tock.bot.definition.StoryDefinition, kotlin.String)/configurationName">configurationName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">)</span></code><code><span class="identifier">StoryDefinitionConfiguration</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.admin.story.StoryDefinitionConfiguration$<init>(kotlin.String, kotlin.String, ai.tock.bot.definition.Intent, ai.tock.bot.admin.answer.AnswerConfigurationType, kotlin.collections.List((ai.tock.bot.admin.answer.AnswerConfiguration)), kotlin.Int, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity)), kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationStep)), kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature)), org.litote.kmongo.Id((ai.tock.bot.admin.story.StoryDefinitionConfiguration)))/storyId">storyId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.admin.story.StoryDefinitionConfiguration$<init>(kotlin.String, kotlin.String, ai.tock.bot.definition.Intent, ai.tock.bot.admin.answer.AnswerConfigurationType, kotlin.collections.List((ai.tock.bot.admin.answer.AnswerConfiguration)), kotlin.Int, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity)), kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationStep)), kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature)), org.litote.kmongo.Id((ai.tock.bot.admin.story.StoryDefinitionConfiguration)))/botId">botId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.admin.story.StoryDefinitionConfiguration$<init>(kotlin.String, kotlin.String, ai.tock.bot.definition.Intent, ai.tock.bot.admin.answer.AnswerConfigurationType, kotlin.collections.List((ai.tock.bot.admin.answer.AnswerConfiguration)), kotlin.Int, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity)), kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationStep)), kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature)), org.litote.kmongo.Id((ai.tock.bot.admin.story.StoryDefinitionConfiguration)))/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.definition/-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.admin.story.StoryDefinitionConfiguration$<init>(kotlin.String, kotlin.String, ai.tock.bot.definition.Intent, ai.tock.bot.admin.answer.AnswerConfigurationType, kotlin.collections.List((ai.tock.bot.admin.answer.AnswerConfiguration)), kotlin.Int, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity)), kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationStep)), kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature)), org.litote.kmongo.Id((ai.tock.bot.admin.story.StoryDefinitionConfiguration)))/currentType">currentType</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.admin.answer/-answer-configuration-type/index.html"><span class="identifier">AnswerConfigurationType</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.admin.story.StoryDefinitionConfiguration$<init>(kotlin.String, kotlin.String, ai.tock.bot.definition.Intent, ai.tock.bot.admin.answer.AnswerConfigurationType, kotlin.collections.List((ai.tock.bot.admin.answer.AnswerConfiguration)), kotlin.Int, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity)), kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationStep)), kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature)), org.litote.kmongo.Id((ai.tock.bot.admin.story.StoryDefinitionConfiguration)))/answers">answers</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../../ai.tock.bot.admin.answer/-answer-configuration/index.html"><span class="identifier">AnswerConfiguration</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.admin.story.StoryDefinitionConfiguration$<init>(kotlin.String, kotlin.String, ai.tock.bot.definition.Intent, ai.tock.bot.admin.answer.AnswerConfigurationType, kotlin.collections.List((ai.tock.bot.admin.answer.AnswerConfiguration)), kotlin.Int, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity)), kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationStep)), kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature)), org.litote.kmongo.Id((ai.tock.bot.admin.story.StoryDefinitionConfiguration)))/version">version</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.admin.story.StoryDefinitionConfiguration$<init>(kotlin.String, kotlin.String, ai.tock.bot.definition.Intent, ai.tock.bot.admin.answer.AnswerConfigurationType, kotlin.collections.List((ai.tock.bot.admin.answer.AnswerConfiguration)), kotlin.Int, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity)), kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationStep)), kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature)), org.litote.kmongo.Id((ai.tock.bot.admin.story.StoryDefinitionConfiguration)))/namespace">namespace</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;defaultNamespace<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.admin.story.StoryDefinitionConfiguration$<init>(kotlin.String, kotlin.String, ai.tock.bot.definition.Intent, ai.tock.bot.admin.answer.AnswerConfigurationType, kotlin.collections.List((ai.tock.bot.admin.answer.AnswerConfiguration)), kotlin.Int, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity)), kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationStep)), kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature)), org.litote.kmongo.Id((ai.tock.bot.admin.story.StoryDefinitionConfiguration)))/mandatoryEntities">mandatoryEntities</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-story-definition-configuration-mandatory-entity/index.html"><span class="identifier">StoryDefinitionConfigurationMandatoryEntity</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;emptyList()<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.admin.story.StoryDefinitionConfiguration$<init>(kotlin.String, kotlin.String, ai.tock.bot.definition.Intent, ai.tock.bot.admin.answer.AnswerConfigurationType, kotlin.collections.List((ai.tock.bot.admin.answer.AnswerConfiguration)), kotlin.Int, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity)), kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationStep)), kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature)), org.litote.kmongo.Id((ai.tock.bot.admin.story.StoryDefinitionConfiguration)))/steps">steps</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-story-definition-configuration-step/index.html"><span class="identifier">StoryDefinitionConfigurationStep</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;emptyList()<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.admin.story.StoryDefinitionConfiguration$<init>(kotlin.String, kotlin.String, ai.tock.bot.definition.Intent, ai.tock.bot.admin.answer.AnswerConfigurationType, kotlin.collections.List((ai.tock.bot.admin.answer.AnswerConfiguration)), kotlin.Int, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity)), kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationStep)), kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature)), org.litote.kmongo.Id((ai.tock.bot.admin.story.StoryDefinitionConfiguration)))/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;storyId<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.admin.story.StoryDefinitionConfiguration$<init>(kotlin.String, kotlin.String, ai.tock.bot.definition.Intent, ai.tock.bot.admin.answer.AnswerConfigurationType, kotlin.collections.List((ai.tock.bot.admin.answer.AnswerConfiguration)), kotlin.Int, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity)), kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationStep)), kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature)), org.litote.kmongo.Id((ai.tock.bot.admin.story.StoryDefinitionConfiguration)))/category">category</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;"default"<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.admin.story.StoryDefinitionConfiguration$<init>(kotlin.String, kotlin.String, ai.tock.bot.definition.Intent, ai.tock.bot.admin.answer.AnswerConfigurationType, kotlin.collections.List((ai.tock.bot.admin.answer.AnswerConfiguration)), kotlin.Int, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity)), kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationStep)), kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature)), org.litote.kmongo.Id((ai.tock.bot.admin.story.StoryDefinitionConfiguration)))/description">description</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;""<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.admin.story.StoryDefinitionConfiguration$<init>(kotlin.String, kotlin.String, ai.tock.bot.definition.Intent, ai.tock.bot.admin.answer.AnswerConfigurationType, kotlin.collections.List((ai.tock.bot.admin.answer.AnswerConfiguration)), kotlin.Int, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity)), kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationStep)), kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature)), org.litote.kmongo.Id((ai.tock.bot.admin.story.StoryDefinitionConfiguration)))/userSentence">userSentence</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;""<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.admin.story.StoryDefinitionConfiguration$<init>(kotlin.String, kotlin.String, ai.tock.bot.definition.Intent, ai.tock.bot.admin.answer.AnswerConfigurationType, kotlin.collections.List((ai.tock.bot.admin.answer.AnswerConfiguration)), kotlin.Int, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity)), kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationStep)), kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature)), org.litote.kmongo.Id((ai.tock.bot.admin.story.StoryDefinitionConfiguration)))/configurationName">configurationName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.admin.story.StoryDefinitionConfiguration$<init>(kotlin.String, kotlin.String, ai.tock.bot.definition.Intent, ai.tock.bot.admin.answer.AnswerConfigurationType, kotlin.collections.List((ai.tock.bot.admin.answer.AnswerConfiguration)), kotlin.Int, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity)), kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationStep)), kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature)), org.litote.kmongo.Id((ai.tock.bot.admin.story.StoryDefinitionConfiguration)))/features">features</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-story-definition-configuration-feature/index.html"><span class="identifier">StoryDefinitionConfigurationFeature</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;emptyList()<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.admin.story.StoryDefinitionConfiguration$<init>(kotlin.String, kotlin.String, ai.tock.bot.definition.Intent, ai.tock.bot.admin.answer.AnswerConfigurationType, kotlin.collections.List((ai.tock.bot.admin.answer.AnswerConfiguration)), kotlin.Int, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity)), kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationStep)), kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.String, kotlin.collections.List((ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature)), org.litote.kmongo.Id((ai.tock.bot.admin.story.StoryDefinitionConfiguration)))/_id">_id</span><span class="symbol">:</span>&nbsp;<span class="identifier">Id</span><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">StoryDefinitionConfiguration</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;newId()<span class="symbol">)</span></code>
+<p>A <a href="../../ai.tock.bot.definition/-story-definition/index.html">StoryDefinition</a> defined at runtime.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="_id.html">_id</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">_id</span><span class="symbol">: </span><span class="identifier">Id</span><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">StoryDefinitionConfiguration</span></a><span class="symbol">&gt;</span></code>
+<p>The configuration identifier.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="answers.html">answers</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">answers</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../../ai.tock.bot.admin.answer/-answer-configuration/index.html"><span class="identifier">AnswerConfiguration</span></a><span class="symbol">&gt;</span></code>
+<p>The answers available.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="bot-id.html">botId</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">botId</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The bot identifier.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="category.html">category</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">category</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The category of the story.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="configuration-name.html">configurationName</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">configurationName</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code>
+<p>The configuration name if any.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="current-type.html">currentType</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">currentType</span><span class="symbol">: </span><a href="../../ai.tock.bot.admin.answer/-answer-configuration-type/index.html"><span class="identifier">AnswerConfigurationType</span></a></code>
+<p>The type of answer configuration.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="description.html">description</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">description</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The description of the story.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="features.html">features</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">features</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-story-definition-configuration-feature/index.html"><span class="identifier">StoryDefinitionConfigurationFeature</span></a><span class="symbol">&gt;</span></code>
+<p>The optional supported</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="intent.html">intent</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">intent</span><span class="symbol">: </span><a href="../../ai.tock.bot.definition/-intent/index.html"><span class="identifier">Intent</span></a></code>
+<p>The target main intent.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="mandatory-entities.html">mandatoryEntities</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">mandatoryEntities</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-story-definition-configuration-mandatory-entity/index.html"><span class="identifier">StoryDefinitionConfigurationMandatoryEntity</span></a><span class="symbol">&gt;</span></code>
+<p>The mandatory entities.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="name.html">name</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">name</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The name of the story.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="namespace.html">namespace</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">namespace</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The namespace of the story.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="steps.html">steps</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">steps</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-story-definition-configuration-step/index.html"><span class="identifier">StoryDefinitionConfigurationStep</span></a><span class="symbol">&gt;</span></code>
+<p>The optional steps.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="story-id.html">storyId</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">storyId</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The story definition identifier.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="user-sentence.html">userSentence</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">userSentence</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The user sentence sample.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="version.html">version</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">version</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The version of the story.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="find-next-steps.html">findNextSteps</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">findNextSteps</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.admin.story.StoryDefinitionConfiguration$findNextSteps(ai.tock.bot.admin.story.StoryDefinitionConfiguration)/story">story</span><span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">StoryDefinitionConfiguration</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

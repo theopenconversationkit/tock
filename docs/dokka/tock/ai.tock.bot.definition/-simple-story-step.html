@@ -1,0 +1,110 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>SimpleStoryStep - tock</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">tock</a>&nbsp;/&nbsp;<a href="index.html">ai.tock.bot.definition</a>&nbsp;/&nbsp;<a href="./-simple-story-step.html">SimpleStoryStep</a><br/>
+<br/>
+<h1>SimpleStoryStep</h1>
+<code><span class="keyword">interface </span><span class="identifier">SimpleStoryStep</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-story-step/index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><a href="-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span></code> <a href="https://github.com/theopenconversationkit/tock/blob/master/bot/engine/src/main/kotlin/definition/SimpleStoryStep.kt#L22">(source)</a>
+<p><a href="-story-step/index.html">StoryStep</a> without custom <a href="-story-handler-definition/index.html">StoryHandlerDefinition</a>.</p>
+<h3>Inherited Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-story-step/base-intent.html">baseIntent</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">baseIntent</span><span class="symbol">: </span><a href="-intent-aware/index.html"><span class="identifier">IntentAware</span></a></code>
+<p>Returns <a href="-story-step/intent.html">intent</a> or the <a href="-story-definition/main-intent.html">StoryDefinition.mainIntent</a> if <a href="-story-step/intent.html">intent</a> is null.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-story-step/children.html">children</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">children</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="-story-step/index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><a href="-story-step/index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span></code>
+<p>The optional children of the step.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-story-step/intent.html">intent</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">intent</span><span class="symbol">: </span><a href="-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">?</span></code>
+<p>The main intent of the step.
+If not null and if the current intent is equals to <a href="-story-step/intent.html">intent</a>,
+this step will be automatically selected to be the current step.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-story-step/name.html">name</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">name</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The name of the step. usually automatically defined by the enum field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-story-step/other-starter-intents.html">otherStarterIntents</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">otherStarterIntents</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">&gt;</span></code>
+<p>Same behaviour than <a href="-story-step/intent.html">intent</a> in the rare case when the step handle more than one intent.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-story-step/secondary-intents.html">secondaryIntents</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">secondaryIntents</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">&gt;</span></code>
+<p>The secondary intents of this step. If detected and if the current step is this step,
+the current step remains this step.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-story-step/answer.html">answer</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">answer</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="-story-step/index.html#T"><span class="identifier">T</span></a><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span></code>
+<p>The custom answer for this step.
+When returning a null value,
+it means that the step is not able to answer to the current request.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-story-step/support-intent.html">supportIntent</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">supportIntent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryStep$supportIntent(ai.tock.bot.definition.Intent)/i">i</span><span class="symbol">:</span>&nbsp;<a href="-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Does this step support this intent?</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-story-step/support-starter-intent.html">supportStarterIntent</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">supportStarterIntent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryStep$supportStarterIntent(ai.tock.bot.definition.Intent)/i">i</span><span class="symbol">:</span>&nbsp;<a href="-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Does this step support this intent as starter intent?</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

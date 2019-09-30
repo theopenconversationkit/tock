@@ -948,9 +948,9 @@ Si vous souhaitez cependant éviter tout risque, vous pouvez utiliser la méthod
 
 <h2 id="tester-linternationalisation">Tester l'internationalisation<a class="headerlink" href="#tester-linternationalisation" title="Permanent link">&para;</a></h2>
 <p>Un exemple de dispositif de test est disponible dans le
-<a href="https://github.com/theopenconversationkit/tock-bot-open-data/tree/master/src/test/kotlin/fr/vsct/tock/bot/open/data/rule">code source du bot d'exemple</a>
-Il est nécessaire d'étendre <a href="https://github.com/theopenconversationkit/tock-bot-open-data/blob/master/src/test/kotlin/fr/vsct/tock/bot/open/data/rule/OpenDataJUnitExtension.kt">l'extension de test</a>
-pour ensuite indiquer la <a href="https://github.com/theopenconversationkit/tock-bot-open-data/blob/master/src/test/kotlin/fr/vsct/tock/bot/open/data/rule/TranslatorEngineMock.kt">correspondance des libellés</a> à tester.</p>
+<a href="https://github.com/theopenconversationkit/tock-bot-open-data/tree/master/src/test/kotlin/ai.tock/bot/open/data/rule">code source du bot d'exemple</a>
+Il est nécessaire d'étendre <a href="https://github.com/theopenconversationkit/tock-bot-open-data/blob/master/src/test/kotlin/ai.tock/bot/open/data/rule/OpenDataJUnitExtension.kt">l'extension de test</a>
+pour ensuite indiquer la <a href="https://github.com/theopenconversationkit/tock-bot-open-data/blob/master/src/test/kotlin/ai.tock/bot/open/data/rule/TranslatorEngineMock.kt">correspondance des libellés</a> à tester.</p>
 <p>Il ne reste plus qu'à indiquer la locale souhaitée : </p>
 <div class="codehilite"><pre><span></span>    <span class="n">@Test</span>
     <span class="k">fun</span> <span class="nf">`search story asks for departure date WHEN there is a destination and an origin but no departure date in context`</span><span class="p">()</span> <span class="p">{</span>

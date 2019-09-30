@@ -1,0 +1,108 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>TeamsConnectorCallback - tock</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">ai.tock.bot.connector.teams</a>&nbsp;/&nbsp;<a href="./index.html">TeamsConnectorCallback</a><br/>
+<br/>
+<h1>TeamsConnectorCallback</h1>
+<code><span class="keyword">class </span><span class="identifier">TeamsConnectorCallback</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.connector/-connector-callback-base/index.html"><span class="identifier">ConnectorCallbackBase</span></a></code> <a href="https://github.com/theopenconversationkit/tock/blob/master/bot/connector-teams/src/main/kotlin/TeamsConnectorCallback.kt#L6">(source)</a>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">TeamsConnectorCallback</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.teams.TeamsConnectorCallback$<init>(kotlin.String, com.microsoft.bot.schema.models.Activity)/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.teams.TeamsConnectorCallback$<init>(kotlin.String, com.microsoft.bot.schema.models.Activity)/activity">activity</span><span class="symbol">:</span>&nbsp;<span class="identifier">Activity</span><span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="activity.html">activity</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">activity</span><span class="symbol">: </span><span class="identifier">Activity</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../ai.tock.bot.connector/-connector-callback-base/application-id.html">applicationId</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">applicationId</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The application id.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../ai.tock.bot.connector/-connector-callback-base/connector-type.html">connectorType</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">connectorType</span><span class="symbol">: </span><a href="../../ai.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../ai.tock.bot.connector/-connector-callback-base/event-answered.html">eventAnswered</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">eventAnswered</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.ConnectorCallbackBase$eventAnswered(ai.tock.bot.engine.event.Event)/event">event</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.event/-event/index.html"><span class="identifier">Event</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Called by <a href="../../ai.tock.bot.engine/-connector-controller/handle.html">ConnectorController.handle</a> when the event is answered.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../ai.tock.bot.connector/-connector-callback-base/event-skipped.html">eventSkipped</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">eventSkipped</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.ConnectorCallbackBase$eventSkipped(ai.tock.bot.engine.event.Event)/event">event</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.event/-event/index.html"><span class="identifier">Event</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Called by <a href="../../ai.tock.bot.engine/-connector-controller/handle.html">ConnectorController.handle</a> when the event is not handled.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../ai.tock.bot.connector/-connector-callback-base/exception-thrown.html">exceptionThrown</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">exceptionThrown</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.ConnectorCallbackBase$exceptionThrown(ai.tock.bot.engine.event.Event, kotlin.Throwable)/event">event</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.event/-event/index.html"><span class="identifier">Event</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.ConnectorCallbackBase$exceptionThrown(ai.tock.bot.engine.event.Event, kotlin.Throwable)/throwable">throwable</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html"><span class="identifier">Throwable</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Called by <a href="../../ai.tock.bot.engine/-connector-controller/handle.html">ConnectorController.handle</a> when an exception is thrown.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../ai.tock.bot.connector/-connector-callback-base/user-locked.html">userLocked</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">userLocked</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.ConnectorCallbackBase$userLocked(ai.tock.bot.engine.event.Event)/event">event</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.event/-event/index.html"><span class="identifier">Event</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Called by <a href="../../ai.tock.bot.engine/-connector-controller/handle.html">ConnectorController.handle</a> when the user is locked.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../ai.tock.bot.connector/-connector-callback-base/user-lock-released.html">userLockReleased</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">userLockReleased</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.ConnectorCallbackBase$userLockReleased(ai.tock.bot.engine.event.Event)/event">event</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.event/-event/index.html"><span class="identifier">Event</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Called by <a href="../../ai.tock.bot.engine/-connector-controller/handle.html">ConnectorController.handle</a> when the user lock is released.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

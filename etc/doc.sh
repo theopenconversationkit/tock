@@ -11,8 +11,8 @@ mkdocs build
 cd ../..
 
 rm -rf docs/dokka
-cp -rf dokka/target/* docs
+cp -Rf dokka/target/* docs
 rm -rf docs/en/*
-cp -rf docs-mk/en/site/* docs/en
+cp -Rf docs-mk/en/site/* docs/en
 rm -rf docs/fr/*
-cp -rf docs-mk/fr/site/* docs/fr
+cp -Rf docs-mk/fr/site/* docs/fr

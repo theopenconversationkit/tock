@@ -90,7 +90,7 @@ val greetings = story("greetings") {
 }
 ```
 
-Notez que dans le corps de la fonction, `this` est de type [`BotBus`](https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.engine/-bot-bus/index.html),
+Notez que dans le corps de la fonction, `this` est de type [`BotBus`](https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.engine/-bot-bus/index.html),
 à partir duquel vous pouvez interagir avec l'utilisateur, et qui permet également d'accèder
 à tous les élements contextuels disponibles.
 
@@ -416,7 +416,7 @@ enum class MySteps : StoryStep<MyHandlerDef> {
 ```
 
 Davantage d'options de configuration sont disponibles. Consultez la description de 
-[`StoryStep`](https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.definition/-story-step/index.html). 
+[`StoryStep`](https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.definition/-story-step/index.html). 
 
 ### _Postback buttons_ & _quick replies_
 

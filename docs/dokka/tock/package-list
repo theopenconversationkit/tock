@@ -1,89 +1,118 @@
 $dokka.format:html
 $dokka.linkExtension:html
-$dokka.location:fr.vsct.tock.bot.engine.dialog$setTo(fr.vsct.tock.nlp.api.client.model.Entity, fr.vsct.tock.nlp.entity.Value)fr.vsct.tock.bot.engine.dialog/fr.vsct.tock.nlp.api.client.model.-entity/set-to.html
-$dokka.location:fr.vsct.tock.bot.engine.dialog$setTo(fr.vsct.tock.nlp.api.client.model.Entity, kotlin.String)fr.vsct.tock.bot.engine.dialog/fr.vsct.tock.nlp.api.client.model.-entity/set-to.html
-$dokka.location:fr.vsct.tock.bot.engine.monitoring$logError(mu.KLogger, kotlin.String, fr.vsct.tock.bot.engine.monitoring.RequestTimerData)fr.vsct.tock.bot.engine.monitoring/mu.-k-logger/log-error.html
-$dokka.location:fr.vsct.tock.bot.engine.monitoring$logError(mu.KLogger, kotlin.Throwable, fr.vsct.tock.bot.engine.monitoring.RequestTimerData)fr.vsct.tock.bot.engine.monitoring/mu.-k-logger/log-error.html
-$dokka.location:fr.vsct.tock.shared$addJacksonConverter(retrofit2.Retrofit.Builder, com.fasterxml.jackson.databind.ObjectMapper)fr.vsct.tock.shared/retrofit2.-retrofit.-builder/add-jackson-converter.html
-$dokka.location:fr.vsct.tock.shared$changeNamespace(kotlin.String, kotlin.String)fr.vsct.tock.shared/kotlin.-string/change-namespace.html
-$dokka.location:fr.vsct.tock.shared$create(retrofit2.Retrofit)fr.vsct.tock.shared/retrofit2.-retrofit/create.html
-$dokka.location:fr.vsct.tock.shared$debug(mu.KLogger, kotlin.Throwable)fr.vsct.tock.shared/mu.-k-logger/debug.html
-$dokka.location:fr.vsct.tock.shared$error(mu.KLogger, kotlin.Throwable)fr.vsct.tock.shared/mu.-k-logger/error.html
-$dokka.location:fr.vsct.tock.shared$info(mu.KLogger, kotlin.Throwable)fr.vsct.tock.shared/mu.-k-logger/info.html
-$dokka.location:fr.vsct.tock.shared$mapNotNullValues(kotlin.collections.Iterable((fr.vsct.tock.shared.mapNotNullValues.T)), kotlin.Function1((fr.vsct.tock.shared.mapNotNullValues.T, kotlin.Pair((fr.vsct.tock.shared.mapNotNullValues.K, fr.vsct.tock.shared.mapNotNullValues.V)))))fr.vsct.tock.shared/kotlin.collections.-iterable/map-not-null-values.html
-$dokka.location:fr.vsct.tock.shared$name(kotlin.String)fr.vsct.tock.shared/kotlin.-string/name.html
-$dokka.location:fr.vsct.tock.shared$namespace(kotlin.String)fr.vsct.tock.shared/kotlin.-string/namespace.html
-$dokka.location:fr.vsct.tock.shared$namespaceAndName(kotlin.String)fr.vsct.tock.shared/kotlin.-string/namespace-and-name.html
-$dokka.location:fr.vsct.tock.shared$provide(com.github.salomonbrys.kodein.KodeinInjector, kotlin.Any)fr.vsct.tock.shared/com.github.salomonbrys.kodein.-kodein-injector/provide.html
-$dokka.location:fr.vsct.tock.shared$provideOrDefault(com.github.salomonbrys.kodein.KodeinInjector, kotlin.Any, kotlin.Function0((fr.vsct.tock.shared.provideOrDefault.T)))fr.vsct.tock.shared/com.github.salomonbrys.kodein.-kodein-injector/provide-or-default.html
-$dokka.location:fr.vsct.tock.shared$sumByLong(kotlin.collections.Iterable((fr.vsct.tock.shared.sumByLong.T)), kotlin.Function1((fr.vsct.tock.shared.sumByLong.T, kotlin.Long)))fr.vsct.tock.shared/kotlin.collections.-iterable/sum-by-long.html
-$dokka.location:fr.vsct.tock.shared$toList(kotlin.collections.Iterator((fr.vsct.tock.shared.toList.T)))fr.vsct.tock.shared/kotlin.collections.-iterator/to-list.html
-$dokka.location:fr.vsct.tock.shared$toSet(java.util.Enumeration((fr.vsct.tock.shared.toSet.T)))fr.vsct.tock.shared/java.util.-enumeration/to-set.html
-$dokka.location:fr.vsct.tock.shared$trace(mu.KLogger, kotlin.Throwable)fr.vsct.tock.shared/mu.-k-logger/trace.html
-$dokka.location:fr.vsct.tock.shared$warn(mu.KLogger, kotlin.Throwable)fr.vsct.tock.shared/mu.-k-logger/warn.html
-$dokka.location:fr.vsct.tock.shared$watch(com.mongodb.reactivestreams.client.MongoCollection((fr.vsct.tock.shared.watch.T)), com.mongodb.client.model.changestream.FullDocument, kotlin.Function1((com.mongodb.client.model.changestream.ChangeStreamDocument((fr.vsct.tock.shared.watch.T)), kotlin.Unit)))fr.vsct.tock.shared/com.mongodb.reactivestreams.client.-mongo-collection/watch.html
-$dokka.location:fr.vsct.tock.shared$withNamespace(kotlin.String, kotlin.String)fr.vsct.tock.shared/kotlin.-string/with-namespace.html
-$dokka.location:fr.vsct.tock.shared$withoutNamespace(kotlin.String, kotlin.String)fr.vsct.tock.shared/kotlin.-string/without-namespace.html
-$dokka.location:fr.vsct.tock.shared.jackson$addDeserializer(com.fasterxml.jackson.databind.module.SimpleModule, kotlin.reflect.KClass((fr.vsct.tock.shared.jackson.addDeserializer.T)), com.fasterxml.jackson.databind.JsonDeserializer((fr.vsct.tock.shared.jackson.addDeserializer.T)))fr.vsct.tock.shared.jackson/com.fasterxml.jackson.databind.module.-simple-module/add-deserializer.html
-$dokka.location:fr.vsct.tock.shared.jackson$addSerializer(com.fasterxml.jackson.databind.module.SimpleModule, kotlin.reflect.KClass((fr.vsct.tock.shared.jackson.addSerializer.T)), com.fasterxml.jackson.databind.JsonSerializer((fr.vsct.tock.shared.jackson.addSerializer.T)))fr.vsct.tock.shared.jackson/com.fasterxml.jackson.databind.module.-simple-module/add-serializer.html
-$dokka.location:fr.vsct.tock.shared.jackson$fieldNameWithValueReady(com.fasterxml.jackson.core.JsonParser)fr.vsct.tock.shared.jackson/com.fasterxml.jackson.core.-json-parser/field-name-with-value-ready.html
-$dokka.location:fr.vsct.tock.shared.jackson$read(com.fasterxml.jackson.core.JsonParser, kotlin.Function2((fr.vsct.tock.shared.jackson.read.FIELDS, kotlin.String, kotlin.Unit)))fr.vsct.tock.shared.jackson/com.fasterxml.jackson.core.-json-parser/read.html
-$dokka.location:fr.vsct.tock.shared.jackson$readListValues(com.fasterxml.jackson.core.JsonParser)fr.vsct.tock.shared.jackson/com.fasterxml.jackson.core.-json-parser/read-list-values.html
-$dokka.location:fr.vsct.tock.shared.jackson$readValue(com.fasterxml.jackson.core.JsonParser)fr.vsct.tock.shared.jackson/com.fasterxml.jackson.core.-json-parser/read-value.html
-$dokka.location:fr.vsct.tock.shared.vertx$blocking(io.vertx.core.Vertx, kotlin.Function1((io.vertx.core.Future((fr.vsct.tock.shared.vertx.blocking.T)), kotlin.Unit)), kotlin.Function1((io.vertx.core.AsyncResult((fr.vsct.tock.shared.vertx.blocking.T)), kotlin.Unit)))fr.vsct.tock.shared.vertx/io.vertx.core.-vertx/blocking.html
-$dokka.location:fr.vsct.tock.shared.vertx$blocking(io.vertx.ext.web.Route, kotlin.Function1((io.vertx.ext.web.RoutingContext, kotlin.Unit)))fr.vsct.tock.shared.vertx/io.vertx.ext.web.-route/blocking.html
-fr.vsct.tock.bot
-fr.vsct.tock.bot.admin.answer
-fr.vsct.tock.bot.admin.bot
-fr.vsct.tock.bot.admin.dialog
-fr.vsct.tock.bot.admin.message
-fr.vsct.tock.bot.admin.story
-fr.vsct.tock.bot.admin.test
-fr.vsct.tock.bot.admin.user
-fr.vsct.tock.bot.connector
-fr.vsct.tock.bot.connector.alexa
-fr.vsct.tock.bot.connector.ga
-fr.vsct.tock.bot.connector.ga.model
-fr.vsct.tock.bot.connector.ga.model.notification
-fr.vsct.tock.bot.connector.ga.model.request
-fr.vsct.tock.bot.connector.ga.model.response
-fr.vsct.tock.bot.connector.media
-fr.vsct.tock.bot.connector.messenger
-fr.vsct.tock.bot.connector.messenger.model
-fr.vsct.tock.bot.connector.messenger.model.attachment
-fr.vsct.tock.bot.connector.messenger.model.handover
-fr.vsct.tock.bot.connector.messenger.model.send
-fr.vsct.tock.bot.connector.messenger.model.webhook
-fr.vsct.tock.bot.connector.rocketchat
-fr.vsct.tock.bot.connector.slack
-fr.vsct.tock.bot.connector.slack.model
-fr.vsct.tock.bot.connector.slack.model.old
-fr.vsct.tock.bot.connector.teams
-fr.vsct.tock.bot.connector.teams.auth
-fr.vsct.tock.bot.connector.teams.messages
-fr.vsct.tock.bot.connector.teams.token
-fr.vsct.tock.bot.connector.whatsapp
-fr.vsct.tock.bot.connector.whatsapp.model.common
-fr.vsct.tock.bot.connector.whatsapp.model.send
-fr.vsct.tock.bot.connector.whatsapp.model.webhook
-fr.vsct.tock.bot.definition
-fr.vsct.tock.bot.engine
-fr.vsct.tock.bot.engine.action
-fr.vsct.tock.bot.engine.config
-fr.vsct.tock.bot.engine.dialog
-fr.vsct.tock.bot.engine.event
-fr.vsct.tock.bot.engine.feature
-fr.vsct.tock.bot.engine.message
-fr.vsct.tock.bot.engine.message.parser
-fr.vsct.tock.bot.engine.monitoring
-fr.vsct.tock.bot.engine.nlp
-fr.vsct.tock.bot.engine.stt
-fr.vsct.tock.bot.engine.user
-fr.vsct.tock.bot.test
-fr.vsct.tock.bot.test.junit
-fr.vsct.tock.shared
-fr.vsct.tock.shared.cache
-fr.vsct.tock.shared.jackson
-fr.vsct.tock.shared.security
-fr.vsct.tock.shared.security.auth
-fr.vsct.tock.shared.vertx
+$dokka.location:ai.tock.bot.engine.dialog$setTo(ai.tock.nlp.api.client.model.Entity, ai.tock.nlp.entity.Value)ai.tock.bot.engine.dialog/ai.tock.nlp.api.client.model.-entity/set-to.html
+$dokka.location:ai.tock.bot.engine.dialog$setTo(ai.tock.nlp.api.client.model.Entity, kotlin.String)ai.tock.bot.engine.dialog/ai.tock.nlp.api.client.model.-entity/set-to.html
+$dokka.location:ai.tock.bot.engine.monitoring$logError(mu.KLogger, kotlin.String, ai.tock.bot.engine.monitoring.RequestTimerData)ai.tock.bot.engine.monitoring/mu.-k-logger/log-error.html
+$dokka.location:ai.tock.bot.engine.monitoring$logError(mu.KLogger, kotlin.Throwable, ai.tock.bot.engine.monitoring.RequestTimerData)ai.tock.bot.engine.monitoring/mu.-k-logger/log-error.html
+$dokka.location:ai.tock.bot.test$asGenericMessage(ch.tutteli.atrium.creating.AssertionPlant((ai.tock.bot.test.BotBusMockLog)), kotlin.Function1((ch.tutteli.atrium.creating.AssertionPlant((ai.tock.bot.engine.message.GenericMessage)), kotlin.Unit)))ai.tock.bot.test/ch.tutteli.atrium.creating.-assertion-plant/as-generic-message.html
+$dokka.location:ai.tock.bot.test$toBeMessengerAttachmentMessage(ch.tutteli.atrium.creating.AssertionPlant((ai.tock.bot.test.BotBusMockLog)), kotlin.Function1((ch.tutteli.atrium.creating.AssertionPlant((ai.tock.bot.connector.messenger.model.send.AttachmentMessage)), kotlin.Unit)))ai.tock.bot.test/ch.tutteli.atrium.creating.-assertion-plant/to-be-messenger-attachment-message.html
+$dokka.location:ai.tock.bot.test$toBeMessengerTextMessage(ch.tutteli.atrium.creating.AssertionPlant((ai.tock.bot.test.BotBusMockLog)), kotlin.String)ai.tock.bot.test/ch.tutteli.atrium.creating.-assertion-plant/to-be-messenger-text-message.html
+$dokka.location:ai.tock.bot.test$toBeSimpleTextMessage(ch.tutteli.atrium.creating.AssertionPlant((ai.tock.bot.test.BotBusMockLog)), kotlin.String)ai.tock.bot.test/ch.tutteli.atrium.creating.-assertion-plant/to-be-simple-text-message.html
+$dokka.location:ai.tock.bot.test$toHaveChoices(ch.tutteli.atrium.creating.AssertionPlant((ai.tock.bot.engine.message.GenericElement)), kotlin.String, kotlin.Array((kotlin.String)))ai.tock.bot.test/ch.tutteli.atrium.creating.-assertion-plant/to-have-choices.html
+$dokka.location:ai.tock.bot.test$toHaveElement(ch.tutteli.atrium.creating.AssertionPlant((ai.tock.bot.engine.message.GenericMessage)), kotlin.Int, kotlin.Function1((ch.tutteli.atrium.creating.AssertionPlant((ai.tock.bot.engine.message.GenericElement)), kotlin.Unit)))ai.tock.bot.test/ch.tutteli.atrium.creating.-assertion-plant/to-have-element.html
+$dokka.location:ai.tock.bot.test$toHaveGlobalChoices(ch.tutteli.atrium.creating.AssertionPlant((ai.tock.bot.engine.message.GenericMessage)), kotlin.String, kotlin.Array((kotlin.String)))ai.tock.bot.test/ch.tutteli.atrium.creating.-assertion-plant/to-have-global-choices.html
+$dokka.location:ai.tock.bot.test$toHaveGlobalText(ch.tutteli.atrium.creating.AssertionPlant((ai.tock.bot.engine.message.GenericMessage)), kotlin.String, kotlin.String)ai.tock.bot.test/ch.tutteli.atrium.creating.-assertion-plant/to-have-global-text.html
+$dokka.location:ai.tock.bot.test$toHaveSubtitle(ch.tutteli.atrium.creating.AssertionPlant((ai.tock.bot.engine.message.GenericElement)), kotlin.String)ai.tock.bot.test/ch.tutteli.atrium.creating.-assertion-plant/to-have-subtitle.html
+$dokka.location:ai.tock.bot.test$toHaveText(ch.tutteli.atrium.creating.AssertionPlant((ai.tock.bot.engine.message.GenericElement)), kotlin.String, kotlin.String)ai.tock.bot.test/ch.tutteli.atrium.creating.-assertion-plant/to-have-text.html
+$dokka.location:ai.tock.bot.test$toHaveTitle(ch.tutteli.atrium.creating.AssertionPlant((ai.tock.bot.engine.message.GenericElement)), kotlin.String)ai.tock.bot.test/ch.tutteli.atrium.creating.-assertion-plant/to-have-title.html
+$dokka.location:ai.tock.bot.test$withButtonAttachment(ch.tutteli.atrium.creating.AssertionPlant((ai.tock.bot.connector.messenger.model.send.AttachmentMessage)), kotlin.String, kotlin.String)ai.tock.bot.test/ch.tutteli.atrium.creating.-assertion-plant/with-button-attachment.html
+$dokka.location:ai.tock.bot.test$withButtonAttachment(ch.tutteli.atrium.creating.AssertionPlant((ai.tock.bot.connector.messenger.model.send.AttachmentMessage)), kotlin.String, kotlin.collections.List((kotlin.String)))ai.tock.bot.test/ch.tutteli.atrium.creating.-assertion-plant/with-button-attachment.html
+$dokka.location:ai.tock.bot.test$withGenericTemplateElement(ch.tutteli.atrium.creating.AssertionPlant((ai.tock.bot.connector.messenger.model.send.AttachmentMessage)), kotlin.Int, kotlin.String, kotlin.String, kotlin.collections.List((kotlin.String)))ai.tock.bot.test/ch.tutteli.atrium.creating.-assertion-plant/with-generic-template-element.html
+$dokka.location:ai.tock.bot.test$withTextQuickReplies(ch.tutteli.atrium.creating.AssertionPlant((ai.tock.bot.connector.messenger.model.send.AttachmentMessage)), kotlin.collections.List((kotlin.String)))ai.tock.bot.test/ch.tutteli.atrium.creating.-assertion-plant/with-text-quick-replies.html
+$dokka.location:ai.tock.shared$addJacksonConverter(retrofit2.Retrofit.Builder, com.fasterxml.jackson.databind.ObjectMapper)ai.tock.shared/retrofit2.-retrofit.-builder/add-jackson-converter.html
+$dokka.location:ai.tock.shared$changeNamespace(kotlin.String, kotlin.String)ai.tock.shared/kotlin.-string/change-namespace.html
+$dokka.location:ai.tock.shared$create(retrofit2.Retrofit)ai.tock.shared/retrofit2.-retrofit/create.html
+$dokka.location:ai.tock.shared$debug(mu.KLogger, kotlin.Throwable)ai.tock.shared/mu.-k-logger/debug.html
+$dokka.location:ai.tock.shared$error(mu.KLogger, kotlin.Throwable)ai.tock.shared/mu.-k-logger/error.html
+$dokka.location:ai.tock.shared$info(mu.KLogger, kotlin.Throwable)ai.tock.shared/mu.-k-logger/info.html
+$dokka.location:ai.tock.shared$mapNotNullValues(kotlin.collections.Iterable((ai.tock.shared.mapNotNullValues.T)), kotlin.Function1((ai.tock.shared.mapNotNullValues.T, kotlin.Pair((ai.tock.shared.mapNotNullValues.K, ai.tock.shared.mapNotNullValues.V)))))ai.tock.shared/kotlin.collections.-iterable/map-not-null-values.html
+$dokka.location:ai.tock.shared$name(kotlin.String)ai.tock.shared/kotlin.-string/name.html
+$dokka.location:ai.tock.shared$namespace(kotlin.String)ai.tock.shared/kotlin.-string/namespace.html
+$dokka.location:ai.tock.shared$namespaceAndName(kotlin.String)ai.tock.shared/kotlin.-string/namespace-and-name.html
+$dokka.location:ai.tock.shared$provide(com.github.salomonbrys.kodein.KodeinInjector, kotlin.Any)ai.tock.shared/com.github.salomonbrys.kodein.-kodein-injector/provide.html
+$dokka.location:ai.tock.shared$provideOrDefault(com.github.salomonbrys.kodein.KodeinInjector, kotlin.Any, kotlin.Function0((ai.tock.shared.provideOrDefault.T)))ai.tock.shared/com.github.salomonbrys.kodein.-kodein-injector/provide-or-default.html
+$dokka.location:ai.tock.shared$sumByLong(kotlin.collections.Iterable((ai.tock.shared.sumByLong.T)), kotlin.Function1((ai.tock.shared.sumByLong.T, kotlin.Long)))ai.tock.shared/kotlin.collections.-iterable/sum-by-long.html
+$dokka.location:ai.tock.shared$toList(kotlin.collections.Iterator((ai.tock.shared.toList.T)))ai.tock.shared/kotlin.collections.-iterator/to-list.html
+$dokka.location:ai.tock.shared$toSet(java.util.Enumeration((ai.tock.shared.toSet.T)))ai.tock.shared/java.util.-enumeration/to-set.html
+$dokka.location:ai.tock.shared$trace(mu.KLogger, kotlin.Throwable)ai.tock.shared/mu.-k-logger/trace.html
+$dokka.location:ai.tock.shared$warn(mu.KLogger, kotlin.Throwable)ai.tock.shared/mu.-k-logger/warn.html
+$dokka.location:ai.tock.shared$watch(com.mongodb.reactivestreams.client.MongoCollection((ai.tock.shared.watch.T)), com.mongodb.client.model.changestream.FullDocument, kotlin.Function1((com.mongodb.client.model.changestream.ChangeStreamDocument((ai.tock.shared.watch.T)), kotlin.Unit)))ai.tock.shared/com.mongodb.reactivestreams.client.-mongo-collection/watch.html
+$dokka.location:ai.tock.shared$withNamespace(kotlin.String, kotlin.String)ai.tock.shared/kotlin.-string/with-namespace.html
+$dokka.location:ai.tock.shared$withoutNamespace(kotlin.String, kotlin.String)ai.tock.shared/kotlin.-string/without-namespace.html
+$dokka.location:ai.tock.shared.jackson$addDeserializer(com.fasterxml.jackson.databind.module.SimpleModule, kotlin.reflect.KClass((ai.tock.shared.jackson.addDeserializer.T)), com.fasterxml.jackson.databind.JsonDeserializer((ai.tock.shared.jackson.addDeserializer.T)))ai.tock.shared.jackson/com.fasterxml.jackson.databind.module.-simple-module/add-deserializer.html
+$dokka.location:ai.tock.shared.jackson$addSerializer(com.fasterxml.jackson.databind.module.SimpleModule, kotlin.reflect.KClass((ai.tock.shared.jackson.addSerializer.T)), com.fasterxml.jackson.databind.JsonSerializer((ai.tock.shared.jackson.addSerializer.T)))ai.tock.shared.jackson/com.fasterxml.jackson.databind.module.-simple-module/add-serializer.html
+$dokka.location:ai.tock.shared.jackson$fieldNameWithValueReady(com.fasterxml.jackson.core.JsonParser)ai.tock.shared.jackson/com.fasterxml.jackson.core.-json-parser/field-name-with-value-ready.html
+$dokka.location:ai.tock.shared.jackson$read(com.fasterxml.jackson.core.JsonParser, kotlin.Function2((ai.tock.shared.jackson.read.FIELDS, kotlin.String, kotlin.Unit)))ai.tock.shared.jackson/com.fasterxml.jackson.core.-json-parser/read.html
+$dokka.location:ai.tock.shared.jackson$readListValues(com.fasterxml.jackson.core.JsonParser)ai.tock.shared.jackson/com.fasterxml.jackson.core.-json-parser/read-list-values.html
+$dokka.location:ai.tock.shared.jackson$readValue(com.fasterxml.jackson.core.JsonParser)ai.tock.shared.jackson/com.fasterxml.jackson.core.-json-parser/read-value.html
+$dokka.location:ai.tock.shared.vertx$blocking(io.vertx.core.Vertx, kotlin.Function1((io.vertx.core.Promise((ai.tock.shared.vertx.blocking.T)), kotlin.Unit)), kotlin.Function1((io.vertx.core.AsyncResult((ai.tock.shared.vertx.blocking.T)), kotlin.Unit)))ai.tock.shared.vertx/io.vertx.core.-vertx/blocking.html
+$dokka.location:ai.tock.shared.vertx$blocking(io.vertx.ext.web.Route, kotlin.Function1((io.vertx.ext.web.RoutingContext, kotlin.Unit)))ai.tock.shared.vertx/io.vertx.ext.web.-route/blocking.html
+ai.tock.bot
+ai.tock.bot.admin.answer
+ai.tock.bot.admin.bot
+ai.tock.bot.admin.dialog
+ai.tock.bot.admin.message
+ai.tock.bot.admin.story
+ai.tock.bot.admin.test
+ai.tock.bot.admin.user
+ai.tock.bot.api.client
+ai.tock.bot.api.model
+ai.tock.bot.api.model.configuration
+ai.tock.bot.api.model.context
+ai.tock.bot.api.model.message.bot
+ai.tock.bot.api.model.message.user
+ai.tock.bot.api.model.websocket
+ai.tock.bot.api.webhook
+ai.tock.bot.api.websocket
+ai.tock.bot.connector
+ai.tock.bot.connector.alexa
+ai.tock.bot.connector.ga
+ai.tock.bot.connector.ga.model
+ai.tock.bot.connector.ga.model.notification
+ai.tock.bot.connector.ga.model.request
+ai.tock.bot.connector.ga.model.response
+ai.tock.bot.connector.media
+ai.tock.bot.connector.messenger
+ai.tock.bot.connector.messenger.model
+ai.tock.bot.connector.messenger.model.attachment
+ai.tock.bot.connector.messenger.model.handover
+ai.tock.bot.connector.messenger.model.send
+ai.tock.bot.connector.messenger.model.webhook
+ai.tock.bot.connector.rocketchat
+ai.tock.bot.connector.slack
+ai.tock.bot.connector.slack.model
+ai.tock.bot.connector.slack.model.old
+ai.tock.bot.connector.teams
+ai.tock.bot.connector.teams.auth
+ai.tock.bot.connector.teams.messages
+ai.tock.bot.connector.teams.token
+ai.tock.bot.connector.twitter
+ai.tock.bot.connector.twitter.model
+ai.tock.bot.connector.twitter.model.incoming
+ai.tock.bot.connector.twitter.model.outcoming
+ai.tock.bot.connector.web
+ai.tock.bot.connector.whatsapp
+ai.tock.bot.connector.whatsapp.model.common
+ai.tock.bot.connector.whatsapp.model.send
+ai.tock.bot.connector.whatsapp.model.webhook
+ai.tock.bot.definition
+ai.tock.bot.engine
+ai.tock.bot.engine.action
+ai.tock.bot.engine.config
+ai.tock.bot.engine.dialog
+ai.tock.bot.engine.event
+ai.tock.bot.engine.feature
+ai.tock.bot.engine.message
+ai.tock.bot.engine.message.parser
+ai.tock.bot.engine.monitoring
+ai.tock.bot.engine.nlp
+ai.tock.bot.engine.stt
+ai.tock.bot.engine.user
+ai.tock.bot.test
+ai.tock.bot.test.junit
+ai.tock.shared
+ai.tock.shared.cache
+ai.tock.shared.jackson
+ai.tock.shared.security
+ai.tock.shared.security.auth
+ai.tock.shared.vertx

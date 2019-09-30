@@ -27,7 +27,7 @@ permettant par exemple de faire du debug pas-à-pas), suivez ces instructions :
 
 * Déployez une stack Tock NLU grâce au descripteur `docker-compose.yml` comme expliqué [ici](https://github.com/theopenconversationkit/tock-docker#user-content-docker-images-for-tock)
 
-* Demandez votre propre [clef SNCF Open Data](https://data.sncf.com/) (gratuite) et configurez la variable d'environnement (voir [OpenDataConfiguration](https://github.com/theopenconversationkit/tock-bot-open-data/blob/master/src/main/kotlin/fr/vsct/tock/bot/open/data/OpenDataConfiguration.kt#L29))
+* Demandez votre propre [clef SNCF Open Data](https://data.sncf.com/) (gratuite) et configurez la variable d'environnement (voir [OpenDataConfiguration](https://github.com/theopenconversationkit/tock-bot-open-data/blob/master/src/main/kotlin/ai.tock/bot/open/data/OpenDataConfiguration.kt#L29))
 
 * Configurez un connecteur : Messenger, Google Assistant ou autre (voir [canaux et connecteurs](../utilisateur/canaux.md))
 

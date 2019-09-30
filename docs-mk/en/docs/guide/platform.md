@@ -150,9 +150,9 @@ précédents guides pour plus de détails.
 * Editez-le avec le code suivant :
 
 ```kotlin
-import fr.vsct.tock.bot.api.client.newBot
-import fr.vsct.tock.bot.api.client.newStory
-import fr.vsct.tock.bot.api.websocket.start
+import ai.tock.bot.api.client.newBot
+import ai.tock.bot.api.client.newStory
+import ai.tock.bot.api.websocket.start
 
 fun main() {
     start( // Do not use #startWithDemo when integrating with a local platform 

@@ -139,9 +139,9 @@ la dépendance `tock-bot-api-websocket` incluse :
 * Editez-le avec le code suivant :
 
 ```kotlin
-import fr.vsct.tock.bot.api.client.newBot
-import fr.vsct.tock.bot.api.client.newStory
-import fr.vsct.tock.bot.api.websocket.startWithDemo
+import ai.tock.bot.api.client.newBot
+import ai.tock.bot.api.client.newStory
+import ai.tock.bot.api.websocket.startWithDemo
 
 fun main() {
     startWithDemo( // Integrate with the Tock demo platform by default
@@ -165,7 +165,7 @@ allez dans _Configuration_ > _Bot Configurations_ et reportez la valeur _API Key
 de log ressemblant à celle-ci :
 
 ```
-[main] INFO  fr.vsct.tock.bot.api.websocket.BotApiWebSocketClient - start web socket client: {...}
+[main] INFO  ai.tock.bot.api.websocket.BotApiWebSocketClient - start web socket client: {...}
 ```
 
 > Vérifiez éventuellement que d'autres logs provenant de `BotApiWebSocketClient` n'indiquent pas d'erreur. Si c'est le cas,

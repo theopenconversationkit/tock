@@ -1,0 +1,72 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>DialogFlowStateData - tock</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">ai.tock.bot.admin.dialog</a>&nbsp;/&nbsp;<a href="./index.html">DialogFlowStateData</a><br/>
+<br/>
+<h1>DialogFlowStateData</h1>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">DialogFlowStateData</span></code> <a href="https://github.com/theopenconversationkit/tock/blob/master/bot/engine/src/main/kotlin/admin/dialog/DialogFlowStateData.kt#L22">(source)</a>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">DialogFlowStateData</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.admin.dialog.DialogFlowStateData$<init>(kotlin.String, kotlin.String, kotlin.String, kotlin.collections.Set((kotlin.String)), kotlin.Long, org.litote.kmongo.Id((ai.tock.bot.admin.dialog.DialogFlowStateData)))/storyDefinitionId">storyDefinitionId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.admin.dialog.DialogFlowStateData$<init>(kotlin.String, kotlin.String, kotlin.String, kotlin.collections.Set((kotlin.String)), kotlin.Long, org.litote.kmongo.Id((ai.tock.bot.admin.dialog.DialogFlowStateData)))/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.admin.dialog.DialogFlowStateData$<init>(kotlin.String, kotlin.String, kotlin.String, kotlin.collections.Set((kotlin.String)), kotlin.Long, org.litote.kmongo.Id((ai.tock.bot.admin.dialog.DialogFlowStateData)))/step">step</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.admin.dialog.DialogFlowStateData$<init>(kotlin.String, kotlin.String, kotlin.String, kotlin.collections.Set((kotlin.String)), kotlin.Long, org.litote.kmongo.Id((ai.tock.bot.admin.dialog.DialogFlowStateData)))/entities">entities</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.admin.dialog.DialogFlowStateData$<init>(kotlin.String, kotlin.String, kotlin.String, kotlin.collections.Set((kotlin.String)), kotlin.Long, org.litote.kmongo.Id((ai.tock.bot.admin.dialog.DialogFlowStateData)))/count">count</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.admin.dialog.DialogFlowStateData$<init>(kotlin.String, kotlin.String, kotlin.String, kotlin.collections.Set((kotlin.String)), kotlin.Long, org.litote.kmongo.Id((ai.tock.bot.admin.dialog.DialogFlowStateData)))/_id">_id</span><span class="symbol">:</span>&nbsp;<span class="identifier">Id</span><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">DialogFlowStateData</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;newId()<span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="_id.html">_id</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">_id</span><span class="symbol">: </span><span class="identifier">Id</span><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">DialogFlowStateData</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="count.html">count</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">count</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="entities.html">entities</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">entities</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="intent.html">intent</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">intent</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="step.html">step</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">step</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="story-definition-id.html">storyDefinitionId</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">storyDefinitionId</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

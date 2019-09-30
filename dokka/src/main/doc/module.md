@@ -4,7 +4,7 @@ Welcome to the [Tock](https://theopenconversationkit.github.io/tock) KDoc docume
 
 # package ai.tock.bot
 
-Utility methods to **start a new bot**
+Utility methods to start a new bot
 
 # package ai.tock.bot.admin.answer
 
@@ -34,6 +34,42 @@ Contains [TestPlan] and [TestPlanExecution] to manage automated integration test
 
 User monitoring via the admin interface	
 
+# package ai.tock.bot.api.client
+
+Bot API Client Definition
+
+# package ai.tock.bot.api.model
+
+Bot API Model Definition
+
+# package ai.tock.bot.api.model.configuration
+
+Bot API Model Configuration
+
+# package ai.tock.bot.api.model.context
+
+Bot API Model Context
+
+# package ai.tock.bot.api.model.message.bot
+
+Bot API Bot Messages Model
+
+# package ai.tock.bot.api.model.message.user
+
+Bot API User Messages Model
+
+# package ai.tock.bot.api.model.websocket
+
+Bot API Websocket dedicated Model
+
+# package ai.tock.bot.api.webhook
+
+Bot API Webhook methods
+
+# ai.tock.bot.api.websocket
+
+Bot API Websocket methods
+
 # package ai.tock.bot.connector
 
 Contains classes used to define a new [Connector]
@@ -49,6 +85,10 @@ Google Assistant connector implementation. See [GAConnector]
 # package ai.tock.bot.connector.ga.model
 
 Google Assistant connector common model	
+
+# ai.tock.bot.connector.ga.model.notification
+
+Google Assistant notification model
 
 # package ai.tock.bot.connector.ga.model.request
 
@@ -117,6 +157,26 @@ Teams connector complex messages
 # package ai.tock.bot.connector.teams.token
 
 Teams connector token support
+
+# ai.tock.bot.connector.twitter
+
+Twitter connector implementation
+
+# ai.tock.bot.connector.twitter.model
+
+Twitter connector base model classes
+
+# ai.tock.bot.connector.twitter.model.incoming
+
+Twitter connector incoming model
+
+# ai.tock.bot.connector.twitter.model.outcoming
+
+Twitter connector outcoming model
+
+# ai.tock.bot.connector.web
+
+Web Connector implementation
 
 # package ai.tock.bot.connector.whatsapp
 

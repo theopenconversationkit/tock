@@ -26,7 +26,7 @@ import ai.tock.shared.jackson.read
 import ai.tock.shared.jackson.readValue
 import mu.KotlinLogging
 
-class OptionDeserializer : JacksonDeserializer<AbstractOption>() {
+internal class OptionDeserializer : JacksonDeserializer<AbstractOption>() {
 
     companion object {
         private val logger = KotlinLogging.logger {}

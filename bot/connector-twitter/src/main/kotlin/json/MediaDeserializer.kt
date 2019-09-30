@@ -26,7 +26,7 @@ import ai.tock.shared.jackson.read
 import ai.tock.shared.jackson.readValue
 import mu.KotlinLogging
 
-class MediaDeserializer : JacksonDeserializer<Media>() {
+internal class MediaDeserializer : JacksonDeserializer<Media>() {
 
     companion object {
         private val logger = KotlinLogging.logger {}

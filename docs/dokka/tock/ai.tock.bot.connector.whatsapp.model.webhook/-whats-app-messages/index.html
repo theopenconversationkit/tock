@@ -1,0 +1,125 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>WhatsAppMessages - tock</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">ai.tock.bot.connector.whatsapp.model.webhook</a>&nbsp;/&nbsp;<a href="./index.html">WhatsAppMessages</a><br/>
+<br/>
+<h1>WhatsAppMessages</h1>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">WhatsAppMessages</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a></code> <a href="https://github.com/theopenconversationkit/tock/blob/master/bot/connector-whatsapp/src/main/kotlin/model/webhook/WhatsAppMessages.kt#L28">(source)</a>
+<p>See https://developers.facebook.com/docs/whatsapp/api/webhooks/inbound#message-obj.</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">WhatsAppMessages</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppMessages$<init>(kotlin.collections.List((ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppMessage)), kotlin.collections.List((ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppStatus)), kotlin.collections.List((ai.tock.bot.connector.whatsapp.model.common.WhatsAppError)), kotlin.collections.List((ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppContact)))/messages">messages</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-whats-app-message/index.html"><span class="identifier">WhatsAppMessage</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;emptyList()<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppMessages$<init>(kotlin.collections.List((ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppMessage)), kotlin.collections.List((ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppStatus)), kotlin.collections.List((ai.tock.bot.connector.whatsapp.model.common.WhatsAppError)), kotlin.collections.List((ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppContact)))/statuses">statuses</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-whats-app-status/index.html"><span class="identifier">WhatsAppStatus</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;emptyList()<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppMessages$<init>(kotlin.collections.List((ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppMessage)), kotlin.collections.List((ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppStatus)), kotlin.collections.List((ai.tock.bot.connector.whatsapp.model.common.WhatsAppError)), kotlin.collections.List((ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppContact)))/errors">errors</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../../ai.tock.bot.connector.whatsapp.model.common/-whats-app-error/index.html"><span class="identifier">WhatsAppError</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;emptyList()<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppMessages$<init>(kotlin.collections.List((ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppMessage)), kotlin.collections.List((ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppStatus)), kotlin.collections.List((ai.tock.bot.connector.whatsapp.model.common.WhatsAppError)), kotlin.collections.List((ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppContact)))/contacts">contacts</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-whats-app-contact/index.html"><span class="identifier">WhatsAppContact</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;emptyList()<span class="symbol">)</span></code>
+<p>See https://developers.facebook.com/docs/whatsapp/api/webhooks/inbound#message-obj.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="connector-type.html">connectorType</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">connectorType</span><span class="symbol">: </span><a href="../../ai.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a></code>
+<p>The connector type.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="contacts.html">contacts</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">contacts</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-whats-app-contact/index.html"><span class="identifier">WhatsAppContact</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="errors.html">errors</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">errors</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../../ai.tock.bot.connector.whatsapp.model.common/-whats-app-error/index.html"><span class="identifier">WhatsAppError</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="messages.html">messages</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">messages</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-whats-app-message/index.html"><span class="identifier">WhatsAppMessage</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="statuses.html">statuses</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">statuses</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-whats-app-status/index.html"><span class="identifier">WhatsAppStatus</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../ai.tock.bot.connector/-connector-message/obfuscate.html">obfuscate</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">obfuscate</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.ConnectorMessage$obfuscate(ai.tock.shared.security.StringObfuscatorMode)/mode">mode</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.shared.security/-string-obfuscator-mode/index.html"><span class="identifier">StringObfuscatorMode</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a></code>
+<p>Obfuscate the message - by default this method does nothing.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../ai.tock.bot.connector/-connector-message/to-generic-message.html">toGenericMessage</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">toGenericMessage</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.bot.engine.message/-generic-message/index.html"><span class="identifier">GenericMessage</span></a><span class="symbol">?</span></code>
+<p>Transforms this message into a generic <a href="../../ai.tock.bot.engine.message/-generic-message/index.html">GenericMessage</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../ai.tock.bot.connector/-connector-message/to-sentence-element.html">toSentenceElement</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><s><span class="identifier">toSentenceElement</span></s><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.bot.engine.message/-generic-message/index.html"><span class="identifier">GenericMessage</span></a><span class="symbol">?</span></code>
+<p>Transforms this message into a generic <a href="../../ai.tock.bot.engine.message/-generic-message/index.html">GenericMessage</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Extension Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../ai.tock.bot.connector.ga/find-transaction-decision-value-input.html">findTransactionDecisionValueInput</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><a href="../../ai.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">.</span><span class="identifier">findTransactionDecisionValueInput</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.bot.connector.ga.model.request/-g-a-transaction-decision-value/index.html"><span class="identifier">GATransactionDecisionValue</span></a><span class="symbol">?</span></code>
+<p>Return a <a href="../../ai.tock.bot.connector.ga.model.request/-g-a-transaction-decision-value/index.html">GATransactionDecisionValue</a> if available.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../ai.tock.bot.connector.ga/find-transaction-requirements-check-input.html">findTransactionRequirementsCheckInput</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><a href="../../ai.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">.</span><span class="identifier">findTransactionRequirementsCheckInput</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.bot.connector.ga.model.request/-g-a-transaction-requirements-check-result/index.html"><span class="identifier">GATransactionRequirementsCheckResult</span></a><span class="symbol">?</span></code>
+<p>Return a <a href="../../ai.tock.bot.connector.ga.model.request/-g-a-transaction-requirements-check-result/index.html">GATransactionRequirementsCheckResult</a> if available.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

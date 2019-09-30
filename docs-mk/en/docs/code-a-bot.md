@@ -61,7 +61,7 @@ val greetings = story("greetings") {
 }
 ```
 
-Note that in the body of the function, *this* has a [BotBus](https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.engine/-bot-bus/index.html) type.
+Note that in the body of the function, *this* has a [BotBus](https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.engine/-bot-bus/index.html) type.
 From which you can interact with the user, and which also allows you to access
 to all available contextual elements.
 
@@ -400,7 +400,7 @@ enum class MySteps : StoryStep<MyHandlerDef> {
 }
 ```
 
-More configuration options are available. Check out the description of [StoryStep](https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.definition/-story-step/index.html). 
+More configuration options are available. Check out the description of [StoryStep](https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.definition/-story-step/index.html). 
 
 ### Postback buttons & quick replies
 
@@ -454,7 +454,7 @@ To retrieve the parameters of the button that was clicked:
 
 It is possible to develop its own connector.
 
-1) Implement the interface [Connector](https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector/-connector/index.html) 
+1) Implement the interface [Connector](https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.connector/-connector/index.html) 
 
 Here is an example of implementation:
 
@@ -518,7 +518,7 @@ class TestConnectorCallback(
 
 ```
 
-2) Implement the interface [ConnectorProvider](https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector/-connector-provider/index.html)
+2) Implement the interface [ConnectorProvider](https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.connector/-connector-provider/index.html)
 
 Here is an example of implementation:
 
@@ -541,7 +541,7 @@ class TestConnectorProviderService: ConnectorProvider by TestConnectorProvider
 
 3) Make this connector available via a Service Loader
 
-By placing a file META-INF/services/fr.vsct.tock.bot.connector.ConnectorProvider
+By placing a file META-INF/services/ai.tock.bot.connector.ConnectorProvider
 in the classpath, containing the class name :
 
 ```kotlin

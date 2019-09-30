@@ -34,7 +34,7 @@ import ai.tock.shared.jackson.readListValues
 import ai.tock.shared.jackson.readValue
 import mu.KotlinLogging
 
-class EventDeserializer : JacksonDeserializer<IncomingEvent>() {
+internal class EventDeserializer : JacksonDeserializer<IncomingEvent>() {
 
     companion object {
         private val logger = KotlinLogging.logger {}

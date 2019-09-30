@@ -1,0 +1,99 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>EventState - tock</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">ai.tock.bot.engine.dialog</a>&nbsp;/&nbsp;<a href="./index.html">EventState</a><br/>
+<br/>
+<h1>EventState</h1>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">EventState</span></code> <a href="https://github.com/theopenconversationkit/tock/blob/master/bot/engine/src/main/kotlin/engine/dialog/EventState.kt#L25">(source)</a>
+<p>State in event scope.</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">EventState</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.engine.dialog.EventState$<init>(kotlin.collections.MutableList((ai.tock.bot.engine.dialog.EntityValue)), kotlin.Boolean, ai.tock.bot.connector.ConnectorType, ai.tock.translator.UserInterfaceType, kotlin.String, kotlin.String)/entityValues">entityValues</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="../-entity-value/index.html"><span class="identifier">EntityValue</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;mutableListOf()<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.engine.dialog.EventState$<init>(kotlin.collections.MutableList((ai.tock.bot.engine.dialog.EntityValue)), kotlin.Boolean, ai.tock.bot.connector.ConnectorType, ai.tock.translator.UserInterfaceType, kotlin.String, kotlin.String)/testEvent">testEvent</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a>&nbsp;<span class="symbol">=</span>&nbsp;false<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.engine.dialog.EventState$<init>(kotlin.collections.MutableList((ai.tock.bot.engine.dialog.EntityValue)), kotlin.Boolean, ai.tock.bot.connector.ConnectorType, ai.tock.translator.UserInterfaceType, kotlin.String, kotlin.String)/targetConnectorType">targetConnectorType</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.engine.dialog.EventState$<init>(kotlin.collections.MutableList((ai.tock.bot.engine.dialog.EntityValue)), kotlin.Boolean, ai.tock.bot.connector.ConnectorType, ai.tock.translator.UserInterfaceType, kotlin.String, kotlin.String)/userInterface">userInterface</span><span class="symbol">:</span>&nbsp;<span class="identifier">UserInterfaceType</span><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.engine.dialog.EventState$<init>(kotlin.collections.MutableList((ai.tock.bot.engine.dialog.EntityValue)), kotlin.Boolean, ai.tock.bot.connector.ConnectorType, ai.tock.translator.UserInterfaceType, kotlin.String, kotlin.String)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.engine.dialog.EventState$<init>(kotlin.collections.MutableList((ai.tock.bot.engine.dialog.EntityValue)), kotlin.Boolean, ai.tock.bot.connector.ConnectorType, ai.tock.translator.UserInterfaceType, kotlin.String, kotlin.String)/step">step</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span></code>
+<p>State in event scope.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="entity-values.html">entityValues</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">entityValues</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="../-entity-value/index.html"><span class="identifier">EntityValue</span></a><span class="symbol">&gt;</span></code>
+<p>The entity values.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="intent.html">intent</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">intent</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code>
+<p>The current intent of the action.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="step.html">step</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">step</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code>
+<p>The current step.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="target-connector-type.html">targetConnectorType</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">targetConnectorType</span><span class="symbol">: </span><a href="../../ai.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a><span class="symbol">?</span></code>
+<p>The target connector type - usually the source connector but not always.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="test-event.html">testEvent</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">testEvent</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Is it a "test" event - flag used by automatic tests.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="user-interface.html">userInterface</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">userInterface</span><span class="symbol">: </span><span class="identifier">UserInterfaceType</span><span class="symbol">?</span></code>
+<p>The user interface - if different of default interface of <a href="../../ai.tock.bot.connector/-connector-type/index.html">ConnectorType</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="get-entity.html">getEntity</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">getEntity</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.engine.dialog.EventState$getEntity(kotlin.String)/role">role</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-entity-value/index.html"><span class="identifier">EntityValue</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

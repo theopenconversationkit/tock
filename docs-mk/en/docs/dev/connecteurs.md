@@ -69,7 +69,7 @@ s'ouvre aux bots conversationnels et que le connecteur Tock n'existe pas encore.
 
 Pour cela quatres étapes sont nécessaires :
 
-1) Implémenter l'interface [`Connector`](https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector/-connector/index.html) 
+1) Implémenter l'interface [`Connector`](https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.connector/-connector/index.html) 
 
 Voici un exemple d'implémentation :
 
@@ -133,7 +133,7 @@ class TestConnectorCallback(
 
 ```
 
-2) Implémenter l'interface [`ConnectorProvider`](https://theopenconversationkit.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector/-connector-provider/index.html)
+2) Implémenter l'interface [`ConnectorProvider`](https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.connector/-connector-provider/index.html)
 
 Voici un exemple d'implémentation :
 
@@ -156,7 +156,7 @@ class TestConnectorProviderService: ConnectorProvider by TestConnectorProvider
 
 3) Rendre disponible ce connecteur via un _Service Loader_ :
 
-Pour cela, placez un fichier `META-INF/services/fr.vsct.tock.bot.connector.ConnectorProvider` dans le classpath, 
+Pour cela, placez un fichier `META-INF/services/ai.tock.bot.connector.ConnectorProvider` dans le classpath, 
 contenant le nom de la classe :
 
 `mypackage.TestConnectorProviderService`
