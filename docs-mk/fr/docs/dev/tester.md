@@ -10,7 +10,7 @@ Avec Maven :
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>bot-test</artifactId>
-            <version>19.3.3</version>
+            <version>19.9.0</version>
             <scope>test</scope>
         </dependency>
 ```
@@ -18,7 +18,7 @@ Avec Maven :
 ou Gradle :
 
 ```gradle
-      testCompile 'ai.tock:bot-test:19.3.3'
+      testCompile 'ai.tock:bot-test:19.9.0'
 ``` 
 
 L'ensemble de ce framework est documenté au format KDoc [ici](../../dokka/tock/ai.tock.bot.test).
