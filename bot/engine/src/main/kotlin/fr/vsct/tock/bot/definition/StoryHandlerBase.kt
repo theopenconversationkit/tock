@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.definition
 import fr.vsct.tock.bot.definition.BotDefinition.Companion.defaultBreath
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.shared.defaultNamespace
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nKeyProvider.Companion.generateKey
@@ -83,6 +84,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
         if (findStoryDefinition(bus)?.unsupportedUserInterfaces?.contains(bus.userInterfaceType) == true) {
             bus.botDefinition.unknownStory.storyHandler.handle(bus)
         } else {
+            val initialStory = bus.story
             //set current i18n provider
             bus.i18nProvider = this
             val handler = setupHandlerDefinition(bus)
@@ -93,11 +95,13 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
                 handler.handle()
             }
 
-            if (!bus.connectorData.skipAnswer && bus.story.lastAction?.metadata?.lastAnswer != true) {
+            if (!bus.connectorData.skipAnswer && (initialStory.endNotCalled() || bus.story.endNotCalled())) {
                 logger.warn { "Bus.end not called for story ${bus.story.definition.id} and user ${bus.userId.id}" }
             }
         }
     }
+
+    private fun Story.endNotCalled(): Boolean = lastAction?.metadata?.lastAnswer != true
 
     override fun support(bus: BotBus): Double =
         if (bus.story.definition == bus.botDefinition.unknownStory) {
