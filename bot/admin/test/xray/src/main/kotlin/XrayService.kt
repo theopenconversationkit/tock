@@ -105,6 +105,17 @@ class XrayService(
         XrayConfiguration.configure()
     }
 
+    fun execute(namespace: String): XRayPlanExecutionResult {
+        val testPlanExecution = testKeys == null
+
+        // if the API receives test keys then run the test, otherwise run the test plan
+        return if (testPlanExecution) {
+            executePlans(namespace)
+        } else {
+            executeTests(namespace)
+        }
+    }
+
     /**
      * Execution of one or several test plans.
      * It will retrieve the right connector and then execute all tests belonging to targeted test plans using Xray links.

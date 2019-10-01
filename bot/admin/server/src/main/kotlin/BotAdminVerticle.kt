@@ -308,14 +308,15 @@ open class BotAdminVerticle : AdminVerticle() {
 
         /**
          * Triggered on "Create" button, after providing connector and test plan key.
+         * Will reach Jira to gather all test steps and send them to the bot as a conversation
          */
         blockingJsonPost("/xray/execute", botUser) { context, configuration: XRayPlanExecutionConfiguration ->
             XrayService(
                 listOfNotNull(configuration.configurationId),
-                listOf(configuration.testPlanKey),
-                listOf(),
+                listOfNotNull(configuration.testPlanKey),
+                listOfNotNull(configuration.testKey),
                 configuration.testedBotId
-            ).executePlans(context.organization)
+            ).execute(context.organization)
         }
         /**
          * --------------------------------------------------------------------------------------
