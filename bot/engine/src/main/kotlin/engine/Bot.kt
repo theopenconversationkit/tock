@@ -16,7 +16,6 @@
 
 package ai.tock.bot.engine
 
-import com.github.salomonbrys.kodein.instance
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.definition.BotDefinition
@@ -33,6 +32,7 @@ import ai.tock.bot.engine.nlp.NlpController
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.injector
+import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import java.util.Locale
 
@@ -82,7 +82,7 @@ internal class Bot(
 
         parseAction(action, userTimeline, dialog, connector)
 
-        val story = getStory(action, dialog)
+        val story = getStory(userTimeline, dialog, action)
 
         val bus = TockBotBus(connector, userTimeline, dialog, action, connectorData, botDefinition)
 
@@ -118,7 +118,7 @@ internal class Bot(
 
         if (!userTimeline.userState.botDisabled) {
             connector.startTypingInAnswerTo(action, connectorData)
-            val story = getStory(action, dialog)
+            val story = getStory(userTimeline, dialog, action)
             val bus = TockBotBus(connector, userTimeline, dialog, action, connectorData, botDefinition)
 
             try {
@@ -144,7 +144,7 @@ internal class Bot(
         return newDialog
     }
 
-    private fun getStory(action: Action, dialog: Dialog): Story {
+    private fun getStory(userTimeline: UserTimeline, dialog: Dialog, action: Action): Story {
         val newIntent = dialog.state.currentIntent
         val previousStory = dialog.currentStory
 
@@ -164,7 +164,7 @@ internal class Bot(
                 previousStory
             }
 
-        story.computeCurrentStep(action, newIntent)
+        story.computeCurrentStep(userTimeline, dialog, action, newIntent)
 
         story.actions.add(action)
 

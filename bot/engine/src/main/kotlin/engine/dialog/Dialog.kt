@@ -91,6 +91,11 @@ data class Dialog(
     fun allActions(): List<Action> = stories.flatMap { it.actions }
 
     /**
+     * Returns last action.
+     */
+    val lastAction: Action? = stories.lastOrNull()?.lastAction ?: stories.getOrNull(stories.size - 2)?.lastAction
+
+    /**
      * The [Snapshots] of the dialog.
      */
     val snapshots: List<Snapshot> by lazy { injector.provide<UserTimelineDAO>().getSnapshots(id) }

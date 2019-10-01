@@ -16,6 +16,9 @@
 
 package ai.tock.bot.definition
 
+import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.dialog.Dialog
+import ai.tock.bot.engine.user.UserTimeline
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -72,6 +75,13 @@ interface StoryStep<T : StoryHandlerDefinition> {
      * the current step remains this step.
      */
     val secondaryIntents: Set<IntentAware> get() = emptySet()
+
+    /**
+     * Does this Step has to be automatically selected?
+     * if returns true, the step is selected.
+     */
+    fun select(userTimeline: UserTimeline, dialog: Dialog, action: Action, intent: Intent?): Boolean =
+        intent != null && supportStarterIntent(intent)
 
     /**
      * Does this step support this intent as starter intent?

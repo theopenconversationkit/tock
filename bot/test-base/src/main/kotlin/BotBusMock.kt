@@ -274,7 +274,7 @@ open class BotBusMock(
             context.dialog.stories.add(context.story)
         }
 
-        context.story.computeCurrentStep(a, context.dialog.state.currentIntent)
+        context.story.computeCurrentStep(context.userTimeline, context.dialog, a, context.dialog.state.currentIntent)
 
         if (a != context.firstAction) {
             context.story.actions.add(a)

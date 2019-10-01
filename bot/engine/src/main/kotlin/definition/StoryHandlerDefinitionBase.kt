@@ -30,8 +30,7 @@ import kotlin.reflect.full.superclasses
 /**
  * Base implementation of [StoryHandlerDefinition].
  */
-abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(
-        val bus: BotBus)
+abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(val bus: BotBus)
     : BotBus by bus, StoryHandlerDefinition {
 
     companion object {
@@ -72,14 +71,10 @@ abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(
     open fun answer() {}
 
     /**
-     * Default implementation redirect to answer if there is no current step
-     * or if the [StoryStep.answer] method of the current step returns null.
+     * Default implementation redirect to answer.
      */
     override fun handle() {
-        @Suppress("UNCHECKED_CAST")
-        if ((step as StoryStep<StoryHandlerDefinition>?)?.answer()?.invoke(this) == null) {
-            answer()
-        }
+        answer()
     }
 
     /**
@@ -96,7 +91,7 @@ abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(
 
     private val cachedConnector: T? by lazy {
         findConnector(connectorType)
-                .also { if (it == null) logger.warn { "unsupported connector type $connectorType for ${this::class}" } }
+            .also { if (it == null) logger.warn { "unsupported connector type $connectorType for ${this::class}" } }
     }
 
     /**

@@ -18,8 +18,10 @@ package ai.tock.bot.definition
 
 import ai.tock.bot.engine.BotEngineTest
 import ai.tock.bot.engine.TestStoryDefinition
+import ai.tock.nlp.entity.date.DateEntityRange
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 /**
  *
@@ -56,5 +58,27 @@ class DefinitionBuildersTest : BotEngineTest() {
     fun `unknown story can be a story with steps`() {
         bus.step = Step.a
         unknownStory.handle(bus)
+    }
+
+    @Test
+    fun `story with preconditions is ok`() {
+        val s = storyDef<Def>("yeh") {
+            StoryData(
+                entityText("entity"),
+                entityValue<DateEntityRange>("date")?.start()
+            )
+        }
+        assertNotNull(s)
+    }
+
+    @Test
+    fun `story with preconditions and steps is ok`() {
+        val s = storyDefWithSteps<Def, Step2>("yeh") {
+            StoryData(
+                entityText("entity"),
+                entityValue<DateEntityRange>("date")?.start()
+            )
+        }
+        assertNotNull(s)
     }
 }

@@ -24,6 +24,7 @@ import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendChoice
+import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.shared.error
 import mu.KotlinLogging
 
@@ -105,7 +106,7 @@ data class Story(
     /**
      * Set the current step form the specified action and new intent.
      */
-    fun computeCurrentStep(action: Action, newIntent: Intent?) {
+    fun computeCurrentStep(userTimeline: UserTimeline, dialog: Dialog, action: Action, newIntent: Intent?) {
         //set current step if necessary
         var forced = false
         if (action is SendChoice) {
@@ -120,8 +121,8 @@ data class Story(
         this.step = step?.name
 
         //check the children of the step
-        if (!forced && newIntent != null) {
-            step?.children?.find { it.supportStarterIntent(newIntent) }?.apply {
+        if (!forced) {
+            step?.children?.find { it.select(userTimeline, dialog, action, newIntent) }?.apply {
                 forced = true
                 this@Story.step = name
             }
@@ -135,8 +136,8 @@ data class Story(
         }
 
         //check the step from the intent
-        if (!forced && newIntent != null && step == null) {
-            definition.steps.find { it.supportStarterIntent(newIntent) }?.apply {
+        if (!forced && step == null) {
+            definition.steps.find { it.select(userTimeline, dialog, action, newIntent) }?.apply {
                 forced = true
                 this@Story.step = name
             }

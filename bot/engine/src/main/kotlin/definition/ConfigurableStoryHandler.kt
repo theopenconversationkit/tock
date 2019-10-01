@@ -29,14 +29,14 @@ open class ConfigurableStoryHandler<out T : StoryHandlerDefinition>(
      */
     mainIntentName: String? = null,
     /**
-     * The [HandlerDef] instantiator. Defines [StoryHandlerBase.newHandlerDefinition].
+     * The [HandlerDef] creator. Defines [StoryHandlerBase.newHandlerDefinition].
      */
-    private val handlerDefInstantiator: (BotBus) -> T,
+    private val handlerDefCreator: HandlerStoryDefinitionCreator<T>,
     /**
      * Check preconditions. if [BotBus.end] is called in this function,
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
      */
-    private val preconditionsChecker: BotBus.() -> Unit,
+    private val preconditionsChecker: BotBus.() -> Any?,
     /**
      * The namespace for [I18nKeyProvider] implementation.
      */
@@ -47,7 +47,7 @@ open class ConfigurableStoryHandler<out T : StoryHandlerDefinition>(
     breath: Long = BotDefinition.defaultBreath
 ) : StoryHandlerBase<T>(mainIntentName, i18nNamespace, breath) {
 
-    override fun newHandlerDefinition(bus: BotBus): T = handlerDefInstantiator(bus)
+    override fun newHandlerDefinition(bus: BotBus, data: Any?): T = handlerDefCreator.create(bus, data)
 
-    override fun checkPreconditions(): BotBus.() -> Unit = preconditionsChecker
+    override fun checkPreconditions(): BotBus.() -> Any? = preconditionsChecker
 }

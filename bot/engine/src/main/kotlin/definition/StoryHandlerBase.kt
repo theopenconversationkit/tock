@@ -19,7 +19,6 @@ package ai.tock.bot.definition
 import ai.tock.bot.definition.BotDefinition.Companion.defaultBreath
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.SendSentence
-import ai.tock.bot.engine.dialog.Story
 import ai.tock.shared.defaultNamespace
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nKeyProvider.Companion.generateKey
@@ -52,12 +51,12 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
      * Checks preconditions - if [BotBus.end] is called,
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
      */
-    open fun checkPreconditions(): BotBus.() -> Unit = {}
+    open fun checkPreconditions(): BotBus.() -> Any? = {}
 
     /**
      * Instantiates new instance of [T].
      */
-    abstract fun newHandlerDefinition(bus: BotBus): T
+    abstract fun newHandlerDefinition(bus: BotBus, data: Any? = null): T
 
     /**
      * Handles precondition like checking mandatory entities, and create [StoryHandlerDefinition].
@@ -65,11 +64,29 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
      * (as the [StoryHandlerDefinition.handle] function is not called).
      */
     open fun setupHandlerDefinition(bus: BotBus): T? {
-        checkPreconditions().invoke(bus)
+
+        //Default implementation redirect to answer if there is no current step
+        // or if the [StoryStep.handle()] method of the current step returns null
+        @Suppress("UNCHECKED_CAST")
+        (bus.step as StoryStep<StoryHandlerDefinition>?)?.also { step ->
+            val d = (step as? StoryDataStep<*, *>)?.checkPreconditions()?.invoke(bus)?.takeUnless { it is Unit }
+            val handler = newHandlerDefinition(bus, d)
+            if (step is StoryDataStep<*, *>) {
+                (step as StoryDataStep<StoryHandlerDefinition, Any>).handler().invoke(handler, d)
+            } else {
+                step.answer().invoke(handler)
+            }
+        }
+
         return if (isEndCalled(bus)) {
             null
         } else {
-            newHandlerDefinition(bus)
+            val data = checkPreconditions().invoke(bus)?.takeUnless { it is Unit }
+            if (isEndCalled(bus)) {
+                null
+            } else {
+                newHandlerDefinition(bus, data)
+            }
         }
     }
 
@@ -77,16 +94,17 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
      * Has [BotBus.end] been already called?
      */
     private fun isEndCalled(bus: BotBus): Boolean =
-        bus.dialog.allActions().lastOrNull()?.run { this !== bus.action && metadata.lastAnswer } ?: false
+        (bus.userTimeline.currentDialog ?: bus.dialog)
+            .lastAction?.run { this !== bus.action && metadata.lastAnswer } ?: false
 
     final override fun handle(bus: BotBus) {
         //if not supported user interface, use unknown
         if (findStoryDefinition(bus)?.unsupportedUserInterfaces?.contains(bus.userInterfaceType) == true) {
             bus.botDefinition.unknownStory.storyHandler.handle(bus)
         } else {
-            val initialStory = bus.story
             //set current i18n provider
             bus.i18nProvider = this
+
             val handler = setupHandlerDefinition(bus)
 
             if (handler == null) {
@@ -95,13 +113,11 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
                 handler.handle()
             }
 
-            if (!bus.connectorData.skipAnswer && (initialStory.endNotCalled() || bus.story.endNotCalled())) {
+            if (!bus.connectorData.skipAnswer && !isEndCalled(bus)) {
                 logger.warn { "Bus.end not called for story ${bus.story.definition.id} and user ${bus.userId.id}" }
             }
         }
     }
-
-    private fun Story.endNotCalled(): Boolean = lastAction?.metadata?.lastAnswer != true
 
     override fun support(bus: BotBus): Double =
         if (bus.story.definition == bus.botDefinition.unknownStory) {

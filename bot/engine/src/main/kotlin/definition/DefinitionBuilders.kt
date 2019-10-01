@@ -21,7 +21,6 @@ import ai.tock.bot.definition.BotDefinitionBase.Companion.defaultKeywordStory
 import ai.tock.bot.definition.BotDefinitionBase.Companion.defaultUnknownStory
 import ai.tock.bot.engine.BotBus
 import ai.tock.translator.UserInterfaceType
-import kotlin.reflect.full.primaryConstructor
 
 
 /**
@@ -92,18 +91,18 @@ fun bot(
 ): SimpleBotDefinition {
     fun findStory(intent: IntentAware?): StoryDefinition? =
         intent as? StoryDefinition
-                ?: findStoryDefinition(
-                    stories,
-                    intent?.wrappedIntent()?.name,
-                    unknownStory,
-                    keywordStory
-                ).let {
-                    if (it == unknownStory || it == keywordStory) {
-                        null
-                    } else {
-                        it
-                    }
+            ?: findStoryDefinition(
+                stories,
+                intent?.wrappedIntent()?.name,
+                unknownStory,
+                keywordStory
+            ).let {
+                if (it == unknownStory || it == keywordStory) {
+                    null
+                } else {
+                    it
                 }
+            }
 
     return SimpleBotDefinition(
         botId,
@@ -257,18 +256,18 @@ inline fun <reified T : StoryHandlerDefinition> storyDef(
      */
     unsupportedUserInterface: UserInterfaceType? = null,
     /**
-     * The [HandlerDef] instantiator. Defines [StoryHandlerBase.newHandlerDefinition].
+     * The [HandlerDef] creator. Defines [StoryHandlerBase.newHandlerDefinition].
      */
-    noinline handlerDefInstantiator: (BotBus) -> T = { T::class.primaryConstructor!!.call(it) },
+    handlerDefCreator: HandlerStoryDefinitionCreator<T> = defaultHandlerStoryDefinitionCreator(),
     /**
      * Check preconditions. if [BotBus.end] is called in this function,
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
      */
-    noinline preconditionsChecker: BotBus.() -> Unit
+    noinline preconditionsChecker: BotBus.() -> Any?
 ): StoryDefinitionBase =
     StoryDefinitionBase(
         intentName,
-        ConfigurableStoryHandler(intentName, handlerDefInstantiator, preconditionsChecker),
+        ConfigurableStoryHandler(intentName, handlerDefCreator, preconditionsChecker),
         otherStarterIntents,
         secondaryIntents,
         steps,
@@ -296,18 +295,18 @@ inline fun <reified T : StoryHandlerDefinition, reified S> storyDefWithSteps(
      */
     unsupportedUserInterface: UserInterfaceType? = null,
     /**
-     * The [HandlerDef] instantiator. Defines [StoryHandlerBase.newHandlerDefinition].
+     * The [HandlerDef] creator. Defines [StoryHandlerBase.newHandlerDefinition].
      */
-    noinline handlerDefInstantiator: (BotBus) -> T = { T::class.primaryConstructor!!.call(it) },
+    handlerDefCreator: HandlerStoryDefinitionCreator<T> = defaultHandlerStoryDefinitionCreator(),
     /**
      * Check preconditions. if [BotBus.end] is called in this function,
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
      */
-    noinline preconditionsChecker: BotBus.() -> Unit
+    noinline preconditionsChecker: BotBus.() -> Any?
 ): StoryDefinitionBase where S : Enum<S>, S : StoryStep<out StoryHandlerDefinition> =
     StoryDefinitionBase(
         intentName,
-        ConfigurableStoryHandler(intentName, handlerDefInstantiator, preconditionsChecker),
+        ConfigurableStoryHandler(intentName, handlerDefCreator, preconditionsChecker),
         otherStarterIntents,
         secondaryIntents,
         enumValues<S>().toList(),
@@ -373,7 +372,7 @@ inline fun <reified T> storyWithSteps(
      */
     unsupportedUserInterface: UserInterfaceType? = null
 ): StoryDefinitionBase
-        where T : Enum<T>, T : StoryStep<out StoryHandlerDefinition> =
+    where T : Enum<T>, T : StoryStep<out StoryHandlerDefinition> =
     story(
         handler,
         handler,
