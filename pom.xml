@@ -40,32 +40,32 @@
 
         <kodein>4.1.0</kodein>
         <kmongo>3.11.0</kmongo>
-        <jackson>2.9.9</jackson>
-        <jackson-databind>2.9.9.3</jackson-databind>
-        <jackson-module>2.9.9</jackson-module>
+        <jackson>2.9.10</jackson>
+        <jackson-databind>2.9.10</jackson-databind>
+        <jackson-module>2.9.10</jackson-module>
         <jackson-module-loader>0.1.0</jackson-module-loader>
         <jackson-data>0.1.0</jackson-data>
         <jackson-generator>0.3.1</jackson-generator>
-        <klaxon>5.0.11</klaxon>
+        <klaxon>5.0.13</klaxon>
         <vertx>3.8.1</vertx>
-        <retrofit>2.6.1</retrofit>
-        <okhttp>4.1.0</okhttp>
+        <retrofit>2.6.2</retrofit>
+        <okhttp>4.2.0</okhttp>
         <okhttp-signpost>1.1.0</okhttp-signpost>
         <signpost-core>1.2.1.2</signpost-core>
-        <circuitbreaker>0.17.0</circuitbreaker>
-        <guava>28.0-jre</guava>
-        <google-auth>1.30.1</google-auth>
+        <circuitbreaker>1.1.0</circuitbreaker>
+        <guava>28.1-jre</guava>
+        <google-auth>1.30.2</google-auth>
         <jasypt>1.9.3</jasypt>
         <commons-csv>1.7</commons-csv>
         <emoji>5.0</emoji>
         <commons-codec>1.13</commons-codec>
         <commons-lang>3.9</commons-lang>
         <json>20190722</json>
-        <httpclient>4.5.9</httpclient>
-        <google-auth2>0.17.1</google-auth2>
+        <httpclient>4.5.10</httpclient>
+        <google-auth2>0.17.2</google-auth2>
         <simmetrics>4.1.1</simmetrics>
 
-        <junit-jupiter>5.5.1</junit-jupiter>
+        <junit-jupiter>5.5.2</junit-jupiter>
 
         <mockk>1.9.3</mockk>
         <assertj>3.12.2</assertj>

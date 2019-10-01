@@ -30,9 +30,9 @@
 
     <properties>
         <microsoft.bot>4.0.0-a1</microsoft.bot>
-        <mockwebserver>4.1.0</mockwebserver>
+        <mockwebserver>4.2.0</mockwebserver>
         <nimbus-jose-jwt.version>7.8</nimbus-jose-jwt.version>
-        <couroutine.version>1.3.0</couroutine.version>
+        <couroutine.version>1.3.2</couroutine.version>
     </properties>
 
     <dependencies>
