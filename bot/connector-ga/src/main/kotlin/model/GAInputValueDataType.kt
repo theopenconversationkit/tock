@@ -21,9 +21,9 @@ import com.fasterxml.jackson.annotation.JsonValue
 enum class GAInputValueDataType(@get:JsonValue val value: String) {
     option("type.googleapis.com/google.actions.v2.OptionValueSpec"),
     confirmation("type.googleapis.com/google.actions.v2.ConfirmationValueSpec"),
-    transactionRequirementsCheck("type.googleapis.com/google.actions.v2.TransactionRequirementsCheckSpec"),
+    transactionRequirementsCheckV3("type.googleapis.com/google.actions.transactions.v3.TransactionRequirementsCheckSpec"),
     deliveryAddress("type.googleapis.com/google.actions.v2.DeliveryAddressValueSpec"),
-    transactionDecision("type.googleapis.com/google.actions.v2.TransactionDecisionValueSpec"),
+    transactionDecisionV3("type.googleapis.com/google.actions.transactions.v3.TransactionDecisionValueSpec"),
     permission("type.googleapis.com/google.actions.v2.PermissionValueSpec"),
     datetime("type.googleapis.com/google.actions.v2.DateTimeValueSpec"),
     newSurface("type.googleapis.com/google.actions.v2.NewSurfaceValueSpec")

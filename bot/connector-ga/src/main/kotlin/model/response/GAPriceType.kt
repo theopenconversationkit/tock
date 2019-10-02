@@ -5,5 +5,4 @@ package ai.tock.bot.connector.ga.model.response
  */
 enum class GAPriceType {
     UNKNOWN, ESTIMATE, ACTUAL
-
 }

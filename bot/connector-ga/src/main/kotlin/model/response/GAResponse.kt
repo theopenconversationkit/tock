@@ -26,7 +26,6 @@ data class GAResponse(
         val expectUserResponse: Boolean = true,
         val expectedInputs: List<GAExpectedInput>?,
         val finalResponse: GAFinalResponse? = null,
-        val customPushMessage: GACustomPushMessage? = null,
         val responseMetadata: GAResponseMetadata? = null,
         @get:JsonProperty("isInSandbox")
         val isInSandbox: Boolean

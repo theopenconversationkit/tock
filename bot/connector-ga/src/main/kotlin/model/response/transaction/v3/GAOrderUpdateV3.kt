@@ -14,26 +14,18 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.ga.model.response
+package ai.tock.bot.connector.ga.model.response.transaction.v3
+
+import ai.tock.bot.connector.ga.model.response.GAUserNotification
 
 /**
  * @see https://developers.google.com/actions/reference/rest/Shared.Types/AppResponse#orderupdate
  */
-data class GAOrderUpdate(
-        val googleOrderId: String,
-        val actionOrderId: String,
-        val orderState: GAOrderState,
-        val orderManagementActions: List<GAAction>,
-        val receipt: GAReceipt,
-        val updateTime: String,
-        val totalPrice: GAPrice? = null,
-        val lineItemUpdates: Map<String, GALineItemUpdate>,
+data class GAOrderUpdateV3(
+        val type: String? = null,
+        val updateMask: String? = null,
+        val order: GAOrder,
         val userNotification: GAUserNotification? = null,
-        val infoExtension: String? = null,
-        val rejectionInfo: GARejectionInfo? = null,
-        val cancellationInfo: GACancellationInfo? = null,
-        val inTransitInfo: GAInTransitInfo? = null,
-        val fulfillmentInfo: GAFulfillmentInfo? = null,
-        val returnInfo: GAReturnInfo? = null
+        val reason: String? = null
 )
 
