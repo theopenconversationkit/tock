@@ -16,8 +16,11 @@
 
 package ai.tock.bot.connector.ga.model.response
 
+import ai.tock.bot.connector.ga.model.response.transaction.v3.GAOrderUpdateV3
+
 /**
  *
  */
-data class GAStructuredResponse(val orderUpdate:GAOrderUpdate) {
-}
+data class GAStructuredResponse(
+    val orderUpdateV3: GAOrderUpdateV3?
+)

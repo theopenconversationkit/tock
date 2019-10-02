@@ -20,6 +20,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import ai.tock.bot.connector.ga.model.GAInputValueDataType
+import ai.tock.bot.connector.ga.model.response.transaction.v3.GATransactionDecisionValueSpecV3
+import ai.tock.bot.connector.ga.model.response.transaction.v3.GATransactionRequirementsCheckSpecV3
 import ai.tock.bot.engine.message.GenericMessage
 
 /**
@@ -32,8 +34,8 @@ import ai.tock.bot.engine.message.GenericMessage
 @JsonSubTypes(
         JsonSubTypes.Type(value = GAOptionValueSpec::class, name = "type.googleapis.com/google.actions.v2.OptionValueSpec"),
         JsonSubTypes.Type(value = GAPermissionValueSpec::class, name = "type.googleapis.com/google.actions.v2.PermissionValueSpec"),
-        JsonSubTypes.Type(value = GATransactionRequirementsCheckSpec::class, name = "type.googleapis.com/google.actions.v2.TransactionRequirementsCheckSpec"),
-        JsonSubTypes.Type(value = GATransactionDecisionValueSpec::class, name = "type.googleapis.com/google.actions.v2.TransactionDecisionValueSpec"),
+        JsonSubTypes.Type(value = GATransactionRequirementsCheckSpecV3::class, name = "type.googleapis.com/google.actions.transactions.v3.TransactionRequirementsCheckSpec"),
+        JsonSubTypes.Type(value = GATransactionDecisionValueSpecV3::class, name = "type.googleapis.com/google.actions.transactions.v3.TransactionDecisionValueSpec"),
         JsonSubTypes.Type(value = GANewSurfaceValueSpec::class, name = "type.googleapis.com/google.actions.v2.TransactionDecisionValueSpec")
 )
 abstract class GAInputValueData(@get:JsonProperty("@type") val type: GAInputValueDataType) {

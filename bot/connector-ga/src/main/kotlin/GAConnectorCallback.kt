@@ -265,7 +265,6 @@ internal data class GAConnectorCallback(
                 finalResponse == null,
                 if (expectedInput == null) null else listOf(expectedInput),
                 finalResponse,
-                null,
                 null, //GAResponseMetadata(GAStatus(0, "OK")),
                 request.isInSandbox
         )
@@ -359,7 +358,6 @@ internal data class GAConnectorCallback(
                                                     )
                                             )
                                     ),
-                                    null,
                                     GAResponseMetadata(
                                             GAStatus(
                                                     GAStatusCode.INTERNAL,
