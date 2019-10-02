@@ -63,30 +63,12 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
      * If this function returns null, this implied that [BotBus.end] has been called in this function
      * (as the [StoryHandlerDefinition.handle] function is not called).
      */
-    open fun setupHandlerDefinition(bus: BotBus): T? {
-
-        //Default implementation redirect to answer if there is no current step
-        // or if the [StoryStep.handle()] method of the current step returns null
-        @Suppress("UNCHECKED_CAST")
-        (bus.step as StoryStep<StoryHandlerDefinition>?)?.also { step ->
-            val d = (step as? StoryDataStep<*, *>)?.checkPreconditions()?.invoke(bus)?.takeUnless { it is Unit }
-            val handler = newHandlerDefinition(bus, d)
-            if (step is StoryDataStep<*, *>) {
-                (step as StoryDataStep<StoryHandlerDefinition, Any>).handler().invoke(handler, d)
-            } else {
-                step.answer().invoke(handler)
-            }
-        }
-
+    private fun setupHandlerDefinition(bus: BotBus): T? {
+        val data = checkPreconditions().invoke(bus)?.takeUnless { it is Unit }
         return if (isEndCalled(bus)) {
             null
         } else {
-            val data = checkPreconditions().invoke(bus)?.takeUnless { it is Unit }
-            if (isEndCalled(bus)) {
-                null
-            } else {
-                newHandlerDefinition(bus, data)
-            }
+            newHandlerDefinition(bus, data)
         }
     }
 
@@ -105,16 +87,31 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
             //set current i18n provider
             bus.i18nProvider = this
 
-            val handler = setupHandlerDefinition(bus)
+            var data = checkPreconditions().invoke(bus)?.takeUnless { it is Unit }
+            if (!isEndCalled(bus)) {
+                val step = bus.step
+                var handler: T? = null
 
-            if (handler == null) {
-                logger.debug { "end called in computeStoryContext - skip action" }
-            } else {
-                handler.handle()
-            }
+                //Default implementation redirect to answer if there is no current step
+                // or if the [StoryStep.handle()] method of the current step returns null
+                @Suppress("UNCHECKED_CAST")
+                (step as StoryStep<StoryHandlerDefinition>?)?.also { step ->
+                    data = (step as? StoryDataStep<*, *>)?.checkPreconditions()?.invoke(bus)?.takeUnless { it is Unit } ?: data
+                    handler = newHandlerDefinition(bus, data)
+                    if (step is StoryDataStep<*, *>) {
+                        (step as StoryDataStep<StoryHandlerDefinition, Any>).handler().invoke(handler!!, data)
+                    } else {
+                        step.answer().invoke(handler!!)
+                    }
+                }
+                if (!isEndCalled(bus)) {
+                    handler = handler ?: newHandlerDefinition(bus, data)
+                    handler!!.handle()
 
-            if (!bus.connectorData.skipAnswer && !isEndCalled(bus)) {
-                logger.warn { "Bus.end not called for story ${bus.story.definition.id} and user ${bus.userId.id}" }
+                    if (!bus.connectorData.skipAnswer && !isEndCalled(bus)) {
+                        logger.warn { "Bus.end not called for story ${bus.story.definition.id} and user ${bus.userId.id}" }
+                    }
+                }
             }
         }
     }
