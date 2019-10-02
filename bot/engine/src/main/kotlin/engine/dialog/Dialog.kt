@@ -93,7 +93,7 @@ data class Dialog(
     /**
      * Returns last action.
      */
-    val lastAction: Action? = stories.lastOrNull()?.lastAction ?: stories.getOrNull(stories.size - 2)?.lastAction
+    val lastAction: Action? get() = stories.lastOrNull()?.lastAction ?: stories.getOrNull(stories.size - 2)?.lastAction
 
     /**
      * The [Snapshots] of the dialog.
