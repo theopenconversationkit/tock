@@ -62,7 +62,7 @@ class DefinitionBuildersTest : BotEngineTest() {
 
     @Test
     fun `story with preconditions is ok`() {
-        val s = storyDef<Def>("yeh") {
+        val s = storyDef<Def, StoryData>("yeh") {
             StoryData(
                 entityText("entity"),
                 entityValue<DateEntityRange>("date")?.start()
@@ -73,11 +73,21 @@ class DefinitionBuildersTest : BotEngineTest() {
 
     @Test
     fun `story with preconditions and steps is ok`() {
-        val s = storyDefWithSteps<Def, Step2>("yeh") {
+        val s = storyDefWithSteps<Def2, Step2, StoryData>("yeh") {
             StoryData(
                 entityText("entity"),
                 entityValue<DateEntityRange>("date")?.start()
             )
+        }
+        assertNotNull(s)
+    }
+
+    @Test
+    fun `story with preconditions and no exhaustive conditions is ok`() {
+        val s = storyDef<Def>("yeh") {
+            when {
+                entityText("entity") == null -> end("For which destination?")
+            }
         }
         assertNotNull(s)
     }

@@ -234,6 +234,50 @@ inline fun <reified T : StoryHandlerDefinition> story(
 /**
  * Creates a new story.
  */
+@JvmName("storyDataDefWithSteps")
+inline fun <reified T : StoryHandlerDefinition, D> storyDef(
+    /**
+     * The [StoryDefinition.mainIntent] name.
+     */
+    intentName: String,
+    /**
+     * The optionals other [StoryDefinition.starterIntents].
+     */
+    otherStarterIntents: Set<IntentAware> = emptySet(),
+    /**
+     * The others [StoryDefinition.intents] - ie the "secondary" intents.
+     */
+    secondaryIntents: Set<IntentAware> = emptySet(),
+    /**
+     * The [StoryStep] of the story if any.
+     */
+    steps: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
+    /**
+     * Is this story unsupported for a [UserInterfaceType]?
+     */
+    unsupportedUserInterface: UserInterfaceType? = null,
+    /**
+     * The [HandlerDef] creator. Defines [StoryHandlerBase.newHandlerDefinition].
+     */
+    handlerDefCreator: HandlerStoryDefinitionCreator<T> = defaultHandlerStoryDefinitionCreator(),
+    /**
+     * Check preconditions. if [BotBus.end] is called in this function,
+     * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
+     */
+    noinline preconditionsChecker: BotBus.() -> D
+): StoryDefinitionBase =
+    StoryDefinitionBase(
+        intentName,
+        ConfigurableStoryHandler(intentName, handlerDefCreator, preconditionsChecker),
+        otherStarterIntents,
+        secondaryIntents,
+        steps,
+        unsupportedUserInterface
+    )
+
+/**
+ * Creates a new story.
+ */
 inline fun <reified T : StoryHandlerDefinition> storyDef(
     /**
      * The [StoryDefinition.mainIntent] name.
@@ -263,7 +307,7 @@ inline fun <reified T : StoryHandlerDefinition> storyDef(
      * Check preconditions. if [BotBus.end] is called in this function,
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
      */
-    noinline preconditionsChecker: BotBus.() -> Any?
+    noinline preconditionsChecker: BotBus.() -> Unit
 ): StoryDefinitionBase =
     StoryDefinitionBase(
         intentName,
@@ -271,6 +315,46 @@ inline fun <reified T : StoryHandlerDefinition> storyDef(
         otherStarterIntents,
         secondaryIntents,
         steps,
+        unsupportedUserInterface
+    )
+
+/**
+ * Creates a new story.
+ */
+@JvmName("storyDataDefWithSteps")
+inline fun <reified T : StoryHandlerDefinition, reified S, D> storyDefWithSteps(
+    /**
+     * The [StoryDefinition.mainIntent] name.
+     */
+    intentName: String,
+    /**
+     * The optionals other [StoryDefinition.starterIntents].
+     */
+    otherStarterIntents: Set<IntentAware> = emptySet(),
+    /**
+     * The others [StoryDefinition.intents] - ie the "secondary" intents.
+     */
+    secondaryIntents: Set<IntentAware> = emptySet(),
+    /**
+     * Is this story unsupported for a [UserInterfaceType]?
+     */
+    unsupportedUserInterface: UserInterfaceType? = null,
+    /**
+     * The [HandlerDef] creator. Defines [StoryHandlerBase.newHandlerDefinition].
+     */
+    handlerDefCreator: HandlerStoryDefinitionCreator<T> = defaultHandlerStoryDefinitionCreator(),
+    /**
+     * Check preconditions. if [BotBus.end] is called in this function,
+     * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
+     */
+    noinline preconditionsChecker: BotBus.() -> D
+): StoryDefinitionBase where S : Enum<S>, S : StoryStep<out StoryHandlerDefinition> =
+    StoryDefinitionBase(
+        intentName,
+        ConfigurableStoryHandler(intentName, handlerDefCreator, preconditionsChecker),
+        otherStarterIntents,
+        secondaryIntents,
+        enumValues<S>().toList(),
         unsupportedUserInterface
     )
 
@@ -302,7 +386,7 @@ inline fun <reified T : StoryHandlerDefinition, reified S> storyDefWithSteps(
      * Check preconditions. if [BotBus.end] is called in this function,
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
      */
-    noinline preconditionsChecker: BotBus.() -> Any?
+    noinline preconditionsChecker: BotBus.() -> Unit
 ): StoryDefinitionBase where S : Enum<S>, S : StoryStep<out StoryHandlerDefinition> =
     StoryDefinitionBase(
         intentName,
@@ -312,6 +396,7 @@ inline fun <reified T : StoryHandlerDefinition, reified S> storyDefWithSteps(
         enumValues<S>().toList(),
         unsupportedUserInterface
     )
+
 
 /**
  * Creates a new story from a [StoryHandler].
