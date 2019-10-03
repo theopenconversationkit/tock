@@ -4,7 +4,7 @@ Le menu _Build_ permet de construire des parcours et des réponses aux phrases u
  
 Dans cette page, le détail de chaque onglet est présenté. Voir aussi 
 [Créer son premier bot avec Tock Studio](../../guide/studio.md) pour un exemple de création 
-de parcours ou [Construire un bot multilingue](../i18n.md) pour l'utilisation de l'onglet _i18n_.
+de parcours ou [Construire un bot multilingue](../i18n.md) pour l'utilisation de l'onglet _Responses_.
 
 ## L'onglet _New Story_
 
@@ -47,17 +47,25 @@ Il peut s'agir des parcours configurés via _Tock Studio_ (ie. avec l'onglet _Ne
 déclarés programmatiquement via [_Bot API_](../../dev/bot-api.md). Pour voir ces derniers, décochez l'option 
 _Only Configured Stories_.
 
+## L'onglet _Story Rules_
+
+Cet section permet de gérer des _fonctions_ activables ou désactivables via l'interface (ou _Feature Flipping_).
+
 ## L'onglet _Bot Flow_
 
 Cet écran permet d'analyser le _flot_ des intentions et des conversations :
 
 * Flot des intentions : analyse statique des parcours et arbres de décisions proposés par le bot
 
-* Flot des conversations : analyse dynamique des parcours réellement effectués par les utilisateurs
+* Flot des conversations (en activant le bouton _Stats_) : analyse dynamique des parcours réellement effectués par les utilisateurs
 
-> TODO : à détailler
+En développant l'interface (flêche à droite du cadre), de nombreux filtres apparaissent : focalisation sur une intention, transitions 
+entrantes/sortantes, toutes les transitions ou seulement les plus représentatives en terme de trafic, etc.
 
-## L'onglet _i18n_
+Il est aussi possible de manipuler la représentation graphique directement dans l'interface, afin de la rendre 
+plus lisible, regrouper des intentions, zoomer/dézoomer, etc. 
+
+## L'onglet _Responses_
 
 Cet onglet permet de modifier les réponses du bot, dynamiquement selon plusieurs critères possibles :
 
@@ -73,14 +81,8 @@ roulement afin de ne pas toujours répondre la même chose.
 
 ![Internationalisation](../../img/i18n.png "Internationalisation")
 
-Voir aussi [Construire un bot multilingue](../i18n.md) pour l'utilisation de l'onglet _i18n_ mais aussi  
+Voir aussi [Construire un bot multilingue](../i18n.md) pour l'utilisation de l'onglet _Responses_ mais aussi  
 les aspects développement sur ce thème. 
-
-## L'onglet _Feature Flipping_
-
-Cet section permet de gérer des _fonctions_ activables ou désactivables via l'interface (_Feature Flipping_).
-
-> TODO : à détailler.
 
 ## Continuer...
 

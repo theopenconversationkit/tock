@@ -1005,13 +1005,34 @@ l'internationalisation avec deux langues proposées.</p>
 </li>
 </ul>
 <h3 id="le-depot-tock">Le dépôt <code>tock</code><a class="headerlink" href="#le-depot-tock" title="Permanent link">&para;</a></h3>
-<blockquote>
-<p>TODO : détailler les modules et la structure du repo</p>
-</blockquote>
+<p>Voici une première description des sources dans le dépôt <code>tock</code> :</p>
+<ul>
+<li><code>bot</code> : la plateforme conversationnelle (interfaces, API, connecteurs, etc.), en dépendance sur les modules <em>NLU</em></li>
+<li><code>docs</code> : le sites de documentation, générés avec MkDocs</li>
+<li><code>docs-mk</code> : les sources pour les sites de documentation, pour MkDocs</li>
+<li><code>dokka</code> : la documentation Dokka du framework Kotlin</li>
+<li><code>etc</code> : des scripts utilitaires, par exemple pour générer les sites avec MkDocs</li>
+<li><code>nlp</code> : la plateforme <em>NLU</em> uniquement (interfaces, API, modèles d'entités, etc.) </li>
+<li><code>scripts</code> : d'autres scripts utilitaires, par exemple pour développer sur Messenger avec ngrok</li>
+<li><code>shared</code> : des composants Kotlin partagés entre les différents modules du framework</li>
+<li><code>stt</code> : des implémentations et wrappers pour le <em>speech-to-text</em></li>
+<li><code>translator</code> : des implémentations et wrappers pour le multilingue (<em>i18n</em>)</li>
+</ul>
+<p>Remarque : il existe "deux <em>admin</em>" (ie. deux interfaces <em>Tock Studio</em>) dans les sources. En effet, il est possible 
+d'installer la plateforme <em>NLU</em> / <em>NLP</em> seule sans les outils conversationnels. En conséquence :</p>
+<ul>
+<li><code>nlp/admin</code> : contient les composants et interfaces graphiques pour le <em>NLU</em> / <em>NLP</em> seulement</li>
+<li><code>bot/admin</code> : reprend les composants <em>NLP</em> / <em>NLU</em> (en dépendance dans le build Maven) et reconstruit les interfaces 
+en y ajoutant les outils conversationnels  </li>
+</ul>
 <h3 id="le-depot-tock-docker">Le dépôt <code>tock-docker</code><a class="headerlink" href="#le-depot-tock-docker" title="Permanent link">&para;</a></h3>
-<blockquote>
-<p>TODO : détailler les modules et la structure du repo, le fonctionnement des builds Maven et Docker, etc.</p>
-</blockquote>
+<p>Le dépôt contient une structure de modules Maven reprenant les différents composants de la plateforme Tock. 
+Chacun de ces modules porte une implémentation Docker du composant en s'appuie sur le plugin Maven 
+<code>io.fabric8:docker-maven-plugin</code> pour encapsuler le build Docker.</p>
+<p>A la racine du dépôt se trouvent différents descripteurs Docker Compose permettant de déployer une plateforme 
+en se basant sur les images déjà construites. Différentes configurations existent, notamment en mode <em>Bot API</em> 
+ou en mode <em>intégré</em>, avec la plateforme <em>NLU</em> standalone, etc. Le descripteur de référence pour le mode 
+<em>Bot API</em> est <code>docker-compose-bot.yml</code>.</p>
 <h2 id="construire-tock-a-partir-des-sources">Construire Tock à partir des sources<a class="headerlink" href="#construire-tock-a-partir-des-sources" title="Permanent link">&para;</a></h2>
 <h3 id="tock-core">Tock (core)<a class="headerlink" href="#tock-core" title="Permanent link">&para;</a></h3>
 <p>Le projet est construit avec <a href="https://maven.apache.org/">Maven</a>, y compris les modules Web impliquant 

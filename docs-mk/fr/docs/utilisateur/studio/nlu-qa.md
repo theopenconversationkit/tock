@@ -17,7 +17,8 @@ et sur les entités (_Entity average probability_)
 
 ## L'onglet _Intent distance_
 
-> TODO
+Les métriques présentées en tableau dans cet page (_Occurrences_ et _Average Diff_) permettent d'identifier les intentions 
+plus ou moins proches dans le modèle, notamment afin d'optimiser la modélisation. 
 
 ## L'onglet _Model Builds_
 

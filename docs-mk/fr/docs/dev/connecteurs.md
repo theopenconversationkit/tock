@@ -6,10 +6,6 @@ ainsi que la liste des connecteurs déjà disponibles.
 Cette page n'ajoute donc que les éléments propres au développement avec les _connecteurs_ Tock ou le développement de 
 nouveaux connecteurs.
 
-## Généralités
-
-> TODO : composants spécifiques à un connecteur/canal et utilisation en mode _Bot API_ ou en mode _Bot intégré_.
-
 ## Messenger
 
 Pour en savoir plus sur ce connecteur, vous pouvez aussi vous rendre dans le dossier 

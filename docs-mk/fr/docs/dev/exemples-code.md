@@ -2,7 +2,7 @@
 
 ## Les exemples dans _Bot Samples_
 
-Le dépôt [tock-bot-samples]() contient des exemples de code, notamment ceux utilisés dans 
+Le dépôt [tock-bot-samples](https://github.com/theopenconversationkit/tock-bot-samples) contient des exemples de code, notamment ceux utilisés dans 
 [la documentation Tock](../guide/api.md) pour programmer des parcours en modes _WebHook_ ou _WebSocket_.
 
 ## Le bot _Open Data_
@@ -12,8 +12,6 @@ exemple d'implémentation de bot basé sur les [API _Open Data_ de la SNCF](http
 
 Ce bot utilise le framework Kotlin pour Tock (et pas le mode _Bot API_ via _Webhook_ ou _WebSocket_). 
 Il implémente également une internationalisation avec deux langues proposées : Français et Anglais.
-
-> TODO : description des principales fonctionnalités, parcours à tester, comment tester l'i18n, etc.
 
 ### Déployer le bot avec Docker
 
@@ -33,6 +31,3 @@ permettant par exemple de faire du debug pas-à-pas), suivez ces instructions :
 
 * Démarrez le lanceur `OpenDataBot` dans votre IDE, IntelliJ ou autre. Le bot est opérationnel, parlez-lui ! :)
  
-### Tester le bot & l'internationalisation
-
-> TODO

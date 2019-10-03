@@ -38,7 +38,9 @@ Pour chaque échange de messages avec le bot, la langue détectée est indiquée
 
 ## L'onglet _Test Plans_
 
-> TODO
+Cet outil permet de créer et de suivre l'exécution de tests de conversations automatisés, afin de vérifier 
+automatiquement et régulièrement la non-régression du bot. Cette partie est en plein développement et une documentation 
+complète arrivera prochainement.
 
 ## Continuer...
 

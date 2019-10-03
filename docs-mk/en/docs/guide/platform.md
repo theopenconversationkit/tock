@@ -168,7 +168,7 @@ fun main() {
 }
 ```
 
-> Vous pouvez retrouver ce code (et d'autres exemples) dans le dépôt [tock-bot-samples]().
+> Vous pouvez retrouver ce code (et d'autres exemples) dans le dépôt [tock-bot-samples](https://github.com/theopenconversationkit/tock-bot-samples).
 
 * Remplacez la clef d'API par celle de votre propre application Tock. Pour cela, dans _Tock Studio_, 
 allez dans _Configuration_ > _Bot Configurations_ et reportez la valeur _API Key_ dans le code.

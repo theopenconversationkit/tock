@@ -71,11 +71,9 @@ la dépendance `tock-bot-api-websocket` incluse :
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.sourceDirectory>${project.basedir}/src/main/kotlin</project.build.sourceDirectory>
-        <project.build.testSourceDirectory>${project.basedir}/src/test/kotlin</project.build.testSourceDirectory>
-        <lib.tock.version>19.9.0</lib.tock.version>
         <plugin.kotlin.version>1.3.41</plugin.kotlin.version>
         <plugin.source.version>3.1.0</plugin.source.version>
+        <lib.tock.version>19.9.0</lib.tock.version>
     </properties>
 
     <dependencies>
@@ -87,8 +85,7 @@ la dépendance `tock-bot-api-websocket` incluse :
     </dependencies>
 
     <build>
-        <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
-        <testSourceDirectory>${project.build.testSourceDirectory}</testSourceDirectory>
+        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
@@ -130,7 +127,7 @@ la dépendance `tock-bot-api-websocket` incluse :
 </project>
 ```
 
-> Vous pouvez retrouver ce code (et d'autres exemples) dans le dépôt [tock-bot-samples]().
+> Vous pouvez retrouver ce code et d'autres exemples dans le dépôt [tock-bot-samples](https://github.com/theopenconversationkit/tock-bot-samples).
 
 ## Créer une fonction qui se connecte à Tock
 
@@ -156,7 +153,7 @@ fun main() {
 }
 ```
 
-> Vous pouvez retrouver ce code (et d'autres exemples) dans le dépôt [tock-bot-samples]().
+> Vous pouvez retrouver ce code (et d'autres exemples) dans le dépôt [tock-bot-samples](https://github.com/theopenconversationkit/tock-bot-samples).
 
 * Remplacez la clef d'API par celle de votre propre application Tock. Pour cela, dans _Tock Studio_, 
 allez dans _Configuration_ > _Bot Configurations_ et reportez la valeur _API Key_ dans le code.
@@ -186,7 +183,7 @@ A ce stade, le parcours existe bien dans Tock, mais l'_intention_ n'a pas été 
 Vous pouvez le vérifier en regardant la liste des intentions disponibles dans _NLU_ > _Intents_ > _build_ 
 (la catégorie par défaut).
 
-> TODO : fix [#533](https://github.com/theopenconversationkit/tock/issues/533)
+> Ce point sera bientôt amélioré ([issue #533](https://github.com/theopenconversationkit/tock/issues/533)).
 
 * Allez dans _NLU_ > _Inbox_, pour la dernière phrase que vous venez de saisir :
 

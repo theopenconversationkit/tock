@@ -138,5 +138,5 @@ Pour cela, il suffit de remplacer la méthode `start` par `startWithDemo` (sans 
 ## Développer dans un autre langage
 
 Il est possible de développer dans n'importe quel langage en programmant directement via l'API.
- 
-> TODO : contrat en cours de stabilisation & documentation à venir.
+
+Des exemples avec Kotlin mais aussi Nodejs sont disponibles.

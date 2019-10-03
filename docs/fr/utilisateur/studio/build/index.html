@@ -793,6 +793,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#longlet-story-rules" class="md-nav__link">
+    L'onglet Story Rules
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#longlet-bot-flow" class="md-nav__link">
     L'onglet Bot Flow
   </a>
@@ -800,15 +807,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#longlet-i18n" class="md-nav__link">
-    L'onglet i18n
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#longlet-feature-flipping" class="md-nav__link">
-    L'onglet Feature Flipping
+  <a href="#longlet-responses" class="md-nav__link">
+    L'onglet Responses
   </a>
   
 </li>
@@ -841,7 +841,7 @@
 <p>Le menu <em>Build</em> permet de construire des parcours et des réponses aux phrases utilisateur.</p>
 <p>Dans cette page, le détail de chaque onglet est présenté. Voir aussi 
 <a href="../../../guide/studio/">Créer son premier bot avec Tock Studio</a> pour un exemple de création 
-de parcours ou <a href="../../i18n/">Construire un bot multilingue</a> pour l'utilisation de l'onglet <em>i18n</em>.</p>
+de parcours ou <a href="../../i18n/">Construire un bot multilingue</a> pour l'utilisation de l'onglet <em>Responses</em>.</p>
 <h2 id="longlet-new-story">L'onglet <em>New Story</em><a class="headerlink" href="#longlet-new-story" title="Permanent link">&para;</a></h2>
 <h3 id="creer-une-reponse-simple">Créer une réponse simple<a class="headerlink" href="#creer-une-reponse-simple" title="Permanent link">&para;</a></h3>
 <blockquote>
@@ -869,6 +869,8 @@ Si il ne l'a pas déjà indiquée, le bot devrait lui demander "Pour quelle dest
 <p>Il peut s'agir des parcours configurés via <em>Tock Studio</em> (ie. avec l'onglet <em>New Story</em>) mais aussi les parcours 
 déclarés programmatiquement via <a href="../../../dev/bot-api/"><em>Bot API</em></a>. Pour voir ces derniers, décochez l'option 
 <em>Only Configured Stories</em>.</p>
+<h2 id="longlet-story-rules">L'onglet <em>Story Rules</em><a class="headerlink" href="#longlet-story-rules" title="Permanent link">&para;</a></h2>
+<p>Cet section permet de gérer des <em>fonctions</em> activables ou désactivables via l'interface (ou <em>Feature Flipping</em>).</p>
 <h2 id="longlet-bot-flow">L'onglet <em>Bot Flow</em><a class="headerlink" href="#longlet-bot-flow" title="Permanent link">&para;</a></h2>
 <p>Cet écran permet d'analyser le <em>flot</em> des intentions et des conversations :</p>
 <ul>
@@ -876,13 +878,14 @@ déclarés programmatiquement via <a href="../../../dev/bot-api/"><em>Bot API</e
 <p>Flot des intentions : analyse statique des parcours et arbres de décisions proposés par le bot</p>
 </li>
 <li>
-<p>Flot des conversations : analyse dynamique des parcours réellement effectués par les utilisateurs</p>
+<p>Flot des conversations (en activant le bouton <em>Stats</em>) : analyse dynamique des parcours réellement effectués par les utilisateurs</p>
 </li>
 </ul>
-<blockquote>
-<p>TODO : à détailler</p>
-</blockquote>
-<h2 id="longlet-i18n">L'onglet <em>i18n</em><a class="headerlink" href="#longlet-i18n" title="Permanent link">&para;</a></h2>
+<p>En développant l'interface (flêche à droite du cadre), de nombreux filtres apparaissent : focalisation sur une intention, transitions 
+entrantes/sortantes, toutes les transitions ou seulement les plus représentatives en terme de trafic, etc.</p>
+<p>Il est aussi possible de manipuler la représentation graphique directement dans l'interface, afin de la rendre 
+plus lisible, regrouper des intentions, zoomer/dézoomer, etc. </p>
+<h2 id="longlet-responses">L'onglet <em>Responses</em><a class="headerlink" href="#longlet-responses" title="Permanent link">&para;</a></h2>
 <p>Cet onglet permet de modifier les réponses du bot, dynamiquement selon plusieurs critères possibles :</p>
 <ul>
 <li>
@@ -901,13 +904,8 @@ roulement afin de ne pas toujours répondre la même chose.</p>
 <p>Cela permet de rendre le bot plus agréable en variant ses réponses.</p>
 </blockquote>
 <p><img alt="Internationalisation" src="../../../img/i18n.png" title="Internationalisation" /></p>
-<p>Voir aussi <a href="../../i18n/">Construire un bot multilingue</a> pour l'utilisation de l'onglet <em>i18n</em> mais aussi<br />
+<p>Voir aussi <a href="../../i18n/">Construire un bot multilingue</a> pour l'utilisation de l'onglet <em>Responses</em> mais aussi<br />
 les aspects développement sur ce thème. </p>
-<h2 id="longlet-feature-flipping">L'onglet <em>Feature Flipping</em><a class="headerlink" href="#longlet-feature-flipping" title="Permanent link">&para;</a></h2>
-<p>Cet section permet de gérer des <em>fonctions</em> activables ou désactivables via l'interface (<em>Feature Flipping</em>).</p>
-<blockquote>
-<p>TODO : à détailler.</p>
-</blockquote>
 <h2 id="continuer">Continuer...<a class="headerlink" href="#continuer" title="Permanent link">&para;</a></h2>
 <p>Rendez-vous dans <a href="../test/">Menu <em>Test</em></a> pour la suite du manuel utilisateur. </p>
 <blockquote>

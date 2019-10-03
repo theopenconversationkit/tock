@@ -95,13 +95,6 @@ de limiter la mémoire des JVMs en suivant l'exemple suivant :
 JAVA_ARGS=-Xmx1g -XX:MaxMetaspaceSize=256m
 ```
 
-## Paramétrage fonctionnel
-
-### Sélection du moteur NLU
-
-> TODO : documenter comment utiliser [OpenNLP](https://opennlp.apache.org/) (par défaut), [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/)
->ou autre.
-
 ## Voir aussi...
 
 Pour une utilisation de Tock en production, nous vous recommandons de parcourir également les pages suivantes :

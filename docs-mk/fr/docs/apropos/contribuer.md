@@ -40,11 +40,36 @@ l'internationalisation avec deux langues proposées.
 
 ### Le dépôt `tock`
 
-> TODO : détailler les modules et la structure du repo
+Voici une première description des sources dans le dépôt `tock` :
+
+* `bot` : la plateforme conversationnelle (interfaces, API, connecteurs, etc.), en dépendance sur les modules _NLU_
+* `docs` : le sites de documentation, générés avec MkDocs
+* `docs-mk` : les sources pour les sites de documentation, pour MkDocs
+* `dokka` : la documentation Dokka du framework Kotlin
+* `etc` : des scripts utilitaires, par exemple pour générer les sites avec MkDocs
+* `nlp` : la plateforme _NLU_ uniquement (interfaces, API, modèles d'entités, etc.) 
+* `scripts` : d'autres scripts utilitaires, par exemple pour développer sur Messenger avec ngrok
+* `shared` : des composants Kotlin partagés entre les différents modules du framework
+* `stt` : des implémentations et wrappers pour le _speech-to-text_
+* `translator` : des implémentations et wrappers pour le multilingue (_i18n_)
+
+Remarque : il existe "deux _admin_" (ie. deux interfaces _Tock Studio_) dans les sources. En effet, il est possible 
+d'installer la plateforme _NLU_ / _NLP_ seule sans les outils conversationnels. En conséquence :
+
+* `nlp/admin` : contient les composants et interfaces graphiques pour le _NLU_ / _NLP_ seulement
+* `bot/admin` : reprend les composants _NLP_ / _NLU_ (en dépendance dans le build Maven) et reconstruit les interfaces 
+en y ajoutant les outils conversationnels  
 
 ### Le dépôt `tock-docker`
 
-> TODO : détailler les modules et la structure du repo, le fonctionnement des builds Maven et Docker, etc.
+Le dépôt contient une structure de modules Maven reprenant les différents composants de la plateforme Tock. 
+Chacun de ces modules porte une implémentation Docker du composant en s'appuie sur le plugin Maven 
+`io.fabric8:docker-maven-plugin` pour encapsuler le build Docker.
+
+A la racine du dépôt se trouvent différents descripteurs Docker Compose permettant de déployer une plateforme 
+en se basant sur les images déjà construites. Différentes configurations existent, notamment en mode _Bot API_ 
+ou en mode _intégré_, avec la plateforme _NLU_ standalone, etc. Le descripteur de référence pour le mode 
+_Bot API_ est `docker-compose-bot.yml`.
 
 ## Construire Tock à partir des sources
 
