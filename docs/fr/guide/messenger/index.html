@@ -297,9 +297,80 @@
       
     
     
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Configurer Messenger
+      </label>
+    
     <a href="./" title="Configurer Messenger" class="md-nav__link md-nav__link--active">
       Configurer Messenger
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table des matières</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ce-que-vous-allez-creer" class="md-nav__link">
+    Ce que vous allez créer
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pre-requis" class="md-nav__link">
+    Pré-requis
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creer-une-page-facebook" class="md-nav__link">
+    Créer une page Facebook
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creer-une-application-facebook" class="md-nav__link">
+    Créer une application Facebook
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configurer-un-connecteur-messenger-dans-tock" class="md-nav__link">
+    Configurer un connecteur Messenger dans Tock
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#felicitations" class="md-nav__link">
+    Félicitations!
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#continuer" class="md-nav__link">
+    Continuer...
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
     
   </li>
 
@@ -746,6 +817,64 @@
     
   
   
+    <label class="md-nav__title" for="__toc">Table des matières</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ce-que-vous-allez-creer" class="md-nav__link">
+    Ce que vous allez créer
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pre-requis" class="md-nav__link">
+    Pré-requis
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creer-une-page-facebook" class="md-nav__link">
+    Créer une page Facebook
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creer-une-application-facebook" class="md-nav__link">
+    Créer une application Facebook
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configurer-un-connecteur-messenger-dans-tock" class="md-nav__link">
+    Configurer un connecteur Messenger dans Tock
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#felicitations" class="md-nav__link">
+    Félicitations!
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#continuer" class="md-nav__link">
+    Continuer...
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -758,9 +887,118 @@
                 
                 
                 <h1 id="configurer-son-bot-pour-messenger">Configurer son bot pour Messenger<a class="headerlink" href="#configurer-son-bot-pour-messenger" title="Permanent link">&para;</a></h1>
-<blockquote>
-<p>TODO</p>
-</blockquote>
+<p>Si vous avez suivi le guide <a href="../studio/">Créer son premier bot avec <em>Tock Studio</em></a>, vous avez déclaré un connecteur
+ de type Slack.</p>
+<p>Dans ce guide, vous allez créer une configuration pour <a href="https://fr-fr.facebook.com/messenger/">Facebook Messenger</a> 
+et intégrer le bot pour dialoguer avec lui sur ce réseau social.</p>
+<p>Si vous le souhaitez, vous pouvez aussi sauter cette étape et passer directement à <a href="../api/">la suite</a>.</p>
+<h2 id="ce-que-vous-allez-creer">Ce que vous allez créer<a class="headerlink" href="#ce-que-vous-allez-creer" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p>Une configuration (dans Facebook et dans Tock) pour recevoir et envoyer des messages via Messenger</p>
+</li>
+<li>
+<p>Un bot qui parle sur une <em>page</em> Facebook ou dans <a href="https://www.messenger.com/">Messenger</a></p>
+</li>
+</ul>
+<h2 id="pre-requis">Pré-requis<a class="headerlink" href="#pre-requis" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p>Environ 20 minutes</p>
+</li>
+<li>
+<p>Un bot Tock fonctionnel (par exemple suite au guide <a href="../studio/">premier bot Tock</a>)</p>
+</li>
+<li>
+<p>Un compte <a href="https://developers.facebook.com/">Facebook Developer</a></p>
+</li>
+</ul>
+<h2 id="creer-une-page-facebook">Créer une page Facebook<a class="headerlink" href="#creer-une-page-facebook" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p>Créez une page Facebook</p>
+</li>
+<li>
+<p>Donnez-lui un nom (par exemple <em>My Tock Bot</em>)</p>
+</li>
+<li>
+<p>Recommandation : ne publiez pas la page pour limiter son accès des utilisateurs Messenger : 
+<em>Paramètres &gt; Général &gt; Visibilité de la page &gt; <strong>Non publiée</strong></em></p>
+</li>
+</ul>
+<h2 id="creer-une-application-facebook">Créer une application Facebook<a class="headerlink" href="#creer-une-application-facebook" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p>Allez sur la page <a href="https://developers.facebook.com/apps/">Facebook for developers &gt; Voir toutes les applications</a></p>
+</li>
+<li>
+<p><em>Ajouter une app</em></p>
+</li>
+<li>
+<p>Entrez un nom pour l'<em>application</em></p>
+</li>
+<li>
+<p><em>Créer un ID d'app</em>... Notez l'ID de la page, vous en aurez besoin plus tard.</p>
+</li>
+<li>
+<p>Ajoutez un produit : <em>Messenger</em></p>
+</li>
+<li>
+<p>Dans les paramètres, générez un jeton (<em>token</em>) pour votre page. Notez ce <em>token</em> pour la suite.</p>
+</li>
+</ul>
+<h2 id="configurer-un-connecteur-messenger-dans-tock">Configurer un connecteur Messenger dans Tock<a class="headerlink" href="#configurer-un-connecteur-messenger-dans-tock" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p>Dans <em>Tock Studio</em> allez dans <em>Configuration</em> &gt; <em>Bot Configurations</em></p>
+</li>
+<li>
+<p>Créez un connecteur de type <em>Messenger</em> et ouvrez la section <em>Connector Custom Configuration</em></p>
+</li>
+<li>
+<p>Configurez l'ID de page et le <em>token</em> précédemment générés côté Facebook</p>
+</li>
+<li>
+<p>Comme <em>Webhook token</em>, saisissez <code>token</code> (par exemple)</p>
+</li>
+<li>
+<p>Dans le champ <em>Secret</em>, entrez la clef secrète que vous trouverez dans le portail Facebook for developers :
+<em>paramètres &gt; général &gt; afficher la clef secrète</em> </p>
+</li>
+<li>
+<p>Vérifiez que la configuration du connecteur est bien enregistrée</p>
+</li>
+<li>
+<p>...</p>
+</li>
+<li>
+<p>Testez votre bot sur Messenger !</p>
+</li>
+</ul>
+<h2 id="felicitations">Félicitations!<a class="headerlink" href="#felicitations" title="Permanent link">&para;</a></h2>
+<p>Votre bot dialogue désormais sur Messenger, en plus des autres canaux auquel vous l'avez intégré.</p>
+<p>Le modèle conversationnel, les fonctionnalités et la personnalité de votre assistant sont construits et 
+restent indépendants des canaux sur lesquels le bot est présent. Toutefois, rien ne vous empêche de créer 
+des parcours ou des réponses spécifiquement pour tel ou tel canal, comme vous le verrez au travers 
+de différents outils Tock : écran de gestion des <em>Responses</em>, activation d'intentions sur tel ou tel canal 
+avec l'écran <em>Story Rules</em>, utilisation des <em>DSLs</em> et de la <em>Bot API</em> pour tirer parti de composants graphiques 
+spécifiques, etc.</p>
+<h2 id="continuer">Continuer...<a class="headerlink" href="#continuer" title="Permanent link">&para;</a></h2>
+<p>Dans les sections suivantes vous apprendez à :</p>
+<ul>
+<li>
+<p><a href="../api/">Créer des parcours programmés en Kotlin</a>, ouvrant la voie à des comportements complexes et 
+l'intégration d'API tierces si besoin</p>
+</li>
+<li>
+<p><a href="../plateforme/">Déployer une plateforme Tock</a> en quelques minutes avec Docker</p>
+</li>
+</ul>
+<p>Pour en savoir plus sur le connecteur Slack fourni avec Tock, rendez-vous dans le dossier 
+<a href="https://github.com/theopenconversationkit/tock/tree/master/bot/connector-slack">connector-slack</a> sur GitHub, 
+où vous retrouverez les sources et le <em>README</em> du connecteur.</p>
+<p>Pour en savoir plus sur <em>Tock Studio</em>, les fonctionnalités et les modes de déploiement de Tock, vous pouvez aussi 
+parcourir le <a href="../../toc/">manuel utilisateur</a>, plus complet.</p>
                 
                   
                 
