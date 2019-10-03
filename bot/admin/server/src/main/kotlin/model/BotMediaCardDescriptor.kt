@@ -25,10 +25,11 @@ import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.Translator
 
 
-data class BotMediaCardDescriptor(val title: I18nLabel?,
-                             val subTitle: I18nLabel?,
-                             val file: MediaFileDescriptor?,
-                             val actions: List<BotMediaActionDescriptor> = emptyList()) : BotMediaMessageDescriptor {
+data class BotMediaCardDescriptor(
+    val title: I18nLabel?,
+    val subTitle: I18nLabel?,
+    val file: MediaFileDescriptor?,
+    val actions: List<BotMediaActionDescriptor> = emptyList()) : BotMediaMessageDescriptor {
 
     constructor(desc: MediaCardDescriptor) :
         this(

@@ -16,22 +16,25 @@
 
 package ai.tock.bot.admin.model
 
-import com.fasterxml.jackson.annotation.JsonSubTypes
-import com.fasterxml.jackson.annotation.JsonTypeInfo
 import ai.tock.bot.connector.media.MediaActionDescriptor
 import ai.tock.bot.connector.media.MediaCardDescriptor
 import ai.tock.bot.connector.media.MediaMessageDescriptor
 import ai.tock.bot.connector.media.MediaMessageType
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "type")
 @JsonSubTypes(
-    JsonSubTypes.Type(value = BotMediaActionDescriptor::class, name = "0"),
+
     JsonSubTypes.Type(value = BotMediaActionDescriptor::class, name = "action"),
-    JsonSubTypes.Type(value = BotMediaCardDescriptor::class, name = "1"),
-    JsonSubTypes.Type(value = BotMediaCardDescriptor::class, name = "card")
+    JsonSubTypes.Type(value = BotMediaActionDescriptor::class, name = "0"),
+
+    JsonSubTypes.Type(value = BotMediaCardDescriptor::class, name = "card"),
+    JsonSubTypes.Type(value = BotMediaCardDescriptor::class, name = "1")
 )
 interface BotMediaMessageDescriptor {
 
@@ -48,3 +51,4 @@ interface BotMediaMessageDescriptor {
 
     fun toDescriptor(): MediaMessageDescriptor
 }
+

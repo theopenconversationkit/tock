@@ -18,7 +18,7 @@ package ai.tock.bot.admin.model
 
 import ai.tock.bot.connector.media.MediaActionDescriptor
 import ai.tock.bot.connector.media.MediaMessageType
-import ai.tock.bot.connector.media.MediaMessageType.card
+import ai.tock.bot.connector.media.MediaMessageType.action
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.Translator
@@ -27,7 +27,7 @@ data class BotMediaActionDescriptor(val title: I18nLabel, var url: String? = nul
 
     constructor(desc: MediaActionDescriptor) : this(Translator.saveIfNotExist(desc.title), desc.url)
 
-    override val type: MediaMessageType = card
+    override val type: MediaMessageType = action
 
     override fun toDescriptor(): MediaActionDescriptor = MediaActionDescriptor(I18nLabelValue(title), url)
 }
