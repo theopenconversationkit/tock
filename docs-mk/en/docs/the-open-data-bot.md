@@ -1,4 +1,7 @@
-# Getting Started with the Conversational Framework
+# The Open Data Bot example
+
+It is possible to program stories using the Tock _Bot API_ (see [_Bot API_ mode](code-a-bot.md)), or the so-called _Integrated Bot_ mode.
+An integrated bot sample is available: the _Open Data Bot_.
 
 ## The Open Data Bot
 

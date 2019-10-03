@@ -57,12 +57,6 @@ It is even possible to implement your own connectors to integrate with more chan
 > In this tutorial, you will configure a connector for [Slack](https://slack.com/) - the collaborative and instant 
 >messaging platform. 
 >It will be possible to try the bot using the _Tock Studio_ interface - no need to use Slack or get an account.
->
->The following section [Configure Slack](slack.md) will present, how to configure both Slack and the Tock 
->application/connector, to integrate and try the bot live on Slack.
->
-> Similarly the [Configure Messenger](messenger.md) guide shows, how to deploy the bot to another channel, 
->the Facebook messaging service.
 
 Create the first connector for your application:
 
@@ -77,8 +71,7 @@ Create the first connector for your application:
  * _Create_
 
 > Note that an _API Key_ is automatically generated for the application, once the first connector is created. 
->This key is required to connect to the bot API, in order to leverage the _WebHook_ or _WebSocket_ modes described in 
->_[Program stories](api.md)_.
+>This key is required to connect to the bot API, in order to leverage the _WebHook_ or _WebSocket_ modes.
 
 > Clicking on _Display test configurations_, you can see another configuration has been created. 
 >This connector is special, it is used when the bot is tested directly through the _Tock Studio_ interface. 
@@ -114,8 +107,7 @@ A form now opens to configure the new _story_ creation, the intent, the type of 
 * End with _Create Story_
 
 > It is possible to answer more messages, or more advanced messages including images, links, 
->_Actions_ and buttons to continue within the conversation, etc. To known more, please refer to the 
->[Tock Studio](../utilisateur/studio.md) section from the Tock user manual.
+>_Actions_ and buttons to continue within the conversation, etc.
 
 
 ## Test the bot
@@ -194,15 +186,5 @@ you have been able to create a simple conversational workflow and test it online
 
 ## To be continued...
 
-In the next sections you will learn how to:
-
-* [Configure the bot for Slack](slack.md) (requires a Slack account)
-
-* [Configure the bot for Messenger](messenger.md) (requires a Facebook developer account)
-
-* [Create more stories, written in Kotlin](api.md), making it possible to implement complex behaviours and features, 
- possibly integrating 3rd party APIs
-
-* [Deploy a (standalone) Tock platform](platform.md) in minutes with Docker
-
-To find more about _Tock Studio_, its features and deployment modes, you can also browse the complete Tock [user manual](../toc.md).
+Note that the French documentation is far more complete for now - looking at the TOC for instance.
+The translation process has begun. Please be patient or tell us, which part you need the most.

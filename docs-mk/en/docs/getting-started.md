@@ -1,18 +1,20 @@
-# Getting Started
+# TLDR;
+ 
+Deploy the Open Data Bot example with Docker.
 
 ## A Sample Bot
 
-A sample bot using Tock is available: [https://github.com/theopenconversationkit/tock-bot-open-data](https://github.com/theopenconversationkit/tock-bot-open-data).
+The sample bot using Tock _Integrated mode_: [https://github.com/theopenconversationkit/tock-bot-open-data](https://github.com/theopenconversationkit/tock-bot-open-data).
  
 It uses [Open Data SNCF API](https://data.sncf.com/) (french trainlines itineraries).
 
 This is a good starting point, since it also includes a very simple NLP model.
-Of course, as the model is not big, the quality of the bot is low, but still it's enough to demonstrate the use of the toolkit.
 
+> Of course, as the model is not big, the quality of the bot is low, but still it's enough to demonstrate the use of the toolkit.
 
 ## Docker Images
 
-Docker images are available in the [Docker Hub](https://hub.docker.com/r/tock/).
+Docker images in [Docker Hub](https://hub.docker.com/r/tock/).
 
 The source code used to build these images, as well as the docker-compose files used to start the Tock toolkit, are available in the GitHub repository [https://github.com/theopenconversationkit/tock-docker](https://github.com/theopenconversationkit/tock-docker).
 
@@ -29,7 +31,7 @@ The source code used to build these images, as well as the docker-compose files 
     docker-compose up
 ``` 
 
-The admin webapp is now available on port 80: [http://localhost](http://localhost)
+The admin webapp is now available on port `80`: [http://localhost](http://localhost)
 
 The default login is *admin@app.com* and the password is *password*.
 
