@@ -24,7 +24,6 @@ import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
-import ai.tock.bot.engine.event.PassThreadControlEvent
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 
@@ -38,9 +37,9 @@ internal object MessageConverter {
             if (action.text == null) {
                 action.messages.first() as? BusinessChatConnectorMessage
             } else BusinessChatConnectorTextMessage(
-                    sourceId = action.playerId.id,
-                    destinationId = action.recipientId.id,
-                    body = action.text.toString()
+                sourceId = action.playerId.id,
+                destinationId = action.recipientId.id,
+                body = action.text.toString()
             )
         } else null
     }
@@ -67,24 +66,12 @@ internal object MessageConverter {
                         recipientId = PlayerId(message.destinationId, PlayerType.bot),
                         text = listPickerChoice.text
                     )
-                }
-                else {
+                } else {
                     null
                 }
             }
             MessageType.pass_thread_control -> {
-                if(message.handoverData?.newOwnerAppId != null && message.handoverData.metadata == "alcmeon-secondary-done") {
-                    PassThreadControlEvent(
-                        recipientId = PlayerId(message.destinationId, PlayerType.user),
-                        userId = PlayerId(message.destinationId, PlayerType.user),
-                        applicationId = connectorId,
-                        newOwnerAppId = message.handoverData.newOwnerAppId,
-                        metadata = message.handoverData.metadata
-                    )
-                }
-                else {
-                    null
-                }
+                businessChatClient.integrationService.parseThreadControl(message, connectorId)
             }
             else -> null
         }

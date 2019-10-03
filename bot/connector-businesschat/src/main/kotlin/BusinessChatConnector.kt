@@ -16,7 +16,6 @@
 
 package ai.tock.bot.connector.businesschat
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
@@ -35,22 +34,34 @@ import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.provide
+import ai.tock.shared.trace
+import com.fasterxml.jackson.module.kotlin.readValue
 import mu.KotlinLogging
 
 /**
- * Defines a connector for BusinessChat
+ * Defines a connector for BusinessChat.
+ *
  * @param path base path for our business chat endpoints
- * @param businessId your organization Business ID
+ * @param connectorId the connector identifier
+ * @param businessId your organization business identifier
  */
 internal class BusinessChatConnector(
     private val path: String,
     private val connectorId: String,
     private val businessId: String
-) :
-    ConnectorBase(BusinessChatConnectorProvider.connectorType) {
+) : ConnectorBase(BusinessChatConnectorProvider.connectorType) {
 
     private val logger = KotlinLogging.logger { }
-    private val cspBusinessChatClient: CSPBusinessChatClient get() = injector.provide()
+
+    private val cspBusinessChatClient: CSPBusinessChatClient = CSPBusinessChatClient(
+        try {
+            injector.provide<BusinessChatIntegrationService>()
+        } catch (e: Throwable) {
+            logger.error("No Business Chat Integration Service injected - fallback to default")
+            logger.trace(e)
+            DefaultBusinessChatIntegrationService()
+        }
+    )
     private val executor: Executor get() = injector.provide()
 
     /**
@@ -83,8 +94,7 @@ internal class BusinessChatConnector(
 
                     if (businessId == message.sourceId && message.handoverData == null) {
                         logger.info("Ignoring echo message")
-                    }
-                    else {
+                    } else {
                         executor.executeBlocking {
                             val event = MessageConverter.toEvent(message, connectorId, cspBusinessChatClient)
                             event?.let {

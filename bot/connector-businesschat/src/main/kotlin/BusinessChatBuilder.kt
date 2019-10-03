@@ -40,7 +40,7 @@ fun <T : Bus<T>> T.withBusinessChat(messageProvider: () -> BusinessChatConnector
  *
  */
 fun <T : Bus<T>> T.businessChatText(
-    text: String
+    text: CharSequence
 ): BusinessChatConnectorMessage =
     BusinessChatConnectorTextMessage(
         sourceId = botId.id,
@@ -74,17 +74,17 @@ fun <T : Bus<T>> T.businessChatAttachement(
  * @param items the items list
  */
 fun <T : Bus<T>> T.businessChatListPicker(
-    title: String,
-    subtitle: String,
-    listDetails: String,
+    title: CharSequence,
+    subtitle: CharSequence,
+    listDetails: CharSequence,
     items: List<ListPickerItem>
 ): BusinessChatConnectorMessage =
     BusinessChatConnectorListPickerMessage(
         sourceId = botId.id,
         destinationId = userId.id,
-        title = title,
-        subtitle = subtitle,
-        listDetails = listDetails,
+        title = translate(title).toString(),
+        subtitle = translate(subtitle).toString(),
+        listDetails = translate(listDetails).toString(),
         multipleSelection = false,
         items = items
     )
@@ -99,7 +99,7 @@ fun <T : Bus<T>> T.businessChatListPicker(
  */
 fun <T : Bus<T>> T.businessChatRichLink(
     url: String,
-    title: String,
+    title: CharSequence,
     image: ByteArray,
     mimeType: String
 ): BusinessChatConnectorMessage =
@@ -107,7 +107,7 @@ fun <T : Bus<T>> T.businessChatRichLink(
         sourceId = botId.id,
         destinationId = userId.id,
         url = url,
-        title = title,
+        title = translate(title).toString(),
         image = image,
         mimeType = mimeType
     )
