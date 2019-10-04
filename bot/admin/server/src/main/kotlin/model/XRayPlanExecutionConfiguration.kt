@@ -21,7 +21,7 @@ package ai.tock.bot.admin.model
  */
 data class XRayPlanExecutionConfiguration(
     val configurationId: String?,
-    val testPlanKey: String? = null,
-    val testKey: String? = null,
+    val testKey: String = "",
+    val testPlanKey: String = "",
     val testedBotId: String
 )

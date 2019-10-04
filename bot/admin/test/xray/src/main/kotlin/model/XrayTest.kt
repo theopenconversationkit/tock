@@ -22,8 +22,9 @@ import ai.tock.translator.UserInterfaceType.textChat
 /**
  *
  */
+
 data class XrayTest(
-        val key: String,
+        val key: String = "",
         val precondition: List<XrayPrecondition> = emptyList()) {
 
     fun supportConf(conf: String): Boolean {
