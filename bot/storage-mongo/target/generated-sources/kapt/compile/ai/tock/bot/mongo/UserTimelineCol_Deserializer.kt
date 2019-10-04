@@ -43,6 +43,8 @@ internal class UserTimelineCol_Deserializer : JsonDeserializer<UserTimelineCol>(
             var _lastUpdateDate_set : Boolean = false
             var _lastUserActionDate_: Instant? = null
             var _lastUserActionDate_set : Boolean = false
+            var _namespace_: String? = null
+            var _namespace_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -98,6 +100,11 @@ internal class UserTimelineCol_Deserializer : JsonDeserializer<UserTimelineCol>(
                              else p.readValueAs(Instant::class.java);
                             _lastUserActionDate_set = true
                             }
+                    "namespace" -> {
+                            _namespace_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _namespace_set = true
+                            }
                     else -> {
                             if (_token_?.isStructStart == true)
                             p.skipChildren()
@@ -108,12 +115,12 @@ internal class UserTimelineCol_Deserializer : JsonDeserializer<UserTimelineCol>(
                         } 
             return if(__id_set && _playerId_set && _userPreferences_set && _userState_set &&
                     _temporaryIds_set && _applicationIds_set && _lastActionText_set &&
-                    _lastUpdateDate_set && _lastUserActionDate_set)
+                    _lastUpdateDate_set && _lastUserActionDate_set && _namespace_set)
                     UserTimelineCol(_id = __id_!!, playerId = _playerId_!!, userPreferences =
                             _userPreferences_!!, userState = _userState_!!, temporaryIds =
                             _temporaryIds_!!, applicationIds = _applicationIds_!!, lastActionText =
                             _lastActionText_, lastUpdateDate = _lastUpdateDate_!!,
-                            lastUserActionDate = _lastUserActionDate_!!)
+                            lastUserActionDate = _lastUserActionDate_!!, namespace = _namespace_)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(__id_set)
@@ -133,7 +140,9 @@ internal class UserTimelineCol_Deserializer : JsonDeserializer<UserTimelineCol>(
                     if(_lastUpdateDate_set)
                     map[parameters.getValue("lastUpdateDate")] = _lastUpdateDate_
                     if(_lastUserActionDate_set)
-                    map[parameters.getValue("lastUserActionDate")] = _lastUserActionDate_ 
+                    map[parameters.getValue("lastUserActionDate")] = _lastUserActionDate_
+                    if(_namespace_set)
+                    map[parameters.getValue("namespace")] = _namespace_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -153,7 +162,8 @@ internal class UserTimelineCol_Deserializer : JsonDeserializer<UserTimelineCol>(
                 primaryConstructor.findParameterByName("applicationIds")!!, "lastActionText" to
                 primaryConstructor.findParameterByName("lastActionText")!!, "lastUpdateDate" to
                 primaryConstructor.findParameterByName("lastUpdateDate")!!, "lastUserActionDate" to
-                primaryConstructor.findParameterByName("lastUserActionDate")!!) }
+                primaryConstructor.findParameterByName("lastUserActionDate")!!, "namespace" to
+                primaryConstructor.findParameterByName("namespace")!!) }
 
         private val __id__reference: TypeReference<Id<UserTimelineCol>> = object :
                 TypeReference<Id<UserTimelineCol>>() {}

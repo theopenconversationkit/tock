@@ -35,24 +35,34 @@ interface UserTimelineDAO {
      * Saves the timeline.
      *
      * @param userTimeline the timeline to save
-     * @param botDefinition the optional bot definition (in order to add stats about the bot)
+     * @param botDefinition the bot definition (in order to add stats about the bot)
      */
-    fun save(userTimeline: UserTimeline, botDefinition: BotDefinition? = null)
+    fun save(userTimeline: UserTimeline, botDefinition: BotDefinition)
+
+    /**
+     * Saves the timeline.
+     *
+     * @param userTimeline the timeline to save
+     * @param namespace the namespace of the current bot
+     */
+    fun save(userTimeline: UserTimeline, namespace: String)
 
     /**
      * Update playerId for dialog and user timelines.
      */
-    fun updatePlayerId(oldPlayerId: PlayerId, newPlayerId: PlayerId)
+    fun updatePlayerId(namespace: String, oldPlayerId: PlayerId, newPlayerId: PlayerId)
 
     /**
      * Loads with last dialog. If no timeline exists, creates a new one.
      *
+     * @param namespace the namespace of the bot
      * @param userId the user id of the last message
      * @param priorUserId not null if this user ahs an other id before
      * @param groupId not null if this is a conversation group
      * @param storyDefinitionProvider provides [StoryDefinition] from story ids.
      */
     fun loadWithLastValidDialog(
+        namespace: String,
         userId: PlayerId,
         priorUserId: PlayerId? = null,
         groupId: String? = null,
@@ -62,27 +72,28 @@ interface UserTimelineDAO {
     /**
      * Loads without the dialogs. If no timeline, create a new one.
      */
-    fun loadWithoutDialogs(userId: PlayerId): UserTimeline
+    fun loadWithoutDialogs(namespace: String, userId: PlayerId): UserTimeline
 
     /**
      * Loads without the dialogs.
      */
-    fun loadByTemporaryIdsWithoutDialogs(temporaryIds: List<String>): List<UserTimeline>
+    fun loadByTemporaryIdsWithoutDialogs(namespace: String, temporaryIds: List<String>): List<UserTimeline>
 
     /**
      * Remove the timeline and the associated dialogs.
      */
-    fun remove(playerId: PlayerId)
+    fun remove(namespace: String, playerId: PlayerId)
 
     /**
      * Remove all timelines and associated dialogs of a client.
      */
-    fun removeClient(clientId: String)
+    fun removeClient(namespace: String, clientId: String)
 
     /**
      * Returns the dialogs of specified client id.
      */
     fun getClientDialogs(
+        namespace: String,
         clientId: String,
         storyDefinitionProvider: (String) -> StoryDefinition
     ): List<Dialog>
@@ -90,7 +101,10 @@ interface UserTimelineDAO {
     /**
      * Returns all dialogs updated after the specified Instant.
      */
-    fun getDialogsUpdatedFrom(from: Instant, storyDefinitionProvider: (String) -> StoryDefinition): List<Dialog>
+    fun getDialogsUpdatedFrom(
+        namespace: String,
+        from: Instant,
+        storyDefinitionProvider: (String) -> StoryDefinition): List<Dialog>
 
     /**
      * Gets the snapshots of a dialog.
@@ -100,7 +114,7 @@ interface UserTimelineDAO {
     /**
      * Returns the last story id of the specified user, if any.
      */
-    fun getLastStoryId(playerId: PlayerId): String?
+    fun getLastStoryId(namespace: String, playerId: PlayerId): String?
 
     /**
      * Returns the archived values for the state id.

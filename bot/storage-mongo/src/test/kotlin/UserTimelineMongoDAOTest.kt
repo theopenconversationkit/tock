@@ -35,10 +35,10 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
     fun `getClientDialogs retrieves user timeline WHEN clientId is not null`() {
         val id = PlayerId("id", PlayerType.user, "clientId")
         val u = UserTimeline(id, dialogs = mutableListOf(Dialog(setOf(id))))
-        UserTimelineMongoDAO.save(u)
+        UserTimelineMongoDAO.save(u, "namespace")
         assertEquals(
             u.dialogs,
-            UserTimelineMongoDAO.getClientDialogs(id.clientId!!, { error("no story provided") })
+            UserTimelineMongoDAO.getClientDialogs("namespace", id.clientId!!) { error("no story provided") }
         )
     }
 
@@ -57,11 +57,11 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
     @Test
     fun `get userTimeLine with temporaryIds `() {
         val id = PlayerId("id", PlayerType.user, "clientId")
-        val u = UserTimeline(id, dialogs = mutableListOf(Dialog(setOf(id))),temporaryIds = mutableSetOf("123456879", "1477854545"))
-        UserTimelineMongoDAO.save(u)
+        val u = UserTimeline(id, dialogs = mutableListOf(Dialog(setOf(id))), temporaryIds = mutableSetOf("123456879", "1477854545"))
+        UserTimelineMongoDAO.save(u, "namespace")
         assertEquals(
             u.toString(),
-            UserTimelineMongoDAO.loadByTemporaryIdsWithoutDialogs(listOf("123456879","99999999")).firstOrNull()?.toString()
+            UserTimelineMongoDAO.loadByTemporaryIdsWithoutDialogs("namespace", listOf("123456879", "99999999")).firstOrNull()?.toString()
         )
     }
 
@@ -69,19 +69,19 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
     fun `updatePlayerId update timeline and dialog player id`() {
         val id = PlayerId("id", PlayerType.user)
         val u = UserTimeline(id, dialogs = mutableListOf(Dialog(setOf(id))))
-        UserTimelineMongoDAO.save(u)
-        println(UserTimelineMongoDAO.loadWithLastValidDialog(id, null) { error("no story provided") })
+        UserTimelineMongoDAO.save(u, "namespace")
+        println(UserTimelineMongoDAO.loadWithLastValidDialog("namespace", id, null) { error("no story provided") })
 
         val newId = PlayerId("id", PlayerType.user, "a")
-        UserTimelineMongoDAO.updatePlayerId(id, newId)
-        println(UserTimelineMongoDAO.loadWithLastValidDialog(newId, null) { error("no story provided") })
+        UserTimelineMongoDAO.updatePlayerId("namespace", id, newId)
+        println(UserTimelineMongoDAO.loadWithLastValidDialog("namespace", newId, null) { error("no story provided") })
         assertEquals(
             u.dialogs.map { it.copy(playerIds = setOf(newId)) },
-            UserTimelineMongoDAO.getClientDialogs(newId.clientId!!) { error("no story provided") }
+            UserTimelineMongoDAO.getClientDialogs("namespace", newId.clientId!!) { error("no story provided") }
         )
         assertEquals(
             newId,
-            UserTimelineMongoDAO.loadWithoutDialogs(newId).playerId
+            UserTimelineMongoDAO.loadWithoutDialogs("namespace", newId).playerId
         )
 
     }

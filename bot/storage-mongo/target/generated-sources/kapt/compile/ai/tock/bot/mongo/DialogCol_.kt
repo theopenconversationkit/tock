@@ -34,6 +34,8 @@ private val __GroupId: KProperty1<DialogCol, String?>
     get() = DialogCol::groupId
 private val __Test: KProperty1<DialogCol, Boolean?>
     get() = DialogCol::test
+private val __Namespace: KProperty1<DialogCol, String?>
+    get() = DialogCol::namespace
 internal class DialogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, DialogCol?>) :
         KPropertyPath<T, DialogCol?>(previous,property) {
     val playerIds: PlayerId_Col<T>
@@ -60,6 +62,9 @@ internal class DialogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty
     val test: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__Test)
 
+    val namespace: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__Namespace)
+
     companion object {
         val PlayerIds: PlayerId_Col<DialogCol>
             get() = PlayerId_Col(null,__PlayerIds)
@@ -76,7 +81,9 @@ internal class DialogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty
         val GroupId: KProperty1<DialogCol, String?>
             get() = __GroupId
         val Test: KProperty1<DialogCol, Boolean?>
-            get() = __Test}
+            get() = __Test
+        val Namespace: KProperty1<DialogCol, String?>
+            get() = __Namespace}
 }
 
 internal class DialogCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -105,6 +112,9 @@ internal class DialogCol_Col<T>(previous: KPropertyPath<T, *>?, property: KPrope
 
     val test: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__Test)
+
+    val namespace: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__Namespace)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): DialogCol_<T> = DialogCol_(this,
@@ -135,6 +145,9 @@ internal class DialogCol_Map<T, K>(previous: KPropertyPath<T, *>?, property: KPr
 
     val test: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__Test)
+
+    val namespace: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__Namespace)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): DialogCol_<T> = DialogCol_(this,

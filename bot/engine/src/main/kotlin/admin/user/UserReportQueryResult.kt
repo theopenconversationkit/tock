@@ -17,8 +17,7 @@
 package ai.tock.bot.admin.user
 
 data class UserReportQueryResult(
-        val total: Long,
-        val start: Long,
-        val end: Long,
-        val users: List<UserReport>) {
-}
+    val total: Long,
+    val start: Long = 0,
+    val end: Long = 0,
+    val users: List<UserReport> = emptyList())

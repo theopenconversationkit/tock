@@ -16,13 +16,6 @@
 
 package ai.tock.bot.mongo
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.JsonToken
-import com.fasterxml.jackson.core.TreeNode
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonDeserializer
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import ai.tock.bot.admin.user.UserReport
 import ai.tock.bot.engine.action.SendAttachment
 import ai.tock.bot.engine.action.SendChoice
@@ -40,9 +33,16 @@ import ai.tock.shared.security.TockObfuscatorService.obfuscate
 import ai.tock.shared.security.decrypt
 import ai.tock.shared.security.encrypt
 import ai.tock.shared.security.encryptionEnabled
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.core.JsonToken
+import com.fasterxml.jackson.core.TreeNode
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.JsonDeserializer
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
-import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.toId
 import java.time.Instant
 import java.time.ZoneId
@@ -59,15 +59,17 @@ internal data class UserTimelineCol(
     val applicationIds: MutableSet<String> = mutableSetOf(),
     var lastActionText: String? = null,
     val lastUpdateDate: Instant = Instant.now(),
-    var lastUserActionDate: Instant = lastUpdateDate
+    var lastUserActionDate: Instant = lastUpdateDate,
+    val namespace: String? = null
 ) {
 
-    constructor(newTimeline: UserTimeline, oldTimeline: UserTimelineCol?) : this(
-        newTimeline.playerId.id.toId(),
+    constructor(timelineId: String, namespace:String, newTimeline: UserTimeline, oldTimeline: UserTimelineCol?) : this(
+        timelineId.toId(),
         newTimeline.playerId,
         UserPreferencesWrapper(newTimeline.userPreferences),
         UserStateWrapper(newTimeline.userState),
-        newTimeline.temporaryIds
+        newTimeline.temporaryIds,
+        namespace = namespace
     ) {
         //register last action
         newTimeline.dialogs.lastOrNull()?.currentStory?.actions?.lastOrNull { it.playerId.type == PlayerType.user }
@@ -166,16 +168,16 @@ internal data class UserTimelineCol(
         val flags: Map<String, TimeBoxedFlagWrapper>
     ) {
         constructor(state: UserState) :
-                this(
-                    state.creationDate,
-                    Instant.now(),
-                    state.flags.mapValues {
-                        TimeBoxedFlagWrapper(
-                            it.value,
-                            MongoBotConfiguration.hasToEncryptFlag(it.key)
-                        )
-                    }
-                )
+            this(
+                state.creationDate,
+                Instant.now(),
+                state.flags.mapValues {
+                    TimeBoxedFlagWrapper(
+                        it.value,
+                        MongoBotConfiguration.hasToEncryptFlag(it.key)
+                    )
+                }
+            )
 
         fun toUserState(): UserState {
             return UserState(

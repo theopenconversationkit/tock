@@ -16,13 +16,9 @@
 
 package ai.tock.bot.admin.test
 
-import com.github.salomonbrys.kodein.instance
-import com.google.common.cache.Cache
-import com.google.common.cache.CacheBuilder
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.dialog.DialogReportDAO
 import ai.tock.bot.connector.rest.client.ConnectorRestClient
-import ai.tock.bot.connector.rest.client.model.ClientConnectorType
 import ai.tock.bot.connector.rest.client.model.ClientMessage
 import ai.tock.bot.connector.rest.client.model.ClientMessageRequest
 import ai.tock.bot.connector.rest.client.model.ClientSentence
@@ -34,9 +30,11 @@ import ai.tock.shared.Dice
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.provide
+import com.github.salomonbrys.kodein.instance
+import com.google.common.cache.Cache
+import com.google.common.cache.CacheBuilder
 import mu.KotlinLogging
 import org.litote.kmongo.Id
-import org.litote.kmongo.newId
 import java.time.Duration
 import java.time.Instant
 
@@ -53,7 +51,7 @@ object TestPlanService {
     private val botConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
 
     private val applicationIdPathCache: Cache<String, String> =
-            CacheBuilder.newBuilder().expireAfterAccess(Duration.ofMinutes(1)).build()
+        CacheBuilder.newBuilder().expireAfterAccess(Duration.ofMinutes(1)).build()
 
     fun getPlanExecutions(plan: TestPlan): List<TestPlanExecution> {
         return testPlanDAO.getPlanExecutions(plan._id)
@@ -91,7 +89,7 @@ object TestPlanService {
         return testPlanDAO.getPlan(planId)
     }
 
-    fun getTestPlanExecution(testPlan: TestPlan, testExecutionId: Id<TestPlanExecution>) : TestPlanExecution? {
+    fun getTestPlanExecution(testPlan: TestPlan, testExecutionId: Id<TestPlanExecution>): TestPlanExecution? {
         return testPlanDAO.getTestPlanExecution(testPlan, testExecutionId);
     }
 
@@ -126,12 +124,12 @@ object TestPlanService {
 
         // store the test plan execution into the right Object
         val exec = TestPlanExecution(
-                plan._id,
-                dialogs,
-                nbErrors,
-                duration = Duration.between(start, Instant.now()),
-                _id = executionId,
-                status = TestPlanExecutionStatus.PENDING
+            plan._id,
+            dialogs,
+            nbErrors,
+            duration = Duration.between(start, Instant.now()),
+            _id = executionId,
+            status = TestPlanExecutionStatus.PENDING
         )
         // save the test plan execution into the database
         testPlanDAO.saveTestExecution(exec)
@@ -147,7 +145,7 @@ object TestPlanService {
         }
 
         // save the test plan execution into the database
-        testPlanDAO.saveTestExecution(exec.copy(status=TestPlanExecutionStatus.COMPLETE))
+        testPlanDAO.saveTestExecution(exec.copy(status = TestPlanExecutionStatus.COMPLETE))
         // return the completed test execution
         return exec
     }
@@ -173,15 +171,15 @@ object TestPlanService {
             // first action is just saying Hi!
             if (testPlan.startAction != null) {
                 client.talk(
-                        getPath(testPlan),
-                        testPlan.locale,
-                        ClientMessageRequest(
-                                playerId,
-                                botId,
-                                testPlan.startAction!!.toClientMessage(),
-                                testPlan.targetConnectorType.toClientConnectorType(),
-                                true
-                        )
+                    getPath(testPlan),
+                    testPlan.locale,
+                    ClientMessageRequest(
+                        playerId,
+                        botId,
+                        testPlan.startAction!!.toClientMessage(),
+                        testPlan.targetConnectorType.toClientConnectorType(),
+                        true
+                    )
                 )
             }
 
@@ -191,11 +189,11 @@ object TestPlanService {
                 if (it.playerId.type == PlayerType.user) {
                     // convert the current test step as a request formatted to be understandable by the bot
                     val request = ClientMessageRequest(
-                            playerId,
-                            botId,
-                            it.findFirstMessage().toClientMessage(),
-                            testPlan.targetConnectorType.toClientConnectorType(),
-                            true
+                        playerId,
+                        botId,
+                        it.findFirstMessage().toClientMessage(),
+                        testPlan.targetConnectorType.toClientConnectorType(),
+                        true
                     )
                     logger.debug { "ASK -- : $request" }
                     // send the converted test step to the bot
@@ -222,17 +220,17 @@ object TestPlanService {
                     } else {
                         logger.error { "ERROR : " + answer.errorBody()?.string() }
                         return DialogExecutionReport(
-                                dialog.id, true, errorMessage = answer.errorBody()?.toString()
-                                ?: "Unknown error"
+                            dialog.id, true, errorMessage = answer.errorBody()?.toString()
+                            ?: "Unknown error"
                         )
                     }
                 } else {
                     if (botMessages.isEmpty()) {
                         return DialogExecutionReport(
-                                dialog.id,
-                                true,
-                                it.id,
-                                errorMessage = "(no answer but one expected)"
+                            dialog.id,
+                            true,
+                            it.id,
+                            errorMessage = "(no answer but one expected)"
                         )
                     }
                     val botMessage = botMessages.removeAt(0)
@@ -240,10 +238,10 @@ object TestPlanService {
                     if (!botMessage.convertAndDeepEquals(it)) {
                         logger.error { "Not the same messages:\n\t\tObtained ----- $botMessage\n\t\tExpected ----- ${it.messages.map { m -> m.toClientMessage() }}" }
                         return DialogExecutionReport(
-                                dialog.id,
-                                true,
-                                it.id,
-                                botMessage.toMessage()
+                            dialog.id,
+                            true,
+                            it.id,
+                            botMessage.toMessage()
                         )
                     }
                 }
@@ -254,7 +252,7 @@ object TestPlanService {
             logger.error(e)
             DialogExecutionReport(dialog.id, true, errorMessage = e.message)
         } finally {
-            userTimelineDAO.remove(PlayerId(playerId, PlayerType.user))
+            userTimelineDAO.remove(testPlan.namespace, PlayerId(playerId, PlayerType.user))
         }
     }
 
@@ -262,7 +260,7 @@ object TestPlanService {
         val applicationId = testPlan.applicationId
         return applicationIdPathCache.get(applicationId) {
             botConfigurationDAO.getConfigurationById(testPlan.botApplicationConfigurationId)?.path
-                    ?: "/$applicationId"
+                ?: "/$applicationId"
         }
     }
 

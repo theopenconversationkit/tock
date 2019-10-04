@@ -16,10 +16,6 @@
 
 package ai.tock.bot.mongo
 
-import com.fasterxml.jackson.annotation.JsonSubTypes
-import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.annotation.JsonTypeName
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import ai.tock.bot.admin.dialog.ActionReport
 import ai.tock.bot.admin.dialog.DialogReport
 import ai.tock.bot.definition.Intent
@@ -43,6 +39,10 @@ import ai.tock.shared.checkMaxLengthAllowed
 import ai.tock.shared.jackson.AnyValueWrapper
 import ai.tock.shared.security.TockObfuscatorService.obfuscate
 import ai.tock.translator.UserInterfaceType.textChat
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.annotation.JsonTypeName
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
@@ -63,7 +63,8 @@ internal data class DialogCol(
     val applicationIds: Set<String> = emptySet(),
     val lastUpdateDate: Instant = now(),
     val groupId: String? = null,
-    val test: Boolean = false
+    val test: Boolean = false,
+    val namespace: String? = null
 ) {
 
     companion object {
@@ -85,7 +86,8 @@ internal data class DialogCol(
         dialog.stories.map { StoryMongoWrapper(it) },
         userTimeline.applicationIds,
         groupId = dialog.groupId,
-        test = userTimeline.userPreferences.test
+        test = userTimeline.userPreferences.test,
+        namespace = userTimeline.namespace
     )
 
     fun toDialog(storyDefinitionProvider: (String) -> StoryDefinition): Dialog {

@@ -16,7 +16,6 @@
 
 package ai.tock.bot.definition
 
-import com.github.salomonbrys.kodein.instance
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.action.SendChoice
@@ -28,6 +27,7 @@ import ai.tock.bot.engine.event.PassThreadControlEvent
 import ai.tock.bot.engine.event.StartConversationEvent
 import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.shared.injector
+import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 
 /**
@@ -45,12 +45,13 @@ open class EventListenerBase : EventListener {
         logger.debug { "listen event $event" }
 
         fun StoryDefinition?.sendChoice(event: OneToOneEvent, force: Boolean = false): Boolean =
-                if (this == null && !force) {
-                    false
-                } else {
-                    sendChoice(event, this?.mainIntent() ?: controller.botDefinition.stories.first().mainIntent(), controller, connectorData)
-                    true
-                }
+            if (this == null && !force) {
+                false
+            } else {
+                sendChoice(event, this?.mainIntent()
+                    ?: controller.botDefinition.stories.first().mainIntent(), controller, connectorData)
+                true
+            }
 
         with(controller.botDefinition) {
             return when (event) {
@@ -59,9 +60,9 @@ open class EventListenerBase : EventListener {
                 is NoInputEvent -> goodbyeStory.sendChoice(event)
                 is PassThreadControlEvent -> {
                     val userTimelineDAO: UserTimelineDAO by injector.instance()
-                    val timeline = userTimelineDAO.loadWithoutDialogs(event.userId)
+                    val timeline = userTimelineDAO.loadWithoutDialogs(namespace, event.userId)
                     timeline.userState.botDisabled = false
-                    userTimelineDAO.save(timeline)
+                    userTimelineDAO.save(timeline, controller.botDefinition)
                     true
                 }
                 else -> false

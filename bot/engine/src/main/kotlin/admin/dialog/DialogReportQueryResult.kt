@@ -20,8 +20,7 @@ package ai.tock.bot.admin.dialog
  *
  */
 data class DialogReportQueryResult(
-        val total: Long,
-        val start: Long,
-        val end: Long,
-        val dialogs: List<DialogReport>) {
-}
+    val total: Long,
+    val start: Long = 0,
+    val end: Long = 0,
+    val dialogs: List<DialogReport> = emptyList())

@@ -66,6 +66,11 @@ internal class DialogCol_Serializer : StdSerializer<DialogCol>(DialogCol::class.
         gen.writeFieldName("test")
         val _test_ = value.test
         gen.writeBoolean(_test_)
+        gen.writeFieldName("namespace")
+        val _namespace_ = value.namespace
+        if(_namespace_ == null) { gen.writeNull() } else {
+                gen.writeString(_namespace_)
+                }
         gen.writeEndObject()
     }
 }

@@ -61,6 +61,11 @@ internal class UserTimelineCol_Serializer :
         gen.writeFieldName("lastUserActionDate")
         val _lastUserActionDate_ = value.lastUserActionDate
         serializers.defaultSerializeValue(_lastUserActionDate_, gen)
+        gen.writeFieldName("namespace")
+        val _namespace_ = value.namespace
+        if(_namespace_ == null) { gen.writeNull() } else {
+                gen.writeString(_namespace_)
+                }
         gen.writeEndObject()
     }
 }

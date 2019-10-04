@@ -189,22 +189,22 @@ object BotRepository {
         notificationType: ActionNotificationType
     ) {
         val userTimelineDAO: UserTimelineDAO = injector.provide()
-        val userTimeline = userTimelineDAO.loadWithoutDialogs(recipientId)
+        val userTimeline = userTimelineDAO.loadWithoutDialogs(botDefinition.namespace, recipientId)
         val userState = userTimeline.userState
         val currentState = userState.botDisabled
 
         if (stateModifier == NotifyBotStateModifier.ACTIVATE_ONLY_FOR_THIS_NOTIFICATION
             || stateModifier == NotifyBotStateModifier.REACTIVATE) {
             userState.botDisabled = false
-            userTimelineDAO.save(userTimeline)
+            userTimelineDAO.save(userTimeline, botDefinition)
         }
 
         notify(recipientId, intent, step, parameters, notificationType)
 
         if (stateModifier == NotifyBotStateModifier.ACTIVATE_ONLY_FOR_THIS_NOTIFICATION) {
-            val userTimelineAfterNotification = userTimelineDAO.loadWithoutDialogs(recipientId)
+            val userTimelineAfterNotification = userTimelineDAO.loadWithoutDialogs(botDefinition.namespace, recipientId)
             userTimelineAfterNotification.userState.botDisabled = currentState
-            userTimelineDAO.save(userTimeline)
+            userTimelineDAO.save(userTimeline, botDefinition)
         }
     }
 

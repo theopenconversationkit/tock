@@ -16,7 +16,6 @@
 
 package ai.tock.bot.mongo
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendSentence
@@ -39,6 +38,7 @@ import ai.tock.shared.jackson.AnyValueWrapper
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.security.ParameterObfuscator
 import ai.tock.shared.security.TockObfuscatorService
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
@@ -110,10 +110,14 @@ class DialogColDeserializationTest : AbstractTest(false) {
         val playerId = PlayerId("a", PlayerType.user)
         val s = mapper.writeValueAsString(
             DialogCol(
-                dialog, UserTimelineCol(
+                dialog,
+                UserTimelineCol(
+                    "id",
+                    "namespace",
                     UserTimeline(
                         playerId
-                    ), null
+                    ),
+                    null
                 )
             )
         )
@@ -181,7 +185,7 @@ class DialogColDeserializationTest : AbstractTest(false) {
     @Test
     fun `deserialization of unknown value is ok`() {
         val json = this::class.java.getResourceAsStream("/dialog.json")
-        val col : DialogCol? = mapper.readValue(json)
+        val col: DialogCol? = mapper.readValue(json)
         assertNotNull(col)
     }
 

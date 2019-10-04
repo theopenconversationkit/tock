@@ -16,7 +16,6 @@
 
 package ai.tock.bot.engine
 
-import com.github.salomonbrys.kodein.instance
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorConfiguration
@@ -41,6 +40,7 @@ import ai.tock.shared.intProperty
 import ai.tock.shared.longProperty
 import ai.tock.shared.provide
 import ai.tock.stt.STT
+import com.github.salomonbrys.kodein.instance
 import io.vertx.ext.web.Router
 import mu.KotlinLogging
 import java.net.URL
@@ -143,6 +143,7 @@ internal class TockConnectorController constructor(
 
                     val userTimeline =
                         userTimelineDAO.loadWithLastValidDialog(
+                            botDefinition.namespace,
                             action.playerId,
                             data.priorUserId,
                             data.groupId,
@@ -183,6 +184,7 @@ internal class TockConnectorController constructor(
         return try {
             val userTimeline =
                 userTimelineDAO.loadWithLastValidDialog(
+                    botDefinition.namespace,
                     action.playerId,
                     data.priorUserId,
                     data.groupId,

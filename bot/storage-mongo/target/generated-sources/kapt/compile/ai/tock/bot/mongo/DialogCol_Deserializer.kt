@@ -44,6 +44,8 @@ internal class DialogCol_Deserializer : JsonDeserializer<DialogCol>(), JacksonMo
             var _groupId_set : Boolean = false
             var _test_: Boolean? = null
             var _test_set : Boolean = false
+            var _namespace_: String? = null
+            var _namespace_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -94,6 +96,11 @@ internal class DialogCol_Deserializer : JsonDeserializer<DialogCol>(), JacksonMo
                              else p.booleanValue;
                             _test_set = true
                             }
+                    "namespace" -> {
+                            _namespace_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _namespace_set = true
+                            }
                     else -> {
                             if (_token_?.isStructStart == true)
                             p.skipChildren()
@@ -103,10 +110,12 @@ internal class DialogCol_Deserializer : JsonDeserializer<DialogCol>(), JacksonMo
                 _token_ = currentToken
                         } 
             return if(_playerIds_set && __id_set && _state_set && _stories_set &&
-                    _applicationIds_set && _lastUpdateDate_set && _groupId_set && _test_set)
+                    _applicationIds_set && _lastUpdateDate_set && _groupId_set && _test_set &&
+                    _namespace_set)
                     DialogCol(playerIds = _playerIds_!!, _id = __id_!!, state = _state_!!, stories =
                             _stories_!!, applicationIds = _applicationIds_!!, lastUpdateDate =
-                            _lastUpdateDate_!!, groupId = _groupId_, test = _test_!!)
+                            _lastUpdateDate_!!, groupId = _groupId_, test = _test_!!, namespace =
+                            _namespace_)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_playerIds_set)
@@ -124,7 +133,9 @@ internal class DialogCol_Deserializer : JsonDeserializer<DialogCol>(), JacksonMo
                     if(_groupId_set)
                     map[parameters.getValue("groupId")] = _groupId_
                     if(_test_set)
-                    map[parameters.getValue("test")] = _test_ 
+                    map[parameters.getValue("test")] = _test_
+                    if(_namespace_set)
+                    map[parameters.getValue("namespace")] = _namespace_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -143,7 +154,8 @@ internal class DialogCol_Deserializer : JsonDeserializer<DialogCol>(), JacksonMo
                 primaryConstructor.findParameterByName("applicationIds")!!, "lastUpdateDate" to
                 primaryConstructor.findParameterByName("lastUpdateDate")!!, "groupId" to
                 primaryConstructor.findParameterByName("groupId")!!, "test" to
-                primaryConstructor.findParameterByName("test")!!) }
+                primaryConstructor.findParameterByName("test")!!, "namespace" to
+                primaryConstructor.findParameterByName("namespace")!!) }
 
         private val _playerIds__reference: TypeReference<Set<PlayerId>> = object :
                 TypeReference<Set<PlayerId>>() {}

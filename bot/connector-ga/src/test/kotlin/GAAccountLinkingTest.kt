@@ -1,9 +1,5 @@
 package ai.tock.bot.connector.ga
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.singleton
 import ai.tock.bot.connector.ga.GAAccountLinking.Companion.getUserId
 import ai.tock.bot.connector.ga.GAAccountLinking.Companion.isUserAuthenticated
 import ai.tock.bot.connector.ga.GAAccountLinking.Companion.switchTimeLine
@@ -11,6 +7,7 @@ import ai.tock.bot.connector.ga.model.request.GAConversation
 import ai.tock.bot.connector.ga.model.request.GARequest
 import ai.tock.bot.connector.ga.model.request.GASurface
 import ai.tock.bot.connector.ga.model.request.GAUser
+import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.user.PlayerId
@@ -19,6 +16,10 @@ import ai.tock.bot.engine.user.UserState
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.shared.tockInternalInjector
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.singleton
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -123,6 +124,7 @@ internal class GAAccountLinkingTest {
 
         every {
             userTimelineDAO.loadWithLastValidDialog(
+                any(),
                 previousUserId,
                 storyDefinitionProvider = any()
             )
@@ -130,15 +132,18 @@ internal class GAAccountLinkingTest {
 
         val capturedTimeline = slot<UserTimeline>()
         every {
-            userTimelineDAO.save(any())
+            userTimelineDAO.save(any(), any<BotDefinition>())
         } answers {}
 
         val controller: ConnectorController = mockk()
+        val botDefinition: BotDefinition = mockk()
         every { controller.storyDefinitionLoader() } returns { mockk() }
+        every { controller.botDefinition } returns botDefinition
+        every { botDefinition.namespace } returns "namespace"
 
         switchTimeLine(newUserId, previousUserId, controller)
 
-        verify { userTimelineDAO.save(capture(capturedTimeline)) }
+        verify { userTimelineDAO.save(capture(capturedTimeline), any<BotDefinition>()) }
         assertEquals(newUserId, capturedTimeline.captured.playerId)
         assertEquals(previousUserPreferences, capturedTimeline.captured.userPreferences)
         assertEquals(previousUserState, capturedTimeline.captured.userState)
