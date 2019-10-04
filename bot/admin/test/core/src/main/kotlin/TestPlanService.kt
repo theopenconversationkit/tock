@@ -22,7 +22,6 @@ import com.google.common.cache.CacheBuilder
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.dialog.DialogReportDAO
 import ai.tock.bot.connector.rest.client.ConnectorRestClient
-import ai.tock.bot.connector.rest.client.model.ClientConnectorType
 import ai.tock.bot.connector.rest.client.model.ClientMessage
 import ai.tock.bot.connector.rest.client.model.ClientMessageRequest
 import ai.tock.bot.connector.rest.client.model.ClientSentence
@@ -36,7 +35,6 @@ import ai.tock.shared.injector
 import ai.tock.shared.provide
 import mu.KotlinLogging
 import org.litote.kmongo.Id
-import org.litote.kmongo.newId
 import java.time.Duration
 import java.time.Instant
 
@@ -60,11 +58,11 @@ object TestPlanService {
     }
 
     fun getTestPlansByNamespaceAndNlpModel(namespace: String, nlpModel: String): List<TestPlan> {
-        return testPlanDAO.getPlans().filter { it.namespace == namespace && it.nlpModel == nlpModel }
+        return testPlanDAO.getTestPlans().filter { it.namespace == namespace && it.nlpModel == nlpModel }
     }
 
     fun getTestPlansByNamespace(namespace: String): List<TestPlan> {
-        return testPlanDAO.getPlans().filter { it.namespace == namespace }
+        return testPlanDAO.getTestPlans().filter { it.namespace == namespace }
     }
 
     fun getTestPlansByApplication(applicationId: String): List<TestPlan> {
@@ -88,7 +86,7 @@ object TestPlanService {
     }
 
     fun getTestPlan(planId: Id<TestPlan>): TestPlan? {
-        return testPlanDAO.getPlan(planId)
+        return testPlanDAO.getTestPlan(planId)
     }
 
     fun getTestPlanExecution(testPlan: TestPlan, testExecutionId: Id<TestPlanExecution>) : TestPlanExecution? {

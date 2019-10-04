@@ -44,11 +44,9 @@ interface TestPlanDAO {
      */
     fun saveTestExecution(testPlanExecution: TestPlanExecution)
 
-    fun updateTestPlanExecution(executionId: Id<TestPlanExecution>, status: TestPlanExecutionStatus)
+    fun getTestPlans(): List<TestPlan>
 
-    fun getPlans(): List<TestPlan>
-
-    fun getPlan(testPlanId: Id<TestPlan>): TestPlan?
+    fun getTestPlan(testPlanId: Id<TestPlan>): TestPlan?
 
     fun getPlansByApplicationId(applicationId: String): List<TestPlan>
 

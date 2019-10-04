@@ -69,12 +69,7 @@ internal object TestPlanMongoDAO : TestPlanDAO {
         testPlanExecutionCol.save(testPlanExecution)
     }
 
-    override fun updateTestPlanExecution(executionId: Id<TestPlanExecution>, status: TestPlanExecutionStatus) {
-        val tmpTestPlanExecution = testPlanExecutionCol.findOneById(executionId)
-        if (tmpTestPlanExecution != null) tmpTestPlanExecution.status = status else TestPlanExecutionStatus.COMPLETE
-    }
-
-    override fun getPlan(testPlanId: Id<TestPlan>): TestPlan? {
+    override fun getTestPlan(testPlanId: Id<TestPlan>): TestPlan? {
         return testPlanCol.findOneById(testPlanId)
     }
 
@@ -86,7 +81,7 @@ internal object TestPlanMongoDAO : TestPlanDAO {
         return testPlanCol.find(ApplicationId eq applicationId).ascendingSort(Name).toList()
     }
 
-    override fun getPlans(): List<TestPlan> {
+    override fun getTestPlans(): List<TestPlan> {
         return testPlanCol.find().ascendingSort(Name).toList()
     }
 

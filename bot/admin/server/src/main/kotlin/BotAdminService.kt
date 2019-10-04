@@ -113,7 +113,7 @@ object BotAdminService {
     private val featureDAO: FeatureDAO by injector.instance()
     private val dialogFlowDAO: DialogFlowDAO get() = injector.provide()
     private val restConnectorClientCache: MutableMap<String, ConnectorRestClient> = ConcurrentHashMap()
-    private val executor: Executor get() = injector.provide()
+    private val testPlanExecutor: Executor get() = injector.provide()
     private val front = FrontClient
 
     fun getRestClient(conf: BotApplicationConfiguration): ConnectorRestClient {
@@ -674,9 +674,9 @@ object BotAdminService {
     fun executeTestPlan(testPlan: TestPlan): Id<TestPlanExecution> {
         val executionId = Dice.newId()
         val exec = TestPlanExecution(
-            testPlan._id,
-            mutableListOf(),
-            0,
+            testPlanId =  testPlan._id,
+            dialogs = mutableListOf(),
+            nbErrors = 0,
             duration = Duration.between(Instant.now(), Instant.now()),
             _id = executionId.toId(),
             status = TestPlanExecutionStatus.PENDING
@@ -684,7 +684,7 @@ object BotAdminService {
         // save the test plan execution into the database
         TestPlanService.saveTestPlanExecution(exec)
 
-        executor.executeBlocking {
+        testPlanExecutor.executeBlocking {
             TestPlanService.runTestPlan(
                 getRestClient(
                     getBotConfiguration(

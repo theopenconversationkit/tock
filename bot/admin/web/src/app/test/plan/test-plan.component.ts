@@ -58,11 +58,9 @@ export class TestPlanComponent implements OnInit {
   ngOnInit(): void {
     this.reload();
     setInterval(_ => {
-      // if path params exist and if the current test execution is not complete, then get the execution status
       if ((null != this.testPlanId && null != this.testExecutionId) && "COMPLETE" !== this.testExecutionStatus) {
         this.getExecutionStatus(this.testPlanId, this.testExecutionId);
       }
-      // if the test execution is complete
       if("COMPLETE" === this.testExecutionStatus) {
         this.executePlan = false;
       }
