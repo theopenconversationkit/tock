@@ -58,11 +58,11 @@ object TestPlanService {
     }
 
     fun getTestPlansByNamespaceAndNlpModel(namespace: String, nlpModel: String): List<TestPlan> {
-        return testPlanDAO.getPlans().filter { it.namespace == namespace && it.nlpModel == nlpModel }
+        return testPlanDAO.getTestPlans().filter { it.namespace == namespace && it.nlpModel == nlpModel }
     }
 
     fun getTestPlansByNamespace(namespace: String): List<TestPlan> {
-        return testPlanDAO.getPlans().filter { it.namespace == namespace }
+        return testPlanDAO.getTestPlans().filter { it.namespace == namespace }
     }
 
     fun getTestPlansByApplication(applicationId: String): List<TestPlan> {
@@ -86,7 +86,7 @@ object TestPlanService {
     }
 
     fun getTestPlan(planId: Id<TestPlan>): TestPlan? {
-        return testPlanDAO.getPlan(planId)
+        return testPlanDAO.getTestPlan(planId)
     }
 
     fun getTestPlanExecution(testPlan: TestPlan, testExecutionId: Id<TestPlanExecution>): TestPlanExecution? {
