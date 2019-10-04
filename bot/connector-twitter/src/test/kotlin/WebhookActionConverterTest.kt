@@ -33,6 +33,8 @@ import ai.tock.bot.connector.twitter.model.incoming.DirectMessageIndicateTypingI
 import ai.tock.bot.connector.twitter.model.incoming.TweetIncomingEvent
 import ai.tock.bot.engine.action.ActionMetadata
 import ai.tock.bot.engine.action.ActionVisibility
+import ai.tock.bot.engine.action.Metadata.REPLY
+import ai.tock.bot.engine.action.Metadata.VISIBILITY
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
@@ -173,11 +175,17 @@ internal class WebhookActionConverterTest {
             "appId",
             PlayerId("14235326"),
             "Plouf",
-            metadata = ActionMetadata(visibility = ActionVisibility.private)
+            metadata = ActionMetadata(
+                connectorMetadata = mutableMapOf(
+                    VISIBILITY to ActionVisibility.private
+                )
+            )
         )
 
-        assertThat(event).isEqualToIgnoringGivenFields(expectedEvent,
-            "id", "date")
+        assertThat(event).isEqualToIgnoringGivenFields(
+            expectedEvent,
+            "id", "date"
+        )
         assertThat(event.playerId.type).isEqualTo(PlayerType.user)
         assertThat(event.recipientId.type).isEqualTo(PlayerType.bot)
     }
@@ -259,7 +267,15 @@ internal class WebhookActionConverterTest {
                     isQuote = false,
                     entities = Entities(
                         hashtags = emptyList(),
-                        mentions = listOf(Mention(screenName = "Delphes99", name = "Laurent Gautho-lapeyre aka Delphes", id = "602907365", idStr = "602907365", indices = listOf(6, 16))),
+                        mentions = listOf(
+                            Mention(
+                                screenName = "Delphes99",
+                                name = "Laurent Gautho-lapeyre aka Delphes",
+                                id = "602907365",
+                                idStr = "602907365",
+                                indices = listOf(6, 16)
+                            )
+                        ),
                         urls = emptyList(),
                         symbols = emptyList()
                     )
@@ -273,17 +289,24 @@ internal class WebhookActionConverterTest {
             "appId",
             PlayerId("602907365", PlayerType.user),
             "Hello @Delphes99 alors ?",
-            metadata = ActionMetadata(visibility = ActionVisibility.public)
+            metadata = ActionMetadata(
+                connectorMetadata = mutableMapOf(
+                    VISIBILITY to ActionVisibility.public,
+                    REPLY to false
+                )
+            )
         )
 
-        assertThat(event).isEqualToIgnoringGivenFields(expectedEvent,
-            "id", "date")
+        assertThat(event).isEqualToIgnoringGivenFields(
+            expectedEvent,
+            "id", "date"
+        )
         assertThat(event.playerId.type).isEqualTo(PlayerType.user)
         assertThat(event.recipientId.type).isEqualTo(PlayerType.bot)
     }
 
     @Test
-    fun `incoming tweet with mention (reply)`() {
+    fun `incoming tweet with mention (reply to status)`() {
         val expected = TweetIncomingEvent(
             forUserId = "602907365",
             tweets = listOf(
@@ -309,10 +332,19 @@ internal class WebhookActionConverterTest {
                     ),
                     isQuote = false,
                     inReplyToUserId = 602907365,
+                    inReplyToStatusId = 6029073651,
                     contributors = "Delphes99",
                     entities = Entities(
                         hashtags = emptyList(),
-                        mentions = listOf(Mention(screenName = "Delphes99", name = "Laurent Gautho-lapeyre aka Delphes", id = "602907365", idStr = "602907365", indices = listOf(0, 10))),
+                        mentions = listOf(
+                            Mention(
+                                screenName = "Delphes99",
+                                name = "Laurent Gautho-lapeyre aka Delphes",
+                                id = "602907365",
+                                idStr = "602907365",
+                                indices = listOf(0, 10)
+                            )
+                        ),
                         urls = emptyList(),
                         symbols = emptyList()
                     )
@@ -326,11 +358,18 @@ internal class WebhookActionConverterTest {
             "appId",
             PlayerId("602907365", PlayerType.user),
             "@Delphes99 alors?",
-            metadata = ActionMetadata(visibility = ActionVisibility.public)
+            metadata = ActionMetadata(
+                connectorMetadata = mutableMapOf(
+                    VISIBILITY to ActionVisibility.public,
+                    REPLY to true
+                )
+            )
         )
 
-        assertThat(event).isEqualToIgnoringGivenFields(expectedEvent,
-            "id", "date")
+        assertThat(event).isEqualToIgnoringGivenFields(
+            expectedEvent,
+            "id", "date"
+        )
         assertThat(event.playerId.type).isEqualTo(PlayerType.user)
         assertThat(event.recipientId.type).isEqualTo(PlayerType.bot)
     }
@@ -365,7 +404,15 @@ internal class WebhookActionConverterTest {
                     isQuote = false,
                     entities = Entities(
                         hashtags = emptyList(),
-                        mentions = listOf(Mention(screenName = "chabott4", name = "chabotté", id = "1121407864646656000", idStr = "1121407864646656000", indices = listOf(6, 15))),
+                        mentions = listOf(
+                            Mention(
+                                screenName = "chabott4",
+                                name = "chabotté",
+                                id = "1121407864646656000",
+                                idStr = "1121407864646656000",
+                                indices = listOf(6, 15)
+                            )
+                        ),
                         urls = emptyList(),
                         symbols = emptyList()
                     )

@@ -38,6 +38,7 @@ import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.Bus
 import ai.tock.bot.engine.I18nTranslator
 import ai.tock.bot.engine.action.ActionVisibility
+import ai.tock.bot.engine.action.Metadata.VISIBILITY
 import ai.tock.bot.engine.action.SendChoice
 import mu.KotlinLogging
 
@@ -420,8 +421,8 @@ fun I18nTranslator.nlpOption(label: CharSequence, description: CharSequence): Op
  * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
 fun BotBus.withTwitter(messageProvider: () -> TwitterConnectorMessage): BotBus {
-    withVisibility(action.metadata.visibility)
-    return if (action.metadata.visibility != ActionVisibility.public) {
+    withVisibility(action.metadata.connectorMetadata[VISIBILITY] as ActionVisibility)
+    return if (action.metadata.connectorMetadata[VISIBILITY] != ActionVisibility.public) {
         withMessage(twitterConnectorType, messageProvider)
     } else {
         this
@@ -433,8 +434,8 @@ fun BotBus.withTwitter(messageProvider: () -> TwitterConnectorMessage): BotBus {
  * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
 fun BotBus.withPublicTwitter(messageProvider: () -> TwitterPublicConnectorMessage): BotBus {
-    withVisibility(action.metadata.visibility)
-    return if (action.metadata.visibility == ActionVisibility.public) {
+    withVisibility(action.metadata.connectorMetadata[VISIBILITY] as ActionVisibility)
+    return if (action.metadata.connectorMetadata[VISIBILITY] == ActionVisibility.public) {
         withMessage(twitterConnectorType, messageProvider)
     } else {
         this
@@ -445,7 +446,8 @@ fun BotBus.withPublicTwitter(messageProvider: () -> TwitterPublicConnectorMessag
  * End the conversation only if the visibility is public
  */
 fun BotBus.endIfPublicTwitter() {
-    if (targetConnectorType == twitterConnectorType && action.metadata.visibility == ActionVisibility.public) {
+    if (targetConnectorType == twitterConnectorType &&
+        action.metadata.connectorMetadata[VISIBILITY] == ActionVisibility.public) {
         end()
     }
 }
