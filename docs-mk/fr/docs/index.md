@@ -15,9 +15,7 @@ L'utilisateur choisit les composants qu'il embarque et peut ainsi conserver la m
 > [GitHub](https://github.com/theopenconversationkit/tock) 
 > sous une [licence Apache 2](https://github.com/theopenconversationkit/tock/blob/master/LICENSE). 
 >
-> Tock est une solution soutenue par l'association [_TOSIT (The Open Source I Trust)_](http://tosit.fr/).
-
-
+>
 ## Fonctionnalités
 
 * Assitants _embarqués_ ou intégrés à des sites Web, applications mobiles, réseaux sociaux, enceintes connectées etc.
