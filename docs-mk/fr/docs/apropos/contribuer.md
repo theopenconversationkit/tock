@@ -12,9 +12,6 @@ Le langage de référence est [Kotlin](https://kotlinlang.org/) mais d'autres la
  
 Tock utilise [Vert.x](http://vertx.io/) et [MongoDB](https://www.mongodb.com ).
 
-> Pour l’instant les applications sont 
-essentiellement développées en _blocking IO_, mais pour la suite l’approche _[fibers](http://docs.paralleluniverse.co/quasar/)_ sera privilégiée.
-
 Les interfaces graphiques _(Tock Studio)_ sont écrites avec [Angular](https://angular.io/) en [Typescript](https://www.typescriptlang.org/).
 
 ## Structure des sources

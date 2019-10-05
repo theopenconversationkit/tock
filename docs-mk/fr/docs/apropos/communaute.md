@@ -16,7 +16,7 @@ Voici les prochains événements liés à Tock ou identifiés pour échanger ave
 
 ## Association TOSIT
 
-La solution Tock est soutenue par l'association _TOSIT (The Open Source I Trust)_,
+La solution Tock souhaite rejoindre une association comme le _TOSIT (The Open Source I Trust)_,
  une structure de soutien à l’Open Source  qui vise à soutenir l’émergence de codes, logiciels et 
  solutions informatiques sous licence open source et/ou licence libre.
 
@@ -25,7 +25,7 @@ La solution Tock est soutenue par l'association _TOSIT (The Open Source I Trust)
 
 Tock s'inscrit dans le cadre du Groupe de Travail _Chatbots_ du TOSIT.
 
-La solution est d'ores et déjà préconisée par plusieurs membres du TOSIT, dont SNCF.
+La solution est d'ores et déjà utilisée par plusieurs membres du TOSIT, dont SNCF.
 
 Pour en savoir plus, voir le site de l'association : [http://tosit.fr/](http://tosit.fr/)
 

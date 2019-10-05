@@ -13,9 +13,6 @@ provided API.
  
 Tock leverages [Vert.x](http://vertx.io/) and [MongoDB](https://www.mongodb.com ).
 
-> For the moment, most Tock applications are written in _blocking IO_ mode. 
-> In the future, _[fibers](http://docs.paralleluniverse.co/quasar/)_ should be preferred.
-
 Graphical interfaces (namely _Tock Studio_) are powered by [Angular](https://angular.io/) in [Typescript](https://www.typescriptlang.org/).
 
 ## Source structure

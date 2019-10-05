@@ -21,5 +21,3 @@ requirement for their own projects.
 
 The complete Tock solution is shared with the community in order to federate and mutualize efforts from assistant builders. 
 
-> In 2019, Tock was selected both as a reference solution for the groupe SNCF, and the 
->[_TOSIT (The Open Source I Trust)_](http://tosit.fr/) association.
