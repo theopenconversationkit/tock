@@ -1,15 +1,20 @@
-- 19.9 September 2019      
-    - Conversational framework: Kotlin & nodejs support  
-    - AB Test engine workflow
-    - Web Connector
-    - Predefined values improvements
+- 19.9.1 October 2019
+    - first conversational DSL in admin interface
     
-- 20.3 March 2020
+- 19.9.2 November 2019   
+    - AB test engine workflow
+    
+- 20.3.0 March 2020
     - Conversational framework: support for other languages than Kotlin (multi-platform Kotlin)
     - Spacy, Rasa & Spark NLP support 
     - Code editor admin interface
     
 ## Latest releases  
+              
+- 19.9.0 September 2019      
+    - Conversational framework: Kotlin & nodejs support
+    - Web Connector
+    - Predefined values improvements              
               
 - 19.3.2 July 2019
     - Bot API
