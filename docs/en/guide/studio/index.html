@@ -230,30 +230,18 @@
       
       
 
-
-  <li class="md-nav__item">
-    <a href="../../getting-started/" title="TLDR;" class="md-nav__link">
-      TLDR;
-    </a>
-  </li>
-
-    
-      
-      
-      
-
   
 
 
   <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
     
-    <label class="md-nav__link" for="nav-3">
+    <label class="md-nav__link" for="nav-2">
       Try Tock Studio
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-3">
+      <label class="md-nav__title" for="nav-2">
         Try Tock Studio
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -361,13 +349,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#to-be-continued" class="md-nav__link">
-    To be continued...
-  </a>
-  
-</li>
-      
       
       
       
@@ -415,13 +396,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
     
-    <label class="md-nav__link" for="nav-4">
+    <label class="md-nav__link" for="nav-3">
       Develop Stories
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-4">
+      <label class="md-nav__title" for="nav-3">
         Develop Stories
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -433,7 +414,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../code-a-bot/" title="Bot API mode" class="md-nav__link">
+    <a href="../../dev/bot-api/" title="Bot API mode" class="md-nav__link">
       Bot API mode
     </a>
   </li>
@@ -445,7 +426,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../the-open-data-bot/" title="Integrated Bot mode" class="md-nav__link">
+    <a href="../../dev/integrated-bot/" title="Integrated Bot mode" class="md-nav__link">
       Integrated Bot mode
     </a>
   </li>
@@ -457,20 +438,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../../i18n/" title="Multilingual (i18n)" class="md-nav__link">
-      Multilingual (i18n)
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../api/" title="APIs" class="md-nav__link">
-      APIs
+    <a href="../../dev/connectors/" title="Connectors" class="md-nav__link">
+      Connectors
     </a>
   </li>
 
@@ -487,6 +456,18 @@
   </li>
 
         
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../the-open-data-bot/" title="Code Samples" class="md-nav__link">
+      Code Samples
+    </a>
+  </li>
+
+        
       </ul>
     </nav>
   </li>
@@ -499,13 +480,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
     
-    <label class="md-nav__link" for="nav-5">
+    <label class="md-nav__link" for="nav-4">
       About
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-5">
+      <label class="md-nav__title" for="nav-4">
         About
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -702,13 +683,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#to-be-continued" class="md-nav__link">
-    To be continued...
-  </a>
-  
-</li>
-      
       
       
       
@@ -758,8 +732,7 @@ possible to both design and test a conversational assistant in a few minutes, wi
 <p><strong>Important</strong>: this platform is not supposed to host bots in production. 
 This is merely a sandbox instance, in order to try the Tock solution without installing it.</p>
 </blockquote>
-<p>A login dialog invites you to connect with GitHub. Then, you have to accept that Tock gets info from your account - 
-only your account ID will be read from GitHub.</p>
+<p>A login dialog invites you to connect with GitHub. Only your account ID will be read from GitHub.</p>
 <h2 id="create-a-tock-application">Create a Tock application<a class="headerlink" href="#create-a-tock-application" title="Permanent link">&para;</a></h2>
 <p>When accessing the demo platform for the first time, a wizard helps to create the first <em>application</em>:</p>
 <ul>
@@ -775,7 +748,7 @@ only your account ID will be read from GitHub.</p>
 </ul>
 <blockquote>
 <p>The just-created application is now visible from the menu: <em>Configuration</em> &gt; <em>NLU Applications</em>.</p>
-<p>Once the first application has been created, more can be added by going back to this interface, then <em>Create New Application</em>.</p>
+<p>Once the first application has been created, you can create others using <em>Create New Application</em>.</p>
 </blockquote>
 <h2 id="add-a-connector">Add a connector<a class="headerlink" href="#add-a-connector" title="Permanent link">&para;</a></h2>
 <p>To interact with the bot (through a communication channel), a <em>connector</em> must be used. 
@@ -811,8 +784,8 @@ It will be possible to try the bot using the <em>Tock Studio</em> interface - no
 <blockquote>
 <p>Note that an <em>API Key</em> is automatically generated for the application, once the first connector is created. 
 This key is required to connect to the bot API, in order to leverage the <em>WebHook</em> or <em>WebSocket</em> modes.</p>
-<p>Clicking on <em>Display test configurations</em>, you can see another configuration has been created. 
-This connector is special, it is used when the bot is tested directly through the <em>Tock Studio</em> interface. 
+<p>Clicking on <em>Display test configurations</em>, you can see another <code>Test</code> configuration has been created. 
+This connector is used when the bot is tested directly through the <em>Tock Studio</em> interface. 
 It allows to try the bot without having Slack, for instance.</p>
 </blockquote>
 <h2 id="create-a-story">Create a story<a class="headerlink" href="#create-a-story" title="Permanent link">&para;</a></h2>
@@ -823,11 +796,11 @@ and possibly <em>entities</em>.</p>
 engine should detect a "weather" intent and a "tomorrow" date/time entity precising the question 
 (like a kind of intent variable/parameter).</p>
 </blockquote>
-<p>In order to detect intents and entities, sentences must first be added and qualified - so that the bot learns. 
-The Tock <em>NLU</em> menu permits to manage intents and entities, qualify sentences and supervise the bot training:
-<strong>the more qualified sentences, the more relevant is the bot</strong> (the more it understands natural language).</p>
+<p>In order to detect intents and entities, sentences must first be added and qualifieds. 
+The Tock <em>NLU</em> menu allows to manage intents and entities, qualify sentences and supervise the bot training:
+<strong>the more qualified sentences, the more relevant is the bot</strong>.</p>
 <p>Nevertheless, let's leave intents and entities for now...</p>
-<p>The Tock <em>Stories</em> mode allows to create intents automatically in a few minutes, as well as the expected asnwers.
+<p>The Tock <em>Stories</em> mode allows to create intents automatically in a few minutes, as well as the expected answers.
   You will now create a first template of a conversation, using the <em>Tock Studio</em> graphical tools:</p>
 <ul>
 <li>
@@ -846,10 +819,6 @@ The Tock <em>NLU</em> menu permits to manage intents and entities, qualify sente
 <p>End with <em>Create Story</em></p>
 </li>
 </ul>
-<blockquote>
-<p>It is possible to answer more messages, or more advanced messages including images, links, 
-<em>Actions</em> and buttons to continue within the conversation, etc.</p>
-</blockquote>
 <h2 id="test-the-bot">Test the bot<a class="headerlink" href="#test-the-bot" title="Permanent link">&para;</a></h2>
 <p>It is time to try the bot and its first story!</p>
 <ul>
@@ -861,19 +830,12 @@ The Tock <em>NLU</em> menu permits to manage intents and entities, qualify sente
 </li>
 </ul>
 <blockquote>
-<p>In case the bot answers it did not understand, that is probably a qualification issue. You can check that 
-the <em>story</em> and/or <em>intent</em> are created by looking at <em>Build</em> &gt; <em>Search Stories</em>.</p>
 <p>Please check that the correct application and language are selected (in case there are more than one) 
 when testing: they are visible in the top-right corner of the interface.</p>
-<p>If the bot still does not understand, maybe the sentence entered is not exactly the one entered with the <em>story</em> creation,
-then the bot does not make the connection. In the next section, you will learn how to improve bot understanding
-by qualifying more user sentences.</p>
-<p>When a technical error message occurs, it must be a connector configuration problem.</p>
 </blockquote>
 <h2 id="improve-the-understanding">Improve the understanding<a class="headerlink" href="#improve-the-understanding" title="Permanent link">&para;</a></h2>
 <p>By entering various sentences through the <em>Test the bot</em> interface, you can see it does not understand much
-your natural language - even with sentences very similar to the one at <em>story</em> creation.</p>
-<p>That is normal.</p>
+your phrases - even with sentences very similar to the one at <em>story</em> creation.</p>
 <p>The conversational model and the Tock <em>NLU</em> engine must be trained and improved by progressively adding 
  user <em>qualified sentences</em> to feed underlying algorithms and give more and more relevant results.</p>
 <blockquote>
@@ -916,9 +878,6 @@ however too many sentences (or too similar) can over-train the model for an inte
 <p>You have just created your first conversational application with Tock.</p>
 <p>With a few minutes and no particular knowledge or skill, more importantly without writing or deploying code, 
 you have been able to create a simple conversational workflow and test it online.</p>
-<h2 id="to-be-continued">To be continued...<a class="headerlink" href="#to-be-continued" title="Permanent link">&para;</a></h2>
-<p>Note that the French documentation is far more complete for now - looking at the TOC for instance.
-The translation process has begun. Please be patient or tell us, which part you need the most.</p>
                 
                   
                 
@@ -939,7 +898,7 @@ The translation process has begun. Please be patient or tell us, which part you 
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../../getting-started/" title="TLDR;" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../.." title="Overview" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -948,7 +907,7 @@ The translation process has begun. Please be patient or tell us, which part you 
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                TLDR;
+                Overview
               </span>
             </div>
           </a>

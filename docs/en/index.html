@@ -283,27 +283,15 @@
       
 
 
-  <li class="md-nav__item">
-    <a href="getting-started/" title="TLDR;" class="md-nav__link">
-      TLDR;
-    </a>
-  </li>
-
-    
-      
-      
-      
-
-
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
     
-    <label class="md-nav__link" for="nav-3">
+    <label class="md-nav__link" for="nav-2">
       Try Tock Studio
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-3">
+      <label class="md-nav__title" for="nav-2">
         Try Tock Studio
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -357,13 +345,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
     
-    <label class="md-nav__link" for="nav-4">
+    <label class="md-nav__link" for="nav-3">
       Develop Stories
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-4">
+      <label class="md-nav__title" for="nav-3">
         Develop Stories
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -375,7 +363,7 @@
 
 
   <li class="md-nav__item">
-    <a href="code-a-bot/" title="Bot API mode" class="md-nav__link">
+    <a href="dev/bot-api/" title="Bot API mode" class="md-nav__link">
       Bot API mode
     </a>
   </li>
@@ -387,7 +375,7 @@
 
 
   <li class="md-nav__item">
-    <a href="the-open-data-bot/" title="Integrated Bot mode" class="md-nav__link">
+    <a href="dev/integrated-bot/" title="Integrated Bot mode" class="md-nav__link">
       Integrated Bot mode
     </a>
   </li>
@@ -399,20 +387,8 @@
 
 
   <li class="md-nav__item">
-    <a href="i18n/" title="Multilingual (i18n)" class="md-nav__link">
-      Multilingual (i18n)
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="api/" title="APIs" class="md-nav__link">
-      APIs
+    <a href="dev/connectors/" title="Connectors" class="md-nav__link">
+      Connectors
     </a>
   </li>
 
@@ -429,6 +405,18 @@
   </li>
 
         
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="the-open-data-bot/" title="Code Samples" class="md-nav__link">
+      Code Samples
+    </a>
+  </li>
+
+        
       </ul>
     </nav>
   </li>
@@ -441,13 +429,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
     
-    <label class="md-nav__link" for="nav-5">
+    <label class="md-nav__link" for="nav-4">
       About
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-5">
+      <label class="md-nav__title" for="nav-4">
         About
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -615,7 +603,7 @@
                 <h1 id="welcome-to-tock-open-conversational-platform">Welcome to Tock - open conversational platform<a class="headerlink" href="#welcome-to-tock-open-conversational-platform" title="Permanent link">&para;</a></h1>
 <p><img alt="Tock logo" src="assets/images/logo.svg" style="width: 100px;"></p>
 <p><strong>Tock</strong> (<em>The Open Conversation Kit</em>) is a complete and open platform to build conversational agents - also known as <em>bots</em>. </p>
-<p>Contrary to most conversational AI solutions, Tock does not depend on 3rd-party APIs, although it is possible to integrate with them.
+<p>Tock does not depend on 3rd-party APIs, although it is possible to integrate with them.
 Users choose which components to embed and decide to keep (or share) ownership of conversational data and models.</p>
 <blockquote>
 <p>Tock has been used in production for several years by <a href="https://www.oui.sncf/services/assistant">OUI.sncf</a> to
@@ -641,7 +629,7 @@ can be deployed alone (for use cases like the <a href="https://fr.wikipedia.org/
 <li>Numerous connectors to <a href="https://www.messenger.com/">Messenger</a>, <a href="https://www.whatsapp.com/">WhatsApp</a>, 
 <a href="https://assistant.google.com/">Google Assistant / Home</a>, <a href="https://twitter.com/">Twitter</a>, <a href="https://alexa.amazon.com/">Alexa</a>, 
 <a href="https://www.apple.com/fr/ios/business-chat/">Business Chat / iMessage</a>, <a href="https://products.office.com/fr-fr/microsoft-teams/">Teams</a>, 
-<a href="https://slack.com/">Slack</a>... (see <a href="utilisateur/channels/">connectors</a>)</li>
+<a href="https://slack.com/">Slack</a>... (see <a href="dev/connectors/">connectors</a>)</li>
 <li><em>Cloud</em> or <em>on-premise</em> setups, with or without <a href="https://www.docker.com/">Docker</a>, 
 <em>"embedded"</em> bots without Internet </li>
 </ul>
@@ -655,10 +643,7 @@ but Tock does not depend on them directly.</p>
 <p>Graphical interfaces <em>(Tock Studio)</em> are made with <a href="https://angular.io/">Angular</a> in <a href="https://www.typescriptlang.org/">Typescript</a>.</p>
 <h2 id="getting-started">Getting started...<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="toc/">Table of contents</a></li>
-<li><a href="guide/studio/">Guides</a> and running <a href="https://demo.tock.ai/">demo/sandbox platform</a></li>
-<li><a href="utilisateur/concepts/">User</a>, <a href="dev/modes/">developer</a> and <a href="admin/architecture/">administrator/ops</a> manuals</li>
-<li><a href="about/resources/">Resources (slides, video)</a> and <a href="dev/exemples-code/">code samples</a></li>
+<li>Read <a href="guide/studio/">Tutorial</a> and start using the <a href="https://demo.tock.ai/">demo/sandbox platform</a></li>
 </ul>
                 
                   
@@ -681,13 +666,13 @@ but Tock does not depend on them directly.</p>
       <nav class="md-footer-nav__inner md-grid">
         
         
-          <a href="getting-started/" title="TLDR;" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="guide/studio/" title="Create your 1st bot" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                TLDR;
+                Create your 1st bot
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">

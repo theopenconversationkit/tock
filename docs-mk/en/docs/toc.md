@@ -12,25 +12,25 @@
     * [Deploy a standalone Tock platform with Docker](guide/platform.md)
 
 * Use Tock :
-    * [Conversational concepts for Tock](utilisateur/concepts.md)
-    * [_Tock Studio_ interfaces](utilisateur/studio.md) :
-        * [General interface](utilisateur/studio/general.md)
-        * [The _Configuration_ menu](utilisateur/studio/configuration.md)
-        * [The _NLU_ menu](utilisateur/studio/nlu.md)
-        * [The _NLU QA_ menu](utilisateur/studio/nlu-qa.md)
-        * [The _Build_ menu](utilisateur/studio/build.md)
-        * [The _Test_ menu](utilisateur/studio/test.md)
-        * [The _Monitoring_ menu](utilisateur/studio/monitoring.md)
-    * [Build your conversational model](utilisateur/studio/build-model.md)
-    * [Create a multichannel bot (connectors)](utilisateur/channels.md)
-    * [Create a multilingual bot (internationalization)](utilisateur/i18n.md)
+    * [Conversational concepts for Tock](user/concepts.md)
+    * [_Tock Studio_ interfaces](user/studio.md) :
+        * [General interface](user/studio/general.md)
+        * [The _Configuration_ menu](user/studio/configuration.md)
+        * [The _NLU_ menu](user/studio/nlu.md)
+        * [The _NLU QA_ menu](user/studio/nlu-qa.md)
+        * [The _Build_ menu](user/studio/build.md)
+        * [The _Test_ menu](user/studio/test.md)
+        * [The _Monitoring_ menu](user/studio/monitoring.md)
+    * [Build your conversational model](user/studio/build-model.md)
+    * [Create a multichannel bot (connectors)](user/channels.md)
+    * [Create a multilingual bot (internationalization)](user/i18n.md)
 
 * Develop with Tock :
     * [Available modes](dev/modes.md)
     * [_Tock Bot API_](dev/bot-api.md)
     * [_Tock Integrated Bot_](dev/integrated-bot.md)
         * [Unit Tests](dev/test.md)
-    * [Connectors](dev/connecteurs.md)
+    * [Connectors](dev/connectors.md)
     * [Internationalization (_i18n_)](dev/i18n.md)
     * [Tock APIs](dev/api.md)
     * [Code samples](dev/exemples-code.md)

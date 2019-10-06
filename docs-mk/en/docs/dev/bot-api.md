@@ -1,43 +1,23 @@
-# Développer en mode _Tock Bot API_
+# _Tock Bot API Mode_
 
-Le mode _Bot API_ de Tock permet de développer des bots en se connectant à une plateforme _NLU_ Tock d'une manière peu 
-couplée car n'ayant pas accès à la base de données (MongoDB), contrairement au mode _Bot Framework_.
+This is the recommended way to start to develop with Tock. 
 
-![BOT API](../img/bot_api.png "BOT API")
+You add custom answers using a REST API. Kotlin wrapper is available.
 
-C'est donc le mode de développement Tock recommandé pour démarrer, ainsi que dans des scenarios ou l'accès partagé à la 
-base de données serait un problème.
+## Connect to the demo platform
 
-> Par exemple, seul le mode _Bot API_ est autorisé sur la [plateforme de démonstration](https://demo.tock.ai/)
->publique Tock (pour des raisons de sécurité évidentes).
+Rather than deploying its own Tock platform, it is possible to test the _WebSocket_ or _Webhook_ modes directly on the
+[Tock demo platform](https://demo.tock.ai/).
 
-Cette page présente le développement de bots Tock en mode _Bot API_ en [Kotlin](https://kotlinlang.org/). 
-Notez qu'il est possible de développer dans n'importe quel langage via la _Bot API_ - _une documentation pour un autre langage devrait bientôt arriver._
+## Develop with Kotlin
 
-> Une autre section présente le mode [_Bot Framework_](integrated-bot.md), plus intégré mais aussi plus couplé à la plateforme Tock.
+### Enable WebSocket mode
 
-## Développer en _Bot API_ en Kotlin
+This is the preferred mode at startup.
 
-### Pré-requis / Architecture
+To use the websocket client, add the `tock-bot-api-websocket` dependency to your [Kotlin](https://kotlinlang.org/) application / project.
 
-Pour utiliser le mode _Bot API_ de Tock, un module spécifique doit être déployé avec la plateforme. Généralement appelé 
-`bot-api` dans les descripteurs Docker Compose par exemple, ce service a pour rôle :
-
-* D'exposer la _Bot API_ aux clients potentiels quelque soit leur langage de programmation
-* D'accepter des connexions en _WebSocket_
-
-Le guide [Déployer Tock avec Docker](../guide/platform.md) ou encore le chapitre 
-[Installation](../admin/installation.md) montrent comment déployer ce module si nécessaire.
-
-> Le module `bot-api` est déjà déployé sur la [plateforme de démonstration Tock](https://demo.tock.ai/).
-
-### Activer le mode WebSocket
-
-C'est le mode à privilégier au démarrage car le plus simple à mettre en oeuvre.
-
-Pour utiliser le client websocket, il faut ajouter la dépendance `tock-bot-api-websocket` à votre application/projet [Kotlin](https://kotlinlang.org/).
-
-Par exemple dans un projet [Maven](https://maven.apache.org/) :
+Using [Maven](https://maven.apache.org/) :
 
 ```xml
         <dependency>
@@ -47,17 +27,18 @@ Par exemple dans un projet [Maven](https://maven.apache.org/) :
         </dependency>
 ```
 
-Ou dans un projet [Gradle](https://gradle.org/) :
+Or [Gradle](https://gradle.org/) :
 
 ```gradle
       compile 'ai.tock:tock-bot-api-websocket:19.9.0'
 ```
 
-### Activer le mode WebHook
+### Enable WebHook mode
 
-Pour utiliser le client _WebHook_, il faut ajouter la dépendance `tock-bot-api-webhook` à votre application/projet [Kotlin](https://kotlinlang.org/).
+Alternatively, you can choose to use the _WebHook_ client.
+Add the `tock-bot-api-webhook` dependency to your [Kotlin](https://kotlinlang.org/) application / project.
 
-Par exemple dans un projet [Maven](https://maven.apache.org/) :
+Using [Maven](https://maven.apache.org/) :
 
 ```xml
         <dependency>
@@ -67,76 +48,82 @@ Par exemple dans un projet [Maven](https://maven.apache.org/) :
         </dependency>
 ```
 
-Ou dans un projet [Gradle](https://gradle.org/) :
+Or [Gradle](https://gradle.org/) :
 
 ```gradle
       compile 'ai.tock:tock-bot-api-webhook:19.9.0'
 ```
 
-Dans ce cas, contrairement au mode _WebSocket_, il faut que l'application/bot démarrée soit joignable par la 
- plateforme Tock. Son URL doit être indiquée dans le champ _webhook url_ dans la vue _Configuration_ > _Bot Configurations_ 
- de l'interface _Tock Studio_.
+In this case, unlike the _WebSocket_ mode, the bot application must be reachable by the
+Tock platform and so has to expose a public URL (you can use [ngrok](https://ngrok.com/) in order to provide this URL). 
+
+This URL must be specified in the _webhook url_ field in the _Configuration_> _Bot Configurations_ view of _Tock Studio_.
  
-### Paramétrer la clé d'API
+### Set up the API key
+ 
+In _Tock Studio_, after configuring a bot, go to _Configuration_> _Bot Configurations_ and copy
+the API key of the bot to which you want to connect.
+ 
+You can enter / paste this key into the Kotlin code (see below).
  
-Dans _Tock Studio_, après avoir configuré un bot, allez dans _Configuration_ > _Bot Configurations_ et copiez 
-la clé d'API du bot auquel vous souhaitez vous connecter.
- 
-Vous pourrez saisir/coller cette clef dans le code Kotlin (voir ci-dessous).
- 
-### Créer des parcours en Kotlin 
- 
-Pour le moment, les composants suivants sont supportés pour les réponses :
- 
-* Texte brut
-* Format "carte"
-* Formats spécfiques aux différents canaux intégrés
- 
-Voici un exemple de bot simple avec quelques parcours déclarés : 
+### Create Stories
+ 
+The following components are supported for the Bot answers:
+ 
+ * Text with Buttons (Quick Reply)
+ * "Card" format
+ * "Carousel" format
+ * Specific formats of the used channels like Messenger, Slack, etc.
+ 
+Here is an example of a simple bot with some declared Stories:
  
 ```kotlin
 fun main() {
-    start(
+    startWithDemo(
         newBot(
             "PUT-YOUR-TOCK-APP-API-KEY-HERE", // Get your app API key from Bot Configurations in Tock Studio
              newStory("greetings") { // Intent 'greetings'
-                 end("Bonjour!") // Raw text answer
+                 end("Hello!") // Raw text answer
              },
              newStory("location") { // Intent 'location'
                  end(
+                    // Anwser with a card - including text, file(image, video,..) and user action suggestions
                      newCard(
-                         "Le titre de la carte",
-                         "Un sous-titre",
+                         "Card title",
+                         "Card sub title",
                          newAttachment("https://url-image.png"),
                          newAction("Action 1"),
-                         newAction("Action 2", "http://redirection") // Anwser with a card - including text, image and actions
+                         newAction("Action 2", "http://redirection") 
                      )
                  )
              },
              newStory("goodbye") { // Intent 'goodbye'
                  end {
                      // Answer with Messenger-specific button/quick reply
-                     buttonsTemplate("Etes-vous sûr(e) de vouloir partir ?", nlpQuickReply("Je reste"))
+                     buttonsTemplate("Are you sure ?", nlpQuickReply("Stay here"))
                  } 
              },
+             // Fallback answer when the bot does find a correct response
              unknownStory {
-                 end("Je n'ai pas compris. Mais j'apprends tous les jours :)") // Default answer
+                 end("Sorry I don't understand :(") 
              }
-        ),
-        "http://localhost:8080" // Local platform URL (default host/port)
+        )
     )
 }
 ```
  
-### Tester avec la plateforme de démonstration
+## Develop in another language
 
-Plutôt que déployer se propre plateforme Tock, il est possible de tester le mode _WebSocket_ directement sur la
-[plateforme de démonstration Tock](https://demo.tock.ai/). 
+It is possible to develop in the language of your choice by using directly the underlying REST API.
 
-Pour cela, il suffit de remplacer la méthode `start` par `startWithDemo` (sans préciser l'adresse de la plateforme).
+### Install Bot API on your own servers
 
-## Développer dans un autre langage
+To use Tock's _Bot API_ mode without the demo platform, a specific module must be deployed on your own server. 
 
-Il est possible de développer dans n'importe quel langage en programmant directement via l'API.
- 
-> TODO : contrat en cours de stabilisation & documentation à venir.
+Called `bot-api` in Docker Compose descriptors, this service:
+
+* Expose the _Bot API_ to the potential customers whatever their programming language are.
+* Accept _WebSocket_ connections and / or connections to the configured webhook.
+
+Compared to the "demo mode", The only required change in the code is to replace
+the `startWithDemo` method with the `start` one, specifying the `bot-api` target server address.

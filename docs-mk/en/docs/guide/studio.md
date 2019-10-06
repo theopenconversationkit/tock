@@ -27,8 +27,7 @@ Open [https://demo.tock.ai/](https://demo.tock.ai/) to access the Tock demonstra
 > **Important**: this platform is not supposed to host bots in production. 
 >This is merely a sandbox instance, in order to try the Tock solution without installing it.
 
-A login dialog invites you to connect with GitHub. Then, you have to accept that Tock gets info from your account - 
-only your account ID will be read from GitHub.
+A login dialog invites you to connect with GitHub. Only your account ID will be read from GitHub.
 
 ## Create a Tock application
 
@@ -42,7 +41,7 @@ When accessing the demo platform for the first time, a wizard helps to create th
 
 > The just-created application is now visible from the menu: _Configuration_ > _NLU Applications_.
 >
-> Once the first application has been created, more can be added by going back to this interface, then _Create New Application_.
+> Once the first application has been created, you can create others using _Create New Application_.
 
 ## Add a connector
 
@@ -73,8 +72,8 @@ Create the first connector for your application:
 > Note that an _API Key_ is automatically generated for the application, once the first connector is created. 
 >This key is required to connect to the bot API, in order to leverage the _WebHook_ or _WebSocket_ modes.
 
-> Clicking on _Display test configurations_, you can see another configuration has been created. 
->This connector is special, it is used when the bot is tested directly through the _Tock Studio_ interface. 
+> Clicking on _Display test configurations_, you can see another `Test` configuration has been created. 
+>This connector is used when the bot is tested directly through the _Tock Studio_ interface. 
 >It allows to try the bot without having Slack, for instance.
 
 
@@ -87,13 +86,13 @@ and possibly _entities_.
 >engine should detect a "weather" intent and a "tomorrow" date/time entity precising the question 
 >(like a kind of intent variable/parameter).
 
-In order to detect intents and entities, sentences must first be added and qualified - so that the bot learns. 
-The Tock _NLU_ menu permits to manage intents and entities, qualify sentences and supervise the bot training:
-**the more qualified sentences, the more relevant is the bot** (the more it understands natural language).
+In order to detect intents and entities, sentences must first be added and qualifieds. 
+The Tock _NLU_ menu allows to manage intents and entities, qualify sentences and supervise the bot training:
+**the more qualified sentences, the more relevant is the bot**.
 
 Nevertheless, let's leave intents and entities for now...
 
-The Tock _Stories_ mode allows to create intents automatically in a few minutes, as well as the expected asnwers.
+The Tock _Stories_ mode allows to create intents automatically in a few minutes, as well as the expected answers.
   You will now create a first template of a conversation, using the _Tock Studio_ graphical tools:
 
 * Go to _Build_ > _New Story_
@@ -106,10 +105,6 @@ A form now opens to configure the new _story_ creation, the intent, the type of 
 
 * End with _Create Story_
 
-> It is possible to answer more messages, or more advanced messages including images, links, 
->_Actions_ and buttons to continue within the conversation, etc.
-
-
 ## Test the bot
 
 It is time to try the bot and its first story!
@@ -118,24 +113,13 @@ It is time to try the bot and its first story!
 
 * Say "hello", the bot answers
 
-> In case the bot answers it did not understand, that is probably a qualification issue. You can check that 
->the _story_ and/or _intent_ are created by looking at _Build_ > _Search Stories_.
->
 > Please check that the correct application and language are selected (in case there are more than one) 
 >when testing: they are visible in the top-right corner of the interface.
->
-> If the bot still does not understand, maybe the sentence entered is not exactly the one entered with the _story_ creation,
-> then the bot does not make the connection. In the next section, you will learn how to improve bot understanding
->by qualifying more user sentences.
->
-> When a technical error message occurs, it must be a connector configuration problem.
 
 ## Improve the understanding
 
 By entering various sentences through the _Test the bot_ interface, you can see it does not understand much
-your natural language - even with sentences very similar to the one at _story_ creation.
-
-That is normal.
+your phrases - even with sentences very similar to the one at _story_ creation.
 
 The conversational model and the Tock _NLU_ engine must be trained and improved by progressively adding 
  user _qualified sentences_ to feed underlying algorithms and give more and more relevant results.
@@ -182,9 +166,3 @@ You have just created your first conversational application with Tock.
 
 With a few minutes and no particular knowledge or skill, more importantly without writing or deploying code, 
 you have been able to create a simple conversational workflow and test it online.
-
-
-## To be continued...
-
-Note that the French documentation is far more complete for now - looking at the TOC for instance.
-The translation process has begun. Please be patient or tell us, which part you need the most.

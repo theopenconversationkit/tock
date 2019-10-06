@@ -7,17 +7,16 @@ repo_url: 'https://github.com/theopenconversationkit/tock'
 edit_uri: ''
 nav:
   - 'Overview': 'index.md'
-  - 'TLDR;': 'getting-started.md'
   - 'Try Tock Studio':
     - 'Create your 1st bot': 'guide/studio.md'
     - 'Build NLP models': 'build-nlp-model.md'
     - 'Monitor NLP models': 'evaluate-the-model.md'
   - 'Develop Stories':
-    - 'Bot API mode': 'code-a-bot.md'
-    - 'Integrated Bot mode': 'the-open-data-bot.md'
-    - 'Multilingual (i18n)': 'i18n.md'
-    - 'APIs': 'api.md'
+    - 'Bot API mode': 'dev/bot-api.md'
+    - 'Integrated Bot mode': 'dev/integrated-bot.md'
+    - 'Connectors': 'dev/connectors.md'
     - 'KDoc': 'kdoc.md'
+    - 'Code Samples': 'the-open-data-bot.md'
   - 'About':
       - 'Why Tock': 'about/why.md'
       - 'Showcase': 'about/showcase.md'

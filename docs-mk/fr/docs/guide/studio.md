@@ -127,7 +127,7 @@ Il est maintenant temps de tester le bot et votre premier parcours!
 > Si le bot répond qu'il n'a pas compris, c'est certainement un problème de qualification. Vous pouvez vérifier que la 
 >_story_ et/ou l'_intention_ ont bien été créés en allant dans _Build_ > _Search Stories_.
 >
-> Vérifiez aussi que vous êtes sur la bonne application et la bonne lanque (au cas où vous en auriez créé plusieurs) 
+> Vérifiez aussi que vous êtes sur la bonne application et la bonne langue (au cas où vous en auriez créé plusieurs) 
 >pour faire le test : ils sont visibles en haut à droite de l'interface.
 >
 > Si malgré tout le bot répond qu'il ne comprend pas, peut-être n'avez-vous pas saisi exactement la phrase utilisée à 

@@ -230,30 +230,18 @@
       
       
 
-
-  <li class="md-nav__item">
-    <a href="../getting-started/" title="TLDR;" class="md-nav__link">
-      TLDR;
-    </a>
-  </li>
-
-    
-      
-      
-      
-
   
 
 
   <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
     
-    <label class="md-nav__link" for="nav-3">
+    <label class="md-nav__link" for="nav-2">
       Try Tock Studio
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-3">
+      <label class="md-nav__title" for="nav-2">
         Try Tock Studio
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -323,8 +311,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#partial-model-tests" class="md-nav__link">
-    Partial Model Tests
+  <a href="#model-tests" class="md-nav__link">
+    Model Tests
   </a>
   
     <nav class="md-nav">
@@ -372,13 +360,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
     
-    <label class="md-nav__link" for="nav-4">
+    <label class="md-nav__link" for="nav-3">
       Develop Stories
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-4">
+      <label class="md-nav__title" for="nav-3">
         Develop Stories
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -390,7 +378,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../code-a-bot/" title="Bot API mode" class="md-nav__link">
+    <a href="../dev/bot-api/" title="Bot API mode" class="md-nav__link">
       Bot API mode
     </a>
   </li>
@@ -402,7 +390,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../the-open-data-bot/" title="Integrated Bot mode" class="md-nav__link">
+    <a href="../dev/integrated-bot/" title="Integrated Bot mode" class="md-nav__link">
       Integrated Bot mode
     </a>
   </li>
@@ -414,20 +402,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../i18n/" title="Multilingual (i18n)" class="md-nav__link">
-      Multilingual (i18n)
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../api/" title="APIs" class="md-nav__link">
-      APIs
+    <a href="../dev/connectors/" title="Connectors" class="md-nav__link">
+      Connectors
     </a>
   </li>
 
@@ -444,6 +420,18 @@
   </li>
 
         
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../the-open-data-bot/" title="Code Samples" class="md-nav__link">
+      Code Samples
+    </a>
+  </li>
+
+        
       </ul>
     </nav>
   </li>
@@ -456,13 +444,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
     
-    <label class="md-nav__link" for="nav-5">
+    <label class="md-nav__link" for="nav-4">
       About
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-5">
+      <label class="md-nav__title" for="nav-4">
         About
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -597,8 +585,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#partial-model-tests" class="md-nav__link">
-    Partial Model Tests
+  <a href="#model-tests" class="md-nav__link">
+    Model Tests
   </a>
   
     <nav class="md-nav">
@@ -650,17 +638,17 @@
 <li>average execution time</li>
 </ul>
 </li>
-<li><strong>Test Trend</strong> : evolution of the relevance of <a href="#partial-model-tests">partial model tests</a> </li>
-<li><strong>Intent Errors</strong> : the list of intent errors found with partial model tests</li>
-<li><strong>Entity Errors</strong> : the list of entity errors found with partial model tests</li>
-<li><strong>Model Builds</strong> : the cimplete list of model builds</li>
+<li><strong>Model Builds</strong> : the cimplete list of model builds    </li>
+<li><strong>Test Trend</strong> : evolution of the relevance of <a href="#partial-model-tests">model tests</a> </li>
+<li><strong>Intent Errors</strong> : the list of intent errors found with model tests</li>
+<li><strong>Entity Errors</strong> : the list of entity errors found with model tests</li>
 </ol>
-<h2 id="partial-model-tests">Partial Model Tests<a class="headerlink" href="#partial-model-tests" title="Permanent link">&para;</a></h2>
-<p>Partial model tests is a way to detect qualifications errors.</p>
+<h2 id="model-tests">Model Tests<a class="headerlink" href="#model-tests" title="Permanent link">&para;</a></h2>
+<p>Model tests are used to detect qualifications errors.</p>
 <p>Temporarily models are built from a random part of the whole sentence set of the model (90% for example)
 and then tested against the remaining sentences. </p>
 <p>The process is repeated a number of times and the most frequent errors are pushed to an admin user.</p>
-<p>Partial model tests are useful only with large models.</p>
+<p>Model tests are useful only with large models.</p>
 <h3 id="intent-errors">Intent errors<a class="headerlink" href="#intent-errors" title="Permanent link">&para;</a></h3>
 <p>Click on the <em>Intent Errors</em> tab:</p>
 <p><img alt="schéma Tock" src="../img/intent-errors.png" title="Intent Errors Detection" /></p>
@@ -704,7 +692,7 @@ and then tested against the remaining sentences. </p>
           </a>
         
         
-          <a href="../code-a-bot/" title="Bot API mode" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../dev/bot-api/" title="Bot API mode" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">

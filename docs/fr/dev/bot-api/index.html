@@ -460,19 +460,19 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#developper-en-bot-api-en-kotlin" class="md-nav__link">
-    Développer en Bot API en Kotlin
+  <a href="#se-connecter-sur-la-plateforme-de-demonstration" class="md-nav__link">
+    Se connecter sur la plateforme de démonstration
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#developper-un-bot-en-mode-bot-api-avec-kotlin" class="md-nav__link">
+    Développer un bot en mode Bot API avec Kotlin
   </a>
   
     <nav class="md-nav">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#pre-requis-architecture" class="md-nav__link">
-    Pré-requis / Architecture
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#activer-le-mode-websocket" class="md-nav__link">
@@ -502,13 +502,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#tester-avec-la-plateforme-de-demonstration" class="md-nav__link">
-    Tester avec la plateforme de démonstration
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -518,6 +511,19 @@
   <a href="#developper-dans-un-autre-langage" class="md-nav__link">
     Développer dans un autre langage
   </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installer-bot-api-sur-vos-propres-serveurs" class="md-nav__link">
+    Installer Bot API sur vos propres serveurs
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -550,7 +556,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../connecteurs/" title="Connecteurs" class="md-nav__link">
+    <a href="../connectors.md" title="Connecteurs" class="md-nav__link">
       Connecteurs
     </a>
   </li>
@@ -834,19 +840,19 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#developper-en-bot-api-en-kotlin" class="md-nav__link">
-    Développer en Bot API en Kotlin
+  <a href="#se-connecter-sur-la-plateforme-de-demonstration" class="md-nav__link">
+    Se connecter sur la plateforme de démonstration
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#developper-un-bot-en-mode-bot-api-avec-kotlin" class="md-nav__link">
+    Développer un bot en mode Bot API avec Kotlin
   </a>
   
     <nav class="md-nav">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#pre-requis-architecture" class="md-nav__link">
-    Pré-requis / Architecture
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#activer-le-mode-websocket" class="md-nav__link">
@@ -876,13 +882,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#tester-avec-la-plateforme-de-demonstration" class="md-nav__link">
-    Tester avec la plateforme de démonstration
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -892,6 +891,19 @@
   <a href="#developper-dans-un-autre-langage" class="md-nav__link">
     Développer dans un autre langage
   </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installer-bot-api-sur-vos-propres-serveurs" class="md-nav__link">
+    Installer Bot API sur vos propres serveurs
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -913,33 +925,23 @@
                 
                 
                 <h1 id="developper-en-mode-tock-bot-api">Développer en mode <em>Tock Bot API</em><a class="headerlink" href="#developper-en-mode-tock-bot-api" title="Permanent link">&para;</a></h1>
-<p>Le mode <em>Bot API</em> de Tock permet de développer des bots en se connectant à une plateforme <em>NLU</em> Tock d'une manière peu 
-couplée car n'ayant pas accès à la base de données (MongoDB), contrairement au mode <em>Bot Framework</em>.</p>
-<p><img alt="BOT API" src="../../img/bot_api.png" title="BOT API" /></p>
+<p>Le mode <em>Bot API</em> de Tock permet de développer des bots en se connectant à une plateforme <em>Tock Studio</em> en 
+utilisant l'API REST conversationnelle de Tock.</p>
 <p>C'est donc le mode de développement Tock recommandé pour démarrer, ainsi que dans des scenarios ou l'accès partagé à la 
 base de données serait un problème.</p>
 <blockquote>
-<p>Par exemple, seul le mode <em>Bot API</em> est autorisé sur la <a href="https://demo.tock.ai/">plateforme de démonstration</a>
-publique Tock (pour des raisons de sécurité évidentes).</p>
+<p>Seul le mode <em>Bot API</em> est disponible sur la <a href="https://demo.tock.ai/">plateforme de démonstration</a>
+publique Tock.</p>
 </blockquote>
 <p>Cette page présente le développement de bots Tock en mode <em>Bot API</em> en <a href="https://kotlinlang.org/">Kotlin</a>. 
-Notez qu'il est possible de développer dans n'importe quel langage via la <em>Bot API</em> - <em>une documentation pour un autre langage devrait bientôt arriver.</em></p>
+Notez qu'il est possible de développer dans n'importe quel langage via la <em>Bot API</em>.</p>
 <blockquote>
 <p>Une autre section présente le mode <a href="../bot-integre/"><em>Bot Framework</em></a>, plus intégré mais aussi plus couplé à la plateforme Tock.</p>
 </blockquote>
-<h2 id="developper-en-bot-api-en-kotlin">Développer en <em>Bot API</em> en Kotlin<a class="headerlink" href="#developper-en-bot-api-en-kotlin" title="Permanent link">&para;</a></h2>
-<h3 id="pre-requis-architecture">Pré-requis / Architecture<a class="headerlink" href="#pre-requis-architecture" title="Permanent link">&para;</a></h3>
-<p>Pour utiliser le mode <em>Bot API</em> de Tock, un module spécifique doit être déployé avec la plateforme. Généralement appelé 
-<code>bot-api</code> dans les descripteurs Docker Compose par exemple, ce service a pour rôle :</p>
-<ul>
-<li>D'exposer la <em>Bot API</em> aux clients potentiels quelque soit leur langage de programmation</li>
-<li>D'accepter des connexions en <em>WebSocket</em></li>
-</ul>
-<p>Le guide <a href="../../guide/plateforme/">Déployer Tock avec Docker</a> ou encore le chapitre 
-<a href="../../admin/installation/">Installation</a> montrent comment déployer ce module si nécessaire.</p>
-<blockquote>
-<p>Le module <code>bot-api</code> est déjà déployé sur la <a href="https://demo.tock.ai/">plateforme de démonstration Tock</a>.</p>
-</blockquote>
+<h2 id="se-connecter-sur-la-plateforme-de-demonstration">Se connecter sur la plateforme de démonstration<a class="headerlink" href="#se-connecter-sur-la-plateforme-de-demonstration" title="Permanent link">&para;</a></h2>
+<p>Plutôt que déployer se propre plateforme Tock, il est possible de tester les modes <em>WebSocket</em> ou <em>Webhook</em> directement sur la
+<a href="https://demo.tock.ai/">plateforme de démonstration Tock</a>. </p>
+<h2 id="developper-un-bot-en-mode-bot-api-avec-kotlin">Développer un bot en mode <em>Bot API</em> avec Kotlin<a class="headerlink" href="#developper-un-bot-en-mode-bot-api-avec-kotlin" title="Permanent link">&para;</a></h2>
 <h3 id="activer-le-mode-websocket">Activer le mode WebSocket<a class="headerlink" href="#activer-le-mode-websocket" title="Permanent link">&para;</a></h3>
 <p>C'est le mode à privilégier au démarrage car le plus simple à mettre en oeuvre.</p>
 <p>Pour utiliser le client websocket, il faut ajouter la dépendance <code>tock-bot-api-websocket</code> à votre application/projet <a href="https://kotlinlang.org/">Kotlin</a>.</p>
@@ -958,7 +960,7 @@ Notez qu'il est possible de développer dans n'importe quel langage via la <em>B
 
 
 <h3 id="activer-le-mode-webhook">Activer le mode WebHook<a class="headerlink" href="#activer-le-mode-webhook" title="Permanent link">&para;</a></h3>
-<p>Pour utiliser le client <em>WebHook</em>, il faut ajouter la dépendance <code>tock-bot-api-webhook</code> à votre application/projet <a href="https://kotlinlang.org/">Kotlin</a>.</p>
+<p>De manière alternative, vous pouvez choisir d'utiliser le client <em>WebHook</em>, il faut ajouter la dépendance <code>tock-bot-api-webhook</code> à votre application/projet <a href="https://kotlinlang.org/">Kotlin</a>.</p>
 <p>Par exemple dans un projet <a href="https://maven.apache.org/">Maven</a> :</p>
 <div class="codehilite"><pre><span></span>        <span class="nt">&lt;dependency&gt;</span>
             <span class="nt">&lt;groupId&gt;</span>ai.tock<span class="nt">&lt;/groupId&gt;</span>
@@ -974,7 +976,8 @@ Notez qu'il est possible de développer dans n'importe quel langage via la <em>B
 
 
 <p>Dans ce cas, contrairement au mode <em>WebSocket</em>, il faut que l'application/bot démarrée soit joignable par la 
- plateforme Tock. Son URL doit être indiquée dans le champ <em>webhook url</em> dans la vue <em>Configuration</em> &gt; <em>Bot Configurations</em> 
+ plateforme Tock via une URL publique (vous pouvez utilisez par exemple <a href="https://ngrok.com/">ngrok</a>). </p>
+<p>Cette URL doit être indiquée dans le champ <em>webhook url</em> dans la vue <em>Configuration</em> &gt; <em>Bot Configurations</em> 
  de l'interface <em>Tock Studio</em>.</p>
 <h3 id="parametrer-la-cle-dapi">Paramétrer la clé d'API<a class="headerlink" href="#parametrer-la-cle-dapi" title="Permanent link">&para;</a></h3>
 <p>Dans <em>Tock Studio</em>, après avoir configuré un bot, allez dans <em>Configuration</em> &gt; <em>Bot Configurations</em> et copiez 
@@ -983,52 +986,60 @@ la clé d'API du bot auquel vous souhaitez vous connecter.</p>
 <h3 id="creer-des-parcours-en-kotlin">Créer des parcours en Kotlin<a class="headerlink" href="#creer-des-parcours-en-kotlin" title="Permanent link">&para;</a></h3>
 <p>Pour le moment, les composants suivants sont supportés pour les réponses :</p>
 <ul>
-<li>Texte brut</li>
+<li>Texte avec Boutons (Quick Reply)</li>
 <li>Format "carte"</li>
-<li>Formats spécfiques aux différents canaux intégrés</li>
+<li>Format "carousel"</li>
+<li>Formats spécifiques aux différents canaux intégrés</li>
 </ul>
 <p>Voici un exemple de bot simple avec quelques parcours déclarés : </p>
 <div class="codehilite"><pre><span></span><span class="k">fun</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">start</span><span class="p">(</span>
+    <span class="n">startWithDemo</span><span class="p">(</span>
         <span class="n">newBot</span><span class="p">(</span>
-            <span class="s">&quot;PUT-YOUR-TOCK-APP-API-KEY-HERE&quot;</span><span class="p">,</span> <span class="c1">// Get your app API key from Bot Configurations in Tock Studio</span>
-             <span class="n">newStory</span><span class="p">(</span><span class="s">&quot;greetings&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// Intent &#39;greetings&#39;</span>
-                 <span class="n">end</span><span class="p">(</span><span class="s">&quot;Bonjour!&quot;</span><span class="p">)</span> <span class="c1">// Raw text answer</span>
+            <span class="s">&quot;PUT-YOUR-TOCK-APP-API-KEY-HERE&quot;</span><span class="p">,</span> <span class="c1">// Récupérer la clé d&#39;API à partir de l&#39;onglet &quot;Bot Configurations&quot; dans Tock Studio</span>
+             <span class="n">newStory</span><span class="p">(</span><span class="s">&quot;greetings&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// Intention &#39;greetings&#39;</span>
+                 <span class="n">end</span><span class="p">(</span><span class="s">&quot;Bonjour!&quot;</span><span class="p">)</span> <span class="c1">// Réponse texte simple</span>
              <span class="p">},</span>
-             <span class="n">newStory</span><span class="p">(</span><span class="s">&quot;location&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// Intent &#39;location&#39;</span>
+             <span class="n">newStory</span><span class="p">(</span><span class="s">&quot;location&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// Intention &#39;location&#39;</span>
                  <span class="n">end</span><span class="p">(</span>
+                     <span class="c1">// Réponse avec une carte - pouvant inclure du texte, un fichier (par exemple une image) et des suggestions d&#39;action utilisateur</span>
                      <span class="n">newCard</span><span class="p">(</span>
                          <span class="s">&quot;Le titre de la carte&quot;</span><span class="p">,</span>
                          <span class="s">&quot;Un sous-titre&quot;</span><span class="p">,</span>
                          <span class="n">newAttachment</span><span class="p">(</span><span class="s">&quot;https://url-image.png&quot;</span><span class="p">),</span>
                          <span class="n">newAction</span><span class="p">(</span><span class="s">&quot;Action 1&quot;</span><span class="p">),</span>
-                         <span class="n">newAction</span><span class="p">(</span><span class="s">&quot;Action 2&quot;</span><span class="p">,</span> <span class="s">&quot;http://redirection&quot;</span><span class="p">)</span> <span class="c1">// Anwser with a card - including text, image and actions</span>
+                         <span class="n">newAction</span><span class="p">(</span><span class="s">&quot;Action 2&quot;</span><span class="p">,</span> <span class="s">&quot;http://redirection&quot;</span><span class="p">)</span> 
                      <span class="p">)</span>
                  <span class="p">)</span>
              <span class="p">},</span>
-             <span class="n">newStory</span><span class="p">(</span><span class="s">&quot;goodbye&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// Intent &#39;goodbye&#39;</span>
+             <span class="n">newStory</span><span class="p">(</span><span class="s">&quot;goodbye&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// Intention &#39;goodbye&#39;</span>
                  <span class="n">end</span> <span class="p">{</span>
-                     <span class="c1">// Answer with Messenger-specific button/quick reply</span>
+                     <span class="c1">// Réponse spécifique au format Messenger </span>
                      <span class="n">buttonsTemplate</span><span class="p">(</span><span class="s">&quot;Etes-vous sûr(e) de vouloir partir ?&quot;</span><span class="p">,</span> <span class="n">nlpQuickReply</span><span class="p">(</span><span class="s">&quot;Je reste&quot;</span><span class="p">))</span>
                  <span class="p">}</span> 
              <span class="p">},</span>
+             <span class="c1">// Réponse fournie pas le bot en cas d&#39;incompréhension</span>
              <span class="n">unknownStory</span> <span class="p">{</span>
-                 <span class="n">end</span><span class="p">(</span><span class="s">&quot;Je n&#39;ai pas compris. Mais j&#39;apprends tous les jours :)&quot;</span><span class="p">)</span> <span class="c1">// Default answer</span>
+                 <span class="n">end</span><span class="p">(</span><span class="s">&quot;Je n&#39;ai pas compris. Mais j&#39;apprends tous les jours :)&quot;</span><span class="p">)</span>
              <span class="p">}</span>
-        <span class="p">),</span>
-        <span class="s">&quot;http://localhost:8080&quot;</span> <span class="c1">// Local platform URL (default host/port)</span>
+        <span class="p">)</span>
     <span class="p">)</span>
 <span class="p">}</span>
 </pre></div>
 
 
-<h3 id="tester-avec-la-plateforme-de-demonstration">Tester avec la plateforme de démonstration<a class="headerlink" href="#tester-avec-la-plateforme-de-demonstration" title="Permanent link">&para;</a></h3>
-<p>Plutôt que déployer se propre plateforme Tock, il est possible de tester le mode <em>WebSocket</em> directement sur la
-<a href="https://demo.tock.ai/">plateforme de démonstration Tock</a>. </p>
-<p>Pour cela, il suffit de remplacer la méthode <code>start</code> par <code>startWithDemo</code> (sans préciser l'adresse de la plateforme).</p>
 <h2 id="developper-dans-un-autre-langage">Développer dans un autre langage<a class="headerlink" href="#developper-dans-un-autre-langage" title="Permanent link">&para;</a></h2>
 <p>Il est possible de développer dans n'importe quel langage en programmant directement via l'API.</p>
-<p>Des exemples avec Kotlin mais aussi Nodejs sont disponibles.</p>
+<h3 id="installer-bot-api-sur-vos-propres-serveurs">Installer Bot API sur vos propres serveurs<a class="headerlink" href="#installer-bot-api-sur-vos-propres-serveurs" title="Permanent link">&para;</a></h3>
+<p>Pour utiliser le mode <em>Bot API</em> de Tock, un module spécifique doit être déployé avec la plateforme. Généralement appelé 
+<code>bot-api</code> dans les descripteurs Docker Compose par exemple, ce service a pour rôle :</p>
+<ul>
+<li>D'exposer la <em>Bot API</em> aux clients potentiels quelque soit leur langage de programmation</li>
+<li>D'accepter des connexions en <em>WebSocket</em> et/ou de se connecter au webhook configuré</li>
+</ul>
+<p>Le guide <a href="../../guide/plateforme/">Déployer Tock avec Docker</a> ou encore le chapitre 
+<a href="../../admin/installation/">Installation</a> montrent comment déployer ce module si nécessaire.</p>
+<p>La seule modification nécessaire par rapport au code d'exemple pour la platforme de démonstration est de remplacer
+la méthode <code>startWithDemo</code> par <code>start</code> en précisant si besoin l'adresse de du serveur <code>bot-api</code>.</p>
                 
                   
                 

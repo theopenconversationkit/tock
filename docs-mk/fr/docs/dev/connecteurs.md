@@ -43,7 +43,7 @@ Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le 
 Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
 [connector-teams](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-teams) sur GitHub.
 
-### Business Chat / Messages
+### Business Chat / iMessages
 
 Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
 [connector-businesschat](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-businesschat) sur GitHub.
@@ -55,7 +55,9 @@ Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le 
 
 ### Web
 
-> Work in progress
+Ce connecteur permet de déployer une API REST dédiée à la création d'un chatbot sur une interface Web par exemple.
+Consultez ses sources et son _README_ dans le dossier 
+[connector-web](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-web) sur GitHub.
 
 ## Développer son propre connecteur
 
@@ -63,7 +65,9 @@ Il est possible de créer son propre connecteur Tock, par exemple pour interface
 l'organisation (souvent un site Web ou une application mobile spécifiques), ou bien quand un canal grand public 
 s'ouvre aux bots conversationnels et que le connecteur Tock n'existe pas encore.
 
-Pour cela quatres étapes sont nécessaires :
+Un exemple de connecteur spécifique est disponible dans le projet d'exemple [Bot Open Data](https://github.com/theopenconversationkit/tock-bot-open-data/tree/master/src/main/kotlin/connector). 
+
+Pour définir son propre connecteur, quatres étapes sont nécessaires :
 
 1) Implémenter l'interface [`Connector`](https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.connector/-connector/index.html) 
 

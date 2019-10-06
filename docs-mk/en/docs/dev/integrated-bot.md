@@ -1,39 +1,57 @@
-# Développer en mode _Tock Bot intégré_
+# _Integrated Bot Mode_
 
-Le mode _Bot intégré_ Tock permet de développer un bot en utilisant un 
-[Domain Specifique Language (DSL)](https://fr.wikipedia.org/wiki/Langage_d%C3%A9di%C3%A9) 
- en [Kotlin](https://kotlinlang.org/).
+To develop a bot or an assistant with Tock,
+you can also use the so called *Integrated mode* 
+developed in [Kotlin](https://kotlinlang.org/). 
+You get then direct access to the MongoDb database.
+ 
+> This mode is not available in the demo platform - you need to install the Tock
+> docker images on your own servers.
 
-Contrairement au mode _Bot API_ encore en développement, le _Bot Framework_ Kotlin permet d'exploiter toutes les 
-possibilités de la plateforme Tock, notamment :
+## Sample Project
 
-* Gestion des contextes utilisateurs
-* Historique de conversation
-* Notions avancées comme la _fusion d'entités_
-* Etc.
+A sample bot using Tock _Integrated mode_ is provided: [https://github.com/theopenconversationkit/tock-bot-open-data](https://github.com/theopenconversationkit/tock-bot-open-data).
+ 
+It uses [Open Data SNCF API](https://data.sncf.com/) (french trainlines itineraries).
 
-> Exemple de _fusion d'entités_ : lorsque un utilisateur demande "demain" dans une phrase 
->(appelons cette entité _date_) puis "plutôt le soir" dans une phrase suivante, la fusion permet de mettre à jour 
->automatiquement l'entité (_date_) avec les deux informations complémentaires : jour et créneau horaire dans cet exemple.
+This is a good starting point, since it also includes a very simple NLP model.
 
-Attention : dans ce mode de développement, contrairement au mode [_Bot API_](bot-api.md), il est nécessaire que le module bot 
- dispose d'une connexion à la base de donnée (MongoDB) de la plateforme Tock utilisée.
+> Of course, as the model is not big, the quality of the bot is low, but still it's enough to demonstrate the use of the toolkit.
 
-> Pour appréhender complètement ce qui va suivre, il est recommandé de maîtriser les bases du 
->langage de programmation [Kotlin](https://kotlinlang.org/).
+## Docker Images
 
-## Démarrer avec le framework
+Docker images in [Docker Hub](https://hub.docker.com/r/tock/).
 
-### Documentation KDoc
+The source code used to build these images, as well as the docker-compose files used to start the Tock toolkit, are available in the GitHub repository [https://github.com/theopenconversationkit/tock-docker](https://github.com/theopenconversationkit/tock-docker).
 
-La documentation du framework au format KDoc est disponible [ici](../../../../dokka/tock).
+### Start the NLP stack
 
-### Dépendance `bot-toolkit`
+```sh 
+    #get the last docker-compose file
+    curl -o docker-compose.yml https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/docker-compose.yml
+    #get the script to start mongo in replicaset mode
+    mkdir -p scripts && curl -o scripts/setup.sh https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/scripts/setup.sh && chmod +x scripts/setup.sh
+    #get the last tag
+    curl -o .env https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/.env
+    #launch the stack
+    docker-compose up
+``` 
 
-Pour utiliser le framework conversationnel, il faut ajouter la dépendance `bot-tookit` à l'application / au projet
-Kotlin.
+The admin webapp is now available on port `80`: [http://localhost](http://localhost)
 
-Par exemple dans un projet [Maven](https://maven.apache.org/) :
+The default login is *admin@app.com* and the password is *password*.
+
+### Sample bot based on Open Data APIs
+
+A docker image is available to launch it directly. The instructions are specified in the [github project containing the docker images](https://github.com/theopenconversationkit/tock-docker#user-content-run-the-open-data-bot-example).
+
+## Develop a new Bot
+
+### Add the bot-toolkit Dependency
+
+The bot-toolkit dependency is required:
+
+With Maven:
 
 ```xml
         <dependency>
@@ -43,15 +61,15 @@ Par exemple dans un projet [Maven](https://maven.apache.org/) :
         </dependency>
 ```
 
-Ou dans un projet [Gradle](https://gradle.org/) :
+With Gradle:
 
 ```gradle
       compile 'ai.tock:bot-toolkit:19.9.0'
 ```
 
-### Un bot est un ensemble de parcours (stories)
+### A Bot is a Set of Stories
 
-Voici par exemple comment le Bot Open Data est défini :
+This is how the open data bot is defined:
 
 ```kotlin
 val openBot = bot(
@@ -67,99 +85,95 @@ val openBot = bot(
 )
 ```
 
-Ce bot comporte un identifiant (obligatoire - "bot_open_data") et une liste de parcours ou _stories_.
+This bot has an unique identifier (required - "bot_open_data") and a list of **"Story"**.
  
-Une _Story_ est un regroupement fonctionnel qui correspond à une intention principale et, de manière optionelle,
-à une ou plusieurs intentions dites "secondaires" (voir [Concepts](../utilisateur/concepts.md)).
+A *Story* is a functional subset that has a main intention and, optionally,
+one or more so-called "secondary" intentions.
 
-Ici le bot définit 4 parcours : `greetings`, `departures`, `arrivals` et `search`. 
+Here the bot defines 4 *Stories*, greetings, departures, arrivals and search. 
+Greetings is also set (*hello = greetings*) as the default story used for a new dialog.
 
-Le parcours `greetings` est déclaré comme parcours principal, il sera présenté par défaut au début d'une conversation :
-`hello = greetings`.
+### A Simple Story 
 
-### Une Story simple 
-
-_Comment définit-on une Story?_
-
-Voici une première version simplifiée du parcours `greetings` :
+How do you define a story? Here is a first simplified version of the story *greetings*:
 
 ```kotlin
-val greetings = story("greetings") {
-    send("Bienvenue chez le Bot Open Data Sncf! :)")
-    end("Il s'agit d'un bot de démonstration du framework Tock : https://github.com/theopenconversationkit/tock")
+val greetings = story("greetings") { 
+        send("Welcome to the Tock Open Data Bot! :)")
+        end("This is a Tock framework demonstration bot: https://github.com/theopenconversationkit/tock")
 }
 ```
 
-Notez que dans le corps de la fonction, `this` est de type [`BotBus`](https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.engine/-bot-bus/index.html),
-à partir duquel vous pouvez interagir avec l'utilisateur, et qui permet également d'accèder
-à tous les élements contextuels disponibles.
+Note that in the body of the function, *this* has a [BotBus](https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.engine/-bot-bus/index.html) type.
+From which you can interact with the user, and which also allows you to access
+to all available contextual elements.
 
-Concrètement sela signifie que quand l'intention `greetings` sera détectée par le modèle NLP, la fonction ci-dessus sera appelée par le framework Tock.
+When the intention *greetings* will be detected by the NLP model, 
+the function above will be called by the Tock framework.
 
-Le bot envoie donc successivement une première phrase de réponse (`bus.send()`), puis un deuxième en indiquant que c'est 
-la dernière phrase de sa réponse à l'aide d'un `bus.end()`.
+The bot sends successively a first response sentence (*bus.send()*), then a second one indicating that it is
+the last sentence of his answer using a *bus.end()*.
 
-Voici maintenant la version complète de `greetings` :
+Here is the full version of *greetings*:
+
 
 ```kotlin
-val greetings = story("greetings") {
+val greetings = story("greetings") { 
     //cleanup state
     resetDialogState()
 
-    send("Bienvenue chez le Bot Open Data Sncf! :)")
-    send("Il s'agit d'un bot de démonstration du framework Tock : https://github.com/theopenconversationkit/tock")
+    send("Welcome to the Tock Open Data Bot! :)")
+    send("This is a Tock framework demonstration bot: https://github.com/theopenconversationkit/tock")
 
     withMessenger {
         buttonsTemplate(
-              "Il est volontairement très limité, mais demandez lui un itinéraire ou les départs à partir d'une gare et constatez le résultat! :) ",
-              postbackButton("Itinéraires", search),
-              postbackButton("Départs", Departures),
-              postbackButton("Arrivées", Arrivals)
+                "The bot is very limited, but ask him a route or the next departures from a station in France, and see the result! :)",
+                postbackButton("Itineraries", search),
+                postbackButton("Departures", Departures),
+                postbackButton("Arrivals", Arrivals)
         )
     }
     withGoogleAssistant {
-       gaMessage(
-              "Il est volontairement très limité, mais demandez lui un itinéraire ou les départs à partir d'une gare et constatez le résultat! :) ",
-              "Itinéraires",
-              "Départs",
-              "Arrivées")
-       }
+        gaMessage(
+                "The bot is very limited, but ask him a route or the next departures from a station in France, and see the result! :)",
+                "Itineraries",
+                "Departures",
+                "Arrivals")
+    }
 
     end()
 }
 ``` 
 
-Deux notions ont été ajoutées :
+Two notions have been added:
 
-- `resetDialogState()` qui permet de repartir d'un contexte utilisateur vide (en oubliant les éventuels échanges précédents)
+- *resetDialogState()* which cleanup the state (forgetting any previous context).
 
-- les méthodes `withMessenger{}` et `withGoogleAssistant{}` qui permettent de définir des réponses spécifiques pour chaque connecteur.
-Ici un texte avec des boutons pour Messenger, et un texte avec des suggestions pour Google Assistant.
+- the *withMessenger{}* and *withGoogleAssistant{}* methods that define specific responses for each connector -
+Here it's a text with buttons for Messenger, and a text with suggestions for Google Assistant.
 
-### Démarrer et connecter le bot
+### Start and Connect the Bot
 
-Pour démarrer le bot, il suffit de rajouter dans votre `main` principal l'appel suivant :
+To start the bot, simply add the following call to your main function:
 
 ```kotlin
 registerAndInstallBot(openBot)
 ``` 
 
-La variable `openBot` dans l'exemple est le bot que vous avez défini plus haut.
+where the *openBot* variable is the bot you originally defined.
 
-Une fois le bot démarré, il est également nécessaire de spécifier quels connecteurs sont utilisés
-dans l'interface d'administration du bot, du menu _Configuration_ > _Bot Configurations_ > _Create a new configuration_.
+When the bot is started, you also need to specify which connectors are used
+in the web administration interface: Configuration -> Bot Configurations -> Create a new configuration  
 
-Pour en savoir plus sur les différents canaux et connecteurs, voir [cette page](../utilisateur/channels.md).
+See [Connectors](connectors.md) page for the list of available connectors.
 
-## Aller plus loin
+### Advanced options
 
-Bien sûr, le `StoryHandler` de `greetings` ne dépend pas du contexte : la réponse est toujours la même.
- 
-Pour le développement de stories complexes, nous avons besoin d'une abstraction supplémentaire.
+Of course, the *StoryHandler* of *greetings* does not depend on the context: the answer is always the same.
 
-### Intentions secondaires
+#### Secondary Intentions
 
-Voici le début de la définition de la story `search` :
+Here is the beginning of the definition of the *search* story :
 
 ```kotlin
 val search = storyDef<SearchDef>(
@@ -170,20 +184,20 @@ val search = storyDef<SearchDef>(
 }
 ``` 
 
-Le parcours `search` définit une intention secondaire "de démarrage" (`indicate_origin`) 
-et une intention secondaire simple (`indicate_location`).
+The story **search** defines a secondary *starter* intent (*indicate_origin*)
+and a simple secondary intent (*indicate_location*).
 
-Une intention secondaire "de démarrage" est semblable en tout point à une intention principale : 
-dès que cette intention est détectée, le parcours `search` va être exécuté, 
-si la story courante ne possède pas cette intention en tant qu'intention secondaire.
+A secondary *starter* intent is similar in every respect to the main intent:
+as soon as the intent is detected, if the current story does not contain *indicate_origin* as secondary intent,
+the story *search* is called.
 
-Pour une intention secondaire simple, par contre, la story ne sera exécutée que si la story courante du contexte 
-est "déjà" la story search. Plusieurs story différentes peuvent donc partager les mêmes intentions secondaires.
+For a *classic* secondary intent, on the other hand, the story will be executed only if the current story of the context
+is *already* the **search** story. Different stories can therefore share the same secondary intents.
 
-### Manipuler les entités
+#### Handle Entities
 
-Pour récupérer les valeurs des entités, une bonne pratique est de définir des **extensions**. 
-Par exemple voici le code utilisé pour récupérer l'entité `destination` :
+To retrieve entity values, it is good practice to define Kotlin **extensions**.
+For example here is the code used to retrieve the *destination* entity:
 
 ```kotlin
 
@@ -199,14 +213,14 @@ private fun BotBus.setPlace(entity: Entity, place: Place?) = changeEntityValue(e
     
 ```
 
-Une entité de type `location` et de role `destination` est créée. 
-Il s'agit de l'entité correspondante dans le modèle NLP.
+An entity of type "location" and role "destination" is created.
+There is a corresponding entity in the NLP model.
 
-Une variable `destination` est définie, qui va simplifier la manipulation de cette entité dans le code métier.
-Cette variable contient la valeur actuelle de la destination dans le contexte utilisateur.
+A variable *destination* is defined, which will simplify the handling of this entity in the conversational code.
+This variable contains the current value of the destination in the user context.
 
-Voici une version complétée de la story `search` qui utilise `destination` :
-
+Here's a full version of the *search* story that uses *destination*:
+ 
 ```kotlin
 
 val search = storyDef<SearchDef>(
@@ -216,20 +230,20 @@ val search = storyDef<SearchDef>(
 
         //check mandatory entities
         when {
-            destination == null -> end("Pour quelle destination?")
-            origin == null -> end("Pour quelle origine?")
-            departureDate == null -> end("Quand souhaitez-vous partir?")
+            destination == null -> end("For which destination?")
+            origin == null -> end("For which origin?")
+            departureDate == null -> end("When?")
         } 
 }
 
 ``` 
 
-Si il n'y a pas de valeur dans le contexte courant pour la destination, le bot demande de spécifier la destination et en reste là.
-Idem pour l'origine ou la date de départ.
+If there is no value in the current context for the destination, the bot asks to specify the destination and stays there.
+Same behaviour for the origin or date of departure.
 
-Si les 3 valeurs obligatoires sont spécifiées, il passe à la réponse proprement dite développée dans la classe (`SearchDef`).
+If the 3 required values are specified, then the real answer developed in the *SearchDef* class is used.
 
-La version complète de cette première partie du code est la suivante :
+Here is the full version of this first part of the code:
 
 ```kotlin
 
@@ -249,23 +263,24 @@ val search = storyDef<SearchDef>(
     
         //check mandatory entities
         when {
-            destination == null -> end("Pour quelle destination?")
-            origin == null -> end("Pour quelle origine?")
-            departureDate == null -> end("Quand souhaitez-vous partir?")
-        }
+            destination == null -> end("For which destination?")
+            origin == null -> end("For which origin?")
+            departureDate == null -> end("When?")
+        } 
 }
 
 ```
 
-Dans le cas où l'intention détectée est `indicate_location`, nous ne savons pas si la localité indiquée représente l'origine ou la destination.
-Il est donc codé une règle simple : 
-Si il existe déjà dans le contexte une origine et pas de destination, la nouvelle localité est en fait la destination.
-Sinon, il s'agit de l'origine. 
+In the case where the detected intention is *indicate_location*, we do not know if the locality represents the origin or the destination.
 
-### Utiliser `HandlerDef`
+A simple rule is then used:
+If there is already in the context an origin and no destination, the new locality is actually the destination.
+Otherwise, it is the origin.
 
-Dans la définition de la story `search` ci-dessus, vous avez pu noter le typage générique `SearchDef`. 
-Voici le code de cette classe :
+#### HandlerDef
+
+In the *search* story above, you may have noted the generic *SearchDef* typing.
+Here is the code of this class:
 
 ```kotlin
 @GAHandler(GASearchConnector::class)
@@ -277,13 +292,13 @@ class SearchDef(bus: BotBus) : HandlerDef<SearchConnector>(bus) {
     private val date: LocalDateTime = bus.departureDate!!
 
     override fun answer() {
-        send("De {0} à {1}", o, d)
-        send("Départ le {0}", date by datetimeFormat)
+        send("From {0} to {1}", o, d)
+        send("Departure on {0}", date by datetimeFormat)
         val journeys = SncfOpenDataClient.journey(o, d, date)
         if (journeys.isEmpty()) {
-            end("Désolé, aucun itinéraire trouvé :(")
+            end("Sorry, no routes found :(")
         } else {
-            send("Voici la première proposition :")
+            send("Here is the first proposal:")
             connector?.sendFirstJourney(journeys.first())
             end()
         }
@@ -291,22 +306,26 @@ class SearchDef(bus: BotBus) : HandlerDef<SearchConnector>(bus) {
 }
 ```
 
-`SearchDef` étend `HandlerDef` qui est un alias d'une classe du framework Tock.
+*SearchDef* extends *HandlerDef* which is an alias of a Tock framework class.
 
-C'est en général ici que l'on va définir le code métier des parcours complexes. 
+It is usually here that the code of complex *stories* is defined.
 
-Le code est relativement parlant, mais il contient une abstraction supplémentaire : `SearchConnector`.
+The code contains an additional abstraction: **SearchConnector**.
 
-`SearchConnector` est la classe qui définit le comportement spécifique à chaque connecteur, et les annotations
- `@GAHandler(GASearchConnector::class)` et `@MessengerHandler(MessengerSearchConnector::class)` 
- indiquent les implémentations correspondantes pour les différents connecteurs supportés (respectivement Google Assistant et Messenger).
- 
- Que se passerait-il s'il n'y avait pas de connecteur pour Google Assistant par exemple ? 
- La méthode `connector?.sendFirstJourney(journeys.first())` n'enverrait pas la réponse finale, puisque `connector` serait `null`.
- 
-### Utiliser `ConnectorDef`
+*SearchConnector* is the class that defines the behavior specific to each connector, and the annotations
+**@GAHandler**(GASearchConnector::class) and **@MessengerHandler**(MessengerSearchConnector::class) 
+indicate the corresponding implementations for the different supported connectors (respectively Google Assistant and Messenger).
+ 
 
-Voici maintenant une version simplifiée de `SearchConnector` :
+What would happen there is no connector for Google Assistant for example, and if a call from Google Assistant is answered?
+
+
+The *connector?.sendFirstJourney(journeys.first())* method call would not send the final response,
+since *connector* would be *null*.
+
+#### ConnectorDef
+
+Here is a simplified version of *SearchConnector* :
 
 ```kotlin
 sealed class SearchConnector(context: SearchDef) : ConnectorDef<SearchDef>(context) {
@@ -320,7 +339,7 @@ sealed class SearchConnector(context: SearchDef) : ConnectorDef<SearchDef>(conte
 }
 ``` 
 
-Et voici son implémentation pour Messenger :
+And its Messenger implementation:
 
 ```kotlin
 class MessengerSearchConnector(context: SearchDef) : SearchConnector(context) {
@@ -341,19 +360,18 @@ class MessengerSearchConnector(context: SearchDef) : SearchConnector(context) {
 }
 ```
 
-Le code spécifique à chaque connecteur est ainsi correctement découplé. Le code commun à chaque connecteur est présent dans `SearchConnector` et le comportement spécifique à
-chaque connecteur se trouve dans les classes dédiées.
+The code specific to each connector is thus decoupled correctly.
+The code common to each connector is present in *SearchConnector* and the behavior specific to
+each connector is specified in the dedicated classes.
 
-### Utiliser `StoryStep`
+#### StoryStep
 
-Parfois il est nécessaire de se souvenir de l'étape à laquelle l'utilisateur se trouve
-dans la story courante. Pour cela Tock met à disposition la notion de `StoryStep`.
+Sometimes you need to remember the stage at which the user is
+in the current story. For this, Tock provides the concept of *StoryStep*.
 
-Il existe deux types de `StoryStep` :
+There are two types of StoryStep.
 
-#### `SimpleStoryStep`
-
-A utiliser dans les cas simples, pour lequels on va gérer le comportement induit directement :
+##### SimpleStoryStep
 
 ```kotlin
 enum class MyStep : SimpleStoryStep { a, b }
@@ -369,45 +387,44 @@ val story = storyWithSteps<MyStep>("intent") {
 }
 ```
 
-Pour modifier l'étape courante, deux méthodes sont disponibles :
+To modify the current step, two methods are available:
 
-* Modifier manuellement l'étape
+* Manually change the step
 
 ```kotlin
 val story = storyWithSteps<MyStep>("intent") {
     //(...)
     step = MyStep.a
-    // l'étape sera persistée tant que nous resterons dans cette story
+    // the step will be persisted as long as we stay in this story
 }
 ```
 
-* Utiliser les boutons ou autres _quick replies_
+* Use buttons or quick replies
 
-Plus de détails sur ce sujet [plus bas](#postback-buttons-quick-replies).
+More details on this topic [here](../code-a-bot/#postback-buttons-quick-replies).
 
-#### Les `StoryStep` avec comportement
 
-Dans des cas plus complexes, on souhaite pouvoir définir un comportement pour chaque étape. 
-L'utilisation de [`HandlerDef`](#utiliser-handlerdef) est alors un prérequis.
+##### StorySteps with complex behavior
+
+In more complex cases, we want to be able to define a behavior for each step.
 
 ```kotlin
 enum class MySteps : StoryStep<MyHandlerDef> {
 
-    //pas de comportement spécifique
+    //no specific behaviour
     display,
 
     select {
 
-        // la step "select" sera automatiquement sélectionnée si la sous-intention select est détectée
+        // "select" step will be automatically selected if the select sub-intention is detected
         override val intent: IntentAware? = SecondaryIntent.select
-        //dans ce cas la réponse suivante sera apportée
+
         override fun answer(): MyHandlerDef.() -> Any? = {
             end("I don't know yet how to select something")
         }
     },
 
     disruption {
-        //seule la réponse est configurée
         override fun answer(): ScoreboardDef.() -> Any? = {
             end("some perturbation")
         }
@@ -415,16 +432,15 @@ enum class MySteps : StoryStep<MyHandlerDef> {
 }
 ```
 
-Davantage d'options de configuration sont disponibles. Consultez la description de 
-[`StoryStep`](https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.definition/-story-step/index.html). 
+More configuration options are available. Check out the description of [StoryStep](https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.definition/-story-step/index.html). 
 
-### _Postback buttons_ & _quick replies_
+#### Postback buttons & quick replies
 
-Messenger met à disposition ce type de bouton, et la plupart des connecteurs avec interface graphique font de même.
+Messenger provides this type of button, as most connectors with GUI.
 
-Tock permet de définir l'action effectuée suite à un clic sur ces boutons. 
+With Tock, you can easily define the action performed after clicking on these buttons. 
 
-Dans l'exemple suivant, le bouton redirigera vers l'intention `search`. 
+In the following example, the button will redirect to the "search" intent:
 
 ```kotlin
 buttonsTemplate(
@@ -432,12 +448,12 @@ buttonsTemplate(
             postbackButton("Itineraries", search)
 )
 ```
- 
-Il est possible de définir également une `StoryStep` et des paramètres dédiés :
+
+It is also possible to define a * StoryStep * and dedicated parameters:
 
 ```kotlin
 
-//pour définir des paramètres, la pratique recommandée est d'étendre l'interface ParameterKey
+//to define parameters, just extend the ParameterKey interface
 enum class ChoiceParameter : ParameterKey {
     nextResultDate, nextResultOrigin
 }
@@ -447,26 +463,21 @@ buttonsTemplate(
             postbackButton(
                 "Itineraries",
                 intent = search, 
-                //si aucune step n'est indiquée, c'est la step courante qui est utilisée
+                //if no step is specified, the current step is used
                 step = MyStep.a, 
                 parameters =  
-                    //ce paramètre est stocké sous forme de chaîne de caractère (les crochets sont utilisés)
+                    //this parameter is stored as a string (hooks are used)
                     nextResultDate[nextDate] + 
-                    //ce paramètre est stocké en json (les parenthèses sont utilisées)
+                    //this parameter is stored in json (parentheses are used)
                     nextResultOrigin(origin)
             )
 )
 ``` 
 
-Pour récupérer les paramètres du bouton sur lequel on a cliqué :
+To retrieve the parameters of the button that was clicked:
 
 ```kotlin
     val isClick = isChoiceAction()
     val nextDate = choice(nextResultDate)
     val nextOrigin : Locality = action.jsonChoice(nextResultOrigin)
 ```
-
-### Tests Unitaires
-
-La page [Tests Unitaires](test.md) présente le framework fourni pour réaliser des TUs  avec Tock.
- 

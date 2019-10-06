@@ -42,7 +42,7 @@
     
     
       
-        <title>Connecteurs - Tock</title>
+        <title>Les connecteurs Tock - Tock</title>
       
     
     
@@ -109,7 +109,7 @@
             </span>
             <span class="md-header-nav__topic">
               
-                Connecteurs
+                Les connecteurs Tock
               
             </span>
           
@@ -398,12 +398,10 @@
       
       
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5" checked>
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
     
     <label class="md-nav__link" for="nav-5">
       Développer avec Tock
@@ -455,125 +453,11 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Connecteurs
-      </label>
-    
-    <a href="./" title="Connecteurs" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../connectors.md" title="Connecteurs" class="md-nav__link">
       Connecteurs
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">Table des matières</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#messenger" class="md-nav__link">
-    Messenger
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#slack" class="md-nav__link">
-    Slack
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#google-assistant-google-home" class="md-nav__link">
-    Google Assistant / Google Home
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#alexa-echo" class="md-nav__link">
-    Alexa / Echo
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#rocketchat" class="md-nav__link">
-    Rocket.Chat
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#whatsapp" class="md-nav__link">
-    WhatsApp
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#teams" class="md-nav__link">
-    Teams
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#business-chat-messages" class="md-nav__link">
-    Business Chat / Messages
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#twitter" class="md-nav__link">
-    Twitter
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#web" class="md-nav__link">
-    Web
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#developper-son-propre-connecteur" class="md-nav__link">
-    Développer son propre connecteur
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
         
@@ -905,8 +789,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#business-chat-messages" class="md-nav__link">
-    Business Chat / Messages
+  <a href="#business-chat-imessages" class="md-nav__link">
+    Business Chat / iMessages
   </a>
   
 </li>
@@ -982,21 +866,22 @@ où vous retrouverez les sources et le <em>README</em> du connecteur.</p>
 <h3 id="teams">Teams<a class="headerlink" href="#teams" title="Permanent link">&para;</a></h3>
 <p>Pour en savoir plus sur ce connecteur, voir ses sources et son <em>README</em> dans le dossier 
 <a href="https://github.com/theopenconversationkit/tock/tree/master/bot/connector-teams">connector-teams</a> sur GitHub.</p>
-<h3 id="business-chat-messages">Business Chat / Messages<a class="headerlink" href="#business-chat-messages" title="Permanent link">&para;</a></h3>
+<h3 id="business-chat-imessages">Business Chat / iMessages<a class="headerlink" href="#business-chat-imessages" title="Permanent link">&para;</a></h3>
 <p>Pour en savoir plus sur ce connecteur, voir ses sources et son <em>README</em> dans le dossier 
 <a href="https://github.com/theopenconversationkit/tock/tree/master/bot/connector-businesschat">connector-businesschat</a> sur GitHub.</p>
 <h3 id="twitter">Twitter<a class="headerlink" href="#twitter" title="Permanent link">&para;</a></h3>
 <p>Pour en savoir plus sur ce connecteur, voir ses sources et son <em>README</em> dans le dossier 
 <a href="https://github.com/theopenconversationkit/tock/tree/master/bot/connector-twitter">connector-twitter</a> sur GitHub.</p>
 <h3 id="web">Web<a class="headerlink" href="#web" title="Permanent link">&para;</a></h3>
-<blockquote>
-<p>Work in progress</p>
-</blockquote>
+<p>Ce connecteur permet de déployer une API REST dédiée à la création d'un chatbot sur une interface Web par exemple.
+Consultez ses sources et son <em>README</em> dans le dossier 
+<a href="https://github.com/theopenconversationkit/tock/tree/master/bot/connector-web">connector-web</a> sur GitHub.</p>
 <h2 id="developper-son-propre-connecteur">Développer son propre connecteur<a class="headerlink" href="#developper-son-propre-connecteur" title="Permanent link">&para;</a></h2>
 <p>Il est possible de créer son propre connecteur Tock, par exemple pour interfacer un bot Tock avec un canal propre à 
 l'organisation (souvent un site Web ou une application mobile spécifiques), ou bien quand un canal grand public 
 s'ouvre aux bots conversationnels et que le connecteur Tock n'existe pas encore.</p>
-<p>Pour cela quatres étapes sont nécessaires :</p>
+<p>Un exemple de connecteur spécifique est disponible dans le projet d'exemple <a href="https://github.com/theopenconversationkit/tock-bot-open-data/tree/master/src/main/kotlin/connector">Bot Open Data</a>. </p>
+<p>Pour définir son propre connecteur, quatres étapes sont nécessaires :</p>
 <p>1) Implémenter l'interface <a href="https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.connector/-connector/index.html"><code>Connector</code></a> </p>
 <p>Voici un exemple d'implémentation :</p>
 <div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">testConnectorType</span> <span class="p">=</span> <span class="n">ConnectorType</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">)</span>
@@ -1097,41 +982,6 @@ contenant le nom de la classe :</p>
       
         
 <footer class="md-footer">
-  
-    <div class="md-footer-nav">
-      <nav class="md-footer-nav__inner md-grid">
-        
-          <a href="../bot-integre/" title="Tock Bot intégré" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
-            <div class="md-flex__cell md-flex__cell--shrink">
-              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
-            </div>
-            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
-              <span class="md-flex__ellipsis">
-                <span class="md-footer-nav__direction">
-                  Précédent
-                </span>
-                Tock Bot intégré
-              </span>
-            </div>
-          </a>
-        
-        
-          <a href="../i18n/" title="i18n" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
-            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
-              <span class="md-flex__ellipsis">
-                <span class="md-footer-nav__direction">
-                  Suivant
-                </span>
-                i18n
-              </span>
-            </div>
-            <div class="md-flex__cell md-flex__cell--shrink">
-              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
-            </div>
-          </a>
-        
-      </nav>
-    </div>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">

@@ -8,21 +8,22 @@ Five tabs are used to control the relevance of the model:
     * self-evaluation of the model about its relevance in terms of recognition of intent and entities
     * number of calls and errors
     * average execution time
-2. **Test Trend** : evolution of the relevance of [partial model tests](#partial-model-tests) 
-3. **Intent Errors** : the list of intent errors found with partial model tests
-4. **Entity Errors** : the list of entity errors found with partial model tests
-5. **Model Builds** : the cimplete list of model builds
+2. **Model Builds** : the cimplete list of model builds    
+3. **Test Trend** : evolution of the relevance of [model tests](#partial-model-tests) 
+4. **Intent Errors** : the list of intent errors found with model tests
+5. **Entity Errors** : the list of entity errors found with model tests
 
-## Partial Model Tests
 
-Partial model tests is a way to detect qualifications errors.
+## Model Tests
+
+Model tests are used to detect qualifications errors.
 
 Temporarily models are built from a random part of the whole sentence set of the model (90% for example)
 and then tested against the remaining sentences. 
 
 The process is repeated a number of times and the most frequent errors are pushed to an admin user.
 
-Partial model tests are useful only with large models.
+Model tests are useful only with large models.
 
 ### Intent errors
 

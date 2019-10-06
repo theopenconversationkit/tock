@@ -4,7 +4,7 @@
 
 **Tock** (*The Open Conversation Kit*) is a complete and open platform to build conversational agents - also known as _bots_. 
 
-Contrary to most conversational AI solutions, Tock does not depend on 3rd-party APIs, although it is possible to integrate with them.
+Tock does not depend on 3rd-party APIs, although it is possible to integrate with them.
 Users choose which components to embed and decide to keep (or share) ownership of conversational data and models.
 
 > Tock has been used in production for several years by [OUI.sncf](https://www.oui.sncf/services/assistant) to
@@ -29,7 +29,7 @@ can be deployed alone (for use cases like the [Internet Of Things](https://fr.wi
 * Numerous connectors to [Messenger](https://www.messenger.com/), [WhatsApp](https://www.whatsapp.com/), 
 [Google Assistant / Home](https://assistant.google.com/), [Twitter](https://twitter.com/), [Alexa](https://alexa.amazon.com/), 
 [Business Chat / iMessage](https://www.apple.com/fr/ios/business-chat/), [Teams](https://products.office.com/fr-fr/microsoft-teams/), 
-[Slack](https://slack.com/)... (see [connectors](utilisateur/channels.md))
+[Slack](https://slack.com/)... (see [connectors](dev/connectors.md))
 * _Cloud_ or _on-premise_ setups, with or without [Docker](https://www.docker.com/), 
 _"embedded"_ bots without Internet 
 
@@ -48,8 +48,5 @@ Graphical interfaces _(Tock Studio)_ are made with [Angular](https://angular.io/
 
 ## Getting started...
 
-* [Table of contents](toc.md)
-* [Guides](guide/studio.md) and running [demo/sandbox platform](https://demo.tock.ai/)
-* [User](utilisateur/concepts.md), [developer](dev/modes.md) and [administrator/ops](admin/architecture.md) manuals
-* [Resources (slides, video)](about/resources.md) and [code samples](dev/exemples-code.md)
+* Read [Tutorial](guide/studio.md) and start using the [demo/sandbox platform](https://demo.tock.ai/)
 
