@@ -68,14 +68,17 @@ You can enter / paste this key into the Kotlin code (see below).
  
 ### Create Stories
  
-The following components are supported for the Bot answers:
+The following formats are supported:
+
+
+* Text with Buttons (Quick Replies)
+* "Card" format
+* "Carousel" format
+* Specific channel formats like Messenger format, Slack format, etc.
+
+
  
- * Text with Buttons (Quick Reply)
- * "Card" format
- * "Carousel" format
- * Specific formats of the used channels like Messenger, Slack, etc.
- 
-Here is an example of a simple bot with some declared Stories:
+Here is a simple bot with a few stories:
  
 ```kotlin
 fun main() {

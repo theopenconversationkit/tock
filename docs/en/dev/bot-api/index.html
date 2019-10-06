@@ -746,14 +746,14 @@ the API key of the bot to which you want to connect.
  
 You can enter / paste this key into the Kotlin code (see below).</p>
 <h3 id="create-stories">Create Stories<a class="headerlink" href="#create-stories" title="Permanent link">&para;</a></h3>
-<p>The following components are supported for the Bot answers:
- 
- * Text with Buttons (Quick Reply)
- * "Card" format
- * "Carousel" format
- * Specific formats of the used channels like Messenger, Slack, etc.
- 
-Here is an example of a simple bot with some declared Stories:</p>
+<p>The following formats are supported:</p>
+<ul>
+<li>Text with Buttons (Quick Replies)</li>
+<li>"Card" format</li>
+<li>"Carousel" format</li>
+<li>Specific channel formats like Messenger format, Slack format, etc.</li>
+</ul>
+<p>Here is a simple bot with a few stories:</p>
 <div class="codehilite"><pre><span></span><span class="k">fun</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="n">startWithDemo</span><span class="p">(</span>
         <span class="n">newBot</span><span class="p">(</span>
