@@ -16,6 +16,8 @@
 
 package ai.tock.bot.connector.rocketchat
 
+import ai.tock.shared.Dice
+import ai.tock.shared.error
 import chat.rocket.common.model.Token
 import chat.rocket.common.util.PlatformLogger
 import chat.rocket.core.RocketChatClient
@@ -27,12 +29,11 @@ import chat.rocket.core.internal.rest.joinChat
 import chat.rocket.core.internal.rest.login
 import chat.rocket.core.internal.rest.sendMessage
 import chat.rocket.core.model.Room
-import ai.tock.shared.Dice
-import ai.tock.shared.error
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.channels.Channel
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -100,7 +101,7 @@ internal class RocketChatClient(
 
     fun join(roomId: String?, listener: (Room) -> Unit) {
         disabled = false
-        val job = launch(CommonPool) {
+        val job = GlobalScope.launch(Dispatchers.IO) {
             try {
                 logger.debug { "Try to connect $login" }
                 val token = client.login(login, password)

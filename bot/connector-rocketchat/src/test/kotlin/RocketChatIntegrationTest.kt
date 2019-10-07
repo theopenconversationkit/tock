@@ -33,7 +33,7 @@ class RocketChatIntegrationTest {
         "appId",
         RocketChatClient(
             "http://localhost:3000",
-            "test",
+            "test2",
             "a",
             "https://avatars2.githubusercontent.com/u/224255?s=88&v=4"
         ),
@@ -44,7 +44,7 @@ class RocketChatIntegrationTest {
         "appId",
         RocketChatClient(
             "http://localhost:3000",
-            "test",
+            "test2",
             "a",
             "https://avatars2.githubusercontent.com/u/224255?s=88&v=4"
         )
