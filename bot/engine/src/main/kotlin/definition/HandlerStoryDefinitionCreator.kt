@@ -18,22 +18,36 @@ package ai.tock.bot.definition
 
 import ai.tock.bot.engine.BotBus
 import kotlin.reflect.full.primaryConstructor
+import kotlin.reflect.full.starProjectedType
 
 /**
  * Returns default [HandlerStoryDefinitionCreator].
  */
-inline fun <reified T : StoryHandlerDefinition> defaultHandlerStoryDefinitionCreator(): HandlerStoryDefinitionCreator<T> = T::class.let {
-    object : HandlerStoryDefinitionCreator<T> {
-        override fun create(bus: BotBus, data: Any?): T {
-            val pC = it.primaryConstructor ?: error("No primary constructor for $it")
-            return if (pC.parameters.size == 2) {
-                pC.call(bus, data)
-            } else {
-                pC.call(bus)
+inline fun <reified T : StoryHandlerDefinition> defaultHandlerStoryDefinitionCreator(): HandlerStoryDefinitionCreator<T> =
+    T::class.let {
+        object : HandlerStoryDefinitionCreator<T> {
+            override fun create(bus: BotBus, data: Any?): T {
+                val pC = it.primaryConstructor ?: error("No primary constructor for $it")
+
+                return pC.callBy(
+                    listOfNotNull(
+                        pC.parameters.first { parameter ->
+                            parameter.type == bus::class.starProjectedType
+                        } to bus,
+                        if (data != null) {
+                            pC.parameters.find { parameter ->
+                                parameter.type == data::class.starProjectedType
+                            }?.let { p ->
+                                p to data
+                            }
+                        } else {
+                            null
+                        }
+                    ).toMap()
+                )
             }
         }
     }
-}
 
 /**
  * In order to create [StoryHandlerDefinition].

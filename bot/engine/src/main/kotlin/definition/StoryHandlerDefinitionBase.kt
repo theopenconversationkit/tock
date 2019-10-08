@@ -24,14 +24,16 @@ import mu.KotlinLogging
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.primaryConstructor
+import kotlin.reflect.full.starProjectedType
 import kotlin.reflect.full.superclasses
 
 /**
  * Base implementation of [StoryHandlerDefinition].
  */
-abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(val bus: BotBus)
-    : BotBus by bus, StoryHandlerDefinition {
+abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(val bus: BotBus) : BotBus by bus,
+    StoryHandlerDefinition {
 
     companion object {
 
@@ -44,13 +46,18 @@ abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(val 
                 getAllAnnotations(kclass)
                     .filter { it.annotationClass.findAnnotation<ConnectorHandler>() != null }
                     .mapNotNullValues { a: Annotation ->
-                        a.annotationClass.findAnnotation<ConnectorHandler>()!!.connectorTypeId to (a.annotationClass.java.getDeclaredMethod("value").invoke(a) as? Class<*>?)?.kotlin
+                        a.annotationClass.findAnnotation<ConnectorHandler>()!!.connectorTypeId to (a.annotationClass.java.getDeclaredMethod(
+                            "value"
+                        ).invoke(a) as? Class<*>?)?.kotlin
                     }
                     .toMap()
             }
         }
 
-        private fun getAllAnnotations(kClass: KClass<*>, alreadyFound: MutableSet<KClass<*>> = mutableSetOf()): List<Annotation> {
+        private fun getAllAnnotations(
+            kClass: KClass<*>,
+            alreadyFound: MutableSet<KClass<*>> = mutableSetOf()
+        ): List<Annotation> {
             return if (!alreadyFound.contains(kClass)) {
                 val r = kClass.annotations.toMutableList()
                 alreadyFound.add(kClass)
@@ -87,7 +94,16 @@ abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(val 
      * Default implementation use annotations annotated with @[ConnectorHandler].
      */
     @Suppress("UNCHECKED_CAST")
-    open fun findConnector(connectorType: ConnectorType): T? = getHandlerMap(this::class)[connectorType.id]?.primaryConstructor?.call(this) as T?
+    open fun findConnector(connectorType: ConnectorType): T? {
+        val connectorDef = getHandlerMap(this::class)[connectorType.id]
+        return connectorDef?.primaryConstructor?.callBy(
+            mapOf(
+                connectorDef.primaryConstructor!!.parameters.first {
+                    it.type.isSubtypeOf(StoryHandlerDefinitionBase::class.starProjectedType)
+                } to this
+            )
+        ) as T?
+    }
 
     private val cachedConnector: T? by lazy {
         findConnector(connectorType)
