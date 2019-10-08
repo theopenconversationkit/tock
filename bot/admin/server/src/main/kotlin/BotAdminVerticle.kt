@@ -16,8 +16,6 @@
 
 package ai.tock.bot.admin
 
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.github.salomonbrys.kodein.instance
 import ai.tock.bot.admin.BotAdminService.createI18nRequest
 import ai.tock.bot.admin.BotAdminService.dialogReportDAO
 import ai.tock.bot.admin.BotAdminService.getBotConfigurationByApplicationIdAndBotId
@@ -25,7 +23,6 @@ import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.model.BotAdminConfiguration
 import ai.tock.bot.admin.model.BotConnectorConfiguration
-import ai.tock.bot.admin.model.BotDialogRequest
 import ai.tock.bot.admin.model.BotI18nLabel
 import ai.tock.bot.admin.model.BotI18nLabels
 import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
@@ -34,12 +31,9 @@ import ai.tock.bot.admin.model.CreateStoryRequest
 import ai.tock.bot.admin.model.DialogFlowRequest
 import ai.tock.bot.admin.model.DialogsSearchQuery
 import ai.tock.bot.admin.model.StorySearchRequest
-import ai.tock.bot.admin.model.TestPlanUpdate
 import ai.tock.bot.admin.model.UserSearchQuery
-import ai.tock.bot.admin.model.XRayPlanExecutionConfiguration
-import ai.tock.bot.admin.test.TestPlan
 import ai.tock.bot.admin.test.TestPlanService
-import ai.tock.bot.admin.test.xray.XrayService
+import ai.tock.bot.admin.test.findTestService
 import ai.tock.bot.connector.ConnectorType.Companion.rest
 import ai.tock.bot.connector.ConnectorTypeConfiguration
 import ai.tock.bot.connector.rest.addRestConnector
@@ -61,11 +55,11 @@ import ai.tock.translator.I18nLabel
 import ai.tock.translator.Translator
 import ai.tock.translator.Translator.initTranslator
 import ai.tock.translator.TranslatorEngine
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.github.salomonbrys.kodein.instance
 import io.vertx.core.http.HttpMethod.GET
-import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
-import org.litote.kmongo.newId
 
 /**
  *
@@ -218,112 +212,9 @@ open class BotAdminVerticle : AdminVerticle() {
                 } ?: unauthorized()
         }
 
-        blockingJsonPost("/test/talk", botUser) { context, query: BotDialogRequest ->
-            if (context.organization == query.namespace) {
-                BotAdminService.talk(query)
-            } else {
-                unauthorized()
-            }
-        }
-
         blockingJsonGet("/action/nlp-stats/:actionId", botUser) { context ->
             dialogReportDAO.getNlpCallStats(context.pathId("actionId"), context.organization)
         }
-
-
-        /**
-         * --------------------------------------------------------------------------------------
-         *                                       TEST PART
-         * --------------------------------------------------------------------------------------
-         */
-        blockingJsonGet("/test/plans", botUser) { context ->
-            TestPlanService.getTestPlansByNamespace(context.organization)
-        }
-
-        blockingJsonGet("/test/plan/:planId", botUser) { context ->
-            TestPlanService.getTestPlan(context.pathId("planId"))
-        }
-
-        blockingJsonGet("/test/plan/:planId/executions", botUser) { context ->
-            TestPlanService.getPlanExecutions(context.loadTestPlan())
-        }
-
-        blockingJsonGet("/test/plan/:planId/executions/:executionId", botUser) { context ->
-            TestPlanService.getTestPlanExecution(context.loadTestPlan(), context.pathId("executionId"))
-        }
-
-        blockingJsonPost(
-            "/test/plan",
-            botUser,
-            logger<TestPlanUpdate>("Update Test Plan") { _, p ->
-                p?.let { FrontClient.getApplicationByNamespaceAndName(it.namespace, it.nlpModel)?._id }
-            }
-        ) { context, plan: TestPlanUpdate ->
-            if (context.organization == plan.namespace) {
-                TestPlanService.saveTestPlan(plan.toTestPlan())
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingDelete(
-            "/test/plan/:planId",
-            botUser,
-            simpleLogger("Delete Test Plan", { it.path("planId") to true })
-        ) { context ->
-            TestPlanService.removeTestPlan(context.loadTestPlan())
-        }
-
-        blockingJsonPost(
-            "/test/plan/:planId/dialog/:dialogId",
-            botUser,
-            simpleLogger("Add Dialog to Test Plan", { it.path("planId") to it.path("dialogId") })
-        ) { context, _: ApplicationScopedQuery ->
-            TestPlanService.addDialogToTestPlan(context.loadTestPlan(), context.pathId("dialogId"))
-        }
-
-        blockingJsonPost(
-            "/test/plan/:planId/dialog/delete/:dialogId",
-            botUser,
-            simpleLogger("Remove Dialog from Test Plan", { it.path("planId") to it.path("dialogId") })
-        ) { context, _: ApplicationScopedQuery ->
-            TestPlanService.removeDialogFromTestPlan(
-                context.loadTestPlan(),
-                context.pathId("dialogId")
-            )
-        }
-
-        blockingJsonPost("/test/plan/execute", botUser) { context, testPlan: TestPlan ->
-            BotAdminService.saveAndExecuteTestPlan(context.organization, testPlan, newId())
-        }
-
-        /**
-         * Triggered on click on "Launch" button.
-         */
-        blockingJsonPost("/test/plan/:planId/run", botUser) { context, _: ApplicationScopedQuery ->
-            context.loadTestPlan().run {
-                BotAdminService.executeTestPlan(this)
-            }
-        }
-
-        /**
-         * Triggered on "Create" button, after providing connector and test plan key.
-         * Will reach Jira to gather all test steps and send them to the bot as a conversation
-         */
-        blockingJsonPost("/xray/execute", botUser) { context, configuration: XRayPlanExecutionConfiguration ->
-            XrayService(
-                listOfNotNull(configuration.configurationId),
-                listOfNotNull(configuration.testPlanKey),
-                listOfNotNull(configuration.testKey),
-                configuration.testedBotId
-            ).execute(context.organization)
-        }
-        /**
-         * --------------------------------------------------------------------------------------
-         *                                     END TEST PART
-         * --------------------------------------------------------------------------------------
-         */
-
 
         blockingJsonGet("/feature/:applicationId", botUser) { context ->
             val applicationId = context.path("applicationId")
@@ -548,6 +439,8 @@ open class BotAdminVerticle : AdminVerticle() {
             BotAdminConfiguration()
         }
 
+        findTestService().registerServices().invoke(this)
+
         configureStaticHandling()
     }
 
@@ -563,14 +456,5 @@ open class BotAdminVerticle : AdminVerticle() {
         return super.saveApplication(existingApp, app)
     }
 
-    fun RoutingContext.loadTestPlan(): TestPlan {
-        return TestPlanService.getTestPlan(pathId("planId"))?.run {
-            if (organization != namespace) {
-                unauthorized()
-            } else {
-                this
-            }
-        } ?: notFound()
-    }
 
 }

@@ -16,7 +16,6 @@
 
 package ai.tock.bot.admin
 
-import com.github.salomonbrys.kodein.instance
 import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
 import ai.tock.bot.admin.answer.AnswerConfigurationType.script
@@ -35,8 +34,6 @@ import ai.tock.bot.admin.kotlin.compiler.KotlinFile
 import ai.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
 import ai.tock.bot.admin.model.BotAnswerConfiguration
 import ai.tock.bot.admin.model.BotBuiltinAnswerConfiguration
-import ai.tock.bot.admin.model.BotDialogRequest
-import ai.tock.bot.admin.model.BotDialogResponse
 import ai.tock.bot.admin.model.BotScriptAnswerConfiguration
 import ai.tock.bot.admin.model.BotSimpleAnswerConfiguration
 import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
@@ -53,16 +50,7 @@ import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep
-import ai.tock.bot.admin.test.TestPlan
-import ai.tock.bot.admin.test.TestPlanExecution
-import ai.tock.bot.admin.test.TestPlanExecutionStatus
-import ai.tock.bot.admin.test.TestPlanService
-import ai.tock.bot.admin.test.toClientConnectorType
-import ai.tock.bot.admin.test.toClientMessage
 import ai.tock.bot.admin.user.UserReportDAO
-import ai.tock.bot.connector.rest.client.ConnectorRestClient
-import ai.tock.bot.connector.rest.client.model.ClientMessageRequest
-import ai.tock.bot.connector.rest.client.model.ClientSentence
 import ai.tock.bot.engine.dialog.DialogFlowDAO
 import ai.tock.bot.engine.feature.FeatureDAO
 import ai.tock.bot.engine.feature.FeatureState
@@ -79,23 +67,19 @@ import ai.tock.nlp.front.shared.config.EntityTypeDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.config.SentencesQuery
 import ai.tock.shared.Dice
-import ai.tock.shared.Executor
-import ai.tock.shared.error
 import ai.tock.shared.injector
-import ai.tock.shared.property
 import ai.tock.shared.provide
 import ai.tock.shared.vertx.UnauthorizedException
 import ai.tock.shared.vertx.WebVerticle.Companion.badRequest
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.Translator
+import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
-import java.time.Duration
 import java.time.Instant
 import java.util.Locale
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  *
@@ -104,24 +88,13 @@ object BotAdminService {
 
     private val logger = KotlinLogging.logger {}
 
-    private val defaultRestConnectorBaseUrl =
-        property("tock_bot_admin_rest_default_base_url", "please set base url of the bot")
     private val userReportDAO: UserReportDAO by injector.instance()
     internal val dialogReportDAO: DialogReportDAO by injector.instance()
     private val applicationConfigurationDAO: BotApplicationConfigurationDAO by injector.instance()
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO by injector.instance()
     private val featureDAO: FeatureDAO by injector.instance()
     private val dialogFlowDAO: DialogFlowDAO get() = injector.provide()
-    private val restConnectorClientCache: MutableMap<String, ConnectorRestClient> = ConcurrentHashMap()
-    private val testPlanExecutor: Executor get() = injector.provide()
     private val front = FrontClient
-
-    fun getRestClient(conf: BotApplicationConfiguration): ConnectorRestClient {
-        val baseUrl = conf.baseUrl?.let { if (it.isBlank()) null else it } ?: defaultRestConnectorBaseUrl
-        return restConnectorClientCache.getOrPut(baseUrl) {
-            ConnectorRestClient(baseUrl)
-        }
-    }
 
     fun getBots(namespace: String, botId: String): List<BotConfiguration> {
         return applicationConfigurationDAO.getBotConfigurationsByNamespaceAndBotId(namespace, botId)
@@ -554,36 +527,6 @@ object BotAdminService {
         return Translator.create(labelKey, request.locale)
     }
 
-    fun talk(request: BotDialogRequest): BotDialogResponse {
-        val conf = getBotConfiguration(request.botApplicationConfigurationId, request.namespace)
-        return try {
-            val restClient = getRestClient(conf)
-            val response = restClient.talk(
-                conf.path ?: conf.applicationId,
-                request.currentLanguage,
-                ClientMessageRequest(
-                    "test_${conf._id}_${request.currentLanguage}",
-                    "test_bot_${conf._id}_${request.currentLanguage}",
-                    request.message.toClientMessage(),
-                    conf.targetConnectorType.toClientConnectorType()
-                )
-            )
-
-            if (response.isSuccessful) {
-                response.body()?.run {
-                    BotDialogResponse(messages, userLocale, userActionId, hasNlpStats)
-                } ?: BotDialogResponse(emptyList())
-
-            } else {
-                logger.error { "error with $conf : ${response.errorBody()?.string()}" }
-                BotDialogResponse(listOf(ClientSentence("technical error :( ${response.errorBody()?.string()}]")))
-            }
-        } catch (throwable: Throwable) {
-            logger.error(throwable)
-            BotDialogResponse(listOf(ClientSentence("technical error :( ${throwable.message}")))
-        }
-    }
-
     fun getFeatures(botId: String, namespace: String): List<FeatureState> {
         return featureDAO.getFeatures(botId, namespace)
     }
@@ -617,20 +560,6 @@ object BotAdminService {
         return dialogFlowDAO.loadApplicationData(namespace, request.botId, applicationIds)
     }
 
-    /**
-     * This function saves the current test plan in the mongo database and
-     * executes all test contained in the common test plan.
-     *
-     */
-    fun saveAndExecuteTestPlan(namespace: String, testPlan: TestPlan, executionId: Id<TestPlanExecution>): TestPlanExecution =
-        getBotConfiguration(testPlan.botApplicationConfigurationId, namespace)
-            .let {
-                TestPlanService.saveAndRunTestPlan(
-                    getRestClient(it),
-                    testPlan,
-                    executionId
-                )
-            }
 
     fun deleteApplication(app: ApplicationDefinition) {
         applicationConfigurationDAO.getConfigurationsByNamespaceAndNlpModel(
@@ -671,31 +600,4 @@ object BotAdminService {
         }
     }
 
-    fun executeTestPlan(testPlan: TestPlan): Id<TestPlanExecution> {
-        val executionId = Dice.newId()
-        val exec = TestPlanExecution(
-            testPlanId =  testPlan._id,
-            dialogs = mutableListOf(),
-            nbErrors = 0,
-            duration = Duration.between(Instant.now(), Instant.now()),
-            _id = executionId.toId(),
-            status = TestPlanExecutionStatus.PENDING
-        )
-        // save the test plan execution into the database
-        TestPlanService.saveTestPlanExecution(exec)
-
-        testPlanExecutor.executeBlocking {
-            TestPlanService.runTestPlan(
-                getRestClient(
-                    getBotConfiguration(
-                        testPlan.botApplicationConfigurationId,
-                        testPlan.namespace
-                    )
-                ),
-                testPlan,
-                executionId.toId()
-            )
-        }
-        return executionId.toId()
-    }
 }
