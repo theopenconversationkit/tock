@@ -48,6 +48,29 @@ class TeamsHeroCard(
     val tap: CardAction?
 ) : TeamsBotMessage(null) {
 
+    override fun equals(other: Any?): Boolean {
+        if (null == other) return false
+        if (other !is TeamsHeroCard) return false
+        if (title != other.title ||
+                subtitle != other.subtitle ||
+                attachmentContent != other.attachmentContent) return false
+        if ((images?.size ?: -1) != (other.images?.size ?: -1)) return false
+        images?.forEach {self ->
+            if (other.images == null) return false
+            if (!other.images.any { it.tap()?.equalsTo(self.tap()) == true
+                            && it.alt() == self.alt()
+                            && it.url() == self.url()}) return false
+        }
+        if ((buttons?.size ?: -1) != (other.buttons?.size ?: -1)) return false
+        buttons?.forEach {self ->
+            if (other.buttons == null) return false
+            if (!other.buttons.any{ it.equalsTo(self)}) return false
+        }
+        if (tap?.equalsTo(other.tap) != true) return false
+        return true
+    }
+
+
     override fun toString(): String {
         val images = images?.map { it.url() } ?: ""
         val buttons = buttons?.map { it.value() } ?: ""
@@ -134,4 +157,14 @@ class TeamsCardAction(
         val allValues = buttons.groupBy { it.title() }.mapValues { it.value[0].value() }
         return "TeamsCardAction(actionTitle='$actionTitle', buttons=$allValues)"
     }
+}
+
+
+fun CardAction.equalsTo(other: CardAction?): Boolean {
+    return image() == other?.image()
+            && text() == other?.text()
+            && title() == other?.title()
+            && displayText() == other?.displayText()
+            && type()?.name == other?.type()?.name
+            && value() == other?.value()
 }
