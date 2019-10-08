@@ -318,7 +318,7 @@ abstract class WebVerticle : AbstractVerticle() {
         }
     }
 
-    protected fun <O> blockingJsonGet(
+    fun <O> blockingJsonGet(
         path: String,
         role: TockUserRole? = defaultRole(),
         handler: (RoutingContext) -> O
@@ -416,7 +416,7 @@ abstract class WebVerticle : AbstractVerticle() {
         }
     }
 
-    protected inline fun <reified I : Any, O> blockingJsonPost(
+     inline fun <reified I : Any, O> blockingJsonPost(
         path: String,
         role: TockUserRole? = defaultRole(),
         logger: RequestLogger = defaultRequestLogger,
@@ -434,7 +434,7 @@ abstract class WebVerticle : AbstractVerticle() {
         blockingWithBodyJson(PUT, path, role, logger, handler)
     }
 
-    protected fun blockingDelete(
+    fun blockingDelete(
         path: String,
         role: TockUserRole? = defaultRole(),
         logger: RequestLogger = defaultRequestLogger,

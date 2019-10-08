@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
+package ai.tock.bot.admin.test.model
 
-import ai.tock.bot.connector.rest.client.model.ClientMessage
-import java.util.Locale
+import ai.tock.bot.admin.bot.BotApplicationConfiguration
+import ai.tock.bot.engine.message.Message
+import ai.tock.nlp.admin.model.ApplicationScopedQuery
+import org.litote.kmongo.Id
 
 /**
  *
  */
-data class BotDialogResponse(
-    val messages: List<ClientMessage>,
-    val userLocale: Locale? = null,
-    val userActionId:String? = null,
-    val hasNlpStats:Boolean = false
-)
+data class BotDialogRequest(
+        val botApplicationConfigurationId: Id<BotApplicationConfiguration>,
+        val message: Message) : ApplicationScopedQuery() {
+}

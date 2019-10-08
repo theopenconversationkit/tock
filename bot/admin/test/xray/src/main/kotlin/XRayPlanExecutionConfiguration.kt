@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
-
-import ai.tock.bot.admin.bot.BotApplicationConfiguration
-import ai.tock.bot.engine.message.Message
-import ai.tock.nlp.admin.model.ApplicationScopedQuery
-import org.litote.kmongo.Id
+package ai.tock.bot.admin.test.xray
 
 /**
  *
  */
-data class BotDialogRequest(
-        val botApplicationConfigurationId: Id<BotApplicationConfiguration>,
-        val message: Message) : ApplicationScopedQuery() {
-}
+data class XRayPlanExecutionConfiguration(
+    val configurationId: String?,
+    val testKey: String?,
+    val testPlanKey: String?,
+    val testedBotId: String
+)

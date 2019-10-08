@@ -98,14 +98,14 @@ open class AdminVerticle : WebVerticle() {
 
     override fun authProvider(): TockAuthProvider = defaultAuthProvider()
 
-    protected fun simpleLogger(
+    fun simpleLogger(
         actionType: String,
         dataProvider: (RoutingContext) -> Any? = { null },
         applicationIdProvider: (RoutingContext, Any?) -> Id<ApplicationDefinition>? = { context, _ -> context.pathParam("applicationId")?.toId() }
 
     ): RequestLogger = logger<Any>(actionType, dataProvider, applicationIdProvider)
 
-    protected inline fun <T> logger(
+    inline fun <T> logger(
         actionType: String,
         noinline dataProvider: (RoutingContext) -> Any? = { null },
         crossinline applicationIdProvider: (RoutingContext, T?) -> Id<ApplicationDefinition>? = { context, _ -> context.pathParam("applicationId")?.toId() }
