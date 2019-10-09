@@ -16,10 +16,6 @@
 
 package ai.tock.bot.connector.messenger
 
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.github.salomonbrys.kodein.instance
-import com.google.common.cache.Cache
-import com.google.common.cache.CacheBuilder
 import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
@@ -73,6 +69,10 @@ import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.property
 import ai.tock.shared.vertx.vertx
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.github.salomonbrys.kodein.instance
+import com.google.common.cache.Cache
+import com.google.common.cache.CacheBuilder
 import mu.KotlinLogging
 import org.apache.commons.codec.binary.Hex
 import org.apache.commons.lang3.LocaleUtils
@@ -119,6 +119,10 @@ class MessengerConnector internal constructor(
             return connectors.find { it.pageId == pageId }
             //TODO remove this when backward compatibility is no more assured
                 ?: (connectors.find { it.applicationId == pageId }?.also { logger.warn { "use appId as pageId $pageId not found" } })
+        }
+
+        fun getConnectorById(connectorId: String): MessengerConnector? {
+            return connectors.firstOrNull { it.applicationId == connectorIdApplicationIdMap[connectorId] }
         }
 
         fun healthcheck(): Boolean {
@@ -689,7 +693,10 @@ class MessengerConnector internal constructor(
         text(text, suggestions.map { nlpQuickReply(it) })
     }
 
-    override fun addSuggestions(message: ConnectorMessage, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
+    override fun addSuggestions(
+        message: ConnectorMessage,
+        suggestions: List<CharSequence>
+    ): BotBus.() -> ConnectorMessage? = {
         if (message is Message && message.quickReplies.isNullOrEmpty()) {
             message.copy(suggestions.map { nlpQuickReply(it) })
         } else {
