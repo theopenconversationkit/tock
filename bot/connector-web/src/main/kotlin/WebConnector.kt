@@ -16,7 +16,6 @@
 
 package ai.tock.bot.connector.web
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
@@ -36,7 +35,10 @@ import ai.tock.shared.Executor
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.provide
+import com.fasterxml.jackson.module.kotlin.readValue
+import io.vertx.core.http.HttpMethod
 import io.vertx.ext.web.RoutingContext
+import io.vertx.ext.web.handler.CorsHandler
 import mu.KotlinLogging
 
 internal const val WEB_CONNECTOR_ID = "web"
@@ -60,15 +62,24 @@ class WebConnector internal constructor(
         controller.registerServices(path) { router ->
             logger.debug("deploy web connector services for root path $path ")
 
-            router.post(path).handler { context ->
-                try {
-                    executor.executeBlocking {
-                        handleRequest(controller, context, context.bodyAsString)
+            router.route(path)
+                .handler(
+                    CorsHandler.create("*")
+                        .allowedMethod(HttpMethod.POST)
+                        .allowedHeader("Access-Control-Allow-Origin")
+                        .allowedHeader("Content-Type")
+                        .allowedHeader("X-Requested-With")
+                )
+            router.post(path)
+                .handler { context ->
+                    try {
+                        executor.executeBlocking {
+                            handleRequest(controller, context, context.bodyAsString)
+                        }
+                    } catch (e: Throwable) {
+                        context.fail(e)
                     }
-                } catch (e: Throwable) {
-                    context.fail(e)
                 }
-            }
         }
     }
 
