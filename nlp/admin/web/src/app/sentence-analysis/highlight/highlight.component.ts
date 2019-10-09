@@ -165,8 +165,8 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
-  remove(token: Token) {
-    if (token.entity) {
+  remove(event: MouseEvent, token: Token) {
+    if (token && token.entity && event.altKey) {
       this.currentDblClick = true;
       this.sentence.removeEntity(token.entity);
       setTimeout(_ => {
@@ -174,6 +174,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
         this.rebuild();
         this.currentDblClick = false;
       });
+      event.stopPropagation();
     }
   }
 

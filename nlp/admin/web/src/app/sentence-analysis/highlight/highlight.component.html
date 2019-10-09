@@ -18,15 +18,16 @@
   <div class="highlight-text">
     <nb-actions size="small" style="cursor: pointer;float: right">
       <nb-action class="control-item" nbTooltip="Display conversations using this sentence"
-         *ngIf="displayActions && appConfig.displayDialogUrl && isRootSentence()">
+                 *ngIf="displayActions && appConfig.displayDialogUrl && isRootSentence()">
         <a class="control-item" [routerLink]="[appConfig.displayDialogUrl]"
-            [queryParams]="{ text: this.sentence.text}"><i class="material-icons">format_quote</i></a>
+           [queryParams]="{ text: this.sentence.text}"><i class="material-icons">format_quote</i></a>
       </nb-action>
       <nb-action class="control-item" (click)="answerToSentence()" nbTooltip="Set a custom answer"
                  *ngIf="displayActions && appConfig.answerToSentenceUrl && isRootSentence()">
         <i class="material-icons">question_answers</i>
       </nb-action>
-      <nb-action class="control-item" (click)="$event.stopPropagation();copyToClipboard();" nbTooltip="Copy sentence to clipboard"
+      <nb-action class="control-item" (click)="$event.stopPropagation();copyToClipboard();"
+                 nbTooltip="Copy sentence to clipboard"
                  *ngIf="displayActions && isRootSentence()">
         <i class="material-icons">content_copy</i>
       </nb-action>
@@ -36,8 +37,8 @@
          #tokensContainer
          class="tokens"
          (mouseup)="select()" (touchend)="select()"><span *ngFor="let t of tokens"
-                                                          (dblclick)="remove(t);$event.stopPropagation();"
-                                                          [title]="t.entity ? 'Double Click to remove' : ''"
+                                                          (dblclick)="remove($event, t)"
+                                                          [title]="t.entity ? t.entity.role+' - Alt + Double Click to remove' : ''"
                                                           [style.font-size]="fontSize"
                                                           [style.background]="t.color()"
                                                           [id]="prefix + t.index">{{t.text}}</span>
