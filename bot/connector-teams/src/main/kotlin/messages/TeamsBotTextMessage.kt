@@ -57,7 +57,7 @@ class TeamsHeroCard(
         if ((images?.size ?: -1) != (other.images?.size ?: -1)) return false
         images?.forEach {self ->
             if (other.images == null) return false
-            if (!other.images.any { it.tap()?.equalsTo(self.tap()) == true
+            if (!other.images.any { ((it.tap() != null && self.tap() != null && it.tap()?.equalsTo(self.tap()) == true) || (it.tap() == null && self.tap() == null))
                             && it.alt() == self.alt()
                             && it.url() == self.url()}) return false
         }
@@ -66,7 +66,7 @@ class TeamsHeroCard(
             if (other.buttons == null) return false
             if (!other.buttons.any{ it.equalsTo(self)}) return false
         }
-        if (tap?.equalsTo(other.tap) != true) return false
+        if ((tap != null && other.tap != null) && !tap.equalsTo(other.tap)) return false
         return true
     }
 
@@ -141,7 +141,9 @@ class TeamsCardAction(
         if (!super.equals(other)) return false
 
         if (actionTitle != other.actionTitle) return false
-        if (buttons != other.buttons) return false
+        buttons.forEach {self ->
+            if (!other.buttons.any{ it.equalsTo(self)}) return false
+        }
 
         return true
     }

@@ -12,14 +12,21 @@ class TeamsBotTextMessageTest {
     private val cardAction = CardAction().withDisplayText("displayText").withImage("image").withText("text").withTitle("title").withType(ActionTypes.OPEN_URL).withValue("value")
     private val differentCardAction = CardAction().withDisplayText("displayText").withText("texte").withTitle("title").withType(ActionTypes.MESSAGE_BACK).withValue("value")
     private val cardImage = CardImage().withUrl("http://image.jpeg").withAlt("Image").withTap(cardAction)
+    private val cardImageWithJustUrl = CardImage().withUrl("http://image.jpeg")
     private val differentCardImage = CardImage().withUrl("http://image.jpeg").withAlt("Image").withTap(differentCardAction)
 
     @Test
     fun `assert HeroCardActions are equals`() {
         val heroCard1 = TeamsHeroCard(title = "title", subtitle = "sub", attachmentContent = "attachement", images = listOf(cardImage), buttons = listOf(cardAction), tap = cardAction)
         val heroCard2 = TeamsHeroCard(title = "title", subtitle = "sub", attachmentContent = "attachement", images = listOf(cardImage), buttons = listOf(cardAction), tap = cardAction)
+        val heroCard3 = TeamsHeroCard(title = "title", subtitle = "sub", attachmentContent = "attachement", images = listOf(cardImageWithJustUrl), buttons = listOf(cardAction), tap = cardAction)
+        val heroCard4 = TeamsHeroCard(title = "title", subtitle = "sub", attachmentContent = "attachement", images = listOf(cardImageWithJustUrl), buttons = listOf(cardAction), tap = cardAction)
+        val heroCard5 = TeamsHeroCard(title = "title", subtitle = "sub", attachmentContent = "attachement", images = listOf(cardImageWithJustUrl), buttons = listOf(cardAction), tap = null)
+        val heroCard6 = TeamsHeroCard(title = "title", subtitle = "sub", attachmentContent = "attachement", images = listOf(cardImageWithJustUrl), buttons = listOf(cardAction), tap = null)
 
         assert(heroCard1 == heroCard2)
+        assert(heroCard3 == heroCard4)
+        assert(heroCard5 == heroCard6)
     }
 
     @Test
