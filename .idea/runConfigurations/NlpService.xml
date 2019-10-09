@@ -6,7 +6,7 @@
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <option name="PASS_PARENT_ENVS" value="true" />
-    <option name="MAIN_CLASS_NAME" value="fr.vsct.tock.nlp.api.StartNlpServiceKt" />
+    <option name="MAIN_CLASS_NAME" value="ai.tock.nlp.api.StartNlpServiceKt" />
     <option name="WORKING_DIRECTORY" value="" />
     <envs>
       <env name="nlpverticle_port" value="8888" />
