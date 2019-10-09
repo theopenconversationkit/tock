@@ -23,10 +23,11 @@ import kotlin.test.assertEquals
 
 class HandlerStoryDefinitionCreatorTest {
 
+    private val bus = mockk<BotBus>(relaxed = true)
+    private val data = StoryData("a", null)
+
     @Test
-    fun `story definition creator works with StoryData argument`() {
-        val bus = mockk<BotBus>(relaxed = true)
-        val data = StoryData("a", null)
+    fun `GIVEN handlerDef with data WHEN creation with bus and data THEN definition is created with bus and data`() {
         val def: Def = defaultHandlerStoryDefinitionCreator<Def>().create(bus, data)
 
         assertEquals(bus, def.bus)
@@ -34,11 +35,50 @@ class HandlerStoryDefinitionCreatorTest {
     }
 
     @Test
-    fun `story definition creator works without StoryData argument`() {
-        val bus = mockk<BotBus>(relaxed = true)
-        val data = StoryData("a", null)
+    fun `GIVEN handlerDef with data and default parameter WHEN creation with bus and data THEN definition is created with bus, data and parameter`() {
+        val def: DefWithDefaultParameter =
+            defaultHandlerStoryDefinitionCreator<DefWithDefaultParameter>().create(bus, data)
+
+        assertEquals(bus, def.bus)
+        assertEquals(data, def.data)
+        assertEquals("parameter", def.parameter)
+    }
+
+    @Test
+    fun `GIVEN handlerDef without data WHEN creation with bus and data THEN definition is created with bus`() {
         val def: SimpleDef = defaultHandlerStoryDefinitionCreator<SimpleDef>().create(bus, data)
 
         assertEquals(bus, def.bus)
     }
+
+    @Test
+    fun `GIVEN handlerDef with default parameter WHEN creation with bus and data THEN definition is created with bus and parameter`() {
+        val def: SimpleDefWithDefaultParameter =
+            defaultHandlerStoryDefinitionCreator<SimpleDefWithDefaultParameter>().create(bus, data)
+
+        assertEquals(bus, def.bus)
+        assertEquals("parameter", def.parameter)
+    }
+
+    @Test
+    fun `GIVEN handlerDef WHEN creation with bus THEN definition is created with bus`() {
+        val def: SimpleDef = defaultHandlerStoryDefinitionCreator<SimpleDef>().create(bus)
+
+        assertEquals(bus, def.bus)
+    }
+
+    @Test
+    fun `GIVEN handlerDef with default parameter WHEN creation with bus THEN definition is created with bus and parameter`() {
+        val def: SimpleDefWithDefaultParameter =
+            defaultHandlerStoryDefinitionCreator<SimpleDefWithDefaultParameter>().create(bus)
+
+        assertEquals(bus, def.bus)
+        assertEquals("parameter", def.parameter)
+    }
+
+    internal class DefWithDefaultParameter(bus: BotBus, val data: StoryData, val parameter: String = "parameter") :
+        HandlerDef<Connector>(bus)
+
+    internal class SimpleDefWithDefaultParameter(bus: BotBus, val parameter: String = "parameter") :
+        HandlerDef<Connector>(bus)
 }
