@@ -7,7 +7,11 @@ if [ "$TRAVIS_BRANCH" = 'master' ] && [ "$TRAVIS_PULL_REQUEST" = 'false' ]; then
   gpg --fast-import etc/codesigning.asc
   if [ "$TRAVIS_TAG" = '' ];
   then
-    mvn deploy -DskipTests=true -Dtravis --settings etc/deploy-settings.xml -U
+    if [ "$SKIP_DEPLOY" = 'true' ]; then
+      mvn test -B -Dskip.npm -Dassembly.skipAssembly=true -U -q
+    else
+      mvn deploy -DskipTests=true -Dtravis --settings etc/deploy-settings.xml -U
+    fi
   else
     if [[ $TRAVIS_TAG == *"build"* ]];
     then
