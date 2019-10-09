@@ -16,6 +16,7 @@
 
 package ai.tock.shared.jackson
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Assertions
@@ -29,6 +30,14 @@ import kotlin.test.assertNull
 class AnyValueWrapperTest {
 
     data class Custom(val name: String)
+
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME)
+    sealed class Either {
+        data class ThisOne(val anyProperty: String) : Either()
+        data class AnotherOne(val anyProperty: String, val otherProperty: Int) : Either()
+    }
+
+    data class Somes(val somes: List<Either>)
 
     @Test
     fun serializeAndDeserializeAnyValueWrapper_shouldLeftDataInchanged() {
@@ -60,5 +69,28 @@ class AnyValueWrapperTest {
         val s = mapper.writeValueAsString(value)
         val newValue = mapper.readValue<AnyValueWrapper?>(s, object : TypeReference<AnyValueWrapper?>() {})
         assertNull(newValue)
+    }
+
+    @Test
+    fun serializeAndDeserializeSealedClass_shouldLeftDataUnchanged() {
+        val value = Either.ThisOne("toto")
+        val s = mapper.writeValueAsString(value)
+        val newValue = mapper.readValue<Either.ThisOne>(s)
+        assertEquals(value, newValue)
+    }
+
+    /**
+     * Be careful : doesn't work if you directly writeValueAsString on a list object because of generic collection type erasure.
+     *
+     * So you will have to use a first class collection like Somes
+     */
+    @Test
+    fun serializeAndDeserializeSealedClassInCollection_shouldCreateCorrectSubtype() {
+        val thisOne = Either.ThisOne("toto")
+        val anotherOne = Either.AnotherOne("titi", 42)
+        val s = mapper.writeValueAsString(Somes(listOf(thisOne, anotherOne)))
+        val newValue = mapper.readValue<Somes>(s)
+        assertEquals(thisOne, newValue.somes[0])
+        assertEquals(anotherOne, newValue.somes[1])
     }
 }
