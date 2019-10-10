@@ -16,7 +16,7 @@ import kotlin.test.assertEquals
 
 internal class StoryHandlerDefinitionBaseTest {
 
-    private val bus = mockk<BotBus>(relaxed = true)
+    private val bus = mockk<SubBotBus>(relaxed = true)
 
     @Test
     fun `GIVEN simple connector WHEN creation THEN connector is set`() {
@@ -47,6 +47,7 @@ internal class StoryHandlerDefinitionBaseTest {
         assertEquals("parameter", (def.connector as SecondConnectorWithParameterDef).parameter)
     }
 
+    abstract class SubBotBus : BotBus
 
     @FirstConnectorHandler(FirstConnectorDef::class)
     @SecondConnectorHandler(SecondConnectorWithParameterDef::class)

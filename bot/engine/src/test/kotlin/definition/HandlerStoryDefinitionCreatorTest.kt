@@ -23,7 +23,7 @@ import kotlin.test.assertEquals
 
 class HandlerStoryDefinitionCreatorTest {
 
-    private val bus = mockk<BotBus>(relaxed = true)
+    private val bus = mockk<SubBotBus>(relaxed = true)
     private val data = StoryData("a", null)
 
     @Test
@@ -76,9 +76,12 @@ class HandlerStoryDefinitionCreatorTest {
         assertEquals("parameter", def.parameter)
     }
 
+    abstract class SubBotBus : BotBus
+
     internal class DefWithDefaultParameter(bus: BotBus, val data: StoryData, val parameter: String = "parameter") :
         HandlerDef<Connector>(bus)
 
     internal class SimpleDefWithDefaultParameter(bus: BotBus, val parameter: String = "parameter") :
         HandlerDef<Connector>(bus)
+
 }

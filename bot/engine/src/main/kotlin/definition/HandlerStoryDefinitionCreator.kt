@@ -17,6 +17,7 @@
 package ai.tock.bot.definition
 
 import ai.tock.bot.engine.BotBus
+import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.starProjectedType
 
@@ -32,11 +33,11 @@ inline fun <reified T : StoryHandlerDefinition> defaultHandlerStoryDefinitionCre
                 return pC.callBy(
                     listOfNotNull(
                         pC.parameters.first { parameter ->
-                            parameter.type == bus::class.starProjectedType
+                            bus::class.starProjectedType.isSubtypeOf(parameter.type)
                         } to bus,
                         if (data != null) {
                             pC.parameters.find { parameter ->
-                                parameter.type == data::class.starProjectedType
+                                data::class.starProjectedType.isSubtypeOf(parameter.type)
                             }?.let { p ->
                                 p to data
                             }

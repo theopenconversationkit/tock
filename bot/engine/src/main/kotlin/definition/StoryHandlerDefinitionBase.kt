@@ -99,7 +99,7 @@ abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(val 
         return connectorDef?.primaryConstructor?.callBy(
             mapOf(
                 connectorDef.primaryConstructor!!.parameters.first {
-                    it.type.isSubtypeOf(StoryHandlerDefinitionBase::class.starProjectedType)
+                    it.type.isSubtypeOf(BotBus::class.starProjectedType)
                 } to this
             )
         ) as T?
