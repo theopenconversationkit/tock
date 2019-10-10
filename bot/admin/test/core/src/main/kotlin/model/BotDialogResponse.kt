@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
+package ai.tock.bot.admin.test.model
+
+import ai.tock.bot.connector.rest.client.model.ClientMessage
+import java.util.Locale
 
 /**
  *
  */
-data class XRayPlanExecutionConfiguration(
-    val configurationId: String?,
-    val testKey: String = "",
-    val testPlanKey: String = "",
-    val testedBotId: String
+data class BotDialogResponse(
+    val messages: List<ClientMessage>,
+    val userLocale: Locale? = null,
+    val userActionId:String? = null,
+    val hasNlpStats:Boolean = false
 )

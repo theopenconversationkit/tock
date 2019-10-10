@@ -1,6 +1,6 @@
-In order to install in dev mode, add these symbolic links (linux) :
+In order to install in dev mode, add these symbolic links :
 
-In the current directory (bot/admin/web):
+> For unix users, in the current directory (bot/admin/web):
 
 ```
 ln -s ../../../../nlp/admin/web/src/app/applications src/app/applications
@@ -26,7 +26,7 @@ ln -s ../../../../nlp/admin/web/src/app/try src/app/try
 Alternatively, you can run ```mvn validate``` to create these symbolic links.
  
 
-Then run these npm commands in order to setup and launch [Angular CLI](https://cli.angular.io/) :
+Then run these npm commands in order to setup and launch [Angular CLI](https://cli.angular.io/).
 
 ```
 npm install
@@ -34,4 +34,13 @@ npm install -g @angular/cli
 ng serve
 ```
 
-Of course you need also to start the [Bot Admin server](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/BotAdmin.xml).
+WARNING : Those commands require [Python 2.7](https://www.python.org/downloads/release/python-272/). So, if you have different Python versions, specify it to the npm command like this :
+```
+//python.exe for windows users
+npm install --python=D:/devhome/opt/Python27/python.exe
+npm install --python=D:/devhome/opt/Python27/python.exe -g @angular/cli
+ng serve
+```
+
+
+Of course in the end you need also to start the [Bot Admin server](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/BotAdmin.xml).
