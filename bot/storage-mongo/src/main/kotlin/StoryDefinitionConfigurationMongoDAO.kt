@@ -35,6 +35,7 @@ import mu.KotlinLogging
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
+import org.litote.kmongo.and
 import org.litote.kmongo.ascending
 import org.litote.kmongo.deleteMany
 import org.litote.kmongo.deleteOneById
@@ -120,15 +121,15 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
     }
 
     override fun getStoryDefinitionByNamespaceAndBotIdAndIntent(namespace: String, botId: String, intent: String): StoryDefinitionConfiguration? {
-        return col.findOne(BotId eq botId, Intent.name_ eq intent)
+        return col.findOne(Namespace eq namespace, BotId eq botId, Intent.name_ eq intent)
     }
 
     override fun getStoryDefinitionByNamespaceAndBotIdAndStoryId(namespace: String, botId: String, storyId: String): StoryDefinitionConfiguration? {
-        return col.findOne(BotId eq botId, StoryId eq storyId)
+        return col.findOne(Namespace eq namespace, BotId eq botId, StoryId eq storyId)
     }
 
     override fun getStoryDefinitionsByNamespaceAndBotId(namespace: String, botId: String): List<StoryDefinitionConfiguration> {
-        return col.find(BotId eq botId).toList()
+        return col.find(and(Namespace eq namespace, BotId eq botId)).toList()
     }
 
     override fun save(story: StoryDefinitionConfiguration) {
