@@ -125,8 +125,9 @@ class KotlinCompilerTest {
             "ClassToBeCompiled.kt"
                 to
                 """
+                import ai.tock.bot.admin.kotlin.compiler.KotlinCompilerTest  
                 fun main(args: Array<String>) {
-                    ai.tock.bot.admin.kotlin.compiler.KotlinCompilerTest.mark = true
+                    KotlinCompilerTest.mark = true
                 }"""
         )
         assertFalse(mark)

@@ -16,6 +16,9 @@
 
 package ai.tock.bot.admin.kotlin.compiler
 
+import ai.tock.bot.admin.kotlin.compiler.EnvironmentManager.environment
+import ai.tock.shared.error
+import ai.tock.shared.listProperty
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Pair
@@ -27,9 +30,6 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.impl.PsiFileFactoryImpl
 import com.intellij.testFramework.LightVirtualFile
-import ai.tock.bot.admin.kotlin.compiler.EnvironmentManager.environment
-import ai.tock.shared.error
-import ai.tock.shared.listProperty
 import mu.KotlinLogging
 import org.jetbrains.kotlin.analyzer.AnalysisResult
 import org.jetbrains.kotlin.cli.jvm.compiler.CliBindingTrace
@@ -47,6 +47,7 @@ import org.jetbrains.kotlin.diagnostics.Errors
 import org.jetbrains.kotlin.diagnostics.rendering.DefaultErrorMessages
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import org.jetbrains.kotlin.idea.MainFunctionDetector
+import org.jetbrains.kotlin.konan.file.File
 import org.jetbrains.kotlin.load.kotlin.PackagePartClassUtils
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingContext
@@ -86,6 +87,8 @@ internal object KotlinCompiler {
 
     private fun loadPathFromClassLoader(classLoader: ClassLoader, paths: MutableList<Path>, classPath: List<String>) {
         logger.debug { "load paths from $classLoader" }
+        val cp = System.getProperty("java.class.path")
+        logger.debug { "classpath: $cp" }
         //java 8
         paths.addAll(
             (classLoader as? URLClassLoader)
@@ -96,7 +99,7 @@ internal object KotlinCompiler {
                 }
                 ?:
                 //java 9
-                classPath
+                (classPath + cp.split(File.pathSeparator))
                     .flatMap {
                         Paths.get(it).let {
                             if (Files.isDirectory(it)) {
@@ -108,6 +111,7 @@ internal object KotlinCompiler {
                             }
                         }
                     }
+                    .distinct()
                     .apply { logger.info { "class path used : $this" } }
         )
     }

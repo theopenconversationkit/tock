@@ -34,6 +34,10 @@
             <artifactId>tock-bot-admin-kotlin-compiler-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>bot-toolkit</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-web</artifactId>
         </dependency>
