@@ -7,10 +7,9 @@ if [ "$TRAVIS_BRANCH" = 'master' ] && [ "$TRAVIS_PULL_REQUEST" = 'false' ]; then
   gpg --fast-import etc/codesigning.asc
   if [ "$TRAVIS_TAG" = '' ];
   then
-    if [ "$SKIP_DEPLOY" = 'true' ]; then
-      mvn test -B -Dskip.npm -Dassembly.skipAssembly=true -U -q
-    else
-      mvn deploy -DskipTests=true -Dtravis --settings etc/deploy-settings.xml -U
+    mvn test -B -Dskip.npm -Dassembly.skipAssembly=true -U -q
+    if [ "$SKIP_DEPLOY" != 'true' ]; then
+      mvn deploy -T 4 -DskipTests=true -Dtravis --settings etc/deploy-settings.xml -U
     fi
   else
     if [[ $TRAVIS_TAG == *"build"* ]];
@@ -19,7 +18,8 @@ if [ "$TRAVIS_BRANCH" = 'master' ] && [ "$TRAVIS_PULL_REQUEST" = 'false' ]; then
       echo "tock version : $TOCK_VERSION"
       echo "tock tag : $TRAVIS_TAG"
       mvn versions:set -DnewVersion="$TRAVIS_TAG"
-      mvn deploy -Dmilestone --settings etc/deploy-settings.xml
+      mvn install -B -Dskip.npm -Dassembly.skipAssembly=true -U -q
+      mvn deploy -T 4 -DskipTests=true -Dmilestone --settings etc/deploy-settings.xml
     fi
   fi
   else
