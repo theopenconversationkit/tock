@@ -23,6 +23,7 @@ import {BotMessage, Sentence} from "../../shared/model/dialog-data";
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef, MatSnackBar} from "@angular/material";
 import {BotSharedService} from "../../shared/bot-shared.service";
 import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
+import {randomString} from "../../model/commons";
 
 @Component({
   selector: 'tock-bot-dialog',
@@ -37,6 +38,7 @@ export class BotDialogComponent implements OnInit, OnDestroy {
   messages: TestMessage[] = [];
 
   loading: boolean;
+  private userModifierId:string = randomString();
 
   private errorUnsuscriber: any;
 
@@ -90,7 +92,8 @@ export class BotDialogComponent implements OnInit, OnDestroy {
           message,
           this.state.currentApplication.namespace,
           this.state.currentApplication.name,
-          this.state.currentLocale))
+          this.state.currentLocale,
+          this.userModifierId))
       .subscribe(r => {
         this.loading = false;
         userAction.locale = r.userLocale;
@@ -116,6 +119,7 @@ export class BotDialogComponent implements OnInit, OnDestroy {
 
   clear() {
     this.messages = [];
+    this.userModifierId = randomString();
   }
 
   ngOnDestroy() {

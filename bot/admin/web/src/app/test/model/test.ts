@@ -24,7 +24,8 @@ export class BotDialogRequest extends ApplicationScopedQuery {
               public message: BotMessage,
               public namespace: string,
               public applicationName: string,
-              public language: string) {
+              public language: string,
+              public userIdModifier:string) {
     super(namespace, applicationName, language)
   }
 

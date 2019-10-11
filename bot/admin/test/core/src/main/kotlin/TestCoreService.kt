@@ -155,7 +155,7 @@ class TestCoreService : TestService {
                 conf.path ?: conf.applicationId,
                 request.currentLanguage,
                 ClientMessageRequest(
-                    "test_${conf._id}_${request.currentLanguage}",
+                    "test_${conf._id}_${request.currentLanguage}_${request.userIdModifier}",
                     "test_bot_${conf._id}_${request.currentLanguage}",
                     request.message.toClientMessage(),
                     conf.targetConnectorType.toClientConnectorType()

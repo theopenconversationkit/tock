@@ -70,6 +70,8 @@ export class JsonUtils {
   }
 }
 
+
+
 export class ApplicationScopedQuery {
   constructor(public namespace: string,
               public applicationName: string,
@@ -106,6 +108,10 @@ export function escapeRegex(s: string) {
 
 export function isNullOrUndefined<T>(obj: T | null | undefined): obj is null | undefined {
   return typeof obj === "undefined" || obj === null;
+}
+
+export function randomString() : string {
+  return '_' + Math.random().toString(36).substr(2, 9);
 }
 
 export function groupBy(list, keyGetter) {
