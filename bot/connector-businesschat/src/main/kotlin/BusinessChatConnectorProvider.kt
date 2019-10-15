@@ -18,12 +18,18 @@ package ai.tock.bot.connector.businesschat
 
 import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorConfiguration
+import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorProvider
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.ConnectorTypeConfiguration
 import ai.tock.bot.connector.ConnectorTypeConfigurationField
+import ai.tock.bot.connector.businesschat.model.input.BusinessChatConnectorImageMessage
+import ai.tock.bot.connector.businesschat.model.input.BusinessChatConnectorListPickerMessage
+import ai.tock.bot.connector.businesschat.model.input.BusinessChatConnectorRichLinkMessage
+import ai.tock.bot.connector.businesschat.model.input.BusinessChatConnectorTextMessage
 import ai.tock.shared.resourceAsString
 import ai.tock.translator.UserInterfaceType.textAndVoiceAssistant
+import kotlin.reflect.KClass
 
 internal const val BUSINESS_CHAT_CONNECTOR_TYPE_ID = "businesschat"
 /**
@@ -53,17 +59,24 @@ internal object BusinessChatConnectorProvider : ConnectorProvider {
      */
     override fun configuration(): ConnectorTypeConfiguration {
         return ConnectorTypeConfiguration(
-                businessChatConnectorType,
-                listOf(
-                        ConnectorTypeConfigurationField(
-                                "Business Id",
-                                BUSINESS_ID,
-                                true
-                        )
-                ),
-                resourceAsString("/businesschat.svg")
+            businessChatConnectorType,
+            listOf(
+                ConnectorTypeConfigurationField(
+                    "Business Id",
+                    BUSINESS_ID,
+                    true
+                )
+            ),
+            resourceAsString("/businesschat.svg")
         )
     }
+
+    override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(
+        BusinessChatConnectorImageMessage::class,
+        BusinessChatConnectorListPickerMessage::class,
+        BusinessChatConnectorRichLinkMessage::class,
+        BusinessChatConnectorTextMessage::class
+    )
 }
 
 internal class BusinessChatConnectorProviderService : ConnectorProvider by BusinessChatConnectorProvider

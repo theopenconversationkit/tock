@@ -16,8 +16,6 @@
 
 package ai.tock.bot.connector.slack
 
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.github.salomonbrys.kodein.instance
 import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorMessage
@@ -40,6 +38,8 @@ import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.vertx.vertx
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import java.net.URLDecoder
 import java.time.Duration

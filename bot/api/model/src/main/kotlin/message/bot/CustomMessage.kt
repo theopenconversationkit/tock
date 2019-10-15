@@ -16,8 +16,9 @@
 
 package ai.tock.bot.api.model.message.bot
 
-import ai.tock.shared.jackson.AnyValueWrapper
+import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.shared.jackson.ConstrainedValueWrapper
 
-class CustomMessage(
-    val message: AnyValueWrapper,
+data class CustomMessage(
+    val message: ConstrainedValueWrapper<out ConnectorMessage>,
     override val delay: Long = 0) : BotMessage

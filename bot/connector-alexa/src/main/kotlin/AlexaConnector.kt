@@ -16,14 +16,6 @@
 
 package ai.tock.bot.connector.alexa
 
-import com.amazon.speech.Sdk
-import com.amazon.speech.speechlet.IntentRequest
-import com.amazon.speech.speechlet.SpeechletRequestHandler
-import com.amazon.speech.speechlet.SpeechletRequestHandlerException
-import com.amazon.speech.speechlet.authentication.SpeechletRequestSignatureVerifier
-import com.amazon.speech.speechlet.verifier.ApplicationIdSpeechletRequestEnvelopeVerifier
-import com.amazon.speech.speechlet.verifier.SpeechletRequestVerifierWrapper
-import com.amazon.speech.speechlet.verifier.TimestampSpeechletRequestVerifier
 import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorMessage
@@ -37,6 +29,14 @@ import ai.tock.bot.engine.action.SendAttachment.AttachmentType.image
 import ai.tock.bot.engine.event.Event
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.error
+import com.amazon.speech.Sdk
+import com.amazon.speech.speechlet.IntentRequest
+import com.amazon.speech.speechlet.SpeechletRequestHandler
+import com.amazon.speech.speechlet.SpeechletRequestHandlerException
+import com.amazon.speech.speechlet.authentication.SpeechletRequestSignatureVerifier
+import com.amazon.speech.speechlet.verifier.ApplicationIdSpeechletRequestEnvelopeVerifier
+import com.amazon.speech.speechlet.verifier.SpeechletRequestVerifierWrapper
+import com.amazon.speech.speechlet.verifier.TimestampSpeechletRequestVerifier
 import io.vertx.core.buffer.Buffer
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
@@ -159,5 +159,4 @@ class AlexaConnector internal constructor(
             emptyList()
         }
     }
-
 }

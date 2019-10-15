@@ -16,10 +16,6 @@
 
 package ai.tock.bot.connector.teams
 
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.github.salomonbrys.kodein.instance
-import com.microsoft.bot.schema.models.Activity
-import com.microsoft.bot.schema.models.ActivityTypes
 import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
@@ -49,6 +45,10 @@ import ai.tock.shared.Executor
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.github.salomonbrys.kodein.instance
+import com.microsoft.bot.schema.models.Activity
+import com.microsoft.bot.schema.models.ActivityTypes
 import mu.KotlinLogging
 import java.time.Duration
 import kotlin.system.measureTimeMillis

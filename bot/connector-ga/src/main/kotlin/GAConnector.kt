@@ -16,10 +16,6 @@
 
 package ai.tock.bot.connector.ga
 
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.google.api.client.auth.openidconnect.IdToken
-import com.google.api.client.auth.openidconnect.IdTokenVerifier
-import com.google.api.client.json.jackson2.JacksonFactory
 import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorCallbackBase
@@ -45,6 +41,10 @@ import ai.tock.shared.Executor
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.provide
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.google.api.client.auth.openidconnect.IdToken
+import com.google.api.client.auth.openidconnect.IdTokenVerifier
+import com.google.api.client.json.jackson2.JacksonFactory
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import kotlin.LazyThreadSafetyMode.PUBLICATION
@@ -203,11 +203,11 @@ class GAConnector internal constructor(
             if (m != null && m.suggestions.isEmpty()) {
                 message.copy(
                     expectedInputs = message.expectedInputs.take(message.expectedInputs.size - 1) +
-                            message.expectedInputs.last().copy(
-                                inputPrompt = message.expectedInputs.last().inputPrompt.copy(
-                                    richInitialPrompt = m.copy(suggestions = suggestions.map { suggestion(it) })
-                                )
+                        message.expectedInputs.last().copy(
+                            inputPrompt = message.expectedInputs.last().inputPrompt.copy(
+                                richInitialPrompt = m.copy(suggestions = suggestions.map { suggestion(it) })
                             )
+                        )
                 )
             } else {
                 null

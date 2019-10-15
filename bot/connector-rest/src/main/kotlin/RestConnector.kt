@@ -16,7 +16,6 @@
 
 package ai.tock.bot.connector.rest
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
@@ -44,6 +43,7 @@ import ai.tock.shared.booleanProperty
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.security.RequestFilter
 import ai.tock.shared.vertx.blocking
+import com.fasterxml.jackson.module.kotlin.readValue
 import mu.KotlinLogging
 import java.util.Locale
 
@@ -181,5 +181,4 @@ class RestConnector(
             else -> getTargetConnector(targetConnectorType)?.toConnectorMessage(message)?.invoke(this) ?: emptyList()
         }
     }
-
 }

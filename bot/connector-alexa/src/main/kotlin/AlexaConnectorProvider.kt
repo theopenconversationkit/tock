@@ -18,12 +18,14 @@ package ai.tock.bot.connector.alexa
 
 import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorConfiguration
+import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorProvider
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.ConnectorTypeConfiguration
 import ai.tock.bot.connector.ConnectorTypeConfigurationField
 import ai.tock.shared.resourceAsString
 import mu.KotlinLogging
+import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 
 /**
@@ -62,7 +64,7 @@ internal object AlexaConnectorProvider : ConnectorProvider {
                     ?.split(PROJECT_ID_SEPARATOR)
                     ?.filter { it.isNotBlank() }
                     ?.toSet()
-                        ?: emptySet(),
+                    ?: emptySet(),
                 parameters[PROJECT_TIMESTAMP]?.toLong() ?: DEFAULT_TIMESTAMP
             )
         }
@@ -81,13 +83,16 @@ internal object AlexaConnectorProvider : ConnectorProvider {
                     "_project_timestamp",
                     false
                 ), ConnectorTypeConfigurationField(
-                    "Alexa mapper class",
-                    "_mapper",
-                    false
-                )
+                "Alexa mapper class",
+                "_mapper",
+                false
+            )
             ),
             resourceAsString("/alexa.svg")
         )
+
+
+    override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(AlexaMessage::class)
 
 }
 

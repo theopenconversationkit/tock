@@ -18,11 +18,14 @@ package ai.tock.bot.connector.slack
 
 import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorConfiguration
+import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorProvider
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.ConnectorTypeConfiguration
 import ai.tock.bot.connector.ConnectorTypeConfigurationField
+import ai.tock.bot.connector.slack.model.SlackMessageOut
 import ai.tock.shared.resourceAsString
+import kotlin.reflect.KClass
 
 internal object SlackConnectorProvider : ConnectorProvider {
 
@@ -67,6 +70,8 @@ internal object SlackConnectorProvider : ConnectorProvider {
             ),
             resourceAsString("/slack.svg")
         )
+
+    override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(SlackMessageOut::class)
 
 }
 

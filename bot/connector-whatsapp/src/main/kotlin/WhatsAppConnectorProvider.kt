@@ -17,11 +17,15 @@ package ai.tock.bot.connector.whatsapp
 
 import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorConfiguration
+import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorProvider
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.ConnectorTypeConfiguration
 import ai.tock.bot.connector.ConnectorTypeConfigurationField
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotImageMessage
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotTextMessage
 import ai.tock.shared.resourceAsString
+import kotlin.reflect.KClass
 
 internal object WhatsAppConnectorProvider : ConnectorProvider {
 
@@ -66,6 +70,8 @@ internal object WhatsAppConnectorProvider : ConnectorProvider {
             ) + ConnectorTypeConfiguration.commonSecurityFields(),
             resourceAsString("/whatsapp.svg")
         )
+
+    override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(WhatsAppBotImageMessage::class, WhatsAppBotTextMessage::class)
 
 }
 

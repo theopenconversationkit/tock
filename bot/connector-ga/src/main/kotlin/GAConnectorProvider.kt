@@ -18,11 +18,13 @@ package ai.tock.bot.connector.ga
 
 import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorConfiguration
+import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorProvider
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.ConnectorTypeConfiguration
 import ai.tock.bot.connector.ConnectorTypeConfigurationField
 import ai.tock.shared.resourceAsString
+import kotlin.reflect.KClass
 
 /**
  *
@@ -43,7 +45,7 @@ internal object GAConnectorProvider : ConnectorProvider {
                     ?.split(PROJECT_ID_SEPARATOR)
                     ?.filter { it.isNotBlank() }
                     ?.toSet()
-                        ?: emptySet())
+                    ?: emptySet())
         }
     }
 
@@ -59,6 +61,8 @@ internal object GAConnectorProvider : ConnectorProvider {
             ),
             resourceAsString("/ga.svg")
         )
+
+    override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(GAResponseConnectorMessage::class)
 }
 
 internal class GAConnectorProviderService : ConnectorProvider by GAConnectorProvider

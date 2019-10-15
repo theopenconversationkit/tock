@@ -18,11 +18,14 @@ package ai.tock.bot.connector.twitter
 
 import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorConfiguration
+import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorProvider
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.ConnectorTypeConfiguration
 import ai.tock.bot.connector.ConnectorTypeConfigurationField
+import ai.tock.bot.connector.twitter.model.outcoming.OutcomingEvent
 import ai.tock.shared.resourceAsString
+import kotlin.reflect.KClass
 
 internal object TwitterConnectorProvider : ConnectorProvider {
 
@@ -104,6 +107,8 @@ internal object TwitterConnectorProvider : ConnectorProvider {
             ),
             resourceAsString("/twitter.svg")
         )
+
+    override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(OutcomingEvent::class)
 }
 
 internal class TwitterConnectorProviderService : ConnectorProvider by TwitterConnectorProvider

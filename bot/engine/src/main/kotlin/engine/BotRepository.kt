@@ -49,6 +49,7 @@ import ai.tock.shared.Executor
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.error
 import ai.tock.shared.injector
+import ai.tock.shared.jackson.addConstrainedTypes
 import ai.tock.shared.provide
 import ai.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
@@ -82,6 +83,7 @@ object BotRepository {
         ServiceLoader.load(ConnectorProvider::class.java).map { it }.apply {
             forEach {
                 logger.info { "Connector ${it.connectorType} loaded" }
+                addConstrainedTypes(it.supportedResponseConnectorMessageTypes)
             }
         }
     )

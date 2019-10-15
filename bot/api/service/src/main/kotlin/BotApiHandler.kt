@@ -16,9 +16,6 @@
 
 package ai.tock.bot.api.service
 
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.google.common.cache.Cache
-import com.google.common.cache.CacheBuilder
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.api.model.BotResponse
 import ai.tock.bot.api.model.UserRequest
@@ -31,7 +28,6 @@ import ai.tock.bot.api.model.message.bot.I18nText
 import ai.tock.bot.api.model.message.bot.Sentence
 import ai.tock.bot.api.model.websocket.RequestData
 import ai.tock.bot.api.model.websocket.ResponseData
-import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.media.MediaAction
 import ai.tock.bot.connector.media.MediaCard
 import ai.tock.bot.connector.media.MediaCarousel
@@ -53,6 +49,9 @@ import ai.tock.translator.I18nContext
 import ai.tock.translator.TranslatedSequence
 import ai.tock.translator.Translator
 import ai.tock.translator.raw
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.google.common.cache.Cache
+import com.google.common.cache.CacheBuilder
 import mu.KotlinLogging
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit.SECONDS
@@ -237,7 +236,7 @@ internal class BotApiHandler(
             applicationId,
             userId,
             null,
-            mutableListOf(message.message.value as ConnectorMessage)
+            listOfNotNull(message.message.value).toMutableList()
         )
     }
 

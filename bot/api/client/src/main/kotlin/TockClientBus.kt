@@ -33,7 +33,7 @@ import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.engine.user.PlayerId
-import ai.tock.shared.jackson.AnyValueWrapper
+import ai.tock.shared.jackson.ConstrainedValueWrapper
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.RawString
@@ -87,7 +87,7 @@ class TockClientBus(
 
     private fun addMessage(plainText: CharSequence?, delay: Long) {
         context.connectorMessages.remove(targetConnectorType)?.also {
-            messages.add(CustomMessage(AnyValueWrapper(it), delay))
+            messages.add(CustomMessage(ConstrainedValueWrapper(it), delay))
         }
         if (plainText != null) {
             messages.add(

@@ -18,11 +18,17 @@ package ai.tock.bot.connector.teams
 
 import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorConfiguration
+import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorProvider
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.ConnectorTypeConfiguration
 import ai.tock.bot.connector.ConnectorTypeConfigurationField
+import ai.tock.bot.connector.teams.messages.TeamsBotTextMessage
+import ai.tock.bot.connector.teams.messages.TeamsCardAction
+import ai.tock.bot.connector.teams.messages.TeamsCarousel
+import ai.tock.bot.connector.teams.messages.TeamsHeroCard
 import ai.tock.shared.resourceAsString
+import kotlin.reflect.KClass
 
 /**
  *
@@ -37,10 +43,10 @@ internal object TeamsConnectorProvider : ConnectorProvider {
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration) {
             return TeamsConnector(
-                    connectorId = connectorId,
-                    path = path,
-                    appId = parameters.getValue(APP_ID),
-                    appPassword = parameters.getValue(PASSWORD)
+                connectorId = connectorId,
+                path = path,
+                appId = parameters.getValue(APP_ID),
+                appPassword = parameters.getValue(PASSWORD)
             )
         }
     }
@@ -62,6 +68,13 @@ internal object TeamsConnectorProvider : ConnectorProvider {
             ),
             resourceAsString("/teams.svg")
         )
+
+    override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(
+        TeamsBotTextMessage::class,
+        TeamsCardAction::class,
+        TeamsCarousel::class,
+        TeamsHeroCard::class
+    )
 
 }
 

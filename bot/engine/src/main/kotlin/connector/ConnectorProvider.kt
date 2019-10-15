@@ -19,6 +19,7 @@ package ai.tock.bot.connector
 import ai.tock.bot.connector.ConnectorTypeConfiguration.Companion.ALLOWED_IPS_FIELD
 import ai.tock.bot.connector.ConnectorTypeConfiguration.Companion.X_AUTH_TOKEN_FIELD
 import ai.tock.shared.security.RequestFilter
+import kotlin.reflect.KClass
 
 /**
  * To provide a new [Connector] from a [ConnectorConfiguration].
@@ -31,6 +32,11 @@ interface ConnectorProvider {
      * The connector type provided
      */
     val connectorType: ConnectorType
+
+    /**
+     * The supported connector messages - used to check the authorized messages.
+     */
+    val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> get() = emptySet()
 
     /**
      * Provides a new [Connector] instance from the specified [ConnectorConfiguration].

@@ -31,8 +31,6 @@
  */
 package ai.tock.bot.connector.whatsapp
 
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.github.salomonbrys.kodein.instance
 import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
@@ -49,6 +47,8 @@ import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.security.RequestFilter
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import java.time.Duration
 
@@ -123,5 +123,4 @@ class WhatsAppConnector(
                 }
         }
     }
-
 }

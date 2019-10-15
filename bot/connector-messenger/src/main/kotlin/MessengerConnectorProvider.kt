@@ -18,11 +18,15 @@ package ai.tock.bot.connector.messenger
 
 import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorConfiguration
+import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorProvider
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.ConnectorTypeConfiguration
 import ai.tock.bot.connector.ConnectorTypeConfigurationField
+import ai.tock.bot.connector.messenger.model.send.AttachmentMessage
+import ai.tock.bot.connector.messenger.model.send.TextMessage
 import ai.tock.shared.resourceAsString
+import kotlin.reflect.KClass
 
 /**
  *
@@ -85,6 +89,11 @@ internal object MessengerConnectorProvider : ConnectorProvider {
             ),
             resourceAsString("/messenger.svg")
         )
+
+    override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(
+        AttachmentMessage::class,
+        TextMessage::class
+    )
 }
 
 internal class MessengerConnectorProviderService : ConnectorProvider by MessengerConnectorProvider

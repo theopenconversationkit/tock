@@ -18,10 +18,13 @@ package ai.tock.bot.connector.rest
 
 import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorConfiguration
+import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorProvider
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.ConnectorTypeConfiguration
+import ai.tock.bot.connector.rest.model.MessageRequest
 import ai.tock.shared.resourceAsString
+import kotlin.reflect.KClass
 
 
 /**
@@ -53,6 +56,10 @@ internal object RestConnectorProvider : ConnectorProvider {
             ConnectorTypeConfiguration.commonSecurityFields(),
             resourceAsString("/test.svg")
         )
+
+    override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(
+        MessageRequest::class
+    )
 
 }
 

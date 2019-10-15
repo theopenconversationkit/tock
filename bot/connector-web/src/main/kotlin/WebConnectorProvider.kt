@@ -18,10 +18,12 @@ package ai.tock.bot.connector.web
 
 import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorConfiguration
+import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorProvider
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.ConnectorTypeConfiguration
 import ai.tock.shared.resourceAsString
+import kotlin.reflect.KClass
 
 internal object WebConnectorProvider : ConnectorProvider {
 
@@ -41,6 +43,9 @@ internal object WebConnectorProvider : ConnectorProvider {
             webConnectorType,
             svgIcon = resourceAsString("/web.svg")
         )
+
+    override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(WebMessage::class)
+
 }
 
 //used in file META-INF/services/ai.tock.bot.connector.ConnectorProvider
