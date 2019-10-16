@@ -3,7 +3,8 @@ jdk:
 - openjdk8
 branches:
   only:
-  - master
+    - master
+    - /^build-.*$/
 script: ./etc/deploy.sh
 cache:
   directories:
