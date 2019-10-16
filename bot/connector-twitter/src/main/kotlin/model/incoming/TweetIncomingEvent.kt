@@ -21,6 +21,8 @@ import ai.tock.bot.connector.twitter.model.Tweet
 import ai.tock.bot.connector.twitter.model.User
 import ai.tock.bot.engine.action.ActionMetadata
 import ai.tock.bot.engine.action.ActionVisibility
+import ai.tock.bot.engine.action.Metadata.VISIBILITY
+import ai.tock.bot.engine.action.Metadata.REPLY
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.user.PlayerId
@@ -49,17 +51,23 @@ data class TweetIncomingEvent(
 
     override fun toEvent(applicationId: String): Event? {
         val tweet = tweets.first()
-        // Ignore all replies and quoted tweets && message from account listened
-        val isReplyMessage = tweet.isQuote && tweet.inReplyToStatusId == null
-        val isFromAccountListened = forUserId.equals(tweet.user.id)
-        return if (!isReplyMessage && !isFromAccountListened) {
+
+        val isReplyMessage = tweet.inReplyToStatusId != null
+        val isFromAccountListened = forUserId == tweet.user.id
+        // Ignore all replies from account listened
+        return if (!isFromAccountListened) {
             SendSentence(
                 playerId(PlayerType.user),
                 applicationId,
                 PlayerId(forUserId, PlayerType.bot),
                 //extended entities and full_text
                 tweet.extendedTweet?.text ?: tweet.text,
-                metadata = ActionMetadata(visibility = ActionVisibility.public)
+                metadata =  ActionMetadata(
+                    connectorMetadata = mutableMapOf(
+                        VISIBILITY to ActionVisibility.public,
+                        REPLY to isReplyMessage
+                    )
+                )
             )
         } else {
             logger.debug { "ignore event $this with tweet text = [${tweet.text}] from [${tweet.user.id}][${tweet.user.name}]" }

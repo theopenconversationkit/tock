@@ -16,9 +16,6 @@
 
 package ai.tock.bot.engine.action
 
-/**
- *
- */
 data class ActionMetadata(
         /** Is it the last answer of the bot. */
         var lastAnswer: Boolean = false,
@@ -26,6 +23,6 @@ data class ActionMetadata(
         var priority: ActionPriority = ActionPriority.normal,
         /** tag deals with type of message notification. */
         var notificationType: ActionNotificationType? = null,
-        /** visibility of the message */
-        var visibility: ActionVisibility = ActionVisibility.unknown) {
-}
+        /** metadata dependant from some connectors */
+        var connectorMetadata: MutableMap<Metadata, Any> = mutableMapOf()
+)

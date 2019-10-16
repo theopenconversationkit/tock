@@ -22,5 +22,6 @@ import ai.tock.bot.engine.action.ActionVisibility
 class TwitterConnectorCallback(
     override val applicationId: String,
     val visibility: ActionVisibility,
-    val threadId: Long?
+    val threadId: Long?,
+    val reply: Boolean
 ): ConnectorCallbackBase(applicationId, twitterConnectorType)

@@ -21,6 +21,7 @@ import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.action.ActionNotificationType
 import ai.tock.bot.engine.action.ActionPriority
 import ai.tock.bot.engine.action.ActionVisibility
+import ai.tock.bot.engine.action.Metadata
 
 /**
  *
@@ -31,7 +32,7 @@ internal data class BusMockData(
     val contextMap: MutableMap<String, Any> = mutableMapOf(),
     var priority: ActionPriority = ActionPriority.normal,
     var notificationType: ActionNotificationType? = null,
-    var visibility: ActionVisibility = ActionVisibility.unknown
+    var connectorMetadata: MutableMap<Metadata, Any> = mutableMapOf(Metadata.VISIBILITY to ActionVisibility.unknown)
 ) {
 
     fun clear() {

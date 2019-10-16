@@ -16,7 +16,6 @@
 
 package ai.tock.bot.connector.messenger.json.webhook
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import ai.tock.bot.connector.messenger.WebhookActionConverter
 import ai.tock.bot.connector.messenger.model.Recipient
 import ai.tock.bot.connector.messenger.model.Sender
@@ -38,10 +37,12 @@ import ai.tock.bot.connector.messenger.model.webhook.UserActionPayload
 import ai.tock.bot.connector.messenger.model.webhook.Webhook
 import ai.tock.bot.engine.action.ActionMetadata
 import ai.tock.bot.engine.action.ActionVisibility
+import ai.tock.bot.engine.action.Metadata.VISIBILITY
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.shared.jackson.mapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
@@ -86,22 +87,22 @@ class WebhookDeserializationTest {
     @Test
     fun testQuickReplayWebhookDeserialization() {
         val input = "{\n" +
-            "  \"sender\": {\n" +
-            "    \"id\": \"USER_ID\"\n" +
-            "  },\n" +
-            "  \"recipient\": {\n" +
-            "    \"id\": \"PAGE_ID\"\n" +
-            "  },\n" +
-            "  \"timestamp\": 1464990849275,\n" +
-            "  \"message\": {\n" +
-            "    \"mid\": \"mid.1464990849238:b9a22a2bcb1de31773\",\n" +
-            "    \"seq\": 69,\n" +
-            "    \"text\": \"Red\",\n" +
-            "    \"quick_reply\": {\n" +
-            "      \"payload\": \"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED\"\n" +
-            "    }\n" +
-            "  }\n" +
-            "} "
+                "  \"sender\": {\n" +
+                "    \"id\": \"USER_ID\"\n" +
+                "  },\n" +
+                "  \"recipient\": {\n" +
+                "    \"id\": \"PAGE_ID\"\n" +
+                "  },\n" +
+                "  \"timestamp\": 1464990849275,\n" +
+                "  \"message\": {\n" +
+                "    \"mid\": \"mid.1464990849238:b9a22a2bcb1de31773\",\n" +
+                "    \"seq\": 69,\n" +
+                "    \"text\": \"Red\",\n" +
+                "    \"quick_reply\": {\n" +
+                "      \"payload\": \"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED\"\n" +
+                "    }\n" +
+                "  }\n" +
+                "} "
         val output = mapper.readValue<Webhook>(input)
         assertEquals(
             MessageWebhook(
@@ -292,15 +293,15 @@ class WebhookDeserializationTest {
             "appId",
             PlayerId("PAGE_ID", PlayerType.user),
             "test@test.com",
-            metadata = ActionMetadata(visibility = ActionVisibility.public)
+            metadata = ActionMetadata(connectorMetadata = mutableMapOf(VISIBILITY to ActionVisibility.public))
         )
         val eventMessage = event.messages[0]
         assert(eventMessage is MessageWebhook)
         assert((eventMessage as MessageWebhook).message.quickReply is UserActionPayload)
-        assertEquals((eventMessage.message.quickReply as UserActionPayload).payload,"test@test.com")
-        assertEquals(event.text,expectedEvent.text)
-        assertEquals(event.playerId.type,PlayerType.user)
-        assertEquals(event.recipientId.type,PlayerType.bot)
+        assertEquals((eventMessage.message.quickReply as UserActionPayload).payload, "test@test.com")
+        assertEquals(event.text, expectedEvent.text)
+        assertEquals(event.playerId.type, PlayerType.user)
+        assertEquals(event.recipientId.type, PlayerType.bot)
     }
 
     @Test

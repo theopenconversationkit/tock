@@ -26,6 +26,7 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionNotificationType
 import ai.tock.bot.engine.action.ActionPriority
 import ai.tock.bot.engine.action.ActionVisibility
+import ai.tock.bot.engine.action.Metadata.VISIBILITY
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.EntityStateValue
@@ -118,7 +119,7 @@ internal class TockBotBus(
     private fun answer(a: Action, delay: Long = 0): BotBus {
         context.currentDelay += delay
         a.metadata.priority = context.priority
-        a.metadata.visibility = context.visibility
+        a.metadata.connectorMetadata[VISIBILITY] = context.visibility
 
         if (a is SendSentence) {
             a.messages.addAll(context.connectorMessages.values)
