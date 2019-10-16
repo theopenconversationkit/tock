@@ -35,23 +35,23 @@
         <kotlin>1.3.50</kotlin>
         <couroutine>1.3.2</couroutine>
 
-        <slf4j>1.7.25</slf4j>
-        <logback>1.2.3</logback>
+        <slf4j>2.0.0-alpha1</slf4j>
+        <logback>1.3.0-alpha4</logback>
 
         <kotlin-logging>1.7.6</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>3.11.0</kmongo>
+        <kmongo>3.11.1</kmongo>
         <jackson>2.10.0</jackson>
         <jackson-databind>2.10.0</jackson-databind>
         <jackson-module>2.10.0</jackson-module>
         <jackson-module-loader>0.1.0</jackson-module-loader>
         <jackson-data>0.1.0</jackson-data>
         <jackson-generator>0.3.1</jackson-generator>
-        <klaxon>5.0.13</klaxon>
-        <vertx>3.8.1</vertx>
+        <klaxon>5.1</klaxon>
+        <vertx>3.8.2</vertx>
         <retrofit>2.6.2</retrofit>
-        <okhttp>4.2.0</okhttp>
+        <okhttp>4.2.2</okhttp>
         <okhttp-signpost>1.1.0</okhttp-signpost>
         <signpost-core>1.2.1.2</signpost-core>
         <circuitbreaker>1.1.0</circuitbreaker>
@@ -64,7 +64,7 @@
         <commons-lang>3.9</commons-lang>
         <json>20190722</json>
         <httpclient>4.5.10</httpclient>
-        <google-auth2>0.17.2</google-auth2>
+        <google-auth2>0.18.0</google-auth2>
         <simmetrics>4.1.1</simmetrics>
 
         <junit-jupiter>5.5.2</junit-jupiter>
@@ -79,7 +79,7 @@
         <plugin.release>2.5.3</plugin.release>
         <plugin.gpg>1.6</plugin.gpg>
         <plugin.nexus-staging>1.6.8</plugin.nexus-staging>
-        <plugin.dokka>0.9.18</plugin.dokka>
+        <plugin.dokka>0.10.0</plugin.dokka>
         <plugin.assembly>3.1.1</plugin.assembly>
         <plugin.frontend>1.8.0</plugin.frontend>
         <plugin.clean>3.1.0</plugin.clean>
