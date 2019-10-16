@@ -42,6 +42,7 @@ import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionNotificationType
 import ai.tock.bot.engine.action.ActionVisibility
+import ai.tock.bot.engine.action.Metadata.VISIBILITY
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.config.UploadedFilesService
 import ai.tock.bot.engine.config.UploadedFilesService.getFileContentFromUrl
@@ -154,15 +155,20 @@ internal class TwitterConnector internal constructor(
                                 logger.info { incomingEvent }
                                 executor.executeBlocking {
                                     val event = incomingEvent.toEvent(applicationId)
-                                    val (threadId, visibility) = if (incomingEvent is TweetIncomingEvent) {
-                                        incomingEvent.tweets.first().id to ActionVisibility.public
+                                    val (threadId, visibility, reply) = if (incomingEvent is TweetIncomingEvent) {
+                                        Triple(
+                                            incomingEvent.tweets.first().id,
+                                            ActionVisibility.public,
+                                            incomingEvent.tweets.first().inReplyToStatusId != null
+                                        )
                                     } else {
-                                        null to ActionVisibility.private
+                                        Triple(null, ActionVisibility.private, false)
                                     }
                                     val callback = TwitterConnectorCallback(
                                         applicationId,
                                         visibility,
-                                        threadId
+                                        threadId,
+                                        reply
                                     )
                                     if (event != null) {
                                         controller.handle(event, ConnectorData(callback))
@@ -217,8 +223,8 @@ internal class TwitterConnector internal constructor(
         callback as TwitterConnectorCallback
         logger.debug { "event: $event" }
         if (event is Action) {
-            if (event.metadata.visibility == ActionVisibility.unknown) {
-                event.metadata.visibility = callback.visibility
+            if (event.metadata.connectorMetadata[VISIBILITY] == ActionVisibility.unknown) {
+                event.metadata.connectorMetadata[VISIBILITY] = callback.visibility
             }
             val outcomingEvent = TwitterMessageConverter.toEvent(event)
             if (outcomingEvent != null) {
@@ -245,7 +251,7 @@ internal class TwitterConnector internal constructor(
                 parameters
             ),
             ConnectorData(
-                TwitterConnectorCallback(applicationId, ActionVisibility.private, null)
+                TwitterConnectorCallback(applicationId, ActionVisibility.private, null, false)
             )
         )
     }

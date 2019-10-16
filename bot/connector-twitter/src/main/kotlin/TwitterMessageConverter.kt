@@ -24,6 +24,7 @@ import ai.tock.bot.connector.twitter.model.outcoming.Tweet
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionVisibility
 import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.action.Metadata.VISIBILITY
 import mu.KotlinLogging
 
 internal object TwitterMessageConverter {
@@ -32,7 +33,7 @@ internal object TwitterMessageConverter {
 
     fun toEvent(action: Action): ConnectorMessage? {
         return if (action is SendSentence) {
-            if (action.metadata.visibility == ActionVisibility.public) {
+            if (action.metadata.connectorMetadata[VISIBILITY] == ActionVisibility.public) {
                 if (action.hasMessage(TwitterConnectorProvider.connectorType)) {
                     action.message(TwitterConnectorProvider.connectorType) as Tweet
                 } else {

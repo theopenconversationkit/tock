@@ -22,6 +22,7 @@ import ai.tock.bot.connector.twitter.model.OptionsResponse
 import ai.tock.bot.connector.twitter.model.User
 import ai.tock.bot.engine.action.ActionMetadata
 import ai.tock.bot.engine.action.ActionVisibility
+import ai.tock.bot.engine.action.Metadata.VISIBILITY
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.ContinuePublicConversationInPrivateEvent
@@ -58,7 +59,7 @@ data class DirectMessageIncomingEvent(
     ): Event? {
         // ignore direct message sent from the bot
         val firstOrNull = directMessages.firstOrNull()
-        return if (!forUserId.equals(firstOrNull?.messageCreated?.senderId)) {
+        return if (forUserId != firstOrNull?.messageCreated?.senderId) {
             firstOrNull?.let {
                 val quickReplyResponse = it.messageCreated.messageData.quickReplyResponse
                 return if (quickReplyResponse != null) {
@@ -72,7 +73,7 @@ data class DirectMessageIncomingEvent(
                                             applicationId,
                                             recipientId(PlayerType.bot),
                                             parameters[SendChoice.NLP],
-                                            metadata = ActionMetadata(visibility = ActionVisibility.private)
+                                            metadata = ActionMetadata(connectorMetadata = mutableMapOf(VISIBILITY to ActionVisibility.private))
                                         )
                                     } else {
                                         SendChoice(
@@ -81,7 +82,7 @@ data class DirectMessageIncomingEvent(
                                             recipientId(PlayerType.bot),
                                             intentName,
                                             parameters,
-                                            metadata = ActionMetadata(visibility = ActionVisibility.private)
+                                            metadata = ActionMetadata(connectorMetadata = mutableMapOf(VISIBILITY to ActionVisibility.private))
                                         )
                                     }
                                 }
@@ -100,7 +101,7 @@ data class DirectMessageIncomingEvent(
                             applicationId,
                             recipientId(PlayerType.bot),
                             it.textWithoutUrls(),
-                            metadata = ActionMetadata(visibility = ActionVisibility.private)
+                            metadata = ActionMetadata(connectorMetadata = mutableMapOf(VISIBILITY to ActionVisibility.private))
                         )
                     }
                 }
