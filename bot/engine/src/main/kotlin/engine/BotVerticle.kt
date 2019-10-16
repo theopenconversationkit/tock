@@ -159,20 +159,36 @@ internal class BotVerticle(
         if (websocketEnabled) {
             logger.info { "Install WebSocket handler" }
             server.websocketHandler { context ->
-                val key = context.path().let { if (it.startsWith("/")) it.substring(1) else null }
+                try {
+                    val key = context.path().let { if (it.startsWith("/")) it.substring(1) else null }
 
-                if (WebSocketController.isAuthorizedKey(key)) {
-                    logger.info { "Install WebSocket push handler for ${context.path()}" }
-                    WebSocketController.setPushHandler(key!!) { context.writeTextMessage(it) }
+                    if (WebSocketController.isAuthorizedKey(key)) {
+                        logger.info { "Install WebSocket push handler for ${context.path()}" }
+                        WebSocketController.setPushHandler(key!!) {
+                            try {
+                                logger.debug { "send: $it" }
+                                context.writeTextMessage(it)
+                            } catch (e: Exception) {
+                                logger.error(e)
+                            }
+                        }
 
-                    context.textMessageHandler { json ->
-                        WebSocketController.getReceiveHandler(key)?.invoke(json)
-                    }.closeHandler {
-                        WebSocketController.removePushHandler(key)
+                        context.textMessageHandler { json ->
+                            try {
+                                logger.debug { "receive $json" }
+                                WebSocketController.getReceiveHandler(key)?.invoke(json)
+                            } catch (e: Exception) {
+                                logger.error(e)
+                            }
+                        }.closeHandler {
+                            WebSocketController.removePushHandler(key)
+                        }
+                    } else {
+                        logger.warn { "unknown key: $key" }
+                        context.reject()
                     }
-                } else {
-                    logger.warn { "unknown key: $key" }
-                    context.reject()
+                } catch (e: Exception) {
+                    logger.error(e)
                 }
             }
         }

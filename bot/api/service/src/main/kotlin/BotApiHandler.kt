@@ -101,18 +101,24 @@ internal class BotApiHandler(
             logger.debug { "register $apiKey" }
             WebSocketController.registerAuthorizedKey(apiKey)
             WebSocketController.setReceiveHandler(apiKey) { content: String ->
-                val response: ResponseData? = mapper.readValue(content)
-                if (response != null) {
-                    val holder = wsRepository.getIfPresent(response.requestId)
-                    if (holder == null) {
-                        logger.warn { "unknown request ${response.requestId}" }
+                try {
+                    val response: ResponseData? = mapper.readValue(content)
+                    if (response != null) {
+                        val conf = response.botConfiguration
+                        if (conf == null) {
+                            val holder = wsRepository.getIfPresent(response.requestId)
+                            if (holder == null) {
+                                logger.warn { "unknown request ${response.requestId}" }
+                            }
+                            holder?.receive(response)
+                        } else {
+                            provider.updateIfConfigurationChange(conf)
+                        }
+                    } else {
+                        logger.warn { "null response: $content" }
                     }
-                    holder?.receive(response)
-                    if (response.botConfiguration != null) {
-                        provider.updateIfConfigurationChange(response.botConfiguration!!)
-                    }
-                } else {
-                    logger.warn { "null response: $content" }
+                } catch (e: Exception) {
+                    logger.error(e)
                 }
             }
         }

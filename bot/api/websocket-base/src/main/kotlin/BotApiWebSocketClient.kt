@@ -1,6 +1,5 @@
 package ai.tock.bot.api.websocket
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import ai.tock.bot.api.client.ClientBotDefinition
 import ai.tock.bot.api.client.TockClientBus
 import ai.tock.bot.api.client.toConfiguration
@@ -14,6 +13,7 @@ import ai.tock.shared.jackson.mapper
 import ai.tock.shared.property
 import ai.tock.shared.vertx.blocking
 import ai.tock.shared.vertx.vertx
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.vertx.core.http.HttpClient
 import io.vertx.core.http.WebSocketConnectOptions
 import mu.KotlinLogging
@@ -75,8 +75,20 @@ fun start(
     ssl: Boolean = booleanProperty("tock_websocket_ssl", false)) {
 
     fun restart(client: HttpClient, delay: Long) {
-        client.close()
-        vertx.setTimer(TimeUnit.SECONDS.toMillis(delay)) { start(botDefinition, serverPort, serverHost, ssl) }
+        logger.info("restart...")
+        try {
+            client.close()
+        } catch (e: Exception) {
+            logger.error(e)
+        }
+        vertx.setTimer(TimeUnit.SECONDS.toMillis(delay)) {
+            try {
+                start(botDefinition, serverPort, serverHost, ssl)
+            } catch (e: Exception) {
+                logger.error(e)
+                restart(client, delay)
+            }
+        }
     }
 
     val options = WebSocketConnectOptions().setSsl(ssl).setHost(serverHost).setPort(serverPort)
@@ -86,58 +98,65 @@ fun start(
     val client = vertx.createHttpClient()
 
     client.webSocket(options) { context ->
-        val socket = context.result()
-        //send bot configuration
-        socket?.writeTextMessage(
-            mapper.writeValueAsString(
+        try {
+            val socket = context.result()
+            //send bot configuration
+            val conf = mapper.writeValueAsString(
                 ResponseData(Dice.newId(), botConfiguration = botDefinition.toConfiguration())
             )
-        )
-        socket
-            ?.textMessageHandler { json ->
-                vertx.blocking<String>({
-                    logger.debug { json }
-                    val data: RequestData = mapper.readValue(json)
-                    val request = data.botRequest
-                    if (request != null) {
-                        val bus = TockClientBus(botDefinition, data) { r ->
-                            val response = mapper.writeValueAsString(ResponseData(data.requestId, r))
-                            logger.debug { response }
-                            it.complete(response)
-                        }
-                        bus.handle()
-                    } else if (data.configuration == true) {
-                        it.complete(mapper.writeValueAsString(
-                            ResponseData(data.requestId, botConfiguration = botDefinition.toConfiguration())
-                        ))
-                    } else {
-                        it.fail("invalid request: $json")
-                    }
-                }) {
-                    if (it.succeeded()) {
-                        if (it.result() != null) {
-                            socket.writeTextMessage(it.result())
+            logger.debug { "send bot conf: $conf" }
+            socket?.writeTextMessage(conf)
+            socket
+                ?.textMessageHandler { json ->
+                    vertx.blocking<String>({
+                        logger.debug { "json: $json" }
+                        val data: RequestData = mapper.readValue(json)
+                        val request = data.botRequest
+                        if (request != null) {
+                            logger.debug { "handle request by bus" }
+                            val bus = TockClientBus(botDefinition, data) { r ->
+                                logger.debug { "send bus response" }
+                                val response = mapper.writeValueAsString(ResponseData(data.requestId, r))
+                                logger.debug { response }
+                                it.complete(response)
+                            }
+                            bus.handle()
+                        } else if (data.configuration == true) {
+                            logger.debug { "send configuration " }
+                            it.complete(mapper.writeValueAsString(
+                                ResponseData(data.requestId, botConfiguration = botDefinition.toConfiguration())
+                            ))
                         } else {
-                            logger.error { "empty response for $json" }
+                            it.fail("invalid request: $json")
                         }
-                    } else {
-                        val c = it.cause()
-                        if (c == null) {
-                            logger.error("unknown error for $json : ${it.result()}")
+                    }) {
+                        if (it.succeeded()) {
+                            if (it.result() != null) {
+                                socket.writeTextMessage(it.result())
+                            } else {
+                                logger.error { "empty response for $json" }
+                            }
                         } else {
-                            logger.error(c)
+                            val c = it.cause()
+                            if (c == null) {
+                                logger.error("unknown error for $json : ${it.result()}")
+                            } else {
+                                logger.error(c)
+                            }
                         }
                     }
                 }
-            }
-            ?.exceptionHandler {
-                logger.info("Closed, restarting in 10 seconds");
-                restart(client, 5);
-            }
-            ?.closeHandler {
-                logger.info("Closed, restarting in 10 seconds");
-                restart(client, 10);
-            } ?: restart(client, 10).apply { logger.warn { "web socket server not found - retry" } }
+                ?.exceptionHandler {
+                    logger.info("Exception, restarting in 1s");
+                    restart(client, 1);
+                }
+                ?.closeHandler {
+                    logger.info("Closed, restarting in 1s");
+                    restart(client, 1);
+                } ?: restart(client, 10).apply { logger.warn { "web socket server not found - retry in 10s" } }
+        } catch (e: Exception) {
+            logger.error(e)
+        }
     }
 }
 
