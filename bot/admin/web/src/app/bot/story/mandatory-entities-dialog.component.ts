@@ -2,7 +2,7 @@ import {Component, Inject, OnInit} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef, MatSnackBar} from "@angular/material";
 import {StateService} from "../../core-nlp/state.service";
 import {AnswerConfigurationType, IntentName, MandatoryEntity, SimpleAnswerConfiguration} from "../model/story";
-import {EntityDefinition, Intent, IntentsCategory} from "../../model/nlp";
+import {EntityDefinition, entityNameFromQualifiedName, Intent, IntentsCategory} from "../../model/nlp";
 import {CreateEntityDialogComponent} from "../../sentence-analysis/create-entity-dialog/create-entity-dialog.component";
 import {IntentDialogComponent} from "../../sentence-analysis/intent-dialog/intent-dialog.component";
 
@@ -54,6 +54,7 @@ export class MandatoryEntitiesDialogComponent implements OnInit {
   private setNewEntity() {
     const c = this.newEntity ? this.newEntity.category : null;
     this.newEntity = new MandatoryEntity(
+      "",
       "",
       new IntentName(""),
       [new SimpleAnswerConfiguration([])],
@@ -137,6 +138,7 @@ export class MandatoryEntitiesDialogComponent implements OnInit {
         let role = result.role;
         e.entity = new EntityDefinition(name, role);
         e.role = role;
+        e.entityType = name;
       }
     });
   }

@@ -341,6 +341,7 @@ object BotAdminService {
     ): StoryDefinitionConfigurationMandatoryEntity =
         StoryDefinitionConfigurationMandatoryEntity(
             role,
+            entityType,
             intent,
             answers.mapNotNull { it.toConfiguration(botId, oldStory?.mandatoryEntities?.find { it.role == role }?.answers) },
             currentType

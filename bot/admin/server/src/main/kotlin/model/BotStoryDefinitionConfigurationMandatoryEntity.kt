@@ -13,6 +13,10 @@ data class BotStoryDefinitionConfigurationMandatoryEntity(
      */
     val role: String,
     /**
+     * The type of mandatory entity.
+     */
+    val entityType: String,
+    /**
      * The intent used to find the entities.
      */
     val intent: Intent,
@@ -41,6 +45,7 @@ data class BotStoryDefinitionConfigurationMandatoryEntity(
     constructor(story: StoryDefinitionConfiguration, e: StoryDefinitionConfigurationMandatoryEntity) :
         this(
             e.role,
+            e.entityType,
             e.intent,
             e.answers.mapAnswers(),
             e.currentType,

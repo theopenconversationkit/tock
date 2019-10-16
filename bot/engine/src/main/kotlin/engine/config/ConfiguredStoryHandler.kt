@@ -28,6 +28,7 @@ import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.message.ActionWrappedMessage
 import ai.tock.bot.engine.message.MessagesList
+import ai.tock.nlp.api.client.model.Entity
 import mu.KotlinLogging
 
 /**
@@ -43,7 +44,7 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
         configuration.findEnabledFeature(bus.applicationId)?.let { feature ->
             if (feature.switchToStoryId != null) {
                 bus.botDefinition
-                    .stories.find { it.id == feature.switchToStoryId || (it as? ConfiguredStoryDefinition)?.configuration?.storyId == feature.switchToStoryId}
+                    .stories.find { it.id == feature.switchToStoryId || (it as? ConfiguredStoryDefinition)?.configuration?.storyId == feature.switchToStoryId }
                     ?.apply {
                         bus.handleAndSwitchStory(this)
                         return@handle
@@ -52,7 +53,23 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
         }
 
         configuration.mandatoryEntities.forEach { entity ->
-            if (bus.entityValueDetails(entity.role) == null && entity.hasCurrentAnwser()) {
+            //fallback from "generic" entity
+            val role = entity.role
+            val entityTypeName = entity.entityTypeName
+            if (role != entityTypeName
+                && bus.entityValueDetails(role) == null
+                && bus.hasActionEntity(entityTypeName)) {
+                bus.dialog.state.changeValue(
+                    role,
+                    bus.entityValueDetails(entityTypeName)
+                        ?.let { v ->
+                            v.copy(entity = Entity(v.entity.entityType, role))
+                        }
+                )
+                bus.removeEntityValue(entityTypeName)
+            }
+            //send entity question
+            if (bus.entityValueDetails(role) == null && entity.hasCurrentAnwser()) {
                 entity.send(bus)
                 return@handle
             }

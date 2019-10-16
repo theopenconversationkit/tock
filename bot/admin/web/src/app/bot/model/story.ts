@@ -202,6 +202,7 @@ export class MandatoryEntity extends AnswerContainer {
   public intentDefinition: Intent;
 
   constructor(public role: string,
+              public entityType:string,
               public intent: IntentName,
               answers: AnswerConfiguration[],
               currentType: AnswerConfigurationType,
@@ -218,7 +219,7 @@ export class MandatoryEntity extends AnswerContainer {
   }
 
   clone(): MandatoryEntity {
-    return new MandatoryEntity(this.role, this.intent.clone(), this.answers.slice(0).map(a => a.clone()), this.currentType, this.category);
+    return new MandatoryEntity(this.role, this.entityType, this.intent.clone(), this.answers.slice(0).map(a => a.clone()), this.currentType, this.category);
   }
 
   static fromJSON(json: any): MandatoryEntity {
