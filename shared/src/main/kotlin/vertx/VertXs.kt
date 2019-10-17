@@ -28,7 +28,10 @@ import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.RoutingContext
+import kotlinx.coroutines.slf4j.MDCContext
+import kotlinx.coroutines.slf4j.MDCContextMap
 import mu.KotlinLogging
+import mu.withLoggingContext
 import java.time.Duration
 import java.util.concurrent.Callable
 
@@ -113,22 +116,31 @@ internal fun vertxExecutor(): Executor {
             if (delay.isZero) {
                 executeBlocking(runnable)
             } else {
-                vertx.setTimer(delay.toMillis(), {
-                    executeBlocking(runnable)
-                })
+                val loggingContext = MDCContext().contextMap
+                vertx.setTimer(delay.toMillis()) {
+                    invokeWithLoggingContext(loggingContext) {
+                        executeBlocking(runnable)
+                    }
+                }
             }
         }
 
         override fun executeBlocking(runnable: () -> Unit) {
+            val loggingContext = MDCContext().contextMap
             vertx.blocking<Unit>({
-                invoke(runnable)
-                it.complete()
+                invokeWithLoggingContext(loggingContext) {
+                    invoke(runnable)
+                    it.complete()
+                }
             }, {})
         }
 
         override fun <T> executeBlocking(blocking: Callable<T>, result: (T?) -> Unit) {
+            val loggingContext = MDCContext().contextMap
             vertx.blocking<T>({
-                blocking.call()
+                invokeWithLoggingContext(loggingContext) {
+                    blocking.call()
+                }
             }, {
                 if (it.succeeded()) {
                     result.invoke(it.result())
@@ -139,10 +151,15 @@ internal fun vertxExecutor(): Executor {
         }
 
         override fun setPeriodic(initialDelay: Duration, delay: Duration, runnable: () -> Unit): Long {
+            val loggingContext = MDCContext().contextMap
             return vertx.setTimer(initialDelay.toMillis()) {
-                executeBlocking(runnable)
-                vertx.setPeriodic(delay.toMillis()) {
+                invokeWithLoggingContext(loggingContext) {
                     executeBlocking(runnable)
+                    vertx.setPeriodic(delay.toMillis()) {
+                        invokeWithLoggingContext(loggingContext) {
+                            executeBlocking(runnable)
+                        }
+                    }
                 }
             }
         }
@@ -152,6 +169,14 @@ internal fun vertxExecutor(): Executor {
                 runnable.invoke()
             } catch (throwable: Throwable) {
                 logger.error(throwable)
+            }
+        }
+
+        private fun invokeWithLoggingContext(loggingContext: MDCContextMap, runnable: () -> Unit) {
+            runnable.let {
+                loggingContext?.let { map ->
+                    withLoggingContext(map, it)
+                }?: invoke(it)
             }
         }
     }
