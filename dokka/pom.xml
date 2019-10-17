@@ -56,7 +56,7 @@
                 <configuration>
                     <moduleName>tock</moduleName>
                     <jdkVersion>8</jdkVersion>
-                    <reportNotDocumented>false</reportNotDocumented>
+                    <reportUndocumented>false</reportUndocumented>
                     <sourceLinks>
                         <link>
                             <dir>${project.basedir}/../shared/src/main/kotlin</dir>

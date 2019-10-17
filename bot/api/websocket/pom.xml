@@ -57,7 +57,7 @@
                 </executions>
                 <configuration>
                     <jdkVersion>8</jdkVersion>
-                    <reportNotDocumented>false</reportNotDocumented>
+                    <reportUndocumented>false</reportUndocumented>
                     <sourceDirectories>
                         <dir>${project.basedir}/../websocket-base/src/main/kotlin</dir>
                     </sourceDirectories>

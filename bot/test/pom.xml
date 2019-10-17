@@ -56,7 +56,7 @@
                 </executions>
                 <configuration>
                     <jdkVersion>8</jdkVersion>
-                    <reportNotDocumented>false</reportNotDocumented>
+                    <reportUndocumented>false</reportUndocumented>
                     <sourceDirectories>
                         <dir>${project.basedir}/../test-base/src/main/kotlin</dir>
                     </sourceDirectories>
