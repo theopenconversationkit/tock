@@ -16,13 +16,12 @@ Provided via <a href="#">addAlexaConnector.alexaTockMapper</a> parameter.</p>
 <tbody>
 <tr>
 <td>
-<p><a href="-init-.html">&lt;init&gt;</a></p>
+<h4><a href="-init-.html">&lt;init&gt;</a></h4>
 </td>
 <td>
-<code><span class="identifier">AlexaTockMapper</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$<init>(kotlin.String)/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span></code>
 <p>An Alexa model to Tock model mapper.
 Provided via <a href="#">addAlexaConnector.alexaTockMapper</a> parameter.</p>
-</td>
+<code><span class="identifier">AlexaTockMapper</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$<init>(kotlin.String)/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">)</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -31,10 +30,10 @@ Provided via <a href="#">addAlexaConnector.alexaTockMapper</a> parameter.</p>
 <tbody>
 <tr>
 <td>
-<p><a href="application-id.html">applicationId</a></p>
+<h4><a href="application-id.html">applicationId</a></h4>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">applicationId</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+<code><span class="keyword">val </span><span class="identifier">applicationId</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -43,66 +42,59 @@ Provided via <a href="#">addAlexaConnector.alexaTockMapper</a> parameter.</p>
 <tbody>
 <tr>
 <td>
-<p><a href="alexa-entity-to-tock-entity.html">alexaEntityToTockEntity</a></p>
+<h4><a href="alexa-entity-to-tock-entity.html">alexaEntityToTockEntity</a></h4>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">alexaEntityToTockEntity</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$alexaEntityToTockEntity(com.amazon.speech.speechlet.IntentRequest, kotlin.String, kotlin.String, ai.tock.bot.definition.BotDefinition)/request">request</span><span class="symbol">:</span>&nbsp;<span class="identifier">IntentRequest</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$alexaEntityToTockEntity(com.amazon.speech.speechlet.IntentRequest, kotlin.String, kotlin.String, ai.tock.bot.definition.BotDefinition)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$alexaEntityToTockEntity(com.amazon.speech.speechlet.IntentRequest, kotlin.String, kotlin.String, ai.tock.bot.definition.BotDefinition)/slot">slot</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$alexaEntityToTockEntity(com.amazon.speech.speechlet.IntentRequest, kotlin.String, kotlin.String, ai.tock.bot.definition.BotDefinition)/botDefinition">botDefinition</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.definition/-bot-definition/index.html"><span class="identifier">BotDefinition</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Entity</span><span class="symbol">?</span></code>
 <p>Returns a Tock entity from an Alexa slot.</p>
-</td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">alexaEntityToTockEntity</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$alexaEntityToTockEntity(com.amazon.speech.speechlet.IntentRequest, kotlin.String, kotlin.String, ai.tock.bot.definition.BotDefinition)/request">request</span><span class="symbol">:</span>&nbsp;<span class="identifier">IntentRequest</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$alexaEntityToTockEntity(com.amazon.speech.speechlet.IntentRequest, kotlin.String, kotlin.String, ai.tock.bot.definition.BotDefinition)/intent">intent</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$alexaEntityToTockEntity(com.amazon.speech.speechlet.IntentRequest, kotlin.String, kotlin.String, ai.tock.bot.definition.BotDefinition)/slot">slot</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$alexaEntityToTockEntity(com.amazon.speech.speechlet.IntentRequest, kotlin.String, kotlin.String, ai.tock.bot.definition.BotDefinition)/botDefinition">botDefinition</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.definition/-bot-definition/index.html"><span class="identifier">BotDefinition</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Entity</span><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="alexa-entity-to-tock-entity-value.html">alexaEntityToTockEntityValue</a></p>
+<h4><a href="alexa-entity-to-tock-entity-value.html">alexaEntityToTockEntityValue</a></h4>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">alexaEntityToTockEntityValue</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$alexaEntityToTockEntityValue(com.amazon.speech.speechlet.IntentRequest, kotlin.String, com.amazon.speech.slu.Slot, ai.tock.bot.definition.BotDefinition, kotlin.Int)/request">request</span><span class="symbol">:</span>&nbsp;<span class="identifier">IntentRequest</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$alexaEntityToTockEntityValue(com.amazon.speech.speechlet.IntentRequest, kotlin.String, com.amazon.speech.slu.Slot, ai.tock.bot.definition.BotDefinition, kotlin.Int)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$alexaEntityToTockEntityValue(com.amazon.speech.speechlet.IntentRequest, kotlin.String, com.amazon.speech.slu.Slot, ai.tock.bot.definition.BotDefinition, kotlin.Int)/slot">slot</span><span class="symbol">:</span>&nbsp;<span class="identifier">Slot</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$alexaEntityToTockEntityValue(com.amazon.speech.speechlet.IntentRequest, kotlin.String, com.amazon.speech.slu.Slot, ai.tock.bot.definition.BotDefinition, kotlin.Int)/botDefinition">botDefinition</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.definition/-bot-definition/index.html"><span class="identifier">BotDefinition</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$alexaEntityToTockEntityValue(com.amazon.speech.speechlet.IntentRequest, kotlin.String, com.amazon.speech.slu.Slot, ai.tock.bot.definition.BotDefinition, kotlin.Int)/index">index</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">NlpEntityValue</span></code>
 <p>Returns a Tock <a href="#">NlpEntityValue</a> from an Alexa slot.</p>
-</td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">alexaEntityToTockEntityValue</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$alexaEntityToTockEntityValue(com.amazon.speech.speechlet.IntentRequest, kotlin.String, com.amazon.speech.slu.Slot, ai.tock.bot.definition.BotDefinition, kotlin.Int)/request">request</span><span class="symbol">:</span>&nbsp;<span class="identifier">IntentRequest</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$alexaEntityToTockEntityValue(com.amazon.speech.speechlet.IntentRequest, kotlin.String, com.amazon.speech.slu.Slot, ai.tock.bot.definition.BotDefinition, kotlin.Int)/intent">intent</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$alexaEntityToTockEntityValue(com.amazon.speech.speechlet.IntentRequest, kotlin.String, com.amazon.speech.slu.Slot, ai.tock.bot.definition.BotDefinition, kotlin.Int)/slot">slot</span><span class="symbol">:</span>&nbsp;<span class="identifier">Slot</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$alexaEntityToTockEntityValue(com.amazon.speech.speechlet.IntentRequest, kotlin.String, com.amazon.speech.slu.Slot, ai.tock.bot.definition.BotDefinition, kotlin.Int)/botDefinition">botDefinition</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.definition/-bot-definition/index.html"><span class="identifier">BotDefinition</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$alexaEntityToTockEntityValue(com.amazon.speech.speechlet.IntentRequest, kotlin.String, com.amazon.speech.slu.Slot, ai.tock.bot.definition.BotDefinition, kotlin.Int)/index">index</span><span class="symbol">:</span>&nbsp;<span class="identifier">Int</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">NlpEntityValue</span></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="alexa-intent-to-tock-intent.html">alexaIntentToTockIntent</a></p>
+<h4><a href="alexa-intent-to-tock-intent.html">alexaIntentToTockIntent</a></h4>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">alexaIntentToTockIntent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$alexaIntentToTockIntent(com.amazon.speech.speechlet.IntentRequest, ai.tock.bot.definition.BotDefinition)/request">request</span><span class="symbol">:</span>&nbsp;<span class="identifier">IntentRequest</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$alexaIntentToTockIntent(com.amazon.speech.speechlet.IntentRequest, ai.tock.bot.definition.BotDefinition)/botDefinition">botDefinition</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.definition/-bot-definition/index.html"><span class="identifier">BotDefinition</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
 <p>Returns a Tock intent from an Alexa intent.</p>
-</td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">alexaIntentToTockIntent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$alexaIntentToTockIntent(com.amazon.speech.speechlet.IntentRequest, ai.tock.bot.definition.BotDefinition)/request">request</span><span class="symbol">:</span>&nbsp;<span class="identifier">IntentRequest</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$alexaIntentToTockIntent(com.amazon.speech.speechlet.IntentRequest, ai.tock.bot.definition.BotDefinition)/botDefinition">botDefinition</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.definition/-bot-definition/index.html"><span class="identifier">BotDefinition</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="get-slots.html">getSlots</a></p>
+<h4><a href="get-slots.html">getSlots</a></h4>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getSlots</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$getSlots(com.amazon.speech.speechlet.IntentRequest)/request">request</span><span class="symbol">:</span>&nbsp;<span class="identifier">IntentRequest</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<span class="identifier">Slot</span><span class="symbol">&gt;</span><span class="symbol">?</span></code>
 <p>Gets slots from the intent request.</p>
-</td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getSlots</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$getSlots(com.amazon.speech.speechlet.IntentRequest)/request">request</span><span class="symbol">:</span>&nbsp;<span class="identifier">IntentRequest</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Map</span><span class="symbol">&lt;</span><span class="identifier">String</span><span class="symbol">,</span>&nbsp;<span class="identifier">Slot</span><span class="symbol">&gt;</span><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="to-end-session-event.html">toEndSessionEvent</a></p>
+<h4><a href="to-end-session-event.html">toEndSessionEvent</a></h4>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">toEndSessionEvent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$toEndSessionEvent(com.amazon.speech.json.SpeechletRequestEnvelope((com.amazon.speech.speechlet.SessionEndedRequest)))/requestEnvelope">requestEnvelope</span><span class="symbol">:</span>&nbsp;<span class="identifier">SpeechletRequestEnvelope</span><span class="symbol">&lt;</span><span class="identifier">SessionEndedRequest</span><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.bot.engine.event/-end-session-event/index.html"><span class="identifier">EndSessionEvent</span></a></code>
 <p>Returns a <a href="../../ai.tock.bot.engine.event/-end-session-event/index.html">EndSessionEvent</a> from an Alexa <a href="#">SessionEndedRequest</a>.</p>
-</td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">toEndSessionEvent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$toEndSessionEvent(com.amazon.speech.json.SpeechletRequestEnvelope((com.amazon.speech.speechlet.SessionEndedRequest)))/requestEnvelope">requestEnvelope</span><span class="symbol">:</span>&nbsp;<span class="identifier">SpeechletRequestEnvelope</span><span class="symbol">&lt;</span><span class="identifier">SessionEndedRequest</span><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.bot.engine.event/-end-session-event/index.html"><span class="identifier">EndSessionEvent</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="to-event.html">toEvent</a></p>
+<h4><a href="to-event.html">toEvent</a></h4>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">toEvent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$toEvent(kotlin.String, com.amazon.speech.speechlet.IntentRequest, ai.tock.bot.definition.BotDefinition)/userId">userId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$toEvent(kotlin.String, com.amazon.speech.speechlet.IntentRequest, ai.tock.bot.definition.BotDefinition)/request">request</span><span class="symbol">:</span>&nbsp;<span class="identifier">IntentRequest</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$toEvent(kotlin.String, com.amazon.speech.speechlet.IntentRequest, ai.tock.bot.definition.BotDefinition)/botDefinition">botDefinition</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.definition/-bot-definition/index.html"><span class="identifier">BotDefinition</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.bot.engine.event/-event/index.html"><span class="identifier">Event</span></a></code>
 <p>Returns an <a href="../../ai.tock.bot.engine.event/-event/index.html">Event</a> from an Alexa <a href="#">IntentRequest</a>.</p>
-</td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">toEvent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$toEvent(kotlin.String, com.amazon.speech.speechlet.IntentRequest, ai.tock.bot.definition.BotDefinition)/userId">userId</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$toEvent(kotlin.String, com.amazon.speech.speechlet.IntentRequest, ai.tock.bot.definition.BotDefinition)/request">request</span><span class="symbol">:</span>&nbsp;<span class="identifier">IntentRequest</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$toEvent(kotlin.String, com.amazon.speech.speechlet.IntentRequest, ai.tock.bot.definition.BotDefinition)/botDefinition">botDefinition</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.definition/-bot-definition/index.html"><span class="identifier">BotDefinition</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.bot.engine.event/-event/index.html"><span class="identifier">Event</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="to-start-session-event.html">toStartSessionEvent</a></p>
+<h4><a href="to-start-session-event.html">toStartSessionEvent</a></h4>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">toStartSessionEvent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$toStartSessionEvent(com.amazon.speech.json.SpeechletRequestEnvelope((com.amazon.speech.speechlet.SessionStartedRequest)))/requestEnvelope">requestEnvelope</span><span class="symbol">:</span>&nbsp;<span class="identifier">SpeechletRequestEnvelope</span><span class="symbol">&lt;</span><span class="identifier">SessionStartedRequest</span><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.bot.engine.event/-start-session-event/index.html"><span class="identifier">StartSessionEvent</span></a></code>
 <p>Returns a <a href="../../ai.tock.bot.engine.event/-start-session-event/index.html">StartSessionEvent</a> from an Alexa <a href="#">SessionStartedRequest</a>.</p>
-</td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">toStartSessionEvent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.alexa.AlexaTockMapper$toStartSessionEvent(com.amazon.speech.json.SpeechletRequestEnvelope((com.amazon.speech.speechlet.SessionStartedRequest)))/requestEnvelope">requestEnvelope</span><span class="symbol">:</span>&nbsp;<span class="identifier">SpeechletRequestEnvelope</span><span class="symbol">&lt;</span><span class="identifier">SessionStartedRequest</span><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.bot.engine.event/-start-session-event/index.html"><span class="identifier">StartSessionEvent</span></a></code></td>
 </tr>
 </tbody>
 </table>

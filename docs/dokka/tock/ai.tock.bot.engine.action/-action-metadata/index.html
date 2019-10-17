@@ -8,16 +8,16 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">ai.tock.bot.engine.action</a>&nbsp;/&nbsp;<a href="./index.html">ActionMetadata</a><br/>
 <br/>
 <h1>ActionMetadata</h1>
-<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">ActionMetadata</span></code> <a href="https://github.com/theopenconversationkit/tock/blob/master/bot/engine/src/main/kotlin/engine/action/ActionMetadata.kt#L22">(source)</a>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">ActionMetadata</span></code> <a href="https://github.com/theopenconversationkit/tock/blob/master/bot/engine/src/main/kotlin/engine/action/ActionMetadata.kt#L19">(source)</a>
 <h3>Constructors</h3>
 <table>
 <tbody>
 <tr>
 <td>
-<p><a href="-init-.html">&lt;init&gt;</a></p>
+<h4><a href="-init-.html">&lt;init&gt;</a></h4>
 </td>
 <td>
-<code><span class="identifier">ActionMetadata</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.engine.action.ActionMetadata$<init>(kotlin.Boolean, ai.tock.bot.engine.action.ActionPriority, ai.tock.bot.engine.action.ActionNotificationType, ai.tock.bot.engine.action.ActionVisibility)/lastAnswer">lastAnswer</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a>&nbsp;<span class="symbol">=</span>&nbsp;false<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.engine.action.ActionMetadata$<init>(kotlin.Boolean, ai.tock.bot.engine.action.ActionPriority, ai.tock.bot.engine.action.ActionNotificationType, ai.tock.bot.engine.action.ActionVisibility)/priority">priority</span><span class="symbol">:</span>&nbsp;<a href="../-action-priority/index.html"><span class="identifier">ActionPriority</span></a>&nbsp;<span class="symbol">=</span>&nbsp;ActionPriority.normal<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.engine.action.ActionMetadata$<init>(kotlin.Boolean, ai.tock.bot.engine.action.ActionPriority, ai.tock.bot.engine.action.ActionNotificationType, ai.tock.bot.engine.action.ActionVisibility)/notificationType">notificationType</span><span class="symbol">:</span>&nbsp;<a href="../-action-notification-type/index.html"><span class="identifier">ActionNotificationType</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.engine.action.ActionMetadata$<init>(kotlin.Boolean, ai.tock.bot.engine.action.ActionPriority, ai.tock.bot.engine.action.ActionNotificationType, ai.tock.bot.engine.action.ActionVisibility)/visibility">visibility</span><span class="symbol">:</span>&nbsp;<a href="../-action-visibility/index.html"><span class="identifier">ActionVisibility</span></a>&nbsp;<span class="symbol">=</span>&nbsp;ActionVisibility.unknown<span class="symbol">)</span></code></td>
+<code><span class="identifier">ActionMetadata</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.engine.action.ActionMetadata$<init>(kotlin.Boolean, ai.tock.bot.engine.action.ActionPriority, ai.tock.bot.engine.action.ActionNotificationType, kotlin.collections.MutableMap((ai.tock.bot.engine.action.Metadata, kotlin.Any)))/lastAnswer">lastAnswer</span><span class="symbol">:</span>&nbsp;<span class="identifier">Boolean</span>&nbsp;<span class="symbol">=</span>&nbsp;false<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.engine.action.ActionMetadata$<init>(kotlin.Boolean, ai.tock.bot.engine.action.ActionPriority, ai.tock.bot.engine.action.ActionNotificationType, kotlin.collections.MutableMap((ai.tock.bot.engine.action.Metadata, kotlin.Any)))/priority">priority</span><span class="symbol">:</span>&nbsp;<a href="../-action-priority/index.html"><span class="identifier">ActionPriority</span></a>&nbsp;<span class="symbol">=</span>&nbsp;ActionPriority.normal<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.engine.action.ActionMetadata$<init>(kotlin.Boolean, ai.tock.bot.engine.action.ActionPriority, ai.tock.bot.engine.action.ActionNotificationType, kotlin.collections.MutableMap((ai.tock.bot.engine.action.Metadata, kotlin.Any)))/notificationType">notificationType</span><span class="symbol">:</span>&nbsp;<a href="../-action-notification-type/index.html"><span class="identifier">ActionNotificationType</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.engine.action.ActionMetadata$<init>(kotlin.Boolean, ai.tock.bot.engine.action.ActionPriority, ai.tock.bot.engine.action.ActionNotificationType, kotlin.collections.MutableMap((ai.tock.bot.engine.action.Metadata, kotlin.Any)))/connectorMetadata">connectorMetadata</span><span class="symbol">:</span>&nbsp;<span class="identifier">MutableMap</span><span class="symbol">&lt;</span><a href="../-metadata/index.html"><span class="identifier">Metadata</span></a><span class="symbol">,</span>&nbsp;<span class="identifier">Any</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;mutableMapOf()<span class="symbol">)</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -26,39 +26,35 @@
 <tbody>
 <tr>
 <td>
-<p><a href="last-answer.html">lastAnswer</a></p>
+<h4><a href="connector-metadata.html">connectorMetadata</a></h4>
 </td>
 <td>
-<code><span class="keyword">var </span><span class="identifier">lastAnswer</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>metadata dependant from some connectors</p>
+<code><span class="keyword">var </span><span class="identifier">connectorMetadata</span><span class="symbol">: </span><span class="identifier">MutableMap</span><span class="symbol">&lt;</span><a href="../-metadata/index.html"><span class="identifier">Metadata</span></a><span class="symbol">,</span>&nbsp;<span class="identifier">Any</span><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="last-answer.html">lastAnswer</a></h4>
+</td>
+<td>
 <p>Is it the last answer of the bot.</p>
-</td>
+<code><span class="keyword">var </span><span class="identifier">lastAnswer</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="notification-type.html">notificationType</a></p>
+<h4><a href="notification-type.html">notificationType</a></h4>
 </td>
 <td>
-<code><span class="keyword">var </span><span class="identifier">notificationType</span><span class="symbol">: </span><a href="../-action-notification-type/index.html"><span class="identifier">ActionNotificationType</span></a><span class="symbol">?</span></code>
 <p>tag deals with type of message notification.</p>
-</td>
+<code><span class="keyword">var </span><span class="identifier">notificationType</span><span class="symbol">: </span><a href="../-action-notification-type/index.html"><span class="identifier">ActionNotificationType</span></a><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="priority.html">priority</a></p>
+<h4><a href="priority.html">priority</a></h4>
 </td>
 <td>
-<code><span class="keyword">var </span><span class="identifier">priority</span><span class="symbol">: </span><a href="../-action-priority/index.html"><span class="identifier">ActionPriority</span></a></code>
 <p>Significance deals with the notification level.</p>
-</td>
-</tr>
-<tr>
-<td>
-<p><a href="visibility.html">visibility</a></p>
-</td>
-<td>
-<code><span class="keyword">var </span><span class="identifier">visibility</span><span class="symbol">: </span><a href="../-action-visibility/index.html"><span class="identifier">ActionVisibility</span></a></code>
-<p>visibility of the message</p>
-</td>
+<code><span class="keyword">var </span><span class="identifier">priority</span><span class="symbol">: </span><a href="../-action-priority/index.html"><span class="identifier">ActionPriority</span></a></code></td>
 </tr>
 </tbody>
 </table>

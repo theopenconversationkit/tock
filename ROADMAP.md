@@ -1,7 +1,5 @@
-- 19.9.1 October 2019
-    - first conversational DSL in admin interface
-    
 - 19.9.2 November 2019   
+    - first conversational DSL in admin interface     
     - AB test engine workflow
     
 - 20.3.0 March 2020
@@ -10,6 +8,9 @@
     - Code editor admin interface
     
 ## Latest releases  
+        
+- 19.9.1 October 2019
+    - Bug fixes        
               
 - 19.9.0 September 2019      
     - Conversational framework: Kotlin & nodejs support

@@ -11,6 +11,7 @@ base de données serait un problème.
 
 Cette page présente le développement de bots Tock en mode _Bot API_ en [Kotlin](https://kotlinlang.org/). 
 Notez qu'il est possible de développer dans n'importe quel langage via la _Bot API_.
+En particulier, un [client nodejs](https://github.com/theopenconversationkit/tock-node) est disponible.
 
 > Une autre section présente le mode [_Bot Framework_](bot-integre.md), plus intégré mais aussi plus couplé à la plateforme Tock.
 
@@ -33,14 +34,14 @@ Par exemple dans un projet [Maven](https://maven.apache.org/) :
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-bot-api-websocket</artifactId>
-            <version>19.9.0</version>
+            <version>19.9.1</version>
         </dependency>
 ```
 
 Ou dans un projet [Gradle](https://gradle.org/) :
 
 ```gradle
-      compile 'ai.tock:tock-bot-api-websocket:19.9.0'
+      compile 'ai.tock:tock-bot-api-websocket:19.9.1'
 ```
 
 ### Activer le mode WebHook
@@ -53,14 +54,14 @@ Par exemple dans un projet [Maven](https://maven.apache.org/) :
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-bot-api-webhook</artifactId>
-            <version>19.9.0</version>
+            <version>19.9.1</version>
         </dependency>
 ```
 
 Ou dans un projet [Gradle](https://gradle.org/) :
 
 ```gradle
-      compile 'ai.tock:tock-bot-api-webhook:19.9.0'
+      compile 'ai.tock:tock-bot-api-webhook:19.9.1'
 ```
 
 Dans ce cas, contrairement au mode _WebSocket_, il faut que l'application/bot démarrée soit joignable par la 
@@ -121,8 +122,16 @@ fun main() {
     )
 }
 ```
+
+Le [code source complet de l'exemple](https://github.com/theopenconversationkit/tock-bot-demo) est disponible.
  
 ## Développer dans un autre langage
+
+### Node
+
+Veuillez consulter la documentation dédiée au [client nodejs](https://github.com/theopenconversationkit/tock-node) pour plus de détails.
+
+### API
 
 Il est possible de développer dans n'importe quel langage en programmant directement via l'API.
 

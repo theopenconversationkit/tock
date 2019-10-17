@@ -2,7 +2,7 @@
 
 This is the recommended way to start to develop with Tock. 
 
-You add custom answers using a REST API. Kotlin wrapper is available.
+You add custom answers using a REST API. Kotlin client and [Node client](https://github.com/theopenconversationkit/tock-node) are available.
 
 ## Connect to the demo platform
 
@@ -23,14 +23,14 @@ Using [Maven](https://maven.apache.org/) :
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-bot-api-websocket</artifactId>
-            <version>19.9.0</version>
+            <version>19.9.1</version>
         </dependency>
 ```
 
 Or [Gradle](https://gradle.org/) :
 
 ```gradle
-      compile 'ai.tock:tock-bot-api-websocket:19.9.0'
+      compile 'ai.tock:tock-bot-api-websocket:19.9.1'
 ```
 
 ### Enable WebHook mode
@@ -44,14 +44,14 @@ Using [Maven](https://maven.apache.org/) :
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-bot-api-webhook</artifactId>
-            <version>19.9.0</version>
+            <version>19.9.1</version>
         </dependency>
 ```
 
 Or [Gradle](https://gradle.org/) :
 
 ```gradle
-      compile 'ai.tock:tock-bot-api-webhook:19.9.0'
+      compile 'ai.tock:tock-bot-api-webhook:19.9.1'
 ```
 
 In this case, unlike the _WebSocket_ mode, the bot application must be reachable by the
@@ -76,8 +76,6 @@ The following formats are supported:
 * "Carousel" format
 * Specific channel formats like Messenger format, Slack format, etc.
 
-
- 
 Here is a simple bot with a few stories:
  
 ```kotlin
@@ -114,8 +112,16 @@ fun main() {
     )
 }
 ```
+
+Please consult the [full source code sample](https://github.com/theopenconversationkit/tock-bot-demo).
  
 ## Develop in another language
+
+### Node
+
+Please consult the dedicated [node client](https://github.com/theopenconversationkit/tock-node) documentation.
+
+### API
 
 It is possible to develop in the language of your choice by using directly the underlying REST API.
 

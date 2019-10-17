@@ -15,26 +15,11 @@
 <tbody>
 <tr>
 <td>
-<p><a href="-init-.html">&lt;init&gt;</a></p>
+<h4><a href="-init-.html">&lt;init&gt;</a></h4>
 </td>
 <td>
-<code><span class="identifier">SimpleStoryHandlerBase</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.SimpleStoryHandlerBase$<init>(kotlin.String)/mainIntentName">mainIntentName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span></code>
 <p>For simple stories that do not use custom <a href="../-story-handler-definition/index.html">StoryHandlerDefinition</a>.</p>
-</td>
-</tr>
-</tbody>
-</table>
-<h3>Inherited Properties</h3>
-<table>
-<tbody>
-<tr>
-<td>
-<p><a href="../-story-handler-base/breath.html">breath</a></p>
-</td>
-<td>
-<code><span class="keyword">val </span><span class="identifier">breath</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a></code>
-<p>Convenient value to wait before next answer sentence.</p>
-</td>
+<code><span class="identifier">SimpleStoryHandlerBase</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.SimpleStoryHandlerBase$<init>(kotlin.String)/mainIntentName">mainIntentName</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -43,106 +28,19 @@
 <tbody>
 <tr>
 <td>
-<p><a href="action.html">action</a></p>
+<h4><a href="action.html">action</a></h4>
 </td>
 <td>
-<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">action</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.SimpleStoryHandlerBase$action(ai.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
 <p>The method to implement.</p>
-</td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">action</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.SimpleStoryHandlerBase$action(ai.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Unit</span></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="new-handler-definition.html">newHandlerDefinition</a></p>
+<h4><a href="new-handler-definition.html">newHandlerDefinition</a></h4>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">newHandlerDefinition</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.SimpleStoryHandlerBase$newHandlerDefinition(ai.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a></code>
 <p>Instantiates new instance of <a href="../-story-handler-base/index.html#T">T</a>.</p>
-</td>
-</tr>
-</tbody>
-</table>
-<h3>Inherited Functions</h3>
-<table>
-<tbody>
-<tr>
-<td>
-<p><a href="../-story-handler-base/check-preconditions.html">checkPreconditions</a></p>
-</td>
-<td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">checkPreconditions</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
-<p>Checks preconditions - if <a href="../../ai.tock.bot.engine/-bot-bus/end.html">BotBus.end</a> is called,
-<a href="../-story-handler-definition/handle.html">StoryHandlerDefinition.handle</a> is not called and the handling of bot answer is over.</p>
-</td>
-</tr>
-<tr>
-<td>
-<p><a href="../-story-handler-base/find-story-definition.html">findStoryDefinition</a></p>
-</td>
-<td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">findStoryDefinition</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryHandlerBase$findStoryDefinition(ai.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">?</span></code>
-<p>Finds the story definition of this handler.</p>
-</td>
-</tr>
-<tr>
-<td>
-<p><a href="../-story-handler-base/handle.html">handle</a></p>
-</td>
-<td>
-<code><span class="keyword">fun </span><span class="identifier">handle</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryHandlerBase$handle(ai.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
-<p>Receive a message from the bus.</p>
-</td>
-</tr>
-<tr>
-<td>
-<p><a href="../-story-handler-base/handle-and-switch-story.html">handleAndSwitchStory</a></p>
-</td>
-<td>
-<code><span class="keyword">fun </span><span class="identifier">handleAndSwitchStory</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryHandlerBase$handleAndSwitchStory(ai.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
-<p>Handles the action and switches the context to the underlying story definition.</p>
-</td>
-</tr>
-<tr>
-<td>
-<p><a href="../-story-handler-base/i18n.html">i18n</a></p>
-</td>
-<td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">i18n</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryHandlerBase$i18n(kotlin.CharSequence, kotlin.collections.List((kotlin.Any)))/defaultLabel">defaultLabel</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.StoryHandlerBase$i18n(kotlin.CharSequence, kotlin.collections.List((kotlin.Any)))/args">args</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">I18nLabelValue</span></code></td>
-</tr>
-<tr>
-<td>
-<p><a href="../-story-handler-base/i18n-key.html">i18nKey</a></p>
-</td>
-<td>
-<code><span class="keyword">fun </span><span class="identifier">i18nKey</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryHandlerBase$i18nKey(kotlin.String, kotlin.CharSequence, kotlin.Array((kotlin.Any)))/key">key</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.StoryHandlerBase$i18nKey(kotlin.String, kotlin.CharSequence, kotlin.Array((kotlin.Any)))/defaultLabel">defaultLabel</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">, </span><span class="keyword">vararg</span> <span class="identifier" id="ai.tock.bot.definition.StoryHandlerBase$i18nKey(kotlin.String, kotlin.CharSequence, kotlin.Array((kotlin.Any)))/args">args</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">I18nLabelValue</span></code>
-<p>Gets an i18n label with the specified key. Current namespace is used for the categorization.</p>
-</td>
-</tr>
-<tr>
-<td>
-<p><a href="../-story-handler-base/setup-handler-definition.html">setupHandlerDefinition</a></p>
-</td>
-<td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setupHandlerDefinition</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryHandlerBase$setupHandlerDefinition(ai.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-handler-base/index.html#T"><span class="identifier">T</span></a><span class="symbol">?</span></code>
-<p>Handles precondition like checking mandatory entities, and create <a href="../-story-handler-definition/index.html">StoryHandlerDefinition</a>.
-If this function returns null, this implied that <a href="../../ai.tock.bot.engine/-bot-bus/end.html">BotBus.end</a> has been called in this function
-(as the <a href="../-story-handler-definition/handle.html">StoryHandlerDefinition.handle</a> function is not called).</p>
-</td>
-</tr>
-<tr>
-<td>
-<p><a href="../-story-handler-base/support.html">support</a></p>
-</td>
-<td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">support</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryHandlerBase$support(ai.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
-<p>What is the probability of bot support for the current request?</p>
-</td>
-</tr>
-<tr>
-<td>
-<p><a href="../-story-handler-base/wrapped-intent.html">wrappedIntent</a></p>
-</td>
-<td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">wrappedIntent</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-intent/index.html"><span class="identifier">Intent</span></a></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">newHandlerDefinition</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.SimpleStoryHandlerBase$newHandlerDefinition(ai.tock.bot.engine.BotBus, kotlin.Any)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.SimpleStoryHandlerBase$newHandlerDefinition(ai.tock.bot.engine.BotBus, kotlin.Any)/data">data</span><span class="symbol">:</span>&nbsp;<span class="identifier">Any</span><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a></code></td>
 </tr>
 </tbody>
 </table>

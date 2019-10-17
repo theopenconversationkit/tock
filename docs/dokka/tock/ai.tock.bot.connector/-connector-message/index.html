@@ -15,12 +15,11 @@
 <tbody>
 <tr>
 <td>
-<p><a href="connector-type.html">connectorType</a></p>
+<h4><a href="connector-type.html">connectorType</a></h4>
 </td>
 <td>
-<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">connectorType</span><span class="symbol">: </span><a href="../-connector-type/index.html"><span class="identifier">ConnectorType</span></a></code>
 <p>The connector type.</p>
-</td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">connectorType</span><span class="symbol">: </span><a href="../-connector-type/index.html"><span class="identifier">ConnectorType</span></a></code></td>
 </tr>
 </tbody>
 </table>
@@ -29,30 +28,27 @@
 <tbody>
 <tr>
 <td>
-<p><a href="obfuscate.html">obfuscate</a></p>
+<h4><a href="obfuscate.html">obfuscate</a></h4>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">obfuscate</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.ConnectorMessage$obfuscate(ai.tock.shared.security.StringObfuscatorMode)/mode">mode</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.shared.security/-string-obfuscator-mode/index.html"><span class="identifier">StringObfuscatorMode</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">ConnectorMessage</span></a></code>
 <p>Obfuscate the message - by default this method does nothing.</p>
-</td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">obfuscate</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.ConnectorMessage$obfuscate(ai.tock.shared.security.StringObfuscatorMode)/mode">mode</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.shared.security/-string-obfuscator-mode/index.html"><span class="identifier">StringObfuscatorMode</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">ConnectorMessage</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="to-generic-message.html">toGenericMessage</a></p>
+<h4><a href="to-generic-message.html">toGenericMessage</a></h4>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">toGenericMessage</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.bot.engine.message/-generic-message/index.html"><span class="identifier">GenericMessage</span></a><span class="symbol">?</span></code>
 <p>Transforms this message into a generic <a href="../../ai.tock.bot.engine.message/-generic-message/index.html">GenericMessage</a>.</p>
-</td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">toGenericMessage</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.bot.engine.message/-generic-message/index.html"><span class="identifier">GenericMessage</span></a><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="to-sentence-element.html">toSentenceElement</a></p>
+<h4><a href="to-sentence-element.html">toSentenceElement</a></h4>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><s><span class="identifier">toSentenceElement</span></s><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.bot.engine.message/-generic-message/index.html"><span class="identifier">GenericMessage</span></a><span class="symbol">?</span></code>
 <p>Transforms this message into a generic <a href="../../ai.tock.bot.engine.message/-generic-message/index.html">GenericMessage</a>.</p>
-</td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><s><span class="identifier">toSentenceElement</span></s><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.bot.engine.message/-generic-message/index.html"><span class="identifier">GenericMessage</span></a><span class="symbol">?</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -61,21 +57,19 @@
 <tbody>
 <tr>
 <td>
-<p><a href="../../ai.tock.bot.connector.ga/find-transaction-decision-value-input.html">findTransactionDecisionValueInput</a></p>
+<h4><a href="../../ai.tock.bot.connector.ga/find-transaction-decision-value-v3.html">findTransactionDecisionValueV3</a></h4>
 </td>
 <td>
-<code><span class="keyword">fun </span><a href="./index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">.</span><span class="identifier">findTransactionDecisionValueInput</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.bot.connector.ga.model.request/-g-a-transaction-decision-value/index.html"><span class="identifier">GATransactionDecisionValue</span></a><span class="symbol">?</span></code>
-<p>Return a <a href="../../ai.tock.bot.connector.ga.model.request/-g-a-transaction-decision-value/index.html">GATransactionDecisionValue</a> if available.</p>
-</td>
+<p>Return a <a href="../../ai.tock.bot.connector.ga.model.request.transaction.v3/-g-a-transaction-decision-value-v3/index.html">GATransactionDecisionValueV3</a> if available.</p>
+<code><span class="keyword">fun </span><a href="./index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">.</span><span class="identifier">findTransactionDecisionValueV3</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.bot.connector.ga.model.request.transaction.v3/-g-a-transaction-decision-value-v3/index.html"><span class="identifier">GATransactionDecisionValueV3</span></a><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="../../ai.tock.bot.connector.ga/find-transaction-requirements-check-input.html">findTransactionRequirementsCheckInput</a></p>
+<h4><a href="../../ai.tock.bot.connector.ga/find-transaction-requirements-check-result-v3.html">findTransactionRequirementsCheckResultV3</a></h4>
 </td>
 <td>
-<code><span class="keyword">fun </span><a href="./index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">.</span><span class="identifier">findTransactionRequirementsCheckInput</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.bot.connector.ga.model.request/-g-a-transaction-requirements-check-result/index.html"><span class="identifier">GATransactionRequirementsCheckResult</span></a><span class="symbol">?</span></code>
-<p>Return a <a href="../../ai.tock.bot.connector.ga.model.request/-g-a-transaction-requirements-check-result/index.html">GATransactionRequirementsCheckResult</a> if available.</p>
-</td>
+<p>Return a <a href="../../ai.tock.bot.connector.ga.model.request.transaction.v3/-g-a-transaction-requirements-check-result-v3/index.html">GATransactionRequirementsCheckResultV3</a> if available.</p>
+<code><span class="keyword">fun </span><a href="./index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">.</span><span class="identifier">findTransactionRequirementsCheckResultV3</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.bot.connector.ga.model.request.transaction.v3/-g-a-transaction-requirements-check-result-v3/index.html"><span class="identifier">GATransactionRequirementsCheckResultV3</span></a><span class="symbol">?</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -84,93 +78,90 @@
 <tbody>
 <tr>
 <td>
-<p><a href="../../ai.tock.bot.connector.alexa/-alexa-input-message/index.html">AlexaInputMessage</a></p>
+<h4><a href="../../ai.tock.bot.connector.alexa/-alexa-input-message/index.html">AlexaInputMessage</a></h4>
 </td>
 <td>
-<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">AlexaInputMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">ConnectorMessage</span></a></code>
 <p>The user message sent by Alexa.</p>
-</td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">AlexaInputMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">ConnectorMessage</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="../../ai.tock.bot.connector.alexa/-alexa-message/index.html">AlexaMessage</a></p>
+<h4><a href="../../ai.tock.bot.connector.alexa/-alexa-message/index.html">AlexaMessage</a></h4>
 </td>
 <td>
-<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">AlexaMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">ConnectorMessage</span></a></code>
 <p>An alexa message.</p>
-</td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">AlexaMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">ConnectorMessage</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="../../ai.tock.bot.connector.ga/-g-a-request-connector-message/index.html">GARequestConnectorMessage</a></p>
+<h4><a href="../../ai.tock.bot.connector.ga/-g-a-request-connector-message/index.html">GARequestConnectorMessage</a></h4>
 </td>
 <td>
 <code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">GARequestConnectorMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">ConnectorMessage</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="../../ai.tock.bot.connector.ga/-g-a-response-connector-message/index.html">GAResponseConnectorMessage</a></p>
+<h4><a href="../../ai.tock.bot.connector.ga/-g-a-response-connector-message/index.html">GAResponseConnectorMessage</a></h4>
 </td>
 <td>
 <code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">GAResponseConnectorMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">ConnectorMessage</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="../../ai.tock.bot.connector.messenger.model/-messenger-connector-message/index.html">MessengerConnectorMessage</a></p>
+<h4><a href="../../ai.tock.bot.connector.messenger.model/-messenger-connector-message/index.html">MessengerConnectorMessage</a></h4>
 </td>
 <td>
 <code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">MessengerConnectorMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">ConnectorMessage</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="../../ai.tock.bot.connector.slack.model/-slack-connector-message/index.html">SlackConnectorMessage</a></p>
+<h4><a href="../../ai.tock.bot.connector.slack.model/-slack-connector-message/index.html">SlackConnectorMessage</a></h4>
 </td>
 <td>
 <code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">SlackConnectorMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">ConnectorMessage</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="../../ai.tock.bot.connector.teams.messages/-teams-bot-message/index.html">TeamsBotMessage</a></p>
+<h4><a href="../../ai.tock.bot.connector.teams.messages/-teams-bot-message/index.html">TeamsBotMessage</a></h4>
 </td>
 <td>
 <code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">TeamsBotMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">ConnectorMessage</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="../../ai.tock.bot.connector.twitter.model/-twitter-connector-message/index.html">TwitterConnectorMessage</a></p>
+<h4><a href="../../ai.tock.bot.connector.twitter.model/-twitter-connector-message/index.html">TwitterConnectorMessage</a></h4>
 </td>
 <td>
 <code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">TwitterConnectorMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">ConnectorMessage</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="../../ai.tock.bot.connector.twitter.model/-twitter-public-connector-message/index.html">TwitterPublicConnectorMessage</a></p>
+<h4><a href="../../ai.tock.bot.connector.twitter.model/-twitter-public-connector-message/index.html">TwitterPublicConnectorMessage</a></h4>
 </td>
 <td>
 <code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">TwitterPublicConnectorMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">ConnectorMessage</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="../../ai.tock.bot.connector.web/-web-message/index.html">WebMessage</a></p>
+<h4><a href="../../ai.tock.bot.connector.web/-web-message/index.html">WebMessage</a></h4>
 </td>
 <td>
 <code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">WebMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">ConnectorMessage</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="../../ai.tock.bot.connector.whatsapp.model.send/-whats-app-bot-message/index.html">WhatsAppBotMessage</a></p>
+<h4><a href="../../ai.tock.bot.connector.whatsapp.model.send/-whats-app-bot-message/index.html">WhatsAppBotMessage</a></h4>
 </td>
 <td>
 <code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">WhatsAppBotMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">ConnectorMessage</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="../../ai.tock.bot.connector.whatsapp.model.webhook/-whats-app-messages/index.html">WhatsAppMessages</a></p>
+<h4><a href="../../ai.tock.bot.connector.whatsapp.model.webhook/-whats-app-messages/index.html">WhatsAppMessages</a></h4>
 </td>
 <td>
-<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">WhatsAppMessages</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">ConnectorMessage</span></a></code>
 <p>See https://developers.facebook.com/docs/whatsapp/api/webhooks/inbound#message-obj.</p>
-</td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">WhatsAppMessages</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">ConnectorMessage</span></a></code></td>
 </tr>
 </tbody>
 </table>

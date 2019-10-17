@@ -1,4 +1,4 @@
-Provides a Bot REST API
+# Provides a Bot REST API
 
 1) Add a web connector in admin interface with /test relative path.
 
@@ -122,3 +122,7 @@ response:
   ]
 }
 ```
+
+# React chat widget
+
+Please consult the related [documentation](https://github.com/theopenconversationkit/tock-react-kit).

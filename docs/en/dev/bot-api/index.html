@@ -396,6 +396,20 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#node" class="md-nav__link">
+    Node
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api" class="md-nav__link">
+    API
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#install-bot-api-on-your-own-servers" class="md-nav__link">
     Install Bot API on your own servers
   </a>
@@ -668,6 +682,20 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#node" class="md-nav__link">
+    Node
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api" class="md-nav__link">
+    API
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#install-bot-api-on-your-own-servers" class="md-nav__link">
     Install Bot API on your own servers
   </a>
@@ -698,7 +726,7 @@
                 
                 <h1 id="tock-bot-api-mode"><em>Tock Bot API Mode</em><a class="headerlink" href="#tock-bot-api-mode" title="Permanent link">&para;</a></h1>
 <p>This is the recommended way to start to develop with Tock. </p>
-<p>You add custom answers using a REST API. Kotlin wrapper is available.</p>
+<p>You add custom answers using a REST API. Kotlin client and <a href="https://github.com/theopenconversationkit/tock-node">Node client</a> are available.</p>
 <h2 id="connect-to-the-demo-platform">Connect to the demo platform<a class="headerlink" href="#connect-to-the-demo-platform" title="Permanent link">&para;</a></h2>
 <p>Rather than deploying its own Tock platform, it is possible to test the <em>WebSocket</em> or <em>Webhook</em> modes directly on the
 <a href="https://demo.tock.ai/">Tock demo platform</a>.</p>
@@ -710,13 +738,13 @@
 <div class="codehilite"><pre><span></span>        <span class="nt">&lt;dependency&gt;</span>
             <span class="nt">&lt;groupId&gt;</span>ai.tock<span class="nt">&lt;/groupId&gt;</span>
             <span class="nt">&lt;artifactId&gt;</span>tock-bot-api-websocket<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>19.9.0<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;version&gt;</span>19.9.1<span class="nt">&lt;/version&gt;</span>
         <span class="nt">&lt;/dependency&gt;</span>
 </pre></div>
 
 
 <p>Or <a href="https://gradle.org/">Gradle</a> :</p>
-<div class="codehilite"><pre><span></span>      <span class="n">compile</span> <span class="s1">&#39;ai.tock:tock-bot-api-websocket:19.9.0&#39;</span>
+<div class="codehilite"><pre><span></span>      <span class="n">compile</span> <span class="s1">&#39;ai.tock:tock-bot-api-websocket:19.9.1&#39;</span>
 </pre></div>
 
 
@@ -727,13 +755,13 @@ Add the <code>tock-bot-api-webhook</code> dependency to your <a href="https://ko
 <div class="codehilite"><pre><span></span>        <span class="nt">&lt;dependency&gt;</span>
             <span class="nt">&lt;groupId&gt;</span>ai.tock<span class="nt">&lt;/groupId&gt;</span>
             <span class="nt">&lt;artifactId&gt;</span>tock-bot-api-webhook<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>19.9.0<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;version&gt;</span>19.9.1<span class="nt">&lt;/version&gt;</span>
         <span class="nt">&lt;/dependency&gt;</span>
 </pre></div>
 
 
 <p>Or <a href="https://gradle.org/">Gradle</a> :</p>
-<div class="codehilite"><pre><span></span>      <span class="n">compile</span> <span class="s1">&#39;ai.tock:tock-bot-api-webhook:19.9.0&#39;</span>
+<div class="codehilite"><pre><span></span>      <span class="n">compile</span> <span class="s1">&#39;ai.tock:tock-bot-api-webhook:19.9.1&#39;</span>
 </pre></div>
 
 
@@ -789,7 +817,11 @@ You can enter / paste this key into the Kotlin code (see below).</p>
 </pre></div>
 
 
+<p>Please consult the <a href="https://github.com/theopenconversationkit/tock-bot-demo">full source code sample</a>.</p>
 <h2 id="develop-in-another-language">Develop in another language<a class="headerlink" href="#develop-in-another-language" title="Permanent link">&para;</a></h2>
+<h3 id="node">Node<a class="headerlink" href="#node" title="Permanent link">&para;</a></h3>
+<p>Please consult the dedicated <a href="https://github.com/theopenconversationkit/tock-node">node client</a> documentation.</p>
+<h3 id="api">API<a class="headerlink" href="#api" title="Permanent link">&para;</a></h3>
 <p>It is possible to develop in the language of your choice by using directly the underlying REST API.</p>
 <h3 id="install-bot-api-on-your-own-servers">Install Bot API on your own servers<a class="headerlink" href="#install-bot-api-on-your-own-servers" title="Permanent link">&para;</a></h3>
 <p>To use Tock's <em>Bot API</em> mode without the demo platform, a specific module must be deployed on your own server. </p>

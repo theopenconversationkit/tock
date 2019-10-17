@@ -15,16 +15,15 @@
 <tbody>
 <tr>
 <td>
-<p><a href="wrap.html">wrap</a></p>
+<h4><a href="wrap.html">wrap</a></h4>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">infix</span> <span class="keyword">fun </span><span class="identifier">wrap</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.IntentAware$wrap(ai.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
 <p>Is it the right intent?</p>
-</td>
+<code><span class="keyword">open</span> <span class="keyword">infix</span> <span class="keyword">fun </span><span class="identifier">wrap</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.IntentAware$wrap(ai.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="wrapped-intent.html">wrappedIntent</a></p>
+<h4><a href="wrapped-intent.html">wrappedIntent</a></h4>
 </td>
 <td>
 <code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">wrappedIntent</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-intent/index.html"><span class="identifier">Intent</span></a></code></td>
@@ -36,50 +35,46 @@
 <tbody>
 <tr>
 <td>
-<p><a href="../../ai.tock.bot.api.client/-client-story-definition/index.html">ClientStoryDefinition</a></p>
+<h4><a href="../../ai.tock.bot.api.client/-client-story-definition/index.html">ClientStoryDefinition</a></h4>
 </td>
 <td>
 <code><span class="keyword">class </span><span class="identifier">ClientStoryDefinition</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">IntentAware</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="../-intent/index.html">Intent</a></p>
+<h4><a href="../-intent/index.html">Intent</a></h4>
 </td>
 <td>
-<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">Intent</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">IntentAware</span></a></code>
 <p>An intent definition.</p>
-</td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">Intent</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">IntentAware</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="../-intent-aware-base/index.html">IntentAwareBase</a></p>
+<h4><a href="../-intent-aware-base/index.html">IntentAwareBase</a></h4>
 </td>
 <td>
-<code><span class="keyword">interface </span><span class="identifier">IntentAwareBase</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">IntentAware</span></a></code>
-<p>For <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html">Enum</a> based <a href="./index.html">IntentAware</a> implementations.</p>
-</td>
+<p>For <a href="#">Enum</a> based <a href="./index.html">IntentAware</a> implementations.</p>
+<code><span class="keyword">interface </span><span class="identifier">IntentAwareBase</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">IntentAware</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="../-story-definition/index.html">StoryDefinition</a></p>
+<h4><a href="../-story-definition/index.html">StoryDefinition</a></h4>
 </td>
 <td>
-<code><span class="keyword">interface </span><span class="identifier">StoryDefinition</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">IntentAware</span></a></code>
 <p>The definition of a "Story".
 A story holds a list of actions of the same domain.
 The story provides a set of starter intents.
 When theses intents are detected, The story is started.</p>
-</td>
+<code><span class="keyword">interface </span><span class="identifier">StoryDefinition</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">IntentAware</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="../-story-handler-base/index.html">StoryHandlerBase</a></p>
+<h4><a href="../-story-handler-base/index.html">StoryHandlerBase</a></h4>
 </td>
 <td>
-<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">StoryHandlerBase</span><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-story-handler/index.html"><span class="identifier">StoryHandler</span></a><span class="symbol">, </span><span class="identifier">I18nKeyProvider</span><span class="symbol">, </span><a href="./index.html"><span class="identifier">IntentAware</span></a></code>
 <p>Base implementation of <a href="../-story-handler/index.html">StoryHandler</a>.
 Provides also a convenient implementation of <a href="#">I18nKeyProvider</a> to support i18n.</p>
-</td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">StoryHandlerBase</span><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-story-handler/index.html"><span class="identifier">StoryHandler</span></a><span class="symbol">, </span><span class="identifier">I18nKeyProvider</span><span class="symbol">, </span><a href="./index.html"><span class="identifier">IntentAware</span></a></code></td>
 </tr>
 </tbody>
 </table>

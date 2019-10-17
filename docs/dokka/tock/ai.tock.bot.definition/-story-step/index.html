@@ -8,7 +8,7 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">ai.tock.bot.definition</a>&nbsp;/&nbsp;<a href="./index.html">StoryStep</a><br/>
 <br/>
 <h1>StoryStep</h1>
-<code><span class="keyword">interface </span><span class="identifier">StoryStep</span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span></code> <a href="https://github.com/theopenconversationkit/tock/blob/master/bot/engine/src/main/kotlin/definition/StoryStep.kt#L37">(source)</a>
+<code><span class="keyword">interface </span><span class="identifier">StoryStep</span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span></code> <a href="https://github.com/theopenconversationkit/tock/blob/master/bot/engine/src/main/kotlin/definition/StoryStep.kt#L40">(source)</a>
 <p>A step (the implementation is usually an enum) is a part of a <a href="../-story-definition/index.html">StoryDefinition</a>.
 Used to manage workflow in a <a href="../-story-handler/index.html">StoryHandler</a>.</p>
 <h3>Properties</h3>
@@ -16,60 +16,54 @@ Used to manage workflow in a <a href="../-story-handler/index.html">StoryHandler
 <tbody>
 <tr>
 <td>
-<p><a href="base-intent.html">baseIntent</a></p>
+<h4><a href="base-intent.html">baseIntent</a></h4>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">baseIntent</span><span class="symbol">: </span><a href="../-intent-aware/index.html"><span class="identifier">IntentAware</span></a></code>
 <p>Returns <a href="intent.html">intent</a> or the <a href="../-story-definition/main-intent.html">StoryDefinition.mainIntent</a> if <a href="intent.html">intent</a> is null.</p>
-</td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">baseIntent</span><span class="symbol">: </span><a href="../-intent-aware/index.html"><span class="identifier">IntentAware</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="children.html">children</a></p>
+<h4><a href="children.html">children</a></h4>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">children</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span></code>
 <p>The optional children of the step.</p>
-</td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">children</span><span class="symbol">: </span><span class="identifier">Set</span><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="intent.html">intent</a></p>
+<h4><a href="intent.html">intent</a></h4>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">intent</span><span class="symbol">: </span><a href="../-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">?</span></code>
 <p>The main intent of the step.
 If not null and if the current intent is equals to <a href="intent.html">intent</a>,
 this step will be automatically selected to be the current step.</p>
-</td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">intent</span><span class="symbol">: </span><a href="../-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="name.html">name</a></p>
+<h4><a href="name.html">name</a></h4>
 </td>
 <td>
-<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">name</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
 <p>The name of the step. usually automatically defined by the enum field.</p>
-</td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">name</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="other-starter-intents.html">otherStarterIntents</a></p>
+<h4><a href="other-starter-intents.html">otherStarterIntents</a></h4>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">otherStarterIntents</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="../-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">&gt;</span></code>
 <p>Same behaviour than <a href="intent.html">intent</a> in the rare case when the step handle more than one intent.</p>
-</td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">otherStarterIntents</span><span class="symbol">: </span><span class="identifier">Set</span><span class="symbol">&lt;</span><a href="../-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="secondary-intents.html">secondaryIntents</a></p>
+<h4><a href="secondary-intents.html">secondaryIntents</a></h4>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">secondaryIntents</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="../-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">&gt;</span></code>
 <p>The secondary intents of this step. If detected and if the current step is this step,
 the current step remains this step.</p>
-</td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">secondaryIntents</span><span class="symbol">: </span><span class="identifier">Set</span><span class="symbol">&lt;</span><a href="../-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -78,32 +72,38 @@ the current step remains this step.</p>
 <tbody>
 <tr>
 <td>
-<p><a href="answer.html">answer</a></p>
+<h4><a href="answer.html">answer</a></h4>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">answer</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span></code>
 <p>The custom answer for this step.
 When returning a null value,
 it means that the step is not able to answer to the current request.</p>
-</td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">answer</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<span class="identifier">Any</span><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="support-intent.html">supportIntent</a></p>
+<h4><a href="select.html">select</a></h4>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">supportIntent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryStep$supportIntent(ai.tock.bot.definition.Intent)/i">i</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Does this Step has to be automatically selected?
+if returns true, the step is selected.</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">select</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryStep$select(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.engine.action.Action, ai.tock.bot.definition.Intent)/userTimeline">userTimeline</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.user/-user-timeline/index.html"><span class="identifier">UserTimeline</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.StoryStep$select(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.engine.action.Action, ai.tock.bot.definition.Intent)/dialog">dialog</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.dialog/-dialog/index.html"><span class="identifier">Dialog</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.StoryStep$select(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.engine.action.Action, ai.tock.bot.definition.Intent)/action">action</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.StoryStep$select(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.engine.action.Action, ai.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="support-intent.html">supportIntent</a></h4>
+</td>
+<td>
 <p>Does this step support this intent?</p>
-</td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">supportIntent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryStep$supportIntent(ai.tock.bot.definition.Intent)/i">i</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="support-starter-intent.html">supportStarterIntent</a></p>
+<h4><a href="support-starter-intent.html">supportStarterIntent</a></h4>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">supportStarterIntent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryStep$supportStarterIntent(ai.tock.bot.definition.Intent)/i">i</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
 <p>Does this step support this intent as starter intent?</p>
-</td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">supportStarterIntent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryStep$supportStarterIntent(ai.tock.bot.definition.Intent)/i">i</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -112,12 +112,19 @@ it means that the step is not able to answer to the current request.</p>
 <tbody>
 <tr>
 <td>
-<p><a href="../-simple-story-step.html">SimpleStoryStep</a></p>
+<h4><a href="../-simple-story-step.html">SimpleStoryStep</a></h4>
 </td>
 <td>
-<code><span class="keyword">interface </span><span class="identifier">SimpleStoryStep</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span></code>
 <p><a href="./index.html">StoryStep</a> without custom <a href="../-story-handler-definition/index.html">StoryHandlerDefinition</a>.</p>
+<code><span class="keyword">interface </span><span class="identifier">SimpleStoryStep</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="../-story-data-step/index.html">StoryDataStep</a></h4>
 </td>
+<td>
+<p>A step that can have specific preconditions and can use input data object in handler.</p>
+<code><span class="keyword">interface </span><span class="identifier">StoryDataStep</span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">, </span><span class="identifier">D</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span></code></td>
 </tr>
 </tbody>
 </table>

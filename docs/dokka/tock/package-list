@@ -1,5 +1,6 @@
 $dokka.format:html
 $dokka.linkExtension:html
+$dokka.location:ai.tock.bot.connector.teams.messages$equalsTo(com.microsoft.bot.schema.models.CardAction, com.microsoft.bot.schema.models.CardAction)ai.tock.bot.connector.teams.messages/com.microsoft.bot.schema.models.-card-action/equals-to.html
 $dokka.location:ai.tock.bot.engine.dialog$setTo(ai.tock.nlp.api.client.model.Entity, ai.tock.nlp.entity.Value)ai.tock.bot.engine.dialog/ai.tock.nlp.api.client.model.-entity/set-to.html
 $dokka.location:ai.tock.bot.engine.dialog$setTo(ai.tock.nlp.api.client.model.Entity, kotlin.String)ai.tock.bot.engine.dialog/ai.tock.nlp.api.client.model.-entity/set-to.html
 $dokka.location:ai.tock.bot.engine.monitoring$logError(mu.KLogger, kotlin.String, ai.tock.bot.engine.monitoring.RequestTimerData)ai.tock.bot.engine.monitoring/mu.-k-logger/log-error.html
@@ -70,7 +71,9 @@ ai.tock.bot.connector.ga
 ai.tock.bot.connector.ga.model
 ai.tock.bot.connector.ga.model.notification
 ai.tock.bot.connector.ga.model.request
+ai.tock.bot.connector.ga.model.request.transaction.v3
 ai.tock.bot.connector.ga.model.response
+ai.tock.bot.connector.ga.model.response.transaction.v3
 ai.tock.bot.connector.media
 ai.tock.bot.connector.messenger
 ai.tock.bot.connector.messenger.model

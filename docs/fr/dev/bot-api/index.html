@@ -516,6 +516,20 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#node" class="md-nav__link">
+    Node
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api" class="md-nav__link">
+    API
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#installer-bot-api-sur-vos-propres-serveurs" class="md-nav__link">
     Installer Bot API sur vos propres serveurs
   </a>
@@ -896,6 +910,20 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#node" class="md-nav__link">
+    Node
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api" class="md-nav__link">
+    API
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#installer-bot-api-sur-vos-propres-serveurs" class="md-nav__link">
     Installer Bot API sur vos propres serveurs
   </a>
@@ -934,7 +962,8 @@ base de données serait un problème.</p>
 publique Tock.</p>
 </blockquote>
 <p>Cette page présente le développement de bots Tock en mode <em>Bot API</em> en <a href="https://kotlinlang.org/">Kotlin</a>. 
-Notez qu'il est possible de développer dans n'importe quel langage via la <em>Bot API</em>.</p>
+Notez qu'il est possible de développer dans n'importe quel langage via la <em>Bot API</em>.
+En particulier, un <a href="https://github.com/theopenconversationkit/tock-node">client nodejs</a> est disponible.</p>
 <blockquote>
 <p>Une autre section présente le mode <a href="../bot-integre/"><em>Bot Framework</em></a>, plus intégré mais aussi plus couplé à la plateforme Tock.</p>
 </blockquote>
@@ -949,13 +978,13 @@ Notez qu'il est possible de développer dans n'importe quel langage via la <em>B
 <div class="codehilite"><pre><span></span>        <span class="nt">&lt;dependency&gt;</span>
             <span class="nt">&lt;groupId&gt;</span>ai.tock<span class="nt">&lt;/groupId&gt;</span>
             <span class="nt">&lt;artifactId&gt;</span>tock-bot-api-websocket<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>19.9.0<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;version&gt;</span>19.9.1<span class="nt">&lt;/version&gt;</span>
         <span class="nt">&lt;/dependency&gt;</span>
 </pre></div>
 
 
 <p>Ou dans un projet <a href="https://gradle.org/">Gradle</a> :</p>
-<div class="codehilite"><pre><span></span>      <span class="n">compile</span> <span class="s1">&#39;ai.tock:tock-bot-api-websocket:19.9.0&#39;</span>
+<div class="codehilite"><pre><span></span>      <span class="n">compile</span> <span class="s1">&#39;ai.tock:tock-bot-api-websocket:19.9.1&#39;</span>
 </pre></div>
 
 
@@ -965,13 +994,13 @@ Notez qu'il est possible de développer dans n'importe quel langage via la <em>B
 <div class="codehilite"><pre><span></span>        <span class="nt">&lt;dependency&gt;</span>
             <span class="nt">&lt;groupId&gt;</span>ai.tock<span class="nt">&lt;/groupId&gt;</span>
             <span class="nt">&lt;artifactId&gt;</span>tock-bot-api-webhook<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>19.9.0<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;version&gt;</span>19.9.1<span class="nt">&lt;/version&gt;</span>
         <span class="nt">&lt;/dependency&gt;</span>
 </pre></div>
 
 
 <p>Ou dans un projet <a href="https://gradle.org/">Gradle</a> :</p>
-<div class="codehilite"><pre><span></span>      <span class="n">compile</span> <span class="s1">&#39;ai.tock:tock-bot-api-webhook:19.9.0&#39;</span>
+<div class="codehilite"><pre><span></span>      <span class="n">compile</span> <span class="s1">&#39;ai.tock:tock-bot-api-webhook:19.9.1&#39;</span>
 </pre></div>
 
 
@@ -1027,7 +1056,11 @@ la clé d'API du bot auquel vous souhaitez vous connecter.</p>
 </pre></div>
 
 
+<p>Le <a href="https://github.com/theopenconversationkit/tock-bot-demo">code source complet de l'exemple</a> est disponible.</p>
 <h2 id="developper-dans-un-autre-langage">Développer dans un autre langage<a class="headerlink" href="#developper-dans-un-autre-langage" title="Permanent link">&para;</a></h2>
+<h3 id="node">Node<a class="headerlink" href="#node" title="Permanent link">&para;</a></h3>
+<p>Veuillez consulter la documentation dédiée au <a href="https://github.com/theopenconversationkit/tock-node">client nodejs</a> pour plus de détails.</p>
+<h3 id="api">API<a class="headerlink" href="#api" title="Permanent link">&para;</a></h3>
 <p>Il est possible de développer dans n'importe quel langage en programmant directement via l'API.</p>
 <h3 id="installer-bot-api-sur-vos-propres-serveurs">Installer Bot API sur vos propres serveurs<a class="headerlink" href="#installer-bot-api-sur-vos-propres-serveurs" title="Permanent link">&para;</a></h3>
 <p>Pour utiliser le mode <em>Bot API</em> de Tock, un module spécifique doit être déployé avec la plateforme. Généralement appelé 

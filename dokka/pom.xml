@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-root</artifactId>
-        <version>19.9.0</version>
+        <version>19.9.1</version>
     </parent>
 
     <artifactId>tock-dokka</artifactId>
@@ -59,137 +59,137 @@
                     <reportUndocumented>false</reportUndocumented>
                     <sourceLinks>
                         <link>
-                            <dir>${project.basedir}/../shared/src/main/kotlin</dir>
+                            <path>${project.basedir}/../shared/src/main/kotlin</path>
                             <url>https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin
                             </url>
-                            <urlSuffix>#L</urlSuffix>
+                            <lineSuffix>#L</lineSuffix>
                         </link>
                         <link>
-                            <dir>${project.basedir}/../bot/toolkit-base/src/main/kotlin</dir>
+                            <path>${project.basedir}/../bot/toolkit-base/src/main/kotlin</path>
                             <url>
                                 https://github.com/theopenconversationkit/tock/blob/master/bot/toolkit-base/src/main/kotlin
                             </url>
-                            <urlSuffix>#L</urlSuffix>
+                            <lineSuffix>#L</lineSuffix>
                         </link>
                         <link>
-                            <dir>${project.basedir}/../bot/toolkit/src/main/kotlin</dir>
+                            <path>${project.basedir}/../bot/toolkit/src/main/kotlin</path>
                             <url>
                                 https://github.com/theopenconversationkit/tock/blob/master/bot/toolkit/src/main/kotlin
                             </url>
-                            <urlSuffix>#L</urlSuffix>
+                            <lineSuffix>#L</lineSuffix>
                         </link>
                         <link>
-                            <dir>${project.basedir}/../bot/engine/src/main/kotlin</dir>
+                            <path>${project.basedir}/../bot/engine/src/main/kotlin</path>
                             <url>
                                 https://github.com/theopenconversationkit/tock/blob/master/bot/engine/src/main/kotlin
                             </url>
-                            <urlSuffix>#L</urlSuffix>
+                            <lineSuffix>#L</lineSuffix>
                         </link>
                         <link>
-                            <dir>${project.basedir}/../bot/connector-twitter/src/main/kotlin</dir>
+                            <path>${project.basedir}/../bot/connector-twitter/src/main/kotlin</path>
                             <url>
                                 https://github.com/theopenconversationkit/tock/blob/master/bot/connector-twitter/src/main/kotlin
                             </url>
-                            <urlSuffix>#L</urlSuffix>
+                            <lineSuffix>#L</lineSuffix>
                         </link>
                         <link>
-                            <dir>${project.basedir}/../bot/connector-web/src/main/kotlin</dir>
+                            <path>${project.basedir}/../bot/connector-web/src/main/kotlin</path>
                             <url>
                                 https://github.com/theopenconversationkit/tock/blob/master/bot/connector-web/src/main/kotlin
                             </url>
-                            <urlSuffix>#L</urlSuffix>
+                            <lineSuffix>#L</lineSuffix>
                         </link>
                         <link>
-                            <dir>${project.basedir}/../bot/connector-ga/src/main/kotlin</dir>
+                            <path>${project.basedir}/../bot/connector-ga/src/main/kotlin</path>
                             <url>
                                 https://github.com/theopenconversationkit/tock/blob/master/bot/connector-ga/src/main/kotlin
                             </url>
-                            <urlSuffix>#L</urlSuffix>
+                            <lineSuffix>#L</lineSuffix>
                         </link>
                         <link>
-                            <dir>${project.basedir}/../bot/connector-messenger/src/main/kotlin</dir>
+                            <path>${project.basedir}/../bot/connector-messenger/src/main/kotlin</path>
                             <url>
                                 https://github.com/theopenconversationkit/tock/blob/master/bot/connector-messenger/src/main/kotlin
                             </url>
-                            <urlSuffix>#L</urlSuffix>
+                            <lineSuffix>#L</lineSuffix>
                         </link>
                         <link>
-                            <dir>${project.basedir}/../bot/connector-slack/src/main/kotlin</dir>
+                            <path>${project.basedir}/../bot/connector-slack/src/main/kotlin</path>
                             <url>
                                 https://github.com/theopenconversationkit/tock/blob/master/bot/connector-slack/src/main/kotlin
                             </url>
-                            <urlSuffix>#L</urlSuffix>
+                            <lineSuffix>#L</lineSuffix>
                         </link>
                         <link>
-                            <dir>${project.basedir}/../bot/connector-rocketchat/src/main/kotlin</dir>
+                            <path>${project.basedir}/../bot/connector-rocketchat/src/main/kotlin</path>
                             <url>
                                 https://github.com/theopenconversationkit/tock/blob/master/bot/connector-rocketchat/src/main/kotlin
                             </url>
-                            <urlSuffix>#L</urlSuffix>
+                            <lineSuffix>#L</lineSuffix>
                         </link>
                         <link>
-                            <dir>${project.basedir}/../bot/connector-alexa/src/main/kotlin</dir>
+                            <path>${project.basedir}/../bot/connector-alexa/src/main/kotlin</path>
                             <url>
                                 https://github.com/theopenconversationkit/tock/blob/master/bot/connector-alexa/src/main/kotlin
                             </url>
-                            <urlSuffix>#L</urlSuffix>
+                            <lineSuffix>#L</lineSuffix>
                         </link>
                         <link>
-                            <dir>${project.basedir}/../bot/connector-teams/src/main/kotlin</dir>
+                            <path>${project.basedir}/../bot/connector-teams/src/main/kotlin</path>
                             <url>
                                 https://github.com/theopenconversationkit/tock/blob/master/bot/connector-teams/src/main/kotlin
                             </url>
-                            <urlSuffix>#L</urlSuffix>
+                            <lineSuffix>#L</lineSuffix>
                         </link>
                         <link>
-                            <dir>${project.basedir}/../bot/connector-whatsapp/src/main/kotlin</dir>
+                            <path>${project.basedir}/../bot/connector-whatsapp/src/main/kotlin</path>
                             <url>
                                 https://github.com/theopenconversationkit/tock/blob/master/bot/connector-whatsapp/src/main/kotlin
                             </url>
-                            <urlSuffix>#L</urlSuffix>
+                            <lineSuffix>#L</lineSuffix>
                         </link>
                         <link>
-                            <dir>${project.basedir}/../bot/connector-alexa/src/main/kotlin</dir>
+                            <path>${project.basedir}/../bot/connector-alexa/src/main/kotlin</path>
                             <url>
                                 https://github.com/theopenconversationkit/tock/blob/master/bot/connector-alexa/src/main/kotlin
                             </url>
-                            <urlSuffix>#L</urlSuffix>
+                            <lineSuffix>#L</lineSuffix>
                         </link>
                         <link>
-                            <dir>${project.basedir}/../bot/test-base/src/main/kotlin</dir>
+                            <path>${project.basedir}/../bot/test-base/src/main/kotlin</path>
                             <url>https://github.com/theopenconversationkit/tock/blob/master/bot/test-base/src/main/kotlin
                             </url>
-                            <urlSuffix>#L</urlSuffix>
+                            <lineSuffix>#L</lineSuffix>
                         </link>
                         <link>
-                            <dir>${project.basedir}/../bot/test/src/main/kotlin</dir>
+                            <path>${project.basedir}/../bot/test/src/main/kotlin</path>
                             <url>https://github.com/theopenconversationkit/tock/blob/master/bot/test/src/main/kotlin
                             </url>
-                            <urlSuffix>#L</urlSuffix>
+                            <lineSuffix>#L</lineSuffix>
                         </link>
                         <link>
-                            <dir>${project.basedir}/../bot/api/client/src/main/kotlin</dir>
+                            <path>${project.basedir}/../bot/api/client/src/main/kotlin</path>
                             <url>https://github.com/theopenconversationkit/tock/blob/master/bot/api/client/src/main/kotlin
                             </url>
-                            <urlSuffix>#L</urlSuffix>
+                            <lineSuffix>#L</lineSuffix>
                         </link>
                         <link>
-                            <dir>${project.basedir}/../bot/api/model/src/main/kotlin</dir>
+                            <path>${project.basedir}/../bot/api/model/src/main/kotlin</path>
                             <url>https://github.com/theopenconversationkit/tock/blob/master/bot/api/model/src/main/kotlin
                             </url>
-                            <urlSuffix>#L</urlSuffix>
+                            <lineSuffix>#L</lineSuffix>
                         </link>
                         <link>
-                            <dir>${project.basedir}/../bot/api/websocket-base/src/main/kotlin</dir>
+                            <path>${project.basedir}/../bot/api/websocket-base/src/main/kotlin</path>
                             <url>https://github.com/theopenconversationkit/tock/blob/master/bot/api/websocket-base/src/main/kotlin
                             </url>
-                            <urlSuffix>#L</urlSuffix>
+                            <lineSuffix>#L</lineSuffix>
                         </link>
                         <link>
-                            <dir>${project.basedir}/../bot/api/webhook-base/src/main/kotlin</dir>
+                            <path>${project.basedir}/../bot/api/webhook-base/src/main/kotlin</path>
                             <url>https://github.com/theopenconversationkit/tock/blob/master/bot/api/webhook-base/src/main/kotlin
                             </url>
-                            <urlSuffix>#L</urlSuffix>
+                            <lineSuffix>#L</lineSuffix>
                         </link>
                     </sourceLinks>
                     <outputDir>target/dokka</outputDir>

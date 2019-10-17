@@ -14,28 +14,28 @@
 <tbody>
 <tr>
 <td>
-<p><a href="-web-button/index.html">WebButton</a></p>
+<h4><a href="-web-button/index.html">WebButton</a></h4>
 </td>
 <td>
 <code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">WebButton</span></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="-web-connector/index.html">WebConnector</a></p>
+<h4><a href="-web-connector/index.html">WebConnector</a></h4>
 </td>
 <td>
 <code><span class="keyword">class </span><span class="identifier">WebConnector</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.connector/-connector-base/index.html"><span class="identifier">ConnectorBase</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="-web-connector-request/index.html">WebConnectorRequest</a></p>
+<h4><a href="-web-connector-request/index.html">WebConnectorRequest</a></h4>
 </td>
 <td>
 <code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">WebConnectorRequest</span></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="-web-message/index.html">WebMessage</a></p>
+<h4><a href="-web-message/index.html">WebMessage</a></h4>
 </td>
 <td>
 <code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">WebMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a></code></td>
@@ -47,14 +47,13 @@
 <tbody>
 <tr>
 <td>
-<p><a href="-web-handler/index.html">WebHandler</a></p>
+<h4><a href="-web-handler/index.html">WebHandler</a></h4>
 </td>
 <td>
-<code><span class="keyword">annotation</span> <span class="keyword">class </span><span class="identifier">WebHandler</span></code>
 <p>To specify <a href="../ai.tock.bot.definition/-connector-story-handler/index.html">ConnectorStoryHandler</a> for Web connector.
-<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html">KClass</a> passed as <a href="-web-handler/value.html">value</a> of this annotation must have a primary constructor
+<a href="#">KClass</a> passed as <a href="-web-handler/value.html">value</a> of this annotation must have a primary constructor
 with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.</p>
-</td>
+<code><span class="keyword">annotation</span> <span class="keyword">class </span><span class="identifier">WebHandler</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -63,12 +62,11 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 <tbody>
 <tr>
 <td>
-<p><a href="web-connector-type.html">webConnectorType</a></p>
+<h4><a href="web-connector-type.html">webConnectorType</a></h4>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">webConnectorType</span><span class="symbol">: </span><a href="../ai.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a></code>
 <p>The web (REST) connector type.</p>
-</td>
+<code><span class="keyword">val </span><span class="identifier">webConnectorType</span><span class="symbol">: </span><a href="../ai.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a></code></td>
 </tr>
 </tbody>
 </table>
@@ -77,58 +75,52 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 <tbody>
 <tr>
 <td>
-<p><a href="web-button.html">webButton</a></p>
+<h4><a href="web-button.html">webButton</a></h4>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.engine/-bus/index.html"><span class="identifier">Bus</span></a><span class="symbol">&lt;</span><a href="web-button.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span> <a href="web-button.html#T"><span class="identifier">T</span></a><span class="symbol">.</span><span class="identifier">webButton</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.web$webButton(ai.tock.bot.connector.web.webButton.T, kotlin.CharSequence, ai.tock.bot.definition.IntentAware, ai.tock.bot.definition.StoryStep((ai.tock.bot.definition.StoryHandlerDefinition)), ai.tock.bot.definition.Parameters)/title">title</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.web$webButton(ai.tock.bot.connector.web.webButton.T, kotlin.CharSequence, ai.tock.bot.definition.IntentAware, ai.tock.bot.definition.StoryStep((ai.tock.bot.definition.StoryHandlerDefinition)), ai.tock.bot.definition.Parameters)/targetIntent">targetIntent</span><span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.definition/-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.web$webButton(ai.tock.bot.connector.web.webButton.T, kotlin.CharSequence, ai.tock.bot.definition.IntentAware, ai.tock.bot.definition.StoryStep((ai.tock.bot.definition.StoryHandlerDefinition)), ai.tock.bot.definition.Parameters)/step">step</span><span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.definition/-story-step/index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<a href="../ai.tock.bot.definition/-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.web$webButton(ai.tock.bot.connector.web.webButton.T, kotlin.CharSequence, ai.tock.bot.definition.IntentAware, ai.tock.bot.definition.StoryStep((ai.tock.bot.definition.StoryHandlerDefinition)), ai.tock.bot.definition.Parameters)/parameters">parameters</span><span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.definition/-parameters/index.html"><span class="identifier">Parameters</span></a>&nbsp;<span class="symbol">=</span>&nbsp;Parameters()<span class="symbol">)</span><span class="symbol">: </span><a href="-web-button/index.html"><span class="identifier">WebButton</span></a></code>
 <p>Creates a button.</p>
-</td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.engine/-bus/index.html"><span class="identifier">Bus</span></a><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span><span class="symbol">&gt;</span> <span class="identifier">T</span><span class="symbol">.</span><span class="identifier">webButton</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.web$webButton(ai.tock.bot.connector.web.webButton.T, kotlin.CharSequence, ai.tock.bot.definition.IntentAware, ai.tock.bot.definition.StoryStep((ai.tock.bot.definition.StoryHandlerDefinition)), ai.tock.bot.definition.Parameters)/title">title</span><span class="symbol">:</span>&nbsp;<span class="identifier">CharSequence</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.web$webButton(ai.tock.bot.connector.web.webButton.T, kotlin.CharSequence, ai.tock.bot.definition.IntentAware, ai.tock.bot.definition.StoryStep((ai.tock.bot.definition.StoryHandlerDefinition)), ai.tock.bot.definition.Parameters)/targetIntent">targetIntent</span><span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.definition/-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.web$webButton(ai.tock.bot.connector.web.webButton.T, kotlin.CharSequence, ai.tock.bot.definition.IntentAware, ai.tock.bot.definition.StoryStep((ai.tock.bot.definition.StoryHandlerDefinition)), ai.tock.bot.definition.Parameters)/step">step</span><span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.definition/-story-step/index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<a href="../ai.tock.bot.definition/-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.web$webButton(ai.tock.bot.connector.web.webButton.T, kotlin.CharSequence, ai.tock.bot.definition.IntentAware, ai.tock.bot.definition.StoryStep((ai.tock.bot.definition.StoryHandlerDefinition)), ai.tock.bot.definition.Parameters)/parameters">parameters</span><span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.definition/-parameters/index.html"><span class="identifier">Parameters</span></a>&nbsp;<span class="symbol">=</span>&nbsp;Parameters()<span class="symbol">)</span><span class="symbol">: </span><a href="-web-button/index.html"><span class="identifier">WebButton</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="web-card.html">webCard</a></p>
+<h4><a href="web-card.html">webCard</a></h4>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.engine/-bus/index.html"><span class="identifier">Bus</span></a><span class="symbol">&lt;</span><a href="web-card.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span> <a href="web-card.html#T"><span class="identifier">T</span></a><span class="symbol">.</span><span class="identifier">webCard</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.web$webCard(ai.tock.bot.connector.web.webCard.T, ai.tock.bot.connector.media.MediaCard)/card">card</span><span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.connector.media/-media-card/index.html"><span class="identifier">MediaCard</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="-web-message/index.html"><span class="identifier">WebMessage</span></a></code>
 <p>Creates a <a href="-web-message/index.html">WebMessage</a> from a <a href="../ai.tock.bot.connector.media/-media-card/index.html">MediaCard</a>.</p>
-</td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.engine/-bus/index.html"><span class="identifier">Bus</span></a><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span><span class="symbol">&gt;</span> <span class="identifier">T</span><span class="symbol">.</span><span class="identifier">webCard</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.web$webCard(ai.tock.bot.connector.web.webCard.T, ai.tock.bot.connector.media.MediaCard)/card">card</span><span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.connector.media/-media-card/index.html"><span class="identifier">MediaCard</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="-web-message/index.html"><span class="identifier">WebMessage</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="web-carousel.html">webCarousel</a></p>
+<h4><a href="web-carousel.html">webCarousel</a></h4>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.engine/-bus/index.html"><span class="identifier">Bus</span></a><span class="symbol">&lt;</span><a href="web-carousel.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span> <a href="web-carousel.html#T"><span class="identifier">T</span></a><span class="symbol">.</span><span class="identifier">webCarousel</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.web$webCarousel(ai.tock.bot.connector.web.webCarousel.T, ai.tock.bot.connector.media.MediaCarousel)/carousel">carousel</span><span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.connector.media/-media-carousel/index.html"><span class="identifier">MediaCarousel</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="-web-message/index.html"><span class="identifier">WebMessage</span></a></code>
 <p>Creates a <a href="-web-message/index.html">WebMessage</a> from a <a href="../ai.tock.bot.connector.media/-media-carousel/index.html">MediaCarousel</a>.</p>
-</td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.engine/-bus/index.html"><span class="identifier">Bus</span></a><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span><span class="symbol">&gt;</span> <span class="identifier">T</span><span class="symbol">.</span><span class="identifier">webCarousel</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.web$webCarousel(ai.tock.bot.connector.web.webCarousel.T, ai.tock.bot.connector.media.MediaCarousel)/carousel">carousel</span><span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.connector.media/-media-carousel/index.html"><span class="identifier">MediaCarousel</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="-web-message/index.html"><span class="identifier">WebMessage</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="web-message.html">webMessage</a></p>
+<h4><a href="web-message.html">webMessage</a></h4>
 </td>
 <td>
-<code><span class="keyword">fun </span><a href="../ai.tock.bot.engine/-i18n-translator/index.html"><span class="identifier">I18nTranslator</span></a><span class="symbol">.</span><span class="identifier">webMessage</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.web$webMessage(ai.tock.bot.engine.I18nTranslator, kotlin.CharSequence, kotlin.Array((ai.tock.bot.connector.web.WebButton)))/title">title</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">, </span><span class="keyword">vararg</span> <span class="identifier" id="ai.tock.bot.connector.web$webMessage(ai.tock.bot.engine.I18nTranslator, kotlin.CharSequence, kotlin.Array((ai.tock.bot.connector.web.WebButton)))/buttons">buttons</span><span class="symbol">:</span>&nbsp;<a href="-web-button/index.html"><span class="identifier">WebButton</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="-web-message/index.html"><span class="identifier">WebMessage</span></a></code>
 <p>Creates a text with buttons.</p>
-</td>
+<code><span class="keyword">fun </span><a href="../ai.tock.bot.engine/-i18n-translator/index.html"><span class="identifier">I18nTranslator</span></a><span class="symbol">.</span><span class="identifier">webMessage</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.web$webMessage(ai.tock.bot.engine.I18nTranslator, kotlin.CharSequence, kotlin.Array((ai.tock.bot.connector.web.WebButton)))/title">title</span><span class="symbol">:</span>&nbsp;<span class="identifier">CharSequence</span><span class="symbol">, </span><span class="keyword">vararg</span> <span class="identifier" id="ai.tock.bot.connector.web$webMessage(ai.tock.bot.engine.I18nTranslator, kotlin.CharSequence, kotlin.Array((ai.tock.bot.connector.web.WebButton)))/buttons">buttons</span><span class="symbol">:</span>&nbsp;<a href="-web-button/index.html"><span class="identifier">WebButton</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="-web-message/index.html"><span class="identifier">WebMessage</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="web-text-button.html">webTextButton</a></p>
+<h4><a href="web-text-button.html">webTextButton</a></h4>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.engine/-bus/index.html"><span class="identifier">Bus</span></a><span class="symbol">&lt;</span><a href="web-text-button.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span> <a href="web-text-button.html#T"><span class="identifier">T</span></a><span class="symbol">.</span><span class="identifier">webTextButton</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.web$webTextButton(ai.tock.bot.connector.web.webTextButton.T, kotlin.CharSequence)/text">text</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="-web-button/index.html"><span class="identifier">WebButton</span></a></code>
 <p>Creates a button from a text.</p>
-</td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.engine/-bus/index.html"><span class="identifier">Bus</span></a><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span><span class="symbol">&gt;</span> <span class="identifier">T</span><span class="symbol">.</span><span class="identifier">webTextButton</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.web$webTextButton(ai.tock.bot.connector.web.webTextButton.T, kotlin.CharSequence)/text">text</span><span class="symbol">:</span>&nbsp;<span class="identifier">CharSequence</span><span class="symbol">)</span><span class="symbol">: </span><a href="-web-button/index.html"><span class="identifier">WebButton</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="with-web.html">withWeb</a></p>
+<h4><a href="with-web.html">withWeb</a></h4>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.engine/-bus/index.html"><span class="identifier">Bus</span></a><span class="symbol">&lt;</span><a href="with-web.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span> <a href="with-web.html#T"><span class="identifier">T</span></a><span class="symbol">.</span><span class="identifier">withWeb</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.web$withWeb(ai.tock.bot.connector.web.withWeb.T, kotlin.Function0((ai.tock.bot.connector.web.WebMessage)))/messageProvider">messageProvider</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="-web-message/index.html"><span class="identifier">WebMessage</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="with-web.html#T"><span class="identifier">T</span></a></code>
 <p>Adds a Web <a href="../ai.tock.bot.connector/-connector-message/index.html">ConnectorMessage</a> if the current connector is Web.
 You need to call <a href="#">BotBus.send</a> or <a href="#">BotBus.end</a> later to send this message.</p>
-</td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.engine/-bus/index.html"><span class="identifier">Bus</span></a><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span><span class="symbol">&gt;</span> <span class="identifier">T</span><span class="symbol">.</span><span class="identifier">withWeb</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.web$withWeb(ai.tock.bot.connector.web.withWeb.T, kotlin.Function0((ai.tock.bot.connector.web.WebMessage)))/messageProvider">messageProvider</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="-web-message/index.html"><span class="identifier">WebMessage</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code></td>
 </tr>
 </tbody>
 </table>
