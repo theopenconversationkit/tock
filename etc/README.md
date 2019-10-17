@@ -1,3 +1,13 @@
+# How to build intermediate build
+
+Add a git tag using the convention "build-$version-$buildNumber"
+
+> Example : git tag build-19.9.1-10 && git push origin --tags
+
+The build is automatically uploaded by travis to https://dl.bintray.com/tock/tock
+
+> Don't forget to tag also https://github.com/theopenconversationkit/tock-corenlp project if you need it
+
 # Deploy in maven repository
 
 ## Local configuration
