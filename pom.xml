@@ -135,6 +135,12 @@
                 <artifactId>kotlinx-coroutines-core</artifactId>
                 <version>${couroutine}</version>
             </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlinx</groupId>
+                <artifactId>kotlinx-coroutines-slf4j</artifactId>
+                <version>${couroutine}</version>
+            </dependency>
+
 
             <dependency>
                 <groupId>com.github.salomonbrys.kodein</groupId>
