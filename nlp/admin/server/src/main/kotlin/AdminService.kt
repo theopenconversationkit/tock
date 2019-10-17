@@ -155,14 +155,10 @@ object AdminService {
     fun createOrUpdateIntent(namespace: String, intent: IntentDefinition): IntentDefinition? {
         return if (namespace == intent.namespace) {
             val intentId = front.getIntentIdByQualifiedName(intent.qualifiedName)
-            if (intentId == null) {
-                front.save(intent)
-                intent.applications.forEach { appId ->
-                    front.save(front.getApplicationById(appId)!!.let { it.copy(intents = it.intents + intent._id) })
-                }
+            (if (intentId == null) {
                 intent
             } else {
-                val oldIntent = front.getIntentById(intentId)!!.run {
+                front.getIntentById(intentId)!!.run {
                     copy(
                         label = intent.label,
                         description = intent.description,
@@ -174,8 +170,11 @@ object AdminService {
                         sharedIntents = intent.sharedIntents + sharedIntents
                     )
                 }
-                front.save(oldIntent)
-                oldIntent
+            }).apply {
+                front.save(this)
+                applications.forEach { appId ->
+                    front.save(front.getApplicationById(appId)!!.let { it.copy(intents = it.intents + _id) })
+                }
             }
         } else {
             null
