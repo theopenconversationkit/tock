@@ -80,6 +80,8 @@ fun <T> Vertx.blocking(blockingHandler: (Promise<T>) -> Unit, resultHandler: (As
             } catch (throwable: Throwable) {
                 logger.error(throwable) { throwable.message }
                 future.fail(throwable)
+            } finally {
+                future.tryFail("call not completed")
             }
         },
         false,
@@ -129,8 +131,8 @@ internal fun vertxExecutor(): Executor {
             val loggingContext = MDCContext().contextMap
             vertx.blocking<Unit>({
                 invokeWithLoggingContext(loggingContext) {
-                    invoke(runnable)
-                    it.complete()
+                    catchableRunnable(runnable).invoke()
+                    it.tryComplete()
                 }
             }, {})
         }
@@ -139,7 +141,11 @@ internal fun vertxExecutor(): Executor {
             val loggingContext = MDCContext().contextMap
             vertx.blocking<T>({
                 invokeWithLoggingContext(loggingContext) {
-                    blocking.call()
+                    try {
+                        blocking.call()
+                    } finally {
+                        it.tryFail("call not completed")
+                    }
                 }
             }, {
                 if (it.succeeded()) {
@@ -164,7 +170,7 @@ internal fun vertxExecutor(): Executor {
             }
         }
 
-        private fun invoke(runnable: () -> Unit) {
+        private fun catchableRunnable(runnable: () -> Unit): () -> Unit = {
             try {
                 runnable.invoke()
             } catch (throwable: Throwable) {
@@ -173,10 +179,13 @@ internal fun vertxExecutor(): Executor {
         }
 
         private fun invokeWithLoggingContext(loggingContext: MDCContextMap, runnable: () -> Unit) {
-            runnable.let {
-                loggingContext?.let { map ->
-                    withLoggingContext(map, it)
-                }?: invoke(it)
+            val r = catchableRunnable(runnable)
+            loggingContext.let { context ->
+                if (context == null) {
+                    r.invoke()
+                } else {
+                    withLoggingContext(context, r)
+                }
             }
         }
     }
