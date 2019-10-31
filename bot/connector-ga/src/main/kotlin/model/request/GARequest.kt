@@ -44,7 +44,8 @@ data class GARequest(
             } else {
                 UserInterfaceType.textChat
             }
-        return EventState(userInterface = ui)
+        val userVerified = (ui != UserInterfaceType.voiceAssistant) || (user.userVerificationStatus == GAUserVerificationStatus.VERIFIED)
+        return EventState(userInterface = ui, userVerified = userVerified)
     }
 
     /**

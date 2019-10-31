@@ -25,6 +25,7 @@ data class GAUser(
         val profile: GAUserProfile? = null,
         val accessToken: String? = null,
         val permissions: Set<GAPermission>? = null,
+        val userVerificationStatus : GAUserVerificationStatus = GAUserVerificationStatus.VERIFIED,
         val locale: String = defaultLocale.toLanguageTag()) {
 
     companion object {

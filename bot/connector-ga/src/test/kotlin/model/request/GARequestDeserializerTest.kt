@@ -55,7 +55,7 @@ class GARequestDeserializerTest {
         val request: GARequest = mapper.readValue(json)
         assertEquals(
             GARequest(
-                user = GAUser(profile = null, accessToken = null, permissions = null, locale = "en-US"),
+                user = GAUser(profile = null, accessToken = null, permissions = null, locale = "en-US", userVerificationStatus = GAUserVerificationStatus.UNKNOWN),
                 device = GADevice(
                     location = GALocation(
                         coordinates = GALatLng(

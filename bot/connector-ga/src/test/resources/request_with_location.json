@@ -1,6 +1,7 @@
 {
   "user": {
-    "locale": "en-US"
+    "locale": "en-US",
+    "userVerificationStatus" : "UNKNOWN"
   },
   "conversation": {
     "conversationId": "1505388822587",

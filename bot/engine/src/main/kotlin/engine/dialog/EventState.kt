@@ -40,6 +40,10 @@ data class EventState(
      */
     var userInterface: UserInterfaceType? = null,
     /**
+     * The user verification status.
+     */
+    var userVerified: Boolean = true,
+    /**
      * The current intent of the action.
      */
     var intent: String? = null,
