@@ -7,8 +7,9 @@ Tock has been designed to remain an open platform shared with the community.<br/
 This lists the next planed events related to Tock, as well as groups identified to share with the community:
 
 * _November:_
-    * We should present Tock at the following [***Paris NLP*** (season 4 meetup #2)](https://www.meetup.com/fr-FR/Paris-NLP/events/lkmbhqyzpbkc/)
-    * An open ***Hackathon*** event will take place in Paris the 21-22 of November around conversational AI with Tock (+ info very soon)
+    * We may present Tock at the [***Paris NLP*** (season 4 meetup #2)](https://www.meetup.com/fr-FR/Paris-NLP/events/lkmbhqyzpbkc/) (to be confirmed)
+    * An [open ***Hackathon*** event](https://hackandbot.sncf.com/) will take place in Paris the 21-22 of November 
+    around conversational AI with Tock
 
 * _December:_
     * A talk about open conversational AI platforms has been submitted to the 
