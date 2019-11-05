@@ -69,7 +69,7 @@ Un exemple de connecteur spécifique est disponible dans le projet d'exemple [Bo
 
 Pour définir son propre connecteur, quatres étapes sont nécessaires :
 
-1) Implémenter l'interface [`Connector`](https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.connector/-connector/index.html) 
+1) Implémenter l'interface [`Connector`](https://doc.tock.ai/tock/dokka/tock/ai.tock.bot.connector/-connector/index.html) 
 
 Voici un exemple d'implémentation :
 
@@ -133,7 +133,7 @@ class TestConnectorCallback(
 
 ```
 
-2) Implémenter l'interface [`ConnectorProvider`](https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.connector/-connector-provider/index.html)
+2) Implémenter l'interface [`ConnectorProvider`](https://doc.tock.ai/tock/dokka/tock/ai.tock.bot.connector/-connector-provider/index.html)
 
 Voici un exemple d'implémentation :
 
