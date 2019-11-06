@@ -29,7 +29,7 @@ data class MessageData(
 ) {
     fun toGenericMessage(): GenericMessage {
         return GenericMessage(
-            texts = mapOf("title" to text),
+            texts = mapOf("text" to text),
             choices = (quickReply?.toChoices() ?: emptyList())  + (ctas?.map { it.toChoice() } ?: emptyList())
         )
     }
