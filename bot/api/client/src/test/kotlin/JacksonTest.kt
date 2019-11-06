@@ -16,13 +16,18 @@
 
 package ai.tock.bot.api.client
 
-val story1 = newStory("story1") {
-    end("Hello")
+import ai.tock.bot.api.model.message.bot.I18nText
+import ai.tock.shared.jackson.mapper
+import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
+
+class JacksonTest {
+
+    @Test
+    fun `I18nText has to be serialized without length property`() {
+        val i18n = I18nText("a")
+        assertEquals("""{"text":"a"}""", mapper.writeValueAsString(i18n))
+        val i18n2 = I18nText("a", listOf("b"), false)
+        assertEquals("""{"text":"a","args":["b"],"toBeTranslated":false}""", mapper.writeValueAsString(i18n2))
+    }
 }
-
-val story2 = newStory("story2") {
-    end("Goodby")
-}
-
-val test = newBot("key", story1, story2)
-
