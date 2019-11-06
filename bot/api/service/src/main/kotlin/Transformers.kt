@@ -35,7 +35,7 @@ internal fun BotBus.toUserRequest(): UserRequest =
         intent?.wrappedIntent()?.name,
         entities
             .values
-            .mapNotNull { it.value }
+            .flatMap { it.newValues }
             .map { it.toEntity(this) },
         action.toApiMessage(),
         story.definition.id,
