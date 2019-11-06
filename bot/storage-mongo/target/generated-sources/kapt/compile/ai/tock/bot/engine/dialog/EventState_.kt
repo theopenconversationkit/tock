@@ -23,6 +23,8 @@ private val __TargetConnectorType: KProperty1<EventState, ConnectorType?>
     get() = EventState::targetConnectorType
 private val __UserInterface: KProperty1<EventState, UserInterfaceType?>
     get() = EventState::userInterface
+private val __UserVerified: KProperty1<EventState, Boolean?>
+    get() = EventState::userVerified
 private val __Intent: KProperty1<EventState, String?>
     get() = EventState::intent
 private val __Step: KProperty1<EventState, String?>
@@ -41,6 +43,9 @@ class EventState_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Eve
     val userInterface: KPropertyPath<T, UserInterfaceType?>
         get() = KPropertyPath(this,__UserInterface)
 
+    val userVerified: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__UserVerified)
+
     val intent: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Intent)
 
@@ -56,6 +61,8 @@ class EventState_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Eve
             get() = ConnectorType_(null,__TargetConnectorType)
         val UserInterface: KProperty1<EventState, UserInterfaceType?>
             get() = __UserInterface
+        val UserVerified: KProperty1<EventState, Boolean?>
+            get() = __UserVerified
         val Intent: KProperty1<EventState, String?>
             get() = __Intent
         val Step: KProperty1<EventState, String?>
@@ -76,6 +83,9 @@ class EventState_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
 
     val userInterface: KPropertyPath<T, UserInterfaceType?>
         get() = KPropertyPath(this,__UserInterface)
+
+    val userVerified: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__UserVerified)
 
     val intent: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Intent)
@@ -100,6 +110,9 @@ class EventState_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<
 
     val userInterface: KPropertyPath<T, UserInterfaceType?>
         get() = KPropertyPath(this,__UserInterface)
+
+    val userVerified: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__UserVerified)
 
     val intent: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Intent)
