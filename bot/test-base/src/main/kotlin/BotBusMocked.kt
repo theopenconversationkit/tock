@@ -175,7 +175,7 @@ fun mockTockCommon(bus: BotBus) {
     every { bus.translate(any()) } answers { args[0] as TranslatedSequence }
     every { bus.translate(any(), *anyVararg()) } answers {
         Translator.formatMessage(
-            args[0] as String,
+            args[0].toString(),
             I18nContext(defaultLocale, textChat, null),
             args.subList(1, args.size)
         ).raw
