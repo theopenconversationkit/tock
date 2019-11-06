@@ -54,9 +54,10 @@ data class EntityStateValue(
 
     private var updated: Instant = initialUpdate
     private var loaded: Boolean = stateValueId == null
+    internal var multiRequestedValues: List<EntityValue>? = null
 
     constructor(action: Action, entityValue: EntityValue)
-            : this(entityValue, mutableListOf(ArchivedEntityValue(entityValue, action)))
+        : this(entityValue, mutableListOf(ArchivedEntityValue(entityValue, action)))
 
     constructor(entity: Entity, value: Value) : this(EntityValue(entity, value))
 
@@ -89,7 +90,7 @@ data class EntityStateValue(
                     injector.provide<UserTimelineDAO>().getArchivedEntityValues(stateValueId, oldActionsMap)
                         .run { if (isEmpty()) emptyList() else subList(0, size - 1) }
                 }
-                        ?: emptyList()
+                    ?: emptyList()
             currentHistory.addAll(0, old)
         }
     }
@@ -128,9 +129,12 @@ data class EntityStateValue(
     val lastUpdate: Instant get() = updated
 
     /**
-     * Is this state has been updated un current [BotBus]?
+     * Is this state has been updated in current [BotBus]?
      */
     val hasBeanUpdatedInBus: Boolean get() = initialUpdate != updated
 
-
+    /**
+     *  All values for the current request when merge is not applicable.
+     */
+    val newValues: List<EntityValue> get() = multiRequestedValues ?: listOfNotNull(currentValue)
 }
