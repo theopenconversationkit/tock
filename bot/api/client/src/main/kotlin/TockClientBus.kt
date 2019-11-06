@@ -26,6 +26,7 @@ import ai.tock.bot.api.model.message.bot.Carousel
 import ai.tock.bot.api.model.message.bot.CustomMessage
 import ai.tock.bot.api.model.message.bot.I18nText
 import ai.tock.bot.api.model.message.bot.Sentence
+import ai.tock.bot.api.model.message.bot.Suggestion
 import ai.tock.bot.api.model.message.user.UserMessage
 import ai.tock.bot.api.model.websocket.RequestData
 import ai.tock.bot.connector.ConnectorMessage
@@ -36,9 +37,9 @@ import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.jackson.ConstrainedValueWrapper
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nLabelValue
-import ai.tock.translator.RawString
-import ai.tock.translator.TranslatedString
+import ai.tock.translator.TranslatedSequence
 import ai.tock.translator.UserInterfaceType
+import ai.tock.translator.raw
 import java.util.Locale
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -85,17 +86,17 @@ class TockClientBus(
 
     override fun defaultDelay(answerIndex: Int): Long = 0
 
-    private fun addMessage(plainText: CharSequence?, delay: Long) {
+    private fun addMessage(plainText: CharSequence?, delay: Long, suggestions: List<Suggestion> = emptyList()) {
         context.connectorMessages.remove(targetConnectorType)?.also {
             messages.add(CustomMessage(ConstrainedValueWrapper(it), delay))
         }
         if (plainText != null) {
             messages.add(
                 when (plainText) {
-                    is String -> Sentence(I18nText(plainText), delay = delay)
-                    is TranslatedString, is RawString -> Sentence(I18nText(plainText.toString(), toBeTranslated = false), delay = delay)
-                    is I18nText -> Sentence(plainText, delay = delay)
-                    else -> Sentence(I18nText(plainText.toString()), delay = delay)
+                    is String -> Sentence(I18nText(plainText), delay = delay, suggestions = suggestions)
+                    is TranslatedSequence -> Sentence(I18nText(plainText.toString(), toBeTranslated = false), delay = delay, suggestions = suggestions)
+                    is I18nText -> Sentence(plainText, delay = delay, suggestions = suggestions)
+                    else -> Sentence(I18nText(plainText.toString()), delay = delay, suggestions = suggestions)
                 }
             )
         }
@@ -108,7 +109,18 @@ class TockClientBus(
     }
 
     override fun sendRawText(plainText: CharSequence?, delay: Long): ClientBus {
-        addMessage(plainText, delay)
+        addMessage(plainText?.raw, delay)
+        return this
+    }
+
+    override fun send(i18nText: CharSequence, suggestions: List<Suggestion>, delay: Long, vararg i18nArgs: Any?): ClientBus {
+        addMessage(translate(i18nText, i18nArgs), delay, suggestions)
+        return this
+    }
+
+    override fun end(i18nText: CharSequence, suggestions: List<Suggestion>, delay: Long, vararg i18nArgs: Any?): ClientBus {
+        addMessage(translate(i18nText, i18nArgs), delay, suggestions)
+        answer(messages)
         return this
     }
 
