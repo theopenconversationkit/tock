@@ -108,10 +108,10 @@ internal class Nlp : NlpController {
                         }
 
                         val entityEvaluations = customEntityEvaluations +
-                                nlpResult.entities
-                                    .asSequence()
-                                    .filter { e -> customEntityEvaluations.none { it.entity == e.entity } }
-                                    .map { EntityValue(nlpResult, it) }
+                            nlpResult.entities
+                                .asSequence()
+                                .filter { e -> customEntityEvaluations.none { it.entity == e.entity } }
+                                .map { EntityValue(nlpResult, it) }
                         sentence.state.entityValues.addAll(entityEvaluations)
 
                         dialog.apply {
@@ -181,7 +181,7 @@ internal class Nlp : NlpController {
                     if (result != null) {
                         nlpResult.copy(
                             entities = result.values
-                                    + nlpResult.entities.filter { e ->
+                                + nlpResult.entities.filter { e ->
                                 result.values.none { it.start == e.start }
                             })
                     } else {
@@ -257,7 +257,7 @@ internal class Nlp : NlpController {
                 toQueryContext(),
                 NlpQueryState(
                     dialog.state.nextActionState?.states
-                            ?: listOfNotNull(dialog.currentStory?.definition?.mainIntent()?.name).toSet()
+                        ?: listOfNotNull(dialog.currentStory?.definition?.mainIntent()?.name).toSet()
                 )
             )
         }
@@ -273,6 +273,9 @@ internal class Nlp : NlpController {
             return if (oldValue == null) {
                 if (eligibleToMergeValues.size < 2) {
                     EntityStateValue(action, defaultNewValue)
+                        .apply {
+                            multiRequestedValues = newValues
+                        }
                 } else {
                     val result = mergeValues(entity, eligibleToMergeValues, defaultNewValue)
                     EntityStateValue(action, result)
@@ -282,6 +285,9 @@ internal class Nlp : NlpController {
                     || (eligibleToMergeValues.size == 1 && oldValue.value?.value == null)
                 ) {
                     oldValue.changeValue(defaultNewValue, action)
+                        .apply {
+                            multiRequestedValues = newValues
+                        }
                 } else {
                     val result = mergeValues(entity, eligibleToMergeValues, defaultNewValue, oldValue)
                     oldValue.changeValue(result, action)

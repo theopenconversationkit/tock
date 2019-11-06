@@ -72,12 +72,12 @@ class UserTimeline(
     /**
      * Last action if any.
      */
-    val lastAction: Action? = dialogs.findLast { it.lastAction != null }?.lastAction
+    val lastAction: Action? get() = dialogs.findLast { it.lastAction != null }?.lastAction
 
     /**
      * Last user action if any.
      */
-    val lastUserAction: Action? = dialogs.findLast { it.lastUserAction != null }?.lastUserAction
+    val lastUserAction: Action? get() = dialogs.findLast { it.lastUserAction != null }?.lastUserAction
 
     override fun toString(): String {
         return "UserTimeline(playerId=$playerId)"
