@@ -16,6 +16,7 @@
 
 package ai.tock.bot.engine.user
 
+import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.Story
 
@@ -67,6 +68,16 @@ class UserTimeline(
             }
         }
     }
+
+    /**
+     * Last action if any.
+     */
+    val lastAction: Action? = dialogs.findLast { it.lastAction != null }?.lastAction
+
+    /**
+     * Last user action if any.
+     */
+    val lastUserAction: Action? = dialogs.findLast { it.lastUserAction != null }?.lastUserAction
 
     override fun toString(): String {
         return "UserTimeline(playerId=$playerId)"

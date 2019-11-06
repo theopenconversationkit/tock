@@ -22,7 +22,6 @@ import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendLocation
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.user.PlayerId
-import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.TimeBoxedFlag
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.bot.engine.user.UserState
@@ -63,7 +62,7 @@ internal data class UserTimelineCol(
     val namespace: String? = null
 ) {
 
-    constructor(timelineId: String, namespace:String, newTimeline: UserTimeline, oldTimeline: UserTimelineCol?) : this(
+    constructor(timelineId: String, namespace: String, newTimeline: UserTimeline, oldTimeline: UserTimelineCol?) : this(
         timelineId.toId(),
         newTimeline.playerId,
         UserPreferencesWrapper(newTimeline.userPreferences),
@@ -72,7 +71,7 @@ internal data class UserTimelineCol(
         namespace = namespace
     ) {
         //register last action
-        newTimeline.dialogs.lastOrNull()?.currentStory?.actions?.lastOrNull { it.playerId.type == PlayerType.user }
+        newTimeline.lastUserAction
             ?.let {
                 lastUserActionDate = it.date
                 lastActionText = when (it) {
@@ -87,7 +86,7 @@ internal data class UserTimelineCol(
         oldTimeline?.let {
             applicationIds.addAll(it.applicationIds)
         }
-        newTimeline.dialogs.lastOrNull()?.currentStory?.actions?.forEach {
+        newTimeline.lastAction?.also {
             applicationIds.add(it.applicationId)
         }
     }

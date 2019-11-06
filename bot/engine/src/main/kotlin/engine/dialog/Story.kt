@@ -24,6 +24,7 @@ import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendChoice
+import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.shared.error
 import mu.KotlinLogging
@@ -47,6 +48,11 @@ data class Story(
      * The last action of the story.
      */
     val lastAction: Action? get() = actions.lastOrNull()
+
+    /**
+     * The last user action of the story.
+     */
+    val lastUserAction: Action? get() = actions.findLast { it.playerId.type == PlayerType.user }
 
     /**
      * The current step of the story.
