@@ -61,7 +61,7 @@ fun <T : Bus<T>> T.webButton(
  * Creates a button from a text.
  */
 fun <T : Bus<T>> T.webTextButton(text: CharSequence): WebButton =
-    translate(text).toString().let { t -> WebButton(t, SendChoice.encodeNlpChoiceId(t)) }
+    WebButton(translate(text).toString())
 
 /**
  * Creates a [WebMessage] from a [MediaCard].
