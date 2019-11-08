@@ -29,7 +29,7 @@ import java.time.Instant
 /**
  * A simple attachment file sent.
  */
-class SendAttachment(playerId: PlayerId,
+open class SendAttachment(playerId: PlayerId,
                      applicationId: String,
                      recipientId: PlayerId,
                      val url: String,
