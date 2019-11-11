@@ -22,10 +22,10 @@ private val PATTERN =
     Pattern.compile("[a-zA-Z0-9\\.\\_\\-]{1,256}\\@[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}(\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25})+")
 
 
-data class UserActionPayload(val payload: String) {
-    fun hasEmailPayloadFromMessenger() : Boolean {
-        val e = payload.trim()
-        if (e.isEmpty()) {
+data class UserActionPayload(val payload: String?) {
+    fun hasEmailPayloadFromMessenger(): Boolean {
+        val e = payload?.trim()
+        if (e.isNullOrEmpty()) {
             return false
         }
 
