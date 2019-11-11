@@ -16,6 +16,7 @@
 
 package ai.tock.bot.connector.messenger.model.send
 
+import ai.tock.bot.definition.Intent.Companion
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.message.Choice
 
@@ -23,15 +24,17 @@ import ai.tock.bot.engine.message.Choice
  *
  */
 data class PostbackButton(
-        val payload: String,
-        val title: String) : Button(ButtonType.postback) {
+    val payload: String?,
+    val title: String) : Button(ButtonType.postback) {
 
     override fun toChoice(): Choice {
-        return SendChoice.decodeChoiceId(payload)
+        return payload?.let {
+            SendChoice.decodeChoiceId(it)
                 .let { (intent, params) ->
                     Choice(
-                            intent,
-                            params + (SendChoice.TITLE_PARAMETER to title))
+                        intent,
+                        params + (SendChoice.TITLE_PARAMETER to title))
                 }
+        } ?: Choice(Companion.unknown.name, mapOf(SendChoice.TITLE_PARAMETER to title))
     }
 }

@@ -61,11 +61,13 @@ internal object WebhookActionConverter {
             is MessageWebhook ->
                 with(message.message) {
                     if (quickReply != null) {
-                        if(quickReply!!.hasEmailPayloadFromMessenger()){
-                            readSentence(message,applicationId)
-                        }else{
-                            SendChoice.decodeChoiceId(quickReply!!.payload)
-                                .let { (intentName, parameters) ->
+                        if (quickReply!!.hasEmailPayloadFromMessenger()) {
+                            readSentence(message, applicationId)
+                        } else {
+                            quickReply
+                                ?.payload
+                                ?.let { SendChoice.decodeChoiceId(it) }
+                                ?.let { (intentName, parameters) ->
                                     if (parameters.containsKey(SendChoice.NLP)) {
                                         SendSentence(
                                             message.playerId(PlayerType.user),
@@ -83,15 +85,21 @@ internal object WebhookActionConverter {
                                         )
                                     }
                                 }
+                                ?: SendSentence(
+                                    message.playerId(PlayerType.user),
+                                    applicationId,
+                                    message.recipientId(PlayerType.bot),
+                                    "(click)"
+                                )
                         }
                     } else {
                         val a = attachments
                         if (a.isNotEmpty()) {
-                            val type = a.first().type
-                            when (type) {
-                                AttachmentType.location -> readLocation(message, a.first(), applicationId)
-                                AttachmentType.image -> readAttachment(message, a.first(), applicationId, image)
-                                AttachmentType.audio -> readAttachment(message, a.first(), applicationId, audio)
+                            val first = a.first()
+                            when (first.type) {
+                                AttachmentType.location -> readLocation(message, first, applicationId)
+                                AttachmentType.image -> readAttachment(message, first, applicationId, image)
+                                AttachmentType.audio -> readAttachment(message, first, applicationId, audio)
                                 // ignore for now
                                 else -> readSentence(message, applicationId)
                             }
@@ -101,8 +109,8 @@ internal object WebhookActionConverter {
                     }
                 }
             is PostbackWebhook ->
-                SendChoice.decodeChoiceId(message.postback.payload)
-                    .let { (intentName, parameters) ->
+                message.postback.payload?.let { payload -> SendChoice.decodeChoiceId(payload) }
+                    ?.let { (intentName, parameters) ->
                         SendChoice(
                             message.playerId(PlayerType.user),
                             applicationId,
@@ -111,6 +119,12 @@ internal object WebhookActionConverter {
                             parameters
                         )
                     }
+                    ?: SendSentence(
+                        message.playerId(PlayerType.user),
+                        applicationId,
+                        message.recipientId(PlayerType.bot),
+                        "(click)"
+                    )
             is OptinWebhook ->
                 SubscribingEvent(
                     message.playerId(PlayerType.user),
