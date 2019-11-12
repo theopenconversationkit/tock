@@ -39,6 +39,8 @@ import ai.tock.shared.checkMaxLengthAllowed
 import ai.tock.shared.jackson.AnyValueWrapper
 import ai.tock.shared.security.TockObfuscatorService.obfuscate
 import ai.tock.translator.UserInterfaceType.textChat
+import com.fasterxml.jackson.annotation.JsonAlias
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
@@ -320,6 +322,8 @@ internal data class DialogCol(
     @JsonTypeName(value = "attachment")
     class SendAttachmentMongoWrapper(
         val url: String,
+        @JsonProperty("attachment_type")
+        @JsonAlias("type")
         val type: SendAttachment.AttachmentType
     ) : ActionMongoWrapper() {
 
