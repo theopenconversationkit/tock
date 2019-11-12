@@ -225,7 +225,7 @@ internal class BotApiHandler(
             }
 
         if (actions.isEmpty()) {
-            error("no message find in $message")
+            error("no message found in $message")
         }
         val messagesList = MessagesList(actions.map { ActionWrappedMessage(it, 0) })
         val delay = botDefinition.defaultDelay(currentAnswerIndex)
