@@ -85,6 +85,6 @@ interface NlpListener {
     /**
      * Called when nlp request is throwing an error.
      */
-    fun error(query: NlpQuery, throwable: Throwable?) = Unit
+    fun error(query: NlpQuery, dialog: Dialog, throwable: Throwable?) = Unit
 
 }
