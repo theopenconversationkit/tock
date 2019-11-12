@@ -41,6 +41,7 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
   filter: DialogFilter = new DialogFilter(true, false);
   state: StateService;
   connectorTypes: ConnectorType[] = [];
+  private loaded = false;
 
   constructor(state: StateService,
               private monitoring: MonitoringService,
@@ -67,9 +68,12 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
 
   search(query: PaginatedQuery): Observable<PaginatedResult<DialogReport>> {
     return this.route.queryParams.pipe(mergeMap(params => {
-      if (params["dialogId"]) this.filter.dialogId = params["dialogId"];
-      if (params["text"]) this.filter.text = params["text"];
-      if (params["intentName"]) this.filter.intentName = params["intentName"];
+      if (!this.loaded) {
+        if (params["dialogId"]) this.filter.dialogId = params["dialogId"];
+        if (params["text"]) this.filter.text = params["text"];
+        if (params["intentName"]) this.filter.intentName = params["intentName"];
+        this.loaded = true;
+      }
       return this.monitoring.dialogs(this.buildDialogQuery(query));
     }));
   }
