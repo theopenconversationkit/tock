@@ -44,7 +44,7 @@ interface NlpListener {
      * This method is automatically called by the bot after a NLP request in order to select an intent.
      * Overrides it if you need more control on intent choice.
      *
-     * If it returns null, [BotDefinition.findIntent] is called.
+     * If it returns null, [ai.tock.bot.definition.BotDefinition.findIntent] is called.
      *
      * Default returns null.
      */
@@ -84,7 +84,18 @@ interface NlpListener {
 
     /**
      * Called when nlp request is throwing an error.
+     *
+     * Using this method, you can for example redirect to a custom story which will handle the error.
+     *
+     * ```
+     * object MyNlpListener : NlpListener {
+     *  override fun error(query: NlpQuery, dialog: Dialog, throwable: Throwable?) {
+     *   super.error(query, dialog, throwable)
+     *   dialog.state.currentIntent = bot.myCustomErrorStory.mainIntent()
+     *  }
+     * }
+     * ```
      */
-    fun error(query: NlpQuery, throwable: Throwable?) = Unit
+    fun error(query: NlpQuery, dialog: Dialog, throwable: Throwable?) = Unit
 
 }

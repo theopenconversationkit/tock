@@ -128,10 +128,10 @@ internal class Nlp : NlpController {
                                 nlpResult
                             )
                         }
-                    } ?: listenNlpErrorCall(query, null)
+                    } ?: listenNlpErrorCall(query, dialog, null)
                 } catch (t: Throwable) {
                     logger.error(t)
-                    listenNlpErrorCall(query, t)
+                    listenNlpErrorCall(query, dialog, t)
                 }
             }
         }
@@ -225,10 +225,10 @@ internal class Nlp : NlpController {
             }
         }
 
-        private fun listenNlpErrorCall(query: NlpQuery, throwable: Throwable?) {
+        private fun listenNlpErrorCall(query: NlpQuery, dialog: Dialog, throwable: Throwable?) {
             BotRepository.forEachNlpListener {
                 try {
-                    it.error(query, throwable)
+                    it.error(query, dialog, throwable)
                 } catch (e: Exception) {
                     logger.error(e)
                 }
