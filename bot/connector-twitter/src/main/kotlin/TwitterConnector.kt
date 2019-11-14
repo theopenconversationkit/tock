@@ -158,11 +158,11 @@ internal class TwitterConnector internal constructor(
                                     val (threadId, visibility, reply) = if (incomingEvent is TweetIncomingEvent) {
                                         Triple(
                                             incomingEvent.tweets.first().id,
-                                            ActionVisibility.public,
+                                            ActionVisibility.PUBLIC,
                                             incomingEvent.tweets.first().inReplyToStatusId != null
                                         )
                                     } else {
-                                        Triple(null, ActionVisibility.private, false)
+                                        Triple(null, ActionVisibility.PRIVATE, false)
                                     }
                                     val callback = TwitterConnectorCallback(
                                         applicationId,
@@ -223,8 +223,8 @@ internal class TwitterConnector internal constructor(
         callback as TwitterConnectorCallback
         logger.debug { "event: $event" }
         if (event is Action) {
-            if (event.metadata.connectorMetadata[VISIBILITY] == ActionVisibility.unknown) {
-                event.metadata.connectorMetadata[VISIBILITY] = callback.visibility
+            if (event.metadata.visibility == ActionVisibility.UNKNOWN) {
+                event.metadata.visibility = callback.visibility
             }
             val outcomingEvent = TwitterMessageConverter.toEvent(event)
             if (outcomingEvent != null) {
@@ -251,7 +251,7 @@ internal class TwitterConnector internal constructor(
                 parameters
             ),
             ConnectorData(
-                TwitterConnectorCallback(applicationId, ActionVisibility.private, null, false)
+                TwitterConnectorCallback(applicationId, ActionVisibility.PRIVATE, null, false)
             )
         )
     }
