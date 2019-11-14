@@ -31,6 +31,8 @@ import ai.tock.bot.definition.StoryHandlerDefinition
 import ai.tock.bot.definition.StoryStep
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.action.ActionQuote
+import ai.tock.bot.engine.action.ActionReply
 import ai.tock.bot.engine.action.ActionVisibility
 import ai.tock.bot.engine.action.Metadata
 import ai.tock.bot.engine.action.SendChoice
@@ -230,7 +232,9 @@ fun mockTwitter(bus: BotBus) {
     mockTockCommon(bus)
     mockkStatic("ai.tock.bot.connector.twitter.TwitterBuildersKt")
     every { bus.targetConnectorType } returns twitterConnectorType
-    every { bus.action.metadata.connectorMetadata[Metadata.VISIBILITY] } returns ActionVisibility.unknown
+    every { bus.action.metadata.visibility } returns ActionVisibility.UNKNOWN
+    every { bus.action.metadata.quoteMessage } returns ActionQuote.UNKNOWN
+    every { bus.action.metadata.replyMessage } returns ActionReply.UNKNOWN
     every { bus.withTwitter(any()) }.answers {
         if (bus.targetConnectorType == twitterConnectorType) {
             @Suppress("UNCHECKED_CAST")

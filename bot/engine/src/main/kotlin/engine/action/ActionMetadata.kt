@@ -23,6 +23,10 @@ data class ActionMetadata(
         var priority: ActionPriority = ActionPriority.normal,
         /** tag deals with type of message notification. */
         var notificationType: ActionNotificationType? = null,
-        /** metadata dependant from some connectors */
-        var connectorMetadata: MutableMap<Metadata, Any> = mutableMapOf()
+        /** visibility of the message. */
+        var visibility: ActionVisibility = ActionVisibility.UNKNOWN,
+        /** Message which is a reply to another. */
+        var replyMessage: ActionReply = ActionReply.UNKNOWN,
+        /** Message which contains a quote. */
+        var quoteMessage: ActionQuote = ActionQuote.UNKNOWN
 )

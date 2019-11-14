@@ -33,7 +33,7 @@ internal object TwitterMessageConverter {
 
     fun toEvent(action: Action): ConnectorMessage? {
         return if (action is SendSentence) {
-            if (action.metadata.connectorMetadata[VISIBILITY] == ActionVisibility.public) {
+            if (action.metadata.visibility == ActionVisibility.PUBLIC) {
                 if (action.hasMessage(TwitterConnectorProvider.connectorType)) {
                     action.message(TwitterConnectorProvider.connectorType) as Tweet
                 } else {

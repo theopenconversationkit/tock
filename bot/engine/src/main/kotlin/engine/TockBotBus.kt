@@ -119,7 +119,7 @@ internal class TockBotBus(
     private fun answer(a: Action, delay: Long = 0): BotBus {
         context.currentDelay += delay
         a.metadata.priority = context.priority
-        a.metadata.connectorMetadata[VISIBILITY] = context.visibility
+        a.metadata.visibility = context.visibility
 
         if (a is SendSentence) {
             a.messages.addAll(context.connectorMessages.values)

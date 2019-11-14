@@ -297,7 +297,9 @@ open class BotBusMock(
     private fun answer(action: Action, delay: Long = 0): BotBus {
         mockData.currentDelay += delay
         action.metadata.priority = mockData.priority
-        action.metadata.connectorMetadata[VISIBILITY] = mockData.connectorMetadata[VISIBILITY]!!
+        action.metadata.visibility = mockData.visibility
+        action.metadata.quoteMessage = mockData.quoteMessage
+        action.metadata.replyMessage = mockData.replyMessage
         if (action is SendSentence) {
             action.messages.addAll(mockData.connectorMessages.values)
             if (action.text == null && !action.hasMessage(connectorType)) {
@@ -373,7 +375,7 @@ open class BotBusMock(
     }
 
     override fun withVisibility(visibility: ActionVisibility): BotBus {
-        mockData.connectorMetadata[VISIBILITY] = visibility
+        mockData.visibility = visibility
         return this
     }
 
