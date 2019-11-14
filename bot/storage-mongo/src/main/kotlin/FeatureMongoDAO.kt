@@ -16,9 +16,6 @@
 
 package ai.tock.bot.mongo
 
-import com.mongodb.client.model.ReplaceOptions
-import com.mongodb.client.model.changestream.ChangeStreamDocument
-import com.mongodb.client.model.changestream.FullDocument.UPDATE_LOOKUP
 import ai.tock.bot.engine.feature.FeatureDAO
 import ai.tock.bot.engine.feature.FeatureState
 import ai.tock.bot.mongo.Feature_.Companion.BotId
@@ -28,6 +25,9 @@ import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.MongoBotConfiguration.database
 import ai.tock.shared.error
 import ai.tock.shared.watch
+import com.mongodb.client.model.ReplaceOptions
+import com.mongodb.client.model.changestream.ChangeStreamDocument
+import com.mongodb.client.model.changestream.FullDocument.UPDATE_LOOKUP
 import mu.KotlinLogging
 import org.bson.BsonString
 import org.litote.jackson.data.JacksonData
@@ -67,7 +67,7 @@ internal object FeatureMongoDAO : FeatureDAO {
      */
     private val listener: (ChangeStreamDocument<Feature>) -> Unit = { c ->
         //cleanup cache
-        (c.documentKey[_id.name] as? BsonString)?.value?.also { features.remove(it) }
+        (c.documentKey?.get(_id.name) as? BsonString)?.value?.also { features.remove(it) }
     }
 
     init {
@@ -95,17 +95,17 @@ internal object FeatureMongoDAO : FeatureDAO {
     ): Boolean {
         val id = calculateId(botId, namespace, category, name)
         return features[id]
-                ?: (col.findOne(_id eq id)
-                    .let { f ->
-                        if (f == null) {
-                            default.also {
-                                addFeature(botId, namespace, default, category, name)
-                            }
-                        } else {
-                            features[id] = f.enabled
-                            f.enabled
+            ?: (col.findOne(_id eq id)
+                .let { f ->
+                    if (f == null) {
+                        default.also {
+                            addFeature(botId, namespace, default, category, name)
                         }
-                    })
+                    } else {
+                        features[id] = f.enabled
+                        f.enabled
+                    }
+                })
     }
 
     override fun enable(botId: String, namespace: String, category: String, name: String) {
