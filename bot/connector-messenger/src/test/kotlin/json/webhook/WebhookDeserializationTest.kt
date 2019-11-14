@@ -293,7 +293,7 @@ class WebhookDeserializationTest {
             "appId",
             PlayerId("PAGE_ID", PlayerType.user),
             "test@test.com",
-            metadata = ActionMetadata(connectorMetadata = mutableMapOf(VISIBILITY to ActionVisibility.public))
+            metadata = ActionMetadata(visibility = ActionVisibility.PUBLIC)
         )
         val eventMessage = event.messages[0]
         assert(eventMessage is MessageWebhook)

@@ -34,7 +34,7 @@ internal data class BusContext(
     val contextMap: MutableMap<String, Any> = mutableMapOf(),
     var priority: ActionPriority = normal,
     var notificationType: ActionNotificationType? = null,
-    var visibility: ActionVisibility = ActionVisibility.unknown
+    var visibility: ActionVisibility = ActionVisibility.UNKNOWN
 ) {
     companion object {
         val logger: KLogger = KotlinLogging.logger {}
@@ -43,7 +43,7 @@ internal data class BusContext(
     fun clear() {
         connectorMessages.clear()
         priority = normal
-        visibility = ActionVisibility.unknown
+        visibility = ActionVisibility.UNKNOWN
     }
 
     fun addMessage(message: ConnectorMessage) {

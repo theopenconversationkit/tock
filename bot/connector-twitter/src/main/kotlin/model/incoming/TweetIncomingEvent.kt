@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.connector.twitter.model.Tweet
 import ai.tock.bot.connector.twitter.model.User
 import ai.tock.bot.engine.action.ActionMetadata
+import ai.tock.bot.engine.action.ActionQuote
+import ai.tock.bot.engine.action.ActionReply
 import ai.tock.bot.engine.action.ActionVisibility
-import ai.tock.bot.engine.action.Metadata.VISIBILITY
-import ai.tock.bot.engine.action.Metadata.REPLY
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.user.PlayerId
@@ -63,11 +63,10 @@ data class TweetIncomingEvent(
                 //extended entities and full_text
                 tweet.extendedTweet?.text ?: tweet.text,
                 metadata =  ActionMetadata(
-                    connectorMetadata = mutableMapOf(
-                        VISIBILITY to ActionVisibility.public,
-                        REPLY to isReplyMessage
+                    visibility = ActionVisibility.PUBLIC,
+                    replyMessage = if(isReplyMessage) ActionReply.ISREPLY else ActionReply.NOREPLY,
+                    quoteMessage = if(tweet.isQuote) ActionQuote.ISQUOTE else ActionQuote.NOQUOTE
                     )
-                )
             )
         } else {
             logger.debug { "ignore event $this with tweet text = [${tweet.text}] from [${tweet.user.id}][${tweet.user.name}]" }
