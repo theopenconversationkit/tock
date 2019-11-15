@@ -121,7 +121,7 @@ class XrayService(
      */
     fun executeTestPlans(namespace: String): XRayPlanExecutionResult {
         logger.info { "execute plans with namespace $namespace" }
-        val jiraProject = getProjectFromIssue(testPlanKeys.get(0))
+        val jiraProject = getProjectFromIssue(testPlanKeys[0])
         val executionId = Dice.newId()
 
         return try {
@@ -143,7 +143,7 @@ class XrayService(
                     }
         } catch (t: Throwable) {
             logger.error(t)
-            XRayPlanExecutionResult(0, 0)
+            XRayPlanExecutionResult(0, 0, "No tests run")
         }
     }
 
@@ -177,7 +177,7 @@ class XrayService(
                     }
         } catch (t: Throwable) {
             logger.error(t)
-            XRayPlanExecutionResult(0, 0)
+            XRayPlanExecutionResult(0, 0, "No tests run")
         }
     }
 
@@ -192,7 +192,7 @@ class XrayService(
                 .groupBy { it.planKey }
                 .forEach { planKey, plans ->
                     //if it is a multi-connector test plan
-                    if (plans.map { it.testPlan.dialogs.map { it.id } }
+                    if (plans.map { it.testPlan.dialogs.map { dialogExecutionReport -> dialogExecutionReport.id } }
                                     //no duplicate
                                     .run { toSet().size == size }) {
                         val firstExecution = plans.map { it.execution.date }.min()!!
@@ -225,8 +225,9 @@ class XrayService(
                 }
 
         return XRayPlanExecutionResult(
-                reports.sumBy { it.execution.dialogs.filter { !it.error }.size },
-                reports.sumBy { it.execution.dialogs.size }
+                reports.sumBy { it.execution.dialogs.filter { dialogExecutionReport -> !dialogExecutionReport.error }.size },
+                reports.sumBy { it.execution.dialogs.size },
+                reports.map { it.execution.dialogs.find { dialogExecutionReport -> dialogExecutionReport.error }?.errorMessage }.toString()
         )
     }
 
@@ -669,5 +670,10 @@ class XrayService(
                 }
 
         return XrayTest(jira.key)
+    }
+
+    fun convertBotMessageToXrayAttachment(messageToConvert: String) {
+        logger.debug { "COUCOU" }
+        logger.debug { "messageToConvert $ ${messageToConvert}" }
     }
 }
