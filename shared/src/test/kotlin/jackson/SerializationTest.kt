@@ -25,6 +25,6 @@ class SerializationTest {
     @Test
     fun `Duration is serialized as Iso format`() {
         val d = mapper.writeValueAsString(Duration.ofMinutes(10))
-        assertEquals("PT10M", d)
+        assertEquals("\"PT10M\"", d)
     }
 }
