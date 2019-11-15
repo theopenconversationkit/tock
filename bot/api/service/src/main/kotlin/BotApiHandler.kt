@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2019 e-voyageurs technologies
+ * Copyright (C) 2017/2019 VSCT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -225,7 +225,7 @@ internal class BotApiHandler(
             }
 
         if (actions.isEmpty()) {
-            error("no message found in $message")
+            error("no message find in $message")
         }
         val messagesList = MessagesList(actions.map { ActionWrappedMessage(it, 0) })
         val delay = botDefinition.defaultDelay(currentAnswerIndex)

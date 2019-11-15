@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2019 e-voyageurs technologies
+ * Copyright (C) 2017/2019 VSCT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import ai.tock.bot.api.model.websocket.RequestData
 import ai.tock.bot.api.model.websocket.ResponseData
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.vertx.WebVerticle
+import ai.tock.shared.vertx.makeDetailedHealthcheck
 import io.vertx.core.http.HttpMethod
 import io.vertx.ext.web.RoutingContext
 
@@ -56,8 +57,10 @@ internal class WebhookVerticle(private val botDefinition: ClientBotDefinition) :
 
     override val defaultPort: Int = 8887
 
-    override fun healthcheck(): (RoutingContext) -> Unit = {
-        it.response().end()
+    override fun defaultHealthcheck(): (RoutingContext) -> Unit {
+        return { it.response().end() }
     }
+
+    override fun detailedHealthcheck(): (RoutingContext) -> Unit = makeDetailedHealthcheck()
 
 }

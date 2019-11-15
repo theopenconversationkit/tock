@@ -1,5 +1,8 @@
+import ai.tock.bot.api.client.newBot
+import ai.tock.bot.api.client.newStory
+
 /*
- * Copyright (C) 2017/2019 e-voyageurs technologies
+ * Copyright (C) 2017/2019 VSCT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +16,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ai.tock.bot.api.client
 
 val story1 = newStory("story1") {
     end("Hello")
@@ -23,5 +25,5 @@ val story2 = newStory("story2") {
     end("Goodby")
 }
 
-val test = newBot("key", story1, story2)
+val test = newBot("key",story1, story2)
 

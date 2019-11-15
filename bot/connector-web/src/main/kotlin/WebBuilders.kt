@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2019 e-voyageurs technologies
+ * Copyright (C) 2017/2019 VSCT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ fun <T : Bus<T>> T.webButton(
  * Creates a button from a text.
  */
 fun <T : Bus<T>> T.webTextButton(text: CharSequence): WebButton =
-    WebButton(translate(text).toString())
+    translate(text).toString().let { t -> WebButton(t, SendChoice.encodeNlpChoiceId(t)) }
 
 /**
  * Creates a [WebMessage] from a [MediaCard].

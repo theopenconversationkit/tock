@@ -35,7 +35,7 @@ import ai.tock.shared.namespace
 import ai.tock.shared.watch
 import mu.KotlinLogging
 import org.litote.kmongo.and
-import org.litote.kmongo.ensureUniqueIndex
+import ai.tock.shared.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.exists
 import org.litote.kmongo.findOne

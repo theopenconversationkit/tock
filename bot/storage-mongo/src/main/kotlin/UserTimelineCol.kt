@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2019 e-voyageurs technologies
+ * Copyright (C) 2017 VSCT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -7,9 +7,9 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -22,6 +22,7 @@ import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendLocation
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.user.PlayerId
+import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.TimeBoxedFlag
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.bot.engine.user.UserState
@@ -62,7 +63,7 @@ internal data class UserTimelineCol(
     val namespace: String? = null
 ) {
 
-    constructor(timelineId: String, namespace: String, newTimeline: UserTimeline, oldTimeline: UserTimelineCol?) : this(
+    constructor(timelineId: String, namespace:String, newTimeline: UserTimeline, oldTimeline: UserTimelineCol?) : this(
         timelineId.toId(),
         newTimeline.playerId,
         UserPreferencesWrapper(newTimeline.userPreferences),
@@ -71,7 +72,7 @@ internal data class UserTimelineCol(
         namespace = namespace
     ) {
         //register last action
-        newTimeline.lastUserAction
+        newTimeline.dialogs.lastOrNull()?.currentStory?.actions?.lastOrNull { it.playerId.type == PlayerType.user }
             ?.let {
                 lastUserActionDate = it.date
                 lastActionText = when (it) {
@@ -86,7 +87,7 @@ internal data class UserTimelineCol(
         oldTimeline?.let {
             applicationIds.addAll(it.applicationIds)
         }
-        newTimeline.lastAction?.also {
+        newTimeline.dialogs.lastOrNull()?.currentStory?.actions?.forEach {
             applicationIds.add(it.applicationId)
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2019 e-voyageurs technologies
+ * Copyright (C) 2019 VSCT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -7,9 +7,9 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.connector.twitter.model.Tweet
 import ai.tock.bot.connector.twitter.model.User
 import ai.tock.bot.engine.action.ActionMetadata
-import ai.tock.bot.engine.action.ActionQuote
-import ai.tock.bot.engine.action.ActionReply
 import ai.tock.bot.engine.action.ActionVisibility
+import ai.tock.bot.engine.action.Metadata.VISIBILITY
+import ai.tock.bot.engine.action.Metadata.REPLY
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.user.PlayerId
@@ -63,10 +63,11 @@ data class TweetIncomingEvent(
                 //extended entities and full_text
                 tweet.extendedTweet?.text ?: tweet.text,
                 metadata =  ActionMetadata(
-                    visibility = ActionVisibility.PUBLIC,
-                    replyMessage = if(isReplyMessage) ActionReply.ISREPLY else ActionReply.NOREPLY,
-                    quoteMessage = if(tweet.isQuote) ActionQuote.ISQUOTE else ActionQuote.NOQUOTE
+                    connectorMetadata = mutableMapOf(
+                        VISIBILITY to ActionVisibility.public,
+                        REPLY to isReplyMessage
                     )
+                )
             )
         } else {
             logger.debug { "ignore event $this with tweet text = [${tweet.text}] from [${tweet.user.id}][${tweet.user.name}]" }

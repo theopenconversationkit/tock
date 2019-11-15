@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2019 e-voyageurs technologies
+ * Copyright (C) 2017/2019 VSCT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import ai.tock.bot.api.model.message.bot.AttachmentType
 import ai.tock.bot.api.model.message.bot.Card
 import ai.tock.bot.api.model.message.bot.Carousel
 import ai.tock.bot.api.model.message.bot.I18nText
-import ai.tock.bot.api.model.message.bot.Suggestion
 import ai.tock.bot.api.model.message.user.UserMessage
 import ai.tock.bot.engine.Bus
 import ai.tock.nlp.entity.Value
@@ -86,40 +85,6 @@ interface ClientBus : Bus<ClientBus> {
      * Sends a [Carousel as last bot answer.
      */
     fun end(carousel: Carousel): ClientBus
-
-    /**
-     * Sends a text with suggestions.
-     */
-    fun send(
-        i18nText: CharSequence,
-        suggestions: List<Suggestion>,
-        delay: Long = defaultDelay(currentAnswerIndex),
-        vararg i18nArgs: Any?): ClientBus
-
-    /**
-     * Sends a text with suggestions.
-     */
-    fun send(
-        i18nText: CharSequence,
-        suggestions: List<CharSequence>
-    ): ClientBus = send(i18nText, suggestions.map { Suggestion(translate(it)) })
-
-    /**
-     * Sends a text with suggestions as last bot answer.
-     */
-    fun end(
-        i18nText: CharSequence,
-        suggestions: List<Suggestion>,
-        delay: Long = defaultDelay(currentAnswerIndex),
-        vararg i18nArgs: Any?): ClientBus
-
-    /**
-     * Sends a text with suggestions as last bot answer.
-     */
-    fun end(
-        i18nText: CharSequence,
-        suggestions: List<CharSequence>
-    ): ClientBus = end(i18nText, suggestions.map { Suggestion(translate(it)) })
 
     /**
      * Finds the [Entity] from the specified entity role.

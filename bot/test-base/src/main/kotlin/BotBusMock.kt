@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2019 e-voyageurs technologies
+ * Copyright (C) 2017 VSCT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -7,9 +7,9 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -297,9 +297,7 @@ open class BotBusMock(
     private fun answer(action: Action, delay: Long = 0): BotBus {
         mockData.currentDelay += delay
         action.metadata.priority = mockData.priority
-        action.metadata.visibility = mockData.visibility
-        action.metadata.quoteMessage = mockData.quoteMessage
-        action.metadata.replyMessage = mockData.replyMessage
+        action.metadata.connectorMetadata[VISIBILITY] = mockData.connectorMetadata[VISIBILITY]!!
         if (action is SendSentence) {
             action.messages.addAll(mockData.connectorMessages.values)
             if (action.text == null && !action.hasMessage(connectorType)) {
@@ -375,7 +373,7 @@ open class BotBusMock(
     }
 
     override fun withVisibility(visibility: ActionVisibility): BotBus {
-        mockData.visibility = visibility
+        mockData.connectorMetadata[VISIBILITY] = visibility
         return this
     }
 

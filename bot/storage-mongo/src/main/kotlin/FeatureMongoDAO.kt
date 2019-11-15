@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2019 e-voyageurs technologies
+ * Copyright (C) 2017 VSCT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -7,15 +7,18 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 
 package ai.tock.bot.mongo
 
+import com.mongodb.client.model.ReplaceOptions
+import com.mongodb.client.model.changestream.ChangeStreamDocument
+import com.mongodb.client.model.changestream.FullDocument.UPDATE_LOOKUP
 import ai.tock.bot.engine.feature.FeatureDAO
 import ai.tock.bot.engine.feature.FeatureState
 import ai.tock.bot.mongo.Feature_.Companion.BotId
@@ -25,9 +28,6 @@ import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.MongoBotConfiguration.database
 import ai.tock.shared.error
 import ai.tock.shared.watch
-import com.mongodb.client.model.ReplaceOptions
-import com.mongodb.client.model.changestream.ChangeStreamDocument
-import com.mongodb.client.model.changestream.FullDocument.UPDATE_LOOKUP
 import mu.KotlinLogging
 import org.bson.BsonString
 import org.litote.jackson.data.JacksonData
@@ -67,7 +67,7 @@ internal object FeatureMongoDAO : FeatureDAO {
      */
     private val listener: (ChangeStreamDocument<Feature>) -> Unit = { c ->
         //cleanup cache
-        (c.documentKey?.get(_id.name) as? BsonString)?.value?.also { features.remove(it) }
+        (c.documentKey[_id.name] as? BsonString)?.value?.also { features.remove(it) }
     }
 
     init {
@@ -95,17 +95,17 @@ internal object FeatureMongoDAO : FeatureDAO {
     ): Boolean {
         val id = calculateId(botId, namespace, category, name)
         return features[id]
-            ?: (col.findOne(_id eq id)
-                .let { f ->
-                    if (f == null) {
-                        default.also {
-                            addFeature(botId, namespace, default, category, name)
+                ?: (col.findOne(_id eq id)
+                    .let { f ->
+                        if (f == null) {
+                            default.also {
+                                addFeature(botId, namespace, default, category, name)
+                            }
+                        } else {
+                            features[id] = f.enabled
+                            f.enabled
                         }
-                    } else {
-                        features[id] = f.enabled
-                        f.enabled
-                    }
-                })
+                    })
     }
 
     override fun enable(botId: String, namespace: String, category: String, name: String) {

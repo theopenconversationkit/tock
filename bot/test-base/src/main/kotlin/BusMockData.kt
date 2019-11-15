@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2019 e-voyageurs technologies
+ * Copyright (C) 2017 VSCT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -7,9 +7,9 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -20,8 +20,6 @@ import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.action.ActionNotificationType
 import ai.tock.bot.engine.action.ActionPriority
-import ai.tock.bot.engine.action.ActionQuote
-import ai.tock.bot.engine.action.ActionReply
 import ai.tock.bot.engine.action.ActionVisibility
 import ai.tock.bot.engine.action.Metadata
 
@@ -34,9 +32,7 @@ internal data class BusMockData(
     val contextMap: MutableMap<String, Any> = mutableMapOf(),
     var priority: ActionPriority = ActionPriority.normal,
     var notificationType: ActionNotificationType? = null,
-    var visibility: ActionVisibility = ActionVisibility.UNKNOWN,
-    var replyMessage: ActionReply = ActionReply.UNKNOWN,
-    var quoteMessage: ActionQuote = ActionQuote.UNKNOWN
+    var connectorMetadata: MutableMap<Metadata, Any> = mutableMapOf(Metadata.VISIBILITY to ActionVisibility.unknown)
 ) {
 
     fun clear() {

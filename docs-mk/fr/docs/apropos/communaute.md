@@ -7,9 +7,8 @@ Tock est bâti sur un modèle communautaire pour créer une plateforme ouverte.<
 Voici les prochains événements liés à Tock ou identifiés pour échanger avec la communauté :
 
 * _Novembre:_
-    * Nous pourrions présenter Tock au [***Paris NLP*** (season 4 meetup #2)](https://www.meetup.com/fr-FR/Paris-NLP/events/lkmbhqyzpbkc/) (à confirmer)
-    * Un [***Hackathon*** ouvert à tous](https://hackandbot.sncf.com/) aura lieu les 21-22 novembre à Paris, 
-    sur le thème du conversationnel avec Tock
+    * Nous devrions présenter Tock au [***Paris NLP*** (season 4 meetup #2)](https://www.meetup.com/fr-FR/Paris-NLP/events/lkmbhqyzpbkc/)
+    * Un ***Hackathon*** ouvert au public aura lieu les 21-22 novembre à Paris, autour du thème du conversationnel avec Tock (+ infos très bientôt)
 
 * _Décembre:_
     * Une conférence sur les plateformes conversationnelles ouvertes a été soumis au CFP du 

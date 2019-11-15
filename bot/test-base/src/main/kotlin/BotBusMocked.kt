@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2019 e-voyageurs technologies
+ * Copyright (C) 2017/2019 VSCT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,6 @@ import ai.tock.bot.definition.StoryHandlerDefinition
 import ai.tock.bot.definition.StoryStep
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.Action
-import ai.tock.bot.engine.action.ActionQuote
-import ai.tock.bot.engine.action.ActionReply
 import ai.tock.bot.engine.action.ActionVisibility
 import ai.tock.bot.engine.action.Metadata
 import ai.tock.bot.engine.action.SendChoice
@@ -177,7 +175,7 @@ fun mockTockCommon(bus: BotBus) {
     every { bus.translate(any()) } answers { args[0] as TranslatedSequence }
     every { bus.translate(any(), *anyVararg()) } answers {
         Translator.formatMessage(
-            args[0].toString(),
+            args[0] as String,
             I18nContext(defaultLocale, textChat, null),
             args.subList(1, args.size)
         ).raw
@@ -232,9 +230,7 @@ fun mockTwitter(bus: BotBus) {
     mockTockCommon(bus)
     mockkStatic("ai.tock.bot.connector.twitter.TwitterBuildersKt")
     every { bus.targetConnectorType } returns twitterConnectorType
-    every { bus.action.metadata.visibility } returns ActionVisibility.UNKNOWN
-    every { bus.action.metadata.quoteMessage } returns ActionQuote.UNKNOWN
-    every { bus.action.metadata.replyMessage } returns ActionReply.UNKNOWN
+    every { bus.action.metadata.connectorMetadata[Metadata.VISIBILITY] } returns ActionVisibility.unknown
     every { bus.withTwitter(any()) }.answers {
         if (bus.targetConnectorType == twitterConnectorType) {
             @Suppress("UNCHECKED_CAST")

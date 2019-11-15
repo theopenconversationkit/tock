@@ -59,7 +59,7 @@ An example of custom connector can be seen in the [Bot Open Data sample project]
 
 To develop your own, follow these steps:
 
-1) Implement the interface [Connector](https://doc.tock.ai/tock/dokka/tock/ai.tock.bot.connector/-connector/index.html) 
+1) Implement the interface [Connector](https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.connector/-connector/index.html) 
 
 Here is an example of implementation:
 
@@ -123,7 +123,7 @@ class TestConnectorCallback(
 
 ```
 
-2) Implement the interface [ConnectorProvider](https://doc.tock.ai/tock/dokka/tock/ai.tock.bot.connector/-connector-provider/index.html)
+2) Implement the interface [ConnectorProvider](https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.connector/-connector-provider/index.html)
 
 Here is an example of implementation:
 

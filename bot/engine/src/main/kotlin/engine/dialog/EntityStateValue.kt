@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2019 e-voyageurs technologies
+ * Copyright (C) 2017 VSCT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -7,9 +7,9 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -54,10 +54,9 @@ data class EntityStateValue(
 
     private var updated: Instant = initialUpdate
     private var loaded: Boolean = stateValueId == null
-    internal var multiRequestedValues: List<EntityValue>? = null
 
     constructor(action: Action, entityValue: EntityValue)
-        : this(entityValue, mutableListOf(ArchivedEntityValue(entityValue, action)))
+            : this(entityValue, mutableListOf(ArchivedEntityValue(entityValue, action)))
 
     constructor(entity: Entity, value: Value) : this(EntityValue(entity, value))
 
@@ -90,7 +89,7 @@ data class EntityStateValue(
                     injector.provide<UserTimelineDAO>().getArchivedEntityValues(stateValueId, oldActionsMap)
                         .run { if (isEmpty()) emptyList() else subList(0, size - 1) }
                 }
-                    ?: emptyList()
+                        ?: emptyList()
             currentHistory.addAll(0, old)
         }
     }
@@ -129,12 +128,9 @@ data class EntityStateValue(
     val lastUpdate: Instant get() = updated
 
     /**
-     * Is this state has been updated in current [BotBus]?
+     * Is this state has been updated un current [BotBus]?
      */
     val hasBeanUpdatedInBus: Boolean get() = initialUpdate != updated
 
-    /**
-     *  All values for the current request when merge is not applicable.
-     */
-    val newValues: List<EntityValue> get() = multiRequestedValues ?: listOfNotNull(currentValue)
+
 }

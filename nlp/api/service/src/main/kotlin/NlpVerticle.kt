@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2019 e-voyageurs technologies
+ * Copyright (C) 2017 VSCT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -7,9 +7,9 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -35,6 +35,7 @@ import ai.tock.shared.property
 import ai.tock.shared.security.auth.TockAuthProvider
 import ai.tock.shared.security.initEncryptor
 import ai.tock.shared.vertx.WebVerticle
+import ai.tock.shared.vertx.makeDetailedHealthcheck
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
@@ -188,11 +189,18 @@ class NlpVerticle : WebVerticle() {
         }
     }
 
-    override fun healthcheck(): (RoutingContext) -> Unit {
+    override fun defaultHealthcheck(): (RoutingContext) -> Unit {
         return {
             executor.executeBlocking {
                 it.response().setStatusCode(if (FrontClient.healthcheck()) 200 else 500).end()
             }
         }
     }
+
+    override fun detailedHealthcheck(): (RoutingContext) -> Unit = makeDetailedHealthcheck(
+        listOf(
+            Pair("duckling_service", { FrontClient.healthcheck() })
+        )
+    )
+
 }

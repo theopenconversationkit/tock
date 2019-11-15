@@ -29,7 +29,7 @@ import org.litote.kmongo.Id
 import org.litote.kmongo.and
 import org.litote.kmongo.deleteMany
 import org.litote.kmongo.descendingSort
-import org.litote.kmongo.ensureIndex
+import ai.tock.shared.ensureIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.save

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2019 e-voyageurs technologies
+ * Copyright (C) 2017/2019 VSCT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ internal fun BotBus.toUserRequest(): UserRequest =
         intent?.wrappedIntent()?.name,
         entities
             .values
-            .flatMap { it.newValues }
+            .mapNotNull { it.value }
             .map { it.toEntity(this) },
         action.toApiMessage(),
         story.definition.id,

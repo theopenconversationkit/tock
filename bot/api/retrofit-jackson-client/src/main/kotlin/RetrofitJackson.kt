@@ -1,5 +1,13 @@
+import ai.tock.shared.jackson.mapper
+import ai.tock.shared.longProperty
+import okhttp3.OkHttpClient.Builder
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.jackson.JacksonConverterFactory
+import java.util.concurrent.TimeUnit.MILLISECONDS
+
 /*
- * Copyright (C) 2017/2019 e-voyageurs technologies
+ * Copyright (C) 2017/2019 VSCT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +21,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package ai.tock.bot.api.retrofit
-
-import ai.tock.shared.jackson.mapper
-import ai.tock.shared.longProperty
-import okhttp3.OkHttpClient.Builder
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.jackson.JacksonConverterFactory
-import java.util.concurrent.TimeUnit.MILLISECONDS
 
 /**
  * Creates a retrofit instance from the specified base url.

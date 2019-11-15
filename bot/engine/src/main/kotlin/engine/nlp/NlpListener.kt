@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2019 e-voyageurs technologies
+ * Copyright (C) 2017 VSCT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -7,9 +7,9 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -44,7 +44,7 @@ interface NlpListener {
      * This method is automatically called by the bot after a NLP request in order to select an intent.
      * Overrides it if you need more control on intent choice.
      *
-     * If it returns null, [ai.tock.bot.definition.BotDefinition.findIntent] is called.
+     * If it returns null, [BotDefinition.findIntent] is called.
      *
      * Default returns null.
      */
@@ -84,17 +84,6 @@ interface NlpListener {
 
     /**
      * Called when nlp request is throwing an error.
-     *
-     * Using this method, you can for example redirect to a custom story which will handle the error.
-     *
-     * ```
-     * object MyNlpListener : NlpListener {
-     *  override fun error(query: NlpQuery, dialog: Dialog, throwable: Throwable?) {
-     *   super.error(query, dialog, throwable)
-     *   dialog.state.currentIntent = bot.myCustomErrorStory.mainIntent()
-     *  }
-     * }
-     * ```
      */
     fun error(query: NlpQuery, dialog: Dialog, throwable: Throwable?) = Unit
 

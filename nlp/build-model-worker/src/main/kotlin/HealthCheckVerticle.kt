@@ -18,6 +18,7 @@ package ai.tock.nlp.build
 
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.vertx.WebVerticle
+import ai.tock.shared.vertx.makeDetailedHealthcheck
 import io.vertx.ext.web.RoutingContext
 
 /**
@@ -31,7 +32,7 @@ class HealthCheckVerticle(
         //do nothing
     }
 
-    override fun healthcheck(): (RoutingContext) -> Unit =
+    override fun defaultHealthcheck(): (RoutingContext) -> Unit =
         { context ->
             context.response().end(
                 mapper.writeValueAsString(
@@ -41,5 +42,9 @@ class HealthCheckVerticle(
                 )
             )
         }
+
+    override fun detailedHealthcheck(): (RoutingContext) -> Unit = makeDetailedHealthcheck(
+        selfCheck = { !buildVerticle.canAnalyse.get() }
+    )
 
 }

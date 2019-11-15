@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2019 e-voyageurs technologies
+ * Copyright (C) 2017 VSCT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -7,9 +7,9 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -50,7 +50,6 @@ import ai.tock.shared.defaultLocale
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.addConstrainedTypes
-import ai.tock.shared.listProperty
 import ai.tock.shared.provide
 import ai.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
@@ -70,15 +69,12 @@ object BotRepository {
 
     private val logger = KotlinLogging.logger {}
 
-    //load only specified configuration ids (dev mode)
-    private val restrictedConfigurationIds: List<String> = listProperty("tock_restricted_configuration_id", emptyList())
-
     private val botConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
     private val storyDefinitionConfigurationDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
     internal val botProviders: MutableMap<BotProviderId, BotProvider> = ConcurrentHashMap()
     internal val storyHandlerListeners: MutableList<StoryHandlerListener> = mutableListOf()
     private val nlpListeners: MutableList<NlpListener> = mutableListOf(BuiltInKeywordListener)
-    private val nlpClient: NlpClient get() = injector.provide()
+    internal val nlpClient: NlpClient get() = injector.provide()
     private val nlpController: NlpController get() = injector.provide()
     private val executor: Executor get() = injector.provide()
     internal val botAnswerInterceptors: MutableList<BotAnswerInterceptor> = mutableListOf()
@@ -99,7 +95,7 @@ object BotRepository {
         ConcurrentHashMap()
 
     @Volatile
-    private var botsInstalled: Boolean = false
+    internal var botsInstalled: Boolean = false
 
     /**
      * Request timer for connectors.
@@ -362,12 +358,8 @@ object BotRepository {
         val existingConfsById: Map<Id<BotApplicationConfiguration>, BotApplicationConfiguration> = connectorControllerMap.keys
             .groupBy { it._id }.mapValues { it.value.first() }
         //path -> botAppConf
-        val confs: Map<Id<BotApplicationConfiguration>, BotApplicationConfiguration> =
-            botConfigurationDAO
-                .getConfigurations()
-                .groupBy { it._id }
-                .mapValues { it.value.first() }
-                .filter { restrictedConfigurationIds.isEmpty() || restrictedConfigurationIds.contains(it.value.applicationId) }
+        val confs: Map<Id<BotApplicationConfiguration>, BotApplicationConfiguration> = botConfigurationDAO.getConfigurations()
+            .groupBy { it._id }.mapValues { it.value.first() }
 
         confs.values.forEach { c ->
             //gets the provider
