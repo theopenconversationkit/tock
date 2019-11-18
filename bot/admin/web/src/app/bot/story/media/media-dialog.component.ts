@@ -41,20 +41,20 @@ export class MediaDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<MediaDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    public rest : RestService,
+    public rest: RestService,
     private state: StateService,
     private bot: BotService) {
     this.category = this.data.category ? this.data.category : "build";
     this.create = this.data.media === null;
     this.media = this.data.media ? this.data.media : new MediaCard([]);
     if (this.media.title) {
-      this.media.titleLabel = this.media.title.defaultLocalizedLabel().label;
+      this.media.titleLabel = this.media.title.defaultLocalizedLabelForLocale(this.state.currentLocale).label;
     }
     if (this.media.subTitle) {
-      this.media.subTitleLabel = this.media.subTitle.defaultLocalizedLabel().label;
+      this.media.subTitleLabel = this.media.subTitle.defaultLocalizedLabelForLocale(this.state.currentLocale).label;
     }
 
-    this.media.actions.forEach(a => a.titleLabel = a.title.defaultLocalizedLabel().label);
+    this.media.actions.forEach(a => a.titleLabel = a.title.defaultLocalizedLabelForLocale(this.state.currentLocale).label);
 
     this.uploader = new FileUploader({removeAfterUpload: true});
     this.uploader.onCompleteItem =
@@ -68,7 +68,10 @@ export class MediaDialogComponent {
   save() {
     if (this.media.titleLabel && this.media.titleLabel.trim().length !== 0) {
       if (this.media.title) {
-        this.media.title.defaultLocalizedLabel().label = this.media.titleLabel.trim();
+        this.bot.saveI18nLabel(
+          this.media.title.changeDefaultLabelForLocale(this.state.currentLocale, this.media.titleLabel.trim())
+        ).subscribe(_ => {
+        });
       } else {
         this.bot.createI18nLabel(
           new CreateI18nLabelRequest(
@@ -84,7 +87,10 @@ export class MediaDialogComponent {
 
     if (this.media.subTitleLabel && this.media.subTitleLabel.trim().length !== 0) {
       if (this.media.subTitle) {
-        this.media.subTitle.defaultLocalizedLabel().label = this.media.subTitleLabel.trim();
+        this.bot.saveI18nLabel(
+          this.media.subTitle.changeDefaultLabelForLocale(this.state.currentLocale, this.media.subTitleLabel.trim())
+        ).subscribe(_ => {
+        });
       } else {
         this.bot.createI18nLabel(
           new CreateI18nLabelRequest(
@@ -102,7 +108,10 @@ export class MediaDialogComponent {
       .filter(a => a.titleLabel && a.titleLabel.trim().length !== 0)
       .map(a => {
         if (a.title) {
-          a.title.defaultLocalizedLabel().label = a.titleLabel.trim();
+          this.bot.saveI18nLabel(
+            a.title.changeDefaultLabelForLocale(this.state.currentLocale, a.titleLabel.trim())
+          ).subscribe(_ => {
+          });
         } else {
           this.bot.createI18nLabel(
             new CreateI18nLabelRequest(

@@ -74,6 +74,22 @@ export class I18nLabel {
     return d ? d : this.i18n[0];
   }
 
+  defaultLocalizedLabelForLocale(locale: string): I18nLocalizedLabel {
+    const d = this.label(locale, defaultUserInterfaceType);
+    return d ? d : this.i18n[0];
+  }
+
+  changeDefaultLabelForLocale(locale: string, label: string): I18nLabel {
+    let l = this.label(locale, defaultUserInterfaceType);
+    if (!l) {
+      l = new I18nLocalizedLabel(locale, defaultUserInterfaceType, label, false, null, []);
+      this.i18n.push(l)
+    } else {
+      l.label = label;
+    }
+    return this
+  }
+
   label(locale: string, userInterface: UserInterfaceType, connectorId?: string): I18nLocalizedLabel {
     const l = this.i18n.find(i => i.locale === locale && i.interfaceType === userInterface && i.connectorId === connectorId);
     return l ? l : this.i18n.find(i => i.locale === locale && i.interfaceType === userInterface);
