@@ -589,9 +589,9 @@ class XrayService(
         }
         //define steps
         val steps: MutableList<XrayBuildTestStep> = mutableListOf()
-        dialog.actions.forEach { a ->
-            val user = a.playerId.type == user
-            val m = a.message
+        dialog.actions.forEach { action ->
+            val user = action.playerId.type == user
+            val m = action.message
             val mData = if (m.isSimpleMessage()) m.toPrettyString() else ""
             val mAttachments =
                     listOfNotNull(
@@ -673,7 +673,10 @@ class XrayService(
     }
 
     fun convertBotMessageToXrayAttachment(messageToConvert: String) {
-        logger.debug { "COUCOU" }
-        logger.debug { "messageToConvert $ ${messageToConvert}" }
+        logger.debug { "message to convert: $messageToConvert" }
+        logger.debug { "converted message: ${messageToConvert}" }
+
+
+        //response.body().messages.map { it.toMessage().toPrettyString() }
     }
 }

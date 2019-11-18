@@ -135,14 +135,17 @@ object XrayClient {
 
     fun getProjectFromIssue(issueKey: String): JiraTestProject {
         val klaxon = Klaxon()
+        val xrayResponse = xray.getIssue(issueKey).execute()
 
-        val body = xray.getIssue(issueKey).execute().body()?.string()
+        return if (!xrayResponse.isSuccessful) {
+            logger.error { "ERROR -- Jira project not retrieved -->" + xrayResponse.errorBody().toString() }
+            JiraTestProject("")
+        } else {
+            val parsed = klaxon.parseJsonObject(StringReader(xrayResponse.body()?.string() ?: ""))
+            val project = (parsed.getValue("fields") as JsonObject).map["project"]
+            JiraTestProject((project as JsonObject)["key"].toString())
+        }
 
-        // parse the body
-        val parsed = klaxon.parseJsonObject(StringReader(body))
-        val project = (parsed.getValue("fields") as JsonObject).map["project"]
-
-        return JiraTestProject((project as JsonObject)["key"].toString())
     }
 
     /**
