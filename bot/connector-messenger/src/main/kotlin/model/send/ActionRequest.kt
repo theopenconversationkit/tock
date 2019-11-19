@@ -18,8 +18,12 @@ package ai.tock.bot.connector.messenger.model.send
 
 import ai.tock.bot.connector.messenger.model.Recipient
 import ai.tock.bot.connector.messenger.model.send.SenderAction.typing_on
+import com.fasterxml.jackson.annotation.JsonProperty
 
-data class ActionRequest(val recipient: Recipient,
-                         val sender_action: SenderAction = typing_on)
+data class ActionRequest(
+    val recipient: Recipient,
+    val sender_action: SenderAction = typing_on,
+    @JsonProperty("persona_id")
+    val personaId: String? = null)
 
 

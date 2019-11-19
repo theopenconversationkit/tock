@@ -98,7 +98,8 @@ class MessengerConnector internal constructor(
     private val verifyToken: String?,
     internal val client: MessengerClient,
     @Volatile
-    private var subscriptionCheck: Boolean = webhookSubscriptionCheckEnabled
+    private var subscriptionCheck: Boolean = webhookSubscriptionCheckEnabled,
+    private val personaId: String? = null
 ) : ConnectorBase(MessengerConnectorProvider.connectorType) {
 
     private data class ActionWithTimestamp(val action: Action, val timestamp: Long)
@@ -240,7 +241,7 @@ class MessengerConnector internal constructor(
     ): SendResponse? {
         return try {
             if (event is Action) {
-                var message = SendActionConverter.toMessageRequest(event)
+                var message = SendActionConverter.toMessageRequest(event, personaId)
                 if (message != null) {
                     message = transformMessageRequest.invoke(message)
                     logger.debug { "message sent: $message to ${event.recipientId}" }
@@ -269,7 +270,8 @@ class MessengerConnector internal constructor(
                                                         true
                                                     )
                                                 )
-                                            )
+                                            ),
+                                            personaId
                                         )
                                     )!!
                                         .apply {
@@ -414,11 +416,11 @@ class MessengerConnector internal constructor(
         when (event) {
             is TypingOnEvent -> client.sendAction(
                 getToken(event),
-                transformActionRequest(ActionRequest(Recipient(event.recipientId.id), typing_on))
+                transformActionRequest(ActionRequest(Recipient(event.recipientId.id), typing_on, personaId))
             )
             is TypingOffEvent -> client.sendAction(
                 getToken(event),
-                transformActionRequest(ActionRequest(Recipient(event.recipientId.id), typing_off))
+                transformActionRequest(ActionRequest(Recipient(event.recipientId.id), typing_off, personaId))
             )
             is MarkSeenEvent -> client.sendAction(
                 getToken(event),
@@ -492,17 +494,17 @@ class MessengerConnector internal constructor(
             { token ->
                 val recipient = Recipient(action.recipientId.id)
                 if (action.metadata.lastAnswer) {
-                    client.sendAction(token, ActionRequest(recipient, typing_off))
+                    client.sendAction(token, ActionRequest(recipient, typing_off, personaId))
                     client.sendAction(token, ActionRequest(recipient, mark_seen))
                 } else {
-                    client.sendAction(token, ActionRequest(recipient, typing_on))
+                    client.sendAction(token, ActionRequest(recipient, typing_on, personaId))
                 }
             }
         )
     }
 
     internal fun endTypingAnswer(action: Action) {
-        client.sendAction(getToken(action), ActionRequest(Recipient(action.recipientId.id), typing_off))
+        client.sendAction(getToken(action), ActionRequest(Recipient(action.recipientId.id), typing_off, personaId))
     }
 
     override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences {
