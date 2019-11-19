@@ -22,19 +22,24 @@ import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.SimpleStoryHandlerBase
 import ai.tock.bot.definition.SimpleStoryStep
 import ai.tock.bot.definition.StoryDefinitionExtended
+import ai.tock.bot.definition.story
 import ai.tock.bot.definition.storyWithSteps
 import ai.tock.translator.UserInterfaceType
 import ai.tock.translator.UserInterfaceType.voiceAssistant
 import ai.tock.translator.raw
 
 val secondaryIntent = Intent("secondary")
+val enableStory = story("enable") {}
+val disableStory = story("disable") {}
 
 class BotDefinitionTest
     : BotDefinitionBase(
-        "test",
-        "namespace",
-        stories = enumValues<TestStoryDefinition>().toList() + otherStory,
-        unknownStory = TestStoryDefinition.unknown
+    "test",
+    "namespace",
+    stories = enumValues<TestStoryDefinition>().toList() + otherStory,
+    unknownStory = TestStoryDefinition.unknown,
+    botEnabledStory = enableStory,
+    botDisabledStory = disableStory
 )
 
 enum class StepTest : SimpleStoryStep { s1, s2, s3 }
@@ -49,11 +54,11 @@ abstract class AbstractStoryHandler : SimpleStoryHandlerBase() {
 }
 
 enum class TestStoryDefinition(
-        override val storyHandler: AbstractStoryHandler,
-        override val otherStarterIntents: Set<IntentAware> = emptySet(),
-        override val secondaryIntents: Set<IntentAware> = emptySet(),
-        override val stepsArray: Array<StepTest> = enumValues(),
-        override val unsupportedUserInterface: UserInterfaceType? = null
+    override val storyHandler: AbstractStoryHandler,
+    override val otherStarterIntents: Set<IntentAware> = emptySet(),
+    override val secondaryIntents: Set<IntentAware> = emptySet(),
+    override val stepsArray: Array<StepTest> = enumValues(),
+    override val unsupportedUserInterface: UserInterfaceType? = null
 ) : StoryDefinitionExtended {
 
     test(StoryHandlerTest, secondaryIntents = setOf(secondaryIntent)),

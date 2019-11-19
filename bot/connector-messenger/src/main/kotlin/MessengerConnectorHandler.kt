@@ -17,6 +17,9 @@
 package ai.tock.bot.connector.messenger
 
 import ai.tock.bot.connector.ConnectorData
+import ai.tock.bot.connector.messenger.MessengerConnector.Companion.connectorIdApplicationIdMap
+import ai.tock.bot.connector.messenger.MessengerConnector.Companion.connectorIdConnectorControllerMap
+import ai.tock.bot.connector.messenger.MessengerConnector.Companion.pageIdConnectorIdMap
 import ai.tock.bot.connector.messenger.model.webhook.CallbackRequest
 import ai.tock.bot.connector.messenger.model.webhook.Webhook
 import ai.tock.bot.engine.ConnectorController
@@ -42,11 +45,19 @@ internal class MessengerConnectorHandler(
         request.entry.forEach { entry ->
             try {
                 val pageId = entry.id
+
+                if (entry.standby.isNullOrEmpty()) {
+                    if (!pageIdConnectorIdMap.containsKey(pageId)) {
+                        logger.error { "unknown page id $pageId" }
+                        return@forEach
+                    }
+                }
+
                 //retrieve the controller from the page id
-                val c = MessengerConnector.pageIdConnectorIdMap[pageId]
-                    ?.firstOrNull { MessengerConnector.connectorIdApplicationIdMap[it] == applicationId }
-                    ?.let { MessengerConnector.connectorIdConnectorControllerMap[it] }
-                    ?: (controller.apply { logger.error { "unknown page id $pageId" } })
+                val c = pageIdConnectorIdMap[pageId]
+                    ?.firstOrNull { connectorIdApplicationIdMap[it] == applicationId }
+                    ?.let { connectorIdConnectorControllerMap[it] }
+                    ?: controller
                 val conn = c.connector as MessengerConnector
                 val targetConnectorId = conn.connectorId
 

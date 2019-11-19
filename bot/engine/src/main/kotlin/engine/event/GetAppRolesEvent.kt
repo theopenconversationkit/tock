@@ -41,4 +41,9 @@ class GetAppRolesEvent(
      * appId -> list of roles
      */
     val appRoles: Map<String, Set<AppRole>>
-) : Event(applicationId)
+) : Event(applicationId) {
+
+    override fun toString(): String {
+        return "[GetAppRolesEvent] for $recipientId and $applicationId with roles $appRoles"
+    }
+}

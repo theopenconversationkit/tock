@@ -114,13 +114,8 @@ internal class Bot(
         } else if (!userTimeline.userState.botDisabled && botDefinition.disableBot(userTimeline, dialog, action)) {
             logger.debug { "Disable bot for $action" }
             userTimeline.userState.botDisabled = true
-        }
-
-        if (!botDefinition.hasToPersistAction(userTimeline, action)) {
-            connectorData.saveTimeline = false
-        }
-
-        if (!botDefinition.hasToPersistAction(userTimeline, action)) {
+        } //if user state has changed, always persist the user. If not, test if the state is persisted
+        else if (!botDefinition.hasToPersistAction(userTimeline, action)) {
             connectorData.saveTimeline = false
         }
 

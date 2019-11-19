@@ -80,18 +80,52 @@ class BotTest : BotEngineTest() {
     }
 
     @Test
-    fun `handle notification only action does not persist action in history`() {
+    fun `GIVEN disabled user THEN handle notification action does not persist action in history`() {
+        userTimeline.userState.botDisabled = true
         val sentence = action(Sentence("other")).apply { state.notification = true }
         assertTrue(connectorData.saveTimeline)
         bot.handle(sentence, userTimeline, connectorController, connectorData)
         assertFalse(connectorData.saveTimeline)
+        assertTrue(userTimeline.userState.botDisabled)
     }
 
     @Test
-    fun `handle action persists action in history`() {
+    fun `GIVEN enabled user THEN handle notification disable user and action is persisted in history`() {
+        userTimeline.userState.botDisabled = false
+        val sentence = action(Sentence("other")).apply { state.notification = true }
+        assertTrue(connectorData.saveTimeline)
+        bot.handle(sentence, userTimeline, connectorController, connectorData)
+        assertTrue(connectorData.saveTimeline)
+        assertTrue(userTimeline.userState.botDisabled)
+    }
+
+    @Test
+    fun `GIVEN enabled user THEN handle action persists action in history`() {
         val sentence = action(Sentence("other"))
         assertTrue(connectorData.saveTimeline)
         bot.handle(sentence, userTimeline, connectorController, connectorData)
         assertTrue(connectorData.saveTimeline)
+        assertFalse(userTimeline.userState.botDisabled)
+    }
+
+    @Test
+    fun `GIVEN enabled user AND disabled action THEN handle action persist action in history`() {
+        val sentence = action(Sentence("other"))
+        dialog.state.currentIntent = disableStory.mainIntent()
+        assertTrue(connectorData.saveTimeline)
+        bot.handle(sentence, userTimeline, connectorController, connectorData)
+        assertTrue(connectorData.saveTimeline)
+        assertTrue(userTimeline.userState.botDisabled)
+    }
+
+    @Test
+    fun `GIVEN disabled user AND enable action THEN handle action persist action in history`() {
+        userTimeline.userState.botDisabled = true
+        dialog.state.currentIntent = enableStory.mainIntent()
+        val sentence = action(Sentence("other"))
+        assertTrue(connectorData.saveTimeline)
+        bot.handle(sentence, userTimeline, connectorController, connectorData)
+        assertTrue(connectorData.saveTimeline)
+        assertFalse(userTimeline.userState.botDisabled)
     }
 }
