@@ -27,7 +27,9 @@ import io.mockk.slot
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 /**
  *
@@ -75,5 +77,21 @@ class BotTest : BotEngineTest() {
 
         assertEquals(otherStory, dialog.currentStory?.definition)
         assertNull(dialog.currentStory?.step)
+    }
+
+    @Test
+    fun `handle notification only action does not persist action in history`() {
+        val sentence = action(Sentence("other")).apply { state.notification = true }
+        assertTrue(connectorData.saveTimeline)
+        bot.handle(sentence, userTimeline, connectorController, connectorData)
+        assertFalse(connectorData.saveTimeline)
+    }
+
+    @Test
+    fun `handle action persists action in history`() {
+        val sentence = action(Sentence("other"))
+        assertTrue(connectorData.saveTimeline)
+        bot.handle(sentence, userTimeline, connectorController, connectorData)
+        assertTrue(connectorData.saveTimeline)
     }
 }

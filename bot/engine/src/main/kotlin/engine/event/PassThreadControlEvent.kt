@@ -27,4 +27,8 @@ class PassThreadControlEvent(
     applicationId: String,
     val newOwnerAppId: String,
     val metadata: String? = null
-) : OneToOneEvent(userId, recipientId, applicationId)
+) : OneToOneEvent(userId, recipientId, applicationId) {
+    override fun toString(): String {
+        return "[PassThreadControl] to $newOwnerAppId with metadata $metadata"
+    }
+}

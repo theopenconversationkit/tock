@@ -30,7 +30,6 @@ import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.Story
 import ai.tock.bot.engine.nlp.NlpController
 import ai.tock.bot.engine.user.UserTimeline
-import ai.tock.shared.booleanProperty
 import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
@@ -57,8 +56,6 @@ internal class Bot(
     }
 
     private val logger = KotlinLogging.logger {}
-
-    private val sendChoiceActivateBot = booleanProperty("tock_bot_send_choice_activate", true)
 
     private val nlp: NlpController by injector.instance()
 
@@ -110,10 +107,21 @@ internal class Bot(
 
         parseAction(action, userTimeline, dialog, connector)
 
-        if (botDefinition.isBotEnabledIntent(dialog.state.currentIntent)) {
+        if (userTimeline.userState.botDisabled && botDefinition.enableBot(userTimeline, dialog, action)) {
             logger.debug { "Enable bot for $action" }
             userTimeline.userState.botDisabled = false
             botDefinition.botEnabledListener(action)
+        } else if (!userTimeline.userState.botDisabled && botDefinition.disableBot(userTimeline, dialog, action)) {
+            logger.debug { "Disable bot for $action" }
+            userTimeline.userState.botDisabled = true
+        }
+
+        if (!botDefinition.hasToPersistAction(userTimeline, action)) {
+            connectorData.saveTimeline = false
+        }
+
+        if (!botDefinition.hasToPersistAction(userTimeline, action)) {
+            connectorData.saveTimeline = false
         }
 
         if (!userTimeline.userState.botDisabled) {
@@ -184,7 +192,7 @@ internal class Bot(
         try {
             when (action) {
                 is SendChoice -> {
-                    parseChoice(userTimeline, action, dialog)
+                    parseChoice(action, dialog)
                 }
                 is SendLocation -> {
                     parseLocation(action, dialog)
@@ -222,7 +230,7 @@ internal class Bot(
         }
     }
 
-    private fun parseChoice(userTimeline: UserTimeline, choice: SendChoice, dialog: Dialog) {
+    private fun parseChoice(choice: SendChoice, dialog: Dialog) {
         botDefinition.findIntent(choice.intentName).let { intent ->
             //restore state if it's possible (old dialog choice case)
             if (intent != Intent.unknown) {
@@ -247,11 +255,6 @@ internal class Bot(
                 }
             }
             dialog.state.currentIntent = intent
-            // send choice always reactivate disable bot (is the intent is not a disabled intent)
-            if (sendChoiceActivateBot && !botDefinition.isBotDisabledIntent(dialog.state.currentIntent)) {
-                userTimeline.userState.botDisabled = false
-                botDefinition.botEnabledListener(choice)
-            }
         }
     }
 
