@@ -76,7 +76,24 @@ export class I18nLabel {
 
   defaultLocalizedLabelForLocale(locale: string): I18nLocalizedLabel {
     const d = this.label(locale, defaultUserInterfaceType);
-    return d ? d : this.i18n[0];
+    if (d) {
+      return d;
+    } else {
+      let defaultLabel = this.defaultLocalizedLabel();
+      if (!defaultLabel && this.i18n.length !== 0) {
+        defaultLabel = this.i18n[0]
+      }
+      const newLabel = new I18nLocalizedLabel(
+        locale,
+        defaultUserInterfaceType,
+        defaultLabel ? defaultLabel.label : "",
+        false,
+        null,
+        []
+      );
+      this.i18n.push(newLabel);
+      return newLabel;
+    }
   }
 
   changeDefaultLabelForLocale(locale: string, label: string): I18nLabel {

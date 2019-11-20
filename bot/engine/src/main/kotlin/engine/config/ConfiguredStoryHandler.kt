@@ -124,7 +124,7 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
 
     private fun BotBus.send(container: StoryDefinitionAnswersContainer, answer: SimpleAnswer, end: Boolean = false) {
         val label = translate(answer.key)
-        val suggestions = container.findNextSteps(configuration)
+        val suggestions = container.findNextSteps(this, configuration)
         val connectorMessages =
             answer.mediaMessage
                 ?.takeIf { it.checkValidity() }

@@ -73,6 +73,7 @@ import ai.tock.shared.vertx.UnauthorizedException
 import ai.tock.shared.vertx.WebVerticle.Companion.badRequest
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nLabel
+import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.Translator
 import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
@@ -389,7 +390,8 @@ object BotAdminService {
             targetIntent?.takeIf { it.name.isNotBlank() },
             answers.mapNotNull { it.toConfiguration(botId, oldStory?.steps?.find { it.name == name }?.answers) },
             currentType,
-            userSentence,
+            userSentence.defaultLabel ?: "",
+            I18nLabelValue(userSentence),
             children.map { it.toStepConfiguration(app, botId, oldStory) },
             level
         ).apply {

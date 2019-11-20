@@ -21,6 +21,7 @@ import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
 import ai.tock.bot.admin.bot.BotVersion
 import ai.tock.bot.definition.StoryDefinition
+import ai.tock.bot.engine.BotBus
 
 /**
  * Contains list of [AnswerConfiguration].
@@ -52,5 +53,5 @@ internal interface StoryDefinitionAnswersContainer {
             ?.findBestVersion(BotVersion.getCurrentBotVersion(botId))
             ?.storyDefinition
 
-    fun findNextSteps(story: StoryDefinitionConfiguration): List<String> = emptyList()
+    fun findNextSteps(bus: BotBus, story: StoryDefinitionConfiguration): List<CharSequence> = emptyList()
 }
