@@ -243,14 +243,14 @@ object TestPlanService {
                     // if the bot's answer does not equal to the test step
                     if (!botMessage.convertAndDeepEquals(it)) {
                         logger.error { "Not the same messages:\n\t\tObtained ----- $botMessage\n\t\tExpected ----- ${it.messages.map { m -> m.toClientMessage() }}" }
-                        val botAnswer = botMessage.toMessage().toPrettyString()
+                        val givenAnswer = botMessage.toMessage().toPrettyString()
                         val expectedAnswer = it.messages.map { message -> message.toPrettyString() }.joinToString(" - ")
                         return DialogExecutionReport(
                                 dialogReportId = dialog.id,
                                 error = true,
                                 errorActionId = it.id,
-                                errorMessage = "Réponse inattendue : \"$botAnswer\" au lieu de \"$expectedAnswer\" ----- " +
-                                        "Mots différents : " + botAnswer.split(" ").filter { word ->
+                                errorMessage = "Réponse inattendue : \"$givenAnswer\" au lieu de \"$expectedAnswer\" ----- " +
+                                        "Mots différents : " + givenAnswer.split(" ").filter { word ->
                                     !expectedAnswer.split(" ").contains(word)
                                 }.toString()
                         )

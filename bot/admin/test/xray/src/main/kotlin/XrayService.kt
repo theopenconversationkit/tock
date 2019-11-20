@@ -105,7 +105,10 @@ class XrayService(
             testKeys.isNotEmpty() && testPlanKeys.isNotEmpty() -> throw AssertionError("Impossible d'exécuter un test plan et un test à la fois.")
             testKeys.isNotEmpty() -> executeTests(namespace)
             testPlanKeys.isNotEmpty() -> executeTestPlans(namespace)
-            else -> throw AssertionError("Veuillez spécifier le \"testPlanKey\" OU (xor) le \"testKey\".")
+            else -> {
+                logger.error { "Veuillez spécifier le \"testPlanKey\" OU (xor) le \"testKey\"." }
+                XRayPlanExecutionResult(success = 0, total = 0, errorMessage = "ERREUR : Veuillez spécifier le \"testPlanKey\" OU (xor) le \"testKey\".")
+            }
         }
     }
 
