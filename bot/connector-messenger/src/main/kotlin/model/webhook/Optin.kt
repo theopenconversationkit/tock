@@ -23,6 +23,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
  */
 data class Optin(
     @JsonProperty("user_ref")
-    val userRef: String,
+    val userRef: String? = null,
     val ref: String? = null
 )
