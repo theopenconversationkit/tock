@@ -16,15 +16,13 @@
 
 package ai.tock.bot.admin.test.xray
 
+import ai.tock.bot.admin.bot.BotApplicationConfiguration
+import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.dialog.DialogReport
-import ai.tock.bot.admin.test.DialogExecutionReport
-import ai.tock.bot.admin.test.TestActionReport
-import ai.tock.bot.admin.test.TestDialogReport
-import ai.tock.bot.admin.test.TestPlan
-import ai.tock.bot.admin.test.TestPlanExecution
-import ai.tock.bot.admin.test.TestPlanExecutionStatus
+import ai.tock.bot.admin.test.*
 import ai.tock.bot.admin.test.TestPlanService.saveTestPlanExecution
-import ai.tock.bot.admin.test.findTestClient
+import ai.tock.bot.admin.test.model.BotDialogRequest
+import ai.tock.bot.admin.test.model.BotDialogResponse
 import ai.tock.bot.admin.test.xray.XrayClient.getProjectFromIssue
 import ai.tock.bot.admin.test.xray.model.JiraIssueType
 import ai.tock.bot.admin.test.xray.model.JiraTest
@@ -44,17 +42,15 @@ import ai.tock.bot.admin.test.xray.model.XrayTestExecutionReport
 import ai.tock.bot.admin.test.xray.model.XrayTestExecutionStepReport
 import ai.tock.bot.admin.test.xray.model.XrayTextExecutionFields
 import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.rest.client.ConnectorRestClient
+import ai.tock.bot.connector.rest.client.model.ClientMessageRequest
+import ai.tock.bot.connector.rest.client.model.ClientSentence
 import ai.tock.bot.engine.message.parser.MessageParser
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType.bot
 import ai.tock.bot.engine.user.PlayerType.user
-import ai.tock.shared.Dice
-import ai.tock.shared.defaultLocale
-import ai.tock.shared.defaultZoneId
-import ai.tock.shared.error
-import ai.tock.shared.listProperty
-import ai.tock.shared.mapListProperty
-import ai.tock.shared.property
+import ai.tock.shared.*
+import ai.tock.shared.vertx.UnauthorizedException
 import ai.tock.translator.UserInterfaceType
 import mu.KotlinLogging
 import org.litote.kmongo.Id
@@ -66,6 +62,7 @@ import java.time.OffsetDateTime.ofInstant
 import java.time.temporal.ChronoUnit
 import java.util.Base64
 import java.util.Locale
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  *
@@ -92,10 +89,8 @@ class XrayService(
     private val botId = PlayerId("testBot", bot)
     private val connectorJiraMap = mapListProperty("tock_bot_test_connector_jira_map", emptyMap())
     private val jiraProject: String = property("tock_bot_test_jira_project", "please set a jira project")
-    private val testTypeField: String =
-            property("tock_bot_test_jira_xray_test_type_field", "please set a test type field")
-    private val manualStepsField: String =
-            property("tock_bot_test_jira_xray_manual_test_field", "please set a manual type field")
+    private val testTypeField: String = property("tock_bot_test_jira_xray_test_type_field", "please set a test type field")
+    private val manualStepsField: String = property("tock_bot_test_jira_xray_manual_test_field", "please set a test type field")
     private val linkedField: String = property("tock_bot_test_jira_linked_field", "")
     private val locale: Locale = Locale.forLanguageTag(property("tock_bot_test_locale", defaultLocale.toLanguageTag()))
     private val instant = Instant.now()
@@ -583,11 +578,71 @@ class XrayService(
             testsPlans: List<String>,
             labelTestPlansMap: Map<String, String> = emptyMap()
     ): XrayTest? {
+        val steps = defineTestSteps(dialog)
+
+        val labels = linkedJira?.let { XrayClient.getLabels(it) } ?: emptyList()
+
+        val test = JiraTest(
+                jiraProject,
+                testName.invoke(labels),
+                "",
+                listOf("automatisation"),
+                testTypeField,
+                manualStepsField,
+                "cucumber-tock"
+        )
+        val jira = XrayClient.createTest(test)
+        if (linkedJira != null) {
+            XrayClient.linkTest(jira.key, linkedJira)
+            testsPlans.forEach {
+                XrayClient.addTestToTestPlan(jira.key, it)
+            }
+            if (labelTestPlansMap.isNotEmpty()) {
+                labels
+                        .filter { labelTestPlansMap.containsKey(it) }
+                        .forEach {
+                            XrayClient.addTestToTestPlan(jira.key, labelTestPlansMap[it]!!)
+                        }
+            }
+        }
+
+        steps?.forEach {
+            XrayClient.saveStep(jira.key, it)
+        }
+
+        XrayPrecondition.getPreconditionForUserInterface(dialog.actions.first().userInterfaceType)
+                ?.apply {
+                    XrayClient.addPrecondition(this, jira.key)
+                }
+
+        return XrayTest(jira.key)
+    }
+
+    fun updateXrayTest(dialog: DialogReport, testKey: String): XrayTest? {
+        val steps = defineTestSteps(dialog)
+
+        if (XrayClient.getIssue(testKey) == null) {
+            return null
+        }
+
+        // remove all existing test steps
+        val stepList = XrayClient.getTestSteps(testKey)
+        stepList.forEach { currentStep ->
+            XrayClient.deleteStep(testKey, currentStep.id.toInt())
+        }
+
+        steps?.forEach {
+            XrayClient.saveStep(testKey, it)
+        }
+
+        return XrayTest(testKey)
+    }
+
+    private fun defineTestSteps(dialog: DialogReport): List<XrayBuildTestStep>? {
         if (dialog.actions.isEmpty()) {
             logger.warn { "no action for dialog $dialog" }
             return null
         }
-        //define steps
         val steps: MutableList<XrayBuildTestStep> = mutableListOf()
         dialog.actions.forEach { action ->
             val user = action.playerId.type == user
@@ -634,49 +689,7 @@ class XrayService(
                 }
                         ?: logger.warn { "no first step for $dialog" }
             }
-
         }
-        val labels = linkedJira?.let { XrayClient.getLabels(it) } ?: emptyList()
-        //create test
-        val test = JiraTest(
-                jiraProject,
-                testName.invoke(labels),
-                "",
-                testTypeField,
-                manualStepsField
-        )
-        val jira = XrayClient.createTest(test)
-        if (linkedJira != null) {
-            XrayClient.linkTest(jira.key, linkedJira)
-            testsPlans.forEach {
-                XrayClient.addTestToTestPlan(jira.key, it)
-            }
-            if (labelTestPlansMap.isNotEmpty()) {
-                labels
-                        .filter { labelTestPlansMap.containsKey(it) }
-                        .forEach {
-                            XrayClient.addTestToTestPlan(jira.key, labelTestPlansMap[it]!!)
-                        }
-            }
-        }
-
-        steps.forEach {
-            XrayClient.saveStep(jira.key, it)
-        }
-
-        XrayPrecondition.getPreconditionForUserInterface(dialog.actions.first().userInterfaceType)
-                ?.apply {
-                    XrayClient.addPrecondition(this, jira.key)
-                }
-
-        return XrayTest(jira.key)
-    }
-
-    fun convertBotMessageToXrayAttachment(messageToConvert: String) {
-        logger.debug { "message to convert: $messageToConvert" }
-        logger.debug { "converted message: ${messageToConvert}" }
-
-
-        //response.body().messages.map { it.toMessage().toPrettyString() }
+        return steps
     }
 }

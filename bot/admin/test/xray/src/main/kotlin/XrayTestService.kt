@@ -16,12 +16,12 @@
 
 package ai.tock.bot.admin.test.xray
 
-import ai.tock.bot.admin.dialog.DialogReport
 import ai.tock.bot.admin.test.TestCoreService
 import ai.tock.bot.admin.test.TestService
+import ai.tock.bot.admin.test.model.BotDialogRequest
 import ai.tock.nlp.admin.AdminVerticle
 import ai.tock.shared.security.TockUserRole.botUser
-import ai.tock.translator.UserInterfaceType
+import ai.tock.shared.vertx.WebVerticle.Companion
 
 private val testCoreService = TestCoreService()
 
@@ -35,15 +35,11 @@ class XrayTestService : TestService by testCoreService {
          */
         blockingJsonPost("/xray/execute", botUser) { context, configuration: XRayPlanExecutionConfiguration ->
             XrayService(
-                listOfNotNull(configuration.configurationId),
-                listOfNotNull(configuration.testPlanKey),
-                listOfNotNull(configuration.testKey),
-                configuration.testedBotId
+                    listOfNotNull(configuration.configurationId),
+                    listOfNotNull(configuration.testPlanKey),
+                    listOfNotNull(configuration.testKey),
+                    configuration.testedBotId
             ).execute(context.organization)
-        }
-
-        blockingJsonPost("/xray/convert", botUser) { context, messageToConvert: String ->
-            XrayService().convertBotMessageToXrayAttachment(messageToConvert)
         }
     }
 

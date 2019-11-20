@@ -45,6 +45,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
+import org.jetbrains.annotations.TestOnly
 import retrofit2.Response
 import java.io.StringReader
 
@@ -56,8 +57,10 @@ object XrayClient {
     private val logger = KotlinLogging.logger {}
 
     private val xrayTimeoutInSeconds = longProperty("tock_bot_test_xray_timeout_in_ms", 60000L)
-    private val xrayLogin = property("tock_bot_test_xray_login", "please set xray login")
-    private val xrayPassword = property("tock_bot_test_xray_password", "please set xray password")
+//    private val xrayLogin = property("tock_bot_test_xray_login", "please set xray login")
+//    private val xrayPassword = property("tock_bot_test_xray_password", "please set xray password")
+    private val xrayLogin = property("tock_bot_test_xray_login", "jira_qc")
+    private val xrayPassword = property("tock_bot_test_xray_password", "Hmc5S_rK9yJ7")
 
     val xray: XrayApi
 
@@ -181,6 +184,11 @@ object XrayClient {
         xray.createTest(test).execute().body() ?: error("error during creating test $test")
 
     fun saveStep(testKey: String, step: XrayBuildTestStep) = xray.saveStep(testKey, step).execute().body()
+
+    fun deleteStep(testKey: String, stepId: Int) =
+        xray.deleteStep(testKey, stepId).execute().body() ?: error("error during test step deletion")
+
+    fun getIssue(issueKey: String) = xray.getIssue(issueKey).execute().body() ?: error ("error: issue not found")
 
     fun addPrecondition(preConditionKey: String, jiraId: String) =
         xray.addPrecondition(
