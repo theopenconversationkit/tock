@@ -39,18 +39,29 @@ import ai.tock.bot.connector.media.MediaCardDescriptor
 import ai.tock.bot.connector.media.MediaCarouselDescriptor
 import ai.tock.bot.connector.media.MediaMessageDescriptor
 import ai.tock.bot.connector.media.MediaMessageType
+import ai.tock.bot.engine.action.ActionMetadata
+import ai.tock.bot.engine.action.ActionVisibility
 import ai.tock.bot.engine.event.EventType
 import ai.tock.bot.engine.message.Attachment
 import ai.tock.bot.engine.message.Choice
 import ai.tock.bot.engine.message.Location
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.message.Sentence
+import ai.tock.shared.error
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.core.JsonToken
+import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.JsonDeserializer
+import mu.KotlinLogging
 import org.litote.jackson.JacksonModuleServiceLoader
 
 /**
  *
  */
 private object BotEngineJacksonConfiguration {
+
+    private val logger = KotlinLogging.logger {}
 
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -135,6 +146,25 @@ private object BotEngineJacksonConfiguration {
                     }
                 })
 
+                //TODO remove in 20.3
+                addDeserializer(ActionVisibility::class.java, object: JsonDeserializer<ActionVisibility>() {
+                    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): ActionVisibility {
+                        val curr = p.currentToken
+
+                        // Usually should just get string value:
+                        return if (curr == JsonToken.VALUE_STRING || curr == JsonToken.FIELD_NAME) {
+                            try {
+                                val name = p.text.toUpperCase()
+                                ActionVisibility.valueOf(name)
+                            } catch (e: Exception) {
+                                logger.error(e)
+                                return ActionVisibility.UNKNOWN
+                            }
+                        } else {
+                             ActionVisibility.UNKNOWN
+                        }
+                    }
+                })
             }
             return module
         }
