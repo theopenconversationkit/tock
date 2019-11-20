@@ -16,7 +16,6 @@
 
 package ai.tock.bot.connector.messenger
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import ai.tock.bot.connector.ConnectorException
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.messenger.model.Recipient
@@ -48,6 +47,7 @@ import ai.tock.shared.longProperty
 import ai.tock.shared.property
 import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import ai.tock.shared.warn
+import com.fasterxml.jackson.module.kotlin.readValue
 import mu.KotlinLogging
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -218,7 +218,7 @@ internal class MessengerClient(val secretKey: String) {
 
     fun getThreadOwnerId(token: String, userId: String): String? =
         try {
-            graphApi.threadOwner(token, userId).execute().body()?.data?.threadOwner?.appId
+            graphApi.threadOwner(token, userId).execute().body()?.data?.firstOrNull()?.threadOwner?.appId
         } catch (e: Exception) {
             logger.warn(e)
             null

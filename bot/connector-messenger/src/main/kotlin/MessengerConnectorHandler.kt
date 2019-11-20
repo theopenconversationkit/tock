@@ -23,11 +23,13 @@ import ai.tock.bot.connector.messenger.MessengerConnector.Companion.pageIdConnec
 import ai.tock.bot.connector.messenger.model.webhook.CallbackRequest
 import ai.tock.bot.connector.messenger.model.webhook.Webhook
 import ai.tock.bot.engine.ConnectorController
+import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.monitoring.RequestTimerData
 import ai.tock.bot.engine.monitoring.logError
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType.bot
 import ai.tock.bot.engine.user.PlayerType.temporary
+import ai.tock.bot.engine.user.PlayerType.user
 import ai.tock.shared.error
 import mu.KotlinLogging
 
@@ -61,16 +63,28 @@ internal class MessengerConnectorHandler(
                 val conn = c.connector as MessengerConnector
                 val targetConnectorId = conn.connectorId
 
-                fun handle(m: Webhook, notifiedOnly: Boolean) {
+                fun handle(m: Webhook, notifiedOnly: Boolean = false) {
                     try {
-                        handleMessage(c, targetConnectorId, m, notifiedOnly)
+                        handleMessage(c, targetConnectorId, m, notifiedOnly) {
+                            try {
+                                conn.getThreadOwner(m.playerId(user))
+                                    ?.let { appId ->
+                                        pageIdConnectorIdMap[pageId]
+                                            ?.firstOrNull { connectorIdApplicationIdMap[it] == appId }
+                                            ?: appId
+                                    }
+                            } catch (t: Throwable) {
+                                logger.error(t)
+                                null
+                            }
+                        }
                     } catch (e: Throwable) {
                         try {
                             logger.logError(e, requestTimerData)
                             controller.errorMessage(
                                 m.playerId(bot),
                                 applicationId,
-                                m.recipientId(bot)
+                                m.recipientId(user)
                             ).let {
                                 conn.sendEvent(it)
                                 conn.endTypingAnswer(it)
@@ -81,7 +95,7 @@ internal class MessengerConnectorHandler(
                     }
                 }
 
-                entry.messaging?.filterNotNull()?.forEach { handle(it, false) }
+                entry.messaging?.filterNotNull()?.forEach { handle(it) }
                 entry.standby?.filterNotNull()?.forEach { handle(it, true) }
             } catch (e: Throwable) {
                 logger.logError(e, requestTimerData)
@@ -93,9 +107,18 @@ internal class MessengerConnectorHandler(
         controller: ConnectorController,
         applicationId: String,
         webhook: Webhook,
-        notifiedOnly: Boolean) {
-        val event = WebhookActionConverter.toEvent(webhook, applicationId)?.apply { state.notification = notifiedOnly }
+        notifiedOnly: Boolean,
+        threadOwnerRetriever: () -> String?) {
+        val event = WebhookActionConverter.toEvent(webhook, applicationId)
+
         if (event != null) {
+            val sourceAppChoiceId = (event as? SendChoice)?.sourceAppId()
+            if (notifiedOnly || (sourceAppChoiceId != null && applicationId != sourceAppChoiceId)) {
+                val sourceAppId = if (notifiedOnly) threadOwnerRetriever() else sourceAppChoiceId
+                event.state.notification = true
+                event.state.sourceApplicationId = sourceAppId
+            }
+
             controller.handle(
                 event,
                 ConnectorData(

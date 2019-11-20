@@ -21,6 +21,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 /**
  *
  */
-data class ThreadOwnerResponse(val data: ThreadOwnerData)
+data class ThreadOwnerResponse(val data: List<ThreadOwnerData>)
 
 data class ThreadOwnerData(@JsonProperty("thread_owner") val threadOwner: ThreadOwner)
