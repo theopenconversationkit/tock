@@ -110,7 +110,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
                     handler.handle()
 
                     if (!bus.connectorData.skipAnswer && !isEndCalled(bus)) {
-                        logger.warn { "Bus.end not called for story ${bus.story.definition.id} and user ${bus.userId.id}" }
+                        logger.warn { "Bus.end not called for story ${bus.story.definition.id}, user ${bus.userId.id} and connector ${bus.targetConnectorType}" }
                     }
                 }
             }
