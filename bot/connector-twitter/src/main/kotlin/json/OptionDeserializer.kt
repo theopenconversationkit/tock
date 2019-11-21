@@ -16,14 +16,14 @@
 
 package ai.tock.bot.connector.twitter.json
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
 import ai.tock.bot.connector.twitter.model.AbstractOption
 import ai.tock.bot.connector.twitter.model.Option
 import ai.tock.bot.connector.twitter.model.OptionWithoutDescription
 import ai.tock.shared.jackson.JacksonDeserializer
 import ai.tock.shared.jackson.read
 import ai.tock.shared.jackson.readValue
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
 import mu.KotlinLogging
 
 internal class OptionDeserializer : JacksonDeserializer<AbstractOption>() {
@@ -37,17 +37,18 @@ internal class OptionDeserializer : JacksonDeserializer<AbstractOption>() {
         data class MediaFields(
             var label: String? = null,
             var description: String? = null,
-            var metadata: String? = null
+            var metadata: String? = null,
+            var other: EmptyJson? = null
         )
 
         val (label, description, metadata)
-                = jp.read<MediaFields> { fields, name ->
+            = jp.read<MediaFields> { fields, name ->
             with(fields) {
                 when (name) {
                     "label" -> label = jp.readValue()
                     "description" -> description = jp.readValue()
                     "metadata" -> metadata = jp.readValue()
-                    else -> unknownValue
+                    else -> other = jp.readUnknownValue()
                 }
             }
         }

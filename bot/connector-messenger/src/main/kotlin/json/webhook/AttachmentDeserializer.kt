@@ -16,14 +16,14 @@
 
 package ai.tock.bot.connector.messenger.json.webhook
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
 import ai.tock.bot.connector.messenger.model.webhook.Attachment
 import ai.tock.bot.connector.messenger.model.webhook.AttachmentType
 import ai.tock.bot.connector.messenger.model.webhook.Payload
 import ai.tock.shared.jackson.JacksonDeserializer
 import ai.tock.shared.jackson.read
 import ai.tock.shared.jackson.readValue
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
 import mu.KotlinLogging
 
 /**
@@ -39,15 +39,16 @@ internal class AttachmentDeserializer : JacksonDeserializer<Attachment>() {
     override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Attachment? {
         //facebook can send empty attachments (ie attachments:[{}])
         data class AttachmentFields(
-                var type: AttachmentType? = null,
-                var payload: Payload? = null)
+            var type: AttachmentType? = null,
+            var payload: Payload? = null,
+            var other: EmptyJson? = null)
 
         val (type, payload) = jp.read<AttachmentFields> { fields, name ->
             with(fields) {
                 when (name) {
                     Attachment::type.name -> type = jp.readValue()
                     Attachment::payload.name -> payload = jp.readValue()
-                    else -> unknownValue
+                    else -> other = jp.readUnknownValue()
                 }
             }
         }

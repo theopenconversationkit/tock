@@ -16,9 +16,6 @@
 
 package ai.tock.bot.connector.twitter.json
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.DeserializationContext
 import ai.tock.bot.connector.twitter.model.Application
 import ai.tock.bot.connector.twitter.model.DirectMessage
 import ai.tock.bot.connector.twitter.model.DirectMessageIndicateTyping
@@ -32,6 +29,9 @@ import ai.tock.shared.jackson.JacksonDeserializer
 import ai.tock.shared.jackson.read
 import ai.tock.shared.jackson.readListValues
 import ai.tock.shared.jackson.readValue
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.DeserializationContext
 import mu.KotlinLogging
 
 internal class EventDeserializer : JacksonDeserializer<IncomingEvent>() {
@@ -48,11 +48,12 @@ internal class EventDeserializer : JacksonDeserializer<IncomingEvent>() {
             var apps: Map<String, Application>? = null,
             var directMessages: List<DirectMessage>? = null,
             var directMessagesIndicateTyping: List<DirectMessageIndicateTyping>? = null,
-            var tweets: List<Tweet>? = null
+            var tweets: List<Tweet>? = null,
+            var other: EmptyJson? = null
         )
 
         val (forUserId, users, apps, directMessages, directMessageIndicateTyping, statuses)
-                = jp.read<EventFields> { fields, name ->
+            = jp.read<EventFields> { fields, name ->
             with(fields) {
                 when (name) {
                     "for_user_id" -> forUserId = jp.readValue()
@@ -61,7 +62,7 @@ internal class EventDeserializer : JacksonDeserializer<IncomingEvent>() {
                     "direct_message_events" -> directMessages = jp.readListValues()
                     "direct_message_indicate_typing_events" -> directMessagesIndicateTyping = jp.readListValues()
                     "tweet_create_events" -> tweets = jp.readValueAs(object : TypeReference<List<Tweet>>() {})
-                    else -> unknownValue
+                    else -> other = jp.readUnknownValue()
                 }
             }
         }

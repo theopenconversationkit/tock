@@ -16,8 +16,6 @@
 
 package ai.tock.bot.connector.messenger.json.webhook
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
 import ai.tock.bot.connector.messenger.model.webhook.FacebookLocation
 import ai.tock.bot.connector.messenger.model.webhook.LocationPayload
 import ai.tock.bot.connector.messenger.model.webhook.Payload
@@ -25,6 +23,8 @@ import ai.tock.bot.connector.messenger.model.webhook.UrlPayload
 import ai.tock.shared.jackson.JacksonDeserializer
 import ai.tock.shared.jackson.read
 import ai.tock.shared.jackson.readValue
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
 import mu.KotlinLogging
 
 /**
@@ -39,15 +39,16 @@ internal class PayloadDeserializer : JacksonDeserializer<Payload>() {
 
     override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Payload? {
         data class PayloadFields(
-                var coordinates: FacebookLocation? = null,
-                var url: String? = null)
+            var coordinates: FacebookLocation? = null,
+            var url: String? = null,
+            var other: EmptyJson? = null)
 
         val (coordinates, url) = jp.read<PayloadFields> { fields, name ->
             with(fields) {
                 when (name) {
                     LocationPayload::coordinates.name -> coordinates = jp.readValue()
                     UrlPayload::url.name -> url = jp.valueAsString
-                    else -> unknownValue
+                    else -> other = jp.readValue()
                 }
             }
         }

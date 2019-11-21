@@ -16,10 +16,6 @@
 
 package ai.tock.bot.connector.messenger.json.send
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.TreeNode
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.node.ArrayNode
 import ai.tock.bot.connector.messenger.model.send.Button
 import ai.tock.bot.connector.messenger.model.send.ButtonPayload
 import ai.tock.bot.connector.messenger.model.send.Element
@@ -35,6 +31,10 @@ import ai.tock.shared.jackson.JacksonDeserializer
 import ai.tock.shared.jackson.read
 import ai.tock.shared.jackson.readListValues
 import ai.tock.shared.jackson.readValue
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.core.TreeNode
+import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.node.ArrayNode
 import mu.KotlinLogging
 
 /**
@@ -56,12 +56,13 @@ internal class PayloadDeserializer : JacksonDeserializer<Payload>() {
             var buttons: List<Button>? = null,
             var elements: List<Any>? = null,
             var topElementStyle: ListElementStyle? = null,
-            var sharable: Boolean? = null
+            var sharable: Boolean? = null,
+            var other: EmptyJson? = null
         )
 
         val (templateType, url, attachmentId, isReusable,
-                text, buttons, elements, topElementStyle, sharable)
-                = jp.read<PayloadFields> { fields, name ->
+            text, buttons, elements, topElementStyle, sharable)
+            = jp.read<PayloadFields> { fields, name ->
             with(fields) {
                 when (name) {
                     "template_type" -> templateType = jp.readValue()
@@ -86,7 +87,7 @@ internal class PayloadDeserializer : JacksonDeserializer<Payload>() {
                     ButtonPayload::text.name -> text = jp.valueAsString
                     "top_element_style" -> topElementStyle = jp.readValue()
                     MediaPayload::sharable.name -> sharable = jp.valueAsBoolean
-                    else -> unknownValue
+                    else -> other = jp.readUnknownValue()
                 }
             }
         }

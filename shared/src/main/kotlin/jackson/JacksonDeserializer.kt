@@ -16,6 +16,9 @@
 
 package ai.tock.shared.jackson
 
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.core.JsonToken.START_ARRAY
+import com.fasterxml.jackson.core.JsonToken.START_OBJECT
 import com.fasterxml.jackson.databind.JsonDeserializer
 import mu.KotlinLogging
 
@@ -24,6 +27,16 @@ import mu.KotlinLogging
  */
 abstract class JacksonDeserializer<T> : JsonDeserializer<T>() {
 
-    protected val unknownValue: (String) -> Unit =
-        { KotlinLogging.logger {}.warn { "Unsupported field : $it for ${javaClass}" } }
+    object EmptyJson
+
+    protected fun JsonParser.readUnknownValue(): EmptyJson {
+        skipChildren()
+        when (currentToken()) {
+            START_OBJECT, START_ARRAY -> skipChildren()
+            else -> nextToken()
+        }
+        KotlinLogging.logger {}.warn { "Unsupported field : ${javaClass}" }
+        return EmptyJson
+    }
+
 }

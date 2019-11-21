@@ -31,4 +31,46 @@ class CallbackRequestDeserializationTest {
         val s = mapper.writeValueAsString(r)
         assertEquals(r, mapper.readValue(s))
     }
+
+
+
+    @Test
+    fun testDeserialization() {
+        val json ="""
+        {
+            "object": "page",
+            "entry": [
+                {
+                    "id": "1072877829517101",
+                    "time": 1574337626872,
+                    "messaging": [
+                        {
+                            "sender": {
+                                "id": "1696785613739982"
+                            },
+                            "recipient": {
+                                "id": "1072877829517101"
+                            },
+                            "timestamp": 1574337624727,
+                            "message": {
+                                "mid": "m_bWelEDyH_VUB2asdGYWNskansOeR_J9rheTeWjyz7SOKVtTieg4N7cKiLIioB-p1jMGHO81pvH3M7g5zBOzppQ",
+                                "text": "Bonjour",
+                                "nlp": {
+                                    "entities": {},
+                                    "detected_locales": [
+                                        {
+                                            "locale": "fr_XX",
+                                            "confidence": 0.9988
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    """.trimIndent()
+        println(mapper.readValue<CallbackRequest>(json))
+    }
 }
