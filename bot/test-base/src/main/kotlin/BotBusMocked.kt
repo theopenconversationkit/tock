@@ -46,7 +46,6 @@ import ai.tock.nlp.api.client.model.Entity
 import ai.tock.nlp.entity.Value
 import ai.tock.shared.defaultLocale
 import ai.tock.translator.I18nContext
-import ai.tock.translator.TranslatedSequence
 import ai.tock.translator.Translator
 import ai.tock.translator.UserInterfaceType.textAndVoiceAssistant
 import ai.tock.translator.UserInterfaceType.textChat
@@ -174,7 +173,7 @@ fun mockTockCommon(bus: BotBus) {
     every { botDefinition.defaultDelay(any()) } returns 0
     every { bus.resetDialogState() } returns Unit
 
-    every { bus.translate(any()) } answers { args[0] as TranslatedSequence }
+    every { bus.translate(any()) } answers { (args[0] as CharSequence).raw }
     every { bus.translate(any(), *anyVararg()) } answers {
         Translator.formatMessage(
             args[0].toString(),

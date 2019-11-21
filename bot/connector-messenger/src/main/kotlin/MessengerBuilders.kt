@@ -413,12 +413,7 @@ fun I18nTranslator.genericElement(
     if (buttons?.size ?: 0 > 3) {
         error("Number of buttons > 3 : $buttons")
     }
-    return Element(
-        t.toString(),
-        imageUrl,
-        s?.toString(),
-        buttons
-    )
+    return Element(t, s, imageUrl, buttons)
 }
 
 /**
@@ -440,12 +435,7 @@ fun I18nTranslator.listElement(
     if (s?.length ?: 0 > 80) {
         logger.warn { "subtitle $s has more than 80 chars" }
     }
-    return Element(
-        t.toString(),
-        imageUrl,
-        s?.toString(),
-        if (button == null) null else listOf(button)
-    )
+    return Element(t, s, imageUrl, listOfNotNull(button))
 }
 
 /**
