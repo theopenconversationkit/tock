@@ -16,10 +16,10 @@
 
 package ai.tock.bot.connector.messenger.model.send
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.connector.messenger.model.Recipient
 import ai.tock.bot.connector.messenger.model.send.MessagingType.RESPONSE
 import ai.tock.bot.connector.messenger.model.send.NotificationType.NO_PUSH
+import com.fasterxml.jackson.annotation.JsonProperty
 
 data class MessageRequest(
     val recipient: Recipient,
@@ -29,6 +29,7 @@ data class MessageRequest(
     @JsonProperty("notification_type")
     val notificationType: NotificationType = NO_PUSH,
     @JsonProperty("tag")
-    val tag: MessageTag? = null
-) {
-}
+    val tag: MessageTag? = null,
+    @JsonProperty("persona_id")
+    val personaId: String? = null
+)

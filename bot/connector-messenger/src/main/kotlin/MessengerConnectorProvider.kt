@@ -38,6 +38,7 @@ internal object MessengerConnectorProvider : ConnectorProvider {
     private const val TOKEN = "token"
     private const val VERIFY_TOKEN = "verifyToken"
     private const val SECRET = "secret"
+    private const val PERSONA_ID = "personaId"
 
     override val connectorType: ConnectorType get() = messengerConnectorType
 
@@ -52,7 +53,8 @@ internal object MessengerConnectorProvider : ConnectorProvider {
                 "$appId|${parameters.getValue(SECRET)}",
                 parameters.getValue(TOKEN),
                 parameters[VERIFY_TOKEN],
-                MessengerClient(parameters.getValue(SECRET))
+                MessengerClient(parameters.getValue(SECRET)),
+                personaId = parameters[PERSONA_ID]?.takeUnless { it.isBlank() }
             )
         }
     }
@@ -85,6 +87,11 @@ internal object MessengerConnectorProvider : ConnectorProvider {
                     "Secret",
                     SECRET,
                     true
+                ),
+                ConnectorTypeConfigurationField(
+                    "Persona Id",
+                    PERSONA_ID,
+                    false
                 )
             ),
             resourceAsString("/messenger.svg")

@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.messenger.model.attachment
+package ai.tock.bot.connector.messenger
 
-import ai.tock.bot.connector.messenger.model.send.AttachmentMessage
-import com.fasterxml.jackson.annotation.JsonProperty
+import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.user.PlayerId
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
-/**
- *
- */
-data class AttachmentRequest(
-    val message: AttachmentMessage,
-    @JsonProperty("persona_id")
-    val personaId: String? = null
-)
+class SendActionConverterTest {
+
+    @Test
+    fun `WHEN setting a persona id THEN a MessageRequest with persona_id is returned`() {
+        val personaId = "id"
+        val s = SendSentence(PlayerId("a"), "app", PlayerId("b"), "text")
+        val m = SendActionConverter.toMessageRequest(s, personaId)
+        assertEquals(personaId, m?.personaId)
+    }
+}

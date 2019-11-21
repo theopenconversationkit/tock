@@ -40,7 +40,7 @@ internal object SendActionConverter {
 
     private val logger = KotlinLogging.logger {}
 
-    fun toMessageRequest(action: Action): MessageRequest? {
+    fun toMessageRequest(action: Action, personaId: String? = null): MessageRequest? {
         return when (action) {
             is SendSentence ->
                 if (action.hasMessage(MessengerConnectorProvider.connectorType)) {
@@ -66,7 +66,8 @@ internal object SendActionConverter {
                 it,
                 if (messageTag == null) RESPONSE else MESSAGE_TAG,
                 NotificationType.toNotificationType(action),
-                messageTag
+                messageTag,
+                personaId
             )
         }
     }
