@@ -22,7 +22,12 @@ import ai.tock.bot.connector.messenger.model.webhook.CallbackRequest
 import ai.tock.bot.connector.messenger.model.webhook.Entry
 import ai.tock.bot.connector.messenger.model.webhook.Message
 import ai.tock.bot.connector.messenger.model.webhook.MessageWebhook
+import ai.tock.bot.connector.messenger.model.webhook.PostbackWebhook
+import ai.tock.bot.connector.messenger.model.webhook.UserActionPayload
+import ai.tock.bot.definition.Intent
 import ai.tock.bot.engine.ConnectorController
+import ai.tock.bot.engine.action.SendChoice
+import ai.tock.bot.engine.action.SendChoice.Companion
 import ai.tock.bot.engine.monitoring.RequestTimerData
 import io.mockk.every
 import io.mockk.mockk
@@ -133,6 +138,25 @@ internal class MultiMessengerConnectorsTest {
             )
         )
 
+    fun choice(page: String, appId:String) =
+        CallbackRequest(
+            "page",
+            listOf(
+                Entry(
+                    page,
+                    0,
+                    messaging = listOf(
+                        PostbackWebhook(
+                            Sender("1"),
+                            Recipient(page),
+                            1L,
+                            UserActionPayload(SendChoice.encodeChoiceId(Intent.unknown, sourceAppId = appId))
+                        )
+                    )
+                )
+            )
+        )
+
     fun standby(page: String) = request(page).run {
         copy(entry = entry.map { it.copy(messaging = null, standby = it.messaging) }
         )
@@ -214,8 +238,8 @@ internal class MultiMessengerConnectorsTest {
     }
 
     @Test
-    fun `GIVEN 5 messenger connectors WHEN app A is notified of the page B call by app B THEN the right controller is called AND notifyOnly is true`() {
-
+    fun `GIVEN 5 messenger connectors WHEN app A is notified of the page B call by app B THEN notifyOnly is true AND sourceId is ok`() {
+        every { messengerClient.getThreadOwnerId(token2, "1") } returns appId5
         val handler = MessengerConnectorHandler(
             "appA",
             controller1,
@@ -225,6 +249,35 @@ internal class MultiMessengerConnectorsTest {
 
         handler.handleRequest()
 
-        verify { controller2.handle(match { it.applicationId == connectorId2 && it.state.notification }, any()) }
+        verify { controller2.handle(match { it.applicationId == connectorId2 && it.state.notification && it.state.sourceApplicationId == connectorId5 }, any()) }
+    }
+
+    @Test
+    fun `GIVEN 5 messenger connectors WHEN app A is notified of the page B call by app B with thread owner is an unknown app THEN notifyOnly is true AND sourceId is the unknown app id`() {
+        every { messengerClient.getThreadOwnerId(token2, "1") } returns "other_messenger_app_id"
+        val handler = MessengerConnectorHandler(
+            "appA",
+            controller1,
+            standby("pageB"),
+            RequestTimerData("messenger")
+        )
+
+        handler.handleRequest()
+
+        verify { controller2.handle(match { it.applicationId == connectorId2 && it.state.notification && it.state.sourceApplicationId == "other_messenger_app_id" }, any()) }
+    }
+
+    @Test
+    fun `GIVEN 5 messenger connectors WHEN a send choice of a different app is retrieved THEN notifyOnly is true AND sourceId is the choice source app id`() {
+        val handler = MessengerConnectorHandler(
+            "appA",
+            controller1,
+            choice("pageB", connectorId5),
+            RequestTimerData("messenger")
+        )
+
+        handler.handleRequest()
+
+        verify { controller2.handle(match { it.applicationId == connectorId2 && it.state.notification && it.state.sourceApplicationId == connectorId5 }, any()) }
     }
 }

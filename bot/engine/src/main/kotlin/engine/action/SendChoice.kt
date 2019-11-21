@@ -87,6 +87,7 @@ class SendChoice(
         const val STEP_PARAMETER = "_step"
         const val PREVIOUS_INTENT_PARAMETER = "_previous_intent"
         const val NLP = "_nlp"
+        const val SOURCE_APP_ID = "_source"
 
         /**
          * Encodes a choice id where text will be analysed by NLP engine.
@@ -122,7 +123,13 @@ class SendChoice(
              */
             parameters: Map<String, String> = emptyMap()
         ): String {
-            return encodeChoiceId(intent, step?.name, parameters, bus.stepName, bus.intent?.wrappedIntent())
+            return encodeChoiceId(
+                intent,
+                step?.name,
+                parameters,
+                bus.stepName,
+                bus.intent?.wrappedIntent(),
+                sourceAppId = bus.applicationId)
         }
 
         /**
@@ -146,7 +153,14 @@ class SendChoice(
              */
             parameters: Map<String, String> = emptyMap()
         ): String {
-            return encodeChoiceId(intent, step, parameters, bus.stepName, bus.intent?.wrappedIntent())
+            return encodeChoiceId(
+                intent,
+                step,
+                parameters,
+                bus.stepName,
+                bus.intent?.wrappedIntent(),
+                sourceAppId = bus.applicationId
+            )
         }
 
         /**
@@ -172,14 +186,19 @@ class SendChoice(
             /**
              * The current intent of the bus.
              */
-            currentIntent: Intent? = null
+            currentIntent: Intent? = null,
+            /**
+             * The app id emitter
+             */
+            sourceAppId: String? = null
         ): String =
             encodeChoiceId(
                 intent,
                 step?.name,
                 parameters,
                 busStep?.name,
-                currentIntent
+                currentIntent,
+                sourceAppId
             )
 
         /**
@@ -205,7 +224,11 @@ class SendChoice(
             /**
              * The current intent of the bus.
              */
-            currentIntent: Intent?
+            currentIntent: Intent?,
+            /**
+             * The app id emitter
+             */
+            sourceAppId: String? = null
         ): String {
             val currentStep = if (step == null) busStep else step
             return StringBuilder().apply {
@@ -214,7 +237,8 @@ class SendChoice(
                     listOfNotNull(
                         if (currentStep != null) STEP_PARAMETER to currentStep else null,
                         if (currentIntent != null && currentIntent != intent)
-                            PREVIOUS_INTENT_PARAMETER to currentIntent.name else null
+                            PREVIOUS_INTENT_PARAMETER to currentIntent.name else null,
+                        if (sourceAppId != null) SOURCE_APP_ID to sourceAppId else null
                     )
 
                 if (params.isNotEmpty()) {
@@ -266,6 +290,11 @@ class SendChoice(
      * The step of this choice (when applicable).
      */
     fun step(): String? = parameters[STEP_PARAMETER]
+
+    /**
+     * The source application id (if any) ie the creator of the choice.
+     */
+    fun sourceAppId(): String? = parameters[SOURCE_APP_ID]
 
     internal fun previousIntent(): String? = parameters[PREVIOUS_INTENT_PARAMETER]
 

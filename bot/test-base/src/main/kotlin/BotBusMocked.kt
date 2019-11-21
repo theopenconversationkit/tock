@@ -34,7 +34,6 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionQuote
 import ai.tock.bot.engine.action.ActionReply
 import ai.tock.bot.engine.action.ActionVisibility
-import ai.tock.bot.engine.action.Metadata
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.dialog.EntityValue
 import ai.tock.bot.engine.message.Message
@@ -158,6 +157,7 @@ fun mockTockCommon(bus: BotBus) {
     every { bus.userId } returns playerId
     val botId = PlayerId("bot")
     every { bus.botId } returns botId
+    every { bus.applicationId } returns "appId"
 
     val userTimeline: UserTimeline = mockk()
     val userState = UserState(Instant.now())
@@ -194,7 +194,8 @@ fun mockTockCommon(bus: BotBus) {
             args[2] as? StoryStep<out StoryHandlerDefinition>,
             (args[3] as? Map<String, String>) ?: emptyMap(),
             null,
-            null)
+            null,
+            bus.applicationId)
     }
     every {
         SendChoice.encodeChoiceId(bus, any(), any<String>(), any())
@@ -205,7 +206,8 @@ fun mockTockCommon(bus: BotBus) {
             args[2] as? String,
             (args[3] as? Map<String, String>) ?: emptyMap(),
             null,
-            null)
+            null,
+            bus.applicationId)
     }
 }
 

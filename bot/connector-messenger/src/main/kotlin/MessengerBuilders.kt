@@ -511,10 +511,14 @@ fun I18nTranslator.standaloneQuickReply(
     /**
      * The current intent of the Bus<T>.
      */
-    currentIntent: Intent? = null
+    currentIntent: Intent? = null,
+    /**
+     * The app id emitter.
+     */
+    sourceAppId: String?
 ): QuickReply =
     quickReply(title, targetIntent, imageUrl, step?.name, parameters.toMap()) { intent, s, params ->
-        SendChoice.encodeChoiceId(intent, s, params, busStep?.name, currentIntent)
+        SendChoice.encodeChoiceId(intent, s, params, busStep?.name, currentIntent, sourceAppId = sourceAppId)
     }
 
 /**
@@ -640,7 +644,11 @@ fun I18nTranslator.standalonePostbackButton(
     /**
      * The current intent of the Bus<T>.
      */
-    currentIntent: Intent? = null
+    currentIntent: Intent? = null,
+    /**
+     * The app id emitter
+     */
+    sourceAppId: String?
 ): PostbackButton =
     postbackButton(
         title,
@@ -648,7 +656,7 @@ fun I18nTranslator.standalonePostbackButton(
         step,
         parameters.toMap()
     ) { intent, s, params ->
-        SendChoice.encodeChoiceId(intent, s, params, busStep, currentIntent)
+        SendChoice.encodeChoiceId(intent, s, params, busStep, currentIntent, sourceAppId = sourceAppId)
     }
 
 /**

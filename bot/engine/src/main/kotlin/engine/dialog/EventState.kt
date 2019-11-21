@@ -57,7 +57,11 @@ data class EventState(
      *
      * Default is false.
      */
-    var notification: Boolean = false
+    var notification: Boolean = false,
+    /**
+     * For notification event, what is the source of the notification if known?
+     */
+    var sourceApplicationId: String? = null
 ) {
 
     fun getEntity(role: String): List<EntityValue> {
