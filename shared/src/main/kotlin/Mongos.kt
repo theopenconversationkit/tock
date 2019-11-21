@@ -16,6 +16,9 @@
 
 package ai.tock.shared
 
+import ai.tock.shared.jackson.addDeserializer
+import ai.tock.shared.jackson.addSerializer
+import ai.tock.shared.jackson.jacksonAdditionalModules
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonTokenId
 import com.fasterxml.jackson.databind.DeserializationContext
@@ -35,9 +38,6 @@ import com.mongodb.client.model.changestream.FullDocument
 import com.mongodb.connection.netty.NettyStreamFactoryFactory
 import com.mongodb.reactivestreams.client.MongoCollection
 import de.undercouch.bson4jackson.types.Decimal128
-import ai.tock.shared.jackson.addDeserializer
-import ai.tock.shared.jackson.addSerializer
-import ai.tock.shared.jackson.jacksonAdditionalModules
 import mu.KotlinLogging
 import org.litote.kmongo.KMongo
 import org.litote.kmongo.id.IdGenerator
@@ -47,6 +47,7 @@ import org.litote.kmongo.util.CollectionNameFormatter
 import org.litote.kmongo.util.KMongoConfiguration
 import org.litote.kmongo.util.KMongoConfiguration.registerBsonModule
 import java.time.Duration
+import java.time.Period
 import java.time.ZoneId
 import java.time.ZoneOffset
 import kotlin.reflect.KClass
@@ -74,6 +75,8 @@ internal object TockKMongoConfiguration {
             addDeserializer(ZoneId::class, JSR310StringParsableDeserializer.ZONE_ID)
             addSerializer(ZoneOffset::class, ToStringSerializer(ZoneOffset::class.java))
             addDeserializer(ZoneOffset::class, JSR310StringParsableDeserializer.ZONE_OFFSET)
+            addDeserializer(Period::class, JSR310StringParsableDeserializer.PERIOD)
+            addSerializer(Period::class, ToStringSerializer(Period::class.java))
             addSerializer(Duration::class, DurationSerializer.INSTANCE)
             addDeserializer(Duration::class, object : StdScalarDeserializer<Duration>(Duration::class.java) {
 
@@ -97,7 +100,7 @@ internal object TockKMongoConfiguration {
             })
         }
 
-        KMongoConfiguration.registerBsonModule(tockModule)
+        registerBsonModule(tockModule)
         KMongoConfiguration.extendedJsonMapper.registerModule(tockModule)
         jacksonAdditionalModules.forEach {
             registerBsonModule(it)

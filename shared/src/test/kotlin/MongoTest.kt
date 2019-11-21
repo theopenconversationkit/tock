@@ -16,7 +16,10 @@
 
 package ai.tock.shared
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Test
+import org.litote.kmongo.util.KMongoConfiguration
+import java.time.Period
 import kotlin.test.assertEquals
 
 /**
@@ -29,5 +32,15 @@ class MongoTest {
     @Test
     fun collectionBuilder_shouldAddUnderscore_forEachUpperCase() {
         assertEquals("this_is_a_collection", collectionBuilder.invoke(ThisIsACollection::class))
+    }
+
+    data class TestPeriod(val p: Period)
+
+    @Test
+    fun `GIVEN serialized Period THEN KMongo mapper can deserialize it`() {
+        TockKMongoConfiguration.configure()
+        val test = TestPeriod(Period.ofDays(22))
+        val json = KMongoConfiguration.extendedJsonMapper.writeValueAsString(test)
+        assertEquals(test, KMongoConfiguration.extendedJsonMapper.readValue(json))
     }
 }
