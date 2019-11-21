@@ -47,7 +47,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
 
     companion object {
         private val logger = KotlinLogging.logger {}
-        internal val SWITCH_STORY_BUS_KEY = "_tock_switch"
+        internal const val SWITCH_STORY_BUS_KEY = "_tock_switch"
     }
 
     /**
