@@ -19,12 +19,12 @@ package ai.tock.bot.engine
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.BotAnswerInterceptor
+import ai.tock.bot.definition.StoryHandlerBase.Companion.SWITCH_STORY_BUS_KEY
 import ai.tock.bot.engine.BotRepository.registerBotAnswerInterceptor
 import ai.tock.bot.engine.TestStoryDefinition.test
 import ai.tock.bot.engine.TestStoryDefinition.test2
 import ai.tock.bot.engine.TestStoryDefinition.withoutStep
 import ai.tock.bot.engine.action.Action
-import ai.tock.bot.engine.action.ActionPriority
 import ai.tock.bot.engine.action.ActionPriority.urgent
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendSentence
@@ -54,7 +54,7 @@ class BotBusTest : BotEngineTest() {
 
     @Test
     fun withSignificance_hasToUpdateActionSignificance() {
-        bus.withPriority(ActionPriority.urgent).end()
+        bus.withPriority(urgent).end()
 
         every { connector.loadProfile(any(), any()) } returns UserPreferences()
         every { connector.connectorType } returns ConnectorType("test")
@@ -207,5 +207,17 @@ class BotBusTest : BotEngineTest() {
         }
 
         verify { connector.send(and(ofType<SendSentence>(), match { it.stringText == "message" }), any(), any()) }
+    }
+
+    @Test
+    fun `switchStory set the switch story key to true`() {
+        bus.switchStory(test2)
+        assertEquals(true, bus.getBusContextValue(SWITCH_STORY_BUS_KEY)!!)
+    }
+
+    @Test
+    fun `handleAndSwitchStory remove the switch story key`() {
+        bus.handleAndSwitchStory(test2)
+        assertNull(bus.getBusContextValue(SWITCH_STORY_BUS_KEY))
     }
 }

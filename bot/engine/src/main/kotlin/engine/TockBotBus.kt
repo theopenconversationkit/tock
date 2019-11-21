@@ -110,9 +110,9 @@ internal class TockBotBus(
      */
     override fun setBusContextValue(key: String, value: Any?) {
         if (value == null) {
-            context.contextMap - key
+            context.contextMap.remove(key)
         } else {
-            context.contextMap.put(key, value)
+            context.contextMap[key] = value
         }
     }
 

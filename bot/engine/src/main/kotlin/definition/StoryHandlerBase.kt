@@ -45,7 +45,10 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     val breath: Long = defaultBreath
 ) : StoryHandler, I18nKeyProvider, IntentAware {
 
-    private val logger = KotlinLogging.logger {}
+    companion object {
+        private val logger = KotlinLogging.logger {}
+        internal val SWITCH_STORY_BUS_KEY = "_tock_switch"
+    }
 
     /**
      * Checks preconditions - if [BotBus.end] is called,
@@ -109,7 +112,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
                     handler = handler ?: newHandlerDefinition(bus, data)
                     handler.handle()
 
-                    if (!bus.connectorData.skipAnswer && !isEndCalled(bus)) {
+                    if (!bus.connectorData.skipAnswer && bus.getBusContextValue<Boolean>(SWITCH_STORY_BUS_KEY) != true && !isEndCalled(bus)) {
                         logger.warn { "Bus.end not called for story ${bus.story.definition.id}, user ${bus.userId.id} and connector ${bus.targetConnectorType}" }
                     }
                 }
