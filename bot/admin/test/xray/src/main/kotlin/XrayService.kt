@@ -16,13 +16,15 @@
 
 package ai.tock.bot.admin.test.xray
 
-import ai.tock.bot.admin.bot.BotApplicationConfiguration
-import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.dialog.DialogReport
-import ai.tock.bot.admin.test.*
+import ai.tock.bot.admin.test.DialogExecutionReport
+import ai.tock.bot.admin.test.TestActionReport
+import ai.tock.bot.admin.test.TestDialogReport
+import ai.tock.bot.admin.test.TestPlan
+import ai.tock.bot.admin.test.TestPlanExecution
+import ai.tock.bot.admin.test.TestPlanExecutionStatus
 import ai.tock.bot.admin.test.TestPlanService.saveTestPlanExecution
-import ai.tock.bot.admin.test.model.BotDialogRequest
-import ai.tock.bot.admin.test.model.BotDialogResponse
+import ai.tock.bot.admin.test.findTestClient
 import ai.tock.bot.admin.test.xray.XrayClient.getProjectFromIssue
 import ai.tock.bot.admin.test.xray.model.JiraIssueType
 import ai.tock.bot.admin.test.xray.model.JiraTest
@@ -31,8 +33,8 @@ import ai.tock.bot.admin.test.xray.model.XrayBuildStepAttachment
 import ai.tock.bot.admin.test.xray.model.XrayBuildTestStep
 import ai.tock.bot.admin.test.xray.model.XrayExecutionConfiguration
 import ai.tock.bot.admin.test.xray.model.XrayPrecondition
-import ai.tock.bot.admin.test.xray.model.XrayStatus.FAIL
 import ai.tock.bot.admin.test.xray.model.XrayStatus.PASS
+import ai.tock.bot.admin.test.xray.model.XrayStatus.FAIL
 import ai.tock.bot.admin.test.xray.model.XrayStatus.TODO
 import ai.tock.bot.admin.test.xray.model.XrayTest
 import ai.tock.bot.admin.test.xray.model.XrayTestExecution
@@ -42,15 +44,17 @@ import ai.tock.bot.admin.test.xray.model.XrayTestExecutionReport
 import ai.tock.bot.admin.test.xray.model.XrayTestExecutionStepReport
 import ai.tock.bot.admin.test.xray.model.XrayTextExecutionFields
 import ai.tock.bot.connector.ConnectorType
-import ai.tock.bot.connector.rest.client.ConnectorRestClient
-import ai.tock.bot.connector.rest.client.model.ClientMessageRequest
-import ai.tock.bot.connector.rest.client.model.ClientSentence
 import ai.tock.bot.engine.message.parser.MessageParser
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType.bot
 import ai.tock.bot.engine.user.PlayerType.user
-import ai.tock.shared.*
-import ai.tock.shared.vertx.UnauthorizedException
+import ai.tock.shared.Dice
+import ai.tock.shared.defaultLocale
+import ai.tock.shared.defaultZoneId
+import ai.tock.shared.error
+import ai.tock.shared.listProperty
+import ai.tock.shared.mapListProperty
+import ai.tock.shared.property
 import ai.tock.translator.UserInterfaceType
 import mu.KotlinLogging
 import org.litote.kmongo.Id
@@ -60,9 +64,8 @@ import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.OffsetDateTime.ofInstant
 import java.time.temporal.ChronoUnit
-import java.util.Base64
 import java.util.Locale
-import java.util.concurrent.ConcurrentHashMap
+import java.util.Base64
 
 /**
  *
