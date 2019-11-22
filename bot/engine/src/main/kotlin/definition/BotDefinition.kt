@@ -222,8 +222,7 @@ interface BotDefinition : I18nKeyProvider {
      * Does this action trigger bot activation ?
      */
     fun enableBot(timeline: UserTimeline, dialog: Dialog, action: Action): Boolean =
-        !action.state.notification
-            || isBotEnabledIntent(dialog.state.currentIntent)
+        isBotEnabledIntent(dialog.state.currentIntent)
             // send choice can reactivate disabled bot (is the intent is not a disabled intent)
             ||
             (sendChoiceActivateBot
