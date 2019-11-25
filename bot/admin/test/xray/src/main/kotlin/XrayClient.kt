@@ -16,9 +16,6 @@
 
 package ai.tock.bot.admin.test.xray
 
-import com.beust.klaxon.JsonObject
-import com.beust.klaxon.Klaxon
-import com.beust.klaxon.Parser
 import ai.tock.bot.admin.test.xray.XrayConfiguration.xrayUrl
 import ai.tock.bot.admin.test.xray.model.JiraAttachment
 import ai.tock.bot.admin.test.xray.model.JiraIssue
@@ -40,6 +37,9 @@ import ai.tock.shared.create
 import ai.tock.shared.longProperty
 import ai.tock.shared.property
 import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import com.beust.klaxon.JsonObject
+import com.beust.klaxon.Klaxon
+import com.beust.klaxon.Parser
 import mu.KotlinLogging
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -135,14 +135,16 @@ object XrayClient {
 
     fun getProjectFromIssue(issueKey: String): JiraTestProject {
         val klaxon = Klaxon()
+        val xrayResponse = xray.getIssue(issueKey).execute()
 
-        val body = xray.getIssue(issueKey).execute().body()?.string()
-
-        // parse the body
-        val parsed = klaxon.parseJsonObject(StringReader(body))
-        val project = (parsed.getValue("fields") as JsonObject).map["project"]
-
-        return JiraTestProject((project as JsonObject)["key"].toString())
+        return if (xrayResponse.isSuccessful) {
+            val parsed = klaxon.parseJsonObject(StringReader(xrayResponse.body()?.string() ?: ""))
+            val project = (parsed.getValue("fields") as JsonObject).map["project"]
+            JiraTestProject((project as JsonObject)["key"].toString())
+        } else {
+            logger.error { "ERROR -- Jira project not retrieved -->" + xrayResponse.errorBody().toString() }
+            JiraTestProject("")
+        }
     }
 
     /**
@@ -178,6 +180,11 @@ object XrayClient {
         xray.createTest(test).execute().body() ?: error("error during creating test $test")
 
     fun saveStep(testKey: String, step: XrayBuildTestStep) = xray.saveStep(testKey, step).execute().body()
+
+    fun deleteStep(testKey: String, stepId: Long) =
+        xray.deleteStep(testKey, stepId).execute().body() ?: error("error during test step deletion")
+
+    fun getIssue(issueKey: String) = xray.getIssue(issueKey).execute().body() ?: error ("error: issue not found")
 
     fun addPrecondition(preConditionKey: String, jiraId: String) =
         xray.addPrecondition(

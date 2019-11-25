@@ -16,25 +16,29 @@
 
 package ai.tock.bot.admin.test.xray.model
 
+import ai.tock.shared.property
+
 /**
  * see (https://confluence.xpand-addons.com/display/XRAY/Tests+-+REST)
  */
 data class JiraTest(val fields: Map<String, Any>) {
-
     constructor(project: String,
                 summary: String,
                 description: String,
+                labels: List<String>,
                 testTypeField: String,
-                stepField: String)
+                stepField: String,
+                customfield: String)
             : this(
             mapOf(
                     "project" to JiraTestProject(project),
                     "summary" to summary,
                     "description" to description,
+                    "labels" to labels,
                     "issuetype" to JiraIssueType("Test"),
                     testTypeField to mapOf("value" to "Manual"),
-                    stepField to mapOf("steps" to emptyList<XrayAttachment>())
+                    stepField to mapOf("steps" to emptyList<XrayAttachment>()),
+                    property("tock_bot_test_jira_xray_automation_type_field", "please set an automation framework") to mapOf("value" to customfield)
             )
     )
-
 }

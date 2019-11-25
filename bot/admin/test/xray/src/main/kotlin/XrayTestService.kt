@@ -33,10 +33,10 @@ class XrayTestService : TestService by testCoreService {
          */
         blockingJsonPost("/xray/execute", botUser) { context, configuration: XRayPlanExecutionConfiguration ->
             XrayService(
-                listOfNotNull(configuration.configurationId),
-                listOfNotNull(configuration.testPlanKey),
-                listOfNotNull(configuration.testKey),
-                configuration.testedBotId
+                    listOfNotNull(configuration.configurationId),
+                    listOfNotNull(configuration.testPlanKey),
+                    listOfNotNull(configuration.testKey),
+                    configuration.testedBotId
             ).execute(context.organization)
         }
     }
