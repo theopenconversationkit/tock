@@ -58,15 +58,23 @@ open class EventListenerBase : EventListener {
                 is StartConversationEvent -> helloStory.sendChoice(event, true)
                 is EndConversationEvent -> goodbyeStory.sendChoice(event)
                 is NoInputEvent -> goodbyeStory.sendChoice(event)
-                is PassThreadControlEvent -> {
-                    val userTimelineDAO: UserTimelineDAO by injector.instance()
-                    val timeline = userTimelineDAO.loadWithoutDialogs(namespace, event.userId)
-                    timeline.userState.botDisabled = false
-                    userTimelineDAO.save(timeline, controller.botDefinition)
-                    true
-                }
+                is PassThreadControlEvent -> passThreadControlEventListener(controller, connectorData, event)
                 else -> false
             }
+        }
+    }
+
+    protected open fun passThreadControlEventListener(
+        controller: ConnectorController,
+        connectorData: ConnectorData,
+        event: PassThreadControlEvent
+    ): Boolean {
+        with(controller.botDefinition) {
+            val userTimelineDAO: UserTimelineDAO by injector.instance()
+            val timeline = userTimelineDAO.loadWithoutDialogs(namespace, event.userId)
+            timeline.userState.botDisabled = false
+            userTimelineDAO.save(timeline, controller.botDefinition)
+            return true
         }
     }
 
