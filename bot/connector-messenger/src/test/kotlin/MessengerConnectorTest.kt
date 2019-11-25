@@ -62,7 +62,7 @@ internal class MessengerConnectorTest {
     }
 
     @Test
-    fun `GIVEN one messenger connector WHEN unregistering the version THEN not version is not registered anymore`() {
+    fun `GIVEN one messenger connector WHEN unregistering the version THEN version is not registered anymore`() {
         messengerConnector1.register(controller1)
         assertEquals(controller1, connectorIdConnectorControllerMap[connectorId1])
         messengerConnector1.unregister(controller1)
