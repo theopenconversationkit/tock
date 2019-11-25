@@ -182,7 +182,7 @@ object XrayClient {
     fun saveStep(testKey: String, step: XrayBuildTestStep) = xray.saveStep(testKey, step).execute().body()
 
     fun deleteStep(testKey: String, stepId: Long) =
-        xray.deleteStep(testKey, stepId.toInt()).execute().body() ?: error("error during test step deletion")
+        xray.deleteStep(testKey, stepId).execute().body() ?: error("error during test step deletion")
 
     fun getIssue(issueKey: String) = xray.getIssue(issueKey).execute().body() ?: error ("error: issue not found")
 

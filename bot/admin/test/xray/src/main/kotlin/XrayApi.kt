@@ -61,7 +61,7 @@ interface XrayApi {
     fun saveStep(@Path("testKey") testKey: String, @Body execution: XrayBuildTestStep): Call<ResponseBody>
 
     @DELETE("/rest/raven/1.0/api/test/{testKey}/step/{id}")
-    fun deleteStep(@Path("testKey") testKey: String, @Path("id") stepId: Int): Call<ResponseBody>
+    fun deleteStep(@Path("testKey") testKey: String, @Path("id") stepId: Long): Call<ResponseBody>
 
     @POST("/rest/raven/1.0/api/precondition/{preConditionKey}/test")
     fun addPrecondition(
