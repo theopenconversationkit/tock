@@ -18,10 +18,8 @@ package ai.tock.bot.admin.test.xray
 
 import ai.tock.bot.admin.test.TestCoreService
 import ai.tock.bot.admin.test.TestService
-import ai.tock.bot.admin.test.model.BotDialogRequest
 import ai.tock.nlp.admin.AdminVerticle
 import ai.tock.shared.security.TockUserRole.botUser
-import ai.tock.shared.vertx.WebVerticle.Companion
 
 private val testCoreService = TestCoreService()
 

@@ -146,14 +146,11 @@ object TestPlanService {
             }
         }
 
-        if (nbErrors != 0) {
-            exec.nbErrors = nbErrors
-        }
-
+        val finalExecution = exec.copy(nbErrors = nbErrors, status = TestPlanExecutionStatus.COMPLETE)
         // update the test plan execution into the database
-        testPlanDAO.saveTestExecution(exec.copy(nbErrors = nbErrors, status = TestPlanExecutionStatus.COMPLETE))
+        testPlanDAO.saveTestExecution(finalExecution)
         // return the completed test execution
-        return exec
+        return finalExecution
     }
 
     /**

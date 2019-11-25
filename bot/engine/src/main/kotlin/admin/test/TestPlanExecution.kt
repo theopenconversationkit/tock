@@ -36,7 +36,7 @@ data class TestPlanExecution(
     /**
      * Number of errors, if any.
      */
-    var nbErrors: Int,
+    val nbErrors: Int,
     /**
      * Date of the execution.
      */

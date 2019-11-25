@@ -627,14 +627,13 @@ class XrayService(
     fun updateXrayTest(dialog: DialogReport, testKey: String): XrayTest? {
         val steps = defineTestSteps(dialog)
 
-        if (XrayClient.getIssue(testKey) == null) {
-            return null
-        }
+        // call kept to check if issue exists
+        XrayClient.getIssue(testKey)
 
         // remove all existing test steps
         val stepList = XrayClient.getTestSteps(testKey)
         stepList.forEach { currentStep ->
-            XrayClient.deleteStep(testKey, currentStep.id.toInt())
+            XrayClient.deleteStep(testKey, currentStep.id)
         }
 
         steps?.forEach {
