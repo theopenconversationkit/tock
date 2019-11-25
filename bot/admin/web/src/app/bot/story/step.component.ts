@@ -22,6 +22,8 @@ import {StateService} from "../../core-nlp/state.service";
 import {IntentDialogComponent} from "../../sentence-analysis/intent-dialog/intent-dialog.component";
 import {NlpService} from "../../nlp-tabs/nlp.service";
 import {DialogService} from "../../core-nlp/dialog.service";
+import {CreateI18nLabelRequest} from "../model/i18n";
+import {BotService} from "../bot-service";
 
 @Component({
   selector: 'tock-step',
@@ -56,7 +58,8 @@ export class StepComponent implements OnInit {
     public state: StateService,
     private dialog: DialogService,
     private matDialog: MatDialog,
-    private nlp: NlpService) {
+    private nlp: NlpService,
+    private bot: BotService) {
   }
 
   ngOnInit() {
@@ -158,7 +161,16 @@ export class StepComponent implements OnInit {
     if (invalidMessage) {
       this.dialog.notify(`Error: ${invalidMessage}`);
     } else {
-      this.step.new = false;
+      this.bot.createI18nLabel(
+        new CreateI18nLabelRequest(
+          this.defaultCategory,
+          this.step.newUserSentence.trim(),
+          this.state.currentLocale,
+        )
+      ).subscribe(i18n => {
+        this.step.userSentence = i18n;
+        this.step.new = false;
+      })
     }
   }
 
@@ -172,25 +184,30 @@ export class StepComponent implements OnInit {
   }
 
   userSentenceChange(userSentence: string) {
-    if (userSentence.trim().length !== 0 && this.step.intent.name.length === 0) {
-      const app = this.state.currentApplication;
-      const language = this.state.currentLocale;
-      this.nlp.parse(new ParseQuery(
-        app.namespace,
-        app.name,
-        language,
-        userSentence,
-        true
-      )).subscribe(r => {
-        if (r.classification.intentId) {
-          const intent = this.state.findIntentById(r.classification.intentId);
-          if (intent) {
-            this.step.intentDefinition = intent;
-            this.step.intent = new IntentName(intent.name);
-            this.onIntentChange(this.step, intent.name);
+    if (userSentence.trim().length !== 0) {
+      if (!this.step.new) {
+        this.bot.saveI18nLabel(this.step.userSentence).subscribe(_ => {});
+      }
+      if (this.step.intent.name.length === 0) {
+        const app = this.state.currentApplication;
+        const language = this.state.currentLocale;
+        this.nlp.parse(new ParseQuery(
+          app.namespace,
+          app.name,
+          language,
+          userSentence,
+          true
+        )).subscribe(r => {
+          if (r.classification.intentId) {
+            const intent = this.state.findIntentById(r.classification.intentId);
+            if (intent) {
+              this.step.intentDefinition = intent;
+              this.step.intent = new IntentName(intent.name);
+              this.onIntentChange(this.step, intent.name);
+            }
           }
-        }
-      })
+        })
+      }
     }
   }
 

@@ -26,6 +26,7 @@ import ai.tock.bot.connector.messenger.model.handover.RequestThreadControl
 import ai.tock.bot.connector.messenger.model.handover.RequestThreadControlWebhook
 import ai.tock.bot.connector.messenger.model.handover.TakeThreadControl
 import ai.tock.bot.connector.messenger.model.handover.TakeThreadControlWebhook
+import ai.tock.bot.connector.messenger.model.webhook.CallbackRequest
 import ai.tock.bot.connector.messenger.model.webhook.Message
 import ai.tock.bot.connector.messenger.model.webhook.MessageEcho
 import ai.tock.bot.connector.messenger.model.webhook.MessageEchoWebhook
@@ -37,7 +38,6 @@ import ai.tock.bot.connector.messenger.model.webhook.UserActionPayload
 import ai.tock.bot.connector.messenger.model.webhook.Webhook
 import ai.tock.bot.engine.action.ActionMetadata
 import ai.tock.bot.engine.action.ActionVisibility
-import ai.tock.bot.engine.action.Metadata.VISIBILITY
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
@@ -87,22 +87,22 @@ class WebhookDeserializationTest {
     @Test
     fun testQuickReplayWebhookDeserialization() {
         val input = "{\n" +
-                "  \"sender\": {\n" +
-                "    \"id\": \"USER_ID\"\n" +
-                "  },\n" +
-                "  \"recipient\": {\n" +
-                "    \"id\": \"PAGE_ID\"\n" +
-                "  },\n" +
-                "  \"timestamp\": 1464990849275,\n" +
-                "  \"message\": {\n" +
-                "    \"mid\": \"mid.1464990849238:b9a22a2bcb1de31773\",\n" +
-                "    \"seq\": 69,\n" +
-                "    \"text\": \"Red\",\n" +
-                "    \"quick_reply\": {\n" +
-                "      \"payload\": \"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED\"\n" +
-                "    }\n" +
-                "  }\n" +
-                "} "
+            "  \"sender\": {\n" +
+            "    \"id\": \"USER_ID\"\n" +
+            "  },\n" +
+            "  \"recipient\": {\n" +
+            "    \"id\": \"PAGE_ID\"\n" +
+            "  },\n" +
+            "  \"timestamp\": 1464990849275,\n" +
+            "  \"message\": {\n" +
+            "    \"mid\": \"mid.1464990849238:b9a22a2bcb1de31773\",\n" +
+            "    \"seq\": 69,\n" +
+            "    \"text\": \"Red\",\n" +
+            "    \"quick_reply\": {\n" +
+            "      \"payload\": \"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED\"\n" +
+            "    }\n" +
+            "  }\n" +
+            "} "
         val output = mapper.readValue<Webhook>(input)
         assertEquals(
             MessageWebhook(
@@ -242,21 +242,21 @@ class WebhookDeserializationTest {
     @Test
     fun testEmailQuickReplyWebhookDeserialization() {
         val input = "{\n" +
-                "  \"sender\": {\n" +
-                "    \"id\": \"USER_ID\"\n" +
-                "  },\n" +
-                "  \"recipient\": {\n" +
-                "    \"id\": \"PAGE_ID\"\n" +
-                "  },\n" +
-                "  \"timestamp\": 1464990849275,\n" +
-                "  \"message\": {\n" +
-                "    \"mid\": \"mid.1464990849238:b9a22a2bcb1de31773\",\n" +
-                "    \"text\": \"test@test.com\",\n" +
-                "    \"quick_reply\": {\n" +
-                "      \"payload\": \"test@test.com\"\n" +
-                "    }\n" +
-                "  }\n" +
-                "} "
+            "  \"sender\": {\n" +
+            "    \"id\": \"USER_ID\"\n" +
+            "  },\n" +
+            "  \"recipient\": {\n" +
+            "    \"id\": \"PAGE_ID\"\n" +
+            "  },\n" +
+            "  \"timestamp\": 1464990849275,\n" +
+            "  \"message\": {\n" +
+            "    \"mid\": \"mid.1464990849238:b9a22a2bcb1de31773\",\n" +
+            "    \"text\": \"test@test.com\",\n" +
+            "    \"quick_reply\": {\n" +
+            "      \"payload\": \"test@test.com\"\n" +
+            "    }\n" +
+            "  }\n" +
+            "} "
         val output = mapper.readValue<Webhook>(input)
         assertEquals(
             MessageWebhook(
@@ -293,7 +293,7 @@ class WebhookDeserializationTest {
             "appId",
             PlayerId("PAGE_ID", PlayerType.user),
             "test@test.com",
-            metadata = ActionMetadata(connectorMetadata = mutableMapOf(VISIBILITY to ActionVisibility.public))
+            metadata = ActionMetadata(visibility = ActionVisibility.PUBLIC)
         )
         val eventMessage = event.messages[0]
         assert(eventMessage is MessageWebhook)
@@ -321,4 +321,13 @@ class WebhookDeserializationTest {
 
     }
 
+    @Test
+    fun `null payload has to be supported`() {
+        val json = """{"object":"page","entry":[{"id":"1744550565845823","time":1574175286359,"standby":[{"sender":{"id":"1590192107678927"},"recipient":{"id":"1744550565845823"},"timestamp":1574175285472,"postback":{}}]}]}"""
+        val callback: CallbackRequest = mapper.readValue(json)
+        assertEquals(json, mapper.writeValueAsString(callback))
+    }
+
 }
+
+

@@ -65,6 +65,7 @@ val mapper: ObjectMapper by lazy {
         .configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true)
         .configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true)
         .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
+        .configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
 }
 
 /**

@@ -17,9 +17,13 @@
 package ai.tock.bot.connector.messenger.model.attachment
 
 import ai.tock.bot.connector.messenger.model.send.AttachmentMessage
+import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  *
  */
-data class AttachmentRequest(val message:AttachmentMessage) {
-}
+data class AttachmentRequest(
+    val message: AttachmentMessage,
+    @JsonProperty("persona_id")
+    val personaId: String? = null
+)

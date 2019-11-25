@@ -18,7 +18,13 @@
   <!-- user sentence -->
   <mat-form-field class="input">
     <input matInput
-           [(ngModel)]="step.userSentence"
+           *ngIf="!step.new"
+           [(ngModel)]="step.userSentence.defaultLocalizedLabelForLocale(state.currentLocale).label"
+           placeholder="Enter a User Phrase 2"
+           (blur)="userSentenceChange($event.target.value)">
+    <input matInput
+           *ngIf="step.new"
+           [(ngModel)]="step.newUserSentence"
            placeholder="Enter a User Phrase"
            (blur)="userSentenceChange($event.target.value)">
   </mat-form-field>
@@ -80,6 +86,6 @@
     </mat-optgroup>
   </mat-autocomplete>
 </div>
-<span *ngIf="step && readonly" class="read-only">{{step.userSentence}}
+<span *ngIf="step && readonly" class="read-only">{{step.userSentence.defaultLocalizedLabelForLocale(state.currentLocale).label}}
   <span *ngIf="step.intent && step.intent.name" class="intent" matTooltip="Action Intent">[{{step.intent.name}}]</span>: <tock-answer
   class="answer" [answer]="step" [editable]="false"></tock-answer></span>

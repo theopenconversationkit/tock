@@ -16,8 +16,6 @@
 
 package ai.tock.bot.connector.messenger.json.send
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
 import ai.tock.bot.connector.messenger.model.send.Button
 import ai.tock.bot.connector.messenger.model.send.ButtonType
 import ai.tock.bot.connector.messenger.model.send.CallButton
@@ -28,6 +26,8 @@ import ai.tock.bot.connector.messenger.model.send.UrlButton
 import ai.tock.shared.jackson.JacksonDeserializer
 import ai.tock.shared.jackson.read
 import ai.tock.shared.jackson.readValue
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
 import mu.KotlinLogging
 
 /**
@@ -41,10 +41,11 @@ internal class ButtonDeserializer : JacksonDeserializer<Button>() {
 
     override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Button? {
         data class ButtonFields(
-                var type: ButtonType? = null,
-                var url: String? = null,
-                var title: String? = null,
-                var payload: String? = null
+            var type: ButtonType? = null,
+            var url: String? = null,
+            var title: String? = null,
+            var payload: String? = null,
+            var other: EmptyJson? = null
         )
 
         val (type, url, title, payload) = jp.read<ButtonFields> { fields, name ->
@@ -54,7 +55,7 @@ internal class ButtonDeserializer : JacksonDeserializer<Button>() {
                     UrlButton::url.name -> url = jp.valueAsString
                     UrlButton::title.name -> title = jp.valueAsString
                     PostbackButton::payload.name -> payload = jp.valueAsString
-                    else -> unknownValue
+                    else -> other = jp.readUnknownValue()
                 }
             }
         }

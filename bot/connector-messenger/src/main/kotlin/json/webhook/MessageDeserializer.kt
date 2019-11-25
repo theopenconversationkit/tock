@@ -16,8 +16,6 @@
 
 package ai.tock.bot.connector.messenger.json.webhook
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
 import ai.tock.bot.connector.messenger.model.webhook.Attachment
 import ai.tock.bot.connector.messenger.model.webhook.Message
 import ai.tock.bot.connector.messenger.model.webhook.MessageEcho
@@ -26,6 +24,8 @@ import ai.tock.shared.jackson.JacksonDeserializer
 import ai.tock.shared.jackson.read
 import ai.tock.shared.jackson.readListValues
 import ai.tock.shared.jackson.readValue
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
 import mu.KotlinLogging
 
 /**
@@ -37,7 +37,6 @@ internal class MessageDeserializer : JacksonDeserializer<Message>() {
         private val logger = KotlinLogging.logger {}
     }
 
-
     override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Message? {
         data class MessageFields(var mid: String? = null,
                                  var seq: Long? = null,
@@ -46,8 +45,9 @@ internal class MessageDeserializer : JacksonDeserializer<Message>() {
                                  var isEcho: Boolean = false,
                                  var appId: Long? = null,
                                  var metadata: String? = null,
-                                 var quickReply: UserActionPayload? = null)
-
+                                 var quickReply: UserActionPayload? = null,
+                                 var other: EmptyJson? = null
+        )
 
         val (mid, seq, text, attachments, isEcho, appId, metadata, quickReply)
             = jp.read<MessageFields> { fields, name ->
@@ -60,7 +60,7 @@ internal class MessageDeserializer : JacksonDeserializer<Message>() {
                     "app_id" -> appId = jp.longValue
                     MessageEcho::metadata.name -> metadata = jp.valueAsString
                     "quick_reply" -> quickReply = jp.readValue()
-                    else -> unknownValue
+                    else -> other = jp.readUnknownValue()
                 }
             }
         }

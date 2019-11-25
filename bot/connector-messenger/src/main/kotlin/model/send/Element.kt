@@ -16,12 +16,12 @@
 
 package ai.tock.bot.connector.messenger.model.send
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.engine.action.SendAttachment.AttachmentType.image
 import ai.tock.bot.engine.message.GenericElement
 import ai.tock.shared.mapNotNullValues
 import ai.tock.shared.security.StringObfuscatorMode
 import ai.tock.shared.security.TockObfuscatorService.obfuscate
+import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  * List or generic template subElements.
@@ -31,16 +31,23 @@ data class Element(val title: String,
                    val subtitle: String? = null,
                    val buttons: List<Button>? = null) {
 
+    internal constructor(
+        title: CharSequence,
+        subtitle: CharSequence?,
+        imageUrl: String?,
+        buttons: List<Button>?
+    ) : this(title.toString(), imageUrl, subtitle?.toString(), buttons?.takeUnless { it.isEmpty() })
+
     fun toGenericElement(): GenericElement {
         return GenericElement(
-                choices = buttons?.map { it.toChoice() } ?: emptyList(),
-                texts = mapNotNullValues(
-                        Element::title.name to title,
-                        Element::subtitle.name to subtitle
-                ),
-                attachments = imageUrl
-                        ?.let { listOf(ai.tock.bot.engine.message.Attachment(imageUrl, image)) }
-                        ?: emptyList()
+            choices = buttons?.map { it.toChoice() } ?: emptyList(),
+            texts = mapNotNullValues(
+                Element::title.name to title,
+                Element::subtitle.name to subtitle
+            ),
+            attachments = imageUrl
+                ?.let { listOf(ai.tock.bot.engine.message.Attachment(imageUrl, image)) }
+                ?: emptyList()
         )
     }
 

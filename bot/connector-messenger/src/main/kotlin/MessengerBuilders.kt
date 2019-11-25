@@ -413,12 +413,7 @@ fun I18nTranslator.genericElement(
     if (buttons?.size ?: 0 > 3) {
         error("Number of buttons > 3 : $buttons")
     }
-    return Element(
-        t.toString(),
-        imageUrl,
-        s?.toString(),
-        buttons
-    )
+    return Element(t, s, imageUrl, buttons)
 }
 
 /**
@@ -440,12 +435,7 @@ fun I18nTranslator.listElement(
     if (s?.length ?: 0 > 80) {
         logger.warn { "subtitle $s has more than 80 chars" }
     }
-    return Element(
-        t.toString(),
-        imageUrl,
-        s?.toString(),
-        if (button == null) null else listOf(button)
-    )
+    return Element(t, s, imageUrl, listOfNotNull(button))
 }
 
 /**
@@ -511,10 +501,14 @@ fun I18nTranslator.standaloneQuickReply(
     /**
      * The current intent of the Bus<T>.
      */
-    currentIntent: Intent? = null
+    currentIntent: Intent? = null,
+    /**
+     * The app id emitter.
+     */
+    sourceAppId: String?
 ): QuickReply =
     quickReply(title, targetIntent, imageUrl, step?.name, parameters.toMap()) { intent, s, params ->
-        SendChoice.encodeChoiceId(intent, s, params, busStep?.name, currentIntent)
+        SendChoice.encodeChoiceId(intent, s, params, busStep?.name, currentIntent, sourceAppId = sourceAppId)
     }
 
 /**
@@ -640,7 +634,11 @@ fun I18nTranslator.standalonePostbackButton(
     /**
      * The current intent of the Bus<T>.
      */
-    currentIntent: Intent? = null
+    currentIntent: Intent? = null,
+    /**
+     * The app id emitter
+     */
+    sourceAppId: String?
 ): PostbackButton =
     postbackButton(
         title,
@@ -648,7 +646,7 @@ fun I18nTranslator.standalonePostbackButton(
         step,
         parameters.toMap()
     ) { intent, s, params ->
-        SendChoice.encodeChoiceId(intent, s, params, busStep, currentIntent)
+        SendChoice.encodeChoiceId(intent, s, params, busStep, currentIntent, sourceAppId = sourceAppId)
     }
 
 /**

@@ -16,14 +16,14 @@
 
 package ai.tock.bot.connector.twitter.json
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
 import ai.tock.bot.connector.twitter.model.Image
 import ai.tock.bot.connector.twitter.model.Media
 import ai.tock.bot.connector.twitter.model.Video
 import ai.tock.shared.jackson.JacksonDeserializer
 import ai.tock.shared.jackson.read
 import ai.tock.shared.jackson.readValue
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
 import mu.KotlinLogging
 
 internal class MediaDeserializer : JacksonDeserializer<Media>() {
@@ -40,11 +40,12 @@ internal class MediaDeserializer : JacksonDeserializer<Media>() {
             var imageType: String? = null,
             var width: Int? = null,
             var height: Int? = null,
-            var videoType: String? = null
+            var videoType: String? = null,
+            var other: EmptyJson? = null
         )
 
         val (image, video, imageType, width, height, videoType)
-                = jp.read<MediaFields> { fields, name ->
+            = jp.read<MediaFields> { fields, name ->
             with(fields) {
                 when (name) {
                     "image" -> image = jp.readValue()
@@ -53,7 +54,7 @@ internal class MediaDeserializer : JacksonDeserializer<Media>() {
                     "w" -> width = jp.readValue()
                     "h" -> height = jp.readValue()
                     "video_type" -> videoType = jp.readValue()
-                    else -> unknownValue
+                    else -> other = jp.readUnknownValue()
                 }
             }
         }

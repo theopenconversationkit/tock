@@ -21,6 +21,10 @@ import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep
 import ai.tock.bot.definition.Intent
 import ai.tock.nlp.front.shared.config.IntentDefinition
+import ai.tock.translator.I18nKeyProvider
+import ai.tock.translator.I18nLabel
+import ai.tock.translator.I18nLabelValue
+import ai.tock.translator.Translator
 
 data class BotStoryDefinitionConfigurationStep(
     /**
@@ -50,7 +54,7 @@ data class BotStoryDefinitionConfigurationStep(
     /**
      * The user sentence sample.
      */
-    val userSentence: String = "",
+    val userSentence: I18nLabel,
     /**
      * The children of the steps
      */
@@ -77,7 +81,14 @@ data class BotStoryDefinitionConfigurationStep(
             e.answers.mapAnswers(),
             e.currentType,
             story.category,
-            e.userSentence,
+            (e.userSentenceLabel
+                ?: I18nLabelValue(
+                    I18nKeyProvider.generateKey(story.namespace, story.category, e.userSentence),
+                    story.namespace,
+                    story.category,
+                    e.userSentence
+                ))
+                .let { Translator.saveIfNotExist(it) },
             e.children.map { BotStoryDefinitionConfigurationStep(story, it) },
             e.level
         )

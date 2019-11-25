@@ -53,7 +53,7 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
         }
 
         configuration.mandatoryEntities.forEach { entity ->
-            //fallback from "generic" entity
+            //fallback from "generic" entity if the role is not present
             val role = entity.role
             val entityTypeName = entity.entityTypeName
             if (role != entityTypeName
@@ -68,10 +68,14 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
                 )
                 bus.removeEntityValue(entityTypeName)
             }
-            //send entity question
+
             if (bus.entityValueDetails(role) == null && entity.hasCurrentAnwser()) {
-                entity.send(bus)
-                return@handle
+                //if the role is generic and there is an other role in the entity list: skip
+                if (role != entityTypeName || bus.entities.none { entity.entityType == it.value.value?.entity?.entityType?.name }) {
+                    //else send entity question
+                    entity.send(bus)
+                    return@handle
+                }
             }
         }
 
@@ -124,7 +128,7 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
 
     private fun BotBus.send(container: StoryDefinitionAnswersContainer, answer: SimpleAnswer, end: Boolean = false) {
         val label = translate(answer.key)
-        val suggestions = container.findNextSteps(configuration)
+        val suggestions = container.findNextSteps(this, configuration)
         val connectorMessages =
             answer.mediaMessage
                 ?.takeIf { it.checkValidity() }

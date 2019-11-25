@@ -74,7 +74,7 @@ export class StepsComponent implements OnInit, OnChanges {
       [answer],
       AnswerConfigurationType.simple,
       this.defaultCategory,
-      "",
+      null,
       [],
       step ? step.level + 1 : 0
     );

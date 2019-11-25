@@ -16,8 +16,6 @@
 
 package ai.tock.bot.connector.messenger.json.webhook
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
 import ai.tock.bot.connector.messenger.model.Recipient
 import ai.tock.bot.connector.messenger.model.Sender
 import ai.tock.bot.connector.messenger.model.handover.AppRolesWebhook
@@ -42,6 +40,8 @@ import ai.tock.bot.connector.messenger.model.webhook.Webhook
 import ai.tock.shared.jackson.JacksonDeserializer
 import ai.tock.shared.jackson.read
 import ai.tock.shared.jackson.readValue
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
 import mu.KotlinLogging
 
 /**
@@ -66,14 +66,15 @@ internal class WebhookDeserializer : JacksonDeserializer<Webhook>() {
             var passThreadControl: PassThreadControl? = null,
             var takeThreadControl: TakeThreadControl? = null,
             var requestThreadControl: RequestThreadControl? = null,
-            var appRoles: Map<String, List<String>>? = null
+            var appRoles: Map<String, List<String>>? = null,
+            var other: EmptyJson? = null
         )
 
         val (sender, recipient, timestamp,
-                message, optin, postback,
-                priorMessage, accountLinking,
-                passThreadControl, takeThreadControl, requestThreadControl, appRoles)
-                = jp.read<WebhookFields> { fields, name ->
+            message, optin, postback,
+            priorMessage, accountLinking,
+            passThreadControl, takeThreadControl, requestThreadControl, appRoles)
+            = jp.read<WebhookFields> { fields, name ->
             with(fields) {
                 when (name) {
                     Webhook::sender.name -> sender = jp.readValue()
@@ -88,7 +89,7 @@ internal class WebhookDeserializer : JacksonDeserializer<Webhook>() {
                     "take_thread_control" -> takeThreadControl = jp.readValue()
                     "request_thread_control" -> requestThreadControl = jp.readValue()
                     "app_roles" -> appRoles = jp.readValue()
-                    else -> unknownValue
+                    else -> other = jp.readUnknownValue()
                 }
             }
         }

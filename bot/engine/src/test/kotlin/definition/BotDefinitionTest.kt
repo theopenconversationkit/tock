@@ -18,10 +18,15 @@ package ai.tock.bot.definition
 
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.BotDefinitionTest
+import ai.tock.bot.engine.dialog.Dialog
+import ai.tock.bot.engine.dialog.DialogState
 import ai.tock.translator.I18nLabelValue
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import java.util.Locale
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 
 /**
  *
@@ -42,5 +47,14 @@ class BotDefinitionTest {
             )
             , result
         )
+    }
+
+    @Test
+    fun `GIVEN not notified action WHEN the intent is not a enable intent THEN the bot is not activated`() {
+        val dialog = mockk<Dialog>()
+        val state = DialogState()
+        every { dialog.state } returns state
+        val result = botDef.enableBot(mockk(), dialog, mockk())
+        assertFalse(result)
     }
 }

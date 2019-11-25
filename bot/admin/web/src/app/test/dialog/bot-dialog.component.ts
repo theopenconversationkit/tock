@@ -24,6 +24,7 @@ import {MAT_DIALOG_DATA, MatDialog, MatDialogRef, MatSnackBar} from "@angular/ma
 import {BotSharedService} from "../../shared/bot-shared.service";
 import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
 import {randomString} from "../../model/commons";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'tock-bot-dialog',
@@ -41,6 +42,7 @@ export class BotDialogComponent implements OnInit, OnDestroy {
   private userModifierId:string = randomString();
 
   private errorUnsuscriber: any;
+  private subscription: Subscription;
 
   constructor(public state: StateService,
               private test: TestService,
@@ -53,7 +55,8 @@ export class BotDialogComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.errorUnsuscriber = this.rest.errorEmitter.subscribe(e =>
       this.loading = false
-    )
+    );
+    this.subscription = this.state.configurationChange.subscribe(_ => this.clear());
   }
 
   changeConfiguration(selectBotEvent: SelectBotEvent) {

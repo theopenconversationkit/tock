@@ -73,7 +73,7 @@ data class DirectMessageIncomingEvent(
                                             applicationId,
                                             recipientId(PlayerType.bot),
                                             parameters[SendChoice.NLP],
-                                            metadata = ActionMetadata(connectorMetadata = mutableMapOf(VISIBILITY to ActionVisibility.private))
+                                            metadata = ActionMetadata(visibility = ActionVisibility.PRIVATE)
                                         )
                                     } else {
                                         SendChoice(
@@ -82,7 +82,7 @@ data class DirectMessageIncomingEvent(
                                             recipientId(PlayerType.bot),
                                             intentName,
                                             parameters,
-                                            metadata = ActionMetadata(connectorMetadata = mutableMapOf(VISIBILITY to ActionVisibility.private))
+                                            metadata = ActionMetadata(visibility = ActionVisibility.PRIVATE)
                                         )
                                     }
                                 }
@@ -101,7 +101,7 @@ data class DirectMessageIncomingEvent(
                             applicationId,
                             recipientId(PlayerType.bot),
                             it.textWithoutUrls(),
-                            metadata = ActionMetadata(connectorMetadata = mutableMapOf(VISIBILITY to ActionVisibility.private))
+                            metadata = ActionMetadata(visibility = ActionVisibility.PRIVATE)
                         )
                     }
                 }

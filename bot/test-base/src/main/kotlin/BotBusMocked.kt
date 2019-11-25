@@ -31,8 +31,9 @@ import ai.tock.bot.definition.StoryHandlerDefinition
 import ai.tock.bot.definition.StoryStep
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.action.ActionQuote
+import ai.tock.bot.engine.action.ActionReply
 import ai.tock.bot.engine.action.ActionVisibility
-import ai.tock.bot.engine.action.Metadata
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.dialog.EntityValue
 import ai.tock.bot.engine.message.Message
@@ -45,7 +46,6 @@ import ai.tock.nlp.api.client.model.Entity
 import ai.tock.nlp.entity.Value
 import ai.tock.shared.defaultLocale
 import ai.tock.translator.I18nContext
-import ai.tock.translator.TranslatedSequence
 import ai.tock.translator.Translator
 import ai.tock.translator.UserInterfaceType.textAndVoiceAssistant
 import ai.tock.translator.UserInterfaceType.textChat
@@ -156,6 +156,7 @@ fun mockTockCommon(bus: BotBus) {
     every { bus.userId } returns playerId
     val botId = PlayerId("bot")
     every { bus.botId } returns botId
+    every { bus.applicationId } returns "appId"
 
     val userTimeline: UserTimeline = mockk()
     val userState = UserState(Instant.now())
@@ -172,7 +173,7 @@ fun mockTockCommon(bus: BotBus) {
     every { botDefinition.defaultDelay(any()) } returns 0
     every { bus.resetDialogState() } returns Unit
 
-    every { bus.translate(any()) } answers { args[0] as TranslatedSequence }
+    every { bus.translate(any()) } answers { (args[0] as CharSequence).raw }
     every { bus.translate(any(), *anyVararg()) } answers {
         Translator.formatMessage(
             args[0].toString(),
@@ -192,7 +193,8 @@ fun mockTockCommon(bus: BotBus) {
             args[2] as? StoryStep<out StoryHandlerDefinition>,
             (args[3] as? Map<String, String>) ?: emptyMap(),
             null,
-            null)
+            null,
+            bus.applicationId)
     }
     every {
         SendChoice.encodeChoiceId(bus, any(), any<String>(), any())
@@ -203,7 +205,8 @@ fun mockTockCommon(bus: BotBus) {
             args[2] as? String,
             (args[3] as? Map<String, String>) ?: emptyMap(),
             null,
-            null)
+            null,
+            bus.applicationId)
     }
 }
 
@@ -230,7 +233,9 @@ fun mockTwitter(bus: BotBus) {
     mockTockCommon(bus)
     mockkStatic("ai.tock.bot.connector.twitter.TwitterBuildersKt")
     every { bus.targetConnectorType } returns twitterConnectorType
-    every { bus.action.metadata.connectorMetadata[Metadata.VISIBILITY] } returns ActionVisibility.unknown
+    every { bus.action.metadata.visibility } returns ActionVisibility.UNKNOWN
+    every { bus.action.metadata.quoteMessage } returns ActionQuote.UNKNOWN
+    every { bus.action.metadata.replyMessage } returns ActionReply.UNKNOWN
     every { bus.withTwitter(any()) }.answers {
         if (bus.targetConnectorType == twitterConnectorType) {
             @Suppress("UNCHECKED_CAST")

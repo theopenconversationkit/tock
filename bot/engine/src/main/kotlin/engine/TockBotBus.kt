@@ -110,16 +110,16 @@ internal class TockBotBus(
      */
     override fun setBusContextValue(key: String, value: Any?) {
         if (value == null) {
-            context.contextMap - key
+            context.contextMap.remove(key)
         } else {
-            context.contextMap.put(key, value)
+            context.contextMap[key] = value
         }
     }
 
     private fun answer(a: Action, delay: Long = 0): BotBus {
         context.currentDelay += delay
         a.metadata.priority = context.priority
-        a.metadata.connectorMetadata[VISIBILITY] = context.visibility
+        a.metadata.visibility = context.visibility
 
         if (a is SendSentence) {
             a.messages.addAll(context.connectorMessages.values)

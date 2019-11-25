@@ -7,17 +7,21 @@ Tock est bâti sur un modèle communautaire pour créer une plateforme ouverte.<
 Voici les prochains événements liés à Tock ou identifiés pour échanger avec la communauté :
 
 * _Novembre:_
-    * Nous pourrions présenter Tock au [***Paris NLP*** (season 4 meetup #2)](https://www.meetup.com/fr-FR/Paris-NLP/events/lkmbhqyzpbkc/) (à confirmer)
-    * Un [***Hackathon*** ouvert à tous](https://hackandbot.sncf.com/) aura lieu les 21-22 novembre à Paris, 
-    sur le thème du conversationnel avec Tock
+    * SNCF organise un [***Hackathon*** ouvert à tous](https://hackandbot.sncf.com/) les 21-22 novembre 
+    à Paris, sur le thème du conversationnel avec Tock. Il reste quelques places. 
+    C'est l'occasion de tester la solution et de rencontrer ses créateurs
+    ![Hackandbot](https://v.fastcdn.co/u/0bc8903d/47537535-0-Instapage1920x600.png)
 
 * _Décembre:_
-    * Une conférence sur les plateformes conversationnelles ouvertes a été soumis au CFP du 
-[***Paris Open Source Summit***](https://www.opensourcesummit.paris/) (à confirmer)
+    * Nous présenterons avec des représentants de SNCF mais aussi de [Botfront.io](https://botfront.io/) 
+    une conférence intitulée _"Conversationnel & Open Source"_ au 
+[***Paris Open Source Summit***](https://www.opensourcesummit.paris/ARTIFICIAL+INTELLIGENCE_168_5748.html) le 11 décembre (16h30)
+    ![POSS2019](https://www.opensourcesummit.paris/upload/bandeau_slide-2019(2).png)
 
 ## Association TOSIT
 
-La solution Tock souhaite rejoindre une association comme le _TOSIT (The Open Source I Trust)_,
+La solution Tock est actuellement activement étudiée et expérimentée par l'association 
+_TOSIT (The Open Source I Trust)_,
  une structure de soutien à l’Open Source  qui vise à soutenir l’émergence de codes, logiciels et 
  solutions informatiques sous licence open source et/ou licence libre.
 

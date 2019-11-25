@@ -24,6 +24,8 @@ import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.SimpleStoryStep
 import ai.tock.bot.definition.StoryHandlerDefinition
 import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.engine.BotBus
+import ai.tock.translator.I18nLabelValue
 
 /**
  * A [StoryStep] configuration in a [StoryDefinitionConfiguration].
@@ -52,7 +54,9 @@ data class StoryDefinitionConfigurationStep(
     /**
      * The user sentence sample.
      */
+    @Deprecated("use userSentenceLabel")
     val userSentence: String = "",
+    val userSentenceLabel: I18nLabelValue? = null,
     /**
      * The children of the steps
      */
@@ -89,6 +93,7 @@ data class StoryDefinitionConfigurationStep(
 
     fun toStoryStep(): StoryStep<StoryHandlerDefinition> = Step(this)
 
-    override fun findNextSteps(story: StoryDefinitionConfiguration): List<String> =
-        children.map { it.userSentence }
+    override fun findNextSteps(bus: BotBus, story: StoryDefinitionConfiguration): List<CharSequence> =
+        children.map { it.userSentenceLabel ?: it.userSentence }
+
 }

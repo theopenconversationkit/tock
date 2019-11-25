@@ -50,7 +50,18 @@ data class EventState(
     /**
      * The current step.
      */
-    var step: String? = null
+    var step: String? = null,
+    /**
+     * If true, this event is not addressed to the bot, but the bot is notified
+     * that it has been sent in a multi users/bots conversation.
+     *
+     * Default is false.
+     */
+    var notification: Boolean = false,
+    /**
+     * For notification event, what is the source of the notification if known?
+     */
+    var sourceApplicationId: String? = null
 ) {
 
     fun getEntity(role: String): List<EntityValue> {

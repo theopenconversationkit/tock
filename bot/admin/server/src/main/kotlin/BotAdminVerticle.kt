@@ -431,7 +431,7 @@ open class BotAdminVerticle : AdminVerticle() {
             val connectorType = context.path("connectorType")
             context.response().putHeader("Content-Type", "image/svg+xml")
             context.response().putHeader("Cache-Control", "max-age=84600, public")
-            ConnectorTypeConfiguration.connectorConfigurations.first { it.connectorType.id == connectorType }.svgIcon
+            ConnectorTypeConfiguration.connectorConfigurations.firstOrNull { it.connectorType.id == connectorType }?.svgIcon
                 ?: ""
         }
 

@@ -23,6 +23,7 @@ import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.StoryDefinition
+import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
 import ai.tock.shared.defaultNamespace
 import org.litote.kmongo.Id
@@ -110,8 +111,8 @@ data class StoryDefinitionConfiguration(
             steps = storyDefinition.steps.map { StoryDefinitionConfigurationStep(it) }
         )
 
-    override fun findNextSteps(story: StoryDefinitionConfiguration): List<String> =
-        steps.map { it.userSentence }
+    override fun findNextSteps(bus: BotBus, story: StoryDefinitionConfiguration): List<CharSequence> =
+        steps.map { it.userSentenceLabel ?: it.userSentence }
 
     internal fun hasOnlyDisabledFeature(applicationId: String?): Boolean =
         when {

@@ -23,7 +23,7 @@ nav:
       - 'Modes disponibles': 'dev/modes.md'
       - 'Tock Bot API': 'dev/bot-api.md'
       - 'Tock Bot intégré': 'dev/bot-integre.md'
-      - 'Connecteurs': 'dev/connectors.md'
+      - 'Connecteurs': 'dev/connecteurs.md'
       - 'i18n': 'dev/i18n.md'
       - 'Liste des APIs': 'dev/api.md'
       - 'Exemples de code': 'dev/exemples-code.md'

@@ -32,9 +32,9 @@ import ai.tock.bot.connector.twitter.model.incoming.DirectMessageIncomingEvent
 import ai.tock.bot.connector.twitter.model.incoming.DirectMessageIndicateTypingIncomingEvent
 import ai.tock.bot.connector.twitter.model.incoming.TweetIncomingEvent
 import ai.tock.bot.engine.action.ActionMetadata
+import ai.tock.bot.engine.action.ActionQuote
+import ai.tock.bot.engine.action.ActionReply
 import ai.tock.bot.engine.action.ActionVisibility
-import ai.tock.bot.engine.action.Metadata.REPLY
-import ai.tock.bot.engine.action.Metadata.VISIBILITY
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
@@ -176,9 +176,7 @@ internal class WebhookActionConverterTest {
             PlayerId("14235326"),
             "Plouf",
             metadata = ActionMetadata(
-                connectorMetadata = mutableMapOf(
-                    VISIBILITY to ActionVisibility.private
-                )
+                visibility = ActionVisibility.PRIVATE
             )
         )
 
@@ -264,7 +262,7 @@ internal class WebhookActionConverterTest {
                         statusesCount = 239,
                         profileImageUrlHttps = "https://pbs.twimg.com/profile_images/378800000245800156/bbe387dd6a6d46f22a228a259b355df5_normal.jpeg"
                     ),
-                    isQuote = false,
+                    isQuote = true,
                     entities = Entities(
                         hashtags = emptyList(),
                         mentions = listOf(
@@ -290,10 +288,9 @@ internal class WebhookActionConverterTest {
             PlayerId("602907365", PlayerType.user),
             "Hello @Delphes99 alors ?",
             metadata = ActionMetadata(
-                connectorMetadata = mutableMapOf(
-                    VISIBILITY to ActionVisibility.public,
-                    REPLY to false
-                )
+                visibility = ActionVisibility.PUBLIC,
+                replyMessage = ActionReply.NOREPLY,
+                quoteMessage = ActionQuote.ISQUOTE
             )
         )
 
@@ -359,10 +356,9 @@ internal class WebhookActionConverterTest {
             PlayerId("602907365", PlayerType.user),
             "@Delphes99 alors?",
             metadata = ActionMetadata(
-                connectorMetadata = mutableMapOf(
-                    VISIBILITY to ActionVisibility.public,
-                    REPLY to true
-                )
+                visibility = ActionVisibility.PUBLIC,
+                replyMessage = ActionReply.ISREPLY,
+                quoteMessage = ActionQuote.NOQUOTE
             )
         )
 

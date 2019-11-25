@@ -16,8 +16,6 @@
 
 package ai.tock.bot.connector.messenger.json.send
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
 import ai.tock.bot.connector.messenger.model.send.Attachment
 import ai.tock.bot.connector.messenger.model.send.AttachmentMessage
 import ai.tock.bot.connector.messenger.model.send.Message
@@ -27,6 +25,8 @@ import ai.tock.shared.jackson.JacksonDeserializer
 import ai.tock.shared.jackson.read
 import ai.tock.shared.jackson.readListValues
 import ai.tock.shared.jackson.readValue
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
 import mu.KotlinLogging
 
 /**
@@ -42,7 +42,8 @@ internal class MessageDeserializer : JacksonDeserializer<Message>() {
         data class MessageFields(
             var text: String? = null,
             var attachment: Attachment? = null,
-            var quickReplies: List<QuickReply>? = null)
+            var quickReplies: List<QuickReply>? = null,
+            var other: EmptyJson? = null)
 
         val (text, attachment, quickReplies) = jp.read<MessageFields> { fields, name ->
             with(fields) {
@@ -50,7 +51,7 @@ internal class MessageDeserializer : JacksonDeserializer<Message>() {
                     TextMessage::text.name -> text = jp.valueAsString
                     AttachmentMessage::attachment.name -> attachment = jp.readValue()
                     "quick_replies" -> quickReplies = jp.readListValues()
-                    else -> unknownValue
+                    else -> other = jp.readUnknownValue()
                 }
             }
         }

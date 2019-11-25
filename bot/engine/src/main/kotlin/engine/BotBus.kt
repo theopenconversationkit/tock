@@ -24,6 +24,7 @@ import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.ParameterKey
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryHandlerBase
+import ai.tock.bot.definition.StoryHandlerBase.Companion.SWITCH_STORY_BUS_KEY
 import ai.tock.bot.definition.StoryHandlerDefinition
 import ai.tock.bot.definition.StoryStep
 import ai.tock.bot.engine.action.Action
@@ -427,6 +428,7 @@ interface BotBus : Bus<BotBus> {
         story = Story(storyDefinition, starterIntent, story.step)
         dialog.stories.add(story)
         dialog.state.currentIntent = starterIntent
+        setBusContextValue(SWITCH_STORY_BUS_KEY, true)
     }
 
     /**
@@ -434,6 +436,7 @@ interface BotBus : Bus<BotBus> {
      */
     fun handleAndSwitchStory(storyDefinition: StoryDefinition) {
         switchStory(storyDefinition)
+        setBusContextValue(SWITCH_STORY_BUS_KEY, null)
         @Suppress("UNCHECKED_CAST")
         storyDefinition.storyHandler.handle(this)
     }

@@ -50,6 +50,7 @@ import ai.tock.shared.defaultLocale
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.addConstrainedTypes
+import ai.tock.shared.listProperty
 import ai.tock.shared.provide
 import ai.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
@@ -68,6 +69,9 @@ import java.util.concurrent.CopyOnWriteArraySet
 object BotRepository {
 
     private val logger = KotlinLogging.logger {}
+
+    //load only specified configuration ids (dev mode)
+    private val restrictedConfigurationIds: List<String> = listProperty("tock_restricted_configuration_id", emptyList())
 
     private val botConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
     private val storyDefinitionConfigurationDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
@@ -358,8 +362,12 @@ object BotRepository {
         val existingConfsById: Map<Id<BotApplicationConfiguration>, BotApplicationConfiguration> = connectorControllerMap.keys
             .groupBy { it._id }.mapValues { it.value.first() }
         //path -> botAppConf
-        val confs: Map<Id<BotApplicationConfiguration>, BotApplicationConfiguration> = botConfigurationDAO.getConfigurations()
-            .groupBy { it._id }.mapValues { it.value.first() }
+        val confs: Map<Id<BotApplicationConfiguration>, BotApplicationConfiguration> =
+            botConfigurationDAO
+                .getConfigurations()
+                .groupBy { it._id }
+                .mapValues { it.value.first() }
+                .filter { restrictedConfigurationIds.isEmpty() || restrictedConfigurationIds.contains(it.value.applicationId) }
 
         confs.values.forEach { c ->
             //gets the provider

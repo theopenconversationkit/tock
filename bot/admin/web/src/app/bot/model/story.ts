@@ -202,7 +202,7 @@ export class MandatoryEntity extends AnswerContainer {
   public intentDefinition: Intent;
 
   constructor(public role: string,
-              public entityType:string,
+              public entityType: string,
               public intent: IntentName,
               answers: AnswerConfiguration[],
               currentType: AnswerConfigurationType,
@@ -243,6 +243,7 @@ export class StoryStep extends AnswerContainer {
   public intentDefinition: Intent;
   public targetIntentDefinition: Intent;
   public new: boolean;
+  public newUserSentence: string = "";
 
   static filterNew(steps: StoryStep[]): StoryStep[] {
     steps.forEach(s => s.children = StoryStep.filterNew(s.children));
@@ -268,7 +269,7 @@ export class StoryStep extends AnswerContainer {
               answers: AnswerConfiguration[],
               currentType: AnswerConfigurationType,
               category: string,
-              public userSentence: string,
+              public userSentence: I18nLabel,
               public children: StoryStep[],
               public level: number) {
     super(currentType, answers, category)
@@ -294,7 +295,7 @@ export class StoryStep extends AnswerContainer {
       this.answers.slice(0).map(a => a.clone()),
       this.currentType,
       this.category,
-      this.userSentence,
+      this.userSentence.clone(),
       this.children.map(c => c.clone()),
       this.level
     );
@@ -307,7 +308,8 @@ export class StoryStep extends AnswerContainer {
       targetIntent: IntentName.fromJSON(json.targetIntent),
       currentType: AnswerConfigurationType[json.currentType],
       answers: AnswerConfiguration.fromJSONArray(json.answers),
-      children: StoryStep.fromJSONArray(json.children)
+      children: StoryStep.fromJSONArray(json.children),
+      userSentence: I18nLabel.fromJSON(json.userSentence)
     });
 
     return result;

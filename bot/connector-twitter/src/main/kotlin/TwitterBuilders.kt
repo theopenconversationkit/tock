@@ -421,8 +421,8 @@ fun I18nTranslator.nlpOption(label: CharSequence, description: CharSequence): Op
  * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
 fun BotBus.withTwitter(messageProvider: () -> TwitterConnectorMessage): BotBus {
-    withVisibility(actionVisibility(this) as ActionVisibility)
-    return if (actionVisibility(this) != ActionVisibility.public) {
+    withVisibility(actionVisibility(this))
+    return if (actionVisibility(this) != ActionVisibility.PUBLIC) {
         withMessage(twitterConnectorType, messageProvider)
     } else {
         this
@@ -434,8 +434,8 @@ fun BotBus.withTwitter(messageProvider: () -> TwitterConnectorMessage): BotBus {
  * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
 fun BotBus.withPublicTwitter(messageProvider: () -> TwitterPublicConnectorMessage): BotBus {
-    withVisibility(actionVisibility(this) as ActionVisibility)
-    return if (actionVisibility(this) == ActionVisibility.public) {
+    withVisibility(actionVisibility(this))
+    return if (actionVisibility(this) == ActionVisibility.PUBLIC) {
         withMessage(twitterConnectorType, messageProvider)
     } else {
         this
@@ -447,13 +447,12 @@ fun BotBus.withPublicTwitter(messageProvider: () -> TwitterPublicConnectorMessag
  */
 fun BotBus.endIfPublicTwitter() {
     if (targetConnectorType == twitterConnectorType &&
-        actionVisibility(this) == ActionVisibility.public) {
+        actionVisibility(this) == ActionVisibility.PUBLIC) {
         end()
     }
 }
 
-private fun actionVisibility(botBus: BotBus) = botBus.action.metadata.connectorMetadata[VISIBILITY]
-    .takeIf { it is ActionVisibility } ?: ActionVisibility.unknown
+private fun actionVisibility(botBus: BotBus) = botBus.action.metadata.visibility
 
 /**
  * Create a tweet

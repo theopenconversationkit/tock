@@ -23,7 +23,7 @@
   <div *ngFor="let a of answer.answers" class="answer">
     <textarea class="i18n-label"
               matInput
-              [(ngModel)]="a.label.defaultLocalizedLabel().label"
+              [(ngModel)]="a.label.defaultLocalizedLabelForLocale(state.currentLocale).label"
               (change)="updateLabel(a)"
               [style.height]="a.label.defaultLocalizedLabel().baseHeight()">
     </textarea>
