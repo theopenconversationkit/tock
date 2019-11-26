@@ -25,8 +25,9 @@ if [[ $TRAVIS_BRANCH = *"build"* || $TRAVIS_BRANCH = "master" ]] && [ "$TRAVIS_P
   else
     if [ "$TRAVIS_PULL_REQUEST" = 'false' ];
     then
-      mvn test -B -Dskip.npm -Dassembly.skipAssembly=true -U -q
+      mvn test -B -Dskip.npm -Dassembly.skipAssembly=true -q
     else
-      mvn clean test install -B -Dskip.npm -Dassembly.skipAssembly=true -U -q
+      echo "test PR : $TRAVIS_PULL_REQUEST"
+      mvn clean install -B -Dskip.npm -Dassembly.skipAssembly=true -q
     fi
 fi

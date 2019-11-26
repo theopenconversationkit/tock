@@ -55,11 +55,35 @@ class RoutingContextHolderTest {
     }
 
     @Test
-    fun buildResponse_shouldMergeBasicCard_WhenApplicable() {
+    fun `GIVEN response with many basic cards WHEN send to ga THEN keep only the First one `() {
         with(bus) {
-            val r0 = gaMessage("ok")
-            val r1 = gaMessage(richResponse(basicCard("title1", null, "formattedText1")))
-            val r2 = gaMessage(
+            val firstMessage = gaMessage("ok")
+            val secondMessage = gaMessage(
+                richResponse(
+                    basicCard(
+                        "title1",
+                        null,
+                        "formattedText1",
+                        null,
+                        gaButton("button1", "butonUrl1")
+                    ),
+                    listOf(
+                        "suggestion1",
+                        "suggestion2",
+                        "suggestion3",
+                        "suggestion4",
+                        "suggestion5",
+                        "suggestion6",
+                        "suggestion7",
+                        "suggestion8",
+                        "suggestion9",
+                        "suggestion10",
+                        "suggestion11",
+                        "suggestion12"
+                        )
+                )
+            )
+            val thirdMessage = gaMessage(
                 richResponse(
                     basicCard(
                         "title2",
@@ -71,7 +95,7 @@ class RoutingContextHolderTest {
                 )
             )
 
-            val p1 = PlayerId("id1", PlayerType.user)
+            val playerId = PlayerId("id1", PlayerType.user)
 
             val holder = GAConnectorCallback(
                 "",
@@ -86,12 +110,12 @@ class RoutingContextHolderTest {
                     false,
                     emptyList()
                 ),
-                listOf(r0, r1, r2).map {
+                listOf(firstMessage, secondMessage, thirdMessage).map {
                     ActionWithDelay(
                         SendSentence(
-                            p1,
+                            playerId,
                             "appId",
-                            p1,
+                            playerId,
                             null,
                             mutableListOf(it)
                         )
@@ -104,12 +128,12 @@ class RoutingContextHolderTest {
             assertEquals(2, richResponse.items.size)
             val basicCard = richResponse.items[1].basicCard!!
             assertEquals("title1", basicCard.title)
-            assertEquals("subtitle2", basicCard.subtitle)
+            assertEquals("", basicCard.subtitle)
             assertEquals("formattedText1", basicCard.formattedText)
-            assertEquals(gaImage("url2", "acc2"), basicCard.image)
+            assertEquals(null, basicCard.image)
             assertEquals(1, basicCard.buttons.size)
-            assertEquals(gaButton("button2", "butonUrl2"), basicCard.buttons.first())
+            assertEquals(gaButton("button1", "butonUrl1"), basicCard.buttons.first())
+            assertEquals(8,richResponse.suggestions.size)
         }
     }
-
 }

@@ -17,16 +17,31 @@ package ai.tock.bot.connector.messenger
 
 import ai.tock.bot.connector.messenger.MessengerConnector.Companion.connectorIdApplicationIdMap
 import ai.tock.bot.connector.messenger.MessengerConnector.Companion.connectorIdConnectorControllerMap
+import ai.tock.bot.connector.messenger.MessengerConnector.Companion.connectorIdTokenMap
 import ai.tock.bot.connector.messenger.MessengerConnector.Companion.pageIdConnectorIdMap
 import ai.tock.bot.engine.ConnectorController
 import io.mockk.every
 import io.mockk.mockk
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 internal class MessengerConnectorTest {
+
+    companion object {
+        private fun clearState() {
+            pageIdConnectorIdMap.clear()
+            connectorIdConnectorControllerMap.clear()
+            connectorIdTokenMap.clear()
+            connectorIdApplicationIdMap.clear()
+        }
+    }
+
+    init {
+        clearState()
+    }
 
     val connectorId1 = "connectorId1"
     val path1 = "pathA"
@@ -38,12 +53,16 @@ internal class MessengerConnectorTest {
 
     val messengerClient = mockk<MessengerClient>()
 
-    val messengerConnector1 =
+    val messengerConnector1: MessengerConnector =
         MessengerConnector(connectorId1, appId1, path1, pageId1, appToken1, token1, verifyToken1, messengerClient)
     val controller1 = mockk<ConnectorController>(relaxed = true).apply {
         every { connector } returns messengerConnector1
     }
 
+    @AfterEach
+    fun afterEach() {
+        clearState()
+    }
 
     @Test
     fun `GIVEN one messenger connector WHEN registering a new version of this connector and unregistering the old version THEN the new version is correctly registered`() {
