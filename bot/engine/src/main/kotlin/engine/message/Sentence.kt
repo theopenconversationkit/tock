@@ -40,16 +40,17 @@ data class Sentence(
         private val logger = KotlinLogging.logger {}
 
         private fun toGenericMessage(message: ConnectorMessage): GenericMessage =
-                try {
-                    message.toGenericMessage() ?: GenericMessage(message)
-                } catch (t: Throwable) {
-                    logger.error(t)
-                    GenericMessage(message)
-                }
+            (try {
+                message.toGenericMessage() ?: GenericMessage(message)
+            } catch (t: Throwable) {
+                logger.error(t)
+                GenericMessage(message)
+            }
+                ).copy(connectorType = message.connectorType, connectorMessage = message)
     }
 
     constructor(text: String?, messages: MutableList<ConnectorMessage> = mutableListOf(), userInterface: UserInterfaceType? = null)
-            : this(text, messages.map { toGenericMessage(it) }.toMutableList(), userInterface)
+        : this(text, messages.map { toGenericMessage(it) }.toMutableList(), userInterface)
 
     override val eventType: EventType = EventType.sentence
 
@@ -57,18 +58,18 @@ data class Sentence(
                           applicationId: String,
                           recipientId: PlayerId): Action {
         return SendSentence(
-                playerId,
-                applicationId,
-                recipientId,
-                text,
-                messages.mapNotNull {
-                    try {
-                        it.findConnectorMessage()
-                    } catch (e: Exception) {
-                        logger.error(e)
-                        null
-                    }
-                }.toMutableList())
+            playerId,
+            applicationId,
+            recipientId,
+            text,
+            messages.mapNotNull {
+                try {
+                    it.findConnectorMessage()
+                } catch (e: Exception) {
+                    logger.error(e)
+                    null
+                }
+            }.toMutableList())
     }
 
     override fun toPrettyString(): String {

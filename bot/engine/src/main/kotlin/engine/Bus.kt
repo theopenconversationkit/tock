@@ -114,9 +114,8 @@ interface Bus<T : Bus<T>> : I18nTranslator {
         if (r is CharSequence) {
             send(r, delay)
         } else {
-            when (r) {
-                is ConnectorMessage -> withMessage(r)
-                is ConnectorMessageProvider -> withMessage(r.toConnectorMessage())
+            if (r is ConnectorMessageProvider) {
+                withMessage(r.toConnectorMessage())
             }
             send(delay)
         }

@@ -22,7 +22,7 @@ import ai.tock.shared.security.StringObfuscatorMode
 /**
  * Connector specific message format.
  */
-interface ConnectorMessage {
+interface ConnectorMessage : ConnectorMessageProvider {
 
     /**
      * The connector type.
@@ -46,4 +46,6 @@ interface ConnectorMessage {
      * Obfuscate the message - by default this method does nothing.
      */
     fun obfuscate(mode: StringObfuscatorMode): ConnectorMessage = this
+
+    override fun toConnectorMessage(): ConnectorMessage = this
 }
