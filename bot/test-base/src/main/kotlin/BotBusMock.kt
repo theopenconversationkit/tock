@@ -28,7 +28,6 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionNotificationType
 import ai.tock.bot.engine.action.ActionPriority
 import ai.tock.bot.engine.action.ActionVisibility
-import ai.tock.bot.engine.action.Metadata.VISIBILITY
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.dialog.Dialog
@@ -342,9 +341,9 @@ open class BotBusMock(
      */
     override fun setBusContextValue(key: String, value: Any?) {
         if (value == null) {
-            mockData.contextMap - key
+            mockData.contextMap.remove(key)
         } else {
-            mockData.contextMap.put(key, value)
+            mockData.contextMap[key] = value
         }
     }
 
