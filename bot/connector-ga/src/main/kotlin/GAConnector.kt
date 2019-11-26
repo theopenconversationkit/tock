@@ -25,13 +25,19 @@ import ai.tock.bot.connector.ga.GAAccountLinking.Companion.getUserId
 import ai.tock.bot.connector.ga.GAAccountLinking.Companion.isUserAuthenticated
 import ai.tock.bot.connector.ga.GAAccountLinking.Companion.switchTimeLine
 import ai.tock.bot.connector.ga.model.request.GARequest
+import ai.tock.bot.connector.ga.model.response.GACarouselItem
+import ai.tock.bot.connector.ga.model.response.GAItem
+import ai.tock.bot.connector.ga.model.response.GAOptionInfo
+import ai.tock.bot.connector.ga.model.response.GASimpleResponse
 import ai.tock.bot.connector.media.MediaCard
+import ai.tock.bot.connector.media.MediaCarousel
 import ai.tock.bot.connector.media.MediaMessage
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendAttachment.AttachmentType.image
+import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.event.LoginEvent
 import ai.tock.bot.engine.user.PlayerId
@@ -230,6 +236,8 @@ class GAConnector internal constructor(
             else if (subTitle != null) basicCard(formattedText = subTitle)
             else null
 
+            val requiredTextToSpeech = title ?: subTitle ?: "default_ga_card_title"
+
             if (card != null) {
                 val actions = message.actions
                 val suggestions = actions.filter { it.url == null }.map { it.title }
@@ -237,6 +245,7 @@ class GAConnector internal constructor(
                 listOf(
                     gaMessage(
                         richResponse(
+                            i18nKey("default_ga_card_title",requiredTextToSpeech),
                             card.copy(buttons = listOfNotNull(redirect)),
                             suggestions
                         )
@@ -244,6 +253,56 @@ class GAConnector internal constructor(
                 )
             } else {
                 emptyList()
+            }
+        } else if (message is MediaCarousel) {
+            when {
+                message.cards.size>1 -> {
+                    var suggestions = ArrayList<String>()
+                    val items = message.cards.map { card ->
+                        val title = translate(card.title)
+                        val subTitle = translate(card.subTitle)
+                        val targetIntent = this.intent
+
+                        val map = mapOf(SendChoice.TITLE_PARAMETER to title.toString())
+                        suggestions.addAll(card.actions.filter { it.url == null }.map { it.title.toString() })
+                        GACarouselItem(
+                            optionInfo = GAOptionInfo(
+                                key = SendChoice.encodeNlpChoiceId(title.toString()),
+                                synonyms = emptyList()
+                            ),
+                            title = title.toString(),
+                            description = subTitle.toString(),
+                            image = card.file?.takeIf { it.type == image }?.let { gaImage(it.url, it.name) }
+                        )
+                    }
+                    val message = gaMessage(
+                        inputPrompt = inputPrompt(
+                            richResponse(
+                                items = listOf(
+                                    GAItem(
+                                        GASimpleResponse(
+                                            translate("default_ga_carousel_title").toString()
+                                        )
+                                    )
+                                ),
+                                suggestions = suggestions
+                            )
+                        ),
+                        possibleIntents = listOf(
+                            expectedTextIntent(),
+                            expectedIntentForCarousel(items)
+                        )
+                    )
+                    listOf(
+                        message
+                    )
+                }
+                message.cards.size == 1 -> {
+                    toConnectorMessage(message.cards.first()).invoke(this)
+                }
+                else -> {
+                    emptyList()
+                }
             }
         } else {
             emptyList()
