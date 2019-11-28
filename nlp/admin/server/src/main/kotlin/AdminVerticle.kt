@@ -932,7 +932,7 @@ open class AdminVerticle : WebVerticle() {
             val n = context.path("namespace")
             if (front.hasNamespace(context.userLogin, n)) {
                 front.setCurrentNamespace(context.userLogin, n)
-                context.user?.namespace = n
+                context.setUser(context.user!!.copy(namespace = n))
             } else {
                 unauthorized()
             }

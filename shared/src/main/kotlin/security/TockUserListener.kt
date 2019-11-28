@@ -17,12 +17,12 @@
 package ai.tock.shared.security
 
 /**
- * Tock user admin listener interface
+ * Tock user admin listener.
  */
 interface TockUserListener {
 
     /**
-     * Try to register a tock user, updating the user.
+     * Try to register a tock user, and returns the registered user.
      */
-    fun registerUser(user: TockUser)
+    fun registerUser(user: TockUser): TockUser
 }

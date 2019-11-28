@@ -74,12 +74,9 @@ internal class GithubOAuthProvider(
                 if (user != null && user !is TockUser) {
                     executor.executeBlocking {
                         val login = RetrofitGithubClient.login(user.principal().getString("access_token"))
-                        val tockUser = TockUser(login, login, TockUserRole.values().map { r -> r.name }.toSet())
-                        try {
-                            injector.provide<TockUserListener>().registerUser(tockUser)
-                        } catch (e: Exception) {
-                            logger.error(e)
-                        }
+                        val tockUser = injector.provide<TockUserListener>().registerUser(
+                            TockUser(login, login, TockUserRole.values().map { r -> r.name }.toSet())
+                        )
                         it.setUser(tockUser)
                         it.next()
                     }

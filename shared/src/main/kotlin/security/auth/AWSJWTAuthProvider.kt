@@ -17,7 +17,6 @@
 package ai.tock.shared.security.auth
 
 import ai.tock.shared.Executor
-import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.mapProperty
 import ai.tock.shared.property
@@ -81,12 +80,7 @@ internal class AWSJWTAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx), JW
                         } else {
                             executor.executeBlocking {
                                 val customName = token.getString("email")
-                                val u = TockUser(customName, namespace, roles)
-                                try {
-                                    injector.provide<TockUserListener>().registerUser(u)
-                                } catch (e: Exception) {
-                                    logger.error(e)
-                                }
+                                val u = injector.provide<TockUserListener>().registerUser(TockUser(customName, namespace, roles))
                                 resultHandler.handle(Future.succeededFuture(u))
                             }
                         }

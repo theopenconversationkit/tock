@@ -18,7 +18,6 @@ package ai.tock.shared.security.auth
 
 import ai.tock.shared.Executor
 import ai.tock.shared.defaultNamespace
-import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.listProperty
@@ -144,17 +143,14 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
             ?.takeIf { passwords[it] == password }
             ?.also { index ->
                 executor.executeBlocking {
-                    val tockUser = TockUser(
-                        username,
-                        organizations[index],
-                        roles.getOrNull(index)?.takeIf { r -> r.size > 1 || r.firstOrNull()?.isBlank() == false }
-                            ?: allRoles
+                    val tockUser = injector.provide<TockUserListener>().registerUser(
+                        TockUser(
+                            username,
+                            organizations[index],
+                            roles.getOrNull(index)?.takeIf { r -> r.size > 1 || r.firstOrNull()?.isBlank() == false }
+                                ?: allRoles
+                        )
                     )
-                    try {
-                        injector.provide<TockUserListener>().registerUser(tockUser)
-                    } catch (e: Exception) {
-                        logger.error(e)
-                    }
                     resultHandler.handle(Future.succeededFuture(tockUser))
                 }
             }
