@@ -27,6 +27,7 @@ import ai.tock.nlp.front.service.storage.ApplicationDefinitionDAO
 import ai.tock.nlp.front.service.storage.ClassifiedSentenceDAO
 import ai.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import ai.tock.nlp.front.service.storage.IntentDefinitionDAO
+import ai.tock.nlp.front.service.storage.UserNamespaceDAO
 import ai.tock.nlp.front.shared.ApplicationConfiguration
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.ClassifiedSentence
@@ -46,6 +47,7 @@ val applicationDAO: ApplicationDefinitionDAO get() = injector.provide()
 val entityTypeDAO: EntityTypeDefinitionDAO get() = injector.provide()
 val intentDAO: IntentDefinitionDAO get() = injector.provide()
 val sentenceDAO: ClassifiedSentenceDAO get() = injector.provide()
+val userNamespaceDAO:UserNamespaceDAO get() = injector.provide()
 
 /**
  *
@@ -55,6 +57,7 @@ object ApplicationConfigurationService :
     EntityTypeDefinitionDAO by entityTypeDAO,
     IntentDefinitionDAO by intentDAO,
     ClassifiedSentenceDAO by sentenceDAO,
+    UserNamespaceDAO by userNamespaceDAO,
     ApplicationConfiguration {
 
     override fun save(sentence: ClassifiedSentence, user: UserLogin?) {

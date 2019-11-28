@@ -18,6 +18,7 @@ import {Component, OnInit} from "@angular/core";
 import {Router} from "@angular/router";
 import {StateService} from "../core-nlp/state.service";
 import {UserRole} from "../../../../../../nlp/admin/web/src/app/model/auth";
+import {ApplicationsResolver} from "./applications.resolver";
 
 @Component({
   selector: 'tock-configuration-tabs',
@@ -27,12 +28,11 @@ import {UserRole} from "../../../../../../nlp/admin/web/src/app/model/auth";
 export class ConfigurationTabsComponent implements OnInit {
   tabs = [
     {
-      title: 'NLU Applications',
-      route: 'nlp'
-    },
-    {
-      title: 'Bot Configurations',
-      route: 'bot',
+      title: 'NLU Models',
+      route: 'nlu',
+      resolve: {
+        applications: ApplicationsResolver
+      }
     },
     {
       title: 'User Logs',

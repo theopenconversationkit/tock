@@ -27,6 +27,7 @@ import ai.tock.nlp.front.shared.ModelTester
 import ai.tock.nlp.front.shared.ModelUpdater
 import ai.tock.nlp.front.shared.Parser
 import ai.tock.nlp.front.shared.codec.alexa.AlexaCodec
+import ai.tock.shared.security.TockUserListener
 
 /**
  *
@@ -39,4 +40,5 @@ val frontModule = Kodein.Module {
     bind<ApplicationMonitor>() with provider { ApplicationMonitorService }
     bind<ModelTester>() with provider { ModelTesterService }
     bind<AlexaCodec>() with provider { AlexaCodecService }
+    bind<TockUserListener>(overrides = true) with provider { AdminTockUserListener }
 }

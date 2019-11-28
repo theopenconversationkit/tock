@@ -16,8 +16,6 @@
 
 package ai.tock.nlp.front.ioc
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.Kodein.Module
 import ai.tock.duckling.client.ducklingModule
 import ai.tock.nlp.core.service.coreModule
 import ai.tock.nlp.front.client.FrontClient
@@ -27,6 +25,8 @@ import ai.tock.nlp.model.service.modelModule
 import ai.tock.nlp.model.service.storage.mongo.modelMongoModule
 import ai.tock.shared.injector
 import ai.tock.shared.sharedModule
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.Kodein.Module
 import mu.KotlinLogging
 
 /**
@@ -54,7 +54,7 @@ object FrontIoc {
     fun setup(modules: List<Module>) {
         logger.debug { "Start nlp injection" }
         injector.inject(Kodein {
-            coreModules.forEach { import(it) }
+            coreModules.forEach { import(it, allowOverride = true) }
 
             //load additional modules
             modules.forEach {

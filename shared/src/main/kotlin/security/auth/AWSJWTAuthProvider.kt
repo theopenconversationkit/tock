@@ -16,12 +16,17 @@
 
 package ai.tock.shared.security.auth
 
-import com.google.common.io.BaseEncoding
+import ai.tock.shared.Executor
+import ai.tock.shared.error
+import ai.tock.shared.injector
 import ai.tock.shared.mapProperty
 import ai.tock.shared.property
+import ai.tock.shared.provide
 import ai.tock.shared.security.TockUser
+import ai.tock.shared.security.TockUserListener
 import ai.tock.shared.security.TockUserRole
 import ai.tock.shared.vertx.WebVerticle
+import com.google.common.io.BaseEncoding
 import io.vertx.core.AsyncResult
 import io.vertx.core.Future
 import io.vertx.core.Handler
@@ -51,6 +56,8 @@ internal class AWSJWTAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx), JW
     @Volatile
     private var jwtAuthProvider: JWTAuth? = null
 
+    private val executor: Executor get() = injector.provide()
+
     override fun createAuthHandler(verticle: WebVerticle): AuthHandler = AWSJWTAuthHandler(this, null)
 
     override fun authenticate(authInfo: JsonObject, resultHandler: Handler<AsyncResult<User>>) {
@@ -72,9 +79,16 @@ internal class AWSJWTAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx), JW
                             logger.warn { "no namespace for $customRoles" }
                             resultHandler.handle(Future.failedFuture("Unauthorized"))
                         } else {
-                            val customName = token.getString("email")
-                            val u = TockUser(customName, namespace, roles)
-                            resultHandler.handle(Future.succeededFuture(u))
+                            executor.executeBlocking {
+                                val customName = token.getString("email")
+                                val u = TockUser(customName, namespace, roles)
+                                try {
+                                    injector.provide<TockUserListener>().registerUser(u)
+                                } catch (e: Exception) {
+                                    logger.error(e)
+                                }
+                                resultHandler.handle(Future.succeededFuture(u))
+                            }
                         }
                     }
                 } else {
@@ -122,19 +136,19 @@ internal class AWSJWTAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx), JW
                     )
                     JWTAuth.create(
                         vertx, JWTAuthOptions(
-                            JsonObject()
-                                .put(
-                                    "pubSecKeys", JsonArray()
-                                        .add(
-                                            JsonObject()
-                                                .put("algorithm", jwtAlgorithm)
-                                                .put(
-                                                    "publicKey",
-                                                    publicKey
-                                                )
+                        JsonObject()
+                            .put(
+                                "pubSecKeys", JsonArray()
+                                .add(
+                                    JsonObject()
+                                        .put("algorithm", jwtAlgorithm)
+                                        .put(
+                                            "publicKey",
+                                            publicKey
                                         )
                                 )
-                        )
+                            )
+                    )
                     )
                 } else null
             } else null

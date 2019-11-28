@@ -16,13 +16,15 @@
 
 package ai.tock.shared
 
+import ai.tock.shared.cache.TockCache
+import ai.tock.shared.security.NoOpTockUserListener
+import ai.tock.shared.security.TockUserListener
+import ai.tock.shared.vertx.VertxProvider
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import com.github.salomonbrys.kodein.singleton
 import com.mongodb.MongoClient
-import ai.tock.shared.cache.TockCache
-import ai.tock.shared.vertx.VertxProvider
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -48,6 +50,7 @@ val mockedVertx: Vertx by lazy { mockk<Vertx>(relaxed = true) }
 val sharedTestModule = Kodein.Module {
     bind<Executor>() with provider { TestExecutor }
     bind<TockCache>() with provider { NoOpCache }
+    bind<TockUserListener>() with provider { NoOpTockUserListener }
 
     try {
         clearMocks(mockedVertx)

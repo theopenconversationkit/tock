@@ -23,7 +23,8 @@ import {
   ApplicationImportConfiguration,
   ModelBuildQueryResult,
   NlpApplicationConfiguration,
-  UserLogQueryResult
+  UserLogQueryResult,
+  UserNamespace
 } from "../model/application";
 import {RestService} from "./rest/rest.service";
 import {StateService} from "./state.service";
@@ -149,6 +150,26 @@ export class ApplicationService implements OnDestroy {
       url = `/dump/application`;
     }
     this.rest.setFileUploaderOptions(uploader, url);
+  }
+
+  getNamespaces(): Observable<UserNamespace[]> {
+    return this.rest.get(`/namespaces`, UserNamespace.fromJSONArray);
+  }
+
+  getUsersForNamespace(namespace: string): Observable<UserNamespace[]> {
+    return this.rest.get(`/namespaces/${namespace}`, UserNamespace.fromJSONArray);
+  }
+
+  saveNamespace(userNamespace: UserNamespace): Observable<boolean> {
+    return this.rest.post(`/namespace`, userNamespace);
+  }
+
+  selectNamespace(namespace: string): Observable<boolean> {
+    return this.rest.post(`/namespace/select/${namespace}`);
+  }
+
+  deleteNamespace(userNamespace: UserNamespace): Observable<boolean> {
+    return this.rest.delete(`/namespace/${userNamespace.login}/${userNamespace.namespace}`);
   }
 
   prepareSentencesDumpUploader(uploader: FileUploader, full: boolean, name?: string) {

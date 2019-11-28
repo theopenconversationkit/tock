@@ -27,6 +27,7 @@ import ai.tock.nlp.front.shared.config.EntityTypeDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.config.SentencesQuery
 import ai.tock.nlp.front.shared.config.SentencesQueryResult
+import ai.tock.nlp.front.shared.user.UserNamespace
 import ai.tock.shared.security.UserLogin
 import org.litote.kmongo.Id
 import java.util.Locale
@@ -192,5 +193,40 @@ interface ApplicationConfiguration {
         engineType: NlpEngineType,
         configuration: NlpApplicationConfiguration
     )
+
+    /**
+     * Returns all the namespaces of a user.
+     */
+    fun getNamespaces(user: String): List<UserNamespace>
+
+    /**
+     * Returns all the users of a namespace.
+     */
+    fun getUsers(namespace: String): List<UserNamespace>
+
+    /**
+     * Persists namespace.
+     */
+    fun saveNamespace(namespace: UserNamespace)
+
+    /**
+     * Delete namespace.
+     */
+    fun deleteNamespace(user: String, namespace: String)
+
+    /**
+     * Set current namespace for selected user.
+     */
+    fun setCurrentNamespace(user: String, namespace: String)
+
+    /**
+     * Is it the namespace owner ?
+     */
+    fun isNamespaceOwner(user:String, namespace:String) : Boolean
+
+    /**
+     * Is this user has the namespace ?
+     */
+    fun hasNamespace(user:String, namespace:String) : Boolean
 
 }

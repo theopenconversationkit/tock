@@ -33,6 +33,7 @@ import ai.tock.nlp.front.shared.parser.QueryContext
 import ai.tock.nlp.front.shared.test.EntityTestError
 import ai.tock.nlp.front.shared.test.IntentTestError
 import ai.tock.nlp.front.shared.test.TestBuild
+import ai.tock.nlp.front.shared.user.UserNamespace
 import org.litote.jackson.data.JacksonDataRegistry
 import org.litote.kmongo.DataRegistry
 
@@ -56,7 +57,8 @@ import org.litote.kmongo.DataRegistry
         IntentTestError::class,
         TestBuild::class,
         PredefinedValue::class,
-        DictionaryData::class
+        DictionaryData::class,
+        UserNamespace::class
     ]
 )
 @JacksonDataRegistry(
@@ -77,7 +79,8 @@ import org.litote.kmongo.DataRegistry
         TestBuild::class,
         PredefinedValue::class,
         DictionaryData::class,
-    UserActionLog::class
+        UserActionLog::class,
+        UserNamespace::class
     ]
 )
 internal object NlpDataRegistry

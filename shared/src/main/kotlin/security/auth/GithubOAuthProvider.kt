@@ -17,17 +17,18 @@
 package ai.tock.shared.security.auth
 
 import ai.tock.shared.Executor
+import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.property
 import ai.tock.shared.provide
 import ai.tock.shared.security.TockUser
+import ai.tock.shared.security.TockUserListener
 import ai.tock.shared.security.TockUserRole
 import ai.tock.shared.vertx.WebVerticle
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.ext.auth.oauth2.OAuth2Auth
 import io.vertx.ext.auth.oauth2.providers.GithubAuth
-import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.AuthHandler
 import io.vertx.ext.web.handler.OAuth2AuthHandler
 import io.vertx.ext.web.handler.SessionHandler
@@ -70,10 +71,16 @@ internal class GithubOAuthProvider(
         verticle.router.route("/*")
             .handler {
                 val user = it.user()
-                if (user != null && !user.principal().containsKey("login")) {
+                if (user != null && user !is TockUser) {
                     executor.executeBlocking {
-                        user.principal()
-                            .put("login", RetrofitGithubClient.login(user.principal().getString("access_token")))
+                        val login = RetrofitGithubClient.login(user.principal().getString("access_token"))
+                        val tockUser = TockUser(login, login, TockUserRole.values().map { r -> r.name }.toSet())
+                        try {
+                            injector.provide<TockUserListener>().registerUser(tockUser)
+                        } catch (e: Exception) {
+                            logger.error(e)
+                        }
+                        it.setUser(tockUser)
                         it.next()
                     }
                 } else {
@@ -89,10 +96,5 @@ internal class GithubOAuthProvider(
 
     private fun callbackPath(verticle: WebVerticle): String = "${verticle.basePath}/callback"
 
-    override fun toTockUser(context: RoutingContext): TockUser {
-        val user = context.user()
-        val login = user.principal().getString("login")
-        return TockUser(login, login, TockUserRole.values().map { r -> r.name }.toSet())
-    }
 }
 

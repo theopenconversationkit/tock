@@ -53,19 +53,15 @@ import ai.tock.nlp.front.shared.config.EntityTypeDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.monitoring.UserActionLog
 import ai.tock.nlp.front.shared.monitoring.UserActionLogQuery
+import ai.tock.nlp.front.shared.user.UserNamespace
 import ai.tock.shared.BUILTIN_ENTITY_EVALUATOR_NAMESPACE
 import ai.tock.shared.Executor
-import ai.tock.shared.defaultNamespace
 import ai.tock.shared.devEnvironment
 import ai.tock.shared.error
 import ai.tock.shared.injector
-import ai.tock.shared.jackson.mapper
 import ai.tock.shared.name
 import ai.tock.shared.namespace
-import ai.tock.shared.property
 import ai.tock.shared.provide
-import ai.tock.shared.security.TockUser
-import ai.tock.shared.security.TockUserRole
 import ai.tock.shared.security.TockUserRole.admin
 import ai.tock.shared.security.TockUserRole.nlpUser
 import ai.tock.shared.security.TockUserRole.technicalAdmin
@@ -117,7 +113,7 @@ open class AdminVerticle : WebVerticle() {
                     val log = UserActionLog(
                         context.organization,
                         applicationIdProvider.invoke(context, data as? T),
-                        context.user!!.user,
+                        context.userLogin,
                         actionType,
                         dataProvider(context) ?: data,
                         error
@@ -901,20 +897,65 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        if (devEnvironment) {
-            router.get("/rest/user").handler {
-                it.response().end(
-                    mapper.writeValueAsString(
-                        TockUser(
-                            property("tock_user", "admin@app.com"),
-                            defaultNamespace,
-                            TockUserRole.values().map { r -> r.name }.toSet()
-                        )
-                    )
-                )
+        blockingJsonGet("/namespaces") {
+            front.getNamespaces(it.userLogin)
+        }
+
+        blockingJsonGet("/namespaces/:namespace") { context ->
+            val n = context.path("namespace")
+            if (front.isNamespaceOwner(context.userLogin, n)) {
+                front.getUsers(n)
+            } else {
+                unauthorized()
             }
         }
 
+        blockingJsonPost(
+            "/namespace",
+            admin,
+            simpleLogger("Add or Update Namespace for User")
+        )
+        { context, namespace: UserNamespace ->
+            //get the namespace of the current user
+            if (front.isNamespaceOwner(context.userLogin, namespace.namespace)) {
+                front.saveNamespace(namespace)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingPost(
+            "/namespace/select/:namespace",
+            admin
+        )
+        { context ->
+            val n = context.path("namespace")
+            if (front.hasNamespace(context.userLogin, n)) {
+                front.setCurrentNamespace(context.userLogin, n)
+                context.user?.namespace = n
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingDelete(
+            "/namespace/:user/:namespace",
+            logger = simpleLogger(
+                "Remove Namespace from User",
+                {
+                    it.path("user") to it.path("namespace")
+                }
+            )
+        )
+        { context ->
+            val user = context.path("user")
+            val namespace = context.path("namespace")
+            if (front.isNamespaceOwner(context.userLogin, namespace)) {
+                front.deleteNamespace(user, namespace)
+            } else {
+                unauthorized()
+            }
+        }
     }
 
     fun configureStaticHandling() {

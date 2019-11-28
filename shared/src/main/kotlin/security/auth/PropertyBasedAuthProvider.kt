@@ -16,12 +16,16 @@
 
 package ai.tock.shared.security.auth
 
-import com.fasterxml.jackson.module.kotlin.readValue
+import ai.tock.shared.Executor
 import ai.tock.shared.defaultNamespace
+import ai.tock.shared.error
+import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.listProperty
 import ai.tock.shared.property
+import ai.tock.shared.provide
 import ai.tock.shared.security.TockUser
+import ai.tock.shared.security.TockUserListener
 import ai.tock.shared.security.TockUserRole
 import ai.tock.shared.security.TockUserRole.admin
 import ai.tock.shared.security.TockUserRole.botUser
@@ -30,6 +34,7 @@ import ai.tock.shared.security.TockUserRole.technicalAdmin
 import ai.tock.shared.security.TockUserRole.values
 import ai.tock.shared.security.auth.PropertyBasedAuthProvider.authenticate
 import ai.tock.shared.vertx.WebVerticle
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.vertx.core.AsyncResult
 import io.vertx.core.Future
 import io.vertx.core.Handler
@@ -39,11 +44,14 @@ import io.vertx.ext.auth.User
 import io.vertx.ext.web.handler.AuthHandler
 import io.vertx.ext.web.handler.BasicAuthHandler
 import io.vertx.ext.web.handler.SessionHandler
+import mu.KotlinLogging
 
 /**
  * Simple [AuthProvider] used in dev mode.
  */
 internal object PropertyBasedAuthProvider : TockAuthProvider {
+
+    private val logger = KotlinLogging.logger {}
 
     private data class AuthenticateRequest(val email: String, val password: String)
 
@@ -61,6 +69,8 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
     private val organizations: List<String> = listProperty("tock_organizations", listOf(defaultNamespace))
     private val roles: List<Set<String>> = listProperty("tock_roles", emptyList()).map { it.split("|").toSet() }
 
+    private val executor: Executor get() = injector.provide()
+
     override fun protectPaths(
         verticle: WebVerticle,
         pathsToProtect: Set<String>,
@@ -69,10 +79,9 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
         val authHandler = BasicAuthHandler.create(this)
         with(verticle) {
             val excluded = excludedPaths(verticle)
-            (pathsToProtect + logoutPath + authenticatePath).forEach { protectedPath ->
+            (pathsToProtect + logoutPath + authenticatePath + "$basePath/user").forEach { protectedPath ->
                 router.route(protectedPath).handler(WithExcludedPathHandler(excluded, sessionHandler))
             }
-
             pathsToProtect.forEach { protectedPath ->
                 router.route(protectedPath).handler(WithExcludedPathHandler(excluded, authHandler))
             }
@@ -111,6 +120,12 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
                 }
             }
 
+            router.get("$basePath/user").handler {
+                toTockUser(it)?.let { u ->
+                    it.response().end(mapper.writeValueAsString(u))
+                } ?: it.response().setStatusCode(401).end()
+            }
+
             router.post(logoutPath).handler {
                 it.clearUser()
                 it.success()
@@ -123,21 +138,27 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
     override fun authenticate(authInfo: JsonObject, resultHandler: Handler<AsyncResult<User>>) {
         val username = authInfo.getString("username")
         val password = authInfo.getString("password")
-        resultHandler.handle(
-            users
-                .indexOfFirst { it == username }
-                .takeIf { it != -1 }
-                ?.takeIf { passwords[it] == password }
-                ?.let {
-                    Future.succeededFuture<User>(
-                        TockUser(
-                            username,
-                            organizations[it],
-                            roles.getOrNull(it)?.takeIf { r -> r.size > 1 || r.firstOrNull()?.isBlank() == false }
-                                ?: allRoles))
+        users
+            .indexOfFirst { it == username }
+            .takeIf { it != -1 }
+            ?.takeIf { passwords[it] == password }
+            ?.also { index ->
+                executor.executeBlocking {
+                    val tockUser = TockUser(
+                        username,
+                        organizations[index],
+                        roles.getOrNull(index)?.takeIf { r -> r.size > 1 || r.firstOrNull()?.isBlank() == false }
+                            ?: allRoles
+                    )
+                    try {
+                        injector.provide<TockUserListener>().registerUser(tockUser)
+                    } catch (e: Exception) {
+                        logger.error(e)
+                    }
+                    resultHandler.handle(Future.succeededFuture(tockUser))
                 }
-                ?: Future.failedFuture<User>("invalid credentials")
-        )
+            }
+            ?: Future.failedFuture<User>("invalid credentials")
     }
 
 

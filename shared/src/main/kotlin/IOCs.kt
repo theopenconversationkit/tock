@@ -16,6 +16,13 @@
 
 package ai.tock.shared
 
+import ai.tock.shared.cache.TockCache
+import ai.tock.shared.cache.mongo.MongoCache
+import ai.tock.shared.security.NoOpTockUserListener
+import ai.tock.shared.security.TockUserListener
+import ai.tock.shared.vertx.TockVertxProvider
+import ai.tock.shared.vertx.VertxProvider
+import ai.tock.shared.vertx.vertxExecutor
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
@@ -23,11 +30,6 @@ import com.github.salomonbrys.kodein.provider
 import com.github.salomonbrys.kodein.providerOrNull
 import com.github.salomonbrys.kodein.singleton
 import com.mongodb.MongoClient
-import ai.tock.shared.cache.TockCache
-import ai.tock.shared.cache.mongo.MongoCache
-import ai.tock.shared.vertx.TockVertxProvider
-import ai.tock.shared.vertx.VertxProvider
-import ai.tock.shared.vertx.vertxExecutor
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
@@ -67,6 +69,7 @@ val sharedModule = Kodein.Module {
     bind<Executor>() with provider { vertxExecutor() }
     bind<TockCache>() with provider { MongoCache }
     bind<VertxProvider>() with provider { TockVertxProvider }
+    bind<TockUserListener>() with provider { NoOpTockUserListener }
     try {
         bind<MongoClient>() with singleton { mongoClient }
     } catch (e: Exception) {

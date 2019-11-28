@@ -31,37 +31,59 @@ import {
   NbButtonModule,
   NbCardModule,
   NbCheckboxModule,
-  NbRadioModule,
+  NbRadioModule, NbRouteTabsetModule,
   NbSelectModule,
-  NbSpinnerModule,
+  NbSpinnerModule, NbTabsetModule,
   NbTooltipModule
 } from "@nebular/theme";
 import {DisplayUserDataComponent, UserLogsComponent} from "./user/user-logs.component";
 import {MomentModule} from "ngx-moment";
+import {ConfigurationTabsComponent} from "./configuration-tabs.component";
+import {NamespacesComponent} from "./namespace/namespaces.component";
 
 const routes: Routes = [
   {
     path: '',
     canActivate: [AuthGuard],
+    component: ConfigurationTabsComponent,
     resolve: {
       applications: ApplicationsResolver
     },
     children: [
       {
         path: '',
-        component: ApplicationsComponent
+        component: ApplicationsComponent,
+        resolve: {
+          application: ApplicationsResolver
+        }
       },
       {
-        path: 'edit/:id',
-        component: ApplicationComponent
-      },
-      {
-        path: 'create',
-        component: ApplicationComponent
+        path: 'nlu',
+        children: [
+          {
+            path: '',
+            component: ApplicationsComponent
+          },
+          {
+            path: 'edit/:id',
+            component: ApplicationComponent
+          },
+          {
+            path: 'create',
+            component: ApplicationComponent
+          }
+        ],
+        resolve: {
+          application: ApplicationsResolver
+        }
       },
       {
         path: 'users/logs',
         component: UserLogsComponent
+      },
+      {
+        path: 'namespaces',
+        component: NamespacesComponent
       }]
   }
 ];
@@ -79,6 +101,9 @@ export class ApplicationsRoutingModule {
     SharedModule,
     MomentModule,
     ApplicationsRoutingModule,
+    NbTabsetModule,
+    NbCardModule,
+    NbRouteTabsetModule,
     FileUploadModule,
     NbCardModule,
     NbActionsModule,
@@ -96,7 +121,9 @@ export class ApplicationsRoutingModule {
     ApplicationAdvancedOptionsComponent,
     ApplicationUploadComponent,
     UserLogsComponent,
-    DisplayUserDataComponent
+    DisplayUserDataComponent,
+    ConfigurationTabsComponent,
+    NamespacesComponent
   ],
   providers: [
     ApplicationsResolver

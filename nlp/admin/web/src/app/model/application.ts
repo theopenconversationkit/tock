@@ -282,3 +282,24 @@ export class UserLogQueryResult {
   }
 
 }
+
+export class UserNamespace {
+
+  constructor(public namespace: string,
+              public login: string,
+              public owner: boolean,
+              public current: boolean) {
+  }
+
+  static fromJSON(json?: any): UserNamespace {
+    const value = Object.create(UserNamespace.prototype);
+
+    const result = Object.assign(value, json, {});
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): UserNamespace[] {
+    return json ? json.map(UserNamespace.fromJSON) : [];
+  }
+}

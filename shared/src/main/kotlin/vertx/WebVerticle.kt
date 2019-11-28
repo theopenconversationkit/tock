@@ -16,9 +16,6 @@
 
 package ai.tock.shared.vertx
 
-import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
-import com.fasterxml.jackson.module.kotlin.readValue
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.devEnvironment
 import ai.tock.shared.error
@@ -32,6 +29,9 @@ import ai.tock.shared.security.auth.AWSJWTAuthProvider
 import ai.tock.shared.security.auth.GithubOAuthProvider
 import ai.tock.shared.security.auth.PropertyBasedAuthProvider
 import ai.tock.shared.security.auth.TockAuthProvider
+import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.AsyncResult
 import io.vertx.core.Future
@@ -416,7 +416,7 @@ abstract class WebVerticle : AbstractVerticle() {
         }
     }
 
-     inline fun <reified I : Any, O> blockingJsonPost(
+    inline fun <reified I : Any, O> blockingJsonPost(
         path: String,
         role: TockUserRole? = defaultRole(),
         logger: RequestLogger = defaultRequestLogger,
@@ -615,6 +615,9 @@ abstract class WebVerticle : AbstractVerticle() {
 
     val RoutingContext.user: TockUser?
         get() = cachedAuthProvider?.toTockUser(this)
+
+    val RoutingContext.userLogin: String
+        get() = user?.user ?: error("no user in session")
 
     fun HttpServerResponse.endJson(result: Any?) {
         if (result == null) {

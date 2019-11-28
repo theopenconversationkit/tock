@@ -40,7 +40,6 @@ import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.bot.mongo.BotApplicationConfigurationMongoDAO.getApplicationIds
 import ai.tock.bot.mongo.ClientIdCol_.Companion.UserIds
 import ai.tock.bot.mongo.DialogCol_.Companion.GroupId
-import ai.tock.bot.mongo.DialogCol_.Companion.Namespace
 import ai.tock.bot.mongo.DialogCol_.Companion.PlayerIds
 import ai.tock.bot.mongo.DialogCol_.Companion.Stories
 import ai.tock.bot.mongo.DialogCol_.Companion._id
@@ -51,6 +50,8 @@ import ai.tock.bot.mongo.MongoBotConfiguration.database
 import ai.tock.bot.mongo.NlpStatsCol_.Companion.AppNamespace
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.ApplicationIds
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.LastUpdateDate
+import ai.tock.bot.mongo.UserTimelineCol_.Companion.Namespace
+import ai.tock.bot.mongo.UserTimelineCol_.Companion.PlayerId
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.TemporaryIds
 import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
@@ -136,7 +137,11 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         try {
             val ttlIndexOptions = IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS)
 
-            userTimelineCol.ensureUniqueIndex(UserTimelineCol_.PlayerId.id)
+            if (addNamespaceToTimelineId) {
+                userTimelineCol.ensureUniqueIndex(PlayerId.id, Namespace)
+            } else {
+                userTimelineCol.ensureUniqueIndex(PlayerId.id)
+            }
 
             userTimelineCol.ensureIndex(LastUpdateDate)
             userTimelineCol.ensureIndex(TemporaryIds)
@@ -290,7 +295,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
 
     override fun updatePlayerId(namespace: String, oldPlayerId: PlayerId, newPlayerId: PlayerId) {
         val timelineId = timelineId(oldPlayerId.id, namespace)
-        userTimelineCol.updateOneById(timelineId, setValue(UserTimelineCol_.PlayerId, newPlayerId))
+        userTimelineCol.updateOneById(timelineId, setValue(PlayerId, newPlayerId))
         dialogCol.updateMany(
             and(
                 Namespace eq namespace,
@@ -407,7 +412,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
 
     override fun remove(namespace: String, playerId: PlayerId) {
         dialogCol.deleteMany(and(PlayerIds.id eq playerId.id, Namespace eq namespace))
-        userTimelineCol.deleteOne(and(UserTimelineCol_.PlayerId.id eq playerId.id, Namespace eq namespace))
+        userTimelineCol.deleteOne(and(PlayerId.id eq playerId.id, Namespace eq namespace))
         MongoUserLock.deleteLock(playerId.id)
     }
 

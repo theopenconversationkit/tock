@@ -29,8 +29,12 @@ import io.vertx.ext.auth.User
  */
 data class TockUser(
     val user: UserLogin,
-    val namespace: String,
-    val roles: Set<String>
+    @Volatile
+    var namespace: String,
+    @Volatile
+    var roles: Set<String>,
+    @Volatile
+    var registered: Boolean = false
 ) : AbstractUser() {
 
     override fun doIsPermitted(permissionOrRole: String, handler: Handler<AsyncResult<Boolean>>) {

@@ -16,10 +16,6 @@
 
 package ai.tock.nlp.front.storage.mongo
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.provider
-import com.mongodb.client.MongoDatabase
 import ai.tock.nlp.front.service.storage.ApplicationDefinitionDAO
 import ai.tock.nlp.front.service.storage.ClassifiedSentenceDAO
 import ai.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
@@ -28,8 +24,13 @@ import ai.tock.nlp.front.service.storage.ModelBuildTriggerDAO
 import ai.tock.nlp.front.service.storage.ParseRequestLogDAO
 import ai.tock.nlp.front.service.storage.TestModelDAO
 import ai.tock.nlp.front.service.storage.UserActionLogDAO
+import ai.tock.nlp.front.service.storage.UserNamespaceDAO
 import ai.tock.shared.getAsyncDatabase
 import ai.tock.shared.getDatabase
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
+import com.mongodb.client.MongoDatabase
 
 internal const val MONGO_DATABASE: String = "tock_front_mongo_db"
 
@@ -44,5 +45,6 @@ val frontMongoModule = Kodein.Module {
     bind<ParseRequestLogDAO>() with provider { ParseRequestLogMongoDAO }
     bind<TestModelDAO>() with provider { TestModelMongoDAO }
     bind<UserActionLogDAO>() with provider { UserActionLogMongoDAO }
+    bind<UserNamespaceDAO>() with provider { UserNamespaceMongoDAO }
 }
 

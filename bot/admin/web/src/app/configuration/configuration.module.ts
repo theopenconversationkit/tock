@@ -41,6 +41,7 @@ import {
 import {NewBotComponent} from "./bot/new-bot.component";
 import {ReactiveFormsModule} from "@angular/forms";
 import {UserLogsComponent} from "../applications/user/user-logs.component";
+import {NamespacesComponent} from "../applications/namespace/namespaces.component";
 
 const routes: Routes = [
   {
@@ -95,6 +96,10 @@ const routes: Routes = [
       {
         path: 'users/logs',
         component: UserLogsComponent
+      },
+      {
+        path: 'namespaces',
+        component: NamespacesComponent
       }
     ]
   }
@@ -112,7 +117,7 @@ export class BotConfigurationRoutingModule {
     ConfigurationTabsComponent,
     BotConfigurationsComponent,
     BotConfigurationComponent,
-    NewBotComponent
+    NewBotComponent,
   ],
   imports: [
     CommonModule,

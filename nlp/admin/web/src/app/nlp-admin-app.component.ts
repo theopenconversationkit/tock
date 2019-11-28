@@ -59,7 +59,7 @@ export class NlpAdminAppComponent implements OnInit, OnDestroy {
       {
         title: 'Configuration',
         icon: 'settings-outline',
-        link: '/applications',
+        link: '/applications/nlu',
         hidden: this.state.hasRole(UserRole.admin)
       },
       {

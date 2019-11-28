@@ -52,7 +52,7 @@ object BotIoc {
     fun setup(modules: List<Module>) {
         logger.debug { "Start bot injection" }
         injector.inject(Kodein {
-            coreModules.forEach { import(it) }
+            coreModules.forEach { import(it, allowOverride = true) }
 
             //load additional modules
             modules.forEach {
