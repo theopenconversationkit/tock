@@ -69,10 +69,6 @@ internal class Bot(
     ): Double {
         connector as TockConnectorController
 
-        if (action.state.targetConnectorType == null) {
-            action.state.targetConnectorType = connector.connectorType
-        }
-
         loadProfileIfNotSet(connectorData, action, userTimeline, connector)
 
         val dialog = getDialog(action, userTimeline)
@@ -96,10 +92,6 @@ internal class Bot(
         connectorData: ConnectorData
     ) {
         connector as TockConnectorController
-
-        if (action.state.targetConnectorType == null) {
-            action.state.targetConnectorType = connector.connectorType
-        }
 
         loadProfileIfNotSet(connectorData, action, userTimeline, connector)
 

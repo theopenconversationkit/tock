@@ -96,6 +96,9 @@ internal class TockConnectorController constructor(
     fun getBaseUrl(): String = configuration.getBaseUrl()
 
     override fun handle(event: Event, data: ConnectorData) {
+        if (event.state.targetConnectorType == null) {
+            event.state.targetConnectorType = connector.connectorType
+        }
         val callback = data.callback
         try {
             if (!botDefinition.eventListener.listenEvent(this, data, event)) {
@@ -180,6 +183,9 @@ internal class TockConnectorController constructor(
     }
 
     override fun support(action: Action, data: ConnectorData): Double {
+        if (action.state.targetConnectorType == null) {
+            action.state.targetConnectorType = connector.connectorType
+        }
         val callback = data.callback
         return try {
             val userTimeline =

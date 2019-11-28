@@ -24,7 +24,7 @@ class SimpleBotDefinition(
         namespace: String,
         stories: List<StoryDefinition>,
         nlpModelName: String = botId,
-        unknownStory: StoryDefinition = BotDefinitionBase.defaultUnknownStory,
+        unknownStory: StoryDefinition = defaultUnknownStory,
         helloStory: StoryDefinition? = null,
         goodbyeStory: StoryDefinition? = null,
         noInputStory: StoryDefinition? = null,
@@ -33,7 +33,7 @@ class SimpleBotDefinition(
         userLocationStory: StoryDefinition? = null,
         handleAttachmentStory: StoryDefinition? = null,
         eventListener: EventListener = EventListenerBase(),
-        keywordStory: StoryDefinition = BotDefinitionBase.defaultKeywordStory,
+        keywordStory: StoryDefinition = defaultKeywordStory,
         conversation: DialogFlowDefinition? = null
 ) :
         BotDefinitionBase(
