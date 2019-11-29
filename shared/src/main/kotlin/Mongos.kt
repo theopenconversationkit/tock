@@ -39,6 +39,7 @@ import com.mongodb.connection.netty.NettyStreamFactoryFactory
 import com.mongodb.reactivestreams.client.MongoCollection
 import de.undercouch.bson4jackson.types.Decimal128
 import mu.KotlinLogging
+import org.bson.Document
 import org.litote.kmongo.KMongo
 import org.litote.kmongo.id.IdGenerator
 import org.litote.kmongo.id.ObjectIdToStringGenerator
@@ -46,6 +47,7 @@ import org.litote.kmongo.reactivestreams.watchIndefinitely
 import org.litote.kmongo.util.CollectionNameFormatter
 import org.litote.kmongo.util.KMongoConfiguration
 import org.litote.kmongo.util.KMongoConfiguration.registerBsonModule
+import org.litote.kmongo.runCommand
 import java.time.Duration
 import java.time.Period
 import java.time.ZoneId
@@ -179,4 +181,9 @@ inline fun <reified T : Any> MongoCollection<T>.watch(
         reopenListener = { (KotlinLogging.logger {}).warn { "Reopen stream" } },
         listener = listener
     )
+}
+
+fun pingMongoDatabase(database: MongoDatabase): Boolean {
+    val result = database.runCommand<Document>("{ ping: 1 }")
+    return result!!.get("ok") == 1.0
 }
