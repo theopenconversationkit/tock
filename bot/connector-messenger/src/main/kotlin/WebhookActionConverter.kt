@@ -66,24 +66,8 @@ internal object WebhookActionConverter {
                         } else {
                             quickReply
                                 ?.payload
-                                ?.let { SendChoice.decodeChoiceId(it) }
-                                ?.let { (intentName, parameters) ->
-                                    if (parameters.containsKey(SendChoice.NLP)) {
-                                        SendSentence(
-                                            message.playerId(PlayerType.user),
-                                            applicationId,
-                                            message.recipientId(PlayerType.bot),
-                                            parameters[SendChoice.NLP]
-                                        )
-                                    } else {
-                                        SendChoice(
-                                            message.playerId(PlayerType.user),
-                                            applicationId,
-                                            message.recipientId(PlayerType.bot),
-                                            intentName,
-                                            parameters
-                                        )
-                                    }
+                                ?.let { payload ->
+                                    SendChoice.decodeChoice(payload, message.playerId(PlayerType.user), applicationId, message.recipientId(PlayerType.bot))
                                 }
                         }
                     } else {
@@ -103,16 +87,9 @@ internal object WebhookActionConverter {
                     }
                 }
             is PostbackWebhook ->
-                message.postback.payload?.let { payload -> SendChoice.decodeChoiceId(payload) }
-                    ?.let { (intentName, parameters) ->
-                        SendChoice(
-                            message.playerId(PlayerType.user),
-                            applicationId,
-                            message.recipientId(PlayerType.bot),
-                            intentName,
-                            parameters
-                        )
-                    }
+                message.postback.payload?.let { payload ->
+                    SendChoice.decodeChoice(payload, message.playerId(PlayerType.user), applicationId, message.recipientId(PlayerType.bot))
+                }
             is OptinWebhook ->
                 SubscribingEvent(
                     message.playerId(PlayerType.user),

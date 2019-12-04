@@ -15,20 +15,19 @@
  */
 package ai.tock.bot.connector.twitter.model.incoming
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.connector.twitter.model.Application
 import ai.tock.bot.connector.twitter.model.DirectMessage
 import ai.tock.bot.connector.twitter.model.OptionsResponse
 import ai.tock.bot.connector.twitter.model.User
 import ai.tock.bot.engine.action.ActionMetadata
 import ai.tock.bot.engine.action.ActionVisibility
-import ai.tock.bot.engine.action.Metadata.VISIBILITY
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.ContinuePublicConversationInPrivateEvent
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
+import com.fasterxml.jackson.annotation.JsonProperty
 import mu.KotlinLogging
 
 /**
@@ -65,27 +64,14 @@ data class DirectMessageIncomingEvent(
                 return if (quickReplyResponse != null) {
                     when (quickReplyResponse) {
                         is OptionsResponse -> {
-                            SendChoice.decodeChoiceId(quickReplyResponse.metadata)
-                                .let { (intentName, parameters) ->
-                                    if (parameters.containsKey(SendChoice.NLP)) {
-                                        SendSentence(
-                                            playerId(PlayerType.user),
-                                            applicationId,
-                                            recipientId(PlayerType.bot),
-                                            parameters[SendChoice.NLP],
-                                            metadata = ActionMetadata(visibility = ActionVisibility.PRIVATE)
-                                        )
-                                    } else {
-                                        SendChoice(
-                                            playerId(PlayerType.user),
-                                            applicationId,
-                                            recipientId(PlayerType.bot),
-                                            intentName,
-                                            parameters,
-                                            metadata = ActionMetadata(visibility = ActionVisibility.PRIVATE)
-                                        )
-                                    }
-                                }
+                            SendChoice.decodeChoice(
+                                quickReplyResponse.metadata,
+                                playerId(PlayerType.user),
+                                applicationId,
+                                recipientId(PlayerType.bot)
+                            ).apply {
+                                metadata.visibility = ActionVisibility.PRIVATE
+                            }
                         }
                         else -> {
                             logger.debug { "unknown quick reply response type $this" }
@@ -93,7 +79,7 @@ data class DirectMessageIncomingEvent(
                         }
                     }
                 } else {
-                    if(it.isQuote()) {
+                    if (it.isQuote()) {
                         ContinuePublicConversationInPrivateEvent(playerId(PlayerType.user), recipientId(PlayerType.bot), applicationId)
                     } else {
                         SendSentence(
