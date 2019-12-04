@@ -1,0 +1,129 @@
+openapi: 3.0.0
+info:
+  description: "Swagger for the Web connector of the solution TOCK (The Open Conversation Kit). Github : https://github.com/theopenconversationkit"
+  version: "1.0.0"
+  title: "Swagger Web Connector TOCK"
+servers:
+  - url: "http://simon-postman.apps.had-prod-pcy.enedis.fr/io/app/bot_open_data"
+paths:
+  /web:
+    post:
+      summary: "Send query to the bot"
+      description: ""
+      parameters:
+      - in: "query"
+        name: "body"
+        description: "Query to be sent with user ID"
+        required: true
+        schema:
+          $ref: "#/components/schemas/Query"
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Text_Response"
+                  - $ref: "#/components/schemas/Card"
+                  - $ref: "#/components/schemas/Carousel"
+              example:
+                responses:
+                        - text: 'Welcome to the Chatbot :)'
+                        - text: 'Hey!'
+                          buttons:
+                            - title: 'Help on Topic 1'
+                              payload: 'help1?_previous_intent=greetings'
+                            - title: 'Help on Topic 2'
+                              payload: 'help2?_previous_intent=greetings'
+                      
+        500:
+          description: "Internal Server Error"
+          
+          
+components:
+  schemas:
+    Query:
+      type: "object"
+      properties:
+        query:
+          type: "string"
+          example: "Hello!"
+        userId:
+          type: "string"
+          example: "ID_00001"
+  
+    Text_Response:
+      type: "object"
+      properties:
+        responses:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Text"
+  
+    Text:
+      type: "object"
+      required: ["text"]
+      properties:
+        text:
+          type: "string"
+          example: "Welcome to the Chatbot :)"
+        buttons:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Button"
+        
+    Button:
+      type: "object"
+      properties:
+        title:
+          type: "string"
+          example: "Help me on Topic 1"
+        payload:
+          type: "string"
+          example: "helpTopic1?_previous_intent=greetings"
+  
+    Carousel:
+      type: "object"
+      properties:
+        cards:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Card"
+            
+    Card:
+      type: "object"
+      properties:
+        title:
+          type: "string"
+          example: "Title"
+        subTitle:
+          type: "string"
+          example: "subTitle"
+        file:
+          type: "object"
+          properties:
+            url: 
+              type: "string"
+              example: "http://url1.fr/image1.jpg"
+            name:
+              type: "string"
+              example: "name"
+            type:
+              type: "string"
+              example: "image"
+        actions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Actions"
+  
+    Actions:
+      type: "object"
+      properties:
+        title:
+          type: "string"
+          example: "Action1"
+
+externalDocs:
+  description: "TOCK Documentation"
+  url: "https://doc.tock.ai/fr/"
