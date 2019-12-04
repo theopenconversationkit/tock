@@ -123,6 +123,10 @@ response:
 }
 ```
 
+# Swagger
+
+A simple [Swagger descriptor](./Swagger_TOCKWebConnector.yaml) of the rest service is provided¬.
+
 # React chat widget
 
 Please consult the related [documentation](https://github.com/theopenconversationkit/tock-react-kit).
