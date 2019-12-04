@@ -230,7 +230,7 @@ class SendChoice(
              */
             sourceAppId: String? = null
         ): String {
-            val currentStep = if (step == null) busStep else step
+            val currentStep = step ?: busStep
             return StringBuilder().apply {
                 append(intent.wrappedIntent().name)
                 val params = parameters +
@@ -259,13 +259,36 @@ class SendChoice(
             } else {
                 id.substring(0, questionMarkIndex) to id.substring(questionMarkIndex + 1)
                     .split("&")
-                    .map {
-                        it.split("=")
+                    .map { s ->
+                        s.split("=")
                             .let { decode(it[0], UTF_8.name()) to decode(it[1], UTF_8.name()) }
                     }.toMap()
             }
         }
 
+        /**
+         * Decodes an id and returns an action.
+         */
+        fun decodeChoice(id: String, senderId: PlayerId, applicationId: String, recipientId: PlayerId): Action =
+            decodeChoiceId(id)
+                .let { (intentName, parameters) ->
+                    if (parameters.containsKey(NLP)) {
+                        SendSentence(
+                            senderId,
+                            applicationId,
+                            recipientId,
+                            parameters[NLP]
+                        )
+                    } else {
+                        SendChoice(
+                            senderId,
+                            applicationId,
+                            recipientId,
+                            intentName,
+                            parameters
+                        )
+                    }
+                }
     }
 
     override fun toMessage(): Message {
