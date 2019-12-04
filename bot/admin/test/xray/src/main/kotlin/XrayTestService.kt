@@ -39,6 +39,10 @@ class XrayTestService : TestService by testCoreService {
                     configuration.testedBotId
             ).execute(context.organization)
         }
+
+        blockingJsonGet("/xray/test/plans", botUser) { context ->
+            XrayService().getTestPlans()
+        }
     }
 
     override fun priority(): Int = 1

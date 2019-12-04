@@ -26,6 +26,7 @@ import ai.tock.bot.admin.test.TestPlanExecutionStatus
 import ai.tock.bot.admin.test.TestPlanService.saveTestPlanExecution
 import ai.tock.bot.admin.test.findTestClient
 import ai.tock.bot.admin.test.xray.XrayClient.getProjectFromIssue
+import ai.tock.bot.admin.test.xray.XrayClient.getProjectTestPlans
 import ai.tock.bot.admin.test.xray.model.JiraIssueType
 import ai.tock.bot.admin.test.xray.model.JiraTest
 import ai.tock.bot.admin.test.xray.model.XrayAttachment
@@ -42,6 +43,7 @@ import ai.tock.bot.admin.test.xray.model.XrayTestExecutionCreation
 import ai.tock.bot.admin.test.xray.model.XrayTestExecutionInfo
 import ai.tock.bot.admin.test.xray.model.XrayTestExecutionReport
 import ai.tock.bot.admin.test.xray.model.XrayTestExecutionStepReport
+import ai.tock.bot.admin.test.xray.model.XrayTestPlan
 import ai.tock.bot.admin.test.xray.model.XrayTextExecutionFields
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.message.parser.MessageParser
@@ -102,6 +104,8 @@ class XrayService(
     init {
         XrayConfiguration.configure()
     }
+
+    fun getTestPlans(): List<XrayTestPlan> = getProjectTestPlans(jiraProject)
 
     fun execute(namespace: String): XRayPlanExecutionResult {
         return when {

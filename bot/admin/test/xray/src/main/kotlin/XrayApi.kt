@@ -20,10 +20,12 @@ import ai.tock.bot.admin.test.xray.model.JiraAttachment
 import ai.tock.bot.admin.test.xray.model.JiraIssue
 import ai.tock.bot.admin.test.xray.model.JiraIssueLink
 import ai.tock.bot.admin.test.xray.model.JiraTest
+import ai.tock.bot.admin.test.xray.model.SearchResult
 import ai.tock.bot.admin.test.xray.model.XrayBuildTestStep
 import ai.tock.bot.admin.test.xray.model.XrayTest
 import ai.tock.bot.admin.test.xray.model.XrayTestExecution
 import ai.tock.bot.admin.test.xray.model.XrayTestExecutionCreation
+import ai.tock.bot.admin.test.xray.model.XrayTestPlan
 import ai.tock.bot.admin.test.xray.model.XrayTestStep
 import ai.tock.bot.admin.test.xray.model.XrayUpdateTest
 import okhttp3.MultipartBody
@@ -93,4 +95,7 @@ interface XrayApi {
 
     @GET("/rest/api/2/search")
     fun searchIssue(@Query("jql") jql: String): Call<ResponseBody>
+
+    @GET("/rest/api/2/search")
+    fun searchTestPlans(@Query("jql") jql: String, @Query("fields") fields: List<String>): Call<SearchResult>
 }

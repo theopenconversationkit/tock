@@ -18,13 +18,14 @@ import {Component, Inject, OnDestroy, OnInit} from "@angular/core";
 import {TestService} from "../test.service";
 import {StateService} from "../../core-nlp/state.service";
 import {RestService} from "../../core-nlp/rest/rest.service";
-import {BotDialogRequest, TestMessage} from "../model/test";
+import {BotDialogRequest, TestMessage, XRayTestPlan} from "../model/test";
 import {BotMessage, Sentence} from "../../shared/model/dialog-data";
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef, MatSnackBar} from "@angular/material";
 import {BotSharedService} from "../../shared/bot-shared.service";
 import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
 import {randomString} from "../../model/commons";
 import {Subscription} from "rxjs";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef, MatSnackBar} from "@angular/material";
+import {SentenceFilter} from "../../sentences-scroll/sentences-scroll.component";
 
 @Component({
   selector: 'tock-bot-dialog',
@@ -32,22 +33,33 @@ import {Subscription} from "rxjs";
   styleUrls: ['./bot-dialog.component.css']
 })
 export class BotDialogComponent implements OnInit, OnDestroy {
-
   currentConfigurationId: string;
 
   userMessage: string = "";
   messages: TestMessage[] = [];
 
+  xrayAvailable: boolean = false;
+  xrayTestName: string = "";
+  isXrayTestNameFilled: boolean = false;
+  jiraIdentifier: string = "";
+  xrayTestPlans: XRayTestPlan[];
+  selectTestPlans: string[];
+  filter: SentenceFilter = new SentenceFilter();
+
+  xrayTestIdentifier: string = "";
+  isXrayTestIdentifierFilled: boolean = false;
+
   loading: boolean;
-  private userModifierId:string = randomString();
+  private userModifierId: string = randomString();
 
   private errorUnsuscriber: any;
   private subscription: Subscription;
+  private testContext = false;
 
   constructor(public state: StateService,
               private test: TestService,
               private rest: RestService,
-              private shared:BotSharedService,
+              private shared: BotSharedService,
               private snackBar: MatSnackBar,
               private dialog: MatDialog) {
   }
@@ -57,6 +69,20 @@ export class BotDialogComponent implements OnInit, OnDestroy {
       this.loading = false
     );
     this.subscription = this.state.configurationChange.subscribe(_ => this.clear());
+    this.fillTestPlanFilter()
+  }
+
+  private fillTestPlanFilter() {
+    this.shared.getConfiguration().subscribe(r => {
+        this.xrayAvailable = r.xrayAvailable;
+        if (r.xrayAvailable) {
+          this.test.getXrayTestPlans().subscribe(testPlans => {
+              this.xrayTestPlans = testPlans
+            }
+          );
+        }
+      }
+    );
   }
 
   changeConfiguration(selectBotEvent: SelectBotEvent) {
@@ -123,14 +149,61 @@ export class BotDialogComponent implements OnInit, OnDestroy {
   clear() {
     this.messages = [];
     this.userModifierId = randomString();
+    this.clearTestControl();
+  }
+
+  clearTestControl() {
+    this.testContext = false;
+    this.xrayTestName = "";
+    this.jiraIdentifier = "";
   }
 
   ngOnDestroy() {
     this.errorUnsuscriber.unsubscribe();
   }
 
-}
+  enableTestContext() {
+    if (this.testContext == false) {
+      this.talk(new Sentence(0, [], "_test_"));
+      this.testContext = true;
 
+    } else {
+      this.clearTestControl()
+      this.talk(new Sentence(0, [], "_end_test_"));
+    }
+  }
+
+  updateSaveButtonStatus($event: any) {
+    this.isXrayTestNameFilled = $event != ""
+  }
+
+  updateUpdateButtonStatus($event: any) {
+    this.isXrayTestIdentifierFilled = $event != "";
+  }
+
+  saveDialogToXray() {
+    let jiraPart: string = this.jiraIdentifier != "" ? ", " + this.jiraIdentifier : "";
+    this.talk(new Sentence(0, [], "_xray_ " + this.xrayTestName + jiraPart));
+  }
+
+  updateDialogXray() {
+    this.talk(new Sentence(0, [], "_xray_update_ " + this.xrayTestIdentifier));
+  }
+
+  printSelectedTestPlans($event: string[] | string) {
+
+  }
+
+  removeXrayTestIdentifier() {
+    this.xrayTestIdentifier = "";
+    this.isXrayTestIdentifierFilled = false;
+  }
+
+  removeXrayTestName() {
+    this.xrayTestName = "";
+    this.isXrayTestNameFilled = false;
+  }
+}
 
 @Component({
   selector: 'tock-display-nlp-stats',

@@ -23,7 +23,7 @@ import {
   TestPlan,
   TestPlanExecution,
   XRayPlanExecutionConfiguration,
-  XRayPlanExecutionResult
+  XRayPlanExecutionResult, XRayTestPlan
 } from "./model/test";
 import {Observable} from "rxjs";
 
@@ -73,6 +73,10 @@ export class TestService {
 
   executeXRay(conf: XRayPlanExecutionConfiguration): Observable<XRayPlanExecutionResult> {
     return this.rest.post(`/xray/execute`, conf, XRayPlanExecutionResult.fromJSON);
+  }
+
+  getXrayTestPlans(): Observable<XRayTestPlan[]> {
+    return this.rest.get(`/xray/test/plans`, XRayTestPlan.fromJSONArray);
   }
 
 }

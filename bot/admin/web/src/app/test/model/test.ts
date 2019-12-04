@@ -255,3 +255,32 @@ export class XRayPlanExecutionResult {
   }
 
 }
+
+export class XRayTestPlan {
+  constructor(public key: string,
+              public fields: XRayField) {
+  }
+  static fromJSON(json?: any): XRayTestPlan {
+    const value = Object.create(XRayTestPlan.prototype);
+
+    const result = Object.assign(value, json, {});
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): XRayTestPlan[] {
+    return json ? json.map(XRayTestPlan.fromJSON) : [];
+  }
+}
+
+export class XRayField {
+  constructor(public summary: string) {
+  }
+  static fromJSON(json?: any): XRayField {
+    const value = Object.create(XRayField.prototype);
+
+    const result = Object.assign(value, json, {});
+
+    return result;
+  }
+}

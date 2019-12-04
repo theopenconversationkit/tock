@@ -29,6 +29,7 @@ import ai.tock.bot.admin.test.xray.model.XrayBuildTestStep
 import ai.tock.bot.admin.test.xray.model.XrayTest
 import ai.tock.bot.admin.test.xray.model.XrayTestExecution
 import ai.tock.bot.admin.test.xray.model.XrayTestExecutionCreation
+import ai.tock.bot.admin.test.xray.model.XrayTestPlan
 import ai.tock.bot.admin.test.xray.model.XrayTestStep
 import ai.tock.bot.admin.test.xray.model.XrayUpdateTest
 import ai.tock.shared.addJacksonConverter
@@ -63,13 +64,13 @@ object XrayClient {
 
     init {
         xray = retrofitBuilderWithTimeoutAndLogger(
-            xrayTimeoutInSeconds,
-            interceptors = listOf(basicAuthInterceptor(xrayLogin, xrayPassword))
+                xrayTimeoutInSeconds,
+                interceptors = listOf(basicAuthInterceptor(xrayLogin, xrayPassword))
         )
-            .addJacksonConverter()
-            .baseUrl(xrayUrl)
-            .build()
-            .create()
+                .addJacksonConverter()
+                .baseUrl(xrayUrl)
+                .build()
+                .create()
     }
 
     /**
@@ -85,16 +86,16 @@ object XrayClient {
         val tests = xray.getTestsOfTestPlan(testPlanKey).execute().body() ?: error("no test in $testPlanKey")
         // and retrieve the content of those tests, including steps, and return them
         return xray.getTests(tests.joinToString(";") { it.key })
-            .execute()
-            .body()
-            ?: error("unable to get tests for $tests")
+                .execute()
+                .body()
+                ?: error("unable to get tests for $tests")
     }
 
     fun getTests(testKey: String): List<XrayTest> {
         return xray.getTests(testKey)
-            .execute()
-            .body()
-            ?: error("unable to get the test $testKey")
+                .execute()
+                .body()
+                ?: error("unable to get the test $testKey")
     }
 
     /**
@@ -104,7 +105,7 @@ object XrayClient {
      * @return a list of steps as a XrayTestStep object.
      */
     fun getTestSteps(testKey: String): List<XrayTestStep> =
-        xray.getTestSteps(testKey).execute().body() ?: error("no test steps for $testKey")
+            xray.getTestSteps(testKey).execute().body() ?: error("no test steps for $testKey")
 
     /**
      * This functions will search for the issue using the JQL query given in parameters
@@ -154,7 +155,7 @@ object XrayClient {
      */
     fun createNewTestExecutionIssue(textExectuionFields: XrayTestExecutionCreation): JiraIssue {
         return xray.createTestExecution(textExectuionFields).execute().body()
-            ?: error("Test execution creation has failed.")
+                ?: error("Test execution creation has failed.")
     }
 
     /**
@@ -164,7 +165,7 @@ object XrayClient {
      * @return the answer of Jira after the test execution reception.
      */
     fun sendTestExecution(execution: XrayTestExecution): Response<ResponseBody> =
-        xray.sendTestExecution(execution).execute()
+            xray.sendTestExecution(execution).execute()
 
     /**
      * This function converts an attachment file into a String.
@@ -173,38 +174,38 @@ object XrayClient {
      * @return the content of the attachment in String format.
      */
     fun getAttachmentToString(attachment: XrayAttachment): String =
-        xray.getAttachment(attachment.id, attachment.fileName).execute().body()?.string()
-            ?: "error : empty jira attachment"
+            xray.getAttachment(attachment.id, attachment.fileName).execute().body()?.string()
+                    ?: "error : empty jira attachment"
 
     fun createTest(test: JiraTest): JiraIssue =
-        xray.createTest(test).execute().body() ?: error("error during creating test $test")
+            xray.createTest(test).execute().body() ?: error("error during creating test $test")
 
     fun saveStep(testKey: String, step: XrayBuildTestStep) = xray.saveStep(testKey, step).execute().body()
 
     fun deleteStep(testKey: String, stepId: Long) =
-        xray.deleteStep(testKey, stepId).execute().body() ?: error("error during test step deletion")
+            xray.deleteStep(testKey, stepId).execute().body() ?: error("error during test step deletion")
 
-    fun getIssue(issueKey: String) = xray.getIssue(issueKey).execute().body() ?: error ("error: issue not found")
+    fun getIssue(issueKey: String) = xray.getIssue(issueKey).execute().body() ?: error("error: issue not found")
 
     fun addPrecondition(preConditionKey: String, jiraId: String) =
-        xray.addPrecondition(
-            preConditionKey,
-            XrayUpdateTest(listOf(jiraId))
-        ).execute().body()
+            xray.addPrecondition(
+                    preConditionKey,
+                    XrayUpdateTest(listOf(jiraId))
+            ).execute().body()
 
     fun updateTest(jiraId: String, test: JiraTest) = xray.updateTest(jiraId, test).execute().body()
 
     fun uploadAttachment(issueId: String, name: String, content: String): JiraAttachment =
-        xray.addAttachment(
-            issueId,
-            MultipartBody.Part.createFormData(
-                "file",
-                name,
-                RequestBody.create("text/plain".toMediaType(), content)
+            xray.addAttachment(
+                    issueId,
+                    MultipartBody.Part.createFormData(
+                            "file",
+                            name,
+                            RequestBody.create("text/plain".toMediaType(), content)
+                    )
             )
-        )
-            .execute()
-            .body()?.firstOrNull() ?: error("error during attachment of $content")
+                    .execute()
+                    .body()?.firstOrNull() ?: error("error during attachment of $content")
 
     fun linkTest(key1: String, key2: String) {
         xray.linkIssue(JiraIssueLink(JiraType("Associate"), JiraKey(key1), JiraKey(key2))).execute()
@@ -223,5 +224,12 @@ object XrayClient {
     }
 
     fun addTestToTestPlan(test: String, testPlan: String) =
-        xray.addTestToTestPlans(testPlan, XrayUpdateTest(listOf(test))).execute()
+            xray.addTestToTestPlans(testPlan, XrayUpdateTest(listOf(test))).execute()
+
+    fun getProjectTestPlans(project: String): List<XrayTestPlan> {
+        val response = xray.searchTestPlans(jql = "project= $project AND issuetype=\"Test Plan\" order by key ASC", fields = listOf("key", "summary")).execute()
+        val searchResult = response.body() ?: error("No test plans for project $project !")
+
+        return searchResult.issues
+    }
 }

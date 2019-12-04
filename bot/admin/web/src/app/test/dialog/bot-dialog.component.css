@@ -33,3 +33,44 @@
 .messages {
   margin-bottom: 15px;
 }
+
+.dialog-handler {
+  float: right;
+}
+
+.dialog-handler button {
+  margin: 0 5px 0 5px;
+}
+
+.dialog-handler input {
+  margin: 0 10px 0 10px;
+}
+
+.test-plans-select {
+  margin: 0 5px 0 5px;
+  width: 10rem;
+  max-width: 10rem;
+}
+
+.test-plans-select {
+  margin: 0 5px 0 5px;
+  width: 10rem;
+  max-width: 10rem;
+}
+
+.dialog-manager-button {
+  margin: 0 5px 0 5px;
+}
+
+#test-saving-accordions nb-accordion {
+  float: left;
+  widht: 30%;
+}
+
+#test-saving-accordions button {
+  margin: 0 5px 0 5px;
+}
+
+#test-saving-accordions input {
+  margin: 0 10px 0 10px;
+}
