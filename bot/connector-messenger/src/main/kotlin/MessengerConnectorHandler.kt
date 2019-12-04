@@ -132,10 +132,7 @@ internal class MessengerConnectorHandler(
                 )
             )
         } else {
-            logger.logError(
-                "unable to convert $webhook to event",
-                requestTimerData
-            )
+            logger.warn("unable to convert $webhook to event")
         }
     }
 }

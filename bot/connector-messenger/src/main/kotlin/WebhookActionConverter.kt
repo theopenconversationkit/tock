@@ -85,12 +85,6 @@ internal object WebhookActionConverter {
                                         )
                                     }
                                 }
-                                ?: SendSentence(
-                                    message.playerId(PlayerType.user),
-                                    applicationId,
-                                    message.recipientId(PlayerType.bot),
-                                    "(click)"
-                                )
                         }
                     } else {
                         val a = attachments
@@ -119,12 +113,6 @@ internal object WebhookActionConverter {
                             parameters
                         )
                     }
-                    ?: SendSentence(
-                        message.playerId(PlayerType.user),
-                        applicationId,
-                        message.recipientId(PlayerType.bot),
-                        "(click)"
-                    )
             is OptinWebhook ->
                 SubscribingEvent(
                     message.playerId(PlayerType.user),
