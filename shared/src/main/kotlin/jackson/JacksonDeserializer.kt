@@ -27,15 +27,20 @@ import mu.KotlinLogging
  */
 abstract class JacksonDeserializer<T> : JsonDeserializer<T>() {
 
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
     object EmptyJson
 
     protected fun JsonParser.readUnknownValue(): EmptyJson {
+        val name = currentName
         skipChildren()
         when (currentToken()) {
             START_OBJECT, START_ARRAY -> skipChildren()
             else -> nextToken()
         }
-        KotlinLogging.logger {}.warn { "Unsupported field : ${javaClass}" }
+        logger.warn { "Unsupported field: $name" }
         return EmptyJson
     }
 
