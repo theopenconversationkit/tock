@@ -28,6 +28,7 @@ import ai.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import ai.tock.nlp.front.service.storage.IntentDefinitionDAO
 import ai.tock.nlp.front.service.storage.ModelBuildTriggerDAO
 import ai.tock.nlp.front.service.storage.ParseRequestLogDAO
+import ai.tock.nlp.front.service.storage.UserNamespaceDAO
 import ai.tock.nlp.front.shared.ApplicationConfiguration
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.Classification
@@ -68,6 +69,7 @@ abstract class AbstractTest {
         val intentDefinitionDAO: IntentDefinitionDAO = mockk(relaxed = true)
         val classifiedSentenceDAO: ClassifiedSentenceDAO = mockk(relaxed = true)
         val dictionaryRepository: DictionaryRepository = mockk(relaxed = true)
+        val namespaceDAO:UserNamespaceDAO = mockk(relaxed = true)
 
         val frontTestModule = Kodein.Module {
             bind<ApplicationConfiguration>() with provider { config }
@@ -80,6 +82,7 @@ abstract class AbstractTest {
             bind<IntentDefinitionDAO>() with provider { intentDefinitionDAO }
             bind<ClassifiedSentenceDAO>() with provider { classifiedSentenceDAO }
             bind<DictionaryRepository>() with provider { dictionaryRepository }
+            bind<UserNamespaceDAO>() with provider { namespaceDAO }
         }
 
         fun init() {
