@@ -108,7 +108,7 @@ class MessengerConnector internal constructor(
         private val logger = KotlinLogging.logger {}
         internal val pageIdConnectorIdMap: MutableMap<String, MutableSet<String>> = ConcurrentHashMap()
         internal val connectorIdConnectorControllerMap: MutableMap<String, ConnectorController> = ConcurrentHashMap()
-        private val connectorIdTokenMap: MutableMap<String, String> = ConcurrentHashMap()
+        internal val connectorIdTokenMap: MutableMap<String, String> = ConcurrentHashMap()
         internal val connectorIdApplicationIdMap: MutableMap<String, String> = ConcurrentHashMap()
         private val webhookSubscriptionCheckPeriod = property("tock_messenger_webhook_check_period", "600").toLong()
         private val webhookSubscriptionCheckEnabled = booleanProperty("tock_messenger_webhook_check_subscription", false)
