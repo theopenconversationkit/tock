@@ -9,7 +9,7 @@ if [[ $TRAVIS_BRANCH = *"build"* || $TRAVIS_BRANCH = "master" ]] && [ "$TRAVIS_P
   then
     mvn test -B -Dskip.npm -Dassembly.skipAssembly=true -U -q
     if [ "$SKIP_DEPLOY" != 'true' ]; then
-      mvn deploy -T 4 -DskipTests=true -Dtravis --settings etc/deploy-settings.xml -U
+      mvn -B deploy -T 4 -DskipTests=true -Dtravis --settings etc/deploy-settings.xml -U -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
     fi
   else
     if [[ $TRAVIS_TAG == *"build"* ]];
@@ -19,7 +19,7 @@ if [[ $TRAVIS_BRANCH = *"build"* || $TRAVIS_BRANCH = "master" ]] && [ "$TRAVIS_P
       echo "tock tag : $TRAVIS_TAG"
       mvn versions:set -DnewVersion="$TRAVIS_TAG"
       mvn install -B -Dskip.npm -Dassembly.skipAssembly=true -U -q
-      mvn deploy -T 4 -DskipTests=true -Dmilestone --settings etc/deploy-settings.xml
+      mvn deploy -B -T 4 -DskipTests=true -Dmilestone --settings etc/deploy-settings.xml -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
     fi
   fi
   else
