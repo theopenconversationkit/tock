@@ -31,6 +31,7 @@ import ai.tock.bot.connector.messenger.model.send.MediaPayload
 import ai.tock.bot.connector.messenger.model.send.MediaType
 import ai.tock.bot.connector.messenger.model.send.MessageRequest
 import ai.tock.bot.connector.messenger.model.send.MessageTag
+import ai.tock.bot.connector.messenger.model.send.MessageTag.HUMAN_AGENT
 import ai.tock.bot.connector.messenger.model.send.PostbackButton
 import ai.tock.bot.connector.messenger.model.send.QuickReply
 import ai.tock.bot.connector.messenger.model.send.TextMessage
@@ -67,7 +68,7 @@ class MessageRequestDeserializationTest {
                     )
                 )
             )
-            , tag = MessageTag.FEATURE_FUNCTIONALITY_UPDATE
+            , tag = HUMAN_AGENT
         )
         val s = mapper.writeValueAsString(m)
         assertEquals(m, mapper.readValue(s))
@@ -98,7 +99,7 @@ class MessageRequestDeserializationTest {
                     )
                 )
             )
-            , tag = MessageTag.FEATURE_FUNCTIONALITY_UPDATE
+            , tag = HUMAN_AGENT
         )
         val s = mapper.writeValueAsString(m)
         assertEquals(m, mapper.readValue(s))

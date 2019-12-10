@@ -35,7 +35,7 @@ import ai.tock.bot.definition.StoryHandlerDefinition
 import ai.tock.bot.definition.StoryHandlerListener
 import ai.tock.bot.definition.StoryStep
 import ai.tock.bot.engine.action.ActionNotificationType
-import ai.tock.bot.engine.action.ActionNotificationType.newFeatureFunctionality
+import ai.tock.bot.engine.action.ActionNotificationType.humanAgent
 import ai.tock.bot.engine.config.StoryConfigurationMonitor
 import ai.tock.bot.engine.monitoring.RequestTimer
 import ai.tock.bot.engine.nlp.BuiltInKeywordListener
@@ -170,7 +170,7 @@ object BotRepository {
         step: StoryStep<out StoryHandlerDefinition>? = null,
         parameters: Map<String, String> = emptyMap(),
         stateModifier: NotifyBotStateModifier = NotifyBotStateModifier.KEEP_CURRENT_STATE,
-        notificationType: ActionNotificationType = newFeatureFunctionality
+        notificationType: ActionNotificationType = humanAgent
     ) {
         val conf = getConfigurationByApplicationId(applicationId) ?: error("unknown application $applicationId")
         connectorControllerMap.getValue(conf).notifyAndCheckState(recipientId, intent, step, parameters, stateModifier, notificationType)
