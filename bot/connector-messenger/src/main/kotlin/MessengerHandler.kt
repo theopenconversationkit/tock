@@ -28,4 +28,6 @@ import kotlin.reflect.KClass
 @ConnectorHandler(connectorTypeId = MESSENGER_CONNECTOR_TYPE_ID)
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
-annotation class MessengerHandler(val value: KClass<out ConnectorStoryHandler<*>>)
+annotation class MessengerHandler(
+    val value: KClass<out ConnectorStoryHandler<*>>
+)

@@ -165,6 +165,13 @@ class TockClientBus(
         return this
     }
 
+    override fun withMessage(connectorType: ConnectorType, connectorId: String, messageProvider: () -> ConnectorMessage): ClientBus {
+        if (applicationId == connectorId && targetConnectorType == connectorType) {
+            context.connectorMessages[connectorType] = messageProvider()
+        }
+        return this
+    }
+
     override fun i18n(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue {
         val namespace = request.context.namespace
         val category = intent?.wrappedIntent()?.name ?: namespace

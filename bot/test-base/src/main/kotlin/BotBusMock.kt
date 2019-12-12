@@ -385,6 +385,13 @@ open class BotBusMock(
         return this
     }
 
+    override fun withMessage(connectorType: ConnectorType, connectorId: String, messageProvider: () -> ConnectorMessage): BotBus {
+        if (applicationId == connectorId && targetConnectorType == connectorType) {
+            mockData.addMessage(messageProvider.invoke())
+        }
+        return this
+    }
+
     override fun reloadProfile() {
         userPreferences.fillWith(context.initialUserPreferences)
     }
