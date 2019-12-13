@@ -21,6 +21,8 @@ import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.singleton
 import ai.tock.bot.engine.nlp.NlpController
 import ai.tock.nlp.api.client.NlpClient
+import com.google.api.gax.core.CredentialsProvider
+import com.google.api.gax.core.GoogleCredentialsProvider
 
 /**
  * The DialogFlow Nlp client module.
@@ -28,4 +30,5 @@ import ai.tock.nlp.api.client.NlpClient
 val dialogFlowModule = Kodein.Module {
     bind<NlpClient>(overrides = true) with singleton { TockDialogflowNlpClient() }
     bind<NlpController>(overrides = true) with singleton { DialogflowNlp() }
+    bind<CredentialsProvider>() with singleton { GoogleCredentialsProvider.newBuilder().setScopesToApply(emptyList()).build() }
 }
