@@ -68,7 +68,7 @@ internal object NlpProxyBotService {
     ) {
         try {
             val uri = context.request().uri().substringAfter(tockNlpProxyOnBotPath)
-            val client: HttpClient = vertx.createHttpClient(HttpClientOptions())
+            val client: HttpClient = vertx.createHttpClient(HttpClientOptions().apply { isKeepAlive = false })
             val options = RequestOptions()
                 .setHost(tockNlpServiceHost)
                 .setPort(tockNlpServicePort)

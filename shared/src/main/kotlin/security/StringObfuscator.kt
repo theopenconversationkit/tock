@@ -52,14 +52,14 @@ interface StringObfuscator {
             normal -> regex
             display -> replacementRegexp
         }
-                .toPattern()
-                .matcher(text)
-                .run {
-                    replaceAll(
-                            when (mode) {
-                                normal -> replacement
-                                display -> displayed
-                            })
-                }
+            .toPattern()
+            .matcher(text)
+            .run {
+                replaceAll(
+                    when (mode) {
+                        normal -> replacement
+                        display -> displayed
+                    })
+            }
     }
 }
