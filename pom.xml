@@ -31,29 +31,29 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
-        <kotlin>1.3.50</kotlin>
-        <couroutine>1.3.2</couroutine>
+        <kotlin>1.3.61</kotlin>
+        <couroutine>1.3.3</couroutine>
 
-        <slf4j>2.0.0-alpha1</slf4j>
-        <logback>1.3.0-alpha4</logback>
+        <slf4j>1.7.29</slf4j>
+        <logback>1.2.3</logback>
 
-        <kotlin-logging>1.7.6</kotlin-logging>
+        <kotlin-logging>1.7.8</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>3.11.1</kmongo>
-        <jackson>2.10.0</jackson>
-        <jackson-databind>2.10.0</jackson-databind>
-        <jackson-module>2.10.0</jackson-module>
+        <kmongo>3.11.2</kmongo>
+        <jackson>2.10.1</jackson>
+        <jackson-databind>2.10.1</jackson-databind>
+        <jackson-module>2.10.1</jackson-module>
         <jackson-module-loader>0.1.0</jackson-module-loader>
         <jackson-data>0.1.0</jackson-data>
         <jackson-generator>0.3.1</jackson-generator>
-        <klaxon>5.1</klaxon>
-        <vertx>3.8.2</vertx>
-        <retrofit>2.6.2</retrofit>
+        <klaxon>5.2</klaxon>
+        <vertx>3.8.4</vertx>
+        <retrofit>2.7.0</retrofit>
         <okhttp>4.2.2</okhttp>
         <okhttp-signpost>1.1.0</okhttp-signpost>
         <signpost-core>1.2.1.2</signpost-core>
-        <circuitbreaker>1.1.0</circuitbreaker>
+        <circuitbreaker>1.2.0</circuitbreaker>
         <guava>28.1-jre</guava>
         <google-auth>1.30.2</google-auth>
         <jasypt>1.9.3</jasypt>
@@ -63,26 +63,26 @@
         <commons-lang>3.9</commons-lang>
         <json>20190722</json>
         <httpclient>4.5.10</httpclient>
-        <google-auth2>0.18.0</google-auth2>
+        <google-auth2>0.19.0</google-auth2>
         <simmetrics>4.1.1</simmetrics>
 
         <junit-jupiter>5.5.2</junit-jupiter>
 
         <mockk>1.9.3</mockk>
         <assertj>3.12.2</assertj>
-        <byte-buddy>1.10.1</byte-buddy>
+        <byte-buddy>1.10.5</byte-buddy>
         <atrium>0.8.0</atrium>
 
-        <plugin.surefire>3.0.0-M3</plugin.surefire>
-        <plugin.source>3.1.0</plugin.source>
+        <plugin.surefire>3.0.0-M4</plugin.surefire>
+        <plugin.source>3.2.0</plugin.source>
         <plugin.release>2.5.3</plugin.release>
         <plugin.gpg>1.6</plugin.gpg>
         <plugin.nexus-staging>1.6.8</plugin.nexus-staging>
         <plugin.dokka>0.10.0</plugin.dokka>
-        <plugin.assembly>3.1.1</plugin.assembly>
+        <plugin.assembly>3.2.0</plugin.assembly>
         <plugin.frontend>1.8.0</plugin.frontend>
         <plugin.clean>3.1.0</plugin.clean>
-        <plugin.jar>3.1.2</plugin.jar>
+        <plugin.jar>3.2.0</plugin.jar>
         <plugin.ant>1.8</plugin.ant>
         <plugin.shade>3.2.1</plugin.shade>
         <plugin.dependency>3.1.1</plugin.dependency>
