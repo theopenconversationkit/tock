@@ -18,13 +18,17 @@ export class Feature {
 
   constructor(public category: string,
               public name: string,
-              public enabled: boolean) {
+              public enabled: boolean,
+              public startDate: Date = null,
+              public endDate: Date = null) {
   }
 
   static fromJSON(json: any): Feature {
     const value = Object.create(Feature.prototype);
-    const result = Object.assign(value, json, {});
-
+    const result = Object.assign(value, json, {
+      startDate: json.startDate ? new Date(json.startDate) : null,
+      endDate: json.endDate ? new Date(json.endDate) : null
+    });
     return result;
   }
 

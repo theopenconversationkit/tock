@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.engine.feature
+package ai.tock.bot.admin.model
 
 import java.time.ZonedDateTime
 
-/**
- * A state of a feature.
- */
-data class FeatureState(
+data class Feature(
     val category: String,
     val name: String,
     val enabled: Boolean,

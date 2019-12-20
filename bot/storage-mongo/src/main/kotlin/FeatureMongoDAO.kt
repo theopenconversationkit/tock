@@ -24,7 +24,9 @@ import ai.tock.bot.mongo.Feature_.Companion._id
 import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.MongoBotConfiguration.database
 import ai.tock.shared.error
+import ai.tock.shared.internalDefaultZoneId
 import ai.tock.shared.watch
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.mongodb.client.model.ReplaceOptions
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import com.mongodb.client.model.changestream.FullDocument.UPDATE_LOOKUP
@@ -40,16 +42,21 @@ import org.litote.kmongo.getCollection
 import org.litote.kmongo.reactivestreams.forEach
 import org.litote.kmongo.reactivestreams.getCollection
 import org.litote.kmongo.save
+import java.time.ZonedDateTime
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.collections.set
 
 @Data(internal = true)
 @JacksonData(internal = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 internal data class Feature(
     val _id: String,
     val key: String,
     val enabled: Boolean,
     val botId: String,
-    val namespace: String
+    val namespace: String,
+    val startDate: ZonedDateTime? = null,
+    val endDate: ZonedDateTime? = null
 )
 
 /**
@@ -82,7 +89,7 @@ internal object FeatureMongoDAO : FeatureDAO {
         }
     }
 
-    fun calculateId(botId: String, namespace: String, category: String, name: String) =
+    private fun calculateId(botId: String, namespace: String, category: String, name: String) =
         "$botId,$namespace,$category,$name"
 
 
@@ -94,27 +101,40 @@ internal object FeatureMongoDAO : FeatureDAO {
         default: Boolean
     ): Boolean {
         val id = calculateId(botId, namespace, category, name)
-        return features[id]
-            ?: (col.findOne(_id eq id)
-                .let { f ->
-                    if (f == null) {
-                        default.also {
-                            addFeature(botId, namespace, default, category, name)
-                        }
-                    } else {
-                        features[id] = f.enabled
-                        f.enabled
+        val now = ZonedDateTime.now(internalDefaultZoneId)
+
+        return col.findOne(_id eq id)
+            .let { f ->
+                if (f == null) {
+                    default.also {
+                        addFeature(botId, namespace, default, category, name, null, null)
                     }
-                })
+                } else {
+                    features[id] = f.enabled
+                    when {
+                        f.startDate != null && f.endDate == null -> f.enabled && now.isAfter(f.startDate)
+                        f.startDate != null && f.endDate != null -> f.enabled && now.isAfter(f.startDate)
+                                && now.isBefore(f.endDate)
+                        else -> f.enabled
+                    }
+                }
+            }
     }
 
-    override fun enable(botId: String, namespace: String, category: String, name: String) {
+    override fun enable(
+        botId: String,
+        namespace: String,
+        category: String,
+        name: String,
+        startDate: ZonedDateTime?,
+        endDate: ZonedDateTime?
+    ) {
         val id = calculateId(botId, namespace, category, name)
         features[id] = true
 
         col.replaceOne(
             _id eq id,
-            Feature(id, "$category,$name", true, botId, namespace),
+            Feature(id, "$category,$name", true, botId, namespace, startDate, endDate),
             ReplaceOptions().upsert(true)
         )
     }
@@ -136,17 +156,25 @@ internal object FeatureMongoDAO : FeatureDAO {
                     val index = it.key.lastIndexOf(',')
                     val category = if (index == -1) "" else it.key.substring(0, index)
                     val name = if (index == -1) it.key else it.key.substring(index + 1, it.key.length)
-                    FeatureState(category, name, it.enabled)
+                    FeatureState(category, name, it.enabled, it.startDate, it.endDate)
                 } catch (e: Exception) {
                     logger.error(e)
                     null
                 }
             }
 
-    override fun addFeature(botId: String, namespace: String, enabled: Boolean, category: String, name: String) {
+    override fun addFeature(
+        botId: String,
+        namespace: String,
+        enabled: Boolean,
+        category: String,
+        name: String,
+        startDate: ZonedDateTime?,
+        endDate: ZonedDateTime?
+    ) {
         val id = calculateId(botId, namespace, category, name)
         features[id] = enabled
-        col.save(Feature(id, "$category,$name", enabled, botId, namespace))
+        col.save(Feature(id, "$category,$name", enabled, botId, namespace, startDate, endDate))
     }
 
     override fun deleteFeature(botId: String, namespace: String, category: String, name: String) {

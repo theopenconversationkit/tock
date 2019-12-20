@@ -43,6 +43,7 @@ import ai.tock.bot.admin.model.CreateI18nLabelRequest
 import ai.tock.bot.admin.model.CreateStoryRequest
 import ai.tock.bot.admin.model.DialogFlowRequest
 import ai.tock.bot.admin.model.DialogsSearchQuery
+import ai.tock.bot.admin.model.Feature
 import ai.tock.bot.admin.model.StorySearchRequest
 import ai.tock.bot.admin.model.UserSearchQuery
 import ai.tock.bot.admin.model.UserSearchQueryResult
@@ -154,23 +155,37 @@ object BotAdminService {
         applicationName: String
     ): List<BotApplicationConfiguration> {
         val app = applicationDAO.getApplicationByNamespaceAndName(namespace, applicationName)
-        return if (app == null) emptyList() else applicationConfigurationDAO.getConfigurationsByNamespaceAndNlpModel(namespace, app.name)
+        return if (app == null) emptyList() else applicationConfigurationDAO.getConfigurationsByNamespaceAndNlpModel(
+            namespace,
+            app.name
+        )
     }
 
     fun saveApplicationConfiguration(conf: BotApplicationConfiguration) {
         applicationConfigurationDAO.save(conf)
-        if (applicationConfigurationDAO.getBotConfigurationsByNamespaceAndNameAndBotId(conf.namespace, conf.name, conf.botId) == null) {
+        if (applicationConfigurationDAO.getBotConfigurationsByNamespaceAndNameAndBotId(
+                conf.namespace,
+                conf.name,
+                conf.botId
+            ) == null
+        ) {
             applicationConfigurationDAO.save(
                 BotConfiguration(
                     conf.name,
                     conf.botId,
                     conf.namespace,
                     conf.nlpModel
-                ))
+                )
+            )
         }
     }
 
-    fun loadSentencesFromIntent(namespace: String, nlpModel: String, intentName: String, locale: Locale): List<SentenceReport> {
+    fun loadSentencesFromIntent(
+        namespace: String,
+        nlpModel: String,
+        intentName: String,
+        locale: Locale
+    ): List<SentenceReport> {
         val nlpApplication = front.getApplicationByNamespaceAndName(namespace, nlpModel)
         val intent = front.getIntentByNamespaceAndName(namespace, intentName)
         return if (intent != null) {
@@ -346,7 +361,12 @@ object BotAdminService {
             role,
             entityType,
             intent,
-            answers.mapNotNull { it.toConfiguration(botId, oldStory?.mandatoryEntities?.find { it.role == role }?.answers) },
+            answers.mapNotNull {
+                it.toConfiguration(
+                    botId,
+                    oldStory?.mandatoryEntities?.find { it.role == role }?.answers
+                )
+            },
             currentType
         ).apply {
             //if entity is null, it means that entity has not been modified
@@ -372,10 +392,11 @@ object BotAdminService {
                     )
                     front.save(newIntent)
                 } else if (existingEntity == null) {
-                    front.save(newIntent.copy(
-                        applications = newIntent.applications + app._id,
-                        entities = newIntent.entities + EntityDefinition(entityTypeName, role)
-                    )
+                    front.save(
+                        newIntent.copy(
+                            applications = newIntent.applications + app._id,
+                            entities = newIntent.entities + EntityDefinition(entityTypeName, role)
+                        )
                     )
                 }
             }
@@ -491,7 +512,13 @@ object BotAdminService {
                     currentType = story.currentType,
                     intent = story.intent,
                     answers = story.answers.mapNotNull { it.toStoryConfiguration(botConf.botId, storyDefinition) },
-                    mandatoryEntities = story.mandatoryEntities.map { it.toEntityConfiguration(application, botConf.botId, storyDefinition) },
+                    mandatoryEntities = story.mandatoryEntities.map {
+                        it.toEntityConfiguration(
+                            application,
+                            botConf.botId,
+                            storyDefinition
+                        )
+                    },
                     steps = story.steps.map { it.toStepConfiguration(application, botConf.botId, storyDefinition) },
                     userSentence = story.userSentence,
                     configurationName = story.configurationName,
@@ -506,7 +533,13 @@ object BotAdminService {
                     story.answers.mapNotNull { it.toStoryConfiguration(botConf.botId, storyDefinition) },
                     0,
                     namespace,
-                    story.mandatoryEntities.map { it.toEntityConfiguration(application, botConf.botId, storyDefinition) },
+                    story.mandatoryEntities.map {
+                        it.toEntityConfiguration(
+                            application,
+                            botConf.botId,
+                            storyDefinition
+                        )
+                    },
                     story.steps.map { it.toStepConfiguration(application, botConf.botId, storyDefinition) },
                     story.name,
                     story.category,
@@ -583,16 +616,28 @@ object BotAdminService {
         return featureDAO.getFeatures(botId, namespace)
     }
 
-    fun toggleFeature(botId: String, namespace: String, category: String, name: String) {
-        if (featureDAO.isEnabled(botId, namespace, category, name)) {
-            featureDAO.disable(botId, namespace, category, name)
+    fun toggleFeature(botId: String, namespace: String, feature: Feature) {
+        if (featureDAO.isEnabled(botId, namespace, feature.category, feature.name)) {
+            featureDAO.disable(botId, namespace, feature.category, feature.name)
         } else {
-            featureDAO.enable(botId, namespace, category, name)
+            featureDAO.enable(botId, namespace, feature.category, feature.name, feature.startDate, feature.endDate)
         }
     }
 
-    fun addFeature(botId: String, namespace: String, enabled: Boolean, category: String, name: String) {
-        featureDAO.addFeature(botId, namespace, enabled, category, name)
+    fun updateDateAndEnableFeature(botId: String, namespace: String, feature: Feature) {
+        featureDAO.enable(botId, namespace, feature.category, feature.name, feature.startDate, feature.endDate)
+    }
+
+    fun addFeature(botId: String, namespace: String, feature: Feature) {
+        featureDAO.addFeature(
+            botId,
+            namespace,
+            feature.enabled,
+            feature.category,
+            feature.name,
+            feature.startDate,
+            feature.endDate
+        )
     }
 
     fun deleteFeature(botId: String, namespace: String, category: String, name: String) {

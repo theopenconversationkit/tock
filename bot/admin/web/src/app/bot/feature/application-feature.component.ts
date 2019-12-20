@@ -51,17 +51,26 @@ export class ApplicationFeatureComponent implements OnInit {
     this.create = false;
   }
 
+  changeStartDateNew(newState: Date) {
+    this.feature.startDate = newState;
+  }
+
+  changeEndDateNew(newState: Date) {
+    this.feature.endDate = newState;
+  }
+
   toggleNew(newState: boolean) {
     this.feature.enabled = newState;
   }
 
-  addFeature() {
-    this.botService.addFeature(this.state.currentApplication.name, this.feature.enabled, this.feature.category, this.feature.name).subscribe(
-      _ => {
-        this.refresh();
-        this.create = false;
-      }
-    );
+  changeStartDate(f: Feature, newState) {
+    f.startDate = newState;
+    this.update(f);
+  }
+
+  changeEndDate(f: Feature, newState) {
+    f.endDate = newState;
+    this.update(f);
   }
 
   refresh() {
@@ -74,9 +83,26 @@ export class ApplicationFeatureComponent implements OnInit {
     }
   }
 
+  addFeature() {
+    this.botService.addFeature(this.state.currentApplication.name, this.feature).subscribe(
+      _ => {
+        this.refresh();
+        this.create = false;
+      }
+    );
+  }
+
   toggle(f: Feature, newState) {
     f.enabled = newState;
-    this.botService.toggleFeature(this.state.currentApplication.name, f.category, f.name).subscribe();
+    if (!newState) {
+      f.startDate = null;
+      f.endDate = null;
+    }
+    this.botService.toggleFeature(this.state.currentApplication.name, f).subscribe();
+  }
+
+  update(f: Feature) {
+    this.botService.updateDateAndEnableFeature(this.state.currentApplication.name, f).subscribe(_ => this.refresh());
   }
 
   deleteFeature(f: Feature) {
