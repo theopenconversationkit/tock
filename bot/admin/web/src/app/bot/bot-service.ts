@@ -102,12 +102,16 @@ export class BotService {
     return this.rest.get(`/feature/${encodeURIComponent(botId)}`, Feature.fromJSONArray);
   }
 
-  toggleFeature(botId: string, category: string, name: string): Observable<boolean> {
-    return this.rest.post(`/feature/${encodeURIComponent(botId)}/toggle/${encodeURIComponent(category)}/${encodeURIComponent(name)}`);
+  toggleFeature(botId: string, feature: Feature): Observable<boolean> {
+    return this.rest.post(`/feature/${encodeURIComponent(botId)}/toggle`, feature);
   }
 
-  addFeature(botId: string, enabled: boolean, category: string, name: string): Observable<boolean> {
-    return this.rest.post(`/feature/${encodeURIComponent(botId)}/add/${encodeURIComponent(category)}/${encodeURIComponent(name)}/${enabled}`);
+  updateDateAndEnableFeature(botId: string, feature: Feature): Observable<boolean> {
+    return this.rest.post(`/feature/${encodeURIComponent(botId)}/update`, feature);
+  }
+
+  addFeature(botId: string, feature: Feature): Observable<boolean> {
+    return this.rest.post(`/feature/${encodeURIComponent(botId)}/add`, feature);
   }
 
   deleteFeature(botId: string, category: string, name: string): Observable<boolean> {

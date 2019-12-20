@@ -29,14 +29,15 @@
   padding: 0 20px;
 }
 
-.name {
+.category {
   float: left;
   min-width: 150px;
+  font-size: medium;
   line-height: 36px;
   padding-right: 5px;
 }
 
-.category {
+.name {
   float: left;
   min-width: 150px;
   font-size: medium;
@@ -46,6 +47,12 @@
 
 .toggle {
   line-height: 36px;
+}
+
+.planning {
+  float: left;
+  line-height: 1.5rem;
+  padding-right: 1rem;
 }
 
 .i18n-label__title__delete {

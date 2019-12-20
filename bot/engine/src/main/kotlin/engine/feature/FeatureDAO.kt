@@ -16,6 +16,8 @@
 
 package ai.tock.bot.engine.feature
 
+import java.time.ZonedDateTime
+
 /**
  * Feature DAO.
  */
@@ -26,10 +28,23 @@ interface FeatureDAO {
 
     fun isEnabled(botId: String, namespace: String, category: String, name: String, default: Boolean = false): Boolean
 
-    fun enable(botId: String, namespace: String, category: String, name: String)
+    fun enable(
+        botId: String,
+        namespace: String,
+        category: String,
+        name: String,
+        startDate: ZonedDateTime?,
+        endDate: ZonedDateTime?
+    )
 
-    fun enable(botId: String, namespace: String, type: FeatureType) =
-        enable(botId, namespace, type.category, type.name)
+    fun enable(
+        botId: String,
+        namespace: String,
+        type: FeatureType,
+        startDate: ZonedDateTime? = null,
+        endDate: ZonedDateTime? = null
+    ) =
+        enable(botId, namespace, type.category, type.name, startDate, endDate)
 
     fun disable(botId: String, namespace: String, category: String, name: String)
 
@@ -38,10 +53,25 @@ interface FeatureDAO {
 
     fun getFeatures(botId: String, namespace: String): List<FeatureState>
 
-    fun addFeature(botId: String, namespace: String, enabled: Boolean, type: FeatureType) =
-        addFeature(botId, namespace, enabled, type.category, type.name)
+    fun addFeature(
+        botId: String,
+        namespace: String,
+        enabled: Boolean,
+        type: FeatureType,
+        startDate: ZonedDateTime?,
+        endDate: ZonedDateTime?
+    ) =
+        addFeature(botId, namespace, enabled, type.category, type.name, startDate, endDate)
 
-    fun addFeature(botId: String, namespace: String, enabled: Boolean, category: String, name: String)
+    fun addFeature(
+        botId: String,
+        namespace: String,
+        enabled: Boolean,
+        category: String,
+        name: String,
+        startDate: ZonedDateTime?,
+        endDate: ZonedDateTime?
+    )
 
     fun deleteFeature(botId: String, namespace: String, type: FeatureType) =
         deleteFeature(botId, namespace, type.category, type.name)

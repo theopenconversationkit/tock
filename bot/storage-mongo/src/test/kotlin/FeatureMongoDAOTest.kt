@@ -24,8 +24,10 @@ import ai.tock.bot.mongo.FeatureMongoDAO.isEnabled
 import ai.tock.bot.mongo.FeatureMongoDAOTest.Feature.a
 import ai.tock.bot.mongo.FeatureMongoDAOTest.Feature.b
 import ai.tock.bot.mongo.FeatureMongoDAOTest.Feature.c
+import ai.tock.shared.internalDefaultZoneId
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.ZonedDateTime
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -103,4 +105,53 @@ internal class FeatureMongoDAOTest : AbstractTest() {
         assertFalse(isEnabled(botId, namespace, a))
     }
 
+    @Test
+    fun `isEnabled returns true WHEN the today date is between startDate and endDate and activated`() {
+        enable(
+            botId,
+            namespace,
+            a,
+            ZonedDateTime.now(internalDefaultZoneId).minusYears(1),
+            ZonedDateTime.now(internalDefaultZoneId).plusYears(1)
+        )
+
+        assertTrue(isEnabled(botId, namespace, a))
+    }
+
+    @Test
+    fun `isEnabled returns false WHEN the today date is between startDate and endDate and not activated`() {
+        enable(
+            botId,
+            namespace,
+            a,
+            ZonedDateTime.now(internalDefaultZoneId).minusYears(1),
+            ZonedDateTime.now(internalDefaultZoneId).plusYears(2)
+        )
+        disable(botId, namespace, a)
+
+        assertFalse(isEnabled(botId, namespace, a))
+    }
+
+    @Test
+    fun `isEnabled returns true WHEN the today date is after the startDate and there is not dateEnd`() {
+        enable(
+            botId,
+            namespace,
+            a,
+            ZonedDateTime.now(internalDefaultZoneId).minusYears(1)
+        )
+        assertTrue(isEnabled(botId, namespace, a))
+    }
+
+    @Test
+    fun `isEnabled returns false WHEN the today date is before startDate and endDate`() {
+        enable(
+            botId,
+            namespace,
+            a,
+            ZonedDateTime.now(internalDefaultZoneId).plusYears(1), ZonedDateTime.now(internalDefaultZoneId).plusYears(2)
+        )
+
+        assertFalse(isEnabled(botId, namespace, a))
+    }
 }

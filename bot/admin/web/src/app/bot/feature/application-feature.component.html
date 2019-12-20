@@ -30,6 +30,16 @@
     <div *ngIf="create">
       <input #newCategory class="category new" nbInput placeholder="Category" [(ngModel)]="feature.category" [autofocus]="true">
       <input class="name new" nbInput placeholder="Name" [(ngModel)]="feature.name">
+      <div class="planning cell">
+        <input nbInput (keyup.enter)="changeStartDateNew($event)" placeholder="start date" [(ngModel)]="feature.startDate"
+               [nbDatepicker]="startDate" (ngModelChange)="changeStartDateNew($event)">
+        <nb-datepicker #startDate (dateChange)="changeStartDateNew($event)" [max]="feature.endDate"></nb-datepicker>
+      </div>
+      <div class="planning cell">
+        <input nbInput (keyup.enter)="changeEndDateNew($event)" placeholder="end date" [(ngModel)]="feature.endDate"
+               [nbDatepicker]="endDate" (ngModelChange)="changeEndDateNew($event)">
+        <nb-datepicker #endDate (dateChange)="changeEndDateNew($event)" [min]="feature.startDate">></nb-datepicker>
+      </div>
       <nb-toggle class="toggle" status="primary" [checked]="feature.enabled" (checkedChange)="toggleNew($event)" nbTooltip="Status"></nb-toggle>
     </div>
 
@@ -39,6 +49,16 @@
         <div class="name cell">{{f.name}}</div>
         <div class="toggle cell">
           <nb-toggle status="primary" [checked]="f.enabled" (checkedChange)="toggle(f, $event)" nbTooltip="Status"></nb-toggle>
+        </div>
+        <div class="planning cell">
+          <input nbInput (keyup.enter)="changeStartDate(f, $event)" placeholder="start date" [(ngModel)]="f.startDate"
+                 [nbDatepicker]="startDate" (ngModelChange)="changeStartDate(f, $event)">
+          <nb-datepicker #startDate (dateChange)="changeStartDate(f, $event)" [max]="f.endDate"></nb-datepicker>
+        </div>
+        <div class="planning cell">
+          <input nbInput (keyup.enter)="changeEndDate(f, $event)" placeholder="end date" [(ngModel)]="f.endDate"
+                 [nbDatepicker]="endDate" (ngModelChange)="changeEndDate(f, $event)">
+          <nb-datepicker #endDate (dateChange)="changeEndDate(f, $event)" [min]="f.startDate"></nb-datepicker>
         </div>
         <div class="cell">
           <button nbButton (click)="deleteFeature(f)" nbTooltip="Delete {{f.name}}" outline status="danger" size="small" class="delete">
