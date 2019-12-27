@@ -271,6 +271,12 @@
                 <artifactId>vertx-auth-oauth2</artifactId>
                 <version>${vertx}</version>
             </dependency>
+            <dependency>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-codegen</artifactId>
+                <version>${vertx}</version>
+                <scope>test</scope>
+            </dependency>
 
             <dependency>
                 <groupId>org.litote.kmongo</groupId>

@@ -56,8 +56,10 @@ internal class WebhookVerticle(private val botDefinition: ClientBotDefinition) :
 
     override val defaultPort: Int = 8887
 
-    override fun healthcheck(): (RoutingContext) -> Unit = {
-        it.response().end()
+    override fun defaultHealthcheck(): (RoutingContext) -> Unit {
+        return { it.response().end() }
     }
+
+    override fun detailedHealthcheck(): (RoutingContext) -> Unit = ai.tock.shared.vertx.detailedHealthcheck()
 
 }
