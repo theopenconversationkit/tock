@@ -80,7 +80,7 @@ internal class AWSJWTAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx), JW
                         } else {
                             executor.executeBlocking {
                                 val customName = token.getString("email")
-                                val u = injector.provide<TockUserListener>().registerUser(TockUser(customName, namespace, roles))
+                                val u = injector.provide<TockUserListener>().registerUser(TockUser(customName, namespace, roles), true)
                                 resultHandler.handle(Future.succeededFuture(u))
                             }
                         }
