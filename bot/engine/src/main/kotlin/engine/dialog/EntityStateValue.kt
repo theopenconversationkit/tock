@@ -62,9 +62,7 @@ data class EntityStateValue(
     constructor(entity: Entity, value: Value) : this(EntityValue(entity, value))
 
     init {
-        if (currentValue != null) {
-            currentHistory.add(ArchivedEntityValue(currentValue, null, updated))
-        }
+        currentHistory.add(ArchivedEntityValue(currentValue, null, updated))
     }
 
     internal fun changeValue(entity: Entity, newValue: Value?, action: Action? = null): EntityStateValue {
@@ -88,10 +86,15 @@ data class EntityStateValue(
             val old =
                 stateValueId?.let {
                     injector.provide<UserTimelineDAO>().getArchivedEntityValues(stateValueId, oldActionsMap)
-                        .run { if (isEmpty()) emptyList() else subList(0, size - 1) }
                 }
                     ?: emptyList()
             currentHistory.addAll(0, old)
+            //remove duplicate if any
+            if (old.isNotEmpty()
+                && currentHistory.size != old.size
+                && old.last().entityValue?.value == currentHistory[old.size].entityValue?.value) {
+                currentHistory.removeAt(old.size - 1)
+            }
         }
     }
 
@@ -110,8 +113,13 @@ data class EntityStateValue(
     val previousValues: List<ArchivedEntityValue>
         get() {
             checkLoadedValue()
-            return currentHistory.run { if (isEmpty()) emptyList() else subList(0, size - 1) }
+            return currentHistory.run { if (isEmpty()) this else subList(0, size - 1) }
         }
+
+    /**
+     * Returns the penultimate value.
+     */
+    val penultimateValue: ArchivedEntityValue? get() = previousValues.lastOrNull()
 
     /**
      * Entity's all history. First is older. Last in current value.

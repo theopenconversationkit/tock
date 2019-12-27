@@ -20,6 +20,7 @@ import ai.tock.nlp.api.client.model.EntityType
 import ai.tock.nlp.entity.NumberValue
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -33,37 +34,36 @@ class EntityStateValueTest {
         val state = EntityStateValue(null)
 
         assertNull(state.value)
-        assertTrue(state.history.isEmpty())
+        assertFalse(state.history.isEmpty())
         assertTrue(state.previousValues.isEmpty())
 
         val entity = Entity(EntityType("test"), "role")
 
         val value1 = NumberValue(1)
 
-        Thread.sleep(1)
         state.changeValue(entity, value1)
 
         assertEquals(value1, state.value?.value)
-        assertEquals(1, state.history.size)
-        assertEquals(value1, state.history[0].entityValue?.value)
-        assertEquals(state.history[0].date, state.lastUpdate)
-        assertTrue(state.previousValues.isEmpty())
+        assertEquals(2, state.history.size)
+        assertEquals(value1, state.history[1].entityValue?.value)
+        assertEquals(state.history[1].date, state.lastUpdate)
+        assertFalse(state.previousValues.isEmpty())
 
         val updateDate = state.lastUpdate
         val value2 = NumberValue(2)
 
-        Thread.sleep(1)
         state.changeValue(entity, value2)
 
         assertEquals(value2, state.value?.value)
-        assertEquals(2, state.history.size)
-        assertEquals(value1, state.history[0].entityValue?.value)
-        assertEquals(state.history[0].date, updateDate)
-        assertEquals(value2, state.history[1].entityValue?.value)
-        assertEquals(state.history[1].date, state.lastUpdate)
+        assertEquals(3, state.history.size)
+        assertEquals(value1, state.history[1].entityValue?.value)
+        assertEquals(state.history[1].date, updateDate)
+        assertEquals(value2, state.history[2].entityValue?.value)
+        assertEquals(state.history[2].date, state.lastUpdate)
         assertTrue(state.lastUpdate > updateDate)
-        assertEquals(value1, state.previousValues[0].entityValue?.value)
-        assertEquals(state.previousValues[0].date, updateDate)
+        assertEquals(value1, state.previousValues[1].entityValue?.value)
+        assertEquals(state.previousValues[1].date, updateDate)
+        assertEquals(value1, state.penultimateValue?.entityValue?.value)
     }
 
 
