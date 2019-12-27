@@ -136,7 +136,7 @@ internal object DatesMerge {
                             ),
                             day
                         ),
-                        oldValue.content ?: newValueContent
+                        newValue.content
                     )
                     if (newResult.start().truncatedTo(DAYS) >= referenceDateTime.truncatedTo(DAYS)) {
                         return newResult
@@ -177,7 +177,7 @@ internal object DatesMerge {
                                 day
                             )
                         ,
-                        oldValue.content ?: newValueContent
+                        newValue.content
                     )
 
                     if (newResult.start().truncatedTo(DAYS) >= referenceDateTime.truncatedTo(DAYS)) {
