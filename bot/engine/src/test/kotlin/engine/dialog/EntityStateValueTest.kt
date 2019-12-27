@@ -51,7 +51,7 @@ class EntityStateValueTest {
 
         val updateDate = state.lastUpdate
         val value2 = NumberValue(2)
-
+        Thread.sleep(1)
         state.changeValue(entity, value2)
 
         assertEquals(value2, state.value?.value)

@@ -72,7 +72,7 @@ import ai.tock.shared.security.initEncryptor
 import ai.tock.shared.supportedLanguages
 import ai.tock.shared.vertx.RequestLogger
 import ai.tock.shared.vertx.WebVerticle
-import ai.tock.shared.vertx.makeDetailedHealthcheck
+import ai.tock.shared.vertx.detailedHealthcheck
 import com.github.salomonbrys.kodein.instance
 import com.mongodb.MongoClient
 import io.netty.handler.codec.http.HttpHeaderNames
@@ -1033,7 +1033,7 @@ open class AdminVerticle : WebVerticle() {
         return { it.response().end() }
     }
 
-    override fun detailedHealthcheck(): (RoutingContext) -> Unit = makeDetailedHealthcheck(
+    override fun detailedHealthcheck(): (RoutingContext) -> Unit = detailedHealthcheck(
         listOf(
             Pair("duckling_service", { FrontClient.healthcheck() }),
             Pair("tock_front_database", {

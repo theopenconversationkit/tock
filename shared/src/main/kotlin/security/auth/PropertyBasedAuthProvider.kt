@@ -149,7 +149,8 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
                             organizations[index],
                             roles.getOrNull(index)?.takeIf { r -> r.size > 1 || r.firstOrNull()?.isBlank() == false }
                                 ?: allRoles
-                        )
+                        ),
+                        true
                     )
                     resultHandler.handle(Future.succeededFuture(tockUser))
                 }

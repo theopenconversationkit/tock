@@ -20,7 +20,7 @@ import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.pingMongoDatabase
 import ai.tock.shared.vertx.WebVerticle
-import ai.tock.shared.vertx.makeDetailedHealthcheck
+import ai.tock.shared.vertx.detailedHealthcheck
 import com.github.salomonbrys.kodein.instance
 import com.mongodb.MongoClient
 import io.vertx.ext.web.RoutingContext
@@ -48,7 +48,7 @@ class HealthCheckVerticle(
             )
         }
 
-    override fun detailedHealthcheck(): (RoutingContext) -> Unit = makeDetailedHealthcheck(
+    override fun detailedHealthcheck(): (RoutingContext) -> Unit = detailedHealthcheck(
         listOf(
             Pair("tock_front_database", { pingMongoDatabase(mongoClient.getDatabase("tock_front")) }),
             Pair("tock_model_database", { pingMongoDatabase(mongoClient.getDatabase("tock_model")) })

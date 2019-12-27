@@ -30,7 +30,7 @@ object AdminTockUserListener : TockUserListener {
 
     private val logger = KotlinLogging.logger {}
 
-    override fun registerUser(user: TockUser): TockUser {
+    override fun registerUser(user: TockUser, joinNamespace: Boolean): TockUser {
         logger.info { "register $user" }
         var namespace = user.namespace.toLowerCase()
         val existingNamespaces = namespaceDAO.getNamespaces(user.user)
@@ -43,7 +43,7 @@ object AdminTockUserListener : TockUserListener {
             //if existing: take it
             do {
                 selected = existingNamespaces.find { it.namespace == namespace }?.copy(current = true)
-                if (selected == null && namespaceDAO.getUsers(namespace).isEmpty()) {
+                if (selected == null && (joinNamespace || namespaceDAO.getUsers(namespace).isEmpty())) {
                     selected = UserNamespace(user.user, namespace, true, true)
                 } else {
                     namespace = baseNamespace + (index++)

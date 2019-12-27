@@ -35,7 +35,7 @@ import ai.tock.shared.property
 import ai.tock.shared.security.auth.TockAuthProvider
 import ai.tock.shared.security.initEncryptor
 import ai.tock.shared.vertx.WebVerticle
-import ai.tock.shared.vertx.makeDetailedHealthcheck
+import ai.tock.shared.vertx.detailedHealthcheck
 import ai.tock.shared.pingMongoDatabase
 import com.mongodb.MongoClient
 import io.vertx.ext.web.RoutingContext
@@ -200,7 +200,7 @@ class NlpVerticle : WebVerticle() {
         }
     }
 
-    override fun detailedHealthcheck(): (RoutingContext) -> Unit = makeDetailedHealthcheck(
+    override fun detailedHealthcheck(): (RoutingContext) -> Unit = detailedHealthcheck(
         listOf(
             Pair("duckling_service", { FrontClient.healthcheck() }),
             Pair("tock_front_database", { pingMongoDatabase(mongoClient.getDatabase("tock_front")) }),

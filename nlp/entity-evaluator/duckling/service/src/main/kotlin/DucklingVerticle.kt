@@ -25,7 +25,7 @@ import ai.tock.shared.error
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.blocking
-import ai.tock.shared.vertx.makeDetailedHealthcheck
+import ai.tock.shared.vertx.detailedHealthcheck
 import io.vertx.core.Promise
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
@@ -71,7 +71,7 @@ class DucklingVerticle : WebVerticle() {
         return { context -> if (DucklingBridge.initialized) context.response().end() else context.fail(500) }
     }
 
-    override fun detailedHealthcheck(): (RoutingContext) -> Unit = makeDetailedHealthcheck(
+    override fun detailedHealthcheck(): (RoutingContext) -> Unit = detailedHealthcheck(
         listOf(
             Pair("duckling_bridge", { DucklingBridge.initialized })
         )

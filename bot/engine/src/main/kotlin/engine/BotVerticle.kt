@@ -26,7 +26,7 @@ import ai.tock.shared.property
 import ai.tock.shared.security.auth.TockAuthProvider
 import ai.tock.shared.security.initEncryptor
 import ai.tock.shared.vertx.WebVerticle
-import ai.tock.shared.vertx.makeDetailedHealthcheck
+import ai.tock.shared.vertx.detailedHealthcheck
 import ai.tock.translator.Translator.initTranslator
 import io.vertx.core.Promise
 import io.vertx.ext.web.Route
@@ -156,7 +156,7 @@ internal class BotVerticle(
         return BotRepository.healthcheckHandler
     }
 
-    override fun detailedHealthcheck(): (RoutingContext) -> Unit = makeDetailedHealthcheck(
+    override fun detailedHealthcheck(): (RoutingContext) -> Unit = detailedHealthcheck(
         listOf(
             Pair("nlp_client", { BotRepository.nlpClient.healthcheck() })
         ),

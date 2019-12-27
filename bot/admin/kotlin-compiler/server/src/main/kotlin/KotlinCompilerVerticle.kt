@@ -22,7 +22,6 @@ import ai.tock.bot.admin.kotlin.compiler.KotlinFileCompilation
 import ai.tock.bot.admin.kotlin.compiler.TockKotlinCompiler
 import ai.tock.shared.security.TockUserRole
 import ai.tock.shared.vertx.WebVerticle
-import ai.tock.shared.vertx.makeDetailedHealthcheck
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
@@ -49,5 +48,5 @@ class KotlinCompilerVerticle : WebVerticle() {
         return { it.response().end() }
     }
 
-    override fun detailedHealthcheck(): (RoutingContext) -> Unit = makeDetailedHealthcheck()
+    override fun detailedHealthcheck(): (RoutingContext) -> Unit = ai.tock.shared.vertx.detailedHealthcheck()
 }

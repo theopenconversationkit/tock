@@ -7,11 +7,12 @@ import mu.KLogger
 import mu.KotlinLogging
 
 /**
- * Used to construct JSON
+ * Used to construct Healthcheck json result.
+ *
  * @property id task identifier (ex: nlp_service)
  * @property status indicate the task status: "KO" or "OK"
  */
-data class TaskResult(
+internal data class HealthcheckTaskResult(
     val id: String,
     val status: String
 )
@@ -20,8 +21,8 @@ data class TaskResult(
  * Used to construct JSON
  * @property results list of task results
  */
-data class DetailedHealthcheckResults(
-    val results: List<TaskResult>
+internal data class DetailedHealthcheckResults(
+    val results: List<HealthcheckTaskResult>
 )
 
 /**
@@ -29,23 +30,23 @@ data class DetailedHealthcheckResults(
  * @params tasks list of lambda and resource's name that indicate the health of a resource
  * @params selfCheck lambda that indicate the service health
  */
-fun makeDetailedHealthcheck(
+fun detailedHealthcheck(
     tasks: List<Pair<String, () -> Boolean>> = listOf(),
     selfCheck: () -> Boolean = { true }
-) : (RoutingContext) -> Unit {
+): (RoutingContext) -> Unit {
     val mapper = jacksonObjectMapper()
     val logger: KLogger = KotlinLogging.logger {}
 
     return {
         val response = it.response()
-        val results = mutableListOf<TaskResult>()
+        val results = mutableListOf<HealthcheckTaskResult>()
         try {
             if (!selfCheck()) {
                 throw Throwable("health: not passing selfCheck")
             }
             for (task in tasks) {
                 // invoke task and create result from its return value
-                val result = TaskResult(
+                val result = HealthcheckTaskResult(
                     task.first,
                     if (task.second.invoke()) "OK" else "KO"
                 )
