@@ -17,6 +17,15 @@
 package ai.tock.bot.test
 
 
+import ai.tock.bot.connector.messenger.model.send.Attachment
+import ai.tock.bot.connector.messenger.model.send.AttachmentMessage
+import ai.tock.bot.connector.messenger.model.send.ButtonPayload
+import ai.tock.bot.connector.messenger.model.send.Element
+import ai.tock.bot.connector.messenger.model.send.GenericPayload
+import ai.tock.bot.connector.messenger.model.send.PostbackButton
+import ai.tock.bot.connector.messenger.model.send.TextMessage
+import ai.tock.bot.connector.messenger.model.send.TextQuickReply
+import ai.tock.bot.connector.messenger.model.send.UrlButton
 import ch.tutteli.atrium.api.cc.en_GB.isA
 import ch.tutteli.atrium.api.cc.en_GB.notToBeNull
 import ch.tutteli.atrium.api.cc.en_GB.property
@@ -27,21 +36,19 @@ import ch.tutteli.atrium.domain.creating.any.typetransformation.AnyTypeTransform
 import ch.tutteli.atrium.reporting.RawString
 import ch.tutteli.atrium.reporting.translating.Untranslatable
 import ch.tutteli.atrium.verbs.expect
-import ai.tock.bot.connector.messenger.model.send.Attachment
-import ai.tock.bot.connector.messenger.model.send.AttachmentMessage
-import ai.tock.bot.connector.messenger.model.send.ButtonPayload
-import ai.tock.bot.connector.messenger.model.send.Element
-import ai.tock.bot.connector.messenger.model.send.GenericPayload
-import ai.tock.bot.connector.messenger.model.send.PostbackButton
-import ai.tock.bot.connector.messenger.model.send.TextMessage
-import ai.tock.bot.connector.messenger.model.send.TextQuickReply
-import ai.tock.bot.connector.messenger.model.send.UrlButton
 
-
+@Deprecated(
+    "Use assertions on generic message instead",
+    ReplaceWith("asGenericMessage{ toHaveGlobalText(text) }", "ai.tock.bot.test.asGenericMessage")
+)
 fun Assert<BotBusMockLog>.toBeMessengerTextMessage(text: String) {
     expect(subject.messenger()).notToBeNull { isA<TextMessage> { property(TextMessage::text).toBe(text) } }
 }
 
+@Deprecated(
+    "Use assertions on generic message instead",
+    ReplaceWith("asGenericMessage{assertionCreator}", "ai.tock.bot.test.asGenericMessage")
+)
 fun Assert<BotBusMockLog>.toBeMessengerAttachmentMessage(assertionCreator: Assert<AttachmentMessage>.() -> Unit) {
     val parameterObject = AnyTypeTransformation.ParameterObject(
         Untranslatable("is a"),
@@ -56,9 +63,23 @@ fun Assert<BotBusMockLog>.toBeMessengerAttachmentMessage(assertionCreator: Asser
     )
 }
 
+@Deprecated(
+    "Use assertions on generic message instead",
+    ReplaceWith(
+        "toHaveGlobalText(text)\n" +
+                "toHaveGlobalChoices(buttonTitle)"
+    )
+)
 fun Assert<AttachmentMessage>.withButtonAttachment(text: String, buttonTitle: String) =
     withButtonAttachment(text, listOf(buttonTitle))
 
+@Deprecated(
+    "Use assertions on generic message instead",
+    ReplaceWith(
+        "toHaveGlobalText(text)\n" +
+                "toHaveGlobalChoices(buttonTitles)//TODO convert list to vararg"
+    )
+)
 fun Assert<AttachmentMessage>.withButtonAttachment(text: String, buttonTitles: List<String>) =
     property(AttachmentMessage::attachment)
         .property(Attachment::payload)
@@ -76,34 +97,47 @@ fun Assert<AttachmentMessage>.withButtonAttachment(text: String, buttonTitles: L
             }
         }
 
+@Deprecated(
+    "Use assertions on generic message instead",
+    ReplaceWith(
+        "toHaveElement(index){\n" +
+                "toHaveTitle(expectedTitle)\n" +
+                "toHaveSubtitle(subtitle)\n " +
+                "toHaveChoices(buttonTitles)//TODO convert list to vararg\n " +
+                "}", "ai.tock.bot.test.toHaveElement"
+    )
+)
 fun Assert<AttachmentMessage>.withGenericTemplateElement(
     index: Int,
     expectedTitle: String,
     subtitle: String? = null,
     buttonTitles: List<String>
-) =
-    property(AttachmentMessage::attachment)
-        .property(Attachment::payload)
-        .isA<GenericPayload> {
-            property(GenericPayload::elements) {
-                expect(subject[index]) {
-                    property(Element::title).toBe(expectedTitle)
-                    subtitle?.let { property(Element::subtitle).toBe(it) }
-                    property(Element::buttons).notToBeNull {
-                        expect(subject.map { button ->
-                            when (button) {
-                                is PostbackButton -> button.title
-                                is UrlButton -> button.title
-                                else -> null
-                            }
-                        }).toBe(buttonTitles)
-                    }
+) = property(AttachmentMessage::attachment)
+    .property(Attachment::payload)
+    .isA<GenericPayload> {
+        property(GenericPayload::elements) {
+            expect(subject[index]) {
+                property(Element::title).toBe(expectedTitle)
+                subtitle?.let { property(Element::subtitle).toBe(it) }
+                property(Element::buttons).notToBeNull {
+                    expect(subject.map { button ->
+                        when (button) {
+                            is PostbackButton -> button.title
+                            is UrlButton -> button.title
+                            else -> null
+                        }
+                    }).toBe(buttonTitles)
                 }
-
             }
 
         }
 
+    }
+
+@Deprecated(
+    "Use assertions on generic message instead",
+    ReplaceWith("toHaveGlobalChoices(quickReplies)//TODO convert list to vararg")
+)
 fun Assert<AttachmentMessage>.withTextQuickReplies(quickReplies: List<String>) = addAssertionsCreatedBy {
     expect(subject.quickReplies.orEmpty().filterIsInstance<TextQuickReply>().map { it.title })
         .toBe(quickReplies)
