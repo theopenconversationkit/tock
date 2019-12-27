@@ -1,5 +1,6 @@
 package ai.tock.bot.mongo
 
+import java.time.ZonedDateTime
 import kotlin.Boolean
 import kotlin.String
 import kotlin.Suppress
@@ -20,6 +21,10 @@ private val __BotId: KProperty1<Feature, String?>
     get() = Feature::botId
 private val __Namespace: KProperty1<Feature, String?>
     get() = Feature::namespace
+private val __StartDate: KProperty1<Feature, ZonedDateTime?>
+    get() = Feature::startDate
+private val __EndDate: KProperty1<Feature, ZonedDateTime?>
+    get() = Feature::endDate
 internal class Feature_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Feature?>) :
         KPropertyPath<T, Feature?>(previous,property) {
     val _id: KPropertyPath<T, String?>
@@ -37,6 +42,12 @@ internal class Feature_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<
     val namespace: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Namespace)
 
+    val startDate: KPropertyPath<T, ZonedDateTime?>
+        get() = KPropertyPath(this,__StartDate)
+
+    val endDate: KPropertyPath<T, ZonedDateTime?>
+        get() = KPropertyPath(this,__EndDate)
+
     companion object {
         val _id: KProperty1<Feature, String?>
             get() = ___id
@@ -47,7 +58,11 @@ internal class Feature_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<
         val BotId: KProperty1<Feature, String?>
             get() = __BotId
         val Namespace: KProperty1<Feature, String?>
-            get() = __Namespace}
+            get() = __Namespace
+        val StartDate: KProperty1<Feature, ZonedDateTime?>
+            get() = __StartDate
+        val EndDate: KProperty1<Feature, ZonedDateTime?>
+            get() = __EndDate}
 }
 
 internal class Feature_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -67,6 +82,12 @@ internal class Feature_Col<T>(previous: KPropertyPath<T, *>?, property: KPropert
 
     val namespace: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Namespace)
+
+    val startDate: KPropertyPath<T, ZonedDateTime?>
+        get() = KPropertyPath(this,__StartDate)
+
+    val endDate: KPropertyPath<T, ZonedDateTime?>
+        get() = KPropertyPath(this,__EndDate)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): Feature_<T> = Feature_(this,
@@ -88,6 +109,12 @@ internal class Feature_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProp
 
     val namespace: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Namespace)
+
+    val startDate: KPropertyPath<T, ZonedDateTime?>
+        get() = KPropertyPath(this,__StartDate)
+
+    val endDate: KPropertyPath<T, ZonedDateTime?>
+        get() = KPropertyPath(this,__EndDate)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): Feature_<T> = Feature_(this,

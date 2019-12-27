@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
+import java.time.ZonedDateTime
 import kotlin.Boolean
 import kotlin.String
 import kotlin.collections.Map
@@ -29,6 +30,10 @@ internal class Feature_Deserializer : JsonDeserializer<Feature>(), JacksonModule
             var _botId_set : Boolean = false
             var _namespace_: String? = null
             var _namespace_set : Boolean = false
+            var _startDate_: ZonedDateTime? = null
+            var _startDate_set : Boolean = false
+            var _endDate_: ZonedDateTime? = null
+            var _endDate_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -64,6 +69,16 @@ internal class Feature_Deserializer : JsonDeserializer<Feature>(), JacksonModule
                              else p.text;
                             _namespace_set = true
                             }
+                    "startDate" -> {
+                            _startDate_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(ZonedDateTime::class.java);
+                            _startDate_set = true
+                            }
+                    "endDate" -> {
+                            _endDate_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(ZonedDateTime::class.java);
+                            _endDate_set = true
+                            }
                     else -> {
                             if (_token_?.isStructStart == true)
                             p.skipChildren()
@@ -72,9 +87,10 @@ internal class Feature_Deserializer : JsonDeserializer<Feature>(), JacksonModule
                     } 
                 _token_ = currentToken
                         } 
-            return if(__id_set && _key_set && _enabled_set && _botId_set && _namespace_set)
+            return if(__id_set && _key_set && _enabled_set && _botId_set && _namespace_set &&
+                    _startDate_set && _endDate_set)
                     Feature(_id = __id_!!, key = _key_!!, enabled = _enabled_!!, botId = _botId_!!,
-                            namespace = _namespace_!!)
+                            namespace = _namespace_!!, startDate = _startDate_, endDate = _endDate_)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(__id_set)
@@ -86,7 +102,11 @@ internal class Feature_Deserializer : JsonDeserializer<Feature>(), JacksonModule
                     if(_botId_set)
                     map[parameters.getValue("botId")] = _botId_
                     if(_namespace_set)
-                    map[parameters.getValue("namespace")] = _namespace_ 
+                    map[parameters.getValue("namespace")] = _namespace_
+                    if(_startDate_set)
+                    map[parameters.getValue("startDate")] = _startDate_
+                    if(_endDate_set)
+                    map[parameters.getValue("endDate")] = _endDate_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -101,6 +121,8 @@ internal class Feature_Deserializer : JsonDeserializer<Feature>(), JacksonModule
                 "key" to primaryConstructor.findParameterByName("key")!!, "enabled" to
                 primaryConstructor.findParameterByName("enabled")!!, "botId" to
                 primaryConstructor.findParameterByName("botId")!!, "namespace" to
-                primaryConstructor.findParameterByName("namespace")!!) }
+                primaryConstructor.findParameterByName("namespace")!!, "startDate" to
+                primaryConstructor.findParameterByName("startDate")!!, "endDate" to
+                primaryConstructor.findParameterByName("endDate")!!) }
     }
 }

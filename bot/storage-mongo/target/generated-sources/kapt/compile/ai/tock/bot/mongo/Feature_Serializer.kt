@@ -31,6 +31,16 @@ internal class Feature_Serializer : StdSerializer<Feature>(Feature::class.java),
         gen.writeFieldName("namespace")
         val _namespace_ = value.namespace
         gen.writeString(_namespace_)
+        gen.writeFieldName("startDate")
+        val _startDate_ = value.startDate
+        if(_startDate_ == null) { gen.writeNull() } else {
+                serializers.defaultSerializeValue(_startDate_, gen)
+                }
+        gen.writeFieldName("endDate")
+        val _endDate_ = value.endDate
+        if(_endDate_ == null) { gen.writeNull() } else {
+                serializers.defaultSerializeValue(_endDate_, gen)
+                }
         gen.writeEndObject()
     }
 }

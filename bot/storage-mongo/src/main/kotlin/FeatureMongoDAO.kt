@@ -67,7 +67,7 @@ internal object FeatureMongoDAO : FeatureDAO {
     private val logger = KotlinLogging.logger {}
     private val col = database.getCollection<Feature>()
     private val asyncCol = asyncDatabase.getCollection<Feature>()
-    private val features = ConcurrentHashMap<String, Boolean>()
+    private val features = ConcurrentHashMap<String, Feature>()
 
     /**
      * Watch listener.
@@ -81,7 +81,7 @@ internal object FeatureMongoDAO : FeatureDAO {
         try {
             asyncCol.find().forEach { it, t ->
                 if (t != null) logger.error(t)
-                else if (it != null) features[it._id] = it.enabled
+                else if (it != null) features[it._id] = it
             }
             asyncCol.watch(UPDATE_LOOKUP, listener = listener)
         } catch (e: Exception) {
@@ -103,18 +103,18 @@ internal object FeatureMongoDAO : FeatureDAO {
         val id = calculateId(botId, namespace, category, name)
         val now = ZonedDateTime.now(internalDefaultZoneId)
 
-        return col.findOne(_id eq id)
+        return (features[id] ?: col.findOne(_id eq id))
             .let { f ->
                 if (f == null) {
                     default.also {
                         addFeature(botId, namespace, default, category, name, null, null)
                     }
                 } else {
-                    features[id] = f.enabled
+                    features[id] = f
                     when {
                         f.startDate != null && f.endDate == null -> f.enabled && now.isAfter(f.startDate)
                         f.startDate != null && f.endDate != null -> f.enabled && now.isAfter(f.startDate)
-                                && now.isBefore(f.endDate)
+                            && now.isBefore(f.endDate)
                         else -> f.enabled
                     }
                 }
@@ -130,21 +130,23 @@ internal object FeatureMongoDAO : FeatureDAO {
         endDate: ZonedDateTime?
     ) {
         val id = calculateId(botId, namespace, category, name)
-        features[id] = true
+        val feature = Feature(id, "$category,$name", true, botId, namespace, startDate, endDate)
+        features[id] = feature
 
         col.replaceOne(
             _id eq id,
-            Feature(id, "$category,$name", true, botId, namespace, startDate, endDate),
+            feature,
             ReplaceOptions().upsert(true)
         )
     }
 
     override fun disable(botId: String, namespace: String, category: String, name: String) {
         val id = calculateId(botId, namespace, category, name)
-        features[id] = false
+        val feature = Feature(id, "$category,$name", false, botId, namespace)
+        features[id] = feature
         col.replaceOne(
             _id eq id,
-            Feature(id, "$category,$name", false, botId, namespace),
+            feature,
             ReplaceOptions().upsert(true)
         )
     }
@@ -173,8 +175,9 @@ internal object FeatureMongoDAO : FeatureDAO {
         endDate: ZonedDateTime?
     ) {
         val id = calculateId(botId, namespace, category, name)
-        features[id] = enabled
-        col.save(Feature(id, "$category,$name", enabled, botId, namespace, startDate, endDate))
+        val feature = Feature(id, "$category,$name", enabled, botId, namespace, startDate, endDate)
+        features[id] = feature
+        col.save(feature)
     }
 
     override fun deleteFeature(botId: String, namespace: String, category: String, name: String) {
