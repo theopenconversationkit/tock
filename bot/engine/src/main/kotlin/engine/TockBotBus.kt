@@ -26,7 +26,6 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionNotificationType
 import ai.tock.bot.engine.action.ActionPriority
 import ai.tock.bot.engine.action.ActionVisibility
-import ai.tock.bot.engine.action.Metadata.VISIBILITY
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.EntityStateValue
@@ -37,7 +36,7 @@ import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.shared.defaultLocale
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.UserInterfaceType
-import java.util.Locale
+import java.util.*
 
 /**
  *
@@ -174,6 +173,13 @@ internal class TockBotBus(
 
     override fun withMessage(connectorType: ConnectorType, messageProvider: () -> ConnectorMessage): BotBus {
         if (targetConnectorType == connectorType) {
+            context.addMessage(messageProvider.invoke())
+        }
+        return this
+    }
+
+    override fun withMessage(connectorType: ConnectorType, connectorId: String, messageProvider: () -> ConnectorMessage): BotBus {
+        if (applicationId == connectorId && targetConnectorType == connectorType) {
             context.addMessage(messageProvider.invoke())
         }
         return this
