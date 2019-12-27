@@ -430,6 +430,19 @@ fun BotBus.withTwitter(messageProvider: () -> TwitterConnectorMessage): BotBus {
 }
 
 /**
+ * Adds a Twitter [ConnectorMessage] if the current connector is Twitter and the current connector is [connectorId].
+ * You need to call [<T : Bus<T>> T.send] or [<T : Bus<T>> T.end] later to send this message.
+ */
+fun BotBus.withTwitter(connectorId: String, messageProvider: () -> TwitterConnectorMessage): BotBus {
+    withVisibility(actionVisibility(this))
+    return if (actionVisibility(this) != ActionVisibility.PUBLIC) {
+        withMessage(twitterConnectorType, connectorId, messageProvider)
+    } else {
+        this
+    }
+}
+
+/**
  * Adds a Twitter [ConnectorMessage] if the current connector is Twitter and the interface is public.
  * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */

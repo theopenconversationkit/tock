@@ -76,6 +76,11 @@ interface Bus<T : Bus<T>> : I18nTranslator {
     fun withMessage(connectorType: ConnectorType, messageProvider: () -> ConnectorMessage): T
 
     /**
+     * Adds the specified [ConnectorMessage] to the bus context if the [targetConnectorType] and [connectorId] is compatible.
+     */
+    fun withMessage(connectorType: ConnectorType, connectorId: String, messageProvider: () -> ConnectorMessage): T
+
+    /**
      * Sends previously registered [ConnectorMessage].
      */
     fun send(delay: Long = defaultDelay(currentAnswerIndex)): T {

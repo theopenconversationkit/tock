@@ -106,6 +106,14 @@ fun <T : Bus<T>> T.withMessenger(messageProvider: () -> MessengerConnectorMessag
 }
 
 /**
+ * Adds a Messenger [ConnectorMessage] if the current connector is Messenger and the current connector is [connectorId].
+ * You need to call [<T : Bus<T>> T.send] or [<T : Bus<T>> T.end] later to send this message.
+ */
+fun <T : Bus<T>> T.withMessenger(connectorId: String, messageProvider: () -> MessengerConnectorMessage): T {
+    return withMessage(messengerConnectorType, connectorId, messageProvider)
+}
+
+/**
  * Creates a button template [https://developers.facebook.com/docs/messenger-platform/send-api-reference/button-template]
  */
 fun I18nTranslator.buttonsTemplate(text: CharSequence, vararg actions: UserAction): AttachmentMessage =
