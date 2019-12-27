@@ -33,6 +33,7 @@ import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.bot.test.BotBusMock
 import ai.tock.bot.test.BotBusMockContext
+import ai.tock.bot.test.BotBusMockLog
 import ai.tock.bot.test.TestContext
 import ai.tock.bot.test.TestLifecycle
 import ai.tock.bot.test.newBusMockContext
@@ -119,6 +120,35 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
             userPreferences,
             { message.toAction(userId, botDefinition.botId, botId) },
             tests
+        )
+    }
+
+    /**
+     * Sends a message simulating a click on action of a previous bus log and execute the tests.
+     */
+    fun selectChoice(
+        busMockLog: BotBusMockLog,
+        buttonTitle: String,
+        tests: BotBusMock.() -> Unit
+    ): BotBusMock {
+        return sendMessage(
+            message = busMockLog.choice(buttonTitle) ?: error("No choice $buttonTitle found in bus message $busMockLog"),
+            tests = tests
+        )
+    }
+
+    /**
+     * Sends a message simulating a click on action of an element in previous bus log and execute the tests.
+     */
+    fun selectElementChoice(
+        busMockLog: BotBusMockLog,
+        elementIndex: Int,
+        buttonTitle: String,
+        tests: BotBusMock.() -> Unit
+    ): BotBusMock {
+        return sendMessage(
+            message = busMockLog.elementChoice(elementIndex, buttonTitle) ?: error("No choice $buttonTitle found in element $elementIndex of bus message $busMockLog"),
+            tests = tests
         )
     }
 
