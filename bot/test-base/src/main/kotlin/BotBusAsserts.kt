@@ -30,6 +30,8 @@ import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.message.GenericElement
 import ai.tock.bot.engine.message.GenericMessage
+import ch.tutteli.atrium.api.cc.en_GB.containsExactly
+import ch.tutteli.atrium.api.cc.en_GB.containsNot
 
 fun Assert<BotBusMockLog>.toBeSimpleTextMessage(expectedText: String) =
     returnValueOf(BotBusMockLog::text).toBe(expectedText)
@@ -60,6 +62,20 @@ fun Assert<GenericMessage>.toHaveGlobalChoices(expectedChoice  : String, vararg 
         }).contains(expectedChoice, *otherExpectedChoices)
     }
 
+fun Assert<GenericMessage>.toHaveNotGlobalChoices(unexpectedChoice  : String, vararg otherUnexpectedChoices: String) =
+    property(GenericMessage::choices).addAssertionsCreatedBy {
+        expect(subject.map { choice ->
+            choice.parameters[SendChoice.TITLE_PARAMETER]
+        }).containsNot(unexpectedChoice, *otherUnexpectedChoices)
+    }
+
+fun Assert<GenericMessage>.toHaveExactlyGlobalChoices(expectedChoice  : String, vararg otherExpectedChoices: String) =
+    property(GenericMessage::choices).addAssertionsCreatedBy {
+        expect(subject.map { choice ->
+            choice.parameters[SendChoice.TITLE_PARAMETER]
+        }).containsExactly(expectedChoice, *otherExpectedChoices)
+    }
+
 fun Assert<GenericMessage>.toHaveElement(index: Int, assertionCreator: Assert<GenericElement>.() -> Unit) =
     property(GenericMessage::subElements).addAssertionsCreatedBy {
         returnValueOf(List<GenericElement>::get, index) {
@@ -83,6 +99,20 @@ fun Assert<GenericElement>.toHaveChoices(expectedChoice  : String, vararg otherE
         expect(subject.mapNotNull { choice ->
             choice.parameters[SendChoice.TITLE_PARAMETER]
         }).contains(expectedChoice, *otherExpectedChoices)
+    }
+
+fun Assert<GenericElement>.toHaveNotChoices(unexpectedChoice  : String, vararg otherUnexpectedChoices: String) =
+    property(GenericElement::choices).addAssertionsCreatedBy {
+        expect(subject.mapNotNull { choice ->
+            choice.parameters[SendChoice.TITLE_PARAMETER]
+        }).containsNot(unexpectedChoice, *otherUnexpectedChoices)
+    }
+
+fun Assert<GenericElement>.toHaveExactlyChoices(expectedChoice  : String, vararg otherExpectedChoices: String) =
+    property(GenericElement::choices).addAssertionsCreatedBy {
+        expect(subject.mapNotNull { choice ->
+            choice.parameters[SendChoice.TITLE_PARAMETER]
+        }).containsExactly(expectedChoice, *otherExpectedChoices)
     }
 
 
