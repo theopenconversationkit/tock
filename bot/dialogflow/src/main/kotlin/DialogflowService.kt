@@ -16,11 +16,16 @@
 
 package ai.tock.nlp.dialogflow
 
+import ai.tock.shared.injector
+import ai.tock.shared.provide
+import com.google.api.gax.core.CredentialsProvider
 import com.google.cloud.dialogflow.v2.Agent
 import com.google.cloud.dialogflow.v2.AgentsClient
+import com.google.cloud.dialogflow.v2.AgentsSettings
 import com.google.cloud.dialogflow.v2.Intent
 import com.google.cloud.dialogflow.v2.IntentView
 import com.google.cloud.dialogflow.v2.IntentsClient
+import com.google.cloud.dialogflow.v2.IntentsSettings
 import com.google.cloud.dialogflow.v2.ListIntentsRequest
 import com.google.cloud.dialogflow.v2.ProjectAgentName
 import com.google.cloud.dialogflow.v2.ProjectName
@@ -28,6 +33,7 @@ import com.google.cloud.dialogflow.v2.QueryInput
 import com.google.cloud.dialogflow.v2.QueryResult
 import com.google.cloud.dialogflow.v2.SessionName
 import com.google.cloud.dialogflow.v2.SessionsClient
+import com.google.cloud.dialogflow.v2.SessionsSettings
 import com.google.cloud.dialogflow.v2.TextInput
 import mu.KotlinLogging
 
@@ -37,6 +43,14 @@ internal object DialogflowService {
     private const val DIALOGFLOW_MAX_TEXT_LENGTH = 256
 
     private val logger = KotlinLogging.logger {}
+
+    private val credentialsProvider: CredentialsProvider get() = injector.provide()
+
+    private val sessionsSettings = SessionsSettings.newBuilder().setCredentialsProvider(credentialsProvider).build()
+
+    private val agentsSettings = AgentsSettings.newBuilder().setCredentialsProvider(credentialsProvider).build()
+
+    private val intentsSettings = IntentsSettings.newBuilder().setCredentialsProvider(credentialsProvider).build()
 
     /**
      * Returns the result of detect intent with text as input.
@@ -56,7 +70,7 @@ internal object DialogflowService {
         languageCode: String
     ): QueryResult? {
 
-        SessionsClient.create().use {
+        SessionsClient.create(sessionsSettings).use {
             // Set the session name using the sessionId (UUID) and projectID (my-project-id)
             val session = SessionName.of(projectId, sessionId)
             logger.debug("Session Path: $session")
@@ -89,7 +103,7 @@ internal object DialogflowService {
      * Retrieves the [Agent] of the given [projectId].
      */
     fun getAgent(projectId: String): Agent? {
-        AgentsClient.create().use {
+        AgentsClient.create(agentsSettings).use {
             val parent: ProjectName = ProjectName.of(projectId)
             return it.getAgent(parent)
         }
@@ -99,7 +113,7 @@ internal object DialogflowService {
      * Get intents with training phrases
      */
     fun getIntents(projectId: String): List<Intent> {
-        IntentsClient.create().use {
+        IntentsClient.create(intentsSettings).use {
             val parent = ProjectAgentName.of(projectId)
             val request  = ListIntentsRequest.newBuilder().setIntentView(IntentView.INTENT_VIEW_FULL).setParent(parent.toString()).build()
             return it.listIntents(request).iterateAll().asSequence().toList()
