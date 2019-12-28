@@ -115,7 +115,7 @@ object Translator {
         return cache[id]?.copy() ?: i18nDAO.getLabelById(id.toId())
     }
 
-    private fun getLabel(id: String): I18nLabel? = loadLabel(id)
+    fun getLabel(id: String): I18nLabel? = loadLabel(id)
 
     private fun getLabel(key: I18nLabelValue): I18nLabel? = getLabel(key.key)
         ?.apply {

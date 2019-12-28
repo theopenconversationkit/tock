@@ -49,7 +49,7 @@ data class I18nLabel(
             ?: i18n.firstOrNull { it.locale.language == locale.language && it.interfaceType == userInterfaceType && it.connectorId == connectorId }
             ?: i18n.firstOrNull { it.locale.language == locale.language && it.interfaceType == userInterfaceType && it.connectorId == null }
 
-    fun findLabel(locale: Locale, connectorId: String?): I18nLocalizedLabel? =
+    fun findLabel(locale: Locale, connectorId: String? = null): I18nLocalizedLabel? =
         i18n.firstOrNull { it.locale == locale && it.label.isNotBlank() && it.connectorId == connectorId }
             ?: i18n.firstOrNull { it.locale == locale && it.label.isNotBlank() && it.connectorId == null }
             ?: i18n.firstOrNull { it.locale.language == locale.language && it.label.isNotBlank() && it.connectorId == connectorId }

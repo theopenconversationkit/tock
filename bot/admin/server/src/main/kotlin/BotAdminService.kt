@@ -62,6 +62,8 @@ import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.Classification
 import ai.tock.nlp.front.shared.config.ClassifiedSentence
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus
+import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
+import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import ai.tock.nlp.front.shared.config.EntityDefinition
 import ai.tock.nlp.front.shared.config.EntityTypeDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition
@@ -516,10 +518,57 @@ object BotAdminService {
             }
 
             storyDefinitionDAO.save(newStory)
+
+            //save all intents of steps
+            newStory.steps.forEach { saveUserSentenceOfStep(application, it) }
+
             BotStoryDefinitionConfiguration(newStory)
         } else {
             null
         }
+    }
+
+    private fun saveUserSentenceOfStep(
+        application: ApplicationDefinition,
+        step: StoryDefinitionConfigurationStep) {
+
+        val label = step.userSentenceLabel?.let { Translator.getLabel(it.key) }
+        if (label != null && step.intent != null) {
+            application.supportedLocales.forEach { locale ->
+                val text = label.findLabel(locale)?.label
+                if (text != null) {
+                    val existingSentence = front.search(
+                        SentencesQuery(
+                            application._id,
+                            locale,
+                            search = text,
+                            onlyExactMatch = true,
+                            status = setOf(validated, model))
+                    )
+                    if (existingSentence.total == 0L) {
+                        val intent = front.getIntentByNamespaceAndName(application.namespace, step.intent!!.name)
+                        if (intent != null) {
+                            front.save(
+                                ClassifiedSentence(
+                                    text,
+                                    locale,
+                                    application._id,
+                                    Instant.now(),
+                                    Instant.now(),
+                                    validated,
+                                    Classification(intent._id, emptyList()),
+                                    1.0,
+                                    1.0
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+
+        step.children.forEach { saveUserSentenceOfStep(application, it) }
     }
 
     fun createI18nRequest(namespace: String, request: CreateI18nLabelRequest): I18nLabel {

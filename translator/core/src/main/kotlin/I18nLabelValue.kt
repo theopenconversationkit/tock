@@ -24,7 +24,7 @@ package ai.tock.translator
  */
 class I18nLabelValue constructor(
         /**
-         * Unique key of the label (for a given namespace).
+         * Unique key of the label.
          */
         val key: String,
         /**
