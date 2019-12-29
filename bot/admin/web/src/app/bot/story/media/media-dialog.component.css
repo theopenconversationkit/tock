@@ -21,7 +21,7 @@
 .container {
   display: flex;
   flex-direction: column;
-  width:600px;
+  width: 600px;
 }
 
 .container > * {
@@ -58,9 +58,15 @@
 
 .actions {
   display: table;
+  font-size: smaller;
 }
 
 .image {
   max-height: 50px;
   max-width: 50px;
+}
+
+.file {
+  margin-left: 10px;
+  font-size: x-small;
 }

@@ -54,6 +54,13 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
   }
 
   private load() {
+    let selectedStoryId;
+    if (this.loadedStories) {
+      const s = this.loadedStories.find(s => s.selected);
+      if (s) {
+        selectedStoryId = s.storyId;
+      }
+    }
     this.loading = true;
     this.bot.getStories(
       new StorySearchQuery(
@@ -62,7 +69,14 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
         this.state.currentLocale,
         0,
         10000
-      )).subscribe(s => {
+      )
+    ).subscribe(s => {
+      if (selectedStoryId) {
+        const s2 = s.find(newS => newS.storyId === selectedStoryId);
+        if (s2) {
+          s2.selected = true;
+        }
+      }
       this.stories = s.filter(story => !story.isBuiltIn());
       this.loadedStories = s;
       s.forEach(story => {

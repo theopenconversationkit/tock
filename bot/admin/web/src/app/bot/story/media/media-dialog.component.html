@@ -15,7 +15,7 @@
   -->
 
 <h1 mat-dialog-title>Media Message</h1>
-<span class="subTitle">All fields are optionals</span>
+<span class="subTitle">All fields are optional</span>
 <div class="container">
 
   <form #mediaForm="ngForm" class="container">
@@ -35,10 +35,7 @@
     </p>
     <p *ngIf="!media.file">
       <label for="file" matTooltip="Could be an image, a video or a binary file">File: </label>
-      <input id="file" type="file" ng2FileSelect [uploader]="uploader"/>
-      <button (click)="upload()" [disabled]="!uploader.getNotUploadedItems().length" mat-raised-button color="primary">
-        Upload
-      </button>
+      <input id="file" type="file" ng2FileSelect [uploader]="uploader" class="file"/>
     </p>
     <!-- subTitle -->
     <mat-form-field>

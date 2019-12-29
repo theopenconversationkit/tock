@@ -14,8 +14,12 @@
   ~ limitations under the License.
   -->
 
-<mat-expansion-panel *ngIf="story" [expanded]="storyNode || !story._id" [hideToggle]="storyNode || !story._id"
-                     #expansionPanel (opened)="story.hideDetails = false">
+<mat-expansion-panel *ngIf="story"
+                     [expanded]="storyNode || !story._id || story.selected"
+                     [hideToggle]="storyNode || !story._id"
+                     #expansionPanel
+                     (opened)="story.hideDetails = false;story.selected = true;"
+                     (closed)="story.selected = false">
   <mat-expansion-panel-header>
     <mat-panel-title class="panel-title">
       <mat-icon *ngIf="!storyNode && story.isBuiltIn()" class="story-type">build</mat-icon>
@@ -107,7 +111,7 @@
   <mat-action-row *ngIf="storyNode || story._id">
     <button *ngIf="!story._id" (click)="saveNewStory()" mat-raised-button color="primary">Create Story</button>
     <button *ngIf="story._id" (click)="expansionPanel.close();" mat-button>Cancel</button>
-    <button *ngIf="story._id && !story.isBuiltIn()" (click)="saveStory();expansionPanel.close();submitClose();"
+    <button *ngIf="story._id && !story.isBuiltIn()" (click)="saveStory(false);expansionPanel.close();submitClose();"
             mat-raised-button
             color="primary">Update Story
     </button>

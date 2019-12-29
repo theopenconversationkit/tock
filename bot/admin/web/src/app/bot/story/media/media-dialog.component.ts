@@ -56,11 +56,12 @@ export class MediaDialogComponent {
 
     this.media.actions.forEach(a => a.titleLabel = a.title.defaultLocalizedLabelForLocale(this.state.currentLocale).label);
 
-    this.uploader = new FileUploader({removeAfterUpload: true});
+    this.uploader = new FileUploader({removeAfterUpload: true, autoUpload:true});
     this.uploader.onCompleteItem =
       (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
         this.media.file = MediaFile.fromJSON(JSON.parse(response));
       };
+    this.bot.prepareFileDumpUploader(this.uploader);
 
     setTimeout(() => this.titleElement.nativeElement.focus(), 500);
   }
@@ -141,10 +142,4 @@ export class MediaDialogComponent {
     const mediaAction = new MediaAction(null, null);
     this.media.actions.push(mediaAction);
   }
-
-  upload() {
-    this.bot.prepareFileDumpUploader(this.uploader);
-    this.uploader.uploadAll()
-  }
-
 }

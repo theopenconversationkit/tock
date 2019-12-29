@@ -101,6 +101,7 @@ export class StepComponent implements OnInit {
           if (!step.name || step.name.trim().length === 0) {
             step.name = intentName + "_" + step.level;
           }
+          this.checkStep();
         } else {
           let dialogRef = this.dialog.open(
             this.matDialog,
@@ -142,8 +143,11 @@ export class StepComponent implements OnInit {
                 step.intent.name = step.intentDefinition ? step.intentDefinition.name : "";
               }
             }
+            this.checkStep();
           })
         }
+      } else {
+        this.checkStep();
       }
     }, 200);
   }
@@ -152,26 +156,31 @@ export class StepComponent implements OnInit {
     this.delete.emit(this.step);
   }
 
-  save() {
-    let invalidMessage = this.step.currentAnswer().invalidMessage();
-    if ((!this.step.currentAnswer().isEmpty() || this.step.targetIntent.name.trim().length !== 0)
-      && this.step.intent.name.trim().length === 0) {
-      invalidMessage = "Please choose an intent";
+  checkStep() {
+    if (this.step.new) {
+      let invalidMessage = this.step.currentAnswer().invalidMessage();
+      if (invalidMessage) {
+        this.dialog.notify(`Error: ${invalidMessage}`);
+        return;
+      } else if (this.step.newUserSentence.trim().length === 0 || this.step.intent.name.trim().length === 0) {
+        return;
+      } else {
+        this.save();
+      }
     }
-    if (invalidMessage) {
-      this.dialog.notify(`Error: ${invalidMessage}`);
-    } else {
-      this.bot.createI18nLabel(
-        new CreateI18nLabelRequest(
-          this.defaultCategory,
-          this.step.newUserSentence.trim(),
-          this.state.currentLocale,
-        )
-      ).subscribe(i18n => {
-        this.step.userSentence = i18n;
-        this.step.new = false;
-      })
-    }
+  }
+
+  private save() {
+    this.bot.createI18nLabel(
+      new CreateI18nLabelRequest(
+        this.defaultCategory,
+        this.step.newUserSentence.trim(),
+        this.state.currentLocale,
+      )
+    ).subscribe(i18n => {
+      this.step.userSentence = i18n;
+      this.step.new = false;
+    })
   }
 
   addChild() {
@@ -186,7 +195,8 @@ export class StepComponent implements OnInit {
   userSentenceChange(userSentence: string) {
     if (userSentence.trim().length !== 0) {
       if (!this.step.new) {
-        this.bot.saveI18nLabel(this.step.userSentence).subscribe(_ => {});
+        this.bot.saveI18nLabel(this.step.userSentence).subscribe(_ => {
+        });
       }
       if (this.step.intent.name.length === 0) {
         const app = this.state.currentApplication;
@@ -207,6 +217,8 @@ export class StepComponent implements OnInit {
             }
           }
         })
+      } else {
+        this.checkStep();
       }
     }
   }

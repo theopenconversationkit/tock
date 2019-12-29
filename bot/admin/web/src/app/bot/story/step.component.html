@@ -19,11 +19,13 @@
   <mat-form-field class="input">
     <input matInput
            *ngIf="!step.new"
+           required
            [(ngModel)]="step.userSentence.defaultLocalizedLabelForLocale(state.currentLocale).label"
-           placeholder="Enter a User Phrase 2"
+           placeholder="Enter a User Phrase"
            (blur)="userSentenceChange($event.target.value)">
     <input matInput
            *ngIf="step.new"
+           required
            [(ngModel)]="step.newUserSentence"
            placeholder="Enter a User Phrase"
            (blur)="userSentenceChange($event.target.value)">
@@ -31,7 +33,11 @@
 
   <!-- intent -->
   <mat-form-field class="input input-intent">
-    <input matInput name="intent" placeholder="Intent" [(ngModel)]="step.intent.name"
+    <input matInput
+           name="intent"
+           required
+           placeholder="Intent"
+           [(ngModel)]="step.intent.name"
            matTooltip="Intent starting the Action"
            [matAutocomplete]="intentAuto"
            (keyup)="onIntentChange(step, $event.target.value)"
@@ -66,15 +72,9 @@
   </div>
 
   <div class="entity-button">
+    <nb-icon *ngIf="step.new" icon="alert-triangle-outline" nbTooltip="Invalid Action" status="warning"></nb-icon>
     <button *ngIf="!step.new && step.intent && !step.currentAnswer().isEmpty()" mat-icon-button (click)="addChild()">
       <mat-icon>add</mat-icon>
-    </button>
-  </div>
-
-  <div class="entity-button">
-    <button *ngIf="step.new" mat-button color="primary"
-            matTooltip="Save Action" (click)="save()">
-      Save
     </button>
   </div>
 

@@ -154,16 +154,17 @@ export class StoryComponent implements OnInit, OnChanges {
         this.story.category = result.category;
         this.story.description = result.description;
         this.story.userSentence = result.userSentence;
-        this.saveStory();
+        this.saveStory(this.story.selected);
         this.submitClose();
       }
     });
   }
 
-  private saveStory() {
+  private saveStory(selectStoryAfterSave: boolean) {
     this.story.steps = StoryStep.filterNew(this.story.steps);
     if (this.story._id) {
       this.bot.saveStory(this.story).subscribe(s => {
+        this.story.selected = selectStoryAfterSave;
         this.state.resetConfiguration();
         this.dialog.notify(`Story ${this.story.name} modified`, "Update");
       })
@@ -185,7 +186,8 @@ export class StoryComponent implements OnInit, OnChanges {
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.entities) {
         this.story.mandatoryEntities = result.entities;
-        this.saveStory();
+        console.log(this.story);
+        this.saveStory(this.story.selected);
       }
     });
   }
@@ -197,7 +199,7 @@ export class StoryComponent implements OnInit, OnChanges {
       {
         data:
           {
-            steps: this.story.steps,
+            steps: StoryStep.filterNew(this.story.steps),
             category: this.story.category
           },
         minWidth: 900
@@ -206,7 +208,7 @@ export class StoryComponent implements OnInit, OnChanges {
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.steps) {
         this.story.steps = result.steps;
-        this.saveStory();
+        this.saveStory(this.story.selected);
         this.submitClose();
       }
     });
