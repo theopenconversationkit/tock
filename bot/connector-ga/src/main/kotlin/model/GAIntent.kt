@@ -37,7 +37,8 @@ enum class GAIntent(
     permission("actions.intent.PERMISSION", GAInputValueDataType.permission),
     datetime("actions.intent.DATETIME", GAInputValueDataType.datetime),
     signIn("actions.intent.SIGN_IN"),
-    newSurface("actions.intent.NEW_SURFACE",GAInputValueDataType.newSurface);
+    newSurface("actions.intent.NEW_SURFACE",GAInputValueDataType.newSurface),
+    mediaStatus("actions.intent.MEDIA_STATUS",GAInputValueDataType.mediaStatus);
 
     companion object {
         fun findIntent(name: String): GAIntent? {

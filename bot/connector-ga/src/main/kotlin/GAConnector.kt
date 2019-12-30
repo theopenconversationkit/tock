@@ -261,9 +261,7 @@ class GAConnector internal constructor(
                     val items = message.cards.map { card ->
                         val title = translate(card.title)
                         val subTitle = translate(card.subTitle)
-                        val targetIntent = this.intent
 
-                        val map = mapOf(SendChoice.TITLE_PARAMETER to title.toString())
                         suggestions.addAll(card.actions.filter { it.url == null }.map { it.title.toString() })
                         GACarouselItem(
                             optionInfo = GAOptionInfo(
@@ -275,7 +273,7 @@ class GAConnector internal constructor(
                             image = card.file?.takeIf { it.type == image }?.let { gaImage(it.url, it.name) }
                         )
                     }
-                    val message = gaMessage(
+                    val carouselMessage = gaMessage(
                         inputPrompt = inputPrompt(
                             richResponse(
                                 items = listOf(
@@ -294,7 +292,7 @@ class GAConnector internal constructor(
                         )
                     )
                     listOf(
-                        message
+                        carouselMessage
                     )
                 }
                 message.cards.size == 1 -> {

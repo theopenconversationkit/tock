@@ -210,7 +210,7 @@ internal data class GAConnectorCallback(
             val message: GAExpectedInput? =
                     connectorMessages
                         .mapNotNull { it.expectedInput }
-                        .filter { it.inputPrompt?.richInitialPrompt?.items?.all { item -> item.basicCard == null } || it == firstExpectedInputWithCard }
+                        .filter { it.inputPrompt.richInitialPrompt.items.all { item -> item.basicCard == null } || it == firstExpectedInputWithCard }
                         .run {
                             if (isEmpty())
                                 null
@@ -296,31 +296,39 @@ internal data class GAConnectorCallback(
     }
 
     private fun rebuildGASuitableRichResponse(richResponse: GARichResponse, withFinalResponseCheck: Boolean) : GARichResponse{
-        val simpleResponses = (richResponse.items?.filter { item -> item.simpleResponse != null })
-        val basicCardResponses = (richResponse.items?.filter { item -> item.basicCard != null })
-        val structuredResponses = (richResponse.items?.filter { item -> item.structuredResponse != null })
+        val simpleResponses = (richResponse.items.filter { item -> item.simpleResponse != null })
+        val basicCardResponses = (richResponse.items.filter { item -> item.basicCard != null })
+        val structuredResponses = (richResponse.items.filter { item -> item.structuredResponse != null })
+        val mediaResponses = (richResponse.items.filter { item -> item.mediaResponse != null })
+
         val suggestions =  mutableListOf<GASuggestion>()
         val items =  mutableListOf<GAItem>()
-        if(richResponse.items?.first().simpleResponse==null){
+        if(richResponse.items.first().simpleResponse==null){
             logger.warn { "GA Condition failed : first item in rich response must be a simple response"}
         }
         if(simpleResponses.size>2){
             logger.warn { "GA Condition failed : ga message must have at most two simples responses"}
-            items.addAll(richResponse.items?.filter { item -> item.simpleResponse != null }.take(2))
+            items.addAll(richResponse.items.filter { item -> item.simpleResponse != null }.take(2))
         }else{
             items.addAll(simpleResponses)
         }
         if(basicCardResponses.size>1){
             logger.warn { "GA Condition failed : ga message must have at one basic card"}
-            items.add(richResponse.items?.first { item -> item.basicCard != null })
+            items.add(richResponse.items.first { item -> item.basicCard != null })
         }else{
             items.addAll(basicCardResponses)
         }
         if(structuredResponses.size>1){
             logger.warn { "GA Condition failed : ga message must have at one structuredResponse"}
-            items.add(richResponse.items?.first { item -> item.structuredResponse != null })
+            items.add(richResponse.items.first { item -> item.structuredResponse != null })
         }else{
             items.addAll(structuredResponses)
+        }
+        if(mediaResponses.size>1){
+            logger.warn { "GA Condition failed : ga message must have at one mediaResponse"}
+            items.add(richResponse.items.first { item -> item.mediaResponse != null })
+        }else{
+            items.addAll(mediaResponses)
         }
         if(withFinalResponseCheck && richResponse.suggestions.isNotEmpty()){
             logger.warn { "GA Condition failed : ga final response cant have suggestion chips"}

@@ -25,6 +25,7 @@ import ai.tock.bot.connector.ga.model.request.GANewSurfaceValue
 import ai.tock.bot.connector.ga.model.request.GARequest
 import ai.tock.bot.connector.ga.model.request.GASignInStatus
 import ai.tock.bot.connector.ga.model.request.GASignInValue
+import ai.tock.bot.connector.ga.model.response.GAMediaStatusValue
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendLocation
 import ai.tock.bot.engine.action.SendSentence
@@ -32,6 +33,7 @@ import ai.tock.bot.engine.event.EndConversationEvent
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.event.LoginEvent
 import ai.tock.bot.engine.event.LogoutEvent
+import ai.tock.bot.engine.event.MediaStatusEvent
 import ai.tock.bot.engine.event.NewDeviceEvent
 import ai.tock.bot.engine.event.NoInputEvent
 import ai.tock.bot.engine.event.StartConversationEvent
@@ -116,6 +118,12 @@ internal object WebhookActionConverter {
                     botId,
                     applicationId,
                     (input.arguments?.first { it.builtInArg == GAArgumentBuiltInName.NEW_SURFACE }?.extension as GANewSurfaceValue).status.toString()
+                ).setEventState()
+                GAIntent.mediaStatus -> MediaStatusEvent(
+                    playerId,
+                    botId,
+                    applicationId,
+                    (input.arguments?.first { it.builtInArg == GAArgumentBuiltInName.MEDIA_STATUS }?.extension as GAMediaStatusValue).status.toString()
                 ).setEventState()
                 GAIntent.signIn -> {
                     when ((input.arguments?.first { it.builtInArg == GAArgumentBuiltInName.SIGN_IN }?.extension as GASignInValue).status) {

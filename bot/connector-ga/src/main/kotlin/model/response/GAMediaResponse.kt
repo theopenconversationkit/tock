@@ -16,17 +16,10 @@
 
 package ai.tock.bot.connector.ga.model.response
 
-import ai.tock.bot.engine.message.GenericMessage
+import ai.tock.bot.connector.ga.model.response.GAMediaType.*
 
-data class GAItem(
-        val simpleResponse: GASimpleResponse? = null,
-        val basicCard: GABasicCard? = null,
-        val structuredResponse: GAStructuredResponse? = null,
-        val mediaResponse: GAMediaResponse? = null
-) {
+data class GAMediaResponse(
+    val mediaType: GAMediaType = MEDIA_TYPE_UNSPECIFIED,
+    val mediaObjects: List<GAMediaObject> = emptyList()
+)
 
-    fun toGenericMessage(): GenericMessage? {
-        return simpleResponse?.toGenericMessage() ?: basicCard?.toGenericMessage()
-    }
-
-}

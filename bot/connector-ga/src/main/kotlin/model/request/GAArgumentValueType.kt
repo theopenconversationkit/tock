@@ -24,5 +24,6 @@ enum class GAArgumentValueType(@get:JsonValue val value: String){
     transactionDecisionValue("type.googleapis.com/google.actions.v2.TransactionDecisionValue"),
     holdValue("type.googleapis.com/google.actions.v2.HoldValue"),
     signInValue("type.googleapis.com/google.actions.v2.SignInValue"),
-    newSurfaceValue("type.googleapis.com/google.actions.v2.NewSurfaceValue")
+    newSurfaceValue("type.googleapis.com/google.actions.v2.NewSurfaceValue"),
+    mediaStatus("type.googleapis.com/google.actions.v2.MediaStatus")
 }

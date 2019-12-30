@@ -16,17 +16,21 @@
 
 package ai.tock.bot.connector.ga.model.response
 
-import ai.tock.bot.engine.message.GenericMessage
+import ai.tock.bot.connector.ga.model.GAIntent
+import ai.tock.bot.connector.ga.model.request.GAArgumentValue
+import ai.tock.bot.connector.ga.model.request.GAArgumentValueType
 
-data class GAItem(
-        val simpleResponse: GASimpleResponse? = null,
-        val basicCard: GABasicCard? = null,
-        val structuredResponse: GAStructuredResponse? = null,
-        val mediaResponse: GAMediaResponse? = null
-) {
-
-    fun toGenericMessage(): GenericMessage? {
-        return simpleResponse?.toGenericMessage() ?: basicCard?.toGenericMessage()
-    }
-
+/**
+ * @see https://developers.google.com/actions/reference/rest/Shared.Types/MediaStatus
+ */
+enum class GAMediaStatus {
+    STATUS_UNSPECIFIED,
+    FINISHED, // Media has stopped because playback finished.
+    FAILED // Failed to play media
 }
+
+data class GAMediaStatusValue(
+    val status: GAMediaStatus
+) : GAArgumentValue(
+    GAArgumentValueType.mediaStatus
+)
