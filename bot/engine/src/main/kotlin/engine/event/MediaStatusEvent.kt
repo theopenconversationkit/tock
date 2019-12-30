@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.ga.model.response
+package ai.tock.bot.engine.event
 
-import ai.tock.bot.engine.message.GenericMessage
+import ai.tock.bot.engine.user.PlayerId
 
-data class GAItem(
-        val simpleResponse: GASimpleResponse? = null,
-        val basicCard: GABasicCard? = null,
-        val structuredResponse: GAStructuredResponse? = null,
-        val mediaResponse: GAMediaResponse? = null
-) {
-
-    fun toGenericMessage(): GenericMessage? {
-        return simpleResponse?.toGenericMessage() ?: basicCard?.toGenericMessage()
-    }
-
-}
+class MediaStatusEvent (
+    userId: PlayerId,
+    recipientId: PlayerId,
+    applicationId: String,
+    val status: String
+) : OneToOneEvent(userId, recipientId, applicationId)

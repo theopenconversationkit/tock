@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import ai.tock.bot.connector.ga.model.request.transaction.v3.GATransactionDecisionValueV3
+import ai.tock.bot.connector.ga.model.response.GAMediaStatusValue
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -29,7 +30,8 @@ import ai.tock.bot.connector.ga.model.request.transaction.v3.GATransactionDecisi
         JsonSubTypes.Type(value = GATransactionDecisionValueV3::class, name = "type.googleapis.com/google.actions.transactions.v3.TransactionDecisionValue"),
         JsonSubTypes.Type(value = GAHoldValue::class, name = "type.googleapis.com/google.actions.v2.HoldValue"),
         JsonSubTypes.Type(value = GASignInValue::class, name = "type.googleapis.com/google.actions.v2.SignInValue"),
-        JsonSubTypes.Type(value = GANewSurfaceValue::class, name = "type.googleapis.com/google.actions.v2.NewSurfaceValue")
+        JsonSubTypes.Type(value = GANewSurfaceValue::class, name = "type.googleapis.com/google.actions.v2.NewSurfaceValue"),
+        JsonSubTypes.Type(value = GAMediaStatusValue::class, name = "type.googleapis.com/google.actions.v2.MediaStatus")
 )
 abstract class  GAArgumentValue(@get:JsonProperty("@type") val type: GAArgumentValueType) {
 }

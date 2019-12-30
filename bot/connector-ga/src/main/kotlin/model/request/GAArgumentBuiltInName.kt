@@ -38,6 +38,8 @@ enum class GAArgumentBuiltInName {
     /** Sign in status argument. */
     SIGN_IN,
     /** New Surface status argument. */
-    NEW_SURFACE
+    NEW_SURFACE,
+    /** Media status argument. */
+    MEDIA_STATUS
 
 }

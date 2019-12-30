@@ -16,17 +16,12 @@
 
 package ai.tock.bot.connector.ga.model.response
 
-import ai.tock.bot.engine.message.GenericMessage
-
-data class GAItem(
-        val simpleResponse: GASimpleResponse? = null,
-        val basicCard: GABasicCard? = null,
-        val structuredResponse: GAStructuredResponse? = null,
-        val mediaResponse: GAMediaResponse? = null
-) {
-
-    fun toGenericMessage(): GenericMessage? {
-        return simpleResponse?.toGenericMessage() ?: basicCard?.toGenericMessage()
-    }
-
-}
+data class GAMediaObject(
+    val name: String? = null,
+    val description: String? = null,
+    val contentUrl: String? = null,
+    // Union field image can be only one of the following:
+    val largeImage: GAImage? = null,
+    val icon: GAImage? = null
+    // End of list of possible types for union field image.
+)
