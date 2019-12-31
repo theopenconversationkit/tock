@@ -63,9 +63,16 @@ data class Story(
         if (step.name == this.step) {
             return step
         } else {
-            return step.children.mapNotNull { findStep(it) }.firstOrNull()
+            return step.children.asSequence().mapNotNull { findStep(it) }.firstOrNull()
         }
     }
+
+    private fun findParentStep(child: StoryStep<*>): StoryStep<*>? =
+        definition.steps.asSequence().mapNotNull { findParentStep(it, child) }.firstOrNull()
+
+    private fun findParentStep(current: StoryStep<*>, child: StoryStep<*>): StoryStep<*>? =
+        current.takeIf { current.children.any { child.name == it.name } }
+            ?: current.children.asSequence().mapNotNull { findParentStep(it, child) }.firstOrNull()
 
     private fun StoryHandler.sendStartEvent(bus: BotBus): Boolean {
         //stops immediately if any startAction returns false
@@ -123,12 +130,12 @@ data class Story(
         }
 
         //revalidate step
-        val step = currentStep
-        this.step = step?.name
+        val s = currentStep
+        this.step = s?.name
 
         //check the children of the step
         if (!forced) {
-            step?.children?.find { it.select(userTimeline, dialog, action, newIntent) }?.apply {
+            s?.children?.find { it.select(userTimeline, dialog, action, newIntent) }?.apply {
                 forced = true
                 this@Story.step = name
             }
@@ -136,15 +143,26 @@ data class Story(
 
         //reset the step if applicable
         if (!forced && newIntent != null
-            && (step?.intent != null && !step.supportIntent(newIntent))
+            && (s?.intent != null && !s.supportIntent(newIntent))
         ) {
             this.step = null
         }
 
         //check the step from the intent
-        if (!forced && step == null) {
+        if (!forced && this.step == null) {
+
+            if (s != null) {
+                var parent: StoryStep<*>? = s
+                do {
+                    parent = parent?.let { findParentStep(it) }
+                    parent?.children?.find { it.select(userTimeline, dialog, action, newIntent) }?.apply {
+                        this@Story.step = name
+                        return
+                    }
+                } while (parent != null)
+            }
+
             definition.steps.find { it.select(userTimeline, dialog, action, newIntent) }?.apply {
-                forced = true
                 this@Story.step = name
             }
         }
