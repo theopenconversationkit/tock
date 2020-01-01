@@ -16,7 +16,6 @@
 
 package ai.tock.nlp.front.storage.mongo
 
-import com.mongodb.client.MongoCollection
 import ai.tock.nlp.front.service.storage.IntentDefinitionDAO
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition
@@ -27,7 +26,9 @@ import ai.tock.nlp.front.shared.config.IntentDefinition_.Companion.Namespace
 import ai.tock.nlp.front.storage.mongo.MongoFrontConfiguration.asyncDatabase
 import ai.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
 import ai.tock.shared.watch
+import com.mongodb.client.MongoCollection
 import org.litote.kmongo.Id
+import org.litote.kmongo.`in`
 import org.litote.kmongo.contains
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
@@ -82,4 +83,7 @@ internal object IntentDefinitionMongoDAO : IntentDefinitionDAO {
     override fun getIntentsUsingEntity(entityType: String): List<IntentDefinition> {
         return col.find(Entities.entityTypeName eq entityType).toList()
     }
+
+    fun getIntentsByNames(names: List<String>): List<IntentDefinition> =
+        col.find(Name `in` names).toList()
 }

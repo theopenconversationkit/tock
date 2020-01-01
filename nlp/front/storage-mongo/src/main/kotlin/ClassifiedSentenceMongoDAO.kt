@@ -16,11 +16,6 @@
 
 package ai.tock.nlp.front.storage.mongo
 
-import com.mongodb.ReadPreference.secondaryPreferred
-import com.mongodb.client.MongoCollection
-import com.mongodb.client.model.Collation
-import com.mongodb.client.model.IndexOptions
-import com.mongodb.client.model.ReplaceOptions
 import ai.tock.nlp.core.Intent
 import ai.tock.nlp.front.service.storage.ClassifiedSentenceDAO
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
@@ -49,10 +44,19 @@ import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UpdateDa
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UsageCount
 import ai.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
 import ai.tock.nlp.front.storage.mongo.ParseRequestLogMongoDAO.ParseRequestLogStatCol
+import ai.tock.shared.Executor
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.error
-import ai.tock.shared.intProperty
+import ai.tock.shared.injector
+import ai.tock.shared.listProperty
+import ai.tock.shared.longProperty
+import ai.tock.shared.provide
 import ai.tock.shared.security.UserLogin
+import com.mongodb.ReadPreference.secondaryPreferred
+import com.mongodb.client.MongoCollection
+import com.mongodb.client.model.Collation
+import com.mongodb.client.model.IndexOptions
+import com.mongodb.client.model.ReplaceOptions
 import mu.KotlinLogging
 import org.bson.conversions.Bson
 import org.litote.jackson.data.JacksonData
@@ -84,8 +88,10 @@ import org.litote.kmongo.replaceOneWithFilter
 import org.litote.kmongo.setTo
 import org.litote.kmongo.setValue
 import org.litote.kmongo.updateMany
+import java.time.Duration
 import java.time.Instant
 import java.time.Instant.now
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 import java.util.concurrent.TimeUnit.DAYS
 
@@ -175,18 +181,35 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 ApplicationId, Classification_.intentId, Language, UpdateDate
             )
             c.ensureIndex(ForReview)
-            intProperty("tock_nlp_classified_sentences_index_ttl_days", -1)
-                .takeUnless { it == -1 }
-                ?.let { ttl ->
-                    c.ensureIndex(
-                        UpdateDate,
-                        indexOptions = IndexOptions()
-                            .expireAfter(ttl.toLong(), DAYS)
-                            .partialFilterExpression(Status eq inbox)
-                            .name("ttl_sentences_cleanup_index")
+
+            val ttlIntents = listProperty("tock_nlp_classified_sentences_index_ttl_intent_names", emptyList())
+            val ttlDays = longProperty("tock_nlp_classified_sentences_index_ttl_days", -1)
+            if (ttlIntents.isEmpty() && ttlDays != -1L) {
+                logger.info { "add classified sentence ttl index for $ttlDays days" }
+                c.ensureIndex(
+                    UpdateDate,
+                    indexOptions = IndexOptions()
+                        .expireAfter(ttlDays, DAYS)
+                        .partialFilterExpression(Status eq inbox)
+                )
+            } else {
+                c.ensureIndex(UpdateDate)
+            }
+
+            if (ttlIntents.isNotEmpty() && ttlDays != -1L) {
+                logger.info { "add classified sentence periodic crawler for $ttlDays days and intents $ttlIntents" }
+                injector.provide<Executor>().setPeriodic(Duration.ofDays(1)) {
+                    logger.debug { "delete old classified sentences for intents $ttlIntents" }
+                    val intentIds = IntentDefinitionMongoDAO.getIntentsByNames(ttlIntents).map { it._id }
+                    c.deleteMany(
+                        and(
+                            Status eq inbox,
+                            Classification_.intentId `in` intentIds,
+                            UpdateDate lt now().minus(ttlDays, ChronoUnit.DAYS)
+                        )
                     )
                 }
-                ?: c.ensureIndex(UpdateDate)
+            }
 
         } catch (e: Exception) {
             logger.error(e)
