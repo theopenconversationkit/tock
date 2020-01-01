@@ -53,7 +53,14 @@ import {
 import {MapToIterablePipe} from "./map-to-iterable.pipe";
 import {ScrollComponent} from "../scroll/scroll.component";
 import { NbEvaIconsModule } from '@nebular/eva-icons';
-import {NbButtonModule, NbDatepickerModule, NbInputModule, NbToggleModule, NbIconModule} from "@nebular/theme";
+import {
+  NbButtonModule,
+  NbDatepickerModule,
+  NbInputModule,
+  NbToggleModule,
+  NbIconModule,
+  NbActionsModule
+} from "@nebular/theme";
 
 @NgModule({
   imports: [
@@ -88,9 +95,13 @@ import {NbButtonModule, NbDatepickerModule, NbInputModule, NbToggleModule, NbIco
     MatTooltipModule,
     MatTreeModule,
 
+    NbActionsModule,
+    NbButtonModule,
     NbEvaIconsModule,
+    NbDatepickerModule,
     NbIconModule,
-    NbButtonModule
+    NbInputModule,
+    NbToggleModule
   ],
   declarations: [ConfirmDialogComponent, MapToIterablePipe, ScrollComponent],
   providers: [],
@@ -128,9 +139,11 @@ import {NbButtonModule, NbDatepickerModule, NbInputModule, NbToggleModule, NbIco
     FormsModule,
     MapToIterablePipe,
 
+    NbActionsModule,
+    NbButtonModule,
     NbEvaIconsModule,
-    NbIconModule,
     NbDatepickerModule,
+    NbIconModule,
     NbInputModule,
     NbToggleModule],
 

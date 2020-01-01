@@ -207,28 +207,26 @@ object AdminService {
     fun searchTestEntityErrors(query: TestErrorQuery, encryptSentences: Boolean): EntityTestErrorQueryResultReport {
         return front.searchTestEntityErrors(query)
             .run {
-                EntityTestErrorQueryResultReport(
-                    total,
-                    data.mapNotNull {
-                        val s = front.search(
-                            SentencesQuery(
-                                it.applicationId,
-                                it.language,
-                                search = it.text,
-                                onlyExactMatch = true
-                            )
+                val results = data.mapNotNull {
+                    val s = front.search(
+                        SentencesQuery(
+                            it.applicationId,
+                            it.language,
+                            search = it.text,
+                            onlyExactMatch = true
                         )
-                        if (s.total == 0L) {
-                            null
-                        } else {
-                            EntityTestErrorWithSentenceReport(
-                                SentenceReport(s.sentences.first()),
-                                it,
-                                encryptSentences
-                            )
-                        }
+                    )
+                    if (s.total == 0L) {
+                        null
+                    } else {
+                        EntityTestErrorWithSentenceReport(
+                            SentenceReport(s.sentences.first()),
+                            it,
+                            encryptSentences
+                        )
                     }
-                )
+                }
+                EntityTestErrorQueryResultReport(results.size, results)
             }
     }
 

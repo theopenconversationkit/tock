@@ -86,7 +86,7 @@ abstract class WebVerticle : AbstractVerticle() {
         }
     }
 
-    protected open val logger: KLogger = KotlinLogging.logger {}
+    open val logger: KLogger = KotlinLogging.logger {}
 
     private data class BooleanResponse(val success: Boolean = true)
 

@@ -47,12 +47,20 @@ export class QualityService {
     return this.rest.post("/test/intent-errors", query, IntentTestErrorQueryResult.fromJSON)
   }
 
+  searchIntentErrorsBlob(query: TestErrorQuery): Observable<Blob> {
+    return this.rest.post("/test/intent-errors", query, j => new Blob([JSON.stringify(j)], {type: 'application/json'}))
+  }
+
   deleteIntentError(error: IntentTestError): Observable<boolean> {
     return this.rest.post("/test/intent-error/delete", error)
   }
 
   searchEntityErrors(query: TestErrorQuery): Observable<EntityTestErrorQueryResult> {
     return this.rest.post("/test/entity-errors", query, EntityTestErrorQueryResult.fromJSON)
+  }
+
+  searchEntityErrorsBlob(query: TestErrorQuery): Observable<Blob> {
+    return this.rest.post("/test/entity-errors", query, j => new Blob([JSON.stringify(j)], {type: 'application/json'}))
   }
 
   deleteEntityError(error: EntityTestError): Observable<boolean> {

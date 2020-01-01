@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import {saveAs} from "file-saver";
 import {AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, ViewChild} from "@angular/core";
 import {MatPaginator, MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {DataSource} from "@angular/cdk/collections";
@@ -23,6 +24,7 @@ import {StateService} from "../core-nlp/state.service";
 import {Router} from "@angular/router";
 import {QualityService} from "../quality-nlp/quality.service";
 import {escapeRegex} from "../model/commons";
+import {DialogService} from "../core-nlp/dialog.service";
 
 @Component({
   selector: 'tock-test-intent-error',
@@ -39,7 +41,8 @@ export class TestIntentErrorComponent implements OnInit, AfterViewInit, OnDestro
   constructor(public state: StateService,
               private quality: QualityService,
               private snackBar: MatSnackBar,
-              private router: Router) {
+              private router: Router,
+              private dialog: DialogService) {
   }
 
   ngOnInit(): void {
@@ -82,6 +85,22 @@ export class TestIntentErrorComponent implements OnInit, AfterViewInit, OnDestro
         );
       }
     )
+  }
+
+  download() {
+    setTimeout(_ => {
+      this.quality.searchIntentErrorsBlob(
+        TestErrorQuery.create(
+          this.state,
+          0,
+          100000,
+          this.dataSource.intent === "" ? undefined : this.dataSource.intent
+        )
+      ).subscribe(blob => {
+        saveAs(blob, this.state.currentApplication.name + "_intent_errors.json");
+        this.dialog.notify(`Dump provided`, "Dump");
+      })
+    }, 1);
   }
 }
 

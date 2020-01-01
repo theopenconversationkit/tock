@@ -61,8 +61,8 @@ import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.name
 import ai.tock.shared.namespace
-import ai.tock.shared.provide
 import ai.tock.shared.pingMongoDatabase
+import ai.tock.shared.provide
 import ai.tock.shared.security.TockUserRole.admin
 import ai.tock.shared.security.TockUserRole.nlpUser
 import ai.tock.shared.security.TockUserRole.technicalAdmin
