@@ -27,7 +27,7 @@
   font-size: smaller;
   cursor: pointer;
 }
-.error {
+.error-message {
   color: red;
 }
 .success {
