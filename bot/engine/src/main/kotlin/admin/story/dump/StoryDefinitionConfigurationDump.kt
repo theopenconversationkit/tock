@@ -107,7 +107,7 @@ data class StoryDefinitionConfigurationDump(
         StoryDefinitionConfiguration(
             storyId,
             controller.botId,
-            intent,
+            controller.checkIntent(intent)!!,
             currentType,
             answers.map { it.toAnswer(currentType, controller) },
             version,

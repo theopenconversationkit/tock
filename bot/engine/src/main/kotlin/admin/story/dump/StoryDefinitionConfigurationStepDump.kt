@@ -77,9 +77,9 @@ data class StoryDefinitionConfigurationStepDump(
 
     fun toStep(controller: StoryDefinitionConfigurationDumpController): StoryDefinitionConfigurationStep =
         StoryDefinitionConfigurationStep(
-            name,
-            intent,
-            targetIntent,
+            name.takeUnless { it.isBlank() } ?: "${intent?.name}_$level",
+            controller.checkIntent(intent),
+            controller.checkIntent(targetIntent),
             answers.map { it.toAnswer(currentType, controller) },
             currentType,
             "",

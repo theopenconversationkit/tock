@@ -57,7 +57,7 @@ data class StoryDefinitionConfigurationMandatoryEntityDump(
         StoryDefinitionConfigurationMandatoryEntity(
             role,
             entityType,
-            intent,
+            controller.checkIntent(intent)!!,
             answers.map { it.toAnswer(currentType, controller) },
             currentType
         )

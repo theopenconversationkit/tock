@@ -131,7 +131,7 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
     this.uploader.onCompleteItem =
       (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
         this.dialog.notify(`Dump uploaded`, "Dump");
-        this.load();
+        this.state.resetConfiguration();
       };
     this.displayUpload = true;
   }

@@ -56,6 +56,7 @@ import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpController
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationFeatureDump
 import ai.tock.bot.admin.user.UserReportDAO
+import ai.tock.bot.definition.Intent
 import ai.tock.bot.engine.dialog.DialogFlowDAO
 import ai.tock.bot.engine.feature.FeatureDAO
 import ai.tock.bot.engine.feature.FeatureState
@@ -74,6 +75,7 @@ import ai.tock.nlp.front.shared.config.EntityTypeDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.config.SentencesQuery
 import ai.tock.shared.Dice
+import ai.tock.shared.defaultLocale
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.vertx.UnauthorizedException
@@ -106,7 +108,9 @@ object BotAdminService {
 
     private class BotStoryDefinitionConfigurationDumpController(
         override val targetNamespace: String,
-        override val botId: String)
+        override val botId: String,
+        val story: StoryDefinitionConfigurationDump,
+        val application: ApplicationDefinition)
         : StoryDefinitionConfigurationDumpController {
 
         override fun keepFeature(feature: StoryDefinitionConfigurationFeatureDump): Boolean =
@@ -137,6 +141,22 @@ object BotAdminService {
                     script.date
                 )
             }
+        }
+
+        override fun checkIntent(intent: Intent?): Intent? {
+            if (intent != null) {
+                AdminService.createOrGetIntent(
+                    targetNamespace,
+                    IntentDefinition(
+                        intent.name,
+                        targetNamespace,
+                        setOf(application._id),
+                        emptySet(),
+                        category = story.category
+                    )
+                )
+            }
+            return intent
         }
     }
 
@@ -277,59 +297,48 @@ object BotAdminService {
     }
 
     fun importStories(namespace: String, botId: String, stories: List<StoryDefinitionConfigurationDump>) {
-        stories.map {
-            it.toStoryDefinitionConfiguration(
-                BotStoryDefinitionConfigurationDumpController(namespace, botId)
-            )
-        }
-            .forEach {
-                saveStory(namespace, it)
+        val botConf = getBotConfigurationsByNamespaceAndBotId(namespace, botId).firstOrNull()
+
+        if (botConf == null) {
+            badRequest("No bot configuration is defined yet")
+        } else {
+            val application = front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)!!
+            stories.map {
+                it.toStoryDefinitionConfiguration(
+                    BotStoryDefinitionConfigurationDumpController(namespace, botId, it, application)
+                )
             }
+                .forEach {
+                    saveStory(namespace, it, botConf, application)
+                }
+        }
     }
 
     private fun saveStory(
         namespace: String,
-        story: StoryDefinitionConfiguration
+        story: StoryDefinitionConfiguration,
+        botConf: BotApplicationConfiguration,
+        application: ApplicationDefinition
     ) {
-
-        val botConf = getBotConfigurationsByNamespaceAndBotId(namespace, story.botId).firstOrNull()
-        return if (botConf != null) {
-
-            val application = front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)!!
-
-            AdminService.createOrGetIntent(
-                namespace,
-                IntentDefinition(
-                    story.intent.name,
-                    namespace,
-                    setOf(application._id),
-                    emptySet(),
-                    category = story.category
-                )
-            )
-
-            storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
-                namespace,
-                botConf.botId,
-                story.intent.name
-            )?.also {
-                storyDefinitionDAO.delete(it)
-            }
-            storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
-                namespace,
-                botConf.botId,
-                story.storyId
-            )?.also {
-                storyDefinitionDAO.delete(it)
-            }
-
-            storyDefinitionDAO.save(story)
-
-            //save all intents of steps
-            story.steps.forEach { saveUserSentenceOfStep(application, it) }
-        } else {
-            badRequest("No bot configuration is defined yet")
+        storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
+            namespace,
+            botConf.botId,
+            story.intent.name
+        )?.also {
+            storyDefinitionDAO.delete(it)
         }
+        storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
+            namespace,
+            botConf.botId,
+            story.storyId
+        )?.also {
+            storyDefinitionDAO.delete(it)
+        }
+
+        storyDefinitionDAO.save(story)
+
+        //save all intents of steps
+        story.steps.forEach { saveUserSentenceOfStep(application, it) }
     }
 
     fun findStoryByBotIdAndIntent(namespace: String, botId: String, intent: String): BotStoryDefinitionConfiguration? {
@@ -670,6 +679,7 @@ object BotAdminService {
         if (label != null && step.intent != null) {
             application.supportedLocales.forEach { locale ->
                 val text = label.findLabel(locale)?.label
+                    ?: label.findLabel(defaultLocale)?.label
                 if (text != null) {
                     val existingSentence = front.search(
                         SentencesQuery(
