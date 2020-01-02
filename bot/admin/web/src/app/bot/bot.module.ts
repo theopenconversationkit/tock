@@ -46,8 +46,17 @@ import {StepsComponent} from "./story/steps.component";
 import {StepComponent} from "./story/step.component";
 import {MediaDialogComponent} from "./story/media/media-dialog.component";
 import {ThemeModule} from "../theme/theme.module";
-import {NbRouteTabsetModule, NbCardModule, NbSpinnerModule, NbCheckboxModule, NbAccordionModule, NbSelectModule,
-  NbButtonModule, NbTooltipModule, NbActionsModule, NbInputModule, NbRadioModule } from "@nebular/theme";
+import {
+  NbAccordionModule,
+  NbCardModule,
+  NbCheckboxModule,
+  NbInputModule,
+  NbRadioModule,
+  NbRouteTabsetModule,
+  NbSelectModule,
+  NbSpinnerModule,
+  NbTooltipModule
+} from "@nebular/theme";
 import {ApplicationFeatureComponent} from "./feature/application-feature.component";
 import {StoryRuleComponent} from "./feature/story-rule.component";
 
@@ -112,9 +121,7 @@ export class BotRoutingModule {
     NbCheckboxModule,
     NbAccordionModule,
     NbSelectModule,
-    NbButtonModule,
     NbTooltipModule,
-    NbActionsModule,
     NbInputModule,
     NbRadioModule
   ],

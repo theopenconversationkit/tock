@@ -74,8 +74,10 @@ object UploadedFilesService {
         downloadFile(context, "$id.$suffix")
     }
 
+    internal fun fileId(id: String, suffix: String): String = "$id.$suffix"
+
     internal fun botFilePath(bus: BotBus, id: String, suffix: String): String =
-        (bus as? TockBotBus)?.connector?.getBaseUrl() + basePath + id + "." + suffix
+        (bus as? TockBotBus)?.connector?.getBaseUrl() + basePath + fileId(id, suffix)
 
     fun getFileContentFromUrl(url: String): ByteArray? =
         url.run {
@@ -83,13 +85,14 @@ object UploadedFilesService {
             if (start == -1) {
                 null
             } else {
-                getFromCache(url.substring(start+1).toId(), UPLOADED_TYPE)
+                getFileContentFromId(url.substring(start + 1))
             }
         }
 
+    internal fun getFileContentFromId(id: String): ByteArray? = getFromCache(id.toId(), UPLOADED_TYPE) as? ByteArray
 
     private fun downloadFile(context: RoutingContext, id: String) {
-        val bytes: ByteArray? = getFromCache(id.toId(), UPLOADED_TYPE)
+        val bytes: ByteArray? = getFileContentFromId(id)
         if (bytes != null) {
             context.response().putHeader("Content-Type", guessContentType(id))
                 .end(Buffer.buffer(bytes))

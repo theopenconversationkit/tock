@@ -19,6 +19,7 @@ package ai.tock.bot.admin
 import ai.tock.bot.admin.BotAdminService.createI18nRequest
 import ai.tock.bot.admin.BotAdminService.dialogReportDAO
 import ai.tock.bot.admin.BotAdminService.getBotConfigurationByApplicationIdAndBotId
+import ai.tock.bot.admin.BotAdminService.importStories
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.model.BotAdminConfiguration
@@ -33,6 +34,7 @@ import ai.tock.bot.admin.model.DialogsSearchQuery
 import ai.tock.bot.admin.model.Feature
 import ai.tock.bot.admin.model.StorySearchRequest
 import ai.tock.bot.admin.model.UserSearchQuery
+import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
 import ai.tock.bot.admin.test.TestPlanService
 import ai.tock.bot.admin.test.findTestService
 import ai.tock.bot.connector.ConnectorType.Companion.rest
@@ -295,6 +297,18 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         ) { context, query: CreateStoryRequest ->
             BotAdminService.createStory(context.organization, query) ?: unauthorized()
+        }
+
+        blockingJsonGet("/bot/story/:appName/export", botUser) { context ->
+            BotAdminService.exportStories(context.organization, context.path("appName"))
+        }
+
+        blockingUploadJsonPost(
+            "/bot/story/:appName/import",
+            botUser,
+            simpleLogger("JSON Import Response Labels")
+        ) { context, stories: List<StoryDefinitionConfigurationDump> ->
+            importStories(context.organization, context.path("appName"), stories)
         }
 
         blockingJsonPost(

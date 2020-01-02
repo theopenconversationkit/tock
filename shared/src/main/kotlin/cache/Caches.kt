@@ -16,12 +16,12 @@
 
 package ai.tock.shared.cache
 
-import com.google.common.cache.Cache
-import com.google.common.cache.CacheBuilder
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.longProperty
 import ai.tock.shared.provide
+import com.google.common.cache.Cache
+import com.google.common.cache.CacheBuilder
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import java.util.concurrent.TimeUnit
@@ -61,15 +61,15 @@ private fun <T : Any> inMemoryKey(id: Id<T>, type: String): Any = id to type
 fun <T : Any> getOrCache(id: Id<T>, type: String, valueProvider: () -> T?): T? {
     return inMemoryCache.get(inMemoryKey(id, type)) {
         cache.get(id, type)
-                ?: try {
-                    valueProvider.invoke()?.apply {
-                        putInCache(id, type, this)
-                    }
-                } catch (e: Exception) {
-                    logger.error(e)
-                    null
+            ?: try {
+                valueProvider.invoke()?.apply {
+                    putInCache(id, type, this)
                 }
-                ?: NOT_PRESENT
+            } catch (e: Exception) {
+                logger.error(e)
+                null
+            }
+            ?: NOT_PRESENT
     }.replaceNotPresent()
 }
 
@@ -93,7 +93,9 @@ fun <T : Any> getFromCache(id: Id<T>, type: String): T? {
  */
 fun <T : Any> putInCache(id: Id<T>, type: String, value: T) {
     try {
-        inMemoryCache.put(inMemoryKey(id, type), value)
+        if (value !is ByteArray) {
+            inMemoryCache.put(inMemoryKey(id, type), value)
+        }
         cache.put(id, type, value)
     } catch (e: Exception) {
         logger.error(e)

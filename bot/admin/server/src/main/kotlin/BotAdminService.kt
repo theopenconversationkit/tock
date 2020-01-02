@@ -51,6 +51,10 @@ import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep
+import ai.tock.bot.admin.story.dump.ScriptAnswerVersionedConfigurationDump
+import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
+import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpController
+import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationFeatureDump
 import ai.tock.bot.admin.user.UserReportDAO
 import ai.tock.bot.engine.dialog.DialogFlowDAO
 import ai.tock.bot.engine.feature.FeatureDAO
@@ -99,6 +103,42 @@ object BotAdminService {
     private val featureDAO: FeatureDAO by injector.instance()
     private val dialogFlowDAO: DialogFlowDAO get() = injector.provide()
     private val front = FrontClient
+
+    private class BotStoryDefinitionConfigurationDumpController(
+        override val targetNamespace: String,
+        override val botId: String)
+        : StoryDefinitionConfigurationDumpController {
+
+        override fun keepFeature(feature: StoryDefinitionConfigurationFeatureDump): Boolean =
+            feature.botApplicationConfigurationId == null
+                || getBotConfigurationById(feature.botApplicationConfigurationId!!)?.namespace == targetNamespace
+
+        override fun buildScript(script: ScriptAnswerVersionedConfigurationDump, compile: Boolean): ScriptAnswerVersionedConfiguration {
+            return if (compile && !KotlinCompilerClient.compilerDisabled) {
+                val fileName = "T${Dice.newId()}.kt"
+                val result = KotlinCompilerClient.compile(KotlinFile(script.script, fileName))
+                if (result?.compilationResult == null) {
+                    throw badRequest("Compilation error: ${result?.errors?.joinToString()}")
+                } else {
+                    val c = result.compilationResult!!
+                    ScriptAnswerVersionedConfiguration(
+                        script.script,
+                        c.files.map { it.key.substring(0, it.key.length - ".class".length) to it.value },
+                        BotVersion.getCurrentBotVersion(botId),
+                        c.mainClass
+                    )
+                }
+            } else {
+                ScriptAnswerVersionedConfiguration(
+                    script.script,
+                    emptyList(),
+                    script.version,
+                    "",
+                    script.date
+                )
+            }
+        }
+    }
 
     fun getBots(namespace: String, botId: String): List<BotConfiguration> {
         return applicationConfigurationDAO.getBotConfigurationsByNamespaceAndBotId(namespace, botId)
@@ -206,19 +246,24 @@ object BotAdminService {
         }
     }
 
-    fun loadStories(request: StorySearchRequest): List<BotStoryDefinitionConfiguration> {
+    fun loadStories(request: StorySearchRequest): List<BotStoryDefinitionConfiguration> =
+        findStories(request.namespace, request.applicationName).map {
+            BotStoryDefinitionConfiguration(it)
+        }
+
+    private fun findStories(namespace: String, applicationName: String): List<StoryDefinitionConfiguration> {
         val botConf =
-            getBotConfigurationsByNamespaceAndNlpModel(request.namespace, request.applicationName).firstOrNull()
+            getBotConfigurationsByNamespaceAndNlpModel(namespace, applicationName).firstOrNull()
         return if (botConf == null) {
             emptyList()
         } else {
             storyDefinitionDAO
-                .getStoryDefinitionsByNamespaceAndBotId(request.namespace, botConf.botId)
-                .map {
-                    BotStoryDefinitionConfiguration(it)
-                }
+                .getStoryDefinitionsByNamespaceAndBotId(namespace, botConf.botId)
         }
     }
+
+    fun exportStories(namespace: String, applicationName: String): List<StoryDefinitionConfigurationDump> =
+        findStories(namespace, applicationName).map { StoryDefinitionConfigurationDump(it) }
 
     fun findStory(namespace: String, storyDefinitionId: String): BotStoryDefinitionConfiguration? {
         val story = storyDefinitionDAO.getStoryDefinitionById(storyDefinitionId.toId())
@@ -229,6 +274,62 @@ object BotAdminService {
             }
         }
         return null
+    }
+
+    fun importStories(namespace: String, botId: String, stories: List<StoryDefinitionConfigurationDump>) {
+        stories.map {
+            it.toStoryDefinitionConfiguration(
+                BotStoryDefinitionConfigurationDumpController(namespace, botId)
+            )
+        }
+            .forEach {
+                saveStory(namespace, it)
+            }
+    }
+
+    private fun saveStory(
+        namespace: String,
+        story: StoryDefinitionConfiguration
+    ) {
+
+        val botConf = getBotConfigurationsByNamespaceAndBotId(namespace, story.botId).firstOrNull()
+        return if (botConf != null) {
+
+            val application = front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)!!
+
+            AdminService.createOrGetIntent(
+                namespace,
+                IntentDefinition(
+                    story.intent.name,
+                    namespace,
+                    setOf(application._id),
+                    emptySet(),
+                    category = story.category
+                )
+            )
+
+            storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
+                namespace,
+                botConf.botId,
+                story.intent.name
+            )?.also {
+                storyDefinitionDAO.delete(it)
+            }
+            storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
+                namespace,
+                botConf.botId,
+                story.storyId
+            )?.also {
+                storyDefinitionDAO.delete(it)
+            }
+
+            storyDefinitionDAO.save(story)
+
+            //save all intents of steps
+            story.steps.forEach { saveUserSentenceOfStep(application, it) }
+        } else {
+            badRequest("No bot configuration is defined yet")
+        }
     }
 
     fun findStoryByBotIdAndIntent(namespace: String, botId: String, intent: String): BotStoryDefinitionConfiguration? {

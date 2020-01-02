@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
+package ai.tock.bot.admin.story.dump
 
-import ai.tock.nlp.admin.model.PaginatedQuery
+import ai.tock.bot.admin.answer.ScriptAnswerVersionedConfiguration
 
-/**
- *
- */
-class StorySearchRequest : PaginatedQuery()
+interface StoryDefinitionConfigurationDumpController {
+    val targetNamespace: String
+    val botId:String
+    fun keepFeature(feature: StoryDefinitionConfigurationFeatureDump): Boolean
+    fun buildScript(script: ScriptAnswerVersionedConfigurationDump, compile: Boolean): ScriptAnswerVersionedConfiguration
+}

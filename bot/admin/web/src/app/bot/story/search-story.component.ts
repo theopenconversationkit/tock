@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
+import {saveAs} from "file-saver";
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {BotService} from "../bot-service";
 import {NlpService} from "../../nlp-tabs/nlp.service";
 import {StateService} from "../../core-nlp/state.service";
 import {StoryDefinitionConfiguration, StorySearchQuery} from "../model/story";
 import {Subscription} from "rxjs";
+import {DialogService} from "../../core-nlp/dialog.service";
+import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
 
 @Component({
   selector: 'tock-search-story',
@@ -37,11 +40,15 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
   onlyConfigured: boolean = true;
   loading: boolean = false;
 
+  displayUpload: boolean = false;
+  uploader: FileUploader;
+
   private subscription: Subscription;
 
   constructor(private nlp: NlpService,
               private state: StateService,
-              private bot: BotService) {
+              private bot: BotService,
+              private dialog: DialogService) {
   }
 
   ngOnInit(): void {
@@ -107,5 +114,31 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
       && (this.category.length === 0 || this.category === s.category)
       && (!this.onlyConfigured || !s.isBuiltIn())
     );
+  }
+
+  download() {
+    setTimeout(_ => {
+      this.bot.exportStories(this.state.currentApplication.name)
+        .subscribe(blob => {
+          saveAs(blob, this.state.currentApplication.name + "_stories.json");
+          this.dialog.notify(`Dump provided`, "Dump");
+        })
+    }, 1);
+  }
+
+  prepareUpload() {
+    this.uploader = new FileUploader({removeAfterUpload: true});
+    this.uploader.onCompleteItem =
+      (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
+        this.dialog.notify(`Dump uploaded`, "Dump");
+        this.load();
+      };
+    this.displayUpload = true;
+  }
+
+  upload() {
+    this.bot.prepareStoryDumpUploader(this.uploader, this.state.currentApplication.name);
+    this.uploader.uploadAll();
+    this.displayUpload = false;
   }
 }

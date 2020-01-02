@@ -23,35 +23,35 @@ package ai.tock.translator
  * format pattern arguments for this current translation.
  */
 class I18nLabelValue constructor(
-        /**
-         * Unique key of the label.
-         */
-        val key: String,
-        /**
-         * Namespace of the label.
-         */
-        namespace: String,
-        /**
-         * Category of the label.
-         */
-        category: String,
-        /**
-         * The default label if no translation is found.
-         */
-        val defaultLabel: CharSequence,
-        /**
-         * The optional format pattern arguments.
-         */
-        val args: List<Any?> = emptyList()
+    /**
+     * Unique key of the label.
+     */
+    val key: String,
+    /**
+     * Namespace of the label.
+     */
+    namespace: String,
+    /**
+     * Category of the label.
+     */
+    category: String,
+    /**
+     * The default label if no translation is found.
+     */
+    val defaultLabel: CharSequence,
+    /**
+     * The optional format pattern arguments.
+     */
+    val args: List<Any?> = emptyList()
 ) : CharSequence by defaultLabel {
 
     constructor(label: I18nLabel) :
-            this(
-                    label._id.toString(),
-                    label.namespace,
-                    label.category,
-                    label.defaultLabel ?: ""
-            )
+        this(
+            label._id.toString(),
+            label.namespace,
+            label.category,
+            label.defaultLabel ?: ""
+        )
 
     /**
      * Namespace of the label.
@@ -61,6 +61,12 @@ class I18nLabelValue constructor(
      * Category of the label.
      */
     val category: String = category.toLowerCase()
+
+    /**
+     * Returns the value with the given namespace.
+     */
+    fun withNamespace(newNamespace: String): I18nLabelValue =
+        I18nLabelValue(key.replaceBefore("_", newNamespace), newNamespace, category, defaultLabel, args)
 
     override fun toString(): String {
         return defaultLabel.toString()

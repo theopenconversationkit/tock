@@ -28,7 +28,33 @@
       <input nbInput status="primary" placeholder="Search Stories" [(ngModel)]="filter" (keyup)="search()">
     </span>
     <mat-slide-toggle [(ngModel)]="onlyConfigured" (change)="search()">Only Configured Stories</mat-slide-toggle>
+    <div class="download">
+      <button nbButton ghost (click)="download()" matTooltip="Export Stories">
+        <mat-icon>file_download</mat-icon>
+      </button>
+      <button nbButton ghost (click)="prepareUpload()" matTooltip="Import Stories">
+        <mat-icon>file_upload</mat-icon>
+      </button>
+    </div>
+
   </nb-card-body>
+</nb-card>
+<nb-card *ngIf="displayUpload">
+  <nb-card-header>Upload Stories</nb-card-header>
+  <nb-card-body>
+    <p>
+      <label for="file">Please select a story dump file:&nbsp;</label>
+      <input id="file" type="file" ng2FileSelect [uploader]="uploader"/>
+    </p>
+  </nb-card-body>
+  <nb-card-footer>
+    <button nbButton ghost (click)="displayUpload = false">
+      Cancel
+    </button>
+    <button nbButton outline (click)="upload()" [disabled]="!uploader.getNotUploadedItems().length" status="primary">
+      Upload
+    </button>
+  </nb-card-footer>
 </nb-card>
 <mat-accordion *ngIf="stories">
   <tock-story *ngFor="let s of stories" [story]="s" (delete)="delete($event)"

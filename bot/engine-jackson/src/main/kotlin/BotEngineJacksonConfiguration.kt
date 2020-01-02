@@ -16,17 +16,6 @@
 
 package ai.tock.bot.jackson
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.databind.BeanDescription
-import com.fasterxml.jackson.databind.DeserializationConfig
-import com.fasterxml.jackson.databind.Module
-import com.fasterxml.jackson.databind.SerializationConfig
-import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier
-import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition
-import com.fasterxml.jackson.databind.jsontype.NamedType
-import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.databind.ser.BeanPropertyWriter
-import com.fasterxml.jackson.databind.ser.BeanSerializerModifier
 import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
@@ -34,12 +23,20 @@ import ai.tock.bot.admin.answer.MessageAnswerConfiguration
 import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
 import ai.tock.bot.admin.answer.ScriptAnswerVersionedConfiguration
 import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
+import ai.tock.bot.admin.story.dump.AnswerConfigurationDump
+import ai.tock.bot.admin.story.dump.BuiltInAnswerConfigurationDump
+import ai.tock.bot.admin.story.dump.MediaActionDescriptorDump
+import ai.tock.bot.admin.story.dump.MediaCardDescriptorDump
+import ai.tock.bot.admin.story.dump.MediaCarouselDescriptorDump
+import ai.tock.bot.admin.story.dump.MediaMessageDescriptorDump
+import ai.tock.bot.admin.story.dump.MessageAnswerConfigurationDump
+import ai.tock.bot.admin.story.dump.ScriptAnswerConfigurationDump
+import ai.tock.bot.admin.story.dump.SimpleAnswerConfigurationDump
 import ai.tock.bot.connector.media.MediaActionDescriptor
 import ai.tock.bot.connector.media.MediaCardDescriptor
 import ai.tock.bot.connector.media.MediaCarouselDescriptor
 import ai.tock.bot.connector.media.MediaMessageDescriptor
 import ai.tock.bot.connector.media.MediaMessageType
-import ai.tock.bot.engine.action.ActionMetadata
 import ai.tock.bot.engine.action.ActionVisibility
 import ai.tock.bot.engine.event.EventType
 import ai.tock.bot.engine.message.Attachment
@@ -48,11 +45,21 @@ import ai.tock.bot.engine.message.Location
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.message.Sentence
 import ai.tock.shared.error
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
+import com.fasterxml.jackson.databind.BeanDescription
+import com.fasterxml.jackson.databind.DeserializationConfig
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonDeserializer
+import com.fasterxml.jackson.databind.Module
+import com.fasterxml.jackson.databind.SerializationConfig
+import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier
+import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition
+import com.fasterxml.jackson.databind.jsontype.NamedType
+import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.databind.ser.BeanPropertyWriter
+import com.fasterxml.jackson.databind.ser.BeanSerializerModifier
 import mu.KotlinLogging
 import org.litote.jackson.JacksonModuleServiceLoader
 
@@ -84,6 +91,20 @@ private object BotEngineJacksonConfiguration {
     )
     interface MixinMediaMessage
 
+    @JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "answerType"
+    )
+    interface MixinAnswerConfigurationDump
+
+    @JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "type"
+    )
+    interface MixinMediaMessageDump
+
     val module: SimpleModule
         get() {
             val module = SimpleModule()
@@ -110,10 +131,32 @@ private object BotEngineJacksonConfiguration {
                     )
                 )
 
+                setMixInAnnotation(AnswerConfigurationDump::class.java, MixinAnswerConfigurationDump::class.java)
+                registerSubtypes(NamedType(SimpleAnswerConfigurationDump::class.java, AnswerConfigurationType.simple.name))
+                registerSubtypes(NamedType(ScriptAnswerConfigurationDump::class.java, AnswerConfigurationType.script.name))
+                registerSubtypes(
+                    NamedType(
+                        MessageAnswerConfigurationDump::class.java,
+                        AnswerConfigurationType.message.name
+                    )
+                )
+                registerSubtypes(
+                    NamedType(
+                        BuiltInAnswerConfigurationDump::class.java,
+                        AnswerConfigurationType.builtin.name
+                    )
+                )
+
                 setMixInAnnotation(MediaMessageDescriptor::class.java, MixinMediaMessage::class.java)
                 registerSubtypes(NamedType(MediaCardDescriptor::class.java, MediaMessageType.card.name))
                 registerSubtypes(NamedType(MediaActionDescriptor::class.java, MediaMessageType.action.name))
                 registerSubtypes(NamedType(MediaCarouselDescriptor::class.java, MediaMessageType.carousel.name))
+
+                setMixInAnnotation(MediaMessageDescriptorDump::class.java, MixinMediaMessageDump::class.java)
+                registerSubtypes(NamedType(MediaCardDescriptorDump::class.java, MediaMessageType.card.name))
+                registerSubtypes(NamedType(MediaActionDescriptorDump::class.java, MediaMessageType.action.name))
+                registerSubtypes(NamedType(MediaCarouselDescriptorDump::class.java, MediaMessageType.carousel.name))
+
 
                 setSerializerModifier(object : BeanSerializerModifier() {
                     override fun changeProperties(
@@ -147,7 +190,7 @@ private object BotEngineJacksonConfiguration {
                 })
 
                 //TODO remove in 20.3
-                addDeserializer(ActionVisibility::class.java, object: JsonDeserializer<ActionVisibility>() {
+                addDeserializer(ActionVisibility::class.java, object : JsonDeserializer<ActionVisibility>() {
                     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): ActionVisibility {
                         val curr = p.currentToken
 
@@ -161,7 +204,7 @@ private object BotEngineJacksonConfiguration {
                                 return ActionVisibility.UNKNOWN
                             }
                         } else {
-                             ActionVisibility.UNKNOWN
+                            ActionVisibility.UNKNOWN
                         }
                     }
                 })

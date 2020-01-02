@@ -4,19 +4,19 @@ info:
   version: "1.0.0"
   title: "Swagger Web Connector TOCK"
 servers:
-  - url: "http://simon-postman.apps.had-prod-pcy.enedis.fr/io/app/bot_open_data"
+  - url: "https://demo-bot.tock.ai/io/[namespace]/demo/web"
 paths:
   /web:
     post:
       summary: "Send query to the bot"
       description: ""
       parameters:
-      - in: "query"
-        name: "body"
-        description: "Query to be sent with user ID"
-        required: true
-        schema:
-          $ref: "#/components/schemas/Query"
+        - in: "query"
+          name: "body"
+          description: "Query to be sent with user ID"
+          required: true
+          schema:
+            $ref: "#/components/schemas/Query"
       responses:
         200:
           description: "OK"
@@ -29,18 +29,18 @@ paths:
                   - $ref: "#/components/schemas/Carousel"
               example:
                 responses:
-                        - text: 'Welcome to the Chatbot :)'
-                        - text: 'Hey!'
-                          buttons:
-                            - title: 'Help on Topic 1'
-                              payload: 'help1?_previous_intent=greetings'
-                            - title: 'Help on Topic 2'
-                              payload: 'help2?_previous_intent=greetings'
-                      
+                  - text: 'Welcome to the Chatbot :)'
+                  - text: 'Hey!'
+                    buttons:
+                      - title: 'Help on Topic 1'
+                        payload: 'help1?_previous_intent=greetings'
+                      - title: 'Help on Topic 2'
+                        payload: 'help2?_previous_intent=greetings'
+
         500:
           description: "Internal Server Error"
-          
-          
+
+
 components:
   schemas:
     Query:
@@ -52,7 +52,7 @@ components:
         userId:
           type: "string"
           example: "ID_00001"
-  
+
     Text_Response:
       type: "object"
       properties:
@@ -60,7 +60,7 @@ components:
           type: "array"
           items:
             $ref: "#/components/schemas/Text"
-  
+
     Text:
       type: "object"
       required: ["text"]
@@ -72,7 +72,7 @@ components:
           type: "array"
           items:
             $ref: "#/components/schemas/Button"
-        
+
     Button:
       type: "object"
       properties:
@@ -82,7 +82,7 @@ components:
         payload:
           type: "string"
           example: "helpTopic1?_previous_intent=greetings"
-  
+
     Carousel:
       type: "object"
       properties:
@@ -90,7 +90,7 @@ components:
           type: "array"
           items:
             $ref: "#/components/schemas/Card"
-            
+
     Card:
       type: "object"
       properties:
@@ -103,7 +103,7 @@ components:
         file:
           type: "object"
           properties:
-            url: 
+            url:
               type: "string"
               example: "http://url1.fr/image1.jpg"
             name:
@@ -116,7 +116,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Actions"
-  
+
     Actions:
       type: "object"
       properties:

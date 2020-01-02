@@ -38,6 +38,14 @@ export class BotService {
     return this.rest.post("/bot/story/search", request, StoryDefinitionConfiguration.fromJSONArray);
   }
 
+  exportStories(applicationName: string): Observable<Blob> {
+    return this.rest.get(`/bot/story/${applicationName}/export`, j => new Blob([JSON.stringify(j)], {type: 'application/json'}));
+  }
+
+  prepareStoryDumpUploader(uploader: FileUploader, applicationName: string) {
+    this.rest.setFileUploaderOptions(uploader, `/bot/story/${applicationName}/import`);
+  }
+
   saveStory(story: StoryDefinitionConfiguration): Observable<StoryDefinitionConfiguration> {
     return this.rest.post("/bot/story", story.prepareBeforeSend(), StoryDefinitionConfiguration.fromJSON)
   }
