@@ -33,7 +33,7 @@
 <h4><a href="has-bean-updated-in-bus.html">hasBeanUpdatedInBus</a></h4>
 </td>
 <td>
-<p>Is this state has been updated un current <a href="#">BotBus</a>?</p>
+<p>Is this state has been updated in current <a href="#">BotBus</a>?</p>
 <code><span class="keyword">val </span><span class="identifier">hasBeanUpdatedInBus</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
 </tr>
 <tr>
@@ -52,6 +52,22 @@ Could be empty if there is no history and current value is null.</p>
 <td>
 <p>The last update date of the value.</p>
 <code><span class="keyword">val </span><span class="identifier">lastUpdate</span><span class="symbol">: </span><span class="identifier">Instant</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="new-values.html">newValues</a></h4>
+</td>
+<td>
+<p>All values for the current request when merge is not applicable.</p>
+<code><span class="keyword">val </span><span class="identifier">newValues</span><span class="symbol">: </span><span class="identifier">List</span><span class="symbol">&lt;</span><a href="../-entity-value/index.html"><span class="identifier">EntityValue</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="penultimate-value.html">penultimateValue</a></h4>
+</td>
+<td>
+<p>Returns the penultimate value.</p>
+<code><span class="keyword">val </span><span class="identifier">penultimateValue</span><span class="symbol">: </span><a href="../-archived-entity-value/index.html"><span class="identifier">ArchivedEntityValue</span></a><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>

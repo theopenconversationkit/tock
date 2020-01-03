@@ -105,6 +105,13 @@
 <td>
 <code><span class="keyword">val </span><span class="identifier">RoutingContext</span><span class="symbol">.</span><span class="identifier">user</span><span class="symbol">: </span><a href="../../ai.tock.shared.security/-tock-user/index.html"><span class="identifier">TockUser</span></a><span class="symbol">?</span></code></td>
 </tr>
+<tr>
+<td>
+<h4><a href="user-login.html">userLogin</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">RoutingContext</span><span class="symbol">.</span><span class="identifier">userLogin</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
+</tr>
 </tbody>
 </table>
 <h3>Functions</h3>
@@ -252,11 +259,27 @@
 </tr>
 <tr>
 <td>
+<h4><a href="default-healthcheck.html">defaultHealthcheck</a></h4>
+</td>
+<td>
+<p>Provide basic health information: mainly through HTTP status code</p>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">defaultHealthcheck</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="symbol">(</span><span class="identifier">RoutingContext</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<span class="identifier">Unit</span></code></td>
+</tr>
+<tr>
+<td>
 <h4><a href="default-role.html">defaultRole</a></h4>
 </td>
 <td>
 <p>The default role of a service.</p>
 <code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">defaultRole</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.shared.security/-tock-user-role/index.html"><span class="identifier">TockUserRole</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="detailed-healthcheck.html">detailedHealthcheck</a></h4>
+</td>
+<td>
+<p>Provide enhanced information: HTTP response has JSON body with health status of resources</p>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">detailedHealthcheck</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="symbol">(</span><span class="identifier">RoutingContext</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<span class="identifier">Unit</span></code></td>
 </tr>
 <tr>
 <td>
@@ -287,7 +310,7 @@
 <h4><a href="healthcheck.html">healthcheck</a></h4>
 </td>
 <td>
-<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">healthcheck</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="symbol">(</span><span class="identifier">RoutingContext</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<span class="identifier">Unit</span></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">healthcheck</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="symbol">(</span><span class="identifier">RoutingContext</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<span class="identifier">Unit</span></code></td>
 </tr>
 <tr>
 <td>

@@ -66,7 +66,7 @@
 </td>
 <td>
 <p>Connector specific message format.</p>
-<code><span class="keyword">interface </span><span class="identifier">ConnectorMessage</span></code></td>
+<code><span class="keyword">interface </span><span class="identifier">ConnectorMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-connector-message-provider/index.html"><span class="identifier">ConnectorMessageProvider</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -132,6 +132,25 @@ The implementation is loaded at runtime to list all available connectors, using 
 in order to provide <a href="#">ConnectorStoryHandler</a> for each connector.
 Used only by connector implementation.</p>
 <code><span class="keyword">annotation</span> <span class="keyword">class </span><span class="identifier">ConnectorHandler</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-connector-id-handler/index.html">ConnectorIdHandler</a></h4>
+</td>
+<td>
+<p>Annotation used to configure <a href="-connector-id-handlers/index.html">ConnectorIdHandlers</a>,
+in order to provide <a href="../ai.tock.bot.definition/-connector-story-handler/index.html">ConnectorStoryHandler</a> for each connector id.</p>
+<code><span class="keyword">annotation</span> <span class="keyword">class </span><span class="identifier">ConnectorIdHandler</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-connector-id-handlers/index.html">ConnectorIdHandlers</a></h4>
+</td>
+<td>
+<p>Annotation used to annotate <a href="#">StoryHandlerDefinitionBase</a> implementation,
+in order to provide <a href="#">ConnectorStoryHandler</a> for each connector id.
+Used only by connector implementation.</p>
+<code><span class="keyword">annotation</span> <span class="keyword">class </span><span class="identifier">ConnectorIdHandlers</span></code></td>
 </tr>
 </tbody>
 </table>

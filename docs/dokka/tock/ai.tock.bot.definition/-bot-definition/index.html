@@ -8,7 +8,7 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">ai.tock.bot.definition</a>&nbsp;/&nbsp;<a href="./index.html">BotDefinition</a><br/>
 <br/>
 <h1>BotDefinition</h1>
-<code><span class="keyword">interface </span><span class="identifier">BotDefinition</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">I18nKeyProvider</span></code> <a href="https://github.com/theopenconversationkit/tock/blob/master/bot/engine/src/main/kotlin/definition/BotDefinition.kt#L41">(source)</a>
+<code><span class="keyword">interface </span><span class="identifier">BotDefinition</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">I18nKeyProvider</span></code> <a href="https://github.com/theopenconversationkit/tock/blob/master/bot/engine/src/main/kotlin/definition/BotDefinition.kt#L45">(source)</a>
 <p>The main interface used to define the behaviour of the bot.</p>
 <p>New bots should usually not directly extend this class, but instead extend <a href="../-bot-definition-base/index.html">BotDefinitionBase</a>.</p>
 <h3>Properties</h3>
@@ -172,6 +172,22 @@
 </tr>
 <tr>
 <td>
+<h4><a href="disable-bot.html">disableBot</a></h4>
+</td>
+<td>
+<p>Does this action trigger bot deactivation ?</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">disableBot</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$disableBot(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.engine.action.Action)/timeline">timeline</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.user/-user-timeline/index.html"><span class="identifier">UserTimeline</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$disableBot(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.engine.action.Action)/dialog">dialog</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.dialog/-dialog/index.html"><span class="identifier">Dialog</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$disableBot(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.engine.action.Action)/action">action</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="enable-bot.html">enableBot</a></h4>
+</td>
+<td>
+<p>Does this action trigger bot activation ?</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">enableBot</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$enableBot(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.engine.action.Action)/timeline">timeline</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.user/-user-timeline/index.html"><span class="identifier">UserTimeline</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$enableBot(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.engine.action.Action)/dialog">dialog</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.dialog/-dialog/index.html"><span class="identifier">Dialog</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$enableBot(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.engine.action.Action)/action">action</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
+</tr>
+<tr>
+<td>
 <h4><a href="entity.html">entity</a></h4>
 </td>
 <td>
@@ -206,6 +222,14 @@
 </tr>
 <tr>
 <td>
+<h4><a href="has-to-persist-action.html">hasToPersistAction</a></h4>
+</td>
+<td>
+<p>If this method returns true, the action will be added in the stored history.</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">hasToPersistAction</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$hasToPersistAction(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.action.Action)/timeline">timeline</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.user/-user-timeline/index.html"><span class="identifier">UserTimeline</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$hasToPersistAction(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.action.Action)/action">action</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
+</tr>
+<tr>
+<td>
 <h4><a href="i18n.html">i18n</a></h4>
 </td>
 <td>
@@ -225,7 +249,7 @@
 </td>
 <td>
 <p>Is this intent disable the bot?</p>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">isBotDisabledIntent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$isBotDisabledIntent(ai.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><s><span class="identifier">isBotDisabledIntent</span></s><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$isBotDisabledIntent(ai.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
 </tr>
 <tr>
 <td>
@@ -233,7 +257,7 @@
 </td>
 <td>
 <p>Is this intent is reactivating the bot?</p>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">isBotEnabledIntent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$isBotEnabledIntent(ai.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><s><span class="identifier">isBotEnabledIntent</span></s><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$isBotEnabledIntent(ai.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
 </tr>
 </tbody>
 </table>
