@@ -59,13 +59,14 @@ interface ConnectorController {
      * @param intent the notification intent
      * @param step the optional step target
      * @param parameters the optional parameters
+     * @param notificationType notification type if any
      */
     fun notify(
         recipientId: PlayerId,
         intent: IntentAware,
         step: StoryStep<out StoryHandlerDefinition>? = null,
         parameters: Map<String, String> = emptyMap(),
-        notificationType: ActionNotificationType
+        notificationType: ActionNotificationType?
     ) {
         connector.notify(this, recipientId, intent, step, parameters, notificationType)
     }
