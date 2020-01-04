@@ -1,6 +1,6 @@
-- 19.9.2 November 2019   
+- 19.9.3 February 2020   
     - first conversational DSL in admin interface     
-    - AB test engine workflow
+    - AB test engine workflow 
     
 - 20.3.0 March 2020
     - Conversational framework: support for other languages than Kotlin (multi-platform Kotlin)
@@ -8,6 +8,10 @@
     - Code editor admin interface
     
 ## Latest releases  
+        
+- 19.9.2 January 2020   
+    - Story Configuration import / export 
+    - React Widget improvements       
         
 - 19.9.1 October 2019
     - Bug fixes        

@@ -16,6 +16,7 @@
     * [@NainJaune](https://github.com/NainJaune)
     * [@elebescond](https://github.com/elebescond)
     * [@SarukaUsagi](https://github.com/SarukaUsagi)
+    * [@MaximeLeFrancois](https://github.com/MaximeLeFrancois)
         
 ## Code conventions
 
