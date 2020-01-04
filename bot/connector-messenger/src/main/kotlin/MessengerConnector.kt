@@ -620,7 +620,7 @@ class MessengerConnector internal constructor(
         intent: IntentAware,
         step: StoryStep<out StoryHandlerDefinition>?,
         parameters: Map<String, String>,
-        notificationType: ActionNotificationType
+        notificationType: ActionNotificationType?
     ) {
         controller.handle(
             SendChoice(

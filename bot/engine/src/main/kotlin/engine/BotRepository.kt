@@ -35,7 +35,6 @@ import ai.tock.bot.definition.StoryHandlerDefinition
 import ai.tock.bot.definition.StoryHandlerListener
 import ai.tock.bot.definition.StoryStep
 import ai.tock.bot.engine.action.ActionNotificationType
-import ai.tock.bot.engine.action.ActionNotificationType.humanAgent
 import ai.tock.bot.engine.config.StoryConfigurationMonitor
 import ai.tock.bot.engine.monitoring.RequestTimer
 import ai.tock.bot.engine.nlp.BuiltInKeywordListener
@@ -92,7 +91,7 @@ object BotRepository {
         }
     )
 
-    private val connectorControllerMap: ConcurrentHashMap<BotApplicationConfiguration, ConnectorController> =
+    internal val connectorControllerMap: ConcurrentHashMap<BotApplicationConfiguration, ConnectorController> =
         ConcurrentHashMap()
 
     private val applicationIdBotApplicationConfigurationMap: ConcurrentHashMap<String, BotApplicationConfiguration> =
@@ -161,7 +160,7 @@ object BotRepository {
      * @param step the optional step target
      * @param parameters the optional parameters
      * @param stateModifier allow the notification to bypass current user state
-     * @param notificationType the notification category
+     * @param notificationType the notification type if any
      */
     fun notify(
         applicationId: String,
@@ -170,7 +169,7 @@ object BotRepository {
         step: StoryStep<out StoryHandlerDefinition>? = null,
         parameters: Map<String, String> = emptyMap(),
         stateModifier: NotifyBotStateModifier = NotifyBotStateModifier.KEEP_CURRENT_STATE,
-        notificationType: ActionNotificationType = humanAgent
+        notificationType: ActionNotificationType? = null
     ) {
         val conf = getConfigurationByApplicationId(applicationId) ?: error("unknown application $applicationId")
         connectorControllerMap.getValue(conf).notifyAndCheckState(recipientId, intent, step, parameters, stateModifier, notificationType)
@@ -185,6 +184,7 @@ object BotRepository {
      * @param step the optional step target
      * @param parameters the optional parameters
      * @param stateModifier allow the notification to bypass current user state
+     * @param notificationType notification type if any
      */
     private fun ConnectorController.notifyAndCheckState(
         recipientId: PlayerId,
@@ -192,7 +192,7 @@ object BotRepository {
         step: StoryStep<out StoryHandlerDefinition>?,
         parameters: Map<String, String>,
         stateModifier: NotifyBotStateModifier,
-        notificationType: ActionNotificationType
+        notificationType: ActionNotificationType?
     ) {
         val userTimelineDAO: UserTimelineDAO = injector.provide()
         val userTimeline = userTimelineDAO.loadWithoutDialogs(botDefinition.namespace, recipientId)
