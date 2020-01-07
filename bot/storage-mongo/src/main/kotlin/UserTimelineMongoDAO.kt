@@ -149,7 +149,6 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 LastUpdateDate,
                 indexOptions = IndexOptions()
                     .expireAfter(longProperty("tock_bot_timeline_index_ttl_days", 365), DAYS)
-                    .background(true)
             )
             dialogCol.ensureIndex(PlayerIds.id)
             dialogCol.ensureIndex(PlayerIds.id, Namespace)

@@ -223,7 +223,6 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                 Date,
                 indexOptions = IndexOptions()
                     .expireAfter(longProperty("tock_nlp_log_stats_index_ttl_days", 30), DAYS)
-                    .background(true)
             )
         } catch (e: Exception) {
             logger.error(e)
