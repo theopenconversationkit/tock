@@ -110,7 +110,7 @@ class DetailedHealthcheckTest {
     }
 
     @Test
-    fun `Response JSON should contains 3 results with ids "a", "b", "c"`() {
+    fun `Response JSON should contains 3 results with ids a, b, c`() {
         val mapper = jacksonObjectMapper()
         healthcheck(routingContext)
         val data : DetailedHealthcheckResults = mapper.readValue(bodySlot.captured)
@@ -121,7 +121,7 @@ class DetailedHealthcheckTest {
     }
 
     @Test
-    fun `Response JSON task result status should be "OK" when the task return true`() {
+    fun `Response JSON task result status should be OK when the task return true`() {
         val mapper = jacksonObjectMapper()
         healthcheck(routingContext)
         val data : DetailedHealthcheckResults = mapper.readValue(bodySlot.captured)
@@ -130,7 +130,7 @@ class DetailedHealthcheckTest {
     }
 
     @Test
-    fun `Response JSON task result status should be "KO" when the task return true`() {
+    fun `Response JSON task result status should be KO when the task return true`() {
         val mapper = jacksonObjectMapper()
         healthcheck(routingContext)
         val data : DetailedHealthcheckResults = mapper.readValue(bodySlot.captured)
