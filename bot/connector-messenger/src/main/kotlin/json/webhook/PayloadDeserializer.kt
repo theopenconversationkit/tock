@@ -48,7 +48,7 @@ internal class PayloadDeserializer : JacksonDeserializer<Payload>() {
                 when (name) {
                     LocationPayload::coordinates.name -> coordinates = jp.readValue()
                     UrlPayload::url.name -> url = jp.valueAsString
-                    else -> other = jp.readValue()
+                    else -> other = jp.readUnknownValue()
                 }
             }
         }
