@@ -14,16 +14,24 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
+package ai.tock.bot.xray.model
 
-import ai.tock.bot.admin.bot.BotApplicationConfiguration.Companion.defaultBaseUrl
-import ai.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
-import ai.tock.shared.booleanProperty
-import ai.tock.shared.propertyExists
+import ai.tock.translator.UserInterfaceType
+import ai.tock.translator.UserInterfaceType.textChat
 
-data class BotAdminConfiguration(
-    val botApiSupport: Boolean = booleanProperty("tock_bot_api", false),
-    val compilerAvailable: Boolean = !KotlinCompilerClient.compilerDisabled,
-    val xrayAvailable: Boolean = propertyExists("tock_bot_test_xray_url"),
-    val botApiBaseUrl: String = defaultBaseUrl
-)
+/**
+ *
+ */
+
+data class XrayTest(
+        val key: String = "",
+        val precondition: List<XrayPrecondition> = emptyList()) {
+
+    fun supportConf(conf: String): Boolean {
+        return precondition.isEmpty() || precondition.any { it.supportConf(conf) }
+    }
+
+    fun findUserInterface(): UserInterfaceType
+            = precondition.mapNotNull { it.findUserInterface() }.firstOrNull() ?: textChat
+
+}

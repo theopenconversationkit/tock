@@ -22,6 +22,7 @@ import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.nlp.BuiltInKeywordListener.deleteKeyword
 import ai.tock.bot.engine.nlp.BuiltInKeywordListener.endTestContextKeyword
 import ai.tock.bot.engine.nlp.BuiltInKeywordListener.testContextKeyword
+import ai.tock.bot.engine.nlp.keywordServices
 import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.shared.error
 import ai.tock.shared.injector
@@ -171,17 +172,30 @@ open class BotDefinitionBase(
                 object : SimpleStoryHandlerBase() {
                     override fun action(bus: BotBus) {
                         val text = getKeyword(bus)
-                        when (getKeyword(bus)) {
-                            deleteKeyword -> deleteKeywordHandler(bus)
-                            testContextKeyword -> testContextKeywordHandler(bus)
-                            endTestContextKeyword -> endTestContextKeywordHandler(bus)
-                            else -> bus.end(bus.baseI18nValue("unknown keyword : {0}"), text)
+                        if (!handleWithKeywordListeners(bus, text)) {
+                            when (text) {
+                                deleteKeyword -> deleteKeywordHandler(bus)
+                                testContextKeyword -> testContextKeywordHandler(bus)
+                                endTestContextKeyword -> endTestContextKeywordHandler(bus)
+                                else -> bus.end(bus.baseI18nValue("unknown keyword : {0}"), text)
+                            }
                         }
                     }
                 },
                 setOf(Intent.keyword)
             )
+
+        fun handleWithKeywordListeners(bus: BotBus, keyword: String?): Boolean {
+            if (keyword != null) {
+                keywordServices.asSequence().map { it.keywordHandler(keyword) }.firstOrNull()?.let { handler ->
+                    handler(bus)
+                    return true
+                }
+            }
+            return false
+        }
     }
+
 
     /**
      * Constructor intended to be used by an enum.

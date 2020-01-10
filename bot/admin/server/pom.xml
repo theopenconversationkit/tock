@@ -51,10 +51,6 @@
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
-            <artifactId>tock-bot-admin-test-xray</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ai.tock</groupId>
             <artifactId>tock-bot-admin-kotlin-compiler-client</artifactId>
         </dependency>
 
