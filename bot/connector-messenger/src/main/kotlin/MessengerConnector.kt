@@ -20,6 +20,7 @@ import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.connector.ConnectorQueue
 import ai.tock.bot.connector.media.MediaMessage
 import ai.tock.bot.connector.messenger.AttachmentCacheService.getAttachmentId
 import ai.tock.bot.connector.messenger.AttachmentCacheService.setAttachmentId
@@ -70,8 +71,6 @@ import ai.tock.shared.property
 import ai.tock.shared.vertx.vertx
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
-import com.google.common.cache.Cache
-import com.google.common.cache.CacheBuilder
 import mu.KotlinLogging
 import org.apache.commons.codec.binary.Hex
 import org.apache.commons.lang3.LocaleUtils
@@ -79,9 +78,7 @@ import java.time.Duration
 import java.time.ZoneOffset
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.CopyOnWriteArraySet
-import java.util.concurrent.TimeUnit
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
@@ -101,8 +98,6 @@ class MessengerConnector internal constructor(
     private var subscriptionCheck: Boolean = webhookSubscriptionCheckEnabled,
     private val personaId: String? = null
 ) : ConnectorBase(MessengerConnectorProvider.connectorType) {
-
-    private data class ActionWithTimestamp(val action: Action, val timestamp: Long)
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -139,10 +134,8 @@ class MessengerConnector internal constructor(
     }
 
     private val executor: Executor by injector.instance()
-    private val messagesByRecipientMap: Cache<String, ConcurrentLinkedQueue<ActionWithTimestamp>> =
-        CacheBuilder.newBuilder()
-            .expireAfterAccess(1, TimeUnit.MINUTES)
-            .build()
+    private val queue: ConnectorQueue
+        get() = ConnectorQueue(executor)
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
@@ -444,63 +437,27 @@ class MessengerConnector internal constructor(
                     event.metadata.notificationType = it
                 }
             }
-            val id = event.recipientId.id.intern()
-            val action = ActionWithTimestamp(event, System.currentTimeMillis() + delayInMs)
-            val queue = messagesByRecipientMap
-                .get(id) { ConcurrentLinkedQueue() }
-                .apply {
-                    synchronized(id) {
-                        peek().also { existingAction ->
-                            offer(action)
-                            if (existingAction != null) {
-                                return
-                            }
+            queue.add(event, delayInMs) { action ->
+                sendEvent(
+                    action,
+                    postMessage =
+                    { token ->
+                        val recipient = Recipient(action.recipientId.id)
+                        if (action.metadata.lastAnswer) {
+                            client.sendAction(token, ActionRequest(recipient, typing_off, personaId))
+                            client.sendAction(token, ActionRequest(recipient, mark_seen))
+                        } else {
+                            client.sendAction(token, ActionRequest(recipient, typing_on, personaId))
                         }
                     }
-                }
+                )
 
-            executor.executeBlocking(delay) {
-                sendActionFromConnector(event, queue)
             }
         } else {
             executor.executeBlocking(delay) {
                 sendEvent(event)
             }
         }
-    }
-
-    private fun sendActionFromConnector(action: Action, queue: ConcurrentLinkedQueue<ActionWithTimestamp>) {
-        try {
-            sendActionFromConnector(action)
-        } finally {
-            synchronized(action.recipientId.id.intern()) {
-                //remove the current one
-                queue.poll()
-                queue.peek()
-            }?.also { a ->
-                val timeToWait = a.timestamp - System.currentTimeMillis()
-                if (timeToWait > 0) {
-                    Thread.sleep(timeToWait)
-                }
-                sendActionFromConnector(a.action, queue)
-            }
-        }
-    }
-
-    private fun sendActionFromConnector(action: Action) {
-        sendEvent(
-            action,
-            postMessage =
-            { token ->
-                val recipient = Recipient(action.recipientId.id)
-                if (action.metadata.lastAnswer) {
-                    client.sendAction(token, ActionRequest(recipient, typing_off, personaId))
-                    client.sendAction(token, ActionRequest(recipient, mark_seen))
-                } else {
-                    client.sendAction(token, ActionRequest(recipient, typing_on, personaId))
-                }
-            }
-        )
     }
 
     internal fun endTypingAnswer(action: Action) {
