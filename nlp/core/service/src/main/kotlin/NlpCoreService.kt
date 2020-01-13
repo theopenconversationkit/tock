@@ -16,7 +16,6 @@
 
 package ai.tock.nlp.core.service
 
-import com.github.salomonbrys.kodein.instance
 import ai.tock.nlp.core.CallContext
 import ai.tock.nlp.core.Entity
 import ai.tock.nlp.core.EntityRecognition
@@ -31,6 +30,7 @@ import ai.tock.nlp.core.ParsingResult
 import ai.tock.nlp.core.merge.ValueDescriptor
 import ai.tock.nlp.core.quality.TestContext
 import ai.tock.nlp.core.service.entity.EntityCore
+import ai.tock.nlp.core.service.entity.EntityCoreService
 import ai.tock.nlp.core.service.entity.EntityMerge
 import ai.tock.nlp.model.EntityCallContextForEntity
 import ai.tock.nlp.model.EntityCallContextForIntent
@@ -41,6 +41,7 @@ import ai.tock.nlp.model.NlpClassifier
 import ai.tock.shared.checkMaxLengthAllowed
 import ai.tock.shared.error
 import ai.tock.shared.injector
+import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 
 /**
@@ -198,21 +199,7 @@ internal object NlpCoreService : NlpCore {
         return entityCore.mergeValues(EntityCallContextForEntity(context, entity), values)
     }
 
-    override fun getBuiltInEntityTypes(): Set<String> =
-        //TODO remove this when custom entity type choice is implemented
-        setOf(
-            "duckling:datetime",
-            "duckling:temperature",
-            "duckling:number",
-            "duckling:ordinal",
-            "duckling:distance",
-            "duckling:volume",
-            "duckling:amount-of-money",
-            "duckling:duration",
-            "duckling:email",
-            "duckling:url",
-            "duckling:phone-number"
-        )
+    override fun getBuiltInEntityTypes(): Set<String> = EntityCoreService.knownEntityTypes
 
     override fun healthcheck(): Boolean {
         return entityCore.healthcheck()

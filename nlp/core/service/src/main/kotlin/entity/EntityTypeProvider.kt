@@ -19,16 +19,22 @@ package ai.tock.nlp.core.service.entity
 import ai.tock.nlp.core.EntityType
 
 /**
- * Implements this interface to support new entity types.
+ * Implement this interface to support new entity types.
  * The implementation is loaded at runtime, using the java [java.util.ServiceLoader]
  * - you need to provide a META-INF/services/xxx file.
  */
 interface EntityTypeProvider {
 
     /**
+     * Returns supported entity types - ie if the list of supported entity types if it is already known.
+     */
+    fun supportedEntityTypes(): Set<String> = emptySet()
+
+    /**
      * Does the given [EntityType] can be classified?
      */
-    fun supportClassification(namespace: String, entityTypeName: String): Boolean = false
+    fun supportClassification(namespace: String, entityTypeName: String): Boolean =
+        supportedEntityTypes().contains("$namespace:$entityTypeName")
 
     /**
      * Does the given [EntityType] can be evaluated?

@@ -22,11 +22,6 @@ package ai.tock.shared
 const val TOCK_NAMESPACE: String = "tock"
 
 /**
- * Built in entity evaluator namespace (for now only duckling).
- */
-const val BUILTIN_ENTITY_EVALUATOR_NAMESPACE: String = "duckling"
-
-/**
  * The default app namespace.
  */
 const val DEFAULT_APP_NAMESPACE = "app"

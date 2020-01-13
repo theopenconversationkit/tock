@@ -54,7 +54,6 @@ import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.monitoring.UserActionLog
 import ai.tock.nlp.front.shared.monitoring.UserActionLogQuery
 import ai.tock.nlp.front.shared.user.UserNamespace
-import ai.tock.shared.BUILTIN_ENTITY_EVALUATOR_NAMESPACE
 import ai.tock.shared.Executor
 import ai.tock.shared.devEnvironment
 import ai.tock.shared.error
@@ -614,9 +613,7 @@ open class AdminVerticle : WebVerticle() {
         }
 
         blockingJsonGet("/entity-types") { context ->
-            front.getEntityTypes().filter {
-                it.name.namespace() == context.organization || it.name.namespace() == BUILTIN_ENTITY_EVALUATOR_NAMESPACE
-            }
+            front.getEntityTypesByNamespaceAndSharedEntityTypes(context.organization)
         }
 
         blockingJsonPost(

@@ -16,14 +16,12 @@
 
 package ai.tock.nlp.core.service.entity
 
-import java.util.ServiceLoader
+import ai.tock.shared.Loader
 
 /**
  * Provides all supported entity type providers.
  */
 internal object SupportedEntityTypeProviders {
 
-    fun providers(): List<EntityTypeProvider> {
-        return ServiceLoader.load(EntityTypeProvider::class.java).toList()
-    }
+    fun providers(): List<EntityTypeProvider> = Loader.loadServices()
 }

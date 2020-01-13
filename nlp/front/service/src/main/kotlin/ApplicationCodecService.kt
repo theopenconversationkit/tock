@@ -18,6 +18,7 @@ package ai.tock.nlp.front.service
 
 import ai.tock.nlp.core.Intent
 import ai.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT_NAME
+import ai.tock.nlp.core.NlpCore
 import ai.tock.nlp.front.service.ConfigurationRepository.entityTypeExists
 import ai.tock.nlp.front.service.ModelUpdaterService.triggerBuild
 import ai.tock.nlp.front.shared.ApplicationCodec
@@ -40,7 +41,6 @@ import ai.tock.nlp.front.shared.config.EntityDefinition
 import ai.tock.nlp.front.shared.config.EntityTypeDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.config.SentencesQuery
-import ai.tock.shared.BUILTIN_ENTITY_EVALUATOR_NAMESPACE
 import ai.tock.shared.changeNamespace
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.error
@@ -57,20 +57,22 @@ import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 import java.time.Instant
 import java.util.Locale
+import kotlin.LazyThreadSafetyMode.PUBLICATION
 
 /**
  *
  */
-object ApplicationCodecService : ApplicationCodec {
+internal object ApplicationCodecService : ApplicationCodec {
 
     private val logger = KotlinLogging.logger {}
     val config: ApplicationConfiguration get() = injector.provide()
+    private val core: NlpCore get() = injector.provide()
+
+    private val builtInNamespaces: Set<String> by lazy(PUBLICATION) { core.getBuiltInEntityTypes().map { it.namespace() }.toSet() }
 
     override fun export(applicationId: Id<ApplicationDefinition>, dumpType: DumpType): ApplicationDump {
         val app = config.getApplicationById(applicationId)!!
-        val entities = config.getEntityTypes().filter {
-            it.name.namespace() == app.namespace || it.name.namespace() == BUILTIN_ENTITY_EVALUATOR_NAMESPACE
-        }
+        val entities = config.getEntityTypesByNamespaceAndSharedEntityTypes(app.namespace)
         val intents = config.getIntentsByApplicationId(applicationId)
         val sentences = config.getSentences(intents.map { it._id }.toSet())
         return ApplicationDump(app, entities, intents, sentences)
@@ -86,7 +88,7 @@ object ApplicationCodecService : ApplicationCodec {
 
     private fun String.newName(namespace: String): String {
         val n = this.namespace()
-        return if (n == namespace || n == BUILTIN_ENTITY_EVALUATOR_NAMESPACE) {
+        return if (n == namespace || builtInNamespaces.contains(n)) {
             this
         } else {
             "$namespace:${name()}"

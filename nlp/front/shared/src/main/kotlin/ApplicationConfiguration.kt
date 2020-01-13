@@ -101,6 +101,8 @@ interface ApplicationConfiguration {
 
     fun save(entityType: EntityTypeDefinition)
 
+    fun getEntityTypesByNamespaceAndSharedEntityTypes(namespace:String): List<EntityTypeDefinition>
+
     fun getEntityTypes(): List<EntityTypeDefinition>
 
     fun getEntityTypeByName(name: String): EntityTypeDefinition?

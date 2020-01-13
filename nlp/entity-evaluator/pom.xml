@@ -31,6 +31,7 @@
 
     <modules>
         <module>entity-value</module>
+        <module>rest</module>
         <module>duckling</module>
     </modules>
 
