@@ -20,6 +20,7 @@ import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.connector.ConnectorQueue
 import ai.tock.bot.connector.media.MediaCard
 import ai.tock.bot.connector.media.MediaMessage
 import ai.tock.bot.connector.twitter.model.Attachment
@@ -60,7 +61,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import org.apache.commons.lang3.LocaleUtils
-import java.time.Duration
 import java.time.ZoneOffset
 
 internal class TwitterConnector internal constructor(
@@ -78,6 +78,9 @@ internal class TwitterConnector internal constructor(
     }
 
     private val executor: Executor by injector.instance()
+
+    private val queue: ConnectorQueue
+        get() = ConnectorQueue(executor)
 
     override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences {
 
@@ -211,6 +214,7 @@ internal class TwitterConnector internal constructor(
         }
     }
 
+
     /**
      * Send an event with this connector for the specified delay.
      *
@@ -225,12 +229,36 @@ internal class TwitterConnector internal constructor(
             if (event.metadata.visibility == ActionVisibility.UNKNOWN) {
                 event.metadata.visibility = callback.visibility
             }
-            val outcomingEvent = TwitterMessageConverter.toEvent(event)
-            if (outcomingEvent != null) {
-                sendMessage(outcomingEvent, callback, delayInMs)
+            queue.add(event, delayInMs) { action ->
+                TwitterMessageConverter.toEvent(action)?.also { message ->
+                    when (message) {
+                        is OutcomingEvent -> {
+                            when (message.event) {
+                                is DirectMessageOutcomingEvent -> {
+                                    if (message.attachmentData != null) {
+                                        sendDirectMessageWithAttachment(
+                                            message.attachmentData.mediaCategory,
+                                            message.attachmentData.contentType,
+                                            message.attachmentData.bytes,
+                                            message.event
+                                        )
+                                    } else {
+                                        client.sendDirectMessage(message)
+                                    }
+
+                                }
+                            }
+                        }
+                        is Tweet -> {
+                            client.sendTweet(message, callback.threadId)
+                        }
+                        else -> logger.error { "Unknown message to send by twitter : " + message.javaClass }
+                    }
+                }
             }
         }
     }
+
 
     override fun notify(
         controller: ConnectorController,
@@ -255,33 +283,6 @@ internal class TwitterConnector internal constructor(
         )
     }
 
-    private fun sendMessage(message: ConnectorMessage, callback: TwitterConnectorCallback, delayInMs: Long) {
-        executor.executeBlocking(Duration.ofMillis(delayInMs)) {
-            when (message) {
-                is OutcomingEvent -> {
-                    when (message.event) {
-                        is DirectMessageOutcomingEvent -> {
-                            if (message.attachmentData != null) {
-                                sendDirectMessageWithAttachment(
-                                    message.attachmentData.mediaCategory,
-                                    message.attachmentData.contentType,
-                                    message.attachmentData.bytes,
-                                    message.event
-                                )
-                            } else {
-                                client.sendDirectMessage(message)
-                            }
-
-                        }
-                    }
-                }
-                is Tweet -> {
-                    client.sendTweet(message, callback.threadId)
-                }
-                else -> logger.error { "Unknown message to send by twitter : " + message.javaClass }
-            }
-        }
-    }
 
     private fun sendDirectMessageWithAttachment(
         mediaCategory: MediaCategory,
