@@ -24,5 +24,6 @@ import ai.tock.bot.engine.action.ActionNotificationType
  */
 internal class MessengerConnectorCallback(
     applicationId: String,
-    val notificationType: ActionNotificationType? = null
+    val notificationType: ActionNotificationType? = null,
+    val errorListener: (Throwable) -> Unit = {}
 ) : ConnectorCallbackBase(applicationId, messengerConnectorType)

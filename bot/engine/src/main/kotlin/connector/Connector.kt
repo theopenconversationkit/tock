@@ -71,6 +71,7 @@ interface Connector {
      * @param step the optional step target
      * @param parameters the optional parameters
      * @param notificationType notification type if any
+     * @param errorListener called when a message has not been delivered
      */
     fun notify(
         controller: ConnectorController,
@@ -78,7 +79,8 @@ interface Connector {
         intent: IntentAware,
         step: StoryStep<out StoryHandlerDefinition>? = null,
         parameters: Map<String, String> = emptyMap(),
-        notificationType: ActionNotificationType?
+        notificationType: ActionNotificationType?,
+        errorListener: (Throwable) -> Unit = {}
     ): Unit =
         throw UnsupportedOperationException("Connector $connectorType does not support notification")
 

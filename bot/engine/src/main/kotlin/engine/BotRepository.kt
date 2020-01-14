@@ -152,7 +152,7 @@ object BotRepository {
 
     /**
      * Sends a notification to the connector.
-     * A [BotBus] is created and the corresponding story is called.
+     * A [Bus] is created and the corresponding story is called.
      *
      * @param applicationId the configuration connector id
      * @param recipientId the recipient identifier
@@ -161,6 +161,7 @@ object BotRepository {
      * @param parameters the optional parameters
      * @param stateModifier allow the notification to bypass current user state
      * @param notificationType the notification type if any
+     * @param errorListener called when a message has not been delivered
      */
     fun notify(
         applicationId: String,
@@ -169,30 +170,21 @@ object BotRepository {
         step: StoryStep<out StoryHandlerDefinition>? = null,
         parameters: Map<String, String> = emptyMap(),
         stateModifier: NotifyBotStateModifier = NotifyBotStateModifier.KEEP_CURRENT_STATE,
-        notificationType: ActionNotificationType? = null
+        notificationType: ActionNotificationType? = null,
+        errorListener: (Throwable) -> Unit = {}
     ) {
         val conf = getConfigurationByApplicationId(applicationId) ?: error("unknown application $applicationId")
-        connectorControllerMap.getValue(conf).notifyAndCheckState(recipientId, intent, step, parameters, stateModifier, notificationType)
+        connectorControllerMap.getValue(conf).notifyAndCheckState(recipientId, intent, step, parameters, stateModifier, notificationType, errorListener)
     }
 
-    /**
-     * Sends a notification to the connector.
-     * A [BotBus] is created and the corresponding story is called.
-     *
-     * @param recipientId the recipient identifier
-     * @param intent the notification intent
-     * @param step the optional step target
-     * @param parameters the optional parameters
-     * @param stateModifier allow the notification to bypass current user state
-     * @param notificationType notification type if any
-     */
     private fun ConnectorController.notifyAndCheckState(
         recipientId: PlayerId,
         intent: IntentAware,
         step: StoryStep<out StoryHandlerDefinition>?,
         parameters: Map<String, String>,
         stateModifier: NotifyBotStateModifier,
-        notificationType: ActionNotificationType?
+        notificationType: ActionNotificationType?,
+        errorListener: (Throwable) -> Unit = {}
     ) {
         val userTimelineDAO: UserTimelineDAO = injector.provide()
         val userTimeline = userTimelineDAO.loadWithoutDialogs(botDefinition.namespace, recipientId)
@@ -205,7 +197,7 @@ object BotRepository {
             userTimelineDAO.save(userTimeline, botDefinition)
         }
 
-        notify(recipientId, intent, step, parameters, notificationType)
+        notify(recipientId, intent, step, parameters, notificationType, errorListener)
 
         if (stateModifier == NotifyBotStateModifier.ACTIVATE_ONLY_FOR_THIS_NOTIFICATION) {
             val userTimelineAfterNotification = userTimelineDAO.loadWithoutDialogs(botDefinition.namespace, recipientId)

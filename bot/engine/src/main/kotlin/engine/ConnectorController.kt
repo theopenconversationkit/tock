@@ -60,15 +60,17 @@ interface ConnectorController {
      * @param step the optional step target
      * @param parameters the optional parameters
      * @param notificationType notification type if any
+     * @param errorListener called when a message has not been delivered
      */
     fun notify(
         recipientId: PlayerId,
         intent: IntentAware,
         step: StoryStep<out StoryHandlerDefinition>? = null,
         parameters: Map<String, String> = emptyMap(),
-        notificationType: ActionNotificationType?
+        notificationType: ActionNotificationType?,
+        errorListener: (Throwable) -> Unit = {}
     ) {
-        connector.notify(this, recipientId, intent, step, parameters, notificationType)
+        connector.notify(this, recipientId, intent, step, parameters, notificationType, errorListener)
     }
 
     /**

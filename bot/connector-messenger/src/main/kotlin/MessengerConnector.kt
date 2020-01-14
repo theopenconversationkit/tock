@@ -230,7 +230,8 @@ class MessengerConnector internal constructor(
         event: Event,
         transformMessageRequest: (MessageRequest) -> MessageRequest = { it },
         postMessage: (String) -> Unit = {},
-        transformActionRequest: (ActionRequest) -> ActionRequest = { it }
+        transformActionRequest: (ActionRequest) -> ActionRequest = { it },
+        errorListener: (Throwable) -> Unit = {}
     ): SendResponse? {
         return try {
             if (event is Action) {
@@ -304,6 +305,7 @@ class MessengerConnector internal constructor(
             }
         } catch (e: Throwable) {
             logger.error(e)
+            errorListener.invoke(e)
             null
         }
     }
@@ -431,15 +433,16 @@ class MessengerConnector internal constructor(
      */
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
         val delay = Duration.ofMillis(delayInMs)
+        val messengerCallback = callback as? MessengerConnectorCallback
         if (event is Action) {
-            (callback as? MessengerConnectorCallback)?.notificationType?.also {
+            messengerCallback?.notificationType?.also {
                 if (event.metadata.notificationType == null) {
                     event.metadata.notificationType = it
                 }
             }
             queue.add(event, delayInMs) { action ->
                 sendEvent(
-                    action,
+                    event = action,
                     postMessage =
                     { token ->
                         val recipient = Recipient(action.recipientId.id)
@@ -449,13 +452,17 @@ class MessengerConnector internal constructor(
                         } else {
                             client.sendAction(token, ActionRequest(recipient, typing_on, personaId))
                         }
-                    }
+                    },
+                    errorListener = messengerCallback?.errorListener ?: {}
                 )
 
             }
         } else {
             executor.executeBlocking(delay) {
-                sendEvent(event)
+                sendEvent(
+                    event = event,
+                    errorListener = messengerCallback?.errorListener ?: {}
+                )
             }
         }
     }
@@ -577,7 +584,8 @@ class MessengerConnector internal constructor(
         intent: IntentAware,
         step: StoryStep<out StoryHandlerDefinition>?,
         parameters: Map<String, String>,
-        notificationType: ActionNotificationType?
+        notificationType: ActionNotificationType?,
+        errorListener: (Throwable) -> Unit
     ) {
         controller.handle(
             SendChoice(
@@ -589,7 +597,7 @@ class MessengerConnector internal constructor(
                 parameters
             ),
             ConnectorData(
-                MessengerConnectorCallback(connectorId, notificationType)
+                MessengerConnectorCallback(connectorId, notificationType, errorListener)
             )
         )
     }

@@ -261,7 +261,8 @@ internal class TwitterConnector internal constructor(
         intent: IntentAware,
         step: StoryStep<out StoryHandlerDefinition>?,
         parameters: Map<String, String>,
-        notificationType: ActionNotificationType?
+        notificationType: ActionNotificationType?,
+        errorListener: (Throwable) -> Unit
     ) {
         controller.handle(
             SendChoice(
