@@ -165,11 +165,12 @@ export class TestPlanComponent implements OnInit {
     this.executePlan = true;
     this.testExecutionStatus = "PENDING";
     this.runningTestPlan = plan;
+    const ref = this.snackBar.open(`Plan ${plan.name} is running.`, "Execution", {duration: 20000});
     this.test.runTestPlan(plan._id).subscribe(
       execution => {
-        this.testExecutionId = execution
+        ref.dismiss();
+        this.testExecutionId = execution;
         this.showExecutions(plan);
-        this.snackBar.open(`Plan ${plan.name} is running.`, "Execution", {duration: 2000})
         this.getExecutionStatus(this.testPlanId, this.testExecutionId)
       });
     this.testPlanId = plan._id;

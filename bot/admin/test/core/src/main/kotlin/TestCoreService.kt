@@ -28,7 +28,6 @@ import ai.tock.nlp.admin.AdminVerticle
 import ai.tock.nlp.admin.model.ApplicationScopedQuery
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.shared.Dice
-import ai.tock.shared.Executor
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.property
@@ -224,19 +223,16 @@ class TestCoreService : TestService {
         )
         // save the test plan execution into the database
         TestPlanService.saveTestPlanExecution(exec)
-        val testPlanExecutor: Executor = injector.provide()
-        testPlanExecutor.executeBlocking {
-            TestPlanService.runTestPlan(
-                getRestClient(
-                    getBotConfiguration(
-                        testPlan.botApplicationConfigurationId,
-                        testPlan.namespace
-                    )
-                ),
-                testPlan,
-                executionId.toId()
-            )
-        }
+        TestPlanService.runTestPlan(
+            getRestClient(
+                getBotConfiguration(
+                    testPlan.botApplicationConfigurationId,
+                    testPlan.namespace
+                )
+            ),
+            testPlan,
+            executionId.toId()
+        )
         return executionId.toId()
     }
 
