@@ -58,6 +58,7 @@
 
         <module>admin</module>
 
+        <module>chatbase</module>
 
     </modules>
 
