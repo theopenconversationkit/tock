@@ -48,7 +48,8 @@ class SendChoice(
     id: Id<Action> = newId(),
     date: Instant = Instant.now(),
     state: EventState = EventState(),
-    metadata: ActionMetadata = ActionMetadata()
+    metadata: ActionMetadata = ActionMetadata(),
+    val referralParameter: String? = null
 ) : Action(playerId, recipientId, applicationId, id, date, state, metadata) {
 
     constructor(
@@ -63,17 +64,17 @@ class SendChoice(
         state: EventState = EventState(),
         metadata: ActionMetadata = ActionMetadata()
     ) :
-        this(
-            playerId,
-            applicationId,
-            recipientId,
-            intentName,
-            parameters + mapNotNullValues(STEP_PARAMETER to step?.name),
-            id,
-            date,
-            state,
-            metadata
-        )
+            this(
+                playerId,
+                applicationId,
+                recipientId,
+                intentName,
+                parameters + mapNotNullValues(STEP_PARAMETER to step?.name),
+                id,
+                date,
+                state,
+                metadata
+            )
 
     companion object {
 
@@ -129,7 +130,8 @@ class SendChoice(
                 parameters,
                 bus.stepName,
                 bus.intent?.wrappedIntent(),
-                sourceAppId = bus.applicationId)
+                sourceAppId = bus.applicationId
+            )
         }
 
         /**
@@ -234,12 +236,12 @@ class SendChoice(
             return StringBuilder().apply {
                 append(intent.wrappedIntent().name)
                 val params = parameters +
-                    listOfNotNull(
-                        if (currentStep != null) STEP_PARAMETER to currentStep else null,
-                        if (currentIntent != null && currentIntent != intent)
-                            PREVIOUS_INTENT_PARAMETER to currentIntent.name else null,
-                        if (sourceAppId != null) SOURCE_APP_ID to sourceAppId else null
-                    )
+                        listOfNotNull(
+                            if (currentStep != null) STEP_PARAMETER to currentStep else null,
+                            if (currentIntent != null && currentIntent != intent)
+                                PREVIOUS_INTENT_PARAMETER to currentIntent.name else null,
+                            if (sourceAppId != null) SOURCE_APP_ID to sourceAppId else null
+                        )
 
                 if (params.isNotEmpty()) {
                     params.map { e ->
@@ -269,7 +271,13 @@ class SendChoice(
         /**
          * Decodes an id and returns an action.
          */
-        fun decodeChoice(id: String, senderId: PlayerId, applicationId: String, recipientId: PlayerId): Action =
+        fun decodeChoice(
+            id: String,
+            senderId: PlayerId,
+            applicationId: String,
+            recipientId: PlayerId,
+            referralParameter: String? = null
+        ): Action =
             decodeChoiceId(id)
                 .let { (intentName, parameters) ->
                     if (parameters.containsKey(NLP)) {
@@ -281,11 +289,12 @@ class SendChoice(
                         )
                     } else {
                         SendChoice(
-                            senderId,
-                            applicationId,
-                            recipientId,
-                            intentName,
-                            parameters
+                            playerId = senderId,
+                            applicationId = applicationId,
+                            recipientId = recipientId,
+                            intentName = intentName,
+                            parameters = parameters,
+                            referralParameter = referralParameter
                         )
                     }
                 }
