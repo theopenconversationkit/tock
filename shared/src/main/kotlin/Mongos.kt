@@ -19,6 +19,7 @@ package ai.tock.shared
 import ai.tock.shared.jackson.addDeserializer
 import ai.tock.shared.jackson.addSerializer
 import ai.tock.shared.jackson.jacksonAdditionalModules
+import ai.tock.shared.security.mongo.MongoCredentialsProvider
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonTokenId
 import com.fasterxml.jackson.databind.DeserializationContext
@@ -32,6 +33,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.DurationSerializer
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClient
 import com.mongodb.MongoClientSettings
+import com.mongodb.ServerAddress
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import com.mongodb.client.model.changestream.FullDocument
@@ -122,12 +124,19 @@ private val mongoUrl = ConnectionString(
     )
 )
 
+private val credentialsProvider = injector.provide<MongoCredentialsProvider>()
+
 /**
  * The sync [MongoClient] of Tock.
  */
 internal val mongoClient: MongoClient by lazy {
     TockKMongoConfiguration.configure()
-    KMongo.createClient(mongoUrl)
+    val uri = com.mongodb.MongoClientURI(mongoUrl.toString())
+    KMongo.createClient(
+        uri.hosts.map { ServerAddress(it) },
+        (uri.credentials ?: credentialsProvider.getCredentials())?.let { listOf(it) } ?: emptyList(),
+        uri.options
+    )
 }
 
 /**
@@ -139,6 +148,11 @@ internal val asyncMongoClient: com.mongodb.reactivestreams.client.MongoClient by
         MongoClientSettings.builder()
             .applyConnectionString(mongoUrl)
             .apply {
+                if (com.mongodb.MongoClientURI(mongoUrl.toString()).credentials == null) {
+                    credentialsProvider.getCredentials()?.let {
+                        this.credential(it)
+                    }
+                }
                 if (mongoUrl.sslEnabled == true) {
                     streamFactoryFactory(NettyStreamFactoryFactory.builder().build())
                 }
