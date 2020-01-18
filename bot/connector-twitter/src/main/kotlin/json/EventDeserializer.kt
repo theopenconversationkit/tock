@@ -71,10 +71,7 @@ internal class EventDeserializer : JacksonDeserializer<IncomingEvent>() {
             directMessages != null -> DirectMessageIncomingEvent(forUserId!!, users!!, apps, directMessages)
             directMessageIndicateTyping != null -> DirectMessageIndicateTypingIncomingEvent(forUserId!!, users!!, directMessageIndicateTyping)
             statuses != null -> TweetIncomingEvent(forUserId!!, statuses)
-            else -> {
-                logger.error { "unknown event" }
-                null
-            }
+            else -> null
         }
     }
 

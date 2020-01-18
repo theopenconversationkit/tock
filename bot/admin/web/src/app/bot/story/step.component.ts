@@ -214,6 +214,7 @@ export class StepComponent implements OnInit {
               this.step.intentDefinition = intent;
               this.step.intent = new IntentName(intent.name);
               this.onIntentChange(this.step, intent.name);
+              this.validateIntent(this.step, false);
             }
           }
         })

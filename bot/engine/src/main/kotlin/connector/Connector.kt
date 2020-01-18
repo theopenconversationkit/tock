@@ -65,11 +65,12 @@ interface Connector {
      * Sends a notification to the connector.
      * A [BotBus] is created and the corresponding story is called.
      *
-     * @param applicationId the configuration connector id
+     * @param controller the connector controller
      * @param recipientId the recipient identifier
      * @param intent the notification intent
      * @param step the optional step target
      * @param parameters the optional parameters
+     * @param notificationType notification type if any
      */
     fun notify(
         controller: ConnectorController,
@@ -77,7 +78,7 @@ interface Connector {
         intent: IntentAware,
         step: StoryStep<out StoryHandlerDefinition>? = null,
         parameters: Map<String, String> = emptyMap(),
-        notificationType: ActionNotificationType
+        notificationType: ActionNotificationType?
     ): Unit =
         throw UnsupportedOperationException("Connector $connectorType does not support notification")
 

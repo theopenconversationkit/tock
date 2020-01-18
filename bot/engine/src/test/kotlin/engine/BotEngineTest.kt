@@ -141,6 +141,9 @@ abstract class BotEngineTest {
 
     @AfterEach
     fun after() {
+        BotRepository.botProviders.clear()
+        BotRepository.connectorProviders.clear()
+        BotRepository.connectorControllerMap.clear()
         tockInternalInjector = KodeinInjector()
     }
 
