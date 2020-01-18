@@ -174,11 +174,6 @@ internal class TwitterConnector internal constructor(
                                     )
                                     if (event != null) {
                                         controller.handle(event, ConnectorData(callback))
-                                    } else {
-                                        logger.logError(
-                                            "unable to convert $incomingEvent to event",
-                                            requestTimerData
-                                        )
                                     }
                                 }
                             }
