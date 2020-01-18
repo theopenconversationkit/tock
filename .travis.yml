@@ -6,7 +6,7 @@ branches:
     - master
     - /^build-.*$/
 install: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
-script: ./etc/deploy.sh
+script: travis_wait ./etc/deploy.sh
 cache:
   directories:
   - $HOME/.m2/repository
