@@ -7,7 +7,7 @@ if [[ $TRAVIS_BRANCH = *"build"* || $TRAVIS_BRANCH = "master" ]] && [ "$TRAVIS_P
   gpg --fast-import etc/codesigning.asc
   if [ "$TRAVIS_TAG" = '' ];
   then
-    mvn test -B -Dskip.npm -Dassembly.skipAssembly=true -U -q
+    mvn test -B -Dskip.npm -Dassembly.skipAssembly=true -U -q || exit 1
     if [ "$SKIP_DEPLOY" != 'true' ]; then
       mvn -B deploy -T 4 -DskipTests=true -Dtravis --settings etc/deploy-settings.xml -U -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
     fi
@@ -18,7 +18,7 @@ if [[ $TRAVIS_BRANCH = *"build"* || $TRAVIS_BRANCH = "master" ]] && [ "$TRAVIS_P
       echo "tock version : $TOCK_VERSION"
       echo "tock tag : $TRAVIS_TAG"
       mvn versions:set -DnewVersion="$TRAVIS_TAG"
-      mvn install -B -Dskip.npm -Dassembly.skipAssembly=true -U -q
+      mvn install -B -Dskip.npm -Dassembly.skipAssembly=true -U -q || exit 1
       mvn deploy -B -T 4 -DskipTests=true -Dmilestone --settings etc/deploy-settings.xml -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
     fi
   fi
