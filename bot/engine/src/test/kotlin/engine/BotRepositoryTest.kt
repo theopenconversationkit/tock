@@ -294,14 +294,14 @@ class BotRepositoryTest : BotEngineTest() {
         fun `GIVEN stateModifier THEN notify calls connector notify method`() {
             BotRepository.notify("test", recipientId, intent, stateModifier = KEEP_CURRENT_STATE)
 
-            verify { connector.notify(any(), recipientId, intent, null, any(), any()) }
+            verify { connector.notify(any(), recipientId, intent, null, any(), any(), any()) }
         }
 
         @Test
         fun `GIVEN no notificationType passed THEN notify pass null NotificationType to connector`() {
             BotRepository.notify("test", recipientId, intent)
 
-            verify { connector.notify(any(), recipientId, intent, null, any(), notificationType = null) }
+            verify { connector.notify(any(), recipientId, intent, null, any(), null, any()) }
         }
     }
 
