@@ -28,25 +28,35 @@
   </nb-card-header>
   <nb-card-body>
     <div *ngIf="create">
-      <input #newCategory class="category new" nbInput placeholder="Category" [(ngModel)]="feature.category" [autofocus]="true">
-      <input class="name new" nbInput placeholder="Name" [(ngModel)]="feature.name">
-      <div class="planning cell">
+      <tock-select-bot [(configurationId)]="botApplicationConfigurationId" [allowNoSelection]="true"
+                       noConfigurationLabel="All Configurations"><br>
+      <input #newCategory class="first_new category new" nbInput placeholder="Category" [(ngModel)]="feature.category" [autofocus]="true">
+      <input class="first_new name new" nbInput placeholder="Name" [(ngModel)]="feature.name">
+      <div class="first_new planning cell">
         <input nbInput (keyup.enter)="changeStartDateNew($event)" placeholder="start date" [(ngModel)]="feature.startDate"
                [nbDatepicker]="startDate" (ngModelChange)="changeStartDateNew($event)">
         <nb-datepicker #startDate (dateChange)="changeStartDateNew($event)" [max]="feature.endDate"></nb-datepicker>
       </div>
-      <div class="planning cell">
+      <div class="first_new planning cell">
         <input nbInput (keyup.enter)="changeEndDateNew($event)" placeholder="end date" [(ngModel)]="feature.endDate"
                [nbDatepicker]="endDate" (ngModelChange)="changeEndDateNew($event)">
         <nb-datepicker #endDate (dateChange)="changeEndDateNew($event)" [min]="feature.startDate">></nb-datepicker>
       </div>
-      <nb-toggle class="toggle" status="primary" [checked]="feature.enabled" (checkedChange)="toggleNew($event)" nbTooltip="Status"></nb-toggle>
+      <nb-toggle class="first_new toggle" status="primary" [checked]="feature.enabled" (checkedChange)="toggleNew($event)" nbTooltip="Status"></nb-toggle>
+      </tock-select-bot>
     </div>
 
     <div *ngIf="!create" class="features-table">
       <div *ngFor="let f of features" class="feature">
         <div class="category cell">{{f.category}}</div>
         <div class="name cell">{{f.name}}</div>
+        <div class="application cell" *ngIf="f.configuration">
+          <img src="{{f.configuration.connectorType.iconUrl()}}"
+               class="connector"
+               [matTooltip]="f.configuration.connectorType.label()"/>
+          {{ f.configuration.connectorType.label() }} ( {{ f.applicationId }})
+        </div>
+        <div class="application cell" *ngIf="!f.configuration"></div>
         <div class="toggle cell">
           <nb-toggle status="primary" [checked]="f.enabled" (checkedChange)="toggle(f, $event)" nbTooltip="Status"></nb-toggle>
         </div>

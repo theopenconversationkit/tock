@@ -747,12 +747,13 @@ object BotAdminService {
             feature.category,
             feature.name,
             feature.startDate,
-            feature.endDate
+            feature.endDate,
+            feature.applicationId
         )
     }
 
-    fun deleteFeature(botId: String, namespace: String, category: String, name: String) {
-        featureDAO.deleteFeature(botId, namespace, category, name)
+    fun deleteFeature(botId: String, namespace: String, category: String, name: String, applicationId: String?) {
+        featureDAO.deleteFeature(botId, namespace, category, name, applicationId)
     }
 
     fun loadDialogFlow(request: DialogFlowRequest): ApplicationDialogFlowData {

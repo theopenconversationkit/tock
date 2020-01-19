@@ -122,8 +122,8 @@ export class BotService {
     return this.rest.post(`/feature/${encodeURIComponent(botId)}/add`, feature);
   }
 
-  deleteFeature(botId: string, category: string, name: string): Observable<boolean> {
-    return this.rest.delete(`/feature/${encodeURIComponent(botId)}/${encodeURIComponent(category)}/${encodeURIComponent(name)}`);
+  deleteFeature(botId: string, category: string, name: string, applicationId:string): Observable<boolean> {
+    return this.rest.delete(`/feature/${encodeURIComponent(botId)}/${encodeURIComponent(category)}/${encodeURIComponent(name)}/${applicationId ? encodeURIComponent(applicationId) : ''}`);
   }
 
   getApplicationFlow(request: DialogFlowRequest): Observable<ApplicationDialogFlow> {

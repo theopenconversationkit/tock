@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
+import {BotApplicationConfiguration} from "../../core/model/configuration";
+
 export class Feature {
+
+  configuration: BotApplicationConfiguration;
 
   constructor(public category: string,
               public name: string,
               public enabled: boolean,
               public startDate: Date = null,
-              public endDate: Date = null) {
+              public endDate: Date = null,
+              public applicationId: string = null) {
   }
 
   static fromJSON(json: any): Feature {

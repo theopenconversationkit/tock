@@ -97,6 +97,15 @@ export class BotConfigurationService implements OnInit, OnDestroy {
     }
   }
 
+  findApplicationConfigurationByApplicationId(applicationId: string): BotApplicationConfiguration {
+    const i = this.configurations.getValue().filter(c => c.applicationId === applicationId);
+    if (i.length === 0) {
+      return null;
+    } else {
+      return i[0];
+    }
+  }
+
   saveBot(conf: BotConfiguration): Observable<any> {
     return this.rest.post("/bot", conf);
   }

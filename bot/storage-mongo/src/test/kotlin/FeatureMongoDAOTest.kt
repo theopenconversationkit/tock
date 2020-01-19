@@ -25,7 +25,7 @@ import ai.tock.bot.mongo.FeatureMongoDAOTest.Feature.a
 import ai.tock.bot.mongo.FeatureMongoDAOTest.Feature.b
 import ai.tock.bot.mongo.FeatureMongoDAOTest.Feature.c
 import ai.tock.shared.internalDefaultZoneId
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import java.time.ZonedDateTime
 import kotlin.test.assertFalse
@@ -42,12 +42,16 @@ internal class FeatureMongoDAOTest : AbstractTest() {
 
     val botId = "id"
     val namespace = "namespace"
+    val applicationId = "applicationId"
 
-    @BeforeEach
+    @AfterEach
     fun cleanupFeatures() {
         deleteFeature(botId, namespace, a)
         deleteFeature(botId, namespace, b)
         deleteFeature(botId, namespace, c)
+        deleteFeature(botId, namespace, a, applicationId)
+        deleteFeature(botId, namespace, b, applicationId)
+        deleteFeature(botId, namespace, c, applicationId)
     }
 
     @Test
@@ -153,5 +157,61 @@ internal class FeatureMongoDAOTest : AbstractTest() {
         )
 
         assertFalse(isEnabled(botId, namespace, a))
+    }
+
+
+    @Test
+    fun `GIVEN feature with applicationId THEN isEnabled returns false WHEN the feature is not present`() {
+        assertFalse(isEnabled(botId, namespace, a, applicationId))
+    }
+
+    @Test
+    fun `GIVEN feature with applicationId THEN isEnabled persists default feature state WHEN the feature is not present and feature is enabled`() {
+        assertFalse(isEnabled(botId, namespace, a, applicationId, false))
+
+        //default state is not used anymore
+        assertFalse(isEnabled(botId, namespace, a, applicationId, true))
+    }
+
+    @Test
+    fun `GIVEN feature with applicationId THEN isEnabled persists default feature state WHEN the feature is not present and feature id disabled`() {
+        assertTrue(isEnabled(botId, namespace, a, applicationId, true))
+
+        //default state is not used anymore
+        assertTrue(isEnabled(botId, namespace, a, applicationId, false))
+    }
+
+    @Test
+    fun `GIVEN feature with applicationId THEN isEnabled returns true WHEN the feature is not present AND default is true`() {
+        assertTrue(isEnabled(botId, namespace, a, applicationId, true))
+    }
+
+    @Test
+    fun `GIVEN A feature with applicationId enabled in db THEN isEnabled returns true`() {
+        enable(botId, namespace, a, applicationId = applicationId)
+
+        assertTrue(isEnabled(botId, namespace, a, applicationId))
+    }
+
+    @Test
+    fun `GIVEN A feature with applicationId enabled in db WHEN the feature is disabled THEN isEnabled returns false`() {
+        enable(botId, namespace, a, applicationId = applicationId)
+
+        assertTrue(isEnabled(botId, namespace, a, applicationId))
+
+        disable(botId, namespace, a, applicationId)
+
+        assertFalse(isEnabled(botId, namespace, a, applicationId))
+    }
+
+    @Test
+    fun `GIVEN A feature with applicationId enabled in db WHEN the feature is deleted THEN isEnabled returns false`() {
+        enable(botId, namespace, a, applicationId = applicationId)
+
+        assertTrue(isEnabled(botId, namespace, a, applicationId))
+
+        deleteFeature(botId, namespace, a, applicationId)
+
+        assertFalse(isEnabled(botId, namespace, a, applicationId))
     }
 }

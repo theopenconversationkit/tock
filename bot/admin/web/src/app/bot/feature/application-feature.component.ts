@@ -18,6 +18,7 @@ import {Component, ElementRef, OnInit, ViewChild} from "@angular/core";
 import {Feature} from "../model/feature";
 import {BotService} from "../bot-service";
 import {StateService} from "../../core-nlp/state.service";
+import {BotConfigurationService} from "../../core/bot-configuration.service";
 
 @Component({
   selector: 'tock-application-feature',
@@ -30,11 +31,13 @@ export class ApplicationFeatureComponent implements OnInit {
   features: Feature[] = [];
   create: boolean = false;
   feature: Feature = new Feature("", "", false);
+  botApplicationConfigurationId: string;
   loadingApplicationsFeatures: boolean = false;
   @ViewChild('newCategory', {static: false}) newCategory: ElementRef;
 
   constructor(private state: StateService,
-              private botService: BotService) {
+              private botService: BotService,
+              private configurationService: BotConfigurationService) {
   }
 
   ngOnInit(): void {
@@ -77,6 +80,11 @@ export class ApplicationFeatureComponent implements OnInit {
     if (this.state.currentApplication) {
       this.loadingApplicationsFeatures = true;
       this.botService.getFeatures(this.state.currentApplication.name).subscribe(f => {
+        f.forEach(feature => {
+          if(feature.applicationId) {
+            feature.configuration = this.configurationService.findApplicationConfigurationByApplicationId(feature.applicationId);
+          }
+        });
         this.features = f;
         this.loadingApplicationsFeatures = false;
       });
@@ -84,10 +92,16 @@ export class ApplicationFeatureComponent implements OnInit {
   }
 
   addFeature() {
+    const conf = this.configurationService.findApplicationConfigurationById(this.botApplicationConfigurationId);
+    if (conf) {
+      this.feature.applicationId = conf.applicationId;
+    }
     this.botService.addFeature(this.state.currentApplication.name, this.feature).subscribe(
       _ => {
         this.refresh();
         this.create = false;
+        this.botApplicationConfigurationId = undefined;
+        this.feature.applicationId = undefined;
       }
     );
   }
@@ -106,7 +120,7 @@ export class ApplicationFeatureComponent implements OnInit {
   }
 
   deleteFeature(f: Feature) {
-    this.botService.deleteFeature(this.state.currentApplication.name, f.category, f.name)
+    this.botService.deleteFeature(this.state.currentApplication.name, f.category, f.name, f.applicationId)
       .subscribe(_ => this.refresh());
   }
 
