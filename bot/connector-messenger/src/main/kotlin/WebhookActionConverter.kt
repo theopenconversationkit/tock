@@ -28,6 +28,7 @@ import ai.tock.bot.connector.messenger.model.webhook.LocationPayload
 import ai.tock.bot.connector.messenger.model.webhook.MessageWebhook
 import ai.tock.bot.connector.messenger.model.webhook.OptinWebhook
 import ai.tock.bot.connector.messenger.model.webhook.PostbackWebhook
+import ai.tock.bot.connector.messenger.model.webhook.ReferralParametersWebhook
 import ai.tock.bot.connector.messenger.model.webhook.UrlPayload
 import ai.tock.bot.connector.messenger.model.webhook.Webhook
 import ai.tock.bot.engine.action.SendAttachment
@@ -42,6 +43,7 @@ import ai.tock.bot.engine.event.GetAppRolesEvent
 import ai.tock.bot.engine.event.LoginEvent
 import ai.tock.bot.engine.event.LogoutEvent
 import ai.tock.bot.engine.event.PassThreadControlEvent
+import ai.tock.bot.engine.event.ReferralParametersEvent
 import ai.tock.bot.engine.event.RequestThreadControlEvent
 import ai.tock.bot.engine.event.SubscribingEvent
 import ai.tock.bot.engine.event.TakeThreadControlEvent
@@ -67,7 +69,12 @@ internal object WebhookActionConverter {
                             quickReply
                                 ?.payload
                                 ?.let { payload ->
-                                    SendChoice.decodeChoice(payload, message.playerId(PlayerType.user), applicationId, message.recipientId(PlayerType.bot))
+                                    SendChoice.decodeChoice(
+                                        payload,
+                                        message.playerId(PlayerType.user),
+                                        applicationId,
+                                        message.recipientId(PlayerType.bot)
+                                    )
                                 }
                         }
                     } else {
@@ -86,10 +93,17 @@ internal object WebhookActionConverter {
                         }
                     }
                 }
-            is PostbackWebhook ->
+            is PostbackWebhook -> {
                 message.postback.payload?.let { payload ->
-                    SendChoice.decodeChoice(payload, message.playerId(PlayerType.user), applicationId, message.recipientId(PlayerType.bot))
+                    SendChoice.decodeChoice(
+                        payload,
+                        message.playerId(PlayerType.user),
+                        applicationId,
+                        message.recipientId(PlayerType.bot),
+                        message.postback.referral?.ref
+                    )
                 }
+            }
             is OptinWebhook ->
                 SubscribingEvent(
                     message.playerId(PlayerType.user),
@@ -159,6 +173,14 @@ internal object WebhookActionConverter {
                     applicationId,
                     message.takeThreadControl.previousOwnerAppId,
                     message.takeThreadControl.metadata
+                )
+            }
+            is ReferralParametersWebhook -> {
+                ReferralParametersEvent(
+                    message.playerId(PlayerType.user),
+                    message.recipientId(PlayerType.bot),
+                    applicationId,
+                    message.referral.ref
                 )
             }
             else -> {
