@@ -18,6 +18,9 @@
   display: flex;
   flex-direction: column;
   width:400px;
+  /* Fixes #733 Responsiveness issues. */
+  max-height: calc(100vh - 210px);
+  overflow: auto;
 }
 
 .container > * {
