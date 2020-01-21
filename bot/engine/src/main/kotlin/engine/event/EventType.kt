@@ -88,7 +88,9 @@ enum class EventType(val action: Boolean = true) {
     /**
      * [TakeThreadControlEvent] event type.
      */
-    takeThreadControl(false)
-
-
+    takeThreadControl(false),
+    /**
+     * [ReferralParamtersEvent] event type.
+     */
+    referralParamters(false)
 }
