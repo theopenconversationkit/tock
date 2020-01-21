@@ -41,10 +41,22 @@
 
 .intent_name {
   font-size: larger;
+  /* Fixes #733 Responsiveness issues. */
+  display: inline-block;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .intent_id {
   text-align: center;
+  /* Fixes #733 Responsiveness issues. */
+  display: inline-block;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .intent_description {
@@ -69,7 +81,6 @@
 }
 
 .actions {
-  white-space: nowrap;
 }
 
 .entity {
