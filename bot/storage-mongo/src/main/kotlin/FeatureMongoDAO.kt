@@ -26,7 +26,6 @@ import ai.tock.bot.mongo.MongoBotConfiguration.database
 import ai.tock.shared.error
 import ai.tock.shared.internalDefaultZoneId
 import ai.tock.shared.watch
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.mongodb.client.model.ReplaceOptions
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import com.mongodb.client.model.changestream.FullDocument.UPDATE_LOOKUP
@@ -48,7 +47,6 @@ import kotlin.collections.set
 
 @Data(internal = true)
 @JacksonData(internal = true)
-@JsonIgnoreProperties(ignoreUnknown = true)
 internal data class Feature(
     val _id: String,
     val key: String,
@@ -89,8 +87,8 @@ internal object FeatureMongoDAO : FeatureDAO {
         }
     }
 
-    private fun calculateId(botId: String, namespace: String, category: String, name: String) =
-        "$botId,$namespace,$category,$name"
+    private fun calculateId(botId: String, namespace: String, category: String, name: String, applicationId: String?) =
+        "$botId,$namespace,$category,$name${applicationId?.let { "+$it" } ?: ""}"
 
 
     override fun isEnabled(
@@ -98,12 +96,15 @@ internal object FeatureMongoDAO : FeatureDAO {
         namespace: String,
         category: String,
         name: String,
+        applicationId: String?,
         default: Boolean
     ): Boolean {
-        val id = calculateId(botId, namespace, category, name)
+        val id = calculateId(botId, namespace, category, name, applicationId)
+        val idWithoutApplicationId = calculateId(botId, namespace, category, name, null)
         val now = ZonedDateTime.now(internalDefaultZoneId)
 
-        return (features[id] ?: col.findOne(_id eq id))
+        return (features[id] ?: features[idWithoutApplicationId] ?: col.findOne(_id eq id)
+        ?: col.findOne(_id eq idWithoutApplicationId))
             .let { f ->
                 if (f == null) {
                     default.also {
@@ -127,9 +128,10 @@ internal object FeatureMongoDAO : FeatureDAO {
         category: String,
         name: String,
         startDate: ZonedDateTime?,
-        endDate: ZonedDateTime?
+        endDate: ZonedDateTime?,
+        applicationId: String?
     ) {
-        val id = calculateId(botId, namespace, category, name)
+        val id = calculateId(botId, namespace, category, name, applicationId)
         val feature = Feature(id, "$category,$name", true, botId, namespace, startDate, endDate)
         features[id] = feature
 
@@ -140,8 +142,13 @@ internal object FeatureMongoDAO : FeatureDAO {
         )
     }
 
-    override fun disable(botId: String, namespace: String, category: String, name: String) {
-        val id = calculateId(botId, namespace, category, name)
+    override fun disable(
+        botId: String,
+        namespace: String,
+        category: String,
+        name: String,
+        applicationId: String?) {
+        val id = calculateId(botId, namespace, category, name, applicationId)
         val feature = Feature(id, "$category,$name", false, botId, namespace)
         features[id] = feature
         col.replaceOne(
@@ -156,9 +163,11 @@ internal object FeatureMongoDAO : FeatureDAO {
             .mapNotNull {
                 try {
                     val index = it.key.lastIndexOf(',')
+                    val applicationIndex = it._id.lastIndexOf('+')
                     val category = if (index == -1) "" else it.key.substring(0, index)
                     val name = if (index == -1) it.key else it.key.substring(index + 1, it.key.length)
-                    FeatureState(category, name, it.enabled, it.startDate, it.endDate)
+                    val applicationId = if (applicationIndex == -1) null else it._id.substring(applicationIndex + 1)
+                    FeatureState(category, name, it.enabled, it.startDate, it.endDate, applicationId)
                 } catch (e: Exception) {
                     logger.error(e)
                     null
@@ -172,16 +181,22 @@ internal object FeatureMongoDAO : FeatureDAO {
         category: String,
         name: String,
         startDate: ZonedDateTime?,
-        endDate: ZonedDateTime?
+        endDate: ZonedDateTime?,
+        applicationId: String?
     ) {
-        val id = calculateId(botId, namespace, category, name)
+        val id = calculateId(botId, namespace, category, name, applicationId)
         val feature = Feature(id, "$category,$name", enabled, botId, namespace, startDate, endDate)
         features[id] = feature
         col.save(feature)
     }
 
-    override fun deleteFeature(botId: String, namespace: String, category: String, name: String) {
-        val id = calculateId(botId, namespace, category, name)
+    override fun deleteFeature(
+        botId: String,
+        namespace: String,
+        category: String,
+        name: String,
+        applicationId: String?) {
+        val id = calculateId(botId, namespace, category, name, applicationId)
         features.remove(id)
         col.deleteOneById(id)
     }

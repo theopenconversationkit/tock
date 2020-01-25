@@ -26,5 +26,6 @@ data class FeatureState(
     val name: String,
     val enabled: Boolean,
     val startDate: ZonedDateTime?,
-    val endDate: ZonedDateTime?
+    val endDate: ZonedDateTime?,
+    val applicationId: String?
 )

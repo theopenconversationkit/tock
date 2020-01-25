@@ -45,6 +45,14 @@
   padding-right: 5px;
 }
 
+.application {
+  float: left;
+  min-width: 50px;
+  font-size: medium;
+  line-height: 36px;
+  padding-right: 5px;
+}
+
 .toggle {
   line-height: 36px;
 }
@@ -70,5 +78,13 @@
 
 .new {
   margin-right: 20px;
+}
+
+.first_new {
+  margin-top: 20px;
+}
+
+.connector {
+  height: 24px;
 }
 

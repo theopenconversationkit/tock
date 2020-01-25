@@ -456,7 +456,7 @@ interface BotBus : Bus<BotBus> {
      * @param default the default value if the feature state is unknown
      */
     fun isFeatureEnabled(feature: FeatureType, default: Boolean = false) =
-        injector.provide<FeatureDAO>().isEnabled(botDefinition.botId, botDefinition.namespace, feature, default)
+        injector.provide<FeatureDAO>().isEnabled(botDefinition.botId, botDefinition.namespace, feature, applicationId, default)
 
     /**
      * Marks the current as not understood in the nlp model.

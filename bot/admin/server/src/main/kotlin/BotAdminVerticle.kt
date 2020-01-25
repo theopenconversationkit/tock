@@ -262,14 +262,26 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingDelete(
-            "/feature/:applicationId/:category/:name",
+            "/feature/:botId/:category/:name/",
             botUser,
-            simpleLogger("Delete Application Feature", { it.path("name") to it.path("enabled") })
+            simpleLogger("Delete Application Feature", { listOf(it.path("botId"), it.path("category"), it.path("name")) })
+        ) { context ->
+            val category = context.path("category")
+            val name = context.path("name")
+            val botId = context.path("botId")
+            BotAdminService.deleteFeature(botId, context.organization, category, name, null)
+        }
+
+        blockingDelete(
+            "/feature/:botId/:category/:name/:applicationId",
+            botUser,
+            simpleLogger("Delete Application Feature", { listOf(it.path("botId"), it.path("category"), it.path("name"), it.path("applicationId")) })
         ) { context ->
             val applicationId = context.path("applicationId")
             val category = context.path("category")
             val name = context.path("name")
-            BotAdminService.deleteFeature(applicationId, context.organization, category, name)
+            val botId = context.path("botId")
+            BotAdminService.deleteFeature(botId, context.organization, category, name, applicationId.takeUnless { it.isBlank() })
         }
 
         blockingJsonGet("/application/:applicationId/plans", botUser) { context ->
