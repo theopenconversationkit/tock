@@ -17,6 +17,7 @@
 package ai.tock.bot.connector.web
 
 import ai.tock.bot.engine.action.SendChoice
+import ai.tock.bot.engine.action.SendChoice.Companion.REFERRAL_PARAMETER
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.event.ReferralParametersEvent
@@ -42,19 +43,17 @@ data class WebConnectorRequest(val query: String? = null, val payload: String? =
                 applicationId = applicationId,
                 recipientId = PlayerId(applicationId, bot),
                 intentName = intent,
-                parameters = parameters,
-                referralParameter = ref
+                parameters = parameters + (if (ref == null) emptyMap() else mapOf(REFERRAL_PARAMETER to ref))
             )
         } else {
-            if(ref != null) {
+            if (ref != null) {
                 ReferralParametersEvent(
                     userId = PlayerId(userId),
                     recipientId = PlayerId(applicationId, bot),
                     applicationId = applicationId,
                     ref = ref
                 )
-            }
-            else {
+            } else {
                 error("query & payload are both null")
             }
         }
