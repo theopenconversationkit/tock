@@ -48,7 +48,7 @@
           </thead>
           <tr *ngFor="let i of node.intents">
             <td>
-              <span class="intent_name">{{i.intentLabel()}}</span>
+              <span class="intent_name" title="{{i.intentLabel()}}">{{i.intentLabel()}}</span>
               <div *ngIf="state.intentExistsInOtherApplication(i.name)"
                    matTooltip="This intent is shared between at least one other application. All changes to the intent will also affect the other applications that use this intent."
                    matTooltipPosition="right">
@@ -56,7 +56,7 @@
                 <mat-icon>share</mat-icon>
               </div>
             </td>
-            <td class="intent_id"><span>{{i.name}}</span></td>
+            <td><span class="intent_id" title="{{i.name}}">{{i.name}}</span></td>
             <td class="intent_description">{{i.description}}</td>
             <td>
           <span *ngFor="let e of i.entities">
@@ -72,9 +72,8 @@
           </span>
             </td>
             <td class="shared">
-              <button *ngIf="selectedIntent !== i" mat-button (click)="displaySharedIntent(i)">
+              <button *ngIf="selectedIntent !== i" mat-button matTooltip="Add shared intent" (click)="displaySharedIntent(i)">
                 <mat-icon>add_box</mat-icon>
-                Add shared intent
               </button>
               <nb-select *ngIf="selectedIntent === i && !state.intentExistsInOtherApplication(i.name)"
                           class="intent"
@@ -102,9 +101,8 @@
               </div>
             </td>
             <td class="states">
-              <button *ngIf="!state.intentExistsInOtherApplication(i.name)" mat-button (click)="addState(i)">
+              <button *ngIf="!state.intentExistsInOtherApplication(i.name)" mat-button matTooltip="Add state" (click)="addState(i)">
                 <mat-icon>add_box</mat-icon>
-                Add state
               </button>
               <div *ngIf="i.mandatoryStates.length !== 0" class="shared_list">
                 <mat-chip-list *ngIf="!state.intentExistsInOtherApplication(i.name)"
