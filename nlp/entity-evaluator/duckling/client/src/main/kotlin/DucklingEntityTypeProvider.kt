@@ -18,17 +18,33 @@ package ai.tock.duckling.client
 
 import ai.tock.duckling.client.DucklingDimensions.DUCKLING
 import ai.tock.duckling.client.DucklingDimensions.dimensions
-import ai.tock.nlp.core.service.entity.EntityTypeEvaluator
 import ai.tock.nlp.core.service.entity.EntityTypeClassifier
+import ai.tock.nlp.core.service.entity.EntityTypeEvaluator
 import ai.tock.nlp.core.service.entity.EntityTypeProvider
 import ai.tock.shared.booleanProperty
 
 private val ducklingEnabled = booleanProperty("tock_duckling_enabled", true)
 
+private val entityTypes = setOf(
+    "duckling:datetime",
+    "duckling:temperature",
+    "duckling:number",
+    "duckling:ordinal",
+    "duckling:distance",
+    "duckling:volume",
+    "duckling:amount-of-money",
+    "duckling:duration",
+    "duckling:email",
+    "duckling:url",
+    "duckling:phone-number"
+)
+
 /**
  *
  */
 internal class DucklingEntityTypeProvider : EntityTypeProvider {
+
+    override fun supportedEntityTypes(): Set<String> = if (ducklingEnabled) entityTypes else emptySet()
 
     override fun getEntityTypeClassifier(): EntityTypeClassifier = DucklingParser
 

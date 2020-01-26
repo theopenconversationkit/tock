@@ -47,7 +47,7 @@ val applicationDAO: ApplicationDefinitionDAO get() = injector.provide()
 val entityTypeDAO: EntityTypeDefinitionDAO get() = injector.provide()
 val intentDAO: IntentDefinitionDAO get() = injector.provide()
 val sentenceDAO: ClassifiedSentenceDAO get() = injector.provide()
-val userNamespaceDAO:UserNamespaceDAO get() = injector.provide()
+val userNamespaceDAO: UserNamespaceDAO get() = injector.provide()
 
 /**
  *
@@ -291,6 +291,10 @@ object ApplicationConfigurationService :
         applicationName: String,
         engineType: NlpEngineType,
         configuration: NlpApplicationConfiguration
-    ) =
-        modelCore.updateModelConfiguration(applicationName, engineType, configuration)
+    ) = modelCore.updateModelConfiguration(applicationName, engineType, configuration)
+
+    override fun getEntityTypesByNamespaceAndSharedEntityTypes(namespace: String): List<EntityTypeDefinition> {
+        val builtin = core.getBuiltInEntityTypes()
+        return getEntityTypes().filter { it.name.namespace() == namespace || builtin.contains(it.name) }
+    }
 }

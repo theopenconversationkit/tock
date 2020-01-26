@@ -38,6 +38,8 @@ internal object EntityCoreService : EntityCore {
 
     private val entityTypeProviders: List<EntityTypeProvider> by lazy(PUBLICATION) { SupportedEntityTypeProviders.providers() }
 
+    val knownEntityTypes: Set<String> get() = entityTypeProviders.flatMap { it.supportedEntityTypes() }.toSet()
+
     private fun getEntityEvaluator(entityType: EntityType): EntityTypeEvaluator? =
         entityType.name.namespaceAndName().let { (namespace, name) ->
             entityTypeProviders.firstOrNull { it.supportEvaluation(namespace, name) }?.getEntityTypeEvaluator()
