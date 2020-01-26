@@ -35,6 +35,8 @@ import ai.tock.bot.connector.messenger.model.webhook.Optin
 import ai.tock.bot.connector.messenger.model.webhook.OptinWebhook
 import ai.tock.bot.connector.messenger.model.webhook.PostbackWebhook
 import ai.tock.bot.connector.messenger.model.webhook.PriorMessage
+import ai.tock.bot.connector.messenger.model.webhook.Referral
+import ai.tock.bot.connector.messenger.model.webhook.ReferralParametersWebhook
 import ai.tock.bot.connector.messenger.model.webhook.UserActionPayload
 import ai.tock.bot.connector.messenger.model.webhook.Webhook
 import ai.tock.shared.jackson.JacksonDeserializer
@@ -67,14 +69,15 @@ internal class WebhookDeserializer : JacksonDeserializer<Webhook>() {
             var takeThreadControl: TakeThreadControl? = null,
             var requestThreadControl: RequestThreadControl? = null,
             var appRoles: Map<String, List<String>>? = null,
+            var referral: Referral? = null,
             var other: EmptyJson? = null
         )
 
         val (sender, recipient, timestamp,
             message, optin, postback,
             priorMessage, accountLinking,
-            passThreadControl, takeThreadControl, requestThreadControl, appRoles)
-            = jp.read<WebhookFields> { fields, name ->
+            passThreadControl, takeThreadControl, requestThreadControl, appRoles, referral)
+                = jp.read<WebhookFields> { fields, name ->
             with(fields) {
                 when (name) {
                     Webhook::sender.name -> sender = jp.readValue()
@@ -89,6 +92,7 @@ internal class WebhookDeserializer : JacksonDeserializer<Webhook>() {
                     "take_thread_control" -> takeThreadControl = jp.readValue()
                     "request_thread_control" -> requestThreadControl = jp.readValue()
                     "app_roles" -> appRoles = jp.readValue()
+                    "referral" -> referral = jp.readValue()
                     else -> other = jp.readUnknownValue()
                 }
             }
@@ -128,6 +132,8 @@ internal class WebhookDeserializer : JacksonDeserializer<Webhook>() {
             TakeThreadControlWebhook(sender, recipient, timestamp, takeThreadControl)
         } else if (requestThreadControl != null) {
             RequestThreadControlWebhook(sender, recipient, timestamp, requestThreadControl)
+        } else if (referral != null) {
+            ReferralParametersWebhook(sender, recipient, timestamp, referral)
         } else {
             logger.error { "unknown webhook" }
             null

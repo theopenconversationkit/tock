@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.engine.event
-
-import ai.tock.bot.engine.user.PlayerId
+package ai.tock.bot.connector.messenger.model.send
 
 /**
- * Switch to private mode event.
+ *
  */
-class ContinuePublicConversationInPrivateEvent(userId: PlayerId,
-                                               recipientId: PlayerId,
-                                               applicationId: String) : OneToOneEvent(userId, recipientId, applicationId)
+enum class SourceType {
+    SHORTLINK, ADS
+}

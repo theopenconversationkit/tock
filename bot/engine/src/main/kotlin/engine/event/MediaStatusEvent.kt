@@ -18,6 +18,9 @@ package ai.tock.bot.engine.event
 
 import ai.tock.bot.engine.user.PlayerId
 
+/**
+ * In order to listen to media event ("stop", "play, etc.).
+ */
 class MediaStatusEvent (
     userId: PlayerId,
     recipientId: PlayerId,

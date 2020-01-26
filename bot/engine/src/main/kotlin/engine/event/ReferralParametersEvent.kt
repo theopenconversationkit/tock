@@ -19,8 +19,11 @@ package ai.tock.bot.engine.event
 import ai.tock.bot.engine.user.PlayerId
 
 /**
- * Switch to private mode event.
+ * A referral event is an event that contains a String reference.
  */
-class ContinuePublicConversationInPrivateEvent(userId: PlayerId,
-                                               recipientId: PlayerId,
-                                               applicationId: String) : OneToOneEvent(userId, recipientId, applicationId)
+class ReferralParametersEvent(
+    userId: PlayerId,
+    recipientId: PlayerId,
+    applicationId: String,
+    val ref: String
+) : OneToOneEvent(userId, recipientId, applicationId)

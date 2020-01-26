@@ -26,6 +26,8 @@ import ai.tock.bot.connector.messenger.model.handover.RequestThreadControl
 import ai.tock.bot.connector.messenger.model.handover.RequestThreadControlWebhook
 import ai.tock.bot.connector.messenger.model.handover.TakeThreadControl
 import ai.tock.bot.connector.messenger.model.handover.TakeThreadControlWebhook
+import ai.tock.bot.connector.messenger.model.send.ReferralIdentifierType.OPEN_THREAD
+import ai.tock.bot.connector.messenger.model.send.SourceType.SHORTLINK
 import ai.tock.bot.connector.messenger.model.webhook.CallbackRequest
 import ai.tock.bot.connector.messenger.model.webhook.Message
 import ai.tock.bot.connector.messenger.model.webhook.MessageEcho
@@ -34,6 +36,8 @@ import ai.tock.bot.connector.messenger.model.webhook.MessageWebhook
 import ai.tock.bot.connector.messenger.model.webhook.Optin
 import ai.tock.bot.connector.messenger.model.webhook.OptinWebhook
 import ai.tock.bot.connector.messenger.model.webhook.PostbackWebhook
+import ai.tock.bot.connector.messenger.model.webhook.Referral
+import ai.tock.bot.connector.messenger.model.webhook.ReferralParametersWebhook
 import ai.tock.bot.connector.messenger.model.webhook.UserActionPayload
 import ai.tock.bot.connector.messenger.model.webhook.Webhook
 import ai.tock.bot.engine.action.ActionMetadata
@@ -326,6 +330,36 @@ class WebhookDeserializationTest {
         val json = """{"object":"page","entry":[{"id":"1744550565845823","time":1574175286359,"standby":[{"sender":{"id":"1590192107678927"},"recipient":{"id":"1744550565845823"},"timestamp":1574175285472,"postback":{}}]}]}"""
         val callback: CallbackRequest = mapper.readValue(json)
         assertEquals(json, mapper.writeValueAsString(callback))
+    }
+
+    @Test
+    fun `referral deserialization`() {
+        val json =
+            """{
+                "sender":{
+                    "id":"<PSID>"
+                    },
+                "recipient":{
+                    "id":"<PAGE_ID>"
+                    },
+                "timestamp":1458692752478,
+                "referral": {
+                    "ref": "ref_data_in_m_dot_me_param",
+                    "source": "SHORTLINK",
+                    "type": "OPEN_THREAD"
+                    }
+                }"""
+
+        val webhook: Webhook = mapper.readValue(json)
+        assertEquals(
+            ReferralParametersWebhook(
+                sender = Sender(id = "<PSID>"),
+                recipient = Recipient(id = "<PAGE_ID>"),
+                timestamp = 1458692752478,
+                referral = Referral(ref = "ref_data_in_m_dot_me_param", source = SHORTLINK, type = OPEN_THREAD)
+            ),
+            webhook
+        )
     }
 
 }

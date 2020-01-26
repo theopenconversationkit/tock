@@ -88,6 +88,7 @@ class SendChoice(
         const val PREVIOUS_INTENT_PARAMETER = "_previous_intent"
         const val NLP = "_nlp"
         const val SOURCE_APP_ID = "_source"
+        const val REFERRAL_PARAMETER = "_referral"
 
         /**
          * Encodes a choice id where text will be analysed by NLP engine.
@@ -129,7 +130,8 @@ class SendChoice(
                 parameters,
                 bus.stepName,
                 bus.intent?.wrappedIntent(),
-                sourceAppId = bus.applicationId)
+                sourceAppId = bus.applicationId
+            )
         }
 
         /**
@@ -269,7 +271,13 @@ class SendChoice(
         /**
          * Decodes an id and returns an action.
          */
-        fun decodeChoice(id: String, senderId: PlayerId, applicationId: String, recipientId: PlayerId): Action =
+        fun decodeChoice(
+            id: String,
+            senderId: PlayerId,
+            applicationId: String,
+            recipientId: PlayerId,
+            referralParameter: String? = null
+        ): Action =
             decodeChoiceId(id)
                 .let { (intentName, parameters) ->
                     if (parameters.containsKey(NLP)) {
@@ -281,11 +289,11 @@ class SendChoice(
                         )
                     } else {
                         SendChoice(
-                            senderId,
-                            applicationId,
-                            recipientId,
-                            intentName,
-                            parameters
+                            playerId = senderId,
+                            applicationId = applicationId,
+                            recipientId = recipientId,
+                            intentName = intentName,
+                            parameters = parameters + (if (referralParameter == null) emptyMap() else mapOf(REFERRAL_PARAMETER to referralParameter))
                         )
                     }
                 }
@@ -325,6 +333,11 @@ class SendChoice(
      * Provides the id used by connectors.
      */
     fun toEncodedId(): String = encodeChoiceId(Intent(intentName), step(), parameters, null, null)
+
+    /**
+     * Returns the referral parameter if any.
+     */
+    val referralParameter: String? get() = parameters[REFERRAL_PARAMETER]
 
     override fun toString(): String {
         return "SendChoice(intentName='$intentName', parameters=$parameters)"
