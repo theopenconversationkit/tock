@@ -48,8 +48,7 @@ class SendChoice(
     id: Id<Action> = newId(),
     date: Instant = Instant.now(),
     state: EventState = EventState(),
-    metadata: ActionMetadata = ActionMetadata(),
-    val referralParameter: String? = null
+    metadata: ActionMetadata = ActionMetadata()
 ) : Action(playerId, recipientId, applicationId, id, date, state, metadata) {
 
     constructor(
@@ -64,17 +63,17 @@ class SendChoice(
         state: EventState = EventState(),
         metadata: ActionMetadata = ActionMetadata()
     ) :
-            this(
-                playerId,
-                applicationId,
-                recipientId,
-                intentName,
-                parameters + mapNotNullValues(STEP_PARAMETER to step?.name),
-                id,
-                date,
-                state,
-                metadata
-            )
+        this(
+            playerId,
+            applicationId,
+            recipientId,
+            intentName,
+            parameters + mapNotNullValues(STEP_PARAMETER to step?.name),
+            id,
+            date,
+            state,
+            metadata
+        )
 
     companion object {
 
@@ -89,6 +88,7 @@ class SendChoice(
         const val PREVIOUS_INTENT_PARAMETER = "_previous_intent"
         const val NLP = "_nlp"
         const val SOURCE_APP_ID = "_source"
+        const val REFERRAL_PARAMETER = "_referral"
 
         /**
          * Encodes a choice id where text will be analysed by NLP engine.
@@ -236,12 +236,12 @@ class SendChoice(
             return StringBuilder().apply {
                 append(intent.wrappedIntent().name)
                 val params = parameters +
-                        listOfNotNull(
-                            if (currentStep != null) STEP_PARAMETER to currentStep else null,
-                            if (currentIntent != null && currentIntent != intent)
-                                PREVIOUS_INTENT_PARAMETER to currentIntent.name else null,
-                            if (sourceAppId != null) SOURCE_APP_ID to sourceAppId else null
-                        )
+                    listOfNotNull(
+                        if (currentStep != null) STEP_PARAMETER to currentStep else null,
+                        if (currentIntent != null && currentIntent != intent)
+                            PREVIOUS_INTENT_PARAMETER to currentIntent.name else null,
+                        if (sourceAppId != null) SOURCE_APP_ID to sourceAppId else null
+                    )
 
                 if (params.isNotEmpty()) {
                     params.map { e ->
@@ -293,8 +293,7 @@ class SendChoice(
                             applicationId = applicationId,
                             recipientId = recipientId,
                             intentName = intentName,
-                            parameters = parameters,
-                            referralParameter = referralParameter
+                            parameters = parameters + (if (referralParameter == null) emptyMap() else mapOf(REFERRAL_PARAMETER to referralParameter))
                         )
                     }
                 }
@@ -334,6 +333,11 @@ class SendChoice(
      * Provides the id used by connectors.
      */
     fun toEncodedId(): String = encodeChoiceId(Intent(intentName), step(), parameters, null, null)
+
+    /**
+     * Returns the referral parameter if any.
+     */
+    val referralParameter: String? get() = parameters[REFERRAL_PARAMETER]
 
     override fun toString(): String {
         return "SendChoice(intentName='$intentName', parameters=$parameters)"

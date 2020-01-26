@@ -20,8 +20,9 @@ import ai.tock.bot.connector.messenger.model.Recipient
 import ai.tock.bot.connector.messenger.model.Sender
 import ai.tock.bot.connector.messenger.model.send.ReferralIdentifierType
 import ai.tock.bot.connector.messenger.model.send.SourceType
+import ai.tock.bot.connector.messenger.model.send.SourceType.SHORTLINK
 
-class ReferralParametersWebhook(
+internal data class ReferralParametersWebhook(
     override val sender: Sender,
     override val recipient: Recipient,
     override val timestamp: Long,
@@ -29,7 +30,7 @@ class ReferralParametersWebhook(
 ) : Webhook()
 
 data class Referral(
-    val ref: String,
-    val source: SourceType,
+    val ref: String = "",
+    val source: SourceType = SHORTLINK,
     val type: ReferralIdentifierType = ReferralIdentifierType.OPEN_THREAD
 )

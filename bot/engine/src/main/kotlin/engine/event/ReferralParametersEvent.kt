@@ -18,6 +18,9 @@ package ai.tock.bot.engine.event
 
 import ai.tock.bot.engine.user.PlayerId
 
+/**
+ * A referral event is an event that contains a String reference.
+ */
 class ReferralParametersEvent(
     userId: PlayerId,
     recipientId: PlayerId,
