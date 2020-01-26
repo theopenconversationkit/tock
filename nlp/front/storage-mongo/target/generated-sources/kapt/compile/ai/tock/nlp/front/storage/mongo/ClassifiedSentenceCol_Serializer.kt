@@ -81,6 +81,18 @@ internal class ClassifiedSentenceCol_Serializer :
         if(_classifier_ == null) { gen.writeNull() } else {
                 gen.writeString(_classifier_)
                 }
+        gen.writeFieldName("otherIntentsProbabilities")
+        val _otherIntentsProbabilities_ = value.otherIntentsProbabilities
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructMapType(
+                kotlin.collections.Map::class.java,
+                serializers.config.typeFactory.constructType(kotlin.String::class.java),
+                serializers.config.typeFactory.constructType(kotlin.Double::class.java)
+                ),
+                true,
+                null
+                )
+                .serialize(_otherIntentsProbabilities_, gen, serializers)
         gen.writeEndObject()
     }
 }

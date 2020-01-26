@@ -16,6 +16,7 @@ import kotlin.Double
 import kotlin.Long
 import kotlin.String
 import kotlin.collections.Map
+import kotlin.collections.MutableMap
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.findParameterByName
@@ -65,6 +66,8 @@ internal class ClassifiedSentenceCol_Deserializer :
             var _reviewComment_set : Boolean = false
             var _classifier_: String? = null
             var _classifier_set : Boolean = false
+            var _otherIntentsProbabilities_: MutableMap<String, Double>? = null
+            var _otherIntentsProbabilities_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -155,6 +158,11 @@ internal class ClassifiedSentenceCol_Deserializer :
                              else p.text;
                             _classifier_set = true
                             }
+                    "otherIntentsProbabilities" -> {
+                            _otherIntentsProbabilities_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_otherIntentsProbabilities__reference);
+                            _otherIntentsProbabilities_set = true
+                            }
                     else -> {
                             if (_token_?.isStructStart == true)
                             p.skipChildren()
@@ -167,7 +175,7 @@ internal class ClassifiedSentenceCol_Deserializer :
                     _creationDate_set && _updateDate_set && _status_set && _classification_set &&
                     _lastIntentProbability_set && _lastEntityProbability_set && _lastUsage_set &&
                     _usageCount_set && _unknownCount_set && _forReview_set && _reviewComment_set &&
-                    _classifier_set)
+                    _classifier_set && _otherIntentsProbabilities_set)
                     ClassifiedSentenceMongoDAO.ClassifiedSentenceCol(text = _text_!!, fullText =
                             _fullText_!!, language = _language_!!, applicationId =
                             _applicationId_!!, creationDate = _creationDate_!!, updateDate =
@@ -176,7 +184,7 @@ internal class ClassifiedSentenceCol_Deserializer :
                             lastEntityProbability = _lastEntityProbability_, lastUsage =
                             _lastUsage_, usageCount = _usageCount_, unknownCount = _unknownCount_,
                             forReview = _forReview_!!, reviewComment = _reviewComment_, classifier =
-                            _classifier_)
+                            _classifier_, otherIntentsProbabilities = _otherIntentsProbabilities_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_text_set)
@@ -210,7 +218,10 @@ internal class ClassifiedSentenceCol_Deserializer :
                     if(_reviewComment_set)
                     map[parameters.getValue("reviewComment")] = _reviewComment_
                     if(_classifier_set)
-                    map[parameters.getValue("classifier")] = _classifier_ 
+                    map[parameters.getValue("classifier")] = _classifier_
+                    if(_otherIntentsProbabilities_set)
+                    map[parameters.getValue("otherIntentsProbabilities")] =
+                            _otherIntentsProbabilities_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -238,9 +249,13 @@ internal class ClassifiedSentenceCol_Deserializer :
                 primaryConstructor.findParameterByName("unknownCount")!!, "forReview" to
                 primaryConstructor.findParameterByName("forReview")!!, "reviewComment" to
                 primaryConstructor.findParameterByName("reviewComment")!!, "classifier" to
-                primaryConstructor.findParameterByName("classifier")!!) }
+                primaryConstructor.findParameterByName("classifier")!!, "otherIntentsProbabilities"
+                to primaryConstructor.findParameterByName("otherIntentsProbabilities")!!) }
 
         private val _applicationId__reference: TypeReference<Id<ApplicationDefinition>> = object :
                 TypeReference<Id<ApplicationDefinition>>() {}
+
+        private val _otherIntentsProbabilities__reference: TypeReference<Map<String, Double>> =
+                object : TypeReference<Map<String, Double>>() {}
     }
 }

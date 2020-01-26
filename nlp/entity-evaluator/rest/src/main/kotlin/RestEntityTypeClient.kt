@@ -38,7 +38,7 @@ import java.util.Locale
 /**
  * Rest client used to find entities from a rest API.
  */
-class RestEntityTypeClient(targetUrl: String = property("tock_nlp_entity_type_url", "http://localhost:5000/app/v1")) {
+class RestEntityTypeClient(targetUrl: String = property("tock_nlp_entity_type_url", "http://localhost:5000/app/v1/")) {
 
     internal data class EntityTypeRequest(
         val text: String,
@@ -62,14 +62,14 @@ class RestEntityTypeClient(targetUrl: String = property("tock_nlp_entity_type_ur
     private interface EntityTypeApi {
 
         @Headers("Content-Type:application/json")
-        @GET("/entities")
+        @GET("entities")
         fun supportedEntityTypes(): Call<Set<String>>
 
         @Headers("Content-Type:application/json")
-        @POST("/parse")
+        @POST("parse")
         fun parse(@Body testPlan: EntityTypeRequest): Call<EntityTypeResponse>
 
-        @GET("/healthcheck")
+        @GET("healthcheck")
         fun healthcheck(): Call<ResponseBody>
 
     }

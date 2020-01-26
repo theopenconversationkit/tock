@@ -69,7 +69,7 @@ data class ClassificationReport(
         emptyList(),
         sentence.lastIntentProbability,
         sentence.lastEntityProbability,
-        emptyMap(),
+        sentence.otherIntentsProbabilities,
         sentence.lastUsage,
         sentence.usageCount,
         sentence.unknownCount

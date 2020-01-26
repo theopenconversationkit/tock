@@ -91,11 +91,15 @@ data class ClassifiedSentence(
     /**
      * Last person that has qualified the sentence
      */
-    val qualifier: UserLogin? = null
+    val qualifier: UserLogin? = null,
+    /**
+     * Other intents with significant probabilities.
+     */
+    val otherIntentsProbabilities: Map<String, Double> = emptyMap()
 ) {
 
     constructor(
-        query: ParseResult,
+        result: ParseResult,
         language: Locale,
         applicationId: Id<ApplicationDefinition>,
         intentId: Id<IntentDefinition>,
@@ -103,15 +107,16 @@ data class ClassifiedSentence(
         lastEntityProbability: Double
     )
             : this(
-        query.retainedQuery,
+        result.retainedQuery,
         language,
         applicationId,
         Instant.now(),
         Instant.now(),
         ClassifiedSentenceStatus.inbox,
-        Classification(query, intentId),
+        Classification(result, intentId),
         lastIntentProbability,
-        lastEntityProbability
+        lastEntityProbability,
+        otherIntentsProbabilities = result.otherIntentsProbabilities
     )
 
     /**
@@ -123,7 +128,8 @@ data class ClassifiedSentence(
             creationDate = creationDate,
             updateDate = updateDate,
             lastIntentProbability = lastIntentProbability,
-            lastEntityProbability = lastEntityProbability
+            lastEntityProbability = lastEntityProbability,
+            otherIntentsProbabilities = otherIntentsProbabilities
         )
     }
 

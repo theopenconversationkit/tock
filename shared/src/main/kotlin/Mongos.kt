@@ -185,5 +185,5 @@ inline fun <reified T : Any> MongoCollection<T>.watch(
 
 fun pingMongoDatabase(database: MongoDatabase): Boolean {
     val result = database.runCommand<Document>("{ ping: 1 }")
-    return result!!.get("ok") == 1.0
+    return result["ok"] == 1.0
 }

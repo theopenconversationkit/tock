@@ -124,7 +124,8 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         val unknownCount: Long? = 0,
         val forReview: Boolean = false,
         val reviewComment: String? = null,
-        val classifier: UserLogin? = null
+        val classifier: UserLogin? = null,
+        val otherIntentsProbabilities: Map<String, Double> = emptyMap()
     ) {
 
         constructor(sentence: ClassifiedSentence) :
@@ -144,7 +145,8 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 sentence.unknownCount,
                 sentence.forReview,
                 sentence.reviewComment,
-                sentence.qualifier
+                sentence.qualifier,
+                sentence.otherIntentsProbabilities
             )
 
         fun toSentence(): ClassifiedSentence =
@@ -163,7 +165,8 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 unknownCount ?: 0,
                 forReview,
                 reviewComment,
-                classifier
+                classifier,
+                otherIntentsProbabilities
             )
     }
 

@@ -17,6 +17,7 @@ import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
 import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
+import org.litote.kmongo.property.KMapSimplePropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 private val __Text: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
@@ -56,6 +57,9 @@ private val __ReviewComment: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSen
     get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::reviewComment
 private val __Classifier: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
     get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::classifier
+private val __OtherIntentsProbabilities:
+        KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, Map<String, Double>?>
+    get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::otherIntentsProbabilities
 internal class ClassifiedSentenceCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         ClassifiedSentenceMongoDAO.ClassifiedSentenceCol?>) : KPropertyPath<T,
         ClassifiedSentenceMongoDAO.ClassifiedSentenceCol?>(previous,property) {
@@ -108,6 +112,10 @@ internal class ClassifiedSentenceCol_<T>(previous: KPropertyPath<T, *>?, propert
     val classifier: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Classifier)
 
+    val otherIntentsProbabilities: KMapSimplePropertyPath<T, String?, Double?>
+        get() =
+                KMapSimplePropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::otherIntentsProbabilities)
+
     companion object {
         val Text: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
             get() = __Text
@@ -144,7 +152,11 @@ internal class ClassifiedSentenceCol_<T>(previous: KPropertyPath<T, *>?, propert
         val ReviewComment: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
             get() = __ReviewComment
         val Classifier: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
-            get() = __Classifier}
+            get() = __Classifier
+        val OtherIntentsProbabilities:
+                KMapSimplePropertyPath<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?,
+                Double?>
+            get() = KMapSimplePropertyPath(null, __OtherIntentsProbabilities)}
 }
 
 internal class ClassifiedSentenceCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -199,6 +211,10 @@ internal class ClassifiedSentenceCol_Col<T>(previous: KPropertyPath<T, *>?, prop
 
     val classifier: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Classifier)
+
+    val otherIntentsProbabilities: KMapSimplePropertyPath<T, String?, Double?>
+        get() =
+                KMapSimplePropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::otherIntentsProbabilities)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ClassifiedSentenceCol_<T> =
@@ -256,6 +272,10 @@ internal class ClassifiedSentenceCol_Map<T, K>(previous: KPropertyPath<T, *>?, p
 
     val classifier: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Classifier)
+
+    val otherIntentsProbabilities: KMapSimplePropertyPath<T, String?, Double?>
+        get() =
+                KMapSimplePropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::otherIntentsProbabilities)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ClassifiedSentenceCol_<T> =
