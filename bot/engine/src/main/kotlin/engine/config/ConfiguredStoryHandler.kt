@@ -120,7 +120,9 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
                             send(container, a)
                         }
                     it.last().apply {
-                        send(container, this, true)
+                        send(container, this,
+                                // Fixes #731 end only if no targetIntent will be called after answer
+                                (step as? Step)?.configuration?.targetIntent == null)
                     }
                 }
         }
