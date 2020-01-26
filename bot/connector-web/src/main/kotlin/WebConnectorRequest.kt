@@ -19,12 +19,13 @@ package ai.tock.bot.connector.web
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
+import ai.tock.bot.engine.event.ReferralParametersEvent
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType.bot
 import ai.tock.shared.defaultLocale
 import java.util.Locale
 
-data class WebConnectorRequest(val query: String? = null, val payload: String? = null, val userId: String, val locale: Locale = defaultLocale) {
+data class WebConnectorRequest(val query: String? = null, val payload: String? = null, val userId: String, val locale: Locale = defaultLocale, val ref: String? = null) {
 
     fun toEvent(applicationId: String): Event =
         if (query != null) {
@@ -37,14 +38,25 @@ data class WebConnectorRequest(val query: String? = null, val payload: String? =
         } else if (payload != null) {
             val (intent, parameters) = SendChoice.decodeChoiceId(payload)
             SendChoice(
-                PlayerId(userId),
-                applicationId,
-                PlayerId(applicationId, bot),
-                intent,
-                parameters
+                playerId = PlayerId(userId),
+                applicationId = applicationId,
+                recipientId = PlayerId(applicationId, bot),
+                intentName = intent,
+                parameters = parameters,
+                referralParameter = ref
             )
         } else {
-            error("query & payload are both null")
+            if(ref != null) {
+                ReferralParametersEvent(
+                    userId = PlayerId(userId),
+                    recipientId = PlayerId(applicationId, bot),
+                    applicationId = applicationId,
+                    ref = ref
+                )
+            }
+            else {
+                error("query & payload are both null")
+            }
         }
 
 }
