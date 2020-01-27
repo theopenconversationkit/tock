@@ -57,12 +57,14 @@ fun I18nTranslator.webMessage(title: CharSequence, buttons: List<WebButton>): We
 fun <T : Bus<T>> T.webButton(
     title: CharSequence,
     targetIntent: IntentAware? = null,
+    imageUrl: String? = null,
     step: StoryStep<out StoryHandlerDefinition>? = null,
     parameters: Parameters = Parameters()
 ): WebButton =
     WebButton(
         translate(title).toString(),
-        targetIntent?.let { i -> SendChoice.encodeChoiceId(this, i, step, parameters.toMap()) }
+        targetIntent?.let { i -> SendChoice.encodeChoiceId(this, i, step, parameters.toMap()) },
+        imageUrl
     )
 
 /**
