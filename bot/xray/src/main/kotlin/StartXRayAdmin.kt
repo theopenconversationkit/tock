@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
+package ai.tock.bot.xray
 
-import ai.tock.bot.admin.bot.BotApplicationConfiguration.Companion.defaultBaseUrl
-import ai.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
-import ai.tock.shared.booleanProperty
-import ai.tock.shared.propertyExists
+import ai.tock.bot.BotIoc
+import ai.tock.nlp.front.ioc.FrontIoc
+import mu.KotlinLogging
+import java.util.Properties
 
-data class BotAdminConfiguration(
-    val botApiSupport: Boolean = booleanProperty("tock_bot_api", false),
-    val compilerAvailable: Boolean = !KotlinCompilerClient.compilerDisabled,
-    val xrayAvailable: Boolean = propertyExists("tock_bot_test_xray_url"),
-    val botApiBaseUrl: String = defaultBaseUrl
-)
+private val logger = KotlinLogging.logger {}
+
+fun main(args: Array<String>) {
+    if (args.isNotEmpty()) {
+        val p = Properties()
+        p.load(XrayService::class.java.getResourceAsStream("/${args[0]}.properties"))
+        logger.info { "set properties: $p" }
+        p.forEach { e -> System.setProperty(e.key.toString(), e.value.toString()) }
+    }
+    FrontIoc.setup(BotIoc.coreModules)
+    main()
+}

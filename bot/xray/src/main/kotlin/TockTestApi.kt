@@ -14,16 +14,25 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
+package ai.tock.bot.xray
 
-import ai.tock.bot.admin.bot.BotApplicationConfiguration.Companion.defaultBaseUrl
-import ai.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
-import ai.tock.shared.booleanProperty
-import ai.tock.shared.propertyExists
+import ai.tock.bot.admin.bot.BotApplicationConfiguration
+import ai.tock.bot.admin.test.TestPlan
+import ai.tock.bot.admin.test.TestPlanExecution
+import retrofit2.Call
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.Path
 
-data class BotAdminConfiguration(
-    val botApiSupport: Boolean = booleanProperty("tock_bot_api", false),
-    val compilerAvailable: Boolean = !KotlinCompilerClient.compilerDisabled,
-    val xrayAvailable: Boolean = propertyExists("tock_bot_test_xray_url"),
-    val botApiBaseUrl: String = defaultBaseUrl
-)
+/**
+ *
+ */
+interface TockTestApi {
+
+    @POST("/rest/admin/test/plan/execute")
+    fun executeTestPlan(@Body testPlan: TestPlan): Call<TestPlanExecution>
+
+    @GET("/rest/admin/configuration/bots/{botId}")
+    fun getBotConfigurations(@Path("botId") botId: String): Call<List<BotApplicationConfiguration>>
+}

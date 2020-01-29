@@ -14,16 +14,29 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
+package ai.tock.bot.xray
 
-import ai.tock.bot.admin.bot.BotApplicationConfiguration.Companion.defaultBaseUrl
-import ai.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
-import ai.tock.shared.booleanProperty
-import ai.tock.shared.propertyExists
+import ai.tock.shared.defaultNamespace
+import mu.KotlinLogging
 
-data class BotAdminConfiguration(
-    val botApiSupport: Boolean = booleanProperty("tock_bot_api", false),
-    val compilerAvailable: Boolean = !KotlinCompilerClient.compilerDisabled,
-    val xrayAvailable: Boolean = propertyExists("tock_bot_test_xray_url"),
-    val botApiBaseUrl: String = defaultBaseUrl
-)
+private val logger = KotlinLogging.logger {}
+
+/**
+ *
+ */
+fun main() {
+    logger.info { "Start tests" }
+    val result: XrayPlanExecutionResult= XrayService().executeTestPlans(defaultNamespace)
+
+
+    if (result.total == 0) {
+        logger.error { "No test played" }
+        System.exit(1)
+    } else if (result.success != result.total) {
+        logger.error { "At least one test failed" }
+        System.exit(1)
+    } else {
+        logger.info { "All tests passed" }
+        System.exit(0)
+    }
+}

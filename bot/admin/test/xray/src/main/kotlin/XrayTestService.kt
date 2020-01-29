@@ -18,6 +18,8 @@ package ai.tock.bot.admin.test.xray
 
 import ai.tock.bot.admin.test.TestCoreService
 import ai.tock.bot.admin.test.TestService
+import ai.tock.bot.xray.XrayPlanExecutionConfiguration
+import ai.tock.bot.xray.XrayService
 import ai.tock.nlp.admin.AdminVerticle
 import ai.tock.shared.security.TockUserRole.botUser
 
@@ -31,7 +33,7 @@ class XrayTestService : TestService by testCoreService {
          * Triggered on "Create" button, after providing connector and test plan key.
          * Will reach Jira to gather all test steps and send them to the bot as a conversation
          */
-        blockingJsonPost("/xray/execute", botUser) { context, configuration: XRayPlanExecutionConfiguration ->
+        blockingJsonPost("/xray/execute", botUser) { context, configuration: XrayPlanExecutionConfiguration ->
             XrayService(
                     listOfNotNull(configuration.configurationId),
                     listOfNotNull(configuration.testPlanKey),

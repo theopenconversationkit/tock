@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
+package ai.tock.bot.xray.model
 
-import ai.tock.bot.admin.bot.BotApplicationConfiguration.Companion.defaultBaseUrl
-import ai.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
-import ai.tock.shared.booleanProperty
-import ai.tock.shared.propertyExists
+import java.time.OffsetDateTime
 
-data class BotAdminConfiguration(
-    val botApiSupport: Boolean = booleanProperty("tock_bot_api", false),
-    val compilerAvailable: Boolean = !KotlinCompilerClient.compilerDisabled,
-    val xrayAvailable: Boolean = propertyExists("tock_bot_test_xray_url"),
-    val botApiBaseUrl: String = defaultBaseUrl
-)
+/**
+ *
+ */
+data class XrayTestExecutionReport(
+        val testKey: String,
+        val start: OffsetDateTime,
+        val finish: OffsetDateTime,
+        val comment: String,
+        val status: XrayStatus,
+        val steps: List<XrayTestExecutionStepReport>
+) {
+}

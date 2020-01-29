@@ -207,7 +207,7 @@
             </dependency>
             <dependency>
                 <groupId>ai.tock</groupId>
-                <artifactId>tock-bot-admin-test-xray</artifactId>
+                <artifactId>tock-xray-plugin</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -238,6 +238,11 @@
             <dependency>
                 <groupId>ai.tock</groupId>
                 <artifactId>bot-test-base</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ai.tock</groupId>
+                <artifactId>tock-xray</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

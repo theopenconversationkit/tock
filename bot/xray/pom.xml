@@ -8,9 +8,9 @@
   ~
   ~ http://www.apache.org/licenses/LICENSE-2.0
   ~
-  ~ Unless required by applicable law or agreed to in writing, software
+  ~  Unless required by applicable law or agreed to in writing, software
   ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
@@ -20,32 +20,39 @@
 
     <parent>
         <groupId>ai.tock</groupId>
-        <artifactId>tock-bot-admin-test</artifactId>
+        <artifactId>tock-root</artifactId>
         <version>19.9.3-SNAPSHOT</version>
     </parent>
 
-    <artifactId>tock-bot-admin-test-xray</artifactId>
-    <name>Tock Bot Admin Test Xray</name>
-    <description>Xray connector for Tock Bot Admin Test</description>
+    <artifactId>tock-xray-plugin</artifactId>
+    <name>Tock XRay Plugin</name>
+    <description>Tock XRay plugin</description>
 
     <dependencies>
         <dependency>
             <groupId>ai.tock</groupId>
-            <artifactId>tock-bot-admin-test-core</artifactId>
+            <artifactId>tock-bot-engine</artifactId>
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
-            <artifactId>tock-xray-plugin</artifactId>
+            <artifactId>bot-toolkit-base</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
-            <artifactId>tock-bot-engine-jackson</artifactId>
+            <artifactId>tock-nlp-front-ioc</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.beust</groupId>
             <artifactId>klaxon</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-test-junit5</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
@@ -61,11 +68,5 @@
             <artifactId>junit-jupiter-params</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-test-junit5</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
-
 </project>
