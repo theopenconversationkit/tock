@@ -29,7 +29,7 @@
     <description>Bot Test helpers and mocks with any connector</description>
 
     <properties>
-        <junit4>4.12</junit4>
+        <junit4>4.13</junit4>
     </properties>
 
     <dependencies>
