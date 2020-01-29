@@ -29,14 +29,20 @@ import ai.tock.bot.engine.message.GenericMessage
 import ai.tock.bot.engine.message.GenericMessage.Companion.TEXT_PARAM
 import ai.tock.shared.mapNotNullValues
 
-data class WebButton(val title: String, val payload: String? = null) {
+data class WebButton(val title: String, val payload: String? = null, val imageUrl: String? = null) {
 
     fun toChoice(): Choice =
         if (payload == null) {
             Choice.fromText(title)
         } else {
             SendChoice.decodeChoiceId(payload).let { (intent, params) ->
-                Choice(intent, params + (SendChoice.TITLE_PARAMETER to title))
+                Choice(
+                    intent,
+                    params +  mapNotNullValues(
+                        SendChoice.TITLE_PARAMETER to title,
+                        SendChoice.IMAGE_PARAMETER to imageUrl
+                    )
+                )
             }
         }
 }
