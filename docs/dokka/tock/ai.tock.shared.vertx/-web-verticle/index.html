@@ -263,7 +263,7 @@
 </td>
 <td>
 <p>Provide basic health information: mainly through HTTP status code</p>
-<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">defaultHealthcheck</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="symbol">(</span><span class="identifier">RoutingContext</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<span class="identifier">Unit</span></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">defaultHealthcheck</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="symbol">(</span><span class="identifier">RoutingContext</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<span class="identifier">Unit</span></code></td>
 </tr>
 <tr>
 <td>
@@ -279,7 +279,7 @@
 </td>
 <td>
 <p>Provide enhanced information: HTTP response has JSON body with health status of resources</p>
-<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">detailedHealthcheck</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="symbol">(</span><span class="identifier">RoutingContext</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<span class="identifier">Unit</span></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">detailedHealthcheck</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="symbol">(</span><span class="identifier">RoutingContext</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<span class="identifier">Unit</span></code></td>
 </tr>
 <tr>
 <td>

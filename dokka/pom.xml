@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-root</artifactId>
-        <version>19.9.2</version>
+        <version>19.9.3</version>
     </parent>
 
     <artifactId>tock-dokka</artifactId>
