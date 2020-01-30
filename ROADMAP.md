@@ -1,5 +1,4 @@
-- 19.9.3 February 2020   
-    - first conversational DSL in admin interface     
+- 19.9.4 February 2020   
     - AB test engine workflow 
     
 - 20.3.0 March 2020
@@ -8,6 +7,9 @@
     - Code editor admin interface
     
 ## Latest releases  
+
+- 19.9.3 end of January 2020   
+    - Chatbase integration 
         
 - 19.9.2 January 2020   
     - Story Configuration import / export 
