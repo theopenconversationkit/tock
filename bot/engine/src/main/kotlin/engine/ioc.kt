@@ -15,13 +15,16 @@
  */
 package ai.tock.bot.engine
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.singleton
+import ai.tock.bot.definition.ConnectorHandlerProvider
+import ai.tock.bot.definition.DefaultConnectorHandlerProvider
 import ai.tock.bot.engine.nlp.Nlp
 import ai.tock.bot.engine.nlp.NlpController
 import ai.tock.nlp.api.client.NlpClient
 import ai.tock.nlp.api.client.TockNlpClient
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
+import com.github.salomonbrys.kodein.singleton
 
 /**
  * The bot ioc module.
@@ -29,4 +32,5 @@ import ai.tock.nlp.api.client.TockNlpClient
 val botModule = Kodein.Module {
     bind<NlpClient>() with singleton { TockNlpClient() }
     bind<NlpController>() with singleton { Nlp() }
+    bind<ConnectorHandlerProvider>() with provider { DefaultConnectorHandlerProvider }
 }

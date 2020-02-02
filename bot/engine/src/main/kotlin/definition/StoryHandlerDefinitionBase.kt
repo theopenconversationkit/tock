@@ -20,15 +20,13 @@ import ai.tock.bot.connector.ConnectorHandler
 import ai.tock.bot.connector.ConnectorIdHandlers
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.BotBus
-import ai.tock.shared.mapNotNullValues
+import ai.tock.shared.injector
+import ai.tock.shared.provide
 import mu.KotlinLogging
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
-import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.starProjectedType
-import kotlin.reflect.full.superclasses
 
 /**
  * Base implementation of [StoryHandlerDefinition].
@@ -40,46 +38,12 @@ abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(val 
 
         private val logger = KotlinLogging.logger {}
 
-        private val connectorHandlerMap: MutableMap<KClass<*>, Map<String, KClass<*>>> = ConcurrentHashMap()
-
-        private val connectorIdHandlerMap: MutableMap<KClass<*>, Map<String, KClass<*>>> = ConcurrentHashMap()
-
-        private fun getConnectorHandlerMap(kclass: KClass<*>): Map<String, KClass<*>> {
-            return connectorHandlerMap.getOrPut(kclass) {
-                getAllAnnotations(kclass)
-                    .filter { it.annotationClass.findAnnotation<ConnectorHandler>() != null }
-                    .mapNotNullValues { a: Annotation ->
-                        a.annotationClass.findAnnotation<ConnectorHandler>()!!.connectorTypeId to (a.annotationClass.java.getDeclaredMethod(
-                            "value"
-                        ).invoke(a) as? Class<*>?)?.kotlin
-                    }
-                    .toMap()
+        private val connectorProvider: ConnectorHandlerProvider get() =
+            try {
+                injector.provide()
+            } catch(e:Throwable) {
+                DefaultConnectorHandlerProvider
             }
-        }
-
-        private fun getConnectorIdHandlerMap(kclass: KClass<*>): Map<String, KClass<*>> {
-            return connectorIdHandlerMap.getOrPut(kclass) {
-                kclass.findAnnotation<ConnectorIdHandlers>()?.handlers?.map { connectorIdHandler ->
-                    connectorIdHandler.connectorId to connectorIdHandler.value
-                }?.toMap() ?: mapOf()
-            }
-        }
-
-        private fun getAllAnnotations(
-            kClass: KClass<*>,
-            alreadyFound: MutableSet<KClass<*>> = mutableSetOf()
-        ): List<Annotation> {
-            return if (!alreadyFound.contains(kClass)) {
-                val r = kClass.annotations.toMutableList()
-                alreadyFound.add(kClass)
-                kClass.superclasses.forEach {
-                    r.addAll(getAllAnnotations(it, alreadyFound))
-                }
-                r
-            } else {
-                emptyList()
-            }
-        }
     }
 
     /**
@@ -115,29 +79,29 @@ abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(val 
      * Method to override in order to provide [ConnectorStoryHandler].
      * Default implementation use annotations annotated with @[ConnectorHandler].
      */
-    open fun findConnector(connectorType: ConnectorType): T? {
-        val connectorDef = getConnectorHandlerMap(this::class)[connectorType.id]
-        return provideConnectorStoryHandler(connectorDef)
-    }
+    @Suppress("UNCHECKED_CAST")
+    open fun findConnector(connectorType: ConnectorType): T? =
+        connectorProvider.provide(this, connectorType) as? T?
 
     /**
      * Method to override in order to provide [ConnectorStoryHandler].
      * Default implementation use annotations annotated with @[ConnectorIdHandlers].
      */
-    open fun findConnector(connectorId: String): T? {
-        val connectorDef = getConnectorIdHandlerMap(this::class)[connectorId]
-        return provideConnectorStoryHandler(connectorDef)
-    }
-
-    private val cachedConnector: T? by lazy {
-        (findConnector(applicationId) ?: findConnector(connectorType))
-            .also { if (it == null) logger.warn { "unsupported connector type $applicationId or $connectorType for ${this::class}" } }
-    }
+    @Suppress("UNCHECKED_CAST")
+    open fun findConnector(connectorId: String): T? =
+        connectorProvider.provide(this, connectorId) as? T?
 
     /**
      * Provides the current [ConnectorStoryHandler] using [findConnector].
      */
-    override val connector: T? get() = cachedConnector
+    override val connector: T? get() = (findConnector(applicationId) ?: findConnector(connectorType))
+        .also { if (it == null) logger.warn { "unsupported connector type $applicationId or $connectorType for ${this::class}" } }
 
 
+    /**
+     * Provides a not null [connector]. Throws NPE if [connector] is null.
+     */
+    @Suppress("UNCHECKED_CAST")
+    val c: T
+        get() = connector as T
 }

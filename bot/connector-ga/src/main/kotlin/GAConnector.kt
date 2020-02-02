@@ -245,7 +245,7 @@ class GAConnector internal constructor(
                 listOf(
                     gaMessage(
                         richResponse(
-                            i18nKey("default_ga_card_title",requiredTextToSpeech),
+                            i18nKey("default_ga_card_title", requiredTextToSpeech),
                             card.copy(buttons = listOfNotNull(redirect)),
                             suggestions
                         )
@@ -256,8 +256,8 @@ class GAConnector internal constructor(
             }
         } else if (message is MediaCarousel) {
             when {
-                message.cards.size>1 -> {
-                    var suggestions = ArrayList<String>()
+                message.cards.size > 1 -> {
+                    val suggestions = ArrayList<String>()
                     val items = message.cards.map { card ->
                         val title = translate(card.title)
                         val subTitle = translate(card.subTitle)

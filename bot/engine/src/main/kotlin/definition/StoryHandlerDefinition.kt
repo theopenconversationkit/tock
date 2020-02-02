@@ -16,12 +16,8 @@
 
 package ai.tock.bot.definition
 
-import ai.tock.bot.connector.ConnectorMessageProvider
 import ai.tock.bot.engine.BotBus
-import ai.tock.bot.engine.message.Message
-import ai.tock.bot.engine.message.MessagesList
-import ai.tock.bot.engine.message.Sentence
-import mu.KotlinLogging
+import ai.tock.bot.engine.message.MessagesList.Companion.toMessageList
 
 /**
  * Story handler definitions are used in [StoryHandler] to provide custom context and to manage specific connector behaviour.
@@ -29,10 +25,6 @@ import mu.KotlinLogging
  * Implementations should usually use [StoryHandlerDefinitionBase].
  */
 interface StoryHandlerDefinition : BotBus {
-
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
 
     /**
      * The [ConnectorStoryHandler] provided for the current [BotBus.targetConnectorType] - null if it does not exist.
@@ -44,30 +36,16 @@ interface StoryHandlerDefinition : BotBus {
      */
     fun handle()
 
-    private fun toMessageList(default: CharSequence? = null,
-                              messageProvider: () -> Any?): MessagesList {
-        val result = messageProvider()
-        val list = if (result is Collection<*>) result else listOfNotNull(result)
-        val messages = list.mapNotNull { m ->
-            when (m) {
-                is Message -> m
-                is CharSequence -> Sentence(translate(m).toString())
-                is ConnectorMessageProvider -> Sentence(null, mutableListOf(m.toConnectorMessage()))
-                else -> {
-                    logger.error { "message not handled: $m" }
-                    null
-                }
-            }
-        }.takeUnless { it.isEmpty() }
-            ?: listOfNotNull(default?.let { Sentence(translate(it).toString()) })
-
-        return MessagesList(messages)
-    }
-
+    /**
+     * Answers with the specified parameters.
+     *
+     * @param default used if [messageProvider] returns null
+     * @param messageProvider provides the answer - a message or a list of messages
+     */
     fun answerWith(
         default: CharSequence? = null,
         messageProvider: () -> Any?) {
-        end(messages = toMessageList(default, messageProvider))
+        end(messages = toMessageList(default, this) { messageProvider() })
     }
 
 }

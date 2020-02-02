@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.definition
+package ai.tock.bot.engine.message
 
-// Definition aliases.
+data class TextWithSuggestions(
+    val text: CharSequence,
+    val suggestions: List<Suggestion> = emptyList(),
+    val attributes: Map<String, String> = emptyMap()) {
 
-typealias IntentDef = IntentAwareBase
-typealias Handler<T> = StoryHandlerBase<T>
-typealias HandlerDef<T> = StoryHandlerDefinitionBase<T>
-typealias ConnectorDef<T> = ConnectorStoryHandlerBase<T>
-typealias SimpleHandler = SimpleStoryHandlerBase
+    constructor(text: CharSequence, vararg suggestions: Suggestion?) : this(text, suggestions.toList().filterNotNull())
+}

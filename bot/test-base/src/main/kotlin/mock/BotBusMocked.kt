@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.test
+package ai.tock.bot.test.mock
 
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.messenger.messengerConnectorType
@@ -36,6 +36,7 @@ import ai.tock.bot.engine.action.ActionReply
 import ai.tock.bot.engine.action.ActionVisibility
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.dialog.EntityValue
+import ai.tock.bot.engine.dialog.EventState
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.message.MessagesList
 import ai.tock.bot.engine.user.PlayerId
@@ -72,12 +73,7 @@ fun StoryDefinitionBase.test(bus: BotBus) {
     }
 }
 
-/**
- * Default mockk BotBus configuration.
- */
-fun mockTockCommon(bus: BotBus) {
-    clearAllMocks()
-
+private fun mockBusCommon(bus: BotBus) {
     every { bus.step } returns null
     every { bus.currentAnswerIndex } returns 0
     every { bus.choice(any()) } returns null
@@ -208,39 +204,72 @@ fun mockTockCommon(bus: BotBus) {
             null,
             bus.applicationId)
     }
+    val state = mockk<EventState>(relaxed = true)
+    val action = mockk<Action>(relaxed = true)
+    every { action.state } returns state
+    every { bus.action } returns action
+    every { bus.hasActionEntity(any<String>()) } returns false
+    every { bus.entities } returns emptyMap()
+}
+
+/**
+ * Default mockk BotBus configuration.
+ */
+fun mockBus(bus: BotBus = mockk(), test: (BotBus) -> Any?) {
+    try {
+        mockBusCommon(bus)
+
+        test(bus)
+    } finally {
+        clearAllMocks()
+    }
 }
 
 /**
  * Mock classic messenger extensions.
  */
-fun mockMessenger(bus: BotBus) {
-    mockTockCommon(bus)
-    mockkStatic("ai.tock.bot.connector.messenger.MessengerBuildersKt")
-    every { bus.targetConnectorType } returns messengerConnectorType
-    every { bus.withMessenger(any()) }.answers {
-        if (bus.targetConnectorType == messengerConnectorType) {
-            @Suppress("UNCHECKED_CAST")
-            (args[1] as (() -> MessengerConnectorMessage)).invoke()
+fun mockMessenger(bus: BotBus = mockk(), test: (BotBus) -> Any?) {
+    try {
+        mockBusCommon(bus)
+
+        mockkStatic("ai.tock.bot.connector.messenger.MessengerBuildersKt")
+        every { bus.targetConnectorType } returns messengerConnectorType
+        every { bus.withMessenger(any()) }.answers {
+            if (bus.targetConnectorType == messengerConnectorType) {
+                @Suppress("UNCHECKED_CAST")
+                (args[1] as (() -> MessengerConnectorMessage)).invoke()
+            }
+            bus
         }
-        bus
+
+        test(bus)
+    } finally {
+        clearAllMocks()
     }
 }
 
 /**
  * Mock classic twitter extensions.
  */
-fun mockTwitter(bus: BotBus) {
-    mockTockCommon(bus)
-    mockkStatic("ai.tock.bot.connector.twitter.TwitterBuildersKt")
-    every { bus.targetConnectorType } returns twitterConnectorType
-    every { bus.action.metadata.visibility } returns ActionVisibility.UNKNOWN
-    every { bus.action.metadata.quoteMessage } returns ActionQuote.UNKNOWN
-    every { bus.action.metadata.replyMessage } returns ActionReply.UNKNOWN
-    every { bus.withTwitter(any()) }.answers {
-        if (bus.targetConnectorType == twitterConnectorType) {
-            @Suppress("UNCHECKED_CAST")
-            (args[1] as (() -> TwitterConnectorMessage)).invoke()
+fun mockTwitter(bus: BotBus, test: (BotBus) -> Any?) {
+    try {
+        mockBusCommon(bus)
+
+        mockkStatic("ai.tock.bot.connector.twitter.TwitterBuildersKt")
+        every { bus.targetConnectorType } returns twitterConnectorType
+        every { bus.action.metadata.visibility } returns ActionVisibility.UNKNOWN
+        every { bus.action.metadata.quoteMessage } returns ActionQuote.UNKNOWN
+        every { bus.action.metadata.replyMessage } returns ActionReply.UNKNOWN
+        every { bus.withTwitter(any()) }.answers {
+            if (bus.targetConnectorType == twitterConnectorType) {
+                @Suppress("UNCHECKED_CAST")
+                (args[1] as (() -> TwitterConnectorMessage)).invoke()
+            }
+            bus
         }
-        bus
+
+        test(bus)
+    } finally {
+        clearAllMocks()
     }
 }

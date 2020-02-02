@@ -16,6 +16,7 @@
 
 package ai.tock.bot.definition
 
+import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.user.UserTimeline
@@ -77,10 +78,17 @@ interface StoryStep<T : StoryHandlerDefinition> {
     val secondaryIntents: Set<IntentAware> get() = emptySet()
 
     /**
-     * Does this Step has to be automatically selected?
+     * Does this Step has to be selected from the Bus?
+     * This method is called if [StoryHandlerBase.checkPreconditions] does not call [BotBus.end].
+     * If this functions returns true, the step is selected and remaining steps are not tested.
+     */
+    fun selectFromBus(): BotBus.() -> Boolean = { false }
+
+    /**
+     * Does this Step has to be automatically selected before [BotBus] creation?
      * if returns true, the step is selected.
      */
-    fun select(userTimeline: UserTimeline, dialog: Dialog, action: Action, intent: Intent?): Boolean =
+    fun selectFromAction(userTimeline: UserTimeline, dialog: Dialog, action: Action, intent: Intent?): Boolean =
         intent != null && supportStarterIntent(intent)
 
     /**

@@ -135,7 +135,7 @@ data class Story(
 
         //check the children of the step
         if (!forced) {
-            s?.children?.find { it.select(userTimeline, dialog, action, newIntent) }?.apply {
+            s?.children?.find { it.selectFromAction(userTimeline, dialog, action, newIntent) }?.apply {
                 forced = true
                 this@Story.step = name
             }
@@ -155,14 +155,14 @@ data class Story(
                 var parent: StoryStep<*>? = s
                 do {
                     parent = parent?.let { findParentStep(it) }
-                    parent?.children?.find { it.select(userTimeline, dialog, action, newIntent) }?.apply {
+                    parent?.children?.find { it.selectFromAction(userTimeline, dialog, action, newIntent) }?.apply {
                         this@Story.step = name
                         return
                     }
                 } while (parent != null)
             }
 
-            definition.steps.find { it.select(userTimeline, dialog, action, newIntent) }?.apply {
+            definition.steps.find { it.selectFromAction(userTimeline, dialog, action, newIntent) }?.apply {
                 this@Story.step = name
             }
         }

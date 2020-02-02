@@ -20,16 +20,29 @@ import ai.tock.bot.engine.BotBus
 
 /**
  * A step that can have specific preconditions and can use input data object in handler.
+ *
+ * @param T StoryDef
+ * @param TD the data of the StoryDef
+ * @param D the data of the step
  */
-interface StoryDataStep<T : StoryHandlerDefinition, D> : StoryStep<T> {
+interface StoryDataStep<T : StoryHandlerDefinition, TD, D> : StoryStep<T> {
 
     override fun answer(): T.() -> Any? = { handler().invoke(this, null) }
 
     /**
+     * Does this Step has to be selected from the Bus?
+     * This method is called if [StoryHandlerBase.checkPreconditions] does not call [BotBus.end].
+     * If this functions returns true, the step is selected and remaining steps are not tested.
+     */
+    fun selectFromBusAndData(): BotBus.(TD?) -> Boolean = { false }
+
+    /**
      * Checks preconditions - if [BotBus.end] is called,
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
+     * Returned data is used in subsequent call of [handler] if not null
+     * - else [StoryHandlerBase.checkPreconditions] returned data is used.
      */
-    fun checkPreconditions(): BotBus.() -> D? = { null }
+    fun checkPreconditions(): BotBus.(TD?) -> D? = { null }
 
     /**
      * The custom handler for this step.

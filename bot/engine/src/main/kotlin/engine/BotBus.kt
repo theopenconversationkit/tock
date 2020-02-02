@@ -42,6 +42,7 @@ import ai.tock.bot.engine.feature.FeatureDAO
 import ai.tock.bot.engine.feature.FeatureType
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.message.MessagesList
+import ai.tock.bot.engine.message.MessagesList.Companion.toMessageList
 import ai.tock.bot.engine.nlp.NlpCallStats
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.bot.engine.user.UserTimeline
@@ -388,7 +389,7 @@ interface BotBus : Bus<BotBus> {
      * Sends a [MessagesList].
      */
     fun send(messages: MessagesList, initialDelay: Long = 0): BotBus {
-        messages.messages.forEachIndexed { i, m ->
+        messages.messages.forEach { m ->
             val wait = initialDelay + m.delay
             send(m.toAction(this), wait)
         }
@@ -489,6 +490,32 @@ interface BotBus : Bus<BotBus> {
 
     override val test: Boolean get() = userPreferences.test
 
+
+    // override default beahviour
+    override fun end(
+        delay: Long,
+        messageProvider: BotBus.() -> Any?
+    ): BotBus {
+        val messages = toMessageList(null, this, messageProvider)
+        if (messages.messages.isEmpty()) {
+            end(delay)
+        } else {
+            end(messages = messages, initialDelay = delay)
+        }
+        return this
+    }
+
+    override fun send(delay: Long, messageProvider: BotBus.() -> Any?): BotBus {
+        val messages = toMessageList(null, this, messageProvider)
+        if (messages.messages.isEmpty()) {
+            send(delay)
+        } else {
+            send(messages = toMessageList(null, this, messageProvider), initialDelay = delay)
+        }
+        return this
+    }
+
+
     //this is mainly to allow mockk to work -->
 
     override fun withMessage(message: ConnectorMessage): BotBus = super.withMessage(message)
@@ -499,13 +526,9 @@ interface BotBus : Bus<BotBus> {
 
     override fun send(i18nText: CharSequence, vararg i18nArgs: Any?): BotBus = super.send(i18nText, *i18nArgs)
 
-    override fun send(delay: Long, messageProvider: BotBus.() -> Any?): BotBus = super.send(delay, messageProvider)
-
     override fun end(i18nText: CharSequence, delay: Long, vararg i18nArgs: Any?): BotBus = super.end(i18nText, delay, *i18nArgs)
 
     override fun end(i18nText: CharSequence, vararg i18nArgs: Any?): BotBus = super.end(i18nText, *i18nArgs)
 
     override fun end(delay: Long): BotBus = super.end(delay)
-
-    override fun end(delay: Long, messageProvider: BotBus.() -> Any?): BotBus = super.end(delay, messageProvider)
 }

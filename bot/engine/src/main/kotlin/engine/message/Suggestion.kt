@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.definition
+package ai.tock.bot.engine.message
 
-// Definition aliases.
+import ai.tock.bot.definition.IntentAware
+import ai.tock.bot.definition.Parameters
+import ai.tock.bot.definition.StoryStep
 
-typealias IntentDef = IntentAwareBase
-typealias Handler<T> = StoryHandlerBase<T>
-typealias HandlerDef<T> = StoryHandlerDefinitionBase<T>
-typealias ConnectorDef<T> = ConnectorStoryHandlerBase<T>
-typealias SimpleHandler = SimpleStoryHandlerBase
+data class Suggestion(
+    val title: CharSequence,
+    val intent: IntentAware? = null,
+    val parameters: Parameters = Parameters(),
+    val step: StoryStep<*>? = null,
+    val attributes: Map<String, String> = emptyMap()) {
+
+    constructor(title: CharSequence, intent: IntentAware, step: StoryStep<*>? = null, parameters: Parameters = Parameters()) :
+        this(title, intent, parameters, step)
+}

@@ -80,10 +80,10 @@ class Def2(bus: BotBus, val data: StoryData) : HandlerDef<Connector>(bus) {
 
 class Connector2(context: Def2) : ConnectorDef<Def2>(context)
 
-enum class Step2 : StoryDataStep<Def2, StoryData2> {
+enum class Step2 : StoryDataStep<Def2, StoryData, StoryData2> {
     s1 {
 
-        override fun checkPreconditions(): BotBus.() -> StoryData2? = {
+        override fun checkPreconditions(): BotBus.(StoryData?) -> StoryData2? = {
             changeContextValue("myValue", entityText("entity"))
 
             StoryData2(

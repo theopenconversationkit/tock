@@ -82,9 +82,30 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
         (bus.userTimeline.currentDialog ?: bus.dialog)
             .lastAction?.run { this !== bus.action && metadata.lastAnswer } ?: false
 
+    /**
+     * Select a step from the bus.
+     */
+    fun selectStepFromBusAndData(bus: BotBus, data: Any?, storyDefinition: StoryDefinition?): StoryStep<*>? {
+        storyDefinition?.steps?.also { steps ->
+            for (s in steps) {
+                @Suppress("UNCHECKED_CAST") val selected = if (s is StoryDataStep<*, *, *>) {
+                    (s as? StoryDataStep<*, Any, *>)?.selectFromBusAndData()?.invoke(bus, data) ?: false
+                } else {
+                    s.selectFromBus().invoke(bus)
+                }
+
+                if (selected) {
+                    return s
+                }
+            }
+        }
+        return null
+    }
+
     final override fun handle(bus: BotBus) {
+        val storyDefinition = findStoryDefinition(bus)
         //if not supported user interface, use unknown
-        if (findStoryDefinition(bus)?.unsupportedUserInterfaces?.contains(bus.userInterfaceType) == true) {
+        if (storyDefinition?.unsupportedUserInterfaces?.contains(bus.userInterfaceType) == true) {
             bus.botDefinition.unknownStory.storyHandler.handle(bus)
         } else {
             //set current i18n provider
@@ -92,18 +113,23 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
 
             var data = checkPreconditions().invoke(bus)?.takeUnless { it is Unit }
             if (!isEndCalled(bus)) {
+                //select steps from bus
+                selectStepFromBusAndData(bus, data, storyDefinition)?.also {
+                    bus.step = it
+                }
                 val step = bus.step
                 var handler: T? = null
 
                 //Default implementation redirect to answer if there is no current step
                 // or if the [StoryStep.handle()] method of the current step returns null
                 if (step != null) {
-                    data = (step as? StoryDataStep<*, *>)?.checkPreconditions()?.invoke(bus)?.takeUnless { it is Unit }
+                    @Suppress("UNCHECKED_CAST")
+                    data = (step as? StoryDataStep<*, Any, *>)?.checkPreconditions()?.invoke(bus, data)?.takeUnless { it is Unit }
                         ?: data
                     handler = newHandlerDefinition(bus, data)
                     @Suppress("UNCHECKED_CAST")
-                    if (step is StoryDataStep<*, *>) {
-                        (step as StoryDataStep<T, Any>).handler().invoke(handler, data)
+                    if (step is StoryDataStep<*, *, *>) {
+                        (step as StoryDataStep<T, Any, Any>).handler().invoke(handler, data)
                     } else {
                         (step as StoryStep<T>).answer().invoke(handler)
                     }
