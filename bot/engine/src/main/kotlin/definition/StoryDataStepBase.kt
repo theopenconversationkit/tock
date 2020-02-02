@@ -20,10 +20,17 @@ import ai.tock.bot.engine.BotBus
 
 /**
  * Base class for [StoryDataStep] implementations.
+ *
+ * @param T the [StoryDef]
+ * @param TD the StoryDef data
+ * @param D the step data
  */
 abstract class StoryDataStepBase<T : StoryHandlerDefinition, TD, D>(
     private val select: TD.(BotBus) -> Boolean = { false },
-    private val setup: BotBus.(TD) -> D,
+    private val setup: BotBus.(TD) -> D = {
+        @Suppress("UNCHECKED_CAST")
+        Unit as D
+    },
     private val reply: T.(D) -> Any?
 ) : StoryDataStep<T, TD, D> {
 
@@ -32,6 +39,11 @@ abstract class StoryDataStepBase<T : StoryHandlerDefinition, TD, D>(
     fun setup(): BotBus.(TD) -> D = setup
 
     fun reply(): T.(D) -> Any? = reply
+
+    fun execute(storyDef: T, configuration: TD): Any? {
+        val d = setup()(storyDef, configuration)
+        return handler()(storyDef, d)
+    }
 
     final override fun selectFromBusAndData(): BotBus.(TD?) -> Boolean = {
         select()(it!!, this)

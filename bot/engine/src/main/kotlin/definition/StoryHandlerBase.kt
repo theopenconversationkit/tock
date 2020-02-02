@@ -111,10 +111,10 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
             //set current i18n provider
             bus.i18nProvider = this
 
-            var data = checkPreconditions().invoke(bus)?.takeUnless { it is Unit }
+            val mainData = checkPreconditions().invoke(bus)?.takeUnless { it is Unit }
             if (!isEndCalled(bus)) {
                 //select steps from bus
-                selectStepFromBusAndData(bus, data, storyDefinition)?.also {
+                selectStepFromBusAndData(bus, mainData, storyDefinition)?.also {
                     bus.step = it
                 }
                 val step = bus.step
@@ -124,9 +124,9 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
                 // or if the [StoryStep.handle()] method of the current step returns null
                 if (step != null) {
                     @Suppress("UNCHECKED_CAST")
-                    data = (step as? StoryDataStep<*, Any, *>)?.checkPreconditions()?.invoke(bus, data)?.takeUnless { it is Unit }
-                        ?: data
-                    handler = newHandlerDefinition(bus, data)
+                    val data = (step as? StoryDataStep<*, Any, *>)?.checkPreconditions()?.invoke(bus, mainData)?.takeUnless { it is Unit }
+                        ?: mainData
+                    handler = newHandlerDefinition(bus, mainData)
                     @Suppress("UNCHECKED_CAST")
                     if (step is StoryDataStep<*, *, *>) {
                         (step as StoryDataStep<T, Any, Any>).handler().invoke(handler, data)
@@ -135,7 +135,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
                     }
                 }
                 if (!isEndCalled(bus)) {
-                    handler = handler ?: newHandlerDefinition(bus, data)
+                    handler = handler ?: newHandlerDefinition(bus, mainData)
                     handler.handle()
 
                     if (!bus.connectorData.skipAnswer && bus.getBusContextValue<Boolean>(SWITCH_STORY_BUS_KEY) != true && !isEndCalled(bus)) {
