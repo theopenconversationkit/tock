@@ -23,7 +23,11 @@ import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.media.MediaCard
 import ai.tock.bot.connector.media.MediaCarousel
+import ai.tock.bot.connector.media.MediaFile
 import ai.tock.bot.connector.media.MediaMessage
+import ai.tock.bot.connector.web.send.UrlButton
+import ai.tock.bot.connector.web.send.WebCard
+import ai.tock.bot.connector.web.send.WebCarousel
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.ConnectorController
@@ -122,19 +126,35 @@ class WebConnector internal constructor(
     }
 
     override fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? =
-        { WebMessage(text.toString(), suggestions.map { webTextButton(it) }) }
+        { WebMessage(text.toString(), suggestions.map { webPostbackButton(it) }) }
 
     override fun addSuggestions(message: ConnectorMessage, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
         (message as? WebMessage)?.takeIf { it.buttons.isEmpty() }?.let {
-            it.copy(buttons = suggestions.map { webTextButton(it) })
+            it.copy(buttons = suggestions.map { webPostbackButton(it) })
         } ?: message
     }
 
     override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
         listOfNotNull(
             when (message) {
-                is MediaCard -> WebMessage(card = message)
-                is MediaCarousel -> WebMessage(carousel = message)
+                is MediaCard -> {
+                    WebMessage(card = WebCard(
+                        title = message.title,
+                        subTitle = message.subTitle,
+                        file = message.file?.url?.let{MediaFile(message.file?.url as String, message.file?.name as String)},
+                        buttons = message.actions.map { UrlButton(it.title.toString(), it.url.toString()) }
+                    ))
+                }
+                is MediaCarousel -> {
+                    WebMessage(carousel = WebCarousel(message.cards.map { mediaCard ->
+                        WebCard(
+                            title = mediaCard.title,
+                            subTitle = mediaCard.subTitle,
+                            file = mediaCard.file?.url?.let{MediaFile(mediaCard.file?.url as String, mediaCard.file?.name as String)},
+                            buttons = mediaCard.actions.map { button -> UrlButton(button.title.toString(), button.url.toString()) }
+                        )
+                    }))
+                }
                 else -> null
             }
         )
