@@ -23,6 +23,7 @@ import ai.tock.bot.engine.BotBus
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 import mu.KotlinLogging
+import kotlin.LazyThreadSafetyMode.PUBLICATION
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.primaryConstructor
@@ -38,12 +39,13 @@ abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(val 
 
         private val logger = KotlinLogging.logger {}
 
-        private val connectorProvider: ConnectorHandlerProvider get() =
-            try {
-                injector.provide()
-            } catch(e:Throwable) {
-                DefaultConnectorHandlerProvider
-            }
+        private val connectorProvider: ConnectorHandlerProvider
+            get() =
+                try {
+                    injector.provide()
+                } catch (e: Throwable) {
+                    DefaultConnectorHandlerProvider
+                }
     }
 
     /**
@@ -91,12 +93,15 @@ abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(val 
     open fun findConnector(connectorId: String): T? =
         connectorProvider.provide(this, connectorId) as? T?
 
+    private val cachedConnector: T? by lazy(PUBLICATION) {
+        (findConnector(applicationId) ?: findConnector(connectorType))
+            .also { if (it == null) logger.warn { "unsupported connector type $applicationId or $connectorType for ${this::class}" } }
+    }
+
     /**
      * Provides the current [ConnectorStoryHandler] using [findConnector].
      */
-    override val connector: T? get() = (findConnector(applicationId) ?: findConnector(connectorType))
-        .also { if (it == null) logger.warn { "unsupported connector type $applicationId or $connectorType for ${this::class}" } }
-
+    override val connector: T? get() = cachedConnector
 
     /**
      * Provides a not null [connector]. Throws NPE if [connector] is null.

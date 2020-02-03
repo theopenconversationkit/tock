@@ -34,7 +34,7 @@ interface StoryDataStep<T : StoryHandlerDefinition, TD, D> : StoryStep<T> {
      * This method is called if [StoryHandlerBase.checkPreconditions] does not call [BotBus.end].
      * If this functions returns true, the step is selected and remaining steps are not tested.
      */
-    fun selectFromBusAndData(): BotBus.(TD?) -> Boolean = { false }
+    fun selectFromBusAndData(): T.(TD?) -> Boolean = { false }
 
     /**
      * Checks preconditions - if [BotBus.end] is called,
@@ -42,7 +42,7 @@ interface StoryDataStep<T : StoryHandlerDefinition, TD, D> : StoryStep<T> {
      * Returned data is used in subsequent call of [handler] if not null
      * - else [StoryHandlerBase.checkPreconditions] returned data is used.
      */
-    fun checkPreconditions(): BotBus.(TD?) -> D? = { null }
+    fun checkPreconditions(): T.(TD?) -> D? = { null }
 
     /**
      * The custom handler for this step.

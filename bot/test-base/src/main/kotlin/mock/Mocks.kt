@@ -20,6 +20,7 @@ import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.ConnectorDef
 import ai.tock.bot.definition.ConnectorHandlerProvider
 import ai.tock.bot.definition.ConnectorStoryHandlerBase
+import ai.tock.bot.definition.HandlerDef
 import ai.tock.bot.definition.StoryDefinitionBase
 import ai.tock.bot.definition.StoryHandlerBase
 import ai.tock.bot.definition.StoryHandlerDefinition
@@ -41,8 +42,8 @@ fun StoryDefinitionBase.checkPreconditions(bus: BotBus) = (storyHandler as Story
 /**
  * Runs the select step from Bus phase.
  */
-fun StoryDefinitionBase.selectStepFromBus(bus: BotBus, data: Any?): StoryStep<*>? =
-    (storyHandler as StoryHandlerBase<*>).selectStepFromBusAndData(bus, data, this)
+fun StoryDefinitionBase.selectStepFromData(def: HandlerDef<*>, data: Any?): StoryStep<*>? =
+    (storyHandler as StoryHandlerBase<*>).selectStepFromStoryHandlerAndData(def, data, this)
 
 /**
  * Provides a mock of [ConnectorDef] and run the test block.

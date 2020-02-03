@@ -27,17 +27,17 @@ import ai.tock.bot.engine.BotBus
  * @param D the step data
  */
 abstract class StoryDataStepBase<T : StoryHandlerDefinition, TD, D>(
-    private val select: TD.(BotBus) -> Boolean = { false },
-    private val setup: BotBus.(TD) -> D = {
+    private val select: TD.(T) -> Boolean = { false },
+    private val setup: T.(TD) -> D = {
         @Suppress("UNCHECKED_CAST")
         EmptyData as D
     },
     private val reply: T.(D) -> Any?
 ) : StoryDataStep<T, TD, D> {
 
-    fun select(): TD.(BotBus) -> Boolean = select
+    fun select(): TD.(T) -> Boolean = select
 
-    fun setup(): BotBus.(TD) -> D = setup
+    fun setup(): T.(TD) -> D = setup
 
     fun reply(): T.(D) -> Any? = reply
 
@@ -46,11 +46,11 @@ abstract class StoryDataStepBase<T : StoryHandlerDefinition, TD, D>(
         return reply()(storyDef, d)
     }
 
-    final override fun selectFromBusAndData(): BotBus.(TD?) -> Boolean = {
+    final override fun selectFromBusAndData(): T.(TD?) -> Boolean = {
         select()(it!!, this)
     }
 
-    final override fun checkPreconditions(): BotBus.(TD?) -> D? = {
+    final override fun checkPreconditions(): T.(TD?) -> D? = {
         setup()(this, it!!)
     }
 
