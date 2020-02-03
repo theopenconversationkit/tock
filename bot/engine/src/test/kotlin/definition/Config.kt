@@ -23,8 +23,8 @@ import java.time.ZonedDateTime
 class SimpleDef(bus: BotBus) : HandlerDef<Connector>(bus)
 
 data class StoryData(
-    val entityValue: String?,
-    val departureDate: ZonedDateTime?
+    val entityValue: String? = null,
+    val departureDate: ZonedDateTime? = null
 )
 
 class Def(bus: BotBus, val data: StoryData) : HandlerDef<Connector>(bus) {
@@ -101,5 +101,7 @@ enum class Step2 : StoryDataStep<Def2, StoryData, StoryData2> {
 
     s2
 }
+
+object Step3 : StoryDataStepBase<Def2, StoryData, EmptyData>(reply = { "ok" })
 
 

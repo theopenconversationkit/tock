@@ -16,6 +16,7 @@
 
 package ai.tock.bot.definition
 
+import ai.tock.bot.definition.StoryHandlerBase.Companion.isEndCalled
 import ai.tock.bot.engine.BotBus
 
 /**
@@ -29,7 +30,7 @@ abstract class StoryDataStepBase<T : StoryHandlerDefinition, TD, D>(
     private val select: TD.(BotBus) -> Boolean = { false },
     private val setup: BotBus.(TD) -> D = {
         @Suppress("UNCHECKED_CAST")
-        Unit as D
+        EmptyData as D
     },
     private val reply: T.(D) -> Any?
 ) : StoryDataStep<T, TD, D> {
@@ -42,7 +43,7 @@ abstract class StoryDataStepBase<T : StoryHandlerDefinition, TD, D>(
 
     fun execute(storyDef: T, configuration: TD): Any? {
         val d = setup()(storyDef, configuration)
-        return handler()(storyDef, d)
+        return reply()(storyDef, d)
     }
 
     final override fun selectFromBusAndData(): BotBus.(TD?) -> Boolean = {
@@ -55,8 +56,12 @@ abstract class StoryDataStepBase<T : StoryHandlerDefinition, TD, D>(
 
     final override fun handler(): T.(D?) -> Any? = {
         val c = this
-        end {
-            reply()(c, it!!)
+        val reply = reply()(c, it!!)
+        //in order to manage switch inside the reply
+        if (!isEndCalled(c)) {
+            end {
+                reply
+            }
         }
     }
 

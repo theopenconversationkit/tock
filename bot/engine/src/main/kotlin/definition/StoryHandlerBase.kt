@@ -48,6 +48,13 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     companion object {
         private val logger = KotlinLogging.logger {}
         internal const val SWITCH_STORY_BUS_KEY = "_tock_switch"
+
+        /**
+         * Has [BotBus.end] been already called?
+         */
+        internal fun isEndCalled(bus: BotBus): Boolean =
+            (bus.userTimeline.currentDialog ?: bus.dialog)
+                .lastAction?.run { this !== bus.action && metadata.lastAnswer } ?: false
     }
 
     /**
@@ -74,13 +81,6 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
             newHandlerDefinition(bus, data)
         }
     }
-
-    /**
-     * Has [BotBus.end] been already called?
-     */
-    private fun isEndCalled(bus: BotBus): Boolean =
-        (bus.userTimeline.currentDialog ?: bus.dialog)
-            .lastAction?.run { this !== bus.action && metadata.lastAnswer } ?: false
 
     /**
      * Select a step from the bus.
