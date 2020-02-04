@@ -184,8 +184,8 @@ class XrayService(
                         sendToXray(it)
                     }
         } catch (t: Throwable) {
-            logger.error(t)
-            XrayPlanExecutionResult(0, 0, "No tests run")
+            logger.error(t.message)
+            XrayPlanExecutionResult(0, 0, "No tests run: ${t.message}")
         }
     }
 
@@ -259,8 +259,18 @@ class XrayService(
             dialogs: List<TestDialogReport>,
             executionDialogs: List<DialogExecutionReport>
     ): Boolean {
+        var testExecutionKey = ""
         // try to get the jira identifier of the test plan
-        var testExecutionKey = XrayClient.getKeyOfSearchedIssue("project = \"${configurations[0].jiraTestProject.key}\" and issuetype = \"Test Execution\" and summary ~ \"$planKey\"")
+        val testExecutionKeyIssue = XrayClient.getKeyOfSearchedIssue(
+                "project = \"${configurations[0].jiraTestProject.key}\" and " +
+                        "issuetype = \"Test Execution\" and " +
+                        "summary ~ \"$planKey ${configurations[0].botConfiguration.name}\"")
+
+        when(testExecutionKeyIssue) {
+            TooMuchIssuesRetrieved -> error("too many test execution retrieved with summary \"$planKey ${configurations[0].botConfiguration.name}\".")
+            NoIssueRetrieved -> error("no test execution retrieved with summary \"$planKey ${configurations[0].botConfiguration.name}\".")
+            is IssueRetrieved -> testExecutionKey = testExecutionKeyIssue.key
+        }
 
         // if no test execution has been found, then create a new one
         if (testExecutionKey.isEmpty()) {
