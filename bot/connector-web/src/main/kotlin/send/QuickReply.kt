@@ -20,7 +20,7 @@ import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.message.Choice
 import ai.tock.shared.mapNotNullValues
 
-data class QuickReply(val title: String, val payload: String?) : Button(ButtonType.quick_reply) {
+data class QuickReply(val title: String, val payload: String?, val imageUrl: String?) : Button(ButtonType.quick_reply) {
 
     override fun toChoice(): Choice =
         if (payload == null) {
@@ -30,7 +30,8 @@ data class QuickReply(val title: String, val payload: String?) : Button(ButtonTy
                 Choice(
                     intent,
                     params + mapNotNullValues(
-                        SendChoice.TITLE_PARAMETER to title
+                        SendChoice.TITLE_PARAMETER to title,
+                        SendChoice.IMAGE_PARAMETER to imageUrl
                     )
                 )
             }

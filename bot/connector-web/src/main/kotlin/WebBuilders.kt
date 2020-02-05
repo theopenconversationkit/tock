@@ -125,11 +125,13 @@ fun <T : Bus<T>> T.webQuickReply(
     title: CharSequence,
     targetIntent: IntentAware? = null,
     step: StoryStep<out StoryHandlerDefinition>? = null,
-    parameters: Parameters = Parameters()
+    parameters: Parameters = Parameters(),
+    imageUrl: String? = null
 ): Button =
     QuickReply(
         translate(title).toString(),
-        targetIntent?.let { i -> SendChoice.encodeChoiceId(this, i, step, parameters.toMap()) }
+        targetIntent?.let { i -> SendChoice.encodeChoiceId(this, i, step, parameters.toMap()) },
+        imageUrl
     )
 
 /**
