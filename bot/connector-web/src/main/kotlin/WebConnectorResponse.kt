@@ -16,10 +16,6 @@
 
 package ai.tock.bot.connector.web
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY
-import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.media.MediaCard
 import ai.tock.bot.connector.media.MediaCarousel
@@ -28,31 +24,18 @@ import ai.tock.bot.engine.message.Choice
 import ai.tock.bot.engine.message.GenericMessage
 import ai.tock.bot.engine.message.GenericMessage.Companion.TEXT_PARAM
 import ai.tock.shared.mapNotNullValues
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY
 
-data class WebButton(val title: String, val payload: String? = null, val imageUrl: String? = null) {
-
-    fun toChoice(): Choice =
-        if (payload == null) {
-            Choice.fromText(title)
-        } else {
-            SendChoice.decodeChoiceId(payload).let { (intent, params) ->
-                Choice(
-                    intent,
-                    params +  mapNotNullValues(
-                        SendChoice.TITLE_PARAMETER to title,
-                        SendChoice.IMAGE_PARAMETER to imageUrl
-                    )
-                )
-            }
-        }
-}
-
+@Deprecated("Use the new WebMessage implementation v1")
 @JsonInclude(NON_EMPTY)
-data class WebMessage(
+data class OldWebMessage(
     val text: String? = null,
     val buttons: List<WebButton> = emptyList(),
     val card: MediaCard? = null,
-    val carousel: MediaCarousel? = null) : ConnectorMessage {
+    val carousel: MediaCarousel? = null
+) : WebConnectorMessage {
 
     @get:JsonIgnore
     override val connectorType: ConnectorType = webConnectorType
@@ -65,6 +48,26 @@ data class WebMessage(
                 texts = mapNotNullValues(TEXT_PARAM to text),
                 choices = buttons.map { it.toChoice() }
             )
+}
+
+
+@Deprecated("Use the WebBuilders methods to create buttons")
+data class WebButton(val title: String, val payload: String? = null, val imageUrl: String? = null) {
+
+    fun toChoice(): Choice =
+        if (payload == null) {
+            Choice.fromText(title)
+        } else {
+            SendChoice.decodeChoiceId(payload).let { (intent, params) ->
+                Choice(
+                    intent,
+                    params + mapNotNullValues(
+                        SendChoice.TITLE_PARAMETER to title,
+                        SendChoice.IMAGE_PARAMETER to imageUrl
+                    )
+                )
+            }
+        }
 }
 
 internal data class WebConnectorResponse(val responses: List<WebMessage>)
