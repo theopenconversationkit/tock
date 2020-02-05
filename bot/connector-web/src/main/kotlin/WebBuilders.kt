@@ -39,7 +39,7 @@ import ai.tock.bot.engine.action.SendChoice
  * Adds a Web [ConnectorMessage] if the current connector is Web.
  * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
-fun <T : Bus<T>> T.withWeb(messageProvider: () -> WebMessage): T {
+fun <T : Bus<T>> T.withWeb(messageProvider: () -> WebConnectorMessage): T {
     return withMessage(webConnectorType, messageProvider)
 }
 

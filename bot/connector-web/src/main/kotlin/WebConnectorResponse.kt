@@ -16,7 +16,6 @@
 
 package ai.tock.bot.connector.web
 
-import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.media.MediaCard
 import ai.tock.bot.connector.media.MediaCarousel
@@ -36,7 +35,7 @@ data class OldWebMessage(
     val buttons: List<WebButton> = emptyList(),
     val card: MediaCard? = null,
     val carousel: MediaCarousel? = null
-) : ConnectorMessage {
+) : WebConnectorMessage {
 
     @get:JsonIgnore
     override val connectorType: ConnectorType = webConnectorType

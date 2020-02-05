@@ -1,6 +1,5 @@
 package ai.tock.bot.connector.web
 
-import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.web.send.Button
 import ai.tock.bot.connector.web.send.WebCard
@@ -17,7 +16,7 @@ data class WebMessage(
     val card: WebCard? = null,
     val carousel: WebCarousel? = null,
     val version: String = "1"
-) : ConnectorMessage {
+) : WebConnectorMessage {
 
     @get:JsonIgnore
     override val connectorType: ConnectorType = webConnectorType
