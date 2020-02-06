@@ -42,6 +42,7 @@ abstract class StoryDataStepBase<T : StoryHandlerDefinition, TD, D>(
     fun reply(): T.(D) -> Any? = reply
 
     fun execute(storyDef: T, configuration: TD): Any? {
+        storyDef.step = this
         val d = setup()(storyDef, configuration)
         return reply()(storyDef, d)
     }
