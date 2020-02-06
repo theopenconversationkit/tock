@@ -36,13 +36,20 @@ class BotDefinitionTest
     : BotDefinitionBase(
     "test",
     "namespace",
-    stories = enumValues<TestStoryDefinition>().toList() + otherStory,
+    stories = enumValues<TestStoryDefinition>().toList() + otherStory + testWithoutStep,
     unknownStory = TestStoryDefinition.unknown,
     botEnabledStory = enableStory,
     botDisabledStory = disableStory
 )
 
-enum class StepTest : SimpleStoryStep { s1, s2, s3 }
+enum class StepTest : SimpleStoryStep {
+    s1,
+    s2,
+    s3,
+    s4 {
+        override val secondaryIntents: Set<IntentAware> = setOf(Intent("s4_secondary"))
+    }
+}
 
 abstract class AbstractStoryHandler : SimpleStoryHandlerBase() {
     var registeredBus: BotBus? = null
@@ -82,4 +89,8 @@ object StoryHandlerUnknown : AbstractStoryHandler()
 
 val otherStory = storyWithSteps<StepTest>("other") {
     end("other")
+}
+
+val testWithoutStep = story("withoutStep") {
+    end("withoutStep")
 }

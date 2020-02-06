@@ -16,7 +16,10 @@
 
 package ai.tock.bot.engine
 
+import ai.tock.bot.definition.Intent
+import ai.tock.bot.engine.StepTest.s4
 import ai.tock.bot.engine.TestStoryDefinition.test
+import ai.tock.bot.engine.TestStoryDefinition.unknown
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.dialog.Dialog
@@ -76,6 +79,86 @@ class BotTest : BotEngineTest() {
         bot.handle(sentence, userTimeline, connectorController, connectorData)
 
         assertEquals(otherStory, dialog.currentStory?.definition)
+        assertNull(dialog.currentStory?.step)
+    }
+
+    @Test
+    fun `GIVEN selected step WHEN secondary intent of the step is called THEN step (and story) is still selected`() {
+        val def = story.definition
+        story.step = s4.name
+        val sentence = action(Sentence("s4_secondary"))
+
+        val sendSentence = slot<SendSentence>()
+        val capturedDialog = slot<Dialog>()
+
+        every { nlp.parseSentence(capture(sendSentence), any(), capture(capturedDialog), any(), any()) } answers {
+            sendSentence.captured.state.intent = "s4_secondary"
+            capturedDialog.captured.state.currentIntent = Intent("s4_secondary")
+        }
+
+        bot.handle(sentence, userTimeline, connectorController, connectorData)
+
+        assertEquals(def, dialog.currentStory?.definition)
+        assertEquals(s4.name, dialog.currentStory?.step)
+    }
+
+    @Test
+    fun `GIVEN no selected step WHEN secondary intent of the story is called THEN story is not selected anymore`() {
+        val def = story.definition
+        story.step = null
+        val sentence = action(Sentence("s4_secondary"))
+
+        val sendSentence = slot<SendSentence>()
+        val capturedDialog = slot<Dialog>()
+
+        every { nlp.parseSentence(capture(sendSentence), any(), capture(capturedDialog), any(), any()) } answers {
+            sendSentence.captured.state.intent = "s4_secondary"
+            capturedDialog.captured.state.currentIntent = Intent("s4_secondary")
+        }
+
+        bot.handle(sentence, userTimeline, connectorController, connectorData)
+
+        assertEquals(unknown, dialog.currentStory?.definition)
+        assertNull(dialog.currentStory?.step)
+    }
+
+    @Test
+    fun `GIVEN selected step WHEN secondary intent of the story is called THEN step (and story) is still selected`() {
+        val def = story.definition
+        story.step = s4.name
+        val sentence = action(Sentence("secondaryIntent"))
+
+        val sendSentence = slot<SendSentence>()
+        val capturedDialog = slot<Dialog>()
+
+        every { nlp.parseSentence(capture(sendSentence), any(), capture(capturedDialog), any(), any()) } answers {
+            sendSentence.captured.state.intent = "secondaryIntent"
+            capturedDialog.captured.state.currentIntent = secondaryIntent
+        }
+
+        bot.handle(sentence, userTimeline, connectorController, connectorData)
+
+        assertEquals(def, dialog.currentStory?.definition)
+        assertEquals(s4.name, dialog.currentStory?.step)
+    }
+
+    @Test
+    fun `GIVEN no selected step WHEN secondary intent of one step is called THEN story is not selected any more`() {
+        val def = story.definition
+        story.step = null
+        val sentence = action(Sentence("s4_secondary"))
+
+        val sendSentence = slot<SendSentence>()
+        val capturedDialog = slot<Dialog>()
+
+        every { nlp.parseSentence(capture(sendSentence), any(), capture(capturedDialog), any(), any()) } answers {
+            sendSentence.captured.state.intent = "s4_secondary"
+            capturedDialog.captured.state.currentIntent = Intent("s4_secondary")
+        }
+
+        bot.handle(sentence, userTimeline, connectorController, connectorData)
+
+        assertEquals(unknown, dialog.currentStory?.definition)
         assertNull(dialog.currentStory?.step)
     }
 

@@ -117,6 +117,12 @@ data class Story(
     fun support(bus: BotBus): Double = definition.storyHandler.support(bus)
 
     /**
+     * Does this story supports the intent ?
+     */
+    fun supportIntent(intent:Intent) : Boolean =
+        definition.supportIntent(intent) || currentStep?.supportIntent(intent) == true
+
+    /**
      * Set the current step form the specified action and new intent.
      */
     fun computeCurrentStep(userTimeline: UserTimeline, dialog: Dialog, action: Action, newIntent: Intent?) {

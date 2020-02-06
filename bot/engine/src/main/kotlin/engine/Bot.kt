@@ -145,7 +145,7 @@ internal class Bot(
 
         val story =
             if (previousStory == null
-                || (newIntent != null && !previousStory.definition.supportIntent(newIntent))
+                || (newIntent != null && !previousStory.supportIntent(newIntent))
             ) {
                 val storyDefinition = botDefinition.findStoryDefinition(newIntent?.name, action.applicationId)
                 val newStory = Story(
@@ -232,8 +232,8 @@ internal class Bot(
                             //the new intent is a secondary intent, may be we need to create a intermediate story
                             val currentStory = dialog.currentStory
                             if (currentStory == null
-                                || !currentStory.definition.supportIntent(intent)
-                                || !currentStory.definition.supportIntent(botDefinition.findIntent(previousIntentName))
+                                || !currentStory.supportIntent(intent)
+                                || !currentStory.supportIntent(botDefinition.findIntent(previousIntentName))
                             ) {
                                 dialog.stories.add(Story(previousStory, intent))
                             }

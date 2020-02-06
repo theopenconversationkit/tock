@@ -265,7 +265,7 @@ open class BotBusMock(
         }
 
         if (context.dialog.state.currentIntent != null
-            && !context.story.definition.supportIntent(context.dialog.state.currentIntent!!)
+            && !context.story.supportIntent(context.dialog.state.currentIntent!!)
         ) {
             val storyDefinition = context.botDefinition.findStoryDefinition(context.dialog.state.currentIntent!!)
             context.story = Story(storyDefinition, storyDefinition.mainIntent())
