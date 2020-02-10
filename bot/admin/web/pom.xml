@@ -28,6 +28,15 @@
   <name>Tock Bot Admin Front</name>
   <description>Web app front for Tock Bot Admin</description>
 
+  <dependencies>
+    <dependency>
+      <groupId>ai.tock</groupId>
+      <artifactId>tock-nlp-admin-web</artifactId>
+      <version>${project.version}</version>
+      <optional>true</optional>
+    </dependency>
+  </dependencies>
+
   <build>
     <plugins>
       <plugin>
