@@ -183,7 +183,8 @@ inline fun <reified T : Any> MongoCollection<T>.watch(
     )
 }
 
-fun pingMongoDatabase(database: MongoDatabase): Boolean {
+fun pingMongoDatabase(databaseName: String): Boolean {
+    val database = getDatabase(databaseName)
     val result = database.runCommand<Document>("{ ping: 1 }")
     return result["ok"] == 1.0
 }
