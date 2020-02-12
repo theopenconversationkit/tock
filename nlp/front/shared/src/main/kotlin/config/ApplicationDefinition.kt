@@ -31,6 +31,10 @@ data class ApplicationDefinition(
      */
     val name: String,
     /**
+     * The label of the app.
+     */
+    val label: String = name,
+    /**
      * The namespace of the app.
      */
     val namespace: String,

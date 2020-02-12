@@ -42,19 +42,33 @@
   <nb-card-body *ngIf="application">
     <nb-card>
       <nb-card-body>
-          <input #appName name="appName" nbInput placeholder="New Application Name" [(ngModel)]="application.name"
-                 (keyup.enter)="saveApplication()" class="application-name">
-        <nb-checkbox class="separator" [(ngModel)]="application.mergeEngineTypes"
-                     nbTooltip="If selected, this option uses built-in entity models (like dates) in conjunction with standard NER">
-          Use entity models
-        </nb-checkbox>
-        <nb-checkbox class="separator" *ngIf="!application.mergeEngineTypes" [(ngModel)]="application.useEntityModels"
-                     nbTooltip="If selected, built-in entity models results are provided only for info and potential entity disambiguation">
-          Entity disambiguation only
-        </nb-checkbox>
-        <nb-checkbox class="separator" [(ngModel)]="application.supportSubEntities"
-                     nbTooltip="If selected, you can use subentities in your nlp models">Allow subentities
-        </nb-checkbox>
+        <p>
+          <mat-form-field>
+            <input matInput name="appLabel" placeholder="New Application Label" [(ngModel)]="application.label"
+                   (keyup)="format()" (keyup.enter)="saveApplication()"
+                   matTooltip="Displayed label" #appLabel required autocomplete="off">
+          </mat-form-field>
+        </p>
+        <p>
+          <mat-form-field>
+            <input matInput name="appName" placeholder="New Application Name" [(ngModel)]="application.name"
+                   (keyup.enter)="saveApplication()"
+                   matTooltip="Technical name (without special chars)" #appName required autocomplete="off">
+          </mat-form-field>
+        </p>
+        <p>
+          <nb-checkbox class="separator" [(ngModel)]="application.mergeEngineTypes"
+                       nbTooltip="If selected, this option uses built-in entity models (like dates) in conjunction with standard NER">
+            Use entity models
+          </nb-checkbox>
+          <nb-checkbox class="separator" *ngIf="!application.mergeEngineTypes" [(ngModel)]="application.useEntityModels"
+                       nbTooltip="If selected, built-in entity models results are provided only for info and potential entity disambiguation">
+            Entity disambiguation only
+          </nb-checkbox>
+          <nb-checkbox class="separator" [(ngModel)]="application.supportSubEntities"
+                       nbTooltip="If selected, you can use subentities in your nlp models">Allow subentities
+          </nb-checkbox>
+        </p>
       </nb-card-body>
     </nb-card>
     <nb-card *ngIf="state.locales">

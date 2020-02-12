@@ -38,7 +38,7 @@ export class ApplicationComponent implements OnInit {
   nlpEngineType: string;
   nlpEngineTypeChange: Subject<NlpEngineType> = new Subject();
 
-  @ViewChild('appName', {static: false}) appName: ElementRef;
+  @ViewChild('appLabel', {static: false}) appLabel: ElementRef;
 
   constructor(private route: ActivatedRoute,
               private snackBar: MatSnackBar,
@@ -59,19 +59,30 @@ export class ApplicationComponent implements OnInit {
           }
         } else {
           this.newApplication = true;
-          this.application = new Application("", this.state.user.organization, [], [], StateService.DEFAULT_ENGINE, true, true, false);
+          this.application = new Application("", "", this.state.user.organization, [], [], StateService.DEFAULT_ENGINE, true, true, false);
         }
         this.nlpEngineType = this.application.nlpEngineType.name;
         if (this.application) {
           setTimeout(_ => {
-            this.appName.nativeElement.focus();
+            this.appLabel.nativeElement.focus();
           });
         }
       }
     );
   }
 
+  format() {
+    this.formatName(this.application.label);
+  }
+
+  private formatName(label: string) {
+    if (label) {
+      this.application.name = label.replace(/[^A-Za-z_-]*/g, '').toLowerCase().trim();
+    }
+  }
+
   saveApplication() {
+    this.format();
     if (this.application.name.trim().length === 0) {
       this.snackBar.open(`Please choose an application name`, "ERROR", {duration: 5000});
     } else if (this.application.supportedLocales.length === 0) {

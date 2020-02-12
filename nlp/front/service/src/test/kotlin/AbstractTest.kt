@@ -114,7 +114,7 @@ abstract class AbstractTest {
     val appName = "test"
     val app = ApplicationDefinition(
         appName,
-        namespace,
+        namespace = namespace,
         _id = "id".toId(),
         supportedLocales = setOf(defaultLocale)
     )

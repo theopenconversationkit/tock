@@ -35,6 +35,7 @@ data class ApplicationDump(
 
 data class ApplicationDefinition(
     val name: String,
+    val label: String = name,
     val namespace: String,
     val intents: Set<String> = emptySet(),
     val supportedLocales: Set<Locale> = emptySet(),

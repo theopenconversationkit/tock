@@ -20,6 +20,7 @@ import {flatMap, JsonUtils} from "./commons";
 export class Application {
 
   constructor(public name: string,
+              public label: string,
               public namespace: string,
               public intents: Intent[],
               public supportedLocales: string[],
@@ -33,6 +34,7 @@ export class Application {
   clone(): Application {
     return new Application(
       this.name,
+      this.label,
       this.namespace,
       this.intents.slice(0),
       this.supportedLocales.slice(0),
@@ -102,7 +104,8 @@ export class Application {
     const value = Object.create(Application.prototype);
     const result = Object.assign(value, json, {
       intents: Intent.fromJSONArray(json.intents),
-      nlpEngineType: NlpEngineType.fromJSON(json.nlpEngineType)
+      nlpEngineType: NlpEngineType.fromJSON(json.nlpEngineType),
+      label: json.label || json.name
     });
 
     return result;

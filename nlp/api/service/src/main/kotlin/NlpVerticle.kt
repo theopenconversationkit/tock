@@ -141,6 +141,7 @@ class NlpVerticle : WebVerticle() {
                     front.save(
                         ApplicationDefinition(
                             query.name,
+                            query.label ?: query.name,
                             query.namespace,
                             supportedLocales = setOf(query.locale)
                         )
