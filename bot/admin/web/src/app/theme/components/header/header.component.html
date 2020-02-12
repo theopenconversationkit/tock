@@ -37,7 +37,7 @@
              [ngModel]="state.currentApplication.name"
              class="app">
     <nb-option *ngFor="let app of state.applications"
-               [value]="app.name">{{ app.name }}
+               [value]="app.name">{{ app.label }}
     </nb-option>
   </nb-select>
 

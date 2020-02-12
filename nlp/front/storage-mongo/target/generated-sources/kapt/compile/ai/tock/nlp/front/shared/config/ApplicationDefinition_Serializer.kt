@@ -20,6 +20,9 @@ internal class ApplicationDefinition_Serializer :
         gen.writeFieldName("name")
         val _name_ = value.name
         gen.writeString(_name_)
+        gen.writeFieldName("label")
+        val _label_ = value.label
+        gen.writeString(_label_)
         gen.writeFieldName("namespace")
         val _namespace_ = value.namespace
         gen.writeString(_namespace_)

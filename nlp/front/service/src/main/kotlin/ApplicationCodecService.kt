@@ -296,7 +296,7 @@ internal object ApplicationCodecService : ApplicationCodec {
             var app = config.getApplicationByNamespaceAndName(namespace, appName)
                 .let { app ->
                     if (app == null) {
-                        val appToSave = ApplicationDefinition(appName, namespace)
+                        val appToSave = ApplicationDefinition(appName, appName, namespace)
                         report.add(appToSave)
                         logger.debug { "Import application $appToSave" }
                         config.save(appToSave)

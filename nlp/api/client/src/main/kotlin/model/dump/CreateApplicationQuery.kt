@@ -23,6 +23,7 @@ import java.util.Locale
  */
 data class CreateApplicationQuery(
     val name: String,
+    val label: String = name,
     val namespace: String,
     val locale: Locale
 )

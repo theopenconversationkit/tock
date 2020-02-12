@@ -32,6 +32,10 @@ data class ApplicationWithIntents(
      */
     val name: String,
     /**
+     * The label of the app.
+     */
+    val label: String = name,
+    /**
      * The namespace of the application.
      */
     val namespace: String,
@@ -68,6 +72,7 @@ data class ApplicationWithIntents(
     constructor(application: ApplicationDefinition, intents: List<IntentDefinition>) :
             this(
                 application.name,
+                application.label,
                 application.namespace,
                 intents.sortedWith(compareBy({ it.label }, { it.name })),
                 application.supportedLocales,
@@ -81,6 +86,7 @@ data class ApplicationWithIntents(
     fun toApplication(): ApplicationDefinition {
         return ApplicationDefinition(
             name,
+            label,
             namespace,
             intents.map { it._id }.toSet(),
             supportedLocales,

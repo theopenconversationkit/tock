@@ -29,6 +29,8 @@ internal class ApplicationDefinition_Deserializer : JsonDeserializer<Application
         with(p) {
             var _name_: String? = null
             var _name_set : Boolean = false
+            var _label_: String? = null
+            var _label_set : Boolean = false
             var _namespace_: String? = null
             var _namespace_set : Boolean = false
             var _intents_: MutableSet<Id<IntentDefinition>>? = null
@@ -61,6 +63,11 @@ internal class ApplicationDefinition_Deserializer : JsonDeserializer<Application
                             _name_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _name_set = true
+                            }
+                    "label" -> {
+                            _label_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _label_set = true
                             }
                     "namespace" -> {
                             _namespace_ = if(_token_ == JsonToken.VALUE_NULL) null
@@ -115,18 +122,22 @@ internal class ApplicationDefinition_Deserializer : JsonDeserializer<Application
                     } 
                 _token_ = currentToken
                         } 
-            return if(_name_set && _namespace_set && _intents_set && _supportedLocales_set &&
-                    _intentStatesMap_set && _nlpEngineType_set && _mergeEngineTypes_set &&
-                    _useEntityModels_set && _supportSubEntities_set && __id_set)
-                    ApplicationDefinition(name = _name_!!, namespace = _namespace_!!, intents =
-                            _intents_!!, supportedLocales = _supportedLocales_!!, intentStatesMap =
-                            _intentStatesMap_!!, nlpEngineType = _nlpEngineType_!!, mergeEngineTypes
-                            = _mergeEngineTypes_!!, useEntityModels = _useEntityModels_!!,
+            return if(_name_set && _label_set && _namespace_set && _intents_set &&
+                    _supportedLocales_set && _intentStatesMap_set && _nlpEngineType_set &&
+                    _mergeEngineTypes_set && _useEntityModels_set && _supportSubEntities_set &&
+                    __id_set)
+                    ApplicationDefinition(name = _name_!!, label = _label_!!, namespace =
+                            _namespace_!!, intents = _intents_!!, supportedLocales =
+                            _supportedLocales_!!, intentStatesMap = _intentStatesMap_!!,
+                            nlpEngineType = _nlpEngineType_!!, mergeEngineTypes =
+                            _mergeEngineTypes_!!, useEntityModels = _useEntityModels_!!,
                             supportSubEntities = _supportSubEntities_!!, _id = __id_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_name_set)
                     map[parameters.getValue("name")] = _name_
+                    if(_label_set)
+                    map[parameters.getValue("label")] = _label_
                     if(_namespace_set)
                     map[parameters.getValue("namespace")] = _namespace_
                     if(_intents_set)
@@ -157,7 +168,8 @@ internal class ApplicationDefinition_Deserializer : JsonDeserializer<Application
 
         private val parameters: Map<String, KParameter> by lazy(LazyThreadSafetyMode.PUBLICATION) {
                 kotlin.collections.mapOf("name" to primaryConstructor.findParameterByName("name")!!,
-                "namespace" to primaryConstructor.findParameterByName("namespace")!!, "intents" to
+                "label" to primaryConstructor.findParameterByName("label")!!, "namespace" to
+                primaryConstructor.findParameterByName("namespace")!!, "intents" to
                 primaryConstructor.findParameterByName("intents")!!, "supportedLocales" to
                 primaryConstructor.findParameterByName("supportedLocales")!!, "intentStatesMap" to
                 primaryConstructor.findParameterByName("intentStatesMap")!!, "nlpEngineType" to

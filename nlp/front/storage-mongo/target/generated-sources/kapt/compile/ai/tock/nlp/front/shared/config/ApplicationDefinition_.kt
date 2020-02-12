@@ -18,6 +18,8 @@ import org.litote.kmongo.property.KPropertyPath
 
 private val __Name: KProperty1<ApplicationDefinition, String?>
     get() = ApplicationDefinition::name
+private val __Label: KProperty1<ApplicationDefinition, String?>
+    get() = ApplicationDefinition::label
 private val __Namespace: KProperty1<ApplicationDefinition, String?>
     get() = ApplicationDefinition::namespace
 private val __Intents: KProperty1<ApplicationDefinition, Set<Id<IntentDefinition>>?>
@@ -41,6 +43,9 @@ class ApplicationDefinition_<T>(previous: KPropertyPath<T, *>?, property: KPrope
         ApplicationDefinition?>) : KPropertyPath<T, ApplicationDefinition?>(previous,property) {
     val name_: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Name)
+
+    val label: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__Label)
 
     val namespace: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Namespace)
@@ -72,6 +77,8 @@ class ApplicationDefinition_<T>(previous: KPropertyPath<T, *>?, property: KPrope
     companion object {
         val Name: KProperty1<ApplicationDefinition, String?>
             get() = __Name
+        val Label: KProperty1<ApplicationDefinition, String?>
+            get() = __Label
         val Namespace: KProperty1<ApplicationDefinition, String?>
             get() = __Namespace
         val Intents: KCollectionSimplePropertyPath<ApplicationDefinition, Id<IntentDefinition>?>
@@ -98,6 +105,9 @@ class ApplicationDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KPr
         ApplicationDefinition_<T>>(previous,property) {
     val name_: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Name)
+
+    val label: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__Label)
 
     val namespace: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Namespace)
@@ -135,6 +145,9 @@ class ApplicationDefinition_Map<T, K>(previous: KPropertyPath<T, *>?, property: 
         ApplicationDefinition_<T>>(previous,property) {
     val name_: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Name)
+
+    val label: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__Label)
 
     val namespace: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Namespace)

@@ -110,7 +110,7 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
     }
 
     override fun createApplication(namespace: String, name: String, locale: Locale): ApplicationDefinition? {
-        return nlpService.createApplication(CreateApplicationQuery(name, namespace, locale)).execute().body()
+        return nlpService.createApplication(CreateApplicationQuery(name, namespace = namespace, locale = locale)).execute().body()
     }
 
     private fun createMultipart(stream: InputStream): MultipartBody.Part {

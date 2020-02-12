@@ -66,7 +66,7 @@ class ApplicationCodecServiceTest : AbstractTest() {
     @Test
     fun `export sentence fails WHEN sentence intent is unknown`() {
         val appId = "id".toId<ApplicationDefinition>()
-        val app = ApplicationDefinition("test", "test", _id = appId)
+        val app = ApplicationDefinition("test", namespace = "test", _id = appId)
         val sentences = listOf(
             ClassifiedSentence(
                 "text",

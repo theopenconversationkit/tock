@@ -57,7 +57,7 @@ class ParserServiceTest : AbstractTest() {
     @Test
     fun findLanguage_shouldReturnDefault_WhenLocaleParameterIsNotSupportedAndDefaultIsSupported() {
         val locale = ParserService.findLanguage(
-            ApplicationDefinition("test", "test", supportedLocales = setOf(defaultLocale)),
+            ApplicationDefinition("test", namespace = "test", supportedLocales = setOf(defaultLocale)),
             Locale.JAPANESE
         )
 
@@ -67,7 +67,7 @@ class ParserServiceTest : AbstractTest() {
     @Test
     fun findLanguage_shouldReturnFirstFound_WhenLocaleParameterIsNotSupportedAndDefaultIsNotSupported() {
         val locale = ParserService.findLanguage(
-            ApplicationDefinition("test", "test", supportedLocales = setOf(Locale.ITALIAN)),
+            ApplicationDefinition("test", namespace = "test", supportedLocales = setOf(Locale.ITALIAN)),
             Locale.JAPANESE
         )
 
