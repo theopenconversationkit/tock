@@ -424,10 +424,9 @@ internal object ApplicationCodecService : ApplicationCodec {
         )
     }
 
-    override fun exportSentences(
-        query: SentencesQuery,
-        dumpType: DumpType
-    ): SentencesDump {
+    override fun exportSentences(queries: List<SentencesQuery>, dumpType: DumpType): SentencesDump {
+        // Suppose all queries in the same application/locale/etc.
+        val query = queries.first()
         val applicationId = query.applicationId
         val app = config.getApplicationById(applicationId)!!
         val filteredIntentId = query.intentId
@@ -438,9 +437,9 @@ internal object ApplicationCodecService : ApplicationCodec {
             .groupBy { it._id }
             .mapValues { it.value.first() }
 
-        val sentences = config
-            .search(query.copy(start = 0, size = Integer.MAX_VALUE, searchMark = null))
-            .sentences
+        val sentences = queries.flatMap { config
+                .search(it.copy(start = 0, size = Integer.MAX_VALUE, searchMark = null))
+                .sentences }
 
         return SentencesDump(
             app.qualifiedName,

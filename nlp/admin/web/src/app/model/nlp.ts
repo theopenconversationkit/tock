@@ -790,6 +790,16 @@ export class SearchQuery extends PaginatedQuery {
   }
 }
 
+export class SentencesTextQuery extends ApplicationScopedQuery {
+
+  constructor(public namespace: string,
+              public applicationName: string,
+              public language: string,
+              public texts?: string[]) {
+    super(namespace, applicationName, language)
+  }
+}
+
 export interface PaginatedResult<T> {
 
   rows: T[];

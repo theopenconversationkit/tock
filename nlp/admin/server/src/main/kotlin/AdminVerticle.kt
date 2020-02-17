@@ -18,26 +18,7 @@ package ai.tock.nlp.admin
 
 import ai.tock.nlp.admin.AdminService.front
 import ai.tock.nlp.admin.CsvCodec.newPrinter
-import ai.tock.nlp.admin.model.ApplicationScopedQuery
-import ai.tock.nlp.admin.model.ApplicationWithIntents
-import ai.tock.nlp.admin.model.CreateEntityQuery
-import ai.tock.nlp.admin.model.EntityTestErrorQueryResultReport
-import ai.tock.nlp.admin.model.EntityTestErrorWithSentenceReport
-import ai.tock.nlp.admin.model.IntentTestErrorQueryResultReport
-import ai.tock.nlp.admin.model.IntentTestErrorWithSentenceReport
-import ai.tock.nlp.admin.model.LogStatsQuery
-import ai.tock.nlp.admin.model.LogsQuery
-import ai.tock.nlp.admin.model.PaginatedQuery
-import ai.tock.nlp.admin.model.ParseQuery
-import ai.tock.nlp.admin.model.PredefinedLabelQuery
-import ai.tock.nlp.admin.model.PredefinedValueQuery
-import ai.tock.nlp.admin.model.SearchQuery
-import ai.tock.nlp.admin.model.SentenceReport
-import ai.tock.nlp.admin.model.SentencesReport
-import ai.tock.nlp.admin.model.TestBuildQuery
-import ai.tock.nlp.admin.model.TranslateSentencesQuery
-import ai.tock.nlp.admin.model.UpdateEntityDefinitionQuery
-import ai.tock.nlp.admin.model.UpdateSentencesQuery
+import ai.tock.nlp.admin.model.*
 import ai.tock.nlp.core.DictionaryData
 import ai.tock.nlp.core.NlpEngineType
 import ai.tock.nlp.core.PredefinedValue
@@ -203,6 +184,24 @@ open class AdminVerticle : WebVerticle() {
                         context.path("dumpType")
                     )
                 )
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost(
+                "/sentences/dump/:dumpType/:applicationId/fromText",
+                admin
+        ) { context, query: SentencesTextQuery ->
+            val id: Id<ApplicationDefinition> = context.pathId("applicationId")
+            if (context.organization == front.getApplicationById(id)?.namespace) {
+                if (query.texts.isNotEmpty())
+                    front.exportSentences(
+                        query.toSentencesQueries(id),
+                        DumpType.parseDumpType(
+                            context.path("dumpType")
+                        )
+                    )
             } else {
                 unauthorized()
             }
