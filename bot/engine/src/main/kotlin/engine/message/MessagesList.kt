@@ -18,7 +18,7 @@ package ai.tock.bot.engine.message
 
 import ai.tock.bot.connector.ConnectorMessageProvider
 import ai.tock.bot.engine.BotBus
-import ai.tock.bot.engine.BotBus.Companion
+import ai.tock.bot.engine.Bus
 import mu.KotlinLogging
 
 /**
@@ -37,7 +37,7 @@ data class MessagesList(val messages: List<Message>) {
          * @param messageProvider the message provider.
          */
         fun toMessageList(default: CharSequence? = null,
-                          bus:BotBus,
+                          bus: BotBus,
                           messageProvider: BotBus.() -> Any?): MessagesList {
 
             val result = messageProvider(bus)
@@ -48,7 +48,9 @@ data class MessagesList(val messages: List<Message>) {
                     is CharSequence -> Sentence(bus.translate(m).toString())
                     is ConnectorMessageProvider -> Sentence(null, mutableListOf(m.toConnectorMessage()))
                     else -> {
-                        logger.error { "message not handled: $m" }
+                        if (m !is Unit && m !is Bus<*>) {
+                            logger.warn { "message not handled: $m" }
+                        }
                         null
                     }
                 }
