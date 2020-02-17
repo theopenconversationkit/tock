@@ -123,7 +123,7 @@ internal class DatesMergeTest {
 
         val changeDayOfMonth = ValueDescriptor(
             DateEntityValue(
-                referenceTime.plusDays(1).withHour(20),
+                referenceTime.plusDays(1),
                 DateEntityGrain.hour
             ),
             "le 20",
@@ -131,9 +131,20 @@ internal class DatesMergeTest {
             2
         )
 
+        val changeDayOfWeekMorning = ValueDescriptor(
+            DateEntityValue(
+                referenceTime.plusDays(1).withHour(10),
+                DateEntityGrain.hour
+            ),
+            "le jeudi à 10h",
+            false,
+            2
+        )
+
+
         val changeDayOfWeek = ValueDescriptor(
             DateEntityValue(
-                referenceTime.plusDays(1).withHour(20),
+                referenceTime.plusDays(1),
                 DateEntityGrain.hour
             ),
             "le jeudi",
@@ -143,7 +154,7 @@ internal class DatesMergeTest {
 
         val changeDayOfWeek2 = ValueDescriptor(
             DateEntityValue(
-                referenceTime.plusDays(2).withHour(20),
+                referenceTime.plusDays(2),
                 DateEntityGrain.hour
             ),
             "vendredi",
@@ -263,6 +274,14 @@ internal class DatesMergeTest {
     @Test
     fun `merge with change day of week returns the new day of week`() {
         val r = DatesMerge.merge(context, listOf(nextMonth.copy(initial = true), changeDayOfWeek))
+        val date = (r?.value as DateEntityValue).date
+        assertEquals(DayOfWeek.THURSDAY, date.dayOfWeek)
+        assertEquals(date.truncatedTo(ChronoUnit.DAYS), date.truncatedTo(ChronoUnit.DAYS))
+    }
+
+    @Test
+    fun `merge with change day of week of a previously hour based date returns the new day of week truncated to day`() {
+        val r = DatesMerge.merge(context, listOf(changeDayOfWeekMorning.copy(initial = true), changeDayOfWeek))
         val date = (r?.value as DateEntityValue).date
         assertEquals(DayOfWeek.THURSDAY, date.dayOfWeek)
         assertEquals(date.truncatedTo(ChronoUnit.DAYS), date.truncatedTo(ChronoUnit.DAYS))

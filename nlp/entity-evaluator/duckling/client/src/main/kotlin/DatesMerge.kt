@@ -165,7 +165,13 @@ internal object DatesMerge {
                     }
 
                     val newResult = ValueDescriptor(
-                        if (oldDayOfWeek == newDayOfWeek) oldValue.value
+                        if (oldDayOfWeek == newDayOfWeek)
+                            DateEntityValue(
+                                oldValue
+                                    .start(zoneId)
+                                    .truncatedTo(DAYS),
+                                day
+                            )
                         else if (oldDayOfWeek < newDayOfWeek || newDayOfWeek == 7)
                             DateEntityValue(
                                 oldValue
