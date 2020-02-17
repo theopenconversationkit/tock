@@ -28,6 +28,7 @@ import {
   PredefinedLabelQuery,
   PredefinedValueQuery,
   SearchQuery,
+  SentencesTextQuery,
   Sentence,
   SentencesResult,
   TranslateReport,
@@ -141,6 +142,10 @@ export class NlpService implements OnDestroy {
 
   getSentencesDump(application: Application, query: SearchQuery, full: boolean): Observable<Blob> {
     return this.rest.post(`/sentences/dump/${full ? 'full/' : ''}${application._id}`, query, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
+  }
+
+  getSentencesQueryDump(application: Application, query: SentencesTextQuery, full: boolean): Observable<Blob> {
+    return this.rest.post(`/sentences/dump/${full ? 'full/' : ''}${application._id}/fromText`, query, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
   }
 
   createOrUpdatePredefinedValue(query: PredefinedValueQuery): Observable<Dictionary> {

@@ -122,6 +122,9 @@
 
       <ng-container matColumnDef="text">
         <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">
+          <button nbButton outline status="primary" size="small" shape="semi-round" class="btn"
+                  (click)="onDownloadSelected();$event.stopPropagation()">Download Selected
+          </button>
           <button nbButton status="danger" size="small" shape="semi-round" class="btn"
                   (click)="onDelete();$event.stopPropagation()">Delete Selected
           </button>

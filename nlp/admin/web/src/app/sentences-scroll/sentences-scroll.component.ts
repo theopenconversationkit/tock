@@ -16,7 +16,7 @@
 
 import {saveAs} from "file-saver";
 import {AfterViewInit, Component, EventEmitter, Input, Output, ViewChild, ViewEncapsulation} from "@angular/core";
-import {PaginatedResult, SearchQuery, Sentence, SentenceStatus, UpdateSentencesQuery} from "../model/nlp";
+import {PaginatedResult, SearchQuery, SentencesTextQuery, Sentence, SentenceStatus, UpdateSentencesQuery} from "../model/nlp";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {StateService} from "../core-nlp/state.service";
 import {ScrollComponent} from "../scroll/scroll.component";
@@ -252,6 +252,31 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
         }
       }
     );
+  }
+
+  onDownloadSelected() {
+    if (this.selection.selected.length === 0) {
+      this.dialog.notify("Please select at least one sentence first");
+    } else {
+      setTimeout(_ => {
+        const theSelectedSentences = this.selection.selected;
+        const theAppQuery = this.state.createApplicationScopedQuery();
+        const theQuery = new SentencesTextQuery(
+                                    theAppQuery.namespace,
+                                    theAppQuery.applicationName,
+                                    theAppQuery.language,
+                                    theSelectedSentences.map(s => s.text)
+                                )
+         this.nlp.getSentencesQueryDump(
+            this.state.currentApplication,
+            theQuery,
+            this.state.hasRole(UserRole.technicalAdmin))
+            .subscribe(blob => {
+              saveAs(blob, this.state.currentApplication.name + "_selected_sentences.json");
+              this.dialog.notify(`Dump provided`, "Dump");
+            })
+        }, 1);
+    }
   }
 
   onValidate() {
