@@ -24,4 +24,21 @@ data class WebCard(
                 ?: emptyList()
         )
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is WebCard) return false
+        if (title?.toString() != other.title) return false
+        if (subTitle?.toString() != other.subTitle) return false
+        if (buttons != other.buttons) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = title?.hashCode() ?: 0
+        result = 31 * result + (subTitle?.hashCode() ?: 0)
+        result = 31 * result + (file?.hashCode() ?: 0)
+        result = 31 * result + buttons.hashCode()
+        return result
+    }
 }
