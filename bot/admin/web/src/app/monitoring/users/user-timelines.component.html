@@ -39,7 +39,7 @@
         </button>
       <mat-datepicker #before (selectedChanged)="changeBefore()"></mat-datepicker>
       &nbsp;
-      <mat-slide-toggle class="test" [(ngModel)]="filter.displayTests" (change)="waitAndRefresh()">Display tests</mat-slide-toggle>
+      <nb-toggle status="basic" [(ngModel)]="filter.displayTests" (change)="waitAndRefresh()">Display tests</nb-toggle>
       &nbsp;
       <mat-chip-list *ngIf="filter.flags.length !== 0">
               <mat-chip *ngFor="let f of filter.flags"

@@ -39,8 +39,7 @@
 
     <div class="i18n-label__entry__mode">
       <mat-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 0" mat-list-avatar>chat</mat-icon>
-      <mat-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 1" mat-list-avatar>record_voice_over
-      </mat-icon>
+      <mat-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 1" mat-list-avatar>record_voice_over</mat-icon>
     </div>
 
     <div class="i18n-label__entry__connector" *ngIf="l.connectorId">
@@ -52,7 +51,7 @@
 
     <div class="i18n-label__entry__input">
       <textarea class="i18n-label__entry__input__textarea"
-                matInput
+                nbInput rows="1"
                 [(ngModel)]="l.label"
                 (change)="save(i)"
                 [title]="l.stats && l.stats.length !== 0 ? ('used '+ l.mergedStats().count +' times, last used ' + (l.mergedStats().lastUpdate | amTimeAgo)) : 'No stats'"></textarea>

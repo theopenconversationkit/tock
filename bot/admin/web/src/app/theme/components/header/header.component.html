@@ -24,7 +24,7 @@
       Tock Studio
     </div>
     <i class="material-icons small">wb_sunny</i>
-    <mat-slide-toggle class="choice" [checked]="isDark" (change)="switchTheme()" color="primary"></mat-slide-toggle>
+    <nb-toggle  [(ngModel)]="isDark" (checkedChange)="switchTheme()" status="basic"></nb-toggle>
     <i class="material-icons small">brightness_2</i>
   </div>
 </div>
