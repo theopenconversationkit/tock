@@ -188,13 +188,13 @@ object TestPlanService {
 
             // run each test step
             // "it" represents here a TestActionReport
-            dialog.actions.forEach {
-                if (it.playerId.type == PlayerType.user) {
+            dialog.actions.forEachIndexed { testActionIndex, testActionReport ->
+                if (testActionReport.playerId.type == PlayerType.user) {
                     // convert the current test step as a request formatted to be understandable by the bot
                     val request = ClientMessageRequest(
                             playerId,
                             botId,
-                            it.findFirstMessage().toClientMessage(),
+                            testActionReport.findFirstMessage().toClientMessage(),
                             testPlan.targetConnectorType.toClientConnectorType(),
                             true
                     )
@@ -207,13 +207,13 @@ object TestPlanService {
                         logger.debug { "ANSWER -- : $body" }
                         // go over the bot answer to remove emoticons
                         val list = body?.messages?.toMutableList() ?: mutableListOf()
-                        list.forEachIndexed { index, message ->
+                        list.forEachIndexed { messageIndex, message ->
                             var text = (message as ClientSentence).text
                             text?.forEach { c ->
                                 // if emoticon is found, remove it
                                 if (c.isSurrogate()) {
                                     text = text?.replace("$c", "")?.trim()
-                                    list[index] = ClientSentence(text)
+                                    list[messageIndex] = ClientSentence(text)
                                 }
                             }
                         }
@@ -232,24 +232,22 @@ object TestPlanService {
                         return DialogExecutionReport(
                                 dialog.id,
                                 true,
-                                it.id,
+                                testActionReport.id,
                                 errorMessage = "(no answer but one expected)"
                         )
                     }
                     val botMessage = botMessages.removeAt(0)
                     // if the bot's answer does not equal to the test step
-                    if (!botMessage.convertAndDeepEquals(it)) {
-                        logger.error { "Not the same messages:\n\t\tObtained ----- $botMessage\n\t\tExpected ----- ${it.messages.map { m -> m.toClientMessage() }}" }
+                    if (!botMessage.convertAndDeepEquals(testActionReport)) {
+                        logger.error { "Not the same messages:\n\t\tObtained ----- $botMessage\n\t\tExpected ----- ${testActionReport.messages.map { m -> m.toClientMessage() }}" }
                         val givenAnswer = botMessage.toMessage().toPrettyString()
-                        val expectedAnswer = it.messages.map { message -> message.toPrettyString() }.joinToString(" - ")
+                        val expectedAnswer = testActionReport.messages.map { message -> message.toPrettyString() }.joinToString(" - ")
                         return DialogExecutionReport(
                                 dialogReportId = dialog.id,
                                 error = true,
-                                errorActionId = it.id,
-                                errorMessage = "Réponse inattendue : \"$givenAnswer\" au lieu de \"$expectedAnswer\" ----- " +
-                                        "Mots différents : " + givenAnswer.split(" ").filter { word ->
-                                    !expectedAnswer.split(" ").contains(word)
-                                }.toString()
+                                errorActionId = testActionReport.id,
+                                errorMessage = "Réponse inattendue : \"$givenAnswer\" au lieu de \"$expectedAnswer\"",
+                                indexOfStepError = testActionIndex
                         )
                     }
                 }
