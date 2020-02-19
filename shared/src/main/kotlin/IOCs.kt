@@ -20,6 +20,8 @@ import ai.tock.shared.cache.TockCache
 import ai.tock.shared.cache.mongo.MongoCache
 import ai.tock.shared.security.NoOpTockUserListener
 import ai.tock.shared.security.TockUserListener
+import ai.tock.shared.security.mongo.DefaultMongoCredentialsProvider
+import ai.tock.shared.security.mongo.MongoCredentialsProvider
 import ai.tock.shared.vertx.TockVertxProvider
 import ai.tock.shared.vertx.VertxProvider
 import ai.tock.shared.vertx.vertxExecutor
@@ -70,6 +72,7 @@ val sharedModule = Kodein.Module {
     bind<TockCache>() with provider { MongoCache }
     bind<VertxProvider>() with provider { TockVertxProvider }
     bind<TockUserListener>() with provider { NoOpTockUserListener }
+    bind<MongoCredentialsProvider>() with provider { DefaultMongoCredentialsProvider }
     try {
         bind<MongoClient>() with singleton { mongoClient }
     } catch (e: Exception) {

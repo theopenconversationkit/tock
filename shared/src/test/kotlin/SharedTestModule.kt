@@ -19,6 +19,8 @@ package ai.tock.shared
 import ai.tock.shared.cache.TockCache
 import ai.tock.shared.security.NoOpTockUserListener
 import ai.tock.shared.security.TockUserListener
+import ai.tock.shared.security.mongo.DefaultMongoCredentialsProvider
+import ai.tock.shared.security.mongo.MongoCredentialsProvider
 import ai.tock.shared.vertx.VertxProvider
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
@@ -51,6 +53,7 @@ val sharedTestModule = Kodein.Module {
     bind<Executor>() with provider { TestExecutor }
     bind<TockCache>() with provider { NoOpCache }
     bind<TockUserListener>() with provider { NoOpTockUserListener }
+    bind<MongoCredentialsProvider>() with provider { DefaultMongoCredentialsProvider }
 
     try {
         clearMocks(mockedVertx)

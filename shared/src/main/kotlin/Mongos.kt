@@ -19,6 +19,7 @@ package ai.tock.shared
 import ai.tock.shared.jackson.addDeserializer
 import ai.tock.shared.jackson.addSerializer
 import ai.tock.shared.jackson.jacksonAdditionalModules
+import ai.tock.shared.security.mongo.MongoCredentialsProvider
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonTokenId
 import com.fasterxml.jackson.databind.DeserializationContext
@@ -32,6 +33,8 @@ import com.fasterxml.jackson.datatype.jsr310.ser.DurationSerializer
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClient
 import com.mongodb.MongoClientSettings
+import com.mongodb.MongoClientURI
+import com.mongodb.ServerAddress
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import com.mongodb.client.model.changestream.FullDocument
@@ -44,10 +47,10 @@ import org.litote.kmongo.KMongo
 import org.litote.kmongo.id.IdGenerator
 import org.litote.kmongo.id.ObjectIdToStringGenerator
 import org.litote.kmongo.reactivestreams.watchIndefinitely
+import org.litote.kmongo.runCommand
 import org.litote.kmongo.util.CollectionNameFormatter
 import org.litote.kmongo.util.KMongoConfiguration
 import org.litote.kmongo.util.KMongoConfiguration.registerBsonModule
-import org.litote.kmongo.runCommand
 import java.time.Duration
 import java.time.Period
 import java.time.ZoneId
@@ -122,12 +125,23 @@ private val mongoUrl = ConnectionString(
     )
 )
 
+private val credentialsProvider = injector.provide<MongoCredentialsProvider>()
+
 /**
  * The sync [MongoClient] of Tock.
  */
 internal val mongoClient: MongoClient by lazy {
     TockKMongoConfiguration.configure()
-    KMongo.createClient(mongoUrl)
+    if(mongoUrl.credential == null) {
+        val uri = MongoClientURI(mongoUrl.toString())
+        KMongo.createClient(
+            uri.hosts.map { ServerAddress(it) },
+            (uri.credentials ?: credentialsProvider.getCredentials())?.let { listOf(it) } ?: emptyList(),
+            uri.options
+        )
+    } else {
+        KMongo.createClient(mongoUrl)
+    }
 }
 
 /**
@@ -139,6 +153,11 @@ internal val asyncMongoClient: com.mongodb.reactivestreams.client.MongoClient by
         MongoClientSettings.builder()
             .applyConnectionString(mongoUrl)
             .apply {
+                if (mongoUrl.credential == null) {
+                    credentialsProvider.getCredentials()?.let {
+                        this.credential(it)
+                    }
+                }
                 if (mongoUrl.sslEnabled == true) {
                     streamFactoryFactory(NettyStreamFactoryFactory.builder().build())
                 }
