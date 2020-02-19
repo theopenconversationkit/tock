@@ -22,10 +22,11 @@ import com.github.salomonbrys.kodein.provider
 import com.mongodb.client.MongoDatabase
 import ai.tock.nlp.model.service.storage.NlpApplicationConfigurationDAO
 import ai.tock.nlp.model.service.storage.NlpEngineModelDAO
+import ai.tock.shared.TOCK_MODEL_DATABASE
 import ai.tock.shared.getAsyncDatabase
 import ai.tock.shared.getDatabase
 
-internal const val MONGO_DATABASE: String = "tock_model_mongo_db"
+const val MONGO_DATABASE: String = TOCK_MODEL_DATABASE
 
 val modelMongoModule = Kodein.Module {
     bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }

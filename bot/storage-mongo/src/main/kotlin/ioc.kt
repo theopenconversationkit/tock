@@ -29,11 +29,12 @@ import ai.tock.bot.engine.dialog.DialogFlowDAO
 import ai.tock.bot.engine.feature.FeatureDAO
 import ai.tock.bot.engine.user.UserLock
 import ai.tock.bot.engine.user.UserTimelineDAO
+import ai.tock.shared.TOCK_BOT_DATABASE
 import ai.tock.shared.getAsyncDatabase
 import ai.tock.shared.getDatabase
 import ai.tock.translator.I18nDAO
 
-internal const val MONGO_DATABASE: String = "tock_bot_mongo_db"
+const val MONGO_DATABASE: String = TOCK_BOT_DATABASE
 
 val botMongoModule = Kodein.Module {
     bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
