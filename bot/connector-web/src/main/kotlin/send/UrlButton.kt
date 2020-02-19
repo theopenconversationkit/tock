@@ -32,4 +32,18 @@ data class UrlButton(val title: String, val url: String) : Button(ButtonType.web
                 URL_PARAMETER to url
             )
         )
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is UrlButton) return false
+        if (title != other.title) return false
+        if (url != other.url) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = title.hashCode()
+        result = 31 * result + url.hashCode()
+        return result
+    }
 }

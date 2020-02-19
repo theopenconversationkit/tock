@@ -20,5 +20,5 @@ import ai.tock.bot.engine.message.Choice
 
 abstract class Button(val type: ButtonType) {
 
-    abstract fun toChoice() : Choice
+    abstract fun toChoice(): Choice
 }

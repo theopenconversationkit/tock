@@ -36,4 +36,18 @@ data class PostbackButton(val title: String, val payload: String?) : Button(Butt
             }
         }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is PostbackButton) return false
+        if (title != other.title) return false
+        if (payload != other.payload) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = title.hashCode()
+        result = 31 * result + (payload?.hashCode() ?: 0)
+        return result
+    }
+
 }

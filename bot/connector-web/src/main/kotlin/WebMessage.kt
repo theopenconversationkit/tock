@@ -29,4 +29,26 @@ data class WebMessage(
                 texts = mapNotNullValues(GenericMessage.TEXT_PARAM to text),
                 choices = buttons.map { it.toChoice() }
             )
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is WebMessage) return false
+
+        if (text != other.text) return false
+        if (version != other.version) return false
+
+        if (buttons != other.buttons) return false
+        if (card != other.card) return false
+        if (carousel != other.carousel) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = text?.hashCode() ?: 0
+        result = 31 * result + buttons.hashCode()
+        result = 31 * result + (card?.hashCode() ?: 0)
+        result = 31 * result + (carousel?.hashCode() ?: 0)
+        result = 31 * result + version.hashCode()
+        return result
+    }
 }
