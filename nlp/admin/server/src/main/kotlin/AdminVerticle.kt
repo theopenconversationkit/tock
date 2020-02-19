@@ -35,6 +35,9 @@ import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.monitoring.UserActionLog
 import ai.tock.nlp.front.shared.monitoring.UserActionLogQuery
 import ai.tock.nlp.front.shared.user.UserNamespace
+import ai.tock.shared.TOCK_FRONT_DATABASE
+import ai.tock.shared.TOCK_MODEL_DATABASE
+import ai.tock.shared.TOCK_BOT_DATABASE
 import ai.tock.shared.Executor
 import ai.tock.shared.devEnvironment
 import ai.tock.shared.error
@@ -53,8 +56,6 @@ import ai.tock.shared.supportedLanguages
 import ai.tock.shared.vertx.RequestLogger
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.detailedHealthcheck
-import com.github.salomonbrys.kodein.instance
-import com.mongodb.MongoClient
 import io.netty.handler.codec.http.HttpHeaderNames
 import io.vertx.core.Handler
 import io.vertx.core.http.HttpMethod.GET
@@ -73,8 +74,6 @@ import java.util.Locale
 open class AdminVerticle : WebVerticle() {
 
     override val logger: KLogger = KotlinLogging.logger {}
-
-    private val mongoClient: MongoClient by injector.instance()
 
     override val rootPath: String = "/rest/admin"
 
@@ -1032,15 +1031,9 @@ open class AdminVerticle : WebVerticle() {
     override fun detailedHealthcheck(): (RoutingContext) -> Unit = detailedHealthcheck(
         listOf(
             Pair("duckling_service", { FrontClient.healthcheck() }),
-            Pair("tock_front_database", {
-                pingMongoDatabase(mongoClient.getDatabase(System.getenv("tock_front_mongo_db")))
-            }),
-            Pair("tock_model_database", {
-                pingMongoDatabase(mongoClient.getDatabase(System.getenv("tock_model_mongo_db")))
-            }),
-            Pair("tock_bot_database", {
-                pingMongoDatabase(mongoClient.getDatabase(System.getenv("tock_bot_mongo_db")))
-            })
+            Pair("tock_front_database", { pingMongoDatabase(TOCK_FRONT_DATABASE) }),
+            Pair("tock_model_database", { pingMongoDatabase(TOCK_MODEL_DATABASE) }),
+            Pair("tock_bot_database", { pingMongoDatabase(TOCK_BOT_DATABASE) })
         )
     )
 

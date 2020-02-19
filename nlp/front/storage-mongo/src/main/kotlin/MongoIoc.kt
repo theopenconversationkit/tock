@@ -25,6 +25,7 @@ import ai.tock.nlp.front.service.storage.ParseRequestLogDAO
 import ai.tock.nlp.front.service.storage.TestModelDAO
 import ai.tock.nlp.front.service.storage.UserActionLogDAO
 import ai.tock.nlp.front.service.storage.UserNamespaceDAO
+import ai.tock.shared.TOCK_FRONT_DATABASE
 import ai.tock.shared.getAsyncDatabase
 import ai.tock.shared.getDatabase
 import com.github.salomonbrys.kodein.Kodein
@@ -32,7 +33,7 @@ import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import com.mongodb.client.MongoDatabase
 
-internal const val MONGO_DATABASE: String = "tock_front_mongo_db"
+const val MONGO_DATABASE: String = TOCK_FRONT_DATABASE
 
 val frontMongoModule = Kodein.Module {
     bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }

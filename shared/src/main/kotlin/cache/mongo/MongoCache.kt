@@ -23,6 +23,7 @@ import ai.tock.shared.cache.TockCache
 import ai.tock.shared.cache.mongo.MongoCacheData_.Companion.Type
 import ai.tock.shared.error
 import ai.tock.shared.getDatabase
+import ai.tock.shared.TOCK_CACHE_DATABASE
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.and
@@ -38,7 +39,7 @@ import org.litote.kmongo.getCollection
  */
 internal object MongoCache : TockCache {
 
-    private const val MONGO_DATABASE: String = "tock_cache_mongo_db"
+    private const val MONGO_DATABASE: String = TOCK_CACHE_DATABASE
 
     private val logger = KotlinLogging.logger {}
 
