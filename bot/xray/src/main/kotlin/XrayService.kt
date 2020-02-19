@@ -151,7 +151,7 @@ class XrayService(
                     }
         } catch (t: Throwable) {
             logger.error(t)
-            XrayPlanExecutionResult(0, 0, 0, "No tests run")
+            XrayPlanExecutionResult(0, 0, "No test run")
         }
     }
 
@@ -186,7 +186,7 @@ class XrayService(
                     }
         } catch (t: Throwable) {
             logger.error(t.message)
-            XrayPlanExecutionResult(0, 0, 0, "No tests run: ${t.message}")
+            XrayPlanExecutionResult(0, 0,  "No test run: ${t.message}")
         }
     }
 
@@ -236,8 +236,6 @@ class XrayService(
         return XrayPlanExecutionResult(
                 success = reports.sumBy { it.execution.dialogs.filter { dialogExecutionReport -> !dialogExecutionReport.error }.size },
                 total = reports.sumBy { it.execution.dialogs.size },
-                errorAtStep = reports.map { it.execution.dialogs.find { dialogExecutionReport -> dialogExecutionReport.indexOfStepError != null }?.indexOfStepError }[0]
-                        ?: 0,
                 errorMessage = reports.map { it.execution.dialogs.find { dialogExecutionReport -> dialogExecutionReport.error }?.errorMessage }.toString()
         )
     }
