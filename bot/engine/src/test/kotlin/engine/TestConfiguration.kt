@@ -69,6 +69,7 @@ enum class TestStoryDefinition(
 ) : StoryDefinitionExtended {
 
     test(StoryHandlerTest, secondaryIntents = setOf(secondaryIntent)),
+    story_with_other_starter(StoryHandlerTest, setOf(secondaryIntent)),
     test2(StoryHandler2Test),
     voice_not_supported(StoryHandlerVoiceNotSupported, unsupportedUserInterface = voiceAssistant),
     withoutStep(StoryHandlerWithoutStep, stepsArray = emptyArray()),
