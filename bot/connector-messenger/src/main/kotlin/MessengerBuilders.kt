@@ -122,13 +122,22 @@ fun I18nTranslator.buttonsTemplate(text: CharSequence, vararg actions: UserActio
 /**
  * Creates a button template [https://developers.facebook.com/docs/messenger-platform/send-api-reference/button-template]
  */
-fun I18nTranslator.buttonsTemplate(text: CharSequence, actions: List<UserAction> = emptyList()): AttachmentMessage {
+fun I18nTranslator.buttonsTemplate(text: CharSequence, actions: List<UserAction>): AttachmentMessage {
+    val buttons = extractButtons(actions)
+    if (buttons.isEmpty() || buttons.size > 4) {
+        error("buttonsTemplate must have at least 1 button and at most 3")
+    }
+
+    if(text.length > 640) {
+        error("text $text in buttonTemplate should not exceed 640 chars.")
+    }
+
     return AttachmentMessage(
         Attachment(
             AttachmentType.template,
             ButtonPayload(
                 translate(text).toString(),
-                extractButtons(actions)
+                buttons
             )
         ),
         extractQuickReplies(actions.toList())
@@ -288,7 +297,7 @@ fun genericTemplate(vararg elements: Element): AttachmentMessage {
  */
 fun genericTemplate(elements: List<Element>, quickReplies: List<QuickReply>): AttachmentMessage {
     if (elements.isEmpty() || elements.size > 10) {
-        error("must have at least 1 elements and at most 10")
+        error("genericTemplate must have at least 1 elements and at most 10")
     }
 
     return AttachmentMessage(
@@ -434,16 +443,7 @@ fun I18nTranslator.listElement(
     imageUrl: String? = null,
     button: Button? = null
 ): Element {
-    val t = translate(title)
-    val s = translateAndReturnBlankAsNull(subtitle)
-
-    if (t.length > 80) {
-        logger.warn { "title $t has more than 80 chars" }
-    }
-    if (s?.length ?: 0 > 80) {
-        logger.warn { "subtitle $s has more than 80 chars" }
-    }
-    return Element(t, s, imageUrl, listOfNotNull(button))
+    return genericElement(title, subtitle, imageUrl, listOfNotNull(button))
 }
 
 /**

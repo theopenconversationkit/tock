@@ -26,6 +26,7 @@ import ai.tock.bot.connector.messenger.model.send.AttachmentType.video
 import ai.tock.bot.connector.messenger.model.send.ListElementStyle
 import ai.tock.bot.connector.messenger.model.send.ListPayload
 import ai.tock.bot.connector.messenger.model.send.UrlPayload
+import ai.tock.bot.definition.Intent
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.shared.sharedTestModule
@@ -75,6 +76,28 @@ class MessengerBuildersTest {
     }
 
     @Test
+    fun `buttonTemplate throws exception when text exceed 640 chars`() {
+        assertThrows<IllegalStateException> {
+            bus.buttonsTemplate(
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
+                        "Curabitur vitae augue dignissim, ultrices tortor sed, fringilla neque. Maecenas sit amet efficitur enim. " +
+                        "Pellentesque nec dictum tellus. Etiam rhoncus arcu nunc, eget sagittis lacus rutrum ac. Aenean eu ipsum " +
+                        "lorem. Vestibulum condimentum, ligula in euismod auctor, felis ante semper erat, ut laoreet est libero " +
+                        "ut tellus. Duis sollicitudin justo id est lobortis sollicitudin. Fusce gravida sagittis nibh id tempor. " +
+                        "Proin a imperdiet est. In arcu est, imperdiet quis pellentesque vitae, tincidunt sit amet massa. Nunc " +
+                        "laoreet orci eu fringilla auctor. Aliquam interdum odio vel metus.", bus.postbackButton("button", Intent("myIntent"))
+            )
+        }
+    }
+
+    @Test
+    fun `buttonTemplate throws exception when there is no buttons`() {
+        assertThrows<IllegalStateException> {
+            bus.buttonsTemplate("toto", bus.quickReply("quickreply", Intent("myIntent")))
+        }
+    }
+
+    @Test
     fun testImage() {
         assertEquals(
             AttachmentMessage(
@@ -112,7 +135,7 @@ class MessengerBuildersTest {
 
     @Test
     fun testSendToMessenger() {
-        bus.sendToMessenger { buttonsTemplate("Button") }
+        bus.sendToMessenger { buttonsTemplate("Button", postbackButton("button", Intent("myIntent"))) }
 
         verify { bus.withMessage(any()) }
         verify { bus.send(any<Long>()) }
@@ -120,7 +143,7 @@ class MessengerBuildersTest {
 
     @Test
     fun testSendToMessengerWithDelay() {
-        bus.sendToMessenger(10) { buttonsTemplate("Button") }
+        bus.sendToMessenger(10) { buttonsTemplate("Button", postbackButton("button", Intent("myIntent"))) }
 
         verify { bus.withMessage(any()) }
         verify { bus.send(10) }
@@ -128,7 +151,7 @@ class MessengerBuildersTest {
 
     @Test
     fun testEndForMessenger() {
-        bus.endForMessenger { buttonsTemplate("Button") }
+        bus.endForMessenger { buttonsTemplate("Button", postbackButton("button", Intent("myIntent"))) }
 
         verify { bus.withMessage(any()) }
         verify { bus.end(any<Long>()) }

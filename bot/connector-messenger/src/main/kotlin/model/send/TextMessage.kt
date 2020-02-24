@@ -22,10 +22,6 @@ import ai.tock.bot.engine.message.GenericMessage.Companion.TEXT_PARAM
 import ai.tock.shared.security.StringObfuscatorMode
 import ai.tock.shared.security.TockObfuscatorService.obfuscate
 
-/**
- *
- */
-//TODO check 640 char text limit https://developers.facebook.com/docs/messenger-platform/send-api-reference/text-message
 class TextMessage(val text: String, quickReplies: List<QuickReply>? = null) : Message(quickReplies?.run { if (isEmpty()) null else this }) {
 
     override fun toGenericMessage(): GenericMessage? {

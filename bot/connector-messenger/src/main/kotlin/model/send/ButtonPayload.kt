@@ -21,9 +21,8 @@ import ai.tock.shared.security.StringObfuscatorMode
 import ai.tock.shared.security.TockObfuscatorService.obfuscate
 
 /**
- *
+ * See [https://developers.facebook.com/docs/messenger-platform/send-messages/template/button]
  */
-//TODO check 640 char text limit
 data class ButtonPayload(val text: String, val buttons: List<Button>) : ModelPayload(PayloadType.button) {
 
     override fun toGenericMessage(): GenericMessage? {
