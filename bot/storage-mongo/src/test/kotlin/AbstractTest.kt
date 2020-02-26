@@ -16,27 +16,29 @@
 
 package ai.tock.bot.mongo
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.provider
-import com.mongodb.client.MongoDatabase
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.engine.feature.FeatureDAO
+import ai.tock.bot.mongo.ai.tock.bot.mongo.FeatureCache
 import ai.tock.shared.getAsyncDatabase
 import ai.tock.shared.getDatabase
 import ai.tock.shared.sharedTestModule
 import ai.tock.shared.tockInternalInjector
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.provider
+import com.mongodb.client.MongoDatabase
+import io.mockk.spyk
 import org.junit.jupiter.api.BeforeEach
 import org.litote.kmongo.deleteMany
+import org.litote.kmongo.getCollection
 
 /**
  *
  */
 abstract class AbstractTest(val initDb: Boolean = true) {
-
     companion object {
-
         init {
             System.setProperty("tock_bot_encrypted_flags", "test1,test2")
             System.setProperty("tock_encrypt_pass", "dev")
@@ -44,7 +46,7 @@ abstract class AbstractTest(val initDb: Boolean = true) {
     }
 
     @BeforeEach
-    fun before() {
+    open fun before() {
         if (initDb) {
             tockInternalInjector = KodeinInjector()
             tockInternalInjector.inject(Kodein {
@@ -56,7 +58,8 @@ abstract class AbstractTest(val initDb: Boolean = true) {
                     )
                 }
                 bind<BotApplicationConfigurationDAO>() with provider { BotApplicationConfigurationMongoDAO }
-                bind<FeatureDAO>() with provider { FeatureMongoDAO }
+                bind<FeatureCache>() with provider { spyk(MongoFeatureCache()) }
+                bind<FeatureDAO>() with provider { FeatureMongoDAO(instance(), MongoBotConfiguration.database.getCollection())  }
             }
             )
             UserTimelineMongoDAO.dialogCol.deleteMany()
@@ -68,5 +71,4 @@ abstract class AbstractTest(val initDb: Boolean = true) {
             })
         }
     }
-
 }

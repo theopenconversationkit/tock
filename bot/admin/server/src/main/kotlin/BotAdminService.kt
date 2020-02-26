@@ -728,15 +728,15 @@ object BotAdminService {
     }
 
     fun toggleFeature(botId: String, namespace: String, feature: Feature) {
-        if (featureDAO.isEnabled(botId, namespace, feature.category, feature.name)) {
-            featureDAO.disable(botId, namespace, feature.category, feature.name)
+        if (featureDAO.isEnabled(botId, namespace, feature.category, feature.name, feature.applicationId)) {
+            featureDAO.disable(botId, namespace, feature.category, feature.name, feature.applicationId)
         } else {
-            featureDAO.enable(botId, namespace, feature.category, feature.name, feature.startDate, feature.endDate)
+            featureDAO.enable(botId, namespace, feature.category, feature.name, feature.startDate, feature.endDate, feature.applicationId)
         }
     }
 
     fun updateDateAndEnableFeature(botId: String, namespace: String, feature: Feature) {
-        featureDAO.enable(botId, namespace, feature.category, feature.name, feature.startDate, feature.endDate)
+        featureDAO.enable(botId, namespace, feature.category, feature.name, feature.startDate, feature.endDate, feature.applicationId)
     }
 
     fun addFeature(botId: String, namespace: String, feature: Feature) {

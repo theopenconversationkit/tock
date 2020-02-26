@@ -17,201 +17,308 @@
 package ai.tock.bot.mongo
 
 import ai.tock.bot.engine.feature.FeatureType
-import ai.tock.bot.mongo.FeatureMongoDAO.deleteFeature
-import ai.tock.bot.mongo.FeatureMongoDAO.disable
-import ai.tock.bot.mongo.FeatureMongoDAO.enable
-import ai.tock.bot.mongo.FeatureMongoDAO.isEnabled
-import ai.tock.bot.mongo.FeatureMongoDAOTest.Feature.a
-import ai.tock.bot.mongo.FeatureMongoDAOTest.Feature.b
-import ai.tock.bot.mongo.FeatureMongoDAOTest.Feature.c
+import ai.tock.bot.mongo.FeatureMongoDAOTest.Feature.feature
+import ai.tock.bot.mongo.Feature_.Companion._id
 import ai.tock.shared.internalDefaultZoneId
+import com.mongodb.client.MongoCollection
+import com.mongodb.client.result.DeleteResult
+import io.mockk.Runs
+import io.mockk.clearMocks
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
+import io.mockk.verify
+import org.bson.conversions.Bson
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.litote.kmongo.deleteOneById
+import org.litote.kmongo.eq
+import org.litote.kmongo.findOne
+import org.litote.kmongo.save
 import java.time.ZonedDateTime
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import java.time.ZonedDateTime.now
 
-/**
- *
- */
-internal class FeatureMongoDAOTest : AbstractTest() {
-
+internal class FeatureMongoDAOTest {
     enum class Feature : FeatureType {
-        a, b, c
+        feature
     }
 
-    val botId = "id"
-    val namespace = "namespace"
-    val applicationId = "applicationId"
+    private data class FeatureID(val id: String, val key: String)
+
+    private val botId = "id"
+    private val namespace = "namespace"
+    private val applicationId = "applicationId"
+    private val id =
+        FeatureID("id,namespace,ai.tock.bot.mongo.FeatureMongoDAOTest\$Feature,feature", "ai.tock.bot.mongo.FeatureMongoDAOTest\$Feature,feature")
+    private val idWithApplicationId = FeatureID(
+        "id,namespace,ai.tock.bot.mongo.FeatureMongoDAOTest\$Feature,feature+applicationId",
+        "ai.tock.bot.mongo.FeatureMongoDAOTest\$Feature,feature+applicationId"
+    )
+    private val idWithOtherApplicationId = FeatureID(
+        "id,namespace,ai.tock.bot.mongo.FeatureMongoDAOTest\$Feature,feature+otherApplicationId",
+        "ai.tock.bot.mongo.FeatureMongoDAOTest\$Feature,feature+otherApplicationId"
+    )
+
+    private val collection = mockk<MongoCollection<ai.tock.bot.mongo.Feature>>()
+    private val cache = mockk<MongoFeatureCache>()
+    private val featureDAO = FeatureMongoDAO(cache, collection)
+    private var features = mutableListOf<ai.tock.bot.mongo.Feature>()
 
     @AfterEach
     fun cleanupFeatures() {
-        deleteFeature(botId, namespace, a)
-        deleteFeature(botId, namespace, b)
-        deleteFeature(botId, namespace, c)
-        deleteFeature(botId, namespace, a, applicationId)
-        deleteFeature(botId, namespace, b, applicationId)
-        deleteFeature(botId, namespace, c, applicationId)
+        unmockkStatic("org.litote.kmongo.MongoCollectionsKt", "kotlin.collections.KMongoIterableKt")
+
+        clearMocks(collection, cache)
     }
 
-    @Test
-    fun `isEnabled returns false WHEN the feature is not present`() {
-        assertFalse(isEnabled(botId, namespace, a))
+    @BeforeEach
+    internal fun setUp() {
+        mockkStatic("org.litote.kmongo.MongoCollectionsKt", "kotlin.collections.KMongoIterableKt")
+
+        features.clear()
+        every { collection.save(any()) } just Runs
+        every { cache.setState(any(), any()) } just Runs
     }
 
-    @Test
-    fun `isEnabled persists default feature state WHEN the feature is not present and feature is enabled`() {
-        assertFalse(isEnabled(botId, namespace, a, false))
+    @Nested
+    @DisplayName("IsEnabled()")
+    inner class IsEnabled {
+        @Nested
+        @DisplayName("Caching")
+        inner class Cache {
+            @BeforeEach
+            internal fun setUp() {
+                `given no data in cache for`(id)
+                `given no data in cache for`(idWithApplicationId)
+            }
 
-        //default state is not used anymore
-        assertFalse(isEnabled(botId, namespace, a, true))
+            @Test
+            fun `cache connector feature`() {
+                `given no data persisted for`(id)
+                `given data persisted for`(idWithApplicationId, true)
+
+                featureDAO.isEnabled(botId, namespace, feature, applicationId)
+
+                `assert that cache is set to`(idWithApplicationId, true)
+            }
+
+            @Test
+            fun `cache global feature`() {
+                `given data persisted for`(id, true)
+                `given no data persisted for`(idWithApplicationId)
+
+                featureDAO.isEnabled(botId, namespace, feature, applicationId)
+
+                `assert that cache is set to`(id, true)
+            }
+
+            @Test
+            fun `cache global and connector feature`() {
+                `given data persisted for`(id, true)
+                `given data persisted for`(idWithApplicationId, true)
+
+                featureDAO.isEnabled(botId, namespace, feature, applicationId)
+
+                `assert that cache is set to`(id, true)
+                `assert that cache is set to`(idWithApplicationId, true)
+            }
+
+            @Test
+            fun `cache global and all connector features`() {
+                `given data persisted for`(id, true)
+                `given data persisted for`(idWithApplicationId, true)
+                `given data persisted for`(idWithOtherApplicationId, true)
+
+                featureDAO.isEnabled(botId, namespace, feature, applicationId)
+
+                `assert that cache is set to`(id, true)
+                `assert that cache is set to`(idWithApplicationId, true)
+                `assert that cache is set to`(idWithApplicationId, true)
+            }
+
+            private fun `given no data in cache for`(featureID: FeatureID) {
+                every { cache.stateOf(featureID.id) } returns null
+            }
+
+            private fun `assert that cache is set to`(featureID: FeatureID, enabled: Boolean) {
+                verify { cache.setState(featureID.id, Feature(featureID.id, featureID.key, enabled, botId, namespace)) }
+            }
+
+            private fun `given no data persisted for`(featureID: FeatureID) {
+                every { collection.findOne(_id eq featureID.id) } returns null
+            }
+
+            private fun `given data persisted for`(featureID: FeatureID, value: Boolean) {
+                val feature = Feature(featureID.id, featureID.key, value, botId, namespace)
+                every { collection.findOne(_id eq featureID.id) } returns feature
+                features.add(feature)
+                every { collection.find(any<Bson>()).toList() } returns features
+            }
+        }
+
+        @Nested
+        @DisplayName("Requesting for a global feature")
+        inner class Global {
+            @Test
+            fun `existing enabled global feature`() {
+                `given data for`(id, true)
+                `given no data for`(idWithApplicationId)
+
+                assertTrue(featureDAO.isEnabled(botId, namespace, feature, false))
+            }
+
+            @Test
+            fun `feature between activation period`() {
+                `given data for`(
+                    id,
+                    true,
+                    now(internalDefaultZoneId).minusYears(1),
+                    now(internalDefaultZoneId).plusYears(1)
+                )
+
+                assertTrue(featureDAO.isEnabled(botId, namespace, feature, false))
+            }
+
+            @Test
+            fun `disabled feature between activation period`() {
+                `given data for`(
+                    id,
+                    false,
+                    now(internalDefaultZoneId).minusYears(1),
+                    now(internalDefaultZoneId).plusYears(1)
+                )
+
+                assertFalse(featureDAO.isEnabled(botId, namespace, feature, true))
+            }
+
+            @Test
+            fun `feature in activation period with no end date`() {
+                `given data for`(
+                    id,
+                    true,
+                    now(internalDefaultZoneId).minusYears(1)
+                )
+
+                assertTrue(featureDAO.isEnabled(botId, namespace, feature, false))
+            }
+
+            @Test
+            fun `feature before activation period`() {
+                `given data for`(
+                    id,
+                    true,
+                    now(internalDefaultZoneId).plusYears(1),
+                    now(internalDefaultZoneId).plusYears(2)
+                )
+
+                assertFalse(featureDAO.isEnabled(botId, namespace, feature, true))
+            }
+
+            @Test
+            fun `non existing enabled global feature but connector feature exists`() {
+                `given no data for`(id)
+                `given data for`(idWithApplicationId, true)
+
+                assertFalse(featureDAO.isEnabled(botId, namespace, feature, false))
+
+                `assert that feature is persisted with`(id, false)
+            }
+
+            @Test
+            fun `non existing feature is disabled by default`() {
+                `given no data for`(id)
+                `given no data for`(idWithApplicationId)
+
+                assertFalse(featureDAO.isEnabled(botId, namespace, feature))
+
+                `assert that feature is persisted with`(id, false)
+            }
+
+            @Test
+            fun `non existing feature with enabled state by default`() {
+                `given no data for`(id)
+                `given no data for`(idWithApplicationId)
+
+                assertTrue(featureDAO.isEnabled(botId, namespace, feature, true))
+
+                `assert that feature is persisted with`(id, true)
+            }
+
+            @Test
+            fun `non existing feature with disabled state by default`() {
+                `given no data for`(id)
+                `given no data for`(idWithApplicationId)
+
+                assertFalse(featureDAO.isEnabled(botId, namespace, feature, false))
+
+                `assert that feature is persisted with`(id, false)
+            }
+
+            @Test
+            fun delete() {
+                every { collection.deleteOneById(id.id) } returns DeleteResult.acknowledged(1)
+
+                featureDAO.deleteFeature(botId, namespace, feature)
+
+                verify(exactly = 1) { collection.deleteOneById(id.id) }
+            }
+        }
+
+        @Nested
+        @DisplayName("Requesting for a connector specific feature")
+        inner class Connector {
+            @Test
+            fun `existing enabled connector feature`() {
+                `given no data for`(id)
+                `given data for`(idWithApplicationId, true)
+
+                assertTrue(featureDAO.isEnabled(botId, namespace, feature, applicationId, false))
+            }
+
+            @Test
+            fun `non existing connector feature but existing global feature`() {
+                `given data for`(id, true)
+                `given no data for`(idWithApplicationId)
+
+                assertTrue(featureDAO.isEnabled(botId, namespace, feature, applicationId, false))
+            }
+
+            @Test
+            fun delete() {
+                every { collection.deleteOneById(idWithApplicationId.id) } returns DeleteResult.acknowledged(1)
+
+                featureDAO.deleteFeature(botId, namespace, feature, applicationId)
+
+                verify(exactly = 1) { collection.deleteOneById(idWithApplicationId.id) }
+            }
+        }
     }
 
-    @Test
-    fun `isEnabled persists default feature state WHEN the feature is not present and feature id disabled`() {
-        assertTrue(isEnabled(botId, namespace, a, true))
 
-        //default state is not used anymore
-        assertTrue(isEnabled(botId, namespace, a, false))
+
+    private fun `assert that feature is persisted with`(featureID: FeatureID, enabled: Boolean) {
+        verify(exactly = 1) { collection.save(Feature(featureID.id, featureID.key, enabled, botId, namespace)) }
     }
 
-    @Test
-    fun `isEnabled returns true WHEN the feature is not present AND default is true`() {
-        assertTrue(isEnabled(botId, namespace, a, true))
+    private fun `given no data for`(featureID: FeatureID) {
+        mockRetrieveData(featureID, null)
     }
 
-    @Test
-    fun `GIVEN A feature enabled in db THEN isEnabled returns true`() {
-        enable(botId, namespace, a)
-
-        assertTrue(isEnabled(botId, namespace, a))
+    private fun `given data for`(featureID: FeatureID, enabled: Boolean, start: ZonedDateTime? = null, end: ZonedDateTime? = null) {
+        mockRetrieveData(featureID, Feature(featureID.id, featureID.key, enabled, botId, namespace, start, end))
     }
 
-    @Test
-    fun `GIVEN A feature enabled in db WHEN the feature is disabled THEN isEnabled returns false`() {
-        enable(botId, namespace, a)
-
-        assertTrue(isEnabled(botId, namespace, a))
-
-        disable(botId, namespace, a)
-
-        assertFalse(isEnabled(botId, namespace, a))
-    }
-
-    @Test
-    fun `GIVEN A feature enabled in db WHEN the feature is deleted THEN isEnabled returns false`() {
-        enable(botId, namespace, a)
-
-        assertTrue(isEnabled(botId, namespace, a))
-
-        deleteFeature(botId, namespace, a)
-
-        assertFalse(isEnabled(botId, namespace, a))
-    }
-
-    @Test
-    fun `isEnabled returns true WHEN the today date is between startDate and endDate and activated`() {
-        enable(
-            botId,
-            namespace,
-            a,
-            ZonedDateTime.now(internalDefaultZoneId).minusYears(1),
-            ZonedDateTime.now(internalDefaultZoneId).plusYears(1)
-        )
-
-        assertTrue(isEnabled(botId, namespace, a))
-    }
-
-    @Test
-    fun `isEnabled returns false WHEN the today date is between startDate and endDate and not activated`() {
-        enable(
-            botId,
-            namespace,
-            a,
-            ZonedDateTime.now(internalDefaultZoneId).minusYears(1),
-            ZonedDateTime.now(internalDefaultZoneId).plusYears(2)
-        )
-        disable(botId, namespace, a)
-
-        assertFalse(isEnabled(botId, namespace, a))
-    }
-
-    @Test
-    fun `isEnabled returns true WHEN the today date is after the startDate and there is not dateEnd`() {
-        enable(
-            botId,
-            namespace,
-            a,
-            ZonedDateTime.now(internalDefaultZoneId).minusYears(1)
-        )
-        assertTrue(isEnabled(botId, namespace, a))
-    }
-
-    @Test
-    fun `isEnabled returns false WHEN the today date is before startDate and endDate`() {
-        enable(
-            botId,
-            namespace,
-            a,
-            ZonedDateTime.now(internalDefaultZoneId).plusYears(1), ZonedDateTime.now(internalDefaultZoneId).plusYears(2)
-        )
-
-        assertFalse(isEnabled(botId, namespace, a))
-    }
-
-
-    @Test
-    fun `GIVEN feature with applicationId THEN isEnabled returns false WHEN the feature is not present`() {
-        assertFalse(isEnabled(botId, namespace, a, applicationId))
-    }
-
-    @Test
-    fun `GIVEN feature with applicationId THEN isEnabled persists default feature state WHEN the feature is not present and feature is enabled`() {
-        assertFalse(isEnabled(botId, namespace, a, applicationId, false))
-
-        //default state is not used anymore
-        assertFalse(isEnabled(botId, namespace, a, applicationId, true))
-    }
-
-    @Test
-    fun `GIVEN feature with applicationId THEN isEnabled persists default feature state WHEN the feature is not present and feature id disabled`() {
-        assertTrue(isEnabled(botId, namespace, a, applicationId, true))
-
-        //default state is not used anymore
-        assertTrue(isEnabled(botId, namespace, a, applicationId, false))
-    }
-
-    @Test
-    fun `GIVEN feature with applicationId THEN isEnabled returns true WHEN the feature is not present AND default is true`() {
-        assertTrue(isEnabled(botId, namespace, a, applicationId, true))
-    }
-
-    @Test
-    fun `GIVEN A feature with applicationId enabled in db THEN isEnabled returns true`() {
-        enable(botId, namespace, a, applicationId = applicationId)
-
-        assertTrue(isEnabled(botId, namespace, a, applicationId))
-    }
-
-    @Test
-    fun `GIVEN A feature with applicationId enabled in db WHEN the feature is disabled THEN isEnabled returns false`() {
-        enable(botId, namespace, a, applicationId = applicationId)
-
-        assertTrue(isEnabled(botId, namespace, a, applicationId))
-
-        disable(botId, namespace, a, applicationId)
-
-        assertFalse(isEnabled(botId, namespace, a, applicationId))
-    }
-
-    @Test
-    fun `GIVEN A feature with applicationId enabled in db WHEN the feature is deleted THEN isEnabled returns false`() {
-        enable(botId, namespace, a, applicationId = applicationId)
-
-        assertTrue(isEnabled(botId, namespace, a, applicationId))
-
-        deleteFeature(botId, namespace, a, applicationId)
-
-        assertFalse(isEnabled(botId, namespace, a, applicationId))
+    private fun mockRetrieveData(featureID: FeatureID, feature: ai.tock.bot.mongo.Feature?) {
+        every { cache.stateOf(featureID.id) } returns feature
+        every { collection.findOne(_id eq featureID.id) } returns feature
+        feature?.also { features.add(it) }
+        every { collection.find(any<Bson>()).toList() } returns features
     }
 }

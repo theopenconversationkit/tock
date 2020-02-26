@@ -25,6 +25,7 @@ import ai.tock.bot.test.BotBusMockContext
 import ai.tock.bot.test.TestContext
 import ai.tock.bot.test.TestLifecycle
 import ai.tock.bot.test.newBusMockContext
+import io.mockk.clearAllMocks
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -93,6 +94,7 @@ open class TockJUnit4Rule<out T : TestContext>(
                 try {
                     base.evaluate()
                 } finally {
+                    clearAllMocks()
                     lifecycle.end()
                 }
             }
