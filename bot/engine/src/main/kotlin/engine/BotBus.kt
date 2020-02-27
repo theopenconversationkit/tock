@@ -20,6 +20,7 @@ import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.definition.BotDefinition
+import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.ParameterKey
 import ai.tock.bot.definition.StoryDefinition
@@ -424,8 +425,7 @@ interface BotBus : Bus<BotBus> {
     /**
      * Switches the context to the specified story definition (start a new [Story]).
      */
-    fun switchStory(storyDefinition: StoryDefinition) {
-        val starterIntent = storyDefinition.mainIntent()
+    fun switchStory(storyDefinition: StoryDefinition, starterIntent: Intent = storyDefinition.mainIntent()) {
         story = Story(storyDefinition, starterIntent, story.step)
         dialog.stories.add(story)
         dialog.state.currentIntent = starterIntent
@@ -435,8 +435,8 @@ interface BotBus : Bus<BotBus> {
     /**
      * Handles the action and switches the context to the specified story definition.
      */
-    fun handleAndSwitchStory(storyDefinition: StoryDefinition) {
-        switchStory(storyDefinition)
+    fun handleAndSwitchStory(storyDefinition: StoryDefinition, starterIntent: Intent = storyDefinition.mainIntent()) {
+        switchStory(storyDefinition, starterIntent)
         setBusContextValue(SWITCH_STORY_BUS_KEY, null)
         @Suppress("UNCHECKED_CAST")
         storyDefinition.storyHandler.handle(this)

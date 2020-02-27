@@ -16,21 +16,23 @@
 
 package ai.tock.bot.connector.messenger
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.KodeinInjector
 import ai.tock.bot.connector.messenger.model.send.Attachment
 import ai.tock.bot.connector.messenger.model.send.AttachmentMessage
 import ai.tock.bot.connector.messenger.model.send.AttachmentType.audio
 import ai.tock.bot.connector.messenger.model.send.AttachmentType.image
 import ai.tock.bot.connector.messenger.model.send.AttachmentType.video
+import ai.tock.bot.connector.messenger.model.send.ButtonPayload
 import ai.tock.bot.connector.messenger.model.send.ListElementStyle
 import ai.tock.bot.connector.messenger.model.send.ListPayload
 import ai.tock.bot.connector.messenger.model.send.UrlPayload
+import ai.tock.bot.definition.Intent
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.shared.sharedTestModule
 import ai.tock.shared.tockInternalInjector
 import ai.tock.translator.raw
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinInjector
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -58,6 +60,7 @@ class MessengerBuildersTest {
         every { bus.applicationId } returns "appId"
         every { bus.userPreferences } returns UserPreferences()
         every { bus.translate(allAny()) } answers { firstArg() ?: "".raw }
+        every { bus.translate(any<CharSequence>()) } answers { firstArg<CharSequence>().raw }
     }
 
     @Test
@@ -72,6 +75,32 @@ class MessengerBuildersTest {
         val elements = (1..5).map { bus.listElement("title$it") }
         val template = flexibleListTemplate(elements, ListElementStyle.compact)
         assertEquals(elements.subList(0, 4), (template.attachment.payload as ListPayload).elements)
+    }
+
+    @Test
+    fun `buttonTemplate cut the text when text exceed 640 chars`() {
+        val result = bus.buttonsTemplate(
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
+                "Curabitur vitae augue dignissim, ultrices tortor sed, fringilla neque. Maecenas sit amet efficitur enim. " +
+                "Pellentesque nec dictum tellus. Etiam rhoncus arcu nunc, eget sagittis lacus rutrum ac. Aenean eu ipsum " +
+                "lorem. Vestibulum condimentum, ligula in euismod auctor, felis ante semper erat, ut laoreet est libero " +
+                "ut tellus. Duis sollicitudin justo id est lobortis sollicitudin. Fusce gravida sagittis nibh id tempor. " +
+                "Proin a imperdiet est. In arcu est, imperdiet quis pellentesque vitae, tincidunt sit amet massa. Nunc " +
+                "laoreet orci eu fringilla auctor. Aliquam interdum odio vel metus.",
+            bus.postbackButton("button", Intent("myIntent"))
+        )
+
+        assertEquals(
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur vitae augue dignissim, ultrices tortor sed, fringilla neque. Maecenas sit amet efficitur enim. Pellentesque nec dictum tellus. Etiam rhoncus arcu nunc, eget sagittis lacus rutrum ac. Aenean eu ipsum lorem. Vestibulum condimentum, ligula in euismod auctor, felis ante semper erat, ut laoreet est libero ut tellus. Duis sollicitudin justo id est lobortis sollicitudin. Fusce gravida sagittis nibh id tempor. Proin a imperdiet est. In arcu est, imperdiet quis pellentesque vitae, tincidunt sit amet massa. Nunc laoreet orci eu fringilla auctor. Aliquam interdum odio vel me...",
+            (result.attachment.payload as ButtonPayload).text
+        )
+    }
+
+    @Test
+    fun `buttonTemplate throws exception when there is no buttons`() {
+        assertThrows<IllegalStateException> {
+            bus.buttonsTemplate("toto", bus.quickReply("quickreply", Intent("myIntent")))
+        }
     }
 
     @Test
@@ -112,7 +141,7 @@ class MessengerBuildersTest {
 
     @Test
     fun testSendToMessenger() {
-        bus.sendToMessenger { buttonsTemplate("Button") }
+        bus.sendToMessenger { buttonsTemplate("Button", postbackButton("button", Intent("myIntent"))) }
 
         verify { bus.withMessage(any()) }
         verify { bus.send(any<Long>()) }
@@ -120,7 +149,7 @@ class MessengerBuildersTest {
 
     @Test
     fun testSendToMessengerWithDelay() {
-        bus.sendToMessenger(10) { buttonsTemplate("Button") }
+        bus.sendToMessenger(10) { buttonsTemplate("Button", postbackButton("button", Intent("myIntent"))) }
 
         verify { bus.withMessage(any()) }
         verify { bus.send(10) }
@@ -128,7 +157,7 @@ class MessengerBuildersTest {
 
     @Test
     fun testEndForMessenger() {
-        bus.endForMessenger { buttonsTemplate("Button") }
+        bus.endForMessenger { buttonsTemplate("Button", postbackButton("button", Intent("myIntent"))) }
 
         verify { bus.withMessage(any()) }
         verify { bus.end(any<Long>()) }
