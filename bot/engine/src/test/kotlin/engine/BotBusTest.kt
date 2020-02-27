@@ -21,6 +21,7 @@ import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.BotAnswerInterceptor
 import ai.tock.bot.definition.StoryHandlerBase.Companion.SWITCH_STORY_BUS_KEY
 import ai.tock.bot.engine.BotRepository.registerBotAnswerInterceptor
+import ai.tock.bot.engine.TestStoryDefinition.story_with_other_starter
 import ai.tock.bot.engine.TestStoryDefinition.test
 import ai.tock.bot.engine.TestStoryDefinition.test2
 import ai.tock.bot.engine.TestStoryDefinition.withoutStep
@@ -36,6 +37,7 @@ import ai.tock.translator.I18nLabelValue
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.util.Locale
 import kotlin.test.BeforeTest
@@ -219,5 +221,29 @@ class BotBusTest : BotEngineTest() {
     fun `handleAndSwitchStory remove the switch story key`() {
         bus.handleAndSwitchStory(test2)
         assertNull(bus.getBusContextValue(SWITCH_STORY_BUS_KEY))
+    }
+
+    @Test
+    fun `switchStory set starterIntent to mainIntent in currentStory of dialog by default`() {
+        bus.switchStory(story_with_other_starter)
+        assertTrue(story_with_other_starter.wrap(bus.dialog.currentStory!!.starterIntent))
+    }
+
+    @Test
+    fun `switchStory set starterIntent in currentStory of dialog if specified`() {
+        bus.switchStory(story_with_other_starter, secondaryIntent)
+        assertTrue(secondaryIntent.wrap(bus.dialog.currentStory!!.starterIntent))
+    }
+
+    @Test
+    fun `handleAndSwitchStory set starterIntent to mainIntent in currentStory of dialog by default`() {
+        bus.handleAndSwitchStory(story_with_other_starter)
+        assertTrue(story_with_other_starter.wrap(bus.dialog.currentStory!!.starterIntent))
+    }
+
+    @Test
+    fun `handleAndSwitchStory set starterIntent in currentStory of dialog if specified`() {
+        bus.handleAndSwitchStory(story_with_other_starter, secondaryIntent)
+        assertTrue(secondaryIntent.wrap(bus.dialog.currentStory!!.starterIntent))
     }
 }
