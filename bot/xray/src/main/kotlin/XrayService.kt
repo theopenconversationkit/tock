@@ -151,7 +151,7 @@ class XrayService(
                     }
         } catch (t: Throwable) {
             logger.error(t)
-            XrayPlanExecutionResult(0, 0, "No tests run")
+            XrayPlanExecutionResult(0, 0, "No test run")
         }
     }
 
@@ -161,6 +161,7 @@ class XrayService(
      * Execution data will not be saved in the database, there will be no history about it.
      */
     fun executeTests(namespace: String): XrayPlanExecutionResult {
+        val dummyTestPlanKey = "AUTO_${testKeys[0]}"
         val dummyTestPlan = listOf("MOCK")
         val jiraProject = getProjectFromIssue(testKeys[0])
         val executionId = Dice.newId()
@@ -178,14 +179,14 @@ class XrayService(
                     }
                     // test execution of a dummy test plan
                     .flatMap {
-                        execTestsOnly(XrayExecutionConfiguration(it, dummyTestPlan, jiraProject), dummyTestPlan[0], testKeys, executionId.toId())
+                        execTestsOnly(XrayExecutionConfiguration(it, listOf(dummyTestPlanKey), jiraProject), dummyTestPlanKey, testKeys, executionId.toId())
                     }
                     .let {
                         sendToXray(it)
                     }
         } catch (t: Throwable) {
-            logger.error(t)
-            XrayPlanExecutionResult(0, 0, "No tests run")
+            logger.error(t.message)
+            XrayPlanExecutionResult(0, 0,  "No test run: ${t.message}")
         }
     }
 
@@ -233,9 +234,9 @@ class XrayService(
                 }
 
         return XrayPlanExecutionResult(
-                reports.sumBy { it.execution.dialogs.filter { dialogExecutionReport -> !dialogExecutionReport.error }.size },
-                reports.sumBy { it.execution.dialogs.size },
-                reports.map { it.execution.dialogs.find { dialogExecutionReport -> dialogExecutionReport.error }?.errorMessage }.toString()
+                success = reports.sumBy { it.execution.dialogs.filter { dialogExecutionReport -> !dialogExecutionReport.error }.size },
+                total = reports.sumBy { it.execution.dialogs.size },
+                errorMessage = reports.map { it.execution.dialogs.find { dialogExecutionReport -> dialogExecutionReport.error }?.errorMessage }.toString()
         )
     }
 
@@ -260,20 +261,24 @@ class XrayService(
             executionDialogs: List<DialogExecutionReport>
     ): Boolean {
         // try to get the jira identifier of the test plan
-        var testExecutionKey = XrayClient.getKeyOfSearchedIssue("project = \"${configurations[0].jiraTestProject.key}\" and issuetype = \"Test Execution\" and summary ~ \"$planKey\"")
+        val testExecutionKeyIssue = XrayClient.getKeyOfSearchedIssue(
+                "project = \"${configurations[0].jiraTestProject.key}\" and " +
+                        "issuetype = \"Test Execution\" and " +
+                        "summary ~ \"$planKey ${configurations[0].botConfiguration.name}\"")
 
-        // if no test execution has been found, then create a new one
-        if (testExecutionKey.isEmpty()) {
-            testExecutionKey = XrayClient.createNewTestExecutionIssue(
-                    XrayTestExecutionCreation(
-                            XrayTextExecutionFields(
-                                    configurations.get(0).jiraTestProject,
-                                    "$planKey - ${configurations.map { it.botConfiguration.name }.toSortedSet().joinToString()}",
-                                    "Description of the dummy test plan",
-                                    JiraIssueType("Test Execution")
-                            )
-                    )
-            ).key
+        val testExecutionKey = when (testExecutionKeyIssue) {
+            TooMuchIssuesRetrieved -> error("too many test executions have been retrieved with summary \"$planKey ${configurations[0].botConfiguration.name}\".")
+            NoIssueRetrieved -> {
+                XrayClient.createNewTestExecutionIssue(
+                        XrayTestExecutionCreation(
+                                XrayTextExecutionFields(
+                                        configurations.get(0).jiraTestProject,
+                                        "$planKey - ${configurations.map { it.botConfiguration.name }.toSortedSet().joinToString()}",
+                                        "Automatized Test Execution",
+                                        JiraIssueType("Test Execution")
+                                ))).key
+            }
+            is IssueRetrieved -> testExecutionKeyIssue.key
         }
 
         // gather test execution information
@@ -296,45 +301,39 @@ class XrayService(
                             }
                             var stepViewed = false
                             XrayTestExecutionReport(
-                                    dialogReport.dialogReportId.toString(),
-                                    ofInstant(dialogReport.date, defaultZoneId),
-                                    ofInstant(dialogReport.date, defaultZoneId).plus(dialogReport.duration),
-                                    if (dialogReport.error) "Failed execution ${dialogReport.errorMessage
+                                    testKey = dialogReport.dialogReportId.toString(),
+                                    start = ofInstant(dialogReport.date, defaultZoneId),
+                                    finish = ofInstant(dialogReport.date, defaultZoneId).plus(dialogReport.duration),
+                                    comment = if (dialogReport.error) "Failed execution ${dialogReport.errorMessage
                                             ?: ""}" else "Successful execution",
-                                    if (dialogReport.error) FAIL else PASS,
-                                    if (dialog == null) {
-                                        emptyList()
-                                    } else {
-                                        dialog.actions.filter {
-                                            it.playerId.type == bot
-                                        }.map {
-                                            val status = if (!dialogReport.error) {
-                                                PASS
-                                            } else if (stepViewed) {
-                                                TODO
-                                            } else if (dialogReport.errorActionId == it.id) {
+                                    status = if (dialogReport.error) FAIL else PASS,
+                                    steps = dialog?.actions?.filter {
+                                        it.playerId.type == bot
+                                    }?.map { testActionReport ->
+                                        val status = when {
+                                            !dialogReport.error -> PASS
+                                            stepViewed -> TODO
+                                            dialogReport.errorActionId == testActionReport.id -> {
                                                 stepViewed = true
                                                 FAIL
-                                            } else {
-                                                PASS
                                             }
-                                            XrayTestExecutionStepReport(
-                                                    when (status) {
-                                                        PASS -> "Test successful"
-                                                        TODO -> "Skipped"
-                                                        FAIL ->
-                                                            if (dialogReport.returnedMessage != null) {
-                                                                "TestFailed : ${dialogReport.returnedMessage?.toPrettyString()}"
-                                                            } else if (dialogReport.errorMessage != null) {
-                                                                "TestFailed : ${dialogReport.errorMessage}"
-                                                            } else {
-                                                                "Test failed"
-                                                            }
-                                                    },
-                                                    status
-                                            )
+                                            else -> PASS
                                         }
+                                        XrayTestExecutionStepReport(
+                                                when (status) {
+                                                    PASS -> "Test successful"
+                                                    TODO -> "Skipped"
+                                                    FAIL ->
+                                                        when {
+                                                            dialogReport.returnedMessage != null -> "TestFailed : ${dialogReport.returnedMessage?.toPrettyString()}"
+                                                            dialogReport.errorMessage != null -> "TestFailed : ${dialogReport.errorMessage}"
+                                                            else -> "Test failed"
+                                                        }
+                                                },
+                                                status
+                                        )
                                     }
+                                            ?: emptyList()
                             )
                         }
         )

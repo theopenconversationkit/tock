@@ -32,6 +32,7 @@ data class DialogExecutionReport(
         val errorActionId: Id<Action>? = null,
         val returnedMessage: Message? = null,
         val errorMessage: String? = null,
+        val indexOfStepError: Int? = null,
         val date: Instant = Instant.now(),
         val duration: Duration = Duration.ZERO) {
 }

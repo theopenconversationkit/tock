@@ -115,7 +115,7 @@ object XrayClient {
      * @param jql is the query format of Jira to search for issues.
      * @return The identifier of the retrieved issue in String format.
      */
-    fun getKeyOfSearchedIssue(jql: String): String {
+    fun getKeyOfSearchedIssue(jql: String): SearchIssueResult {
         val klaxon = Klaxon()
 
         // get the body content of the response
@@ -126,12 +126,15 @@ object XrayClient {
         val issuesArray = parsed.array<Any>("issues")
 
         // if only one issue has been found, return the identifier of the issue
-        when (issuesArray?.size ?: 0) {
-            0 -> logger.error { "ERROR -- Unable to retrieve the issue!" }
-            1 -> return issuesArray?.get("key")?.value.toString().replace("[", "").replace("]", "")
-            else -> logger.error { "ERROR -- Too much issue have been retrieved!" }
+        return when (issuesArray?.size ?: 0) {
+            0 -> NoIssueRetrieved
+            1 -> {
+                IssueRetrieved(
+                        issuesArray?.get("key")?.value.toString().replace("[", "").replace("]", "")
+                )
+            }
+            else -> TooMuchIssuesRetrieved
         }
-        return ""
     }
 
     fun getProjectFromIssue(issueKey: String): JiraTestProject {
@@ -233,3 +236,8 @@ object XrayClient {
         return searchResult.issues
     }
 }
+
+sealed class SearchIssueResult
+object TooMuchIssuesRetrieved : SearchIssueResult()
+object NoIssueRetrieved : SearchIssueResult()
+data class IssueRetrieved(val key: String) : SearchIssueResult()
