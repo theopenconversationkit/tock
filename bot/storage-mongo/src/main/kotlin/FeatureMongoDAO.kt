@@ -21,29 +21,19 @@ import ai.tock.bot.engine.feature.FeatureState
 import ai.tock.bot.mongo.Feature_.Companion.BotId
 import ai.tock.bot.mongo.Feature_.Companion.Namespace
 import ai.tock.bot.mongo.Feature_.Companion._id
-import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
-import ai.tock.bot.mongo.MongoBotConfiguration.database
+import ai.tock.bot.mongo.ai.tock.bot.mongo.FeatureCache
 import ai.tock.shared.error
 import ai.tock.shared.internalDefaultZoneId
-import ai.tock.shared.watch
-import com.mongodb.client.model.ReplaceOptions
-import com.mongodb.client.model.changestream.ChangeStreamDocument
-import com.mongodb.client.model.changestream.FullDocument.UPDATE_LOOKUP
+import com.mongodb.client.MongoCollection
 import mu.KotlinLogging
-import org.bson.BsonString
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.eq
 import org.litote.kmongo.find
 import org.litote.kmongo.findOne
-import org.litote.kmongo.getCollection
-import org.litote.kmongo.reactivestreams.forEach
-import org.litote.kmongo.reactivestreams.getCollection
 import org.litote.kmongo.save
 import java.time.ZonedDateTime
-import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.set
 
 @Data(internal = true)
 @JacksonData(internal = true)
@@ -57,39 +47,11 @@ internal data class Feature(
     val endDate: ZonedDateTime? = null
 )
 
-/**
- *
- */
-internal object FeatureMongoDAO : FeatureDAO {
-
+internal class FeatureMongoDAO(private val cache: FeatureCache, private val col: MongoCollection<Feature>) : FeatureDAO {
     private val logger = KotlinLogging.logger {}
-    private val col = database.getCollection<Feature>()
-    private val asyncCol = asyncDatabase.getCollection<Feature>()
-    private val features = ConcurrentHashMap<String, Feature>()
-
-    /**
-     * Watch listener.
-     */
-    private val listener: (ChangeStreamDocument<Feature>) -> Unit = { c ->
-        //cleanup cache
-        (c.documentKey?.get(_id.name) as? BsonString)?.value?.also { features.remove(it) }
-    }
-
-    init {
-        try {
-            asyncCol.find().forEach { it, t ->
-                if (t != null) logger.error(t)
-                else if (it != null) features[it._id] = it
-            }
-            asyncCol.watch(UPDATE_LOOKUP, listener = listener)
-        } catch (e: Exception) {
-            logger.error(e)
-        }
-    }
 
     private fun calculateId(botId: String, namespace: String, category: String, name: String, applicationId: String?) =
         "$botId,$namespace,$category,$name${applicationId?.let { "+$it" } ?: ""}"
-
 
     override fun isEnabled(
         botId: String,
@@ -101,25 +63,52 @@ internal object FeatureMongoDAO : FeatureDAO {
     ): Boolean {
         val id = calculateId(botId, namespace, category, name, applicationId)
         val idWithoutApplicationId = calculateId(botId, namespace, category, name, null)
-        val now = ZonedDateTime.now(internalDefaultZoneId)
 
-        return (features[id] ?: features[idWithoutApplicationId] ?: col.findOne(_id eq id)
-        ?: col.findOne(_id eq idWithoutApplicationId))
-            .let { f ->
-                if (f == null) {
-                    default.also {
-                        addFeature(botId, namespace, default, category, name, null, null)
-                    }
-                } else {
-                    features[id] = f
-                    when {
-                        f.startDate != null && f.endDate == null -> f.enabled && now.isAfter(f.startDate)
-                        f.startDate != null && f.endDate != null -> f.enabled && now.isAfter(f.startDate)
-                            && now.isBefore(f.endDate)
-                        else -> f.enabled
-                    }
-                }
+        val (connectorFeature, globalFeature) = getValues(id, idWithoutApplicationId)
+
+        return if (connectorFeature == null && globalFeature == null) {
+            default.also {
+                addFeature(botId, namespace, default, category, name, null, null, null)
             }
+        } else {
+            val feature = (connectorFeature ?: globalFeature)!!
+            isEnabled(feature)
+        }
+    }
+
+    private fun isEnabled(feature: Feature): Boolean {
+        val now = ZonedDateTime.now(internalDefaultZoneId)
+        return when {
+            feature.startDate != null && feature.endDate == null -> feature.enabled && now.isAfter(feature.startDate)
+            feature.startDate != null && feature.endDate != null -> feature.enabled && now.isAfter(feature.startDate)
+                    && now.isBefore(feature.endDate)
+            else -> feature.enabled
+        }
+    }
+
+    private fun getValues(id: String, idWithoutApplicationId: String): Pair<Feature?, Feature?> {
+        val cacheForId = cache.stateOf(id)
+        val cacheForIdWithoutApplicationId = cache.stateOf(idWithoutApplicationId)
+        val pair = if (cacheForId == null && cacheForIdWithoutApplicationId == null) {
+            cacheAllConnectorFeatureWithId(idWithoutApplicationId)
+
+            Pair(
+                col.findOne(_id eq id)?.also { cache.setState(id, it) },
+                col.findOne(_id eq idWithoutApplicationId)?.also { cache.setState(idWithoutApplicationId, it) }
+            )
+        } else {
+            Pair(
+                cacheForId,
+                cacheForIdWithoutApplicationId
+            )
+        }
+        return pair
+    }
+
+    private fun cacheAllConnectorFeatureWithId(globalId: String) {
+        col.find("{\"_id\": /^$globalId\\+/}").toList().forEach {
+            cache.setState(it._id, it)
+        }
     }
 
     override fun enable(
@@ -133,13 +122,8 @@ internal object FeatureMongoDAO : FeatureDAO {
     ) {
         val id = calculateId(botId, namespace, category, name, applicationId)
         val feature = Feature(id, "$category,$name", true, botId, namespace, startDate, endDate)
-        features[id] = feature
 
-        col.replaceOne(
-            _id eq id,
-            feature,
-            ReplaceOptions().upsert(true)
-        )
+        col.save(feature)
     }
 
     override fun disable(
@@ -147,15 +131,11 @@ internal object FeatureMongoDAO : FeatureDAO {
         namespace: String,
         category: String,
         name: String,
-        applicationId: String?) {
+        applicationId: String?
+    ) {
         val id = calculateId(botId, namespace, category, name, applicationId)
         val feature = Feature(id, "$category,$name", false, botId, namespace)
-        features[id] = feature
-        col.replaceOne(
-            _id eq id,
-            feature,
-            ReplaceOptions().upsert(true)
-        )
+        col.save(feature)
     }
 
     override fun getFeatures(botId: String, namespace: String): List<FeatureState> =
@@ -186,7 +166,6 @@ internal object FeatureMongoDAO : FeatureDAO {
     ) {
         val id = calculateId(botId, namespace, category, name, applicationId)
         val feature = Feature(id, "$category,$name", enabled, botId, namespace, startDate, endDate)
-        features[id] = feature
         col.save(feature)
     }
 
@@ -195,9 +174,9 @@ internal object FeatureMongoDAO : FeatureDAO {
         namespace: String,
         category: String,
         name: String,
-        applicationId: String?) {
+        applicationId: String?
+    ) {
         val id = calculateId(botId, namespace, category, name, applicationId)
-        features.remove(id)
         col.deleteOneById(id)
     }
 }

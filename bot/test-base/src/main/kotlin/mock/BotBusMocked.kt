@@ -73,7 +73,10 @@ fun StoryDefinitionBase.test(bus: BotBus) {
     }
 }
 
-private fun mockBusCommon(bus: BotBus) {
+/**
+ * Default mockk BotBus configuration.
+ */
+fun provideMockedBusCommon(bus: BotBus = mockk()): BotBus {
     every { bus.step } returns null
     every { bus.currentAnswerIndex } returns 0
     every { bus.choice(any()) } returns null
@@ -190,7 +193,8 @@ private fun mockBusCommon(bus: BotBus) {
             (args[3] as? Map<String, String>) ?: emptyMap(),
             null,
             null,
-            bus.applicationId)
+            bus.applicationId
+        )
     }
     every {
         SendChoice.encodeChoiceId(bus, any(), any<String>(), any())
@@ -202,7 +206,8 @@ private fun mockBusCommon(bus: BotBus) {
             (args[3] as? Map<String, String>) ?: emptyMap(),
             null,
             null,
-            bus.applicationId)
+            bus.applicationId
+        )
     }
     val state = mockk<EventState>(relaxed = true)
     val action = mockk<Action>(relaxed = true)
@@ -210,14 +215,29 @@ private fun mockBusCommon(bus: BotBus) {
     every { bus.action } returns action
     every { bus.hasActionEntity(any<String>()) } returns false
     every { bus.entities } returns emptyMap()
+
+    return bus
 }
 
 /**
- * Default mockk BotBus configuration.
+ * Execute test with a bus mocked with default BotBus configuration.
  */
 fun mockBus(bus: BotBus = mockk(), test: (BotBus) -> Any?) {
     try {
-        mockBusCommon(bus)
+        provideMockedBusCommon(bus)
+
+        test(bus)
+    } finally {
+        clearAllMocks()
+    }
+}
+
+/**
+ * Execute test with a bus mocked with classic messenger extensions.
+ */
+fun mockMessenger(bus: BotBus = mockk(), test: (BotBus) -> Any?) {
+    try {
+        provideMockedMessengerBus(bus)
 
         test(bus)
     } finally {
@@ -228,19 +248,28 @@ fun mockBus(bus: BotBus = mockk(), test: (BotBus) -> Any?) {
 /**
  * Mock classic messenger extensions.
  */
-fun mockMessenger(bus: BotBus = mockk(), test: (BotBus) -> Any?) {
-    try {
-        mockBusCommon(bus)
+fun provideMockedMessengerBus(bus: BotBus = mockk()): BotBus {
+    provideMockedBusCommon(bus)
 
-        mockkStatic("ai.tock.bot.connector.messenger.MessengerBuildersKt")
-        every { bus.targetConnectorType } returns messengerConnectorType
-        every { bus.withMessenger(any()) }.answers {
-            if (bus.targetConnectorType == messengerConnectorType) {
-                @Suppress("UNCHECKED_CAST")
-                (args[1] as (() -> MessengerConnectorMessage)).invoke()
-            }
-            bus
+    mockkStatic("ai.tock.bot.connector.messenger.MessengerBuildersKt")
+    every { bus.targetConnectorType } returns messengerConnectorType
+    every { bus.withMessenger(any()) }.answers {
+        if (bus.targetConnectorType == messengerConnectorType) {
+            @Suppress("UNCHECKED_CAST")
+            (args[1] as (() -> MessengerConnectorMessage)).invoke()
         }
+        bus
+    }
+
+    return bus
+}
+
+/**
+ * Execute test with a bus mocked with classic twitter extensions.
+ */
+fun mockTwitter(bus: BotBus, test: (BotBus) -> Any?) {
+    try {
+        provideMockedTwitterBus(bus)
 
         test(bus)
     } finally {
@@ -251,25 +280,21 @@ fun mockMessenger(bus: BotBus = mockk(), test: (BotBus) -> Any?) {
 /**
  * Mock classic twitter extensions.
  */
-fun mockTwitter(bus: BotBus, test: (BotBus) -> Any?) {
-    try {
-        mockBusCommon(bus)
+fun provideMockedTwitterBus(bus: BotBus): BotBus {
+    provideMockedBusCommon(bus)
 
-        mockkStatic("ai.tock.bot.connector.twitter.TwitterBuildersKt")
-        every { bus.targetConnectorType } returns twitterConnectorType
-        every { bus.action.metadata.visibility } returns ActionVisibility.UNKNOWN
-        every { bus.action.metadata.quoteMessage } returns ActionQuote.UNKNOWN
-        every { bus.action.metadata.replyMessage } returns ActionReply.UNKNOWN
-        every { bus.withTwitter(any()) }.answers {
-            if (bus.targetConnectorType == twitterConnectorType) {
-                @Suppress("UNCHECKED_CAST")
-                (args[1] as (() -> TwitterConnectorMessage)).invoke()
-            }
-            bus
+    mockkStatic("ai.tock.bot.connector.twitter.TwitterBuildersKt")
+    every { bus.targetConnectorType } returns twitterConnectorType
+    every { bus.action.metadata.visibility } returns ActionVisibility.UNKNOWN
+    every { bus.action.metadata.quoteMessage } returns ActionQuote.UNKNOWN
+    every { bus.action.metadata.replyMessage } returns ActionReply.UNKNOWN
+    every { bus.withTwitter(any()) }.answers {
+        if (bus.targetConnectorType == twitterConnectorType) {
+            @Suppress("UNCHECKED_CAST")
+            (args[1] as (() -> TwitterConnectorMessage)).invoke()
         }
-
-        test(bus)
-    } finally {
-        clearAllMocks()
+        bus
     }
+
+    return bus
 }

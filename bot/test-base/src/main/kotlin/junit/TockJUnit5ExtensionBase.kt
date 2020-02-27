@@ -38,6 +38,7 @@ import ai.tock.bot.test.TestContext
 import ai.tock.bot.test.TestLifecycle
 import ai.tock.bot.test.newBusMockContext
 import ai.tock.translator.UserInterfaceType
+import io.mockk.clearAllMocks
 import mu.KotlinLogging
 import org.junit.jupiter.api.extension.AfterEachCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
@@ -428,6 +429,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         if (!end) {
             end = true
             logger.info { "cleanup Test ${context.displayName}" }
+            clearAllMocks()
             lifecycle.end()
             logger.debug { "end cleanup Test ${context.displayName}" }
         }
