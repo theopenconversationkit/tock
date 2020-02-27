@@ -127,11 +127,13 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
                     @Suppress("UNCHECKED_CAST")
                     val data = (step as? StoryDataStep<T, Any, *>)?.checkPreconditions()?.invoke(handler, mainData)?.takeUnless { it is Unit }
                         ?: mainData
-                    @Suppress("UNCHECKED_CAST")
-                    if (step is StoryDataStep<*, *, *>) {
-                        (step as StoryDataStep<T, Any, Any>).handler().invoke(handler, data)
-                    } else {
-                        (step as StoryStep<T>).answer().invoke(handler)
+                    if (!isEndCalled(bus)) {
+                        @Suppress("UNCHECKED_CAST")
+                        if (step is StoryDataStep<*, *, *>) {
+                            (step as StoryDataStep<T, Any, Any>).handler().invoke(handler, data)
+                        } else {
+                            (step as StoryStep<T>).answer().invoke(handler)
+                        }
                     }
                 }
                 if (!isEndCalled(bus)) {
