@@ -59,6 +59,8 @@ import org.litote.kmongo.Id
 import java.util.ServiceLoader
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArraySet
+import java.util.concurrent.TimeUnit.MINUTES
+import java.util.concurrent.locks.Lock
 
 /**
  * Advanced bot configuration.
@@ -276,25 +278,32 @@ object BotRepository {
      * Installs the bot(s).
      *
      * @param routerHandlers the additional router handlers
+     * @param createApplicationIfNotExists create an nlp application if not exists
+     * @param startupLock if not null, wait do listen until the lock is released
      */
-    fun installBots(routerHandlers: List<(Router) -> Unit>) {
+    fun installBots(
+        routerHandlers: List<(Router) -> Unit>,
+        createApplicationIfNotExists: Boolean = true,
+        startupLock: Lock? = null) {
         val bots = botProviders.values.map { it.botDefinition() }
 
         //check that nlp applications exist
-        bots.distinctBy { it.namespace to it.nlpModelName }
-            .forEach { botDefinition ->
-                try {
-                    nlpClient.createApplication(
-                        botDefinition.namespace,
-                        botDefinition.nlpModelName,
-                        defaultLocale
-                    )?.apply {
-                        logger.info { "nlp application initialized $namespace $name with locale $supportedLocales" }
+        if (createApplicationIfNotExists) {
+            bots.distinctBy { it.namespace to it.nlpModelName }
+                .forEach { botDefinition ->
+                    try {
+                        nlpClient.createApplication(
+                            botDefinition.namespace,
+                            botDefinition.nlpModelName,
+                            defaultLocale
+                        )?.apply {
+                            logger.info { "nlp application initialized $namespace $name with locale $supportedLocales" }
+                        }
+                    } catch (e: Exception) {
+                        logger.error(e)
                     }
-                } catch (e: Exception) {
-                    logger.error(e)
                 }
-            }
+        }
 
         //persist builtin stories
         botProviders.values.forEach {
@@ -318,15 +327,25 @@ object BotRepository {
             logger.warn { "bot already installed - try to configure new confs" }
             verticle.configure()
         } else {
-            vertx.deployVerticle(verticle) {
-                if (it.succeeded()) {
-                    logger.info { "Bots installed" }
-                    botsInstalled = true
-                    //listen future changes
-                    botConfigurationDAO.listenChanges { executor.executeBlocking { checkBotConfigurations() } }
-                } else {
-                    logger.error("Bots installation failure", it.cause() ?: IllegalArgumentException())
+            val lockFree = try {
+                startupLock?.tryLock(5, MINUTES) ?: true
+            } catch (e: InterruptedException) {
+                logger.error(e)
+                false
+            }
+            if (lockFree) {
+                vertx.deployVerticle(verticle) {
+                    if (it.succeeded()) {
+                        logger.info { "Bots installed" }
+                        botsInstalled = true
+                        //listen future changes
+                        botConfigurationDAO.listenChanges { executor.executeBlocking { checkBotConfigurations() } }
+                    } else {
+                        logger.error("Bots installation failure", it.cause() ?: IllegalArgumentException())
+                    }
                 }
+            } else {
+                logger.error("Lock is not free")
             }
         }
 

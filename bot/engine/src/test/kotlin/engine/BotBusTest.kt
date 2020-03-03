@@ -252,5 +252,6 @@ class BotBusTest : BotEngineTest() {
         bus.switchStory(test2)
         assertEquals(test, bus.dialog.stories[0].definition)
         assertEquals(test2, bus.dialog.stories[1].definition)
+        assertEquals(2, bus.dialog.stories.size)
     }
 }
