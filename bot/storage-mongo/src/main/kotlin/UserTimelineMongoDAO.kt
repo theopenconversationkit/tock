@@ -143,7 +143,6 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 userTimelineCol.ensureUniqueIndex(PlayerId.id)
             }
 
-            userTimelineCol.ensureIndex(LastUpdateDate)
             userTimelineCol.ensureIndex(TemporaryIds)
             userTimelineCol.ensureIndex(
                 LastUpdateDate,

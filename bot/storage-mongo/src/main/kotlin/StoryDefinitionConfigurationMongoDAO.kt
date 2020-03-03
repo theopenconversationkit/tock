@@ -25,9 +25,7 @@ import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Namespace
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.StoryId
 import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.MongoBotConfiguration.database
-import ai.tock.bot.mongo.StoryDefinitionConfigurationHistoryCol_.Companion.Conf
 import ai.tock.bot.mongo.StoryDefinitionConfigurationHistoryCol_.Companion.Date
-import ai.tock.shared.defaultNamespace
 import ai.tock.shared.error
 import ai.tock.shared.trace
 import ai.tock.shared.watch
@@ -36,20 +34,16 @@ import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.and
-import org.litote.kmongo.ascending
-import org.litote.kmongo.deleteMany
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
-import org.litote.kmongo.exists
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.getCollectionOfName
 import org.litote.kmongo.reactivestreams.getCollectionOfName
 import org.litote.kmongo.save
-import org.litote.kmongo.set
 import java.time.Instant
 
 /**
@@ -74,34 +68,6 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
 
     init {
         try {
-            //TODO remove this in 19.9
-            try {
-                col.dropIndex(ascending(BotId))
-            } catch (e: Exception) {
-                //ignore
-            }
-            try {
-                col.dropIndex(ascending(BotId, Intent.name_))
-            } catch (e: Exception) {
-                //ignore
-            }
-            try {
-                historyCol.dropIndex(ascending(Conf.botId))
-                historyCol.deleteMany()
-            } catch (e: Exception) {
-                //ignore
-            }
-            col.updateMany(
-                Namespace exists false,
-                set(Namespace, defaultNamespace)
-            )
-            try {
-                col.dropIndex(ascending(Namespace, BotId, Intent.name_))
-            } catch (e: Exception) {
-                //ignore
-            }
-            //END TODO
-
             col.ensureIndex(Namespace, BotId)
             col.ensureIndex(Namespace, BotId, Intent.name_)
             col.ensureUniqueIndex(Namespace, BotId, Intent.name_, ConfigurationName)
