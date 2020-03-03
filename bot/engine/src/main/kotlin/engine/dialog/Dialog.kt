@@ -65,7 +65,7 @@ data class Dialog(
                     dialog.stories.lastOrNull()?.run {
                         val s = copy()
                         s.actions.clear()
-                        if (!actions.isEmpty()) {
+                        if (actions.isNotEmpty()) {
                             s.actions.addAll(actions.takeLast(5))
                         }
                         s
@@ -78,7 +78,7 @@ data class Dialog(
     /**
      * The last update date.
      */
-    val lastDateUpdate: Instant get() = stories.lastOrNull()?.lastAction?.date ?: Instant.now()
+    val lastDateUpdate: Instant get() = lastAction?.date ?: Instant.now()
 
     /**
      * The current story if any.
@@ -93,13 +93,12 @@ data class Dialog(
     /**
      * Returns last action.
      */
-    val lastAction: Action? get() = stories.lastOrNull()?.lastAction ?: stories.getOrNull(stories.size - 2)?.lastAction
+    val lastAction: Action? get() = stories.lastOrNull { it.lastAction != null }?.lastAction
 
     /**
      * Returns last user action.
      */
-    val lastUserAction: Action?
-        get() = stories.lastOrNull()?.lastUserAction ?: stories.getOrNull(stories.size - 2)?.lastUserAction
+    val lastUserAction: Action? = stories.lastOrNull { it.lastUserAction != null }?.lastUserAction
 
     /**
      * The [Snapshots] of the dialog.

@@ -177,16 +177,20 @@ open class BotBusMock(
         set(value) {
             context.userTimeline = value
         }
+
     override var dialog: Dialog
         get() = context.dialog
         set(value) {
             context.dialog = value
         }
+
     override var story: Story
         get() = context.story
         set(value) {
             context.story = value
+            dialog.stories.add(value)
         }
+
     override var botDefinition: BotDefinition
         get() = context.botDefinition
         set(value) {
@@ -197,11 +201,13 @@ open class BotBusMock(
         set(value) {
             context.i18nProvider = value
         }
+
     override var userInterfaceType: UserInterfaceType
         get() = context.userInterfaceType
         set(value) {
             context.userInterfaceType = value
         }
+
     var connectorType: ConnectorType
         get() = context.connectorType
         set(value) {
@@ -210,6 +216,7 @@ open class BotBusMock(
 
     override var connectorData: ConnectorData =
         ConnectorData(ConnectorCallbackBase(action.applicationId, connectorType))
+
     /**
      * The translator used to translate labels - default is NoOp.
      */

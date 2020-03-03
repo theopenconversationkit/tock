@@ -246,4 +246,11 @@ class BotBusTest : BotEngineTest() {
         bus.handleAndSwitchStory(story_with_other_starter, secondaryIntent)
         assertTrue(secondaryIntent.wrap(bus.dialog.currentStory!!.starterIntent))
     }
+
+    @Test
+    fun `switchStory set a new story only once`() {
+        bus.switchStory(test2)
+        assertEquals(test, bus.dialog.stories[0].definition)
+        assertEquals(test2, bus.dialog.stories[1].definition)
+    }
 }
