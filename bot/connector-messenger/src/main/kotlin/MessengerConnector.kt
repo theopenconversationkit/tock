@@ -446,11 +446,13 @@ class MessengerConnector internal constructor(
                     postMessage =
                     { token ->
                         val recipient = Recipient(action.recipientId.id)
-                        if (action.metadata.lastAnswer) {
-                            client.sendAction(token, ActionRequest(recipient, typing_off, personaId))
-                            client.sendAction(token, ActionRequest(recipient, mark_seen))
-                        } else {
-                            client.sendAction(token, ActionRequest(recipient, typing_on, personaId))
+                        if (messengerCallback?.notificationType == null) {
+                            if (action.metadata.lastAnswer) {
+                                client.sendAction(token, ActionRequest(recipient, typing_off, personaId))
+                                client.sendAction(token, ActionRequest(recipient, mark_seen))
+                            } else {
+                                client.sendAction(token, ActionRequest(recipient, typing_on, personaId))
+                            }
                         }
                     },
                     errorListener = messengerCallback?.errorListener ?: {}
@@ -458,11 +460,13 @@ class MessengerConnector internal constructor(
 
             }
         } else {
-            executor.executeBlocking(delay) {
-                sendEvent(
-                    event = event,
-                    errorListener = messengerCallback?.errorListener ?: {}
-                )
+            if (messengerCallback?.notificationType == null || (event !is TypingOnEvent && event !is TypingOffEvent && event !is MarkSeenEvent)) {
+                executor.executeBlocking(delay) {
+                    sendEvent(
+                        event = event,
+                        errorListener = messengerCallback?.errorListener ?: {}
+                    )
+                }
             }
         }
     }

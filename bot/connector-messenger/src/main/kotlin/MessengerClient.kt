@@ -41,6 +41,7 @@ import ai.tock.shared.addJacksonConverter
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.create
 import ai.tock.shared.error
+import ai.tock.shared.info
 import ai.tock.shared.intProperty
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.longProperty
@@ -177,7 +178,7 @@ internal class MessengerClient(val secretKey: String) {
             send(actionRequest) { graphApi.sendAction(token, actionRequest).execute() }
         } catch (e: Exception) {
             //log and ignore
-            logger.error(e)
+            logger.info(e)
             null
         }
     }
@@ -274,8 +275,16 @@ internal class MessengerClient(val secretKey: String) {
         return send(request, call, 0)
     }
 
+    private fun <T> warnRequest(request: T, msg: () -> Any?) {
+        if (request is ActionRequest) {
+            logger.debug(msg)
+        } else {
+            logger.warn(msg)
+        }
+    }
+
     private fun <T> throwError(request: T, errorMessage: String): Nothing {
-        logger.warn { mapper.writeValueAsString(request) }
+        warnRequest(request) { mapper.writeValueAsString(request) }
         throw ConnectorException(errorMessage)
     }
 
@@ -287,9 +296,9 @@ internal class MessengerClient(val secretKey: String) {
             if (!response.isSuccessful) {
                 val error = response.message()
                 val errorCode = response.code()
-                logger.warn { "Messenger Error : $errorCode $error" }
+                warnRequest(request) { "Messenger Error : $errorCode $error" }
                 val errorBody = response.errorBody()?.string()
-                logger.warn { "Messenger Error body : $errorBody" }
+                warnRequest(request) { "Messenger Error body : $errorBody" }
 
                 if (request is MessageRequest && nbTries <= nbRetriesLimit && errorBody != null) {
                     val errorContainer: SendResponseErrorContainer = mapper.readValue(errorBody)
