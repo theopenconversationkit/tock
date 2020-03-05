@@ -20,20 +20,6 @@ package ai.tock.bot.engine.action
  * ActionTag deals with type of message notification.
  */
 enum class ActionNotificationType {
-    @Deprecated("Available until January 15th, 2020 Partially covered as the new action postPurchaseUpdate")
-    reservationUpdate,
-    @Deprecated("Available until January 15th, 2020 Partially covered as the new action humanAgent")
-    issueResolution,
-    @Deprecated("Available until January 15th, 2020 Partially covered as the new action confirmedEventUpdate")
-    transportationUpdate,
-    @Deprecated("Available until January 15th, 2020 Partially covered as the new action humanAgent")
-    newFeatureFunctionality,
-    @Deprecated("Available until January 15th, 2020 Partially covered as the new action confirmedEventUpdate")
-    ticketUpdate,
-    @Deprecated("Available until January 15th, 2020 Partially covered as the new action postPurchaseUpdate")
-    paymentUpdate,
-    @Deprecated("Available until January 15th, 2020 Partially covered as the new action accountUpdate")
-    personalFinanceUpdate,
     accountUpdate,
     confirmedEventUpdate,
     humanAgent,
