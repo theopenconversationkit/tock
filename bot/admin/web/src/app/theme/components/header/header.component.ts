@@ -53,6 +53,9 @@ export class HeaderComponent implements OnInit {
         takeUntil(this.destroy$),
       )
       .subscribe(themeName => this.currentTheme = themeName);
+    if(this.settings.currentLocale != null) {
+      this.state.currentLocale = this.settings.currentLocale
+    }
   }
 
   changeTheme(themeName: string) {
