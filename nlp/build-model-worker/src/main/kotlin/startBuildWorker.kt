@@ -16,20 +16,49 @@
 
 package ai.tock.nlp.build
 
-import com.github.salomonbrys.kodein.Kodein
 import ai.tock.nlp.front.ioc.FrontIoc
+import ai.tock.shared.booleanProperty
+import ai.tock.shared.error
 import ai.tock.shared.vertx.vertx
+import com.github.salomonbrys.kodein.Kodein
 import io.vertx.core.DeploymentOptions
+import mu.KotlinLogging
+import kotlin.system.exitProcess
 
-fun main(args: Array<String>) {
+private val logger = KotlinLogging.logger {}
+private val buildWorkerVerticleEnabled = booleanProperty("tock_build_worker_verticle_enabled", true)
+
+fun main() {
     startBuildWorker()
 }
 
 fun startBuildWorker(vararg modules: Kodein.Module) {
     FrontIoc.setup(*modules)
+    if (buildWorkerVerticleEnabled) {
+        startVerticle()
+
+    } else {
+        startProcess()
+    }
+}
+
+private fun startVerticle() {
     val buildModelWorkerVerticle = BuildModelWorkerVerticle()
     vertx.deployVerticle(buildModelWorkerVerticle, DeploymentOptions().setWorker(true))
     vertx.deployVerticle(CleanupModelWorkerVerticle(), DeploymentOptions().setWorker(true))
     vertx.deployVerticle(HealthCheckVerticle(buildModelWorkerVerticle))
 }
 
+private fun startProcess() {
+    try {
+        BuildModelWorker.buildModelWithValidatedSentences()
+        BuildModelWorker.buildModelWithDeletedSentences()
+        BuildModelWorker.updateAllModels()
+        BuildModelWorker.testModels()
+        BuildModelWorker.cleanupModel()
+        exitProcess(0)
+    } catch (e: Throwable) {
+        logger.error(e)
+        exitProcess(1)
+    }
+}
