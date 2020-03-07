@@ -137,6 +137,8 @@ export class TestBuildsComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
 
   constructor(public state: StateService, private quality: QualityService) {
+    this.modifiedAfter = new Date();
+    this.modifiedAfter.setMonth(this.modifiedAfter.getMonth() - 1);
   }
 
   ngOnInit(): void {
@@ -149,6 +151,7 @@ export class TestBuildsComponent implements OnInit, OnDestroy {
   }
 
   search(): void {
+    console.log(this.modifiedAfter)
     this.quality.buildStats(
       TestErrorQuery.createWithoutSize(this.state, this.intent === "" ? undefined : this.intent, this.modifiedAfter)
     )
