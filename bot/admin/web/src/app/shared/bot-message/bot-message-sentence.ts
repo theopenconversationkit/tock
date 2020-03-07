@@ -20,7 +20,7 @@ import {BotMessage, Sentence} from "../model/dialog-data";
 @Component({
   selector: 'tock-bot-message-sentence',
   template: `
-  <div *ngIf="sentence.text">
+  <div *ngIf="sentence.text" class="text">
     <img *ngIf="sentence.userInterface"
          src="/assets/images/{{sentence.userInterface}}.svg"
          class="userInterface"
