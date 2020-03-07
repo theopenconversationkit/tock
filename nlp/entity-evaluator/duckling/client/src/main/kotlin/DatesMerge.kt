@@ -164,6 +164,13 @@ internal object DatesMerge {
                         else -> oldDayOfWeek
                     }
 
+                    val previous = DateEntityValue(
+                        oldValue
+                            .start(zoneId)
+                            .with(TemporalAdjusters.previous(DayOfWeek.of(newDayOfWeek)))
+                            .truncatedTo(DAYS),
+                        day
+                    )
                     val newResult = ValueDescriptor(
                         if (oldDayOfWeek == newDayOfWeek)
                             DateEntityValue(
@@ -172,7 +179,7 @@ internal object DatesMerge {
                                     .truncatedTo(DAYS),
                                 day
                             )
-                        else if (oldDayOfWeek < newDayOfWeek || newDayOfWeek == 7)
+                        else if (oldDayOfWeek < newDayOfWeek || newDayOfWeek == 7 || previous.start().withZoneSameInstant(zoneId).truncatedTo(DAYS) < referenceDateTime.truncatedTo(DAYS))
                             DateEntityValue(
                                 oldValue
                                     .start(zoneId)
@@ -180,14 +187,7 @@ internal object DatesMerge {
                                     .truncatedTo(DAYS),
                                 day
                             )
-                        else
-                            DateEntityValue(
-                                oldValue
-                                    .start(zoneId)
-                                    .with(TemporalAdjusters.previous(DayOfWeek.of(newDayOfWeek)))
-                                    .truncatedTo(DAYS),
-                                day
-                            )
+                        else previous
                         ,
                         newValue.content
                     )

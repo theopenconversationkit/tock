@@ -243,7 +243,7 @@ internal class DatesMergeTest {
     }
 
     @Test
-    fun `mergeGrain returns non additional merge for 'en fin d'après-midi'(fr)`() {
+    fun `mergeGrain returns non additional merge for en fin d'après-midi (fr)`() {
         val r = DatesMerge.mergeGrain(Locale.FRENCH, tomorrow, endAfternoon)
         assertEquals(DatesMerge.MergeGrain(false, DateEntityGrain.day), r)
     }
