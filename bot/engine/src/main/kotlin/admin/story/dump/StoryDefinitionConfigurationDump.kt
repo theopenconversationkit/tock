@@ -18,8 +18,9 @@ package ai.tock.bot.admin.story.dump
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
-import ai.tock.bot.definition.Intent
+import ai.tock.bot.definition.SimpleIntentName
 import ai.tock.shared.defaultNamespace
+import java.util.Locale
 
 data class StoryDefinitionConfigurationDump(
     /**
@@ -33,7 +34,7 @@ data class StoryDefinitionConfigurationDump(
     /**
      * The target main intent.
      */
-    val intent: Intent,
+    val intent: SimpleIntentName,
     /**
      * The type of answer configuration.
      */
@@ -75,6 +76,10 @@ data class StoryDefinitionConfigurationDump(
      */
     val userSentence: String = "",
     /**
+     * The user sentence sample locale.
+     */
+    val userSentenceLocale: Locale? = null,
+    /**
      * The configuration name if any.
      */
     val configurationName: String? = null,
@@ -99,6 +104,7 @@ data class StoryDefinitionConfigurationDump(
             def.category,
             def.description,
             def.userSentence,
+            def.userSentenceLocale,
             def.configurationName,
             def.features.map { StoryDefinitionConfigurationFeatureDump(it) }
         )
@@ -118,6 +124,7 @@ data class StoryDefinitionConfigurationDump(
             category,
             description,
             userSentence,
+            userSentenceLocale,
             null,
             features.mapNotNull { it.toFeature(controller) }
         )

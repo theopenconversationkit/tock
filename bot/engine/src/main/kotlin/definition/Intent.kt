@@ -17,13 +17,22 @@
 package ai.tock.bot.definition
 
 import ai.tock.shared.TOCK_NAMESPACE
+import ai.tock.shared.withNamespace
+
+/**
+ * The non qualified name of the intent.
+ */
+data class SimpleIntentName(val name: String) {
+
+    fun intent(namespace: String): Intent = Intent(name.withNamespace(namespace))
+}
 
 /**
  * An intent definition.
  */
 data class Intent(
     /**
-     * The name of the intent.
+     * The qualified name of the intent.
      */
     val name: String
 ) : IntentAware {

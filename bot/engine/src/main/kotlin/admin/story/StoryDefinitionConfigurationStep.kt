@@ -19,8 +19,8 @@ package ai.tock.bot.admin.story
 import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
-import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.IntentAware
+import ai.tock.bot.definition.SimpleIntentName
 import ai.tock.bot.definition.SimpleStoryStep
 import ai.tock.bot.definition.StoryHandlerDefinition
 import ai.tock.bot.definition.StoryStep
@@ -38,11 +38,11 @@ data class StoryDefinitionConfigurationStep(
     /**
      * The intent used to reach the step - mandatory if an answer is set, or if there is a [targetIntent].
      */
-    val intent: Intent?,
+    val intent: SimpleIntentName?,
     /**
      * The optional intent to switch to when the step is reached.
      */
-    val targetIntent: Intent?,
+    val targetIntent: SimpleIntentName?,
     /**
      * The answers available.
      */
@@ -70,28 +70,29 @@ data class StoryDefinitionConfigurationStep(
     internal class Step(
         override val name: String,
         override val intent: IntentAware?,
-        val configuration: StoryDefinitionConfigurationStep
+        val configuration: StoryDefinitionConfigurationStep,
+        private val storyConfiguration: StoryDefinitionConfiguration
     ) : SimpleStoryStep {
-        constructor(s: StoryDefinitionConfigurationStep) : this(s.name, s.intent, s)
+        constructor(s: StoryDefinitionConfigurationStep, conf: StoryDefinitionConfiguration) : this(s.name, s.intent?.intent(conf.namespace), s, conf)
 
         override fun equals(other: Any?): Boolean = name == (other as? Step)?.name
 
         override fun hashCode(): Int = name.hashCode()
 
         override val children: Set<StoryStep<StoryHandlerDefinition>>
-            get() = configuration.children.map { it.toStoryStep() }.toSet()
+            get() = configuration.children.map { it.toStoryStep(storyConfiguration) }.toSet()
     }
 
     constructor(step: StoryStep<*>) :
         this(
             step.name,
-            step.intent?.wrappedIntent(),
+            step.intent?.simpleIntentName(),
             null,
             emptyList(),
             builtin
         )
 
-    fun toStoryStep(): StoryStep<StoryHandlerDefinition> = Step(this)
+    fun toStoryStep(story: StoryDefinitionConfiguration): StoryStep<StoryHandlerDefinition> = Step(this, story)
 
     override fun findNextSteps(bus: BotBus, story: StoryDefinitionConfiguration): List<CharSequence> =
         children.map { it.userSentenceLabel ?: it.userSentence }

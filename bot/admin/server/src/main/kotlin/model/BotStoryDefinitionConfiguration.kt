@@ -23,9 +23,10 @@ import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
 import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
-import ai.tock.bot.definition.Intent
+import ai.tock.bot.definition.SimpleIntentName
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
+import java.util.Locale
 
 internal fun List<AnswerConfiguration>.mapAnswers(): List<BotAnswerConfiguration> =
     map {
@@ -43,7 +44,7 @@ internal fun List<AnswerConfiguration>.mapAnswers(): List<BotAnswerConfiguration
 data class BotStoryDefinitionConfiguration(
     val storyId: String,
     val botId: String,
-    val intent: Intent,
+    val intent: SimpleIntentName,
     val currentType: AnswerConfigurationType,
     val namespace: String,
     val answers: List<BotAnswerConfiguration>,
@@ -56,12 +57,13 @@ data class BotStoryDefinitionConfiguration(
      * The user sentence sample.
      */
     val userSentence: String = "",
+    val userSentenceLocale: Locale,
     val configurationName: String? = null,
     val features: List<StoryDefinitionConfigurationFeature> = emptyList(),
     val _id: Id<StoryDefinitionConfiguration> = newId()
 ) {
 
-    constructor(story: StoryDefinitionConfiguration) : this(
+    constructor(story: StoryDefinitionConfiguration, userLocale: Locale) : this(
         story.storyId,
         story.botId,
         story.intent,
@@ -74,6 +76,7 @@ data class BotStoryDefinitionConfiguration(
         story.category,
         story.description,
         story.userSentence,
+        story.userSentenceLocale ?: userLocale,
         story.configurationName,
         story.features,
         story._id

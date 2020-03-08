@@ -63,6 +63,7 @@ import com.github.salomonbrys.kodein.instance
 import io.vertx.core.http.HttpMethod.GET
 import mu.KLogger
 import mu.KotlinLogging
+import org.litote.kmongo.toId
 
 /**
  *
@@ -308,7 +309,7 @@ open class BotAdminVerticle : AdminVerticle() {
                 }
             }
         ) { context, query: CreateStoryRequest ->
-            BotAdminService.createStory(context.organization, query) ?: unauthorized()
+            BotAdminService.createStory(context.organization, query, context.userLogin) ?: unauthorized()
         }
 
         blockingJsonGet("/bot/story/:appName/export", botUser) { context ->
@@ -316,11 +317,11 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingUploadJsonPost(
-            "/bot/story/:appName/import",
+            "/bot/story/:appName/:locale/import",
             botUser,
             simpleLogger("JSON Import Response Labels")
         ) { context, stories: List<StoryDefinitionConfigurationDump> ->
-            importStories(context.organization, context.path("appName"), stories)
+            importStories(context.organization, context.path("appName"), context.pathToLocale("locale"), stories, context.userLogin)
         }
 
         blockingJsonPost(
@@ -333,7 +334,7 @@ open class BotAdminVerticle : AdminVerticle() {
                         ?.let { FrontClient.getApplicationByNamespaceAndName(context.organization, it.nlpModel)?._id }
                 }
             }) { context, story: BotStoryDefinitionConfiguration ->
-            BotAdminService.saveStory(context.organization, story) ?: unauthorized()
+            BotAdminService.saveStory(context.organization, story, context.userLogin) ?: unauthorized()
         }
 
         blockingJsonPost("/bot/story/search", botUser) { context, request: StorySearchRequest ->
@@ -453,7 +454,12 @@ open class BotAdminVerticle : AdminVerticle() {
             simpleLogger("JSON Import Response Labels")
         ) { context, content ->
             val labels: List<I18nLabel> = mapper.readValue(content)
-            i18n.save(labels.filter { it.namespace == context.organization })
+            i18n.save(labels.filter { it.i18n.any { it.validated } }.map {
+                it.copy(
+                    _id = it._id.toString().replaceFirst(it.namespace, context.organization).toId(),
+                    namespace = context.organization
+                )
+            })
         }
 
         blockingUploadBinaryPost("/file", botUser) { context, (fileName, bytes) ->

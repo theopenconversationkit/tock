@@ -42,8 +42,8 @@ export class BotService {
     return this.rest.get(`/bot/story/${applicationName}/export`, j => new Blob([JSON.stringify(j)], {type: 'application/json'}));
   }
 
-  prepareStoryDumpUploader(uploader: FileUploader, applicationName: string) {
-    this.rest.setFileUploaderOptions(uploader, `/bot/story/${applicationName}/import`);
+  prepareStoryDumpUploader(uploader: FileUploader, applicationName: string, locale: string) {
+    this.rest.setFileUploaderOptions(uploader, `/bot/story/${applicationName}/${locale}/import`);
   }
 
   saveStory(story: StoryDefinitionConfiguration): Observable<StoryDefinitionConfiguration> {
@@ -122,7 +122,7 @@ export class BotService {
     return this.rest.post(`/feature/${encodeURIComponent(botId)}/add`, feature);
   }
 
-  deleteFeature(botId: string, category: string, name: string, applicationId:string): Observable<boolean> {
+  deleteFeature(botId: string, category: string, name: string, applicationId: string): Observable<boolean> {
     return this.rest.delete(`/feature/${encodeURIComponent(botId)}/${encodeURIComponent(category)}/${encodeURIComponent(name)}/${applicationId ? encodeURIComponent(applicationId) : ''}`);
   }
 

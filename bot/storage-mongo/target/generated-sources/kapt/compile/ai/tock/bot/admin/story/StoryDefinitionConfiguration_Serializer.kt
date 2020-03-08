@@ -81,6 +81,11 @@ internal class StoryDefinitionConfiguration_Serializer :
         gen.writeFieldName("userSentence")
         val _userSentence_ = value.userSentence
         gen.writeString(_userSentence_)
+        gen.writeFieldName("userSentenceLocale")
+        val _userSentenceLocale_ = value.userSentenceLocale
+        if(_userSentenceLocale_ == null) { gen.writeNull() } else {
+                serializers.defaultSerializeValue(_userSentenceLocale_, gen)
+                }
         gen.writeFieldName("configurationName")
         val _configurationName_ = value.configurationName
         if(_configurationName_ == null) { gen.writeNull() } else {

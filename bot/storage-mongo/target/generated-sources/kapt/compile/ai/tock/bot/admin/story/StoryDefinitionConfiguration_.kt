@@ -2,8 +2,9 @@ package ai.tock.bot.admin.story
 
 import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType
-import ai.tock.bot.definition.Intent
-import ai.tock.bot.definition.Intent_
+import ai.tock.bot.definition.SimpleIntentName
+import ai.tock.bot.definition.SimpleIntentName_
+import java.util.Locale
 import kotlin.Int
 import kotlin.String
 import kotlin.Suppress
@@ -21,7 +22,7 @@ private val __StoryId: KProperty1<StoryDefinitionConfiguration, String?>
     get() = StoryDefinitionConfiguration::storyId
 private val __BotId: KProperty1<StoryDefinitionConfiguration, String?>
     get() = StoryDefinitionConfiguration::botId
-private val __Intent: KProperty1<StoryDefinitionConfiguration, Intent?>
+private val __Intent: KProperty1<StoryDefinitionConfiguration, SimpleIntentName?>
     get() = StoryDefinitionConfiguration::intent
 private val __CurrentType: KProperty1<StoryDefinitionConfiguration, AnswerConfigurationType?>
     get() = StoryDefinitionConfiguration::currentType
@@ -45,6 +46,8 @@ private val __Description: KProperty1<StoryDefinitionConfiguration, String?>
     get() = StoryDefinitionConfiguration::description
 private val __UserSentence: KProperty1<StoryDefinitionConfiguration, String?>
     get() = StoryDefinitionConfiguration::userSentence
+private val __UserSentenceLocale: KProperty1<StoryDefinitionConfiguration, Locale?>
+    get() = StoryDefinitionConfiguration::userSentenceLocale
 private val __ConfigurationName: KProperty1<StoryDefinitionConfiguration, String?>
     get() = StoryDefinitionConfiguration::configurationName
 private val __Features: KProperty1<StoryDefinitionConfiguration,
@@ -61,8 +64,8 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
     val botId: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__BotId)
 
-    val intent: Intent_<T>
-        get() = Intent_(this,StoryDefinitionConfiguration::intent)
+    val intent: SimpleIntentName_<T>
+        get() = SimpleIntentName_(this,StoryDefinitionConfiguration::intent)
 
     val currentType: KPropertyPath<T, AnswerConfigurationType?>
         get() = KPropertyPath(this,__CurrentType)
@@ -95,6 +98,9 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
     val userSentence: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__UserSentence)
 
+    val userSentenceLocale: KPropertyPath<T, Locale?>
+        get() = KPropertyPath(this,__UserSentenceLocale)
+
     val configurationName: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__ConfigurationName)
 
@@ -109,8 +115,8 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
             get() = __StoryId
         val BotId: KProperty1<StoryDefinitionConfiguration, String?>
             get() = __BotId
-        val Intent: Intent_<StoryDefinitionConfiguration>
-            get() = Intent_(null,__Intent)
+        val Intent: SimpleIntentName_<StoryDefinitionConfiguration>
+            get() = SimpleIntentName_(null,__Intent)
         val CurrentType: KProperty1<StoryDefinitionConfiguration, AnswerConfigurationType?>
             get() = __CurrentType
         val Answers: KCollectionSimplePropertyPath<StoryDefinitionConfiguration,
@@ -134,6 +140,8 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
             get() = __Description
         val UserSentence: KProperty1<StoryDefinitionConfiguration, String?>
             get() = __UserSentence
+        val UserSentenceLocale: KProperty1<StoryDefinitionConfiguration, Locale?>
+            get() = __UserSentenceLocale
         val ConfigurationName: KProperty1<StoryDefinitionConfiguration, String?>
             get() = __ConfigurationName
         val Features: KCollectionSimplePropertyPath<StoryDefinitionConfiguration,
@@ -152,8 +160,8 @@ class StoryDefinitionConfiguration_Col<T>(previous: KPropertyPath<T, *>?, proper
     val botId: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__BotId)
 
-    val intent: Intent_<T>
-        get() = Intent_(this,StoryDefinitionConfiguration::intent)
+    val intent: SimpleIntentName_<T>
+        get() = SimpleIntentName_(this,StoryDefinitionConfiguration::intent)
 
     val currentType: KPropertyPath<T, AnswerConfigurationType?>
         get() = KPropertyPath(this,__CurrentType)
@@ -185,6 +193,9 @@ class StoryDefinitionConfiguration_Col<T>(previous: KPropertyPath<T, *>?, proper
 
     val userSentence: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__UserSentence)
+
+    val userSentenceLocale: KPropertyPath<T, Locale?>
+        get() = KPropertyPath(this,__UserSentenceLocale)
 
     val configurationName: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__ConfigurationName)
@@ -208,8 +219,8 @@ class StoryDefinitionConfiguration_Map<T, K>(previous: KPropertyPath<T, *>?, pro
     val botId: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__BotId)
 
-    val intent: Intent_<T>
-        get() = Intent_(this,StoryDefinitionConfiguration::intent)
+    val intent: SimpleIntentName_<T>
+        get() = SimpleIntentName_(this,StoryDefinitionConfiguration::intent)
 
     val currentType: KPropertyPath<T, AnswerConfigurationType?>
         get() = KPropertyPath(this,__CurrentType)
@@ -241,6 +252,9 @@ class StoryDefinitionConfiguration_Map<T, K>(previous: KPropertyPath<T, *>?, pro
 
     val userSentence: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__UserSentence)
+
+    val userSentenceLocale: KPropertyPath<T, Locale?>
+        get() = KPropertyPath(this,__UserSentenceLocale)
 
     val configurationName: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__ConfigurationName)

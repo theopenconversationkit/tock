@@ -16,13 +16,12 @@
 
 package ai.tock.nlp.dialogflow
 
-import com.github.salomonbrys.kodein.instance
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.SimpleAnswer
 import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
-import ai.tock.bot.definition.Intent
+import ai.tock.bot.definition.SimpleIntentName
 import ai.tock.bot.mongo.botMongoModule
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.ioc.FrontIoc
@@ -37,6 +36,7 @@ import ai.tock.shared.trace
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.Translator
+import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import java.util.Locale
 
@@ -108,7 +108,7 @@ object DialogflowIntentImporter {
                         val storyDefinitionConfiguration = StoryDefinitionConfiguration(
                             intentName,
                             application.name,
-                            Intent(intentName),
+                            SimpleIntentName(intentName),
                             AnswerConfigurationType.simple,
                             simpleAnswers,
                             namespace = application.namespace

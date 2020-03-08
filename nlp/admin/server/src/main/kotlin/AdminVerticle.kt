@@ -18,7 +18,27 @@ package ai.tock.nlp.admin
 
 import ai.tock.nlp.admin.AdminService.front
 import ai.tock.nlp.admin.CsvCodec.newPrinter
-import ai.tock.nlp.admin.model.*
+import ai.tock.nlp.admin.model.ApplicationScopedQuery
+import ai.tock.nlp.admin.model.ApplicationWithIntents
+import ai.tock.nlp.admin.model.CreateEntityQuery
+import ai.tock.nlp.admin.model.EntityTestErrorQueryResultReport
+import ai.tock.nlp.admin.model.EntityTestErrorWithSentenceReport
+import ai.tock.nlp.admin.model.IntentTestErrorQueryResultReport
+import ai.tock.nlp.admin.model.IntentTestErrorWithSentenceReport
+import ai.tock.nlp.admin.model.LogStatsQuery
+import ai.tock.nlp.admin.model.LogsQuery
+import ai.tock.nlp.admin.model.PaginatedQuery
+import ai.tock.nlp.admin.model.ParseQuery
+import ai.tock.nlp.admin.model.PredefinedLabelQuery
+import ai.tock.nlp.admin.model.PredefinedValueQuery
+import ai.tock.nlp.admin.model.SearchQuery
+import ai.tock.nlp.admin.model.SentenceReport
+import ai.tock.nlp.admin.model.SentencesReport
+import ai.tock.nlp.admin.model.SentencesTextQuery
+import ai.tock.nlp.admin.model.TestBuildQuery
+import ai.tock.nlp.admin.model.TranslateSentencesQuery
+import ai.tock.nlp.admin.model.UpdateEntityDefinitionQuery
+import ai.tock.nlp.admin.model.UpdateSentencesQuery
 import ai.tock.nlp.core.DictionaryData
 import ai.tock.nlp.core.NlpEngineType
 import ai.tock.nlp.core.PredefinedValue
@@ -35,10 +55,10 @@ import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.monitoring.UserActionLog
 import ai.tock.nlp.front.shared.monitoring.UserActionLogQuery
 import ai.tock.nlp.front.shared.user.UserNamespace
+import ai.tock.shared.Executor
+import ai.tock.shared.TOCK_BOT_DATABASE
 import ai.tock.shared.TOCK_FRONT_DATABASE
 import ai.tock.shared.TOCK_MODEL_DATABASE
-import ai.tock.shared.TOCK_BOT_DATABASE
-import ai.tock.shared.Executor
 import ai.tock.shared.devEnvironment
 import ai.tock.shared.error
 import ai.tock.shared.injector
@@ -59,6 +79,7 @@ import ai.tock.shared.vertx.detailedHealthcheck
 import io.netty.handler.codec.http.HttpHeaderNames
 import io.vertx.core.Handler
 import io.vertx.core.http.HttpMethod.GET
+import io.vertx.ext.web.FileUpload
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.StaticHandler
 import mu.KLogger
@@ -100,7 +121,7 @@ open class AdminVerticle : WebVerticle() {
                         applicationIdProvider.invoke(context, data as? T),
                         context.userLogin,
                         actionType,
-                        dataProvider(context) ?: data,
+                        (dataProvider(context) ?: data)?.takeUnless { it is FileUpload },
                         error
                     )
                     injector.provide<Executor>().executeBlocking { FrontClient.save(log) }
@@ -189,8 +210,8 @@ open class AdminVerticle : WebVerticle() {
         }
 
         blockingJsonPost(
-                "/sentences/dump/:dumpType/:applicationId/fromText",
-                admin
+            "/sentences/dump/:dumpType/:applicationId/fromText",
+            admin
         ) { context, query: SentencesTextQuery ->
             val id: Id<ApplicationDefinition> = context.pathId("applicationId")
             if (context.organization == front.getApplicationById(id)?.namespace) {

@@ -18,7 +18,7 @@ package ai.tock.bot.admin.story.dump
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep
-import ai.tock.bot.definition.Intent
+import ai.tock.bot.definition.SimpleIntentName
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nLabelValue
 
@@ -30,11 +30,11 @@ data class StoryDefinitionConfigurationStepDump(
     /**
      * The intent used to reach the step - mandatory if an answer is set, or if there is a [targetIntent].
      */
-    val intent: Intent?,
+    val intent: SimpleIntentName?,
     /**
      * The optional intent to switch to when the step is reached.
      */
-    val targetIntent: Intent?,
+    val targetIntent: SimpleIntentName?,
     /**
      * The answers available.
      */
@@ -69,7 +69,7 @@ data class StoryDefinitionConfigurationStepDump(
                     I18nKeyProvider.generateKey(namespace, category, def.userSentence),
                     namespace,
                     category,
-                    def.userSentence
+                    def.userSentenceLabel?.defaultLabel ?: def.userSentence
                 ),
             def.children.map { StoryDefinitionConfigurationStepDump(it, namespace, category) },
             def.level

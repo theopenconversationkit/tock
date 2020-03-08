@@ -16,12 +16,16 @@
 
 package ai.tock.bot.definition
 
+import ai.tock.shared.withoutNamespace
+
 /**
  * Convenient interface used to compare [Intent] with [StoryDefinition].
  */
 interface IntentAware {
 
     fun wrappedIntent(): Intent
+
+    fun simpleIntentName(): SimpleIntentName = SimpleIntentName(wrappedIntent().name.withoutNamespace())
 
     /**
      * Is it the right intent?

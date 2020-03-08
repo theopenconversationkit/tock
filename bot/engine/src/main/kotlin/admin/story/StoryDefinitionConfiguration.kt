@@ -22,12 +22,14 @@ import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
 import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.Intent
+import ai.tock.bot.definition.SimpleIntentName
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
 import ai.tock.shared.defaultNamespace
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
+import java.util.Locale
 
 /**
  * A [StoryDefinition] defined at runtime.
@@ -44,7 +46,7 @@ data class StoryDefinitionConfiguration(
     /**
      * The target main intent.
      */
-    val intent: Intent,
+    val intent: SimpleIntentName,
     /**
      * The type of answer configuration.
      */
@@ -86,6 +88,10 @@ data class StoryDefinitionConfiguration(
      */
     val userSentence: String = "",
     /**
+     * The user sentence sample locale.
+     */
+    val userSentenceLocale: Locale? = null,
+    /**
      * The configuration name if any.
      */
     val configurationName: String? = null,
@@ -103,7 +109,7 @@ data class StoryDefinitionConfiguration(
         this(
             storyDefinition.id,
             botDefinition.botId,
-            storyDefinition.mainIntent().wrappedIntent(),
+            storyDefinition.mainIntent().simpleIntentName(),
             builtin,
             listOf(BuiltInAnswerConfiguration(storyDefinition.javaClass.kotlin.qualifiedName)),
             namespace = botDefinition.namespace,
@@ -142,6 +148,9 @@ data class StoryDefinitionConfiguration(
                 }
             } ?: findDefaultEnabledFeature()
         }
+
+    @Transient
+    internal val mainIntent:Intent = intent.intent(namespace)
 
     private fun findDefaultEnabledFeature(): StoryDefinitionConfigurationFeature? = features.find { it.botApplicationConfigurationId == null && it.enabled }
 }

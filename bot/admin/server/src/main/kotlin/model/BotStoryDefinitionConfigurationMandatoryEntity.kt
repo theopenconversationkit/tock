@@ -20,6 +20,7 @@ import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity
 import ai.tock.bot.definition.Intent
+import ai.tock.bot.definition.SimpleIntentName
 import ai.tock.nlp.front.shared.config.EntityDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition
 
@@ -35,7 +36,7 @@ data class BotStoryDefinitionConfigurationMandatoryEntity(
     /**
      * The intent used to find the entities.
      */
-    val intent: Intent,
+    val intent: SimpleIntentName,
     /**
      * The answers available.
      */

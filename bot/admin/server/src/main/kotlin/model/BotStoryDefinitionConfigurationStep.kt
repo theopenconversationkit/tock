@@ -20,6 +20,7 @@ import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep
 import ai.tock.bot.definition.Intent
+import ai.tock.bot.definition.SimpleIntentName
 import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nLabel
@@ -34,11 +35,11 @@ data class BotStoryDefinitionConfigurationStep(
     /**
      * The intent used to reach the step
      */
-    val intent: Intent?,
+    val intent: SimpleIntentName?,
     /**
      * The optional intent to switch to when the step is reached.
      */
-    val targetIntent: Intent?,
+    val targetIntent: SimpleIntentName?,
     /**
      * The answers available.
      */

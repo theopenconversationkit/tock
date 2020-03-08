@@ -19,7 +19,7 @@ package ai.tock.bot.admin.story.dump
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity
 import ai.tock.bot.admin.story.dump.AnswerConfigurationDump.Companion.toDump
-import ai.tock.bot.definition.Intent
+import ai.tock.bot.definition.SimpleIntentName
 
 data class StoryDefinitionConfigurationMandatoryEntityDump(
     /**
@@ -33,7 +33,7 @@ data class StoryDefinitionConfigurationMandatoryEntityDump(
     /**
      * The intent used to find the entities.
      */
-    val intent: Intent,
+    val intent: SimpleIntentName,
     /**
      * The answers available.
      */

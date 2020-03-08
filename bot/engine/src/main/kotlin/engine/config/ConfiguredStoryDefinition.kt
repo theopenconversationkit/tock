@@ -36,19 +36,19 @@ internal class ConfiguredStoryDefinition(val configuration: StoryDefinitionConfi
     override val id: String = configuration._id.toString()
 
     override val starterIntents: Set<Intent> =
-        setOf(configuration.intent) + (configuration.storyDefinition(configuration.botId)?.starterIntents
+        setOf(configuration.mainIntent) + (configuration.storyDefinition(configuration.botId)?.starterIntents
             ?: emptySet())
 
     override val storyHandler: StoryHandler = ConfiguredStoryHandler(configuration)
 
     override val steps: Set<StoryStep<*>> =
         (configuration.storyDefinition(configuration.botId)?.steps ?: emptySet()) +
-            configuration.steps.map { it.toStoryStep() }
+            configuration.steps.map { it.toStoryStep(configuration) }
 
     override val intents: Set<Intent> =
         starterIntents +
             (configuration.storyDefinition(configuration.botId)?.intents ?: emptySet()) +
-            configuration.mandatoryEntities.map { it.intent } +
+            configuration.mandatoryEntities.map { it.intent.intent(configuration.namespace) } +
             allSteps()
                 .filterIsInstance<Step>()
                 .filter { it.configuration.findCurrentAnswer() != null || it.configuration.targetIntent != null }
@@ -61,7 +61,7 @@ internal class ConfiguredStoryDefinition(val configuration: StoryDefinitionConfi
         mutableSetOf<StoryStep<*>>().apply { configuration.steps.forEach { allStep(this, it) } }
 
     private fun allStep(result: MutableSet<StoryStep<*>>, step: StoryDefinitionConfigurationStep) {
-        result.add(step.toStoryStep())
+        result.add(step.toStoryStep(configuration))
         step.children.forEach { allStep(result, it) }
     }
 

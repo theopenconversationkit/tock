@@ -226,6 +226,7 @@ export class StoryComponent implements OnInit, OnChanges {
       "build",
       intent.name,
       "",
+      this.state.currentLocale,
       []
     );
   }

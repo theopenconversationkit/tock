@@ -137,7 +137,7 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
   }
 
   upload() {
-    this.bot.prepareStoryDumpUploader(this.uploader, this.state.currentApplication.name);
+    this.bot.prepareStoryDumpUploader(this.uploader, this.state.currentApplication.name, this.state.currentLocale);
     this.uploader.uploadAll();
     this.displayUpload = false;
   }

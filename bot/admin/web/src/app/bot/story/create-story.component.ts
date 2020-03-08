@@ -125,6 +125,7 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
           "build",
           "",
           "",
+          this.state.currentLocale,
           []
         );
         if (!this.textRetrieved) {

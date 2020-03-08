@@ -93,7 +93,7 @@
       <mat-icon>file_upload</mat-icon>
       Upload JSON
     </button>
-    <button mat-raised-button (click)="displayImportExport = false">Close</button>
+    <button mat-button (click)="displayImportExport = false"><mat-icon>close</mat-icon> Close</button>
 
     <nb-card *ngIf="displayUpload">
       <nb-card-header>Upload a {{uploadType}} File</nb-card-header>
@@ -102,14 +102,16 @@
           <label for="file">Please select a {{uploadType}} file:</label>
           <input id="file" type="file" ng2FileSelect [uploader]="uploader"/>
         </p>
+        <p>
+          <button (click)="displayUpload = false" mat-button>
+            Cancel
+          </button>
+          <button (click)="upload()" [disabled]="!uploader.getNotUploadedItems().length" mat-raised-button
+                  color="primary">
+            Upload
+          </button>
+        </p>
       </nb-card-body>
-      <button (click)="displayUpload = false" mat-button>
-        Cancel
-      </button>
-      <button (click)="upload()" [disabled]="!uploader.getNotUploadedItems().length" mat-raised-button
-              color="primary">
-        Upload
-      </button>
     </nb-card>
   </nb-card-body>
 </nb-card>

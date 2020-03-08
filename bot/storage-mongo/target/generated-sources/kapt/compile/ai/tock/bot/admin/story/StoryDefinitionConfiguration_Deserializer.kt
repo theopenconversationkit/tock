@@ -2,13 +2,14 @@ package ai.tock.bot.admin.story
 
 import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType
-import ai.tock.bot.definition.Intent
+import ai.tock.bot.definition.SimpleIntentName
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
+import java.util.Locale
 import kotlin.Int
 import kotlin.String
 import kotlin.collections.List
@@ -33,7 +34,7 @@ internal class StoryDefinitionConfiguration_Deserializer :
             var _storyId_set : Boolean = false
             var _botId_: String? = null
             var _botId_set : Boolean = false
-            var _intent_: Intent? = null
+            var _intent_: SimpleIntentName? = null
             var _intent_set : Boolean = false
             var _currentType_: AnswerConfigurationType? = null
             var _currentType_set : Boolean = false
@@ -56,6 +57,8 @@ internal class StoryDefinitionConfiguration_Deserializer :
             var _description_set : Boolean = false
             var _userSentence_: String? = null
             var _userSentence_set : Boolean = false
+            var _userSentenceLocale_: Locale? = null
+            var _userSentenceLocale_set : Boolean = false
             var _configurationName_: String? = null
             var _configurationName_set : Boolean = false
             var _features_: MutableList<StoryDefinitionConfigurationFeature>? = null
@@ -84,7 +87,7 @@ internal class StoryDefinitionConfiguration_Deserializer :
                             }
                     "intent" -> {
                             _intent_ = if(_token_ == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Intent::class.java);
+                             else p.readValueAs(SimpleIntentName::class.java);
                             _intent_set = true
                             }
                     "currentType" -> {
@@ -137,6 +140,11 @@ internal class StoryDefinitionConfiguration_Deserializer :
                              else p.text;
                             _userSentence_set = true
                             }
+                    "userSentenceLocale" -> {
+                            _userSentenceLocale_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(Locale::class.java);
+                            _userSentenceLocale_set = true
+                            }
                     "configurationName" -> {
                             _configurationName_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
@@ -163,14 +171,15 @@ internal class StoryDefinitionConfiguration_Deserializer :
             return if(_storyId_set && _botId_set && _intent_set && _currentType_set && _answers_set
                     && _version_set && _namespace_set && _mandatoryEntities_set && _steps_set &&
                     _name_set && _category_set && _description_set && _userSentence_set &&
-                    _configurationName_set && _features_set && __id_set)
+                    _userSentenceLocale_set && _configurationName_set && _features_set && __id_set)
                     StoryDefinitionConfiguration(storyId = _storyId_!!, botId = _botId_!!, intent =
                             _intent_!!, currentType = _currentType_!!, answers = _answers_!!,
                             version = _version_!!, namespace = _namespace_!!, mandatoryEntities =
                             _mandatoryEntities_!!, steps = _steps_!!, name = _name_!!, category =
                             _category_!!, description = _description_!!, userSentence =
-                            _userSentence_!!, configurationName = _configurationName_, features =
-                            _features_!!, _id = __id_!!)
+                            _userSentence_!!, userSentenceLocale = _userSentenceLocale_,
+                            configurationName = _configurationName_, features = _features_!!, _id =
+                            __id_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_storyId_set)
@@ -199,6 +208,8 @@ internal class StoryDefinitionConfiguration_Deserializer :
                     map[parameters.getValue("description")] = _description_
                     if(_userSentence_set)
                     map[parameters.getValue("userSentence")] = _userSentence_
+                    if(_userSentenceLocale_set)
+                    map[parameters.getValue("userSentenceLocale")] = _userSentenceLocale_
                     if(_configurationName_set)
                     map[parameters.getValue("configurationName")] = _configurationName_
                     if(_features_set)
@@ -229,8 +240,9 @@ internal class StoryDefinitionConfiguration_Deserializer :
                 primaryConstructor.findParameterByName("name")!!, "category" to
                 primaryConstructor.findParameterByName("category")!!, "description" to
                 primaryConstructor.findParameterByName("description")!!, "userSentence" to
-                primaryConstructor.findParameterByName("userSentence")!!, "configurationName" to
-                primaryConstructor.findParameterByName("configurationName")!!, "features" to
+                primaryConstructor.findParameterByName("userSentence")!!, "userSentenceLocale" to
+                primaryConstructor.findParameterByName("userSentenceLocale")!!, "configurationName"
+                to primaryConstructor.findParameterByName("configurationName")!!, "features" to
                 primaryConstructor.findParameterByName("features")!!, "_id" to
                 primaryConstructor.findParameterByName("_id")!!) }
 
