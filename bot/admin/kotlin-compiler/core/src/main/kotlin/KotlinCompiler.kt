@@ -141,7 +141,7 @@ internal object KotlinCompiler {
     ): CompilationResult {
         val generationState = getGenerationState(currentPsiFiles, currentProject, configuration)
         val mainClass = findMainClass(generationState.bindingContext, currentPsiFiles, fileName, searchForMain)
-        KotlinCodegenFacade.compileCorrectFiles(generationState) { throwable, _ -> throw throwable }
+        KotlinCodegenFacade.compileCorrectFiles(generationState)
 
         val factory = generationState.factory
         val files = HashMap<String, ByteArray>()

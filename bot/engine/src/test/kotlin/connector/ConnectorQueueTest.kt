@@ -3,8 +3,6 @@ package ai.tock.bot.connector
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.Executor
-import ai.tock.shared.vertx.blocking
-import ai.tock.shared.vertx.vertx
 import io.mockk.Ordering
 import io.mockk.every
 import io.mockk.mockk

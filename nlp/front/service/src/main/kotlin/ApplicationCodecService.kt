@@ -156,7 +156,6 @@ internal object ApplicationCodecService : ApplicationCodec {
         logger.info { "Import dump..." }
         val report = ImportReport()
         try {
-
             dump.entityTypes.forEach { e ->
                 if (!entityTypeExists(e.newName(namespace))) {
                     val newEntity = e.copy(_id = newId(), name = e.newName(namespace))
@@ -211,7 +210,7 @@ internal object ApplicationCodecService : ApplicationCodec {
             val appId = app._id
 
             val intentsToCreate = mutableListOf<IntentDefinition>()
-            var intentsIdsMap = dump.intents.map { i ->
+            val intentsIdsMap = dump.intents.map { i ->
                 var intent = config.getIntentByNamespaceAndName(namespace, i.name)
                 if (intent == null) {
                     intent = i.copy(
@@ -225,7 +224,7 @@ internal object ApplicationCodecService : ApplicationCodec {
                     config.save(intent.copy(namespace = namespace, applications = intent.applications + appId))
                 }
                 i._id to intent._id
-            }.toMap()
+            }.toMap().toMutableMap()
 
             //save new intents
             intentsToCreate.forEach { intent ->
@@ -247,7 +246,7 @@ internal object ApplicationCodecService : ApplicationCodec {
             report.localeAdded = !app.supportedLocales.containsAll(dump.application.supportedLocales)
 
             //add unknown intent to intent map
-            intentsIdsMap += (UNKNOWN_INTENT_NAME.toId<IntentDefinition>() to UNKNOWN_INTENT_NAME.toId())
+            intentsIdsMap[UNKNOWN_INTENT_NAME.toId()] = UNKNOWN_INTENT_NAME.toId()
 
             dump.sentences.forEach { s ->
                 if (config.search(
@@ -437,9 +436,11 @@ internal object ApplicationCodecService : ApplicationCodec {
             .groupBy { it._id }
             .mapValues { it.value.first() }
 
-        val sentences = queries.flatMap { config
+        val sentences = queries.flatMap {
+            config
                 .search(it.copy(start = 0, size = Integer.MAX_VALUE, searchMark = null))
-                .sentences }
+                .sentences
+        }
 
         return SentencesDump(
             app.qualifiedName,

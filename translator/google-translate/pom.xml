@@ -29,7 +29,7 @@
     <description>Google translator implementation</description>
 
     <properties>
-        <google.translate>1.94.2</google.translate>
+        <google.translate>1.94.4</google.translate>
     </properties>
 
     <dependencies>
