@@ -84,7 +84,6 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
           s2.selected = true;
         }
       }
-      this.stories = s.filter(story => !story.isBuiltIn());
       this.loadedStories = s;
       s.forEach(story => {
         story.hideDetails = true;
@@ -93,6 +92,7 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
         }
       });
       this.categories.sort();
+      this.search();
       this.loading = false;
     });
   }
