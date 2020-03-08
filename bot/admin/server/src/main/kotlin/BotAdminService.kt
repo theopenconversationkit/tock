@@ -56,7 +56,7 @@ import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpController
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationFeatureDump
 import ai.tock.bot.admin.user.UserReportDAO
-import ai.tock.bot.definition.SimpleIntentName
+import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.engine.dialog.DialogFlowDAO
 import ai.tock.bot.engine.feature.FeatureDAO
 import ai.tock.bot.engine.feature.FeatureState
@@ -144,7 +144,7 @@ object BotAdminService {
             }
         }
 
-        override fun checkIntent(intent: SimpleIntentName?): SimpleIntentName? {
+        override fun checkIntent(intent: IntentWithoutNamespace?): IntentWithoutNamespace? {
             if (intent != null) {
                 createOrGetIntent(
                     targetNamespace,

@@ -21,7 +21,7 @@ import ai.tock.bot.admin.answer.SimpleAnswer
 import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
-import ai.tock.bot.definition.SimpleIntentName
+import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.mongo.botMongoModule
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.ioc.FrontIoc
@@ -108,7 +108,7 @@ object DialogflowIntentImporter {
                         val storyDefinitionConfiguration = StoryDefinitionConfiguration(
                             intentName,
                             application.name,
-                            SimpleIntentName(intentName),
+                            IntentWithoutNamespace(intentName),
                             AnswerConfigurationType.simple,
                             simpleAnswers,
                             namespace = application.namespace

@@ -22,7 +22,7 @@ import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
 import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.Intent
-import ai.tock.bot.definition.SimpleIntentName
+import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
@@ -46,7 +46,7 @@ data class StoryDefinitionConfiguration(
     /**
      * The target main intent.
      */
-    val intent: SimpleIntentName,
+    val intent: IntentWithoutNamespace,
     /**
      * The type of answer configuration.
      */
@@ -109,7 +109,7 @@ data class StoryDefinitionConfiguration(
         this(
             storyDefinition.id,
             botDefinition.botId,
-            storyDefinition.mainIntent().simpleIntentName(),
+            storyDefinition.mainIntent().intentWithoutNamespace(),
             builtin,
             listOf(BuiltInAnswerConfiguration(storyDefinition.javaClass.kotlin.qualifiedName)),
             namespace = botDefinition.namespace,

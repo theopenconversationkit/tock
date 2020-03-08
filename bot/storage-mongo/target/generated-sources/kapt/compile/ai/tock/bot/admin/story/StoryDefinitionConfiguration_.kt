@@ -2,8 +2,8 @@ package ai.tock.bot.admin.story
 
 import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType
-import ai.tock.bot.definition.SimpleIntentName
-import ai.tock.bot.definition.SimpleIntentName_
+import ai.tock.bot.definition.IntentWithoutNamespace
+import ai.tock.bot.definition.IntentWithoutNamespace_
 import java.util.Locale
 import kotlin.Int
 import kotlin.String
@@ -22,7 +22,7 @@ private val __StoryId: KProperty1<StoryDefinitionConfiguration, String?>
     get() = StoryDefinitionConfiguration::storyId
 private val __BotId: KProperty1<StoryDefinitionConfiguration, String?>
     get() = StoryDefinitionConfiguration::botId
-private val __Intent: KProperty1<StoryDefinitionConfiguration, SimpleIntentName?>
+private val __Intent: KProperty1<StoryDefinitionConfiguration, IntentWithoutNamespace?>
     get() = StoryDefinitionConfiguration::intent
 private val __CurrentType: KProperty1<StoryDefinitionConfiguration, AnswerConfigurationType?>
     get() = StoryDefinitionConfiguration::currentType
@@ -64,8 +64,8 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
     val botId: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__BotId)
 
-    val intent: SimpleIntentName_<T>
-        get() = SimpleIntentName_(this,StoryDefinitionConfiguration::intent)
+    val intent: IntentWithoutNamespace_<T>
+        get() = IntentWithoutNamespace_(this,StoryDefinitionConfiguration::intent)
 
     val currentType: KPropertyPath<T, AnswerConfigurationType?>
         get() = KPropertyPath(this,__CurrentType)
@@ -115,8 +115,8 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
             get() = __StoryId
         val BotId: KProperty1<StoryDefinitionConfiguration, String?>
             get() = __BotId
-        val Intent: SimpleIntentName_<StoryDefinitionConfiguration>
-            get() = SimpleIntentName_(null,__Intent)
+        val Intent: IntentWithoutNamespace_<StoryDefinitionConfiguration>
+            get() = IntentWithoutNamespace_(null,__Intent)
         val CurrentType: KProperty1<StoryDefinitionConfiguration, AnswerConfigurationType?>
             get() = __CurrentType
         val Answers: KCollectionSimplePropertyPath<StoryDefinitionConfiguration,
@@ -160,8 +160,8 @@ class StoryDefinitionConfiguration_Col<T>(previous: KPropertyPath<T, *>?, proper
     val botId: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__BotId)
 
-    val intent: SimpleIntentName_<T>
-        get() = SimpleIntentName_(this,StoryDefinitionConfiguration::intent)
+    val intent: IntentWithoutNamespace_<T>
+        get() = IntentWithoutNamespace_(this,StoryDefinitionConfiguration::intent)
 
     val currentType: KPropertyPath<T, AnswerConfigurationType?>
         get() = KPropertyPath(this,__CurrentType)
@@ -219,8 +219,8 @@ class StoryDefinitionConfiguration_Map<T, K>(previous: KPropertyPath<T, *>?, pro
     val botId: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__BotId)
 
-    val intent: SimpleIntentName_<T>
-        get() = SimpleIntentName_(this,StoryDefinitionConfiguration::intent)
+    val intent: IntentWithoutNamespace_<T>
+        get() = IntentWithoutNamespace_(this,StoryDefinitionConfiguration::intent)
 
     val currentType: KPropertyPath<T, AnswerConfigurationType?>
         get() = KPropertyPath(this,__CurrentType)

@@ -25,7 +25,7 @@ interface IntentAware {
 
     fun wrappedIntent(): Intent
 
-    fun simpleIntentName(): SimpleIntentName = SimpleIntentName(wrappedIntent().name.withoutNamespace())
+    fun intentWithoutNamespace(): IntentWithoutNamespace = IntentWithoutNamespace(wrappedIntent().name.withoutNamespace())
 
     /**
      * Is it the right intent?

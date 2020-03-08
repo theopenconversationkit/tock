@@ -23,7 +23,7 @@ import ai.tock.bot.admin.test.TestPlan
 import ai.tock.bot.admin.test.TestPlanExecution
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.Intent
-import ai.tock.bot.definition.SimpleIntentName
+import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.engine.dialog.EventState
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.translator.I18nLabel
@@ -44,7 +44,7 @@ import org.litote.kmongo.DataRegistry
         TestPlan::class,
         TestPlanExecution::class,
         Intent::class,
-        SimpleIntentName::class,
+        IntentWithoutNamespace::class,
         PlayerId::class,
         EventState::class,
         ConnectorType::class
@@ -60,7 +60,7 @@ import org.litote.kmongo.DataRegistry
         TestPlan::class,
         TestPlanExecution::class,
         Intent::class,
-        SimpleIntentName::class,
+        IntentWithoutNamespace::class,
         PlayerId::class,
         ConnectorType::class
     ]

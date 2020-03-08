@@ -13,11 +13,11 @@ import kotlin.reflect.full.findParameterByName
 import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 
-internal class SimpleIntentName_Deserializer : JsonDeserializer<SimpleIntentName>(),
+internal class IntentWithoutNamespace_Deserializer : JsonDeserializer<IntentWithoutNamespace>(),
         JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addDeserializer(SimpleIntentName::class.java, this)
+    override fun module() = SimpleModule().addDeserializer(IntentWithoutNamespace::class.java, this)
 
-    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): SimpleIntentName {
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): IntentWithoutNamespace {
         with(p) {
             var _name_: String? = null
             var _name_set : Boolean = false
@@ -45,7 +45,7 @@ internal class SimpleIntentName_Deserializer : JsonDeserializer<SimpleIntentName
                 _token_ = currentToken
                         } 
             return if(_name_set)
-                    SimpleIntentName(name = _name_!!)
+                    IntentWithoutNamespace(name = _name_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_name_set)
@@ -56,9 +56,9 @@ internal class SimpleIntentName_Deserializer : JsonDeserializer<SimpleIntentName
     }
 
     companion object {
-        private val primaryConstructor: KFunction<SimpleIntentName> by
+        private val primaryConstructor: KFunction<IntentWithoutNamespace> by
                 lazy(LazyThreadSafetyMode.PUBLICATION) {
-                SimpleIntentName::class.primaryConstructor!! }
+                IntentWithoutNamespace::class.primaryConstructor!! }
 
         private val parameters: Map<String, KParameter> by lazy(LazyThreadSafetyMode.PUBLICATION) {
                 kotlin.collections.mapOf("name" to primaryConstructor.findParameterByName("name")!!)

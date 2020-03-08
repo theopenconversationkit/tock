@@ -18,7 +18,7 @@ package ai.tock.bot.admin.story.dump
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
-import ai.tock.bot.definition.SimpleIntentName
+import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.shared.defaultNamespace
 import java.util.Locale
 
@@ -34,7 +34,7 @@ data class StoryDefinitionConfigurationDump(
     /**
      * The target main intent.
      */
-    val intent: SimpleIntentName,
+    val intent: IntentWithoutNamespace,
     /**
      * The type of answer configuration.
      */

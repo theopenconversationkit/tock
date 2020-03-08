@@ -6,12 +6,13 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.litote.jackson.JacksonModuleServiceLoader
 
-internal class SimpleIntentName_Serializer :
-        StdSerializer<SimpleIntentName>(SimpleIntentName::class.java), JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(SimpleIntentName::class.java, this)
+internal class IntentWithoutNamespace_Serializer :
+        StdSerializer<IntentWithoutNamespace>(IntentWithoutNamespace::class.java),
+        JacksonModuleServiceLoader {
+    override fun module() = SimpleModule().addSerializer(IntentWithoutNamespace::class.java, this)
 
     override fun serialize(
-        value: SimpleIntentName,
+        value: IntentWithoutNamespace,
         gen: JsonGenerator,
         serializers: SerializerProvider
     ) {

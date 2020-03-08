@@ -17,12 +17,12 @@
 package ai.tock.bot.admin.story.dump
 
 import ai.tock.bot.admin.answer.ScriptAnswerVersionedConfiguration
-import ai.tock.bot.definition.SimpleIntentName
+import ai.tock.bot.definition.IntentWithoutNamespace
 
 interface StoryDefinitionConfigurationDumpController {
     val targetNamespace: String
     val botId: String
     fun keepFeature(feature: StoryDefinitionConfigurationFeatureDump): Boolean
     fun buildScript(script: ScriptAnswerVersionedConfigurationDump, compile: Boolean): ScriptAnswerVersionedConfiguration
-    fun checkIntent(intent: SimpleIntentName?): SimpleIntentName?
+    fun checkIntent(intent: IntentWithoutNamespace?): IntentWithoutNamespace?
 }

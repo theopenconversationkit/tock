@@ -2,7 +2,7 @@ package ai.tock.bot.admin.story
 
 import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType
-import ai.tock.bot.definition.SimpleIntentName
+import ai.tock.bot.definition.IntentWithoutNamespace
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
@@ -34,7 +34,7 @@ internal class StoryDefinitionConfiguration_Deserializer :
             var _storyId_set : Boolean = false
             var _botId_: String? = null
             var _botId_set : Boolean = false
-            var _intent_: SimpleIntentName? = null
+            var _intent_: IntentWithoutNamespace? = null
             var _intent_set : Boolean = false
             var _currentType_: AnswerConfigurationType? = null
             var _currentType_set : Boolean = false
@@ -87,7 +87,7 @@ internal class StoryDefinitionConfiguration_Deserializer :
                             }
                     "intent" -> {
                             _intent_ = if(_token_ == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(SimpleIntentName::class.java);
+                             else p.readValueAs(IntentWithoutNamespace::class.java);
                             _intent_set = true
                             }
                     "currentType" -> {

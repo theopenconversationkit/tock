@@ -20,7 +20,7 @@ import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
 import ai.tock.bot.definition.IntentAware
-import ai.tock.bot.definition.SimpleIntentName
+import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.definition.SimpleStoryStep
 import ai.tock.bot.definition.StoryHandlerDefinition
 import ai.tock.bot.definition.StoryStep
@@ -38,11 +38,11 @@ data class StoryDefinitionConfigurationStep(
     /**
      * The intent used to reach the step - mandatory if an answer is set, or if there is a [targetIntent].
      */
-    val intent: SimpleIntentName?,
+    val intent: IntentWithoutNamespace?,
     /**
      * The optional intent to switch to when the step is reached.
      */
-    val targetIntent: SimpleIntentName?,
+    val targetIntent: IntentWithoutNamespace?,
     /**
      * The answers available.
      */
@@ -86,7 +86,7 @@ data class StoryDefinitionConfigurationStep(
     constructor(step: StoryStep<*>) :
         this(
             step.name,
-            step.intent?.simpleIntentName(),
+            step.intent?.intentWithoutNamespace(),
             null,
             emptyList(),
             builtin

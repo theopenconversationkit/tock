@@ -23,7 +23,7 @@ import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
 import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
-import ai.tock.bot.definition.SimpleIntentName
+import ai.tock.bot.definition.IntentWithoutNamespace
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.util.Locale
@@ -44,7 +44,7 @@ internal fun List<AnswerConfiguration>.mapAnswers(): List<BotAnswerConfiguration
 data class BotStoryDefinitionConfiguration(
     val storyId: String,
     val botId: String,
-    val intent: SimpleIntentName,
+    val intent: IntentWithoutNamespace,
     val currentType: AnswerConfigurationType,
     val namespace: String,
     val answers: List<BotAnswerConfiguration>,
