@@ -35,6 +35,7 @@ import ai.tock.shared.getAsyncDatabase
 import ai.tock.shared.getDatabase
 import ai.tock.translator.I18nDAO
 import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.singleton
 import org.litote.kmongo.getCollection
 
 const val MONGO_DATABASE: String = TOCK_BOT_DATABASE
@@ -54,7 +55,7 @@ val botMongoModule = Kodein.Module {
     bind<DialogReportDAO>() with provider { UserTimelineMongoDAO }
     bind<TestPlanDAO>() with provider { TestPlanMongoDAO }
     bind<UserLock>() with provider { MongoUserLock }
-    bind<FeatureCache>() with provider { MongoFeatureCache() }
-    bind<FeatureDAO>() with provider { FeatureMongoDAO(instance(), MongoBotConfiguration.database.getCollection()) }
+    bind<FeatureCache>() with singleton { MongoFeatureCache() }
+    bind<FeatureDAO>() with singleton { FeatureMongoDAO(instance(), MongoBotConfiguration.database.getCollection()) }
     bind<DialogFlowDAO>() with provider { DialogFlowMongoDAO }
 }
