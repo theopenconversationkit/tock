@@ -30,6 +30,38 @@
 </tr>
 <tr>
 <td>
+<h4><a href="-font-loader/index.html">FontLoader</a></h4>
+</td>
+<td>
+<p>Load and register fonts.</p>
+<code><span class="keyword">object </span><span class="identifier">FontLoader</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-image-format/index.html">ImageFormat</a></h4>
+</td>
+<td>
+<p>Supported generation format.</p>
+<code><span class="keyword">enum</span> <span class="keyword">class </span><span class="identifier">ImageFormat</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-image-generator/index.html">ImageGenerator</a></h4>
+</td>
+<td>
+<p>Generates an image from a svg template.</p>
+<code><span class="keyword">class </span><span class="identifier">ImageGenerator</span><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-image-parameters-extractor/index.html">ImageParametersExtractor</a></h4>
+</td>
+<td>
+<p>Provides a data instance from specified parameters.</p>
+<code><span class="keyword">interface </span><span class="identifier">ImageParametersExtractor</span><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
 <h4><a href="-level/index.html">Level</a></h4>
 </td>
 <td>
@@ -43,6 +75,22 @@
 <td>
 <p>Helper methods to deal with <a href="#">ServiceLoader</a>.</p>
 <code><span class="keyword">object </span><span class="identifier">Loader</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-svg-generator/index.html">SvgGenerator</a></h4>
+</td>
+<td>
+<p>Generates an image from a svg file.</p>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">SvgGenerator</span><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-svg-to-png-converter/index.html">SvgToPngConverter</a></h4>
+</td>
+<td>
+<p>Convert a svg image to png image.</p>
+<code><span class="keyword">class </span><span class="identifier">SvgToPngConverter</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -207,6 +255,38 @@ property "tock_default_zone" with default value UTC is used.</p>
 </tr>
 <tr>
 <td>
+<h4><a href="-t-o-c-k_-b-o-t_-d-a-t-a-b-a-s-e.html">TOCK_BOT_DATABASE</a></h4>
+</td>
+<td>
+<p>Tock bot database name property</p>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">TOCK_BOT_DATABASE</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-t-o-c-k_-c-a-c-h-e_-d-a-t-a-b-a-s-e.html">TOCK_CACHE_DATABASE</a></h4>
+</td>
+<td>
+<p>Tock cache database name property</p>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">TOCK_CACHE_DATABASE</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-t-o-c-k_-f-r-o-n-t_-d-a-t-a-b-a-s-e.html">TOCK_FRONT_DATABASE</a></h4>
+</td>
+<td>
+<p>Tock front database name property</p>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">TOCK_FRONT_DATABASE</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-t-o-c-k_-m-o-d-e-l_-d-a-t-a-b-a-s-e.html">TOCK_MODEL_DATABASE</a></h4>
+</td>
+<td>
+<p>Tock model database name property</p>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">TOCK_MODEL_DATABASE</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
+</tr>
+<tr>
+<td>
 <h4><a href="-t-o-c-k_-n-a-m-e-s-p-a-c-e.html">TOCK_NAMESPACE</a></h4>
 </td>
 <td>
@@ -355,7 +435,7 @@ if the env or system property is not found, use the <a href="get-database.html#a
 <h4><a href="ping-mongo-database.html">pingMongoDatabase</a></h4>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">pingMongoDatabase</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$pingMongoDatabase(com.mongodb.client.MongoDatabase)/database">database</span><span class="symbol">:</span>&nbsp;<span class="identifier">MongoDatabase</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">pingMongoDatabase</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$pingMongoDatabase(kotlin.String)/databaseName">databaseName</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
 </tr>
 <tr>
 <td>

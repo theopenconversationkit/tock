@@ -99,6 +99,7 @@ ai.tock.bot.connector.twitter.model
 ai.tock.bot.connector.twitter.model.incoming
 ai.tock.bot.connector.twitter.model.outcoming
 ai.tock.bot.connector.web
+ai.tock.bot.connector.web.send
 ai.tock.bot.connector.whatsapp
 ai.tock.bot.connector.whatsapp.model.common
 ai.tock.bot.connector.whatsapp.model.send
@@ -118,9 +119,11 @@ ai.tock.bot.engine.stt
 ai.tock.bot.engine.user
 ai.tock.bot.test
 ai.tock.bot.test.junit
+ai.tock.bot.test.mock
 ai.tock.shared
 ai.tock.shared.cache
 ai.tock.shared.jackson
 ai.tock.shared.security
 ai.tock.shared.security.auth
+ai.tock.shared.security.mongo
 ai.tock.shared.vertx

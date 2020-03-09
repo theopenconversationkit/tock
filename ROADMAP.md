@@ -1,12 +1,20 @@
-- 19.9.4 February 2020   
+- 20.3.0 March 2020
     - AB test engine workflow 
     
-- 20.3.0 March 2020
-    - Conversational framework: support for other languages than Kotlin (multi-platform Kotlin)
-    - Spacy, Rasa & Spark NLP support 
-    - Code editor admin interface
+- 20.3.1 April 2020    
+    - AB test engine workflow 
+    
+- 20.3.2 May 2020
+    - Spacy, Rasa & Spark NLP support
+    - Code editor admin interface      
+    
+- 20.3.3 June 2020
+    - Conversational framework: support for other languages than Kotlin (multi-platform Kotlin)    
     
 ## Latest releases  
+
+- 19.9.4 March 2020   
+    - Story builder enhancements & bug fixes
 
 - 19.9.3 end of January 2020   
     - Chatbase integration 

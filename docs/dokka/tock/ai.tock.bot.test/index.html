@@ -139,30 +139,6 @@
 </tr>
 <tr>
 <td>
-<h4><a href="mock-messenger.html">mockMessenger</a></h4>
-</td>
-<td>
-<p>Mock classic messenger extensions.</p>
-<code><span class="keyword">fun </span><span class="identifier">mockMessenger</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.test$mockMessenger(ai.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Unit</span></code></td>
-</tr>
-<tr>
-<td>
-<h4><a href="mock-tock-common.html">mockTockCommon</a></h4>
-</td>
-<td>
-<p>Default mockk BotBus configuration.</p>
-<code><span class="keyword">fun </span><span class="identifier">mockTockCommon</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.test$mockTockCommon(ai.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Unit</span></code></td>
-</tr>
-<tr>
-<td>
-<h4><a href="mock-twitter.html">mockTwitter</a></h4>
-</td>
-<td>
-<p>Mock classic twitter extensions.</p>
-<code><span class="keyword">fun </span><span class="identifier">mockTwitter</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.test$mockTwitter(ai.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Unit</span></code></td>
-</tr>
-<tr>
-<td>
 <h4><a href="new-bus-mock.html">newBusMock</a></h4>
 </td>
 <td>
@@ -200,14 +176,6 @@
 <td>
 <p>Provides a mock initialized with the specified <a href="../ai.tock.bot.definition/-story-definition/index.html">StoryDefinition</a> and starts the story.</p>
 <code><span class="keyword">fun </span><a href="../ai.tock.bot.definition/-bot-definition/index.html"><span class="identifier">BotDefinition</span></a><span class="symbol">.</span><span class="identifier">startNewBusMock</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.test$startNewBusMock(ai.tock.bot.definition.BotDefinition, ai.tock.bot.test.TestContext, ai.tock.bot.definition.StoryDefinition, ai.tock.bot.connector.ConnectorType, java.util.Locale, ai.tock.bot.engine.user.PlayerId)/testContext">testContext</span><span class="symbol">:</span>&nbsp;<a href="-test-context/index.html"><span class="identifier">TestContext</span></a>&nbsp;<span class="symbol">=</span>&nbsp;currentTestContext<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.test$startNewBusMock(ai.tock.bot.definition.BotDefinition, ai.tock.bot.test.TestContext, ai.tock.bot.definition.StoryDefinition, ai.tock.bot.connector.ConnectorType, java.util.Locale, ai.tock.bot.engine.user.PlayerId)/story">story</span><span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.definition/-story-definition/index.html"><span class="identifier">StoryDefinition</span></a>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultStoryDefinition(this)<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.test$startNewBusMock(ai.tock.bot.definition.BotDefinition, ai.tock.bot.test.TestContext, ai.tock.bot.definition.StoryDefinition, ai.tock.bot.connector.ConnectorType, java.util.Locale, ai.tock.bot.engine.user.PlayerId)/connectorType">connectorType</span><span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultConnectorType()<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.test$startNewBusMock(ai.tock.bot.definition.BotDefinition, ai.tock.bot.test.TestContext, ai.tock.bot.definition.StoryDefinition, ai.tock.bot.connector.ConnectorType, java.util.Locale, ai.tock.bot.engine.user.PlayerId)/locale">locale</span><span class="symbol">:</span>&nbsp;<span class="identifier">Locale</span>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultLocale()<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.test$startNewBusMock(ai.tock.bot.definition.BotDefinition, ai.tock.bot.test.TestContext, ai.tock.bot.definition.StoryDefinition, ai.tock.bot.connector.ConnectorType, java.util.Locale, ai.tock.bot.engine.user.PlayerId)/userId">userId</span><span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultPlayerId()<span class="symbol">)</span><span class="symbol">: </span><a href="-bot-bus-mock/index.html"><span class="identifier">BotBusMock</span></a></code></td>
-</tr>
-<tr>
-<td>
-<h4><a href="test.html">test</a></h4>
-</td>
-<td>
-<p>Test a <a href="#">StoryDefinition</a> with a mocked (mockk) <a href="../ai.tock.bot.engine/-bot-bus/index.html">BotBus</a>.</p>
-<code><span class="keyword">fun </span><a href="../ai.tock.bot.definition/-story-definition-base/index.html"><span class="identifier">StoryDefinitionBase</span></a><span class="symbol">.</span><span class="identifier">test</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.test$test(ai.tock.bot.definition.StoryDefinitionBase, ai.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../ai.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Unit</span></code></td>
 </tr>
 <tr>
 <td>

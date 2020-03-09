@@ -8,7 +8,7 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">ai.tock.bot.connector.web</a>&nbsp;/&nbsp;<a href="./index.html">WebMessage</a><br/>
 <br/>
 <h1>WebMessage</h1>
-<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">WebMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a></code> <a href="https://github.com/theopenconversationkit/tock/blob/master/bot/connector-web/src/main/kotlin/WebConnectorResponse.kt#L51">(source)</a>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">WebMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-web-connector-message.html"><span class="identifier">WebConnectorMessage</span></a></code> <a href="https://github.com/theopenconversationkit/tock/blob/master/bot/connector-web/src/main/kotlin/WebMessage.kt#L13">(source)</a>
 <h3>Constructors</h3>
 <table>
 <tbody>
@@ -17,7 +17,7 @@
 <h4><a href="-init-.html">&lt;init&gt;</a></h4>
 </td>
 <td>
-<code><span class="identifier">WebMessage</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.web.WebMessage$<init>(kotlin.String, kotlin.collections.List((ai.tock.bot.connector.web.WebButton)), ai.tock.bot.connector.media.MediaCard, ai.tock.bot.connector.media.MediaCarousel)/text">text</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.web.WebMessage$<init>(kotlin.String, kotlin.collections.List((ai.tock.bot.connector.web.WebButton)), ai.tock.bot.connector.media.MediaCard, ai.tock.bot.connector.media.MediaCarousel)/buttons">buttons</span><span class="symbol">:</span>&nbsp;<span class="identifier">List</span><span class="symbol">&lt;</span><a href="../-web-button/index.html"><span class="identifier">WebButton</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;emptyList()<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.web.WebMessage$<init>(kotlin.String, kotlin.collections.List((ai.tock.bot.connector.web.WebButton)), ai.tock.bot.connector.media.MediaCard, ai.tock.bot.connector.media.MediaCarousel)/card">card</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.connector.media/-media-card/index.html"><span class="identifier">MediaCard</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.web.WebMessage$<init>(kotlin.String, kotlin.collections.List((ai.tock.bot.connector.web.WebButton)), ai.tock.bot.connector.media.MediaCard, ai.tock.bot.connector.media.MediaCarousel)/carousel">carousel</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.connector.media/-media-carousel/index.html"><span class="identifier">MediaCarousel</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span></code></td>
+<code><span class="identifier">WebMessage</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.web.WebMessage$<init>(kotlin.String, kotlin.collections.List((ai.tock.bot.connector.web.send.Button)), ai.tock.bot.connector.web.send.WebCard, ai.tock.bot.connector.web.send.WebCarousel, kotlin.String)/text">text</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.web.WebMessage$<init>(kotlin.String, kotlin.collections.List((ai.tock.bot.connector.web.send.Button)), ai.tock.bot.connector.web.send.WebCard, ai.tock.bot.connector.web.send.WebCarousel, kotlin.String)/buttons">buttons</span><span class="symbol">:</span>&nbsp;<span class="identifier">List</span><span class="symbol">&lt;</span><a href="../../ai.tock.bot.connector.web.send/-button/index.html"><span class="identifier">Button</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;emptyList()<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.web.WebMessage$<init>(kotlin.String, kotlin.collections.List((ai.tock.bot.connector.web.send.Button)), ai.tock.bot.connector.web.send.WebCard, ai.tock.bot.connector.web.send.WebCarousel, kotlin.String)/card">card</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.connector.web.send/-web-card/index.html"><span class="identifier">WebCard</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.web.WebMessage$<init>(kotlin.String, kotlin.collections.List((ai.tock.bot.connector.web.send.Button)), ai.tock.bot.connector.web.send.WebCard, ai.tock.bot.connector.web.send.WebCarousel, kotlin.String)/carousel">carousel</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.connector.web.send/-web-carousel/index.html"><span class="identifier">WebCarousel</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.connector.web.WebMessage$<init>(kotlin.String, kotlin.collections.List((ai.tock.bot.connector.web.send.Button)), ai.tock.bot.connector.web.send.WebCard, ai.tock.bot.connector.web.send.WebCarousel, kotlin.String)/version">version</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span>&nbsp;<span class="symbol">=</span>&nbsp;"1"<span class="symbol">)</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -29,21 +29,21 @@
 <h4><a href="buttons.html">buttons</a></h4>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">buttons</span><span class="symbol">: </span><span class="identifier">List</span><span class="symbol">&lt;</span><a href="../-web-button/index.html"><span class="identifier">WebButton</span></a><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">buttons</span><span class="symbol">: </span><span class="identifier">List</span><span class="symbol">&lt;</span><a href="../../ai.tock.bot.connector.web.send/-button/index.html"><span class="identifier">Button</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
 <h4><a href="card.html">card</a></h4>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">card</span><span class="symbol">: </span><a href="../../ai.tock.bot.connector.media/-media-card/index.html"><span class="identifier">MediaCard</span></a><span class="symbol">?</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">card</span><span class="symbol">: </span><a href="../../ai.tock.bot.connector.web.send/-web-card/index.html"><span class="identifier">WebCard</span></a><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>
 <h4><a href="carousel.html">carousel</a></h4>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">carousel</span><span class="symbol">: </span><a href="../../ai.tock.bot.connector.media/-media-carousel/index.html"><span class="identifier">MediaCarousel</span></a><span class="symbol">?</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">carousel</span><span class="symbol">: </span><a href="../../ai.tock.bot.connector.web.send/-web-carousel/index.html"><span class="identifier">WebCarousel</span></a><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>
@@ -60,11 +60,32 @@
 <td>
 <code><span class="keyword">val </span><span class="identifier">text</span><span class="symbol">: </span><span class="identifier">String</span><span class="symbol">?</span></code></td>
 </tr>
+<tr>
+<td>
+<h4><a href="version.html">version</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">version</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
+</tr>
 </tbody>
 </table>
 <h3>Functions</h3>
 <table>
 <tbody>
+<tr>
+<td>
+<h4><a href="equals.html">equals</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">equals</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.connector.web.WebMessage$equals(kotlin.Any)/other">other</span><span class="symbol">:</span>&nbsp;<span class="identifier">Any</span><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="hash-code.html">hashCode</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">hashCode</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Int</span></code></td>
+</tr>
 <tr>
 <td>
 <h4><a href="to-generic-message.html">toGenericMessage</a></h4>

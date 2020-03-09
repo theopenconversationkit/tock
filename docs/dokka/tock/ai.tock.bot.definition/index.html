@@ -79,6 +79,14 @@ Custom provider should usually not directly extend this class, but instead exten
 </tr>
 <tr>
 <td>
+<h4><a href="-connector-handler-provider/index.html">ConnectorHandlerProvider</a></h4>
+</td>
+<td>
+<p>Provides <a href="../ai.tock.bot.connector/-connector-handler/index.html">ConnectorHandler</a>.</p>
+<code><span class="keyword">interface </span><span class="identifier">ConnectorHandlerProvider</span></code></td>
+</tr>
+<tr>
+<td>
 <h4><a href="-connector-story-handler/index.html">ConnectorStoryHandler</a></h4>
 </td>
 <td>
@@ -120,6 +128,14 @@ Custom provider should usually not directly extend this class, but instead exten
 </td>
 <td>
 <code><span class="keyword">enum</span> <span class="keyword">class </span><span class="identifier">DialogFlowStateTransitionType</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-empty-data.html">EmptyData</a></h4>
+</td>
+<td>
+<p>Convenient placeholder for empty data.</p>
+<code><span class="keyword">object </span><span class="identifier">EmptyData</span></code></td>
 </tr>
 <tr>
 <td>
@@ -188,8 +204,15 @@ Custom provider should usually not directly extend this class, but instead exten
 <h4><a href="-intent-def.html">IntentDef</a></h4>
 </td>
 <td>
-<p>Definition aliases.</p>
 <code><span class="keyword">typealias </span><span class="identifier">IntentDef</span>&nbsp;<span class="symbol">=</span>&nbsp;<a href="-intent-aware-base/index.html"><span class="identifier">IntentAwareBase</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-intent-without-namespace/index.html">IntentWithoutNamespace</a></h4>
+</td>
+<td>
+<p>The non qualified name of the intent.</p>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">IntentWithoutNamespace</span></code></td>
 </tr>
 <tr>
 <td>
@@ -252,7 +275,15 @@ Custom provider should usually not directly extend this class, but instead exten
 </td>
 <td>
 <p>A step that can have specific preconditions and can use input data object in handler.</p>
-<code><span class="keyword">interface </span><span class="identifier">StoryDataStep</span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">, </span><span class="identifier">D</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-story-step/index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">interface </span><span class="identifier">StoryDataStep</span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">, </span><span class="identifier">TD</span><span class="symbol">, </span><span class="identifier">D</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-story-step/index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-story-data-step-base/index.html">StoryDataStepBase</a></h4>
+</td>
+<td>
+<p>Base class for <a href="-story-data-step/index.html">StoryDataStep</a> implementations.</p>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">StoryDataStepBase</span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">, </span><span class="identifier">TD</span><span class="symbol">, </span><span class="identifier">D</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-story-data-step/index.html"><span class="identifier">StoryDataStep</span></a><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">,</span>&nbsp;<span class="identifier">TD</span><span class="symbol">,</span>&nbsp;<span class="identifier">D</span><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
