@@ -75,7 +75,7 @@ data class BotStoryDefinitionConfigurationStep(
 
     constructor(story: StoryDefinitionConfiguration, e: StoryDefinitionConfigurationStep) :
         this(
-            e.name,
+            e.name.takeUnless { it.isBlank() } ?: "${e.intent?.name}_${e.level}",
             e.intent,
             e.targetIntent,
             e.answers.mapAnswers(),

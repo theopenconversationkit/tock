@@ -73,7 +73,9 @@ data class StoryDefinitionConfigurationStep(
         val configuration: StoryDefinitionConfigurationStep,
         private val storyConfiguration: StoryDefinitionConfiguration
     ) : SimpleStoryStep {
-        constructor(s: StoryDefinitionConfigurationStep, conf: StoryDefinitionConfiguration) : this(s.name, s.intent?.intent(conf.namespace), s, conf)
+        constructor(s: StoryDefinitionConfigurationStep, conf: StoryDefinitionConfiguration) :
+            this(s.name.takeUnless { it.isBlank() }
+                ?: "${s.intent?.name}_${s.level}", s.intent?.intent(conf.namespace), s, conf)
 
         override fun equals(other: Any?): Boolean = name == (other as? Step)?.name
 
