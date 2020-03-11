@@ -17,7 +17,6 @@
 package ai.tock.bot.definition
 
 import ai.tock.bot.definition.StoryHandlerBase.Companion.isEndCalled
-import ai.tock.bot.engine.BotBus
 
 /**
  * Base class for [StoryDataStep] implementations.
@@ -48,16 +47,25 @@ abstract class StoryDataStepBase<T : StoryHandlerDefinition, TD, D>(
     }
 
     final override fun selectFromBusAndData(): T.(TD?) -> Boolean = {
-        select()(it!!, this)
+        if (it == null) {
+            error("story data has to be not null")
+        }
+        select()(it, this)
     }
 
     final override fun checkPreconditions(): T.(TD?) -> D? = {
-        setup()(this, it!!)
+        if (it == null) {
+            error("story data has to be not null")
+        }
+        setup()(this, it)
     }
 
     final override fun handler(): T.(D?) -> Any? = {
         val c = this
-        val reply = reply()(c, it!!)
+        if (it == null) {
+            error("data step has to be not null")
+        }
+        val reply = reply()(c, it)
         //in order to manage switch inside the reply
         if (!isEndCalled(c)) {
             end {
