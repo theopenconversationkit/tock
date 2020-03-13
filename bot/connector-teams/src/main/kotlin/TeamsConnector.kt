@@ -21,13 +21,16 @@ import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.media.MediaCard
+import ai.tock.bot.connector.media.MediaCarousel
 import ai.tock.bot.connector.media.MediaMessage
 import ai.tock.bot.connector.teams.auth.AuthenticateBotConnectorService
 import ai.tock.bot.connector.teams.auth.ForbiddenException
 import ai.tock.bot.connector.teams.auth.JWKHandler
 import ai.tock.bot.connector.teams.messages.SendActionConverter
+import ai.tock.bot.connector.teams.messages.TeamsBotMessage
 import ai.tock.bot.connector.teams.messages.cardImage
 import ai.tock.bot.connector.teams.messages.nlpCardAction
+import ai.tock.bot.connector.teams.messages.teamsCarousel
 import ai.tock.bot.connector.teams.messages.teamsHeroCard
 import ai.tock.bot.connector.teams.messages.teamsMessageWithButtonCard
 import ai.tock.bot.connector.teams.messages.urlCardAction
@@ -171,22 +174,30 @@ internal class TeamsConnector(
     override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
         when (message) {
             is MediaCard -> {
-                listOf(teamsHeroCard(
-                    message.title ?: message.subTitle ?: "",
-                    null,
-                    message.subTitle ?: message.title ?: "",
-                    listOfNotNull(
-                        message.file?.takeIf { it.type == image }?.let { cardImage(it.url) }
-                    ),
-                    message.actions.map {
-                        val url = it.url
-                        if (url == null) {
-                            nlpCardAction(it.title)
-                        } else {
-                            urlCardAction(it.title, url)
+                listOf(
+                    teamsHeroCard(
+                        message.title ?: message.subTitle ?: "",
+                        null,
+                        message.subTitle ?: message.title ?: "",
+                        listOfNotNull(
+                            message.file?.takeIf { it.type == image }?.let { cardImage(it.url) }
+                        ),
+                        message.actions.map {
+                            val url = it.url
+                            if (url == null) {
+                                nlpCardAction(it.title)
+                            } else {
+                                urlCardAction(it.title, url)
+                            }
                         }
-                    }
+                    )
                 )
+            }
+            is MediaCarousel -> {
+                listOf(
+                    teamsCarousel(
+                        message.cards.mapNotNull { toConnectorMessage(it).invoke(this).firstOrNull() as? TeamsBotMessage }
+                    )
                 )
             }
             else -> emptyList()
