@@ -31,6 +31,10 @@
       (rebuildTree)="rebuildTree(node)"
       [defaultCategory]="defaultCategory"
       class="step"
+      [canUpward]="canUpward(node)"
+      [canDownward]="canDownward(node)"
+      (upward)="upward(node)"
+      (downward)="downward(node)"
       [readonly]="readonly"></tock-step>
   </mat-tree-node>
 </mat-tree>

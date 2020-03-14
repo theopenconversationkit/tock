@@ -172,4 +172,26 @@ export class StepsComponent implements OnInit, OnChanges {
     })
   }
 
+  canDownward(step: StoryStep): boolean {
+    return this.steps.length > 1 && this.steps[this.steps.length - 1] !== step;
+  }
+
+  canUpward(step: StoryStep): boolean {
+    return this.steps.length > 1 && this.steps[0] !== step;
+  }
+
+  upward(step: StoryStep) {
+    const index = this.steps.indexOf(step);
+    this.steps[index] = this.steps[index - 1];
+    this.steps[index - 1] = step;
+    this.validate();
+  }
+
+  downward(step: StoryStep) {
+    const index = this.steps.indexOf(step);
+    this.steps[index] = this.steps[index + 1];
+    this.steps[index + 1] = step;
+    this.validate();
+  }
+
 }

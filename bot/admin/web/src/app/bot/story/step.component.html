@@ -103,6 +103,19 @@
     </button>
   </div>
 
+  <div *ngIf="canDownward" class="entity-button">
+    <button mat-icon-button
+            matTooltip="Downward" (click)="downwardStep()">
+      <mat-icon>arrow_downward</mat-icon>
+    </button>
+  </div>
+  <div *ngIf="canUpward" class="entity-button">
+    <button mat-icon-button
+            matTooltip="Upward" (click)="upwardStep()">
+      <mat-icon>arrow_upward</mat-icon>
+    </button>
+  </div>
+
   <mat-autocomplete #intentAuto="matAutocomplete" autoActiveFirstOption panelWidth="auto">
     <mat-optgroup *ngFor="let category of currentIntentCategories" [label]="category.category">
       <mat-option *ngFor="let intent of category.intents" [value]="intent.name">

@@ -51,6 +51,18 @@ export class StepComponent implements OnInit {
   @Input()
   readonly: boolean = false;
 
+  @Input()
+  canDownward: boolean = false;
+
+  @Input()
+  canUpward: boolean = false;
+
+  @Output()
+  downward = new EventEmitter<StoryStep>();
+
+  @Output()
+  upward = new EventEmitter<StoryStep>();
+
   intentCategories: IntentsCategory[] = [];
   currentIntentCategories: IntentsCategory[] = [];
 
@@ -211,7 +223,7 @@ export class StepComponent implements OnInit {
     );
     dialogRef.afterClosed().subscribe(result => {
       if (result.entity) {
-        if(!result.role) {
+        if (!result.role) {
           this.step.entity = null;
         } else {
           this.step.entity = new EntityStepSelection(
@@ -284,5 +296,13 @@ export class StepComponent implements OnInit {
         });
       }
     });
+  }
+
+  upwardStep() {
+    this.upward.emit(this.step)
+  }
+
+  downwardStep() {
+    this.downward.emit(this.step)
   }
 }
