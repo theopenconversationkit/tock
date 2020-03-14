@@ -34,13 +34,16 @@
     <mat-panel-description>
       <tock-answer *ngIf="!storyNode && story._id && !story.isBuiltIn()" class="answer"
                    [answer]="story" [fullDisplay]="false" [wide]="true"></tock-answer>
-      <button *ngIf="!story.isBuiltIn()" mat-icon-button color="primary" matTooltip="Edit" (click)="$event.stopPropagation();editStory()">
+      <button *ngIf="!story.isBuiltIn()" mat-icon-button color="primary" matTooltip="Edit"
+              (click)="$event.stopPropagation();editStory()">
         <mat-icon>edit</mat-icon>
       </button>
-      <button *ngIf="!story.isBuiltIn()" mat-icon-button matTooltip="Edit Mandatory Entities" (click)="$event.stopPropagation();editEntities()">
+      <button *ngIf="!story.isBuiltIn()" mat-icon-button matTooltip="Edit Mandatory Entities"
+              (click)="$event.stopPropagation();editEntities()">
         <mat-icon>extension</mat-icon>
       </button>
-      <button *ngIf="!story.isBuiltIn()" mat-icon-button matTooltip="Edit Actions" (click)="$event.stopPropagation();editSteps()">
+      <button *ngIf="!story.isBuiltIn()" mat-icon-button matTooltip="Edit Actions"
+              (click)="$event.stopPropagation();editSteps()">
         <mat-icon>dns</mat-icon>
       </button>
       <button *ngIf="story._id" mat-icon-button color="warn" matTooltip="Delete"
@@ -51,62 +54,64 @@
 
   </mat-expansion-panel-header>
 
-  <div>
-    <span class="intent" matTooltip="Main Intent">{{story.intent.name}}</span>
-    <span class="category" matTooltip="Story category">&nbsp;[{{story.category}}]</span>
+  <div class="content">
     <div>
-      {{story.description}}
-    </div>
-    <ul *ngIf="storyNode">
-      <li *ngIf="storyNode.intent">Intent: <b>{{storyNode.intent}}</b></li>
-      <li *ngIf="storyNode.step">Step: <b>{{storyNode.step}}</b></li>
-      <li *ngIf="storyNode.entities.length !==0">Entities: <b>{{storyNode.entities}}</b></li>
-    </ul>
-  </div>
-
-  <div *ngIf="!story.hideDetails && !story.isBuiltIn()">
-    <div class="fullDisplayDivider" *ngIf="fullDisplay"></div>
-    <mat-divider *ngIf="fullDisplay" [inset]="true" class="divider"></mat-divider>
-    <div class="fullDisplayDivider" *ngIf="fullDisplay"></div>
-
-    <!-- mandatory entities -->
-    <div *ngIf="story.mandatoryEntities.length !== 0">
-      Mandatory Entities
-      <button mat-icon-button matTooltip="Edit Mandatory Entities" (click)="editEntities()">
-        <mat-icon>extension</mat-icon>
-      </button>
-      <ul>
-        <li *ngFor="let e of story.mandatoryEntities">{{e.role}}
-          <span *ngIf="e.intent" class="intent" matTooltip="Intent requested">[{{e.intent.name}}]</span>:
-          <tock-answer class="answer" [answer]="e" [editable]="false"></tock-answer>
-        </li>
+      <span class="intent" matTooltip="Main Intent">{{story.intent.name}}</span>
+      <span class="category" matTooltip="Story category">&nbsp;[{{story.category}}]</span>
+      <div>
+        {{story.description}}
+      </div>
+      <ul *ngIf="storyNode">
+        <li *ngIf="storyNode.intent">Intent: <b>{{storyNode.intent}}</b></li>
+        <li *ngIf="storyNode.step">Step: <b>{{storyNode.step}}</b></li>
+        <li *ngIf="storyNode.entities.length !==0">Entities: <b>{{storyNode.entities}}</b></li>
       </ul>
+    </div>
+
+    <div *ngIf="!story.hideDetails && !story.isBuiltIn()">
       <div class="fullDisplayDivider" *ngIf="fullDisplay"></div>
       <mat-divider *ngIf="fullDisplay" [inset]="true" class="divider"></mat-divider>
       <div class="fullDisplayDivider" *ngIf="fullDisplay"></div>
-    </div>
 
-    <!-- default answer -->
-    <label *ngIf="!fullDisplay" for="main_answer" class="label-answer">Answer :</label>
-    <div *ngIf="fullDisplay">
-      Answer
-      <div class="fullDisplayDivider"></div>
-    </div>
-    <tock-answer id="main_answer" class="answer" [answer]="story" [fullDisplay]="fullDisplay" [create]="!story._id"
-                 [submit]="submit"></tock-answer>
+      <!-- mandatory entities -->
+      <div *ngIf="story.mandatoryEntities.length !== 0">
+        Mandatory Entities
+        <button mat-icon-button matTooltip="Edit Mandatory Entities" (click)="editEntities()">
+          <mat-icon>extension</mat-icon>
+        </button>
+        <ul>
+          <li *ngFor="let e of story.mandatoryEntities">{{e.role}}
+            <span *ngIf="e.intent" class="intent" matTooltip="Intent requested">[{{e.intent.name}}]</span>:
+            <tock-answer class="answer" [answer]="e" [editable]="false"></tock-answer>
+          </li>
+        </ul>
+        <div class="fullDisplayDivider" *ngIf="fullDisplay"></div>
+        <mat-divider *ngIf="fullDisplay" [inset]="true" class="divider"></mat-divider>
+        <div class="fullDisplayDivider" *ngIf="fullDisplay"></div>
+      </div>
 
-    <!-- steps -->
-    <div *ngIf="displaySteps" class="fullDisplayDivider"></div>
-    <mat-divider *ngIf="displaySteps" [inset]="true" class="divider"></mat-divider>
-    <div *ngIf="story.steps.length !== 0">
-      Actions
-      <button mat-icon-button matTooltip="Edit Actions" (click)="editSteps()">
-        <mat-icon>dns</mat-icon>
-      </button>
-    </div>
-    <tock-steps [steps]="story.steps" [defaultCategory]="story.category"
-                [readonly]="!displaySteps"></tock-steps>
+      <!-- default answer -->
+      <label *ngIf="!fullDisplay" for="main_answer" class="label-answer">Answer :</label>
+      <div *ngIf="fullDisplay">
+        Answer
+        <div class="fullDisplayDivider"></div>
+      </div>
+      <tock-answer id="main_answer" class="answer" [answer]="story" [fullDisplay]="fullDisplay" [create]="!story._id"
+                   [submit]="submit"></tock-answer>
 
+      <!-- steps -->
+      <div *ngIf="displaySteps" class="fullDisplayDivider"></div>
+      <mat-divider *ngIf="displaySteps" [inset]="true" class="divider"></mat-divider>
+      <div *ngIf="story.steps.length !== 0">
+        Actions
+        <button mat-icon-button matTooltip="Edit Actions" (click)="editSteps()">
+          <mat-icon>dns</mat-icon>
+        </button>
+      </div>
+      <tock-steps [steps]="story.steps" [defaultCategory]="story.category"
+                  [readonly]="!displaySteps"></tock-steps>
+
+    </div>
   </div>
   <mat-action-row *ngIf="storyNode || story._id">
     <button *ngIf="!story._id" (click)="saveNewStory()" mat-raised-button color="primary">Create Story</button>

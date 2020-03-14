@@ -17,6 +17,7 @@
 package ai.tock.bot.admin.model
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType
+import ai.tock.bot.definition.EntityStepSelection
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep
 import ai.tock.bot.definition.IntentWithoutNamespace
@@ -64,6 +65,10 @@ data class BotStoryDefinitionConfigurationStep(
      */
     val level: Int = 0,
     /**
+     * Entity selection.
+     */
+    val entity: EntityStepSelection?,
+    /**
      * Intent defined by the intent name.
      */
     val intentDefinition: IntentDefinition? = null,
@@ -90,6 +95,7 @@ data class BotStoryDefinitionConfigurationStep(
                 ))
                 .let { Translator.saveIfNotExist(it) },
             e.children.map { BotStoryDefinitionConfigurationStep(story, it) },
-            e.level
+            e.level,
+            e.entity
         )
 }

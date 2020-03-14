@@ -45,17 +45,36 @@
            (blur)="validateIntent(step)">
   </mat-form-field>
 
+  <!-- entity -->
+  <div class="entity-button">
+    {{step.entity ? (step.entity.value ? step.entity.value : step.entity.entityRole) : ''}}
+    <button *ngIf="!step.entity || step.entity.value"
+            mat-icon-button
+            [color]="step.entity ? 'primary' : 'secondary'"
+            matTooltip="Set Target Entity Value" (click)="setEntity()">
+      <mat-icon>playlist_add_check</mat-icon>
+    </button>
+    <button *ngIf="step.entity && !step.entity.value"
+            mat-icon-button
+            color="primary"
+            matTooltip="Set Target Entity" (click)="setEntity()">
+      <mat-icon>extension</mat-icon>
+    </button>
+
+  </div>
+
   <!-- answer -->
   <tock-answer [answer]="step" class="entity-button"></tock-answer>&nbsp;
 
   <!-- target intent -->
   <mat-form-field [style.display]="displayTargetIntent ? 'inline-block' : 'none'" class="input input-intent">
     <input #targetIntent matInput name="targetIntent" placeholder="Target Intent" [(ngModel)]="step.targetIntent.name"
-           matTooltip="Intent to switch when reaching the step"
+           matTooltip="Intent to switch when reaching the step (escape to hide)"
            [matAutocomplete]="intentAuto"
            (keyup)="onIntentChange(step, $event.target.value)"
            (focus)="onIntentChange(step, $event.target.value)"
-           (blur)="validateIntent(step, true)">
+           (blur)="validateIntent(step, true)"
+           (keydown.escape)="displayTargetIntent = false">
   </mat-form-field>
   <div *ngIf="!displayTargetIntent" class="entity-button">
     <button mat-icon-button
@@ -73,8 +92,14 @@
 
   <div class="entity-button">
     <nb-icon *ngIf="step.new" icon="alert-triangle-outline" nbTooltip="Invalid Action" status="warning"></nb-icon>
-    <button *ngIf="!step.new && step.intent && !step.currentAnswer().isEmpty()" mat-icon-button (click)="addChild()">
+    <button *ngIf="!step.new && step.intent && !step.currentAnswer().isEmpty()" mat-icon-button (click)="addChild()" matTooltip="Add Action">
       <mat-icon>add</mat-icon>
+    </button>
+  </div>
+
+  <div class="entity-button" *ngIf="!step.new && step.intent && !step.currentAnswer().isEmpty()">
+    <button mat-icon-button (click)="generateChildren()" matTooltip="Generate from Entity">
+      <mat-icon>playlist_add</mat-icon>
     </button>
   </div>
 

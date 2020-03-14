@@ -19,6 +19,7 @@ package ai.tock.bot.admin.story
 import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
+import ai.tock.bot.definition.EntityStepSelection
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.definition.SimpleStoryStep
@@ -64,7 +65,11 @@ data class StoryDefinitionConfigurationStep(
     /**
      * The level of the step.
      */
-    val level: Int = 0
+    val level: Int = 0,
+    /**
+     * Entity selection.
+     */
+    val entity: EntityStepSelection? = null
 ) : StoryDefinitionAnswersContainer {
 
     internal class Step(
@@ -83,6 +88,8 @@ data class StoryDefinitionConfigurationStep(
 
         override val children: Set<StoryStep<StoryHandlerDefinition>>
             get() = configuration.children.map { it.toStoryStep(storyConfiguration) }.toSet()
+
+        override val entityStepSelection: EntityStepSelection? = configuration.entity
     }
 
     constructor(step: StoryStep<*>) :

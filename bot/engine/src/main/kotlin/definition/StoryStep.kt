@@ -85,11 +85,16 @@ interface StoryStep<T : StoryHandlerDefinition> {
     fun selectFromBus(): BotBus.() -> Boolean = { false }
 
     /**
-     * Does this Step has to be automatically selected before [BotBus] creation?
+     * Does this Step has to be automatically selected?
      * if returns true, the step is selected.
      */
     fun selectFromAction(userTimeline: UserTimeline, dialog: Dialog, action: Action, intent: Intent?): Boolean =
-        intent != null && supportStarterIntent(intent)
+        intent != null
+            && supportStarterIntent(intent)
+            && entityStepSelection?.let { e ->
+            if (e.value == null) action.hasEntity(e.entityRole)
+            else action.hasEntityPredefinedValue(e.entityRole, e.value)
+        } ?: true
 
     /**
      * Does this step support this intent as starter intent?
@@ -106,5 +111,10 @@ interface StoryStep<T : StoryHandlerDefinition> {
      * The optional children of the step.
      */
     val children: Set<StoryStep<T>> get() = emptySet()
+
+    /**
+     * If not null, entity has to be set in the current action to trigger the step.
+     */
+    val entityStepSelection: EntityStepSelection? get() = null
 
 }

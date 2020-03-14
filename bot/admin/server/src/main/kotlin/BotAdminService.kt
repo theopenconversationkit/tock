@@ -543,7 +543,8 @@ object BotAdminService {
             userSentence.defaultLabel ?: "",
             I18nLabelValue(userSentence),
             children.map { it.toStepConfiguration(app, botId, oldStory) },
-            level
+            level,
+            entity
         ).apply {
             //if intentDefinition is null, we don't need to update intent
             if (intentDefinition != null) {

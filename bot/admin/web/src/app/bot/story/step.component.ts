@@ -15,7 +15,7 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
-import {IntentName, StoryStep} from "../model/story";
+import {EntityStepSelection, IntentName, StoryStep} from "../model/story";
 import {MatDialog} from "@angular/material";
 import {Intent, IntentsCategory, ParseQuery} from "../../model/nlp";
 import {StateService} from "../../core-nlp/state.service";
@@ -24,6 +24,7 @@ import {NlpService} from "../../nlp-tabs/nlp.service";
 import {DialogService} from "../../core-nlp/dialog.service";
 import {CreateI18nLabelRequest} from "../model/i18n";
 import {BotService} from "../bot-service";
+import {SelectEntityDialogComponent} from "./select-entity-dialog.component";
 
 @Component({
   selector: 'tock-step',
@@ -43,6 +44,9 @@ export class StepComponent implements OnInit {
 
   @Output()
   child = new EventEmitter<StoryStep>();
+
+  @Output()
+  rebuildTree = new EventEmitter<StoryStep>();
 
   @Input()
   readonly: boolean = false;
@@ -165,21 +169,21 @@ export class StepComponent implements OnInit {
       } else if (this.step.newUserSentence.trim().length === 0 || this.step.intent.name.trim().length === 0) {
         return;
       } else {
-        this.save();
+        this.save(this.step);
       }
     }
   }
 
-  private save() {
+  private save(step: StoryStep) {
     this.bot.createI18nLabel(
       new CreateI18nLabelRequest(
         this.defaultCategory,
-        this.step.newUserSentence.trim(),
+        step.newUserSentence.trim(),
         this.state.currentLocale,
       )
     ).subscribe(i18n => {
-      this.step.userSentence = i18n;
-      this.step.new = false;
+      step.userSentence = i18n;
+      step.new = false;
     })
   }
 
@@ -190,6 +194,34 @@ export class StepComponent implements OnInit {
   focusTargetIntent(element) {
     this.displayTargetIntent = true;
     setTimeout(_ => element.focus(), 200);
+  }
+
+  setEntity() {
+    const e = this.step.entity;
+    let dialogRef = this.dialog.open(
+      this.matDialog,
+      SelectEntityDialogComponent,
+      {
+        data: {
+          selectedEntity: e ? e.entityType : null,
+          role: e ? e.entityRole : null,
+          entityValue: e ? e.value : null
+        }
+      }
+    );
+    dialogRef.afterClosed().subscribe(result => {
+      if (result.entity) {
+        if(!result.role) {
+          this.step.entity = null;
+        } else {
+          this.step.entity = new EntityStepSelection(
+            result.value,
+            result.role,
+            result.entity.name
+          )
+        }
+      }
+    });
   }
 
   userSentenceChange(userSentence: string) {
@@ -224,5 +256,33 @@ export class StepComponent implements OnInit {
     }
   }
 
-
+  generateChildren() {
+    let dialogRef = this.dialog.open(
+      this.matDialog,
+      SelectEntityDialogComponent,
+      {
+        data: {generate: true}
+      }
+    );
+    dialogRef.afterClosed().subscribe(result => {
+      if (result.entity) {
+        this.nlp.getDictionary(result.entity).subscribe(dictionary => {
+          //dictionary
+          const newSteps = StoryStep.generateEntitySteps(
+            result.intent,
+            this.defaultCategory,
+            result.entity,
+            result.role,
+            dictionary,
+            this.step.level + 1
+          );
+          newSteps.forEach(s => {
+            this.step.children.push(s);
+            this.save(s);
+          });
+          this.rebuildTree.emit(this.step);
+        });
+      }
+    });
+  }
 }

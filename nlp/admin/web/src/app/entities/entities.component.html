@@ -15,26 +15,17 @@
   -->
 
 <nb-card class="entities">
-  <nb-card-header>Entity roles</nb-card-header>
-  <nb-card-body>
-    <mat-list>
-      <tock-entity-details *ngFor="let e of state.entities | async" [entity]="e"></tock-entity-details>
-    </mat-list>
-  </nb-card-body>
-</nb-card>
-<p></p>
-<nb-card class="entities">
   <nb-card-header>All Entity Types</nb-card-header>
   <nb-card-body>
       <mat-chip-list>
-        <mat-chip *ngFor="let e of state.entityTypes | async"
+        <mat-chip *ngFor="let e of state.entityTypesSortedByName() | async"
                   [color]="e.dictionary ? 'primary' : (e === selectedEntityType ? 'accent' : 'secondary')"
                  [removable]="e.namespace() === state.currentApplication.namespace"
                  (removed)="deleteEntityType(e)"
                  (click)="selectEntityType(e)"
                  [selected]="true"
                  [selectable]="e.namespace() === state.currentApplication.namespace">
-          {{e.name}}
+          {{e.nameWithoutNamespace(state.currentApplication.namespace)}}
           <mat-icon *ngIf="e.namespace() === state.currentApplication.namespace && !e.dictionary"
                    class="add-predefined-list"
                    matTooltip="add predefined values" >playlist_add</mat-icon>
@@ -121,5 +112,14 @@
           </tr>
         </tbody>
       </table>
+  </nb-card-body>
+</nb-card>
+<p></p>
+<nb-card class="entities">
+  <nb-card-header>Entity roles</nb-card-header>
+  <nb-card-body>
+    <mat-list>
+      <tock-entity-details *ngFor="let e of state.entities | async" [entity]="e"></tock-entity-details>
+    </mat-list>
   </nb-card-body>
 </nb-card>

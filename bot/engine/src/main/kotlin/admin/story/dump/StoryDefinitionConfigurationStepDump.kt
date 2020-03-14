@@ -17,6 +17,7 @@
 package ai.tock.bot.admin.story.dump
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType
+import ai.tock.bot.definition.EntityStepSelection
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.translator.I18nKeyProvider
@@ -54,7 +55,11 @@ data class StoryDefinitionConfigurationStepDump(
     /**
      * The level of the step.
      */
-    val level: Int = 0
+    val level: Int = 0,
+    /**
+     * Entity selection.
+     */
+    val entity: EntityStepSelection? = null
 ) {
 
     constructor(def: StoryDefinitionConfigurationStep, namespace: String, category: String) :
@@ -72,7 +77,8 @@ data class StoryDefinitionConfigurationStepDump(
                     def.userSentenceLabel?.defaultLabel ?: def.userSentence
                 ),
             def.children.map { StoryDefinitionConfigurationStepDump(it, namespace, category) },
-            def.level
+            def.level,
+            def.entity
         )
 
     fun toStep(controller: StoryDefinitionConfigurationDumpController): StoryDefinitionConfigurationStep =
@@ -85,6 +91,7 @@ data class StoryDefinitionConfigurationStepDump(
             "",
             userSentenceLabel?.withNamespace(controller.targetNamespace),
             children.map { it.toStep(controller) },
-            level
+            level,
+            entity
         )
 }

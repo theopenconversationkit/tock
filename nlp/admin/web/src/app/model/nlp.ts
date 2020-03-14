@@ -106,6 +106,10 @@ export class EntityType {
               public dictionary: boolean) {
   }
 
+  nameWithoutNamespace(namespace: string): string {
+    return nameWithoutNamespace(namespace, this.name);
+  }
+
   qualifiedName(user: User): string {
     return qualifiedNameWithoutRole(user, this.name);
   }
@@ -1240,8 +1244,12 @@ export function qualifiedName(user: User, type: string, role: string): string {
 }
 
 export function qualifiedNameWithoutRole(user: User, type: string): string {
+  return nameWithoutNamespace(user.organization, type);
+}
+
+export function nameWithoutNamespace(namespace:string, type: string): string {
   const split = type.split(":");
-  if (split[0] !== user.organization) {
+  if (split[0] !== namespace) {
     return type;
   } else {
     return split[1];

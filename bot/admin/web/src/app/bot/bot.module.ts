@@ -59,6 +59,7 @@ import {
 } from "@nebular/theme";
 import {ApplicationFeatureComponent} from "./feature/application-feature.component";
 import {StoryRuleComponent} from "./feature/story-rule.component";
+import {SelectEntityDialogComponent} from "./story/select-entity-dialog.component";
 
 const routes: Routes = [
   {
@@ -141,6 +142,7 @@ export class BotRoutingModule {
     StoryDialogComponent,
     AnswerDialogComponent,
     MandatoryEntitiesDialogComponent,
+    SelectEntityDialogComponent,
     StepDialogComponent,
     StepComponent,
     StepsComponent,
@@ -156,6 +158,7 @@ export class BotRoutingModule {
     StoryDialogComponent,
     AnswerDialogComponent,
     MandatoryEntitiesDialogComponent,
+    SelectEntityDialogComponent,
     StepDialogComponent,
     MediaDialogComponent
   ]

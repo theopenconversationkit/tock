@@ -18,6 +18,7 @@ package ai.tock.bot.engine.event
 
 import ai.tock.bot.engine.dialog.EntityValue
 import ai.tock.bot.engine.dialog.EventState
+import ai.tock.nlp.entity.StringValue
 import ai.tock.shared.security.StringObfuscatorMode
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
@@ -27,13 +28,35 @@ import java.time.Instant
  * The base class for all events or actions.
  */
 abstract class Event(
-        val applicationId: String,
-        val id: Id<out Event> = newId(),
-        val date: Instant = Instant.now(),
-        val state: EventState = EventState()
+    /**
+     * The bot application id.
+     */
+    val applicationId: String,
+    /**
+     * The unique id of the event.
+     */
+    val id: Id<out Event> = newId(),
+    /**
+     * The creation date of the event.
+     */
+    val date: Instant = Instant.now(),
+    /**
+     * The state of the event.
+     */
+    val state: EventState = EventState()
 ) {
+    /**
+     * Does this event contains specified role entity?
+     */
     fun hasEntity(role: String): Boolean {
         return hasSubEntity(state.entityValues, role)
+    }
+
+    /**
+     * Does this event contains specified predefined value entity?
+     */
+    fun hasEntityPredefinedValue(role: String, value: String): Boolean {
+        return state.getEntity(role).any { (it.value as? StringValue)?.value == value }
     }
 
     private fun hasSubEntity(entities: List<EntityValue>, role: String): Boolean {

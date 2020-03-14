@@ -15,7 +15,7 @@
  */
 
 import {PaginatedQuery} from "../../model/commons";
-import {EntityDefinition, Intent, Sentence} from "../../model/nlp";
+import {Dictionary, EntityDefinition, EntityType, Intent, Sentence} from "../../model/nlp";
 import {I18nLabel} from "./i18n";
 import {BotService} from "../bot-service";
 import {Observable, of} from "rxjs";
@@ -120,7 +120,7 @@ export abstract class AnswerContainer {
 export class StoryDefinitionConfiguration extends AnswerContainer {
 
   public hideDetails: boolean = false;
-  public selected:boolean = true;
+  public selected: boolean = true;
 
   constructor(public storyId: string,
               public botId: string,
@@ -131,7 +131,7 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
               category: string = "default",
               public name: string = storyId,
               public userSentence: string = "",
-              public userSentenceLocale:string,
+              public userSentenceLocale: string,
               public features: StoryFeature[],
               public configurationName?: string,
               public _id?: string,
@@ -192,6 +192,24 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
   }
 }
 
+export class EntityStepSelection {
+
+  constructor(public value: string,
+              public entityRole: string,
+              public entityType: string
+  ) {
+  }
+
+  static fromJSON(json: any): EntityStepSelection {
+    if (!json) {
+      return null;
+    }
+    const value = Object.create(EntityStepSelection.prototype);
+    return Object.assign(value, json, {});
+  }
+
+}
+
 export enum AnswerConfigurationType {
   simple,
   message,
@@ -248,6 +266,32 @@ export class StoryStep extends AnswerContainer {
   public new: boolean;
   public newUserSentence: string = "";
 
+  static generateEntitySteps(
+    intent: IntentName,
+    category: string,
+    entityType: EntityType,
+    entityRole: string,
+    dictionary: Dictionary,
+    level: number): StoryStep[] {
+    return dictionary.values.map(v => {
+      const s = new StoryStep(
+        v.value + "_" + level,
+        intent,
+        new IntentName(""),
+        [new SimpleAnswerConfiguration([])],
+        AnswerConfigurationType.simple,
+        category,
+        null,
+        [],
+        level,
+        new EntityStepSelection(v.value, entityRole, entityType.name)
+      );
+      s.new = true;
+      s.newUserSentence = v.value;
+      return s;
+    });
+  }
+
   static filterNew(steps: StoryStep[]): StoryStep[] {
     steps.forEach(s => s.children = StoryStep.filterNew(s.children));
     return steps.filter(s => !s.new);
@@ -274,7 +318,8 @@ export class StoryStep extends AnswerContainer {
               category: string,
               public userSentence: I18nLabel,
               public children: StoryStep[],
-              public level: number) {
+              public level: number,
+              public entity?: EntityStepSelection) {
     super(currentType, answers, category)
   }
 
@@ -312,7 +357,8 @@ export class StoryStep extends AnswerContainer {
       currentType: AnswerConfigurationType[json.currentType],
       answers: AnswerConfiguration.fromJSONArray(json.answers),
       children: StoryStep.fromJSONArray(json.children),
-      userSentence: I18nLabel.fromJSON(json.userSentence)
+      userSentence: I18nLabel.fromJSON(json.userSentence),
+      entity: EntityStepSelection.fromJSON(json.entity)
     });
 
     return result;

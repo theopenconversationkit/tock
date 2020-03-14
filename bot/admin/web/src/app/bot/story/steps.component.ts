@@ -19,6 +19,12 @@ import {AnswerConfigurationType, IntentName, SimpleAnswerConfiguration, StorySte
 import {StateService} from "../../core-nlp/state.service";
 import {FlatTreeControl} from "@angular/cdk/tree";
 import {MatTreeFlatDataSource, MatTreeFlattener} from "@angular/material";
+import {SelectEntityDialogComponent} from "./select-entity-dialog.component";
+import {DialogService} from "../../core-nlp/dialog.service";
+import {MatDialog} from "@angular/material/dialog";
+import {NlpService} from "../../nlp-tabs/nlp.service";
+import {CreateI18nLabelRequest} from "../model/i18n";
+import {BotService} from "../bot-service";
 
 @Component({
   selector: 'tock-steps',
@@ -41,7 +47,11 @@ export class StepsComponent implements OnInit, OnChanges {
   dataSource: MatTreeFlatDataSource<StoryStep, StoryStep>;
 
   constructor(
-    public state: StateService) {
+    public state: StateService,
+    private dialog: DialogService,
+    private matDialog: MatDialog,
+    private nlp: NlpService,
+    private bot: BotService) {
   }
 
   ngOnInit() {
@@ -54,7 +64,7 @@ export class StepsComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if(this.dataSource) {
+    if (this.dataSource) {
       this.dataSource.data = this.steps;
       this.treeControl.expandAll();
     }
@@ -79,7 +89,7 @@ export class StepsComponent implements OnInit, OnChanges {
       step ? step.level + 1 : 0
     );
     newStep.new = true;
-    if(step) {
+    if (step) {
       step.children.push(newStep);
       this.treeControl.expand(step);
     } else {
@@ -88,12 +98,17 @@ export class StepsComponent implements OnInit, OnChanges {
     this.validate();
   }
 
-  private findParent(steps:StoryStep[], step:StoryStep) : StoryStep {
-    if(step.level === 0 || steps.length === 0) {
+  rebuildTree(step: StoryStep) {
+    this.treeControl.expand(step);
+    this.validate();
+  }
+
+  private findParent(steps: StoryStep[], step: StoryStep): StoryStep {
+    if (step.level === 0 || steps.length === 0) {
       return null;
     }
     const c = steps.find(p => p.children.indexOf(step) !== -1);
-    if(c) {
+    if (c) {
       return c;
     }
     const parents = steps.map(s => this.findParent(s.children, step)).filter(s => s !== null);
@@ -102,7 +117,7 @@ export class StepsComponent implements OnInit, OnChanges {
 
   deleteStep(step: StoryStep) {
     const parent = this.findParent(this.steps, step);
-    if(parent) {
+    if (parent) {
       parent.children.splice(parent.children.indexOf(step), 1);
     } else {
       this.steps.splice(this.steps.indexOf(step), 1);
@@ -112,6 +127,49 @@ export class StepsComponent implements OnInit, OnChanges {
 
   validate() {
     this.dataSource.data = this.steps.slice(0);
+  }
+
+  generate() {
+    let dialogRef = this.dialog.open(
+      this.matDialog,
+      SelectEntityDialogComponent,
+      {
+        data: {generate: true}
+      }
+    );
+    dialogRef.afterClosed().subscribe(result => {
+      if (result.entity) {
+        this.nlp.getDictionary(result.entity).subscribe(dictionary => {
+          //dictionary
+          const newSteps = StoryStep.generateEntitySteps(
+            result.intent,
+            this.defaultCategory,
+            result.entity,
+            result.role,
+            dictionary,
+            0
+          );
+          newSteps.forEach(s => {
+            this.steps.push(s);
+            this.save(s);
+          });
+          this.validate();
+        });
+      }
+    });
+  }
+
+  private save(step: StoryStep) {
+    this.bot.createI18nLabel(
+      new CreateI18nLabelRequest(
+        this.defaultCategory,
+        step.newUserSentence.trim(),
+        this.state.currentLocale,
+      )
+    ).subscribe(i18n => {
+      step.userSentence = i18n;
+      step.new = false;
+    })
   }
 
 }

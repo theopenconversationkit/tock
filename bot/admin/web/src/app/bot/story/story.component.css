@@ -24,6 +24,10 @@
   margin-top: 20px;
 }
 
+.content {
+  overflow: auto;
+}
+
 .intent {
   font-style: italic;
 }
