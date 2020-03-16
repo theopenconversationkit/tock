@@ -16,7 +16,14 @@
 
 import {saveAs} from "file-saver";
 import {AfterViewInit, Component, EventEmitter, Input, Output, ViewChild, ViewEncapsulation} from "@angular/core";
-import {PaginatedResult, SearchQuery, SentencesTextQuery, Sentence, SentenceStatus, UpdateSentencesQuery} from "../model/nlp";
+import {
+  PaginatedResult,
+  SearchQuery,
+  Sentence,
+  SentenceStatus,
+  SentencesTextQuery,
+  UpdateSentencesQuery
+} from "../model/nlp";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {StateService} from "../core-nlp/state.service";
 import {ScrollComponent} from "../scroll/scroll.component";
@@ -100,7 +107,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
     this.paginator.page.subscribe(e => {
       this.add = false;
       if (this.pageSize === e.pageSize) {
-        this.cursor = e.pageIndex * e.pageSize;
+        this.cursor = Math.floor(e.pageIndex * e.pageSize);
       } else {
         this.cursor = 0;
         this.pageSize = e.pageSize;
@@ -195,7 +202,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
   protected loadResults(result: PaginatedResult<Sentence>, init: boolean): boolean {
     if (super.loadResults(result, init)) {
       this.dataSource.setNewValues(result.rows);
-      this.pageIndex = result.start / this.pageSize;
+      this.pageIndex = Math.floor(result.start / this.pageSize);
       this.add = true;
       return true;
     } else {
@@ -262,20 +269,20 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
         const theSelectedSentences = this.selection.selected;
         const theAppQuery = this.state.createApplicationScopedQuery();
         const theQuery = new SentencesTextQuery(
-                                    theAppQuery.namespace,
-                                    theAppQuery.applicationName,
-                                    theAppQuery.language,
-                                    theSelectedSentences.map(s => s.text)
-                                )
-         this.nlp.getSentencesQueryDump(
-            this.state.currentApplication,
-            theQuery,
-            this.state.hasRole(UserRole.technicalAdmin))
-            .subscribe(blob => {
-              saveAs(blob, this.state.currentApplication.name + "_selected_sentences.json");
-              this.dialog.notify(`Dump provided`, "Dump");
-            })
-        }, 1);
+          theAppQuery.namespace,
+          theAppQuery.applicationName,
+          theAppQuery.language,
+          theSelectedSentences.map(s => s.text)
+        )
+        this.nlp.getSentencesQueryDump(
+          this.state.currentApplication,
+          theQuery,
+          this.state.hasRole(UserRole.technicalAdmin))
+          .subscribe(blob => {
+            saveAs(blob, this.state.currentApplication.name + "_selected_sentences.json");
+            this.dialog.notify(`Dump provided`, "Dump");
+          })
+      }, 1);
     }
   }
 
