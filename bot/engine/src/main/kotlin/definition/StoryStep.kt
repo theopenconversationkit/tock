@@ -90,11 +90,11 @@ interface StoryStep<T : StoryHandlerDefinition> {
      */
     fun selectFromAction(userTimeline: UserTimeline, dialog: Dialog, action: Action, intent: Intent?): Boolean =
         intent != null
-            && supportStarterIntent(intent)
-            && entityStepSelection?.let { e ->
-            if (e.value == null) action.hasEntity(e.entityRole)
-            else action.hasEntityPredefinedValue(e.entityRole, e.value)
-        } ?: true
+            &&
+            entityStepSelection?.let { e ->
+                if (e.value == null) action.hasEntity(e.entityRole)
+                else action.hasEntityPredefinedValue(e.entityRole, e.value)
+            } ?: supportStarterIntent(intent)
 
     /**
      * Does this step support this intent as starter intent?

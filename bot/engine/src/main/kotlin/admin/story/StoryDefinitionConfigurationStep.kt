@@ -37,7 +37,8 @@ data class StoryDefinitionConfigurationStep(
      */
     val name: String,
     /**
-     * The intent used to reach the step - mandatory if an answer is set, or if there is a [targetIntent].
+     * The intent used to reach the step - mandatory if an answer is set, or if there is a [targetIntent]
+     * - and if there is no [entity] set.
      */
     val intent: IntentWithoutNamespace?,
     /**
