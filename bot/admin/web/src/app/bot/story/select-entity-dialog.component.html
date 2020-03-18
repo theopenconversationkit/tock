@@ -5,7 +5,6 @@
       <mat-form-field class="input input-intent">
         <input matInput
                name="intent"
-               required
                placeholder="Intent"
                [(ngModel)]="intent.name"
                matTooltip="Intent starting the Action"
@@ -56,7 +55,7 @@
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-stroked-button (click)="cancel()">Cancel</button>
-  <button *ngIf="generate" [disabled]="intent.name.trim().length === 0 || !selectedEntity || !role" mat-raised-button
+  <button *ngIf="generate" [disabled]="!selectedEntity || !role" mat-raised-button
           class="submit-button" color="primary" (click)="validateEntity()">Generate
   </button>
   <button *ngIf="!generate" mat-raised-button class="submit-button" color="primary" (click)="validateEntityValue()">
