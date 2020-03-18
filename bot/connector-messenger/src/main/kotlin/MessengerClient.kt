@@ -271,7 +271,7 @@ internal class MessengerClient(val secretKey: String) {
         }
     }
 
-    private fun <T> send(request: T, call: (T) -> Response<SendResponse>): SendResponse {
+    private fun <T : Any> send(request: T, call: (T) -> Response<SendResponse>): SendResponse {
         return send(request, call, 0)
     }
 
@@ -288,8 +288,8 @@ internal class MessengerClient(val secretKey: String) {
         throw ConnectorException(errorMessage)
     }
 
-    private fun <T> send(request: T, call: (T) -> Response<SendResponse>, nbTries: Int): SendResponse {
-        val requestTimerData = requestTimer.start("messenger_send")
+    private fun <T : Any> send(request: T, call: (T) -> Response<SendResponse>, nbTries: Int): SendResponse {
+        val requestTimerData = requestTimer.start("messenger_send_${request.javaClass.simpleName?.toLowerCase()}")
         try {
             val response = call(request)
 
