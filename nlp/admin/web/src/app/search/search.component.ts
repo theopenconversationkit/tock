@@ -48,6 +48,7 @@ export class SearchComponent implements OnInit {
   selectedSentences: Sentence[];
   update: SentencesUpdate = new SentencesUpdate();
   targetLocale: string;
+  users: string[];
 
   private firstSearch = false;
   @ViewChild(SentencesScrollComponent, {static: false}) scroll;
@@ -68,6 +69,7 @@ export class SearchComponent implements OnInit {
         this.status = SentenceStatus[SentenceStatus[params["status"]]];
       }
       this.state.currentIntents.subscribe(i => {
+        this.nlp.findUsers(this.state.currentApplication).subscribe(u => this.users = u);
         const search = this.filter.search;
         this.filter = new SentenceFilter();
         this.filter.search = search;
@@ -119,7 +121,7 @@ export class SearchComponent implements OnInit {
             this.filter.searchSubEntities = entities.find(e => e.subEntities.find(s => this.filter.entityRolesToInclude.includes(s.role)) != undefined) != undefined;
           }
           if (!this.filter.searchSubEntities && this.filter.entityRolesToExclude.length > 0) {
-            this.filter.searchSubEntities = entities.find(e => e.subEntities.find(s => this.filter.entityRolesToExclude.includes(s.role )) != undefined) != undefined;
+            this.filter.searchSubEntities = entities.find(e => e.subEntities.find(s => this.filter.entityRolesToExclude.includes(s.role)) != undefined) != undefined;
           }
         }
       );

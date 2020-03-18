@@ -24,6 +24,8 @@ import ai.tock.nlp.front.shared.config.ClassifiedEntity_.Companion.Role
 import ai.tock.nlp.front.shared.config.ClassifiedSentence
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.inbox
+import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
+import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import ai.tock.nlp.front.shared.config.EntityDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.config.SentencesQuery
@@ -31,6 +33,7 @@ import ai.tock.nlp.front.shared.config.SentencesQueryResult
 import ai.tock.nlp.front.storage.mongo.ApplicationDefinitionMongoDAO.getApplicationById
 import ai.tock.nlp.front.storage.mongo.ApplicationDefinitionMongoDAO.getApplicationsByNamespace
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.ApplicationId
+import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Classifier
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.ForReview
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.FullText
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Language
@@ -68,6 +71,7 @@ import org.litote.kmongo.`in`
 import org.litote.kmongo.and
 import org.litote.kmongo.combine
 import org.litote.kmongo.descendingSort
+import org.litote.kmongo.distinct
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
@@ -87,6 +91,7 @@ import org.litote.kmongo.regex
 import org.litote.kmongo.replaceOneWithFilter
 import org.litote.kmongo.setTo
 import org.litote.kmongo.setValue
+import org.litote.kmongo.toId
 import org.litote.kmongo.updateMany
 import java.time.Duration
 import java.time.Instant
@@ -265,6 +270,13 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         )
     }
 
+    override fun users(applicationId: Id<ApplicationDefinition>): List<String> {
+        return col.distinct(
+            Classifier,
+            and(ApplicationId eq applicationId, Status `in` listOf(validated, model))
+        ).filterNotNull()
+    }
+
     override fun search(query: SentencesQuery): SentencesQueryResult {
         with(query) {
             val filterBase =
@@ -280,7 +292,9 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                     filterSearchMark(),
                     filterModifiedAfter(),
                     filterModifiedBefore(),
-                    filterReviewOnly()
+                    filterReviewOnly(),
+                    filterByUser(),
+                    filterByAllButUser()
                 )
 
             logger.debug { filterBase.json }
@@ -344,6 +358,10 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         else ApplicationId eq applicationId
 
     private fun SentencesQuery.filterReviewOnly() = if (onlyToReview) ForReview eq true else null
+
+    private fun SentencesQuery.filterByUser() = if (user != null) Classifier eq user else null
+
+    private fun SentencesQuery.filterByAllButUser() = if (allButUser != null) Classifier ne allButUser else null
 
     private fun SentencesQuery.filterSearchMark(): Bson? =
         if (searchMark == null) null else UpdateDate lte searchMark?.date
@@ -415,15 +433,15 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
 
     private fun subEntityRoleQueryToExclude(roles: List<String>): Bson =
         and(
-            Classification_.entities.role `nin` roles,
-            Classification_.entities.subEntities.role `nin` roles,
-            Classification_.entities.subEntities.subEntities.role `nin` roles,
-            Classification_.entities.subEntities.subEntities.subEntities.role `nin` roles,
-            Classification_.entities.subEntities.subEntities.subEntities.subEntities.role `nin` roles,
-            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.role `nin` roles,
-            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role `nin` roles,
-            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role `nin` roles,
-            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role `nin` roles
+            Classification_.entities.role nin roles,
+            Classification_.entities.subEntities.role nin roles,
+            Classification_.entities.subEntities.subEntities.role nin roles,
+            Classification_.entities.subEntities.subEntities.subEntities.role nin roles,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.role nin roles,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.role nin roles,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role nin roles,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role nin roles,
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role nin roles
         )
 
     override fun switchSentencesIntent(

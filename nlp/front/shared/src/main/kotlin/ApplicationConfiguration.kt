@@ -77,6 +77,11 @@ interface ApplicationConfiguration {
     fun switchSentencesStatus(sentences: List<ClassifiedSentence>, newStatus: ClassifiedSentenceStatus)
 
     /**
+     * Returns sentence validator users.
+     */
+    fun users(id: Id<ApplicationDefinition>): List<String>
+
+    /**
      * Switch specified sentences to a new intent.
      *
      * @return the number of sentences updated
@@ -101,7 +106,7 @@ interface ApplicationConfiguration {
 
     fun save(entityType: EntityTypeDefinition)
 
-    fun getEntityTypesByNamespaceAndSharedEntityTypes(namespace:String): List<EntityTypeDefinition>
+    fun getEntityTypesByNamespaceAndSharedEntityTypes(namespace: String): List<EntityTypeDefinition>
 
     fun getEntityTypes(): List<EntityTypeDefinition>
 
@@ -224,11 +229,11 @@ interface ApplicationConfiguration {
     /**
      * Is it the namespace owner ?
      */
-    fun isNamespaceOwner(user:String, namespace:String) : Boolean
+    fun isNamespaceOwner(user: String, namespace: String): Boolean
 
     /**
      * Is this user has the namespace ?
      */
-    fun hasNamespace(user:String, namespace:String) : Boolean
+    fun hasNamespace(user: String, namespace: String): Boolean
 
 }

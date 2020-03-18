@@ -35,7 +35,7 @@
                        style="width: 12rem;">
               <nb-option value="-1">All</nb-option>
               <nb-option-group *ngFor="let category of state.currentIntentsCategories | async"
-                               [title]="category.category" >
+                               [title]="category.category">
                 <nb-option *ngFor="let intent of category.intents" [value]="intent._id">
                   {{intent.intentLabel()}}
                 </nb-option>
@@ -55,26 +55,26 @@
             </nb-select>
           </div>
           <div class="search-criterion">
-              <nb-select *ngIf="entityRolesToInlude" multiple placeholder="Entity Roles to include" status="primary"
-                         [(ngModel)]="filter.entityRolesToInclude"
-                         (selectedChange)="search()"
-                         style="width: 12rem;">
-                <nb-option>Clear selection</nb-option>
-                <nb-option *ngFor="let r of entityRolesToInlude" [value]="r">
-                  {{r}}
-                </nb-option>
-              </nb-select>
+            <nb-select *ngIf="entityRolesToInlude" multiple placeholder="Entity Roles to include" status="primary"
+                       [(ngModel)]="filter.entityRolesToInclude"
+                       (selectedChange)="search()"
+                       style="width: 12rem;">
+              <nb-option>Clear selection</nb-option>
+              <nb-option *ngFor="let r of entityRolesToInlude" [value]="r">
+                {{r}}
+              </nb-option>
+            </nb-select>
           </div>
           <div class="search-criterion">
-              <nb-select *ngIf="entityRolesToExclude" multiple placeholder="Entity Roles to exclude" status="primary"
-                         [(ngModel)]="filter.entityRolesToExclude"
-                          (selectedChange)="search()"
-                         style="width: 12rem;">
-                <nb-option>Clear selection</nb-option>
-                <nb-option *ngFor="let r of entityRolesToExclude" [value]="r">
-                  {{r}}
-                </nb-option>
-              </nb-select>
+            <nb-select *ngIf="entityRolesToExclude" multiple placeholder="Entity Roles to exclude" status="primary"
+                       [(ngModel)]="filter.entityRolesToExclude"
+                       (selectedChange)="search()"
+                       style="width: 12rem;">
+              <nb-option>Clear selection</nb-option>
+              <nb-option *ngFor="let r of entityRolesToExclude" [value]="r">
+                {{r}}
+              </nb-option>
+            </nb-select>
           </div>
           <div class="search-criterion">
             <nb-select placeholder="Status" status="primary" [(ngModel)]="status" (selectedChange)="search()"
@@ -87,14 +87,36 @@
             </nb-select>
           </div>
           <div class="search-criterion">
-          <input nbInput (keyup.enter)="search()" placeholder="Modified after" [(ngModel)]="filter.modifiedAfter"
-                 [nbDatepicker]="after" (ngModelChange)="search()">
-          <nb-datepicker #after (dateChange)="search()"></nb-datepicker>
+            <input nbInput (keyup.enter)="search()" placeholder="Modified after" [(ngModel)]="filter.modifiedAfter"
+                   [nbDatepicker]="after" (ngModelChange)="search()">
+            <nb-datepicker #after (dateChange)="search()"></nb-datepicker>
           </div>
           <div class="search-criterion">
             <input nbInput (keyup.enter)="search()" placeholder="Modified before" [(ngModel)]="filter.modifiedBefore"
                    [nbDatepicker]="before" (ngModelChange)="search()">
             <nb-datepicker #before (dateChange)="search()"></nb-datepicker>
+          </div>
+          <div class="search-criterion" *ngIf="users && users.length !== 0">
+            <nb-select placeholder="Validated by" status="primary"
+                       [(ngModel)]="filter.user"
+                       (selectedChange)="search()"
+                       style="width: 12rem;">
+              <nb-option value="">Validated by</nb-option>
+              <nb-option *ngFor="let u of users" [value]="u">
+                {{u}}
+              </nb-option>
+            </nb-select>
+          </div>
+          <div class="search-criterion" *ngIf="users && users.length !== 0">
+            <nb-select placeholder="Not validated by" status="primary"
+                       [(ngModel)]="filter.allButUser"
+                       (selectedChange)="search()"
+                       style="width: 12rem;">
+              <nb-option value="">Not validated by</nb-option>
+              <nb-option *ngFor="let u of users" [value]="u">
+                {{u}}
+              </nb-option>
+            </nb-select>
           </div>
         </div>
       </nb-card-body>

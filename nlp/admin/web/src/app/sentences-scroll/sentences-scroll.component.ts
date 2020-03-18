@@ -143,7 +143,9 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
         ? this.sort.map(s => new Entry<string, boolean>(s.active, s.direction === 'asc'))
         : null,
       this.filter.onlyToReview,
-      this.filter.searchSubEntities
+      this.filter.searchSubEntities,
+      this.filter.user,
+      this.filter.allButUser
     )
   }
 
@@ -273,7 +275,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
           theAppQuery.applicationName,
           theAppQuery.language,
           theSelectedSentences.map(s => s.text)
-        )
+        );
         this.nlp.getSentencesQueryDump(
           this.state.currentApplication,
           theQuery,
@@ -325,11 +327,17 @@ export class SentenceFilter {
               public modifiedAfter?: Date,
               public modifiedBefore?: Date,
               public onlyToReview: boolean = false,
-              public searchSubEntities: boolean = false) {
+              public searchSubEntities: boolean = false,
+              public user?: string,
+              public allButUser?: string) {
   }
 
   clone(): SentenceFilter {
-    return new SentenceFilter(this.search, this.intentId, this.status, this.entityType, this.entityRolesToInclude, this.entityRolesToInclude, this.modifiedAfter, this.modifiedBefore, this.onlyToReview, this.searchSubEntities);
+    return new SentenceFilter(
+      this.search, this.intentId, this.status, this.entityType, this.entityRolesToInclude,
+      this.entityRolesToInclude, this.modifiedAfter, this.modifiedBefore, this.onlyToReview, this.searchSubEntities,
+      this.user, this.allButUser
+    );
   }
 }
 

@@ -39,7 +39,15 @@ data class SearchQuery(
     /**
      * Search the sub entities in the whole entity tree.
      */
-    val searchSubEntities: Boolean = false
+    val searchSubEntities: Boolean = false,
+    /**
+     * Sentences validated by user.
+     */
+    val user: String? = null,
+    /**
+     * Sentences not validated by user.
+     */
+    val allButUser: String? = null
 ) : PaginatedQuery() {
 
     fun toSentencesQuery(applicationId: Id<ApplicationDefinition>): SentencesQuery {
@@ -59,7 +67,9 @@ data class SearchQuery(
             searchMark = searchMark,
             sort = sort ?: emptyList(),
             onlyToReview = onlyToReview,
-            searchSubEntities = searchSubEntities
+            searchSubEntities = searchSubEntities,
+            user = user?.takeUnless { it.isBlank() },
+            allButUser = allButUser?.takeUnless { it.isBlank() }
         )
     }
 }

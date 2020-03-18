@@ -789,7 +789,9 @@ export class SearchQuery extends PaginatedQuery {
               public modifiedBefore?: Date,
               public sort?: Entry<string, boolean>[],
               public onlyToReview: boolean = false,
-              public searchSubEntities: boolean = false) {
+              public searchSubEntities: boolean = false,
+              public user?:string,
+              public allButUser?:string) {
     super(namespace, applicationName, language, start, size, searchMark, sort)
   }
 }

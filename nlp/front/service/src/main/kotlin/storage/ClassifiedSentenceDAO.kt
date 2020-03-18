@@ -88,5 +88,10 @@ interface ClassifiedSentenceDAO {
          */
         text: String
     )
+
+    /**
+     * Returns sentence validator users.
+     */
+    fun users(applicationId: Id<ApplicationDefinition>): List<String>
 }
 

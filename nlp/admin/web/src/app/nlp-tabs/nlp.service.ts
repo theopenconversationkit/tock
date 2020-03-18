@@ -28,9 +28,9 @@ import {
   PredefinedLabelQuery,
   PredefinedValueQuery,
   SearchQuery,
-  SentencesTextQuery,
   Sentence,
   SentencesResult,
+  SentencesTextQuery,
   TranslateReport,
   TranslateSentencesQuery,
   UpdateEntityDefinitionQuery,
@@ -165,7 +165,11 @@ export class NlpService implements OnDestroy {
   }
 
   translateSentences(query: TranslateSentencesQuery): Observable<TranslateReport> {
-    return this.rest.post("/translation/sentence", query, TranslateReport.fromJSON)
+    return this.rest.post("/translation/sentence", query, TranslateReport.fromJSON);
+  }
+
+  findUsers(application: Application): Observable<string[]> {
+    return this.rest.get(`/sentence/users/${application._id}`, i => i);
   }
 
 }

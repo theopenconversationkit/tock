@@ -51,6 +51,13 @@ data class SentencesQuery(
     /**
      * Is the search should be extended to the whole app namespace ?
      */
-    val wholeNamespace: Boolean = false
-
+    val wholeNamespace: Boolean = false,
+    /**
+     * Sentences validated by user.
+     */
+    val user: String? = null,
+    /**
+     * Sentences not validated by user.
+     */
+    val allButUser: String? = null
 )
