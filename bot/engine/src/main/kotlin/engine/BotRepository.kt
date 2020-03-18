@@ -282,7 +282,7 @@ object BotRepository {
      * @param startupLock if not null, wait do listen until the lock is released
      */
     fun installBots(
-        routerHandlers: List<(Router) -> Unit>,
+        routerHandlers: List<(Router) -> Any?>,
         createApplicationIfNotExists: Boolean = true,
         startupLock: Lock? = null) {
         val bots = botProviders.values.map { it.botDefinition() }

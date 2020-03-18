@@ -49,7 +49,7 @@ internal class BotVerticle(
 
     inner class ServiceInstaller(
         val serviceId: String,
-        private val installer: (Router) -> Unit,
+        private val installer: (Router) -> Any?,
         var routes: MutableList<Route> = CopyOnWriteArrayList(),
         @Volatile
         var installed: Boolean = false,
@@ -83,7 +83,7 @@ internal class BotVerticle(
 
     override fun authProvider(): TockAuthProvider? = defaultAuthProvider()
 
-    fun registerServices(serviceIdentifier: String, installer: (Router) -> Unit): ServiceInstaller {
+    fun registerServices(serviceIdentifier: String, installer: (Router) -> Any?): ServiceInstaller {
         return ServiceInstaller(serviceIdentifier, installer).also {
             if (!handlers.containsKey(serviceIdentifier)) {
                 handlers[serviceIdentifier] = it
