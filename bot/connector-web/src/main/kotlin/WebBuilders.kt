@@ -73,7 +73,7 @@ fun I18nTranslator.webMessage(title: CharSequence, vararg buttons: Button): WebM
 /**
  * Creates a text with a list of buttons.
  */
-fun I18nTranslator.webMessage(title: CharSequence, buttons: List<Button>): WebMessage =
+fun I18nTranslator.webMessage(title: CharSequence, buttons: List<Button> = emptyList()): WebMessage =
     WebMessage(
         translate(title).toString(), buttons
     )
