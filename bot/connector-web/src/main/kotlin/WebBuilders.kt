@@ -26,6 +26,7 @@ import ai.tock.bot.connector.web.send.QuickReply
 import ai.tock.bot.connector.web.send.UrlButton
 import ai.tock.bot.connector.web.send.WebCard
 import ai.tock.bot.connector.web.send.WebCarousel
+import ai.tock.bot.connector.web.send.WebCustom
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.Parameters
 import ai.tock.bot.definition.StoryHandlerDefinition
@@ -193,3 +194,8 @@ fun <T : Bus<T>> T.webCard(card: MediaCard): OldWebMessage = OldWebMessage(card 
  */
 @Deprecated("No more supported", ReplaceWith("webCarousel(vararg cards: WebCard)"))
 fun <T : Bus<T>> T.webCarousel(carousel: MediaCarousel): OldWebMessage = OldWebMessage(carousel = carousel)
+
+/**
+ * Creates a custom payload
+ */
+fun <T : Bus<T>> T.webCustom(custom: WebCustom): WebMessage = WebMessage(custom = custom)
