@@ -151,8 +151,8 @@ fun <T : Bus<T>> T.webCard(
     subTitle: CharSequence?,
     buttons: List<Button> = emptyList()
 ): WebCard = WebCard(
-    title = title,
-    subTitle = subTitle,
+    title = translate(title).toString(),
+    subTitle = translate(subTitle).toString(),
     buttons = buttons
 )
 
@@ -165,8 +165,8 @@ fun <T : Bus<T>> T.webCardWithAttachment(
     attachementName: String = ""
 ): WebCard {
     return WebCard(
-        title = title,
-        subTitle = subTitle,
+        title = translate(title).toString(),
+        subTitle = translate(subTitle).toString(),
         file = MediaFile(
             attachmentUrl.toString(), attachementName, type
         ),
