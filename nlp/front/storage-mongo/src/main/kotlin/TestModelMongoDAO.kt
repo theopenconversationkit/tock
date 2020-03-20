@@ -56,6 +56,7 @@ internal object TestModelMongoDAO : TestModelDAO {
     private val buildCol: MongoCollection<TestBuild> by lazy {
         val c = MongoFrontConfiguration.database.getCollection<TestBuild>()
         c.ensureIndex(ApplicationId, Language)
+        c.ensureIndex(StartDate)
         c
     }
 
