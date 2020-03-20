@@ -179,9 +179,9 @@ fun <T : Bus<T>> T.webCardWithAttachment(
  * Creates a [WebMessage] from a [WebCarousel].
  */
 
-fun <T : Bus<T>> T.webCarousel(vararg cards: WebCard): WebMessage = WebMessage(carousel = WebCarousel(cards = cards.toList()))
+fun <T : Bus<T>> T.webCarousel(vararg cards: WebCard, buttons: List<Button> = emptyList()): WebMessage = WebMessage(carousel = WebCarousel(cards = cards.toList()), buttons = buttons)
 
-fun <T : Bus<T>> T.webCarousel(cards: List<WebCard>): WebMessage = WebMessage(carousel = WebCarousel(cards = cards))
+fun <T : Bus<T>> T.webCarousel(cards: List<WebCard>, buttons: List<Button> = emptyList()): WebMessage = WebMessage(carousel = WebCarousel(cards = cards), buttons = buttons)
 
 /**
  * Creates a [OldWebMessage] from a [MediaCard].
