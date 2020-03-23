@@ -17,7 +17,7 @@
 import {Component, OnInit} from "@angular/core";
 import {Router} from "@angular/router";
 import {StateService} from "../core-nlp/state.service";
-import {UserRole} from "../../../../../../nlp/admin/web/src/app/model/auth";
+import {UserRole} from "../model/auth";
 
 @Component({
   selector: 'tock-configuration-tabs',
