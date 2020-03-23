@@ -16,7 +16,7 @@
 
 <div class="search">
   <tock-sentences-scroll [filter]="filter" title="" [displayStatus]="true" [loadOnInit]="false"
-                         (selectedSentences)="selectedSentences = $event">
+                         [displayProbabilities]="true" (selectedSentences)="selectedSentences = $event">
     <nb-card>
       <nb-card-body>
         <span class="search-criterion">
@@ -117,6 +117,20 @@
                 {{u}}
               </nb-option>
             </nb-select>
+          </div>
+          <div class="search-criterion">
+            <input nbInput placeholder="Max Intent Probability (%)"
+                   type="number" min="0" max="100" step="1" maxlength="3" size="5"
+                   [(ngModel)]="filter.maxIntentProbability"
+                   (keyup.enter)="search()"
+                   nbTooltip="Intent Probability <= {{filter.maxIntentProbability}}%">
+          </div>
+          <div class="search-criterion">
+            <input nbInput placeholder="Min Intent Probability (%)"
+                   type="number" min="0" max="100" step="1" maxlength="3" size="5"
+                   [(ngModel)]="filter.minIntentProbability"
+                   (keyup.enter)="search()"
+                   nbTooltip="Intent Probability >= {{filter.minIntentProbability}}%">
           </div>
         </div>
       </nb-card-body>

@@ -145,7 +145,9 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
       this.filter.onlyToReview,
       this.filter.searchSubEntities,
       this.filter.user,
-      this.filter.allButUser
+      this.filter.allButUser,
+      this.filter.maxIntentProbability / 100,
+      this.filter.minIntentProbability / 100
     )
   }
 
@@ -329,14 +331,16 @@ export class SentenceFilter {
               public onlyToReview: boolean = false,
               public searchSubEntities: boolean = false,
               public user?: string,
-              public allButUser?: string) {
+              public allButUser?: string,
+              public maxIntentProbability: number = 100,
+              public minIntentProbability: number = 0) {
   }
 
   clone(): SentenceFilter {
     return new SentenceFilter(
       this.search, this.intentId, this.status, this.entityType, this.entityRolesToInclude,
       this.entityRolesToInclude, this.modifiedAfter, this.modifiedBefore, this.onlyToReview, this.searchSubEntities,
-      this.user, this.allButUser
+      this.user, this.allButUser, this.maxIntentProbability, this.minIntentProbability
     );
   }
 }

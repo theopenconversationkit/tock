@@ -294,7 +294,9 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                     filterModifiedBefore(),
                     filterReviewOnly(),
                     filterByUser(),
-                    filterByAllButUser()
+                    filterByAllButUser(),
+                    filterMaxIntentProbability(),
+                    filterMinIntentProbability()
                 )
 
             logger.debug { filterBase.json }
@@ -402,6 +404,12 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     }
 
     private fun SentencesQuery.filterLanguage() = if (language == null) null else Language eq language
+
+    private fun SentencesQuery.filterMaxIntentProbability(): Bson? =
+            if (maxIntentProbability < 1f) LastIntentProbability lt maxIntentProbability.toDouble() else null
+
+    private fun SentencesQuery.filterMinIntentProbability(): Bson? =
+            if (minIntentProbability > 0f) LastIntentProbability gt minIntentProbability.toDouble() else null
 
     //ugly
     private fun subEntityTypeQuery(entityType: String): Bson =

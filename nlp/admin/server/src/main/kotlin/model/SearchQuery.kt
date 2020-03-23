@@ -47,7 +47,9 @@ data class SearchQuery(
     /**
      * Sentences not validated by user.
      */
-    val allButUser: String? = null
+    val allButUser: String? = null,
+    val maxIntentProbability: Float = 1f,
+    val minIntentProbability: Float = 0f
 ) : PaginatedQuery() {
 
     fun toSentencesQuery(applicationId: Id<ApplicationDefinition>): SentencesQuery {
@@ -69,7 +71,9 @@ data class SearchQuery(
             onlyToReview = onlyToReview,
             searchSubEntities = searchSubEntities,
             user = user?.takeUnless { it.isBlank() },
-            allButUser = allButUser?.takeUnless { it.isBlank() }
+            allButUser = allButUser?.takeUnless { it.isBlank() },
+            maxIntentProbability = maxIntentProbability,
+            minIntentProbability = minIntentProbability
         )
     }
 }

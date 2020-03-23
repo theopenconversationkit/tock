@@ -791,7 +791,9 @@ export class SearchQuery extends PaginatedQuery {
               public onlyToReview: boolean = false,
               public searchSubEntities: boolean = false,
               public user?:string,
-              public allButUser?:string) {
+              public allButUser?:string,
+              public maxIntentProbability: number = 1,
+              public minIntentProbability: number = 0) {
     super(namespace, applicationName, language, start, size, searchMark, sort)
   }
 }
