@@ -80,4 +80,12 @@ interface StoryDefinition : IntentAware {
      */
     override fun wrappedIntent(): Intent = mainIntent()
 
+    fun allSteps(): Set<StoryStep<*>> =
+        mutableSetOf<StoryStep<*>>().apply { steps.forEach { allStep(this, it) } }
+
+    private fun allStep(result: MutableSet<StoryStep<*>>, step: StoryStep<*>) {
+        result.add(step)
+        step.children.forEach { allStep(result, it) }
+    }
+
 }

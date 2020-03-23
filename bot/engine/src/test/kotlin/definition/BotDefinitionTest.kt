@@ -57,4 +57,10 @@ class BotDefinitionTest {
         val result = botDef.enableBot(mockk(), dialog, mockk())
         assertFalse(result)
     }
+
+    @Test
+    fun `GIVEN step only intent WHEN findIntent is called THEN the intent is found`() {
+        val r = botDef.findIntent("s4_secondary")
+        assertEquals(Intent("s4_secondary"), r)
+    }
 }

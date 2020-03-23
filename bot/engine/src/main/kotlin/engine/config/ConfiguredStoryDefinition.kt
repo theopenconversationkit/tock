@@ -57,12 +57,4 @@ internal class ConfiguredStoryDefinition(val configuration: StoryDefinitionConfi
     override val unsupportedUserInterfaces: Set<UserInterfaceType> =
         configuration.storyDefinition(configuration.botId)?.unsupportedUserInterfaces ?: emptySet()
 
-    private fun allSteps(): Set<StoryStep<*>> =
-        mutableSetOf<StoryStep<*>>().apply { configuration.steps.forEach { allStep(this, it) } }
-
-    private fun allStep(result: MutableSet<StoryStep<*>>, step: StoryDefinitionConfigurationStep) {
-        result.add(step.toStoryStep(configuration))
-        step.children.forEach { allStep(result, it) }
-    }
-
 }

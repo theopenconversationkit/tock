@@ -59,8 +59,17 @@ interface BotDefinition : I18nKeyProvider {
          * Is no valid intent found, returns [unknown].
          */
         fun findIntent(stories: List<StoryDefinition>, intent: String): Intent {
-            return stories.flatMap { it.intents }.find { it.name == intent }
-                ?: if (intent == keyword.name) keyword else unknown
+            val targetIntent = Intent(intent)
+            return if (stories.any { it.supportIntent(targetIntent) }
+                || stories.any { it.allSteps().any { s -> s.supportIntent(targetIntent) } }) {
+                targetIntent
+            } else {
+                if (intent == keyword.name) {
+                    keyword
+                } else {
+                    unknown
+                }
+            }
         }
 
         /**
