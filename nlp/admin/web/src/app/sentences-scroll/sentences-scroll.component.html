@@ -167,15 +167,16 @@
 
 
       <ng-container matColumnDef="intentProbability" *ngIf="advancedView">
-        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Intent proba</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Intent probability</mat-header-cell>
         <mat-cell *matCellDef="let row"><span
-          style="color:green">{{row.classification.intentProbability | number:'1.1-2'}}</span></mat-cell>
+          style="color:green">{{row.classification.intentProbability | percent:'1.0-2'}}</span></mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="entitiesProbability" *ngIf="advancedView">
-        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Entities proba</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header" nbTooltip="Average entity probability">
+          Entities probability</mat-header-cell>
         <mat-cell *matCellDef="let row"><span
-          style="color:green">{{row.classification.entitiesProbability| number:'1.1-2'}}</span></mat-cell>
+          style="color:green">{{row.classification.entitiesProbability| percent:'1.0-2'}}</span></mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="lastUsage" *ngIf="advancedView">

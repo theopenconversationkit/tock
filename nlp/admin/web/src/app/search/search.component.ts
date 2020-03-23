@@ -159,6 +159,12 @@ export class SearchComponent implements OnInit {
       if (this.filter.search) {
         this.filter.search = this.filter.search.trim()
       }
+
+      const theActualMin = Math.round(Math.min(this.filter.maxIntentProbability, this.filter.minIntentProbability));
+      const theActualMax = Math.round(Math.max(this.filter.maxIntentProbability, this.filter.minIntentProbability));
+      this.filter.maxIntentProbability = Math.min(100, theActualMax);
+      this.filter.minIntentProbability = Math.max(0, theActualMin);
+
       this.scroll.refresh();
     }, 1);
   }

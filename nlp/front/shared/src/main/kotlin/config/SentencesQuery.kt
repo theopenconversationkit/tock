@@ -59,5 +59,7 @@ data class SentencesQuery(
     /**
      * Sentences not validated by user.
      */
-    val allButUser: String? = null
+    val allButUser: String? = null,
+    val maxIntentProbability: Float = 1f,
+    val minIntentProbability: Float = 0f
 )
