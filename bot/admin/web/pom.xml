@@ -25,6 +25,7 @@
   </parent>
 
   <artifactId>tock-bot-admin-web</artifactId>
+  <packaging>pom</packaging>
   <name>Tock Bot Admin Front</name>
   <description>Web app front for Tock Bot Admin</description>
 
@@ -33,6 +34,7 @@
       <groupId>ai.tock</groupId>
       <artifactId>tock-nlp-admin-web</artifactId>
       <version>${project.version}</version>
+      <type>pom</type>
       <optional>true</optional>
     </dependency>
   </dependencies>
