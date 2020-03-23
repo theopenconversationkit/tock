@@ -34,7 +34,6 @@
       <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
-
         <executions>
           <execution>
             <id>install node and npm</id>
@@ -53,7 +52,7 @@
               <goal>npm</goal>
             </goals>
             <configuration>
-              <arguments>install -d</arguments>
+              <arguments>install -d --loglevel warn</arguments>
             </configuration>
           </execution>
           <execution>
@@ -63,7 +62,7 @@
               <goal>npm</goal>
             </goals>
             <configuration>
-              <arguments>run-script mavenbuild</arguments>
+              <arguments>run-script mavenbuild --loglevel warn</arguments>
             </configuration>
           </execution>
         </executions>
@@ -73,11 +72,19 @@
         <configuration>
           <descriptors>
             <descriptor>src/main/assembly/assembly.xml</descriptor>
+            <descriptor>src/main/assembly/sources.xml</descriptor>
           </descriptors>
         </configuration>
         <executions>
           <execution>
             <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>package-sources</id>
             <phase>package</phase>
             <goals>
               <goal>single</goal>

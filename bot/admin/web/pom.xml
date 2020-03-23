@@ -29,13 +29,17 @@
   <name>Tock Bot Admin Front</name>
   <description>Web app front for Tock Bot Admin</description>
 
+  <properties>
+    <project.build.frontend.directory>${project.build.directory}/frontend</project.build.frontend.directory>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>ai.tock</groupId>
       <artifactId>tock-nlp-admin-web</artifactId>
       <version>${project.version}</version>
-      <type>pom</type>
-      <optional>true</optional>
+      <type>zip</type>
+      <classifier>sources</classifier>
     </dependency>
   </dependencies>
 
@@ -43,44 +47,57 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.1.1</version>
         <executions>
           <execution>
-            <phase>validate</phase>
-            <configuration>
-              <target>
-                <symlink link="${project.basedir}/src/app/applications" resource="${project.basedir}/../../../nlp/admin/web/src/app/applications" failonerror="false" overwrite="true" />
-                <symlink link="${project.basedir}/src/app/archive" resource="${project.basedir}/../../../nlp/admin/web/src/app/archive" failonerror="false" overwrite="true" />
-                <symlink link="${project.basedir}/src/app/build" resource="${project.basedir}/../../../nlp/admin/web/src/app/build" failonerror="false" overwrite="true" />
-                <symlink link="${project.basedir}/src/app/core-nlp" resource="${project.basedir}/../../../nlp/admin/web/src/app/core-nlp" failonerror="false" overwrite="true" />
-                <symlink link="${project.basedir}/src/app/entities" resource="${project.basedir}/../../../nlp/admin/web/src/app/entities" failonerror="false" overwrite="true" />
-                <symlink link="${project.basedir}/src/app/inbox" resource="${project.basedir}/../../../nlp/admin/web/src/app/inbox" failonerror="false" overwrite="true" />
-                <symlink link="${project.basedir}/src/app/intents" resource="${project.basedir}/../../../nlp/admin/web/src/app/intents" failonerror="false" overwrite="true" />
-                <symlink link="${project.basedir}/src/app/logs" resource="${project.basedir}/../../../nlp/admin/web/src/app/logs" failonerror="false" overwrite="true" />
-                <symlink link="${project.basedir}/src/app/model" resource="${project.basedir}/../../../nlp/admin/web/src/app/model" failonerror="false" overwrite="true" />
-                <symlink link="${project.basedir}/src/app/nlp-tabs" resource="${project.basedir}/../../../nlp/admin/web/src/app/nlp-tabs" failonerror="false" overwrite="true" />
-                <symlink link="${project.basedir}/src/app/quality-nlp" resource="${project.basedir}/../../../nlp/admin/web/src/app/quality-nlp" failonerror="false" overwrite="true" />
-                <symlink link="${project.basedir}/src/app/scroll" resource="${project.basedir}/../../../nlp/admin/web/src/app/scroll" failonerror="false" overwrite="true" />
-                <symlink link="${project.basedir}/src/app/search" resource="${project.basedir}/../../../nlp/admin/web/src/app/search" failonerror="false" overwrite="true" />
-                <symlink link="${project.basedir}/src/app/sentence-analysis" resource="${project.basedir}/../../../nlp/admin/web/src/app/sentence-analysis" failonerror="false" overwrite="true" />
-                <symlink link="${project.basedir}/src/app/sentences-scroll" resource="${project.basedir}/../../../nlp/admin/web/src/app/sentences-scroll" failonerror="false" overwrite="true" />
-                <symlink link="${project.basedir}/src/app/shared-nlp" resource="${project.basedir}/../../../nlp/admin/web/src/app/shared-nlp" failonerror="false" overwrite="true" />
-                <symlink link="${project.basedir}/src/app/test-nlp" resource="${project.basedir}/../../../nlp/admin/web/src/app/test-nlp" failonerror="false" overwrite="true" />
-                <symlink link="${project.basedir}/src/app/try" resource="${project.basedir}/../../../nlp/admin/web/src/app/try" failonerror="false" overwrite="true" />
-              </target>
-            </configuration>
+            <id>import-nlp-admin-sources</id>
+            <phase>generate-sources</phase>
             <goals>
-              <goal>run</goal>
+              <goal>unpack-dependencies</goal>
             </goals>
+            <configuration>
+              <includeClassifiers>sources</includeClassifiers>
+              <outputDirectory>${project.build.frontend.directory}/src</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>merge-bot-admin-sources</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <resources>
+                <resource>
+                  <directory>.</directory>
+                  <includes>
+                    <include>src/**</include>
+                    <include>*.json</include>
+                  </includes>
+                  <filtering>false</filtering>
+                </resource>
+              </resources>
+              <outputDirectory>${project.build.frontend.directory}</outputDirectory>
+              <overwrite>true</overwrite>
+            </configuration>
           </execution>
         </executions>
       </plugin>
 
-
       <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
-
+        <configuration>
+          <workingDirectory>${project.build.frontend.directory}</workingDirectory>
+        </configuration>
         <executions>
           <execution>
             <id>install node and npm</id>
@@ -99,7 +116,7 @@
               <goal>npm</goal>
             </goals>
             <configuration>
-              <arguments>install -d</arguments>
+              <arguments>install -d --loglevel warn</arguments>
             </configuration>
           </execution>
           <execution>
@@ -109,7 +126,7 @@
               <goal>npm</goal>
             </goals>
             <configuration>
-              <arguments>run-script mavenbuild</arguments>
+              <arguments>run-script mavenbuild --loglevel warn</arguments>
             </configuration>
           </execution>
         </executions>
@@ -130,45 +147,6 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-clean-plugin</artifactId>
-        <configuration>
-          <filesets>
-            <fileset>
-              <directory>node_modules</directory>
-            </fileset>
-            <fileset>
-              <directory>dist</directory>
-            </fileset>
-            <fileset>
-              <directory>node</directory>
-            </fileset>
-            <fileset>
-              <directory>src/app</directory>
-              <includes>
-                <include>applications</include>
-                <include>archive</include>
-                <include>build</include>
-                <include>core-nlp</include>
-                <include>entities</include>
-                <include>inbox</include>
-                <include>intents</include>
-                <include>logs</include>
-                <include>model</include>
-                <include>nlp-tabs</include>
-                <include>quality-nlp</include>
-                <include>scroll</include>
-                <include>search</include>
-                <include>sentence-analysis</include>
-                <include>sentences-scroll</include>
-                <include>shared-nlp</include>
-                <include>test-nlp</include>
-                <include>try</include>
-              </includes>
-            </fileset>
-          </filesets>
-        </configuration>
       </plugin>
     </plugins>
   </build>
