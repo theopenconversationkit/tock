@@ -48,7 +48,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.1.1</version>
         <executions>
           <execution>
             <id>import-nlp-admin-sources</id>
@@ -59,6 +58,7 @@
             <configuration>
               <includeClassifiers>sources</includeClassifiers>
               <outputDirectory>${project.build.frontend.directory}/src</outputDirectory>
+              <excludes>app/nlp-admin-app.*.*</excludes>
             </configuration>
           </execution>
         </executions>
@@ -101,7 +101,7 @@
         <executions>
           <execution>
             <id>install node and npm</id>
-            <phase>generate-resources</phase>
+            <phase>process-resources</phase>
             <goals>
               <goal>install-node-and-npm</goal>
             </goals>
@@ -111,7 +111,7 @@
           </execution>
           <execution>
             <id>npm install</id>
-            <phase>generate-resources</phase>
+            <phase>process-resources</phase>
             <goals>
               <goal>npm</goal>
             </goals>

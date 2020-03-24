@@ -26,26 +26,10 @@
     <fileSet>
       <outputDirectory>.</outputDirectory>
       <directory>src</directory>
-      <includes>
-        <include>app/applications/**</include>
-        <include>app/archive/**</include>
-        <include>app/build/**</include>
-        <include>app/core-nlp/**</include>
-        <include>app/entities/**</include>
-        <include>app/inbox/**</include>
-        <include>app/intents/**</include>
-        <include>app/logs/**</include>
-        <include>app/model/**</include>
-        <include>app/nlp-tabs/**</include>
-        <include>app/quality-nlp/**</include>
-        <include>app/scroll/**</include>
-        <include>app/search/**</include>
-        <include>app/sentence-analysis/**</include>
-        <include>app/sentences-scroll/**</include>
-        <include>app/shared-nlp/**</include>
-        <include>app/test-nlp/**</include>
-        <include>app/try/**</include>
-      </includes>
+      <excludes>
+        <exclude>environments/**</exclude>
+        <exclude>main/**</exclude>
+      </excludes>
     </fileSet>
   </fileSets>
 </assembly>
