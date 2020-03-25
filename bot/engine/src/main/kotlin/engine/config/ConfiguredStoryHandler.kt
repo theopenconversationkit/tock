@@ -23,6 +23,7 @@ import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionAnswersContainer
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep.Step
+import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryHandler
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.SendSentence
@@ -46,7 +47,7 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
                 bus.botDefinition
                     .stories.find { it.id == feature.switchToStoryId || (it as? ConfiguredStoryDefinition)?.configuration?.storyId == feature.switchToStoryId }
                     ?.apply {
-                        bus.handleAndSwitchStory(this)
+                        bus.switchConfiguredStory(this)
                         return@handle
                     }
             }
@@ -86,11 +87,16 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
                 bus.botDefinition
                     .findStoryDefinition(step.targetIntent?.name, bus.applicationId)
                     .takeUnless { it == bus.botDefinition.unknownStory }
-                    ?.apply { bus.handleAndSwitchStory(this) }
+                    ?.apply { bus.switchConfiguredStory(this) }
                 return@handle
             }
 
         configuration.send(bus)
+    }
+
+    private fun BotBus.switchConfiguredStory(target: StoryDefinition) {
+        step = step?.takeUnless { story.definition == target }
+        handleAndSwitchStory(target)
     }
 
     private fun StoryDefinitionAnswersContainer.send(bus: BotBus) {
@@ -121,8 +127,8 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
                         }
                     it.last().apply {
                         send(container, this,
-                                // Fixes #731 end only if no targetIntent will be called after answer
-                                (step as? Step)?.configuration?.targetIntent == null)
+                            // Fixes #731 end only if no targetIntent will be called after answer
+                            (step as? Step)?.configuration?.targetIntent == null)
                     }
                 }
         }
