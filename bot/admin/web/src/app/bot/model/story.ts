@@ -125,7 +125,7 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
   constructor(public storyId: string,
               public botId: string,
               public intent: IntentName,
-              currentType: AnswerConfigurationType,
+              public currentType: AnswerConfigurationType,
               public namespace: string,
               answers: AnswerConfiguration[] = [],
               category: string = "default",

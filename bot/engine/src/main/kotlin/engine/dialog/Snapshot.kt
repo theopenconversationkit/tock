@@ -16,6 +16,8 @@
 
 package ai.tock.bot.engine.dialog
 
+import ai.tock.bot.admin.answer.AnswerConfigurationType
+import ai.tock.bot.engine.config.ConfiguredStoryDefinition
 import ai.tock.nlp.api.client.model.Entity
 import java.time.Instant
 import java.time.Instant.now
@@ -28,6 +30,8 @@ data class Snapshot(
     val intentName: String?,
     val step: String?,
     val entityValues: List<EntityValue>,
+    val storyType: AnswerConfigurationType?,
+    val storyName: String? = intentName,
     val date: Instant = now()
 ) {
 
@@ -35,7 +39,9 @@ data class Snapshot(
         dialog.currentStory?.definition?.id,
         dialog.state.currentIntent?.name,
         dialog.currentStory?.step,
-        dialog.state.entityValues.values.mapNotNull { it.value }
+        dialog.state.entityValues.values.mapNotNull { it.value },
+        (dialog.currentStory?.definition as? ConfiguredStoryDefinition)?.configuration?.currentType ?: AnswerConfigurationType.builtin,
+        (dialog.currentStory?.definition as? ConfiguredStoryDefinition)?.configuration?.name ?: dialog.state.currentIntent?.name
     )
 
     /**

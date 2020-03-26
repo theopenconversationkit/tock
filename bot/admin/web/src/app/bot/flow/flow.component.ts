@@ -30,7 +30,7 @@ import {entityColor} from "../../model/nlp";
 import {KeyValue} from "@angular/common";
 import {NodeTransition, StoryNode} from "./node";
 import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
-import {StoryDefinitionConfiguration, StorySearchQuery, StoryStep} from "../model/story";
+import {AnswerConfigurationType, StoryDefinitionConfiguration, StorySearchQuery, StoryStep} from "../model/story";
 import {Subscription} from "rxjs";
 import { NbToastrService } from '@nebular/theme';
 
@@ -114,12 +114,13 @@ export class FlowComponent implements OnInit, OnDestroy {
   intent: boolean = false;
   minimalNodeCount: number = 0;
   maxNodeCount: number = 1;
-  minimalTransitionPercentage: number = 0;
+  minimalTransitionPercentage: number = 10;
 
-  selectedStoryId: string;
+  selectedStory: StoryDefinitionConfiguration;
   direction: number;
 
-  stories: Map<string, string> = new Map();
+  storiesById: Map<string, StoryDefinitionConfiguration> = new Map();
+  nodesById: Map<string, StoryNode> = new Map();
 
   selectedEdge: NodeTransition;
   selectedNode: StoryNode;
@@ -129,12 +130,15 @@ export class FlowComponent implements OnInit, OnDestroy {
 
   botConfigurationId: string;
   lastBotSelection: SelectBotEvent;
-  flow: ApplicationDialogFlow;
+  userFlow: ApplicationDialogFlow;
 
   allStories: StoryDefinitionConfiguration[];
   configuredStories: StoryDefinitionConfiguration[];
-  configuredFlow: ApplicationDialogFlow;
-  statsMode: boolean = false;
+  staticFlow: ApplicationDialogFlow;
+  statsMode: boolean = true;
+  displayNodeType: boolean = false;
+  mergeOldStories: boolean = true;
+  displayDebug: boolean = false;
 
   private subscription: Subscription;
 
@@ -165,7 +169,8 @@ export class FlowComponent implements OnInit, OnDestroy {
       )).subscribe(s => {
       this.allStories = s;
       this.configuredStories = s.filter(story => !story.isBuiltIn());
-      this.fillConfiguration();
+      console.debug(this.allStories.length + ' stories retrieved, incl. ' + this.configuredStories.length + ' configured stories.');
+      this.buildStaticFlowFromStories();
     });
   }
 
@@ -180,36 +185,34 @@ export class FlowComponent implements OnInit, OnDestroy {
 
   updateCount() {
     setTimeout(_ => {
-      this.toGraphData(this.statsMode ? this.flow : this.configuredFlow)
+      this.buildGraph(this.statsMode ? this.userFlow : this.staticFlow)
     });
   }
 
-  private fillConfiguration() {
+  private buildStaticFlowFromStories() {
     const intentStoryMap = new Map<string, StoryDefinitionConfiguration>();
     const states: DialogFlowStateData[] = [];
     const transitions: DialogFlowStateTransitionData[] = [];
     this.allStories.forEach(s => {
       intentStoryMap.set(s.intent.name, s);
-      states.push(
-        new DialogFlowStateData(
-          s.intent.name,
-          s.intent.name,
-          [],
-          null,
-          1,
-          s.intent.name
-        )
-      );
-      transitions.push(
-        new DialogFlowStateTransitionData(
-          s.intent.name,
-          [],
-          DialogFlowStateTransitionType.nlp,
-          null,
-          null,
-          1
-        )
-      );
+      states.push(new DialogFlowStateData(
+                                            s._id,
+                                            s.intent.name,
+                                            [],
+                                            null,
+                                            s.currentType,
+                                            s.name,
+                                            0,
+                                            s._id
+                                          ));
+      transitions.push(new DialogFlowStateTransitionData(
+                                                      s._id,
+                                                      [],
+                                                      DialogFlowStateTransitionType.nlp,
+                                                      null,
+                                                      null,
+                                                      0
+                                                    ));
     });
 
     this.allStories.forEach(s => {
@@ -218,25 +221,23 @@ export class FlowComponent implements OnInit, OnDestroy {
       intents.forEach(i => {
         const targetStory = intentStoryMap.get(i);
         if (targetStory) {
-          transitions.push(
-            new DialogFlowStateTransitionData(
-              targetStory.intent.name,
-              [],
-              DialogFlowStateTransitionType.nlp,
-              s.intent.name,
-              null,
-              1
-            )
-          );
+          transitions.push(new DialogFlowStateTransitionData(
+                                                              targetStory.intent.name,
+                                                              [],
+                                                              DialogFlowStateTransitionType.nlp,
+                                                              s.intent.name,
+                                                              null,
+                                                              0
+                                                            ));
         }
       });
     });
-    this.configuredFlow = new ApplicationDialogFlow(states, transitions);
+    this.staticFlow = new ApplicationDialogFlow(states, transitions);
     this.reset();
   }
 
   reset() {
-    this.selectedStoryId = null;
+    this.selectedStory = null;
     this.selectedNode = null;
     this.selectedEdge = null;
     this.direction = null;
@@ -249,9 +250,7 @@ export class FlowComponent implements OnInit, OnDestroy {
   }
 
   changeMode() {
-    this.statsMode = !this.statsMode;
-    this.minimalTransitionPercentage = this.statsMode ? 10 : 0;
-    setTimeout(_ => this.reset());
+    this.reset();
   }
 
   displayFlow(event?: SelectBotEvent) {
@@ -268,18 +267,20 @@ export class FlowComponent implements OnInit, OnDestroy {
             event.configurationId
           )
         ).subscribe(f => {
-          this.flow = f;
+          this.userFlow = f;
+          console.debug('Application flow retrieved, incl. ' + f.states.length + ' states ' + f.transitions.length + ' transistions.');
           this.reset();
         });
       } else {
         this.graphData = null;
-        this.flow = null;
+        this.userFlow = null;
         this.reset();
       }
     }
   }
 
-  toGraphData(flow: ApplicationDialogFlow) {
+  buildGraph(theFlow: ApplicationDialogFlow) {
+    let flow = this.mergeOldStories ? (JSON.parse(JSON.stringify(theFlow))) : theFlow; // clone - states might be modified by merge
     if (flow) {
       const displayOnlyNext: boolean = this.direction === -1;
       const displayOnlyPrev: boolean = this.direction === 1;
@@ -289,50 +290,114 @@ export class FlowComponent implements OnInit, OnDestroy {
       };
 
       //1 create nodes
-      let nodeCount = 0;
-      const nodesMap = new Map<number, StoryNode>();
-      const stateIdNodeMap = new Map<string, StoryNode>();
+      let nodesNumber = 0;
+      const nodesByIndex = new Map<number, StoryNode>();
+      const nodesByStateId = new Map<string, StoryNode>();
+      const nodesByStoryKey = new Map<string, StoryNode>();
 
-      const nodeByKey = [];
       flow.states.forEach(s => {
         if (this.entity && this.step && this.intent) {
-          const node = new StoryNode(s.storyDefinitionId, [s], nodeCount++, s.entities, s.intent, s.step);
-          nodesMap.set(node.id, node);
-          stateIdNodeMap.set(s._id, node);
+          const node = new StoryNode(nodesNumber++, s._id, s.storyDefinitionId, [s], s.entities, s.intent, s.step, s.storyType, s.storyName);
+          nodesByIndex.set(node.index, node);
+          nodesByStateId.set(s._id, node);
         } else {
-          let key = s.storyDefinitionId
+          let keyWithoutType = s.storyDefinitionId
             + (this.intent ? "+" + s.intent : "")
             + (this.step ? "+" + s.step : "")
             + (this.entity ? "+" + s.entities.join("%") : "");
-          let node = nodeByKey[key];
-          if (!node) {
-            node = new StoryNode(
-              s.storyDefinitionId,
-              [s],
-              nodeCount++,
-              this.entity ? s.entities : [],
-              this.intent ? s.intent : null,
-              this.step ? s.step : null
-            );
-            nodeByKey[key] = node;
-            nodesMap.set(node.id, node);
-          } else {
+          let key = keyWithoutType
+            + (s.storyType != undefined ? "+" + s.storyType : "");
+          let node = nodesByStoryKey.get(key);
+          if (node) {
             node.states.push(s);
-            node.count += s.count;
+          } else {
+            if (this.mergeOldStories && key != keyWithoutType) {
+              const nodeWithoutType = nodesByStoryKey.get(keyWithoutType);
+              if (nodeWithoutType) {
+                console.debug('Replacing previous node with typed node...');
+                // Merge previous node to a new typed node
+                node = new StoryNode(
+                  nodeWithoutType.index,
+                  s.storyDefinitionId,
+                  s.storyDefinitionId,
+                  [s],
+                  this.entity ? s.entities : [],
+                  this.intent ? s.intent : null,
+                  this.step ? s.step : null,
+                  s.storyType,
+                  s.storyName
+                );
+                node.states.push.apply(node.states, nodeWithoutType.states);
+
+                // Update maps
+                nodesByStoryKey.delete(keyWithoutType);
+                nodesByStoryKey.set(key, node);
+                nodesByIndex.set(node.index, node);
+                node.states.forEach(state => {
+                  state.storyType = s.storyType;
+                  nodesByStateId.set(state._id, node);
+                });
+              } else {
+                node = new StoryNode(
+                  nodesNumber++,
+                  s.storyDefinitionId,
+                  s.storyDefinitionId,
+                  [s],
+                  this.entity ? s.entities : [],
+                  this.intent ? s.intent : null,
+                  this.step ? s.step : null,
+                  s.storyType,
+                  s.storyName
+                );
+                nodesByStoryKey.set(key, node);
+                nodesByIndex.set(node.index, node);
+              }
+            } else {
+              node = new StoryNode(
+                nodesNumber++,
+                s.storyDefinitionId,
+                s.storyDefinitionId,
+                [s],
+                this.entity ? s.entities : [],
+                this.intent ? s.intent : null,
+                this.step ? s.step : null,
+                s.storyType,
+                s.storyName
+              );
+              nodesByStoryKey.set(key, node);
+              nodesByIndex.set(node.index, node);
+            }
           }
-          stateIdNodeMap.set(s._id, node);
+          nodesByStateId.set(s._id, node);
         }
       });
 
       //2 set stories map
-      const stories = new Map<string, string>();
-      nodesMap.forEach(s => stories.set(s.storyDefinitionId, s.displayName()));
+      const storiesById = new Map<string, StoryDefinitionConfiguration>();
+      if (!this.statsMode) {
+        nodesByIndex.forEach(s => {
+          const theStoryId = s._id;
+          const theStoryName = s.storyName;
+          const theStory = this.allStories.find(aStory => aStory._id == theStoryId);
+          if (theStory) {
+            storiesById.set(theStoryId, theStory);
+            if (s.intent === 'goldobot') {
+              console.debug("Found story: " + theStoryName + " (ID: " + theStoryId + ")");
+              console.debug("Mapping storyId " + theStoryId + " to story:");
+              console.debug(theStory);
+            }
+          } else {
+            console.warn("Cannot find story: " + theStoryName + " (ID: " + theStoryId + ")");
+          }
+        }
+        );
+      }
 
-      let finalNodes: StoryNode[] = [];
       //3 filter state by count
-      nodesMap.forEach(s => {
+      let finalNodes: StoryNode[] = [];
+      nodesByIndex.forEach(s => {
         if (this.minimalNodeCount <= s.count) {
-          finalNodes[s.id] = s;
+          finalNodes[s.index] = s;
         }
       });
 
@@ -340,12 +405,12 @@ export class FlowComponent implements OnInit, OnDestroy {
       const countTransitionByStartId = [];
       const transitionsByKey = new Map<string, NodeTransition>();
       flow.transitions.forEach(t => {
-        const prev = stateIdNodeMap.get(t.previousStateId);
-        const next = stateIdNodeMap.get(t.nextStateId);
-        const prevId = prev ? prev.id : -1;
+        const prev = nodesByStateId.get(t.previousStateId);
+        const next = nodesByStateId.get(t.nextStateId);
+        const prevId = prev ? prev.index : -1;
         //next should always exist but check anyway...
         if (next) {
-          const nextId = next.id;
+          const nextId = next.index;
           if (this.recursive || prev !== next) {
             const tId = prevId + "_" + nextId + "_" + t.type;
             const transition = transitionsByKey.get(tId);
@@ -353,7 +418,6 @@ export class FlowComponent implements OnInit, OnDestroy {
               transitionsByKey.set(tId, new NodeTransition([t], prevId, nextId, t.type));
             } else {
               transition.transitions.push(t);
-              transition.count = transition.count + t.count;
             }
             const oldCount = countTransitionByStartId[prevId];
             countTransitionByStartId[prevId] = oldCount ? oldCount + t.count : t.count;
@@ -364,42 +428,47 @@ export class FlowComponent implements OnInit, OnDestroy {
       //5 filter transitions per percentage
       const finalTransitions = new Map<string, NodeTransition>();
       transitionsByKey.forEach((t, k) => {
-        const prev = nodesMap.get(t.previousId);
-        const next = nodesMap.get(t.nextId);
-        const prevId = prev ? prev.id : -1;
-        const nextId = next.id;
-        const finalPrev = prev ? finalNodes[prev.id] : null;
+        const prev = nodesByIndex.get(t.previousId);
+        const next = nodesByIndex.get(t.nextId);
+        const prevId = prev ? prev.index : -1;
+        const nextId = next.index;
+        const finalPrev = prev ? finalNodes[prev.index] : null;
         const finalNext = finalNodes[nextId];
         const percentage = Math.round((t.count * 10000.0) / countTransitionByStartId[prevId]) / 100;
         if ((this.recursive || prev !== next) && finalNodes[nextId] && (t.previousId === -1 || finalNodes[prevId])) {
-          if (percentage >= this.minimalTransitionPercentage
-            && (!this.selectedStoryId ||
-              (!displayOnlyPrev && finalPrev && finalPrev.storyDefinitionId === this.selectedStoryId)
-              || (!displayOnlyNext && finalNext && finalNext.storyDefinitionId === this.selectedStoryId))) {
+          if (!this.statsMode
+            || (percentage >= this.minimalTransitionPercentage
+            && (!this.selectedStory ||
+              (!displayOnlyPrev && finalPrev && finalPrev.storyDefinitionId === this.selectedStory._id)
+              || (!displayOnlyNext && finalNext && finalNext.storyDefinitionId === this.selectedStory._id)))) {
             finalTransitions.set(k, t);
           }
         }
       });
 
       //6 filter by selected story and create graph nodes
-      let maxCount = 1;
       let addStartup = true;
       const tmpFinalStates = [];
+      const theMinCount = finalNodes.reduce((prev, current) => (prev.count < current.count) ? prev : current ).count;
+      const theMaxCount = finalNodes.reduce((prev, current) => (prev.count > current.count) ? prev : current ).count;
+      console.debug("Node min visits: " + theMinCount);
+      console.debug("Node max visits: " + theMaxCount);
+
       finalNodes.forEach(s => {
         let include = true;
-        if (this.selectedStoryId) {
-          //try to find a transition with this state and selectedStoryId
-          include = s.storyDefinitionId === this.selectedStoryId;
+        if (this.selectedStory) {
+          //try to find a transition with this state and selectedStory ID
+          include = s.storyDefinitionId === this.selectedStory._id;
           if (!include) {
             finalTransitions.forEach(t => {
               if (!include) {
                 const prev = finalNodes[t.previousId];
                 const next = finalNodes[t.nextId];
-                const prevId = prev ? prev.id : -1;
-                if (((!displayOnlyNext && prev && prevId === s.id) || (!displayOnlyPrev && next && next.id === s.id))
+                const prevId = prev ? prev.index : -1;
+                if (((!displayOnlyNext && prev && prevId === s.index) || (!displayOnlyPrev && next && next.index === s.index))
                   && (
-                    (!displayOnlyPrev && prev && prev.storyDefinitionId === this.selectedStoryId)
-                    || (!displayOnlyNext && next && next.storyDefinitionId === this.selectedStoryId)
+                    (!displayOnlyPrev && prev && prev.storyDefinitionId === this.selectedStory._id)
+                    || (!displayOnlyNext && next && next.storyDefinitionId === this.selectedStory._id)
                   )) {
                   include = true;
                 }
@@ -409,19 +478,17 @@ export class FlowComponent implements OnInit, OnDestroy {
         }
         if (include) {
           addStartup = false;
-          tmpFinalStates[s.id] = s;
-          if (this.selectedStoryId) {
-            if (s.storyDefinitionId === this.selectedStoryId) {
-              maxCount = Math.max(maxCount, s.count);
-            }
-          } else {
-            maxCount = Math.max(maxCount, s.count);
-          }
+          tmpFinalStates[s.index] = s;
+          const theScore = this.statsMode ? Math.round(((s.count - theMinCount) * 100.0) / (theMaxCount - theMinCount)) : 0;
+          const theNodeName = s.nodeName() + (this.displayNodeType ? (s.storyType == AnswerConfigurationType.builtin ? ' 🔧'
+                                                                    : (s.storyType == undefined ? ' ?'
+                                                                    : ' 💬'))
+                                                                    : '');
           graph.nodes.push({
             data: {
-              id: s.id,
-              name: s.nodeName(),
-              weight: s.count,
+              id: s.index,
+              name: theNodeName,
+              weight: theScore,
               colorCode: entityColor(s.storyDefinitionId),
               shapeType: s.dynamic ? 'ellipse' : 'roundrectangle'
             }
@@ -433,18 +500,19 @@ export class FlowComponent implements OnInit, OnDestroy {
       if (finalTransitions.size > 1000) {
         this.toastrService.show("More than 1000 nodes to render - please change your options to decrease the number of nodes", "Error", {duration: 5000})
       } else {
+
         //7 create graph edges
         finalTransitions.forEach((t, k) => {
-          const prev = nodesMap.get(t.previousId);
-          const next = nodesMap.get(t.nextId);
-          const prevId = prev ? prev.id : -1;
+          const prev = nodesByIndex.get(t.previousId);
+          const next = nodesByIndex.get(t.nextId);
+          const prevId = prev ? prev.index : -1;
           let percentage = Math.round((t.count * 10000.0) / countTransitionByStartId[prevId]) / 100;
           let fPrev = finalNodes[prevId];
-          let fNext = finalNodes[next.id];
+          let fNext = finalNodes[next.index];
           if (fNext && (t.previousId === -1 || fPrev)
-            && (!this.selectedStoryId
-              || (!displayOnlyPrev && fPrev && this.selectedStoryId === fPrev.storyDefinitionId)
-              || (!displayOnlyNext && this.selectedStoryId === fNext.storyDefinitionId))) {
+            && (!this.selectedStory
+              || (!displayOnlyPrev && fPrev && this.selectedStory._id === fPrev.storyDefinitionId)
+              || (!displayOnlyNext && this.selectedStory._id === fNext.storyDefinitionId))) {
 
             if (t.previousId === -1) {
               addStartup = true;
@@ -453,11 +521,11 @@ export class FlowComponent implements OnInit, OnDestroy {
             graph.edges.push({
               data: {
                 source: prevId,
-                target: next.id,
+                target: next.index,
                 key: k,
                 colorCode: entityColor(DialogFlowStateTransitionType[t.type] ? DialogFlowStateTransitionType[t.type] : DialogFlowStateTransitionType[DialogFlowStateTransitionType.nlp]),
                 strength: t.count,
-                label: percentage + '%',
+                label: this.statsMode ? percentage + '%' : '',
                 classes: 'autorotate'
               }
             });
@@ -470,8 +538,9 @@ export class FlowComponent implements OnInit, OnDestroy {
         }
 
         //9 init vars
-        this.maxNodeCount = maxCount;
-        this.stories = stories;
+        this.maxNodeCount = theMaxCount;
+        this.storiesById = storiesById;
+        this.nodesById = nodesByStoryKey;
         this.allNodes = finalNodes;
         this.allTransitions = finalTransitions;
         this.graphData = graph;

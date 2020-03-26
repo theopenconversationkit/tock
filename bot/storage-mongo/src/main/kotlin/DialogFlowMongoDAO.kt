@@ -43,6 +43,8 @@ import ai.tock.bot.mongo.DialogFlowStateCol_.Companion.Intent
 import ai.tock.bot.mongo.DialogFlowStateCol_.Companion.Namespace
 import ai.tock.bot.mongo.DialogFlowStateCol_.Companion.Step
 import ai.tock.bot.mongo.DialogFlowStateCol_.Companion.StoryDefinitionId
+import ai.tock.bot.mongo.DialogFlowStateCol_.Companion.StoryName
+import ai.tock.bot.mongo.DialogFlowStateCol_.Companion.StoryType
 import ai.tock.bot.mongo.DialogFlowStateCol_.Companion._id
 import ai.tock.bot.mongo.DialogFlowStateTransitionCol_.Companion.NewEntities
 import ai.tock.bot.mongo.DialogFlowStateTransitionCol_.Companion.NextStateId
@@ -86,7 +88,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
     internal val flowStateCol =
             MongoBotConfiguration.database.getCollection<DialogFlowStateCol>("flow_state")
                     .apply {
-                        ensureIndex(Namespace, BotId, StoryDefinitionId, Intent, Step, Entities)
+                        ensureIndex(Namespace, BotId, StoryDefinitionId, Intent, Step, Entities, StoryType, StoryName)
                     }
 
     internal val flowTransitionCol =
@@ -149,6 +151,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                     s.intent,
                     s.step,
                     s.entities,
+                    s.storyType,
+                    s.storyName,
                     transitionCountByNext[s._id as Id<DialogFlowStateData>] ?: 0L,
                     s._id as Id<DialogFlowStateData>
             )
@@ -199,7 +203,9 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                     storyDefinitionId,
                     intentName,
                     snapshot.step,
-                    snapshot.entityValues.map { it.entity.role }.toSortedSet()
+                    snapshot.entityValues.map { it.entity.role }.toSortedSet(),
+                    storyType = snapshot.storyType,
+                    storyName = snapshot.storyName ?: intentName
             ).run {
                 flowStateCol.findOne(
                         Namespace eq namespace,
@@ -210,7 +216,9 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                         if (entities.size < 2) Entities eq entities else and(
                                 Entities size entities.size,
                                 Entities all entities
-                        )
+                        ),
+                        StoryType eq storyType,
+                        StoryName eq storyName
                 ) ?: (this.apply { flowStateCol.insertOne(this) })
             }
         } else {

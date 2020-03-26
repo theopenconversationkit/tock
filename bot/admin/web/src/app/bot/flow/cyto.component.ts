@@ -59,7 +59,8 @@ export class CytoComponent implements OnChanges, OnDestroy {
       .selector('node')
       .css({
         'shape': 'data(shapeType)',
-        'width': 'mapData(weight, 40, 80, 20, 60)',
+        'width': 'mapData(weight, 0, 100, 18, 60)',
+        'height': 'mapData(weight, 0, 100, 18, 60)',
         'content': 'data(name)',
         'text-valign': 'center',
         'text-outline-width': 1,
