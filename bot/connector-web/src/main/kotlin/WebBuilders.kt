@@ -198,4 +198,4 @@ fun <T : Bus<T>> T.webCarousel(carousel: MediaCarousel): OldWebMessage = OldWebM
 /**
  * Creates a custom payload
  */
-fun <T : Bus<T>> T.webWidget(widget: WebWidget): WebMessage = WebMessage(widget = widget)
+fun <T : Bus<T>> T.webWidget(widget: WebWidget, buttons: List<Button> = emptyList()): WebMessage = WebMessage(widget = widget, buttons = buttons)
