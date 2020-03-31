@@ -22,8 +22,9 @@ import {StateService} from "../core-nlp/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {PaginatedQuery, SearchMark} from "../model/commons";
 import {Observable} from "rxjs";
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef, MatSnackBar} from "@angular/material";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material";
 import {ApplicationConfig} from "../core-nlp/application.config";
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-logs',
@@ -41,7 +42,7 @@ export class LogsComponent extends ScrollComponent<Log> {
               private nlp: NlpService,
               private dialog: MatDialog,
               private config: ApplicationConfig,
-              private snackBar: MatSnackBar) {
+              private toastrService: NbToastrService) {
     super(state);
   }
 
@@ -87,7 +88,7 @@ export class LogsComponent extends ScrollComponent<Log> {
         this.state.currentLocale)
         .subscribe(blob => {
           saveAs(blob, this.state.currentApplication.name + "_" + this.state.currentLocale + "_logs.csv");
-          this.snackBar.open(`Export provided`, "Dump", {duration: 1000});
+          this.toastrService.show(`Export provided`, "Dump", {duration: 2000});
         })
     }, 1);
   }

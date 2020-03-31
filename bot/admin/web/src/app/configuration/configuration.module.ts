@@ -36,7 +36,8 @@ import {
   NbRouteTabsetModule,
   NbSpinnerModule,
   NbTabsetModule,
-  NbTooltipModule
+  NbTooltipModule,
+  NbToastrModule
 } from "@nebular/theme";
 import {NewBotComponent} from "./bot/new-bot.component";
 import {ReactiveFormsModule} from "@angular/forms";
@@ -134,7 +135,8 @@ export class BotConfigurationRoutingModule {
     NbActionsModule,
     NbTooltipModule,
     NbSpinnerModule,
-    NbAccordionModule
+    NbAccordionModule,
+    NbToastrModule.forRoot(),
   ],
   providers: [],
   bootstrap: []

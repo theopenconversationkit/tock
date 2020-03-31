@@ -117,7 +117,7 @@ export class SelectBotComponent implements OnInit {
         this.selectionChange.emit(new SelectBotEvent(confResult.name, noConnectorSelection, noConnectorSelection ? null : confResult._id));
         this.configurationIdChange.emit(confResult._id);
       } else {
-        this.dialog.notify("Test Configuration not found");
+        this.dialog.notify("Test Configuration not found", null, {duration: 3000, status: "danger"});
       }
     } else {
       this.currentBotName = 'None';

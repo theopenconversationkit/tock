@@ -22,9 +22,10 @@ import {
   ConnectorType,
   UserInterfaceType
 } from "../../core/model/configuration";
-import {MatDialog, MatSnackBar} from "@angular/material";
+import {MatDialog} from "@angular/material";
 import {ConfirmDialogComponent} from "../../shared-nlp/confirm-dialog/confirm-dialog.component";
 import {StateService} from "../../core-nlp/state.service";
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-bot-configurations',
@@ -42,7 +43,7 @@ export class BotConfigurationsComponent implements OnInit {
 
   constructor(private state: StateService,
               private botConfiguration: BotConfigurationService,
-              private snackBar: MatSnackBar,
+              private toastrService: NbToastrService,
               private dialog: MatDialog) {
   }
 
@@ -97,7 +98,7 @@ export class BotConfigurationsComponent implements OnInit {
 
   refresh() {
     this.botConfiguration.updateConfigurations();
-    this.snackBar.open(`Configurations reloaded`, "Refresh", {duration: 1000});
+    this.toastrService.show(`Configurations reloaded`, "Refresh", {duration: 2000});
   }
 
   create() {
@@ -110,7 +111,7 @@ export class BotConfigurationsComponent implements OnInit {
     this.botConfiguration.saveConfiguration(this.newApplicationConfiguration)
       .subscribe(_ => {
         this.botConfiguration.updateConfigurations();
-        this.snackBar.open(`Configuration created`, "Creation", {duration: 5000});
+        this.toastrService.show(`Configuration created`, "Creation", {duration: 5000});
         this.newApplicationConfiguration = null;
       });
   }
@@ -119,7 +120,7 @@ export class BotConfigurationsComponent implements OnInit {
     this.botConfiguration.saveConfiguration(conf)
       .subscribe(_ => {
         this.botConfiguration.updateConfigurations();
-        this.snackBar.open(`Configuration updated`, "Update", {duration: 5000});
+        this.toastrService.show(`Configuration updated`, "Update", {duration: 5000});
       });
   }
 
@@ -136,7 +137,7 @@ export class BotConfigurationsComponent implements OnInit {
         this.botConfiguration.deleteConfiguration(conf)
           .subscribe(_ => {
             this.botConfiguration.updateConfigurations();
-            this.snackBar.open(`Configuration deleted`, "Delete", {duration: 5000});
+            this.toastrService.show(`Configuration deleted`, "Delete", {duration: 5000});
           });
       }
     });
@@ -144,7 +145,7 @@ export class BotConfigurationsComponent implements OnInit {
 
   saveBot(bot: BotConfiguration) {
     this.botConfiguration.saveBot(bot).subscribe(_ => {
-        this.snackBar.open(`Webhook saved`, "Save", {duration: 5000});
+        this.toastrService.show(`Webhook saved`, "Save", {duration: 5000});
         this.botConfiguration.updateConfigurations();
       }
     );
@@ -163,7 +164,7 @@ export class BotConfigurationsComponent implements OnInit {
       //do nothing
     }
     t.style.display = "none";
-    this.snackBar.open(successful ? `${text} copied to clipboard` : `Unable to copy to clipboard`, "Clipboard", {duration: 1000})
+    this.toastrService.show(successful ? `${text} copied to clipboard` : `Unable to copy to clipboard`, "Clipboard", {duration: 2000})
   }
 
 }

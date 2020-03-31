@@ -18,11 +18,12 @@ import {ChangeDetectorRef, Component, OnDestroy, OnInit} from "@angular/core";
 import {AuthService} from "./core-nlp/auth/auth.service";
 import {StateService} from "./core-nlp/state.service";
 import {RestService} from "./core-nlp/rest/rest.service";
-import {MatIconRegistry, MatSnackBar} from "@angular/material";
+import {MatIconRegistry} from "@angular/material";
 import {UserRole} from "./model/auth";
 import {DomSanitizer} from "@angular/platform-browser";
 import {NbMenuItem} from "@nebular/theme";
 import {DialogService} from "./core-nlp/dialog.service";
+import { NbToastrService } from '@nebular/theme';
 
 
 @Component({
@@ -40,7 +41,7 @@ export class NlpAdminAppComponent implements OnInit, OnDestroy {
   constructor(public auth: AuthService,
               public state: StateService,
               private rest: RestService,
-              private snackBar: MatSnackBar,
+              private toastrService: NbToastrService,
               private changeDetectorRef: ChangeDetectorRef,
               private dialog: DialogService,
               iconRegistry: MatIconRegistry,
@@ -53,7 +54,7 @@ export class NlpAdminAppComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.errorUnsuscriber = this.rest.errorEmitter.subscribe(e =>
-      this.snackBar.open(e, "Error", {duration: 5000})
+      this.toastrService.show(e, "Error", {duration: 5000})
     );
     this.menu = [
       {

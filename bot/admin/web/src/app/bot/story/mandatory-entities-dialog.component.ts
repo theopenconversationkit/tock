@@ -15,12 +15,13 @@
  */
 
 import {Component, Inject, OnInit} from "@angular/core";
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef, MatSnackBar} from "@angular/material";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material";
 import {StateService} from "../../core-nlp/state.service";
 import {AnswerConfigurationType, IntentName, MandatoryEntity, SimpleAnswerConfiguration} from "../model/story";
 import {EntityDefinition, entityNameFromQualifiedName, Intent, IntentsCategory} from "../../model/nlp";
 import {CreateEntityDialogComponent} from "../../sentence-analysis/create-entity-dialog/create-entity-dialog.component";
 import {IntentDialogComponent} from "../../sentence-analysis/intent-dialog/intent-dialog.component";
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-mandatory-entities-dialog',
@@ -44,7 +45,7 @@ export class MandatoryEntitiesDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<MandatoryEntitiesDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     public state: StateService,
-    private snackBar: MatSnackBar,
+    private toastrService: NbToastrService,
     private dialog: MatDialog) {
 
     this.setNewEntity();
@@ -166,7 +167,7 @@ export class MandatoryEntitiesDialogComponent implements OnInit {
   addEntity() {
     let invalidMessage = this.newEntity.currentAnswer().invalidMessage();
     if (invalidMessage) {
-      this.snackBar.open(`Error: ${invalidMessage}`, "ERROR", {duration: 5000});
+      this.toastrService.show(`Error: ${invalidMessage}`, "ERROR", {duration: 5000});
     } else {
       this.entities.push(this.newEntity);
       this.setNewEntity();

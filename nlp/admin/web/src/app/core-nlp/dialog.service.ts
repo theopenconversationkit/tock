@@ -15,16 +15,17 @@
  */
 
 import {ChangeDetectorRef, Injectable, TemplateRef} from "@angular/core";
-import {MatSnackBar, MatSnackBarConfig, MatSnackBarRef, SimpleSnackBar} from "@angular/material/snack-bar";
 import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material/dialog";
 import {ComponentType} from "@angular/cdk/overlay";
+import { NbToastrService } from '@nebular/theme';
+import { NbToastrConfig } from '@nebular/theme';
 
 @Injectable()
 export class DialogService {
 
   private changeDetectorRef: ChangeDetectorRef;
 
-  constructor(private snackBar: MatSnackBar) {
+  constructor(private toastrService: NbToastrService) {
   }
 
   private doFreeze() {
@@ -45,8 +46,8 @@ export class DialogService {
    * @param action The label for the snackbar action.
    * @param config Additional configuration options for the snackbar.
    */
-  notify(message: string, action?: string, config?: MatSnackBarConfig): MatSnackBarRef<SimpleSnackBar> {
-    return this.snackBar.open(message, action ? action : "Error", config ? config : {duration: 3000});
+  notify(message: string, action?: string, config?: Partial<NbToastrConfig>) {
+    this.toastrService.show(message, action ? action : "Error", config ? config : {duration: 3000});
   }
 
   /**

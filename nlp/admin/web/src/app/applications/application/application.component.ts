@@ -15,7 +15,7 @@
  */
 
 import {Component, ElementRef, OnInit, ViewChild} from "@angular/core";
-import {MatDialog, MatSnackBar} from "@angular/material";
+import {MatDialog} from "@angular/material";
 import {ActivatedRoute, Router} from "@angular/router";
 import {StateService} from "../../core-nlp/state.service";
 import {Application} from "../../model/application";
@@ -23,6 +23,7 @@ import {ConfirmDialogComponent} from "../../shared-nlp/confirm-dialog/confirm-di
 import {ApplicationService} from "../../core-nlp/applications.service";
 import {Subject} from "rxjs";
 import {NlpEngineType} from "../../model/nlp";
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-application',
@@ -41,7 +42,7 @@ export class ApplicationComponent implements OnInit {
   @ViewChild('appLabel', {static: false}) appLabel: ElementRef;
 
   constructor(private route: ActivatedRoute,
-              private snackBar: MatSnackBar,
+              private toastrService: NbToastrService,
               private dialog: MatDialog,
               public state: StateService,
               private applicationService: ApplicationService,
@@ -84,22 +85,22 @@ export class ApplicationComponent implements OnInit {
   saveApplication() {
     this.format();
     if (this.application.name.trim().length === 0) {
-      this.snackBar.open(`Please choose an application name`, "ERROR", {duration: 5000});
+      this.toastrService.show(`Please choose an application name`, "ERROR", {duration: 5000, status: 'warning'});
     } else if (this.application.supportedLocales.length === 0) {
-      this.snackBar.open(`Please choose at least one locale`, "ERROR", {duration: 5000});
+      this.toastrService.show(`Please choose at least one locale`, "ERROR", {duration: 5000, status: 'warning'});
     } else {
       this.application.nlpEngineType = this.state.supportedNlpEngines.find(e => e.name === this.nlpEngineType);
       this.applicationService.saveApplication(this.application)
         .subscribe(app => {
           this.applicationService.refreshCurrentApplication(app);
-          this.snackBar.open(`Application ${app.name} saved`, "Save Application", {duration: 1000});
+          this.toastrService.show(`Application ${app.name} saved`, "Save Application", {duration: 2000, status: 'success'});
           if (this.newApplication && this.state.applications.length === 1) {
             this.router.navigateByUrl("/nlp/try");
           } else {
             this.redirect();
           }
         }, error => {
-          this.snackBar.open(error, "Error", {});
+          this.toastrService.show(error, "Error", {status: 'danger'});
         });
     }
   }
@@ -129,10 +130,10 @@ export class ApplicationComponent implements OnInit {
         this.applicationService.deleteApplication(this.application).subscribe(
           result => {
             if (result) {
-              this.snackBar.open(`Application ${this.application.name} deleted`, "Delete Application", {duration: 1000});
+              this.toastrService.show(`Application ${this.application.name} deleted`, "Delete Application", {duration: 2000, status: 'success'});
               this.state.resetConfiguration();
             } else {
-              this.snackBar.open(`Delete Application ${this.application.name} failed`, "Error", {duration: 5000});
+              this.toastrService.show(`Delete Application ${this.application.name} failed`, "Error", {duration: 5000, status: 'danger'});
             }
             this.redirect();
           });
@@ -142,12 +143,12 @@ export class ApplicationComponent implements OnInit {
 
   removeLocale(locale: string) {
     this.application.supportedLocales.splice(this.application.supportedLocales.indexOf(locale), 1);
-    this.snackBar.open(`${this.state.localeName(locale)} removed`, "Locale", {duration: 1000});
+    this.toastrService.show(`${this.state.localeName(locale)} removed`, "Locale", {duration: 2000, status: 'success'});
   }
 
   addLocale() {
     this.application.supportedLocales.push(this.newLocale);
-    this.snackBar.open(`${this.state.localeName(this.newLocale)} added`, "Locale", {duration: 1000});
+    this.toastrService.show(`${this.state.localeName(this.newLocale)} added`, "Locale", {duration: 2000, status: 'success'});
   }
 
   changeNlpEngine(type: string) {

@@ -29,8 +29,8 @@ import {
 import {StateService} from "../core-nlp/state.service";
 import {ActivatedRoute} from "@angular/router";
 import {NlpService} from "../nlp-tabs/nlp.service";
-import {MatSnackBar} from "@angular/material";
 import {UserRole} from "../model/auth";
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-search',
@@ -55,7 +55,7 @@ export class SearchComponent implements OnInit {
 
   constructor(public state: StateService,
               private nlp: NlpService,
-              private snackBar: MatSnackBar,
+              private toastrService: NbToastrService,
               private route: ActivatedRoute) {
   }
 
@@ -182,7 +182,7 @@ export class SearchComponent implements OnInit {
 
   updateSentences() {
     if (this.selectedSentences && this.selectedSentences.length === 0) {
-      this.snackBar.open(`Please select at least one sentence first`, "UPDATE", {duration: 1000})
+      this.toastrService.show(`Please select at least one sentence first`, "UPDATE", {duration: 2000})
     } else {
       this.nlp.updateSentences(
         new UpdateSentencesQuery(
@@ -200,11 +200,11 @@ export class SearchComponent implements OnInit {
       ).subscribe(r => {
         const n = r.nbUpdates;
         if (n === 0) {
-          this.snackBar.open(`No sentence updated`, "UPDATE", {duration: 1000})
+          this.toastrService.show(`No sentence updated`, "UPDATE", {duration: 2000})
         } else if (n === 1) {
-          this.snackBar.open(`1 sentence updated`, "UPDATE", {duration: 1000})
+          this.toastrService.show(`1 sentence updated`, "UPDATE", {duration: 2000})
         } else {
-          this.snackBar.open(`${n} sentences updated`, "UPDATE", {duration: 1000})
+          this.toastrService.show(`${n} sentences updated`, "UPDATE", {duration: 2000})
         }
         this.scroll.refresh();
       });
@@ -213,9 +213,9 @@ export class SearchComponent implements OnInit {
 
   translateSentences() {
     if (!this.targetLocale || this.targetLocale.length === 0) {
-      this.snackBar.open(`Please select a target language first`, "UPDATE", {duration: 1000})
+      this.toastrService.show(`Please select a target language first`, "UPDATE", {duration: 2000})
     } else if (this.selectedSentences && this.selectedSentences.length === 0) {
-      this.snackBar.open(`Please select at least one sentence first`, "UPDATE", {duration: 1000})
+      this.toastrService.show(`Please select at least one sentence first`, "UPDATE", {duration: 2000})
     } else {
       this.nlp.translateSentences(
         new TranslateSentencesQuery(
@@ -231,11 +231,11 @@ export class SearchComponent implements OnInit {
       ).subscribe(r => {
         const n = r.nbTranslations;
         if (n === 0) {
-          this.snackBar.open(`No sentence translated`, "UPDATE", {duration: 1000})
+          this.toastrService.show(`No sentence translated`, "UPDATE", {duration: 2000})
         } else if (n === 1) {
-          this.snackBar.open(`1 sentence translated`, "UPDATE", {duration: 1000})
+          this.toastrService.show(`1 sentence translated`, "UPDATE", {duration: 2000})
         } else {
-          this.snackBar.open(`${n} sentences translated`, "UPDATE", {duration: 1000})
+          this.toastrService.show(`${n} sentences translated`, "UPDATE", {duration: 2000})
         }
       });
     }

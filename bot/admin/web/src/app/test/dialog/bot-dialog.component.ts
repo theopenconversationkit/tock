@@ -24,8 +24,9 @@ import {BotSharedService} from "../../shared/bot-shared.service";
 import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
 import {randomString} from "../../model/commons";
 import {Subscription} from "rxjs";
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef, MatSnackBar} from "@angular/material";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material";
 import {SentenceFilter} from "../../sentences-scroll/sentences-scroll.component";
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-bot-dialog',
@@ -60,7 +61,7 @@ export class BotDialogComponent implements OnInit, OnDestroy {
               private test: TestService,
               private rest: RestService,
               private shared: BotSharedService,
-              private snackBar: MatSnackBar,
+              private toastrService: NbToastrService,
               private dialog: MatDialog) {
   }
 
@@ -98,7 +99,7 @@ export class BotDialogComponent implements OnInit, OnDestroy {
 
   submit() {
     if (!this.currentConfigurationId) {
-      this.snackBar.open(`Please select a Bot first`, "Error", {duration: 3000});
+      this.toastrService.show(`Please select a Bot first`, "Error", {duration: 3000});
       return;
     }
     let m = this.userMessage;

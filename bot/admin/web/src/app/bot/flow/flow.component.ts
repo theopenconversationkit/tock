@@ -29,10 +29,10 @@ import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {entityColor} from "../../model/nlp";
 import {KeyValue} from "@angular/common";
 import {NodeTransition, StoryNode} from "./node";
-import {MatSnackBar} from "@angular/material";
 import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
 import {StoryDefinitionConfiguration, StorySearchQuery, StoryStep} from "../model/story";
 import {Subscription} from "rxjs";
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-flow',
@@ -146,7 +146,7 @@ export class FlowComponent implements OnInit, OnDestroy {
               private state: StateService,
               private bot: BotService,
               private botConfiguration: BotConfigurationService,
-              private snackBar: MatSnackBar) {
+              private toastrService: NbToastrService) {
   }
 
   ngOnInit(): void {
@@ -431,7 +431,7 @@ export class FlowComponent implements OnInit, OnDestroy {
       finalNodes = tmpFinalStates;
 
       if (finalTransitions.size > 1000) {
-        this.snackBar.open("More than 1000 nodes to render - please change your options to decrease the number of nodes", "Error", {duration: 5000})
+        this.toastrService.show("More than 1000 nodes to render - please change your options to decrease the number of nodes", "Error", {duration: 5000})
       } else {
         //7 create graph edges
         finalTransitions.forEach((t, k) => {

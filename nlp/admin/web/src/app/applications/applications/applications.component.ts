@@ -17,10 +17,10 @@
 import {saveAs} from "file-saver";
 import {Component, OnInit} from "@angular/core";
 import {Application} from "../../model/application";
-import {MatSnackBar} from "@angular/material";
 import {StateService} from "../../core-nlp/state.service";
 import {ApplicationService} from "../../core-nlp/applications.service";
 import {UserRole} from "../../model/auth";
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-applications',
@@ -32,7 +32,7 @@ export class ApplicationsComponent implements OnInit {
   UserRole = UserRole;
   uploadDump: boolean = false;
 
-  constructor(private snackBar: MatSnackBar,
+  constructor(private toastrService: NbToastrService,
               public state: StateService,
               private applicationService: ApplicationService) {
   }
@@ -42,14 +42,14 @@ export class ApplicationsComponent implements OnInit {
 
   selectApplication(app: Application) {
     this.state.changeApplication(app);
-    this.snackBar.open(`Application ${app.name} selected`, "Selection", {duration: 1000});
+    this.toastrService.show(`Application ${app.name} selected`, "Selection", {duration: 2000});
   }
 
   downloadDump(app: Application) {
     this.applicationService.getApplicationDump(app)
       .subscribe(blob => {
         saveAs(blob, app.name + "_app.json");
-        this.snackBar.open(`Dump provided`, "Dump", {duration: 1000});
+        this.toastrService.show(`Dump provided`, "Dump", {duration: 2000});
       })
   }
 
@@ -57,7 +57,7 @@ export class ApplicationsComponent implements OnInit {
     this.applicationService.getSentencesDump(app, this.state.hasRole(UserRole.technicalAdmin))
       .subscribe(blob => {
         saveAs(blob, app.name + "_sentences.json");
-        this.snackBar.open(`Dump provided`, "Dump", {duration: 1000});
+        this.toastrService.show(`Dump provided`, "Dump", {duration: 2000});
       })
   }
 

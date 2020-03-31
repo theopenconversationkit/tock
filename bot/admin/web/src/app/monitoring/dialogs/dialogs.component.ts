@@ -24,12 +24,12 @@ import {PaginatedQuery} from "../../model/commons";
 import {DialogReport} from "../../shared/model/dialog-data";
 import {MonitoringService} from "../monitoring.service";
 import {BotConfigurationService} from "../../core/bot-configuration.service";
-import {MatSnackBar} from "@angular/material";
 import {StateService} from "../../core-nlp/state.service";
 import {DialogReportQuery} from "../model/dialogs";
 import {ActivatedRoute} from "@angular/router";
 import {ConnectorType} from "../../core/model/configuration";
 import {BotSharedService} from "../../shared/bot-shared.service";
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-dialogs',
@@ -46,7 +46,7 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
   constructor(state: StateService,
               private monitoring: MonitoringService,
               private botConfiguration: BotConfigurationService,
-              private snackBar: MatSnackBar,
+              private toastrService: NbToastrService,
               private route: ActivatedRoute,
               public botSharedService: BotSharedService) {
     super(state);
@@ -105,11 +105,11 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
 
   addDialogToTestPlan(planId: string, dialog: DialogReport) {
     if (!planId) {
-      this.snackBar.open(`Please select a Plan first`, "Error", {duration: 3000});
+      this.toastrService.show(`Please select a Plan first`, "Error", {duration: 3000});
       return;
     }
     this.monitoring.addDialogToTestPlan(planId, dialog.id)
-      .subscribe(_ => this.snackBar.open(`Dialog added to plan`, "Dialog Added", {duration: 3000}));
+      .subscribe(_ => this.toastrService.show(`Dialog added to plan`, "Dialog Added", {duration: 3000}));
   }
 
 }
