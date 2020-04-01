@@ -4,6 +4,7 @@ import ai.tock.bot.engine.message.GenericMessage
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-interface WebCustom {
-    fun toGenericMessage(): GenericMessage = GenericMessage(texts = mapOf("custom" to this.toString()))
+interface WebWidget {
+    val data: Any
+    fun toGenericMessage(): GenericMessage = GenericMessage(texts = mapOf("widget" to this.toString()))
 }

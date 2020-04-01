@@ -26,7 +26,7 @@ import ai.tock.bot.connector.web.send.QuickReply
 import ai.tock.bot.connector.web.send.UrlButton
 import ai.tock.bot.connector.web.send.WebCard
 import ai.tock.bot.connector.web.send.WebCarousel
-import ai.tock.bot.connector.web.send.WebCustom
+import ai.tock.bot.connector.web.send.WebWidget
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.Parameters
 import ai.tock.bot.definition.StoryHandlerDefinition
@@ -198,4 +198,4 @@ fun <T : Bus<T>> T.webCarousel(carousel: MediaCarousel): OldWebMessage = OldWebM
 /**
  * Creates a custom payload
  */
-fun <T : Bus<T>> T.webCustom(custom: WebCustom): WebMessage = WebMessage(custom = custom)
+fun <T : Bus<T>> T.webWidget(widget: WebWidget, buttons: List<Button> = emptyList()): WebMessage = WebMessage(widget = widget, buttons = buttons)
