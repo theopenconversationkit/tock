@@ -17,7 +17,7 @@
 <assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
-  <id>web</id>
+  <id>sources</id>
   <formats>
     <format>zip</format>
   </formats>
@@ -25,10 +25,11 @@
   <fileSets>
     <fileSet>
       <outputDirectory>.</outputDirectory>
-      <directory>${project.build.frontend.directory}</directory>
-      <includes>
-        <include>dist/**</include>
-      </includes>
+      <directory>src</directory>
+      <excludes>
+        <exclude>environments/**</exclude>
+        <exclude>main/**</exclude>
+      </excludes>
     </fileSet>
   </fileSets>
 </assembly>
