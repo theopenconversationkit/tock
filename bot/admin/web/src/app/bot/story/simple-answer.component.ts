@@ -111,6 +111,32 @@ export class SimpleAnswerComponent implements OnInit {
     }
   }
 
+  downward(answer: SimpleAnswer) {
+    const answers = this.answer.answers;
+    const i = answers.indexOf(answer);
+    answers[i] = answers[i + 1];
+    answers[i + 1] = answer;
+    this.answer.answers = answers.slice();
+  }
+
+  canDownward(answer: SimpleAnswer): boolean {
+    const answers = this.answer.answers;
+    return answers.length > 1 && answers[answers.length - 1] !== answer;
+  }
+
+  upward(answer: SimpleAnswer) {
+    const answers = this.answer.answers;
+    const i = answers.indexOf(answer);
+    answers[i] = answers[i - 1];
+    answers[i - 1] = answer;
+    this.answer.answers = answers.slice();
+  }
+
+  canUpward(answer: SimpleAnswer): boolean {
+    const answers = this.answer.answers;
+    return answers.length > 1 && answers[0] !== answer;
+  }
+
   deleteAnswer(answer: SimpleAnswer, notify: boolean = false) {
     this.answer.answers.splice(this.answer.answers.indexOf(answer), 1);
     this.bot.deleteI18nLabel(answer.label).subscribe(c => {

@@ -39,4 +39,5 @@
 
 .answer {
   min-width: 400px;
+  display: contents;
 }

@@ -16,7 +16,8 @@
 
 <div *ngIf="!fullDisplay">
 
-  <button *ngIf="answer.answers.length !== 0" mat-icon-button class="display" color="primary" matTooltip="Display I18n" (click)="toggleDisplay()">
+  <button *ngIf="answer.answers.length !== 0" mat-icon-button class="display" color="primary" matTooltip="Display I18n"
+          (click)="toggleDisplay()">
     <mat-icon>zoom_in</mat-icon>
   </button>
 
@@ -34,9 +35,16 @@
             (click)="displayMediaMessage(a)">
       <mat-icon>perm_media</mat-icon>
     </button>
-    <button *ngIf="answer.allowNoAnswer || answer.answers.length !== 1" class="answerButton" mat-icon-button color="warn"
+    <button *ngIf="answer.allowNoAnswer || answer.answers.length !== 1" class="answerButton" mat-icon-button
+            color="warn"
             matTooltip="Delete {{answerLabel}}" (click)="deleteAnswer(a, true)">
       <mat-icon>remove</mat-icon>
+    </button>
+    <button *ngIf="canDownward(a)" mat-icon-button color="accent" class="answerButton" matTooltip="Downward" (click)="downward(a)">
+      <mat-icon>arrow_downward</mat-icon>
+    </button>
+    <button *ngIf="canUpward(a)" mat-icon-button color="accent" class="answerButton" matTooltip="Upward" (click)="upward(a)">
+      <mat-icon>arrow_upward</mat-icon>
     </button>
   </div>
   <textarea class="i18n-label i18n-label-add"

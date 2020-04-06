@@ -172,12 +172,19 @@ export class StepsComponent implements OnInit, OnChanges {
     })
   }
 
+  private findNeighbourSteps(step: StoryStep): StoryStep[] {
+    const p = this.findParent(this.steps, step);
+    return p ? p.children : this.steps;
+  }
+
   canDownward(step: StoryStep): boolean {
-    return this.steps.length > 1 && this.steps[this.steps.length - 1] !== step;
+    const steps = this.findNeighbourSteps(step);
+    return steps.length > 1 && steps[steps.length - 1] !== step;
   }
 
   canUpward(step: StoryStep): boolean {
-    return this.steps.length > 1 && this.steps[0] !== step;
+    const steps = this.findNeighbourSteps(step);
+    return steps.length > 1 && steps[0] !== step;
   }
 
   upward(step: StoryStep) {
