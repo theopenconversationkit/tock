@@ -173,7 +173,9 @@ object AdminService {
             }).apply {
                 front.save(this)
                 applications.forEach { appId ->
-                    front.save(front.getApplicationById(appId)!!.let { it.copy(intents = it.intents + _id) })
+                    front.getApplicationById(appId)?.also {
+                        front.save(it.copy(intents = it.intents + _id))
+                    }
                 }
             }
         } else {
