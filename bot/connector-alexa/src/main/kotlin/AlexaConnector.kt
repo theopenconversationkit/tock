@@ -29,6 +29,7 @@ import ai.tock.bot.engine.action.SendAttachment.AttachmentType.image
 import ai.tock.bot.engine.event.Event
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.error
+import ai.tock.shared.vertx.blocking
 import com.amazon.speech.Sdk
 import com.amazon.speech.speechlet.IntentRequest
 import com.amazon.speech.speechlet.SpeechletRequestHandler
@@ -87,7 +88,7 @@ class AlexaConnector internal constructor(
         controller.registerServices(path) { router ->
             logger.info("deploy rest alexa services for root path $path ")
 
-            router.post(path).blockingHandler { context ->
+            router.post(path).blocking { context ->
                 try {
                     handleRequest(controller, context)
                 } catch (e: Throwable) {
