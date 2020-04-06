@@ -21,11 +21,13 @@ import ai.tock.shared.debug
 import ai.tock.shared.devEnvironment
 import ai.tock.shared.error
 import ai.tock.shared.injector
+import ai.tock.shared.intProperty
 import ai.tock.shared.provideOrDefault
 import io.vertx.core.AsyncResult
 import io.vertx.core.Promise
 import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions
+import io.vertx.core.VertxOptions.DEFAULT_WORKER_POOL_SIZE
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.RoutingContext
 import kotlinx.coroutines.slf4j.MDCContext
@@ -42,6 +44,7 @@ private val logger = KotlinLogging.logger {}
  */
 var defaultVertxOptions = VertxOptions().apply {
     maxWorkerExecuteTime = 1000 * 60L * 1000 * 1000000
+    workerPoolSize = intProperty("tock_vertx_worker_pool_size", DEFAULT_WORKER_POOL_SIZE)
     if (devEnvironment) {
         warningExceptionTime = 1000L * 1000 * 1000000
     }
