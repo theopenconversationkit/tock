@@ -15,7 +15,7 @@
  */
 
 import {Component, Input, OnInit} from "@angular/core";
-import {MatDialog, MatSnackBar} from "@angular/material";
+import {MatDialog} from "@angular/material";
 import {ActivatedRoute} from "@angular/router";
 import {StateService} from "../../core-nlp/state.service";
 import {Application, NlpApplicationConfiguration, NlpModelConfiguration} from "../../model/application";
@@ -24,6 +24,7 @@ import {saveAs} from "file-saver";
 import {ApplicationScopedQuery} from "../../model/commons";
 import {NlpEngineType} from "../../model/nlp";
 import {Subject} from "rxjs";
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-application-advanced-options',
@@ -44,7 +45,7 @@ export class ApplicationAdvancedOptionsComponent implements OnInit {
   entityClassifierProperties: string;
 
   constructor(private route: ActivatedRoute,
-              private snackBar: MatSnackBar,
+              private toastrService: NbToastrService,
               private dialog: MatDialog,
               public state: StateService,
               private applicationService: ApplicationService) {
@@ -64,7 +65,7 @@ export class ApplicationAdvancedOptionsComponent implements OnInit {
 
   triggerBuild() {
     this.applicationService.triggerBuild(this.application).subscribe(_ =>
-      this.snackBar.open(`Application build started`, "Build", {duration: 1000})
+      this.toastrService.show(`Application build started`, "Build", {duration: 2000})
     )
   }
 
@@ -79,7 +80,7 @@ export class ApplicationAdvancedOptionsComponent implements OnInit {
         .subscribe(blob => {
           this.exportAlexa = false;
           saveAs(blob, this.application.name + "_alexa.json");
-          this.snackBar.open(`Alexa export file provided`, "Alexa", {duration: 1000});
+          this.toastrService.show(`Alexa export file provided`, "Alexa", {duration: 2000});
         })
     });
   }

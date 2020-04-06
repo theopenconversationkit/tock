@@ -19,10 +19,11 @@ import {AuthService} from "./core-nlp/auth/auth.service";
 import {StateService} from "./core-nlp/state.service";
 import {DialogService} from "./core-nlp/dialog.service";
 import {RestService} from "./core-nlp/rest/rest.service";
-import {MatIconRegistry, MatSnackBar} from "@angular/material";
+import {MatIconRegistry} from "@angular/material";
 import {UserRole} from "./model/auth";
 import {DomSanitizer} from "@angular/platform-browser";
 import {NbMenuItem} from "@nebular/theme";
+import { NbToastrService } from '@nebular/theme';
 
 
 @Component({
@@ -42,7 +43,7 @@ export class BotAdminAppComponent implements OnInit, OnDestroy {
               private rest: RestService,
               private dialog: DialogService,
               private changeDetectorRef: ChangeDetectorRef,
-              private snackBar: MatSnackBar,
+              private toastrService: NbToastrService,
               iconRegistry: MatIconRegistry,
               sanitizer: DomSanitizer) {
     dialog.setupRootChangeDetector(changeDetectorRef);
@@ -53,7 +54,7 @@ export class BotAdminAppComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.errorUnsuscriber = this.rest.errorEmitter.subscribe(e =>
-      this.snackBar.open(e, "Error", {duration: 5000})
+      this.toastrService.show(e, "Error", {duration: 5000, status: 'danger'})
     );
     this.menu = [
       {

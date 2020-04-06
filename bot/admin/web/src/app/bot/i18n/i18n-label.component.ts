@@ -17,9 +17,9 @@ import {StateService} from "../../core-nlp/state.service";
 import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {I18nLabel, I18nLocalizedLabel, userInterfaces} from "../model/i18n";
 import {BotService} from "../bot-service";
-import {MatSnackBar} from "@angular/material";
 import {ConnectorTypeConfiguration} from "../../core/model/configuration";
 import {BotSharedService} from "../../shared/bot-shared.service";
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-i18n-label',
@@ -50,7 +50,7 @@ export class I18nLabelComponent implements OnInit {
 
   constructor(public state: StateService,
               private botService: BotService,
-              private snackBar: MatSnackBar,
+              private toastrService: NbToastrService,
               public botSharedService: BotSharedService) {
   }
 
@@ -82,13 +82,13 @@ export class I18nLabelComponent implements OnInit {
     this.delete.emit(label);
     this.botService
       .deleteI18nLabel(label)
-      .subscribe(_ => this.snackBar.open(`Label ${l} deleted`, "Delete", {duration: 3000}));
+      .subscribe(_ => this.toastrService.show(`Label ${l} deleted`, "Delete", {duration: 3000}));
   }
 
   save(i18n: I18nLabel) {
     this.botService
       .saveI18nLabel(i18n)
-      .subscribe(_ => this.snackBar.open(`Label updated`, "Update", {duration: 3000}));
+      .subscribe(_ => this.toastrService.show(`Label updated`, "Update", {duration: 3000}));
   }
 
   removeLocalizedLabel(i18n: I18nLabel, label: I18nLocalizedLabel) {

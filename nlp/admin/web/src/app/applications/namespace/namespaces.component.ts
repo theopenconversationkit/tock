@@ -15,11 +15,11 @@
  */
 
 import {Component, OnInit} from "@angular/core";
-import {MatSnackBar} from "@angular/material/snack-bar";
 import {StateService} from "../../core-nlp/state.service";
 import {ApplicationService} from "../../core-nlp/applications.service";
 import {UserNamespace} from "../../model/application";
 import {AuthService} from "../../core-nlp/auth/auth.service";
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-namespaces',
@@ -36,7 +36,7 @@ export class NamespacesComponent implements OnInit {
   newLogin: string;
   newOwner: boolean;
 
-  constructor(private snackBar: MatSnackBar,
+  constructor(private toastrService: NbToastrService,
               public state: StateService,
               private applicationService: ApplicationService,
               private authService: AuthService) {
@@ -72,7 +72,7 @@ export class NamespacesComponent implements OnInit {
 
   addUserNamespace() {
     if (!this.newLogin || this.newLogin.trim().length === 0) {
-      this.snackBar.open("Please enter a non empty login")
+      this.toastrService.show("Please enter a non empty login")
     } else {
       this.applicationService.saveNamespace(new UserNamespace(this.managedNamespace, this.newLogin, this.newOwner, false)).subscribe(_ =>
         this.manageUsers(this.managedNamespace)

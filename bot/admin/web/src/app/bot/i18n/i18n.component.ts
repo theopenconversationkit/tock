@@ -18,12 +18,13 @@ import {Component, OnInit} from "@angular/core";
 import {I18nLabel} from "../model/i18n";
 import {BotService} from "../bot-service";
 import {StateService} from "../../core-nlp/state.service";
-import {MatSnackBar, PageEvent} from "@angular/material";
+import {PageEvent} from "@angular/material";
 import {saveAs} from "file-saver";
 import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
 import {I18nController} from "./i18n-label.component";
 import {Subject} from "rxjs";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-i18n',
@@ -56,7 +57,7 @@ export class I18nComponent extends I18nController implements OnInit {
 
   constructor(public state: StateService,
               private botService: BotService,
-              private snackBar: MatSnackBar) {
+              private toastrService: NbToastrService) {
     super(state, [], null);
   }
 
@@ -188,11 +189,11 @@ export class I18nComponent extends I18nController implements OnInit {
       this.loading = false;
       const n = r.nbTranslations;
       if (n === 0) {
-        this.snackBar.open(`No label translated`, "UPDATE", {duration: 1000})
+        this.toastrService.show(`No label translated`, "UPDATE", {duration: 2000})
       } else if (n === 1) {
-        this.snackBar.open(`1 label translated`, "UPDATE", {duration: 1000})
+        this.toastrService.show(`1 label translated`, "UPDATE", {duration: 2000})
       } else {
-        this.snackBar.open(`${n} labels translated`, "UPDATE", {duration: 1000})
+        this.toastrService.show(`${n} labels translated`, "UPDATE", {duration: 2000})
       }
     });
   }
@@ -207,14 +208,14 @@ export class I18nComponent extends I18nController implements OnInit {
     });
     this.botService
       .saveI18nLabels(this.i18n)
-      .subscribe(_ => this.snackBar.open(`All labels validated`, "Validate", {duration: 3000}));
+      .subscribe(_ => this.toastrService.show(`All labels validated`, "Validate", {duration: 3000}));
   }
 
   downloadCsv() {
     this.botService.downloadI18nLabelsCsv()
       .subscribe(blob => {
         saveAs(blob, "labels.csv");
-        this.snackBar.open(`Export provided`, "Export", {duration: 1000});
+        this.toastrService.show(`Export provided`, "Export", {duration: 2000});
       })
   }
 
@@ -222,7 +223,7 @@ export class I18nComponent extends I18nController implements OnInit {
     this.botService.downloadI18nLabelsJson()
       .subscribe(blob => {
         saveAs(blob, "labels.json");
-        this.snackBar.open(`Export provided`, "Export", {duration: 1000});
+        this.toastrService.show(`Export provided`, "Export", {duration: 2000});
       })
   }
 

@@ -15,7 +15,6 @@
  */
 
 import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from "@angular/core";
-import {MatSnackBar} from "@angular/material";
 import {NlpService} from "../../nlp-tabs/nlp.service";
 import {StateService} from "../../core-nlp/state.service";
 import {NormalizeUtil} from "../../model/commons";
@@ -32,6 +31,7 @@ import {ActivatedRoute} from "@angular/router";
 import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {AnswerController} from "./controller";
 import {Subscription} from "rxjs";
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-create-story',
@@ -59,7 +59,7 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
               public state: StateService,
               private botConfiguration: BotConfigurationService,
               private bot: BotService,
-              private snackBar: MatSnackBar,
+              private toastrService: NbToastrService,
               private route: ActivatedRoute) {
   }
 
@@ -95,7 +95,7 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
     const language = this.state.currentLocale;
     const v = value ? value.trim() : this.story.userSentence.trim();
     if (v.length == 0) {
-      this.snackBar.open(`Please enter a non-empty sentence`, "ERROR", {duration: 2000});
+      this.toastrService.show(`Please enter a non-empty sentence`, "ERROR", {duration: 2000});
     } else {
       this.nlp.parse(new ParseQuery(app.namespace, app.name, language, v, true)).subscribe(sentence => {
         this.sentence = sentence;
@@ -179,7 +179,7 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
     this.submit.checkAnswer(_ => {
         let invalidMessage = this.story.currentAnswer().invalidMessage();
         if (invalidMessage) {
-          this.snackBar.open(`Error: ${invalidMessage}`, "ERROR", {duration: 5000});
+          this.toastrService.show(`Error: ${invalidMessage}`, "ERROR", {duration: 5000, status: "danger"});
         } else {
           this.story.steps = this.story.steps.filter(s => !s.new);
           this.bot.newStory(
@@ -190,7 +190,7 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
             )
           ).subscribe(intent => {
             this.state.resetConfiguration();
-            this.snackBar.open(`New story ${this.story.name} created for language ${this.state.currentLocale}`, "New Story", {duration: 3000});
+            this.toastrService.show(`New story ${this.story.name} created for language ${this.state.currentLocale}`, "New Story", {duration: 3000});
 
             this.newSentence.nativeElement.focus();
             setTimeout(_ => this.resetState(), 200);

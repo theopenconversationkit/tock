@@ -18,11 +18,11 @@ import {Component, OnInit} from "@angular/core";
 import {TestPlan, XRayPlanExecutionConfiguration} from "../model/test";
 import {TestService} from "../test.service";
 import {StateService} from "../../core-nlp/state.service";
-import {MatSnackBar} from "@angular/material";
 import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {DialogReport} from "../../shared/model/dialog-data";
 import {BotSharedService} from "../../shared/bot-shared.service";
 import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-bot-test-plan',
@@ -49,7 +49,7 @@ export class TestPlanComponent implements OnInit {
 
   constructor(private state: StateService,
               private test: TestService,
-              private snackBar: MatSnackBar,
+              private toastrService: NbToastrService,
               public botConfiguration: BotConfigurationService,
               private shared: BotSharedService) {
   }
@@ -98,7 +98,7 @@ export class TestPlanComponent implements OnInit {
 
   executeXRay() {
     if (this.xray.testPlanKey.trim().length === 0) {
-      this.snackBar.open(`Please specify a plan key`, "Error", {duration: 2000})
+      this.toastrService.show(`Please specify a plan key`, "Error", {duration: 2000})
     } else {
       this.executeXray = true;
       this.botConfiguration.restConfigurations.subscribe(c => {
@@ -109,11 +109,11 @@ export class TestPlanComponent implements OnInit {
             this.executeXray = false;
             this.reload();
             if (r.total === 0) {
-              this.snackBar.open(`No tests executed for Plan ${this.xray.testPlanKey}`, "Execution", {duration: 2000})
+              this.toastrService.show(`No tests executed for Plan ${this.xray.testPlanKey}`, "Execution", {duration: 2000})
             } else if (r.total === r.success) {
-              this.snackBar.open(`${r.total} tests for Plan ${this.xray.testPlanKey} executed with success`, "Execution", {duration: 2000})
+              this.toastrService.show(`${r.total} tests for Plan ${this.xray.testPlanKey} executed with success`, "Execution", {duration: 2000})
             } else {
-              this.snackBar.open(`Plan ${this.xray.testPlanKey} executed with ${r.success} successful tests / ${r.total}`, "Execution", {duration: 2000})
+              this.toastrService.show(`Plan ${this.xray.testPlanKey} executed with ${r.success} successful tests / ${r.total}`, "Execution", {duration: 2000})
             }
           },
           _ => this.executeXray = false);
@@ -128,7 +128,7 @@ export class TestPlanComponent implements OnInit {
 
   createTestPlan() {
     if (!this.testPlanName || this.testPlanName.trim().length === 0) {
-      this.snackBar.open(`Please enter a valid name`, "Error", {duration: 5000});
+      this.toastrService.show(`Please enter a valid name`, "Error", {duration: 5000});
       return;
     }
     const conf = this.botConfiguration.restConfigurations.value.find(c => c._id === this.testBotConfigurationId);
@@ -145,7 +145,7 @@ export class TestPlanComponent implements OnInit {
       )).subscribe(_ => {
       this.resetCreateTestPlan();
       this.reload();
-      this.snackBar.open(`New test plan saved`, "New Test Plan", {duration: 2000})
+      this.toastrService.show(`New test plan saved`, "New Test Plan", {duration: 2000})
     });
   }
 
@@ -157,7 +157,7 @@ export class TestPlanComponent implements OnInit {
     this.test.removeTestPlan(plan._id).subscribe(
       _ => {
         this.reload();
-        this.snackBar.open(`Plan ${plan.name} deleted`, "Delete", {duration: 2000})
+        this.toastrService.show(`Plan ${plan.name} deleted`, "Delete", {duration: 2000})
       });
   }
 
@@ -165,10 +165,10 @@ export class TestPlanComponent implements OnInit {
     this.executePlan = true;
     this.testExecutionStatus = "PENDING";
     this.runningTestPlan = plan;
-    const ref = this.snackBar.open(`Plan ${plan.name} is running.`, "Execution", {duration: 20000});
+    const ref = this.toastrService.show(`Plan ${plan.name} is running.`, "Execution", {duration: 20000});
     this.test.runTestPlan(plan._id).subscribe(
       execution => {
-        ref.dismiss();
+        ref.close();
         this.testExecutionId = execution;
         this.showExecutions(plan);
         this.getExecutionStatus(this.testPlanId, this.testExecutionId)
@@ -181,7 +181,7 @@ export class TestPlanComponent implements OnInit {
       .removeDialogFromTestPlan(plan._id, dialog.id)
       .subscribe(_ => {
         plan.dialogs = plan.dialogs.filter(d => d.id !== dialog.id);
-        this.snackBar.open(`Dialog removed`, "Removal", {duration: 2000})
+        this.toastrService.show(`Dialog removed`, "Removal", {duration: 2000})
       });
   }
 

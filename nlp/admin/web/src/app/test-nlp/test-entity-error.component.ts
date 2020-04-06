@@ -16,7 +16,7 @@
 
 import {saveAs} from "file-saver";
 import {AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, ViewChild} from "@angular/core";
-import {MatPaginator, MatSnackBar, MatSnackBarConfig} from "@angular/material";
+import {MatPaginator} from "@angular/material";
 import {DataSource} from "@angular/cdk/collections";
 import {BehaviorSubject, merge, Observable, Subscription} from "rxjs";
 import {EntityTestError, TestErrorQuery} from "../model/nlp";
@@ -25,6 +25,7 @@ import {Router} from "@angular/router";
 import {QualityService} from "../quality-nlp/quality.service";
 import {escapeRegex} from "../model/commons";
 import {DialogService} from "../core-nlp/dialog.service";
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-test-entity-error',
@@ -40,7 +41,7 @@ export class TestEntityErrorComponent implements OnInit, AfterViewInit, OnDestro
 
   constructor(public state: StateService,
               private quality: QualityService,
-              private snackBar: MatSnackBar,
+              private toastrService: NbToastrService,
               private router: Router,
               private dialog: DialogService) {
   }
@@ -71,7 +72,7 @@ export class TestEntityErrorComponent implements OnInit, AfterViewInit, OnDestro
   validate(error: EntityTestError) {
     this.quality.deleteEntityError(error).subscribe(
       e => {
-        this.snackBar.open(`Sentence validated`, "Validate Entities", {duration: 1000} as MatSnackBarConfig)
+        this.toastrService.show(`Sentence validated`, "Validate Entities", {duration: 2000});
         this.dataSource.refresh()
       }
     )

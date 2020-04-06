@@ -19,10 +19,11 @@ import {map} from 'rxjs/operators';
 import {Component, Input, OnInit} from "@angular/core";
 import {StateService} from "../core-nlp/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
-import {MatDialog, MatDialogConfig, MatSnackBar, MatSnackBarConfig} from "@angular/material";
+import {MatDialog, MatDialogConfig} from "@angular/material";
 import {ApplicationService} from "../core-nlp/applications.service";
 import {EntityDefinition, EntityType} from "../model/nlp";
 import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialog.component";
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-entity-details',
@@ -40,7 +41,7 @@ export class EntityDetailsComponent implements OnInit {
 
   constructor(public state: StateService,
               private nlp: NlpService,
-              private snackBar: MatSnackBar,
+              private toastrService: NbToastrService,
               private dialog: MatDialog,
               private applicationService: ApplicationService) {
   }
@@ -56,7 +57,7 @@ export class EntityDetailsComponent implements OnInit {
     this.nlp.updateEntityDefinition(
       this.state.createUpdateEntityDefinitionQuery(this.entity)
     ).pipe(map(_ => this.applicationService.reloadCurrentApplication()))
-      .subscribe(_ => this.snackBar.open(`Entity updated`, "Update", {duration: 1000} as MatSnackBarConfig<any>));
+      .subscribe(_ => this.toastrService.show(`Entity updated`, "Update", {duration: 2000}));
   }
 
   remove() {
@@ -72,9 +73,9 @@ export class EntityDetailsComponent implements OnInit {
         this.nlp.removeSubEntity(this.state.currentApplication, this.entityType, this.entity).subscribe(
           _ => {
             this.state.resetConfiguration();
-            this.snackBar.open(`Subentity ${this.entity.entityTypeName} removed`, "Remove Subentity", {duration: 1000} as MatSnackBarConfig<any>);
+            this.toastrService.show(`Subentity ${this.entity.entityTypeName} removed`, "Remove Subentity", {duration: 2000});
           },
-          _ => this.snackBar.open(`Remove Subentity ${this.entity.entityTypeName} failed`, "Error", {duration: 5000} as MatSnackBarConfig<any>)
+          _ => this.toastrService.show(`Remove Subentity ${this.entity.entityTypeName} failed`, "Error", {duration: 5000})
         );
       }
     });

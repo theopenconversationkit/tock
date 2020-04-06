@@ -16,7 +16,7 @@
 
 import {saveAs} from "file-saver";
 import {AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, ViewChild} from "@angular/core";
-import {MatPaginator, MatSnackBar, MatSnackBarConfig} from "@angular/material";
+import {MatPaginator} from "@angular/material";
 import {DataSource} from "@angular/cdk/collections";
 import {BehaviorSubject, merge, Observable, Subscription} from "rxjs";
 import {IntentTestError, TestErrorQuery} from "../model/nlp";
@@ -25,6 +25,7 @@ import {Router} from "@angular/router";
 import {QualityService} from "../quality-nlp/quality.service";
 import {escapeRegex} from "../model/commons";
 import {DialogService} from "../core-nlp/dialog.service";
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-test-intent-error',
@@ -40,7 +41,7 @@ export class TestIntentErrorComponent implements OnInit, AfterViewInit, OnDestro
 
   constructor(public state: StateService,
               private quality: QualityService,
-              private snackBar: MatSnackBar,
+              private toastrService: NbToastrService,
               private router: Router,
               private dialog: DialogService) {
   }
@@ -65,7 +66,7 @@ export class TestIntentErrorComponent implements OnInit, AfterViewInit, OnDestro
   validate(error: IntentTestError) {
     this.quality.deleteIntentError(error).subscribe(
       e => {
-        this.snackBar.open(`Sentence validated`, "Validate Intent", {duration: 1000} as MatSnackBarConfig)
+        this.toastrService.show(`Sentence validated`, "Validate Intent", {duration: 2000});
         this.dataSource.refresh()
       }
     )
