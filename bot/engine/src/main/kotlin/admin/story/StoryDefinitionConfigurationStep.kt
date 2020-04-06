@@ -80,10 +80,12 @@ data class StoryDefinitionConfigurationStep(
         private val storyConfiguration: StoryDefinitionConfiguration
     ) : SimpleStoryStep {
         constructor(s: StoryDefinitionConfigurationStep, conf: StoryDefinitionConfiguration) :
-            this(s.name.takeUnless { it.isBlank() }
-                ?: "${s.intent?.name}_${s.level}", s.intent?.intent(conf.namespace), s, conf)
+            this(s.name.takeUnless { it.isBlank() || s.entity != null }
+                ?: "${s.intent?.name}${(s.entity?.value ?: s.entity?.entityRole)?.let { "_$it" }}_${s.level}", s.intent?.intent(conf.namespace), s, conf)
 
-        override fun equals(other: Any?): Boolean = name == (other as? Step)?.name
+        override fun equals(other: Any?): Boolean =
+            intent?.wrappedIntent()?.name == (other as? Step)?.intent?.wrappedIntent()?.name
+                && configuration.entity == (other as? Step)?.configuration?.entity
 
         override fun hashCode(): Int = name.hashCode()
 

@@ -145,7 +145,7 @@ internal class Bot(
 
         val story =
             if (previousStory == null
-                || (newIntent != null && !previousStory.supportIntent(newIntent))
+                || (newIntent != null && !previousStory.supportAction(userTimeline, dialog, action, newIntent))
             ) {
                 val storyDefinition = botDefinition.findStoryDefinition(newIntent?.name, action.applicationId)
                 val newStory = Story(

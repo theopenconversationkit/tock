@@ -535,7 +535,8 @@ object BotAdminService {
         oldStory: StoryDefinitionConfiguration?
     ): StoryDefinitionConfigurationStep =
         StoryDefinitionConfigurationStep(
-            name.takeUnless { it.isBlank() } ?: "${intent?.name}_$level",
+            name.takeUnless { it.isBlank() }
+                ?: "${intent?.name}${(entity?.value ?: entity?.entityRole)?.let { "_$it" }}_$level",
             intent?.takeIf { it.name.isNotBlank() },
             targetIntent?.takeIf { it.name.isNotBlank() },
             answers.mapNotNull { it.toConfiguration(botId, oldStory?.steps?.find { it.name == name }?.answers) },

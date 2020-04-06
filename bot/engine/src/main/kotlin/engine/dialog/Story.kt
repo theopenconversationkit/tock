@@ -117,9 +117,19 @@ data class Story(
     fun support(bus: BotBus): Double = definition.storyHandler.support(bus)
 
     /**
+     * Does this story supports the action ?
+     */
+    fun supportAction(userTimeline: UserTimeline, dialog: Dialog, action: Action, intent: Intent): Boolean =
+        supportIntent(intent)
+            || currentStep?.selectFromAction(userTimeline, dialog, action, intent) == true
+            || (currentStep?.children ?: definition.steps)
+            .any { it.selectFromAction(userTimeline, dialog, action, intent) }
+
+
+    /**
      * Does this story supports the intent ?
      */
-    fun supportIntent(intent:Intent) : Boolean =
+    fun supportIntent(intent: Intent): Boolean =
         definition.supportIntent(intent) || currentStep?.supportIntent(intent) == true
 
     /**

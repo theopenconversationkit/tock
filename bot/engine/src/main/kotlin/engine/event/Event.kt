@@ -56,7 +56,15 @@ abstract class Event(
      * Does this event contains specified predefined value entity?
      */
     fun hasEntityPredefinedValue(role: String, value: String): Boolean {
-        return state.getEntity(role).any { (it.value as? StringValue)?.value == value }
+        return hasEntityPredefinedValue(state.entityValues, role, value)
+    }
+
+    private fun hasEntityPredefinedValue(entities: List<EntityValue>, role: String, value: String): Boolean {
+        return entities.filter { it.entity.role == role || hasEntityPredefinedValue(it.subEntities, role, value) }
+            .firstOrNull {
+                (it.value as? StringValue)?.value == value
+                    || hasEntityPredefinedValue(it.subEntities, role, value)
+            } != null
     }
 
     private fun hasSubEntity(entities: List<EntityValue>, role: String): Boolean {
