@@ -19,7 +19,9 @@ package ai.tock.bot.connector.web.send
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.message.Choice
 import ai.tock.shared.mapNotNullValues
+import com.fasterxml.jackson.annotation.JsonTypeName
 
+@JsonTypeName("quick_reply")
 data class QuickReply(val title: String, val payload: String?, val imageUrl: String?) : Button(ButtonType.quick_reply) {
 
     override fun toChoice(): Choice =
