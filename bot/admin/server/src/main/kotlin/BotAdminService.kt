@@ -67,6 +67,7 @@ import ai.tock.nlp.front.service.applicationDAO
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.Classification
 import ai.tock.nlp.front.shared.config.ClassifiedSentence
+import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import ai.tock.nlp.front.shared.config.EntityDefinition
 import ai.tock.nlp.front.shared.config.EntityTypeDefinition
@@ -705,20 +706,34 @@ object BotAdminService {
         applicationId: Id<ApplicationDefinition>,
         intentId: Id<IntentDefinition>,
         user: UserLogin) {
-        front.save(
-            ClassifiedSentence(
-                text,
-                locale,
-                applicationId,
-                Instant.now(),
-                Instant.now(),
-                validated,
-                Classification(intentId, emptyList()),
-                1.0,
-                1.0,
-                qualifier = user
+
+        if (
+            front.search(
+                SentencesQuery(
+                    applicationId = applicationId,
+                    language = locale,
+                    search = text,
+                    onlyExactMatch = true,
+                    intentId = intentId,
+                    status = setOf(validated, model)
+                )
+            ).total == 0L
+        ) {
+            front.save(
+                ClassifiedSentence(
+                    text,
+                    locale,
+                    applicationId,
+                    Instant.now(),
+                    Instant.now(),
+                    validated,
+                    Classification(intentId, emptyList()),
+                    1.0,
+                    1.0,
+                    qualifier = user
+                )
             )
-        )
+        }
     }
 
     private fun saveUserSentenceOfStep(
