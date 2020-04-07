@@ -87,6 +87,7 @@
         <plugin.ant>1.8</plugin.ant>
         <plugin.shade>3.2.2</plugin.shade>
         <plugin.dependency>3.1.2</plugin.dependency>
+        <plugin.resources>3.1.0</plugin.resources>
         <plugin.deploy>3.0.0-M1</plugin.deploy>
 
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
@@ -725,6 +726,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
                     <version>${plugin.dependency}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${plugin.resources}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
