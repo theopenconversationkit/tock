@@ -88,7 +88,7 @@ data class EntityTypeDefinition(
     val name: String,
     val description: String,
     val subEntities: List<EntityDefinition> = emptyList(),
-    val predefinedValues: List<PredefinedValue> = emptyList(),
+    val dictionary: Boolean = false,
     val _id: String
 )
 

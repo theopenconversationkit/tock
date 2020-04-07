@@ -29,8 +29,7 @@
           "entity": {
             "entityType": {
               "name": "app:location",
-              "subEntities": [],
-              "predefinedValues": []
+              "subEntities": []
             },
             "role": "origin"
           },
