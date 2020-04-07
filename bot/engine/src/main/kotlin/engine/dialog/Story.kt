@@ -67,6 +67,22 @@ data class Story(
         }
     }
 
+    private fun findStep(steps: Collection<StoryStep<*>>, userTimeline: UserTimeline, dialog: Dialog, action: Action, intent: Intent?): StoryStep<*>? {
+        //first level
+        steps.forEach {
+            if (it.selectFromAction(userTimeline, dialog, action, intent)) {
+                return it
+            }
+        }
+        //then iterate on children
+        steps.forEach { s ->
+            findStep(s.children, userTimeline, dialog, action, intent)?.also {
+                return it
+            }
+        }
+        return null
+    }
+
     private fun findParentStep(child: StoryStep<*>): StoryStep<*>? =
         definition.steps.asSequence().mapNotNull { findParentStep(it, child) }.firstOrNull()
 
@@ -159,7 +175,7 @@ data class Story(
 
         //reset the step if applicable
         if (!forced && newIntent != null
-            && (s?.intent != null && !s.supportIntent(newIntent))
+            && ((s?.intent != null && !s.supportIntent(newIntent)) || (s?.selectFromEntityStepSelection(action, newIntent) == false))
         ) {
             this.step = null
         }
@@ -178,7 +194,7 @@ data class Story(
                 } while (parent != null)
             }
 
-            definition.steps.find { it.selectFromAction(userTimeline, dialog, action, newIntent) }?.apply {
+            findStep(definition.steps, userTimeline, dialog, action, newIntent)?.apply {
                 this@Story.step = name
             }
         }
