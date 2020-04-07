@@ -16,11 +16,6 @@
 
 package ai.tock.nlp.front.storage.mongo
 
-import com.mongodb.ReadPreference.secondaryPreferred
-import com.mongodb.client.MongoCollection
-import com.mongodb.client.model.FindOneAndUpdateOptions
-import com.mongodb.client.model.IndexOptions
-import com.mongodb.client.model.ReturnDocument.AFTER
 import ai.tock.nlp.front.service.storage.ParseRequestLogDAO
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.monitoring.ParseRequestExportLog
@@ -55,6 +50,11 @@ import ai.tock.shared.error
 import ai.tock.shared.longProperty
 import ai.tock.shared.name
 import ai.tock.shared.security.TockObfuscatorService.obfuscate
+import com.mongodb.ReadPreference.secondaryPreferred
+import com.mongodb.client.MongoCollection
+import com.mongodb.client.model.FindOneAndUpdateOptions
+import com.mongodb.client.model.IndexOptions
+import com.mongodb.client.model.ReturnDocument.AFTER
 import mu.KotlinLogging
 import org.bson.Document
 import org.litote.jackson.data.JacksonData
@@ -87,7 +87,7 @@ import org.litote.kmongo.newId
 import org.litote.kmongo.project
 import org.litote.kmongo.regex
 import org.litote.kmongo.save
-import org.litote.kmongo.set
+import org.litote.kmongo.setValue
 import org.litote.kmongo.sort
 import org.litote.kmongo.sum
 import org.litote.kmongo.withDocumentClass
@@ -252,9 +252,9 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                 ),
                 combine(
                     listOfNotNull(
-                        stat.intentProbability?.let { set(IntentProbability, it) },
-                        stat.entitiesProbability?.let { set(EntitiesProbability, it) },
-                        set(LastUsage, stat.lastUsage),
+                        stat.intentProbability?.let { setValue(IntentProbability, it) },
+                        stat.entitiesProbability?.let { setValue(EntitiesProbability, it) },
+                        setValue(LastUsage, stat.lastUsage),
                         inc(Count, 1)
                     )
                 ),

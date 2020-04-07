@@ -26,7 +26,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import com.github.salomonbrys.kodein.singleton
-import com.mongodb.MongoClient
+import com.mongodb.client.MongoClient
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk

@@ -31,10 +31,8 @@ import com.fasterxml.jackson.datatype.jsr310.deser.DurationDeserializer
 import com.fasterxml.jackson.datatype.jsr310.deser.JSR310StringParsableDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.DurationSerializer
 import com.mongodb.ConnectionString
-import com.mongodb.MongoClient
 import com.mongodb.MongoClientSettings
-import com.mongodb.MongoClientURI
-import com.mongodb.ServerAddress
+import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import com.mongodb.client.model.changestream.FullDocument
@@ -132,13 +130,15 @@ private val credentialsProvider = injector.provide<MongoCredentialsProvider>()
  */
 internal val mongoClient: MongoClient by lazy {
     TockKMongoConfiguration.configure()
-    if(mongoUrl.credential == null) {
-        val uri = MongoClientURI(mongoUrl.toString())
-        KMongo.createClient(
-            uri.hosts.map { ServerAddress(it) },
-            (uri.credentials ?: credentialsProvider.getCredentials())?.let { listOf(it) } ?: emptyList(),
-            uri.options
-        )
+    if (mongoUrl.credential == null) {
+        val connectionString = mongoUrl
+        val settings = MongoClientSettings
+            .builder()
+            .applyConnectionString(connectionString)
+            .run { credentialsProvider.getCredentials()?.let { credential(it) } ?: this }
+            .build()
+
+        KMongo.createClient(settings)
     } else {
         KMongo.createClient(mongoUrl)
     }

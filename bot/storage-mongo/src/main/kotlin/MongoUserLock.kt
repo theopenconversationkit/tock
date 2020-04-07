@@ -16,8 +16,6 @@
 
 package ai.tock.bot.mongo
 
-import com.mongodb.MongoWriteException
-import com.mongodb.client.model.IndexOptions
 import ai.tock.bot.engine.user.UserLock
 import ai.tock.bot.mongo.MongoBotConfiguration.database
 import ai.tock.bot.mongo.UserLock_.Companion.Date
@@ -25,10 +23,12 @@ import ai.tock.bot.mongo.UserLock_.Companion.Locked
 import ai.tock.bot.mongo.UserLock_.Companion._id
 import ai.tock.shared.error
 import ai.tock.shared.longProperty
+import com.mongodb.MongoWriteException
+import com.mongodb.client.model.IndexOptions
 import mu.KotlinLogging
+import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
-import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.and
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
@@ -37,12 +37,10 @@ import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.lt
 import org.litote.kmongo.or
-import org.litote.kmongo.set
 import org.litote.kmongo.toId
 import org.litote.kmongo.updateOne
 import org.litote.kmongo.updateOneById
 import org.litote.kmongo.upsert
-import java.lang.Exception
 import java.time.Instant
 import java.time.Instant.now
 import java.util.concurrent.TimeUnit.HOURS
@@ -123,7 +121,7 @@ internal object MongoUserLock : UserLock {
     override fun releaseLock(userId: String) {
         try {
             logger.debug { "release lock for user : $userId" }
-            val r = col.updateOneById(userId, set(Locked, false))
+            val r = col.updateOneById(userId, org.litote.kmongo.setValue(Locked, false))
             if (r.modifiedCount == 0L) {
                 logger.warn { "lock deleted or updated??? : $userId" }
             }

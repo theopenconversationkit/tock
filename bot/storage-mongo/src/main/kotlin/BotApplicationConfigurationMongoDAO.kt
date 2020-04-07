@@ -46,8 +46,8 @@ import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.json
 import org.litote.kmongo.reactivestreams.getCollectionOfName
+import org.litote.kmongo.replaceUpsert
 import org.litote.kmongo.save
-import org.litote.kmongo.upsert
 
 /**
  *
@@ -176,7 +176,7 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
                 BotId eq conf.botId
             ),
             conf,
-            upsert()
+            replaceUpsert()
         )
     }
 

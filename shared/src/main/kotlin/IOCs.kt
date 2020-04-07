@@ -31,7 +31,7 @@ import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import com.github.salomonbrys.kodein.providerOrNull
 import com.github.salomonbrys.kodein.singleton
-import com.mongodb.MongoClient
+import com.mongodb.client.MongoClient
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
