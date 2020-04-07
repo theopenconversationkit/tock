@@ -16,9 +16,6 @@
 
 package ai.tock.bot
 
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.instance
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.BotProvider
 import ai.tock.bot.definition.BotProviderBase
@@ -31,19 +28,20 @@ import ai.tock.shared.resource
 import ai.tock.shared.resourceAsStream
 import ai.tock.translator.I18nDAO
 import ai.tock.translator.I18nLabel
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.instance
 import io.vertx.ext.web.Router
 
 /**
  * Register a new bot.
  */
-@Deprecated("use registerAndInstallBot")
-fun registerBot(botDefinition: BotDefinition) = registerBot(BotProviderBase(botDefinition))
+private fun registerBot(botDefinition: BotDefinition) = registerBot(BotProviderBase(botDefinition))
 
 /**
  * Register a new bot.
  */
-@Deprecated("use registerAndInstallBot")
-fun registerBot(botProvider: BotProvider) = BotRepository.registerBotProvider(botProvider)
+private fun registerBot(botProvider: BotProvider) = BotRepository.registerBotProvider(botProvider)
 
 /**
  * Register and install a new bot.
@@ -66,14 +64,6 @@ fun registerAndInstallBot(
     vararg routerHandlers: (Router) -> Unit
 ) {
     registerBot(botProvider)
-    installBots(routerHandlers.toList(), additionalModules)
-}
-
-/**
- * Install the bot(s) with the specified additional router handlers and additional Tock Modules
- */
-@Deprecated("use registerAndInstallBot")
-fun installBots(vararg routerHandlers: (Router) -> Unit, additionalModules: List<Kodein.Module> = emptyList()) {
     installBots(routerHandlers.toList(), additionalModules)
 }
 

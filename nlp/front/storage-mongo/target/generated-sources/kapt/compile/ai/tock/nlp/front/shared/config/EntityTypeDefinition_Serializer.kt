@@ -40,17 +40,6 @@ internal class EntityTypeDefinition_Serializer :
         gen.writeFieldName("_id")
         val __id_ = value._id
         serializers.defaultSerializeValue(__id_, gen)
-        gen.writeFieldName("predefinedValues")
-        val _predefinedValues_ = value.predefinedValues
-        serializers.findTypedValueSerializer(
-                serializers.config.typeFactory.constructCollectionType(
-                kotlin.collections.List::class.java,
-                serializers.config.typeFactory.constructType(ai.tock.nlp.core.PredefinedValue::class.java)
-                ),
-                true,
-                null
-                )
-                .serialize(_predefinedValues_, gen, serializers)
         gen.writeEndObject()
     }
 }

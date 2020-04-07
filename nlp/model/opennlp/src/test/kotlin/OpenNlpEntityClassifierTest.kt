@@ -154,8 +154,7 @@ class OpenNlpEntityClassifierTest {
                         entity = Entity(
                             entityType = EntityType(
                                 name = "location:location",
-                                subEntities = emptyList(),
-                                predefinedValues = emptyList()
+                                subEntities = emptyList()
                             ),
                             role = "location"
                         ), value = null, subEntities = emptyList(), evaluated = false

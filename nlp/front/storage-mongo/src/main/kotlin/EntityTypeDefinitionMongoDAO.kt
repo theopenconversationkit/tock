@@ -16,8 +16,6 @@
 
 package ai.tock.nlp.front.storage.mongo
 
-import com.mongodb.client.MongoCollection
-import com.mongodb.client.model.ReplaceOptions
 import ai.tock.nlp.core.DictionaryData
 import ai.tock.nlp.core.DictionaryData_.Companion.EntityName
 import ai.tock.nlp.core.DictionaryData_.Companion.Namespace
@@ -26,26 +24,23 @@ import ai.tock.nlp.core.PredefinedValue_.Companion.Value
 import ai.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import ai.tock.nlp.front.shared.config.EntityTypeDefinition
 import ai.tock.nlp.front.shared.config.EntityTypeDefinition_.Companion.Name
-import ai.tock.nlp.front.shared.config.EntityTypeDefinition_.Companion.PredefinedValues
 import ai.tock.nlp.front.storage.mongo.MongoFrontConfiguration.asyncDatabase
 import ai.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
-import ai.tock.shared.error
 import ai.tock.shared.name
 import ai.tock.shared.namespace
 import ai.tock.shared.watch
+import com.mongodb.client.MongoCollection
+import com.mongodb.client.model.ReplaceOptions
 import mu.KotlinLogging
 import org.litote.kmongo.and
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
-import org.litote.kmongo.exists
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
-import org.litote.kmongo.not
 import org.litote.kmongo.pull
 import org.litote.kmongo.pullByFilter
 import org.litote.kmongo.reactivestreams.getCollection
 import org.litote.kmongo.replaceOneWithFilter
-import org.litote.kmongo.size
 import java.util.Locale
 
 /**
@@ -74,19 +69,6 @@ internal object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
 
     override fun listenEntityTypeChanges(listener: () -> Unit) {
         asyncCol.watch { listener() }
-    }
-
-    init {
-        //TODO remove this in 20.3
-        try {
-            col.find(and(PredefinedValues.exists(), not(PredefinedValues.size(0))))
-                .forEach {
-                    save(DictionaryData(it.name.namespace(), it.name.name(), it.predefinedValues))
-                    save(it.copy(predefinedValues = emptyList(), dictionary = true))
-                }
-        } catch (t: Throwable) {
-            logger.error(t)
-        }
     }
 
     override fun save(entityType: EntityTypeDefinition) {

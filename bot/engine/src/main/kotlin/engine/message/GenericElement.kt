@@ -16,10 +16,6 @@
 
 package ai.tock.bot.engine.message
 
-@Deprecated("now GenericElement", replaceWith = ReplaceWith("GenericElement", "ai.tock.bot.engine.message.GenericElement"))
-typealias SentenceSubElement = GenericElement
-
-
 /**
  * A sub element of [GenericMessage].
  */

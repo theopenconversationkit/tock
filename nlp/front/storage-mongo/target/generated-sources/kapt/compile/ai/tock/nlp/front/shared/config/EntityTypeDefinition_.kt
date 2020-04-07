@@ -1,7 +1,5 @@
 package ai.tock.nlp.front.shared.config
 
-import ai.tock.nlp.core.PredefinedValue
-import ai.tock.nlp.core.PredefinedValue_Col
 import kotlin.Boolean
 import kotlin.String
 import kotlin.Suppress
@@ -24,8 +22,6 @@ private val __Dictionary: KProperty1<EntityTypeDefinition, Boolean?>
     get() = EntityTypeDefinition::dictionary
 private val ___id: KProperty1<EntityTypeDefinition, Id<EntityTypeDefinition>?>
     get() = EntityTypeDefinition::_id
-private val __PredefinedValues: KProperty1<EntityTypeDefinition, List<PredefinedValue>?>
-    get() = EntityTypeDefinition::predefinedValues
 class EntityTypeDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         EntityTypeDefinition?>) : KPropertyPath<T, EntityTypeDefinition?>(previous,property) {
     val name_: KPropertyPath<T, String?>
@@ -43,9 +39,6 @@ class EntityTypeDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProper
     val _id: KPropertyPath<T, Id<EntityTypeDefinition>?>
         get() = KPropertyPath(this,___id)
 
-    val predefinedValues: PredefinedValue_Col<T>
-        get() = PredefinedValue_Col(this,EntityTypeDefinition::predefinedValues)
-
     companion object {
         val Name: KProperty1<EntityTypeDefinition, String?>
             get() = __Name
@@ -56,9 +49,7 @@ class EntityTypeDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProper
         val Dictionary: KProperty1<EntityTypeDefinition, Boolean?>
             get() = __Dictionary
         val _id: KProperty1<EntityTypeDefinition, Id<EntityTypeDefinition>?>
-            get() = ___id
-        val PredefinedValues: PredefinedValue_Col<EntityTypeDefinition>
-            get() = PredefinedValue_Col(null,__PredefinedValues)}
+            get() = ___id}
 }
 
 class EntityTypeDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -78,9 +69,6 @@ class EntityTypeDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KPro
 
     val _id: KPropertyPath<T, Id<EntityTypeDefinition>?>
         get() = KPropertyPath(this,___id)
-
-    val predefinedValues: PredefinedValue_Col<T>
-        get() = PredefinedValue_Col(this,EntityTypeDefinition::predefinedValues)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): EntityTypeDefinition_<T> =
@@ -103,9 +91,6 @@ class EntityTypeDefinition_Map<T, K>(previous: KPropertyPath<T, *>?, property: K
 
     val _id: KPropertyPath<T, Id<EntityTypeDefinition>?>
         get() = KPropertyPath(this,___id)
-
-    val predefinedValues: PredefinedValue_Col<T>
-        get() = PredefinedValue_Col(this,EntityTypeDefinition::predefinedValues)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): EntityTypeDefinition_<T> =

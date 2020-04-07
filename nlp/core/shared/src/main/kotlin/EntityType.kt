@@ -29,14 +29,9 @@ data class EntityType(
      */
     val subEntities: List<Entity> = emptyList(),
     /**
-     * The entity predefined values if any.
-     */
-    @Deprecated("will be removed in 20.03 - use DictionaryData")
-    val predefinedValues: List<PredefinedValue> = emptyList(),
-    /**
      * Is the entity based on a dictionary (predefined set of data)?
      */
-    val dictionary: Boolean = predefinedValues.isNotEmpty()
+    val dictionary: Boolean = false
 ) {
 
     fun hasSubEntities(): Boolean = subEntities.isNotEmpty()

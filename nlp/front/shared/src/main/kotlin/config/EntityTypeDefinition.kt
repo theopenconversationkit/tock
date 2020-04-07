@@ -16,7 +16,6 @@
 
 package ai.tock.nlp.front.shared.config
 
-import ai.tock.nlp.core.PredefinedValue
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 
@@ -43,10 +42,5 @@ data class EntityTypeDefinition(
     /**
      * The unique id of the entity.
      */
-    val _id: Id<EntityTypeDefinition> = newId(),
-    /**
-     * The entity predefined values (if any).
-     */
-    @Deprecated("Remove this in 20.3")
-    val predefinedValues: List<PredefinedValue> = emptyList()
+    val _id: Id<EntityTypeDefinition> = newId()
 )

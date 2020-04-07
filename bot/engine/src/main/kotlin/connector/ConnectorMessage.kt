@@ -33,14 +33,7 @@ interface ConnectorMessage : ConnectorMessageProvider {
      * Transforms this message into a generic [GenericMessage].
      * @return the generic transformed element, null if unsupported
      */
-    fun toGenericMessage(): GenericMessage? = toSentenceElement()
-
-    /**
-     * Transforms this message into a generic [GenericMessage].
-     * @return the generic transformed element, null if unsupported
-     */
-    @Deprecated("use toGenericMessage")
-    fun toSentenceElement(): GenericMessage? = null
+    fun toGenericMessage(): GenericMessage? = null
 
     /**
      * Obfuscate the message - by default this method does nothing.

@@ -111,12 +111,6 @@ class MessengerConnector internal constructor(
         private fun getAllConnectors(): List<MessengerConnector> =
             connectorIdConnectorControllerMap.values.asSequence().map { it.connector }.filterIsInstance<MessengerConnector>().toList()
 
-        @Deprecated("use getConnectorById")
-        fun getConnectorByPageId(pageId: String): MessengerConnector? {
-            return getAllConnectors().find { it.pageId == pageId }
-                ?: (getAllConnectors().find { it.applicationId == pageId }?.also { logger.warn { "use appId as pageId $pageId not found" } })
-        }
-
         fun getConnectorById(connectorId: String): MessengerConnector? {
             return connectorIdConnectorControllerMap[connectorId]?.connector as? MessengerConnector
         }
@@ -225,7 +219,6 @@ class MessengerConnector internal constructor(
      * @param postMessage method (with token parameter) launched after successful [MessageRequest] call - default do nothing
      * @param transformActionRequest method to transform the [ActionRequest] before sending - default is identity
      */
-    @Deprecated("do not use directly MessengerConnector.sendEvent method anymore")
     fun sendEvent(
         event: Event,
         transformMessageRequest: (MessageRequest) -> MessageRequest = { it },
@@ -335,20 +328,6 @@ class MessengerConnector internal constructor(
      *
      * @param customEventRequest an object containing a list of custom events
      */
-    @Deprecated("To be removed in next release - app id is already known")
-    fun sendCustomEvent(applicationId: String, customEventRequest: CustomEventRequest) {
-        try {
-            client.sendCustomEvent(applicationId, customEventRequest)
-        } catch (e: Throwable) {
-            logger.error(e)
-        }
-    }
-
-    /**
-     * Send a custom event to messenger
-     *
-     * @param customEventRequest an object containing a list of custom events
-     */
     fun sendCustomEvent(customEventRequest: CustomEventRequest) {
         try {
             client.sendCustomEvent(applicationId, customEventRequest)
@@ -403,8 +382,7 @@ class MessengerConnector internal constructor(
      * @param event the event
      * @param transformActionRequest method to transform the [ActionRequest] before sending - default is identity
      */
-    @Deprecated("do not use directly MessengerConnector.sendSimpleEvent method anymore")
-    fun sendSimpleEvent(
+    private fun sendSimpleEvent(
         event: Event,
         transformActionRequest: (ActionRequest) -> ActionRequest = { it }
     ): SendResponse? =

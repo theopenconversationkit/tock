@@ -1,6 +1,5 @@
 package ai.tock.nlp.front.shared.config
 
-import ai.tock.nlp.core.PredefinedValue
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
@@ -35,8 +34,6 @@ internal class EntityTypeDefinition_Deserializer : JsonDeserializer<EntityTypeDe
             var _dictionary_set : Boolean = false
             var __id_: Id<EntityTypeDefinition>? = null
             var __id_set : Boolean = false
-            var _predefinedValues_: MutableList<PredefinedValue>? = null
-            var _predefinedValues_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -72,11 +69,6 @@ internal class EntityTypeDefinition_Deserializer : JsonDeserializer<EntityTypeDe
                              else p.readValueAs(__id__reference);
                             __id_set = true
                             }
-                    "predefinedValues" -> {
-                            _predefinedValues_ = if(_token_ == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(_predefinedValues__reference);
-                            _predefinedValues_set = true
-                            }
                     else -> {
                             if (_token_?.isStructStart == true)
                             p.skipChildren()
@@ -86,10 +78,9 @@ internal class EntityTypeDefinition_Deserializer : JsonDeserializer<EntityTypeDe
                 _token_ = currentToken
                         } 
             return if(_name_set && _description_set && _subEntities_set && _dictionary_set &&
-                    __id_set && _predefinedValues_set)
+                    __id_set)
                     EntityTypeDefinition(name = _name_!!, description = _description_!!, subEntities
-                            = _subEntities_!!, dictionary = _dictionary_!!, _id = __id_!!,
-                            predefinedValues = _predefinedValues_!!)
+                            = _subEntities_!!, dictionary = _dictionary_!!, _id = __id_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_name_set)
@@ -101,9 +92,7 @@ internal class EntityTypeDefinition_Deserializer : JsonDeserializer<EntityTypeDe
                     if(_dictionary_set)
                     map[parameters.getValue("dictionary")] = _dictionary_
                     if(__id_set)
-                    map[parameters.getValue("_id")] = __id_
-                    if(_predefinedValues_set)
-                    map[parameters.getValue("predefinedValues")] = _predefinedValues_ 
+                    map[parameters.getValue("_id")] = __id_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -119,16 +108,12 @@ internal class EntityTypeDefinition_Deserializer : JsonDeserializer<EntityTypeDe
                 "description" to primaryConstructor.findParameterByName("description")!!,
                 "subEntities" to primaryConstructor.findParameterByName("subEntities")!!,
                 "dictionary" to primaryConstructor.findParameterByName("dictionary")!!, "_id" to
-                primaryConstructor.findParameterByName("_id")!!, "predefinedValues" to
-                primaryConstructor.findParameterByName("predefinedValues")!!) }
+                primaryConstructor.findParameterByName("_id")!!) }
 
         private val _subEntities__reference: TypeReference<List<EntityDefinition>> = object :
                 TypeReference<List<EntityDefinition>>() {}
 
         private val __id__reference: TypeReference<Id<EntityTypeDefinition>> = object :
                 TypeReference<Id<EntityTypeDefinition>>() {}
-
-        private val _predefinedValues__reference: TypeReference<List<PredefinedValue>> = object :
-                TypeReference<List<PredefinedValue>>() {}
     }
 }

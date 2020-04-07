@@ -60,7 +60,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-private const val VERSION = "3.3"
+private const val VERSION = "5.0"
 
 /**
  * Messenger client.

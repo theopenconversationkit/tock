@@ -203,17 +203,10 @@ interface BotDefinition : I18nKeyProvider {
     val botDisabledStory: StoryDefinition?
 
     /**
-     * Is this intent disable the bot?
-     */
-    @Deprecated("use disableBot")
-    fun isBotDisabledIntent(intent: Intent?): Boolean =
-        intent != null && botDisabledStory?.isStarterIntent(intent) ?: false
-
-    /**
      * Does this action trigger bot deactivation ?
      */
     fun disableBot(timeline: UserTimeline, dialog: Dialog, action: Action): Boolean =
-        action.state.notification || isBotDisabledIntent(dialog.state.currentIntent)
+        action.state.notification || dialog.state.currentIntent?.let { botDisabledStory?.isStarterIntent(it) } ?: false
 
     /**
      * To manage reactivation.
@@ -221,23 +214,16 @@ interface BotDefinition : I18nKeyProvider {
     val botEnabledStory: StoryDefinition?
 
     /**
-     * Is this intent is reactivating the bot?
-     */
-    @Deprecated("use enableBot")
-    fun isBotEnabledIntent(intent: Intent?): Boolean =
-        intent != null && botEnabledStory?.isStarterIntent(intent) ?: false
-
-    /**
      * Does this action trigger bot activation ?
      */
     fun enableBot(timeline: UserTimeline, dialog: Dialog, action: Action): Boolean =
-        isBotEnabledIntent(dialog.state.currentIntent)
+        dialog.state.currentIntent?.let { botEnabledStory?.isStarterIntent(it) } ?: false
             // send choice can reactivate disabled bot (is the intent is not a disabled intent)
             ||
             (sendChoiceActivateBot
                 && action is SendChoice
                 && !action.state.notification
-                && !isBotDisabledIntent(dialog.state.currentIntent)
+                && !(dialog.state.currentIntent?.let { botDisabledStory?.isStarterIntent(it) } ?: false)
                 )
 
     /**

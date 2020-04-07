@@ -248,18 +248,6 @@ interface BotBus : Bus<BotBus> {
      * @param entity the entity definition
      * @param textContent the new entity text content
      */
-    @Deprecated("use changeEntityText instead")
-    fun changeEntityValue(entity: Entity, textContent: String) =
-        changeEntityValue(
-            entity.role,
-            EntityValue(entity, null, textContent)
-        )
-
-    /**
-     * Updates the current entity text value in the dialog.
-     * @param entity the entity definition
-     * @param textContent the new entity text content
-     */
     fun changeEntityText(entity: Entity, textContent: String?) =
         changeEntityValue(
             entity.role,

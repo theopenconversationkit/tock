@@ -28,9 +28,6 @@ import ai.tock.bot.connector.messenger.model.send.CallButton
 import ai.tock.bot.connector.messenger.model.send.Element
 import ai.tock.bot.connector.messenger.model.send.EmailQuickReply
 import ai.tock.bot.connector.messenger.model.send.GenericPayload
-import ai.tock.bot.connector.messenger.model.send.ListElementStyle
-import ai.tock.bot.connector.messenger.model.send.ListPayload
-import ai.tock.bot.connector.messenger.model.send.LocationQuickReply
 import ai.tock.bot.connector.messenger.model.send.LoginButton
 import ai.tock.bot.connector.messenger.model.send.LogoutButton
 import ai.tock.bot.connector.messenger.model.send.MediaElement
@@ -177,111 +174,6 @@ fun mediaTemplate(
                 ),
                 sharable
             )
-        ),
-        extractQuickReplies(actions)
-    )
-}
-
-/**
- * ListTemplate does not support list with exactly one element.
- * This function generates a generic template if there is one element,
- * or a classic list element if there is between 2 and 4.
- */
-@Deprecated("messenger lists are deprecated")
-fun flexibleListTemplate(
-    elements: List<Element>,
-    topElementStyle: ListElementStyle? = null,
-    vararg actions: UserAction
-): AttachmentMessage =
-    flexibleListTemplate(elements, topElementStyle, actions.toList())
-
-/**
- * ListTemplate does not support list with exactly one element.
- * This function generates a generic template if there is one element,
- * or a classic list element if there is between 2 and 4.
- */
-@Deprecated("messenger lists are deprecated")
-fun flexibleListTemplate(
-    elements: List<Element>,
-    topElementStyle: ListElementStyle? = null,
-    actions: List<UserAction> = emptyList()
-): AttachmentMessage {
-    return if (elements.size == 1) {
-        genericTemplate(elements, *actions.filterIsInstance(QuickReply::class.java).toTypedArray())
-    } else {
-        listTemplate(elements.take(4), topElementStyle, actions)
-    }
-}
-
-/**
- * Creates a [list template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
- */
-@Deprecated("messenger lists are deprecated")
-fun listTemplate(
-    e1: Element,
-    e2: Element,
-    e3: Element? = null,
-    e4: Element? = null,
-    topElementStyle: ListElementStyle? = null,
-    vararg actions: UserAction
-): AttachmentMessage =
-    listTemplate(e1, e2, e3, e4, topElementStyle, actions.toList())
-
-/**
- * Creates a [list template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
- */
-@Deprecated("messenger lists are deprecated")
-fun listTemplate(
-    e1: Element,
-    e2: Element,
-    e3: Element? = null,
-    e4: Element? = null,
-    topElementStyle: ListElementStyle? = null,
-    actions: List<UserAction> = emptyList()
-): AttachmentMessage {
-    return listTemplate(listOfNotNull(e1, e2, e3, e4), topElementStyle, actions)
-}
-
-/**
- * Creates a [list template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
- */
-@Deprecated("messenger lists are deprecated")
-fun listTemplate(
-    elements: List<Element>,
-    topElementStyle: ListElementStyle? = null,
-    vararg actions: UserAction
-): AttachmentMessage = listTemplate(elements, topElementStyle, actions.toList())
-
-/**
- * Creates a [list template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
- */
-@Deprecated("messenger lists are deprecated")
-fun listTemplate(
-    elements: List<Element>,
-    topElementStyle: ListElementStyle? = null,
-    actions: List<UserAction> = emptyList()
-): AttachmentMessage {
-    if (elements.size < 2 || elements.size > 4) {
-        error("must have at least 2 elements and at most 4")
-    }
-    if (topElementStyle != ListElementStyle.compact
-        && elements.any { it.imageUrl == null }
-    ) {
-        error("imageUrl of elements may not be null with large element style")
-    }
-
-    return AttachmentMessage(
-        Attachment(
-            AttachmentType.template,
-            ListPayload(
-                elements,
-                topElementStyle,
-                extractButtons(actions)
-                    .run {
-                        if (isEmpty()) null
-                        else if (size > 1) error("only one button max")
-                        else this
-                    })
         ),
         extractQuickReplies(actions)
     )
@@ -436,19 +328,6 @@ fun I18nTranslator.genericElement(
 }
 
 /**
- * Creates a [list element](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
- */
-@Deprecated("messenger lists are deprecated")
-fun I18nTranslator.listElement(
-    title: CharSequence,
-    subtitle: CharSequence? = null,
-    imageUrl: String? = null,
-    button: Button? = null
-): Element {
-    return genericElement(title, subtitle, imageUrl, listOfNotNull(button))
-}
-
-/**
  * Provides a [Log In Button](https://developers.facebook.com/docs/messenger-platform/reference/buttons/login).
  */
 fun loginButton(url: String): LoginButton = LoginButton(url)
@@ -457,12 +336,6 @@ fun loginButton(url: String): LoginButton = LoginButton(url)
  * Provides a [Log Out Button](https://developers.facebook.com/docs/messenger-platform/reference/buttons/logout).
  */
 fun logoutButton(): LogoutButton = LogoutButton()
-
-/**
- * Creates a [location quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies#location).
- */
-@Deprecated("location QR is deprecated")
-fun locationQuickReply(): QuickReply = LocationQuickReply()
 
 /**
  * This quick reply does not use any custom payload, but the [textToSend] will we parsed by the NLP engine.
@@ -617,50 +490,6 @@ fun emailQuickReply(): QuickReply = EmailQuickReply()
 
 /**
  * Creates a [postback button](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback).
- * from an [I18nTranslator].
- */
-@Deprecated("use notify method for standalone")
-fun I18nTranslator.standalonePostbackButton(
-    /**
-     * The title of the button.
-     */
-    title: CharSequence,
-    /**
-     * The target intent.
-     */
-    targetIntent: IntentAware,
-    /**
-     * The custom parameters.
-     */
-    parameters: Parameters = Parameters(),
-    /**
-     * The target step.
-     */
-    step: StoryStep<out StoryHandlerDefinition>? = null,
-    /**
-     * The current step of the Bus<T>.
-     */
-    busStep: StoryStep<out StoryHandlerDefinition>? = null,
-    /**
-     * The current intent of the Bus<T>.
-     */
-    currentIntent: Intent? = null,
-    /**
-     * The app id emitter
-     */
-    sourceAppId: String?
-): PostbackButton =
-    postbackButton(
-        title,
-        targetIntent,
-        step,
-        parameters.toMap()
-    ) { intent, s, params ->
-        SendChoice.encodeChoiceId(intent, s, params, busStep, currentIntent, sourceAppId = sourceAppId)
-    }
-
-/**
- * Creates a [postback button](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback).
  */
 fun <T : Bus<T>> T.postbackButton(
     title: CharSequence,
@@ -759,34 +588,6 @@ fun I18nTranslator.urlButton(title: CharSequence, url: String): UrlButton {
     }
     return UrlButton(url, t.toString())
 }
-
-/**
- * Used to generate a text only event,
- * usually sent later by [MessengerConnector.send] or [MessengerConnector.sendOptInEvent].
- */
-@Deprecated("use notify method for standalone")
-fun standaloneMessengerAnswer(
-    playerId: PlayerId,
-    applicationId: String,
-    recipientId: PlayerId,
-    text: String,
-    lastAnswer: Boolean = true,
-    /** Significance deals with the notification level. */
-    priority: ActionPriority = ActionPriority.normal,
-    /** tag deals with type of message notification. */
-    notificationType: ActionNotificationType? = null
-): SendSentence =
-    SendSentence(
-        playerId,
-        applicationId,
-        recipientId,
-        text,
-        metadata = ActionMetadata(
-            lastAnswer,
-            priority,
-            notificationType
-        )
-    )
 
 /**
  * Used to generate a [MessengerConnectorMessage] event,

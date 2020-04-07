@@ -129,7 +129,6 @@ internal object ConfigurationRepository {
                 entityType.subEntities.mapNotNull {
                     it.toEntity()
                 },
-                emptyList(),
                 entityType.dictionary
             )
         }

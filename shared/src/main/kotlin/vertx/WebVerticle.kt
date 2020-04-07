@@ -121,10 +121,7 @@ abstract class WebVerticle : AbstractVerticle() {
         authProvider()
     }
 
-    @Deprecated(message = "replace with protectedPaths method", replaceWith = ReplaceWith("protectedPaths"))
-    protected open fun protectedPath(): String = rootPath
-
-    protected open fun protectedPaths(): Set<String> = setOf(protectedPath())
+    protected open fun protectedPaths(): Set<String> = setOf(rootPath)
 
     abstract fun configure()
 

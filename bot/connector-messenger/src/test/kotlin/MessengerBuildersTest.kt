@@ -22,8 +22,6 @@ import ai.tock.bot.connector.messenger.model.send.AttachmentType.audio
 import ai.tock.bot.connector.messenger.model.send.AttachmentType.image
 import ai.tock.bot.connector.messenger.model.send.AttachmentType.video
 import ai.tock.bot.connector.messenger.model.send.ButtonPayload
-import ai.tock.bot.connector.messenger.model.send.ListElementStyle
-import ai.tock.bot.connector.messenger.model.send.ListPayload
 import ai.tock.bot.connector.messenger.model.send.UrlPayload
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.engine.BotBus
@@ -61,20 +59,6 @@ class MessengerBuildersTest {
         every { bus.userPreferences } returns UserPreferences()
         every { bus.translate(allAny()) } answers { firstArg() ?: "".raw }
         every { bus.translate(any<CharSequence>()) } answers { firstArg<CharSequence>().raw }
-    }
-
-    @Test
-    fun `listTemplate throws exception WHEN at least one element does not contain an image url AND list style is not compact`() {
-        assertThrows<IllegalStateException> {
-            listTemplate(bus.listElement("title"), bus.listElement("title2"))
-        }
-    }
-
-    @Test
-    fun `flexibleListTemplate does not throw exception and keep only first four items WHEN more than four items`() {
-        val elements = (1..5).map { bus.listElement("title$it") }
-        val template = flexibleListTemplate(elements, ListElementStyle.compact)
-        assertEquals(elements.subList(0, 4), (template.attachment.payload as ListPayload).elements)
     }
 
     @Test

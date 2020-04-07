@@ -19,9 +19,6 @@ package ai.tock.bot.engine.message
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 
-@Deprecated("now GenericMessage", replaceWith = ReplaceWith("GenericMessage", "ai.tock.bot.engine.message.GenericMessage"))
-typealias SentenceElement = GenericMessage
-
 /**
  * An aggregation of [Message]s used in [Sentence].
  * This is usually a "generic" view of [ConnectorMessage].
@@ -43,10 +40,12 @@ data class GenericMessage(
          * A [texts] parameter for title.
          */
         const val TITLE_PARAM = "title"
+
         /**
          * A [texts] parameter for subtitle.
          */
         const val SUBTITLE_PARAM = "subtitle"
+
         /**
          * A [texts] parameter for text content.
          */
