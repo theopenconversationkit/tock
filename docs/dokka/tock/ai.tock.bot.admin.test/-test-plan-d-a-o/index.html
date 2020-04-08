@@ -24,14 +24,14 @@
 <h4><a href="get-plan-executions.html">getPlanExecutions</a></h4>
 </td>
 <td>
-<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getPlanExecutions</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.admin.test.TestPlanDAO$getPlanExecutions(org.litote.kmongo.Id((ai.tock.bot.admin.test.TestPlan)))/testPlanId">testPlanId</span><span class="symbol">:</span>&nbsp;<span class="identifier">Id</span><span class="symbol">&lt;</span><a href="../-test-plan/index.html"><span class="identifier">TestPlan</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">List</span><span class="symbol">&lt;</span><a href="../-test-plan-execution/index.html"><span class="identifier">TestPlanExecution</span></a><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getPlanExecutions</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.admin.test.TestPlanDAO$getPlanExecutions(org.litote.kmongo.Id((ai.tock.bot.admin.test.TestPlan)))/testPlanId">testPlanId</span><span class="symbol">:</span>&nbsp;<span class="identifier">Id</span><span class="symbol">&lt;</span><a href="../-test-plan/index.html"><span class="identifier">TestPlan</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-test-plan-execution/index.html"><span class="identifier">TestPlanExecution</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
 <h4><a href="get-plans-by-application-id.html">getPlansByApplicationId</a></h4>
 </td>
 <td>
-<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getPlansByApplicationId</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.admin.test.TestPlanDAO$getPlansByApplicationId(kotlin.String)/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">List</span><span class="symbol">&lt;</span><a href="../-test-plan/index.html"><span class="identifier">TestPlan</span></a><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getPlansByApplicationId</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.admin.test.TestPlanDAO$getPlansByApplicationId(kotlin.String)/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-test-plan/index.html"><span class="identifier">TestPlan</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
@@ -52,7 +52,7 @@
 <h4><a href="get-test-plans.html">getTestPlans</a></h4>
 </td>
 <td>
-<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getTestPlans</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">List</span><span class="symbol">&lt;</span><a href="../-test-plan/index.html"><span class="identifier">TestPlan</span></a><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getTestPlans</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-test-plan/index.html"><span class="identifier">TestPlan</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
@@ -60,7 +60,7 @@
 </td>
 <td>
 <p>Remove the given test plan from the database.</p>
-<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">removeTestPlan</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.admin.test.TestPlanDAO$removeTestPlan(org.litote.kmongo.Id((ai.tock.bot.admin.test.TestPlan)))/planId">planId</span><span class="symbol">:</span>&nbsp;<span class="identifier">Id</span><span class="symbol">&lt;</span><a href="../-test-plan/index.html"><span class="identifier">TestPlan</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Unit</span></code></td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">removeTestPlan</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.admin.test.TestPlanDAO$removeTestPlan(org.litote.kmongo.Id((ai.tock.bot.admin.test.TestPlan)))/planId">planId</span><span class="symbol">:</span>&nbsp;<span class="identifier">Id</span><span class="symbol">&lt;</span><a href="../-test-plan/index.html"><span class="identifier">TestPlan</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -68,7 +68,7 @@
 </td>
 <td>
 <p>Save the given common test plan execution into the mongo database.</p>
-<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">saveTestExecution</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.admin.test.TestPlanDAO$saveTestExecution(ai.tock.bot.admin.test.TestPlanExecution)/testPlanExecution">testPlanExecution</span><span class="symbol">:</span>&nbsp;<a href="../-test-plan-execution/index.html"><span class="identifier">TestPlanExecution</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Unit</span></code></td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">saveTestExecution</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.admin.test.TestPlanDAO$saveTestExecution(ai.tock.bot.admin.test.TestPlanExecution)/testPlanExecution">testPlanExecution</span><span class="symbol">:</span>&nbsp;<a href="../-test-plan-execution/index.html"><span class="identifier">TestPlanExecution</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -76,7 +76,7 @@
 </td>
 <td>
 <p>Save the given common test plan into the mongo database.</p>
-<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">saveTestPlan</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.admin.test.TestPlanDAO$saveTestPlan(ai.tock.bot.admin.test.TestPlan)/testPlan">testPlan</span><span class="symbol">:</span>&nbsp;<a href="../-test-plan/index.html"><span class="identifier">TestPlan</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Unit</span></code></td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">saveTestPlan</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.admin.test.TestPlanDAO$saveTestPlan(ai.tock.bot.admin.test.TestPlan)/testPlan">testPlan</span><span class="symbol">:</span>&nbsp;<a href="../-test-plan/index.html"><span class="identifier">TestPlan</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
 </tr>
 </tbody>
 </table>

@@ -28,7 +28,7 @@
 <p>The custom answer for this step.
 When returning a null value,
 it means that the step is not able to answer to the current request.</p>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">answer</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<span class="identifier">Any</span><span class="symbol">?</span></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">answer</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>
@@ -48,7 +48,7 @@ Returned data is used in subsequent call of <a href="handler.html">handler</a> i
 <p>The custom handler for this step.
 When returning a null value,
 it means that the step is not able to answer to the current request.</p>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">handler</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span><span class="symbol">.</span><span class="symbol">(</span><span class="identifier">D</span><span class="symbol">?</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<span class="identifier">Any</span><span class="symbol">?</span></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">handler</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span><span class="symbol">.</span><span class="symbol">(</span><span class="identifier">D</span><span class="symbol">?</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>
@@ -58,7 +58,7 @@ it means that the step is not able to answer to the current request.</p>
 <p>Does this Step has to be selected from the Bus?
 This method is called if <a href="../-story-handler-base/check-preconditions.html">StoryHandlerBase.checkPreconditions</a> does not call <a href="../../ai.tock.bot.engine/-bot-bus/end.html">BotBus.end</a>.
 If this functions returns true, the step is selected and remaining steps are not tested.</p>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">selectFromBusAndData</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span><span class="symbol">.</span><span class="symbol">(</span><span class="identifier">TD</span><span class="symbol">?</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<span class="identifier">Boolean</span></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">selectFromBusAndData</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span><span class="symbol">.</span><span class="symbol">(</span><span class="identifier">TD</span><span class="symbol">?</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
 </tr>
 </tbody>
 </table>

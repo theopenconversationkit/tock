@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2019 e-voyageurs technologies
+ * Copyright (C) 2017/2020 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ import {AuthService} from "../../../core-nlp/auth/auth.service";
       <nb-layout-footer fixed *ngIf="auth.isLoggedIn()">
         <ngx-footer></ngx-footer>
       </nb-layout-footer>
-      
+
     </nb-layout>
   `,
 })

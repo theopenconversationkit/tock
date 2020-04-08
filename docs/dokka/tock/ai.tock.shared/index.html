@@ -73,7 +73,7 @@
 <h4><a href="-loader/index.html">Loader</a></h4>
 </td>
 <td>
-<p>Helper methods to deal with <a href="#">ServiceLoader</a>.</p>
+<p>Helper methods to deal with <a href="https://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html">ServiceLoader</a>.</p>
 <code><span class="keyword">object </span><span class="identifier">Loader</span></code></td>
 </tr>
 <tr>
@@ -184,16 +184,16 @@
 </td>
 <td>
 <p>The default app namespace.</p>
-<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_APP_NAMESPACE</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_APP_NAMESPACE</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
 </tr>
 <tr>
 <td>
 <h4><a href="default-locale.html">defaultLocale</a></h4>
 </td>
 <td>
-<p>The default Tock <a href="#">Locale</a>.
+<p>The default Tock <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html">Locale</a>.
 Use property "tock_default_locale" and default value "en".</p>
-<code><span class="keyword">val </span><span class="identifier">defaultLocale</span><span class="symbol">: </span><span class="identifier">Locale</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">defaultLocale</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html"><span class="identifier">Locale</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -201,15 +201,15 @@ Use property "tock_default_locale" and default value "en".</p>
 </td>
 <td>
 <p>The Tock app namespace.</p>
-<code><span class="keyword">val </span><span class="identifier">defaultNamespace</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">defaultNamespace</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
 </tr>
 <tr>
 <td>
 <h4><a href="default-zone-id.html">defaultZoneId</a></h4>
 </td>
 <td>
-<p>The default <a href="#">ZoneId</a> used by Tock.</p>
-<code><span class="keyword">val </span><span class="identifier">defaultZoneId</span><span class="symbol">: </span><span class="identifier">ZoneId</span></code></td>
+<p>The default <a href="https://docs.oracle.com/javase/8/docs/api/java/time/ZoneId.html">ZoneId</a> used by Tock.</p>
+<code><span class="keyword">val </span><span class="identifier">defaultZoneId</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/time/ZoneId.html"><span class="identifier">ZoneId</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -218,7 +218,7 @@ Use property "tock_default_locale" and default value "en".</p>
 <td>
 <p>Return true is the current environment is a dev environment.
 Use "tock_env" property to know the environment - if not set or if the value is "dev", this is a dev environment.</p>
-<code><span class="keyword">val </span><span class="identifier">devEnvironment</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">devEnvironment</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -235,7 +235,7 @@ Use "tock_env" property to know the environment - if not set or if the value is 
 <td>
 <p>The internal <a href="default-zone-id.html">defaultZoneId</a> for Tock - var only for tests.
 property "tock_default_zone" with default value UTC is used.</p>
-<code><span class="keyword">var </span><span class="identifier">internalDefaultZoneId</span><span class="symbol">: </span><span class="identifier">ZoneId</span></code></td>
+<code><span class="keyword">var </span><span class="identifier">internalDefaultZoneId</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/time/ZoneId.html"><span class="identifier">ZoneId</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -251,7 +251,7 @@ property "tock_default_zone" with default value UTC is used.</p>
 </td>
 <td>
 <p>The languages supported by Tock.</p>
-<code><span class="keyword">val </span><span class="identifier">supportedLanguages</span><span class="symbol">: </span><span class="identifier">Map</span><span class="symbol">&lt;</span><span class="identifier">String</span><span class="symbol">,</span>&nbsp;<span class="identifier">Locale</span><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">supportedLanguages</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html"><span class="identifier">Locale</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
@@ -259,7 +259,7 @@ property "tock_default_zone" with default value UTC is used.</p>
 </td>
 <td>
 <p>Tock bot database name property</p>
-<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">TOCK_BOT_DATABASE</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">TOCK_BOT_DATABASE</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -267,7 +267,7 @@ property "tock_default_zone" with default value UTC is used.</p>
 </td>
 <td>
 <p>Tock cache database name property</p>
-<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">TOCK_CACHE_DATABASE</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">TOCK_CACHE_DATABASE</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -275,7 +275,7 @@ property "tock_default_zone" with default value UTC is used.</p>
 </td>
 <td>
 <p>Tock front database name property</p>
-<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">TOCK_FRONT_DATABASE</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">TOCK_FRONT_DATABASE</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -283,7 +283,7 @@ property "tock_default_zone" with default value UTC is used.</p>
 </td>
 <td>
 <p>Tock model database name property</p>
-<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">TOCK_MODEL_DATABASE</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">TOCK_MODEL_DATABASE</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -291,7 +291,7 @@ property "tock_default_zone" with default value UTC is used.</p>
 </td>
 <td>
 <p>The Tock namespace.</p>
-<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">TOCK_NAMESPACE</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">TOCK_NAMESPACE</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -300,7 +300,7 @@ property "tock_default_zone" with default value UTC is used.</p>
 <td>
 <p>The internal app namespace - var only for tests.
 Use property "tock_default_namespace" and as default value <a href="-d-e-f-a-u-l-t_-a-p-p_-n-a-m-e-s-p-a-c-e.html">DEFAULT_APP_NAMESPACE</a>.</p>
-<code><span class="keyword">var </span><span class="identifier">tockAppDefaultNamespace</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
+<code><span class="keyword">var </span><span class="identifier">tockAppDefaultNamespace</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -321,7 +321,7 @@ Use property "tock_default_namespace" and as default value <a href="-d-e-f-a-u-l
 </td>
 <td>
 <p>Create a basic auth interceptor.</p>
-<code><span class="keyword">fun </span><span class="identifier">basicAuthInterceptor</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$basicAuthInterceptor(kotlin.String, kotlin.String)/login">login</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$basicAuthInterceptor(kotlin.String, kotlin.String)/password">password</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Interceptor</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">basicAuthInterceptor</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$basicAuthInterceptor(kotlin.String, kotlin.String)/login">login</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$basicAuthInterceptor(kotlin.String, kotlin.String)/password">password</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Interceptor</span></code></td>
 </tr>
 <tr>
 <td>
@@ -329,7 +329,7 @@ Use property "tock_default_namespace" and as default value <a href="-d-e-f-a-u-l
 </td>
 <td>
 <p>Encode basic credential header.</p>
-<code><span class="keyword">fun </span><span class="identifier">basicCredentialsHeader</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$basicCredentialsHeader(kotlin.String, kotlin.String)/login">login</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$basicCredentialsHeader(kotlin.String, kotlin.String)/password">password</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">basicCredentialsHeader</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$basicCredentialsHeader(kotlin.String, kotlin.String)/login">login</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$basicCredentialsHeader(kotlin.String, kotlin.String)/password">password</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -337,7 +337,7 @@ Use property "tock_default_namespace" and as default value <a href="-d-e-f-a-u-l
 </td>
 <td>
 <p>Return an env or system Boolean property.</p>
-<code><span class="keyword">fun </span><span class="identifier">booleanProperty</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$booleanProperty(kotlin.String, kotlin.Boolean)/name">name</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$booleanProperty(kotlin.String, kotlin.Boolean)/defaultValue">defaultValue</span><span class="symbol">:</span>&nbsp;<span class="identifier">Boolean</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">booleanProperty</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$booleanProperty(kotlin.String, kotlin.Boolean)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$booleanProperty(kotlin.String, kotlin.Boolean)/defaultValue">defaultValue</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -346,7 +346,7 @@ Use property "tock_default_namespace" and as default value <a href="-d-e-f-a-u-l
 <td>
 <p>Checks that the text has no more than 50000 chars.
 Else cuts the String.</p>
-<code><span class="keyword">fun </span><span class="identifier">checkMaxLengthAllowed</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$checkMaxLengthAllowed(kotlin.String)/text">text</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">checkMaxLengthAllowed</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$checkMaxLengthAllowed(kotlin.String)/text">text</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -354,7 +354,7 @@ Else cuts the String.</p>
 </td>
 <td>
 <p>Concat two strings and manage intermediate punctuation.</p>
-<code><span class="keyword">fun </span><span class="identifier">concat</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$concat(kotlin.String, kotlin.String)/s1">s1</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$concat(kotlin.String, kotlin.String)/s2">s2</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">concat</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$concat(kotlin.String, kotlin.String)/s1">s1</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$concat(kotlin.String, kotlin.String)/s2">s2</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -363,7 +363,7 @@ Else cuts the String.</p>
 <td>
 <p>Return the async database specified in the <a href="get-async-database.html#ai.tock.shared$getAsyncDatabase(kotlin.String)/databaseNameProperty">databaseNameProperty</a>.
 if the env or system property is not found, use the <a href="get-async-database.html#ai.tock.shared$getAsyncDatabase(kotlin.String)/databaseNameProperty">databaseNameProperty</a> as database name (remove "_mongo_db" string is present).</p>
-<code><span class="keyword">fun </span><span class="identifier">getAsyncDatabase</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$getAsyncDatabase(kotlin.String)/databaseNameProperty">databaseNameProperty</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">MongoDatabase</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">getAsyncDatabase</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$getAsyncDatabase(kotlin.String)/databaseNameProperty">databaseNameProperty</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">MongoDatabase</span></code></td>
 </tr>
 <tr>
 <td>
@@ -372,7 +372,7 @@ if the env or system property is not found, use the <a href="get-async-database.
 <td>
 <p>Return the sync database specified in the <a href="get-database.html#ai.tock.shared$getDatabase(kotlin.String)/databaseNameProperty">databaseNameProperty</a>.
 if the env or system property is not found, use the <a href="get-database.html#ai.tock.shared$getDatabase(kotlin.String)/databaseNameProperty">databaseNameProperty</a> as database name (remove "_mongo_db" string is present).</p>
-<code><span class="keyword">fun </span><span class="identifier">getDatabase</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$getDatabase(kotlin.String)/databaseNameProperty">databaseNameProperty</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">MongoDatabase</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">getDatabase</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$getDatabase(kotlin.String)/databaseNameProperty">databaseNameProperty</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">MongoDatabase</span></code></td>
 </tr>
 <tr>
 <td>
@@ -380,7 +380,7 @@ if the env or system property is not found, use the <a href="get-database.html#a
 </td>
 <td>
 <p>Return an env or system Int property.</p>
-<code><span class="keyword">fun </span><span class="identifier">intProperty</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$intProperty(kotlin.String, kotlin.Int)/name">name</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$intProperty(kotlin.String, kotlin.Int)/defaultValue">defaultValue</span><span class="symbol">:</span>&nbsp;<span class="identifier">Int</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Int</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">intProperty</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$intProperty(kotlin.String, kotlin.Int)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$intProperty(kotlin.String, kotlin.Int)/defaultValue">defaultValue</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -388,15 +388,15 @@ if the env or system property is not found, use the <a href="get-database.html#a
 </td>
 <td>
 <p>Return an env or system List property.</p>
-<code><span class="keyword">fun </span><span class="identifier">listProperty</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$listProperty(kotlin.String, kotlin.collections.List((kotlin.String)), kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$listProperty(kotlin.String, kotlin.collections.List((kotlin.String)), kotlin.String)/defaultValue">defaultValue</span><span class="symbol">:</span>&nbsp;<span class="identifier">List</span><span class="symbol">&lt;</span><span class="identifier">String</span><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$listProperty(kotlin.String, kotlin.collections.List((kotlin.String)), kotlin.String)/separator">separator</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span>&nbsp;<span class="symbol">=</span>&nbsp;","<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">List</span><span class="symbol">&lt;</span><span class="identifier">String</span><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">listProperty</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$listProperty(kotlin.String, kotlin.collections.List((kotlin.String)), kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$listProperty(kotlin.String, kotlin.collections.List((kotlin.String)), kotlin.String)/defaultValue">defaultValue</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$listProperty(kotlin.String, kotlin.collections.List((kotlin.String)), kotlin.String)/separator">separator</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;","<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
 <h4><a href="load-properties.html">loadProperties</a></h4>
 </td>
 <td>
-<p>Load a <a href="#">Properties</a> for classpath.</p>
-<code><span class="keyword">fun </span><span class="identifier">loadProperties</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$loadProperties(kotlin.String)/fileInClasspath">fileInClasspath</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Properties</span></code></td>
+<p>Load a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Properties.html">Properties</a> for classpath.</p>
+<code><span class="keyword">fun </span><span class="identifier">loadProperties</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$loadProperties(kotlin.String)/fileInClasspath">fileInClasspath</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Properties.html"><span class="identifier">Properties</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -404,7 +404,7 @@ if the env or system property is not found, use the <a href="get-database.html#a
 </td>
 <td>
 <p>Return an env or system Long property.</p>
-<code><span class="keyword">fun </span><span class="identifier">longProperty</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$longProperty(kotlin.String, kotlin.Long)/name">name</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$longProperty(kotlin.String, kotlin.Long)/defaultValue">defaultValue</span><span class="symbol">:</span>&nbsp;<span class="identifier">Long</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Long</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">longProperty</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$longProperty(kotlin.String, kotlin.Long)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$longProperty(kotlin.String, kotlin.Long)/defaultValue">defaultValue</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -412,7 +412,7 @@ if the env or system property is not found, use the <a href="get-database.html#a
 </td>
 <td>
 <p>Return an env or system Map of List property.</p>
-<code><span class="keyword">fun </span><span class="identifier">mapListProperty</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$mapListProperty(kotlin.String, kotlin.collections.Map((kotlin.String, kotlin.collections.List(()))), kotlin.String, kotlin.String, kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$mapListProperty(kotlin.String, kotlin.collections.Map((kotlin.String, kotlin.collections.List(()))), kotlin.String, kotlin.String, kotlin.String)/defaultValue">defaultValue</span><span class="symbol">:</span>&nbsp;<span class="identifier">Map</span><span class="symbol">&lt;</span><span class="identifier">String</span><span class="symbol">,</span>&nbsp;<span class="identifier">List</span><span class="symbol">&lt;</span><span class="identifier">String</span><span class="symbol">&gt;</span><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$mapListProperty(kotlin.String, kotlin.collections.Map((kotlin.String, kotlin.collections.List(()))), kotlin.String, kotlin.String, kotlin.String)/entrySeparator">entrySeparator</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span>&nbsp;<span class="symbol">=</span>&nbsp;"|"<span class="symbol">, </span><span class="identifier" id="ai.tock.shared$mapListProperty(kotlin.String, kotlin.collections.Map((kotlin.String, kotlin.collections.List(()))), kotlin.String, kotlin.String, kotlin.String)/keyValueSeparator">keyValueSeparator</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span>&nbsp;<span class="symbol">=</span>&nbsp;"="<span class="symbol">, </span><span class="identifier" id="ai.tock.shared$mapListProperty(kotlin.String, kotlin.collections.Map((kotlin.String, kotlin.collections.List(()))), kotlin.String, kotlin.String, kotlin.String)/listSeparator">listSeparator</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span>&nbsp;<span class="symbol">=</span>&nbsp;","<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Map</span><span class="symbol">&lt;</span><span class="identifier">String</span><span class="symbol">,</span>&nbsp;<span class="identifier">List</span><span class="symbol">&lt;</span><span class="identifier">String</span><span class="symbol">&gt;</span><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">mapListProperty</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$mapListProperty(kotlin.String, kotlin.collections.Map((kotlin.String, kotlin.collections.List(()))), kotlin.String, kotlin.String, kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$mapListProperty(kotlin.String, kotlin.collections.Map((kotlin.String, kotlin.collections.List(()))), kotlin.String, kotlin.String, kotlin.String)/defaultValue">defaultValue</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$mapListProperty(kotlin.String, kotlin.collections.Map((kotlin.String, kotlin.collections.List(()))), kotlin.String, kotlin.String, kotlin.String)/entrySeparator">entrySeparator</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;"|"<span class="symbol">, </span><span class="identifier" id="ai.tock.shared$mapListProperty(kotlin.String, kotlin.collections.Map((kotlin.String, kotlin.collections.List(()))), kotlin.String, kotlin.String, kotlin.String)/keyValueSeparator">keyValueSeparator</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;"="<span class="symbol">, </span><span class="identifier" id="ai.tock.shared$mapListProperty(kotlin.String, kotlin.collections.Map((kotlin.String, kotlin.collections.List(()))), kotlin.String, kotlin.String, kotlin.String)/listSeparator">listSeparator</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;","<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
@@ -420,7 +420,7 @@ if the env or system property is not found, use the <a href="get-database.html#a
 </td>
 <td>
 <p>Return a map with only not null values.</p>
-<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">K</span><span class="symbol">, </span><span class="identifier">V</span><span class="symbol">&gt;</span> <span class="identifier">mapNotNullValues</span><span class="symbol">(</span><span class="keyword">vararg</span> <span class="identifier" id="ai.tock.shared$mapNotNullValues(kotlin.Array((kotlin.Pair((ai.tock.shared.mapNotNullValues.K, ai.tock.shared.mapNotNullValues.V)))))/pairs">pairs</span><span class="symbol">:</span>&nbsp;<span class="identifier">Pair</span><span class="symbol">&lt;</span><span class="identifier">K</span><span class="symbol">,</span>&nbsp;<span class="identifier">V</span><span class="symbol">?</span><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Map</span><span class="symbol">&lt;</span><span class="identifier">K</span><span class="symbol">,</span>&nbsp;<span class="identifier">V</span><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">K</span><span class="symbol">, </span><span class="identifier">V</span><span class="symbol">&gt;</span> <span class="identifier">mapNotNullValues</span><span class="symbol">(</span><span class="keyword">vararg</span> <span class="identifier" id="ai.tock.shared$mapNotNullValues(kotlin.Array((kotlin.Pair((ai.tock.shared.mapNotNullValues.K, ai.tock.shared.mapNotNullValues.V)))))/pairs">pairs</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-pair/index.html"><span class="identifier">Pair</span></a><span class="symbol">&lt;</span><span class="identifier">K</span><span class="symbol">,</span>&nbsp;<span class="identifier">V</span><span class="symbol">?</span><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><span class="identifier">K</span><span class="symbol">,</span>&nbsp;<span class="identifier">V</span><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
@@ -428,14 +428,14 @@ if the env or system property is not found, use the <a href="get-database.html#a
 </td>
 <td>
 <p>Return an env or system Map property.</p>
-<code><span class="keyword">fun </span><span class="identifier">mapProperty</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$mapProperty(kotlin.String, kotlin.collections.Map((kotlin.String, )), kotlin.String, kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$mapProperty(kotlin.String, kotlin.collections.Map((kotlin.String, )), kotlin.String, kotlin.String)/defaultValue">defaultValue</span><span class="symbol">:</span>&nbsp;<span class="identifier">Map</span><span class="symbol">&lt;</span><span class="identifier">String</span><span class="symbol">,</span>&nbsp;<span class="identifier">String</span><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$mapProperty(kotlin.String, kotlin.collections.Map((kotlin.String, )), kotlin.String, kotlin.String)/entrySeparator">entrySeparator</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span>&nbsp;<span class="symbol">=</span>&nbsp;"|"<span class="symbol">, </span><span class="identifier" id="ai.tock.shared$mapProperty(kotlin.String, kotlin.collections.Map((kotlin.String, )), kotlin.String, kotlin.String)/keyValueSeparator">keyValueSeparator</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span>&nbsp;<span class="symbol">=</span>&nbsp;"="<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Map</span><span class="symbol">&lt;</span><span class="identifier">String</span><span class="symbol">,</span>&nbsp;<span class="identifier">String</span><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">mapProperty</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$mapProperty(kotlin.String, kotlin.collections.Map((kotlin.String, )), kotlin.String, kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$mapProperty(kotlin.String, kotlin.collections.Map((kotlin.String, )), kotlin.String, kotlin.String)/defaultValue">defaultValue</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$mapProperty(kotlin.String, kotlin.collections.Map((kotlin.String, )), kotlin.String, kotlin.String)/entrySeparator">entrySeparator</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;"|"<span class="symbol">, </span><span class="identifier" id="ai.tock.shared$mapProperty(kotlin.String, kotlin.collections.Map((kotlin.String, )), kotlin.String, kotlin.String)/keyValueSeparator">keyValueSeparator</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;"="<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
 <h4><a href="ping-mongo-database.html">pingMongoDatabase</a></h4>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">pingMongoDatabase</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$pingMongoDatabase(kotlin.String)/databaseName">databaseName</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">pingMongoDatabase</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$pingMongoDatabase(kotlin.String)/databaseName">databaseName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -443,7 +443,7 @@ if the env or system property is not found, use the <a href="get-database.html#a
 </td>
 <td>
 <p>Return an env or system String property.</p>
-<code><span class="keyword">fun </span><span class="identifier">property</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$property(kotlin.String, kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$property(kotlin.String, kotlin.String)/defaultValue">defaultValue</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">property</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$property(kotlin.String, kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$property(kotlin.String, kotlin.String)/defaultValue">defaultValue</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -451,7 +451,7 @@ if the env or system property is not found, use the <a href="get-database.html#a
 </td>
 <td>
 <p>Is this env or system property exists?</p>
-<code><span class="keyword">fun </span><span class="identifier">propertyExists</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$propertyExists(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">propertyExists</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$propertyExists(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -459,15 +459,15 @@ if the env or system property is not found, use the <a href="get-database.html#a
 </td>
 <td>
 <p>Get a resource url from the classpath.</p>
-<code><span class="keyword">fun </span><span class="identifier">resource</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$resource(kotlin.String)/path">path</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">URL</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">resource</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$resource(kotlin.String)/path">path</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/net/URL.html"><span class="identifier">URL</span></a></code></td>
 </tr>
 <tr>
 <td>
 <h4><a href="resource-as-stream.html">resourceAsStream</a></h4>
 </td>
 <td>
-<p>Get a resource <a href="#">InputStream</a> from the classpath.</p>
-<code><span class="keyword">fun </span><span class="identifier">resourceAsStream</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$resourceAsStream(kotlin.String)/path">path</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">InputStream</span></code></td>
+<p>Get a resource <a href="https://docs.oracle.com/javase/8/docs/api/java/io/InputStream.html">InputStream</a> from the classpath.</p>
+<code><span class="keyword">fun </span><span class="identifier">resourceAsStream</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$resourceAsStream(kotlin.String)/path">path</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/io/InputStream.html"><span class="identifier">InputStream</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -475,7 +475,7 @@ if the env or system property is not found, use the <a href="get-database.html#a
 </td>
 <td>
 <p>Get a text content of a resource from the classpath.</p>
-<code><span class="keyword">fun </span><span class="identifier">resourceAsString</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$resourceAsString(kotlin.String)/path">path</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">resourceAsString</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$resourceAsString(kotlin.String)/path">path</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -483,7 +483,7 @@ if the env or system property is not found, use the <a href="get-database.html#a
 </td>
 <td>
 <p>Init a <a href="#">Retrofit.Builder</a> with specified timeout, logger and interceptors.</p>
-<code><span class="keyword">fun </span><span class="identifier">retrofitBuilderWithTimeoutAndLogger</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$retrofitBuilderWithTimeoutAndLogger(kotlin.Long, mu.KLogger, ai.tock.shared.Level, kotlin.collections.List((okhttp3.Interceptor)), kotlin.Boolean, kotlin.Boolean, java.net.Proxy)/ms">ms</span><span class="symbol">:</span>&nbsp;<span class="identifier">Long</span><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$retrofitBuilderWithTimeoutAndLogger(kotlin.Long, mu.KLogger, ai.tock.shared.Level, kotlin.collections.List((okhttp3.Interceptor)), kotlin.Boolean, kotlin.Boolean, java.net.Proxy)/logger">logger</span><span class="symbol">:</span>&nbsp;<span class="identifier">KLogger</span>&nbsp;<span class="symbol">=</span>&nbsp;KotlinLogging.logger {}<span class="symbol">, </span><span class="identifier" id="ai.tock.shared$retrofitBuilderWithTimeoutAndLogger(kotlin.Long, mu.KLogger, ai.tock.shared.Level, kotlin.collections.List((okhttp3.Interceptor)), kotlin.Boolean, kotlin.Boolean, java.net.Proxy)/level">level</span><span class="symbol">:</span>&nbsp;<a href="-level/index.html"><span class="identifier">Level</span></a>&nbsp;<span class="symbol">=</span>&nbsp;Level.BODY<span class="symbol">, </span><span class="identifier" id="ai.tock.shared$retrofitBuilderWithTimeoutAndLogger(kotlin.Long, mu.KLogger, ai.tock.shared.Level, kotlin.collections.List((okhttp3.Interceptor)), kotlin.Boolean, kotlin.Boolean, java.net.Proxy)/interceptors">interceptors</span><span class="symbol">:</span>&nbsp;<span class="identifier">List</span><span class="symbol">&lt;</span><span class="identifier">Interceptor</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;emptyList()<span class="symbol">, </span><span class="identifier" id="ai.tock.shared$retrofitBuilderWithTimeoutAndLogger(kotlin.Long, mu.KLogger, ai.tock.shared.Level, kotlin.collections.List((okhttp3.Interceptor)), kotlin.Boolean, kotlin.Boolean, java.net.Proxy)/requestGZipEncoding">requestGZipEncoding</span><span class="symbol">:</span>&nbsp;<span class="identifier">Boolean</span>&nbsp;<span class="symbol">=</span>&nbsp;false<span class="symbol">, </span><span class="identifier" id="ai.tock.shared$retrofitBuilderWithTimeoutAndLogger(kotlin.Long, mu.KLogger, ai.tock.shared.Level, kotlin.collections.List((okhttp3.Interceptor)), kotlin.Boolean, kotlin.Boolean, java.net.Proxy)/circuitBreaker">circuitBreaker</span><span class="symbol">:</span>&nbsp;<span class="identifier">Boolean</span>&nbsp;<span class="symbol">=</span>&nbsp;false<span class="symbol">, </span><span class="identifier" id="ai.tock.shared$retrofitBuilderWithTimeoutAndLogger(kotlin.Long, mu.KLogger, ai.tock.shared.Level, kotlin.collections.List((okhttp3.Interceptor)), kotlin.Boolean, kotlin.Boolean, java.net.Proxy)/proxy">proxy</span><span class="symbol">:</span>&nbsp;<span class="identifier">Proxy</span><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Builder</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">retrofitBuilderWithTimeoutAndLogger</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$retrofitBuilderWithTimeoutAndLogger(kotlin.Long, mu.KLogger, ai.tock.shared.Level, kotlin.collections.List((okhttp3.Interceptor)), kotlin.Boolean, kotlin.Boolean, java.net.Proxy)/ms">ms</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.shared$retrofitBuilderWithTimeoutAndLogger(kotlin.Long, mu.KLogger, ai.tock.shared.Level, kotlin.collections.List((okhttp3.Interceptor)), kotlin.Boolean, kotlin.Boolean, java.net.Proxy)/logger">logger</span><span class="symbol">:</span>&nbsp;<span class="identifier">KLogger</span>&nbsp;<span class="symbol">=</span>&nbsp;KotlinLogging.logger {}<span class="symbol">, </span><span class="identifier" id="ai.tock.shared$retrofitBuilderWithTimeoutAndLogger(kotlin.Long, mu.KLogger, ai.tock.shared.Level, kotlin.collections.List((okhttp3.Interceptor)), kotlin.Boolean, kotlin.Boolean, java.net.Proxy)/level">level</span><span class="symbol">:</span>&nbsp;<a href="-level/index.html"><span class="identifier">Level</span></a>&nbsp;<span class="symbol">=</span>&nbsp;Level.BODY<span class="symbol">, </span><span class="identifier" id="ai.tock.shared$retrofitBuilderWithTimeoutAndLogger(kotlin.Long, mu.KLogger, ai.tock.shared.Level, kotlin.collections.List((okhttp3.Interceptor)), kotlin.Boolean, kotlin.Boolean, java.net.Proxy)/interceptors">interceptors</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><span class="identifier">Interceptor</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;emptyList()<span class="symbol">, </span><span class="identifier" id="ai.tock.shared$retrofitBuilderWithTimeoutAndLogger(kotlin.Long, mu.KLogger, ai.tock.shared.Level, kotlin.collections.List((okhttp3.Interceptor)), kotlin.Boolean, kotlin.Boolean, java.net.Proxy)/requestGZipEncoding">requestGZipEncoding</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a>&nbsp;<span class="symbol">=</span>&nbsp;false<span class="symbol">, </span><span class="identifier" id="ai.tock.shared$retrofitBuilderWithTimeoutAndLogger(kotlin.Long, mu.KLogger, ai.tock.shared.Level, kotlin.collections.List((okhttp3.Interceptor)), kotlin.Boolean, kotlin.Boolean, java.net.Proxy)/circuitBreaker">circuitBreaker</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a>&nbsp;<span class="symbol">=</span>&nbsp;false<span class="symbol">, </span><span class="identifier" id="ai.tock.shared$retrofitBuilderWithTimeoutAndLogger(kotlin.Long, mu.KLogger, ai.tock.shared.Level, kotlin.collections.List((okhttp3.Interceptor)), kotlin.Boolean, kotlin.Boolean, java.net.Proxy)/proxy">proxy</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/net/Proxy.html"><span class="identifier">Proxy</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Builder</span></code></td>
 </tr>
 <tr>
 <td>
@@ -491,7 +491,7 @@ if the env or system property is not found, use the <a href="get-database.html#a
 </td>
 <td>
 <p>Create a token authentication interceptor.</p>
-<code><span class="keyword">fun </span><span class="identifier">tokenAuthenticationInterceptor</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$tokenAuthenticationInterceptor(kotlin.String)/token">token</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Interceptor</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">tokenAuthenticationInterceptor</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared$tokenAuthenticationInterceptor(kotlin.String)/token">token</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Interceptor</span></code></td>
 </tr>
 <tr>
 <td>
@@ -499,7 +499,7 @@ if the env or system property is not found, use the <a href="get-database.html#a
 </td>
 <td>
 <p>Best attempt to guess local ip.</p>
-<code><span class="keyword">fun </span><span class="identifier">tryToFindLocalIp</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">tryToFindLocalIp</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
 </tr>
 </tbody>
 </table>

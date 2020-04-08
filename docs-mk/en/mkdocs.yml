@@ -36,7 +36,7 @@ markdown_extensions:
   - codehilite
   - toc:
       permalink: true
-copyright: 'Copyright &copy; 2017/2019 Tock'
+copyright: 'Copyright &copy; 2017/2020 Tock'
 extra:
   social:
     - type: 'github'

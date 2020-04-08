@@ -24,7 +24,7 @@ but instead extend <a href="../-simple-story-handler-base/index.html">SimpleStor
 </td>
 <td>
 <p>An unique identifier for a given bot.</p>
-<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">id</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">id</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -32,7 +32,7 @@ but instead extend <a href="../-simple-story-handler-base/index.html">SimpleStor
 </td>
 <td>
 <p>The complete list of intents supported by the story.</p>
-<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">intents</span><span class="symbol">: </span><span class="identifier">Set</span><span class="symbol">&lt;</span><a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">intents</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
@@ -41,7 +41,7 @@ but instead extend <a href="../-simple-story-handler-base/index.html">SimpleStor
 <td>
 <p>One or more intents that start the story.
 Usually, you don't have the same starter intent in two different story definition.</p>
-<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">starterIntents</span><span class="symbol">: </span><span class="identifier">Set</span><span class="symbol">&lt;</span><a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">starterIntents</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
@@ -49,7 +49,7 @@ Usually, you don't have the same starter intent in two different story definitio
 </td>
 <td>
 <p>The root steps of the story.</p>
-<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">steps</span><span class="symbol">: </span><span class="identifier">Set</span><span class="symbol">&lt;</span><a href="../-story-step/index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><span class="identifier">*</span><span class="symbol">&gt;</span><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">steps</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="../-story-step/index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><span class="identifier">*</span><span class="symbol">&gt;</span><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
@@ -65,7 +65,7 @@ Usually, you don't have the same starter intent in two different story definitio
 </td>
 <td>
 <p>When this story does not support all <a href="#">UserInterfaceType</a>s.</p>
-<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">unsupportedUserInterfaces</span><span class="symbol">: </span><span class="identifier">Set</span><span class="symbol">&lt;</span><span class="identifier">UserInterfaceType</span><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">unsupportedUserInterfaces</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><span class="identifier">UserInterfaceType</span><span class="symbol">&gt;</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -74,11 +74,18 @@ Usually, you don't have the same starter intent in two different story definitio
 <tbody>
 <tr>
 <td>
+<h4><a href="all-steps.html">allSteps</a></h4>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">allSteps</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="../-story-step/index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><span class="identifier">*</span><span class="symbol">&gt;</span><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
 <h4><a href="is-starter-intent.html">isStarterIntent</a></h4>
 </td>
 <td>
 <p>Is the specified intent is a starter intent?</p>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">isStarterIntent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryDefinition$isStarterIntent(ai.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">isStarterIntent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryDefinition$isStarterIntent(ai.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -94,7 +101,7 @@ Usually, you don't have the same starter intent in two different story definitio
 </td>
 <td>
 <p>Is the specified intent is supported by this story?</p>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">supportIntent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryDefinition$supportIntent(ai.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">supportIntent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryDefinition$supportIntent(ai.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
 </tr>
 <tr>
 <td>

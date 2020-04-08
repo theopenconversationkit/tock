@@ -28,7 +28,15 @@ Used to manage workflow in a <a href="../-story-handler/index.html">StoryHandler
 </td>
 <td>
 <p>The optional children of the step.</p>
-<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">children</span><span class="symbol">: </span><span class="identifier">Set</span><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">children</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="entity-step-selection.html">entityStepSelection</a></h4>
+</td>
+<td>
+<p>If not null, entity has to be set in the current action to trigger the step.</p>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">entityStepSelection</span><span class="symbol">: </span><a href="../-entity-step-selection/index.html"><span class="identifier">EntityStepSelection</span></a><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>
@@ -46,7 +54,7 @@ this step will be automatically selected to be the current step.</p>
 </td>
 <td>
 <p>The name of the step. usually automatically defined by the enum field.</p>
-<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">name</span><span class="symbol">: </span><span class="identifier">String</span></code></td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">name</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -54,7 +62,7 @@ this step will be automatically selected to be the current step.</p>
 </td>
 <td>
 <p>Same behaviour than <a href="intent.html">intent</a> in the rare case when the step handle more than one intent.</p>
-<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">otherStarterIntents</span><span class="symbol">: </span><span class="identifier">Set</span><span class="symbol">&lt;</span><a href="../-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">otherStarterIntents</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="../-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
@@ -63,7 +71,7 @@ this step will be automatically selected to be the current step.</p>
 <td>
 <p>The secondary intents of this step. If detected and if the current step is this step,
 the current step remains this step.</p>
-<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">secondaryIntents</span><span class="symbol">: </span><span class="identifier">Set</span><span class="symbol">&lt;</span><a href="../-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">secondaryIntents</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="../-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -78,16 +86,16 @@ the current step remains this step.</p>
 <p>The custom answer for this step.
 When returning a null value,
 it means that the step is not able to answer to the current request.</p>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">answer</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<span class="identifier">Any</span><span class="symbol">?</span></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">answer</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>
 <h4><a href="select-from-action.html">selectFromAction</a></h4>
 </td>
 <td>
-<p>Does this Step has to be automatically selected before <a href="../../ai.tock.bot.engine/-bot-bus/index.html">BotBus</a> creation?
+<p>Does this Step has to be automatically selected?
 if returns true, the step is selected.</p>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">selectFromAction</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryStep$selectFromAction(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.engine.action.Action, ai.tock.bot.definition.Intent)/userTimeline">userTimeline</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.user/-user-timeline/index.html"><span class="identifier">UserTimeline</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.StoryStep$selectFromAction(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.engine.action.Action, ai.tock.bot.definition.Intent)/dialog">dialog</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.dialog/-dialog/index.html"><span class="identifier">Dialog</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.StoryStep$selectFromAction(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.engine.action.Action, ai.tock.bot.definition.Intent)/action">action</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.StoryStep$selectFromAction(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.engine.action.Action, ai.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">selectFromAction</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryStep$selectFromAction(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.engine.action.Action, ai.tock.bot.definition.Intent)/userTimeline">userTimeline</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.user/-user-timeline/index.html"><span class="identifier">UserTimeline</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.StoryStep$selectFromAction(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.engine.action.Action, ai.tock.bot.definition.Intent)/dialog">dialog</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.dialog/-dialog/index.html"><span class="identifier">Dialog</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.StoryStep$selectFromAction(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.engine.action.Action, ai.tock.bot.definition.Intent)/action">action</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.StoryStep$selectFromAction(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.engine.action.Action, ai.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -97,7 +105,16 @@ if returns true, the step is selected.</p>
 <p>Does this Step has to be selected from the Bus?
 This method is called if <a href="../-story-handler-base/check-preconditions.html">StoryHandlerBase.checkPreconditions</a> does not call <a href="../../ai.tock.bot.engine/-bot-bus/end.html">BotBus.end</a>.
 If this functions returns true, the step is selected and remaining steps are not tested.</p>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">selectFromBus</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<span class="identifier">Boolean</span></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">selectFromBus</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="select-from-entity-step-selection.html">selectFromEntityStepSelection</a></h4>
+</td>
+<td>
+<p>Does this step hast to be selected from its <a href="entity-step-selection.html">entityStepSelection</a>?
+Returns null if there is no <a href="entity-step-selection.html">entityStepSelection</a>.</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">selectFromEntityStepSelection</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryStep$selectFromEntityStepSelection(ai.tock.bot.engine.action.Action, ai.tock.bot.definition.Intent)/action">action</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.StoryStep$selectFromEntityStepSelection(ai.tock.bot.engine.action.Action, ai.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>
@@ -105,7 +122,7 @@ If this functions returns true, the step is selected and remaining steps are not
 </td>
 <td>
 <p>Does this step support this intent?</p>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">supportIntent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryStep$supportIntent(ai.tock.bot.definition.Intent)/i">i</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">supportIntent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryStep$supportIntent(ai.tock.bot.definition.Intent)/i">i</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -113,7 +130,7 @@ If this functions returns true, the step is selected and remaining steps are not
 </td>
 <td>
 <p>Does this step support this intent as starter intent?</p>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">supportStarterIntent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryStep$supportStarterIntent(ai.tock.bot.definition.Intent)/i">i</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">supportStarterIntent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryStep$supportStarterIntent(ai.tock.bot.definition.Intent)/i">i</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
 </tr>
 </tbody>
 </table>

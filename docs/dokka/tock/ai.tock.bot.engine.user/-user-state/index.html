@@ -19,7 +19,7 @@
 </td>
 <td>
 <p>The user state.</p>
-<code><span class="identifier">UserState</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.engine.user.UserState$<init>(java.time.Instant, kotlin.collections.MutableMap((kotlin.String, ai.tock.bot.engine.user.TimeBoxedFlag)))/creationDate">creationDate</span><span class="symbol">:</span>&nbsp;<span class="identifier">Instant</span>&nbsp;<span class="symbol">=</span>&nbsp;now()<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.engine.user.UserState$<init>(java.time.Instant, kotlin.collections.MutableMap((kotlin.String, ai.tock.bot.engine.user.TimeBoxedFlag)))/flags">flags</span><span class="symbol">:</span>&nbsp;<span class="identifier">MutableMap</span><span class="symbol">&lt;</span><span class="identifier">String</span><span class="symbol">,</span>&nbsp;<a href="../-time-boxed-flag/index.html"><span class="identifier">TimeBoxedFlag</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;mutableMapOf()<span class="symbol">)</span></code></td>
+<code><span class="identifier">UserState</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.engine.user.UserState$<init>(java.time.Instant, kotlin.collections.MutableMap((kotlin.String, ai.tock.bot.engine.user.TimeBoxedFlag)))/creationDate">creationDate</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html"><span class="identifier">Instant</span></a>&nbsp;<span class="symbol">=</span>&nbsp;now()<span class="symbol">, </span><span class="identifier" id="ai.tock.bot.engine.user.UserState$<init>(java.time.Instant, kotlin.collections.MutableMap((kotlin.String, ai.tock.bot.engine.user.TimeBoxedFlag)))/flags">flags</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html"><span class="identifier">MutableMap</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="../-time-boxed-flag/index.html"><span class="identifier">TimeBoxedFlag</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;mutableMapOf()<span class="symbol">)</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -31,7 +31,7 @@
 <h4><a href="bot-disabled.html">botDisabled</a></h4>
 </td>
 <td>
-<code><span class="keyword">var </span><span class="identifier">botDisabled</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
+<code><span class="keyword">var </span><span class="identifier">botDisabled</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -39,7 +39,7 @@
 </td>
 <td>
 <p>The user creation date.</p>
-<code><span class="keyword">val </span><span class="identifier">creationDate</span><span class="symbol">: </span><span class="identifier">Instant</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">creationDate</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html"><span class="identifier">Instant</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -47,14 +47,14 @@
 </td>
 <td>
 <p>The flag for this user - useful to store basic information about this user.</p>
-<code><span class="keyword">val </span><span class="identifier">flags</span><span class="symbol">: </span><span class="identifier">MutableMap</span><span class="symbol">&lt;</span><span class="identifier">String</span><span class="symbol">,</span>&nbsp;<a href="../-time-boxed-flag/index.html"><span class="identifier">TimeBoxedFlag</span></a><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">flags</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html"><span class="identifier">MutableMap</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="../-time-boxed-flag/index.html"><span class="identifier">TimeBoxedFlag</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
 <h4><a href="profile-loaded.html">profileLoaded</a></h4>
 </td>
 <td>
-<code><span class="keyword">var </span><span class="identifier">profileLoaded</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
+<code><span class="keyword">var </span><span class="identifier">profileLoaded</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
 </tr>
 </tbody>
 </table>
@@ -67,43 +67,43 @@
 </td>
 <td>
 <p>Cleanup the state.</p>
-<code><span class="keyword">fun </span><span class="identifier">cleanup</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Unit</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">cleanup</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
 </tr>
 <tr>
 <td>
 <h4><a href="get-flag.html">getFlag</a></h4>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">getFlag</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.engine.user.UserState$getFlag(kotlin.String)/flag">flag</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">String</span><span class="symbol">?</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">getFlag</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.engine.user.UserState$getFlag(kotlin.String)/flag">flag</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>
 <h4><a href="has-flag.html">hasFlag</a></h4>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">hasFlag</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.engine.user.UserState$hasFlag(kotlin.String)/flag">flag</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Boolean</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">hasFlag</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.engine.user.UserState$hasFlag(kotlin.String)/flag">flag</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
 </tr>
 <tr>
 <td>
 <h4><a href="remove-flag.html">removeFlag</a></h4>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">removeFlag</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.engine.user.UserState$removeFlag(kotlin.String)/flag">flag</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Unit</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">removeFlag</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.engine.user.UserState$removeFlag(kotlin.String)/flag">flag</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
 </tr>
 <tr>
 <td>
 <h4><a href="set-flag.html">setFlag</a></h4>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">setFlag</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.engine.user.UserState$setFlag(kotlin.String, kotlin.Long, kotlin.String)/flag">flag</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.engine.user.UserState$setFlag(kotlin.String, kotlin.Long, kotlin.String)/timeoutInMinutes">timeoutInMinutes</span><span class="symbol">:</span>&nbsp;<span class="identifier">Long</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.engine.user.UserState$setFlag(kotlin.String, kotlin.Long, kotlin.String)/value">value</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Unit</span></code><br/>
-<code><span class="keyword">fun </span><span class="identifier">setFlag</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.engine.user.UserState$setFlag(kotlin.String, java.time.Duration, kotlin.String)/flag">flag</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.engine.user.UserState$setFlag(kotlin.String, java.time.Duration, kotlin.String)/timeoutDuration">timeoutDuration</span><span class="symbol">:</span>&nbsp;<span class="identifier">Duration</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.engine.user.UserState$setFlag(kotlin.String, java.time.Duration, kotlin.String)/value">value</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Unit</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">setFlag</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.engine.user.UserState$setFlag(kotlin.String, kotlin.Long, kotlin.String)/flag">flag</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.engine.user.UserState$setFlag(kotlin.String, kotlin.Long, kotlin.String)/timeoutInMinutes">timeoutInMinutes</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.engine.user.UserState$setFlag(kotlin.String, kotlin.Long, kotlin.String)/value">value</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code><br/>
+<code><span class="keyword">fun </span><span class="identifier">setFlag</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.engine.user.UserState$setFlag(kotlin.String, java.time.Duration, kotlin.String)/flag">flag</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.engine.user.UserState$setFlag(kotlin.String, java.time.Duration, kotlin.String)/timeoutDuration">timeoutDuration</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html"><span class="identifier">Duration</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.engine.user.UserState$setFlag(kotlin.String, java.time.Duration, kotlin.String)/value">value</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
 </tr>
 <tr>
 <td>
 <h4><a href="set-unlimited-flag.html">setUnlimitedFlag</a></h4>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">setUnlimitedFlag</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.engine.user.UserState$setUnlimitedFlag(kotlin.String, kotlin.String)/flag">flag</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.engine.user.UserState$setUnlimitedFlag(kotlin.String, kotlin.String)/value">value</span><span class="symbol">:</span>&nbsp;<span class="identifier">String</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Unit</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">setUnlimitedFlag</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.engine.user.UserState$setUnlimitedFlag(kotlin.String, kotlin.String)/flag">flag</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.engine.user.UserState$setUnlimitedFlag(kotlin.String, kotlin.String)/value">value</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
 </tr>
 </tbody>
 </table>

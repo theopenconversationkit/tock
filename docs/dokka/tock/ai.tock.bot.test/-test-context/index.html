@@ -32,7 +32,7 @@
 </td>
 <td>
 <p>The bot answer interceptors to apply.</p>
-<code><span class="keyword">val </span><span class="identifier">botAnswerInterceptors</span><span class="symbol">: </span><span class="identifier">MutableList</span><span class="symbol">&lt;</span><a href="../../ai.tock.bot.definition/-bot-answer-interceptor/index.html"><span class="identifier">BotAnswerInterceptor</span></a><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">botAnswerInterceptors</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="../../ai.tock.bot.definition/-bot-answer-interceptor/index.html"><span class="identifier">BotAnswerInterceptor</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
@@ -144,7 +144,7 @@
 </td>
 <td>
 <p>The story handler listeners to apply.</p>
-<code><span class="keyword">val </span><span class="identifier">storyHandlerListeners</span><span class="symbol">: </span><span class="identifier">MutableList</span><span class="symbol">&lt;</span><a href="../../ai.tock.bot.definition/-story-handler-listener/index.html"><span class="identifier">StoryHandlerListener</span></a><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">storyHandlerListeners</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="../../ai.tock.bot.definition/-story-handler-listener/index.html"><span class="identifier">StoryHandlerListener</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
@@ -188,8 +188,8 @@
 <h4><a href="default-locale.html">defaultLocale</a></h4>
 </td>
 <td>
-<p>Default <a href="#">Locale</a> if none is provided.</p>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">defaultLocale</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Locale</span></code></td>
+<p>Default <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html">Locale</a> if none is provided.</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">defaultLocale</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html"><span class="identifier">Locale</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -213,7 +213,7 @@
 </td>
 <td>
 <p>Default mocked Tock Ioc.</p>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">importModule</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Builder</span><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<span class="identifier">Unit</span></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">importModule</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Builder</span><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -221,8 +221,8 @@
 </td>
 <td>
 <p>Creates a new mock.</p>
-<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Any</span><span class="symbol">&gt;</span> <span class="identifier">newMock</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code><br/>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Any</span><span class="symbol">&gt;</span> <span class="identifier">newMock</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.test.TestContext$newMock(kotlin.reflect.KClass((ai.tock.bot.test.TestContext.newMock.T)))/kClass">kClass</span><span class="symbol">:</span>&nbsp;<span class="identifier">KClass</span><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code></td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span> <span class="identifier">newMock</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span> <span class="identifier">newMock</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.test.TestContext$newMock(kotlin.reflect.KClass((ai.tock.bot.test.TestContext.newMock.T)))/kClass">kClass</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html"><span class="identifier">KClass</span></a><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code></td>
 </tr>
 </tbody>
 </table>
