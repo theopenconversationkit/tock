@@ -19,7 +19,9 @@ package ai.tock.bot.connector.web.send
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.message.Choice
 import ai.tock.shared.mapNotNullValues
+import com.fasterxml.jackson.annotation.JsonTypeName
 
+@JsonTypeName("postback_button")
 data class PostbackButton(val title: String, val payload: String?) : Button(ButtonType.postback) {
 
     override fun toChoice(): Choice =

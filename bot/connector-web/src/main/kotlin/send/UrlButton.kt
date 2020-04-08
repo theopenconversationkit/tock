@@ -21,7 +21,9 @@ import ai.tock.bot.engine.action.SendChoice.Companion.TITLE_PARAMETER
 import ai.tock.bot.engine.action.SendChoice.Companion.URL_PARAMETER
 import ai.tock.bot.engine.message.Choice
 import ai.tock.shared.mapNotNullValues
+import com.fasterxml.jackson.annotation.JsonTypeName
 
+@JsonTypeName("url_button")
 data class UrlButton(val title: String, val url: String) : Button(ButtonType.web_url) {
 
     override fun toChoice(): Choice =

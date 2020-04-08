@@ -25,6 +25,8 @@ import ai.tock.bot.connector.media.MediaCard
 import ai.tock.bot.connector.media.MediaCarousel
 import ai.tock.bot.connector.media.MediaFile
 import ai.tock.bot.connector.media.MediaMessage
+import ai.tock.bot.connector.web.channel.ChannelMongoDAO
+import ai.tock.bot.connector.web.channel.Channels
 import ai.tock.bot.connector.web.send.UrlButton
 import ai.tock.bot.connector.web.send.WebCard
 import ai.tock.bot.connector.web.send.WebCarousel
@@ -36,9 +38,12 @@ import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.shared.Executor
+import ai.tock.shared.booleanProperty
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.provide
+import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.vertx.core.http.HttpMethod
 import io.vertx.ext.web.RoutingContext
@@ -46,10 +51,13 @@ import io.vertx.ext.web.handler.CorsHandler
 import mu.KotlinLogging
 
 internal const val WEB_CONNECTOR_ID = "web"
+
 /**
  * The web (REST) connector type.
  */
 val webConnectorType = ConnectorType(WEB_CONNECTOR_ID)
+
+private val sseEnabled = booleanProperty("tock_web_sse", false)
 
 class WebConnector internal constructor(
     val applicationId: String,
@@ -62,7 +70,17 @@ class WebConnector internal constructor(
 
     private val executor: Executor get() = injector.provide()
 
+    private val channels = Channels(ChannelMongoDAO)
+
+    private val webMapper = mapper.copy().registerModule(
+        SimpleModule().apply {
+            //fallback for serializing CharSequence
+            addSerializer(CharSequence::class.java, ToStringSerializer())
+        }
+    )
+
     override fun register(controller: ConnectorController) {
+
         controller.registerServices(path) { router ->
             logger.debug("deploy web connector services for root path $path ")
 
@@ -70,10 +88,35 @@ class WebConnector internal constructor(
                 .handler(
                     CorsHandler.create("*")
                         .allowedMethod(HttpMethod.POST)
+                        .run {
+                            if (sseEnabled) allowedMethod(HttpMethod.GET) else this
+                        }
                         .allowedHeader("Access-Control-Allow-Origin")
                         .allowedHeader("Content-Type")
                         .allowedHeader("X-Requested-With")
                 )
+            if (sseEnabled) {
+                router.route(path + "/sse")
+                    .handler { context ->
+                        try {
+                            val userId = context.queryParams()["userId"]
+                            val response = context.response()
+                            response.isChunked = true
+                            response.headers().add("Content-Type", "text/event-stream;charset=UTF-8")
+                            response.headers().add("Connection", "keep-alive")
+                            response.headers().add("Cache-Control", "no-cache")
+                            val channelId = channels.register(userId) { webConnectorResponse ->
+                                response.write("event: message\n")
+                                response.write("data: ${webMapper.writeValueAsString(webConnectorResponse)}\n\n")
+                            }
+                            response.closeHandler {
+                                channels.unregister(channelId)
+                            }
+                        } catch (t: Throwable) {
+                            context.fail(t)
+                        }
+                    }
+            }
             router.post(path)
                 .handler { context ->
                     try {
@@ -96,7 +139,7 @@ class WebConnector internal constructor(
         try {
             logger.debug { "Web request input : $body" }
             val request: WebConnectorRequest = mapper.readValue(body)
-            val callback = WebConnectorCallback(applicationId, request.locale, context)
+            val callback = WebConnectorCallback(applicationId = applicationId, locale = request.locale, context = context, webMapper = webMapper)
             controller.handle(request.toEvent(applicationId), ConnectorData(callback))
         } catch (t: Throwable) {
             BotRepository.requestTimer.throwable(t, timerData)
@@ -110,6 +153,7 @@ class WebConnector internal constructor(
         val c = callback as? WebConnectorCallback
         c?.addAction(event)
         if (event is Action) {
+            channels.send(event)
             if (event.metadata.lastAnswer) {
                 c?.sendResponse()
             }
@@ -141,7 +185,7 @@ class WebConnector internal constructor(
                     WebMessage(card = WebCard(
                         title = message.title,
                         subTitle = message.subTitle,
-                        file = message.file?.url?.let{MediaFile(message.file?.url as String, message.file?.name as String)},
+                        file = message.file?.url?.let { MediaFile(message.file?.url as String, message.file?.name as String) },
                         buttons = message.actions.map { UrlButton(it.title.toString(), it.url.toString()) }
                     ))
                 }
@@ -150,7 +194,7 @@ class WebConnector internal constructor(
                         WebCard(
                             title = mediaCard.title,
                             subTitle = mediaCard.subTitle,
-                            file = mediaCard.file?.url?.let{MediaFile(mediaCard.file?.url as String, mediaCard.file?.name as String)},
+                            file = mediaCard.file?.url?.let { MediaFile(mediaCard.file?.url as String, mediaCard.file?.name as String) },
                             buttons = mediaCard.actions.map { button -> UrlButton(button.title.toString(), button.url.toString()) }
                         )
                     }))

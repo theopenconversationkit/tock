@@ -16,13 +16,11 @@
 
 package ai.tock.bot.connector.web
 
-import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 import ai.tock.bot.connector.ConnectorCallbackBase
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
-import ai.tock.shared.jackson.mapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import java.util.Locale
@@ -32,16 +30,11 @@ internal class WebConnectorCallback(
     applicationId: String,
     val locale: Locale,
     private val context: RoutingContext,
-    private val actions: MutableList<Action> = CopyOnWriteArrayList()
+    private val actions: MutableList<Action> = CopyOnWriteArrayList(),
+    private val webMapper: ObjectMapper
 ) : ConnectorCallbackBase(applicationId, webConnectorType) {
 
     private val logger = KotlinLogging.logger {}
-    private val webMapper = mapper.copy().registerModule(
-        SimpleModule().apply {
-            //fallback for serializing CharSequence
-            addSerializer(CharSequence::class.java, ToStringSerializer())
-        }
-    )
 
     fun addAction(event: Event) {
         if (event is Action) {
