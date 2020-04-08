@@ -1,17 +1,22 @@
-- 20.3.0 March 2020
-    - AB test engine workflow 
-    
 - 20.3.1 April 2020    
-    - AB test engine workflow 
+    - Bux fixes
+    - Obfuscation built-in mechanism 
     
 - 20.3.2 May 2020
-    - Spacy, Rasa & Spark NLP support
-    - Code editor admin interface      
+    - AB test engine workflow
+    - Spacy, Rasa & Spark NLP support (external nlp support)
     
 - 20.3.3 June 2020
+    - Code editor admin interface      
+    
+- 20.9.0 September 2020
     - Conversational framework: support for other languages than Kotlin (multi-platform Kotlin)    
     
 ## Latest releases  
+
+- 20.3.0 March 2020
+    - Story builder: selection by entity
+    - Web Connector: enhancements and sse support
 
 - 19.9.4 March 2020   
     - Story builder enhancements & bug fixes
