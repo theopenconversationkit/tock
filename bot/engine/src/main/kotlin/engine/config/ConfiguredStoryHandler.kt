@@ -81,14 +81,21 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
         }
 
         (bus.step as? Step)?.configuration
-            ?.takeUnless { it.targetIntent == null && !it.hasCurrentAnwser() }
             ?.also { step ->
                 step.send(bus)
+                val targetIntent = step.targetIntent?.name
+                    ?: (bus.intent.takeIf { !step.hasCurrentAnwser() }?.wrappedIntent()?.name)
                 bus.botDefinition
-                    .findStoryDefinition(step.targetIntent?.name, bus.applicationId)
-                    .takeUnless { it == bus.botDefinition.unknownStory }
-                    ?.apply { bus.switchConfiguredStory(this) }
-                return@handle
+                    .takeIf { targetIntent != null }
+                    ?.findStoryDefinition(targetIntent, bus.applicationId)
+                    ?.takeUnless { it == bus.botDefinition.unknownStory }
+                    ?.apply {
+                        bus.switchConfiguredStory(this)
+                        return@handle
+                    }
+                if (step.hasCurrentAnwser()) {
+                    return@handle
+                }
             }
 
         configuration.send(bus)

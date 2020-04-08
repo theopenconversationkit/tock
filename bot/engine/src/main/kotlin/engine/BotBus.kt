@@ -415,6 +415,7 @@ interface BotBus : Bus<BotBus> {
      */
     fun switchStory(storyDefinition: StoryDefinition, starterIntent: Intent = storyDefinition.mainIntent()) {
         story = Story(storyDefinition, starterIntent, story.step)
+        story.computeCurrentStep(userTimeline, dialog, action, intent?.wrappedIntent())
         dialog.state.currentIntent = starterIntent
         setBusContextValue(SWITCH_STORY_BUS_KEY, true)
     }
