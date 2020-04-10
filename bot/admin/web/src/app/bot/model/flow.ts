@@ -15,6 +15,7 @@
  */
 
 import {ApplicationScopedQuery} from "../../model/commons";
+import {AnswerConfigurationType} from "./story";
 
 export class DialogFlowRequest extends ApplicationScopedQuery {
 
@@ -56,6 +57,8 @@ export class DialogFlowStateData {
     public intent: string,
     public entities: string[],
     public step?: string,
+    public storyType?: AnswerConfigurationType,
+    public storyName?: string,
     public count?: number,
     public _id ?: string
   ) {
@@ -63,7 +66,9 @@ export class DialogFlowStateData {
 
   static fromJSON(json: any): DialogFlowStateData {
     const value = Object.create(DialogFlowStateData.prototype);
-    const result = Object.assign(value, json, {});
+    const result = Object.assign(value, json, {
+      storyType: AnswerConfigurationType[json.storyType]
+    });
     return result;
   }
 

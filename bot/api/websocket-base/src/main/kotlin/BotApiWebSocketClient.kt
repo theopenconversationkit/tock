@@ -152,7 +152,7 @@ fun start(
                 ?.closeHandler {
                     logger.info("Closed, restarting in 1s");
                     restart(client, 1);
-                } ?: restart(client, 10).apply { logger.warn { "web socket server not found - retry in 10s" } }
+                } ?: restart(client, 10).apply { logger.warn { "websocket server not found or unknown key - retry in 10s" } }
         } catch (e: Exception) {
             logger.error(e)
         }

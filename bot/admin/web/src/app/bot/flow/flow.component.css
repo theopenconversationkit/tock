@@ -30,6 +30,10 @@ tock-cytoscape {
   margin-left: 10px;
 }
 
+.select-story {
+  min-width: 200px;
+}
+
 .checkbox {
   margin-left: 10px;
 }
@@ -72,4 +76,44 @@ tock-cytoscape {
 .story-btn {
   float: right;
   margin-top: 10px;
+}
+
+.story-type {
+  margin-right: 10px;
+  font-size: 18px;
+}
+
+.statsMode-badge {
+  width: 100px;
+  text-align: center;
+  margin-right: 0.5em;
+  border-radius: 25px;
+  padding: 8px;
+  margin-left: 10px;
+  font-size: small;
+}
+
+.statsMode-true {
+  background-color: #00d68f;
+}
+
+.statsMode-false {
+  background-color: lightblue;
+}
+
+.flow-option-group {
+  margin: 0;
+}
+
+.flow-option-group-name {
+  font-style: italic;
+  display: inline-block;
+  min-width: 150px;
+}
+
+.flow-stat {
+  font-size: small;
+  font-style: italic;
+  display: inline-block;
+  padding: 0 20px;
 }

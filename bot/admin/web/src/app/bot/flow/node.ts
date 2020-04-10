@@ -15,41 +15,48 @@
  */
 
 import {DialogFlowStateData, DialogFlowStateTransitionData, DialogFlowStateTransitionType} from "../model/flow";
+import {AnswerConfigurationType} from "../model/story";
 
 export class StoryNode {
 
   public dynamic: boolean;
-  public count: number;
 
   constructor(
+    public index: number,
+    public _id: string,
     public storyDefinitionId: string,
     public states: DialogFlowStateData[],
-    public id: number,
     public entities: string[],
     public intent?: string,
-    public step?: string
+    public step?: string,
+    public storyType?: AnswerConfigurationType,
+    public storyName?: string,
   ) {
     this.dynamic = storyDefinitionId.match(/^[0-9a-fA-F]{24}$/) != null;
-    this.count = this.states.reduce((sum, s) => sum + s.count, 0);
+  }
+
+  get count(): number {
+    return this.states ? this.states.reduce((sum, s) => sum + s.count, 0) : 0;
   }
 
   displayCount(): string {
-    if (this.count < 1000) {
-      return this.count.toString();
-    } else if (this.count < 100000) {
-      return Math.floor(this.count / 1000) + "k";
-    } if (this.count < 1000000) {
-      return "."+ Math.floor(this.count / 100000) + "m";
+    let count = this.count;
+    if (count < 1000) {
+      return count.toString();
+    } else if (count < 100000) {
+      return Math.floor(count / 1000) + "k";
+    } if (count < 1000000) {
+      return "."+ Math.floor(count / 100000) + "m";
     } else {
-      return Math.floor(this.count / 1000000) + "m"
+      return Math.floor(count / 1000000) + "m"
     }
   }
 
   displayName(): string {
-    const sId = this.storyDefinitionId;
+    const sId = this.storyName;
     const i = this.states[0].intent ? this.states[0].intent : this.intent;
     return sId === 'tock_unknown_story' ? 'unknown' :
-      ((sId && i && sId.match(/^[0-9a-fA-F]{24}$/)) ? i : sId);
+      (sId && i && sId);
   }
 
   nodeName(): string {
@@ -60,18 +67,30 @@ export class StoryNode {
       + (this.step ? "*" + this.step : "")
   }
 
+  isSimpleAnswer(): boolean {
+    return this.storyType === AnswerConfigurationType.simple;
+  }
+
+  isScriptAnswer(): boolean {
+    return this.storyType === AnswerConfigurationType.script;
+  }
+
+  isBuiltIn(): boolean {
+    return this.storyType === AnswerConfigurationType.builtin;
+  }
 }
 
 export class NodeTransition {
-
-  public count: number;
 
   constructor(
     public transitions: DialogFlowStateTransitionData[],
     public previousId: number,
     public nextId: number,
     public type: DialogFlowStateTransitionType
-  ) {
-    this.count = this.transitions.reduce((sum, s) => sum + s.count, 0);
+  ) { }
+
+  get count(): number {
+    return this.transitions ? this.transitions.reduce((sum, s) => sum + s.count, 0) : 0;
   }
+
 }

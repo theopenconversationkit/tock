@@ -1,5 +1,6 @@
 package ai.tock.bot.mongo
 
+import ai.tock.bot.admin.answer.AnswerConfigurationType
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
@@ -37,6 +38,10 @@ internal class DialogFlowStateCol_Deserializer : JsonDeserializer<DialogFlowStat
             var _entities_set : Boolean = false
             var __id_: Id<DialogFlowStateCol>? = null
             var __id_set : Boolean = false
+            var _storyType_: AnswerConfigurationType? = null
+            var _storyType_set : Boolean = false
+            var _storyName_: String? = null
+            var _storyName_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -82,6 +87,16 @@ internal class DialogFlowStateCol_Deserializer : JsonDeserializer<DialogFlowStat
                              else p.readValueAs(__id__reference);
                             __id_set = true
                             }
+                    "storyType" -> {
+                            _storyType_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(AnswerConfigurationType::class.java);
+                            _storyType_set = true
+                            }
+                    "storyName" -> {
+                            _storyName_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _storyName_set = true
+                            }
                     else -> {
                             if (_token_?.isStructStart == true)
                             p.skipChildren()
@@ -91,10 +106,11 @@ internal class DialogFlowStateCol_Deserializer : JsonDeserializer<DialogFlowStat
                 _token_ = currentToken
                         } 
             return if(_namespace_set && _botId_set && _storyDefinitionId_set && _intent_set &&
-                    _step_set && _entities_set && __id_set)
+                    _step_set && _entities_set && __id_set && _storyType_set && _storyName_set)
                     DialogFlowStateCol(namespace = _namespace_!!, botId = _botId_!!,
                             storyDefinitionId = _storyDefinitionId_!!, intent = _intent_!!, step =
-                            _step_, entities = _entities_!!, _id = __id_!!)
+                            _step_, entities = _entities_!!, _id = __id_!!, storyType = _storyType_,
+                            storyName = _storyName_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_namespace_set)
@@ -110,7 +126,11 @@ internal class DialogFlowStateCol_Deserializer : JsonDeserializer<DialogFlowStat
                     if(_entities_set)
                     map[parameters.getValue("entities")] = _entities_
                     if(__id_set)
-                    map[parameters.getValue("_id")] = __id_ 
+                    map[parameters.getValue("_id")] = __id_
+                    if(_storyType_set)
+                    map[parameters.getValue("storyType")] = _storyType_
+                    if(_storyName_set)
+                    map[parameters.getValue("storyName")] = _storyName_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -129,7 +149,9 @@ internal class DialogFlowStateCol_Deserializer : JsonDeserializer<DialogFlowStat
                 primaryConstructor.findParameterByName("intent")!!, "step" to
                 primaryConstructor.findParameterByName("step")!!, "entities" to
                 primaryConstructor.findParameterByName("entities")!!, "_id" to
-                primaryConstructor.findParameterByName("_id")!!) }
+                primaryConstructor.findParameterByName("_id")!!, "storyType" to
+                primaryConstructor.findParameterByName("storyType")!!, "storyName" to
+                primaryConstructor.findParameterByName("storyName")!!) }
 
         private val _entities__reference: TypeReference<Set<String>> = object :
                 TypeReference<Set<String>>() {}

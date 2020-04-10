@@ -38,7 +38,12 @@
             <mat-icon *ngIf="feature.story.isScriptAnswer()" class="story-type">code</mat-icon>
             <span class="story-label">{{feature.story.name}}</span>
           </nb-select-label>
-          <nb-option *ngFor="let s of stories" [value]="s" class="story-label">{{s.name}}</nb-option>
+          <nb-option *ngFor="let s of stories" [value]="s" class="story-label">
+            <mat-icon *ngIf="s.isBuiltIn()" class="story-type">build</mat-icon>
+            <mat-icon *ngIf="s.isSimpleAnswer()" class="story-type">message</mat-icon>
+            <mat-icon *ngIf="s.isScriptAnswer()" class="story-type">code</mat-icon>
+            {{s.name}}
+          </nb-option>
         </nb-select>
         <nb-select outline status="primary" placeholder="Story Redirection" [(selected)]="feature.switchToStoryId"
                    class="story new" nbTooltip="Story Redirection" (selectedChange)="onSwitchStoryChange()">
@@ -49,7 +54,12 @@
             <span class="story-label">{{feature.switchToStory.name}}</span>
           </nb-select-label>
           <nb-option>No Redirection</nb-option>
-          <nb-option *ngFor="let s of stories" [value]="s.storyId" class="story-label">{{s.name}}</nb-option>
+          <nb-option *ngFor="let s of stories" [value]="s.storyId" class="story-label">
+            <mat-icon *ngIf="s.isBuiltIn()" class="story-type">build</mat-icon>
+            <mat-icon *ngIf="s.isSimpleAnswer()" class="story-type">message</mat-icon>
+            <mat-icon *ngIf="s.isScriptAnswer()" class="story-type">code</mat-icon>
+            <span class="story-label">{{s.name}}</span>
+          </nb-option>
         </nb-select>
         <nb-toggle class="new-toggle" status="primary" [checked]="feature.enabled"
                    (checkedChange)="toggleNew($event)"
@@ -59,7 +69,12 @@
 
     <div *ngIf="!create" class="features-table">
       <div *ngFor="let f of features" class="feature">
-        <div class="category cell" nbTooltip="Story">{{f.story.name}}</div>
+        <div class="category cell" nbTooltip="Story">
+          <mat-icon *ngIf="f.story.isBuiltIn()" class="story-type">build</mat-icon>
+          <mat-icon *ngIf="f.story.isSimpleAnswer()" class="story-type">message</mat-icon>
+          <mat-icon *ngIf="f.story.isScriptAnswer()" class="story-type">code</mat-icon>
+          {{f.story.name}}
+        </div>
         <div class="category cell" *ngIf="f.conf">
           <img src="{{f.conf.connectorType.iconUrl()}}"
                class="connector"

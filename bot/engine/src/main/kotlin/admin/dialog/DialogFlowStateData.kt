@@ -16,6 +16,7 @@
 
 package ai.tock.bot.admin.dialog
 
+import ai.tock.bot.admin.answer.AnswerConfigurationType
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 
@@ -24,6 +25,8 @@ data class DialogFlowStateData(
         val intent: String,
         val step: String?,
         val entities: Set<String>,
+        val storyType: AnswerConfigurationType?,
+        val storyName: String = intent,
         val count:Long = 0,
         val _id: Id<DialogFlowStateData> = newId()
 )

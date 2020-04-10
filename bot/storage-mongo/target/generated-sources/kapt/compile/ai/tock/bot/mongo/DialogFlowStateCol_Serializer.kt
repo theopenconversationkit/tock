@@ -48,6 +48,14 @@ internal class DialogFlowStateCol_Serializer :
         gen.writeFieldName("_id")
         val __id_ = value._id
         serializers.defaultSerializeValue(__id_, gen)
+        gen.writeFieldName("storyType")
+        val _storyType_ = value.storyType
+        if(_storyType_ == null) { gen.writeNull() } else {
+                serializers.defaultSerializeValue(_storyType_, gen)
+                }
+        gen.writeFieldName("storyName")
+        val _storyName_ = value.storyName
+        gen.writeString(_storyName_)
         gen.writeEndObject()
     }
 }

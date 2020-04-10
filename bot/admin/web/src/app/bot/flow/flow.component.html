@@ -15,54 +15,128 @@
   -->
 
 <nb-accordion class="flow">
-  <nb-accordion-item>
+  <nb-accordion-item #accordion>
     <nb-accordion-item-header>
-        Bot Flow    -    Layout options
-        <mat-slide-toggle
-          class="mode-selection"
-          color="primary"
-          (click)="$event.stopPropagation();changeMode()">
-          Stats
-        </mat-slide-toggle>
+      Bot Flow
+      <span *ngIf="statsMode" class="status status-header statsMode-badge statsMode-true" matTooltip="Dynamic mode (user flow)">Dynamic</span>
+      <span *ngIf="!statsMode" class="status status-header statsMode-badge statsMode-false" matTooltip="Static mode (available stories)">Static</span>
+      <mat-icon *ngIf="accordion.collapsed" matTooltip="Show options">expand_more</mat-icon>
+      <mat-icon *ngIf="!accordion.collapsed" matTooltip="Hide options">expand_less</mat-icon>
     </nb-accordion-item-header>
     <nb-accordion-item-body>
-      <tock-select-bot [(configurationId)]="botConfigurationId"
-                       [allowNoConfigurationSelection]="true"
-                       (selectionChange)="displayFlow($event)" class="select">
-      </tock-select-bot>
-      <span class="select">
-        <nb-select [(ngModel)]="selectedStoryId" (selectedChange)="update()"
-                placeholder="Story Focus" status="primary">
-          <nb-option [value]="undefined">All</nb-option>
-          <nb-option *ngFor="let s of stories | keyvalue: valueAscOrder" [value]="s.key">{{s.value}}</nb-option>
-        </nb-select>
-      </span>
-      <span *ngIf="selectedStoryId" class="select">
-        <nb-select placeholder="Direction" status="primary" [(ngModel)]="direction" (selectedChange)="update()">
-          <nb-option [value]="undefined">Both</nb-option>
-          <nb-option [value]="-1">Outcoming</nb-option>
-          <nb-option [value]="1">Incoming</nb-option>
-        </nb-select>
-      </span>
-      <br/>
-      <span class="select">
-        <nb-select [(ngModel)]="selectedLayout" (selectedChange)="changeLayout()"
-        placeholder="Layout" status="primary" style="width: 10rem;">
-          <nb-option *ngFor="let l of layouts" [value]="l.name">{{l.name}}</nb-option>
-        </nb-select>
-      </span>
-      <span *ngIf="statsMode">
-      <nb-checkbox [(ngModel)]="recursive" (change)="update()" class="checkbox">Display Recursive</nb-checkbox>
-      <nb-checkbox [(ngModel)]="entity" (change)="update()" class="checkbox">Entity</nb-checkbox>
-      <nb-checkbox [(ngModel)]="step" (change)="update()" class="checkbox">Step</nb-checkbox>
-      <nb-checkbox [(ngModel)]="intent" (change)="update()" class="checkbox">Intent</nb-checkbox>
-      / Node Weight:
-      <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalNodeCount" [max]="maxNodeCount"
-                  (change)="updateCount()"></mat-slider>
-      </span>
-      Transition Percentage:
-      <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalTransitionPercentage"
-                  (change)="updateCount()"></mat-slider>
+
+      <div class="flow-option-group">
+        <span class="flow-option-group-name">Switch Mode:</span>
+        <mat-slide-toggle
+          [(ngModel)]="statsMode"
+          class="mode-selection"
+          color="primary"
+          (change)="changeMode()">
+            <span *ngIf="statsMode">effective user flow (dynamic)</span>
+            <span *ngIf="!statsMode">available stories (static)</span>
+        </mat-slide-toggle>
+      </div>
+
+      <br />
+
+      <div class="flow-option-group">
+        <span class="flow-option-group-name">Scope:</span>
+        <tock-select-bot [(configurationId)]="botConfigurationId"
+                         [allowNoConfigurationSelection]="true"
+                         (selectionChange)="displayFlow($event)" class="select">
+        </tock-select-bot>
+        <span class="select">
+          <nb-select *ngIf="!statsMode" [(selected)]="selectedStory" (selectedChange)="update()"
+                     nbTooltip="Story Focus" placeholder="Story Focus" status="primary" class="select-story">
+            <nb-select-label>
+              <span *ngIf="selectedStory">
+                <mat-icon *ngIf="selectedStory.isBuiltIn()" class="story-type">build</mat-icon>
+                <mat-icon *ngIf="selectedStory.isSimpleAnswer()" class="story-type">message</mat-icon>
+                <mat-icon *ngIf="selectedStory.isScriptAnswer()" class="story-type">code</mat-icon>
+                <span class="story-label">{{selectedStory.name}}</span>
+              </span>
+            </nb-select-label>
+            <nb-option [value]="undefined">All</nb-option>
+            <nb-option *ngFor="let entry of storiesById | keyvalue" [value]="entry.value">
+              <mat-icon *ngIf="entry.value.isBuiltIn()" class="story-type" matTooltip="BuiltIn">build</mat-icon>
+              <mat-icon *ngIf="entry.value.isSimpleAnswer()" class="story-type" matTooltip="Message">message</mat-icon>
+              <mat-icon *ngIf="entry.value.isScriptAnswer()" class="story-type" matTooltip="Script">code</mat-icon>
+              {{entry.value.name}}
+            </nb-option>
+          </nb-select>
+          <nb-select *ngIf="statsMode" [(ngModel)]="selectedStory" (selectedChange)="update()"
+                     placeholder="Story Focus" status="primary" class="select-story">
+            <nb-select-label>
+              <span *ngIf="selectedStory">
+                <mat-icon *ngIf="selectedStory.isBuiltIn()" class="story-type">build</mat-icon>
+                <mat-icon *ngIf="selectedStory.isSimpleAnswer()" class="story-type">message</mat-icon>
+                <mat-icon *ngIf="selectedStory.isScriptAnswer()" class="story-type">code</mat-icon>
+                <mat-icon *ngIf="selectedStory.storyType == undefined" class="story-type">help_outline</mat-icon>
+                <span class="story-label">{{selectedStory.storyName}}</span>
+              </span>
+            </nb-select-label>
+            <nb-option [value]="undefined">All</nb-option>
+            <nb-option *ngFor="let entry of nodesById | keyvalue" [value]="entry.value">
+              <mat-icon *ngIf="entry.value.isBuiltIn()" class="story-type" matTooltip="BuiltIn">build</mat-icon>
+              <mat-icon *ngIf="entry.value.isSimpleAnswer()" class="story-type" matTooltip="Message">message</mat-icon>
+              <mat-icon *ngIf="entry.value.isScriptAnswer()" class="story-type" matTooltip="Script">code</mat-icon>
+              <mat-icon *ngIf="entry.value.storyType == undefined" class="story-type" matTooltip="Unknown Type">help_outline</mat-icon>
+              {{entry.value.storyName}}
+            </nb-option>
+          </nb-select>
+        </span>
+        <span *ngIf="selectedStory" class="select">
+          <nb-select placeholder="Direction" status="primary" [(ngModel)]="direction" (selectedChange)="update()">
+            <nb-option [value]="undefined">Both</nb-option>
+            <nb-option [value]="-1">Outcoming</nb-option>
+            <nb-option [value]="1">Incoming</nb-option>
+          </nb-select>
+        </span>
+        &nbsp;&nbsp;
+        <span *ngIf="statsMode">
+          <nb-checkbox [(ngModel)]="entity" (change)="update()" class="checkbox" matTooltip="View more Nodes by Entity values">Entity</nb-checkbox>
+          <nb-checkbox [(ngModel)]="step" (change)="update()" class="checkbox" matTooltip="View more Nodes by Step">Step</nb-checkbox>
+          <nb-checkbox [(ngModel)]="intent" (change)="update()" class="checkbox" matTooltip="View more Nodes by Intent">Intent</nb-checkbox>
+        </span>
+      </div>
+
+      <div class="flow-option-group" *ngIf="statsMode">
+        <span class="flow-option-group-name">Filters:</span>
+        <nb-checkbox [(ngModel)]="mergeOldStories" (change)="update()" class="checkbox"
+                     matTooltip="Merge Old Stats to Latest Stories when possible">Merge to Latest Stories</nb-checkbox>
+        <span matTooltip="Filter by Minimum Traffic through Node">Min. Node Traffic: </span>
+        <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalNodeCount" [max]="maxNodeCount"
+                    (change)="updateCount()"></mat-slider>
+        <span matTooltip="Filter by Minimum Percentage of Transitions">Min. Transition %: </span>
+        <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalTransitionPercentage"
+                    (change)="updateCount()"></mat-slider>
+      </div>
+
+      <div class="flow-option-group">
+        <span class="flow-option-group-name">Presentation:</span>
+        <span class="select">
+          <nb-select [(ngModel)]="selectedLayout" (selectedChange)="changeLayout()"
+          placeholder="Layout" status="primary" style="width: 10rem;">
+            <nb-option *ngFor="let l of layouts" [value]="l.name">{{l.name}}</nb-option>
+          </nb-select>
+        </span>
+        <span *ngIf="statsMode">
+          <nb-checkbox [(ngModel)]="recursive" (change)="update()" class="checkbox"
+                       matTooltip="Display Recursive Transitions from each Node to itself">Recursive Transitions</nb-checkbox>
+        </span>
+        <nb-checkbox [(ngModel)]="displayNodeType" (change)="updateCount()" class="checkbox"
+                     matTooltip="Display Story-Type icon on each Node label">Story Types</nb-checkbox>
+        <nb-checkbox [(ngModel)]="displayDebug" class="checkbox"
+                     matTooltip="Display Debug stats">Debug</nb-checkbox>
+        <span *ngIf="displayDebug">
+          <span class="flow-stat" *ngIf="nodesById || storiesById">
+            Visible Stories: {{ statsMode ? nodesById.size : storiesById.size }}
+          </span>
+            <span class="flow-stat" *ngIf="allTransitions">
+            Visible Transitions: {{ allTransitions.size }}
+          </span>
+        </span>
+      </div>
     </nb-accordion-item-body>
   </nb-accordion-item>
 </nb-accordion>

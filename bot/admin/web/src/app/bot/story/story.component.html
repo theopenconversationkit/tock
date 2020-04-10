@@ -22,9 +22,9 @@
                      (closed)="story.selected = false">
   <mat-expansion-panel-header>
     <mat-panel-title class="panel-title">
-      <mat-icon *ngIf="!storyNode && story.isBuiltIn()" class="story-type">build</mat-icon>
-      <mat-icon *ngIf="!storyNode && story.isSimpleAnswer()" class="story-type">message</mat-icon>
-      <mat-icon *ngIf="!storyNode && story.isScriptAnswer()" class="story-type">code</mat-icon>
+      <mat-icon *ngIf="!storyNode && story.isBuiltIn()" class="story-type" matTooltip="Built-in Story">build</mat-icon>
+      <mat-icon *ngIf="!storyNode && story.isSimpleAnswer()" class="story-type" matTooltip="Message Story">message</mat-icon>
+      <mat-icon *ngIf="!storyNode && story.isScriptAnswer()" class="story-type" matTooltip="Script Story">code</mat-icon>
       <span *ngIf="!storyNode" nbTooltip="Story name" class="answer-title">{{story.name}}</span>
       <span *ngIf="storyNode" nbTooltip="Story name" [matBadge]="storyNode.displayCount()"
             [matBadgeHidden]="!displayCount"

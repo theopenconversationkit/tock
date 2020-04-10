@@ -73,8 +73,8 @@ class DialogFlowMongoDAOTest : AbstractTest() {
         every { dialog.id } returns "dialogId".toId()
         val snapshotCol = SnapshotCol(
             newId(), listOf(
-                Snapshot(null, null, null, emptyList()),
-                Snapshot("b", "b", null, entityList)
+                Snapshot(null, null, null, emptyList(), null),
+                Snapshot("b", "b", null, entityList, null)
             )
         )
         val action = SendSentence(PlayerId("a"), "appId", PlayerId("appId", bot), "test")
