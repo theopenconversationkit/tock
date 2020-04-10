@@ -37,21 +37,15 @@ import ai.tock.bot.connector.media.MediaCardDescriptor
 import ai.tock.bot.connector.media.MediaCarouselDescriptor
 import ai.tock.bot.connector.media.MediaMessageDescriptor
 import ai.tock.bot.connector.media.MediaMessageType
-import ai.tock.bot.engine.action.ActionVisibility
 import ai.tock.bot.engine.event.EventType
 import ai.tock.bot.engine.message.Attachment
 import ai.tock.bot.engine.message.Choice
 import ai.tock.bot.engine.message.Location
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.message.Sentence
-import ai.tock.shared.error
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.BeanDescription
 import com.fasterxml.jackson.databind.DeserializationConfig
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.Module
 import com.fasterxml.jackson.databind.SerializationConfig
 import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier
@@ -163,12 +157,17 @@ private object BotEngineJacksonConfiguration {
                         config: SerializationConfig,
                         beanDesc: BeanDescription,
                         beanProperties: MutableList<BeanPropertyWriter>
-                    ): MutableList<BeanPropertyWriter> {
-                        return if (beanDesc.beanClass == ScriptAnswerVersionedConfiguration::class.java) {
-                            beanProperties.filter { it.name != ScriptAnswerVersionedConfiguration::storyDefinition.name }
-                                .toMutableList()
-                        } else {
-                            super.changeProperties(config, beanDesc, beanProperties)
+                    ): List<BeanPropertyWriter> {
+                        return when {
+                            beanDesc.beanClass == ScriptAnswerVersionedConfiguration::class.java -> {
+                                beanProperties.filter { it.name != ScriptAnswerVersionedConfiguration::storyDefinition.name }.toList()
+                            }
+                            CharSequence::class.java.isAssignableFrom(beanDesc.beanClass) -> {
+                                beanProperties.filter { it.name != "length" }.toList()
+                            }
+                            else -> {
+                                super.changeProperties(config, beanDesc, beanProperties)
+                            }
                         }
                     }
                 })
@@ -179,35 +178,17 @@ private object BotEngineJacksonConfiguration {
                         config: DeserializationConfig,
                         beanDesc: BeanDescription,
                         propDefs: MutableList<BeanPropertyDefinition>
-                    ): MutableList<BeanPropertyDefinition> {
+                    ): List<BeanPropertyDefinition> {
                         return if (beanDesc.beanClass == ScriptAnswerVersionedConfiguration::class.java) {
                             propDefs.filter { it.name != ScriptAnswerVersionedConfiguration::storyDefinition.name }
-                                .toMutableList()
+                                .toList()
                         } else {
                             super.updateProperties(config, beanDesc, propDefs)
                         }
                     }
                 })
 
-                //TODO remove in 20.3
-                addDeserializer(ActionVisibility::class.java, object : JsonDeserializer<ActionVisibility>() {
-                    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): ActionVisibility {
-                        val curr = p.currentToken
 
-                        // Usually should just get string value:
-                        return if (curr == JsonToken.VALUE_STRING || curr == JsonToken.FIELD_NAME) {
-                            try {
-                                val name = p.text.toUpperCase()
-                                ActionVisibility.valueOf(name)
-                            } catch (e: Exception) {
-                                logger.error(e)
-                                return ActionVisibility.UNKNOWN
-                            }
-                        } else {
-                            ActionVisibility.UNKNOWN
-                        }
-                    }
-                })
             }
             return module
         }
