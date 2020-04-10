@@ -41,7 +41,9 @@ import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
+import ai.tock.shared.longProperty
 import ai.tock.shared.provide
+import ai.tock.shared.vertx.vertx
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -49,6 +51,7 @@ import io.vertx.core.http.HttpMethod
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.CorsHandler
 import mu.KotlinLogging
+import java.time.Duration
 
 internal const val WEB_CONNECTOR_ID = "web"
 
@@ -58,6 +61,7 @@ internal const val WEB_CONNECTOR_ID = "web"
 val webConnectorType = ConnectorType(WEB_CONNECTOR_ID)
 
 private val sseEnabled = booleanProperty("tock_web_sse", false)
+private val sseKeepaliveDelay = longProperty("tock_web_sse_keepalive_delay", 10)
 
 class WebConnector internal constructor(
     val applicationId: String,
@@ -105,11 +109,16 @@ class WebConnector internal constructor(
                             response.headers().add("Content-Type", "text/event-stream;charset=UTF-8")
                             response.headers().add("Connection", "keep-alive")
                             response.headers().add("Cache-Control", "no-cache")
+                            val timerId = vertx.setPeriodic(Duration.ofSeconds(sseKeepaliveDelay).toMillis()) {
+                                response.write("event: ping\n")
+                                response.write("data: 1\n\n")
+                            }
                             val channelId = channels.register(userId) { webConnectorResponse ->
                                 response.write("event: message\n")
                                 response.write("data: ${webMapper.writeValueAsString(webConnectorResponse)}\n\n")
                             }
                             response.closeHandler {
+                                vertx.cancelTimer(timerId)
                                 channels.unregister(channelId)
                             }
                         } catch (t: Throwable) {
