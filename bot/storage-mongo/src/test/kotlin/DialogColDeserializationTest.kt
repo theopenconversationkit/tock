@@ -36,7 +36,7 @@ import ai.tock.nlp.api.client.model.EntityType
 import ai.tock.nlp.api.client.model.NlpIntentQualifier
 import ai.tock.shared.jackson.AnyValueWrapper
 import ai.tock.shared.jackson.mapper
-import ai.tock.shared.security.ParameterObfuscator
+import ai.tock.shared.security.MapObfuscator
 import ai.tock.shared.security.TockObfuscatorService
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.mockk.mockk
@@ -56,9 +56,9 @@ import kotlin.test.assertTrue
  */
 class DialogColDeserializationTest : AbstractTest(false) {
 
-    class TestParamObfuscator : ParameterObfuscator {
-        override fun obfuscate(parameters: Map<String, String>): Map<String, String> {
-            return parameters.mapValues { "" }
+    class TestParamObfuscator : MapObfuscator {
+        override fun obfuscate(map: Map<String, String>): Map<String, String> {
+            return map.mapValues { "" }
         }
     }
 

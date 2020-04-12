@@ -37,9 +37,14 @@ interface IntOpenRange : Comparable<IntOpenRange> {
         return !(this.end <= start || this.start >= end)
     }
 
-    fun isSameRange(range: IntOpenRange) : Boolean {
+    fun isSameRange(range: IntOpenRange): Boolean {
         return start == range.start && end == range.end
     }
+
+    /**
+     * Transforms this range into an [IntRange].
+     */
+    fun toClosedRange(): IntRange = IntRange(start, end - 1)
 
     fun size(): Int = end - start
 

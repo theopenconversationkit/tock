@@ -89,6 +89,10 @@ data class EntityTypeDefinition(
     val description: String,
     val subEntities: List<EntityDefinition> = emptyList(),
     val dictionary: Boolean = false,
+    /**
+     * Is the entity has to be systematically obfuscated?
+     */
+    val obfuscated: Boolean = false,
     val _id: String
 )
 

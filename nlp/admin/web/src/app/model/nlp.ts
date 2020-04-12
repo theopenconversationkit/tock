@@ -103,7 +103,8 @@ export class EntityType {
   constructor(public name: string,
               public description: string,
               public subEntities: EntityDefinition[],
-              public dictionary: boolean) {
+              public dictionary: boolean,
+              public obfuscated: boolean) {
   }
 
   nameWithoutNamespace(namespace: string): string {

@@ -20,6 +20,8 @@ private val __SubEntities: KProperty1<EntityTypeDefinition, List<EntityDefinitio
     get() = EntityTypeDefinition::subEntities
 private val __Dictionary: KProperty1<EntityTypeDefinition, Boolean?>
     get() = EntityTypeDefinition::dictionary
+private val __Obfuscated: KProperty1<EntityTypeDefinition, Boolean?>
+    get() = EntityTypeDefinition::obfuscated
 private val ___id: KProperty1<EntityTypeDefinition, Id<EntityTypeDefinition>?>
     get() = EntityTypeDefinition::_id
 class EntityTypeDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -36,6 +38,9 @@ class EntityTypeDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProper
     val dictionary: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__Dictionary)
 
+    val obfuscated: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__Obfuscated)
+
     val _id: KPropertyPath<T, Id<EntityTypeDefinition>?>
         get() = KPropertyPath(this,___id)
 
@@ -48,6 +53,8 @@ class EntityTypeDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProper
             get() = EntityDefinition_Col(null,__SubEntities)
         val Dictionary: KProperty1<EntityTypeDefinition, Boolean?>
             get() = __Dictionary
+        val Obfuscated: KProperty1<EntityTypeDefinition, Boolean?>
+            get() = __Obfuscated
         val _id: KProperty1<EntityTypeDefinition, Id<EntityTypeDefinition>?>
             get() = ___id}
 }
@@ -66,6 +73,9 @@ class EntityTypeDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KPro
 
     val dictionary: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__Dictionary)
+
+    val obfuscated: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__Obfuscated)
 
     val _id: KPropertyPath<T, Id<EntityTypeDefinition>?>
         get() = KPropertyPath(this,___id)
@@ -88,6 +98,9 @@ class EntityTypeDefinition_Map<T, K>(previous: KPropertyPath<T, *>?, property: K
 
     val dictionary: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__Dictionary)
+
+    val obfuscated: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__Obfuscated)
 
     val _id: KPropertyPath<T, Id<EntityTypeDefinition>?>
         get() = KPropertyPath(this,___id)

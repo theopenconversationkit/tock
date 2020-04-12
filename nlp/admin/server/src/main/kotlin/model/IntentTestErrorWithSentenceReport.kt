@@ -16,6 +16,8 @@
 
 package ai.tock.nlp.admin.model
 
+import ai.tock.nlp.admin.AdminService.obfuscatedEntityRanges
+import ai.tock.nlp.front.shared.config.ClassifiedSentence
 import ai.tock.nlp.front.shared.test.IntentTestError
 import java.time.Instant
 
@@ -32,8 +34,8 @@ class IntentTestErrorWithSentenceReport(
     val firstDetectionDate: Instant = Instant.now()
 ) {
 
-    constructor(error: IntentTestError, encryptSentences: Boolean) : this(
-        SentenceReport(error, encryptSentences),
+    constructor(originalSentence: ClassifiedSentence, error: IntentTestError, obfuscateSentence: Boolean) : this(
+        SentenceReport(error, obfuscateSentence, originalSentence.obfuscatedEntityRanges()),
         error.currentIntent,
         error.wrongIntent,
         error.averageErrorProbability,

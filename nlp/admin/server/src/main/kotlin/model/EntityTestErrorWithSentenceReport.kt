@@ -16,6 +16,8 @@
 
 package ai.tock.nlp.admin.model
 
+import ai.tock.nlp.admin.AdminService.obfuscatedEntityRanges
+import ai.tock.nlp.front.shared.config.ClassifiedSentence
 import ai.tock.nlp.front.shared.test.EntityTestError
 import java.time.Instant
 
@@ -31,12 +33,13 @@ data class EntityTestErrorWithSentenceReport(
     val firstDetectionDate: Instant = Instant.now()
 ) {
 
-    constructor(originalSentence: SentenceReport, error: EntityTestError, encryptSentences: Boolean) : this(
-        originalSentence,
-        SentenceReport(error, encryptSentences),
-        error.averageErrorProbability,
-        error.count,
-        error.total,
-        error.firstDetectionDate
-    )
+    constructor(originalSentence: ClassifiedSentence, error: EntityTestError, obfuscatedSentences: Boolean) :
+        this(
+            SentenceReport(originalSentence, obfuscatedSentences),
+            SentenceReport(error, obfuscatedSentences, originalSentence.obfuscatedEntityRanges()),
+            error.averageErrorProbability,
+            error.count,
+            error.total,
+            error.firstDetectionDate
+        )
 }

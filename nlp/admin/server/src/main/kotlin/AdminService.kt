@@ -36,6 +36,7 @@ import ai.tock.nlp.admin.model.UpdateSentencesReport
 import ai.tock.nlp.core.Intent
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
+import ai.tock.nlp.front.shared.config.ClassifiedSentence
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import ai.tock.nlp.front.shared.config.IntentDefinition
@@ -68,10 +69,10 @@ object AdminService {
         return SentenceReport(result, query.currentLanguage, application._id, intentId)
     }
 
-    fun searchSentences(query: SearchQuery, encryptSentences: Boolean): SentencesReport {
+    fun searchSentences(query: SearchQuery, obfuscateSentences: Boolean): SentencesReport {
         val application = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
         val result = front.search(query.toSentencesQuery(application!!._id))
-        return SentencesReport(query.start, result, encryptSentences)
+        return SentencesReport(query.start, result, obfuscateSentences)
     }
 
     fun updateSentences(query: UpdateSentencesQuery): UpdateSentencesReport {
@@ -194,19 +195,38 @@ object AdminService {
         ) { front.getIntentIdByQualifiedName(it.withNamespace(query.namespace)) }
     }
 
-    fun searchTestIntentErrors(query: TestErrorQuery, encryptSentences: Boolean): IntentTestErrorQueryResultReport {
+    fun searchTestIntentErrors(query: TestErrorQuery, obfuscateSentences: Boolean): IntentTestErrorQueryResultReport {
         return front.searchTestIntentErrors(query)
             .run {
                 IntentTestErrorQueryResultReport(
                     total,
-                    data.map {
-                        IntentTestErrorWithSentenceReport(it, encryptSentences)
+                    data.mapNotNull {
+                        val s = front.search(
+                            SentencesQuery(
+                                it.applicationId,
+                                it.language,
+                                search = it.text,
+                                onlyExactMatch = true
+                            )
+                        )
+                        if (s.total == 0L) {
+                            null
+                        } else {
+                            IntentTestErrorWithSentenceReport(
+                                s.sentences.first(),
+                                it,
+                                obfuscateSentences
+                            )
+                        }
                     }
                 )
             }
     }
 
-    fun searchTestEntityErrors(query: TestErrorQuery, encryptSentences: Boolean): EntityTestErrorQueryResultReport {
+    internal fun ClassifiedSentence.obfuscatedEntityRanges(): List<IntRange> =
+        classification.entities.filter { front.isEntityTypeObfuscated(it.type) }.map { it.toClosedRange() }
+
+    fun searchTestEntityErrors(query: TestErrorQuery, obfuscateSentences: Boolean): EntityTestErrorQueryResultReport {
         return front.searchTestEntityErrors(query)
             .run {
                 val results = data.mapNotNull {
@@ -222,9 +242,9 @@ object AdminService {
                         null
                     } else {
                         EntityTestErrorWithSentenceReport(
-                            SentenceReport(s.sentences.first()),
+                            s.sentences.first(),
                             it,
-                            encryptSentences
+                            obfuscateSentences
                         )
                     }
                 }

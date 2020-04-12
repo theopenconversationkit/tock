@@ -31,7 +31,11 @@ data class EntityType(
     /**
      * Is the entity based on a dictionary (predefined set of data)?
      */
-    val dictionary: Boolean = false
+    val dictionary: Boolean = false,
+    /**
+     * Is the entity has to be systematically obfuscated?
+     */
+    val obfuscated: Boolean = false
 ) {
 
     fun hasSubEntities(): Boolean = subEntities.isNotEmpty()

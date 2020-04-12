@@ -237,9 +237,26 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
     }
 
     override fun save(log: ParseRequestLog) {
+        val obfuscatedRanges = log.result?.entities
+            ?.filter { it.entity.entityType.obfuscated }
+            ?.map { it.toClosedRange() }
+            ?: emptyList()
         val savedLog = log.copy(
-            query = log.query.copy(queries = obfuscate(log.query.queries)),
-            result = log.result?.copy(retainedQuery = obfuscate(log.result?.retainedQuery) ?: "")
+            query = log.query.copy(
+                queries = obfuscate(
+                    texts = log.query.queries,
+                    obfuscatedRanges = log.result?.retainedQuery
+                        ?.let { log.query.queries.indexOf(it) }
+                        ?.takeUnless { i -> i == -1 }
+                        ?.let { mapOf(it to obfuscatedRanges) }
+                        ?: emptyMap()
+                )
+            ),
+            result = log.result?.copy(
+                retainedQuery = obfuscate(
+                    text = log.result?.retainedQuery,
+                    obfuscatedRanges = obfuscatedRanges) ?: ""
+            )
         )
         col.insertOne(ParseRequestLogCol(savedLog))
         if (log.query.context.increaseQueryCounter) {
