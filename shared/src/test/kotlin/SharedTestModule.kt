@@ -38,6 +38,7 @@ import org.litote.kmongo.reactivestreams.KFlapdoodleReactiveStreams
 import java.time.Duration
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit.MILLISECONDS
 
 private val logger = KotlinLogging.logger {}
 
@@ -121,6 +122,33 @@ private object NoOpCache : TockCache {
     override fun <T> remove(id: Id<T>, type: String) {
         map - id to type
     }
+}
+
+/**
+ * A simple executor that uses [nbThreads] - useful for concurrency tests.
+ */
+class SimpleExecutor(private val nbThreads: Int) : Executor {
+
+    private val executor = Executors.newScheduledThreadPool(nbThreads)
+
+    override fun executeBlocking(delay: Duration, runnable: () -> Unit) {
+        executor.schedule(runnable, delay.toMillis(), MILLISECONDS)
+    }
+
+    override fun executeBlocking(runnable: () -> Unit) {
+        executor.schedule(runnable, 0L, MILLISECONDS)
+    }
+
+    override fun <T> executeBlocking(blocking: Callable<T>, result: (T?) -> Unit) {
+        val future = executor.schedule(blocking, 0, MILLISECONDS)
+        future.get().apply { result(this) }
+    }
+
+    override fun setPeriodic(initialDelay: Duration, delay: Duration, runnable: () -> Unit): Long {
+        executor.scheduleWithFixedDelay(runnable, initialDelay.toMillis(), delay.toMillis(), MILLISECONDS)
+        return 0L
+    }
+
 }
 
 private object TestExecutor : Executor {

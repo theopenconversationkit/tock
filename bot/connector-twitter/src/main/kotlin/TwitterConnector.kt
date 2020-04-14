@@ -79,8 +79,7 @@ internal class TwitterConnector internal constructor(
 
     private val executor: Executor by injector.instance()
 
-    private val queue: ConnectorQueue
-        get() = ConnectorQueue(executor)
+    private val queue: ConnectorQueue = ConnectorQueue(executor)
 
     override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences {
 

@@ -27,15 +27,47 @@ import ai.tock.bot.connector.messenger.model.webhook.UserActionPayload
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.action.SendChoice
-import ai.tock.bot.engine.action.SendChoice.Companion
 import ai.tock.bot.engine.monitoring.RequestTimerData
+import ai.tock.shared.Executor
+import ai.tock.shared.SimpleExecutor
+import ai.tock.shared.tockInternalInjector
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.Kodein.Module
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.singleton
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class MultiMessengerConnectorsTest {
+
+    companion object {
+
+        @BeforeAll
+        @JvmStatic
+        fun injectExecutor() {
+            tockInternalInjector = KodeinInjector().apply {
+                inject(Kodein {
+                    import(
+                        Module {
+                            bind<Executor>() with singleton { SimpleExecutor(2) }
+                        })
+                }
+                )
+            }
+        }
+
+        @AfterAll
+        @JvmStatic
+        fun resetInjection() {
+            tockInternalInjector = KodeinInjector()
+        }
+    }
 
     // APP A (pathA) Page A, B et C
     // APP B (pathB) Page A et B
@@ -138,7 +170,7 @@ internal class MultiMessengerConnectorsTest {
             )
         )
 
-    fun choice(page: String, appId:String) =
+    fun choice(page: String, appId: String) =
         CallbackRequest(
             "page",
             listOf(
