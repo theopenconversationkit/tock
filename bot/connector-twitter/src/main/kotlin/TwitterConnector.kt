@@ -132,14 +132,13 @@ internal class TwitterConnector internal constructor(
                     logger.error(e)
                     context.fail(500)
                 }
-
-
             }
 
             // see https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/guides/account-activity-data-objects
             router.post(path).handler { context ->
                 val requestTimerData = BotRepository.requestTimer.start("twitter_webhook")
                 try {
+                    logger.info { "get twitter Message" }
                     val twitterHeader = context.request().getHeader("X-Twitter-Webhooks-Signature")
                     logger.debug { "Twitter signature:  $twitterHeader" }
                     logger.debug { "Twitter headers:  ${context.request().headers().entries()}" }
@@ -154,7 +153,6 @@ internal class TwitterConnector internal constructor(
                             } else if (incomingEvent.ignored) {
                                 logger.debug { "Ignored event : ${incomingEvent.javaClass.simpleName}" }
                             } else {
-                                logger.info { incomingEvent }
                                 executor.executeBlocking {
                                     val event = incomingEvent.toEvent(applicationId)
                                     val (threadId, visibility, reply) = if (incomingEvent is TweetIncomingEvent) {
