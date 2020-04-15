@@ -65,6 +65,12 @@ interface I18nTranslator : I18nKeyProvider {
     }
 
     /**
+     * Translates and format if needed the text with the optionals args.
+     */
+    fun translate(text: CharSequence?, args: List<Any?>): TranslatedSequence =
+        translate(text, *args.toTypedArray())
+
+    /**
      * Translates the specified key.
      */
     fun translate(key: I18nLabelValue?): TranslatedSequence =
