@@ -23,7 +23,7 @@ class TabLink {
 }
 
 const tabs = [
-  new TabLink("users", "Users"),
+  new TabLink("history", "History"),
   new TabLink("dialogs", "Dialogs")
 ];
 
@@ -41,7 +41,7 @@ export class MonitoringTabsComponent implements OnInit {
 
   ngOnInit() {
     if(this.router.routerState.snapshot.url.endsWith("/monitoring")) {
-       this.router.navigateByUrl("/monitoring/users");
+       this.router.navigateByUrl("/monitoring/history");
     }
   }
 

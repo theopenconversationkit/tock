@@ -26,6 +26,8 @@ export class DisplayDialogComponent implements OnInit {
 
   @Input()
   dialog: DialogReport;
+  @Input()
+  userPicture: string;
 
   constructor() {
   }

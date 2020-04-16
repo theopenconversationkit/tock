@@ -24,7 +24,7 @@ import {BotMessage, Sentence} from "../model/dialog-data";
     <img *ngIf="sentence.userInterface"
          src="/assets/images/{{sentence.userInterface}}.svg"
          class="userInterface"
-         matTooltip="{{sentence.userInterface}}"/>
+         nbTooltip="{{sentence.userInterface}}"/>
      {{sentence.text}}
   </div>
   <div *ngIf="!sentence.text">

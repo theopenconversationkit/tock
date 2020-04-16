@@ -22,15 +22,14 @@ import {SharedModule} from "../shared-nlp/shared.module";
 import {AuthGuard} from "../core-nlp/auth/auth.guard";
 import {MonitoringTabsComponent} from "./monitoring-tabs.component";
 import {ApplicationResolver} from "../core-nlp/application.resolver";
-import {UserTimelinesComponent} from "./users/user-timelines.component";
+import {HistoryComponent} from "./history/history.component";
 import {MonitoringService} from "./monitoring.service";
 import {BotSharedModule} from "../shared/bot-shared.module";
 import {MomentModule} from "ngx-moment";
 import {DialogsComponent} from "./dialogs/dialogs.component";
 import {MatDatepickerModule, MatNativeDateModule} from "@angular/material";
 import {NbCardModule, NbCheckboxModule, NbRouteTabsetModule, NbSpinnerModule, NbTooltipModule, NbButtonModule,
-NbInputModule, NbSelectModule, NbCalendarModule} from "@nebular/theme";
-
+NbInputModule, NbSelectModule, NbCalendarModule, NbUserModule, NbDatepickerModule, NbListModule, NbAccordionModule} from "@nebular/theme";
 
 const routes: Routes = [
   {
@@ -43,15 +42,15 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        component: UserTimelinesComponent
-      },
-      {
-        path: 'users',
-        component: UserTimelinesComponent
+        component: HistoryComponent
       },
       {
         path: 'dialogs',
         component: DialogsComponent
+      },
+      {
+        path: 'history',
+        component: HistoryComponent
       }
     ]
   }
@@ -81,12 +80,16 @@ export class MonitoringRoutingModule {
     NbButtonModule,
     NbInputModule,
     NbSelectModule,
-    NbCalendarModule
+    NbCalendarModule,
+    NbUserModule,
+    NbDatepickerModule,
+    NbListModule,
+    NbAccordionModule
   ],
   declarations: [
     MonitoringTabsComponent,
-    UserTimelinesComponent,
-    DialogsComponent
+    DialogsComponent,
+    HistoryComponent
   ],
   exports: [],
   providers: [

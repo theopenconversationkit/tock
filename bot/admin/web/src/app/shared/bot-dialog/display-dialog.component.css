@@ -21,9 +21,9 @@
 
 .connector {
   float:left;
-  padding-right: 5px;
-  width:24px;
-  height:24px;
+  width:32px;
+  height:32px;
+  border-radius: 50%;
 }
 
 .testAction {
@@ -39,4 +39,5 @@
 
 .dialog {
   padding-top:0;
+  margin-bottom: 0;
 }
