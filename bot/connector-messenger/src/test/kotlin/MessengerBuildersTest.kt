@@ -34,6 +34,7 @@ import com.github.salomonbrys.kodein.KodeinInjector
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -59,6 +60,11 @@ class MessengerBuildersTest {
         every { bus.userPreferences } returns UserPreferences()
         every { bus.translate(allAny()) } answers { firstArg() ?: "".raw }
         every { bus.translate(any<CharSequence>()) } answers { firstArg<CharSequence>().raw }
+    }
+
+    @AfterEach
+    fun after() {
+        tockInternalInjector = KodeinInjector()
     }
 
     @Test

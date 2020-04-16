@@ -43,8 +43,8 @@ interface Executor {
      * Execute a task to another thread.
      * If an exception is thrown by the blocking function, null is passed to the result function.
      *
-     * @param blockingHandler the task to run
-     * @param resultHandler the result handler
+     * @param blocking the task to run
+     * @param result the result handler
      *
      */
     fun <T> executeBlocking(blocking: Callable<T>, result: (T?) -> Unit)

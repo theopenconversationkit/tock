@@ -20,9 +20,22 @@ import ai.tock.bot.connector.messenger.MessengerConnector.Companion.connectorIdC
 import ai.tock.bot.connector.messenger.MessengerConnector.Companion.connectorIdTokenMap
 import ai.tock.bot.connector.messenger.MessengerConnector.Companion.pageIdConnectorIdMap
 import ai.tock.bot.engine.ConnectorController
+import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.user.PlayerId
+import ai.tock.shared.Executor
+import ai.tock.shared.SimpleExecutor
+import ai.tock.shared.tockInternalInjector
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.singleton
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.spyk
+import io.mockk.verifyOrder
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -36,6 +49,26 @@ internal class MessengerConnectorTest {
             connectorIdConnectorControllerMap.clear()
             connectorIdTokenMap.clear()
             connectorIdApplicationIdMap.clear()
+        }
+
+        @BeforeAll
+        @JvmStatic
+        fun injectExecutor() {
+            tockInternalInjector = KodeinInjector().apply {
+                inject(Kodein {
+                    import(
+                        Kodein.Module {
+                            bind<Executor>() with singleton { SimpleExecutor(2) }
+                        })
+                }
+                )
+            }
+        }
+
+        @AfterAll
+        @JvmStatic
+        fun resetInjection() {
+            tockInternalInjector = KodeinInjector()
         }
     }
 
@@ -88,6 +121,41 @@ internal class MessengerConnectorTest {
         assertNull(connectorIdConnectorControllerMap[connectorId1])
         assertTrue(pageIdConnectorIdMap[pageId1].isNullOrEmpty())
         assertTrue(connectorIdApplicationIdMap[connectorId1].isNullOrEmpty())
+    }
+
+    @Test
+    fun `GIVEN two actions of same user WHEN sending the two actions THEN the second action wait the first to be sent`() {
+        val connector = spyk(messengerConnector1)
+        val userId = PlayerId("userId")
+        val action1 = mockk<Action> {
+            every { recipientId } returns userId
+        }
+        val action2 = mockk<Action> {
+            every { recipientId } returns userId
+        }
+        val callback = MessengerConnectorCallback("appId")
+
+        var time: Long? = null
+
+        every { connector.sendEvent(any()) } answers {
+            //check the second call occurs at least 100s after the first (as we wait 100 for the first call)
+            if (time != null) {
+                assert(System.currentTimeMillis() - time!! >= 100)
+            } else {
+                time = System.currentTimeMillis()
+                Thread.sleep(100)
+            }
+            null
+        }
+
+        connector.send(action1, callback)
+        connector.send(action2, callback)
+
+        verifyOrder {
+            connector.sendEvent(action1, any(), any(), any(), any())
+            connector.sendEvent(action2, any(), any(), any(), any())
+        }
+
     }
 
 }

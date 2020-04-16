@@ -2,31 +2,17 @@ package ai.tock.bot.connector
 
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.user.PlayerId
-import ai.tock.shared.Executor
+import ai.tock.shared.SimpleExecutor
 import io.mockk.Ordering
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
-import java.time.Duration
-import java.util.concurrent.Callable
-import java.util.concurrent.Executors
 
 internal class ConnectorQueueTest {
 
-    private object executor : Executor {
-        override fun executeBlocking(delay: Duration, runnable: () -> Unit) {
-            Executors.newSingleThreadExecutor().execute(runnable)
-        }
-
-        override fun executeBlocking(runnable: () -> Unit) = throw NotImplementedError()
-
-        override fun <T> executeBlocking(blocking: Callable<T>, result: (T?) -> Unit) = throw NotImplementedError()
-
-        override fun setPeriodic(initialDelay: Duration, delay: Duration, runnable: () -> Unit): Long = throw NotImplementedError()
-
-    }
+    private val executor = SimpleExecutor(10)
 
     @Test
     fun `preserve the order in which messages are sent when the first action is slower than the following`() {

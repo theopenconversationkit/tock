@@ -128,8 +128,7 @@ class MessengerConnector internal constructor(
     }
 
     private val executor: Executor by injector.instance()
-    private val queue: ConnectorQueue
-        get() = ConnectorQueue(executor)
+    private val queue: ConnectorQueue = ConnectorQueue(executor)
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->

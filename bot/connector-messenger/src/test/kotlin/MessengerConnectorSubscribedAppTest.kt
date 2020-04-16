@@ -19,21 +19,50 @@ package ai.tock.bot.connector.messenger
 import ai.tock.bot.connector.messenger.model.subscription.SubscriptionsResponse
 import ai.tock.bot.connector.messenger.model.subscription.SuccessResponse
 import ai.tock.bot.engine.user.UserTimelineDAO
+import ai.tock.shared.Executor
+import ai.tock.shared.SimpleExecutor
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.resourceAsStream
 import ai.tock.shared.sharedModule
+import ai.tock.shared.tockInternalInjector
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.singleton
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class MessengerConnectorSubscribedAppTest {
+
+    companion object {
+
+        @BeforeAll
+        @JvmStatic
+        fun injectExecutor() {
+            tockInternalInjector = KodeinInjector().apply {
+                inject(Kodein {
+                    import(
+                        Kodein.Module {
+                            bind<Executor>() with singleton { SimpleExecutor(2) }
+                        })
+                }
+                )
+            }
+        }
+
+        @AfterAll
+        @JvmStatic
+        fun resetInjection() {
+            tockInternalInjector = KodeinInjector()
+        }
+    }
 
     private val connectorId = "connectorId"
     private val appId = "appId"
