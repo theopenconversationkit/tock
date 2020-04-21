@@ -84,9 +84,9 @@
                                     </mainClass>
                                 </manifest>
                             </archive>
-                            <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
-                            </descriptorRefs>
+                            <descriptors>
+                                <descriptor>src/assembly/jar-with-dependencies.xml</descriptor>
+                            </descriptors>
                         </configuration>
                     </execution>
                 </executions>
