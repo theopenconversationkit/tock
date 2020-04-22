@@ -16,6 +16,7 @@
 
 package ai.tock.nlp.front.shared.parser
 
+import ai.tock.shared.security.TockObfuscatorService
 import java.util.Locale
 
 /**
@@ -45,11 +46,11 @@ data class ParseResult(
     /**
      * The intent evaluated probability.
      */
-    val intentProbability: Double,
+    val intentProbability: Double = 1.0,
     /**
      * The average entity evaluation probability.
      */
-    val entitiesProbability: Double,
+    val entitiesProbability: Double = 1.0,
     /**
      * The analysed query.
      */
@@ -57,11 +58,26 @@ data class ParseResult(
     /**
      * Other intents with significant probabilities.
      */
-    val otherIntentsProbabilities: Map<String, Double>
+    val otherIntentsProbabilities: Map<String, Double> = emptyMap()
 ) {
 
     /**
      * Returns the first value for the specified entity role.
      */
     fun firstValue(role: String): ParsedEntityValue? = entities.firstOrNull { it.entity.role == role }
+
+    /**
+     * Obfuscates the result.
+     */
+    fun obfuscate(obfuscatedRanges: List<IntRange>): ParseResult {
+        val obfuscatedQuery = TockObfuscatorService.obfuscate(
+            text = retainedQuery,
+            obfuscatedRanges = obfuscatedRanges
+        ) ?: ""
+        return copy(
+            retainedQuery = obfuscatedQuery,
+            entities = entities.map { it.obfuscate(obfuscatedQuery) },
+            notRetainedEntities = notRetainedEntities.map { it.obfuscate(obfuscatedQuery) }
+        )
+    }
 }

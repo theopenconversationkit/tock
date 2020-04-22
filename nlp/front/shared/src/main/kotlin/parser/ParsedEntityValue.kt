@@ -20,8 +20,14 @@ import ai.tock.nlp.core.Entity
 import ai.tock.nlp.core.EntityRecognition
 import ai.tock.nlp.core.EntityValue
 import ai.tock.nlp.core.IntOpenRange
+import ai.tock.nlp.entity.EmailValue
+import ai.tock.nlp.entity.PhoneNumberValue
+import ai.tock.nlp.entity.StringValue
+import ai.tock.nlp.entity.UrlValue
 import ai.tock.nlp.entity.Value
 import ai.tock.nlp.front.shared.value.ValueTransformer.wrapNullableValue
+import ai.tock.shared.error
+import mu.KotlinLogging
 
 /**
  * This class is copied from [ai.tock.nlp.core.EntityValue], but
@@ -68,6 +74,10 @@ data class ParsedEntityValue(
     val mergeSupport: Boolean = false
 ) : IntOpenRange {
 
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
     constructor(
         start: Int,
         end: Int,
@@ -78,7 +88,7 @@ data class ParsedEntityValue(
         probability: Double = 1.0,
         mergeSupport: Boolean = false
     ) :
-            this(start, end, entity, wrapNullableValue(value), evaluated, subEntities, probability, mergeSupport)
+        this(start, end, entity, wrapNullableValue(value), evaluated, subEntities, probability, mergeSupport)
 
     constructor(entityValue: EntityValue, probability: Double, mergeSupport: Boolean) : this(
         entityValue.start,
@@ -90,4 +100,26 @@ data class ParsedEntityValue(
         probability,
         mergeSupport
     )
+
+    /**
+     * Obfuscates the entity.
+     */
+    fun obfuscate(obfuscatedQuery: String): ParsedEntityValue =
+        copy(
+            value = value.obfuscate(obfuscatedQuery)
+        )
+
+    private fun Value?.obfuscate(obfuscatedQuery: String): Value? =
+        try {
+            when (this) {
+                is StringValue -> copy(value = obfuscatedQuery.substring(start, end))
+                is EmailValue -> copy(value = obfuscatedQuery.substring(start, end))
+                is PhoneNumberValue -> copy(value = obfuscatedQuery.substring(start, end))
+                is UrlValue -> copy(value = obfuscatedQuery.substring(start, end))
+                else -> this
+            }
+        } catch (e: Exception) {
+            logger.error(e)
+            this
+        }
 }

@@ -49,7 +49,6 @@ import ai.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion._id
 import ai.tock.shared.error
 import ai.tock.shared.longProperty
 import ai.tock.shared.name
-import ai.tock.shared.security.TockObfuscatorService.obfuscate
 import com.mongodb.ReadPreference.secondaryPreferred
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.FindOneAndUpdateOptions
@@ -104,6 +103,7 @@ import java.util.concurrent.TimeUnit.DAYS
 internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
 
     private val logger = KotlinLogging.logger {}
+    private val logObfuscationService = LogObfuscationService()
 
     @Data(internal = true)
     @JacksonData(internal = true)
@@ -237,27 +237,7 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
     }
 
     override fun save(log: ParseRequestLog) {
-        val obfuscatedRanges = log.result?.entities
-            ?.filter { it.entity.entityType.obfuscated }
-            ?.map { it.toClosedRange() }
-            ?: emptyList()
-        val savedLog = log.copy(
-            query = log.query.copy(
-                queries = obfuscate(
-                    texts = log.query.queries,
-                    obfuscatedRanges = log.result?.retainedQuery
-                        ?.let { log.query.queries.indexOf(it) }
-                        ?.takeUnless { i -> i == -1 }
-                        ?.let { mapOf(it to obfuscatedRanges) }
-                        ?: emptyMap()
-                )
-            ),
-            result = log.result?.copy(
-                retainedQuery = obfuscate(
-                    text = log.result?.retainedQuery,
-                    obfuscatedRanges = obfuscatedRanges) ?: ""
-            )
-        )
+        val savedLog = logObfuscationService.obfuscate(log)
         col.insertOne(ParseRequestLogCol(savedLog))
         if (log.query.context.increaseQueryCounter) {
             val stat = ParseRequestLogStatCol(log)
