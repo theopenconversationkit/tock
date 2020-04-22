@@ -22,6 +22,7 @@ import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotRecipientType.indivi
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotTextMessage
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
+import ai.tock.shared.security.decrypt
 
 /**
  *
@@ -35,7 +36,7 @@ internal object SendActionConverter {
                         WhatsAppBotTextMessage(
                             WhatsAppTextBody(text),
                             individual,
-                            action.recipientId.id
+                            decrypt(action.recipientId.id)
                         )
                     } ?: error("null text in action $action")
         } else {

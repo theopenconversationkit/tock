@@ -14,6 +14,36 @@
  * limitations under the License.
  */
 package ai.tock.bot.connector.whatsapp
-/**
- *
- */
+
+import ai.tock.bot.connector.whatsapp.model.common.WhatsAppTextBody
+import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppTextMessage
+import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.user.PlayerId
+import ai.tock.bot.engine.user.PlayerType.bot
+import io.mockk.mockk
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
+
+class WebhookActionConverterTest {
+
+    @Test
+    fun `check user id is encrypted and decrypted`() {
+        val from = "my phone number"
+        val message = WhatsAppTextMessage(WhatsAppTextBody("text"), "id", from, "a")
+        val s = WebhookActionConverter.toEvent(message, "appId", mockk()) as SendSentence
+
+        assertNotEquals(from, s.playerId.id)
+
+        val output = SendActionConverter.toBotMessage(
+            SendSentence(
+                PlayerId("botId", bot),
+                "appId",
+                PlayerId(s.playerId.id),
+                "Hey"
+            )
+        )
+
+        assertEquals(from, output?.to)
+    }
+}
