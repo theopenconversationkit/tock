@@ -79,7 +79,7 @@ interface ApplicationConfiguration {
     /**
      * Returns sentence validator users.
      */
-    fun users(id: Id<ApplicationDefinition>): List<String>
+    fun users(applicationId: Id<ApplicationDefinition>): List<String>
 
     /**
      * Switch specified sentences to a new intent.

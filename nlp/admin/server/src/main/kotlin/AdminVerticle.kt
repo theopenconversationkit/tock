@@ -960,8 +960,7 @@ open class AdminVerticle : WebVerticle() {
         }
 
         blockingPost(
-            "/namespace/select/:namespace",
-            admin
+            "/namespace/select/:namespace"
         )
         { context ->
             val n = context.path("namespace")
