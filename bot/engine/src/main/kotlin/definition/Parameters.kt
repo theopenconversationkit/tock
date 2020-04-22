@@ -26,7 +26,14 @@ package ai.tock.bot.definition
  *
  * where KeyEnum implements [ParameterKey].
  */
-data class Parameters(val entries: Map<String, String>) {
+data class Parameters(private val entries: Map<String, String>) {
+
+    companion object {
+        /**
+         * An empty parameters.
+         */
+        val EMPTY = Parameters(emptyMap())
+    }
 
     constructor(vararg entries: Pair<String, String>) : this(entries.toMap())
 
@@ -34,5 +41,5 @@ data class Parameters(val entries: Map<String, String>) {
 
     fun toArray(): Array<Pair<String, String>> = entries.entries.map { it.key to it.value }.toTypedArray()
 
-    fun toMap() : Map<String,String> = entries
+    fun toMap(): Map<String, String> = entries
 }

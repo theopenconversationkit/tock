@@ -153,7 +153,7 @@ object BotRepository {
     }
 
     /**
-     * Sends a notification to the connector.
+     * Sends a notification to a connector.
      * A [Bus] is created and the corresponding story is called.
      *
      * @param applicationId the configuration connector id
