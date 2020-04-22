@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {AfterViewInit, Component, EventEmitter, Inject, OnDestroy, OnInit, ViewChild} from "@angular/core";
+import {AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, ViewChild} from "@angular/core";
 import {StateService} from "../../core-nlp/state.service";
 import {ApplicationService} from "../../core-nlp/applications.service";
 import {MatPaginator} from "@angular/material";
@@ -22,7 +22,8 @@ import {DataSource} from "@angular/cdk/collections";
 import {UserLog} from "../../model/application";
 import {BehaviorSubject, merge, Observable, Subscription} from "rxjs";
 import {PaginatedQuery} from "../../model/commons";
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
+import {JsonEditorComponent, JsonEditorOptions} from 'ang-jsoneditor';
+import {NbDialogRef, NbDialogService} from '@nebular/theme';
 
 @Component({
   selector: 'tock-user-logs',
@@ -39,7 +40,7 @@ export class UserLogsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(private state: StateService,
               private applicationService: ApplicationService,
-              private dialog: MatDialog) {
+              private dialogService: NbDialogService) {
 
   }
 
@@ -65,13 +66,12 @@ export class UserLogsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   displayData(log: UserLog) {
-    this.dialog.open(DisplayUserDataComponent, {
-      data: {
-        data: log.data()
+    this.dialogService.open(DisplayUserDataComponent, {
+      context: {
+        data: JSON.parse(log.data())
       }
     });
   }
-
 }
 
 export class UserLogsDataSource extends DataSource<UserLog> {
@@ -123,18 +123,49 @@ export class UserLogsDataSource extends DataSource<UserLog> {
 
 @Component({
   selector: 'tock-display-full-log',
-  template: `<h1 mat-dialog-title>User Action Data</h1>
-  <div mat-dialog-content>
-      Data:
-      <pre>{{data.data}}</pre>
-  </div>
-  <div mat-dialog-actions>
-      <button mat-raised-button mat-dialog-close color="primary">Close</button>
-  </div>`
+  template: `
+    <nb-card status="primary">
+      <nb-card-header>User Action Data</nb-card-header>
+      <nb-card-body class="no-padding">
+        <json-editor [options]="editorOptions" [data]="data"></json-editor>
+      </nb-card-body>
+      <nb-card-footer class="btn-align">
+        <button nbButton status="primary" (click)="close()">Close</button>
+      </nb-card-footer>
+    </nb-card>`,
+  styles: [`:host ::ng-deep json-editor,
+            :host ::ng-deep json-editor .jsoneditor,
+            :host ::ng-deep json-editor > div,
+            :host ::ng-deep json-editor jsoneditor-outer {
+                height: 30rem;
+                width: 30rem;
+            }
+            .no-padding{
+              padding: 0;
+            }
+            .btn-align {
+              text-align: right;
+            }
+  `
+  ]
 })
 export class DisplayUserDataComponent {
+  public editorOptions: JsonEditorOptions;
 
-  constructor(public dialogRef: MatDialogRef<DisplayUserDataComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: any) {
+  @ViewChild(JsonEditorComponent, {static: true}) editor: JsonEditorComponent;
+
+  @Input() data: string;
+
+  constructor(public dialogRef: NbDialogRef<DisplayUserDataComponent>) {
+    this.editorOptions = new JsonEditorOptions()
+    this.editorOptions.modes = ['code', 'text', 'tree', 'view'];
+    this.editorOptions.mode = 'view';
+    this.editorOptions.expandAll = true;
+    this.editorOptions.mainMenuBar = false;
+    this.editorOptions.navigationBar = false;
+  }
+
+  close() {
+    this.dialogRef.close();
   }
 }

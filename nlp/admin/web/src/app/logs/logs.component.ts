@@ -15,16 +15,16 @@
  */
 
 import {saveAs} from "file-saver";
-import {Component, Inject} from "@angular/core";
+import {Component, Input, ViewChild} from "@angular/core";
 import {Log, LogsQuery, PaginatedResult} from "../model/nlp";
 import {ScrollComponent} from "../scroll/scroll.component";
 import {StateService} from "../core-nlp/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {PaginatedQuery, SearchMark} from "../model/commons";
 import {Observable} from "rxjs";
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material";
 import {ApplicationConfig} from "../core-nlp/application.config";
-import { NbToastrService } from '@nebular/theme';
+import {NbDialogRef, NbDialogService, NbToastrService} from '@nebular/theme';
+import {JsonEditorComponent, JsonEditorOptions} from 'ang-jsoneditor';
 
 @Component({
   selector: 'tock-logs',
@@ -40,7 +40,7 @@ export class LogsComponent extends ScrollComponent<Log> {
 
   constructor(state: StateService,
               private nlp: NlpService,
-              private dialog: MatDialog,
+              private dialogService: NbDialogService,
               private config: ApplicationConfig,
               private toastrService: NbToastrService) {
     super(state);
@@ -73,10 +73,10 @@ export class LogsComponent extends ScrollComponent<Log> {
   }
 
   displayFullLog(log: Log) {
-    this.dialog.open(DisplayFullLogComponent, {
-      data: {
-        request: log.requestDetails(),
-        response: log.responseDetails()
+    this.dialogService.open(DisplayFullLogComponent, {
+      context: {
+        request: JSON.parse(log.requestDetails()),
+        response: JSON.parse(log.responseDetails())
       }
     });
   }
@@ -96,23 +96,70 @@ export class LogsComponent extends ScrollComponent<Log> {
 
 @Component({
   selector: 'tock-display-full-log',
-  template: `<h1 mat-dialog-title>Request Full Log</h1>
-  <div mat-dialog-content>
-    Request:
-    <pre>{{data.request}}</pre>
-    Response:
-    <pre>{{data.response}}</pre>
-  </div>
-  <div mat-dialog-actions>
-    <button mat-raised-button mat-dialog-close color="primary">Close</button>
-  </div>`
+  template: `
+    <nb-card status="primary">
+      <nb-card-header>
+        Full Log
+      </nb-card-header>
+      <nb-card-body class="body-content">
+        <nb-card status="info" style="margin: 0">
+          <nb-card-header style="border-top-left-radius: 0; border-top-right-radius: 0; text-align: center;">
+            Request
+          </nb-card-header>
+          <nb-card-body style="padding: 0">
+            <json-editor [options]="editorOptions" [data]="request"></json-editor>
+          </nb-card-body>
+        </nb-card>
+
+        <nb-card status="success" style="margin: 0">
+          <nb-card-header style="border-top-left-radius: 0; border-top-right-radius: 0; text-align: center;">
+            Response
+          </nb-card-header>
+          <nb-card-body style="padding: 0">
+            <json-editor [options]="editorOptions" [data]="response"></json-editor>
+          </nb-card-body>
+        </nb-card>
+      </nb-card-body>
+      <nb-card-footer class="btn-align">
+        <button nbButton status="primary" (click)="close()">Close</button>
+      </nb-card-footer>
+    </nb-card>
+  `,
+  styles: [`:host ::ng-deep json-editor,
+            :host ::ng-deep json-editor .jsoneditor,
+            :host ::ng-deep json-editor > div,
+            :host ::ng-deep json-editor jsoneditor-outer {
+              height: 30rem;
+              width: 25rem;
+            }
+            .body-content {
+              padding: 0;
+              display: inline-flex;
+            }
+            .btn-align {
+              text-align: right;
+            }
+  `
+  ]
 })
 export class DisplayFullLogComponent {
+  public editorOptions: JsonEditorOptions;
+  @Input() request: string;
+  @Input() response: string;
 
-  constructor(public dialogRef: MatDialogRef<DisplayFullLogComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: any) {
+  @ViewChild(JsonEditorComponent, { static: true }) editor: JsonEditorComponent;
 
+  constructor(public dialogRef: NbDialogRef<DisplayFullLogComponent>) {
+
+    this.editorOptions = new JsonEditorOptions();
+    this.editorOptions.modes = ['code', 'text', 'tree', 'view'];
+    this.editorOptions.mode = 'view';
+    this.editorOptions.expandAll = true;
+    this.editorOptions.mainMenuBar = false;
+    this.editorOptions.navigationBar = false;
   }
 
-
+  close() {
+    this.dialogRef.close();
+  }
 }

@@ -58,6 +58,7 @@ import {
   NbTooltipModule
 } from "@nebular/theme";
 import {ThemeModule} from "../theme/theme.module";
+import { NgJsonEditorModule } from 'ang-jsoneditor'
 
 const routes: Routes = [
   {
@@ -134,7 +135,8 @@ export class NlpRoutingModule {
     NbSelectModule,
     NbButtonModule,
     NbTooltipModule,
-    NbInputModule
+    NbInputModule,
+    NgJsonEditorModule
   ],
   declarations: [
     NlpTabsComponent,

@@ -34,12 +34,14 @@ import {
   NbRadioModule, NbRouteTabsetModule,
   NbSelectModule,
   NbSpinnerModule, NbTabsetModule,
-  NbTooltipModule
+  NbTooltipModule,
+  NbDialogModule
 } from "@nebular/theme";
 import {DisplayUserDataComponent, UserLogsComponent} from "./user/user-logs.component";
 import {MomentModule} from "ngx-moment";
 import {ConfigurationTabsComponent} from "./configuration-tabs.component";
 import {NamespacesComponent} from "./namespace/namespaces.component";
+import { NgJsonEditorModule } from 'ang-jsoneditor'
 
 const routes: Routes = [
   {
@@ -113,7 +115,9 @@ export class ApplicationsRoutingModule {
     NbSelectModule,
     NbAccordionModule,
     NbSpinnerModule,
-    NbRadioModule
+    NbRadioModule,
+    NgJsonEditorModule,
+    NbDialogModule.forRoot()
   ],
   declarations: [
     ApplicationsComponent,
