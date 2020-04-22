@@ -112,6 +112,8 @@ interface ApplicationConfiguration {
 
     fun getEntityTypeByName(name: String): EntityTypeDefinition?
 
+    fun isEntityTypeObfuscated(name: String): Boolean
+
     /**
      * Load DictionaryData for entity qualified name.
      */

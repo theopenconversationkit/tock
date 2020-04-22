@@ -32,6 +32,8 @@ internal class EntityTypeDefinition_Deserializer : JsonDeserializer<EntityTypeDe
             var _subEntities_set : Boolean = false
             var _dictionary_: Boolean? = null
             var _dictionary_set : Boolean = false
+            var _obfuscated_: Boolean? = null
+            var _obfuscated_set : Boolean = false
             var __id_: Id<EntityTypeDefinition>? = null
             var __id_set : Boolean = false
             var _token_ : JsonToken? = currentToken
@@ -64,6 +66,11 @@ internal class EntityTypeDefinition_Deserializer : JsonDeserializer<EntityTypeDe
                              else p.booleanValue;
                             _dictionary_set = true
                             }
+                    "obfuscated" -> {
+                            _obfuscated_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.booleanValue;
+                            _obfuscated_set = true
+                            }
                     "_id" -> {
                             __id_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(__id__reference);
@@ -78,9 +85,10 @@ internal class EntityTypeDefinition_Deserializer : JsonDeserializer<EntityTypeDe
                 _token_ = currentToken
                         } 
             return if(_name_set && _description_set && _subEntities_set && _dictionary_set &&
-                    __id_set)
+                    _obfuscated_set && __id_set)
                     EntityTypeDefinition(name = _name_!!, description = _description_!!, subEntities
-                            = _subEntities_!!, dictionary = _dictionary_!!, _id = __id_!!)
+                            = _subEntities_!!, dictionary = _dictionary_!!, obfuscated =
+                            _obfuscated_!!, _id = __id_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_name_set)
@@ -91,6 +99,8 @@ internal class EntityTypeDefinition_Deserializer : JsonDeserializer<EntityTypeDe
                     map[parameters.getValue("subEntities")] = _subEntities_
                     if(_dictionary_set)
                     map[parameters.getValue("dictionary")] = _dictionary_
+                    if(_obfuscated_set)
+                    map[parameters.getValue("obfuscated")] = _obfuscated_
                     if(__id_set)
                     map[parameters.getValue("_id")] = __id_ 
                     primaryConstructor.callBy(map) 
@@ -107,7 +117,8 @@ internal class EntityTypeDefinition_Deserializer : JsonDeserializer<EntityTypeDe
                 kotlin.collections.mapOf("name" to primaryConstructor.findParameterByName("name")!!,
                 "description" to primaryConstructor.findParameterByName("description")!!,
                 "subEntities" to primaryConstructor.findParameterByName("subEntities")!!,
-                "dictionary" to primaryConstructor.findParameterByName("dictionary")!!, "_id" to
+                "dictionary" to primaryConstructor.findParameterByName("dictionary")!!, "obfuscated"
+                to primaryConstructor.findParameterByName("obfuscated")!!, "_id" to
                 primaryConstructor.findParameterByName("_id")!!) }
 
         private val _subEntities__reference: TypeReference<List<EntityDefinition>> = object :

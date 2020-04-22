@@ -18,6 +18,7 @@ package ai.tock.shared.security
 
 import ai.tock.shared.Loader
 import ai.tock.shared.error
+import ai.tock.shared.security.StringObfuscatorMode.normal
 import mu.KotlinLogging
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -29,7 +30,7 @@ object TockObfuscatorService {
     private val logger = KotlinLogging.logger {}
 
     private val stringObfuscators: MutableList<StringObfuscator> = CopyOnWriteArrayList()
-    private val parameterObfuscators: MutableList<ParameterObfuscator> = CopyOnWriteArrayList()
+    private val mapObfuscators: MutableList<MapObfuscator> = CopyOnWriteArrayList()
 
     internal fun loadObfuscators() {
         try {
@@ -47,32 +48,46 @@ object TockObfuscatorService {
     }
 
     /**
-     * Register string stringObfuscators.
+     * Registers string stringObfuscators.
      */
     fun registerStringObfuscator(vararg newObfuscators: StringObfuscator) {
         stringObfuscators.addAll(newObfuscators.toList())
     }
 
     /**
-     * Register parameters stringObfuscators.
+     * Registers parameters stringObfuscators.
      */
-    fun registerParameterObfuscator(vararg newObfuscators: ParameterObfuscator) {
-        parameterObfuscators.addAll(newObfuscators.toList())
+    fun registerParameterObfuscator(vararg newObfuscators: MapObfuscator) {
+        mapObfuscators.addAll(newObfuscators.toList())
     }
 
     /**
-     * Remove all current stringObfuscators.
+     * Removes all current stringObfuscators.
      */
     fun deregisterObfuscators() {
         stringObfuscators.clear()
-        parameterObfuscators.clear()
+        mapObfuscators.clear()
     }
 
-    fun obfuscate(texts: List<String>): List<String> {
-        return texts.map { obfuscate(it)!! }
+    /**
+     * Obfuscates list of texts.
+     *
+     * @param texts the text list to obfuscate
+     * @param mode the obfuscation mode
+     * @param obfuscatedRanges a map (texts list indexed) of forced obfuscated ranges
+     */
+    fun obfuscate(texts: List<String>, mode: StringObfuscatorMode = normal, obfuscatedRanges: Map<Int, List<IntRange>> = emptyMap()): List<String> {
+        return texts.mapIndexed { index, t -> obfuscate(t, mode, obfuscatedRanges[index] ?: emptyList()) ?: "" }
     }
 
-    fun obfuscate(text: String?, mode: StringObfuscatorMode = StringObfuscatorMode.normal): String? {
+    /**
+     * Obfuscates text.
+     *
+     * @param text the text to obfuscate
+     * @param mode the obfuscation mode
+     * @param obfuscatedRanges the forced obfuscation ranges
+     */
+    fun obfuscate(text: String?, mode: StringObfuscatorMode = normal, obfuscatedRanges: List<IntRange> = emptyList()): String? {
         return if (text == null) {
             null
         } else {
@@ -80,13 +95,21 @@ object TockObfuscatorService {
             stringObfuscators.forEach {
                 t = it.obfuscate(t, mode)
             }
+            obfuscatedRanges.asSequence().filterNot { it.isEmpty() }.forEach {
+                t = t.replaceRange(it, "*".repeat(1 + it.last - it.first))
+            }
             t
         }
     }
 
-    fun obfuscate(parameters: Map<String, String>): Map<String, String> {
-        var p: Map<String, String> = parameters
-        parameterObfuscators.forEach {
+    /**
+     * Obfuscates a map - usually key-based.
+     *
+     * @map the map to be obfuscated
+     */
+    fun obfuscate(map: Map<String, String>): Map<String, String> {
+        var p: Map<String, String> = map
+        mapObfuscators.forEach {
             p = it.obfuscate(p)
         }
         return p

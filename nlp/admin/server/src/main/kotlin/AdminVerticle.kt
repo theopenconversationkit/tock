@@ -227,7 +227,7 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        //Retrieve qualified sentences dump that matches given application identifier and intent
+        //Retrieve qualified sentences dum<p that matches given application identifier and intent
         blockingJsonGet("/sentences/dump/:dumpType/:applicationId/:intent", admin) {
             val id: Id<ApplicationDefinition> = it.pathId("applicationId")
             if (it.organization == front.getApplicationById(id)?.namespace) {
@@ -541,9 +541,9 @@ open class AdminVerticle : WebVerticle() {
         jsonPost("/sentences/search", nlpUser)
         { context, s: SearchQuery, handler: Handler<SentencesReport> ->
             if (context.organization == s.namespace) {
-                context.isAuthorized(nlpUser) { plain ->
+                context.isAuthorized(admin) { plain ->
                     context.executeBlocking {
-                        handler.handle(service.searchSentences(s, !(plain.result() ?: false)))
+                        handler.handle(service.searchSentences(s, !plain.result()))
                     }
                 }
             } else {
@@ -710,7 +710,8 @@ open class AdminVerticle : WebVerticle() {
                         copy(
                             description = entityType.description,
                             subEntities = entityType.subEntities,
-                            dictionary = entityType.dictionary
+                            dictionary = entityType.dictionary,
+                            obfuscated = entityType.obfuscated
                         )
                     }
                 if (update != null) {
@@ -736,7 +737,7 @@ open class AdminVerticle : WebVerticle() {
         jsonPost("/test/intent-errors", nlpUser)
         { context, query: TestBuildQuery, handler: Handler<IntentTestErrorQueryResultReport> ->
             if (context.organization == query.namespace) {
-                context.isAuthorized(technicalAdmin) { plain ->
+                context.isAuthorized(admin) { plain ->
                     context.executeBlocking {
                         val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
                         handler.handle(AdminService.searchTestIntentErrors(query.toTestErrorQuery(app), !(plain.result()
@@ -767,7 +768,7 @@ open class AdminVerticle : WebVerticle() {
         jsonPost("/test/entity-errors", nlpUser)
         { context, query: TestBuildQuery, handler: Handler<EntityTestErrorQueryResultReport> ->
             if (context.organization == query.namespace) {
-                context.isAuthorized(technicalAdmin) { plain ->
+                context.isAuthorized(admin) { plain ->
                     context.executeBlocking {
                         val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
                         handler.handle(service.searchTestEntityErrors(query.toTestErrorQuery(app), !(plain.result()

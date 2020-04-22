@@ -269,7 +269,7 @@ object BotAdminService {
             front.search(query)
                 .sentences
                 .map { s ->
-                    SentenceReport(s)
+                    SentenceReport(s, true)
                 }
         } else {
             logger.warn { "unknown intent: ${namespace} ${intentName} - skipped" }

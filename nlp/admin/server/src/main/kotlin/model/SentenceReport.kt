@@ -16,6 +16,7 @@
 
 package ai.tock.nlp.admin.model
 
+import ai.tock.nlp.admin.AdminService.obfuscatedEntityRanges
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.ClassifiedSentence
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus
@@ -54,40 +55,47 @@ data class SentenceReport(
         language: Locale,
         applicationId: Id<ApplicationDefinition>,
         intentId: Id<IntentDefinition>?
-    )
-            : this(
-        obfuscate(query.retainedQuery)!!,
-        language,
-        applicationId,
-        now(),
-        now(),
-        ClassifiedSentenceStatus.inbox,
-        ClassificationReport(query, intentId)
-    ) {
+    ) :
+        this(
+            obfuscate(
+                text = query.retainedQuery,
+                obfuscatedRanges = query.entities.filter { it.entity.entityType.obfuscated }.map { it.toClosedRange() }
+            ) ?: "",
+            language,
+            applicationId,
+            now(),
+            now(),
+            ClassifiedSentenceStatus.inbox,
+            ClassificationReport(query, intentId)
+        ) {
         if (text != query.retainedQuery) {
             key = encrypt(query.retainedQuery)
         }
     }
 
-    constructor(sentence: ClassifiedSentence, encryptSentences: Boolean = true) : this(
-        if (encryptSentences) obfuscate(sentence.text)!! else sentence.text,
-        sentence.language,
-        sentence.applicationId,
-        sentence.creationDate,
-        sentence.updateDate,
-        sentence.status,
-        ClassificationReport(sentence),
-        forReview = sentence.forReview,
-        reviewComment = sentence.reviewComment,
-        qualifier = sentence.qualifier
-    ) {
+    constructor(sentence: ClassifiedSentence, obfuscateSentences: Boolean = true) :
+        this(
+            if (obfuscateSentences)
+                obfuscate(text = sentence.text, obfuscatedRanges = sentence.obfuscatedEntityRanges()) ?: ""
+            else sentence.text,
+            sentence.language,
+            sentence.applicationId,
+            sentence.creationDate,
+            sentence.updateDate,
+            sentence.status,
+            ClassificationReport(sentence),
+            forReview = sentence.forReview,
+            reviewComment = sentence.reviewComment,
+            qualifier = sentence.qualifier
+        ) {
         if (text != sentence.text) {
             key = encrypt(sentence.text)
         }
     }
 
-    constructor(error: IntentTestError, encryptSentences: Boolean) : this(
-        if (encryptSentences) obfuscate(error.text)!! else error.text,
+    constructor(error: IntentTestError, obfuscatedSentences: Boolean, obfuscatedRanges: List<IntRange>) : this(
+        if (obfuscatedSentences) obfuscate(text = error.text, obfuscatedRanges = obfuscatedRanges) ?: ""
+        else error.text,
         error.language,
         error.applicationId,
         error.firstDetectionDate,
@@ -96,8 +104,9 @@ data class SentenceReport(
         ClassificationReport(error)
     )
 
-    constructor(error: EntityTestError, encryptSentences: Boolean) : this(
-        if (encryptSentences) obfuscate(error.text)!! else error.text,
+    constructor(error: EntityTestError, obfuscatedSentences: Boolean, obfuscatedRanges: List<IntRange>) : this(
+        if (obfuscatedSentences) obfuscate(text = error.text, obfuscatedRanges = obfuscatedRanges) ?: ""
+        else error.text,
         error.language,
         error.applicationId,
         error.firstDetectionDate,

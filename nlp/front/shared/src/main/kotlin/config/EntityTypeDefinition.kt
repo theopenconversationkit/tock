@@ -40,6 +40,10 @@ data class EntityTypeDefinition(
      */
     val dictionary: Boolean = false,
     /**
+     * Is the entity has to be systematically obfuscated?
+     */
+    val obfuscated: Boolean = false,
+    /**
      * The unique id of the entity.
      */
     val _id: Id<EntityTypeDefinition> = newId()

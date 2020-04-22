@@ -40,6 +40,14 @@
       </mat-chip-list>
   </nb-card-body>
 </nb-card>
+<nb-card class="entities" *ngIf="selectedEntityType != null">
+  <nb-card-header>Configuration for {{ selectedEntityType.name }}</nb-card-header>
+  <nb-card-body>
+    <mat-checkbox [(ngModel)]="selectedEntityType.obfuscated" class="no-model model" (change)="updateEntityType()"
+                  matTooltip="If selected all values are obfuscated in Tock Studio">Obsfuscated
+    </mat-checkbox>
+  </nb-card-body>
+</nb-card>
 <nb-card class="entities" *ngIf="selectedDictionary != null">
   <nb-card-header>Predefined values for {{ selectedEntityType.name }}</nb-card-header>
   <nb-card-body>
@@ -74,7 +82,7 @@
         <button mat-icon-button (click)="createPredefinedValue(pv.value)"><mat-icon>add</mat-icon></button>
       </div>
 
-      <table class="values">
+      <table class="values" *ngIf="selectedDictionary.values.length !== 0">
         <thead>
           <th [width]="'20%'">Predefined Value</th>
           <th [width]="'50%'">Allowed labels</th>

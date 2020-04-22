@@ -29,5 +29,5 @@ interface ObfuscatorService {
     /**
      * Returns the parameter obfuscators to register.
      */
-    fun parameterObfuscators(): List<ParameterObfuscator>
+    fun parameterObfuscators(): List<MapObfuscator>
 }

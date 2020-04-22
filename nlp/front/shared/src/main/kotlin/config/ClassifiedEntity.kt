@@ -19,6 +19,7 @@ package ai.tock.nlp.front.shared.config
 import ai.tock.nlp.core.Entity
 import ai.tock.nlp.core.EntityRecognition
 import ai.tock.nlp.core.EntityValue
+import ai.tock.nlp.core.IntOpenRange
 import ai.tock.nlp.front.shared.parser.ParsedEntityValue
 
 /**
@@ -36,16 +37,16 @@ data class ClassifiedEntity(
     /**
      * Start index of the entity in the text.
      */
-    val start: Int,
+    override val start: Int,
     /**
      * End index (exclusive) of the entity in the text.
      */
-    val end: Int,
+    override val end: Int,
     /**
      * The sub entities of the entity.
      */
     val subEntities: List<ClassifiedEntity> = emptyList()
-) {
+) : IntOpenRange {
 
     constructor(value: ParsedEntityValue) : this(
         value.entity.entityType.name,

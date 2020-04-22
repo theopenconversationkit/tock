@@ -297,4 +297,7 @@ object ApplicationConfigurationService :
         val builtin = core.getBuiltInEntityTypes()
         return getEntityTypes().filter { it.name.namespace() == namespace || builtin.contains(it.name) }
     }
+
+    override fun isEntityTypeObfuscated(name: String): Boolean =
+        ConfigurationRepository.entityTypeByName(name)?.obfuscated ?: true
 }

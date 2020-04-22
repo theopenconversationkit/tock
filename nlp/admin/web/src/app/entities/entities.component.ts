@@ -25,7 +25,7 @@ import {Dictionary, EntityDefinition, EntityType, PredefinedValue} from "../mode
 import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialog.component";
 import {JsonUtils} from "../model/commons";
 import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
-import { NbToastrService } from '@nebular/theme';
+import {NbToastrService} from '@nebular/theme';
 
 @Component({
   selector: 'tock-entities',
@@ -84,9 +84,15 @@ export class EntitiesComponent implements OnInit {
         this.nlp.removeEntityType(entityType).subscribe(
           _ => {
             this.state.resetConfiguration();
-            this.toastrService.show(`Entity Type ${entityType.name} removed`, "Remove Entity Type", {duration: 2000, status: 'success'});
+            this.toastrService.show(`Entity Type ${entityType.name} removed`, "Remove Entity Type", {
+              duration: 2000,
+              status: 'success'
+            });
           },
-          _ => this.toastrService.show(`Delete Entity Type ${entityType.name} failed`, "Error", {duration: 5000, status: 'danger'})
+          _ => this.toastrService.show(`Delete Entity Type ${entityType.name} failed`, "Error", {
+            duration: 5000,
+            status: 'danger'
+          })
         );
       }
     });
@@ -119,6 +125,12 @@ export class EntitiesComponent implements OnInit {
     }
   }
 
+  updateEntityType() {
+    this.nlp.updateEntityType(this.selectedEntityType).subscribe(
+      _ => this.toastrService.show(`Configuration Updated`, "Update", {duration: 5000, status: 'success'})
+    );
+  }
+
   updateDictionary() {
     this.nlp.saveDictionary(this.selectedDictionary).subscribe(
       _ => this.toastrService.show(`Configuration Updated`, "Update", {duration: 5000, status: 'success'})
@@ -135,7 +147,7 @@ export class EntitiesComponent implements OnInit {
         input.focus();
       } else {
         if (this.selectedDictionary.values.some(v => v.value === newValue)) {
-          this.toastrService.show(`Predefined Value already exist`, "Error", {duration: 5000, status: 'warning'} );
+          this.toastrService.show(`Predefined Value already exist`, "Error", {duration: 5000, status: 'warning'});
           input.value = oldValue;
           input.focus();
         } else {
@@ -147,7 +159,10 @@ export class EntitiesComponent implements OnInit {
             error => {
               input.value = oldValue;
               input.focus();
-              this.toastrService.show(`Update Predefined Value '${name}' failed`, "Error", {duration: 5000, status: 'danger'})
+              this.toastrService.show(`Update Predefined Value '${name}' failed`, "Error", {
+                duration: 5000,
+                status: 'danger'
+              })
             })
         }
       }
@@ -169,7 +184,10 @@ export class EntitiesComponent implements OnInit {
             });
           }
         },
-        _ => this.toastrService.show(`Create Predefined Value '${name}' failed`, "Error", {duration: 5000, status: 'danger'}))
+        _ => this.toastrService.show(`Create Predefined Value '${name}' failed`, "Error", {
+          duration: 5000,
+          status: 'danger'
+        }))
     }
   }
 
@@ -193,7 +211,10 @@ export class EntitiesComponent implements OnInit {
           });
         }
       },
-      _ => this.toastrService.show(`Delete Predefined Value '${name}' failed`, "Error", {duration: 5000, status: 'danger'}))
+      _ => this.toastrService.show(`Delete Predefined Value '${name}' failed`, "Error", {
+        duration: 5000,
+        status: 'danger'
+      }))
   }
 
   createLabel(predefinedValue: PredefinedValue, name: string) {
@@ -210,7 +231,10 @@ export class EntitiesComponent implements OnInit {
           next => {
             this.selectedDictionary = next;
           },
-          _ => this.toastrService.show(`Create Label '${name}' for Predefined Value '${predefinedValue.value}' failed`, "Error", {duration: 5000, status: 'danger'}))
+          _ => this.toastrService.show(`Create Label '${name}' for Predefined Value '${predefinedValue.value}' failed`, "Error", {
+            duration: 5000,
+            status: 'danger'
+          }))
     }
   }
 
@@ -232,7 +256,10 @@ export class EntitiesComponent implements OnInit {
             }
           })
         },
-        _ => this.toastrService.show(`Delete Label '${name}' for Predefined Value '${predefinedValue.value}' failed`, "Error", {duration: 5000, status: 'danger'}))
+        _ => this.toastrService.show(`Delete Label '${name}' for Predefined Value '${predefinedValue.value}' failed`, "Error", {
+          duration: 5000,
+          status: 'danger'
+        }))
   }
 
 }

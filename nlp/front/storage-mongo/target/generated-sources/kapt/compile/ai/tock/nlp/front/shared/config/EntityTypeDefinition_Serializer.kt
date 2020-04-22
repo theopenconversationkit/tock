@@ -37,6 +37,9 @@ internal class EntityTypeDefinition_Serializer :
         gen.writeFieldName("dictionary")
         val _dictionary_ = value.dictionary
         gen.writeBoolean(_dictionary_)
+        gen.writeFieldName("obfuscated")
+        val _obfuscated_ = value.obfuscated
+        gen.writeBoolean(_obfuscated_)
         gen.writeFieldName("_id")
         val __id_ = value._id
         serializers.defaultSerializeValue(__id_, gen)

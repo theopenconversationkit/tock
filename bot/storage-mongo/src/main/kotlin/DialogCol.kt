@@ -257,6 +257,7 @@ internal data class DialogCol(
             this(
                 sentence.stringText?.let {
                     val text = checkMaxLengthAllowed(it)
+                    //TODO obfuscate only when viewing - see #862
                     if (sentence.state.testEvent) text else obfuscate(text)
                 },
                 sentence is SendSentenceWithNotLoadedMessage || sentence.messages.isNotEmpty()
@@ -300,7 +301,11 @@ internal data class DialogCol(
     ) : ActionMongoWrapper() {
         val parameters = obfuscate(parameters)
 
-        constructor(choice: SendChoice) : this(choice.intentName, obfuscate(choice.parameters)) {
+        constructor(choice: SendChoice) :
+            this(
+                choice.intentName,
+                if (choice.state.testEvent) choice.parameters else obfuscate(choice.parameters)
+            ) {
             assignFrom(choice)
         }
 

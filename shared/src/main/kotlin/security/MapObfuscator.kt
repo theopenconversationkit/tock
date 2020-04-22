@@ -13,25 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package ai.tock.nlp.admin.model
-
-import ai.tock.nlp.front.shared.config.SentencesQueryResult
+package ai.tock.shared.security
 
 /**
- *
+ * Obfuscate a map.
  */
-data class SentencesReport(
-    val sentences: List<SentenceReport>,
-    val total: Long,
-    val start: Long,
-    val end: Long) {
+interface MapObfuscator {
 
-    constructor(start: Long, result: SentencesQueryResult, obfuscateSentences: Boolean) :
-        this(
-            result.sentences.map { SentenceReport(it, obfuscateSentences) },
-            result.total,
-            start,
-            start + result.sentences.size
-        )
+    /**
+     * Obfuscate the map.
+     */
+    fun obfuscate(map: Map<String, String>): Map<String, String>
 }

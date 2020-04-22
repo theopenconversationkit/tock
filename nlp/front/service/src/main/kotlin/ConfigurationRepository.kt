@@ -90,7 +90,11 @@ internal object ConfigurationRepository {
         val entityTypesDefinitionMap = entityTypeDAO.getEntityTypes().map { it.name to it }.toMap()
         //init subEntities only when all entities are known
         val entityTypesMap =
-            entityTypesDefinitionMap.mapValues { (_, v) -> EntityType(v.name, dictionary = v.dictionary) }
+            entityTypesDefinitionMap.mapValues { (_, v) ->
+                EntityType(
+                v.name, dictionary = v.dictionary, obfuscated = v.obfuscated
+                )
+            }
 
         //init subEntities
         return ConcurrentHashMap(

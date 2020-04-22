@@ -20,7 +20,7 @@ import ai.tock.shared.security.StringObfuscatorMode.display
 import ai.tock.shared.security.TockObfuscatorService.obfuscate
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 
@@ -49,5 +49,11 @@ class TockObfuscatorServiceTest {
         val obfuscated = obfuscate("aze 222777777 223 199999999 ds")
         assertEquals("aze sososecret 223 sososecret ds", obfuscated)
         assertEquals("aze ? 223 ? ds", obfuscate(obfuscated, display))
+    }
+
+    @Test
+    fun `obfuscate has to obfuscate obfuscated ranges`() {
+        val obfuscated = obfuscate("abcdefghijklm", obfuscatedRanges = listOf(1..3, 5..6))
+        assertEquals("a***e**hijklm", obfuscated)
     }
 }

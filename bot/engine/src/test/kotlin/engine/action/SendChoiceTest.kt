@@ -18,7 +18,7 @@ package ai.tock.bot.engine.action
 
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.engine.user.PlayerId
-import ai.tock.shared.security.ParameterObfuscator
+import ai.tock.shared.security.MapObfuscator
 import ai.tock.shared.security.StringObfuscatorMode
 import ai.tock.shared.security.TockObfuscatorService
 import io.mockk.spyk
@@ -33,9 +33,9 @@ import kotlin.test.assertTrue
  */
 class SendChoiceTest {
 
-    class TestParamObfuscator : ParameterObfuscator {
-        override fun obfuscate(parameters: Map<String, String>): Map<String, String> {
-            return parameters.mapValues { "" }
+    class TestParamObfuscator : MapObfuscator {
+        override fun obfuscate(map: Map<String, String>): Map<String, String> {
+            return map.mapValues { "" }
         }
     }
 
