@@ -25,29 +25,67 @@ import {ScrollComponent} from "../../scroll/scroll.component";
 import {Observable} from "rxjs";
 import {PaginatedResult} from "../../model/nlp";
 import {PaginatedQuery} from "../../model/commons";
-import { NbToastrService } from '@nebular/theme';
+import {NbToastrService} from '@nebular/theme';
+import {BotApplicationConfiguration, ConnectorType} from "../../core/model/configuration";
+import {TestPlan} from "../../test/model/test";
 
 @Component({
-  selector: 'tock-user-timelines',
-  templateUrl: './user-timelines.component.html',
-  styleUrls: ['./user-timelines.component.css']
+  selector: 'tock-history',
+  templateUrl: './history.component.html',
+  styleUrls: ['./history.component.css']
 })
-export class UserTimelinesComponent extends ScrollComponent<UserReport> {
+export class HistoryComponent extends ScrollComponent<UserReport> {
 
   filter: UserFilter = new UserFilter([], false);
-  fromDateOpen: boolean = false;
-  toDateOpen: boolean = false;
+  selectedUser: UserReport;
+  selectedPlan: TestPlan;
+  configurations: BotApplicationConfiguration[]
+  isCollapsed: boolean = true;
+  loadingDialog: boolean = false;
 
   constructor(state: StateService,
               private monitoring: MonitoringService,
               private botConfiguration: BotConfigurationService,
               private toastrService: NbToastrService) {
     super(state);
-    this.botConfiguration.configurations.subscribe(_ => this.refresh());
+    this.botConfiguration.configurations.subscribe(configs => {
+      this.configurations = configs
+      this.refresh()
+    });
+  }
+
+  toggle() {
+    this.isCollapsed = !this.isCollapsed;
+  }
+
+  reload() {
+    this.selectedUser = null;
+    this.refresh()
+  }
+
+  protected loadResults(result: PaginatedResult<UserReport>, init: boolean): boolean {
+    if (super.loadResults(result, init)) {
+      if (this.data.length !== 0 && this.selectedUser == null) {
+        this.selectedUser = this.data[0];
+        this.loadDialog(this.selectedUser);
+      }
+      return true;
+    } else {
+      return false;
+    }
   }
 
   containsFlag(flag: string): boolean {
     return this.filter.flags.indexOf(flag) !== -1
+  }
+
+  getConnector(applicationId: string): ConnectorType {
+    let connectors = this.configurations.filter(config => config.applicationId === applicationId).map(config => config.connectorType)
+    return connectors && connectors.length > 0 ? connectors[0] : null
+  }
+
+  getUserPicture(user: UserReport): string {
+    return user.userPreferences.picture ? user.userPreferences.picture : '/assets/images/people.png'
   }
 
   toggleFlag(flag: string) {
@@ -76,7 +114,7 @@ export class UserTimelinesComponent extends ScrollComponent<UserReport> {
   }
 
   waitAndRefresh() {
-    setTimeout(_ => this.refresh());
+    setTimeout(_ => this.reload());
   }
 
   search(query: PaginatedQuery): Observable<PaginatedResult<UserReport>> {
@@ -101,7 +139,6 @@ export class UserTimelinesComponent extends ScrollComponent<UserReport> {
       this.filter.displayTests);
   }
 
-
   private buildDialogQuery(user: UserReport): DialogReportQuery {
     const app = this.state.currentApplication;
     const language = this.state.currentLocale;
@@ -115,17 +152,16 @@ export class UserTimelinesComponent extends ScrollComponent<UserReport> {
       user.playerId);
   }
 
-  closeDialog(user: UserReport) {
-    user.displayDialogs = false;
-  }
-
   loadDialog(user: UserReport) {
+    this.loadingDialog = true;
     this.monitoring.dialogs(this.buildDialogQuery(user)).subscribe(r => {
       if (r.rows.length != 0) {
         user.userDialog = r.rows[0];
         this.monitoring.getTestPlansByNamespaceAndNlpModel().subscribe(r => user.testPlans = r);
       }
       user.displayDialogs = true;
+      this.loadingDialog = false;
+      this.selectedUser = user
     });
   }
 
@@ -136,14 +172,6 @@ export class UserTimelinesComponent extends ScrollComponent<UserReport> {
     }
     this.monitoring.addDialogToTestPlan(planId, dialog.id)
       .subscribe(_ => this.toastrService.show(`Dialog added to plan`, "Dialog Added", {duration: 3000}));
-  }
-
-  openFromCalendar(){
-    this.fromDateOpen = !this.fromDateOpen;
-  }
-
-  openToCalendar(){
-    this.toDateOpen = !this.toDateOpen;
   }
 
 }
