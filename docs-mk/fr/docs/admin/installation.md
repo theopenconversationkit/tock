@@ -12,11 +12,11 @@ la capacité de Tock à monter en charge, les déploiementsde type _Cloud_, la s
 
 ## Installation avec Docker
 
-Les informations ci-dessous concernent l'installation avec [Docker](https://www.docker.com/). En analysant les descripteurs 
-Docker et [Docker Compose](https://docs.docker.com/compose/) fournis 
-(les `Dockerfile` et `docker-compose.yml`) on peut facilement concevoir une installation sans Docker.
+Le dépôt [`tock-docker`](https://github.com/theopenconversationkit/tock-docker) fournit une implémentation complète de 
+Tock pour les technologies [Docker](https://www.docker.com/) et [Docker Compose](https://docs.docker.com/compose/). 
+Tock est composé par défaut de plusieurs conteneurs/images Docker et d'une base de donnée [MongoDB](https://www.mongodb.com).
 
-Tock est composé par défaut de plusieurs conteneurs/images dockers et d'une base de donnée [MongoDB](https://www.mongodb.com).
+Pour en savoir plus sur l'installation de Tock avec Docker, voir les instructions du dépôt [`tock-docker`](https://github.com/theopenconversationkit/tock-docker).
 
 > Le guide [déployer Tock avec Docker](../guide/plateforme.md) dans la section _Découvrir Tock_ donne un exemple de déploiement 
 d'une plateforme complète en quelques minutes avec une empreinte minimale en utilisant Docker et Docker Compose. 
@@ -25,6 +25,121 @@ Cependant, cette méthode n'est pas envisageable pour un déploiement pérenne c
 Si vous souhaitez utiliser Docker Compose en production, merci de lire cet [article](https://docs.docker.com/compose/production/) 
 et de revoir la configuration, qui est uniquement donnée dans le projet `tock-docker` à titre d'exemple. 
 En particulier, la configuration des instances MongoDB doit être revue attentivement.
+
+## Installation sans Docker
+
+Il est tout à fait possible d'installer Tock sans utiliser Docker. En analysant les descripteurs fournis dans 
+[`tock-docker`](https://github.com/theopenconversationkit/tock-docker) (ie. les fichiers `pom.xml`, les `Dockerfile` 
+et `docker-compose.yml`) on peut facilement concevoir une installation sans Docker.
+
+Hormis la base de données MongoDB, tous les autres composants peuvent démarrer comme des applications Java/JVM classiques, par exemple :
+
+- directement en ligne de commande
+- au sein d'un serveur d'applications Java
+- depuis un outil de développement intégré (IDE)
+- etc.
+
+Pour en savoir plus sur les paramètres de lancement des différents composants Tock, vous pouvez vous inspirer 
+des commandes présentes dans les descripteurs de `tock-docker` ou encore des configurations fournies pour IntelliJ  
+(voir ci-dessous).
+
+### Ligne de commande
+
+Une technique consiste à rassembler les différentes dépendances et archives JAR dans un dossier puis démarrer le 
+composant ou l'application avec une commande Java classique.
+
+Pour exemple, le descripteur du composant `tock-docker-nlp-api` 
+ (voir [`pom.xml`](https://github.com/theopenconversationkit/tock-docker/blob/master/nlp-api/pom.xml))
+avec la commande suivante :
+
+    java $JAVA_ARGS -Dfile.encoding=UTF-8 -cp '/maven/*' ai.tock.nlp.api.StartNlpServiceKt
+
+### JAR exécutable
+
+Ce n'est pas la technique que nous recommandons, mais il est possible d'exécuter un JAR unique contenant toutes les 
+dépendances (parfois appelé _"fat JAR"_). Voici comment procéder pour créer un tel JAR, en reprenant l'exemple du 
+composant Tock NLP-API.
+
+Dans le POM du composant (`nlp/api/service/pom.xml`), ajoutez la déclaration suivante :
+
+```xml
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <mainClass>ai.tock.nlp.api.StartNlpServiceKt</mainClass>
+                                </manifest>
+                            </archive>
+                            <descriptors>
+                                <descriptor>src/main/assembly/jar-with-dependencies.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+```
+
+Créez également un descripteur d'archive `nlp/api/service/src/main/assembly/jar-with-dependencies.xml` avec le contenu suivant :
+
+```xml
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+    <id>jar-with-dependencies</id>
+    <formats>
+        <format>jar</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>/</outputDirectory>
+            <useProjectArtifact>true</useProjectArtifact>
+            <unpack>true</unpack>
+            <scope>runtime</scope>
+        </dependencySet>
+    </dependencySets>
+    <containerDescriptorHandlers>
+        <containerDescriptorHandler>
+            <!-- Merge service implementations from dependencies -->
+            <handlerName>metaInf-services</handlerName>
+        </containerDescriptorHandler>
+    </containerDescriptorHandlers>
+</assembly>
+```
+
+Pour finir, construisez l'archive _"jar-with-dependencies"_ avec `mvn package`.
+
+### Dans un IDE
+
+Pour le développement, il est possible d'exécuter les différents composants Tock (NLU, Studio, bot...) 
+depuis un IDE comme [IntelliJ](https://www.jetbrains.com/idea/), [Eclipse](https://www.eclipse.org/) ou 
+[Visual Studio Code](https://code.visualstudio.com/) par exemple.
+
+Outre les [images Docker](https://github.com/theopenconversationkit/tock-docker/blob/master/docker-compose.yml),
+des configurations pour IntelliJ sont fournies avec les sources de Tock :
+
+- Configuration [Services _Tock Studio_ complets (Bot + NLP) / `BotAdmin`](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/BotAdmin.xml) 
+- Configuration [Services _Tock Studio_ (NLP uniquement) / `Admin`](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/Admin.xml) 
+- Configuration [Service NLP / `NlpService`](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/NlpService.xml)
+- Configuration [Service d'entités / `Duckling`](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/Duckling.xml)
+- Configuration [Service construction des modèles NLP / `BuildWorker`](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/BuildWorker.xml)
+- Configuration [Service de compilation des scripts / `KotlinCompilerServer`](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/KotlinCompilerServer.xml)
+
+Enfin pour lancer les interfaces utilisateur (_Tock Studio_), les commandes sont décrites dans les liens suivants :
+
+- Instructions [Interface _Tock Studio_ complète (Bot + NLP)](https://github.com/theopenconversationkit/tock/blob/master/bot/admin/web/README.md)
+- Instructions [Interface _Tock Studio_ (NLP uniquement)](https://github.com/theopenconversationkit/tock/blob/master/nlp/admin/web/README.md)
 
 ## Base de données MongoDB
 
