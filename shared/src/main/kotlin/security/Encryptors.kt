@@ -21,7 +21,10 @@ import ai.tock.shared.error
 import ai.tock.shared.property
 import ai.tock.shared.propertyExists
 import mu.KotlinLogging
+import org.jasypt.contrib.org.apache.commons.codec_1_3.binary.Base64
 import org.jasypt.util.text.BasicTextEncryptor
+import java.nio.charset.StandardCharsets
+import java.security.MessageDigest
 
 private val logger = KotlinLogging.logger {}
 
@@ -46,6 +49,16 @@ private val textEncryptor: BasicTextEncryptor by lazy {
  * Is encryption enabled?
  */
 val encryptionEnabled: Boolean = propertyExists("tock_encrypt_pass")
+
+/**
+ * Encrypt with sha3.
+ */
+fun sha3(s: String): String =
+    String(
+        Base64.encodeBase64Chunked(
+            MessageDigest.getInstance("SHA3-512").digest(s.toByteArray(StandardCharsets.UTF_8))
+        )
+    )
 
 /**
  * Encrypt a string and return the result.

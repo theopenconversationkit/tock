@@ -28,7 +28,7 @@ import kotlin.test.assertNotEquals
 class WebhookActionConverterTest {
 
     @Test
-    fun `check user id is encrypted and decrypted`() {
+    fun `checks user id is encrypted and decrypted`() {
         val from = "my phone number"
         val message = WhatsAppTextMessage(WhatsAppTextBody("text"), "id", from, "a")
         val s = WebhookActionConverter.toEvent(message, "appId", mockk()) as SendSentence
@@ -45,5 +45,16 @@ class WebhookActionConverterTest {
         )
 
         assertEquals(from, output?.to)
+    }
+
+    @Test
+    fun `checks that two messages of the same user has the same encrypted id`() {
+        val from = "my phone number"
+        val message = WhatsAppTextMessage(WhatsAppTextBody("text"), "id", from, "a")
+        val message2 = WhatsAppTextMessage(WhatsAppTextBody("text2"), "id", from, "a")
+        val s = WebhookActionConverter.toEvent(message, "appId", mockk()) as SendSentence
+        val s2 = WebhookActionConverter.toEvent(message2, "appId", mockk()) as SendSentence
+
+        assertEquals(s.playerId, s2.playerId)
     }
 }

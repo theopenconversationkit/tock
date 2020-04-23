@@ -16,7 +16,7 @@
 
 package ai.tock.bot.connector.whatsapp
 
-import com.github.salomonbrys.kodein.instance
+import ai.tock.bot.connector.whatsapp.UserHashedIdCache.createHashedId
 import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppMessage
 import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppTextMessage
 import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppVoiceMessage
@@ -25,9 +25,9 @@ import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.shared.injector
-import ai.tock.shared.security.encrypt
 import ai.tock.stt.AudioCodec
 import ai.tock.stt.STT
+import com.github.salomonbrys.kodein.instance
 
 /**
  *
@@ -37,7 +37,7 @@ internal object WebhookActionConverter {
     private val stt: STT by injector.instance()
 
     fun toEvent(message: WhatsAppMessage, applicationId: String, client: WhatsAppClient): Event? {
-        val senderId = encrypt(message.from)
+        val senderId = createHashedId(message.from)
         return when (message) {
             is WhatsAppTextMessage -> SendSentence(
                 PlayerId(senderId),

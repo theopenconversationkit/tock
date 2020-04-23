@@ -16,13 +16,13 @@
 
 package ai.tock.bot.connector.whatsapp
 
+import ai.tock.bot.connector.whatsapp.UserHashedIdCache.getRealId
 import ai.tock.bot.connector.whatsapp.model.common.WhatsAppTextBody
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotMessage
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotRecipientType.individual
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotTextMessage
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
-import ai.tock.shared.security.decrypt
 
 /**
  *
@@ -32,13 +32,13 @@ internal object SendActionConverter {
     fun toBotMessage(action: Action): WhatsAppBotMessage? {
         return if (action is SendSentence) {
             action.message(whatsAppConnectorType) as? WhatsAppBotMessage
-                    ?: action.stringText?.let { text ->
-                        WhatsAppBotTextMessage(
-                            WhatsAppTextBody(text),
-                            individual,
-                            decrypt(action.recipientId.id)
-                        )
-                    } ?: error("null text in action $action")
+                ?: action.stringText?.let { text ->
+                    WhatsAppBotTextMessage(
+                        WhatsAppTextBody(text),
+                        individual,
+                        getRealId(action.recipientId.id)
+                    )
+                } ?: error("null text in action $action")
         } else {
             null
         }
