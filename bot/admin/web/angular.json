@@ -64,6 +64,14 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true
+            },
+            "dev": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.dev.ts"
+                }
+              ]
             }
           }
         },
@@ -75,6 +83,9 @@
           "configurations": {
             "production": {
               "browserTarget": "bot:build:production"
+            },
+            "dev": {
+              "browserTarget": "bot:build:dev"
             }
           }
         },

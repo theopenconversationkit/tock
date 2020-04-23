@@ -6,6 +6,7 @@
 **/target/*
 !**/target/generated-sources
 node_modules
+environment.dev.ts
 
 # IDEs and editors
 /.idea/*
