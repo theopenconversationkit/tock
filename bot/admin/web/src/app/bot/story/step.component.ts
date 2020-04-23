@@ -237,12 +237,13 @@ export class StepComponent implements OnInit {
   }
 
   userSentenceChange(userSentence: string) {
+    const step = this.step;
     if (userSentence.trim().length !== 0) {
-      if (!this.step.new) {
-        this.bot.saveI18nLabel(this.step.userSentence).subscribe(_ => {
+      if (!step.new) {
+        this.bot.saveI18nLabel(step.userSentence).subscribe(_ => {
         });
       }
-      if (this.step.intent.name.length === 0) {
+      if (step.intent.name.length === 0 && !step.entity) {
         const app = this.state.currentApplication;
         const language = this.state.currentLocale;
         this.nlp.parse(new ParseQuery(
@@ -255,10 +256,10 @@ export class StepComponent implements OnInit {
           if (r.classification.intentId) {
             const intent = this.state.findIntentById(r.classification.intentId);
             if (intent) {
-              this.step.intentDefinition = intent;
-              this.step.intent = new IntentName(intent.name);
-              this.onIntentChange(this.step, intent.name);
-              this.validateIntent(this.step, false);
+              step.intentDefinition = intent;
+              step.intent = new IntentName(intent.name);
+              this.onIntentChange(step, intent.name);
+              this.validateIntent(step, false);
             }
           }
         })
