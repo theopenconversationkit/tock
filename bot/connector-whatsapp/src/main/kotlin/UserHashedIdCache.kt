@@ -16,7 +16,7 @@
 
 package ai.tock.bot.connector.whatsapp
 
-import ai.tock.shared.security.sha3
+import ai.tock.shared.security.shaS256
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import java.util.concurrent.TimeUnit
@@ -28,7 +28,7 @@ internal object UserHashedIdCache {
             .expireAfterAccess(2, TimeUnit.MINUTES)
             .build()
 
-    fun createHashedId(id: String): String = sha3(id).apply { idCache.put(this, id) }
+    fun createHashedId(id: String): String = shaS256(id).apply { idCache.put(this, id) }
 
     fun getRealId(hashedId: String): String = idCache.getIfPresent(hashedId) ?: error("real id not found: $hashedId")
 }

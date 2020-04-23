@@ -51,12 +51,12 @@ private val textEncryptor: BasicTextEncryptor by lazy {
 val encryptionEnabled: Boolean = propertyExists("tock_encrypt_pass")
 
 /**
- * Encrypt with sha3.
+ * Encrypt with sha256.
  */
-fun sha3(s: String): String =
+fun shaS256(s: String): String =
     String(
         Base64.encodeBase64Chunked(
-            MessageDigest.getInstance("SHA3-512").digest(s.toByteArray(StandardCharsets.UTF_8))
+            MessageDigest.getInstance("SHA-256").digest(s.toByteArray(StandardCharsets.UTF_8))
         )
     )
 
