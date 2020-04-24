@@ -429,7 +429,6 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         if (!end) {
             end = true
             logger.info { "cleanup Test ${context.displayName}" }
-            clearAllMocks()
             lifecycle.end()
             logger.debug { "end cleanup Test ${context.displayName}" }
         }

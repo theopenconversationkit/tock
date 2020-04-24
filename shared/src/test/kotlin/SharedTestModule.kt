@@ -58,9 +58,11 @@ val sharedTestModule = Kodein.Module {
 
     try {
         clearMocks(mockedVertx)
-        val vertxProvider = mockk<VertxProvider>()
-        every { vertxProvider.vertx() } returns mockedVertx
-        bind<VertxProvider>() with singleton { vertxProvider }
+        bind<VertxProvider>() with singleton {
+            mockk<VertxProvider>() {
+                every { vertx() } returns mockedVertx
+            }
+        }
     } catch (e: Throwable) {
         //vertx not in classpath : ignore
         logger.trace("vertx is not present in classpath")
