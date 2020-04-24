@@ -16,6 +16,7 @@
 
 package ai.tock.bot.connector.whatsapp
 
+import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorCallbackBase
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotRecipientType
 

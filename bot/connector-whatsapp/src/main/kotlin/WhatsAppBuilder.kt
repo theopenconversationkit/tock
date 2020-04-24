@@ -82,7 +82,7 @@ fun BotBus.whatsAppText(
     WhatsAppBotTextMessage(
         text = WhatsAppTextBody(translate(text).toString()),
         recipientType = (connectorData.callback as? WhatsAppConnectorCallback)?.recipientType ?: WhatsAppBotRecipientType.individual,
-        to = userId.id,
+        userId = userId.id,
         previewUrl = previewUrl
     )
 
@@ -101,5 +101,5 @@ fun BotBus.whatsAppImage(
             caption?.let { translate(it).toString() }
         ),
         recipientType = (connectorData.callback as? WhatsAppConnectorCallback)?.recipientType ?: WhatsAppBotRecipientType.individual,
-        to = userId.id
+        userId = userId.id
     )

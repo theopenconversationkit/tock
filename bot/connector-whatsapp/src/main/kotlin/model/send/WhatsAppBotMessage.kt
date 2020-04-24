@@ -16,13 +16,14 @@
 
 package ai.tock.bot.connector.whatsapp.model.send
 
+import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.whatsapp.UserHashedIdCache
+import ai.tock.bot.connector.whatsapp.whatsAppConnectorType
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import ai.tock.bot.connector.ConnectorMessage
-import ai.tock.bot.connector.ConnectorType
-import ai.tock.bot.connector.whatsapp.whatsAppConnectorType
 
 /**
  *
@@ -36,7 +37,7 @@ import ai.tock.bot.connector.whatsapp.whatsAppConnectorType
     JsonSubTypes.Type(value = WhatsAppBotTextMessage::class, name = "text"),
     JsonSubTypes.Type(value = WhatsAppBotImageMessage::class, name = "image")
 )
-abstract class WhatsAppBotMessage(val type: WhatsAppBotMessageType) : ConnectorMessage {
+abstract class WhatsAppBotMessage(val type: WhatsAppBotMessageType, @JsonIgnore private val userId: String) : ConnectorMessage {
 
     @get:JsonIgnore
     override val connectorType: ConnectorType
@@ -45,7 +46,6 @@ abstract class WhatsAppBotMessage(val type: WhatsAppBotMessageType) : ConnectorM
     @get:JsonProperty("recipient_type")
     abstract val recipientType: WhatsAppBotRecipientType
 
-    abstract val to: String
-
+    val to: String get() = UserHashedIdCache.getRealId(userId)
 
 }

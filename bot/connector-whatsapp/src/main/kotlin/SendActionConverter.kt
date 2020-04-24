@@ -16,7 +16,6 @@
 
 package ai.tock.bot.connector.whatsapp
 
-import ai.tock.bot.connector.whatsapp.UserHashedIdCache.getRealId
 import ai.tock.bot.connector.whatsapp.model.common.WhatsAppTextBody
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotMessage
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotRecipientType.individual
@@ -36,7 +35,7 @@ internal object SendActionConverter {
                     WhatsAppBotTextMessage(
                         WhatsAppTextBody(text),
                         individual,
-                        getRealId(action.recipientId.id)
+                        action.recipientId.id
                     )
                 } ?: error("null text in action $action")
         } else {

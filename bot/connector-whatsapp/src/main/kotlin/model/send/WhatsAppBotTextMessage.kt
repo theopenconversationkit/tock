@@ -16,8 +16,8 @@
 
 package ai.tock.bot.connector.whatsapp.model.send
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.connector.whatsapp.model.common.WhatsAppTextBody
+import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  *
@@ -25,7 +25,7 @@ import ai.tock.bot.connector.whatsapp.model.common.WhatsAppTextBody
 data class WhatsAppBotTextMessage(
     val text: WhatsAppTextBody,
     override val recipientType: WhatsAppBotRecipientType,
-    override val to: String,
+    private val userId: String,
     @get:JsonProperty("preview_url")
     val previewUrl: Boolean = false
-) : WhatsAppBotMessage(WhatsAppBotMessageType.text) 
+) : WhatsAppBotMessage(WhatsAppBotMessageType.text, userId)
