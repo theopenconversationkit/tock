@@ -28,7 +28,7 @@ import {
 import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {entityColor} from "../../model/nlp";
 import {KeyValue} from "@angular/common";
-import {NodeTransition, StoryNode} from "./node";
+import {NodeTransition, StoryNode, NodeTypeFilter, NodeTypeFilters} from "./node";
 import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
 import {AnswerConfigurationType, StoryDefinitionConfiguration, StorySearchQuery, StoryStep} from "../model/story";
 import {Subscription} from "rxjs";
@@ -108,6 +108,9 @@ export class FlowComponent implements OnInit, OnDestroy {
   ];
   layout = this.layouts[0];
   selectedLayout = this.layout.name;
+  typeFilters = NodeTypeFilters;
+  selectedTypeFilter = NodeTypeFilters[0];
+  typeFilterCounters: Map<NodeTypeFilter, number> = new Map();
   recursive: boolean = false;
   entity: boolean = false;
   step: boolean = false;
@@ -393,13 +396,32 @@ export class FlowComponent implements OnInit, OnDestroy {
         );
       }
 
-      //3 filter state by count
+      //3 filter state by count and type
       let finalNodes: StoryNode[] = [];
+      this.typeFilterCounters.clear();
+      this.typeFilters = new Array<NodeTypeFilter>();
+      NodeTypeFilters.forEach(f => {
+        if (f.alwaysDisplay) {
+          this.typeFilters.push(f);
+          this.typeFilterCounters.set(f, 0);
+        }
+      });
+
       nodesByIndex.forEach(s => {
-        if (this.minimalNodeCount <= s.count) {
+        NodeTypeFilters.forEach(f => {
+            if (f.filter(s)) {
+              if (!f.alwaysDisplay && !this.typeFilters.find(filter => filter == f)) this.typeFilters.push(f);
+              this.typeFilterCounters.set(f, this.typeFilterCounters.has(f) ? this.typeFilterCounters.get(f) + 1 : 1);
+            }
+          }
+        );
+        if (this.minimalNodeCount <= s.count && this.selectedTypeFilter.filter(s)) {
           finalNodes[s.index] = s;
         }
       });
+      if (finalNodes.length < 1) {
+        this.toastrService.show("No node to render - please change your options to increase the number of nodes", "Error", {duration: 5000})
+      } else {
 
       //4 create transitions
       const countTransitionByStartId = [];
@@ -540,10 +562,11 @@ export class FlowComponent implements OnInit, OnDestroy {
         //9 init vars
         this.maxNodeCount = theMaxCount;
         this.storiesById = storiesById;
-        this.nodesById = nodesByStoryKey;
-        this.allNodes = finalNodes;
+        this.nodesById = nodesByStoryKey.size > 0 ? nodesByStoryKey : nodesByStateId;
+        this.allNodes = finalNodes.filter(((n): n is StoryNode => n !== null));
         this.allTransitions = finalTransitions;
         this.graphData = graph;
+      }
       }
     }
   }
