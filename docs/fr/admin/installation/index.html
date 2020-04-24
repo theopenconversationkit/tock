@@ -575,6 +575,40 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#installation-sans-docker" class="md-nav__link">
+    Installation sans Docker
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ligne-de-commande" class="md-nav__link">
+    Ligne de commande
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jar-executable" class="md-nav__link">
+    JAR exécutable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dans-un-ide" class="md-nav__link">
+    Dans un IDE
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#base-de-donnees-mongodb" class="md-nav__link">
     Base de données MongoDB
   </a>
@@ -861,6 +895,40 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#installation-sans-docker" class="md-nav__link">
+    Installation sans Docker
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ligne-de-commande" class="md-nav__link">
+    Ligne de commande
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jar-executable" class="md-nav__link">
+    JAR exécutable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dans-un-ide" class="md-nav__link">
+    Dans un IDE
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#base-de-donnees-mongodb" class="md-nav__link">
     Base de données MongoDB
   </a>
@@ -963,10 +1031,10 @@ la capacité de Tock à monter en charge, les déploiementsde type <em>Cloud</em
 <a href="https://demo.tock.ai">plateforme de démonstration Tock</a>.</p>
 </blockquote>
 <h2 id="installation-avec-docker">Installation avec Docker<a class="headerlink" href="#installation-avec-docker" title="Permanent link">&para;</a></h2>
-<p>Les informations ci-dessous concernent l'installation avec <a href="https://www.docker.com/">Docker</a>. En analysant les descripteurs 
-Docker et <a href="https://docs.docker.com/compose/">Docker Compose</a> fournis 
-(les <code>Dockerfile</code> et <code>docker-compose.yml</code>) on peut facilement concevoir une installation sans Docker.</p>
-<p>Tock est composé par défaut de plusieurs conteneurs/images dockers et d'une base de donnée <a href="https://www.mongodb.com">MongoDB</a>.</p>
+<p>Le dépôt <a href="https://github.com/theopenconversationkit/tock-docker"><code>tock-docker</code></a> fournit une implémentation complète de 
+Tock pour les technologies <a href="https://www.docker.com/">Docker</a> et <a href="https://docs.docker.com/compose/">Docker Compose</a>. 
+Tock est composé par défaut de plusieurs conteneurs/images Docker et d'une base de donnée <a href="https://www.mongodb.com">MongoDB</a>.</p>
+<p>Pour en savoir plus sur l'installation de Tock avec Docker, voir les instructions du dépôt <a href="https://github.com/theopenconversationkit/tock-docker"><code>tock-docker</code></a>.</p>
 <blockquote>
 <p>Le guide <a href="../../guide/plateforme/">déployer Tock avec Docker</a> dans la section <em>Découvrir Tock</em> donne un exemple de déploiement 
 d'une plateforme complète en quelques minutes avec une empreinte minimale en utilisant Docker et Docker Compose. 
@@ -975,6 +1043,110 @@ Cependant, cette méthode n'est pas envisageable pour un déploiement pérenne c
 <p>Si vous souhaitez utiliser Docker Compose en production, merci de lire cet <a href="https://docs.docker.com/compose/production/">article</a> 
 et de revoir la configuration, qui est uniquement donnée dans le projet <code>tock-docker</code> à titre d'exemple. 
 En particulier, la configuration des instances MongoDB doit être revue attentivement.</p>
+<h2 id="installation-sans-docker">Installation sans Docker<a class="headerlink" href="#installation-sans-docker" title="Permanent link">&para;</a></h2>
+<p>Il est tout à fait possible d'installer Tock sans utiliser Docker. En analysant les descripteurs fournis dans 
+<a href="https://github.com/theopenconversationkit/tock-docker"><code>tock-docker</code></a> (ie. les fichiers <code>pom.xml</code>, les <code>Dockerfile</code> 
+et <code>docker-compose.yml</code>) on peut facilement concevoir une installation sans Docker.</p>
+<p>Hormis la base de données MongoDB, tous les autres composants peuvent démarrer comme des applications Java/JVM classiques, par exemple :</p>
+<ul>
+<li>directement en ligne de commande</li>
+<li>au sein d'un serveur d'applications Java</li>
+<li>depuis un outil de développement intégré (IDE)</li>
+<li>etc.</li>
+</ul>
+<p>Pour en savoir plus sur les paramètres de lancement des différents composants Tock, vous pouvez vous inspirer 
+des commandes présentes dans les descripteurs de <code>tock-docker</code> ou encore des configurations fournies pour IntelliJ<br />
+(voir ci-dessous).</p>
+<h3 id="ligne-de-commande">Ligne de commande<a class="headerlink" href="#ligne-de-commande" title="Permanent link">&para;</a></h3>
+<p>Une technique consiste à rassembler les différentes dépendances et archives JAR dans un dossier puis démarrer le 
+composant ou l'application avec une commande Java classique.</p>
+<p>Pour exemple, le descripteur du composant <code>tock-docker-nlp-api</code> 
+ (voir <a href="https://github.com/theopenconversationkit/tock-docker/blob/master/nlp-api/pom.xml"><code>pom.xml</code></a>)
+avec la commande suivante :</p>
+<div class="codehilite"><pre><span></span><span class="n">java</span> <span class="err">$</span><span class="n">JAVA_ARGS</span> <span class="o">-</span><span class="n">Dfile</span><span class="p">.</span><span class="k">encoding</span><span class="o">=</span><span class="n">UTF</span><span class="o">-</span><span class="mi">8</span> <span class="o">-</span><span class="n">cp</span> <span class="s1">&#39;/maven/*&#39;</span> <span class="n">ai</span><span class="p">.</span><span class="n">tock</span><span class="p">.</span><span class="n">nlp</span><span class="p">.</span><span class="n">api</span><span class="p">.</span><span class="n">StartNlpServiceKt</span>
+</pre></div>
+
+
+<h3 id="jar-executable">JAR exécutable<a class="headerlink" href="#jar-executable" title="Permanent link">&para;</a></h3>
+<p>Ce n'est pas la technique que nous recommandons, mais il est possible d'exécuter un JAR unique contenant toutes les 
+dépendances (parfois appelé <em>"fat JAR"</em>). Voici comment procéder pour créer un tel JAR, en reprenant l'exemple du 
+composant Tock NLP-API.</p>
+<p>Dans le POM du composant (<code>nlp/api/service/pom.xml</code>), ajoutez la déclaration suivante :</p>
+<div class="codehilite"><pre><span></span>    <span class="nt">&lt;build&gt;</span>
+        <span class="nt">&lt;plugins&gt;</span>
+            <span class="nt">&lt;plugin&gt;</span>
+                <span class="nt">&lt;artifactId&gt;</span>maven-assembly-plugin<span class="nt">&lt;/artifactId&gt;</span>
+                <span class="nt">&lt;executions&gt;</span>
+                    <span class="nt">&lt;execution&gt;</span>
+                        <span class="nt">&lt;phase&gt;</span>package<span class="nt">&lt;/phase&gt;</span>
+                        <span class="nt">&lt;goals&gt;</span>
+                            <span class="nt">&lt;goal&gt;</span>single<span class="nt">&lt;/goal&gt;</span>
+                        <span class="nt">&lt;/goals&gt;</span>
+                        <span class="nt">&lt;configuration&gt;</span>
+                            <span class="nt">&lt;archive&gt;</span>
+                                <span class="nt">&lt;manifest&gt;</span>
+                                    <span class="nt">&lt;mainClass&gt;</span>ai.tock.nlp.api.StartNlpServiceKt<span class="nt">&lt;/mainClass&gt;</span>
+                                <span class="nt">&lt;/manifest&gt;</span>
+                            <span class="nt">&lt;/archive&gt;</span>
+                            <span class="nt">&lt;descriptors&gt;</span>
+                                <span class="nt">&lt;descriptor&gt;</span>src/main/assembly/jar-with-dependencies.xml<span class="nt">&lt;/descriptor&gt;</span>
+                            <span class="nt">&lt;/descriptors&gt;</span>
+                        <span class="nt">&lt;/configuration&gt;</span>
+                    <span class="nt">&lt;/execution&gt;</span>
+                <span class="nt">&lt;/executions&gt;</span>
+            <span class="nt">&lt;/plugin&gt;</span>
+        <span class="nt">&lt;/plugins&gt;</span>
+    <span class="nt">&lt;/build&gt;</span>
+</pre></div>
+
+
+<p>Créez également un descripteur d'archive <code>nlp/api/service/src/main/assembly/jar-with-dependencies.xml</code> avec le contenu suivant :</p>
+<div class="codehilite"><pre><span></span><span class="nt">&lt;assembly</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/ASSEMBLY/2.0.0&quot;</span>
+          <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+          <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;id&gt;</span>jar-with-dependencies<span class="nt">&lt;/id&gt;</span>
+    <span class="nt">&lt;formats&gt;</span>
+        <span class="nt">&lt;format&gt;</span>jar<span class="nt">&lt;/format&gt;</span>
+    <span class="nt">&lt;/formats&gt;</span>
+    <span class="nt">&lt;includeBaseDirectory&gt;</span>false<span class="nt">&lt;/includeBaseDirectory&gt;</span>
+    <span class="nt">&lt;dependencySets&gt;</span>
+        <span class="nt">&lt;dependencySet&gt;</span>
+            <span class="nt">&lt;outputDirectory&gt;</span>/<span class="nt">&lt;/outputDirectory&gt;</span>
+            <span class="nt">&lt;useProjectArtifact&gt;</span>true<span class="nt">&lt;/useProjectArtifact&gt;</span>
+            <span class="nt">&lt;unpack&gt;</span>true<span class="nt">&lt;/unpack&gt;</span>
+            <span class="nt">&lt;scope&gt;</span>runtime<span class="nt">&lt;/scope&gt;</span>
+        <span class="nt">&lt;/dependencySet&gt;</span>
+    <span class="nt">&lt;/dependencySets&gt;</span>
+    <span class="nt">&lt;containerDescriptorHandlers&gt;</span>
+        <span class="nt">&lt;containerDescriptorHandler&gt;</span>
+            <span class="c">&lt;!-- Merge service implementations from dependencies --&gt;</span>
+            <span class="nt">&lt;handlerName&gt;</span>metaInf-services<span class="nt">&lt;/handlerName&gt;</span>
+        <span class="nt">&lt;/containerDescriptorHandler&gt;</span>
+    <span class="nt">&lt;/containerDescriptorHandlers&gt;</span>
+<span class="nt">&lt;/assembly&gt;</span>
+</pre></div>
+
+
+<p>Pour finir, construisez l'archive <em>"jar-with-dependencies"</em> avec <code>mvn package</code>.</p>
+<h3 id="dans-un-ide">Dans un IDE<a class="headerlink" href="#dans-un-ide" title="Permanent link">&para;</a></h3>
+<p>Pour le développement, il est possible d'exécuter les différents composants Tock (NLU, Studio, bot...) 
+depuis un IDE comme <a href="https://www.jetbrains.com/idea/">IntelliJ</a>, <a href="https://www.eclipse.org/">Eclipse</a> ou 
+<a href="https://code.visualstudio.com/">Visual Studio Code</a> par exemple.</p>
+<p>Outre les <a href="https://github.com/theopenconversationkit/tock-docker/blob/master/docker-compose.yml">images Docker</a>,
+des configurations pour IntelliJ sont fournies avec les sources de Tock :</p>
+<ul>
+<li>Configuration <a href="https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/BotAdmin.xml">Services <em>Tock Studio</em> complets (Bot + NLP) / <code>BotAdmin</code></a> </li>
+<li>Configuration <a href="https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/Admin.xml">Services <em>Tock Studio</em> (NLP uniquement) / <code>Admin</code></a> </li>
+<li>Configuration <a href="https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/NlpService.xml">Service NLP / <code>NlpService</code></a></li>
+<li>Configuration <a href="https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/Duckling.xml">Service d'entités / <code>Duckling</code></a></li>
+<li>Configuration <a href="https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/BuildWorker.xml">Service construction des modèles NLP / <code>BuildWorker</code></a></li>
+<li>Configuration <a href="https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/KotlinCompilerServer.xml">Service de compilation des scripts / <code>KotlinCompilerServer</code></a></li>
+</ul>
+<p>Enfin pour lancer les interfaces utilisateur (<em>Tock Studio</em>), les commandes sont décrites dans les liens suivants :</p>
+<ul>
+<li>Instructions <a href="https://github.com/theopenconversationkit/tock/blob/master/bot/admin/web/README.md">Interface <em>Tock Studio</em> complète (Bot + NLP)</a></li>
+<li>Instructions <a href="https://github.com/theopenconversationkit/tock/blob/master/nlp/admin/web/README.md">Interface <em>Tock Studio</em> (NLP uniquement)</a></li>
+</ul>
 <h2 id="base-de-donnees-mongodb">Base de données MongoDB<a class="headerlink" href="#base-de-donnees-mongodb" title="Permanent link">&para;</a></h2>
 <p>La base Mongo devant être configurée en <em>replica set</em>, c'est à dire avec au minimum 3 instances déployées.</p>
 <blockquote>

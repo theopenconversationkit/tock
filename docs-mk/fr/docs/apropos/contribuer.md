@@ -92,27 +92,12 @@ Vous pouvez ensuite instancier ces images via Docker ou les stacks Docker Compos
 
 > Pour démarrer Tock avec Docker Compose hors d'un IDE, voir [Déployer Tock avec Docker](../guide/plateforme.md).
 
-Il est possible d'exécuter les différents composants de Tock (NLU, Studio, bot...) depuis un IDE comme 
-[IntelliJ](https://www.jetbrains.com/idea/), [Eclipse](https://www.eclipse.org/) ou [Visual Studio Code](https://code.visualstudio.com/) par exemple.
+Les différents composants Tock peuvent s'exécuter depuis un IDE (environnement de développement intégré). 
+Des configurations sont fournies pour [IntelliJ](https://www.jetbrains.com/idea/).
 
-Outre les [images Docker](https://github.com/theopenconversationkit/tock-docker/blob/master/docker-compose.yml),
-des configurations pour IntelliJ sont fournies avec les sources de Tock :
+Voir la section [Installation Tock](../admin/installation.md).  
 
-- Le serveur d'administration du bot : [BotAdmin](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/BotAdmin.xml) 
-- Le serveur d'administration du NLP uniquement : [Admin](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/Admin.xml) 
-- Le service NLP : [NlpService](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/NlpService.xml)
-- Le service Duckling : [Duckling](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/Duckling.xml)
-- Le service de construction des modèles NLP : [BuildWorker](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/BuildWorker.xml)
-- Le service de compilation des scripts : [KotlinCompilerServer](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/KotlinCompilerServer.xml)
-
-Pour le bot d'exemple :
-
-- [OpenDataBot](https://github.com/theopenconversationkit/tock-bot-open-data/blob/master/.idea/runConfigurations/OpenDataBot.xml)
-
-Enfin pour lancer les interfaces d'administration, vous aurez besoin de lancer les commandes décrites dans les liens suivants :
-
-- [Pour l'administration complète (Bot + NLP)](https://github.com/theopenconversationkit/tock/blob/master/bot/admin/web/README.md)
-- [Pour l'administration NLP uniquement](https://github.com/theopenconversationkit/tock/blob/master/nlp/admin/web/README.md)
+Pour exécuter le bot/exemple en mode intégré, une configuration est aussi disponible : [OpenDataBot](https://github.com/theopenconversationkit/tock-bot-open-data/blob/master/.idea/runConfigurations/OpenDataBot.xml).
 
 ## Conventions
 
