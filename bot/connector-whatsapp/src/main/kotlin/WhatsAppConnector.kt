@@ -18,7 +18,6 @@ package ai.tock.bot.connector.whatsapp
 
 import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
-import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotRecipientType.group
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotRecipientType.individual
 import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppMessages
@@ -72,12 +71,13 @@ class WhatsAppConnector(
                             if (e != null) {
                                 controller.handle(
                                     e,
-                                    ConnectorData(
+                                    WhatsAppConnectorData(
                                         WhatsAppConnectorCallback(
                                             applicationId,
                                             if (m.groupId == null) individual else group
                                         ),
-                                        groupId = m.groupId
+                                        m.groupId,
+                                        m.from
                                     )
                                 )
                             }
