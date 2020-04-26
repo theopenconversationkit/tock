@@ -267,6 +267,5 @@ data class BotBusMockContext(
      */
     fun choiceOfId(choiceId: String): SendChoice = decodeChoiceId(choiceId).let { it ->
         choice(it.first, *it.second.map { it.key to it.value }.toTypedArray())
-
     }
 }

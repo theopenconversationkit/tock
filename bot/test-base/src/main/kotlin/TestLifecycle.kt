@@ -32,7 +32,7 @@ open class TestLifecycle<out T : TestContext>(val testContext: T) {
     open fun start() {
         resetInjectors()
         //force injection loading
-        testContext.testInjector.kodein()
+        testContext.testInjector
     }
 
     open fun end() {

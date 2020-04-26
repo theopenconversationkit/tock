@@ -419,7 +419,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
     override fun beforeEach(context: ExtensionContext) {
         if (!start) {
             start = true
-            logger.info { "initialize Test ${context.displayName}" }
+            logger.debug { "initialize Test ${context.displayName}" }
             lifecycle.start()
             logger.debug { "end initialize Test ${context.displayName}" }
         }
@@ -428,7 +428,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
     override fun afterEach(context: ExtensionContext) {
         if (!end) {
             end = true
-            logger.info { "cleanup Test ${context.displayName}" }
+            logger.debug { "cleanup Test ${context.displayName}" }
             lifecycle.end()
             logger.debug { "end cleanup Test ${context.displayName}" }
         }
