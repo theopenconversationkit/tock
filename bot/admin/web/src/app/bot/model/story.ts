@@ -81,8 +81,16 @@ export abstract class AnswerContainer {
     return false;
   }
 
+  isConfiguredAnswer(): boolean {
+    return this.isSimpleAnswer() || this.isMessageAnswer() || this.isScriptAnswer();
+  }
+
   isSimpleAnswer(): boolean {
     return this.currentType === AnswerConfigurationType.simple;
+  }
+
+  isMessageAnswer(): boolean {
+    return this.currentType === AnswerConfigurationType.message;
   }
 
   isScriptAnswer(): boolean {

@@ -67,8 +67,16 @@ export class StoryNode {
       + (this.step ? "*" + this.step : "")
   }
 
+  isConfiguredAnswer(): boolean {
+    return this.isSimpleAnswer() || this.isMessageAnswer() || this.isScriptAnswer();
+  }
+
   isSimpleAnswer(): boolean {
     return this.storyType === AnswerConfigurationType.simple;
+  }
+
+  isMessageAnswer(): boolean {
+    return this.storyType === AnswerConfigurationType.message;
   }
 
   isScriptAnswer(): boolean {
@@ -94,3 +102,24 @@ export class NodeTransition {
   }
 
 }
+
+export class NodeTypeFilter {
+
+  constructor(
+    public name: string,
+    public description: string,
+    public alwaysDisplay: boolean,
+    public filter: ((node: StoryNode) => boolean)
+  ) { }
+}
+
+export const NodeTypeFilters = [
+  new NodeTypeFilter('All', 'All Types', true, node => true),
+  new NodeTypeFilter('Configured', 'All Configured Types', true, node => node.isConfiguredAnswer()),
+  new NodeTypeFilter('Simple', 'Only Simple Type', true, node => node.isSimpleAnswer()),
+  //TODO uncomment this when message type available
+  new NodeTypeFilter('Message', 'Only Message Type', true, node => node.isMessageAnswer()),
+  new NodeTypeFilter('Script', 'Only Script Type', true, node => node.isScriptAnswer()),
+  new NodeTypeFilter('Built-in', 'Only Built-in', true, node => node.isBuiltIn()),
+  new NodeTypeFilter('Unknown', 'Unknown Type', false, node => node.storyType == undefined)
+]
