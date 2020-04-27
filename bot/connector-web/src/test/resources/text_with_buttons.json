@@ -1,0 +1,28 @@
+{
+  "responses": [
+    {
+      "text": "Text with Buttons",
+      "buttons": [
+        {
+          "title": "title",
+          "payload": "payload",
+          "type": "postback",
+          "clazz": "postback_button"
+        },
+        {
+          "title": "title",
+          "payload": "payload",
+          "type": "quick_reply",
+          "clazz": "quick_reply"
+        },
+        {
+          "title": "title",
+          "url": "http://www.sncf.com",
+          "type": "web_url",
+          "clazz": "url_button"
+        }
+      ],
+      "version": "1"
+    }
+  ]
+}
