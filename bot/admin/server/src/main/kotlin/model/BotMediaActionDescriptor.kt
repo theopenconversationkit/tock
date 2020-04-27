@@ -29,5 +29,5 @@ data class BotMediaActionDescriptor(val title: I18nLabel, var url: String? = nul
 
     override val type: MediaMessageType = action
 
-    override fun toDescriptor(): MediaActionDescriptor = MediaActionDescriptor(I18nLabelValue(title), url)
+    override fun toDescriptor(): MediaActionDescriptor = MediaActionDescriptor(I18nLabelValue(title), url.takeUnless { it.isNullOrBlank() })
 }
