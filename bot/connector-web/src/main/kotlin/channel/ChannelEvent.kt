@@ -17,4 +17,7 @@ package ai.tock.bot.connector.web.channel
 
 import ai.tock.bot.connector.web.WebConnectorResponse
 
-internal data class ChannelEvent(val recipientId: String, val webConnectorResponse: WebConnectorResponse)
+internal data class ChannelEvent(
+    val appId: String = "unknown",
+    val recipientId: String,
+    val webConnectorResponse: WebConnectorResponse)

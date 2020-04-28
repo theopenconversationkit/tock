@@ -17,4 +17,4 @@ package ai.tock.bot.connector.web.channel
 
 import java.util.UUID
 
-internal data class Channel(val uuid: UUID, val userId: String, val onAction: ChannelCallback)
+internal data class Channel(val appId: String, val uuid: UUID, val userId: String, val onAction: ChannelCallback)

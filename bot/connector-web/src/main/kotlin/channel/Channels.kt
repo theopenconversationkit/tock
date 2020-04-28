@@ -21,25 +21,29 @@ import ai.tock.bot.connector.web.webConnectorType
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 
 internal class Channels(private val channelDAO: ChannelDAO) {
 
-    private var channelsByUser = mutableMapOf<String, MutableList<Channel>>()
+    private val channelsByUser = ConcurrentHashMap<String, CopyOnWriteArrayList<Channel>>()
 
     init {
         channelDAO.listenChanges { channelEvent ->
             channelsByUser[channelEvent.recipientId]?.forEach { channel ->
-                channel.onAction.invoke(channelEvent.webConnectorResponse)
+                if (channel.appId == channelEvent.appId) {
+                    channel.onAction.invoke(channelEvent.webConnectorResponse)
+                }
             }
         }
     }
 
-    fun register(userId: String, onAction: ChannelCallback): Channel {
-        if (channelsByUser[userId] == null) {
-            channelsByUser.set(userId, mutableListOf())
+    fun register(appId: String, userId: String, onAction: ChannelCallback): Channel {
+        val channels = channelsByUser.getOrPut(userId) {
+            CopyOnWriteArrayList()
         }
-        val channel = Channel(UUID.randomUUID(), userId, onAction)
-        channelsByUser[userId]?.add(channel)
+        val channel = Channel(appId, UUID.randomUUID(), userId, onAction)
+        channels.add(channel)
         return channel
     }
 
@@ -59,7 +63,7 @@ internal class Channels(private val channelDAO: ChannelDAO) {
                     it as? WebMessage
                 }
             }
-        channelDAO.save(ChannelEvent(action.recipientId.id, WebConnectorResponse(messages)))
+        channelDAO.save(ChannelEvent(action.applicationId, action.recipientId.id, WebConnectorResponse(messages)))
     }
 
 }

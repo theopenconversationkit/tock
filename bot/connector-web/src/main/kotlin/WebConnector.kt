@@ -70,18 +70,17 @@ class WebConnector internal constructor(
 
     companion object {
         private val logger = KotlinLogging.logger {}
+        private val webMapper = mapper.copy().registerModule(
+            SimpleModule().apply {
+                //fallback for serializing CharSequence
+                addSerializer(CharSequence::class.java, ToStringSerializer())
+            }
+        )
     }
 
     private val executor: Executor get() = injector.provide()
 
-    private val channels = Channels(ChannelMongoDAO)
-
-    private val webMapper = mapper.copy().registerModule(
-        SimpleModule().apply {
-            //fallback for serializing CharSequence
-            addSerializer(CharSequence::class.java, ToStringSerializer())
-        }
-    )
+    private val channels by lazy { Channels(ChannelMongoDAO) }
 
     override fun register(controller: ConnectorController) {
 
@@ -113,7 +112,7 @@ class WebConnector internal constructor(
                                 response.write("event: ping\n")
                                 response.write("data: 1\n\n")
                             }
-                            val channelId = channels.register(userId) { webConnectorResponse ->
+                            val channelId = channels.register(applicationId, userId) { webConnectorResponse ->
                                 response.write("event: message\n")
                                 response.write("data: ${webMapper.writeValueAsString(webConnectorResponse)}\n\n")
                             }
@@ -162,7 +161,9 @@ class WebConnector internal constructor(
         val c = callback as? WebConnectorCallback
         c?.addAction(event)
         if (event is Action) {
-            channels.send(event)
+            if (sseEnabled) {
+                channels.send(event)
+            }
             if (event.metadata.lastAnswer) {
                 c?.sendResponse()
             }
