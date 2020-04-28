@@ -10,6 +10,27 @@ build conversational bots dedicated to various use cases :
 
 This page presents various assistants and products built and powered by Tock.
 
+## _AlloCovid_
+
+The _[AlloCovid](https://www.allocovid.com/)_ conversational service informs and guides French population 
+about the Covid-19.
+
+It results from the collaboration of numerous French experts, tech partners and volunteers.
+To find out more about the project, the team and partners, how the bot works, etc. visit 
+[www.allocovid.com](https://www.allocovid.com/).
+
+Available by phone, on the Web and WhatsApp, _AlloCovid_ builds around a Tock bot and integrates with additional 
+technologies such as [Allo-Media](https://www.allo-media.net/) and [Voxygen](https://www.voxygen.fr/) voice solutions. 
+
+<img alt="AlloCovid" 
+src="https://doc.tock.ai/fr/images/allocovid.png" 
+style="text-align: center;">
+ 
+* **Name:** _[AlloCovid](https://www.allocovid.com/)_
+* **Date of birth:** in production since spring 2020
+* **Field:** health information and guidance
+* **Channels:** text & voice, by phone, on WhatsApp and Website
+
 ## _OUIbot_, the OUI.sncf bot
 
 _[OUIbot](https://www.oui.sncf/services/assistant)_ is the conversational assistant from OUI.sncf. Available since 2016 
@@ -74,7 +95,7 @@ style="width: 500px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rg
 * **Name:** _[Tilien](https://www.facebook.com/botsncftransilien/)_
 * **Date of birth:** in production, since 2018 with Tock
 * **Field:** transport & assistance (route research, route plans, traffic conditions, etc.)
-* **Channels:** text, on Messenger
+* **Channels:** text, on Messenger ([_botsncftransilien_](https://www.facebook.com/botsncftransilien/))
 
 ## _Mon Assistant TGV INOUI_
 
@@ -95,7 +116,7 @@ style="width: 500px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rg
 * **Date of birth:** in production since 2019
 * **Field:** assistance & passenger information (dock information, current travel information, on-board services), 
 relay to an agent
-* **Channels:** text, on Messenger (Facebook _TGV INOUI_ page)
+* **Channels:** text, on Messenger ([_TGV INOUI_](https://www.facebook.com/TGVINOUI/))
 
 ## _L' Agent virtuel SNCF_
 
@@ -111,7 +132,8 @@ Accessible via the SNCF Facebook page, the _Agent virtuel_ is based on Tock.
 * **Name:** _[Agent virtuel SNCF](https://www.facebook.com/SNCFOFFICIEL/)_
 * **Date of birth:** in production since 2019
 * **Field:** travel & transport (traffic situation, works, next departures), relay to an agent
-* **Channels:** text, on Messenger (_SNCF_ Facebook page)
+* **Channels:** text, on Messenger ([_SNCFOFFICIEL_](https://www.facebook.com/SNCFOFFICIEL)) 
+and Twitter ([_@sncf_](https://twitter.com/SNCF))
 
 ## _Eve_, the e-voyageurs internal assistant
 

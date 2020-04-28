@@ -10,6 +10,30 @@ d'équipes pour créer des bots conversationnels dédiés à des usages divers :
 
 Cette page présente différents assistants et produits construits avec Tock.
 
+## _AlloCovid_
+
+Le service _[AlloCovid](https://www.allocovid.com/)_ permet d'informer et d'orienter la population sur 
+le Covid-19, reprenant le questionnaire prédéfini par le Ministère de la Santé.
+
+> _IA vocale engagée dans la crise sanitaire_
+
+Ce service conversationnel est le fruit de la collaboration de nombreux experts français, 
+partenaires technologiques et bénévoles. Pour en savoir sur la génèse du projet, l'équipe et les partenaires, le 
+fonctionnement du bot, la presse, etc. 
+rendez-vous sur [www.allocovid.com](https://www.allocovid.com/).
+
+Disponible par téléphone, sur le Web et WhatsApp, _AlloCovid_ est construit autour d'un bot Tock et intègre des solutions complémentaires 
+comme les technologies vocales [Allo-Media](https://www.allo-media.net/) et [Voxygen](https://www.voxygen.fr/). 
+
+<img alt="AlloCovid" 
+src="https://doc.tock.ai/fr/images/allocovid.png" 
+style="text-align: center;">
+ 
+* **Nom :** _[AlloCovid](https://www.allocovid.com/)_
+* **Date de naissance :** en production au printemps 2020
+* **Domaine :** informations sanitaires et orientation vers les services de santé
+* **Canaux :** texte & voix, par téléphone, sur WhatsApp et site Web
+
 ## _OUIbot_, le bot OUI.sncf
 
 _[OUIbot](https://www.oui.sncf/services/assistant)_ est l'assistant conversationnel de OUI.sncf. Disponible depuis 2016 
@@ -73,7 +97,7 @@ style="width: 500px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rg
 * **Nom :** _[Tilien](https://www.facebook.com/botsncftransilien/)_
 * **Date de naissance :** en production, depuis 2018 sur Tock
 * **Domaine :** transport & assistance (recherche itinéraires, plans des lignes, état du trafic, etc.)
-* **Canaux :** texte, sur Messenger
+* **Canaux :** texte, sur Messenger ([_botsncftransilien_](https://www.facebook.com/botsncftransilien/))
 
 ## _Mon Assistant TGV INOUI_
 
@@ -94,7 +118,7 @@ style="width: 500px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rg
 * **Nom :** _[Mon Assistant TGV INOUI](https://www.facebook.com/TGVINOUI/)_
 * **Date de naissance :** en production depuis 2019
 * **Domaine :** assistance & info voyageur (info quai, infos voyage en cours, services à bord), relai vers un agent
-* **Canaux :** texte, sur Messenger (page Facebook _TGV INOUI_)
+* **Canaux :** texte, sur Messenger ([_TGV INOUI_](https://www.facebook.com/TGVINOUI/))
 
 ## _L'Agent virtuel SNCF_
 
@@ -111,11 +135,12 @@ Accessible via la page Facebook de la SNCF, l'_Agent virtuel_ est basé sur Tock
 * **Nom :** _[Agent virtuel SNCF](https://www.facebook.com/SNCFOFFICIEL/)_
 * **Date de naissance :** en production depuis 2019
 * **Domaine :** voyage & transport (état du trafic, travaux, prochains départs), relai vers un agent
-* **Canaux :** texte, sur Messenger (page Facebook _SNCF_)
+* **Canaux :** texte, sur Messenger ([_SNCFOFFICIEL_](https://www.facebook.com/SNCFOFFICIEL)) et 
+Twitter ([_@sncf_](https://twitter.com/SNCF))
 
 ## _Eve_, le bot interne e-voyageurs
 
-_Eve_ est l'assistant interne des collaborateurs [e-voyageurs SNCF](https://www.sncf.com/fr/groupe/newsroom/e-voyageurs-sncf).
+_Eve_ est l'assistant interne des collaborateurs [e.Voyageurs SNCF](https://www.sncf.com/fr/groupe/newsroom/e-voyageurs-sncf).
 
 > Le chatbot répond aux questions courantes, renvoie vers les bons contacts et outils collaboratifs de l'entreprise, 
 >automatise des demandes courantes au Support Informatique, Services Généraux, Direction Juridique, etc. 
