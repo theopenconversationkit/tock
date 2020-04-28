@@ -76,11 +76,10 @@ class WebConnector internal constructor(
                 addSerializer(CharSequence::class.java, ToStringSerializer())
             }
         )
+        private val channels by lazy { Channels(ChannelMongoDAO) }
     }
 
     private val executor: Executor get() = injector.provide()
-
-    private val channels by lazy { Channels(ChannelMongoDAO) }
 
     override fun register(controller: ConnectorController) {
 
