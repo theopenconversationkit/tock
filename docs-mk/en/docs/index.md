@@ -4,6 +4,8 @@
 
 **Tock** (*The Open Conversation Kit*) is a complete and open platform to build conversational agents - also known as _bots_. 
 
+The [Tock.ai](https://doc.tock.ai/) site is a good starting point to learn about the solution and its growing community.
+
 Tock does not depend on 3rd-party APIs, although it is possible to integrate with them.
 Users choose which components to embed and decide to keep (or share) ownership of conversational data and models.
 
@@ -12,6 +14,10 @@ Users choose which components to embed and decide to keep (or share) ownership o
 
 > The platform source code is available on [GitHub](https://github.com/theopenconversationkit/tock) 
 > under the [Apache License, version 2.0](https://github.com/theopenconversationkit/tock/blob/master/LICENSE).
+
+|   |   |
+|---|---|
+| ![AlloCovid](https://doc.tock.ai/fr/images/allocovid.png) | To find out more about [_AlloCovid_](https://www.allocovid.com/) (built with Tock) please visit [www.allocovid.com](https://www.allocovid.com/). Available by phone, on the Web and WhatsApp, the bot informs and guides French population about the Covid-19, thanks to experts, partners and volunteers. |
 
 ## Features
 
