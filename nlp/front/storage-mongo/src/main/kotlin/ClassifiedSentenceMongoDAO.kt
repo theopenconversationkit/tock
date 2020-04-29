@@ -91,7 +91,6 @@ import org.litote.kmongo.regex
 import org.litote.kmongo.replaceOneWithFilter
 import org.litote.kmongo.setTo
 import org.litote.kmongo.setValue
-import org.litote.kmongo.toId
 import org.litote.kmongo.updateMany
 import java.time.Duration
 import java.time.Instant
@@ -206,16 +205,16 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
 
             if (ttlIntents.isNotEmpty() && ttlDays != -1L) {
                 logger.info { "add classified sentence periodic crawler for $ttlDays days and intents $ttlIntents" }
-                injector.provide<Executor>().setPeriodic(Duration.ofDays(1)) {
-                    logger.debug { "delete old classified sentences for intents $ttlIntents" }
+                injector.provide<Executor>().setPeriodic(Duration.ofMinutes(1), Duration.ofDays(1)) {
                     val intentIds = IntentDefinitionMongoDAO.getIntentsByNames(ttlIntents).map { it._id }
-                    c.deleteMany(
+                    val deleted = c.deleteMany(
                         and(
                             Status eq inbox,
                             Classification_.intentId `in` intentIds,
                             UpdateDate lt now().minus(ttlDays, ChronoUnit.DAYS)
                         )
                     )
+                    logger.debug { "delete ${deleted.deletedCount} old classified sentences for intents $ttlIntents of ids $intentIds" }
                 }
             }
 
@@ -406,10 +405,10 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     private fun SentencesQuery.filterLanguage() = if (language == null) null else Language eq language
 
     private fun SentencesQuery.filterMaxIntentProbability(): Bson? =
-            if (maxIntentProbability < 1f) LastIntentProbability lt maxIntentProbability.toDouble() else null
+        if (maxIntentProbability < 1f) LastIntentProbability lt maxIntentProbability.toDouble() else null
 
     private fun SentencesQuery.filterMinIntentProbability(): Bson? =
-            if (minIntentProbability > 0f) LastIntentProbability gt minIntentProbability.toDouble() else null
+        if (minIntentProbability > 0f) LastIntentProbability gt minIntentProbability.toDouble() else null
 
     //ugly
     private fun subEntityTypeQuery(entityType: String): Bson =
