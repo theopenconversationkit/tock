@@ -4,29 +4,33 @@ info:
   version: "1.0.0"
   title: "Swagger Web Connector TOCK"
 servers:
-  - url: "https://demo-bot.tock.ai/io/[namespace]/demo/web"
+  - url: "https://demo-bot.tock.ai/"
 paths:
-  /web:
+  /{id}:
     post:
       summary: "Send query to the bot"
       description: ""
+      requestBody:
+        description: "Query to be sent with user ID"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Query'
       parameters:
-        - in: "query"
-          name: "body"
-          description: "Query to be sent with user ID"
+        - name: id
+          in: path
+          description: Connector path
           required: true
           schema:
-            $ref: "#/components/schemas/Query"
+            type: string
       responses:
         200:
           description: "OK"
           content:
             application/json:
               schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Text_Response"
-                  - $ref: "#/components/schemas/Card"
-                  - $ref: "#/components/schemas/Carousel"
+                $ref: "#/components/schemas/Response"
               example:
                 responses:
                   - text: 'Welcome to the Chatbot :)'
@@ -40,6 +44,29 @@ paths:
         500:
           description: "Internal Server Error"
 
+  /{id}/sse:
+    get:
+      summary: "Stream bot responses for the given user"
+      parameters:
+        - name: id
+          in: path
+          description: Connector path
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: query
+          description: userId to stream
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
 
 components:
   schemas:
@@ -53,28 +80,50 @@ components:
           type: "string"
           example: "ID_00001"
 
-    Text_Response:
+    Response:
       type: "object"
       properties:
         responses:
           type: "array"
           items:
-            $ref: "#/components/schemas/Text"
+            $ref: "#/components/schemas/Message"
 
-    Text:
+    Message:
       type: "object"
-      required: ["text"]
+      required: ["version"]
       properties:
         text:
           type: "string"
           example: "Welcome to the Chatbot :)"
         buttons:
-          type: "array"
-          items:
-            $ref: "#/components/schemas/Button"
+          $ref: '#/components/schemas/Buttons'
+        card:
+          $ref: "#/components/schemas/Card"
+        carousel:
+          $ref: '#/components/schemas/Carousel'
+        widget:
+          $ref: "#/components/schemas/Widget"
+        version:
+          type: "string"
+          example: "1"
 
-    Button:
+    Buttons:
+      type: "array"
+      items:
+        oneOf:
+          - $ref: "#/components/schemas/PostBack"
+          - $ref: "#/components/schemas/QuickReply"
+          - $ref: "#/components/schemas/UrlButton"
+      discriminator:
+        propertyName: type
+        mapping:
+          postback: '#/components/schemas/PostBack'
+          quick_reply: '#/components/schemas/QuickReply'
+          web_url: '#/components/schemas/UrlButton'
+
+    PostBack:
       type: "object"
+      required: ["title", "type"]
       properties:
         title:
           type: "string"
@@ -82,6 +131,37 @@ components:
         payload:
           type: "string"
           example: "helpTopic1?_previous_intent=greetings"
+        type:
+          type: "string"
+          example: "postback"
+
+    QuickReply:
+      type: "object"
+      required: ["title", "type"]
+      properties:
+        title:
+          type: "string"
+          example: "Choice Topic 1"
+        payload:
+          type: "string"
+          example: "choiceTopic1?_previous_intent=greetings"
+        type:
+          type: "string"
+          example: "quick_reply"
+
+    UrlButton:
+      type: "object"
+      required: ["title", "url", "type"]
+      properties:
+        title:
+          type: "string"
+          example: "Help me on Topic 1"
+        url:
+          type: "string"
+          example: "http://www.sncf.com"
+        type:
+          type: "string"
+          example: "web_url"
 
     Carousel:
       type: "object"
@@ -101,28 +181,32 @@ components:
           type: "string"
           example: "subTitle"
         file:
-          type: "object"
-          properties:
-            url:
-              type: "string"
-              example: "http://url1.fr/image1.jpg"
-            name:
-              type: "string"
-              example: "name"
-            type:
-              type: "string"
-              example: "image"
-        actions:
-          type: array
-          items:
-            $ref: "#/components/schemas/Actions"
+          $ref: '#/components/schemas/File'
+        buttons:
+          $ref: "#/components/schemas/Buttons"
 
-    Actions:
+    File:
       type: "object"
+      required: ["url", "name", "type"]
       properties:
-        title:
+        url:
           type: "string"
-          example: "Action1"
+          example: "http://url1.fr/image1.jpg"
+        name:
+          type: "string"
+          example: "name"
+        type:
+          type: "string"
+          example: "image"
+
+    Widget:
+      type: "object"
+      required: ["data", "type"]
+      properties:
+        data:
+          type: "object"
+        type:
+          type: "string"
 
 externalDocs:
   description: "TOCK Documentation"

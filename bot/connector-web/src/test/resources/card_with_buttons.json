@@ -1,0 +1,30 @@
+{
+  "responses": [
+    {
+      "card": {
+        "title": "title",
+        "subTitle": "subTitle",
+        "file": {
+          "name": "imageName",
+          "url": "http://www.sncf.com/image.png",
+          "type": "image"
+        },
+        "buttons": [
+          {
+            "title": "title",
+            "payload": "payload",
+            "type": "postback",
+            "clazz": "postback_button"
+          },
+          {
+            "title": "title",
+            "url": "http://www.sncf.com",
+            "type": "web_url",
+            "clazz": "url_button"
+          }
+        ]
+      },
+      "version": "1"
+    }
+  ]
+}

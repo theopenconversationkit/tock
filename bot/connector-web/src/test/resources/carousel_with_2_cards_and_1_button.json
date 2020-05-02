@@ -1,0 +1,54 @@
+{
+  "responses": [
+    {
+      "text": "carousel with two cards and one button",
+      "carousel": {
+        "cards": [
+          {
+            "title": "item 1",
+            "subTitle": "subtitle 1",
+            "file": {
+              "name": "imageName 1",
+              "url": "http://www.sncf.com/image1.png",
+              "type": "image"
+            },
+            "buttons": [
+              {
+                "title": "choice item 1",
+                "payload": "payload",
+                "type": "postback",
+                "clazz": "postback_button"
+              }
+            ]
+          },
+          {
+            "title": "item 2",
+            "subTitle": "subtitle 2",
+            "file": {
+              "name": "imageName 2",
+              "url": "http://www.sncf.com/image2.png",
+              "type": "image"
+            },
+            "buttons": [
+              {
+                "title": "choice item 2",
+                "payload": "payload",
+                "type": "postback",
+                "clazz": "postback_button"
+              }
+            ]
+          }
+        ]
+      },
+      "buttons": [
+        {
+          "title": "refresh",
+          "payload": "payload",
+          "type": "postback",
+          "clazz": "postback_button"
+        }
+      ],
+      "version": "1"
+    }
+  ]
+}
