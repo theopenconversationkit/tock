@@ -31,30 +31,30 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
-        <kotlin>1.3.71</kotlin>
+        <kotlin>1.3.72</kotlin>
         <couroutine>1.3.5</couroutine>
 
-        <slf4j>1.7.29</slf4j>
+        <slf4j>1.7.30</slf4j>
         <logback>1.2.3</logback>
 
         <kotlin-logging>1.7.9</kotlin-logging>
 
         <kodein>4.1.0</kodein>
         <kmongo>4.0.0</kmongo>
-        <jackson>2.10.3</jackson>
-        <jackson-databind>2.10.3</jackson-databind>
-        <jackson-module>2.10.3</jackson-module>
+        <jackson>2.11.0</jackson>
+        <jackson-databind>2.11.0</jackson-databind>
+        <jackson-module>2.11.0</jackson-module>
         <jackson-module-loader>0.1.0</jackson-module-loader>
         <jackson-data>0.1.0</jackson-data>
         <jackson-generator>0.3.1</jackson-generator>
         <klaxon>5.2</klaxon>
         <vertx>3.9.0</vertx>
         <retrofit>2.8.1</retrofit>
-        <okhttp>4.5.0</okhttp>
+        <okhttp>4.6.0</okhttp>
         <okhttp-signpost>1.1.0</okhttp-signpost>
         <signpost-core>1.2.1.2</signpost-core>
-        <circuitbreaker>1.3.1</circuitbreaker>
-        <guava>28.2-jre</guava>
+        <circuitbreaker>1.4.0</circuitbreaker>
+        <guava>29.0-jre</guava>
         <google-auth>1.30.2</google-auth>
         <jasypt>1.9.3</jasypt>
         <commons-csv>1.8</commons-csv>
@@ -67,11 +67,11 @@
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
 
-        <junit-jupiter>5.6.1</junit-jupiter>
+        <junit-jupiter>5.6.2</junit-jupiter>
 
-        <mockk>1.9.3</mockk>
+        <mockk>1.10.0</mockk>
         <assertj>3.12.2</assertj>
-        <byte-buddy>1.10.9</byte-buddy>
+        <byte-buddy>1.10.10</byte-buddy>
         <atrium>0.8.0</atrium>
 
         <plugin.surefire>3.0.0-M4</plugin.surefire>
@@ -80,12 +80,12 @@
         <plugin.gpg>1.6</plugin.gpg>
         <plugin.nexus-staging>1.6.8</plugin.nexus-staging>
         <plugin.dokka>0.10.1</plugin.dokka>
-        <plugin.assembly>3.2.0</plugin.assembly>
-        <plugin.frontend>1.9.1</plugin.frontend>
+        <plugin.assembly>3.3.0</plugin.assembly>
+        <plugin.frontend>1.10.0</plugin.frontend>
         <plugin.clean>3.1.0</plugin.clean>
         <plugin.jar>3.2.0</plugin.jar>
-        <plugin.ant>1.8</plugin.ant>
-        <plugin.shade>3.2.2</plugin.shade>
+        <plugin.ant>3.0.0</plugin.ant>
+        <plugin.shade>3.2.3</plugin.shade>
         <plugin.dependency>3.1.2</plugin.dependency>
         <plugin.resources>3.1.0</plugin.resources>
         <plugin.deploy>3.0.0-M1</plugin.deploy>
@@ -95,7 +95,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
-        <node>v10.16.3</node>
+        <node>v12.16.3</node>
     </properties>
 
     <modules>

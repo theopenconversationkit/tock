@@ -37,15 +37,15 @@ const routes: Routes = [
   {path: '', redirectTo: '/nlp/inbox', pathMatch: 'full'},
   {
     path: 'nlp',
-    loadChildren: './nlp-tabs/nlp.module#NlpModule'
+    loadChildren: () => import('./nlp-tabs/nlp.module').then(m => m.NlpModule)
   },
   {
     path: 'applications',
-    loadChildren: './applications/applications.module#ApplicationsModule'
+    loadChildren: () => import('./applications/applications.module').then(m => m.ApplicationsModule)
   },
   {
     path: 'quality',
-    loadChildren: './quality-nlp/quality.module#QualityModule'
+    loadChildren: () => import('./quality-nlp/quality.module').then(m => m.QualityModule)
   },
   {path: '**', redirectTo: '/nlp/inbox'}
 ];

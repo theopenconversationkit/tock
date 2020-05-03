@@ -16,7 +16,7 @@
 
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {StateService} from "../core-nlp/state.service";
-import * as moment from 'moment';
+import moment from 'moment';
 import {QualityService} from "../quality-nlp/quality.service";
 import {TestErrorQuery} from "../model/nlp";
 import {Subscription} from "rxjs";
@@ -151,7 +151,7 @@ export class TestBuildsComponent implements OnInit, OnDestroy {
   }
 
   search(): void {
-    console.log(this.modifiedAfter)
+    //console.log(this.modifiedAfter)
     this.quality.buildStats(
       TestErrorQuery.createWithoutSize(this.state, this.intent === "" ? undefined : this.intent, this.modifiedAfter)
     )

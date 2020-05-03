@@ -15,7 +15,7 @@
  */
 
 import {Component, Inject, OnInit} from "@angular/core";
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material";
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from "@angular/material/dialog";
 import {StateService} from "../../core-nlp/state.service";
 import {AnswerConfigurationType, IntentName, MandatoryEntity, SimpleAnswerConfiguration} from "../model/story";
 import {EntityDefinition, entityNameFromQualifiedName, Intent, IntentsCategory} from "../../model/nlp";

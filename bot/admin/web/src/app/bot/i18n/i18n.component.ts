@@ -18,7 +18,7 @@ import {Component, OnInit} from "@angular/core";
 import {I18nLabel} from "../model/i18n";
 import {BotService} from "../bot-service";
 import {StateService} from "../../core-nlp/state.service";
-import {PageEvent} from "@angular/material";
+import { PageEvent } from "@angular/material/paginator";
 import {saveAs} from "file-saver";
 import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
 import {I18nController} from "./i18n-label.component";

@@ -38,27 +38,27 @@ const routes: Routes = [
   {path: '', redirectTo: '/nlp/inbox', pathMatch: 'full'},
   {
     path: 'nlp',
-    loadChildren: './nlp/nlp.module#BotNlpModule'
+    loadChildren: () => import('./nlp/nlp.module').then(m => m.BotNlpModule)
   },
   {
     path: 'quality',
-    loadChildren: './quality/quality.module#BotQualityModule'
+    loadChildren: () => import('./quality/quality.module').then(m => m.BotQualityModule)
   },
   {
     path: 'configuration',
-    loadChildren: './configuration/configuration.module#BotConfigurationModule'
+    loadChildren: () => import('./configuration/configuration.module').then(m => m.BotConfigurationModule)
   },
   {
     path: 'build',
-    loadChildren: './bot/bot.module#BotModule'
+    loadChildren: () => import('./bot/bot.module').then(m => m.BotModule)
   },
   {
     path: 'test',
-    loadChildren: './test/test.module#BotTestModule'
+    loadChildren: () => import('./test/test.module').then(m => m.BotTestModule)
   },
   {
     path: 'monitoring',
-    loadChildren: './monitoring/monitoring.module#BotMonitoringModule'
+    loadChildren: () => import('./monitoring/monitoring.module').then(m => m.BotMonitoringModule)
   },
   {path: '**', redirectTo: '/nlp/inbox'}
 ];

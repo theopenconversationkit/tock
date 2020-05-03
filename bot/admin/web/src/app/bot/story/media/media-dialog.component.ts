@@ -15,7 +15,7 @@
  */
 
 import {Component, ElementRef, Inject, ViewChild} from "@angular/core";
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
+import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import {MediaAction, MediaCard, MediaFile} from "../../model/story";
 import {CreateI18nLabelRequest} from "../../model/i18n";
 import {BotService} from "../../bot-service";
@@ -36,7 +36,7 @@ export class MediaDialogComponent {
 
   uploader: FileUploader;
 
-  @ViewChild('titleElement', {static: false}) titleElement: ElementRef;
+  @ViewChild('titleElement') titleElement: ElementRef;
 
   constructor(
     public dialogRef: MatDialogRef<MediaDialogComponent>,

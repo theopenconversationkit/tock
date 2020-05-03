@@ -17,7 +17,7 @@
 import {AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, ViewChild} from "@angular/core";
 import {StateService} from "../../core-nlp/state.service";
 import {ApplicationService} from "../../core-nlp/applications.service";
-import {MatPaginator} from "@angular/material";
+import { MatPaginator } from "@angular/material/paginator";
 import {DataSource} from "@angular/cdk/collections";
 import {UserLog} from "../../model/application";
 import {BehaviorSubject, merge, Observable, Subscription} from "rxjs";

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, Renderer} from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, Renderer2 } from '@angular/core';
 
 declare var cytoscape: any;
 
@@ -41,7 +41,7 @@ export class CytoComponent implements OnChanges, OnDestroy {
 
   private cy;
 
-  public constructor(private renderer: Renderer, private el: ElementRef) {
+  public constructor(private renderer: Renderer2, private el: ElementRef) {
     this.layout = this.layout || {
       name: 'grid',
       directed: true,

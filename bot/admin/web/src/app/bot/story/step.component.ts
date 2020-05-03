@@ -16,7 +16,7 @@
 
 import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {EntityStepSelection, IntentName, StoryStep} from "../model/story";
-import {MatDialog} from "@angular/material";
+import { MatDialog } from "@angular/material/dialog";
 import {Intent, IntentsCategory, ParseQuery} from "../../model/nlp";
 import {StateService} from "../../core-nlp/state.service";
 import {IntentDialogComponent} from "../../sentence-analysis/intent-dialog/intent-dialog.component";

@@ -23,7 +23,7 @@ import {
   StoryStep
 } from "../model/story";
 import {BotService} from "../bot-service";
-import {MatDialog} from "@angular/material";
+import { MatDialog } from "@angular/material/dialog";
 import {StateService} from "../../core-nlp/state.service";
 import {ConfirmDialogComponent} from "../../shared-nlp/confirm-dialog/confirm-dialog.component";
 import {StoryDialogComponent} from "./story-dialog.component";
@@ -186,7 +186,7 @@ export class StoryComponent implements OnInit, OnChanges {
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.entities) {
         this.story.mandatoryEntities = result.entities;
-        console.log(this.story);
+        //console.log(this.story);
         this.saveStory(this.story.selected);
       }
     });

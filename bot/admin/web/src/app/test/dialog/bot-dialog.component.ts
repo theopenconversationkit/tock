@@ -24,7 +24,7 @@ import {BotSharedService} from "../../shared/bot-shared.service";
 import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
 import {randomString} from "../../model/commons";
 import {Subscription} from "rxjs";
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material";
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from "@angular/material/dialog";
 import {SentenceFilter} from "../../sentences-scroll/sentences-scroll.component";
 import { NbToastrService } from '@nebular/theme';
 

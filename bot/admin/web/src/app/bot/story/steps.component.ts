@@ -18,7 +18,7 @@ import {Component, Input, OnChanges, OnInit, SimpleChanges} from "@angular/core"
 import {AnswerConfigurationType, IntentName, SimpleAnswerConfiguration, StoryStep} from "../model/story";
 import {StateService} from "../../core-nlp/state.service";
 import {FlatTreeControl} from "@angular/cdk/tree";
-import {MatTreeFlatDataSource, MatTreeFlattener} from "@angular/material";
+import { MatTreeFlatDataSource, MatTreeFlattener } from "@angular/material/tree";
 import {SelectEntityDialogComponent} from "./select-entity-dialog.component";
 import {DialogService} from "../../core-nlp/dialog.service";
 import {MatDialog} from "@angular/material/dialog";

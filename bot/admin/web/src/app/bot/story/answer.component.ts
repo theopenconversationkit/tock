@@ -23,7 +23,8 @@ import {
   SimpleAnswerConfiguration
 } from "../model/story";
 import {BotService} from "../bot-service";
-import {MatDialog, MatRadioChange} from "@angular/material";
+import { MatDialog } from "@angular/material/dialog";
+import { MatRadioChange } from "@angular/material/radio";
 import {StateService} from "../../core-nlp/state.service";
 import {AnswerDialogComponent} from "./answer-dialog.component";
 import {AnswerController} from "./controller";

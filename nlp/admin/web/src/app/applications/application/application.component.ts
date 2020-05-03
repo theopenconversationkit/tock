@@ -15,7 +15,7 @@
  */
 
 import {Component, ElementRef, OnInit, ViewChild} from "@angular/core";
-import {MatDialog} from "@angular/material";
+import { MatDialog } from "@angular/material/dialog";
 import {ActivatedRoute, Router} from "@angular/router";
 import {StateService} from "../../core-nlp/state.service";
 import {Application} from "../../model/application";
@@ -39,7 +39,7 @@ export class ApplicationComponent implements OnInit {
   nlpEngineType: string;
   nlpEngineTypeChange: Subject<NlpEngineType> = new Subject();
 
-  @ViewChild('appLabel', {static: false}) appLabel: ElementRef;
+  @ViewChild('appLabel') appLabel: ElementRef;
 
   constructor(private route: ActivatedRoute,
               private toastrService: NbToastrService,

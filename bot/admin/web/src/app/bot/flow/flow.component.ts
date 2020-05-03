@@ -67,6 +67,7 @@ export class FlowComponent implements OnInit, OnDestroy {
       nodeDimensionsIncludeLabels: true,
       animate: true
     },
+    /*
     {
       name: 'elk',
       nodeDimensionsIncludeLabels: true,
@@ -74,7 +75,7 @@ export class FlowComponent implements OnInit, OnDestroy {
         direction: 'RIGHT',
         edgeRouting: 'SPLINES',
       }
-    },
+    },*/
     {
       name: 'grid',
       nodeDimensionsIncludeLabels: true,

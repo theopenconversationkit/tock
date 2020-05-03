@@ -15,7 +15,7 @@
  */
 
 import {Component, Input, OnInit} from "@angular/core";
-import {MatDialog} from "@angular/material";
+import { MatDialog } from "@angular/material/dialog";
 import {ActivatedRoute} from "@angular/router";
 import {StateService} from "../../core-nlp/state.service";
 import {Application, NlpApplicationConfiguration, NlpModelConfiguration} from "../../model/application";

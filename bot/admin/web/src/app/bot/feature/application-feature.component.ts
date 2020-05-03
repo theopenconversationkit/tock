@@ -33,7 +33,7 @@ export class ApplicationFeatureComponent implements OnInit {
   feature: Feature = new Feature("", "", false);
   botApplicationConfigurationId: string;
   loadingApplicationsFeatures: boolean = false;
-  @ViewChild('newCategory', {static: false}) newCategory: ElementRef;
+  @ViewChild('newCategory') newCategory: ElementRef;
 
   constructor(private state: StateService,
               private botService: BotService,

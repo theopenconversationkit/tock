@@ -19,7 +19,7 @@ import {AuthService} from "./core-nlp/auth/auth.service";
 import {StateService} from "./core-nlp/state.service";
 import {DialogService} from "./core-nlp/dialog.service";
 import {RestService} from "./core-nlp/rest/rest.service";
-import {MatIconRegistry} from "@angular/material";
+import { MatIconRegistry } from "@angular/material/icon";
 import {UserRole} from "./model/auth";
 import {DomSanitizer} from "@angular/platform-browser";
 import {NbMenuItem} from "@nebular/theme";

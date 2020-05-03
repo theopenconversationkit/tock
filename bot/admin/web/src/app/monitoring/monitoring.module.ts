@@ -27,7 +27,8 @@ import {MonitoringService} from "./monitoring.service";
 import {BotSharedModule} from "../shared/bot-shared.module";
 import {MomentModule} from "ngx-moment";
 import {DialogsComponent} from "./dialogs/dialogs.component";
-import {MatDatepickerModule, MatNativeDateModule} from "@angular/material";
+import { MatNativeDateModule } from "@angular/material/core";
+import { MatDatepickerModule } from "@angular/material/datepicker";
 import {NbCardModule, NbCheckboxModule, NbRouteTabsetModule, NbSpinnerModule, NbTooltipModule, NbButtonModule,
 NbInputModule, NbSelectModule, NbCalendarModule, NbUserModule, NbDatepickerModule, NbListModule, NbAccordionModule} from "@nebular/theme";
 

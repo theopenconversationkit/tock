@@ -13,6 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "aot": true,
             "preserveSymlinks": true,
             "outputPath": "dist",
             "index": "src/index.html",
@@ -37,8 +38,6 @@
             ],
             "scripts": [
               "node_modules/cytoscape/dist/cytoscape.min.js",
-              "node_modules/elkjs/lib/elk.bundled.js",
-              "node_modules/cytoscape-elk/cytoscape-elk.js",
               "node_modules/webcola/WebCola/cola.min.js",
               "node_modules/cytoscape-cola/cytoscape-cola.js",
               "node_modules/cytoscape-cose-bilkent/cytoscape-cose-bilkent.js",
@@ -49,6 +48,12 @@
           },
           "configurations": {
             "production": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -66,6 +71,12 @@
               "buildOptimizer": true
             },
             "dev": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",

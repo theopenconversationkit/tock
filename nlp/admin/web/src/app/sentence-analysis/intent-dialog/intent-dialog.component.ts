@@ -15,7 +15,7 @@
  */
 
 import {Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
+import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import {StateService} from "../../core-nlp/state.service";
 
 @Component({
@@ -35,7 +35,7 @@ export class IntentDialogComponent implements OnInit {
   dialogType: string;
   private nameInitialized = false;
 
-  @ViewChild('labelElement', {static: false}) labelElement: ElementRef;
+  @ViewChild('labelElement') labelElement: ElementRef;
 
   constructor(
     public dialogRef: MatDialogRef<IntentDialogComponent>,

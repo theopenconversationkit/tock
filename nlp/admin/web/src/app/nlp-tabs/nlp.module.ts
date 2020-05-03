@@ -41,7 +41,8 @@ import {AddStateDialogComponent} from "../intents/add-state/add-state-dialog.com
 import {EntitiesComponent} from "../entities/entities.component";
 import {EditEntitiesComponent} from "../sentence-analysis/entities/edit-entities.component";
 import {EntityDetailsComponent} from "../entities/entity-details.component";
-import {MatDatepickerModule, MatNativeDateModule} from "@angular/material";
+import { MatNativeDateModule } from "@angular/material/core";
+import { MatDatepickerModule } from "@angular/material/datepicker";
 import {FileUploadModule} from "ng2-file-upload";
 import {ReviewRequestDialogComponent} from "../sentence-analysis/review-request-dialog/review-request-dialog.component";
 import {

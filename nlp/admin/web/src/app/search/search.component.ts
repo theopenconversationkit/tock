@@ -51,7 +51,7 @@ export class SearchComponent implements OnInit {
   users: string[];
 
   private firstSearch = false;
-  @ViewChild(SentencesScrollComponent, {static: false}) scroll;
+  @ViewChild(SentencesScrollComponent) scroll;
 
   constructor(public state: StateService,
               private nlp: NlpService,

@@ -17,7 +17,7 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from "@angular/core";
 import {AnswerContainer, Media, SimpleAnswer, SimpleAnswerConfiguration} from "../model/story";
 import {BotService} from "../bot-service";
-import {MatDialog} from "@angular/material";
+import { MatDialog } from "@angular/material/dialog";
 import {StateService} from "../../core-nlp/state.service";
 import {CreateI18nLabelRequest} from "../model/i18n";
 import {MediaDialogComponent} from "./media/media-dialog.component";
@@ -46,7 +46,7 @@ export class SimpleAnswerComponent implements OnInit {
   newAnswer: string;
   newMedia: Media;
 
-  @ViewChild('newAnswerElement', {static: false}) newAnswerElement: ElementRef;
+  @ViewChild('newAnswerElement') newAnswerElement: ElementRef;
 
   constructor(private state: StateService,
               private bot: BotService,

@@ -49,7 +49,7 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
   submit = new AnswerController();
   textRetrieved: boolean = false;
 
-  @ViewChild('newSentence', {static: false}) newSentence: ElementRef;
+  @ViewChild('newSentence') newSentence: ElementRef;
 
   private stories: StoryDefinitionConfiguration[] = [];
 

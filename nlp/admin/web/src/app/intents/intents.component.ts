@@ -18,7 +18,7 @@ import {saveAs} from "file-saver";
 import {Component, ElementRef, OnInit} from "@angular/core";
 import {StateService} from "../core-nlp/state.service";
 import {EntityDefinition, Intent, IntentsCategory} from "../model/nlp";
-import {MatDialog, MatDialogConfig} from "@angular/material";
+import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
 import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialog.component";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {ApplicationService} from "../core-nlp/applications.service";

@@ -16,7 +16,7 @@
 
 import {saveAs} from "file-saver";
 import {AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, ViewChild} from "@angular/core";
-import {MatPaginator} from "@angular/material";
+import { MatPaginator } from "@angular/material/paginator";
 import {DataSource} from "@angular/cdk/collections";
 import {BehaviorSubject, merge, Observable, Subscription} from "rxjs";
 import {EntityTestError, TestErrorQuery} from "../model/nlp";

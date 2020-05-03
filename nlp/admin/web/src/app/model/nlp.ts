@@ -1274,7 +1274,7 @@ export function nameFromQualifiedName(qualifiedName: string): string {
 }
 
 export function getRoles(intents: Intent[], entityTypes: EntityType[], entityType?: string): string[] {
-  const roles = new Set();
+  const roles = new Set<string>();
   intents.forEach(
     intent => intent.entities.forEach(
       entity => {

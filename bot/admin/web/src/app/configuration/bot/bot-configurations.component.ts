@@ -22,7 +22,7 @@ import {
   ConnectorType,
   UserInterfaceType
 } from "../../core/model/configuration";
-import {MatDialog} from "@angular/material";
+import { MatDialog } from "@angular/material/dialog";
 import {ConfirmDialogComponent} from "../../shared-nlp/confirm-dialog/confirm-dialog.component";
 import {StateService} from "../../core-nlp/state.service";
 import { NbToastrService } from '@nebular/theme';
@@ -39,7 +39,7 @@ export class BotConfigurationsComponent implements OnInit {
   displayTestConfigurations: boolean = false;
 
   //used to copy to clipboard
-  @ViewChild('copy', {static: false}) tmpTextArea: ElementRef;
+  @ViewChild('copy') tmpTextArea: ElementRef;
 
   constructor(private state: StateService,
               private botConfiguration: BotConfigurationService,

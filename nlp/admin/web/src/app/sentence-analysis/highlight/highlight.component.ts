@@ -67,10 +67,10 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
   currentDblClick: boolean;
 
   //used to copy to clipboard
-  @ViewChild('copy', {static: false}) tmpTextArea: ElementRef;
+  @ViewChild('copy') tmpTextArea: ElementRef;
 
   //the tokens container
-  @ViewChild('tokensContainer', {static: false}) tokensContainer: ElementRef;
+  @ViewChild('tokensContainer') tokensContainer: ElementRef;
 
   constructor(private nlp: NlpService,
               public state: StateService,

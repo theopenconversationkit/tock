@@ -75,7 +75,7 @@ const COMPONENTS = [
 })
 export class ThemeModule {
   static forRoot(): ModuleWithProviders {
-    return <ModuleWithProviders>{
+    return {
       ngModule: ThemeModule,
       providers: [
         ...NbThemeModule.forRoot(
