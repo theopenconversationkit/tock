@@ -20,7 +20,7 @@
     <input matInput
            *ngIf="!step.new"
            required
-           [(ngModel)]="step.userSentence.defaultLocalizedLabelForLocale(state.currentLocale).label"
+           [(ngModel)]="step.userSentence.defaultLabel"
            placeholder="Enter a User Phrase"
            (blur)="userSentenceChange($event.target.value)">
     <input matInput

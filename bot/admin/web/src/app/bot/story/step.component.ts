@@ -22,9 +22,10 @@ import {StateService} from "../../core-nlp/state.service";
 import {IntentDialogComponent} from "../../sentence-analysis/intent-dialog/intent-dialog.component";
 import {NlpService} from "../../nlp-tabs/nlp.service";
 import {DialogService} from "../../core-nlp/dialog.service";
-import {CreateI18nLabelRequest} from "../model/i18n";
+import {CreateI18nLabelRequest, I18nLocalizedLabel} from "../model/i18n";
 import {BotService} from "../bot-service";
 import {SelectEntityDialogComponent} from "./select-entity-dialog.component";
+import {defaultUserInterfaceType} from "../../core/model/configuration";
 
 @Component({
   selector: 'tock-step',
@@ -236,10 +237,11 @@ export class StepComponent implements OnInit {
     });
   }
 
-  userSentenceChange(userSentence: string) {
+  userSentenceChange(changedSentence: string) {
     const step = this.step;
-    if (userSentence.trim().length !== 0) {
+    if (changedSentence.trim().length !== 0) {
       if (!step.new) {
+        this.updateStepI18nLabel(step, changedSentence);
         this.bot.saveI18nLabel(step.userSentence).subscribe(_ => {
         });
       }
@@ -250,7 +252,7 @@ export class StepComponent implements OnInit {
           app.namespace,
           app.name,
           language,
-          userSentence,
+          changedSentence,
           true
         )).subscribe(r => {
           if (r.classification.intentId) {
@@ -266,6 +268,24 @@ export class StepComponent implements OnInit {
       } else {
         this.checkStep();
       }
+    }
+  }
+
+  private updateStepI18nLabel(step: StoryStep, changedSentence: string) {
+    step.userSentence.defaultLocale = this.state.currentLocale
+    let currentLocaleI18nSentence = step.userSentence.i18n.find(
+      i18nSentence => i18nSentence.locale === this.state.currentLocale
+    )
+    if (!currentLocaleI18nSentence) {
+      step.userSentence.i18n.push(new I18nLocalizedLabel(
+        this.state.currentLocale,
+        defaultUserInterfaceType,
+        changedSentence,
+        false,
+        null,
+        []))
+    } else {
+      currentLocaleI18nSentence.label = changedSentence
     }
   }
 
