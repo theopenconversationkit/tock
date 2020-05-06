@@ -28,11 +28,6 @@
     <name>Tock NLP Dialogflow Client</name>
     <description>DialogFlow Client for Tock NLP API</description>
 
-    <properties>
-        <dialogflow>2.0.0</dialogflow>
-        <google.oauth2>0.20.0</google.oauth2>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>ai.tock</groupId>
@@ -50,12 +45,10 @@
         <dependency>
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-dialogflow</artifactId>
-            <version>${dialogflow}</version>
         </dependency>
         <dependency>
             <groupId>com.google.auth</groupId>
             <artifactId>google-auth-library-oauth2-http</artifactId>
-            <version>${google.oauth2}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

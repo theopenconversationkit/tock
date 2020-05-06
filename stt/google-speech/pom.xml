@@ -29,7 +29,6 @@
     <description>Google Speech STT implementation</description>
 
     <properties>
-        <google-speech>1.23.0</google-speech>
         <jave>2.4.6</jave>
     </properties>
 
@@ -61,7 +60,6 @@
         <dependency>
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-speech</artifactId>
-            <version>${google-speech}</version>
         </dependency>
     </dependencies>
 

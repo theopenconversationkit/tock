@@ -15,7 +15,8 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ai.tock</groupId>
@@ -63,9 +64,9 @@
         <commons-lang>3.10</commons-lang>
         <json>20190722</json>
         <httpclient>4.5.12</httpclient>
-        <google-auth2>0.20.0</google-auth2>
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
+        <google>5.3.0</google>
 
         <junit-jupiter>5.6.2</junit-jupiter>
 
@@ -151,6 +152,14 @@
                 <groupId>com.github.salomonbrys.kodein</groupId>
                 <artifactId>kodein</artifactId>
                 <version>${kodein}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.cloud</groupId>
+                <artifactId>libraries-bom</artifactId>
+                <version>${google}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
             <dependency>
@@ -544,11 +553,6 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-            <dependency>
-                <groupId>com.google.auth</groupId>
-                <artifactId>google-auth-library-oauth2-http</artifactId>
-                <version>${google-auth2}</version>
-            </dependency>
 
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
@@ -762,7 +766,7 @@
             <name>Apache License, Version 2.0</name>
             <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
-            <comments />
+            <comments/>
         </license>
     </licenses>
 

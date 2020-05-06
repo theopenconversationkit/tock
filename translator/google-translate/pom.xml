@@ -28,10 +28,6 @@
     <name>Tock Google Translator</name>
     <description>Google translator implementation</description>
 
-    <properties>
-        <google.translate>1.94.5</google.translate>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>ai.tock</groupId>
@@ -40,7 +36,6 @@
         <dependency>
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-translate</artifactId>
-            <version>${google.translate}</version>
         </dependency>
     </dependencies>
 
