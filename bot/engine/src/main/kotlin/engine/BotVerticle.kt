@@ -81,6 +81,10 @@ internal class BotVerticle(
     private val secondaryInstallers: MutableSet<ServiceInstaller> = CopyOnWriteArraySet()
     private var initialized: Boolean = false
 
+    override val defaultCorsOrigin: String = "*"
+
+    override val defaultCorsWithCredentials: Boolean = false
+
     override fun authProvider(): TockAuthProvider? = defaultAuthProvider()
 
     fun registerServices(serviceIdentifier: String, installer: (Router) -> Any?): ServiceInstaller {

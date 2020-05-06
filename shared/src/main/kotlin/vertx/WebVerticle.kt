@@ -512,15 +512,27 @@ abstract class WebVerticle : AbstractVerticle() {
     //extension & utility methods
 
     protected open fun addDevCorsHandler() {
-        if (booleanProperty("tock_web_use_default_cors_handler", devEnvironment)) {
+        if (useDefaultCorsHandler) {
             router.route().handler(
                 corsHandler(
-                    property("tock_web_use_default_cors_handler_url", "http://localhost:4200"),
-                    booleanProperty("tock_web_use_default_cors_handler_with_credentials", true)
+                    property("tock_web_use_default_cors_handler_url", defaultCorsOrigin),
+                    booleanProperty("tock_web_use_default_cors_handler_with_credentials", defaultCorsWithCredentials)
                 )
             )
         }
     }
+
+    private val useDefaultCorsHandler: Boolean = booleanProperty("tock_web_use_default_cors_handler", devEnvironment)
+
+    /**
+     * Default cors origin (if tock_web_use_default_cors_handler property is set to true).
+     */
+    protected open val defaultCorsOrigin: String = "http://localhost:4200"
+
+    /**
+     * By default, allow credentials for cors origin (if tock_web_use_default_cors_handler property is set to true).
+     */
+    protected open val defaultCorsWithCredentials: Boolean = true
 
     fun corsHandler(
         origin: String = "*",
