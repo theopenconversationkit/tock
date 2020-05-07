@@ -35,12 +35,14 @@ internal object MessageConverter {
     fun toMessage(action: Action): BusinessChatConnectorMessage? {
         return if (action is SendSentence) {
             if (action.text == null) {
-                action.messages.first() as? BusinessChatConnectorMessage
-            } else BusinessChatConnectorTextMessage(
-                sourceId = action.playerId.id,
-                destinationId = action.recipientId.id,
-                body = action.text.toString()
-            )
+                action.messages.firstOrNull() as? BusinessChatConnectorMessage
+            } else {
+                BusinessChatConnectorTextMessage(
+                    sourceId = action.playerId.id,
+                    destinationId = action.recipientId.id,
+                    body = action.text.toString()
+                )
+            }
         } else null
     }
 

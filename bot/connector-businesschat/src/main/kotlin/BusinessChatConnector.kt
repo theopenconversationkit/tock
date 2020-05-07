@@ -76,6 +76,7 @@ internal class BusinessChatConnector(
                     is BusinessChatConnectorImageMessage -> cspBusinessChatClient.sendAttachment(message)
                     is BusinessChatConnectorListPickerMessage -> cspBusinessChatClient.sendListPicker(message)
                     is BusinessChatConnectorRichLinkMessage -> cspBusinessChatClient.sendRichLink(message)
+                    else -> logger.warn { "unknown message: $event" }
                 }
             }
         }
