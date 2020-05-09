@@ -10,6 +10,9 @@ Tout l'intérêt des connecteurs Tock réside dans la possibilité de développe
 indépendamment du ou des canaux utilisés pour lui parler. Il est ainsi possible de créer un bot pour un canal,
 puis le rendre multicanal par la suite en ajoutant des connecteurs.
 
+Outre les connecteurs fournis avec la distribution Tock, des intégrations possibles 
+pour le traitement de la voix sont mentionnées plus bas.
+
 ## Connecteurs fournis avec Tock
 
 Tock fournit de nombreux connecteurs pour différents types de canaux (voir ci-dessous). De nouveaux connecteurs sont 
@@ -18,9 +21,52 @@ des canaux grand public.
  
  > Exemples : arrivée de Google Home en France en 2017, Alexa en 2018, ouverture des API WhatsApp puis Business Chat en 2019, etc. 
 
+Pour en savoir plus sur les bots référencés utilisant tel ou tel connecteur en production, 
+n'hésitez pas à consulter la page [vitrine Tock](../apropos/vitrine.md).
+
+[<img alt="Logo Messenger" title="Facebook Messenger"
+      src="https://cdn.iconscout.com/icon/free/png-256/facebook-messenger-2-569346.png" 
+      style="width: 50px;">](canaux.md#messenger)
+[<img alt="Logo Slack" title="Slack"
+ src="https://www.macupdate.com/images/icons256/50617.png" 
+ style="width: 50px;">](canaux.md#slack)
+[<img alt="Logo Google Assistant" title="Google Assistant"
+ src="https://res-5.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_120,w_120,f_auto,b_white,q_auto:eco/g0oshbe7blfnsrylchxd" 
+ style="width: 50px;">](canaux.md#google-assistant-home)
+[<img alt="Logo Google Home" title="Google Home"
+ src="https://phoneky.co.uk/thumbs/android/thumbs/ico/3/chromecast-android.jpg" 
+ style="width: 50px;">](canaux.md#google-assistant-home)
+[<img alt="Logo Alexa" title="Amazon Alexa / Amazon Echo"
+ src="https://cognyapps.com/wp-content/uploads/2018/09/amazon-alexa-logo-e1538253665426.png" 
+ style="width: 50px;">](canaux.md#alexa-echo)
+[<img alt="Logo RocketChat" title="Rocket.Chat"
+ src="https://dl2.macupdate.com/images/icons256/58493.png?d=1565347347" 
+ style="width: 50px;">](canaux.md#rocketchat)
+[<img alt="Logo WhatsApp" title="Facebook WhatsApp"
+ src="https://appradarcentral.com/wp-content/uploads/2017/07/WhatsApp-Messenger.png" 
+ style="width: 50px;">](canaux.md#whatsapp)
+[<img alt="Logo Teams" title="Microsoft Teams"
+ src="https://cdn.worldvectorlogo.com/logos/microsoft-teams.svg" 
+ style="width: 50px;">](canaux.md#teams)
+[<img alt="Logo Business Chat" title="Apple Business Chat"
+ src="http://cdn.osxdaily.com/wp-content/uploads/2014/11/Messages-icon-300x300.png" 
+ style="width: 50px;">](canaux.md#business-chat)
+[<img alt="Logo Twitter" title="Twitter"
+ src="https://d2v9ipibika81v.cloudfront.net/uploads/sites/112/2016/06/twitter-logo.jpg" 
+ style="width: 50px;">](canaux.md#twitter)
+[<img alt="Logo Allo-Media" title="Allo-Media"
+  src="https://s3-eu-central-1.amazonaws.com/glassdollar/logos/GD_5bcf9307048f6.png" 
+  style="width: 50px;">](canaux.md#allo-media)
+[<img alt="Logo Web" title="Web (générique)"
+ src="https://static.vecteezy.com/system/resources/previews/000/425/842/non_2x/vector-web-search-icon.jpg" 
+ style="width: 50px;">](canaux.md#web-generique)
+[<img alt="Logo Test" title="Test (générique)"
+ src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcR_8-ubeyOzkkKclCUX3V-LSJVik_u8wtbJs6FBGWp9P19kzAQH&usqp=CAU" 
+ style="width: 50px;">](canaux.md#test-generique)
+ 
 ### Messenger
 
-<img alt="Logo Messenger" 
+<img alt="Logo Messenger" title="Facebook Messenger"
 src="https://cdn.iconscout.com/icon/free/png-256/facebook-messenger-2-569346.png" 
 style="width: 100px;">
 
@@ -37,7 +83,7 @@ où vous retrouverez les sources et le _README_ du connecteur.
 
 ### Slack
 
-<img alt="Logo Slack" 
+<img alt="Logo Slack" title="Slack"
 src="https://www.macupdate.com/images/icons256/50617.png" 
 style="width: 100px;">
 
@@ -52,10 +98,13 @@ Pour en savoir plus sur ce connecteur, vous pouvez aussi vous rendre dans le dos
 [connector-slack](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-slack) sur GitHub, 
 où vous retrouverez les sources et le _README_ du connecteur.
 
-### Google Assistant / Google Home
+### Google Assistant / Home
 
-<img alt="Logo Google Assistant" 
+<img alt="Logo Google Assistant" title="Google Assistant"
 src="https://res-5.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_120,w_120,f_auto,b_white,q_auto:eco/g0oshbe7blfnsrylchxd" 
+style="width: 100px;">
+<img alt="Logo Google Home" title="Google Home"
+src="https://phoneky.co.uk/thumbs/android/thumbs/ico/3/chromecast-android.jpg" 
 style="width: 100px;">
 
 * **Canal** : [Google Assistant](https://assistant.google.com/) / [Google Home](https://store.google.com/fr/product/google_home)
@@ -67,11 +116,11 @@ Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le 
 
 ### Alexa / Echo
 
-<img alt="Logo Alexa" 
-src="https://cdn.wezift.com/assets/apps/amazon-alexa/logo/_imgSingle/9ec0bc97e359276643553d8c33e49872.png?mtime=20171201192101" 
+<img alt="Logo Alexa" title="Amazon Alexa / Amazon Echo"
+src="https://cognyapps.com/wp-content/uploads/2018/09/amazon-alexa-logo-e1538253665426.png" 
 style="width: 100px;">
 
-* **Canal** : [Amazon Alexa](https://alexa.amazon.com/)
+* **Canal** : [Amazon Alexa](https://alexa.amazon.com/) / Amazon Echo
 * **Type** : voix
 * **Status** : connecteur Tock utilisé en production depuis 2018
 
@@ -83,7 +132,7 @@ Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le 
 
 ### Rocket.Chat
 
-<img alt="Logo RocketChat" 
+<img alt="Logo RocketChat" title="Rocket.Chat"
 src="https://dl2.macupdate.com/images/icons256/58493.png?d=1565347347" 
 style="width: 100px;">
 
@@ -96,7 +145,7 @@ Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le 
 
 ### WhatsApp
 
-<img alt="Logo WhatsApp" 
+<img alt="Logo WhatsApp" title="Facebook WhatsApp"
 src="https://appradarcentral.com/wp-content/uploads/2017/07/WhatsApp-Messenger.png" 
 style="width: 100px;">
 
@@ -109,7 +158,7 @@ Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le 
 
 ### Teams
 
-<img alt="Logo Teams" 
+<img alt="Logo Teams" title="Microsoft Teams"
 src="https://cdn.worldvectorlogo.com/logos/microsoft-teams.svg" 
 style="width: 100px;">
 
@@ -120,9 +169,9 @@ style="width: 100px;">
 Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
 [connector-teams](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-teams) sur GitHub.
 
-### Business Chat / Messages
+### Business Chat
 
-<img alt="Logo BusinessChat" 
+<img alt="Logo BusinessChat" title="Apple Business Chat"
 src="http://cdn.osxdaily.com/wp-content/uploads/2014/11/Messages-icon-300x300.png" 
 style="width: 100px;">
 
@@ -135,29 +184,203 @@ Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le 
 
 ### Twitter
 
-<img alt="Logo Twitter" 
+<img alt="Logo Twitter" title="Twitter"
 src="https://d2v9ipibika81v.cloudfront.net/uploads/sites/112/2016/06/twitter-logo.jpg" 
 style="width: 100px;">
 
 * **Canal** : [Twitter](https://twitter.com/) (messages privés)
 * **Type** : texte
-* **Status** : connecteur Tock en développement
+* **Status** : connecteur Tock utilisé en production depuis 2019
 
 Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
 [connector-twitter](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-twitter) sur GitHub.
 
-### Web
+### Allo-Media
 
-> Work in progress
+<img alt="Logo Allo-Media" title="Allo-Media"
+src="https://s3-eu-central-1.amazonaws.com/glassdollar/logos/GD_5bcf9307048f6.png" 
+style="width: 100px;">
 
-### Test
+* **Canal** : [Allo-Media](https://www.allo-media.net/) (téléphonie)
+* **Type** : voix
+* **Status** : connecteur Tock utilisé en production depuis 2020
 
+Ce connecteur a été développé pour le bot [AlloCovid](https://www.allocovid.com/).
+Pour en savoir plus, voir la classe [AlloMediaConnector](https://github.com/theopenconversationkit/allocovid/blob/master/src/main/kotlin/AlloMediaConnector.kt)
+avec les [sources du bot](https://github.com/theopenconversationkit/allocovid) sur GitHub.
+
+### Web (générique)
+
+<img alt="Logo Web" title="Web (générique)"
+ src="https://static.vecteezy.com/system/resources/previews/000/425/842/non_2x/vector-web-search-icon.jpg" 
+ style="width: 100px;">
+
+Ce connecteur générique permet d'intégrer un bot Tock à n'importe quel site Web ou application :
+portail, application Web ou mobile, client REST, etc.
+
+Le connecteur expose une API REST vers le bot, facilement intégrable depuis n'importe quelle application Web ou mobile, ou langage de programmation.
+
+A noter, les développeurs [React](https://reactjs.org/) / Javascript peuvent tirer parti du composant 
+[`tock-react-kit`](https://github.com/theopenconversationkit/tock-react-kit)
+fourni avec Tock pour consommer cette API.
+
+* **Canal** : Web (générique pour tous sites & applications Web)
+* **Type** : texte
+* **Status** : connecteur Tock utilisé en production depuis 2020
+
+Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier
+[connector-web](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-web) sur GitHub.
+Il contient exemples et documentation format _Swagger_ de l'API REST.
+
+
+### Test (générique)
+
+<img alt="Logo Web" title="Test (générique)"
+ src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcR_8-ubeyOzkkKclCUX3V-LSJVik_u8wtbJs6FBGWp9P19kzAQH&usqp=CAU" 
+ style="width: 100px;">
+ 
 Ce connecteur est interne à Tock, il sert à dialoguer avec un bot directement dans l'interface 
-_Tock Studio_ (vue _Test_ > _Test the bot_).
+_Tock Studio_ (vue _Test_ > _Test the bot_) en émulant d'autres connecteurs.
 
-## Architecture & gouvernance des modèles et données
+## Technologies vocales
 
-Dans une optique de _gouvernance des modèles et données_ conversationnelles, l'architecture en connecteurs 
+Les bots Tock traitent des phrases en format texte par défaut (_chatbots_). Néanmoins, on peut 
+intégrer des technologies vocales aux "bornes" du bot afin d'obtenir des conversations vocales (_voicebots_ et _callbots_) :
+
+- Traduction de la voix en texte (_Speech-To-Text_) en amont du traitement par le bot (ie. avant l'étape _NLU_)
+- Traduction du texte en voix (_Text-To-Speech_) en aval du traitement par le bot (ie. synthèse vocale de la réponse du bot)
+
+Certains _connecteurs_ fournis avec Tock permettent d'intégrer un bot à un canal externe 
+gérant les aspects vocaux STT et TTS.
+
+En outre, d'autres technologies vocales ont pu être intégrées à Tock ces dernières années.
+Elles sont mentionnées à titre indicatif, même quand il n'est pas fourni de _connecteur_ prêt à l'emploi.
+
+[<img alt="Logo Android" title="Google Android"
+ src="https://www.wortis.fr/wp-content/uploads/2019/05/icon-wortis-android.png" 
+ style="width: 50px;">](canaux.md#google-android)
+[<img alt="Logo Google Assistant" title="Google Assistant"
+ src="https://res-5.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_120,w_120,f_auto,b_white,q_auto:eco/g0oshbe7blfnsrylchxd" 
+ style="width: 50px;">](canaux.md#google-android)
+[<img alt="Logo Google Home" title="Google Home"
+ src="https://phoneky.co.uk/thumbs/android/thumbs/ico/3/chromecast-android.jpg" 
+ style="width: 50px;">](canaux.md#google-android)
+[<img alt="Logo Teams" title="Microsoft Teams"
+ src="https://cdn.worldvectorlogo.com/logos/microsoft-teams.svg" 
+ style="width: 50px;">](canaux.md#google-android)
+[<img alt="Logo iOS" title="Apple iOS"
+ src="https://www.freeiconspng.com/uploads/app-ios-png-4.png" 
+ style="width: 50px;">](canaux.md#apple-ios)
+[<img alt="Logo BusinessChat" title="Apple Business Chat"
+ src="http://cdn.osxdaily.com/wp-content/uploads/2014/11/Messages-icon-300x300.png" 
+ style="width: 50px;">](canaux.md#apple-ios)
+[<img alt="Logo Alexa" title="Amazon Alexa"
+ src="https://cognyapps.com/wp-content/uploads/2018/09/amazon-alexa-logo-e1538253665426.png" 
+ style="width: 50px;">](canaux.md#amazon-alexa)
+[<img alt="Logo Allo-Media" title="Allo-Media"
+ src="https://s3-eu-central-1.amazonaws.com/glassdollar/logos/GD_5bcf9307048f6.png" 
+ style="width: 50px;">](canaux.md#allo-media-voxygen)
+[<img alt="Logo Voxygen" title="Voxygen" 
+ src="https://res-1.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_256,w_256,f_auto,q_auto:eco/v1502521579/dyuj1cgjsnzhpo6ojwq0.png" 
+ style="width: 50px;">](canaux.md#allo-media-voxygen)
+[<img alt="Logo Nuance" title="Nuance"
+ src="https://www.dicteedragon.fr/img/m/2.jpg" 
+ style="width: 50px;">](canaux.md#nuance)
+
+### Google / Android
+
+Les fonctions _Speech-To-Text_ et _Text-To-Speech_ de Google sont utilisées à travers le 
+[connecteur Google Assistant / Home](canaux.md#google-assistant-home), également par les fonctions 
+vocales de l'[application Microsoft Teams pour Android](https://play.google.com/store/apps/details?id=com.microsoft.teams)
+compatible avec le [connecteur Teams](canaux.md#teams), ainsi qu'au sein de la plateforme Android 
+notamment pour des développements mobiles natifs.
+
+<img alt="Logo Android" title="Google Android"
+src="https://www.wortis.fr/wp-content/uploads/2019/05/icon-wortis-android.png" 
+style="width: 100px;">
+<img alt="Logo Google Assistant" title="Google Assistant"
+src="https://res-5.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_120,w_120,f_auto,b_white,q_auto:eco/g0oshbe7blfnsrylchxd" 
+style="width: 50px;">
+<img alt="Logo Google Home" title="Google Home"
+src="https://phoneky.co.uk/thumbs/android/thumbs/ico/3/chromecast-android.jpg" 
+style="width: 50px;">
+<img alt="Logo Teams" title="Microsoft Teams"
+src="https://cdn.worldvectorlogo.com/logos/microsoft-teams.svg" 
+style="width: 50px;">
+
+* **Technologie** : STT & TTS Google / Android
+* **Status** : utilisé avec Tock en production 
+(via connecteurs [Google Assistant / Home](canaux.md#google-assistant-home), 
+[Microsoft Teams](canaux.md#teams) 
+et en natif Android pour les bots intégrés _on-app_)
+ 
+### Apple / iOS
+
+Les fonctions _Speech-To-Text_ et _Text-To-Speech_ d'Apple sont utilisées à travers le 
+[connecteur Business Chat](canaux.md#business-chat), ainsi qu'au sein d'iOS
+pour des développements mobiles natifs.
+
+<img alt="Logo iOS" title="Apple iOS"
+src="https://www.freeiconspng.com/uploads/app-ios-png-4.png" 
+style="width: 100px;">
+<img alt="Logo BusinessChat" title="Apple Business Chat"
+src="http://cdn.osxdaily.com/wp-content/uploads/2014/11/Messages-icon-300x300.png" 
+style="width: 50px;">
+
+* **Technologie** : STT & TTS Apple / iOS
+* **Status** : utilisé avec Tock en production (via connecteur Business Chat 
+et en natif iOS pour les bots intégrés _on-app_)
+ 
+### Amazon / Alexa
+
+Les fonctions _Speech-To-Text_ et _Text-To-Speech_ d'Alexa (Amazon) sont utilisées à travers le 
+[connecteur Alexa / Echo](canaux.md#alexa-echo).
+
+<img alt="Logo Alexa" title="Amazon Alexa"
+src="https://cognyapps.com/wp-content/uploads/2018/09/amazon-alexa-logo-e1538253665426.png" 
+style="width: 100px;">
+
+* **Technologie** : STT & TTS Amazon / Alexa
+* **Status** : utilisé avec Tock en production (via connecteur Alexa)
+ 
+### Allo-Media & Voxygen
+
+La société [Allo-Media](https://www.allo-media.net/) propose une plateforme IA basée sur les appels téléphoniques.
+
+[Voxygen](https://www.voxygen.fr/) propose des services de synthèse vocale.
+
+A l'occasion du développement du bot [AlloCovid](https://www.allocovid.com/), un [connecteur Allo-Media](canaux.md#allo-media)
+a été développé pour intégrer le bot (Tock) aux services Allo-Media : 
+_Speech-To-Text_ et _Text-To-Speech_ avec Voxygen.
+
+<img alt="Logo Allo-Media" title="Allo-Media"
+src="https://s3-eu-central-1.amazonaws.com/glassdollar/logos/GD_5bcf9307048f6.png" 
+style="width: 100px;"> <img alt="Logo Voxygen" title="Voxygen" 
+src="https://res-1.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_256,w_256,f_auto,q_auto:eco/v1502521579/dyuj1cgjsnzhpo6ojwq0.png" 
+style="width: 100px;">
+
+* **Technologie** : Allo-Media & Voxygen
+* **Status** : utilisé avec Tock en production (via connecteur Allo-Media)
+ 
+### Nuance
+
+[Nuance](https://www.nuance.com) propose des solutions de reconnaissance vocale & IA.
+
+Pour des expérimentations de commande vocale en 2016, Nuance avait été
+intégré à Tock pour ses fonctions _Speech-To-Text_. 
+Même si cette intégration n'a pas été maintenue depuis, cela fonctionnait
+après quelques jours de mise en place.
+
+<img alt="Logo Nuance" title="Nuance"
+src="https://www.dicteedragon.fr/img/m/2.jpg" 
+style="width: 100px;">
+
+* **Technologie** : Nuance
+* **Status** : utilisé avec Tock en 2016
+
+## Architecture de connecteurs & gouvernance des données
+
+Dans une optique de _gouvernance_ des modèles et données conversationnelles, l'architecture en connecteurs 
 Tock présente plusieurs avantages :
 
 * Le modèle est construit dans Tock, il n'est pas partagé via les connecteurs

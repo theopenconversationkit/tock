@@ -19,7 +19,7 @@ L'utilisateur choisit les composants qu'il embarque et peut ainsi conserver la m
 
 |   |   |
 |---|---|
-| ![AlloCovid](https://doc.tock.ai/fr/images/allocovid.png) | Pour en savoir plus sur le service [_AlloCovid_](https://www.allocovid.com/) (conçu avec Tock) rendez-vous sur [www.allocovid.com](https://www.allocovid.com/). Disponible par téléphone, sur le Web et WhatsApp, le bot permet d'informer et orienter la population sur le Covid-19, grâce aux collaborations de nombreux experts français, partenaires et bénévoles. |
+| ![AlloCovid](https://doc.tock.ai/fr/images/allocovid.png) | Pour en savoir plus sur le service [_AlloCovid_](https://www.allocovid.com/) (conçu avec Tock) rendez-vous sur [www.allocovid.com](https://www.allocovid.com/) ou sur [cette page](apropos/vitrine.md#allocovid) pour les aspects techniques et davantage de liens notamment vers les sources. |
 
 ## Fonctionnalités
 

@@ -22,6 +22,12 @@ To find out more about the project, the team and partners, how the bot works, et
 Available by phone, on the Web and WhatsApp, _AlloCovid_ builds around a Tock bot and integrates with additional 
 technologies such as [Allo-Media](https://www.allo-media.net/) and [Voxygen](https://www.voxygen.fr/) voice solutions. 
 
+The _AlloCovid_ bot is powered by open source technologies (Tock) and open source itself: its sources are available on 
+repository [`allocovid`](https://github.com/theopenconversationkit/allocovid).
+
+> The source repository also includes the [_Allo-Media connector_](../dev/connectors.md#allo-media), 
+> technical details about the bot and its [functional specification](https://github.com/Delegation-numerique-en-sante/covid19-algorithme-orientation).
+
 <img alt="AlloCovid" 
 src="https://doc.tock.ai/fr/images/allocovid.png" 
 style="text-align: center;">

@@ -25,6 +25,13 @@ rendez-vous sur [www.allocovid.com](https://www.allocovid.com/).
 Disponible par téléphone, sur le Web et WhatsApp, _AlloCovid_ est construit autour d'un bot Tock et intègre des solutions complémentaires 
 comme les technologies vocales [Allo-Media](https://www.allo-media.net/) et [Voxygen](https://www.voxygen.fr/). 
 
+Le bot _AlloCovid_ est construit autour de technologies open source (à travers la plateforme Tock), 
+et lui-même open source : les sources du bot sont disponibles sur le dépôt [`allocovid`](https://github.com/theopenconversationkit/allocovid).
+
+> Avec les sources du bot on trouve également celles du [_connecteur Allo-Media_](../utilisateur/canaux.md#allo-media), 
+> quelques explications techniques sur le bot et la [spécification fonctionnelle](https://github.com/Delegation-numerique-en-sante/covid19-algorithme-orientation) 
+du questionnaire Covid.
+
 <img alt="AlloCovid" 
 src="https://doc.tock.ai/fr/images/allocovid.png" 
 style="text-align: center;">
