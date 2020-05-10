@@ -27,9 +27,9 @@ data class SentencesReport(
     val start: Long,
     val end: Long) {
 
-    constructor(start: Long, result: SentencesQueryResult, obfuscateSentences: Boolean) :
+    constructor(start: Long, result: SentencesQueryResult) :
         this(
-            result.sentences.map { SentenceReport(it, obfuscateSentences) },
+            result.sentences.map { SentenceReport(it) },
             result.total,
             start,
             start + result.sentences.size

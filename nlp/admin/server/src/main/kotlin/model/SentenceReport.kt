@@ -73,11 +73,9 @@ data class SentenceReport(
         }
     }
 
-    constructor(sentence: ClassifiedSentence, obfuscateSentences: Boolean = true) :
+    constructor(sentence: ClassifiedSentence) :
         this(
-            if (obfuscateSentences)
-                obfuscate(text = sentence.text, obfuscatedRanges = sentence.obfuscatedEntityRanges()) ?: ""
-            else sentence.text,
+            obfuscate(text = sentence.text, obfuscatedRanges = sentence.obfuscatedEntityRanges()) ?: "",
             sentence.language,
             sentence.applicationId,
             sentence.creationDate,
@@ -93,20 +91,22 @@ data class SentenceReport(
         }
     }
 
-    constructor(error: IntentTestError, obfuscatedSentences: Boolean, obfuscatedRanges: List<IntRange>) : this(
-        if (obfuscatedSentences) obfuscate(text = error.text, obfuscatedRanges = obfuscatedRanges) ?: ""
-        else error.text,
+    constructor(error: IntentTestError, obfuscatedRanges: List<IntRange>) : this(
+        obfuscate(text = error.text, obfuscatedRanges = obfuscatedRanges) ?: "",
         error.language,
         error.applicationId,
         error.firstDetectionDate,
         error.firstDetectionDate,
         ClassifiedSentenceStatus.model,
         ClassificationReport(error)
-    )
+    ) {
+        if (text != error.text) {
+            key = encrypt(error.text)
+        }
+    }
 
-    constructor(error: EntityTestError, obfuscatedSentences: Boolean, obfuscatedRanges: List<IntRange>) : this(
-        if (obfuscatedSentences) obfuscate(text = error.text, obfuscatedRanges = obfuscatedRanges) ?: ""
-        else error.text,
+    constructor(error: EntityTestError, obfuscatedRanges: List<IntRange>) : this(
+        obfuscate(text = error.text, obfuscatedRanges = obfuscatedRanges) ?: "",
         error.language,
         error.applicationId,
         error.firstDetectionDate,

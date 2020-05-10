@@ -87,6 +87,9 @@
         <button mat-icon-button (click)="change(row)">
           <mat-icon matTooltip="Change the Entities" style="color:red">update</mat-icon>
         </button>
+        <button mat-icon-button *ngIf="canReveal(row)" (click)="reveal(row)">
+          <mat-icon matTooltip="Reveal the sentence">visibility</mat-icon>
+        </button>
       </mat-cell>
     </ng-container>
 

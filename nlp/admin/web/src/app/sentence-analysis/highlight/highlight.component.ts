@@ -16,6 +16,7 @@
 
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   HostListener,
@@ -37,7 +38,7 @@ import {
 import {NlpService} from "../../nlp-tabs/nlp.service";
 import {StateService} from "../../core-nlp/state.service";
 import {CreateEntityDialogComponent} from "../create-entity-dialog/create-entity-dialog.component";
-import {User} from "../../model/auth";
+import {User, UserRole} from "../../model/auth";
 import {ApplicationConfig} from "../../core-nlp/application.config";
 import {Router} from "@angular/router";
 import {isNullOrUndefined} from "../../model/commons";
@@ -77,7 +78,8 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
               private dialog: DialogService,
               private matDialog: MatDialog,
               private router: Router,
-              public appConfig: ApplicationConfig) {
+              public appConfig: ApplicationConfig,
+              private changeDetectorRef: ChangeDetectorRef) {
     this.editable = true;
     this.edited = false;
     this.selectedStart = -1;
@@ -358,6 +360,21 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
     }
     t.style.display = "none";
     this.dialog.notify(successful ? `${text} copied to clipboard` : `Unable to copy to clipboard`, "Clipboard");
+  }
+
+  canReveal(): boolean {
+    return this.sentence instanceof Sentence && this.sentence.key && this.state.hasRole(UserRole.admin);
+  }
+
+  reveal() {
+    const sentence = this.sentence as Sentence;
+    this.nlp.revealSentence(sentence).subscribe(s => {
+      sentence.text = s.text;
+      sentence.key = null;
+      this.sentence = sentence.clone();
+      this.ngOnInit();
+      this.changeDetectorRef.detectChanges();
+    });
   }
 
 }

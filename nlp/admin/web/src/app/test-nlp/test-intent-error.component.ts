@@ -16,7 +16,7 @@
 
 import {saveAs} from "file-saver";
 import {AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, ViewChild} from "@angular/core";
-import { MatPaginator } from "@angular/material/paginator";
+import {MatPaginator} from "@angular/material/paginator";
 import {DataSource} from "@angular/cdk/collections";
 import {BehaviorSubject, merge, Observable, Subscription} from "rxjs";
 import {IntentTestError, TestErrorQuery} from "../model/nlp";
@@ -25,7 +25,9 @@ import {Router} from "@angular/router";
 import {QualityService} from "../quality-nlp/quality.service";
 import {escapeRegex} from "../model/commons";
 import {DialogService} from "../core-nlp/dialog.service";
-import { NbToastrService } from '@nebular/theme';
+import {NbToastrService} from '@nebular/theme';
+import {UserRole} from "../model/auth";
+import {NlpService} from "../nlp-tabs/nlp.service";
 
 @Component({
   selector: 'tock-test-intent-error',
@@ -43,7 +45,8 @@ export class TestIntentErrorComponent implements OnInit, AfterViewInit, OnDestro
               private quality: QualityService,
               private toastrService: NbToastrService,
               private router: Router,
-              private dialog: DialogService) {
+              private dialog: DialogService,
+              private nlp: NlpService) {
   }
 
   ngOnInit(): void {
@@ -102,6 +105,19 @@ export class TestIntentErrorComponent implements OnInit, AfterViewInit, OnDestro
         this.dialog.notify(`Dump provided`, "Dump");
       })
     }, 1);
+  }
+
+  canReveal(error: IntentTestError): boolean {
+    return error.sentence.key && this.state.hasRole(UserRole.admin);
+  }
+
+  reveal(error: IntentTestError) {
+    const sentence = error.sentence;
+    this.nlp.revealSentence(sentence).subscribe(s => {
+      sentence.text = s.text;
+      sentence.key = null;
+      error.sentence = sentence.clone();
+    });
   }
 }
 

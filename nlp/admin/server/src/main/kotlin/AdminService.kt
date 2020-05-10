@@ -69,10 +69,10 @@ object AdminService {
         return SentenceReport(result, query.currentLanguage, application._id, intentId)
     }
 
-    fun searchSentences(query: SearchQuery, obfuscateSentences: Boolean): SentencesReport {
+    fun searchSentences(query: SearchQuery): SentencesReport {
         val application = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
         val result = front.search(query.toSentencesQuery(application!!._id))
-        return SentencesReport(query.start, result, obfuscateSentences)
+        return SentencesReport(query.start, result)
     }
 
     fun updateSentences(query: UpdateSentencesQuery): UpdateSentencesReport {
@@ -195,7 +195,7 @@ object AdminService {
         ) { front.getIntentIdByQualifiedName(it.withNamespace(query.namespace)) }
     }
 
-    fun searchTestIntentErrors(query: TestErrorQuery, obfuscateSentences: Boolean): IntentTestErrorQueryResultReport {
+    fun searchTestIntentErrors(query: TestErrorQuery): IntentTestErrorQueryResultReport {
         return front.searchTestIntentErrors(query)
             .run {
                 IntentTestErrorQueryResultReport(
@@ -214,8 +214,7 @@ object AdminService {
                         } else {
                             IntentTestErrorWithSentenceReport(
                                 s.sentences.first(),
-                                it,
-                                obfuscateSentences
+                                it
                             )
                         }
                     }
@@ -226,7 +225,7 @@ object AdminService {
     internal fun ClassifiedSentence.obfuscatedEntityRanges(): List<IntRange> =
         classification.entities.filter { front.isEntityTypeObfuscated(it.type) }.map { it.toClosedRange() }
 
-    fun searchTestEntityErrors(query: TestErrorQuery, obfuscateSentences: Boolean): EntityTestErrorQueryResultReport {
+    fun searchTestEntityErrors(query: TestErrorQuery): EntityTestErrorQueryResultReport {
         return front.searchTestEntityErrors(query)
             .run {
                 val results = data.mapNotNull {
@@ -243,8 +242,7 @@ object AdminService {
                     } else {
                         EntityTestErrorWithSentenceReport(
                             s.sentences.first(),
-                            it,
-                            obfuscateSentences
+                            it
                         )
                     }
                 }

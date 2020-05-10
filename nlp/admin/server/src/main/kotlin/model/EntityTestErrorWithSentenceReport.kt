@@ -33,10 +33,10 @@ data class EntityTestErrorWithSentenceReport(
     val firstDetectionDate: Instant = Instant.now()
 ) {
 
-    constructor(originalSentence: ClassifiedSentence, error: EntityTestError, obfuscatedSentences: Boolean) :
+    constructor(originalSentence: ClassifiedSentence, error: EntityTestError) :
         this(
-            SentenceReport(originalSentence, obfuscatedSentences),
-            SentenceReport(error, obfuscatedSentences, originalSentence.obfuscatedEntityRanges()),
+            SentenceReport(originalSentence),
+            SentenceReport(error, originalSentence.obfuscatedEntityRanges()),
             error.averageErrorProbability,
             error.count,
             error.total,

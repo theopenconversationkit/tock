@@ -124,6 +124,10 @@ export class NlpService implements OnDestroy {
     return this.rest.post("/sentence", sentence)
   }
 
+  revealSentence(sentence: Sentence): Observable<Sentence> {
+    return this.rest.post("/sentence/reveal", sentence)
+  }
+
   searchSentences(query: SearchQuery): Observable<SentencesResult> {
     return this.rest.post("/sentences/search", query, SentencesResult.fromJSON)
   }

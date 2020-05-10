@@ -21,9 +21,7 @@ import ai.tock.nlp.admin.CsvCodec.newPrinter
 import ai.tock.nlp.admin.model.ApplicationScopedQuery
 import ai.tock.nlp.admin.model.ApplicationWithIntents
 import ai.tock.nlp.admin.model.CreateEntityQuery
-import ai.tock.nlp.admin.model.EntityTestErrorQueryResultReport
 import ai.tock.nlp.admin.model.EntityTestErrorWithSentenceReport
-import ai.tock.nlp.admin.model.IntentTestErrorQueryResultReport
 import ai.tock.nlp.admin.model.IntentTestErrorWithSentenceReport
 import ai.tock.nlp.admin.model.LogStatsQuery
 import ai.tock.nlp.admin.model.LogsQuery
@@ -33,7 +31,6 @@ import ai.tock.nlp.admin.model.PredefinedLabelQuery
 import ai.tock.nlp.admin.model.PredefinedValueQuery
 import ai.tock.nlp.admin.model.SearchQuery
 import ai.tock.nlp.admin.model.SentenceReport
-import ai.tock.nlp.admin.model.SentencesReport
 import ai.tock.nlp.admin.model.SentencesTextQuery
 import ai.tock.nlp.admin.model.TestBuildQuery
 import ai.tock.nlp.admin.model.TranslateSentencesQuery
@@ -52,6 +49,7 @@ import ai.tock.nlp.front.shared.codec.SentencesDump
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.EntityTypeDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition
+import ai.tock.nlp.front.shared.config.SentencesQuery
 import ai.tock.nlp.front.shared.monitoring.UserActionLog
 import ai.tock.nlp.front.shared.monitoring.UserActionLogQuery
 import ai.tock.nlp.front.shared.user.UserNamespace
@@ -71,13 +69,13 @@ import ai.tock.shared.security.TockUserRole.nlpUser
 import ai.tock.shared.security.TockUserRole.technicalAdmin
 import ai.tock.shared.security.UNKNOWN_USER_LOGIN
 import ai.tock.shared.security.auth.TockAuthProvider
+import ai.tock.shared.security.decrypt
 import ai.tock.shared.security.initEncryptor
 import ai.tock.shared.supportedLanguages
 import ai.tock.shared.vertx.RequestLogger
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.detailedHealthcheck
 import io.netty.handler.codec.http.HttpHeaderNames
-import io.vertx.core.Handler
 import io.vertx.core.http.HttpMethod.GET
 import io.vertx.ext.web.FileUpload
 import io.vertx.ext.web.RoutingContext
@@ -538,16 +536,36 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        jsonPost("/sentences/search", nlpUser)
-        { context, s: SearchQuery, handler: Handler<SentencesReport> ->
+        blockingJsonPost("/sentences/search", nlpUser)
+        { context, s: SearchQuery ->
             if (context.organization == s.namespace) {
-                context.isAuthorized(admin) { plain ->
-                    context.executeBlocking {
-                        handler.handle(service.searchSentences(s, !plain.result()))
-                    }
-                }
+                service.searchSentences(s)
             } else {
                 unauthorized()
+            }
+        }
+
+        blockingJsonPost("/sentence/reveal", admin)
+        { context, s: SentenceReport ->
+            val key = s.key
+            if (key == null) {
+                unauthorized()
+            } else {
+                val decrypt = decrypt(key)
+                val applicationDefinition = front.getApplicationById(s.applicationId)
+                if (applicationDefinition?.namespace == context.organization
+                    && front.search(
+                        SentencesQuery(
+                            applicationId = applicationDefinition._id,
+                            language = s.language,
+                            search = decrypt,
+                            onlyExactMatch = true
+                        )
+                    ).total != 0L) {
+                    s.copy(text = decrypt, key = null)
+                } else {
+                    unauthorized()
+                }
             }
         }
 
@@ -734,16 +752,12 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        jsonPost("/test/intent-errors", nlpUser)
-        { context, query: TestBuildQuery, handler: Handler<IntentTestErrorQueryResultReport> ->
+        blockingJsonPost("/test/intent-errors", nlpUser)
+        { context, query: TestBuildQuery ->
             if (context.organization == query.namespace) {
-                context.isAuthorized(admin) { plain ->
-                    context.executeBlocking {
-                        val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
-                        handler.handle(AdminService.searchTestIntentErrors(query.toTestErrorQuery(app), !(plain.result()
-                            ?: false)))
-                    }
-                }
+                val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
+                    ?: error("application for $query not found")
+                AdminService.searchTestIntentErrors(query.toTestErrorQuery(app))
             } else {
                 unauthorized()
             }
@@ -765,16 +779,12 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        jsonPost("/test/entity-errors", nlpUser)
-        { context, query: TestBuildQuery, handler: Handler<EntityTestErrorQueryResultReport> ->
+        blockingJsonPost("/test/entity-errors", nlpUser)
+        { context, query: TestBuildQuery ->
             if (context.organization == query.namespace) {
-                context.isAuthorized(admin) { plain ->
-                    context.executeBlocking {
-                        val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
-                        handler.handle(service.searchTestEntityErrors(query.toTestErrorQuery(app), !(plain.result()
-                            ?: false)))
-                    }
-                }
+                val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
+                    ?: error("application for $query not found")
+                service.searchTestEntityErrors(query.toTestErrorQuery(app))
             } else {
                 unauthorized()
             }

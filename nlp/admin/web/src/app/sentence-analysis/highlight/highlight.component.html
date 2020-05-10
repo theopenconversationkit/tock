@@ -17,6 +17,9 @@
 <div class="highlight-block">
   <div class="highlight-text">
     <nb-actions size="small" style="cursor: pointer;float: right">
+      <nb-action class="control-item" nbTooltip="Reveal the sentence" (click)="$event.stopPropagation();reveal();" *ngIf="displayActions && canReveal()">
+        <i class="material-icons">visibility</i>
+      </nb-action>
       <nb-action class="control-item" nbTooltip="Display conversations using this sentence"
                  *ngIf="displayActions && appConfig.displayDialogUrl && isRootSentence()">
         <a class="control-item" [routerLink]="[appConfig.displayDialogUrl]"

@@ -34,8 +34,8 @@ class IntentTestErrorWithSentenceReport(
     val firstDetectionDate: Instant = Instant.now()
 ) {
 
-    constructor(originalSentence: ClassifiedSentence, error: IntentTestError, obfuscateSentence: Boolean) : this(
-        SentenceReport(error, obfuscateSentence, originalSentence.obfuscatedEntityRanges()),
+    constructor(originalSentence: ClassifiedSentence, error: IntentTestError) : this(
+        SentenceReport(error, originalSentence.obfuscatedEntityRanges()),
         error.currentIntent,
         error.wrongIntent,
         error.averageErrorProbability,

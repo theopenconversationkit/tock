@@ -16,7 +16,7 @@
 
 import {saveAs} from "file-saver";
 import {AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, ViewChild} from "@angular/core";
-import { MatPaginator } from "@angular/material/paginator";
+import {MatPaginator} from "@angular/material/paginator";
 import {DataSource} from "@angular/cdk/collections";
 import {BehaviorSubject, merge, Observable, Subscription} from "rxjs";
 import {EntityTestError, TestErrorQuery} from "../model/nlp";
@@ -25,7 +25,9 @@ import {Router} from "@angular/router";
 import {QualityService} from "../quality-nlp/quality.service";
 import {escapeRegex} from "../model/commons";
 import {DialogService} from "../core-nlp/dialog.service";
-import { NbToastrService } from '@nebular/theme';
+import {NbToastrService} from '@nebular/theme';
+import {UserRole} from "../model/auth";
+import {NlpService} from "../nlp-tabs/nlp.service";
 
 @Component({
   selector: 'tock-test-entity-error',
@@ -43,7 +45,8 @@ export class TestEntityErrorComponent implements OnInit, AfterViewInit, OnDestro
               private quality: QualityService,
               private toastrService: NbToastrService,
               private router: Router,
-              private dialog: DialogService) {
+              private dialog: DialogService,
+              private nlp: NlpService) {
   }
 
   ngOnInit(): void {
@@ -108,6 +111,22 @@ export class TestEntityErrorComponent implements OnInit, AfterViewInit, OnDestro
         this.dialog.notify(`Dump provided`, "Dump");
       })
     }, 1);
+  }
+
+  canReveal(error: EntityTestError): boolean {
+    return error.originalSentence.key && this.state.hasRole(UserRole.admin);
+  }
+
+  reveal(error: EntityTestError) {
+    const sentence = error.originalSentence;
+    this.nlp.revealSentence(sentence).subscribe(s => {
+      sentence.text = s.text;
+      sentence.key = null;
+      error.sentence.text = s.text;
+      error.sentence.key = null
+      error.originalSentence = sentence.clone();
+      error.sentence = error.sentence.clone();
+    });
   }
 }
 
