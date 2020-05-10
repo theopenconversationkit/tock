@@ -800,7 +800,7 @@ open class AdminVerticle : WebVerticle() {
                 front.deleteTestEntityError(
                     error.sentence.applicationId,
                     error.sentence.language,
-                    error.sentence.toClassifiedSentence().text
+                    error.originalSentence.toClassifiedSentence().text
                 )
 
             } else {
