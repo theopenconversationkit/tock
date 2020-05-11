@@ -20,6 +20,7 @@ import ai.tock.bot.admin.BotAdminService.createI18nRequest
 import ai.tock.bot.admin.BotAdminService.dialogReportDAO
 import ai.tock.bot.admin.BotAdminService.getBotConfigurationByApplicationIdAndBotId
 import ai.tock.bot.admin.BotAdminService.importStories
+import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.model.BotAdminConfiguration
@@ -350,7 +351,7 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonGet("/bot/story/:botId/:intent", botUser) { context ->
-            BotAdminService.findStoryByBotIdAndIntent(
+            BotAdminService.findConfiguredStoryByBotIdAndIntent(
                 context.organization,
                 context.path("botId"),
                 context.path("intent")

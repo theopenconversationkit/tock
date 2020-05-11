@@ -32,7 +32,9 @@ export class StoryRuleComponent implements OnInit {
   create: boolean = false;
   loadingStoryRules: boolean = false;
   stories: StoryDefinitionConfiguration[] = [];
-  features: StoryFeature[] = [];
+//   features: StoryFeature[] = [];
+  disabledFeatures: StoryFeature[] = [];
+  redirectedFeatures: StoryFeature[] = [];
   feature: StoryFeature;
 
   constructor(private state: StateService,
@@ -81,7 +83,11 @@ export class StoryRuleComponent implements OnInit {
         this.configurationService.findApplicationConfigurationById(f.botApplicationConfigurationId)
         : null;
       f.switchToStory = f.switchToStoryId ? this.stories.find(st => st.storyId == f.switchToStoryId) : null;
-      this.features.push(f);
+      if (f.switchToStoryId) {
+        this.redirectedFeatures.push(f);
+      } else {
+        this.disabledFeatures.push(f);
+      }
 
       this.cancelCreate();
     });
@@ -102,7 +108,7 @@ export class StoryRuleComponent implements OnInit {
         if (s.length !== 0) {
           this.feature.story = s[0];
         }
-        this.features = flatMap(s, story => {
+        var features = flatMap(s, story => {
           story.features.forEach(f => {
             f.story = story;
             f.conf = f.botApplicationConfigurationId ?
@@ -112,6 +118,8 @@ export class StoryRuleComponent implements OnInit {
           });
           return story.features;
         });
+        this.disabledFeatures = features.filter(feat => feat.switchToStoryId == null);
+        this.redirectedFeatures = features.filter(feat => feat.switchToStoryId != null);
         this.loadingStoryRules = false;
       });
     }
@@ -123,7 +131,11 @@ export class StoryRuleComponent implements OnInit {
   }
 
   deleteFeature(f: StoryFeature) {
-    this.features.splice(this.features.indexOf(f), 1);
+    if (f.switchToStoryId) {
+      this.redirectedFeatures.splice(this.redirectedFeatures.indexOf(f), 1); // TODO
+    } else {
+      this.disabledFeatures.splice(this.disabledFeatures.indexOf(f), 1); // TODO
+    }
     const s = f.story;
     s.features.splice(s.features.indexOf(f), 1);
     this.botService.saveStory(s).subscribe();
