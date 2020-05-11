@@ -16,10 +16,12 @@
 
 package ai.tock.bot.mongo
 
+import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.BotId
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.ConfigurationName
+import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.CurrentType
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Intent
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Namespace
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.StoryId
@@ -31,20 +33,10 @@ import ai.tock.shared.trace
 import ai.tock.shared.watch
 import mu.KotlinLogging
 import org.litote.jackson.data.JacksonData
-import org.litote.kmongo.Data
-import org.litote.kmongo.Id
-import org.litote.kmongo.and
-import org.litote.kmongo.deleteOneById
-import org.litote.kmongo.ensureIndex
-import org.litote.kmongo.ensureUniqueIndex
-import org.litote.kmongo.eq
-import org.litote.kmongo.findOne
-import org.litote.kmongo.findOneById
-import org.litote.kmongo.getCollection
-import org.litote.kmongo.getCollectionOfName
+import org.litote.kmongo.*
 import org.litote.kmongo.reactivestreams.getCollectionOfName
-import org.litote.kmongo.save
 import java.time.Instant
+import kotlin.collections.toList
 
 /**
  *
@@ -86,12 +78,16 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         return col.findOneById(id)
     }
 
-    override fun getStoryDefinitionByNamespaceAndBotIdAndIntent(namespace: String, botId: String, intent: String): StoryDefinitionConfiguration? {
-        return col.findOne(Namespace eq namespace, BotId eq botId, Intent.name_ eq intent)
+    override fun getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(namespace: String, botId: String, intent: String): StoryDefinitionConfiguration? {
+        return col.findOne(Namespace eq namespace, BotId eq botId, CurrentType ne AnswerConfigurationType.builtin, Intent.name_ eq intent)
     }
 
-    override fun getStoryDefinitionByNamespaceAndBotIdAndStoryId(namespace: String, botId: String, storyId: String): StoryDefinitionConfiguration? {
-        return col.findOne(Namespace eq namespace, BotId eq botId, StoryId eq storyId)
+    override fun getStoryDefinitionByNamespaceAndBotIdAndTypeAndIntent(namespace: String, botId: String, type: AnswerConfigurationType, intent: String): StoryDefinitionConfiguration? {
+        return col.findOne(Namespace eq namespace, BotId eq botId, CurrentType eq type, Intent.name_ eq intent)
+    }
+
+    override fun getStoryDefinitionByNamespaceAndBotIdAndTypeAndStoryId(namespace: String, botId: String, type: AnswerConfigurationType, storyId: String): StoryDefinitionConfiguration? {
+        return col.findOne(Namespace eq namespace, BotId eq botId, CurrentType eq type, StoryId eq storyId)
     }
 
     override fun getStoryDefinitionsByNamespaceAndBotId(namespace: String, botId: String): List<StoryDefinitionConfiguration> {

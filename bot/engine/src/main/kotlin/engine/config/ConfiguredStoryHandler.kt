@@ -42,17 +42,6 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
     }
 
     override fun handle(bus: BotBus) {
-        configuration.findEnabledFeature(bus.applicationId)?.let { feature ->
-            if (feature.switchToStoryId != null) {
-                bus.botDefinition
-                    .stories.find { it.id == feature.switchToStoryId || (it as? ConfiguredStoryDefinition)?.configuration?.storyId == feature.switchToStoryId }
-                    ?.apply {
-                        bus.switchConfiguredStory(this)
-                        return@handle
-                    }
-            }
-        }
-
         configuration.mandatoryEntities.forEach { entity ->
             //fallback from "generic" entity if the role is not present
             val role = entity.role
@@ -112,7 +101,7 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
                 null -> bus.fallbackAnswer()
                 is SimpleAnswerConfiguration -> bus.handleSimpleAnswer(this@send, this)
                 is ScriptAnswerConfiguration -> bus.handleScriptAnswer(this@send)
-                else -> error("type not supported for now: $this")
+                else -> bus.fallbackAnswer()
             }
         }
     }
