@@ -23,8 +23,9 @@ import {SelectEntityDialogComponent} from "./select-entity-dialog.component";
 import {DialogService} from "../../core-nlp/dialog.service";
 import {MatDialog} from "@angular/material/dialog";
 import {NlpService} from "../../nlp-tabs/nlp.service";
-import {CreateI18nLabelRequest} from "../model/i18n";
+import {CreateI18nLabelRequest, I18nLabel, I18nLocalizedLabel} from "../model/i18n";
 import {BotService} from "../bot-service";
+import {defaultUserInterfaceType} from "../../core/model/configuration";
 
 @Component({
   selector: 'tock-steps',
@@ -98,6 +99,50 @@ export class StepsComponent implements OnInit, OnChanges {
     this.validate();
   }
 
+  duplicateStep(step: StoryStep) {
+    // Create new step from step
+    const newStep = this.copyFromStep(step);
+
+    // Find step parent
+    let parent = this.findParent(this.steps, step);
+    if(parent) {
+      // add the duplicate step in it
+      parent.children.push(newStep);
+      this.treeControl.expand(parent);
+    } else {
+      // or add it in the steps list
+      this.steps.push(newStep);
+    }
+    this.validate();
+  }
+
+  private copyFromStep(step: StoryStep) {
+    const answer = new SimpleAnswerConfiguration([]);
+    answer.allowNoAnswer = true;
+    const newStep = new StoryStep(
+      "",
+      new IntentName(step.intent.name),
+      new IntentName(step.targetIntent.name),
+      [answer],
+      AnswerConfigurationType.simple,
+      this.defaultCategory,
+      null,
+      [],
+      step.level
+    );
+    newStep.new = true;
+    newStep.newUserSentence = step.userSentence.defaultLabel;
+    newStep.answers = step.answers.map(stepAnswer => stepAnswer.duplicate(this.bot));
+    this.saveI18nLabel(newStep);
+
+    let stepChildren = step.children;
+    if(stepChildren) {
+      newStep.children = stepChildren.map(child => this.copyFromStep(child))
+    }
+
+    return newStep;
+  }
+
   rebuildTree(step: StoryStep) {
     this.treeControl.expand(step);
     this.validate();
@@ -151,7 +196,7 @@ export class StepsComponent implements OnInit, OnChanges {
           );
           newSteps.forEach(s => {
             this.steps.push(s);
-            this.save(s);
+            this.saveI18nLabel(s);
           });
           this.validate();
         });
@@ -159,7 +204,7 @@ export class StepsComponent implements OnInit, OnChanges {
     });
   }
 
-  private save(step: StoryStep) {
+  private saveI18nLabel(step: StoryStep) {
     this.bot.createI18nLabel(
       new CreateI18nLabelRequest(
         this.defaultCategory,

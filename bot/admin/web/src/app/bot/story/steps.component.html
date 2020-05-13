@@ -28,6 +28,7 @@
       [step]="node"
       (delete)="deleteStep($event)"
       (child)="addNewStep(node)"
+      (duplicate)="duplicateStep(node)"
       (rebuildTree)="rebuildTree(node)"
       [defaultCategory]="defaultCategory"
       class="step"

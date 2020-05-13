@@ -16,7 +16,7 @@
 
 import {PaginatedQuery} from "../../model/commons";
 import {Dictionary, EntityDefinition, EntityType, Intent, Sentence} from "../../model/nlp";
-import {I18nLabel} from "./i18n";
+import {CreateI18nLabelRequest, I18nLabel} from "./i18n";
 import {BotService} from "../bot-service";
 import {Observable, of} from "rxjs";
 import {AttachmentType, BotApplicationConfiguration} from "../../core/model/configuration";
@@ -418,6 +418,8 @@ export abstract class AnswerConfiguration {
 
   abstract clone(): AnswerConfiguration
 
+  abstract duplicate(bot: BotService): AnswerConfiguration
+
   static fromJSON(json: any): AnswerConfiguration {
     if (!json) {
       return null;
@@ -469,6 +471,47 @@ export class SimpleAnswerConfiguration extends AnswerConfiguration {
     return new SimpleAnswerConfiguration(
       this.answers.map(a => a.clone())
     );
+  }
+
+  duplicate(bot: BotService): AnswerConfiguration {
+    return new SimpleAnswerConfiguration(
+      this.answers.map(answerConfiguration => {
+        const clonedAnswerConfiguration = answerConfiguration.clone();
+
+        // Default message
+        this.createAndReplaceLabel(bot, clonedAnswerConfiguration.label, i18n => {
+          clonedAnswerConfiguration.label = i18n;
+        });
+
+        // Media Message
+        const clonedMediaMessage = clonedAnswerConfiguration.mediaMessage;
+        if(clonedMediaMessage instanceof MediaCard) {
+          this.createAndReplaceLabel(bot, clonedMediaMessage.title, i18n => {
+            clonedMediaMessage.title = i18n;
+          });
+          this.createAndReplaceLabel(bot, clonedMediaMessage.subTitle,  i18n => {
+            clonedMediaMessage.subTitle = i18n;
+          });
+          clonedMediaMessage.actions.forEach(action => {
+            this.createAndReplaceLabel(bot, action.title,  i18n => {
+              action.title = i18n;
+            });
+          });
+        }
+
+        return clonedAnswerConfiguration;
+      })
+    );
+  }
+
+  private createAndReplaceLabel(bot: BotService, clonedLabel: I18nLabel, serverCallback: (i18n) => void) {
+    bot.createI18nLabel(
+      new CreateI18nLabelRequest(
+        clonedLabel.category,
+        clonedLabel.defaultLabel,
+        clonedLabel.defaultLocale,
+      )
+    ).subscribe(serverCallback);
   }
 
   checkAfterReset(bot: BotService) {
@@ -672,6 +715,10 @@ export class ScriptAnswerConfiguration extends AnswerConfiguration {
     )
   }
 
+  duplicate(bot: BotService): AnswerConfiguration {
+    return this.clone()
+  }
+
   static fromJSON(json: any): ScriptAnswerConfiguration {
     const value = Object.create(ScriptAnswerConfiguration.prototype);
     const result = Object.assign(value, json, {
@@ -722,6 +769,10 @@ export class BuiltinAnswerConfiguration extends AnswerConfiguration {
     return new BuiltinAnswerConfiguration(
       this.storyHandlerClassName
     );
+  }
+
+  duplicate(bot: BotService): AnswerConfiguration {
+    return this.clone()
   }
 
   static fromJSON(json: any): BuiltinAnswerConfiguration {

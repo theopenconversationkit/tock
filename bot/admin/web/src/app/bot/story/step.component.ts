@@ -47,6 +47,9 @@ export class StepComponent implements OnInit {
   child = new EventEmitter<StoryStep>();
 
   @Output()
+  duplicate = new EventEmitter<StoryStep>();
+
+  @Output()
   rebuildTree = new EventEmitter<StoryStep>();
 
   @Input()
@@ -171,6 +174,10 @@ export class StepComponent implements OnInit {
 
   removeStep() {
     this.delete.emit(this.step);
+  }
+
+  duplicateStep() {
+    this.duplicate.emit(this.step)
   }
 
   checkStep() {

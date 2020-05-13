@@ -96,6 +96,12 @@
     </button>
   </div>
 
+  <div class="entity-button">
+    <button mat-icon-button (click)="duplicateStep()" matTooltip="Duplicate">
+      <mat-icon>control_point_duplicate</mat-icon>
+    </button>
+  </div>
+
   <div class="entity-button" *ngIf="!step.new && step.intent && !step.currentAnswer().isEmpty()">
     <button mat-icon-button (click)="generateChildren()" matTooltip="Generate from Entity">
       <mat-icon>playlist_add</mat-icon>
