@@ -343,9 +343,13 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
 
     internal fun loadConnectorMessages(ids: List<ConnectorMessageColId>): Map<ConnectorMessageColId, List<ConnectorMessage>> {
         return try {
-            connectorMessageCol.find(ConnectorMessageCol::_id `in` ids)
-                .map { m -> m._id to m.messages.mapNotNull { it?.value as? ConnectorMessage } }
-                .toMap()
+            if (ids.isEmpty()) {
+                emptyMap()
+            } else {
+                connectorMessageCol.find(ConnectorMessageCol::_id `in` ids)
+                    .map { m -> m._id to m.messages.mapNotNull { it?.value as? ConnectorMessage } }
+                    .toMap()
+            }
         } catch (e: Exception) {
             logger.error(e)
             emptyMap()
