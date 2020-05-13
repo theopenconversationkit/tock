@@ -32,4 +32,9 @@ data class NlpCallStats(
     val entityResultAfterMerge: List<EntityValue> = emptyList(),
     val nlpQuery: NlpQuery,
     val nlpResult: NlpResult
-)
+) {
+    /**
+     * Entity ranges to be obfuscated.
+     */
+    fun obfuscatedRanges(): List<IntRange> = entityResult.asSequence().filter { it.entity.entityType.obfuscated }.mapNotNull { it.toClosedRange() }.toList()
+}

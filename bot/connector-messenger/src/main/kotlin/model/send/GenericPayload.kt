@@ -17,7 +17,6 @@
 package ai.tock.bot.connector.messenger.model.send
 
 import ai.tock.bot.engine.message.GenericMessage
-import ai.tock.shared.security.StringObfuscatorMode
 
 /**
  *
@@ -26,11 +25,11 @@ data class GenericPayload(val elements: List<Element>) : ModelPayload(PayloadTyp
 
     override fun toGenericMessage(): GenericMessage? {
         return GenericMessage(
-                subElements = elements.map { it.toGenericElement() }
+            subElements = elements.map { it.toGenericElement() }
         )
     }
 
-    override fun obfuscate(mode: StringObfuscatorMode): Payload {
-        return GenericPayload(elements.map { it.obfuscate(mode) })
+    override fun obfuscate(): Payload {
+        return GenericPayload(elements.map { it.obfuscate() })
     }
 }

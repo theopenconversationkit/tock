@@ -31,7 +31,7 @@ data class DialogsSearchQuery(
     val intentName: String?,
     val exactMatch: Boolean,
     val connectorType: ConnectorType?,
-    val displayTests:Boolean = false
+    val displayTests: Boolean = false
 ) : PaginatedQuery() {
 
     fun toDialogReportQuery(): DialogReportQuery {
@@ -47,7 +47,8 @@ data class DialogsSearchQuery(
             intentName,
             exactMatch,
             connectorType = connectorType,
-            displayTests = displayTests
+            displayTests = displayTests,
+            obfuscated = true
         )
     }
 }

@@ -21,8 +21,10 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.EventType
 import ai.tock.bot.engine.message.parser.MessageParser.elementsToString
+import ai.tock.bot.engine.nlp.NlpCallStats
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.error
+import ai.tock.shared.security.TockObfuscatorService
 import ai.tock.translator.UserInterfaceType
 import mu.KotlinLogging
 
@@ -33,7 +35,8 @@ data class Sentence(
     val text: String?,
     val messages: MutableList<GenericMessage> = mutableListOf(),
     val userInterface: UserInterfaceType? = null,
-    override val delay: Long = 0
+    override val delay: Long = 0,
+    @Transient private val nlpStatsProvider: (() -> NlpCallStats?)? = null
 ) : Message {
 
     companion object {
@@ -49,8 +52,12 @@ data class Sentence(
                 ).copy(connectorType = message.connectorType, connectorMessage = message)
     }
 
-    constructor(text: String?, messages: MutableList<ConnectorMessage> = mutableListOf(), userInterface: UserInterfaceType? = null)
-        : this(text, messages.map { toGenericMessage(it) }.toMutableList(), userInterface)
+    constructor(
+        text: String?,
+        messages: MutableList<ConnectorMessage> = mutableListOf(),
+        userInterface: UserInterfaceType? = null,
+        nlpStatsProvider: (() -> NlpCallStats?)? = null)
+        : this(text, messages.map { toGenericMessage(it) }.toMutableList(), userInterface, 0, nlpStatsProvider)
 
     override val eventType: EventType = EventType.sentence
 
@@ -72,9 +79,39 @@ data class Sentence(
             }.toMutableList())
     }
 
+    override fun obfuscate(): Sentence =
+        copy(
+            text = TockObfuscatorService.obfuscate(text, nlpStatsProvider?.invoke()?.obfuscatedRanges() ?: emptyList()),
+            messages = messages.asSequence().map { it.obfuscate() }.toMutableList()
+        )
+
     override fun toPrettyString(): String {
         return text ?: "{$eventType:${elementsToString(messages)}}"
     }
 
     override fun isSimpleMessage(): Boolean = text != null
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Sentence
+
+        if (text != other.text) return false
+        if (messages != other.messages) return false
+        if (userInterface != other.userInterface) return false
+        if (delay != other.delay) return false
+        if (eventType != other.eventType) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = text?.hashCode() ?: 0
+        result = 31 * result + messages.hashCode()
+        result = 31 * result + (userInterface?.hashCode() ?: 0)
+        result = 31 * result + delay.hashCode()
+        result = 31 * result + eventType.hashCode()
+        return result
+    }
 }

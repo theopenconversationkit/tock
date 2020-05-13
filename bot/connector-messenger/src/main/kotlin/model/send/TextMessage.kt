@@ -19,8 +19,7 @@ package ai.tock.bot.connector.messenger.model.send
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.engine.message.GenericMessage
 import ai.tock.bot.engine.message.GenericMessage.Companion.TEXT_PARAM
-import ai.tock.shared.security.StringObfuscatorMode
-import ai.tock.shared.security.TockObfuscatorService.obfuscate
+import ai.tock.shared.security.TockObfuscatorService
 
 class TextMessage(val text: String, quickReplies: List<QuickReply>? = null) : Message(quickReplies?.run { if (isEmpty()) null else this }) {
 
@@ -48,8 +47,8 @@ class TextMessage(val text: String, quickReplies: List<QuickReply>? = null) : Me
         return true
     }
 
-    override fun obfuscate(mode: StringObfuscatorMode): ConnectorMessage {
-        return TextMessage(obfuscate(text, mode)!!, quickReplies)
+    override fun obfuscate(): ConnectorMessage {
+        return TextMessage(TockObfuscatorService.obfuscate(text)!!, quickReplies)
     }
 
     override fun hashCode(): Int {

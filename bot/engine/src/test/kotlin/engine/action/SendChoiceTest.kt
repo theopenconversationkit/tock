@@ -17,10 +17,11 @@
 package ai.tock.bot.engine.action
 
 import ai.tock.bot.definition.Intent
+import ai.tock.bot.engine.message.Choice
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.security.MapObfuscator
-import ai.tock.shared.security.StringObfuscatorMode
 import ai.tock.shared.security.TockObfuscatorService
+import ai.tock.shared.security.TockObfuscatorService.obfuscate
 import io.mockk.spyk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
@@ -48,7 +49,7 @@ class SendChoiceTest {
     fun `GIVEN a sendchoice with parameters WHEN obfuscate the sendchoice THEN obfuscates the parameters`() {
 
         val testParameterObfuscator = spyk(TestParamObfuscator())
-        TockObfuscatorService.registerParameterObfuscator(testParameterObfuscator)
+        TockObfuscatorService.registerMapObfuscator(testParameterObfuscator)
 
         val sendChoice = SendChoice(
             PlayerId(
@@ -64,10 +65,10 @@ class SendChoiceTest {
                 "p2" to "paramValue"
             )
         )
-        val obfuscatedSendChoice: SendChoice = sendChoice.obfuscate(StringObfuscatorMode.normal) as SendChoice
+        val obfuscatedMap = obfuscate((sendChoice.toMessage() as Choice).parameters)
 
         assertTrue(
-            obfuscatedSendChoice.parameters.all {
+            obfuscatedMap.all {
                 it.value.isEmpty()
             }
         )

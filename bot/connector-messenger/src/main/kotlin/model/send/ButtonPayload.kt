@@ -17,8 +17,7 @@
 package ai.tock.bot.connector.messenger.model.send
 
 import ai.tock.bot.engine.message.GenericMessage
-import ai.tock.shared.security.StringObfuscatorMode
-import ai.tock.shared.security.TockObfuscatorService.obfuscate
+import ai.tock.shared.security.TockObfuscatorService
 
 /**
  * See [https://developers.facebook.com/docs/messenger-platform/send-messages/template/button]
@@ -27,12 +26,12 @@ data class ButtonPayload(val text: String, val buttons: List<Button>) : ModelPay
 
     override fun toGenericMessage(): GenericMessage? {
         return GenericMessage(
-                texts = mapOf(ButtonPayload::text.name to text),
-                choices = buttons.map { it.toChoice() }
+            texts = mapOf(ButtonPayload::text.name to text),
+            choices = buttons.map { it.toChoice() }
         )
     }
 
-    override fun obfuscate(mode: StringObfuscatorMode): Payload {
-        return ButtonPayload(obfuscate(text, mode)!!, buttons)
+    override fun obfuscate(): Payload {
+        return ButtonPayload(TockObfuscatorService.obfuscate(text)!!, buttons)
     }
 }

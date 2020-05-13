@@ -196,6 +196,11 @@ object BotAdminService {
 
     fun search(query: DialogsSearchQuery): DialogReportQueryResult {
         return dialogReportDAO.search(query.toDialogReportQuery())
+            .run {
+                copy(dialogs = dialogs.map { d ->
+                    d.copy(actions = d.actions.map { it.copy(message = it.message.obfuscate()) })
+                })
+            }
     }
 
     fun deleteApplicationConfiguration(conf: BotApplicationConfiguration) {

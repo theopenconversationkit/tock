@@ -128,7 +128,7 @@ class DialogColDeserializationTest : AbstractTest(false) {
     @Test
     fun `GIVEN a parameter obfuscator WHEN serializing a SendChoiceMongoWrapper THEN obfuscates the parameters`() {
         val testParameterObfuscator = spyk(TestParamObfuscator())
-        TockObfuscatorService.registerParameterObfuscator(testParameterObfuscator)
+        TockObfuscatorService.registerMapObfuscator(testParameterObfuscator)
         val parameters: Map<String, String> = mapOf("key" to "value")
 
         val stateWrapper = SendChoiceMongoWrapper(
@@ -147,7 +147,7 @@ class DialogColDeserializationTest : AbstractTest(false) {
     fun `GIVEN a parameter obfuscator WHEN serializing a SendChoiceMongoWrapper instantiated from SendChoice THEN obfuscates the parameters`() {
 
         val testParameterObfuscator = spyk(TestParamObfuscator())
-        TockObfuscatorService.registerParameterObfuscator(testParameterObfuscator)
+        TockObfuscatorService.registerMapObfuscator(testParameterObfuscator)
         val parameters: Map<String, String> = mapOf("key" to "value")
 
         val stateWrapper = SendChoiceMongoWrapper(

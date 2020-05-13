@@ -20,6 +20,20 @@ package ai.tock.nlp.api.client.model
  * An entity type, with optional sub entities and predefined values.
  */
 data class EntityType(
+    /**
+     * The qualified name of the entity (ie namespace:name)
+     */
     val name: String,
-    val subEntities: List<Entity> = emptyList()
+    /**
+     * The sub entities of this entity if any.
+     */
+    val subEntities: List<Entity> = emptyList(),
+    /**
+     * Is the entity based on a dictionary (predefined set of data)?
+     */
+    val dictionary: Boolean = false,
+    /**
+     * Is the entity has to be systematically obfuscated?
+     */
+    val obfuscated: Boolean = false
 )

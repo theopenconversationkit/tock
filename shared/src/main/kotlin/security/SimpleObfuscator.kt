@@ -20,11 +20,4 @@ package ai.tock.shared.security
  * Simple implementation for [StringObfuscator].
  */
 data class SimpleObfuscator(override val regex: Regex,
-                            override val replacement: String,
-                            override val displayed: String = replacement,
-                            override val replacementRegexp: Regex = replacement.toRegex(RegexOption.LITERAL)) : StringObfuscator {
-
-
-
-
-}
+                            override val replacement: String) : StringObfuscator

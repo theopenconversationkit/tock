@@ -22,13 +22,10 @@ import ai.tock.bot.definition.StoryHandlerDefinition
 import ai.tock.bot.definition.StoryStep
 import ai.tock.bot.engine.Bus
 import ai.tock.bot.engine.dialog.EventState
-import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.message.Choice
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.mapNotNullValues
-import ai.tock.shared.security.StringObfuscatorMode
-import ai.tock.shared.security.TockObfuscatorService
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.net.URLDecoder.decode
@@ -301,20 +298,6 @@ class SendChoice(
 
     override fun toMessage(): Message {
         return Choice(intentName, parameters)
-    }
-
-    override fun obfuscate(mode: StringObfuscatorMode, playerId: PlayerId): Event {
-        return SendChoice(
-            playerId,
-            applicationId,
-            recipientId,
-            intentName,
-            TockObfuscatorService.obfuscate(parameters),
-            toActionId(),
-            date,
-            state,
-            metadata
-        )
     }
 
     /**

@@ -19,7 +19,6 @@ package ai.tock.bot.connector.messenger.model.send
 import ai.tock.bot.engine.action.SendAttachment.AttachmentType.image
 import ai.tock.bot.engine.message.GenericElement
 import ai.tock.shared.mapNotNullValues
-import ai.tock.shared.security.StringObfuscatorMode
 import ai.tock.shared.security.TockObfuscatorService.obfuscate
 import com.fasterxml.jackson.annotation.JsonProperty
 
@@ -51,7 +50,7 @@ data class Element(val title: String,
         )
     }
 
-    fun obfuscate(mode: StringObfuscatorMode): Element {
-        return Element(obfuscate(title, mode)!!, imageUrl, obfuscate(subtitle, mode), buttons)
+    fun obfuscate(): Element {
+        return Element(obfuscate(title)!!, imageUrl, obfuscate(subtitle), buttons)
     }
 }

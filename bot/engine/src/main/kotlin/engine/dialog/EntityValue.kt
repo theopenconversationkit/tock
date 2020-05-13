@@ -78,7 +78,7 @@ data class EntityValue(
     constructor(nlpResult: NlpResult, value: NlpEntityValue) : this(nlpResult.retainedQuery, value)
 
     constructor(sentence: String, value: NlpEntityValue)
-            : this(
+        : this(
         value.start,
         value.end,
         value.entity,
@@ -91,7 +91,7 @@ data class EntityValue(
     )
 
     constructor(entity: Entity, value: Value?, content: String? = null)
-            : this(
+        : this(
         null,
         null,
         entity,
@@ -103,5 +103,7 @@ data class EntityValue(
     override fun toString(): String {
         return if (evaluated) value?.toString() ?: "null" else content ?: "no content"
     }
+
+    internal fun toClosedRange(): IntRange? = if (start != null && end != null && start < end) IntRange(start, end) else null
 
 }

@@ -23,7 +23,6 @@ import ai.tock.bot.connector.messenger.model.send.AttachmentType.image
 import ai.tock.bot.connector.messenger.model.send.AttachmentType.template
 import ai.tock.bot.connector.messenger.model.send.AttachmentType.video
 import ai.tock.bot.engine.message.GenericMessage
-import ai.tock.shared.security.StringObfuscatorMode
 
 /**
  *
@@ -54,10 +53,10 @@ class AttachmentMessage(val attachment: Attachment, quickReplies: List<QuickRepl
         }
     }
 
-    override fun obfuscate(mode: StringObfuscatorMode): ConnectorMessage {
+    override fun obfuscate(): ConnectorMessage {
         return when (attachment.type) {
             template -> AttachmentMessage(
-                attachment.copy(payload = attachment.payload.obfuscate(mode)),
+                attachment.copy(payload = attachment.payload.obfuscate()),
                 quickReplies
             )
             else -> this

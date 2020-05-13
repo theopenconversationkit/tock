@@ -18,7 +18,6 @@ package ai.tock.shared.security
 
 import ai.tock.shared.Loader
 import ai.tock.shared.error
-import ai.tock.shared.security.StringObfuscatorMode.normal
 import mu.KotlinLogging
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -41,7 +40,7 @@ object TockObfuscatorService {
             Loader
                 .loadServices<ObfuscatorService>()
                 .flatMap { it.parameterObfuscators() }
-                .forEach { registerParameterObfuscator(it) }
+                .forEach { registerMapObfuscator(it) }
         } catch (e: Exception) {
             logger.error(e)
         }
@@ -57,7 +56,7 @@ object TockObfuscatorService {
     /**
      * Registers parameters stringObfuscators.
      */
-    fun registerParameterObfuscator(vararg newObfuscators: MapObfuscator) {
+    fun registerMapObfuscator(vararg newObfuscators: MapObfuscator) {
         mapObfuscators.addAll(newObfuscators.toList())
     }
 
@@ -73,27 +72,25 @@ object TockObfuscatorService {
      * Obfuscates list of texts.
      *
      * @param texts the text list to obfuscate
-     * @param mode the obfuscation mode
      * @param obfuscatedRanges a map (texts list indexed) of forced obfuscated ranges
      */
-    fun obfuscate(texts: List<String>, mode: StringObfuscatorMode = normal, obfuscatedRanges: Map<Int, List<IntRange>> = emptyMap()): List<String> {
-        return texts.mapIndexed { index, t -> obfuscate(t, mode, obfuscatedRanges[index] ?: emptyList()) ?: "" }
+    fun obfuscate(texts: List<String>, obfuscatedRanges: Map<Int, List<IntRange>> = emptyMap()): List<String> {
+        return texts.mapIndexed { index, t -> obfuscate(t, obfuscatedRanges[index] ?: emptyList()) ?: "" }
     }
 
     /**
      * Obfuscates text.
      *
      * @param text the text to obfuscate
-     * @param mode the obfuscation mode
      * @param obfuscatedRanges the forced obfuscation ranges
      */
-    fun obfuscate(text: String?, mode: StringObfuscatorMode = normal, obfuscatedRanges: List<IntRange> = emptyList()): String? {
+    fun obfuscate(text: String?, obfuscatedRanges: List<IntRange> = emptyList()): String? {
         return if (text == null) {
             null
         } else {
             var t: String = text
             stringObfuscators.forEach {
-                t = it.obfuscate(t, mode)
+                t = it.obfuscate(t)
             }
             obfuscatedRanges.asSequence().filterNot { it.isEmpty() }.forEach {
                 t = t.replaceRange(it, "*".repeat(1 + it.last - it.first))

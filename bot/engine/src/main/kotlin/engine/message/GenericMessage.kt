@@ -72,4 +72,20 @@ data class GenericMessage(
 
     internal fun findConnectorMessage() = connectorMessage
 
+    internal fun obfuscate(): GenericMessage =
+        if (connectorMessage == null) {
+            this
+        } else {
+            connectorMessage.obfuscate().toGenericMessage()
+                ?: GenericMessage(
+                    connectorMessage.obfuscate(),
+                    attachments,
+                    choices,
+                    texts,
+                    locations,
+                    metadata,
+                    subElements
+                )
+        }
+
 }

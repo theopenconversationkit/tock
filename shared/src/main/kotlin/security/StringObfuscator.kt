@@ -16,9 +16,6 @@
 
 package ai.tock.shared.security
 
-import ai.tock.shared.security.StringObfuscatorMode.display
-import ai.tock.shared.security.StringObfuscatorMode.normal
-
 /**
  * Replaces a string by an other String.
  */
@@ -35,31 +32,14 @@ interface StringObfuscator {
     val replacement: String
 
     /**
-     * To match the replacement string in [StringObfuscatorMode.display] mode.
-     */
-    val replacementRegexp: Regex
-
-    /**
-     * Used in [StringObfuscatorMode.display] mode.
-     */
-    val displayed: String
-
-    /**
      * Obfuscate the parameter.
      */
-    fun obfuscate(text: String, mode: StringObfuscatorMode = normal): String {
-        return when (mode) {
-            normal -> regex
-            display -> replacementRegexp
-        }
+    fun obfuscate(text: String): String {
+        return regex
             .toPattern()
             .matcher(text)
             .run {
-                replaceAll(
-                    when (mode) {
-                        normal -> replacement
-                        display -> displayed
-                    })
+                replaceAll(replacement)
             }
     }
 }

@@ -16,10 +16,8 @@
 
 package ai.tock.shared.security
 
-import ai.tock.shared.security.StringObfuscatorMode.display
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
-
 
 /**
  *
@@ -32,11 +30,4 @@ class SimpleObfuscatorTest {
         assertEquals("aze sososecret 223 sososecret ds", obf.obfuscate("aze 222777777 223 199999999 ds"))
     }
 
-    @Test
-    fun obfuscate_shouldUseDisplayedText_WhenDisplayModeIsUsed() {
-        val obf = SimpleObfuscator("\\d{9}".toRegex(), "sososecret", "?")
-        val obfuscated = obf.obfuscate("aze 222777777 223 199999999 ds")
-        assertEquals("aze sososecret 223 sososecret ds", obfuscated)
-        assertEquals("aze ? 223 ? ds", obf.obfuscate(obfuscated, display))
-    }
 }

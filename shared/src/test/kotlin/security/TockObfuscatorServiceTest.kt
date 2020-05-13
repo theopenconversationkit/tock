@@ -16,7 +16,6 @@
 
 package ai.tock.shared.security
 
-import ai.tock.shared.security.StringObfuscatorMode.display
 import ai.tock.shared.security.TockObfuscatorService.obfuscate
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -31,7 +30,7 @@ class TockObfuscatorServiceTest {
 
     @BeforeEach
     fun before() {
-        TockObfuscatorService.registerStringObfuscator(SimpleObfuscator("\\d{9}".toRegex(), "sososecret", "?"))
+        TockObfuscatorService.registerStringObfuscator(SimpleObfuscator("\\d{9}".toRegex(), "sososecret"))
     }
 
     @AfterEach
@@ -42,13 +41,6 @@ class TockObfuscatorServiceTest {
     @Test
     fun obfuscate_shouldUpdateText_WhenPatternFound() {
         assertEquals("aze sososecret 223 sososecret ds", obfuscate("aze 222777777 223 199999999 ds"))
-    }
-
-    @Test
-    fun obfuscate_shouldUseDisplayedText_WhenDisplayModeIsUsed() {
-        val obfuscated = obfuscate("aze 222777777 223 199999999 ds")
-        assertEquals("aze sososecret 223 sososecret ds", obfuscated)
-        assertEquals("aze ? 223 ? ds", obfuscate(obfuscated, display))
     }
 
     @Test

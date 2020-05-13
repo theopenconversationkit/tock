@@ -17,11 +17,9 @@
 package ai.tock.bot.engine.action
 
 import ai.tock.bot.engine.dialog.EventState
-import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.message.Attachment
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.user.PlayerId
-import ai.tock.shared.security.StringObfuscatorMode
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.time.Instant
@@ -30,14 +28,14 @@ import java.time.Instant
  * A simple attachment file sent.
  */
 open class SendAttachment(playerId: PlayerId,
-                     applicationId: String,
-                     recipientId: PlayerId,
-                     val url: String,
-                     val type: AttachmentType,
-                     id: Id<Action> = newId(),
-                     date: Instant = Instant.now(),
-                     state: EventState = EventState(),
-                     metadata: ActionMetadata = ActionMetadata())
+                          applicationId: String,
+                          recipientId: PlayerId,
+                          val url: String,
+                          val type: AttachmentType,
+                          id: Id<Action> = newId(),
+                          date: Instant = Instant.now(),
+                          state: EventState = EventState(),
+                          metadata: ActionMetadata = ActionMetadata())
     : Action(playerId, recipientId, applicationId, id, date, state, metadata) {
 
     enum class AttachmentType {
@@ -46,19 +44,5 @@ open class SendAttachment(playerId: PlayerId,
 
     override fun toMessage(): Message {
         return Attachment(url, type)
-    }
-
-    override fun obfuscate(mode: StringObfuscatorMode, playerId: PlayerId): Event {
-        return SendAttachment(
-                playerId,
-                applicationId,
-                recipientId,
-                url,
-                type,
-                toActionId(),
-                date,
-                state,
-                metadata
-        )
     }
 }

@@ -19,7 +19,6 @@ package ai.tock.bot.engine.event
 import ai.tock.bot.engine.dialog.EntityValue
 import ai.tock.bot.engine.dialog.EventState
 import ai.tock.nlp.entity.StringValue
-import ai.tock.shared.security.StringObfuscatorMode
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.time.Instant
@@ -70,10 +69,5 @@ abstract class Event(
     private fun hasSubEntity(entities: List<EntityValue>, role: String): Boolean {
         return entities.any { it.entity.role == role } || entities.any { hasSubEntity(it.subEntities, role) }
     }
-
-    /**
-     * Obfuscate the event - by default this method does nothing.
-     */
-    open fun obfuscate(mode: StringObfuscatorMode): Event = this
 
 }

@@ -251,7 +251,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
 
                 dialog.allActions().forEach {
                     when (it) {
-                        is SendSentenceWithNotLoadedMessage -> {
+                        is SendSentenceNotYetLoaded -> {
                             if (it.messageLoaded && it.messages.isNotEmpty()) {
                                 saveConnectorMessage(it.toActionId(), dialog.id, it.messages)
                             }
@@ -338,6 +338,17 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         } catch (e: Exception) {
             logger.error(e)
             emptyList()
+        }
+    }
+
+    internal fun loadConnectorMessages(ids: List<ConnectorMessageColId>): Map<ConnectorMessageColId, List<ConnectorMessage>> {
+        return try {
+            connectorMessageCol.find(ConnectorMessageCol::_id `in` ids)
+                .map { m -> m._id to m.messages.mapNotNull { it?.value as? ConnectorMessage } }
+                .toMap()
+        } catch (e: Exception) {
+            logger.error(e)
+            emptyMap()
         }
     }
 
@@ -556,8 +567,10 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     .skip(start.toInt())
                     .limit(size)
                     .descendingSort(LastUpdateDate)
-                    .map { it.toDialogReport() }
-                    .toList()
+                    .run {
+                        map { it.toDialogReport() }
+                            .toList()
+                    }
                 DialogReportQueryResult(count, start, start + list.size, list)
             } else {
                 DialogReportQueryResult(0, 0, 0, emptyList())

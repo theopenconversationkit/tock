@@ -111,17 +111,28 @@ internal data class DialogCol(
                 .asSequence()
                 .distinctBy { it.id }
                 .map { it.toAction(_id) }
-                .map {
-                    ActionReport(
-                        it.playerId,
-                        it.recipientId,
-                        it.date,
-                        it.toMessage(),
-                        it.state.targetConnectorType,
-                        it.state.userInterface ?: textChat,
-                        it.state.testEvent,
-                        it.toActionId()
+                .toList()
+                .run {
+                    val customMessagesMap = UserTimelineMongoDAO.loadConnectorMessages(
+                        mapNotNull { (it as? SendSentenceNotYetLoaded)?.let { ConnectorMessageColId(it.toActionId(), it.dialogId) } }
                     )
+
+                    map { a ->
+                        if (a is SendSentenceNotYetLoaded) {
+                            a.setLoadedMessages(customMessagesMap[ConnectorMessageColId(a.toActionId(), a.dialogId)]
+                                ?: emptyList())
+                        }
+                        ActionReport(
+                            a.playerId,
+                            a.recipientId,
+                            a.date,
+                            a.toMessage(),
+                            a.state.targetConnectorType,
+                            a.state.userInterface ?: textChat,
+                            a.state.testEvent,
+                            a.toActionId()
+                        )
+                    }
                 }
                 .toList(),
             stories
@@ -250,24 +261,24 @@ internal data class DialogCol(
     @JsonTypeName(value = "sentence")
     data class SendSentenceMongoWrapper(
         val text: String?,
-        val customMessage: Boolean = false
+        val customMessage: Boolean = false,
+        val nlpStats: Boolean = false
     ) : ActionMongoWrapper() {
 
         constructor(sentence: SendSentence) :
             this(
                 sentence.stringText?.let {
-                    val text = checkMaxLengthAllowed(it)
-                    //TODO obfuscate only when viewing - see #862
-                    if (sentence.state.testEvent) text else obfuscate(text)
+                    checkMaxLengthAllowed(it)
                 },
-                sentence is SendSentenceWithNotLoadedMessage || sentence.messages.isNotEmpty()
+                (sentence as? SendSentenceNotYetLoaded)?.hasCustomMessage ?: sentence.messages.isNotEmpty(),
+                (sentence as? SendSentenceNotYetLoaded)?.hasNlpStats ?: sentence.nlpStats != null
             ) {
             assignFrom(sentence)
         }
 
         override fun toAction(dialogId: Id<Dialog>): Action {
-            return if (customMessage) {
-                SendSentenceWithNotLoadedMessage(
+            return if (customMessage || nlpStats) {
+                SendSentenceNotYetLoaded(
                     dialogId,
                     playerId,
                     applicationId,
@@ -276,7 +287,9 @@ internal data class DialogCol(
                     id,
                     date,
                     state,
-                    botMetadata
+                    botMetadata,
+                    customMessage,
+                    nlpStats
                 )
             } else {
                 SendSentence(

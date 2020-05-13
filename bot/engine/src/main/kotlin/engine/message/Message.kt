@@ -29,8 +29,7 @@ interface Message {
     val eventType: EventType
     val delay: Long
 
-    fun toAction(bus: BotBus): Action
-            = toAction(bus.botId, bus.applicationId, bus.userId)
+    fun toAction(bus: BotBus): Action = toAction(bus.botId, bus.applicationId, bus.userId)
 
     fun toAction(playerId: PlayerId,
                  applicationId: String,
@@ -41,5 +40,10 @@ interface Message {
      */
     fun toPrettyString() = toString()
 
-    fun isSimpleMessage() : Boolean = false
+    /**
+     * Obfuscates the content of message.
+     */
+    fun obfuscate(): Message = this
+
+    fun isSimpleMessage(): Boolean = false
 }

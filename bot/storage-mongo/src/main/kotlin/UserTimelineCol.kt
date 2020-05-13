@@ -75,7 +75,7 @@ internal data class UserTimelineCol(
             ?.let {
                 lastUserActionDate = it.date
                 lastActionText = when (it) {
-                    is SendSentence -> obfuscate(it.stringText)
+                    is SendSentence -> obfuscate(it.stringText, it.nlpStats?.obfuscatedRanges() ?: emptyList())
                     is SendChoice -> "(click) ${it.intentName}"
                     is SendAttachment -> "(send) ${it.url}"
                     is SendLocation -> "(send user location)"

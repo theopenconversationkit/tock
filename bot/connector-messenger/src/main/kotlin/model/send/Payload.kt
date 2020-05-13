@@ -16,15 +16,14 @@
 
 package ai.tock.bot.connector.messenger.model.send
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import ai.tock.bot.connector.messenger.json.send.PayloadDeserializer
 import ai.tock.bot.engine.message.GenericMessage
-import ai.tock.shared.security.StringObfuscatorMode
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 
 @JsonDeserialize(using = PayloadDeserializer::class)
 abstract class Payload {
 
     open fun toGenericMessage(): GenericMessage? = null
 
-    open fun obfuscate(mode: StringObfuscatorMode) : Payload = this
+    open fun obfuscate(): Payload = this
 }

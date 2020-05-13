@@ -41,5 +41,9 @@ data class DialogReportQuery(
     /**
      * Display test dialogs.
      */
-    val displayTests: Boolean = false
+    val displayTests: Boolean = false,
+    /**
+     * Is the result is obfuscated ?.
+     */
+    val obfuscated: Boolean = false
 )

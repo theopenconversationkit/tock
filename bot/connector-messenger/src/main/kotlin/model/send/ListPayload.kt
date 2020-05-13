@@ -16,30 +16,29 @@
 
 package ai.tock.bot.connector.messenger.model.send
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.engine.message.GenericMessage
 import ai.tock.shared.mapNotNullValues
-import ai.tock.shared.security.StringObfuscatorMode
+import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  * See [https://developers.facebook.com/docs/messenger-platform/send-api-reference/list-template]
  */
 data class ListPayload(
-        val elements: List<Element>,
-        @JsonProperty("top_element_style")
-        val topElementStyle: ListElementStyle?,
-        val buttons: List<Button>?
+    val elements: List<Element>,
+    @JsonProperty("top_element_style")
+    val topElementStyle: ListElementStyle?,
+    val buttons: List<Button>?
 ) : ModelPayload(PayloadType.list) {
 
     override fun toGenericMessage(): GenericMessage? {
         return GenericMessage(
-                choices = buttons?.map { it.toChoice() } ?: emptyList(),
-                subElements = elements.map { it.toGenericElement() },
-                metadata = mapNotNullValues(ListPayload::topElementStyle.name to topElementStyle?.name)
+            choices = buttons?.map { it.toChoice() } ?: emptyList(),
+            subElements = elements.map { it.toGenericElement() },
+            metadata = mapNotNullValues(ListPayload::topElementStyle.name to topElementStyle?.name)
         )
     }
 
-    override fun obfuscate(mode: StringObfuscatorMode): Payload {
-        return ListPayload(elements.map { it.obfuscate(mode) }, topElementStyle, buttons)
+    override fun obfuscate(): Payload {
+        return ListPayload(elements.map { it.obfuscate() }, topElementStyle, buttons)
     }
 }

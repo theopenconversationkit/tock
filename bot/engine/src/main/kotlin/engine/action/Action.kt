@@ -18,14 +18,13 @@
 
 package ai.tock.bot.engine.action
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import ai.tock.bot.definition.ParameterKey
 import ai.tock.bot.engine.dialog.EventState
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.jackson.mapper
-import ai.tock.shared.security.StringObfuscatorMode
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.litote.kmongo.Id
 import java.time.Instant
 
@@ -43,12 +42,6 @@ abstract class Action(
 ) : Event(applicationId, id, date, state) {
 
     abstract fun toMessage(): Message
-
-    override fun obfuscate(mode: StringObfuscatorMode): Event {
-        return obfuscate(mode, playerId)
-    }
-
-    abstract fun obfuscate(mode: StringObfuscatorMode, playerId: PlayerId): Event
 
     @Suppress("UNCHECKED_CAST")
     fun toActionId(): Id<Action> = id as Id<Action>

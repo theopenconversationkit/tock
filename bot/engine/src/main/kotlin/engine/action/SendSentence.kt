@@ -19,14 +19,11 @@ package ai.tock.bot.engine.action
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.dialog.EventState
-import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.message.Sentence
 import ai.tock.bot.engine.nlp.NlpCallStats
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.nlp.api.client.model.NlpResult
-import ai.tock.shared.security.StringObfuscatorMode
-import ai.tock.shared.security.TockObfuscatorService
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.time.Instant
@@ -36,20 +33,20 @@ import java.time.Instant
  * Could be a simple text, or a complex message using one or more [ConnectorMessage].
  */
 open class SendSentence(
-        playerId: PlayerId,
-        applicationId: String,
-        recipientId: PlayerId,
-        val text: CharSequence?,
-        open val messages: MutableList<ConnectorMessage> = mutableListOf(),
-        id: Id<Action> = newId(),
-        date: Instant = Instant.now(),
-        state: EventState = EventState(),
-        metadata: ActionMetadata = ActionMetadata(),
-        open var nlpStats: NlpCallStats? = null,
-        /**
-         * Used by analysed nlp (ie Alexa).
-         */
-        val precomputedNlp:NlpResult? = null)
+    playerId: PlayerId,
+    applicationId: String,
+    recipientId: PlayerId,
+    val text: CharSequence?,
+    open val messages: MutableList<ConnectorMessage> = mutableListOf(),
+    id: Id<Action> = newId(),
+    date: Instant = Instant.now(),
+    state: EventState = EventState(),
+    metadata: ActionMetadata = ActionMetadata(),
+    open var nlpStats: NlpCallStats? = null,
+    /**
+     * Used by analysed nlp (ie Alexa).
+     */
+    val precomputedNlp: NlpResult? = null)
     : Action(playerId, recipientId, applicationId, id, date, state, metadata) {
 
     @Transient
@@ -64,34 +61,19 @@ open class SendSentence(
     }
 
     override fun toMessage(): Message {
-        return Sentence(stringText, messages, state.userInterface)
-    }
-
-    override fun obfuscate(mode: StringObfuscatorMode, playerId: PlayerId): Event {
-        return SendSentence(
-                playerId,
-                applicationId,
-                recipientId,
-                TockObfuscatorService.obfuscate(stringText, mode),
-                messages.map { it.obfuscate(mode) }.toMutableList(),
-                toActionId(),
-                date,
-                state,
-                metadata,
-                nlpStats
-        )
+        return Sentence(stringText, messages, state.userInterface) { nlpStats }
     }
 
     override fun toString(): String {
-        return if (stringText != null) stringText else if (messages.isNotEmpty()) messages.toString() else ""
+        return stringText ?: if (messages.isNotEmpty()) messages.toString() else ""
     }
 
-    fun hasEmptyText() : Boolean = precomputedNlp == null  && text.isNullOrBlank()
+    fun hasEmptyText(): Boolean = precomputedNlp == null && text.isNullOrBlank()
 
     /**
      * Replace a connectorMessage
      */
-    fun changeConnectorMessage(message: ConnectorMessage):SendSentence{
+    fun changeConnectorMessage(message: ConnectorMessage): SendSentence {
         messages.removeAll { it.connectorType == message.connectorType }
         messages.add(message)
         return this

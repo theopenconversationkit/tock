@@ -17,7 +17,6 @@
 package ai.tock.bot.connector
 
 import ai.tock.bot.engine.message.GenericMessage
-import ai.tock.shared.security.StringObfuscatorMode
 
 /**
  * Connector specific message format.
@@ -38,7 +37,7 @@ interface ConnectorMessage : ConnectorMessageProvider {
     /**
      * Obfuscate the message - by default this method does nothing.
      */
-    fun obfuscate(mode: StringObfuscatorMode): ConnectorMessage = this
+    fun obfuscate(): ConnectorMessage = this
 
     override fun toConnectorMessage(): ConnectorMessage = this
 }

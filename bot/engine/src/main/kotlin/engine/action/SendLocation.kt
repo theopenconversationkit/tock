@@ -17,12 +17,10 @@
 package ai.tock.bot.engine.action
 
 import ai.tock.bot.engine.dialog.EventState
-import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.message.Location
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserLocation
-import ai.tock.shared.security.StringObfuscatorMode
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.time.Instant
@@ -44,16 +42,4 @@ class SendLocation(playerId: PlayerId,
         return Location(location)
     }
 
-    override fun obfuscate(mode: StringObfuscatorMode, playerId: PlayerId): Event {
-        return SendLocation(
-                playerId,
-                applicationId,
-                recipientId,
-                location,
-                toActionId(),
-                date,
-                state,
-                metadata
-        )
-    }
 }
