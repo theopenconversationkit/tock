@@ -177,7 +177,7 @@ open class BotDefinitionBase(
                                 deleteKeyword -> deleteKeywordHandler(bus)
                                 testContextKeyword -> testContextKeywordHandler(bus)
                                 endTestContextKeyword -> endTestContextKeywordHandler(bus)
-                                else -> bus.end(bus.baseI18nValue("unknown keyword : {0}"), text)
+                                else -> bus.end(bus.baseI18nValue("unknown keyword : {0}", text))
                             }
                         }
                     }
