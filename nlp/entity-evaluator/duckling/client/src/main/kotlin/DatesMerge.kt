@@ -51,7 +51,8 @@ internal object DatesMerge {
         ("(dans )?(le |la |en |(en )?fin de |(en )?d[ée]but de |(en )?milieu de )?soir[ée]?e?" +
             "|(dans )?(le |la |en |(en )?fin de |(en )?d[ée]but de |(en )?milieu de )?mat(in[ée]?e?)?" +
             "|(dans )?(l. ?|(en )?fin d. ?|(en )?d[ée]but d. ?|(en )?milieu d. ?)?apr[eéè](s?[ \\-]?midi|m)" +
-            "|([aà]|vers|apr(e|è)s|[aà] partir de|avant|jusqu'[aà])? ?((([01]?\\d)|(2[0-3]))([:h]|heures?)?([0-5]\\d)?)(du|dans l[ae']? ?|au|en|l[ae'] ?|dès l?[ae']? ?|(en )?d[ée]but (de |d' ?)|(en )?fin (de |d' ?)|(en )?d[ée]but (d' ?|de ))?(mat(in[ée]?e?)|soir[ée]?e?|apr[eéè]s?[ \\-]?midi|journ[ée]e)?").toRegex()
+            "|([aà]|vers|apr(e|è)s|[aà] partir de|avant|jusqu'[aà])? ?((([01]?\\d)|(2[0-3]))([:h]|heures?)?([0-5]\\d)?)(du|dans l[ae']? ?|au|en|l[ae'] ?|dès l?[ae']? ?|(en )?d[ée]but (de |d' ?)|(en )?fin (de |d' ?)|(en )?d[ée]but (d' ?|de ))?(mat(in[ée]?e?)|soir[ée]?e?|apr[eéè]s?[ \\-]?midi|journ[ée]e)?" +
+            "|entre ?((([01]?\\d)|(2[0-3]))([:h]|heures?)?([0-5]\\d)?)(du|dans l[ae']? ?|au|en|l[ae'] ?|dès l?[ae']? ?|(en )?d[ée]but (de |d' ?)|(en )?fin (de |d' ?)|(en )?d[ée]but (d' ?|de ))?(mat(in[ée]?e?)|soir[ée]?e?|apr[eéè]s?[ \\-]?midi|journ[ée]e)? et .*").toRegex()
     private val frenchChangeDayInMonth = "le \\d?\\d".toRegex()
     private val frenchChangeDayInWeek = "(le )?(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)".toRegex()
 
@@ -210,10 +211,13 @@ internal object DatesMerge {
 
     private fun normalize(s: String): String = s.trim().replace(remodeDuplicateSpaceRegexp, " ").toLowerCase()
 
+    fun isChangeHourPattern(content: String?): Boolean =
+        content != null && frenchChangeHourRegex.matches(normalize(content))
+
     fun mergeGrain(language: Locale, oldValue: ValueDescriptor, newValue: ValueDescriptor): MergeGrain? {
         return if (oldValue.end() < now()) {
             null
-        } else if (language.language == "fr" && frenchChangeHourRegex.matches(normalize(newValue.content!!))) {
+        } else if (language.language == "fr" && isChangeHourPattern(newValue.content)) {
             MergeGrain(false, day)
         } else if (oldValue.grain() > newValue.grain()
             && oldValue.grain().calculateEnd(newValue.start(), defaultZoneId) >= newValue.end()

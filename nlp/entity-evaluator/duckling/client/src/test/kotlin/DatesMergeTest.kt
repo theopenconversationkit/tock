@@ -38,6 +38,7 @@ import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import java.util.Locale
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 /**
  *
@@ -329,6 +330,11 @@ internal class DatesMergeTest {
         )
         assertEquals((tomorrow.value as DateEntityValue).date.month + 1, (r?.value as DateEntityValue).date.month)
         assertEquals(20, (r.value as DateEntityValue).date.dayOfMonth)
+    }
+
+    @Test
+    fun `entre 9h et 10h is a french change hour pattern`() {
+        assertTrue(DatesMerge.isChangeHourPattern("entre 9h et 10h"))
     }
 
 }
