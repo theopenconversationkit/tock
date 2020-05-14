@@ -5,8 +5,8 @@ branches:
   only:
     - master
     - /^build-.*$/
-install: mvn --version
-script: travis_wait 30 ./etc/deploy.sh
+install: mvn versions:display-dependency-updates
+script: travis_wait 40 ./etc/deploy.sh
 cache:
   directories:
   - $HOME/.m2/repository
