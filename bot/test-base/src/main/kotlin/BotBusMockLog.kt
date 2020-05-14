@@ -17,6 +17,7 @@
 package ai.tock.bot.test
 
 import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.connector.ConnectorMessageProvider
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendChoice
@@ -68,7 +69,7 @@ data class BotBusMockLog(
     /**
      * Assert that log contains specified message.
      */
-    infix fun assert(message: ConnectorMessage) = assertMessage(message)
+    infix fun assert(message: ConnectorMessageProvider) = assertMessage(message.toConnectorMessage())
 
     /**
      * Convert current BotBusLog action first message to a generic message

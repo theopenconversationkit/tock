@@ -20,6 +20,7 @@ import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorCallbackBase
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.connector.ConnectorMessageProvider
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.IntentAware
@@ -432,4 +433,9 @@ open class BotBusMock(
             interceptor.handle(action, this)
         }
     }
+
+    /**
+     * Assert that logs contains specified messages.
+     */
+    fun assert(vararg messages: ConnectorMessageProvider): Unit = messages.forEachIndexed { i, m -> busAnswers[i].assert(m) }
 }
