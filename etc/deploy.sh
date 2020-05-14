@@ -7,7 +7,7 @@ if [[ $TRAVIS_BRANCH = *"build"* || $TRAVIS_BRANCH = "master" ]] && [ "$TRAVIS_P
   gpg --fast-import etc/codesigning.asc
   if [ "$TRAVIS_TAG" = '' ];
   then
-    mvn test -B -Dskip.npm -Dassembly.skipAssembly=true -T 2C -U -q || exit 1
+    mvn install -B -T 2C -U -q || exit 1
     if [ "$SKIP_DEPLOY" != 'true' ]; then
       mvn -B deploy -T 4 -DskipTests=true -Dtravis --settings etc/deploy-settings.xml -U -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
     fi
@@ -25,9 +25,9 @@ if [[ $TRAVIS_BRANCH = *"build"* || $TRAVIS_BRANCH = "master" ]] && [ "$TRAVIS_P
   else
     if [ "$TRAVIS_PULL_REQUEST" = 'false' ];
     then
-      mvn test -T 2C -B -Dskip.npm -Dassembly.skipAssembly=true -q
+      mvn install -T 2C -B -q
     else
       echo "test PR : $TRAVIS_PULL_REQUEST"
-      mvn clean install -T 2C -B -Dskip.npm -Dassembly.skipAssembly=true -q
+      mvn install -T 2C -B -q
     fi
 fi
