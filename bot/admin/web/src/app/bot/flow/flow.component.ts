@@ -134,7 +134,7 @@ export class FlowComponent implements OnInit, OnDestroy {
 
   selectedConnectorId: string;
   selectedConfigurationName: string;
-  lastBotSelection: SelectBotEvent;
+  lastFlowRequest: DialogFlowRequest;
   userFlow: ApplicationDialogFlow;
 
   allStories: StoryDefinitionConfiguration[];
@@ -173,31 +173,40 @@ export class FlowComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.selectedConfigurationName = null;
+    this.selectedConnectorId = null;
     this.reload();
-    this.subscription = this.state.configurationChange.subscribe(_ => this.reload());
+
+    this.subscription = this.state.configurationChange.subscribe(_ => {
+      this.selectedConfigurationName = null;
+      this.selectedConnectorId = null;
+      this.reload();
+    });
   }
 
-  private reload(configName?: string, configId?: string) {
+  private reload() {
     console.debug('Loading flow...');
     if (true /*configName*/) { // All configs allowed for Bot Flow
       // Reload user flow
       if (this.statsMode) {
-        console.debug('Fetching user flow...');
-        this.bot.getApplicationFlow(
-          new DialogFlowRequest(
-            this.state.currentApplication.namespace,
-            this.state.currentApplication.name,
-            this.state.currentLocale,
-            this.state.currentApplication.name,
-            this.selectedConfigurationName,
-            this.selectedConnectorId,
-            this.displayTests
-          )
-        ).subscribe(f => {
-          this.userFlow = f;
-          console.debug('Application flow retrieved, incl. ' + f.states.length + ' states ' + f.transitions.length + ' transitions.');
-          this.reset();
-        });
+        const request = new DialogFlowRequest(
+                          this.state.currentApplication.namespace,
+                          this.state.currentApplication.name,
+                          this.state.currentLocale,
+                          this.state.currentApplication.name,
+                          this.selectedConfigurationName,
+                          this.selectedConnectorId,
+                          this.displayTests
+                        );
+        if (!request.equals(this.lastFlowRequest)) {
+          console.debug('Fetching user flow...');
+          this.lastFlowRequest = request;
+          this.bot.getApplicationFlow(request).subscribe(f => {
+            this.userFlow = f;
+            console.debug('Application flow retrieved, incl. ' + f.states.length + ' states ' + f.transitions.length + ' transitions.');
+            this.reset();
+          });
+        }
       } else {
         // Reload static flow
         console.debug('Fetching stories...');
@@ -298,20 +307,12 @@ export class FlowComponent implements OnInit, OnDestroy {
 
   changeMode() {
     this.reload();
-    this.reset();
   }
 
   selectedConfigurationChanged(event?: SelectBotEvent) {
-    this.lastBotSelection = event;
-    if (!event) {
-      this.selectedConfigurationName = null;
-      this.selectedConnectorId = null;
-    } else {
-      this.selectedConfigurationName = event.configurationName;
-      this.selectedConnectorId = event.configurationId;
-    }
+    this.selectedConfigurationName = !event ? null : event.configurationName;
+    this.selectedConnectorId = !event ? null : event.configurationId;
     this.reload();
-    this.reset();
   }
 
   buildGraph(theFlow: ApplicationDialogFlow) {
@@ -505,8 +506,10 @@ export class FlowComponent implements OnInit, OnDestroy {
       const tmpFinalStates = [];
       const theMinCount = finalNodes.reduce((prev, current) => (prev.count < current.count) ? prev : current ).count;
       const theMaxCount = finalNodes.reduce((prev, current) => (prev.count > current.count) ? prev : current ).count;
-      console.debug("Node min visits: " + theMinCount);
-      console.debug("Node max visits: " + theMaxCount);
+      if (this.statsMode) {
+        console.debug("Node min visits: " + theMinCount);
+        console.debug("Node max visits: " + theMaxCount);
+      }
 
       finalNodes.forEach(s => {
         let include = true;

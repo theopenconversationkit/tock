@@ -30,6 +30,16 @@ export class DialogFlowRequest extends ApplicationScopedQuery {
     super(namespace, applicationName, language)
   }
 
+  equals(r: DialogFlowRequest): boolean {
+    return r
+      && this.namespace === r.namespace
+      && this.applicationName === r.applicationName
+      && this.language === r.language
+      && this.botId === r.botId
+      && this.botConfigurationName === r.botConfigurationName
+      && this.botConfigurationId === r.botConfigurationId
+      && this.includeTestConfigurations === r.includeTestConfigurations
+  }
 }
 
 export class ApplicationDialogFlow {
