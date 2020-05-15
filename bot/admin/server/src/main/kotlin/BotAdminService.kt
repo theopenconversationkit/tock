@@ -806,15 +806,23 @@ object BotAdminService {
 
     fun loadDialogFlow(request: DialogFlowRequest): ApplicationDialogFlowData {
         val namespace = request.namespace
+        val botId = request.botId
+        val configurationName = request.botConfigurationName
         val applicationIds = if (request.botConfigurationId != null) {
-            setOf(request.botConfigurationId)
-        } else {
+                setOf(request.botConfigurationId)
+        } else if (configurationName != null) {
             applicationConfigurationDAO
-                .getConfigurationsByNamespaceAndConfigurationName(namespace, request.botConfigurationName)
+                .getConfigurationsByBotNamespaceAndConfigurationName(namespace, botId, configurationName)
                 .map { it._id }
                 .toSet()
+        } else {
+            applicationConfigurationDAO
+                    .getConfigurationsByNamespaceAndBotId(namespace, botId)
+                    .map { it._id }
+                    .toSet()
         }
-        return dialogFlowDAO.loadApplicationData(namespace, request.botId, applicationIds)
+        logger.debug("Loading Bot Flow for ${applicationIds.size} configurations: $applicationIds...")
+        return dialogFlowDAO.loadApplicationData(namespace, botId, applicationIds)
     }
 
 

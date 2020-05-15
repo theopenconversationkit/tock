@@ -160,8 +160,8 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
         return col.find(Namespace eq namespace, NlpModel eq nlpModel).toList()
     }
 
-    override fun getConfigurationsByNamespaceAndConfigurationName(namespace: String, configurationName: String): List<BotApplicationConfiguration> {
-        return col.find(Namespace eq namespace, Name eq configurationName).toList()
+    override fun getConfigurationsByBotNamespaceAndConfigurationName(namespace: String, botId: String, configurationName: String): List<BotApplicationConfiguration> {
+        return col.find(Namespace eq namespace, BotId eq botId, Name eq configurationName).toList()
     }
 
     override fun getConfigurations(): List<BotApplicationConfiguration> {

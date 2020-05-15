@@ -132,7 +132,8 @@ export class FlowComponent implements OnInit, OnDestroy {
   allTransitions: Map<string, NodeTransition>;
   graphData;
 
-  botConfigurationId: string;
+  selectedConnectorId: string;
+  selectedConfigurationName: string;
   lastBotSelection: SelectBotEvent;
   userFlow: ApplicationDialogFlow;
 
@@ -174,20 +175,46 @@ export class FlowComponent implements OnInit, OnDestroy {
     this.subscription = this.state.configurationChange.subscribe(_ => this.reload());
   }
 
-  private reload() {
-    this.bot.getStories(
-      new StorySearchQuery(
-        this.state.currentApplication.namespace,
-        this.state.currentApplication.name,
-        this.state.currentLocale,
-        0,
-        10000
-      )).subscribe(s => {
-      this.allStories = s;
-      this.configuredStories = s.filter(story => !story.isBuiltIn());
-      console.debug(this.allStories.length + ' stories retrieved, incl. ' + this.configuredStories.length + ' configured stories.');
-      this.buildStaticFlowFromStories();
-    });
+  private reload(configName?: string, configId?: string) {
+    console.debug('Loading flow...');
+    if (true /*configName*/) { // All configs allowed for Bot Flow
+      // Reload user flow
+      if (this.statsMode) {
+        console.debug('Fetching user flow...');
+        this.bot.getApplicationFlow(
+          new DialogFlowRequest(
+            this.state.currentApplication.namespace,
+            this.state.currentApplication.name,
+            this.state.currentLocale,
+            this.state.currentApplication.name,
+            this.selectedConfigurationName,
+            this.selectedConnectorId
+          )
+        ).subscribe(f => {
+          this.userFlow = f;
+          console.debug('Application flow retrieved, incl. ' + f.states.length + ' states ' + f.transitions.length + ' transitions.');
+          this.reset();
+        });
+      } else {
+        // Reload static flow
+        console.debug('Fetching stories...');
+        this.userFlow = null;
+        this.bot.getStories(
+          new StorySearchQuery(
+            this.state.currentApplication.namespace,
+            this.state.currentApplication.name,
+            this.state.currentLocale,
+            0,
+            10000
+          )).subscribe(s => {
+            this.allStories = s;
+            this.configuredStories = s.filter(story => !story.isBuiltIn());
+            console.debug(this.allStories.length + ' stories retrieved, incl. ' + this.configuredStories.length + ' configured stories.');
+            this.buildStaticFlowFromStories();
+            this.reset();
+          });
+      }
+    }
   }
 
   ngOnDestroy(): void {
@@ -206,6 +233,7 @@ export class FlowComponent implements OnInit, OnDestroy {
   }
 
   private buildStaticFlowFromStories() {
+    console.debug('Building static flow from stories...');
     const intentStoryMap = new Map<string, StoryDefinitionConfiguration>();
     const states: DialogFlowStateData[] = [];
     const transitions: DialogFlowStateTransitionData[] = [];
@@ -270,30 +298,17 @@ export class FlowComponent implements OnInit, OnDestroy {
     this.reset();
   }
 
-  displayFlow(event?: SelectBotEvent) {
-    if (!event || !event.equals(this.lastBotSelection)) {
-      this.lastBotSelection = event;
-      if (event && (event.all || event.configurationName)) {
-        this.bot.getApplicationFlow(
-          new DialogFlowRequest(
-            this.state.currentApplication.namespace,
-            this.state.currentApplication.name,
-            this.state.currentLocale,
-            this.state.currentApplication.name,
-            event.configurationName,
-            event.configurationId
-          )
-        ).subscribe(f => {
-          this.userFlow = f;
-          console.debug('Application flow retrieved, incl. ' + f.states.length + ' states ' + f.transitions.length + ' transistions.');
-          this.reset();
-        });
-      } else {
-        this.graphData = null;
-        this.userFlow = null;
-        this.reset();
-      }
+  selectedConfigurationChanged(event?: SelectBotEvent) {
+    this.lastBotSelection = event;
+    if (!event) {
+      this.selectedConfigurationName = null;
+      this.selectedConnectorId = null;
+    } else {
+      this.selectedConfigurationName = event.configurationName;
+      this.selectedConnectorId = event.configurationId;
     }
+    this.reload();
+    this.reset();
   }
 
   buildGraph(theFlow: ApplicationDialogFlow) {
@@ -401,11 +416,6 @@ export class FlowComponent implements OnInit, OnDestroy {
           const theStory = this.allStories.find(aStory => aStory._id == theStoryId);
           if (theStory) {
             storiesById.set(theStoryId, theStory);
-            if (s.intent === 'goldobot') {
-              console.debug("Found story: " + theStoryName + " (ID: " + theStoryId + ")");
-              console.debug("Mapping storyId " + theStoryId + " to story:");
-              console.debug(theStory);
-            }
           } else {
             console.warn("Cannot find story: " + theStoryName + " (ID: " + theStoryId + ")");
           }

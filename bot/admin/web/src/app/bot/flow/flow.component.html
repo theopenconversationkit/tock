@@ -40,10 +40,10 @@
       <br />
 
       <div class="flow-option-group">
-        <span class="flow-option-group-name">Scope:</span>
-        <tock-select-bot [(configurationId)]="botConfigurationId"
-                         [allowNoConfigurationSelection]="true"
-                         (selectionChange)="displayFlow($event)" class="select">
+        <span class="flow-option-group-name">{{ statsMode ? "Scope:" : "Scope / Filters:"}}</span>
+        <tock-select-bot [allowNoConfigurationSelection]="false" noConnectorLabel="All Connectors"
+                         [allowNoSelection]="true" noConfigurationLabel="All Configurations"
+                         (selectionChange)="selectedConfigurationChanged($event)" class="select">
         </tock-select-bot>
         <span class="select">
           <nb-select placeholder="Story Type" status="primary" [(ngModel)]="selectedTypeFilter"

@@ -48,7 +48,10 @@ export class SelectBotComponent implements OnInit {
   returnsRestConfiguration: boolean = false;
 
   @Input()
-  noConfigurationLabel:string = "No configuration";
+  noConfigurationLabel:string = "No Configuration";
+
+  @Input()
+  noConnectorLabel:string = "No Connector";
 
   configurations: BotApplicationConfiguration[];
 
