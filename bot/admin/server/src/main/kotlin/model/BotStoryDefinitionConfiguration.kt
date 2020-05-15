@@ -23,6 +23,7 @@ import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
 import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
+import ai.tock.bot.definition.StoryTag
 import ai.tock.bot.definition.IntentWithoutNamespace
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
@@ -39,7 +40,7 @@ internal fun List<AnswerConfiguration>.mapAnswers(): List<BotAnswerConfiguration
     }
 
 /**
- *
+ * Story created/updated with Story Builder
  */
 data class BotStoryDefinitionConfiguration(
     val storyId: String,
@@ -60,6 +61,7 @@ data class BotStoryDefinitionConfiguration(
     val userSentenceLocale: Locale,
     val configurationName: String? = null,
     val features: List<StoryDefinitionConfigurationFeature> = emptyList(),
+    val tags: List<StoryTag> = emptyList(),
     val _id: Id<StoryDefinitionConfiguration> = newId()
 ) {
 
@@ -79,6 +81,7 @@ data class BotStoryDefinitionConfiguration(
         story.userSentenceLocale ?: userLocale,
         story.configurationName,
         story.features,
+        story.tags,
         story._id
     )
 

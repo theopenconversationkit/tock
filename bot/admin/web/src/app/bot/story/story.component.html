@@ -55,61 +55,84 @@
   </mat-expansion-panel-header>
 
   <div class="content">
-    <div>
-      <span class="intent" matTooltip="Main Intent">{{story.intent.name}}</span>
-      <span class="category" matTooltip="Story category">&nbsp;[{{story.category}}]</span>
-      <div>
-        {{story.description}}
-      </div>
-      <ul *ngIf="storyNode">
-        <li *ngIf="storyNode.intent">Intent: <b>{{storyNode.intent}}</b></li>
-        <li *ngIf="storyNode.step">Step: <b>{{storyNode.step}}</b></li>
-        <li *ngIf="storyNode.entities.length !==0">Entities: <b>{{storyNode.entities}}</b></li>
-      </ul>
-    </div>
+
+    <!-- Settings card -->
+    <mat-card class="answer-card">
+      <mat-card-header>
+        <mat-card-title>Settings</mat-card-title>
+        <mat-card-subtitle>
+          <span class="intent" matTooltip="Main Intent">{{story.intent.name}}</span>
+          <span class="category" matTooltip="Story category">&nbsp;[{{story.category}}]</span>
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content class="answer-card-content">
+        <!-- Story description -->
+        <div *ngif="story.description">
+          Description : {{story.description}}
+        </div>
+
+        <!-- Story node -->
+        <ul *ngIf="storyNode">
+          <li *ngIf="storyNode.intent">Intent: <b>{{storyNode.intent}}</b></li>
+          <li *ngIf="storyNode.step">Step: <b>{{storyNode.step}}</b></li>
+          <li *ngIf="storyNode.entities.length !==0">Entities: <b>{{storyNode.entities}}</b></li>
+        </ul>
+
+        <!-- Story tag -->
+        <tock-story-tag class="story-tag" [(selectedTag)]="storyTag"></tock-story-tag>
+      </mat-card-content>
+    </mat-card>
 
     <div *ngIf="!story.hideDetails && !story.isBuiltIn()">
-      <div class="fullDisplayDivider" *ngIf="fullDisplay"></div>
-      <mat-divider *ngIf="fullDisplay" [inset]="true" class="divider"></mat-divider>
-      <div class="fullDisplayDivider" *ngIf="fullDisplay"></div>
+      <!-- Mandatory entities -->
+      <mat-card *ngIf="story.mandatoryEntities.length !== 0" class="answer-card">
+        <mat-card-header>
+          <mat-card-title>
+            Mandatory Entities
+            <button mat-icon-button matTooltip="Edit Mandatory Entities" (click)="editEntities()">
+              <mat-icon>extension</mat-icon>
+            </button></mat-card-title>
+        </mat-card-header>
 
-      <!-- mandatory entities -->
-      <div *ngIf="story.mandatoryEntities.length !== 0">
-        Mandatory Entities
-        <button mat-icon-button matTooltip="Edit Mandatory Entities" (click)="editEntities()">
-          <mat-icon>extension</mat-icon>
-        </button>
-        <ul>
-          <li *ngFor="let e of story.mandatoryEntities">{{e.role}}
-            <span *ngIf="e.intent" class="intent" matTooltip="Intent requested">[{{e.intent.name}}]</span>:
-            <tock-answer class="answer" [answer]="e" [editable]="false"></tock-answer>
-          </li>
-        </ul>
-        <div class="fullDisplayDivider" *ngIf="fullDisplay"></div>
-        <mat-divider *ngIf="fullDisplay" [inset]="true" class="divider"></mat-divider>
-        <div class="fullDisplayDivider" *ngIf="fullDisplay"></div>
-      </div>
+        <mat-card-content class="answer-card-content">
+          <ul>
+            <li *ngFor="let e of story.mandatoryEntities">{{e.role}}
+              <span *ngIf="e.intent" class="intent" matTooltip="Intent requested">[{{e.intent.name}}]</span>:
+              <tock-answer class="answer" [answer]="e" [editable]="false"></tock-answer>
+            </li>
+          </ul>
+        </mat-card-content>
+      </mat-card>
 
       <!-- default answer -->
-      <label *ngIf="!fullDisplay" for="main_answer" class="label-answer">Answer :</label>
-      <div *ngIf="fullDisplay">
-        Answer
-        <div class="fullDisplayDivider"></div>
-      </div>
-      <tock-answer id="main_answer" class="answer" [answer]="story" [fullDisplay]="fullDisplay" [create]="!story._id"
-                   [submit]="submit"></tock-answer>
+      <mat-card class="answer-card">
+        <mat-card-header>
+          <mat-card-title *ngIf="!fullDisplay" for="main_answer" class="label-answer">Answer :</mat-card-title>
+          <mat-card-title *ngIf="fullDisplay">Answers</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="answer-card-content">
+          <tock-answer id="main_answer" class="answer"
+                       [answer]="story" [fullDisplay]="fullDisplay"
+                       [create]="!story._id"
+                       [submit]="submit"></tock-answer>
+        </mat-card-content>
+      </mat-card>
 
-      <!-- steps -->
-      <div *ngIf="displaySteps" class="fullDisplayDivider"></div>
-      <mat-divider *ngIf="displaySteps" [inset]="true" class="divider"></mat-divider>
-      <div *ngIf="story.steps.length !== 0">
-        Actions
-        <button mat-icon-button matTooltip="Edit Actions" (click)="editSteps()">
-          <mat-icon>dns</mat-icon>
-        </button>
-      </div>
-      <tock-steps [steps]="story.steps" [defaultCategory]="story.category"
-                  [readonly]="!displaySteps"></tock-steps>
+      <!-- Story steps/action -->
+      <mat-card class="answer-card">
+        <mat-card-header>
+          <mat-card-title>
+            Actions
+            <button mat-icon-button matTooltip="Edit Actions" (click)="editSteps()">
+              <mat-icon>dns</mat-icon>
+            </button>
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="answer-card-content">
+          <tock-steps [steps]="story.steps" [defaultCategory]="story.category" [readonly]="!displaySteps"></tock-steps>
+        </mat-card-content>
+      </mat-card>
 
     </div>
   </div>

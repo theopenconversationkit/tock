@@ -43,6 +43,9 @@
              (change)="intent = $event.target.value"
              required>
     </mat-form-field>
+    <!-- tag -->
+    <tock-story-tag [(selectedTag)]="tag"></tock-story-tag>
+
     <mat-autocomplete #intentAuto="matAutocomplete"  autoActiveFirstOption>
       <mat-optgroup *ngFor="let category of intentCategories" [label]="category.category">
         <mat-option *ngFor="let intent of category.intents" [value]="intent.name">

@@ -46,6 +46,11 @@ interface StoryDefinition : IntentAware {
     val intents: Set<Intent>
 
     /**
+     * The story definition tags that specify different story types or roles.
+     */
+    val tags: List<StoryTag> get() = emptyList()
+
+    /**
      * The story handler of the story.
      */
     val storyHandler: StoryHandler

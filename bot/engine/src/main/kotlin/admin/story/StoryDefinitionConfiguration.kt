@@ -24,6 +24,7 @@ import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.definition.StoryDefinition
+import ai.tock.bot.definition.StoryTag
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
 import ai.tock.shared.defaultNamespace
@@ -39,10 +40,12 @@ data class StoryDefinitionConfiguration(
      * The story definition identifier.
      */
     val storyId: String,
+
     /**
      * The bot identifier.
      */
     val botId: String,
+
     /**
      * The target main intent.
      */
@@ -102,20 +105,27 @@ data class StoryDefinitionConfiguration(
     /**
      * The configuration identifier.
      */
-    val _id: Id<StoryDefinitionConfiguration> = newId()
+    val _id: Id<StoryDefinitionConfiguration> = newId(),
+
+    /**
+     * The story definition tags that specify different story types or roles.
+     */
+    val tags: List<StoryTag> = emptyList()
+
 ) : StoryDefinitionAnswersContainer {
 
     constructor(botDefinition: BotDefinition, storyDefinition: StoryDefinition, configurationName: String?) :
-            this(
-                storyDefinition.id,
-                botDefinition.botId,
-                storyDefinition.mainIntent().intentWithoutNamespace(),
-                builtin,
-                listOf(BuiltInAnswerConfiguration(storyDefinition.javaClass.kotlin.qualifiedName)),
-                namespace = botDefinition.namespace,
-                configurationName = configurationName,
-                steps = storyDefinition.steps.map { StoryDefinitionConfigurationStep(it) }
-            )
+        this(
+            storyId = storyDefinition.id,
+            tags = storyDefinition.tags,
+            botId = botDefinition.botId,
+            intent = storyDefinition.mainIntent().intentWithoutNamespace(),
+            currentType = builtin,
+            answers = listOf(BuiltInAnswerConfiguration(storyDefinition.javaClass.kotlin.qualifiedName)),
+            namespace = botDefinition.namespace,
+            configurationName = configurationName,
+            steps = storyDefinition.steps.map { StoryDefinitionConfigurationStep(it) }
+        )
 
     override fun findNextSteps(bus: BotBus, story: StoryDefinitionConfiguration): List<CharSequence> =
         steps.map { it.userSentenceLabel ?: it.userSentence }

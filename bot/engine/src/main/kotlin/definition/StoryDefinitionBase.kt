@@ -28,7 +28,8 @@ open class StoryDefinitionBase(
     otherStarterIntents: Set<IntentAware> = emptySet(),
     secondaryIntents: Set<IntentAware> = emptySet(),
     stepsList: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
-    unsupportedUserInterface: UserInterfaceType? = null
+    unsupportedUserInterface: UserInterfaceType? = null,
+    override val tags: List<StoryTag> = emptyList()
 ) : StoryDefinition {
 
     override val steps: Set<StoryStep<out StoryHandlerDefinition>> =

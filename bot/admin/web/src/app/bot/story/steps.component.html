@@ -41,10 +41,12 @@
 </mat-tree>
 <div *ngIf="!readonly" class="action">
   <button mat-button (click)="addNewStep()" color="primary">
-    <mat-icon>dns</mat-icon> Add Action
+    <mat-icon>dns</mat-icon>
+    Add Action
   </button>
-  <button mat-icon-button matTooltip="Generate Actions from Entity" (click)="generate()">
-    <mat-icon>playlist_add</mat-icon> Generate from Entity
+  <button mat-button matTooltip="Generate Actions from Entity" (click)="generate()">
+    <mat-icon>playlist_add</mat-icon>
+    Generate from Entity
   </button>
 </div>
 

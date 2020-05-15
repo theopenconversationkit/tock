@@ -19,9 +19,13 @@ package ai.tock.bot.admin.story.dump
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.definition.IntentWithoutNamespace
+import ai.tock.bot.definition.StoryTag
 import ai.tock.shared.defaultNamespace
 import java.util.Locale
 
+/**
+ * Object used for exporting/importing story definitions
+ */
 data class StoryDefinitionConfigurationDump(
     /**
      * The story definition identifier.
@@ -86,46 +90,52 @@ data class StoryDefinitionConfigurationDump(
     /**
      * The optional features supported
      */
-    val features: List<StoryDefinitionConfigurationFeatureDump> = emptyList()
+    val features: List<StoryDefinitionConfigurationFeatureDump> = emptyList(),
+    /**
+     * The story definition tags that specify different story types or roles.
+     */
+    val tags: List<StoryTag> = emptyList()
 ) {
 
     constructor(def: StoryDefinitionConfiguration) :
         this(
-            def.storyId,
-            def.botId,
-            def.intent,
-            def.currentType,
-            AnswerConfigurationDump.toDump(def.answers),
-            def.version,
-            def.namespace,
-            def.mandatoryEntities.map { StoryDefinitionConfigurationMandatoryEntityDump(it) },
-            def.steps.map { StoryDefinitionConfigurationStepDump(it, def.namespace, def.category) },
-            def.name,
-            def.category,
-            def.description,
-            def.userSentence,
-            def.userSentenceLocale,
-            def.configurationName,
-            def.features.map { StoryDefinitionConfigurationFeatureDump(it) }
+            storyId = def.storyId,
+            botId = def.botId,
+            intent = def.intent,
+            currentType = def.currentType,
+            answers = AnswerConfigurationDump.toDump(def.answers),
+            version = def.version,
+            namespace = def.namespace,
+            mandatoryEntities = def.mandatoryEntities.map { StoryDefinitionConfigurationMandatoryEntityDump(it) },
+            steps = def.steps.map { StoryDefinitionConfigurationStepDump(it, def.namespace, def.category) },
+            name = def.name,
+            category = def.category,
+            description = def.description,
+            userSentence = def.userSentence,
+            userSentenceLocale = def.userSentenceLocale,
+            configurationName = def.configurationName,
+            features = def.features.map { StoryDefinitionConfigurationFeatureDump(it) },
+            tags = def.tags
         )
 
     fun toStoryDefinitionConfiguration(controller: StoryDefinitionConfigurationDumpController): StoryDefinitionConfiguration =
         StoryDefinitionConfiguration(
-            storyId,
-            controller.botId,
-            controller.checkIntent(intent)!!,
-            currentType,
-            answers.map { it.toAnswer(currentType, controller) },
-            version,
-            controller.targetNamespace,
-            mandatoryEntities.map { it.toEntity(controller) },
-            steps.map { it.toStep(controller) },
-            name,
-            category,
-            description,
-            userSentence,
-            userSentenceLocale,
-            null,
-            features.mapNotNull { it.toFeature(controller) }
+            storyId = storyId,
+            botId = controller.botId,
+            intent = controller.checkIntent(intent)!!,
+            currentType = currentType,
+            answers = answers.map { it.toAnswer(currentType, controller) },
+            version = version,
+            namespace = controller.targetNamespace,
+            mandatoryEntities = mandatoryEntities.map { it.toEntity(controller) },
+            steps = steps.map { it.toStep(controller) },
+            name = name,
+            category = category,
+            description = description,
+            userSentence = userSentence,
+            userSentenceLocale = userSentenceLocale,
+            configurationName = null,
+            features = features.mapNotNull { it.toFeature(controller) },
+            tags = tags
         )
 }

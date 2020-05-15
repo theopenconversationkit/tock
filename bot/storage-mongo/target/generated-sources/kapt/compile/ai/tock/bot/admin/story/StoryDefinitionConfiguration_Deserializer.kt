@@ -3,6 +3,7 @@ package ai.tock.bot.admin.story
 import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.definition.IntentWithoutNamespace
+import ai.tock.bot.definition.StoryTag
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
@@ -65,6 +66,8 @@ internal class StoryDefinitionConfiguration_Deserializer :
             var _features_set : Boolean = false
             var __id_: Id<StoryDefinitionConfiguration>? = null
             var __id_set : Boolean = false
+            var _tags_: MutableList<StoryTag>? = null
+            var _tags_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -160,6 +163,11 @@ internal class StoryDefinitionConfiguration_Deserializer :
                              else p.readValueAs(__id__reference);
                             __id_set = true
                             }
+                    "tags" -> {
+                            _tags_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_tags__reference);
+                            _tags_set = true
+                            }
                     else -> {
                             if (_token_?.isStructStart == true)
                             p.skipChildren()
@@ -171,7 +179,8 @@ internal class StoryDefinitionConfiguration_Deserializer :
             return if(_storyId_set && _botId_set && _intent_set && _currentType_set && _answers_set
                     && _version_set && _namespace_set && _mandatoryEntities_set && _steps_set &&
                     _name_set && _category_set && _description_set && _userSentence_set &&
-                    _userSentenceLocale_set && _configurationName_set && _features_set && __id_set)
+                    _userSentenceLocale_set && _configurationName_set && _features_set && __id_set
+                    && _tags_set)
                     StoryDefinitionConfiguration(storyId = _storyId_!!, botId = _botId_!!, intent =
                             _intent_!!, currentType = _currentType_!!, answers = _answers_!!,
                             version = _version_!!, namespace = _namespace_!!, mandatoryEntities =
@@ -179,7 +188,7 @@ internal class StoryDefinitionConfiguration_Deserializer :
                             _category_!!, description = _description_!!, userSentence =
                             _userSentence_!!, userSentenceLocale = _userSentenceLocale_,
                             configurationName = _configurationName_, features = _features_!!, _id =
-                            __id_!!)
+                            __id_!!, tags = _tags_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_storyId_set)
@@ -215,7 +224,9 @@ internal class StoryDefinitionConfiguration_Deserializer :
                     if(_features_set)
                     map[parameters.getValue("features")] = _features_
                     if(__id_set)
-                    map[parameters.getValue("_id")] = __id_ 
+                    map[parameters.getValue("_id")] = __id_
+                    if(_tags_set)
+                    map[parameters.getValue("tags")] = _tags_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -244,7 +255,8 @@ internal class StoryDefinitionConfiguration_Deserializer :
                 primaryConstructor.findParameterByName("userSentenceLocale")!!, "configurationName"
                 to primaryConstructor.findParameterByName("configurationName")!!, "features" to
                 primaryConstructor.findParameterByName("features")!!, "_id" to
-                primaryConstructor.findParameterByName("_id")!!) }
+                primaryConstructor.findParameterByName("_id")!!, "tags" to
+                primaryConstructor.findParameterByName("tags")!!) }
 
         private val _answers__reference: TypeReference<List<AnswerConfiguration>> = object :
                 TypeReference<List<AnswerConfiguration>>() {}
@@ -261,5 +273,8 @@ internal class StoryDefinitionConfiguration_Deserializer :
 
         private val __id__reference: TypeReference<Id<StoryDefinitionConfiguration>> = object :
                 TypeReference<Id<StoryDefinitionConfiguration>>() {}
+
+        private val _tags__reference: TypeReference<List<StoryTag>> = object :
+                TypeReference<List<StoryTag>>() {}
     }
 }

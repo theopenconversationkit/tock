@@ -78,4 +78,13 @@
   margin-right: 10px;
 }
 
+.answer-card {
+  border: 1px solid lightgrey;
+  margin: 10px 0 10px 0;
+}
+
+.answer-card-content {
+  margin: 15px;
+}
+
 
