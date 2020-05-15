@@ -112,6 +112,9 @@
           <nb-checkbox [(ngModel)]="step" (change)="update()" class="checkbox" matTooltip="View more Nodes by Step">Step</nb-checkbox>
           <nb-checkbox [(ngModel)]="intent" (change)="update()" class="checkbox" matTooltip="View more Nodes by Intent">Intent</nb-checkbox>
         </span>
+        <span *ngIf="!statsMode">
+          <nb-checkbox [(ngModel)]="displayDisabled" (change)="update()" class="checkbox" matTooltip="Include Stories Disabled by Rules">Disabled</nb-checkbox>
+        </span>
       </div>
 
       <div class="flow-option-group" *ngIf="statsMode">

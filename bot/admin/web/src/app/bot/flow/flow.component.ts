@@ -143,6 +143,7 @@ export class FlowComponent implements OnInit, OnDestroy {
   statsMode: boolean = true;
   displayNodeType: boolean = false;
   displayTests: boolean = true;
+  displayDisabled: boolean = false;
   mergeOldStories: boolean = true;
   displayDebug: boolean = false;
 
@@ -333,47 +334,63 @@ export class FlowComponent implements OnInit, OnDestroy {
       const nodesByStoryKey = new Map<string, StoryNode>();
 
       flow.states.forEach(s => {
-        if (this.statsEntity() && this.statsStep() && this.intent) {
-          const node = new StoryNode(nodesNumber++, s._id, s.storyDefinitionId, [s], s.entities, s.intent, s.step, s.storyType, s.storyName);
-          nodesByIndex.set(node.index, node);
-          nodesByStateId.set(s._id, node);
-        } else {
-          let keyWithoutType = s.storyDefinitionId
-            + (this.statsIntent() ? "+" + s.intent : "")
-            + (this.statsStep() ? "+" + s.step : "")
-            + (this.statsEntity() ? "+" + s.entities.join("%") : "");
-          let key = keyWithoutType
-            + (s.storyType != undefined ? "+" + s.storyType : "");
-          let node = nodesByStoryKey.get(key);
-          if (node) {
-            node.states.push(s);
+        if (this.statsMode || this.displayDisabled || !this.allStories.find(aStory => aStory._id == s._id).isDisabled(this.selectedConnectorId)) {
+          if (this.statsEntity() && this.statsStep() && this.intent) {
+            const node = new StoryNode(nodesNumber++, s._id, s.storyDefinitionId, [s], s.entities, s.intent, s.step, s.storyType, s.storyName);
+            nodesByIndex.set(node.index, node);
+            nodesByStateId.set(s._id, node);
           } else {
-            if (this.mergeOldStories && key != keyWithoutType) {
-              const nodeWithoutType = nodesByStoryKey.get(keyWithoutType);
-              if (nodeWithoutType) {
-                console.debug('Replacing previous node with typed node...');
-                // Merge previous node to a new typed node
-                node = new StoryNode(
-                  nodeWithoutType.index,
-                  s.storyDefinitionId,
-                  s.storyDefinitionId,
-                  [s],
-                  this.statsEntity() ? s.entities : [],
-                  this.intent ? s.intent : null,
-                  this.statsStep() ? s.step : null,
-                  s.storyType,
-                  s.storyName
-                );
-                node.states.push.apply(node.states, nodeWithoutType.states);
+            let keyWithoutType = s.storyDefinitionId
+              + (this.statsIntent() ? "+" + s.intent : "")
+              + (this.statsStep() ? "+" + s.step : "")
+              + (this.statsEntity() ? "+" + s.entities.join("%") : "");
+            let key = keyWithoutType
+              + (s.storyType != undefined ? "+" + s.storyType : "");
+            let node = nodesByStoryKey.get(key);
+            if (node) {
+              node.states.push(s);
+            } else {
+              if (this.mergeOldStories && key != keyWithoutType) {
+                const nodeWithoutType = nodesByStoryKey.get(keyWithoutType);
+                if (nodeWithoutType) {
+                  console.debug('Replacing previous node with typed node...');
+                  // Merge previous node to a new typed node
+                  node = new StoryNode(
+                    nodeWithoutType.index,
+                    s.storyDefinitionId,
+                    s.storyDefinitionId,
+                    [s],
+                    this.statsEntity() ? s.entities : [],
+                    this.intent ? s.intent : null,
+                    this.statsStep() ? s.step : null,
+                    s.storyType,
+                    s.storyName
+                  );
+                  node.states.push.apply(node.states, nodeWithoutType.states);
 
-                // Update maps
-                nodesByStoryKey.delete(keyWithoutType);
-                nodesByStoryKey.set(key, node);
-                nodesByIndex.set(node.index, node);
-                node.states.forEach(state => {
-                  state.storyType = s.storyType;
-                  nodesByStateId.set(state._id, node);
-                });
+                  // Update maps
+                  nodesByStoryKey.delete(keyWithoutType);
+                  nodesByStoryKey.set(key, node);
+                  nodesByIndex.set(node.index, node);
+                  node.states.forEach(state => {
+                    state.storyType = s.storyType;
+                    nodesByStateId.set(state._id, node);
+                  });
+                } else {
+                  node = new StoryNode(
+                    nodesNumber++,
+                    s.storyDefinitionId,
+                    s.storyDefinitionId,
+                    [s],
+                    this.statsEntity() ? s.entities : [],
+                    this.intent ? s.intent : null,
+                    this.statsStep() ? s.step : null,
+                    s.storyType,
+                    s.storyName
+                  );
+                  nodesByStoryKey.set(key, node);
+                  nodesByIndex.set(node.index, node);
+                }
               } else {
                 node = new StoryNode(
                   nodesNumber++,
@@ -389,23 +406,9 @@ export class FlowComponent implements OnInit, OnDestroy {
                 nodesByStoryKey.set(key, node);
                 nodesByIndex.set(node.index, node);
               }
-            } else {
-              node = new StoryNode(
-                nodesNumber++,
-                s.storyDefinitionId,
-                s.storyDefinitionId,
-                [s],
-                this.statsEntity() ? s.entities : [],
-                this.intent ? s.intent : null,
-                this.statsStep() ? s.step : null,
-                s.storyType,
-                s.storyName
-              );
-              nodesByStoryKey.set(key, node);
-              nodesByIndex.set(node.index, node);
             }
+            nodesByStateId.set(s._id, node);
           }
-          nodesByStateId.set(s._id, node);
         }
       });
 
@@ -534,7 +537,10 @@ export class FlowComponent implements OnInit, OnDestroy {
           const theNodeName = s.nodeName() + (this.displayNodeType ? (s.storyType == AnswerConfigurationType.builtin ? ' 🔧'
                                                                     : (s.storyType == undefined ? ' ?'
                                                                     : ' 💬'))
-                                                                    : '');
+                                                                    : '')
+                                           + (!this.statsMode && this.displayDisabled
+                                            && this.allStories.find(aStory => aStory._id == s.storyDefinitionId).isDisabled(this.selectedConnectorId)
+                                            ? ' 🚫' : '');
           graph.nodes.push({
             data: {
               id: s.index,

@@ -181,6 +181,26 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
     return bot.saveStory(this)
   }
 
+  isDisabled(configurationId: string): boolean {
+    return !this.features || this.features.length < 1
+      ? false
+      : this.features.filter(f =>
+          !f.enabled && !f.switchToStoryId
+          && (!f.botApplicationConfigurationId || f.botApplicationConfigurationId == null
+          || f.botApplicationConfigurationId == configurationId)
+        ).length > 0;
+  }
+
+  isRedirected(configurationId: string): boolean {
+    return !this.features || this.features.length < 1
+      ? false
+      : this.features.filter(f =>
+          f.enabled && f.switchToStoryId
+          && (!f.botApplicationConfigurationId || f.botApplicationConfigurationId == null
+          || f.botApplicationConfigurationId == configurationId)
+        ).length > 0;
+  }
+
   static fromJSON(json: any): StoryDefinitionConfiguration {
     const value = Object.create(StoryDefinitionConfiguration.prototype);
     const result = Object.assign(value, json, {
