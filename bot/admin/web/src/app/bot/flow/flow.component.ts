@@ -284,7 +284,10 @@ export class FlowComponent implements OnInit, OnDestroy {
   }
 
   buildGraph(theFlow: ApplicationDialogFlow) {
-    let flow = this.mergeOldStories ? (JSON.parse(JSON.stringify(theFlow))) : theFlow; // clone - states might be modified by merge
+    console.debug('Building graph from flow...');
+    let flow = theFlow
+      ? (this.mergeOldStories ? (JSON.parse(JSON.stringify(theFlow))) : theFlow)  // clone - states might be modified by merge
+      : undefined;
     if (flow) {
       const displayOnlyNext: boolean = this.direction === -1;
       const displayOnlyPrev: boolean = this.direction === 1;
@@ -511,7 +514,7 @@ export class FlowComponent implements OnInit, OnDestroy {
             data: {
               id: s.index,
               name: theNodeName,
-              weight: theScore,
+              weight: theScore ? theScore : 0,
               colorCode: entityColor(s.storyDefinitionId),
               shapeType: s.dynamic ? 'ellipse' : 'roundrectangle'
             }
