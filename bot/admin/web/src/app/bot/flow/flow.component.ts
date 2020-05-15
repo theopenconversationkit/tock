@@ -146,6 +146,18 @@ export class FlowComponent implements OnInit, OnDestroy {
 
   private subscription: Subscription;
 
+  statsEntity(): boolean {
+    return this.statsMode && this.entity;
+  }
+
+  statsStep(): boolean {
+    return this.statsMode && this.step;
+  }
+
+  statsIntent(): boolean {
+    return this.statsMode && this.intent;
+  }
+
   valueAscOrder = (a: KeyValue<string, string>, b: KeyValue<string, string>): number => {
     return a.value.localeCompare(b.value);
   };
@@ -254,6 +266,7 @@ export class FlowComponent implements OnInit, OnDestroy {
   }
 
   changeMode() {
+    this.reload();
     this.reset();
   }
 
@@ -303,15 +316,15 @@ export class FlowComponent implements OnInit, OnDestroy {
       const nodesByStoryKey = new Map<string, StoryNode>();
 
       flow.states.forEach(s => {
-        if (this.entity && this.step && this.intent) {
+        if (this.statsEntity() && this.statsStep() && this.intent) {
           const node = new StoryNode(nodesNumber++, s._id, s.storyDefinitionId, [s], s.entities, s.intent, s.step, s.storyType, s.storyName);
           nodesByIndex.set(node.index, node);
           nodesByStateId.set(s._id, node);
         } else {
           let keyWithoutType = s.storyDefinitionId
-            + (this.intent ? "+" + s.intent : "")
-            + (this.step ? "+" + s.step : "")
-            + (this.entity ? "+" + s.entities.join("%") : "");
+            + (this.statsIntent() ? "+" + s.intent : "")
+            + (this.statsStep() ? "+" + s.step : "")
+            + (this.statsEntity() ? "+" + s.entities.join("%") : "");
           let key = keyWithoutType
             + (s.storyType != undefined ? "+" + s.storyType : "");
           let node = nodesByStoryKey.get(key);
@@ -328,9 +341,9 @@ export class FlowComponent implements OnInit, OnDestroy {
                   s.storyDefinitionId,
                   s.storyDefinitionId,
                   [s],
-                  this.entity ? s.entities : [],
+                  this.statsEntity() ? s.entities : [],
                   this.intent ? s.intent : null,
-                  this.step ? s.step : null,
+                  this.statsStep() ? s.step : null,
                   s.storyType,
                   s.storyName
                 );
@@ -350,9 +363,9 @@ export class FlowComponent implements OnInit, OnDestroy {
                   s.storyDefinitionId,
                   s.storyDefinitionId,
                   [s],
-                  this.entity ? s.entities : [],
+                  this.statsEntity() ? s.entities : [],
                   this.intent ? s.intent : null,
-                  this.step ? s.step : null,
+                  this.statsStep() ? s.step : null,
                   s.storyType,
                   s.storyName
                 );
@@ -365,9 +378,9 @@ export class FlowComponent implements OnInit, OnDestroy {
                 s.storyDefinitionId,
                 s.storyDefinitionId,
                 [s],
-                this.entity ? s.entities : [],
+                this.statsEntity() ? s.entities : [],
                 this.intent ? s.intent : null,
-                this.step ? s.step : null,
+                this.statsStep() ? s.step : null,
                 s.storyType,
                 s.storyName
               );
