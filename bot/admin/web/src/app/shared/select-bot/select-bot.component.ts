@@ -108,13 +108,13 @@ export class SelectBotComponent implements OnInit {
   }
 
   private changeConf(conf: BotApplicationConfiguration, configurations: BotApplicationConfiguration[], noConnectorSelection: boolean) {
+    this.configurations = configurations;
     if (conf) {
       this.currentBotName = this.getName(conf);
       this.currentConfiguration = conf;
       this.currentConfigurations = configurations
         .filter(c => c.name === conf.name);
       this.configurationId = conf._id;
-      this.configurations = configurations;
       const confResult = this.returnsRestConfiguration ? BotApplicationConfiguration.getRestConfiguration(this.allConfigurations, conf) : conf;
       if (confResult) {
         this.selectionChange.emit(new SelectBotEvent(confResult.name, noConnectorSelection, noConnectorSelection ? null : confResult._id));
