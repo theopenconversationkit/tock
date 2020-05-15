@@ -142,6 +142,7 @@ export class FlowComponent implements OnInit, OnDestroy {
   staticFlow: ApplicationDialogFlow;
   statsMode: boolean = true;
   displayNodeType: boolean = false;
+  displayTests: boolean = true;
   mergeOldStories: boolean = true;
   displayDebug: boolean = false;
 
@@ -188,7 +189,8 @@ export class FlowComponent implements OnInit, OnDestroy {
             this.state.currentLocale,
             this.state.currentApplication.name,
             this.selectedConfigurationName,
-            this.selectedConnectorId
+            this.selectedConnectorId,
+            this.displayTests
           )
         ).subscribe(f => {
           this.userFlow = f;

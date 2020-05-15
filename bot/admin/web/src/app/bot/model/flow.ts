@@ -25,7 +25,8 @@ export class DialogFlowRequest extends ApplicationScopedQuery {
     public language: string,
     public botId: string,
     public botConfigurationName: string,
-    public botConfigurationId?: string) {
+    public botConfigurationId?: string,
+    public includeTestConfigurations?: boolean) {
     super(namespace, applicationName, language)
   }
 

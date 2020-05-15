@@ -117,10 +117,6 @@
       <div class="flow-option-group" *ngIf="statsMode">
         <span class="flow-option-group-name">Filters:</span>
         <span>
-          <nb-checkbox [(ngModel)]="mergeOldStories" (change)="update()" class="checkbox"
-                       matTooltip="Merge Old Stats to Latest Stories when possible">Merge to Latest Stories</nb-checkbox>
-        </span>
-        <span>
           <span matTooltip="Filter by Minimum Traffic through Node">Min. Node Traffic: </span>
           <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalNodeCount" [max]="maxNodeCount"
                       (change)="updateCount()"></mat-slider>
@@ -129,6 +125,14 @@
           <span matTooltip="Filter by Minimum Percentage of Transitions">Min. Transition %: </span>
           <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalTransitionPercentage"
                       (change)="updateCount()"></mat-slider>
+        </span>
+        <span>
+          <nb-checkbox [(ngModel)]="displayTests" (change)="reload()" class="checkbox"
+                       matTooltip="Include Test Flow">Tests</nb-checkbox>
+        </span>
+        <span>
+          <nb-checkbox [(ngModel)]="mergeOldStories" (change)="update()" class="checkbox"
+                       matTooltip="Merge Old Stats to Latest Stories when possible">Merge to Latest Stories</nb-checkbox>
         </span>
       </div>
 
