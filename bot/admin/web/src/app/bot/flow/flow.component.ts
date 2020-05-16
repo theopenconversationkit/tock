@@ -146,6 +146,7 @@ export class FlowComponent implements OnInit, OnDestroy {
   displayDisabled: boolean = false;
   mergeOldStories: boolean = true;
   displayDebug: boolean = false;
+  allowSelectAllConfigs: boolean = false;
 
   private subscription: Subscription;
 
@@ -186,7 +187,7 @@ export class FlowComponent implements OnInit, OnDestroy {
 
   private reload() {
     console.debug('Loading flow...');
-    if (true /*configName*/) { // All configs allowed for Bot Flow
+    if (this.selectedConfigurationName || this.allowSelectAllConfigs) {
       // Reload user flow
       if (this.statsMode) {
         const request = new DialogFlowRequest(
@@ -307,6 +308,12 @@ export class FlowComponent implements OnInit, OnDestroy {
 
   changeMode() {
     this.reload();
+  }
+
+  changeAllowSelectAllConfigs() {
+    if (!this.allowSelectAllConfigs && !this.selectedConfigurationName) {
+      this.state.resetConfiguration();
+    }
   }
 
   selectedConfigurationChanged(event?: SelectBotEvent) {
