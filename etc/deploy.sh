@@ -7,32 +7,31 @@ if [[ $TRAVIS_BRANCH = *"build"* || $TRAVIS_BRANCH = "master" ]] && [ "$TRAVIS_P
   gpg --fast-import etc/codesigning.asc
   if [ "$TRAVIS_TAG" = '' ];
   then
-    echo "install and test"
-    mvn install -B -q || exit 1
     if [ "$SKIP_DEPLOY" != 'true' ]; then
       echo "deploy"
-      mvn -B deploy -T 4 -DskipTests=true -Dtravis --settings etc/deploy-settings.xml -U -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+      mvn -B deploy -T4C -Dtravis --settings etc/deploy-settings.xml -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+    else
+      echo "test"
+      mvn install -T 2C -B -q
     fi
   else
     if [[ $TRAVIS_TAG == *"build"* ]];
     then
       export TOCK_VERSION=$(cat pom.xml | grep "^    <version>.*</version>$" | awk -F'[><]' '{print $3}')
       echo "tock version : $TOCK_VERSION"
-      echo "tock tag : $TRAVIS_TAG"
-      echo "install and test"
+      echo "set version to $TRAVIS_TAG"
       mvn versions:set -DnewVersion="$TRAVIS_TAG"
-      mvn install -B -q || exit 1
       echo "deploy"
-      mvn deploy -B -T 4 -DskipTests=true -Dmilestone --settings etc/deploy-settings.xml -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+      mvn deploy -T4C -B -Dmilestone --settings etc/deploy-settings.xml -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
     fi
   fi
   else
     if [ "$TRAVIS_PULL_REQUEST" = 'false' ];
     then
       echo "install and test"
-      mvn install -B -q
+      mvn install -T 2C -B -q
     else
       echo "test PR : $TRAVIS_PULL_REQUEST"
-      mvn install -B -q
+      mvn install -T 2C -B -q
     fi
 fi
