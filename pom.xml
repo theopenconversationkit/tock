@@ -848,7 +848,6 @@
             </activation>
             <properties>
                 <gpg.skip>false</gpg.skip>
-                <skip.npm>true</skip.npm>
             </properties>
             <build>
                 <plugins>
