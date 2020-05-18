@@ -42,7 +42,7 @@
     
     
       
-        <title>Api - Tock</title>
+        <title>API documentation - Tock</title>
       
     
     
@@ -83,6 +83,10 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
+      <a href="#tock-documented-apis" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
     
       <header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid">
@@ -105,7 +109,7 @@
             </span>
             <span class="md-header-nav__topic">
               
-                Api
+                API documentation
               
             </span>
           
@@ -286,10 +290,12 @@
       
       
 
+  
 
-  <li class="md-nav__item md-nav__item--nested">
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
     
     <label class="md-nav__link" for="nav-3">
       Develop Stories
@@ -358,6 +364,77 @@
     <a href="../the-open-data-bot/" title="Code Samples" class="md-nav__link">
       Code Samples
     </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        API documentation
+      </label>
+    
+    <a href="./" title="API documentation" class="md-nav__link md-nav__link--active">
+      API documentation
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tock-web-connector-api" class="md-nav__link">
+    Tock Web Connector API
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tock-web-connector-api_1" class="md-nav__link">
+    Tock Web Connector API
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tock-studio-admin-api" class="md-nav__link">
+    Tock Studio / Admin API
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tock-bot-definition-api" class="md-nav__link">
+    Tock Bot Definition API
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
         
@@ -493,21 +570,86 @@
               </div>
             
             
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tock-web-connector-api" class="md-nav__link">
+    Tock Web Connector API
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tock-web-connector-api_1" class="md-nav__link">
+    Tock Web Connector API
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tock-studio-admin-api" class="md-nav__link">
+    Tock Studio / Admin API
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tock-bot-definition-api" class="md-nav__link">
+    Tock Bot Definition API
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           <div class="md-content">
             <article class="md-content__inner md-typeset">
               
                 
                 
-                  <h1>Api</h1>
-                
-                <p>You can test a model via the Tock NLP API.</p>
-<p>Please consult the documentation <a href="../../api/">/api</a>.</p>
-<p>If you want to test the API, run the <a href="https://github.com/theopenconversationkit/tock-docker">docker images</a>
-and open the url <a href="http://localhost/doc/index.html">http://localhost/doc/index.html</a>   </p>
-<p>Also, Administration API (in order to manage the models) is documented: <a href="../../api/admin.html">/api/admin</a> </p>
-<p>If you want to test the Admin API, run the <a href="https://github.com/theopenconversationkit/tock-docker">docker images</a>
-and open the url <a href="http://localhost/doc/admin.html">http://localhost/doc/admin.html</a>   </p>
+                <h1 id="tock-documented-apis">Tock documented APIs<a class="headerlink" href="#tock-documented-apis" title="Permanent link">&para;</a></h1>
+<h2 id="tock-web-connector-api"><em>Tock Web Connector API</em><a class="headerlink" href="#tock-web-connector-api" title="Permanent link">&para;</a></h2>
+<p>The Tock <em>Web Connector</em> allows to interact with a bot using a REST API.</p>
+<p>API documentation is available at <a href="../../../api/web-connector">/api/web-connector</a>. </p>
+<h2 id="tock-web-connector-api_1"><em>Tock Web Connector API</em><a class="headerlink" href="#tock-web-connector-api_1" title="Permanent link">&para;</a></h2>
+<p>To test a model via the Tock <em>NLU</em> API, see <a href="../../api/">/api</a>.</p>
+<p>It is also possible to run the provided <a href="https://github.com/theopenconversationkit/tock-docker">Docker images</a>
+and open <a href="http://localhost/doc/index.html">http://localhost/doc/index.html</a>   </p>
+<h2 id="tock-studio-admin-api"><em>Tock Studio / Admin API</em><a class="headerlink" href="#tock-studio-admin-api" title="Permanent link">&para;</a></h2>
+<p>Tock Studio <em>Admin</em> API (to manage the models) is documented: <a href="../../api/admin.html">/api/admin</a> </p>
+<p>It is also possible to run the provided <a href="https://github.com/theopenconversationkit/tock-docker">Docker images</a>
+and open <a href="http://localhost/doc/admin.html">http://localhost/doc/admin.html</a>.</p>
+<h2 id="tock-bot-definition-api"><em>Tock Bot Definition API</em><a class="headerlink" href="#tock-bot-definition-api" title="Permanent link">&para;</a></h2>
+<p>This API allows to create bots and stories with any programing language.
+Tock bots can be composed of configured stories (using Tock Studio builder) and 
+programatic stories, possibly implementing complex rules or leveraging other external APIs.</p>
+<p>This API is used by provided Kotlin clients in <em>WebHook</em> or <em>WebSocket</em> mode, 
+as well as the <a href="https://github.com/theopenconversationkit/tock-node"><code>tock-node</code></a> component in Javascript.</p>
+<blockquote>
+<p>The API is under development, it will soon be documented.</p>
+</blockquote>
+<p>To know more about the <em>Bot API</em> development framework, see <a href="bot-api.md">this page</a>.</p>
                 
                   
                 
@@ -524,6 +666,41 @@ and open the url <a href="http://localhost/doc/admin.html">http://localhost/doc/
       
         
 <footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../the-open-data-bot/" title="Code Samples" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Code Samples
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../about/why/" title="Why Tock" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Why Tock
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">

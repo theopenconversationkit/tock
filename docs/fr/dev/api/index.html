@@ -508,6 +508,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#tock-web-connector-api" class="md-nav__link">
+    Tock Web Connector API
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tock-nlu-api" class="md-nav__link">
     Tock NLU API
   </a>
@@ -515,15 +522,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tock-studio-api" class="md-nav__link">
-    Tock Studio API
+  <a href="#tock-studio-admin-api" class="md-nav__link">
+    Tock Studio / Admin API
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#tock-bot-api" class="md-nav__link">
-    Tock Bot API
+  <a href="#tock-bot-definition-api" class="md-nav__link">
+    Tock Bot Definition API
   </a>
   
 </li>
@@ -793,6 +800,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#tock-web-connector-api" class="md-nav__link">
+    Tock Web Connector API
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tock-nlu-api" class="md-nav__link">
     Tock NLU API
   </a>
@@ -800,15 +814,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tock-studio-api" class="md-nav__link">
-    Tock Studio API
+  <a href="#tock-studio-admin-api" class="md-nav__link">
+    Tock Studio / Admin API
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#tock-bot-api" class="md-nav__link">
-    Tock Bot API
+  <a href="#tock-bot-definition-api" class="md-nav__link">
+    Tock Bot Definition API
   </a>
   
 </li>
@@ -832,6 +846,9 @@
                 
                 <h1 id="les-apis-tock">Les APIs Tock<a class="headerlink" href="#les-apis-tock" title="Permanent link">&para;</a></h1>
 <p>Cette section de la documentation Tock présente sommairement les différentes API fournies avec Tock.</p>
+<h2 id="tock-web-connector-api"><em>Tock Web Connector API</em><a class="headerlink" href="#tock-web-connector-api" title="Permanent link">&para;</a></h2>
+<p>Le connecteur Web de Tock permet de dialoguer avec un bot à travers une API REST.</p>
+<p>La documentation de cette API est disponible dans <a href="../../../api/web-connector">/api/web-connector</a>. </p>
 <h2 id="tock-nlu-api"><em>Tock NLU API</em><a class="headerlink" href="#tock-nlu-api" title="Permanent link">&para;</a></h2>
 <p>L'API <em>NLU</em> de Tock (reconnaissance du langage naturel) permet d'interroger programmatiquement le 
 modèle conversationnel et d'analyser une phrase.</p>
@@ -840,15 +857,19 @@ modèle conversationnel et d'analyser une phrase.</p>
 <a href="https://demo.tock.ai/doc/">https://demo.tock.ai/doc/</a>.</p>
 <p>Si vous avez déployé une plateforme Tock en local avec les <a href="https://github.com/theopenconversationkit/tock-docker">images docker</a> 
 fournies, vous pouvez retrouver cette documentation en ligne à l'adresse <a href="http://localhost/doc/index.html">http://localhost/doc/index.html</a>.</p>
-<h2 id="tock-studio-api"><em>Tock Studio API</em><a class="headerlink" href="#tock-studio-api" title="Permanent link">&para;</a></h2>
+<h2 id="tock-studio-admin-api"><em>Tock Studio / Admin API</em><a class="headerlink" href="#tock-studio-admin-api" title="Permanent link">&para;</a></h2>
 <p>De même, la documentation de l'API <em>Tock Studio</em> est disponible dans <a href="../../../api/admin">/api/admin</a>. </p>
 <p>Vous pouvez retrouver cette documentation sur la plateforme de démonstration Tock, à l'adresse
 <a href="https://demo.tock.ai/doc/admin.html">https://demo.tock.ai/doc/admin.html</a>.</p>
 <p>Si vous avez déployé une plateforme Tock en local avec les <a href="https://github.com/theopenconversationkit/tock-docker">images docker</a> 
 fournies, vous pouvez retrouver cette documentation en ligne à l'adresse <a href="http://localhost/doc/admin.html">http://localhost/doc/admin.html</a>.</p>
-<h2 id="tock-bot-api"><em>Tock Bot API</em><a class="headerlink" href="#tock-bot-api" title="Permanent link">&para;</a></h2>
-<p>Cette API permet de développer des bots Tock avec n'importe quel langage. Elle est utilisée par les clients Kotlin en 
-modes <em>WebHook</em> et <em>WebSocket</em>.</p>
+<h2 id="tock-bot-definition-api"><em>Tock Bot Definition API</em><a class="headerlink" href="#tock-bot-definition-api" title="Permanent link">&para;</a></h2>
+<p>Cette API permet de créer des bots et des parcours (<em>stories</em>) avec n'importe quel langage. 
+Un bot Tock peut être composé de parcours configurés dans Tock Studio, complétés par des parcours 
+ développés dans un langage de programmation pour implémenter des règles complexes, interagir avec 
+  d'autres APIs, etc.</p>
+<p>Cette API est utilisée par les clients Kotlin en modes <em>WebHook</em> et <em>WebSocket</em>, 
+ainsi que le composant <a href="https://github.com/theopenconversationkit/tock-node"><code>tock-node</code></a> en Javascript.</p>
 <blockquote>
 <p>L'API est toutefois encore en développement (béta) et sa documentation arrivera bientôt.</p>
 </blockquote>

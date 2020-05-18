@@ -2,82 +2,87 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
      <loc>https://theopenconversationkit.github.io/tock/en/</loc>
-     <lastmod>2020-05-09</lastmod>
+     <lastmod>2020-05-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://theopenconversationkit.github.io/tock/en/guide/studio/</loc>
-     <lastmod>2020-05-09</lastmod>
+     <lastmod>2020-05-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://theopenconversationkit.github.io/tock/en/build-nlp-model/</loc>
-     <lastmod>2020-05-09</lastmod>
+     <lastmod>2020-05-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://theopenconversationkit.github.io/tock/en/evaluate-the-model/</loc>
-     <lastmod>2020-05-09</lastmod>
+     <lastmod>2020-05-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://theopenconversationkit.github.io/tock/en/dev/bot-api/</loc>
-     <lastmod>2020-05-09</lastmod>
+     <lastmod>2020-05-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://theopenconversationkit.github.io/tock/en/dev/integrated-bot/</loc>
-     <lastmod>2020-05-09</lastmod>
+     <lastmod>2020-05-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://theopenconversationkit.github.io/tock/en/dev/connectors/</loc>
-     <lastmod>2020-05-09</lastmod>
+     <lastmod>2020-05-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://theopenconversationkit.github.io/tock/en/kdoc/</loc>
-     <lastmod>2020-05-09</lastmod>
+     <lastmod>2020-05-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://theopenconversationkit.github.io/tock/en/the-open-data-bot/</loc>
-     <lastmod>2020-05-09</lastmod>
+     <lastmod>2020-05-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://theopenconversationkit.github.io/tock/en/api/</loc>
+     <lastmod>2020-05-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://theopenconversationkit.github.io/tock/en/about/why/</loc>
-     <lastmod>2020-05-09</lastmod>
+     <lastmod>2020-05-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://theopenconversationkit.github.io/tock/en/about/showcase/</loc>
-     <lastmod>2020-05-09</lastmod>
+     <lastmod>2020-05-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://theopenconversationkit.github.io/tock/en/about/resources/</loc>
-     <lastmod>2020-05-09</lastmod>
+     <lastmod>2020-05-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://theopenconversationkit.github.io/tock/en/about/contact/</loc>
-     <lastmod>2020-05-09</lastmod>
+     <lastmod>2020-05-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://theopenconversationkit.github.io/tock/en/about/community/</loc>
-     <lastmod>2020-05-09</lastmod>
+     <lastmod>2020-05-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://theopenconversationkit.github.io/tock/en/about/contribute/</loc>
-     <lastmod>2020-05-09</lastmod>
+     <lastmod>2020-05-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://theopenconversationkit.github.io/tock/en/about/jobs/</loc>
-     <lastmod>2020-05-09</lastmod>
+     <lastmod>2020-05-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>

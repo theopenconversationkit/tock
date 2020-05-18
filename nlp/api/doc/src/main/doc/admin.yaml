@@ -1,9 +1,9 @@
 openapi: "3.0.0"
 info:
   description: "This is the Tock NLP ADMIN API. You can manage your model with it!"
-  version: "19.3.0"
+  version: "19.9"
   title: "Tock NLP ADMIN API"
-  termsOfService: "https://theopenconversationkit.github.io/tock/fr/"
+  termsOfService: "https://doc.tock.ai"
   license:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"

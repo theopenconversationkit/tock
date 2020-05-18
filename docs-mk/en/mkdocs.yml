@@ -17,6 +17,7 @@ nav:
     - 'Connectors': 'dev/connectors.md'
     - 'KDoc': 'kdoc.md'
     - 'Code Samples': 'the-open-data-bot.md'
+    - 'API documentation': 'api.md'
   - 'About':
       - 'Why Tock': 'about/why.md'
       - 'Showcase': 'about/showcase.md'
