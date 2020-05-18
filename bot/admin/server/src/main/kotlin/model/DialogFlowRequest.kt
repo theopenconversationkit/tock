@@ -25,6 +25,7 @@ import org.litote.kmongo.Id
  */
 data class DialogFlowRequest(
     val botId: String,
-    val botConfigurationName:String,
-    val botConfigurationId: Id<BotApplicationConfiguration>?
+    val botConfigurationName: String?,
+    val botConfigurationId: Id<BotApplicationConfiguration>?,
+    val includeTestConfigurations: Boolean = false
 ) : ApplicationScopedQuery()

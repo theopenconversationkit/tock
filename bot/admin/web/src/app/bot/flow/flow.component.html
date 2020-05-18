@@ -40,10 +40,10 @@
       <br />
 
       <div class="flow-option-group">
-        <span class="flow-option-group-name">Scope:</span>
-        <tock-select-bot [(configurationId)]="botConfigurationId"
-                         [allowNoConfigurationSelection]="true"
-                         (selectionChange)="displayFlow($event)" class="select">
+        <span class="flow-option-group-name">{{ statsMode ? "Scope:" : "Scope / Filters:"}}</span>
+        <tock-select-bot [allowNoConfigurationSelection]="false" noConnectorLabel="All Connectors"
+                         [allowNoSelection]="allowSelectAllConfigs" noConfigurationLabel="All Configurations"
+                         (selectionChange)="selectedConfigurationChanged($event)" class="select">
         </tock-select-bot>
         <span class="select">
           <nb-select placeholder="Story Type" status="primary" [(ngModel)]="selectedTypeFilter"
@@ -112,14 +112,15 @@
           <nb-checkbox [(ngModel)]="step" (change)="update()" class="checkbox" matTooltip="View more Nodes by Step">Step</nb-checkbox>
           <nb-checkbox [(ngModel)]="intent" (change)="update()" class="checkbox" matTooltip="View more Nodes by Intent">Intent</nb-checkbox>
         </span>
+        <span *ngIf="!statsMode">
+          <nb-checkbox [(ngModel)]="displayDisabled" (change)="update()" class="checkbox" matTooltip="Include Stories Disabled by Rules">Disabled</nb-checkbox>
+          <nb-checkbox [(ngModel)]="allowSelectAllConfigs" class="checkbox" (change)="changeAllowSelectAllConfigs()"
+                       matTooltip="Allow Selection of All Configurations (possible performance impact)">Allow <em>All Configurations</em></nb-checkbox>
+        </span>
       </div>
 
       <div class="flow-option-group" *ngIf="statsMode">
         <span class="flow-option-group-name">Filters:</span>
-        <span>
-          <nb-checkbox [(ngModel)]="mergeOldStories" (change)="update()" class="checkbox"
-                       matTooltip="Merge Old Stats to Latest Stories when possible">Merge to Latest Stories</nb-checkbox>
-        </span>
         <span>
           <span matTooltip="Filter by Minimum Traffic through Node">Min. Node Traffic: </span>
           <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalNodeCount" [max]="maxNodeCount"
@@ -129,6 +130,18 @@
           <span matTooltip="Filter by Minimum Percentage of Transitions">Min. Transition %: </span>
           <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalTransitionPercentage"
                       (change)="updateCount()"></mat-slider>
+        </span>
+        <span>
+          <nb-checkbox [(ngModel)]="displayTests" (change)="reload()" class="checkbox"
+                       matTooltip="Include Test Flow">Tests</nb-checkbox>
+        </span>
+        <span>
+          <nb-checkbox [(ngModel)]="mergeOldStories" (change)="update()" class="checkbox"
+                       matTooltip="Merge Old Stats to Latest Stories when possible">Merge to Latest Stories</nb-checkbox>
+        </span>
+        <span>
+          <nb-checkbox [(ngModel)]="allowSelectAllConfigs" class="checkbox" (change)="changeAllowSelectAllConfigs()"
+                       matTooltip="Allow Selection of All Configurations (possible performance impact)">Allow <em>All Configurations</em></nb-checkbox>
         </span>
       </div>
 
@@ -145,7 +158,9 @@
                        matTooltip="Display Recursive Transitions from each Node to itself">Recursive Transitions</nb-checkbox>
         </span>
         <nb-checkbox [(ngModel)]="displayNodeType" (change)="updateCount()" class="checkbox"
-                     matTooltip="Display Story-Type icon on each Node label">Story Types</nb-checkbox>
+                     matTooltip="Display Story Type icon on each Node">Story Types</nb-checkbox>
+        <nb-checkbox *ngIf="!statsMode" [(ngModel)]="intent" (change)="updateCount()" class="checkbox"
+                     matTooltip="Display Story Main Intent on each Node">Main Intents</nb-checkbox>
         <nb-checkbox [(ngModel)]="displayDebug" class="checkbox"
                      matTooltip="Display Debug stats">Debug</nb-checkbox>
         <span *ngIf="displayDebug">

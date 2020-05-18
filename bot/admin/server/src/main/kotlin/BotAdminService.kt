@@ -56,6 +56,7 @@ import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpController
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationFeatureDump
 import ai.tock.bot.admin.user.UserReportDAO
+import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.engine.dialog.DialogFlowDAO
 import ai.tock.bot.engine.feature.FeatureDAO
@@ -806,15 +807,33 @@ object BotAdminService {
 
     fun loadDialogFlow(request: DialogFlowRequest): ApplicationDialogFlowData {
         val namespace = request.namespace
+        val botId = request.botId
+        val configurationName = request.botConfigurationName
+        val tests = request.includeTestConfigurations
         val applicationIds = if (request.botConfigurationId != null) {
-            setOf(request.botConfigurationId)
-        } else {
+            if (tests && configurationName != null) {
+                val configurations = applicationConfigurationDAO.getConfigurationsByBotNamespaceAndConfigurationName(namespace, botId,
+                        configurationName)
+                val actualConfiguration = configurations.find { it._id == request.botConfigurationId }
+                val testConfiguration = configurations.find { it.applicationId == "test-${actualConfiguration?.applicationId}" }
+                listOf(request.botConfigurationId, testConfiguration?._id).filterNotNull().toSet()
+            } else
+                setOf(request.botConfigurationId)
+        } else if (configurationName != null) {
             applicationConfigurationDAO
-                .getConfigurationsByNamespaceAndConfigurationName(namespace, request.botConfigurationName)
+                .getConfigurationsByBotNamespaceAndConfigurationName(namespace, botId, configurationName)
+                .filter { tests || it.connectorType != ConnectorType.rest }
                 .map { it._id }
                 .toSet()
+        } else {
+            applicationConfigurationDAO
+                    .getConfigurationsByNamespaceAndBotId(namespace, botId)
+                    .filter { tests || it.connectorType != ConnectorType.rest }
+                    .map { it._id }
+                    .toSet()
         }
-        return dialogFlowDAO.loadApplicationData(namespace, request.botId, applicationIds)
+        logger.debug("Loading Bot Flow for ${applicationIds.size} configurations: $applicationIds...")
+        return dialogFlowDAO.loadApplicationData(namespace, botId, applicationIds)
     }
 
 

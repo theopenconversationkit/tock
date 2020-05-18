@@ -132,8 +132,9 @@ export class FlowComponent implements OnInit, OnDestroy {
   allTransitions: Map<string, NodeTransition>;
   graphData;
 
-  botConfigurationId: string;
-  lastBotSelection: SelectBotEvent;
+  selectedConnectorId: string;
+  selectedConfigurationName: string;
+  lastFlowRequest: DialogFlowRequest;
   userFlow: ApplicationDialogFlow;
 
   allStories: StoryDefinitionConfiguration[];
@@ -141,10 +142,25 @@ export class FlowComponent implements OnInit, OnDestroy {
   staticFlow: ApplicationDialogFlow;
   statsMode: boolean = true;
   displayNodeType: boolean = false;
+  displayTests: boolean = true;
+  displayDisabled: boolean = false;
   mergeOldStories: boolean = true;
   displayDebug: boolean = false;
+  allowSelectAllConfigs: boolean = false;
 
   private subscription: Subscription;
+
+  statsEntity(): boolean {
+    return this.statsMode && this.entity;
+  }
+
+  statsStep(): boolean {
+    return this.statsMode && this.step;
+  }
+
+  statsIntent(): boolean {
+    return this.statsMode && this.intent;
+  }
 
   valueAscOrder = (a: KeyValue<string, string>, b: KeyValue<string, string>): number => {
     return a.value.localeCompare(b.value);
@@ -158,24 +174,60 @@ export class FlowComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.selectedConfigurationName = null;
+    this.selectedConnectorId = null;
     this.reload();
-    this.subscription = this.state.configurationChange.subscribe(_ => this.reload());
+
+    this.subscription = this.state.configurationChange.subscribe(_ => {
+      this.selectedConfigurationName = null;
+      this.selectedConnectorId = null;
+      this.reload();
+    });
   }
 
   private reload() {
-    this.bot.getStories(
-      new StorySearchQuery(
-        this.state.currentApplication.namespace,
-        this.state.currentApplication.name,
-        this.state.currentLocale,
-        0,
-        10000
-      )).subscribe(s => {
-      this.allStories = s;
-      this.configuredStories = s.filter(story => !story.isBuiltIn());
-      console.debug(this.allStories.length + ' stories retrieved, incl. ' + this.configuredStories.length + ' configured stories.');
-      this.buildStaticFlowFromStories();
-    });
+    console.debug('Loading flow...');
+    if (this.selectedConfigurationName || this.allowSelectAllConfigs) {
+      // Reload user flow
+      if (this.statsMode) {
+        const request = new DialogFlowRequest(
+                          this.state.currentApplication.namespace,
+                          this.state.currentApplication.name,
+                          this.state.currentLocale,
+                          this.state.currentApplication.name,
+                          this.selectedConfigurationName,
+                          this.selectedConnectorId,
+                          this.displayTests
+                        );
+        if (!request.equals(this.lastFlowRequest)) {
+          console.debug('Fetching user flow...');
+          this.lastFlowRequest = request;
+          this.bot.getApplicationFlow(request).subscribe(f => {
+            this.userFlow = f;
+            console.debug('Application flow retrieved, incl. ' + f.states.length + ' states ' + f.transitions.length + ' transitions.');
+            this.reset();
+          });
+        }
+      } else {
+        // Reload static flow
+        console.debug('Fetching stories...');
+        this.userFlow = null;
+        this.bot.getStories(
+          new StorySearchQuery(
+            this.state.currentApplication.namespace,
+            this.state.currentApplication.name,
+            this.state.currentLocale,
+            0,
+            10000
+          )).subscribe(s => {
+            this.allStories = s;
+            this.configuredStories = s.filter(story => !story.isBuiltIn());
+            console.debug(this.allStories.length + ' stories retrieved, incl. ' + this.configuredStories.length + ' configured stories.');
+            this.buildStaticFlowFromStories();
+            this.reset();
+          });
+      }
+    }
   }
 
   ngOnDestroy(): void {
@@ -194,6 +246,7 @@ export class FlowComponent implements OnInit, OnDestroy {
   }
 
   private buildStaticFlowFromStories() {
+    console.debug('Building static flow from stories...');
     const intentStoryMap = new Map<string, StoryDefinitionConfiguration>();
     const states: DialogFlowStateData[] = [];
     const transitions: DialogFlowStateTransitionData[] = [];
@@ -254,37 +307,26 @@ export class FlowComponent implements OnInit, OnDestroy {
   }
 
   changeMode() {
-    this.reset();
+    this.reload();
   }
 
-  displayFlow(event?: SelectBotEvent) {
-    if (!event || !event.equals(this.lastBotSelection)) {
-      this.lastBotSelection = event;
-      if (event && (event.all || event.configurationName)) {
-        this.bot.getApplicationFlow(
-          new DialogFlowRequest(
-            this.state.currentApplication.namespace,
-            this.state.currentApplication.name,
-            this.state.currentLocale,
-            this.state.currentApplication.name,
-            event.configurationName,
-            event.configurationId
-          )
-        ).subscribe(f => {
-          this.userFlow = f;
-          console.debug('Application flow retrieved, incl. ' + f.states.length + ' states ' + f.transitions.length + ' transistions.');
-          this.reset();
-        });
-      } else {
-        this.graphData = null;
-        this.userFlow = null;
-        this.reset();
-      }
+  changeAllowSelectAllConfigs() {
+    if (!this.allowSelectAllConfigs && !this.selectedConfigurationName) {
+      this.state.resetConfiguration();
     }
   }
 
+  selectedConfigurationChanged(event?: SelectBotEvent) {
+    this.selectedConfigurationName = !event ? null : event.configurationName;
+    this.selectedConnectorId = !event ? null : event.configurationId;
+    this.reload();
+  }
+
   buildGraph(theFlow: ApplicationDialogFlow) {
-    let flow = this.mergeOldStories ? (JSON.parse(JSON.stringify(theFlow))) : theFlow; // clone - states might be modified by merge
+    console.debug('Building graph from flow...');
+    let flow = theFlow
+      ? (this.mergeOldStories ? (JSON.parse(JSON.stringify(theFlow))) : theFlow)  // clone - states might be modified by merge
+      : undefined;
     if (flow) {
       const displayOnlyNext: boolean = this.direction === -1;
       const displayOnlyPrev: boolean = this.direction === 1;
@@ -300,79 +342,81 @@ export class FlowComponent implements OnInit, OnDestroy {
       const nodesByStoryKey = new Map<string, StoryNode>();
 
       flow.states.forEach(s => {
-        if (this.entity && this.step && this.intent) {
-          const node = new StoryNode(nodesNumber++, s._id, s.storyDefinitionId, [s], s.entities, s.intent, s.step, s.storyType, s.storyName);
-          nodesByIndex.set(node.index, node);
-          nodesByStateId.set(s._id, node);
-        } else {
-          let keyWithoutType = s.storyDefinitionId
-            + (this.intent ? "+" + s.intent : "")
-            + (this.step ? "+" + s.step : "")
-            + (this.entity ? "+" + s.entities.join("%") : "");
-          let key = keyWithoutType
-            + (s.storyType != undefined ? "+" + s.storyType : "");
-          let node = nodesByStoryKey.get(key);
-          if (node) {
-            node.states.push(s);
+        if (this.statsMode || this.displayDisabled || !this.allStories.find(aStory => aStory._id == s._id).isDisabled(this.selectedConnectorId)) {
+          if (this.statsEntity() && this.statsStep() && this.intent) {
+            const node = new StoryNode(nodesNumber++, s._id, s.storyDefinitionId, [s], s.entities, s.intent, s.step, s.storyType, s.storyName);
+            nodesByIndex.set(node.index, node);
+            nodesByStateId.set(s._id, node);
           } else {
-            if (this.mergeOldStories && key != keyWithoutType) {
-              const nodeWithoutType = nodesByStoryKey.get(keyWithoutType);
-              if (nodeWithoutType) {
-                console.debug('Replacing previous node with typed node...');
-                // Merge previous node to a new typed node
-                node = new StoryNode(
-                  nodeWithoutType.index,
-                  s.storyDefinitionId,
-                  s.storyDefinitionId,
-                  [s],
-                  this.entity ? s.entities : [],
-                  this.intent ? s.intent : null,
-                  this.step ? s.step : null,
-                  s.storyType,
-                  s.storyName
-                );
-                node.states.push.apply(node.states, nodeWithoutType.states);
+            let keyWithoutType = s.storyDefinitionId
+              + (this.statsIntent() ? "+" + s.intent : "")
+              + (this.statsStep() ? "+" + s.step : "")
+              + (this.statsEntity() ? "+" + s.entities.join("%") : "");
+            let key = keyWithoutType
+              + (s.storyType != undefined ? "+" + s.storyType : "");
+            let node = nodesByStoryKey.get(key);
+            if (node) {
+              node.states.push(s);
+            } else {
+              if (this.mergeOldStories && key != keyWithoutType) {
+                const nodeWithoutType = nodesByStoryKey.get(keyWithoutType);
+                if (nodeWithoutType) {
+                  console.debug('Replacing previous node with typed node...');
+                  // Merge previous node to a new typed node
+                  node = new StoryNode(
+                    nodeWithoutType.index,
+                    s.storyDefinitionId,
+                    s.storyDefinitionId,
+                    [s],
+                    this.statsEntity() ? s.entities : [],
+                    this.intent ? s.intent : null,
+                    this.statsStep() ? s.step : null,
+                    s.storyType,
+                    s.storyName
+                  );
+                  node.states.push.apply(node.states, nodeWithoutType.states);
 
-                // Update maps
-                nodesByStoryKey.delete(keyWithoutType);
-                nodesByStoryKey.set(key, node);
-                nodesByIndex.set(node.index, node);
-                node.states.forEach(state => {
-                  state.storyType = s.storyType;
-                  nodesByStateId.set(state._id, node);
-                });
+                  // Update maps
+                  nodesByStoryKey.delete(keyWithoutType);
+                  nodesByStoryKey.set(key, node);
+                  nodesByIndex.set(node.index, node);
+                  node.states.forEach(state => {
+                    state.storyType = s.storyType;
+                    nodesByStateId.set(state._id, node);
+                  });
+                } else {
+                  node = new StoryNode(
+                    nodesNumber++,
+                    s.storyDefinitionId,
+                    s.storyDefinitionId,
+                    [s],
+                    this.statsEntity() ? s.entities : [],
+                    this.intent ? s.intent : null,
+                    this.statsStep() ? s.step : null,
+                    s.storyType,
+                    s.storyName
+                  );
+                  nodesByStoryKey.set(key, node);
+                  nodesByIndex.set(node.index, node);
+                }
               } else {
                 node = new StoryNode(
                   nodesNumber++,
                   s.storyDefinitionId,
                   s.storyDefinitionId,
                   [s],
-                  this.entity ? s.entities : [],
+                  this.statsEntity() ? s.entities : [],
                   this.intent ? s.intent : null,
-                  this.step ? s.step : null,
+                  this.statsStep() ? s.step : null,
                   s.storyType,
                   s.storyName
                 );
                 nodesByStoryKey.set(key, node);
                 nodesByIndex.set(node.index, node);
               }
-            } else {
-              node = new StoryNode(
-                nodesNumber++,
-                s.storyDefinitionId,
-                s.storyDefinitionId,
-                [s],
-                this.entity ? s.entities : [],
-                this.intent ? s.intent : null,
-                this.step ? s.step : null,
-                s.storyType,
-                s.storyName
-              );
-              nodesByStoryKey.set(key, node);
-              nodesByIndex.set(node.index, node);
             }
+            nodesByStateId.set(s._id, node);
           }
-          nodesByStateId.set(s._id, node);
         }
       });
 
@@ -385,11 +429,6 @@ export class FlowComponent implements OnInit, OnDestroy {
           const theStory = this.allStories.find(aStory => aStory._id == theStoryId);
           if (theStory) {
             storiesById.set(theStoryId, theStory);
-            if (s.intent === 'goldobot') {
-              console.debug("Found story: " + theStoryName + " (ID: " + theStoryId + ")");
-              console.debug("Mapping storyId " + theStoryId + " to story:");
-              console.debug(theStory);
-            }
           } else {
             console.warn("Cannot find story: " + theStoryName + " (ID: " + theStoryId + ")");
           }
@@ -474,8 +513,10 @@ export class FlowComponent implements OnInit, OnDestroy {
       const tmpFinalStates = [];
       const theMinCount = finalNodes.reduce((prev, current) => (prev.count < current.count) ? prev : current ).count;
       const theMaxCount = finalNodes.reduce((prev, current) => (prev.count > current.count) ? prev : current ).count;
-      console.debug("Node min visits: " + theMinCount);
-      console.debug("Node max visits: " + theMaxCount);
+      if (this.statsMode) {
+        console.debug("Node min visits: " + theMinCount);
+        console.debug("Node max visits: " + theMaxCount);
+      }
 
       finalNodes.forEach(s => {
         let include = true;
@@ -506,12 +547,15 @@ export class FlowComponent implements OnInit, OnDestroy {
           const theNodeName = s.nodeName() + (this.displayNodeType ? (s.storyType == AnswerConfigurationType.builtin ? ' 🔧'
                                                                     : (s.storyType == undefined ? ' ?'
                                                                     : ' 💬'))
-                                                                    : '');
+                                                                    : '')
+                                           + (!this.statsMode && this.displayDisabled
+                                            && this.allStories.find(aStory => aStory._id == s.storyDefinitionId).isDisabled(this.selectedConnectorId)
+                                            ? ' 🚫' : '');
           graph.nodes.push({
             data: {
               id: s.index,
               name: theNodeName,
-              weight: theScore,
+              weight: theScore ? theScore : 0,
               colorCode: entityColor(s.storyDefinitionId),
               shapeType: s.dynamic ? 'ellipse' : 'roundrectangle'
             }

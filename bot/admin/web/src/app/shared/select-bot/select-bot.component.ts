@@ -18,6 +18,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {BotApplicationConfiguration} from "../../core/model/configuration";
 import {DialogService} from "../../core-nlp/dialog.service";
+import {StateService} from "../../core-nlp/state.service";
 
 @Component({
   selector: 'tock-select-bot',
@@ -48,7 +49,10 @@ export class SelectBotComponent implements OnInit {
   returnsRestConfiguration: boolean = false;
 
   @Input()
-  noConfigurationLabel:string = "No configuration";
+  noConfigurationLabel:string = "No Configuration";
+
+  @Input()
+  noConnectorLabel:string = "No Connector";
 
   configurations: BotApplicationConfiguration[];
 
@@ -60,7 +64,8 @@ export class SelectBotComponent implements OnInit {
 
   constructor(
     private botConfiguration: BotConfigurationService,
-    private dialog: DialogService) {
+    private dialog: DialogService,
+    private state: StateService) {
   }
 
   private getName(conf: BotApplicationConfiguration): string {
@@ -71,47 +76,53 @@ export class SelectBotComponent implements OnInit {
     this.botConfiguration.configurations
       .subscribe(conf => {
         this.allConfigurations = conf;
-        setTimeout(_ => {
-          if (conf.length !== 0 && conf !== this.configurations) {
-            const retainedConfs = conf.filter(c => c.targetConfigurationId == null);
-            this.botNames = Array.from(new Set(retainedConfs.map(c => this.getName(c)))).sort();
-            const containsCurrentSelection = this.configurationId && retainedConfs.some(c => c._id === this.configurationId);
-            if (!this.allowNoSelection && !containsCurrentSelection && retainedConfs.length !== 0) {
-              this.configurationId = retainedConfs[0]._id;
-            }
-            if (this.configurationId) {
-              if (!containsCurrentSelection) {
-                this.changeConf(conf.find(c => c._id === this.configurationId), retainedConfs, this.allowNoConfigurationSelection);
-              }
-            } else {
-              this.currentBotName = 'None';
-              this.configurations = retainedConfs;
-              if (!containsCurrentSelection) {
-                this.selectionChange.emit(null);
-                this.configurationIdChange.emit(null);
-              }
-            }
-          } else {
-            if (conf.length === 0) {
-              this.currentBotName = 'None';
-              this.configurations = conf.filter(c => c.targetConfigurationId == null);
-              this.selectionChange.emit(null);
-              this.configurationIdChange.emit(null);
-            }
-          }
-
-        });
+        this.updateConfigurations(conf, false);
       });
+    this.state.resetConfigurationEmitter.subscribe(_ => {
+      this.updateConfigurations(this.allConfigurations, true);
+    });
+  }
+
+  private updateConfigurations(conf: BotApplicationConfiguration[], forceUpdate: boolean) {
+    setTimeout(_ => {
+      if (conf.length !== 0 && conf !== this.configurations) {
+        const retainedConfs = conf.filter(c => c.targetConfigurationId == null);
+        this.botNames = Array.from(new Set(retainedConfs.map(c => this.getName(c)))).sort();
+        const containsCurrentSelection = this.configurationId && retainedConfs.some(c => c._id === this.configurationId);
+        if (!this.allowNoSelection && !containsCurrentSelection && retainedConfs.length !== 0) {
+          this.configurationId = retainedConfs[0]._id;
+        }
+        if (this.configurationId) {
+          if (!containsCurrentSelection || forceUpdate) {
+            this.changeConf(conf.find(c => c._id === this.configurationId), retainedConfs, this.allowNoConfigurationSelection);
+          }
+        } else {
+          this.currentBotName = 'None';
+          this.configurations = retainedConfs;
+          if (!containsCurrentSelection) {
+            this.selectionChange.emit(null);
+            this.configurationIdChange.emit(null);
+          }
+        }
+      } else {
+        if (conf.length === 0) {
+          this.currentBotName = 'None';
+          this.configurations = conf.filter(c => c.targetConfigurationId == null);
+          this.selectionChange.emit(null);
+          this.configurationIdChange.emit(null);
+        }
+      }
+    });
   }
 
   private changeConf(conf: BotApplicationConfiguration, configurations: BotApplicationConfiguration[], noConnectorSelection: boolean) {
+    this.configurations = configurations;
     if (conf) {
       this.currentBotName = this.getName(conf);
       this.currentConfiguration = conf;
       this.currentConfigurations = configurations
         .filter(c => c.name === conf.name);
       this.configurationId = conf._id;
-      this.configurations = configurations;
       const confResult = this.returnsRestConfiguration ? BotApplicationConfiguration.getRestConfiguration(this.allConfigurations, conf) : conf;
       if (confResult) {
         this.selectionChange.emit(new SelectBotEvent(confResult.name, noConnectorSelection, noConnectorSelection ? null : confResult._id));

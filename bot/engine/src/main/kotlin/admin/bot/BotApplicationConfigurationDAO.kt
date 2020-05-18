@@ -32,7 +32,7 @@ interface BotApplicationConfigurationDAO {
 
     fun getConfigurationsByNamespaceAndNlpModel(namespace: String, nlpModel: String): List<BotApplicationConfiguration>
 
-    fun getConfigurationsByNamespaceAndConfigurationName(namespace: String, configurationName: String): List<BotApplicationConfiguration>
+    fun getConfigurationsByBotNamespaceAndConfigurationName(namespace: String, botId: String, configurationName: String): List<BotApplicationConfiguration>
 
     fun getConfigurations(): List<BotApplicationConfiguration>
 

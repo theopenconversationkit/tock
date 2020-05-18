@@ -32,7 +32,7 @@
     <nb-select (selectedChange)="changeConnectorType()" status="primary"
                placeholder="Select a connector"
                [(ngModel)]="currentConfiguration" class="select-width">
-      <nb-option *ngIf="allowNoConfigurationSelection" value="">All</nb-option>
+      <nb-option *ngIf="allowNoConfigurationSelection" value="">{{noConnectorLabel}}</nb-option>
       <nb-option *ngFor="let c of currentConfigurations" [value]="c">
         <img src="{{c.connectorType.iconUrl()}}" class="connector-icon"/>
         {{ c.connectorType.label() }} ( {{ c.applicationId }})</nb-option>
