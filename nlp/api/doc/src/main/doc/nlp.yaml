@@ -1,39 +1,39 @@
 openapi: "3.0.0"
 info:
   description: "This is the Tock NLP API. You can parse text with it!"
-  version: "19.3.0"
+  version: "19.9"
   title: "Tock NLP API"
-  termsOfService: "https://theopenconversationkit.github.io/tock/fr/"
+  termsOfService: "https://doc.tock.ai"
   license:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 host: "_HOST_"
 basePath: "/rest/nlp"
 tags:
-- name: "Nlp"
-  description: "Analyse text"
+  - name: "Nlp"
+    description: "Analyse text"
 schemes:
-- "http"
-- "https"
+  - "http"
+  - "https"
 paths:
   /parse:
     post:
       tags:
-      - "Nlp"
+        - "Nlp"
       summary: "parse a sentence"
       description: "You can pass a list of sentences for STT use cases"
       operationId: "parse"
       consumes:
-      - "application/json"
+        - "application/json"
       produces:
-      - "application/json"
+        - "application/json"
       parameters:
-      - in: "body"
-        name: "body"
-        description: "Query"
-        required: true
-        schema:
-          $ref: "#/definitions/NlpQuery"
+        - in: "body"
+          name: "body"
+          description: "Query"
+          required: true
+          schema:
+            $ref: "#/definitions/NlpQuery"
       responses:
         200:
           description: "successful operation"
@@ -169,22 +169,22 @@ definitions:
         $ref: "#/definitions/Entity"
         description: "Entity definition"
       value:
-         type: "object"
-         description: "Current value if evaluated"
+        type: "object"
+        description: "Current value if evaluated"
       evaluated:
-         type: "boolean"
-         description: "Is this entity has been evaluated ?"
+        type: "boolean"
+        description: "Is this entity has been evaluated ?"
       subEntities:
-         type: "array"
-         description: "Sub entities if any"
-         items:
+        type: "array"
+        description: "Sub entities if any"
+        items:
           $ref: "#/definitions/EntityValue"
       probability:
-         type: "number"
-         description: "Recognition probability"
+        type: "number"
+        description: "Recognition probability"
       mergeSupport:
-         type: "boolean"
-         description: "Does this entity value support merge with other values ?"
+        type: "boolean"
+        description: "Does this entity value support merge with other values ?"
 
   Entity:
     type: "object"
@@ -202,11 +202,9 @@ definitions:
             description: "The sub entities of this entity if any"
             items:
               $ref: "#/definitions/Entity"
-          predefinedValues:
-            type: "array"
-            description: "The entity predefined values if any"
-            items:
-              $ref: "#/definitions/PredefinedValue"
+          dictionary:
+            type: "boolean"
+            description: "true if contains dictionary of values"
       role:
         type: "string"
         description: "Role of the entity"
