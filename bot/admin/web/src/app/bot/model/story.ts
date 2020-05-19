@@ -16,7 +16,7 @@
 
 import {PaginatedQuery} from "../../model/commons";
 import {Dictionary, EntityDefinition, EntityType, Intent, Sentence} from "../../model/nlp";
-import {CreateI18nLabelRequest, I18nLabel} from "./i18n";
+import {I18nLabel} from "./i18n";
 import {BotService} from "../bot-service";
 import {Observable, of} from "rxjs";
 import {AttachmentType, BotApplicationConfiguration} from "../../core/model/configuration";
@@ -499,21 +499,21 @@ export class SimpleAnswerConfiguration extends AnswerConfiguration {
         const clonedAnswerConfiguration = answerConfiguration.clone();
 
         // Default message
-        this.createAndReplaceLabel(bot, clonedAnswerConfiguration.label, i18n => {
+        bot.duplicateLabel(clonedAnswerConfiguration.label, i18n => {
           clonedAnswerConfiguration.label = i18n;
         });
 
         // Media Message
         const clonedMediaMessage = clonedAnswerConfiguration.mediaMessage;
-        if(clonedMediaMessage instanceof MediaCard) {
-          this.createAndReplaceLabel(bot, clonedMediaMessage.title, i18n => {
+        if (clonedMediaMessage instanceof MediaCard) {
+          bot.duplicateLabel(clonedMediaMessage.title, i18n => {
             clonedMediaMessage.title = i18n;
           });
-          this.createAndReplaceLabel(bot, clonedMediaMessage.subTitle,  i18n => {
+          bot.duplicateLabel(clonedMediaMessage.subTitle, i18n => {
             clonedMediaMessage.subTitle = i18n;
           });
           clonedMediaMessage.actions.forEach(action => {
-            this.createAndReplaceLabel(bot, action.title,  i18n => {
+            bot.duplicateLabel(action.title, i18n => {
               action.title = i18n;
             });
           });
@@ -522,16 +522,6 @@ export class SimpleAnswerConfiguration extends AnswerConfiguration {
         return clonedAnswerConfiguration;
       })
     );
-  }
-
-  private createAndReplaceLabel(bot: BotService, clonedLabel: I18nLabel, serverCallback: (i18n) => void) {
-    bot.createI18nLabel(
-      new CreateI18nLabelRequest(
-        clonedLabel.category,
-        clonedLabel.defaultLabel,
-        clonedLabel.defaultLocale,
-      )
-    ).subscribe(serverCallback);
   }
 
   checkAfterReset(bot: BotService) {
