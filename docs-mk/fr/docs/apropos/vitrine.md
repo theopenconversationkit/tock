@@ -1,14 +1,16 @@
 # Vitrine utilisateurs
 
-Depuis sa création pour [OUI.sncf](https://www.oui.sncf/) en 2016, Tock est utilisé par de plus en plus
-d'équipes pour créer des bots conversationnels dédiés à des usages divers :
+Depuis sa création pour [OUI.sncf](https://www.oui.sncf/) en 2016 jusqu'au
+service _[AlloCovid](https://www.allocovid.com/)_ en 2020, Tock est utilisé par de plus en plus
+d'équipes (notamment SNCF mais pas uniquement) pour créer des bots conversationnels dédiés à des usages divers :
 
 * _business to customer_ et _business to business_ 
 * distribution, transactionnel, paiement
 * assistance, _care_, _help desks_
 * FAQ et arbres de décision
 
-Cette page présente différents assistants et produits construits avec Tock.
+Cette page présente différents assistants et produits connus construits avec Tock, 
+dont certains ont été [récompensés](recompenses.md) par la communauté.
 
 ## _AlloCovid_
 
@@ -54,7 +56,7 @@ Grâce aux nombreux connecteurs Tock, _OUIbot_ répond présent sur de nombreux 
  site [www.oui.sncf](https://www.oui.sncf/bot), réseaux sociaux, assistants vocaux, enceintes connectées et même 
  [IAffiches avec JCDecaux](https://ouitalk.oui.sncf/blog/innovation/oui-sncf-signe-une-campagne-d-affichage-pilotee-par-une-intelligence-artificielle).
 
-En 2019, _OUIbot_ accompagne près de 10 000 utilisateurs par jour. Il a été élu _[Best Robot Experience](https://www.sensduclient.com/2018/04/ouibot-ouisncf-est-le-gagnant-de-best.html)_
+En 2019, _OUIbot_ accompagne près de 10 000 utilisateurs par jour. Il a été élu _[Best Robot Experience](https://blog-cultures-services.com/2019/07/09/ouibot-de-ouisncf-laureat-prix-best-robot-experience-2019/)_
  pour la deuxième année consécutive.
 
 <img alt="Recompense OUIbot 2019" 
@@ -161,6 +163,18 @@ _Eve_ est à l'écoute des collaborateurs dans l'entreprise et en mobilité sur 
 * **Domaine :** assistance en interne & B2B (FAQ, Support Informatique, RH, Juridique), automatisations DevOps (supervision, 
 déploiements, gestion de production, etc.)
 * **Canaux :** texte & voix, en interne dans l'entreprise et en mobilité via Teams
+
+## Autres bots Tock...
+
+D'autres assistants conversationnels développés avec Tock sont utilisés par différentes organisations
+notamment les membres du [TOSIT](http://tosit.fr/) et pas uniquement la SNCF.
+
+Ces bots ne sont pas toujours destinés au grand public et leurs organisations ne communiquent pas 
+nécessairement dessus. Nous ajouterons des détails sur ces projets si l'occasion se présente :)
+
+Par ailleurs, n'hésitez pas à faire un tour sur le [tchat Gitter](https://gitter.im/tockchat/Lobby) 
+de la communauté, vous pourrez constater que de plus en plus de professionnels et particuliers, étudiants,
+PME et ESN, expérimentent ou utilisent Tock pour leurs projets d'assistants ou d'applications _NLP_.
 
 ## Et vous ?
 

@@ -1,5 +1,5 @@
 site_name: 'Tock'
-site_description: 'Build assistants & chatbots with ease.'
+site_description: 'The Open Conversation Kit'
 site_author: 'Tock'
 site_url: 'https://theopenconversationkit.github.io/tock/en'
 repo_name: 'tock'
@@ -21,16 +21,18 @@ nav:
   - 'About':
       - 'Why Tock': 'about/why.md'
       - 'Showcase': 'about/showcase.md'
+      - 'Awards': 'about/awards.md'
       - 'Resources': 'about/resources.md'
       - 'Contact us': 'about/contact.md'
       - 'Community': 'about/community.md'
       - 'Contribute': 'about/contribute.md'
       - 'Jobs': 'about/jobs.md'
   - '🇬🇧 🇫🇷': 'https://theopenconversationkit.github.io/tock/fr/'
+  - 'Tock.ai 🔗': 'https://doc.tock.ai'
 
 theme:
   name: 'material'
-  logo: 'assets/images/logo.svg'
+  logo: 'assets/images/logo-white.svg'
   favicon: 'img/favicon.png'
 markdown_extensions:
   - admonition

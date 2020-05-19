@@ -1,6 +1,8 @@
 # User showcase
 
-Since its creation for [OUI.sncf](https://www.oui.sncf/) in 2016, Tock has been used by more and more teams to 
+Since its creation for [OUI.sncf](https://en.oui.sncf/en/) in 2016 to the French 
+_[AlloCovid](https://www.allocovid.com/)_ service in 2020, Tock has been used by 
+more and more teams (including [SNCF](https://www.sncf.com/) but not only) to 
 build conversational bots dedicated to various use cases :
 
 * _business to customer_ and _business to business_ 
@@ -8,7 +10,8 @@ build conversational bots dedicated to various use cases :
 * assistance, care, help desks
 * FAQ and decision trees
 
-This page presents various assistants and products built and powered by Tock.
+This page presents various assistants and products built and powered by Tock,
+some of them [awarded](awards.md) by the community.
 
 ## _AlloCovid_
 
@@ -51,7 +54,7 @@ Website [www.oui.sncf](https://www.oui.sncf/bot), social networks, voice assista
  [SmartBrics with JCDecaux](https://ouitalk.oui.sncf/blog/innovation/oui-sncf-signe-une-campagne-d-affichage-pilotee-par-une-intelligence-artificielle)
  devices.
 
-In 2019, _OUIbot_ answers approximately 10.000 users a day. It has been awarded _[Best Robot Experience](https://www.sensduclient.com/2018/04/ouibot-ouisncf-est-le-gagnant-de-best.html)_
+In 2019, _OUIbot_ answers approximately 10.000 users a day. It has been awarded _[Best Robot Experience](https://blog-cultures-services.com/2019/07/09/ouibot-de-ouisncf-laureat-prix-best-robot-experience-2019/)_
  for the second year in a row.
 
 <img alt="OUIbot award 2019" 
@@ -157,6 +160,18 @@ _Eve_ is always listening to the employees, both within the offices and on-the-g
 * **Field:** internal & B2B support (FAQ, IT Support, HR, Legal), DevOps automation (monitoring, 
 deployments, production management, etc.)
 * **Channels:** text & voice, internally within the offices and on-the-go via Teams
+
+## Other Tock bots...
+
+Various organizations already leverage Tock to build conversational agents (which are not mentionned here).
+Among them, some of the [TOSIT](http://tosit.fr/) companies - not only [SNCF](https://www.sncf.com/).
+
+Sometimes these applications are not dedicated to public usage and their organization will not communicate
+about them. We will mention them here when it is possible :)
+
+By the way, do not hesitate to look at the [Gitter](https://gitter.im/tockchat/Lobby) 
+community chat to see professionals, students, large and smaller companies
+ currently using or experimenting with Tock for their conversational or _NLU_ projects.
 
 ## What about you?
 

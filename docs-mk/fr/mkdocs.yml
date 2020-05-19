@@ -1,12 +1,12 @@
 site_name: 'Tock'
-site_description: 'Pour construire aisément vos prochains bots'
+site_description: 'The Open Conversation Kit'
 site_author: 'Tock'
 site_url: 'https://theopenconversationkit.github.io/tock/fr'
 repo_name: 'tock'
 repo_url: 'https://github.com/theopenconversationkit/tock'
 edit_uri: ''
 nav:
-  - 'Vue d`ensemble': 'index.md'
+  - 'Accueil': 'index.md'
   - 'Table des matières': 'toc.md'
   - 'Découvrir Tock': # Guides / Découvrir
       - 'Créer son premier bot': 'guide/studio.md'
@@ -37,18 +37,23 @@ nav:
   - 'A propos':
       - 'Pourquoi Tock': 'apropos/pourquoi.md'
       - 'Vitrine utilisateurs': 'apropos/vitrine.md'
+      - 'Prix et récompenses': 'apropos/recompenses.md'
       - 'Ressources': 'apropos/ressources.md'
       - 'Nous contacter': 'apropos/contact.md'
       - 'Communauté': 'apropos/communaute.md'
       - 'Contribuer': 'apropos/contribuer.md'
       - 'Emploi': 'apropos/emploi.md'
   - '🇫🇷 🇬🇧': 'https://theopenconversationkit.github.io/tock/en/'
+  - 'Tock.ai 🔗': 'https://doc.tock.ai'
 
 theme:
   name: 'material'
   language: 'fr'
-  logo: 'assets/images/logo.svg'
+  logo: 'assets/images/logo-white.svg'
   favicon: 'img/favicon.png'
+plugins:
+  - search:
+      lang: 'fr'
 markdown_extensions:
   - admonition
   - codehilite

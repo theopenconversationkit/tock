@@ -1,6 +1,6 @@
 # Documentation Tock
 
-* [Vue d'ensemble](index.md)
+* [Accueil](index.md)
 
 * [Table des matières]()
 
