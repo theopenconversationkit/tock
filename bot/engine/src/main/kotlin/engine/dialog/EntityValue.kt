@@ -104,6 +104,6 @@ data class EntityValue(
         return if (evaluated) value?.toString() ?: "null" else content ?: "no content"
     }
 
-    internal fun toClosedRange(): IntRange? = if (start != null && end != null && start < end) IntRange(start, end) else null
+    internal fun toClosedRange(): IntRange? = if (start != null && end != null && start < end) IntRange(start, end - 1) else null
 
 }
