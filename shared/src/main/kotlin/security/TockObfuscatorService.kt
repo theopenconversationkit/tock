@@ -85,17 +85,22 @@ object TockObfuscatorService {
      * @param obfuscatedRanges the forced obfuscation ranges
      */
     fun obfuscate(text: String?, obfuscatedRanges: List<IntRange> = emptyList()): String? {
-        return if (text == null) {
-            null
-        } else {
-            var t: String = text
-            stringObfuscators.forEach {
-                t = it.obfuscate(t)
+        return try {
+            if (text == null) {
+                null
+            } else {
+                var t: String = text
+                stringObfuscators.forEach {
+                    t = it.obfuscate(t)
+                }
+                obfuscatedRanges.asSequence().filterNot { it.isEmpty() }.forEach {
+                    t = t.replaceRange(it, "*".repeat(1 + it.last - it.first))
+                }
+                t
             }
-            obfuscatedRanges.asSequence().filterNot { it.isEmpty() }.forEach {
-                t = t.replaceRange(it, "*".repeat(1 + it.last - it.first))
-            }
-            t
+        } catch (e: Exception) {
+            logger.error(e)
+            text
         }
     }
 
@@ -105,11 +110,16 @@ object TockObfuscatorService {
      * @map the map to be obfuscated
      */
     fun obfuscate(map: Map<String, String>): Map<String, String> {
-        var p: Map<String, String> = map
-        mapObfuscators.forEach {
-            p = it.obfuscate(p)
+        return try {
+            var p: Map<String, String> = map
+            mapObfuscators.forEach {
+                p = it.obfuscate(p)
+            }
+            p
+        } catch (e: Exception) {
+            logger.error(e)
+            map
         }
-        return p
     }
 
 }
