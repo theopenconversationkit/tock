@@ -82,6 +82,18 @@ export class BotService {
     return this.rest.post("/i18n/create", request, I18nLabel.fromJSON);
   }
 
+  duplicateLabel(clonedLabel: I18nLabel, callback: (i18n) => void) {
+    if (clonedLabel) {
+      this.createI18nLabel(
+        new CreateI18nLabelRequest(
+          clonedLabel.category,
+          clonedLabel.defaultLocalizedLabel().label,
+          clonedLabel.defaultLocale,
+        )
+      ).subscribe(callback);
+    }
+  }
+
   deleteI18nLabel(label: I18nLabel): Observable<boolean> {
     return this.rest.delete(`/i18n/${encodeURIComponent(label._id)}`);
   }
