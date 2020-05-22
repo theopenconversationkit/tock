@@ -21,7 +21,15 @@ import ai.tock.bot.api.model.configuration.ClientConfiguration
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.BotProvider
 import ai.tock.bot.definition.BotProviderId
+import ai.tock.bot.definition.Intent
 import ai.tock.bot.engine.BotRepository
+import ai.tock.nlp.api.client.NlpClient
+import ai.tock.nlp.front.client.FrontClient
+import ai.tock.nlp.front.shared.config.IntentDefinition
+import ai.tock.shared.Executor
+import ai.tock.shared.injector
+import ai.tock.shared.provide
+import ai.tock.shared.withoutNamespace
 import mu.KotlinLogging
 
 internal class BotApiDefinitionProvider(private val configuration: BotConfiguration) : BotProvider {
@@ -34,6 +42,9 @@ internal class BotApiDefinitionProvider(private val configuration: BotConfigurat
     private var bot: BotDefinition
     private val handler: BotApiHandler = BotApiHandler(this, configuration)
 
+    private val executor: Executor get() = injector.provide()
+    private val nlpClient: NlpClient get() = injector.provide()
+
     init {
         lastConfiguration = handler.configuration()
         bot = BotApiDefinition(configuration, lastConfiguration, handler)
@@ -45,8 +56,25 @@ internal class BotApiDefinitionProvider(private val configuration: BotConfigurat
             this.lastConfiguration = conf
             bot = BotApiDefinition(configuration, conf, handler)
             configurationUpdated = true
+            registerBuiltinStoryIntents()
             BotRepository.registerBuiltInStoryDefinitions(this)
             BotRepository.checkBotConfigurations()
+        }
+    }
+
+    private fun registerBuiltinStoryIntents() {
+        executor.executeBlocking {
+            with(botDefinition()) {
+                val applicationId = FrontClient.getApplicationByNamespaceAndName(namespace, nlpModelName)!!._id
+                val intents = nlpClient.getIntentsByNamespaceAndName(namespace, botId)
+                this.stories.filter { it.mainIntent() != Intent.unknown }.map { it.mainIntent().name.withoutNamespace() }.forEach {
+                    if (intents?.firstOrNull { intent -> intent.name.withoutNamespace() == it } == null) {
+                        logger.debug { "Intent $it not found, creating it..." }
+                        FrontClient.save(IntentDefinition(it, namespace, setOf(applicationId),
+                                emptySet(), description = "Intent created automatically for built-in story.", category = "builtin"))
+                    }
+                }
+            }
         }
     }
 

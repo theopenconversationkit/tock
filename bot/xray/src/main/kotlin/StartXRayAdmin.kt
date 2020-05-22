@@ -17,7 +17,6 @@
 package ai.tock.bot.xray
 
 import ai.tock.bot.BotIoc
-import ai.tock.nlp.front.ioc.FrontIoc
 import mu.KotlinLogging
 import java.util.Properties
 
@@ -30,6 +29,6 @@ fun main(args: Array<String>) {
         logger.info { "set properties: $p" }
         p.forEach { e -> System.setProperty(e.key.toString(), e.value.toString()) }
     }
-    FrontIoc.setup(BotIoc.coreModules)
+    BotIoc.setup()
     main()
 }

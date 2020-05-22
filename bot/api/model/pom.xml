@@ -32,7 +32,6 @@
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-nlp-entity-value</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>

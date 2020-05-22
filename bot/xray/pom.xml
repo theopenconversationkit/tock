@@ -36,12 +36,6 @@
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>bot-toolkit-base</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ai.tock</groupId>
-            <artifactId>tock-nlp-front-ioc</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.beust</groupId>
