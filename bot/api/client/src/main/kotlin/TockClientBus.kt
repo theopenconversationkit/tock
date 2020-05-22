@@ -77,9 +77,13 @@ class TockClientBus(
 
     override fun handle() {
         story =
-            botDefinition.stories.find { it.storyId == request.storyId }
-                ?: botDefinition.stories.find { intent != null && it.isStarterIntent(intent.wrappedIntent()) }
-                    ?: botDefinition.unknownStory
+            if (request.storyId == botDefinition.unknownStory.storyId) {
+                botDefinition.unknownStory
+            } else {
+                botDefinition.stories.find { it.storyId == request.storyId }
+                    ?: botDefinition.stories.find { intent != null && it.isStarterIntent(intent.wrappedIntent()) }
+                        ?: botDefinition.unknownStory
+            }
         step = story.steps.find { it.name == request.step }
         story.handler.handle(this)
     }

@@ -32,7 +32,6 @@ export class StoryRuleComponent implements OnInit {
   create: boolean = false;
   loadingStoryRules: boolean = false;
   stories: StoryDefinitionConfiguration[] = [];
-//   features: StoryFeature[] = [];
   disabledFeatures: StoryFeature[] = [];
   redirectedFeatures: StoryFeature[] = [];
   feature: StoryFeature;

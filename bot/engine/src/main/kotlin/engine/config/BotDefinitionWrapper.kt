@@ -18,11 +18,11 @@ package ai.tock.bot.engine.config
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
-import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
-import ai.tock.bot.definition.*
+import ai.tock.bot.definition.BotDefinition
+import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.Intent.Companion.unknown
-import ai.tock.shared.injector
-import ai.tock.shared.provide
+import ai.tock.bot.definition.IntentAware
+import ai.tock.bot.definition.StoryDefinition
 import mu.KotlinLogging
 
 /**
@@ -38,20 +38,20 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
     @Volatile
     private var allStories: List<StoryDefinition> = botDefinition.stories
 
-    private val dao: StoryDefinitionConfigurationDAO = injector.provide()
-
+    /**
+     * Story redirections (resolved from story features).
+     * Key: storyId
+     * Value: storyId to redirect to | <code>null</code> when story is disabled
+     */
     @Volatile
-    private var storyConfRedirections: Map<String, String?> = emptyMap()
+    private var storyRedirectionsMap: Map<String, String?> = emptyMap()
 
-    fun updateStories(configuredStories: List<ConfiguredStoryDefinition>, applicationId: String?) {
-        this.configuredStories = configuredStories.filter { it.answerType != builtin }.groupBy { it.id }
-        //configured stories can override built-in
+    fun updateStories(configuredStories: List<ConfiguredStoryDefinition>, connectorId: String) {
+        this.configuredStories = configuredStories.groupBy { it.configuration.storyId }
         allStories = (this.configuredStories + botDefinition.stories.groupBy { it.id }).values.flatten()
-        val storyConfigurations = with(botDefinition) {
-            dao.getStoryDefinitionsByNamespaceAndBotId(namespace, botId).map { story -> story.storyId to story }.toMap()
-        }
-        storyConfRedirections = storyConfigurations.map { it.key to followStoryRedirects(applicationId, storyConfigurations, it.key, null) }.toMap()
-        logger.info("Story rules for '${botDefinition.botId} ($applicationId)': $storyConfRedirections")
+        val storyConfigurations = configuredStories.map { it.configuration }.map { it.storyId to it }.toMap()
+        storyRedirectionsMap = storyConfigurations.map { it.key to followStoryRedirects(connectorId, storyConfigurations, it.key, null) }.toMap()
+        logger.debug { "Story rules for '${botDefinition.botId} ($connectorId)': $storyRedirectionsMap" }
     }
 
     override val stories: List<StoryDefinition>
@@ -69,27 +69,32 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
         return findStoryDefinition(intent?.wrappedIntent()?.name)
     }
 
-    fun followStoryRedirects(applicationId: String?, stories: Map<String, StoryDefinitionConfiguration>, requestStoryId: String, switchStoryId: String?): String? =
+    private fun followStoryRedirects(connectorId: String?, stories: Map<String, StoryDefinitionConfiguration>, requestStoryId: String, switchStoryId: String?): String? =
         if (switchStoryId == requestStoryId)
             requestStoryId
         else
             with(switchStoryId ?: requestStoryId) {
                 val theStory = stories[this]
-                if (theStory?.isDisabled(applicationId) == true) { return null }
-                theStory?.findFeatures(applicationId)?.find { it.enabled && !it.switchToStoryId.isNullOrBlank() }?.let {
-                    followStoryRedirects(applicationId, stories.filterKeys { it -> this != it }, requestStoryId, it.switchToStoryId)
+                if (theStory?.isDisabled(connectorId) == true) { return null }
+                theStory?.findFeatures(connectorId)?.find { it.enabled && !it.switchToStoryId.isNullOrBlank() }?.let { feature ->
+                    followStoryRedirects(connectorId, stories.filterKeys { this != it }, requestStoryId, feature.switchToStoryId)
                 } ?: this
             }
 
     override fun findStoryDefinition(intent: String?, applicationId: String?): StoryDefinition {
-        val redirectStoryId = storyConfRedirections[intent]
-        if (redirectStoryId != null && redirectStoryId != intent) {
-            return findStoryDefinition(redirectStoryId, applicationId)
+        val targetStory = storyRedirectionsMap[intent]
+        return if (storyRedirectionsMap.containsKey(intent) && targetStory == null) { // Story is disabled
+            unknownStory
         } else {
-            return intent?.let { i ->
-            configuredStories[i]
-                    ?.firstOrNull()
-                    ?.takeUnless { it.configuration.isDisabled(applicationId) }
+            if (targetStory != null && targetStory != intent) { // Story is redirected
+                findStoryDefinition(targetStory, applicationId)
+            } else {
+                intent?.let { i ->
+                    val enabledConfiguredStories = configuredStories[i]
+                            ?.filter { !it.configuration.isDisabled(applicationId) }
+                    // Configured stories have priority over built-in
+                    enabledConfiguredStories?.firstOrNull { it.answerType != builtin }
+                            ?: enabledConfiguredStories?.firstOrNull()
             }
                 ?: BotDefinition.findStoryDefinition(
                         stories.filter {
@@ -102,6 +107,7 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
                         unknownStory,
                         keywordStory
                 )
+            }
         }
     }
 

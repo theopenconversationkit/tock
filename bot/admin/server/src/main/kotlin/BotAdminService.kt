@@ -16,8 +16,13 @@
 
 package ai.tock.bot.admin
 
-import ai.tock.bot.admin.answer.*
-import ai.tock.bot.admin.answer.AnswerConfigurationType.*
+import ai.tock.bot.admin.answer.AnswerConfiguration
+import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
+import ai.tock.bot.admin.answer.AnswerConfigurationType.script
+import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
+import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
+import ai.tock.bot.admin.answer.ScriptAnswerVersionedConfiguration
+import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.BotConfiguration
@@ -589,7 +594,7 @@ object BotAdminService {
             }
         }
 
-    fun mergeStory(oldStory: StoryDefinitionConfiguration, story: BotStoryDefinitionConfiguration, application: ApplicationDefinition, botId: String) : StoryDefinitionConfiguration {
+    private fun mergeStory(oldStory: StoryDefinitionConfiguration, story: BotStoryDefinitionConfiguration, application: ApplicationDefinition, botId: String) : StoryDefinitionConfiguration {
         return oldStory.copy(
                 name = story.name,
                 description = story.description,
@@ -638,13 +643,13 @@ object BotAdminService {
                     botConf.botId,
                     story.currentType,
                     story.storyId
-            ).also { logger.debug("Found story with same namespace, type and name: $it") }
+            ).also { logger.debug {"Found story with same namespace, type and name: $it"} }
             val storyWithSameNsBotTypeAndIntent = storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndTypeAndIntent(
                     namespace,
                     botConf.botId,
                     story.currentType,
                     story.intent.name
-            ).also { logger.debug("Found story with same namespace, type and intent: $it") }
+            ).also { logger.debug {"Found story with same namespace, type and intent: $it"} }
 
             storyWithSameNsBotTypeAndIntent.let {
                 if (it == null || it.currentType == builtin) {
@@ -703,7 +708,7 @@ object BotAdminService {
                 )
             }
 
-            logger.debug("Saving story: $newStory")
+            logger.debug {"Saving story: $newStory"}
             storyDefinitionDAO.save(newStory)
 
             if (story.userSentence.isNotBlank()) {
@@ -851,7 +856,7 @@ object BotAdminService {
                     .map { it._id }
                     .toSet()
         }
-        logger.debug("Loading Bot Flow for ${applicationIds.size} configurations: $applicationIds...")
+        logger.debug {"Loading Bot Flow for ${applicationIds.size} configurations: $applicationIds..."}
         return dialogFlowDAO.loadApplicationData(namespace, botId, applicationIds)
     }
 
