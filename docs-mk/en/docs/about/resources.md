@@ -5,8 +5,21 @@ in addition to the main documentation and demo instance.
 
 ## Conferences / video (in French)
 
-* _[Code a bot for Messenger and Google Assistant in 30 minutes](https://www.youtube.com/watch?v=K4q8ZHw9TuI)_ 
-<br/> @ _Devoxx France_ **2018** (live coding _"tools in action"_ 30 min)
+* _[Conversational AI & Open Source](https://www.youtube.com/watch?v=K4q8ZHw9TuI)_ @ _Paris Open Source Summit_ **2019**  
+(SNCF REX & guests from EDF, Enedis, Orange, SogetiLabs, TOSIT)  
+[📽️ 30 min (French)](https://www.youtube.com/watch?v=K4q8ZHw9TuI) / 
+[🔳 slides (English)](https://www.slideshare.net/OpenWorldForum/ossparis19-conversationnel-open-source-tat-des-lieux-et-prochains-dfis)
+
+<a href="https://www.youtube.com/watch?v=fTy6uit7Ejg"
+target="tock_poss">
+<img alt="Conversational AI & Open Source @ POSS 2019" 
+src="https://doc.tock.ai/fr/images/POSS2019.jpeg" 
+style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
+</a>
+
+* _[Code a bot for Messenger and Google Assistant in 30 minutes](https://www.youtube.com/watch?v=K4q8ZHw9TuI)_  
+@ _Devoxx France_ **2018** (live coding)
+[📽️ 30 min (French)](https://www.youtube.com/watch?v=K4q8ZHw9TuI)
 
 <a href="https://www.youtube.com/watch?v=K4q8ZHw9TuI"
 target="tock_devoxx">

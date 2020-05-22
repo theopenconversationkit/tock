@@ -6,8 +6,21 @@ en complément des [guides](../guide/studio.md)
 
 ## Conférences / video
 
-* _[Développer un bot sur Messenger et Google Assistant en 30 minutes](https://www.youtube.com/watch?v=K4q8ZHw9TuI)_ 
-<br/> @ _Devoxx France_ **2018** (live coding _"tools in action"_ 30 min)
+* _[Conversationnel & Open Source](https://www.youtube.com/watch?v=K4q8ZHw9TuI)_ @ _Paris Open Source Summit_ **2019**  
+(REX SNCF & invités EDF, Enedis, Orange, SogetiLabs, TOSIT)
+[📽️ 30 min](https://www.youtube.com/watch?v=K4q8ZHw9TuI) / 
+[🔳 slides](https://www.slideshare.net/OpenWorldForum/ossparis19-conversationnel-open-source-tat-des-lieux-et-prochains-dfis)
+
+<a href="https://www.youtube.com/watch?v=fTy6uit7Ejg"
+target="tock_poss">
+<img alt="Conversationnel & Open Source @ POSS 2019" 
+src="https://doc.tock.ai/fr/images/POSS2019.jpeg" 
+style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
+</a>
+
+* _[Développer un bot sur Messenger et Google Assistant en 30 minutes](https://www.youtube.com/watch?v=K4q8ZHw9TuI)_  
+@ _Devoxx France_ **2018** (live coding _"tools in action"_)
+[📽️ 30 min](https://www.youtube.com/watch?v=K4q8ZHw9TuI)
 
 <a href="https://www.youtube.com/watch?v=K4q8ZHw9TuI"
 target="tock_devoxx">
