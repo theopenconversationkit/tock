@@ -350,7 +350,7 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonGet("/bot/story/:botId/:intent", botUser) { context ->
-            BotAdminService.findStoryByBotIdAndIntent(
+            BotAdminService.findConfiguredStoryByBotIdAndIntent(
                 context.organization,
                 context.path("botId"),
                 context.path("intent")

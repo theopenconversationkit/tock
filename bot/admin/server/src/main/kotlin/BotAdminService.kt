@@ -330,27 +330,30 @@ object BotAdminService {
             stories.forEach {
                 val controller = BotStoryDefinitionConfigurationDumpController(namespace, botId, it, application, locale, user)
                 val storyConf = it.toStoryDefinitionConfiguration(controller)
-                saveStory(namespace, storyConf, botConf, controller)
+                importStory(namespace, storyConf, botConf, controller)
             }
         }
     }
 
-    private fun saveStory(
+    private fun importStory(
         namespace: String,
         story: StoryDefinitionConfiguration,
         botConf: BotApplicationConfiguration,
         controller: BotStoryDefinitionConfigurationDumpController
     ) {
-        storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
+
+        storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndTypeAndIntent(
             namespace,
             botConf.botId,
+            story.currentType,
             story.intent.name
         )?.also {
             storyDefinitionDAO.delete(it)
         }
-        storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
+        storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndTypeAndStoryId(
             namespace,
             botConf.botId,
+            story.currentType,
             story.storyId
         )?.also {
             storyDefinitionDAO.delete(it)
@@ -378,8 +381,8 @@ object BotAdminService {
         story.steps.forEach { saveUserSentenceOfStep(controller.application, it, controller.user) }
     }
 
-    fun findStoryByBotIdAndIntent(namespace: String, botId: String, intent: String): BotStoryDefinitionConfiguration? {
-        return storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(namespace, botId, intent)
+    fun findConfiguredStoryByBotIdAndIntent(namespace: String, botId: String, intent: String): BotStoryDefinitionConfiguration? {
+        return storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(namespace, botId, intent)
             ?.let {
                 loadStory(namespace, it)
             }
@@ -591,30 +594,67 @@ object BotAdminService {
             }
         }
 
+    private fun mergeStory(oldStory: StoryDefinitionConfiguration, story: BotStoryDefinitionConfiguration, application: ApplicationDefinition, botId: String) : StoryDefinitionConfiguration {
+        return oldStory.copy(
+                name = story.name,
+                description = story.description,
+                category = story.category,
+                currentType = story.currentType,
+                intent = story.intent,
+                answers = story.answers.mapNotNull { it.toStoryConfiguration(botId, oldStory) },
+                mandatoryEntities = story.mandatoryEntities.map {
+                    it.toEntityConfiguration(
+                            application,
+                            botId,
+                            oldStory
+                    )
+                },
+                steps = story.steps.map { it.toStepConfiguration(application, botId, oldStory) },
+                userSentence = story.userSentence,
+                userSentenceLocale = story.userSentenceLocale,
+                configurationName = story.configurationName,
+                features = story.features
+        )
+    }
+
     fun saveStory(
         namespace: String,
         story: BotStoryDefinitionConfiguration,
         user: UserLogin
     ): BotStoryDefinitionConfiguration? {
 
-        val storyDefinition = storyDefinitionDAO.getStoryDefinitionById(story._id)
+        // Two stories (built-in or configured) should not have the same _id
+        // There should be max one built-in (resp. configured) story for given namespace+bot+intent (or namespace+bot+storyId)
+        // It can be updated if storyId remains the same, fails otherwise
+
+        val storyWithSameId = storyDefinitionDAO.getStoryDefinitionById(story._id)
+        storyWithSameId?.let {
+            if (it.currentType != story.currentType) {
+                badRequest("Story ${it.name} (${it.currentType}) already exists with the ID")
+            }
+        }
+
         val botConf = getBotConfigurationsByNamespaceAndBotId(namespace, story.botId).firstOrNull()
         return if (botConf != null) {
 
             val application = front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)!!
+            val storyWithSameNsBotTypeAndName = storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndTypeAndStoryId(
+                    namespace,
+                    botConf.botId,
+                    story.currentType,
+                    story.storyId
+            ).also { logger.debug {"Found story with same namespace, type and name: $it"} }
+            val storyWithSameNsBotTypeAndIntent = storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndTypeAndIntent(
+                    namespace,
+                    botConf.botId,
+                    story.currentType,
+                    story.intent.name
+            ).also { logger.debug {"Found story with same namespace, type and intent: $it"} }
 
-            storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
-                namespace,
-                botConf.botId,
-                story.intent.name
-            ).let {
+            storyWithSameNsBotTypeAndIntent.let {
                 if (it == null || it.currentType == builtin) {
-                    if (it?.currentType == builtin) {
-                        storyDefinitionDAO.delete(it)
-                    }
-
                     //intent change
-                    if (storyDefinition?._id != null) {
+                    if (storyWithSameId?._id != null) {
                         createOrGetIntent(
                             namespace,
                             story.intent.name,
@@ -624,67 +664,51 @@ object BotAdminService {
                     }
                 } else {
                     if (story._id != it._id) {
-                        badRequest("Story already exists for the intent ${story.intent.name} : ${it.name}")
+                        badRequest("Story ${it.name} (${it.currentType}) already exists for intent ${story.intent.name}")
                     }
                 }
             }
-            if (storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
-                    namespace,
-                    botConf.botId,
-                    story.storyId
-                )?._id != storyDefinition?._id
+            if (storyWithSameNsBotTypeAndName?._id != storyWithSameId?._id
             ) {
-                badRequest("Story ${story.storyId} already exists")
+                if (storyWithSameNsBotTypeAndName?.currentType != builtin) {
+                    badRequest("Story ${story.name} (${story.currentType}) already exists")
+                }
             }
 
-            val newStory = if (storyDefinition != null) {
-                storyDefinition.copy(
-                    name = story.name,
-                    description = story.description,
-                    category = story.category,
-                    currentType = story.currentType,
-                    intent = story.intent,
-                    answers = story.answers.mapNotNull { it.toStoryConfiguration(botConf.botId, storyDefinition) },
-                    mandatoryEntities = story.mandatoryEntities.map {
-                        it.toEntityConfiguration(
-                            application,
-                            botConf.botId,
-                            storyDefinition
-                        )
-                    },
-                    steps = story.steps.map { it.toStepConfiguration(application, botConf.botId, storyDefinition) },
-                    userSentence = story.userSentence,
-                    userSentenceLocale = story.userSentenceLocale,
-                    configurationName = story.configurationName,
-                    features = story.features
-                )
+            val newStory = if (storyWithSameId != null) {
+                mergeStory(storyWithSameId, story, application, botConf.botId)
+            } else if (storyWithSameNsBotTypeAndIntent != null) {
+                mergeStory(storyWithSameNsBotTypeAndIntent, story, application, botConf.botId)
+            } else if (storyWithSameNsBotTypeAndName != null) {
+                mergeStory(storyWithSameNsBotTypeAndName, story, application, botConf.botId)
             } else {
                 StoryDefinitionConfiguration(
-                    story.storyId,
-                    story.botId,
-                    story.intent,
-                    story.currentType,
-                    story.answers.mapNotNull { it.toStoryConfiguration(botConf.botId, storyDefinition) },
-                    0,
-                    namespace,
-                    story.mandatoryEntities.map {
-                        it.toEntityConfiguration(
-                            application,
-                            botConf.botId,
-                            storyDefinition
-                        )
-                    },
-                    story.steps.map { it.toStepConfiguration(application, botConf.botId, storyDefinition) },
-                    story.name,
-                    story.category,
-                    story.description,
-                    story.userSentence,
-                    story.userSentenceLocale,
-                    story.configurationName,
-                    story.features
+                        story.storyId,
+                        story.botId,
+                        story.intent,
+                        story.currentType,
+                        story.answers.mapNotNull { it.toStoryConfiguration(botConf.botId, null) },
+                        0,
+                        namespace,
+                        story.mandatoryEntities.map {
+                            it.toEntityConfiguration(
+                                    application,
+                                    botConf.botId,
+                                    storyWithSameId
+                            )
+                        },
+                        story.steps.map { it.toStepConfiguration(application, botConf.botId, null) },
+                        story.name,
+                        story.category,
+                        story.description,
+                        story.userSentence,
+                        story.userSentenceLocale,
+                        story.configurationName,
+                        story.features
                 )
             }
 
+            logger.debug {"Saving story: $newStory"}
             storyDefinitionDAO.save(newStory)
 
             if (story.userSentence.isNotBlank()) {
@@ -832,7 +856,7 @@ object BotAdminService {
                     .map { it._id }
                     .toSet()
         }
-        logger.debug("Loading Bot Flow for ${applicationIds.size} configurations: $applicationIds...")
+        logger.debug {"Loading Bot Flow for ${applicationIds.size} configurations: $applicationIds..."}
         return dialogFlowDAO.loadApplicationData(namespace, botId, applicationIds)
     }
 

@@ -16,6 +16,7 @@
 
 package ai.tock.bot.admin.story
 
+import ai.tock.bot.admin.answer.AnswerConfigurationType
 import org.litote.kmongo.Id
 
 /**
@@ -30,9 +31,11 @@ interface StoryDefinitionConfigurationDAO {
 
     fun getStoryDefinitionById(id: Id<StoryDefinitionConfiguration>): StoryDefinitionConfiguration?
 
-    fun getStoryDefinitionByNamespaceAndBotIdAndIntent(namespace: String, botId: String, intent: String): StoryDefinitionConfiguration?
+    fun getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(namespace: String, botId: String, intent: String): StoryDefinitionConfiguration?
 
-    fun getStoryDefinitionByNamespaceAndBotIdAndStoryId(namespace: String, botId: String, storyId: String): StoryDefinitionConfiguration?
+    fun getStoryDefinitionByNamespaceAndBotIdAndTypeAndIntent(namespace: String, botId: String, type: AnswerConfigurationType, intent: String): StoryDefinitionConfiguration?
+
+    fun getStoryDefinitionByNamespaceAndBotIdAndTypeAndStoryId(namespace: String, botId: String, type: AnswerConfigurationType, storyId: String): StoryDefinitionConfiguration?
 
     fun getStoryDefinitionsByNamespaceAndBotId(namespace: String, botId: String): List<StoryDefinitionConfiguration>
 

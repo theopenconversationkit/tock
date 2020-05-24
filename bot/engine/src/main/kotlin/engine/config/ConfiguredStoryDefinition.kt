@@ -29,7 +29,7 @@ import ai.tock.translator.UserInterfaceType
 /**
  *
  */
-internal class ConfiguredStoryDefinition(val configuration: StoryDefinitionConfiguration) : StoryDefinition {
+class ConfiguredStoryDefinition(val configuration: StoryDefinitionConfiguration) : StoryDefinition {
 
     val answerType: AnswerConfigurationType = configuration.currentType
 

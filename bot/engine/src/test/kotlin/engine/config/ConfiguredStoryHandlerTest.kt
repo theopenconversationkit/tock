@@ -52,34 +52,6 @@ class ConfiguredStoryHandlerTest {
     ) : ConnectorMessage
 
     @Test
-    fun `switchStory switch story and reset step if same story def`() {
-        val feature: StoryDefinitionConfigurationFeature = mockk {
-            every { switchToStoryId } returns test.id
-        }
-        val configuration: StoryDefinitionConfiguration = mockk {
-            every { findEnabledFeature("appId") } returns feature
-        }
-        val st: Story = mockk {
-            every { definition } returns test
-        }
-        val bus: BotBus = mockk {
-            every { applicationId } returns "appId"
-            every { botDefinition } returns BotDefinitionTest()
-            every { step } returns StepTest.s1
-            every { story } returns st
-            every { step = null } returns Unit
-            every { handleAndSwitchStory(TestStoryDefinition.test, TestStoryDefinition.test.mainIntent()) } returns Unit
-        }
-
-        val handler = ConfiguredStoryHandler(configuration)
-
-        handler.handle(bus)
-
-        verify { bus.step = null }
-        verify { bus.handleAndSwitchStory(test, test.mainIntent()) }
-    }
-
-    @Test
     fun `GIVEN simple answer configuration WHEN sending answer THEN translate suggestions`() {
 
         // Given
