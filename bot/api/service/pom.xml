@@ -32,14 +32,15 @@
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-bot-api-model</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>bot-toolkit</artifactId>
-            <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-nlp-front-client</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-test-junit5</artifactId>

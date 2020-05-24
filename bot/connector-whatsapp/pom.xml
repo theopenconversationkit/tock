@@ -70,7 +70,6 @@
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-stt-google-speech</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

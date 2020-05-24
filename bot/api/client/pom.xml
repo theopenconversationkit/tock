@@ -32,7 +32,6 @@
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-bot-api-model</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
