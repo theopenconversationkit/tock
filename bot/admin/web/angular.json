@@ -22,7 +22,8 @@
             "tsConfig": "src/tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              "src/img"
             ],
             "styles": [
               "src/app/theme/styles/styles.scss",
@@ -34,7 +35,7 @@
               "node_modules/pace-js/templates/pace-theme-flash.tmpl.css",
               "node_modules/leaflet/dist/leaflet.css",
               "node_modules/bootstrap/dist/css/bootstrap.css",
-              "node_modules/jsoneditor/dist/jsoneditor.min.css"
+              "src/jsoneditor.css"
             ],
             "scripts": [
               "node_modules/cytoscape/dist/cytoscape.min.js",

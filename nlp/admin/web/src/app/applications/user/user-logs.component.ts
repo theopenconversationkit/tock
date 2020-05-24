@@ -158,11 +158,11 @@ export class DisplayUserDataComponent {
 
   constructor(public dialogRef: NbDialogRef<DisplayUserDataComponent>) {
     this.editorOptions = new JsonEditorOptions()
-    this.editorOptions.modes = ['code', 'text', 'tree', 'view'];
+    this.editorOptions.modes = ['code', 'view'];
     this.editorOptions.mode = 'view';
     this.editorOptions.expandAll = true;
-    this.editorOptions.mainMenuBar = false;
-    this.editorOptions.navigationBar = false;
+    this.editorOptions.mainMenuBar = true;
+    this.editorOptions.navigationBar = true;
   }
 
   close() {
