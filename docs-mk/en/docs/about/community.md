@@ -1,22 +1,65 @@
 # Community
 
-Tock has been designed to remain an open platform shared with the community.<br/> To know more, see [why Tock](why.md).
+Tock has been designed to remain an open platform shared with the community.  
+To know more, see [why Tock](why.md).
 
-## Next events / Meetup
+The Tock community is open to contribution: every feedback, _issue_, _feature request_ and obviously 
+ _pull request_ is more than welcome!
 
-This lists the next planed events related to Tock, as well as groups identified to share with the community:
+## Join the community (Gitter)
 
-* _November:_
-    * SNCF sets up an [open ***Hackathon*** event](https://hackandbot.sncf.com/) in Paris the 
-    21-22 of November around conversational AI with Tock
-    ![Hackandbot](https://v.fastcdn.co/u/0bc8903d/47537535-0-Instapage1920x600.png)
+Many Tock users and contributors meet on [Gitter](https://gitter.im/tockchat/Lobby) chatrooms. 
+Join them to see how much the community is active and open.
+ 
+* [Tock community on Gitter](https://gitter.im/tockchat/Lobby)
+* [Tock releases thread](https://gitter.im/tockchat/tock-news)
 
-* _December:_
-    * A talk at the [***Paris Open Source Summit***](https://www.opensourcesummit.paris/ARTIFICIAL+INTELLIGENCE_168_5748.html), 
-    titled _"Conversational AI & Open Source"_, is scheduled the 11th of December (16:30). 
-    SNCF as well as [Botfront.io](https://botfront.io/) will present their shared convictions 
-    about open platforms for conversational AI
-    ![POSS2019](https://www.opensourcesummit.paris/upload/bandeau_slide-2019(2).png)
+<a href="https://gitter.im/tockchat/Lobby"
+target="gitter">
+<img alt="Gitter" 
+src="https://lh3.googleusercontent.com/FtFJAWed4C9V_-IKFfQsMFcWJslJgqTqqjzxl0ueK52VmnW_i-yMwZ4oScLRfiXlIA=s180" 
+style="width: 100px;">
+</a>
+
+## Follow Tock news
+
+To find Tock news, new projects, conferences, releases and more please visit the homepage:
+
+* [Tock.ai](https://doc.tock.ai)
+
+Specific news can be found on these topics:
+
+* [Known users & projects](http://doc.tock.ai/tock/en/about/showcase/)
+* [Presentations & conferences](http://doc.tock.ai/tock/en/about/resources/)
+* [Awards](http://doc.tock.ai/tock/en/about/awards/)
+
+For releases & features:
+
+* [Releases & features thread](https://gitter.im/tockchat/tock-news)
+* [Release Notes](https://github.com/theopenconversationkit/tock/releases)
+* [Roadmap](https://github.com/theopenconversationkit/tock/milestones)
+
+## Code & Contribution (GitHub)
+
+The Tock platform and tools are available on 
+[GitHub](https://github.com/theopenconversationkit/tock)
+under the [Apache 2 license](https://github.com/theopenconversationkit/tock/blob/master/LICENSE).
+
+* [Sources & projects](https://github.com/theopenconversationkit/)
+* [License](https://github.com/theopenconversationkit/tock/blob/master/LICENSE)
+* [Issues](https://github.com/theopenconversationkit/tock/issues)
+* [Contributors](https://github.com/theopenconversationkit/tock/graphs/contributors)
+
+To know more about repository structure, coding conventions, etc. refer to the [contribute to Tock](contribute.md) section.
+For other types of contribution, don't hesitate to use GitHub [_issues_](https://github.com/theopenconversationkit/tock/issues) 
+and [join the community](https://gitter.im/tockchat/Lobby) directly on Gitter.
+
+<a href="https://github.com/theopenconversationkit/tock/"
+target="github">
+<img alt="GitHub" 
+src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" 
+style="width: 100px;">
+</a>
 
 ## TOSIT association
 
@@ -32,22 +75,15 @@ To know more about TOSIT, please visit [http://tosit.fr/](http://tosit.fr/)
 
 ![TOSIT logo](http://tosit.fr/resources/images/TOSIT_2.png)
 
-## GitHub & Gitter
+## Public Demo hosting
 
-The Tock platform and tools are available on 
-[https://github.com/theopenconversationkit/tock](https://github.com/theopenconversationkit/tock)
-under the [Apache 2 license](https://github.com/theopenconversationkit/tock/blob/master/LICENSE).
+The public Live Demo helps newcomers try and experiment with the solution. A dedicated user guide is available 
+to make one's first steps with Tock and bots.
+Thanks to [e.Voyageurs SNCF](https://www.sncf.com/fr/groupe/newsroom/e-voyageurs-sncf) for hosting and maintaining the 
+public Live Demo platform.
 
-* [Sources](https://github.com/theopenconversationkit/tock)
-* [License](https://github.com/theopenconversationkit/tock/blob/master/LICENSE)
-* [Versions](https://github.com/theopenconversationkit/tock/releases)
-* [Issues](https://github.com/theopenconversationkit/tock/issues)
-* [Contributors](https://github.com/theopenconversationkit/tock/graphs/contributors)
-* [Gitter](https://gitter.im/tockchat/Lobby)
-* [Demo](https://demo.tock.ai/) 
-
-
-To know more about repository structure, coding conventions, etc. refer to the [contribute to Tock](contribute.md) section.
+* [Live Demo](https://demo.tock.ai/) 
+* [Guide _Create your 1st bot with Tock_](https://doc.tock.ai/tock/en/guide/studio/)
 
 ## Help
 

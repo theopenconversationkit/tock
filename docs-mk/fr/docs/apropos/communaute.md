@@ -1,22 +1,66 @@
 # Communauté Tock
 
-Tock est bâti sur un modèle communautaire pour créer une plateforme ouverte.<br/> Pour en savoir plus, voir [pourquoi Tock](pourquoi.md).
+Tock est bâti sur un modèle communautaire pour créer une plateforme ouverte.  
+Pour en savoir plus, voir [pourquoi Tock](pourquoi.md).
 
-## Next events / Meetup
+La communauté Tock est ouverte à la contribution et tous les retours comme les _feature requests_ et 
+_pull requests_ sont les bienvenus !
 
-Voici les prochains événements liés à Tock ou identifiés pour échanger avec la communauté :
+## Rejoindre la communauté (Gitter)
 
-* _Novembre:_
-    * SNCF organise un [***Hackathon*** ouvert à tous](https://hackandbot.sncf.com/) les 21-22 novembre 
-    à Paris, sur le thème du conversationnel avec Tock. Il reste quelques places. 
-    C'est l'occasion de tester la solution et de rencontrer ses créateurs
-    ![Hackandbot](https://v.fastcdn.co/u/0bc8903d/47537535-0-Instapage1920x600.png)
+La plupart des utilisateurs et contributeurs Tock se retrouvent sur la messagerie instantannée 
+ [Gitter](https://gitter.im/tockchat/Lobby). C'est un bon moyen de voir à quel point la communauté est active et accessible.
+ 
+* [Communauté Tock sur Gitter](https://gitter.im/tockchat/Lobby)
+* [Fil Gitter des releases Tock](https://gitter.im/tockchat/tock-news)
 
-* _Décembre:_
-    * Nous présenterons avec des représentants de SNCF mais aussi de [Botfront.io](https://botfront.io/) 
-    une conférence intitulée _"Conversationnel & Open Source"_ au 
-[***Paris Open Source Summit***](https://www.opensourcesummit.paris/ARTIFICIAL+INTELLIGENCE_168_5748.html) le 11 décembre (16h30)
-    ![POSS2019](https://www.opensourcesummit.paris/upload/bandeau_slide-2019(2).png)
+<a href="https://gitter.im/tockchat/Lobby"
+target="gitter">
+<img alt="Gitter" 
+src="https://lh3.googleusercontent.com/FtFJAWed4C9V_-IKFfQsMFcWJslJgqTqqjzxl0ueK52VmnW_i-yMwZ4oScLRfiXlIA=s180" 
+style="width: 100px;">
+</a>
+
+## Suivre l'actualité de la plateforme
+
+Pour suivre l'actualité des projets Tock mais aussi les meetups, conférences, etc.,
+ rendez-vous sur le site principal :
+
+* [Tock.ai](https://doc.tock.ai)
+
+Vous pouvez également retrouver les nouveautés dans ces pages plus spécfiques :
+
+* [Projets & utilisateurs connus](https://doc.tock.ai/tock/fr/apropos/vitrine/)
+* [Présentations & conférences](https://doc.tock.ai/tock/fr/apropos/ressources/)
+* [Prix & récompenses](https://doc.tock.ai/tock/fr/apropos/recompenses/)
+
+Enfin, pour suivre les versions et fonctionnalités de Tock :
+
+* [Fil Gitter des releases & features](https://gitter.im/tockchat/tock-news)
+* [Release Notes](https://github.com/theopenconversationkit/tock/releases)
+* [Roadmap](https://github.com/theopenconversationkit/tock/milestones)
+
+## Code & Contribution (GitHub)
+
+L'ensemble de la plateforme et des outils est partagé sur 
+[GitHub](https://github.com/theopenconversationkit/)
+sous [licence Apache 2](https://github.com/theopenconversationkit/tock/blob/master/LICENSE).
+
+* [Sources & Projets](https://github.com/theopenconversationkit/)
+* [Licence](https://github.com/theopenconversationkit/tock/blob/master/LICENSE)
+* [Issues](https://github.com/theopenconversationkit/tock/issues)
+* [Contributeurs](https://github.com/theopenconversationkit/tock/graphs/contributors)
+
+Pour en savoir plus sur l'organisation des dépôts, les conventions de code, etc. voir le  
+[guide de contribution](contribuer.md) Tock. Pour tout autre forme de contribution, n'hésitez pas à utiliser les [_issues_](https://github.com/theopenconversationkit/tock/issues) 
+GitHub et à [contacter directement la communauté](https://gitter.im/tockchat/Lobby) avec Gitter.
+
+<a href="https://github.com/theopenconversationkit/tock/"
+target="github">
+<img alt="GitHub" 
+src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" 
+style="width: 100px;">
+</a>
 
 ## Association TOSIT
 
@@ -36,24 +80,16 @@ Pour en savoir plus, voir le site de l'association : [http://tosit.fr/](http://t
 
 ![Logo TOSIT](http://tosit.fr/resources/images/TOSIT_2.png)
 
-## GitHub & Gitter
+## Hébergement de la Démo publique
 
-L'ensemble de la plateforme et des outils est partagé sur 
-[https://github.com/theopenconversationkit/tock](https://github.com/theopenconversationkit/tock)
-sous [licence Apache 2](https://github.com/theopenconversationkit/tock/blob/master/LICENSE).
+La plateforme publique de démonstration Tock est destinée à faciliter la prise en main de 
+la solution. Elle est accompagnée d'un guide pour faire ses premiers pas. Merci à [e.Voyageurs SNCF](https://www.sncf.com/fr/groupe/newsroom/e-voyageurs-sncf) qui héberge et maintient cette 
+plateforme de démo en ligne.
 
-* [Sources](https://github.com/theopenconversationkit/tock)
-* [Licence](https://github.com/theopenconversationkit/tock/blob/master/LICENSE)
-* [Versions](https://github.com/theopenconversationkit/tock/releases)
-* [Issues](https://github.com/theopenconversationkit/tock/issues)
-* [Contributeurs](https://github.com/theopenconversationkit/tock/graphs/contributors)
-* [Gitter](https://gitter.im/tockchat/Lobby)
-* [Démo](https://demo.tock.ai/) 
-
-
-Pour en savoir plus sur l'organisation des dépôts, les conventions de code, etc. voir la section 
-[contribuer à Tock](contribuer.md).
+* [Plateforme Démo en ligne](https://demo.tock.ai/) 
+* [Guide _Créer son 1er bot avec Tock_](http://doc.tock.ai/tock/fr/guide/studio/)
 
 ## Aide
 
-Voir [nous contacter](contact.md).
+Que ce soit pour de l'aide, des questions, des suggestions :  
+n'hésitez pas à [nous contacter](contact.md).
