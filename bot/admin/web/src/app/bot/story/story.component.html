@@ -115,7 +115,7 @@
   </div>
   <mat-action-row *ngIf="storyNode || story._id">
     <button *ngIf="!story._id" (click)="saveNewStory()" mat-raised-button color="primary">Create Story</button>
-    <button *ngIf="story._id" (click)="expansionPanel.close();" mat-button>Cancel</button>
+    <button *ngIf="story._id" (click)="cancelManagingStory();expansionPanel.close();" mat-button>Cancel</button>
     <button *ngIf="story._id && !story.isBuiltIn()" (click)="saveStory(false);expansionPanel.close();submitClose();"
             mat-raised-button
             color="primary">Update Story
