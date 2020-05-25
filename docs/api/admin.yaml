@@ -1,13 +1,20 @@
 openapi: "3.0.0"
 info:
   description: "This is the Tock NLP ADMIN API. You can manage your model with it!"
-  version: "19.9"
-  title: "Tock NLP ADMIN API"
+  version: "20.3"
+  title: "Tock NLP Admin API"
   termsOfService: "https://doc.tock.ai"
+  contact:
+    name: Contact us on Gitter
+    url: https://gitter.im/tockchat/Lobby
   license:
-    name: "Apache 2.0"
-    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-basePath: "/rest/admin"
+    name: Licence Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: https://demo.tock.ai/rest/admin
+    description: Public demo server
+  - url: http://localhost/rest/admin
+    description: Local server (default tock-docker implementation)
 tags:
   - name: "Application"
     description: "Manage application models"
@@ -27,6 +34,26 @@ components:
 security:
   - basicAuth: []
 paths:
+  /parse:
+    post:
+      tags:
+        - "Sentence"
+      summary: "Parse a sentence"
+      requestBody:
+        description: "Query to be sent with user ID"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/definitions/ParseQuery'
+      responses:
+        200:
+          content:
+            application/json:
+              description: "successful operation"
+              schema:
+                $ref: "#/definitions/SentenceReport"
+
   /applications:
     get:
       tags:
@@ -346,6 +373,147 @@ paths:
               description: "successful operation"
 
 definitions:
+  ParseQuery:
+    type: "object"
+    description: "A sentence-parse query"
+    required: [ "query" ]
+    properties:
+      namespace:
+        type: "string"
+        description: "The application namespace"
+      applicationName:
+        type: "string"
+        description: "The application name"
+      language:
+        type: "string"
+        description: "The sentence language or locale"
+      query:
+        type: "string"
+        description: "The sentence"
+      checkExistingQuery:
+        type: "boolean"
+        description: "Check already-qualified sentences"
+      state:
+        type: "string"
+        description: "The sentence state"
+    example:
+      namespace: "app"
+      applicationName: "new_assistant"
+      language: "fr"
+      query: "Bonjour"
+      checkExistingQuery: true
+      state: null
+
+  ClassifiedEntityReport:
+    type: "object"
+    description: "An entity classification report"
+    properties:
+      type:
+        type: "string"
+        description: "The entity type"
+      role:
+        type: "string"
+        description: "The entity role"
+      start:
+        type: "integer"
+        description: "The entity start index in sentence"
+      end:
+        type: "integer"
+        description: "The entity end index in sentence"
+      value:
+        type: "string"
+        description: "The entity value"
+      probability:
+        type: "number"
+        format: "double"
+        description: "The entity probability score"
+      subEntities:
+        type: "array"
+        description: "Sub-entities"
+        items:
+          $ref: "#/definitions/ClassifiedEntityReport"
+
+  ClassificationReport:
+    type: "object"
+    description: "A sentence classification report"
+    properties:
+      intentId:
+        type: "string"
+        description: "The intent ID"
+      entities:
+        type: "array"
+        description: "The classified entities"
+        items:
+          $ref: "#/definitions/ClassifiedEntityReport"
+      notRetainedEntities:
+        type: "array"
+        description: "The entities found but not retained"
+        items:
+          $ref: "#/definitions/ClassifiedEntityReport"
+      intentProbability:
+        type: "number"
+        format: "double"
+        description: "The intent probability score"
+      entitiesProbability:
+        type: "number"
+        format: "double"
+        description: "The entities average probability score"
+      otherIntentsProbabilities:
+        type: object
+        description: "Other intents with significant probabilities"
+        additionalProperties:
+          type: "number"
+      lastUsage:
+        type: "string"
+        format: "date-time"
+        description: "The sentence last use instant"
+      usageCount:
+        type: "string"
+        description: "The sentence uses count"
+      unknownCount:
+        type: "string"
+        description: "The unknown count for the sentence"
+
+  SentenceReport:
+    type: "object"
+    required: [ "text", "intentNamespace", "language", "retainedQuery" ]
+    properties:
+      text:
+        type: "string"
+        description: "The sentence"
+      language:
+        type: "string"
+        description: "The sentence language"
+      applicationId:
+        type: "string"
+        description: "The application ID"
+      creationDate:
+        type: "string"
+        format: "date-time"
+        description: "The sentence creation date"
+      updateDate:
+        type: "string"
+        format: "date-time"
+        description: "The sentence update date"
+      status:
+        type: "string"
+        description: "The sentence status"
+      classification:
+        $ref: "#/definitions/ClassificationReport"
+        description: "The sentence classification (intents and entities)"
+      key:
+        type: "string"
+        description: "The key"
+      forReview:
+        type: "boolean"
+        description: "Is the sentence waiting for classification review?"
+      reviewComment:
+        type: "string"
+        description: "The review comment"
+      qualifier:
+        type: "string"
+        description: "The sentence qualifier (user)"
+
   ApplicationWithIntents:
     type: "object"
     description: "An application with supported intents"
@@ -441,5 +609,5 @@ definitions:
         description: "To evaluate time for entity date types"
 
 externalDocs:
-  description: "Find out more about Tock"
-  url: "https://theopenconversationkit.github.io/tock"
+  description: "Tock Home"
+  url: "https://doc.tock.ai/"
