@@ -147,7 +147,7 @@ export class StoryComponent implements OnInit, OnChanges {
       }
     );
     dialogRef.afterClosed().subscribe(result => {
-      if (result.name) {
+      if (result && result.name) {
         this.story.storyId = result.name;
         this.story.name = result.label;
         this.story.intent.name = result.intent;
