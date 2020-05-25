@@ -57,7 +57,11 @@ internal interface VertxProvider {
 
 internal object TockVertxProvider : VertxProvider {
 
-    override fun vertx(): Vertx = Vertx.vertx(defaultVertxOptions)
+    override fun vertx(): Vertx = Vertx.vertx(defaultVertxOptions).apply {
+        exceptionHandler {
+            logger.error(it)
+        }
+    }
 }
 
 private val internalVertx: Vertx by lazy {
@@ -77,42 +81,42 @@ val vertx: Vertx get() = internalVertx
  */
 fun <T> Vertx.blocking(blockingHandler: (Promise<T>) -> Unit, resultHandler: (AsyncResult<T>) -> Unit) {
     this.executeBlocking(
-        { future: Promise<T> ->
-            try {
-                blockingHandler.invoke(future)
-            } catch (throwable: Throwable) {
-                logger.error(throwable) { throwable.message }
-                future.fail(throwable)
-            } finally {
-                future.tryFail("call not completed")
-            }
-        },
-        false,
-        {
-            try {
-                resultHandler.invoke(it)
-            } catch (e: Throwable) {
-                logger.error(e) { e.message }
-            }
-        })
+            { future: Promise<T> ->
+                try {
+                    blockingHandler.invoke(future)
+                } catch (throwable: Throwable) {
+                    logger.error(throwable) { throwable.message }
+                    future.fail(throwable)
+                } finally {
+                    future.tryFail("call not completed")
+                }
+            },
+            false,
+            {
+                try {
+                    resultHandler.invoke(it)
+                } catch (e: Throwable) {
+                    logger.error(e) { e.message }
+                }
+            })
 }
 
 /**
  * Execute a blocking handler on route (with ordered false).
  */
 fun Route.blocking(handler: (RoutingContext) -> Unit): Route =
-    blockingHandler({
-        try {
-            handler(it)
-        } catch (t: Throwable) {
+        blockingHandler({
             try {
-                logger.error(t)
-                it.fail(t)
-            } catch (e: Throwable) {
-                logger.debug(e)
+                handler(it)
+            } catch (t: Throwable) {
+                try {
+                    logger.error(t)
+                    it.fail(t)
+                } catch (e: Throwable) {
+                    logger.debug(e)
+                }
             }
-        }
-    }, false)
+        }, false)
 
 internal fun vertxExecutor(): Executor {
     return object : Executor {
