@@ -626,11 +626,13 @@ object BotAdminService {
         // Two stories (built-in or configured) should not have the same _id
         // There should be max one built-in (resp. configured) story for given namespace+bot+intent (or namespace+bot+storyId)
         // It can be updated if storyId remains the same, fails otherwise
+        // Only a built-in story can change its type (to "manage it")
 
         val storyWithSameId = storyDefinitionDAO.getStoryDefinitionById(story._id)
         storyWithSameId?.let {
-            if (it.currentType != story.currentType) {
-                badRequest("Story ${it.name} (${it.currentType}) already exists with the ID")
+            val existingType = it.currentType
+            if (existingType != story.currentType && existingType != builtin) {
+                badRequest("Story ${it.name} ($existingType) already exists with the ID")
             }
         }
 
@@ -643,13 +645,13 @@ object BotAdminService {
                     botConf.botId,
                     story.currentType,
                     story.storyId
-            ).also { logger.debug {"Found story with same namespace, type and name: $it"} }
+            )?.also { logger.debug {"Found story with same namespace, type and name: $it"} }
             val storyWithSameNsBotTypeAndIntent = storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndTypeAndIntent(
                     namespace,
                     botConf.botId,
                     story.currentType,
                     story.intent.name
-            ).also { logger.debug {"Found story with same namespace, type and intent: $it"} }
+            )?.also { logger.debug {"Found story with same namespace, type and intent: $it"} }
 
             storyWithSameNsBotTypeAndIntent.let {
                 if (it == null || it.currentType == builtin) {
@@ -668,7 +670,7 @@ object BotAdminService {
                     }
                 }
             }
-            if (storyWithSameNsBotTypeAndName?._id != storyWithSameId?._id
+            if (storyWithSameNsBotTypeAndName != null && storyWithSameNsBotTypeAndName?._id != storyWithSameId?._id
             ) {
                 if (storyWithSameNsBotTypeAndName?.currentType != builtin) {
                     badRequest("Story ${story.name} (${story.currentType}) already exists")
