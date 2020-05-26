@@ -70,6 +70,8 @@ export class StoryComponent implements OnInit, OnChanges {
   @Output()
   close = new EventEmitter<boolean>();
 
+  isSwitchingToManagedStory = false;
+
   constructor(private state: StateService,
               private bot: BotService,
               private dialog: DialogService,
@@ -147,7 +149,7 @@ export class StoryComponent implements OnInit, OnChanges {
       }
     );
     dialogRef.afterClosed().subscribe(result => {
-      if (result.name) {
+      if (result && result.name) {
         this.story.storyId = result.name;
         this.story.name = result.label;
         this.story.intent.name = result.intent;
@@ -215,6 +217,7 @@ export class StoryComponent implements OnInit, OnChanges {
   }
 
   createStory() {
+    this.isSwitchingToManagedStory = false;
     const intent = this.state.findIntentByName(this.storyNode.storyDefinitionId);
     this.story = new StoryDefinitionConfiguration(
       intent.name,
@@ -232,6 +235,7 @@ export class StoryComponent implements OnInit, OnChanges {
   }
 
   saveNewStory() {
+    this.isSwitchingToManagedStory = false;
     let invalidMessage = this.story.currentAnswer().invalidMessage();
     if (invalidMessage) {
       this.dialog.notify(`Error: ${invalidMessage}`);
@@ -255,6 +259,14 @@ export class StoryComponent implements OnInit, OnChanges {
 
   manageStory() {
     this.story.currentType = AnswerConfigurationType.simple;
+    this.isSwitchingToManagedStory = true;
+  }
+
+  cancelManagingStory() {
+    if (this.isSwitchingToManagedStory) {
+      this.isSwitchingToManagedStory = false;
+      this.story.currentType = AnswerConfigurationType.builtin;
+    }
   }
 
 }

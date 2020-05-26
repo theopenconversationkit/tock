@@ -182,14 +182,20 @@ class BotAdminServiceTest {
             }
 
             @Test
-            fun `GIVEN builtin story exists WHEN saving a configured story with same _id THEN fail with BadRequestException`() {
+            fun `GIVEN builtin story exists WHEN saving a configured story with same _id THEN update the story`() {
 
-                val theNewStory = aBuiltinStory.copy(currentType = AnswerConfigurationType.message)
+                val theNewStory = aBuiltinStory.copy(_id = aBuiltinStory._id, currentType = AnswerConfigurationType.message)
 
-                assertFailsWith<BadRequestException> { BotAdminService.saveStory(theNewStory.namespace, theNewStory, "testUser") }
+                BotAdminService.saveStory(theNewStory.namespace, theNewStory, "testUser")
 
                 verify(exactly = 0) { storyDefinitionDAO.delete(any()) }
-                verify(exactly = 0) { storyDefinitionDAO.save(any()) }
+
+                val slot = slot<StoryDefinitionConfiguration>()
+                verify { storyDefinitionDAO.save(capture(slot)) }
+
+                assertEquals(slot.captured.storyId, theNewStory.storyId)
+                assertEquals(slot.captured.currentType, theNewStory.currentType)
+                assertEquals(slot.captured._id, existingStory._id)
             }
 
             @Test
@@ -252,7 +258,7 @@ class BotAdminServiceTest {
             @Test
             fun `GIVEN configured story exists WHEN saving a builtin story with same _id THEN fail with BadRequestException`() {
 
-                val theNewStory = aMessageStory.copy(currentType = AnswerConfigurationType.builtin)
+                val theNewStory = aMessageStory.copy(_id = aMessageStory._id, currentType = AnswerConfigurationType.builtin)
 
                 assertFailsWith<BadRequestException> { BotAdminService.saveStory(theNewStory.namespace, theNewStory, "testUser") }
 
