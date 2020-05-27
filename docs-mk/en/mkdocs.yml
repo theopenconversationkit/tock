@@ -32,15 +32,14 @@ nav:
 
 theme:
   name: 'material'
-  logo: 'assets/images/logo-white.svg'
+  logo: 'assets/images/logo-white.png'
   favicon: 'img/favicon.png'
+  features:
+    - tabs
+    - instant
 markdown_extensions:
   - admonition
   - codehilite
   - toc:
       permalink: true
 copyright: 'Copyright &copy; 2017/2020 Tock'
-extra:
-  social:
-    - type: 'github'
-      link: 'https://github.com/theopenconversationkit/tock'

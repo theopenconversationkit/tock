@@ -1,4 +1,4 @@
-# L'interface _Tock Studio_
+# L'interface Tock Studio
 
 Cette page présente les caractéristiques générales de _Tock Studio_.
 

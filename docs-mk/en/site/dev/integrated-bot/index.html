@@ -1,0 +1,1349 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="Build assistants & chatbots with ease.">
+      
+      
+        <link rel="canonical" href="https://theopenconversationkit.github.io/tock/en/dev/integrated-bot/">
+      
+      
+        <meta name="author" content="Tock">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../img/favicon.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.2">
+    
+    
+      
+        <title>Integrated Bot mode - Tock</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/application.30686662.css">
+      
+      
+    
+    
+      <script src="../../assets/javascripts/modernizr.74668098.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
+    
+    
+    
+      
+    
+    
+  </head>
+  
+    <body dir="ltr">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#integrated-bot-mode" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="https://theopenconversationkit.github.io/tock/en" title="Tock" class="md-header-nav__button md-logo">
+          
+            <img src="../../assets/images/logo.svg" width="24" height="24">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              Tock
+            </span>
+            <span class="md-header-nav__topic">
+              
+                Integrated Bot mode
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/theopenconversationkit/tock" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    tock
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="https://theopenconversationkit.github.io/tock/en" title="Tock" class="md-nav__button md-logo">
+      
+        <img src="../../assets/images/logo.svg" width="48" height="48">
+      
+    </a>
+    Tock
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/theopenconversationkit/tock" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    tock
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Overview" class="md-nav__link">
+      Overview
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+    
+    <label class="md-nav__link" for="nav-2">
+      Try Tock Studio
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Try Tock Studio
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../guide/studio/" title="Create your 1st bot" class="md-nav__link">
+      Create your 1st bot
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../build-nlp-model/" title="Build NLP models" class="md-nav__link">
+      Build NLP models
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../evaluate-the-model/" title="Monitor NLP models" class="md-nav__link">
+      Monitor NLP models
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+    
+    <label class="md-nav__link" for="nav-3">
+      Develop Stories
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Develop Stories
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../bot-api/" title="Bot API mode" class="md-nav__link">
+      Bot API mode
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Integrated Bot mode
+      </label>
+    
+    <a href="./" title="Integrated Bot mode" class="md-nav__link md-nav__link--active">
+      Integrated Bot mode
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#sample-project" class="md-nav__link">
+    Sample Project
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker-images" class="md-nav__link">
+    Docker Images
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#start-the-nlp-stack" class="md-nav__link">
+    Start the NLP stack
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sample-bot-based-on-open-data-apis" class="md-nav__link">
+    Sample bot based on Open Data APIs
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#develop-a-new-bot" class="md-nav__link">
+    Develop a new Bot
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#add-the-bot-toolkit-dependency" class="md-nav__link">
+    Add the bot-toolkit Dependency
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-bot-is-a-set-of-stories" class="md-nav__link">
+    A Bot is a Set of Stories
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-simple-story" class="md-nav__link">
+    A Simple Story
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#start-and-connect-the-bot" class="md-nav__link">
+    Start and Connect the Bot
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-options" class="md-nav__link">
+    Advanced options
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#secondary-intentions" class="md-nav__link">
+    Secondary Intentions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handle-entities" class="md-nav__link">
+    Handle Entities
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handlerdef" class="md-nav__link">
+    HandlerDef
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connectordef" class="md-nav__link">
+    ConnectorDef
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storystep" class="md-nav__link">
+    StoryStep
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simplestorystep" class="md-nav__link">
+    SimpleStoryStep
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storysteps-with-complex-behavior" class="md-nav__link">
+    StorySteps with complex behavior
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#postback-buttons-quick-replies" class="md-nav__link">
+    Postback buttons &amp; quick replies
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connectors/" title="Connectors" class="md-nav__link">
+      Connectors
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../kdoc/" title="KDoc" class="md-nav__link">
+      KDoc
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../the-open-data-bot/" title="Code Samples" class="md-nav__link">
+      Code Samples
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+    <label class="md-nav__link" for="nav-4">
+      About
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        About
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../about/why/" title="Why Tock" class="md-nav__link">
+      Why Tock
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../about/showcase/" title="Showcase" class="md-nav__link">
+      Showcase
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../about/resources/" title="Resources" class="md-nav__link">
+      Resources
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../about/contact/" title="Contact us" class="md-nav__link">
+      Contact us
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../about/community/" title="Community" class="md-nav__link">
+      Community
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../about/contribute/" title="Contribute" class="md-nav__link">
+      Contribute
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../about/jobs/" title="Jobs" class="md-nav__link">
+      Jobs
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="https://theopenconversationkit.github.io/tock/fr/" title="🇬🇧 🇫🇷" class="md-nav__link">
+      🇬🇧 🇫🇷
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#sample-project" class="md-nav__link">
+    Sample Project
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker-images" class="md-nav__link">
+    Docker Images
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#start-the-nlp-stack" class="md-nav__link">
+    Start the NLP stack
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sample-bot-based-on-open-data-apis" class="md-nav__link">
+    Sample bot based on Open Data APIs
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#develop-a-new-bot" class="md-nav__link">
+    Develop a new Bot
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#add-the-bot-toolkit-dependency" class="md-nav__link">
+    Add the bot-toolkit Dependency
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-bot-is-a-set-of-stories" class="md-nav__link">
+    A Bot is a Set of Stories
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-simple-story" class="md-nav__link">
+    A Simple Story
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#start-and-connect-the-bot" class="md-nav__link">
+    Start and Connect the Bot
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-options" class="md-nav__link">
+    Advanced options
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#secondary-intentions" class="md-nav__link">
+    Secondary Intentions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handle-entities" class="md-nav__link">
+    Handle Entities
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handlerdef" class="md-nav__link">
+    HandlerDef
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connectordef" class="md-nav__link">
+    ConnectorDef
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storystep" class="md-nav__link">
+    StoryStep
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simplestorystep" class="md-nav__link">
+    SimpleStoryStep
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storysteps-with-complex-behavior" class="md-nav__link">
+    StorySteps with complex behavior
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#postback-buttons-quick-replies" class="md-nav__link">
+    Postback buttons &amp; quick replies
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="integrated-bot-mode"><em>Integrated Bot Mode</em><a class="headerlink" href="#integrated-bot-mode" title="Permanent link">&para;</a></h1>
+<p>To develop a bot or an assistant with Tock,
+you can also use the so called <em>Integrated mode</em> 
+developed in <a href="https://kotlinlang.org/">Kotlin</a>. 
+You get then direct access to the MongoDb database.</p>
+<blockquote>
+<p>This mode is not available in the demo platform - you need to install the Tock
+docker images on your own servers.</p>
+</blockquote>
+<h2 id="sample-project">Sample Project<a class="headerlink" href="#sample-project" title="Permanent link">&para;</a></h2>
+<p>A sample bot using Tock <em>Integrated mode</em> is provided: <a href="https://github.com/theopenconversationkit/tock-bot-open-data">https://github.com/theopenconversationkit/tock-bot-open-data</a>.</p>
+<p>It uses <a href="https://data.sncf.com/">Open Data SNCF API</a> (french trainlines itineraries).</p>
+<p>This is a good starting point, since it also includes a very simple NLP model.</p>
+<blockquote>
+<p>Of course, as the model is not big, the quality of the bot is low, but still it's enough to demonstrate the use of the toolkit.</p>
+</blockquote>
+<h2 id="docker-images">Docker Images<a class="headerlink" href="#docker-images" title="Permanent link">&para;</a></h2>
+<p>Docker images in <a href="https://hub.docker.com/r/tock/">Docker Hub</a>.</p>
+<p>The source code used to build these images, as well as the docker-compose files used to start the Tock toolkit, are available in the GitHub repository <a href="https://github.com/theopenconversationkit/tock-docker">https://github.com/theopenconversationkit/tock-docker</a>.</p>
+<h3 id="start-the-nlp-stack">Start the NLP stack<a class="headerlink" href="#start-the-nlp-stack" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span>    <span class="c1">#get the last docker-compose file</span>
+    curl -o docker-compose.yml https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/docker-compose.yml
+    <span class="c1">#get the script to start mongo in replicaset mode</span>
+    mkdir -p scripts <span class="o">&amp;&amp;</span> curl -o scripts/setup.sh https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/scripts/setup.sh <span class="o">&amp;&amp;</span> chmod +x scripts/setup.sh
+    <span class="c1">#get the last tag</span>
+    curl -o .env https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/.env
+    <span class="c1">#launch the stack</span>
+    docker-compose up
+</pre></div>
+
+
+<p>The admin webapp is now available on port <code>80</code>: <a href="http://localhost">http://localhost</a></p>
+<p>The default login is <em>admin@app.com</em> and the password is <em>password</em>.</p>
+<h3 id="sample-bot-based-on-open-data-apis">Sample bot based on Open Data APIs<a class="headerlink" href="#sample-bot-based-on-open-data-apis" title="Permanent link">&para;</a></h3>
+<p>A docker image is available to launch it directly. The instructions are specified in the <a href="https://github.com/theopenconversationkit/tock-docker#user-content-run-the-open-data-bot-example">github project containing the docker images</a>.</p>
+<h2 id="develop-a-new-bot">Develop a new Bot<a class="headerlink" href="#develop-a-new-bot" title="Permanent link">&para;</a></h2>
+<h3 id="add-the-bot-toolkit-dependency">Add the bot-toolkit Dependency<a class="headerlink" href="#add-the-bot-toolkit-dependency" title="Permanent link">&para;</a></h3>
+<p>The bot-toolkit dependency is required:</p>
+<p>With Maven:</p>
+<div class="codehilite"><pre><span></span>        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>ai.tock<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>bot-toolkit<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>20.3.1<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+</pre></div>
+
+
+<p>With Gradle:</p>
+<div class="codehilite"><pre><span></span>      <span class="n">compile</span> <span class="s1">&#39;ai.tock:bot-toolkit:20.3.1&#39;</span>
+</pre></div>
+
+
+<h3 id="a-bot-is-a-set-of-stories">A Bot is a Set of Stories<a class="headerlink" href="#a-bot-is-a-set-of-stories" title="Permanent link">&para;</a></h3>
+<p>This is how the open data bot is defined:</p>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">openBot</span> <span class="p">=</span> <span class="n">bot</span><span class="p">(</span>
+        <span class="s">&quot;bot_open_data&quot;</span><span class="p">,</span>
+        <span class="n">stories</span> <span class="p">=</span>
+        <span class="n">listOf</span><span class="p">(</span>
+                <span class="n">greetings</span><span class="p">,</span>
+                <span class="n">departures</span><span class="p">,</span>
+                <span class="n">arrivals</span><span class="p">,</span>
+                <span class="n">search</span>
+        <span class="p">),</span>
+        <span class="n">hello</span> <span class="p">=</span> <span class="n">greetings</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>This bot has an unique identifier (required - "bot_open_data") and a list of <strong>"Story"</strong>.</p>
+<p>A <em>Story</em> is a functional subset that has a main intention and, optionally,
+one or more so-called "secondary" intentions.</p>
+<p>Here the bot defines 4 <em>Stories</em>, greetings, departures, arrivals and search. 
+Greetings is also set (<em>hello = greetings</em>) as the default story used for a new dialog.</p>
+<h3 id="a-simple-story">A Simple Story<a class="headerlink" href="#a-simple-story" title="Permanent link">&para;</a></h3>
+<p>How do you define a story? Here is a first simplified version of the story <em>greetings</em>:</p>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">greetings</span> <span class="p">=</span> <span class="n">story</span><span class="p">(</span><span class="s">&quot;greetings&quot;</span><span class="p">)</span> <span class="p">{</span> 
+        <span class="n">send</span><span class="p">(</span><span class="s">&quot;Welcome to the Tock Open Data Bot! :)&quot;</span><span class="p">)</span>
+        <span class="n">end</span><span class="p">(</span><span class="s">&quot;This is a Tock framework demonstration bot: https://github.com/theopenconversationkit/tock&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Note that in the body of the function, <em>this</em> has a <a href="https://doc.tock.ai/tock/dokka/tock/ai.tock.bot.engine/-bot-bus/index.html">BotBus</a> type.
+From which you can interact with the user, and which also allows you to access
+to all available contextual elements.</p>
+<p>When the intention <em>greetings</em> will be detected by the NLP model, 
+the function above will be called by the Tock framework.</p>
+<p>The bot sends successively a first response sentence (<em>bus.send()</em>), then a second one indicating that it is
+the last sentence of his answer using a <em>bus.end()</em>.</p>
+<p>Here is the full version of <em>greetings</em>:</p>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">greetings</span> <span class="p">=</span> <span class="n">story</span><span class="p">(</span><span class="s">&quot;greetings&quot;</span><span class="p">)</span> <span class="p">{</span> 
+    <span class="c1">//cleanup state</span>
+    <span class="n">resetDialogState</span><span class="p">()</span>
+
+    <span class="n">send</span><span class="p">(</span><span class="s">&quot;Welcome to the Tock Open Data Bot! :)&quot;</span><span class="p">)</span>
+    <span class="n">send</span><span class="p">(</span><span class="s">&quot;This is a Tock framework demonstration bot: https://github.com/theopenconversationkit/tock&quot;</span><span class="p">)</span>
+
+    <span class="n">withMessenger</span> <span class="p">{</span>
+        <span class="n">buttonsTemplate</span><span class="p">(</span>
+                <span class="s">&quot;The bot is very limited, but ask him a route or the next departures from a station in France, and see the result! :)&quot;</span><span class="p">,</span>
+                <span class="n">postbackButton</span><span class="p">(</span><span class="s">&quot;Itineraries&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">),</span>
+                <span class="n">postbackButton</span><span class="p">(</span><span class="s">&quot;Departures&quot;</span><span class="p">,</span> <span class="n">Departures</span><span class="p">),</span>
+                <span class="n">postbackButton</span><span class="p">(</span><span class="s">&quot;Arrivals&quot;</span><span class="p">,</span> <span class="n">Arrivals</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">withGoogleAssistant</span> <span class="p">{</span>
+        <span class="n">gaMessage</span><span class="p">(</span>
+                <span class="s">&quot;The bot is very limited, but ask him a route or the next departures from a station in France, and see the result! :)&quot;</span><span class="p">,</span>
+                <span class="s">&quot;Itineraries&quot;</span><span class="p">,</span>
+                <span class="s">&quot;Departures&quot;</span><span class="p">,</span>
+                <span class="s">&quot;Arrivals&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">end</span><span class="p">()</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Two notions have been added:</p>
+<ul>
+<li>
+<p><em>resetDialogState()</em> which cleanup the state (forgetting any previous context).</p>
+</li>
+<li>
+<p>the <em>withMessenger{}</em> and <em>withGoogleAssistant{}</em> methods that define specific responses for each connector -
+Here it's a text with buttons for Messenger, and a text with suggestions for Google Assistant.</p>
+</li>
+</ul>
+<h3 id="start-and-connect-the-bot">Start and Connect the Bot<a class="headerlink" href="#start-and-connect-the-bot" title="Permanent link">&para;</a></h3>
+<p>To start the bot, simply add the following call to your main function:</p>
+<div class="codehilite"><pre><span></span><span class="n">registerAndInstallBot</span><span class="p">(</span><span class="n">openBot</span><span class="p">)</span>
+</pre></div>
+
+
+<p>where the <em>openBot</em> variable is the bot you originally defined.</p>
+<p>When the bot is started, you also need to specify which connectors are used
+in the web administration interface: Configuration -&gt; Bot Configurations -&gt; Create a new configuration  </p>
+<p>See <a href="../connectors/">Connectors</a> page for the list of available connectors.</p>
+<h3 id="advanced-options">Advanced options<a class="headerlink" href="#advanced-options" title="Permanent link">&para;</a></h3>
+<p>Of course, the <em>StoryHandler</em> of <em>greetings</em> does not depend on the context: the answer is always the same.</p>
+<h4 id="secondary-intentions">Secondary Intentions<a class="headerlink" href="#secondary-intentions" title="Permanent link">&para;</a></h4>
+<p>Here is the beginning of the definition of the <em>search</em> story :</p>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">storyDef</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
+        <span class="s">&quot;search&quot;</span><span class="p">,</span>
+        <span class="n">otherStarterIntents</span> <span class="p">=</span> <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
+        <span class="n">secondaryIntents</span> <span class="p">=</span> <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span>
+
+<span class="p">}</span>
+</pre></div>
+
+
+<p>The story <strong>search</strong> defines a secondary <em>starter</em> intent (<em>indicate_origin</em>)
+and a simple secondary intent (<em>indicate_location</em>).</p>
+<p>A secondary <em>starter</em> intent is similar in every respect to the main intent:
+as soon as the intent is detected, if the current story does not contain <em>indicate_origin</em> as secondary intent,
+the story <em>search</em> is called.</p>
+<p>For a <em>classic</em> secondary intent, on the other hand, the story will be executed only if the current story of the context
+is <em>already</em> the <strong>search</strong> story. Different stories can therefore share the same secondary intents.</p>
+<h4 id="handle-entities">Handle Entities<a class="headerlink" href="#handle-entities" title="Permanent link">&para;</a></h4>
+<p>To retrieve entity values, it is good practice to define Kotlin <strong>extensions</strong>.
+For example here is the code used to retrieve the <em>destination</em> entity:</p>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">destinationEntity</span> <span class="p">=</span> <span class="n">openBot</span><span class="p">.</span><span class="n">entity</span><span class="p">(</span><span class="s">&quot;location&quot;</span><span class="p">,</span> <span class="s">&quot;destination&quot;</span><span class="p">)</span> 
+
+<span class="k">var</span> <span class="py">BotBus</span><span class="p">.</span><span class="n">destination</span><span class="p">:</span> <span class="n">Place</span><span class="p">?</span>
+    <span class="k">get</span><span class="p">()</span> <span class="p">=</span> <span class="n">place</span><span class="p">(</span><span class="n">destinationEntity</span><span class="p">)</span>
+    <span class="k">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="p">=</span> <span class="n">setPlace</span><span class="p">(</span><span class="n">destinationEntity</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+<span class="k">private</span> <span class="k">fun</span> <span class="nc">BotBus</span><span class="p">.</span><span class="nf">place</span><span class="p">(</span><span class="n">entity</span><span class="p">:</span> <span class="n">Entity</span><span class="p">):</span> <span class="n">Place</span><span class="p">?</span> <span class="p">=</span> <span class="n">entityValue</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="o">::</span><span class="n">placeValue</span><span class="p">)</span><span class="o">?.</span><span class="n">place</span>
+
+<span class="k">private</span> <span class="k">fun</span> <span class="nc">BotBus</span><span class="p">.</span><span class="nf">setPlace</span><span class="p">(</span><span class="n">entity</span><span class="p">:</span> <span class="n">Entity</span><span class="p">,</span> <span class="n">place</span><span class="p">:</span> <span class="n">Place</span><span class="p">?)</span> <span class="p">=</span> <span class="n">changeEntityValue</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">place</span><span class="o">?.</span><span class="n">let</span> <span class="p">{</span> <span class="n">PlaceValue</span><span class="p">(</span><span class="n">place</span><span class="p">)</span> <span class="p">})</span>
+</pre></div>
+
+
+<p>An entity of type "location" and role "destination" is created.
+There is a corresponding entity in the NLP model.</p>
+<p>A variable <em>destination</em> is defined, which will simplify the handling of this entity in the conversational code.
+This variable contains the current value of the destination in the user context.</p>
+<p>Here's a full version of the <em>search</em> story that uses <em>destination</em>:</p>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">storyDef</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
+        <span class="s">&quot;search&quot;</span><span class="p">,</span>
+        <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
+        <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span>
+
+        <span class="c1">//check mandatory entities</span>
+        <span class="k">when</span> <span class="p">{</span>
+            <span class="n">destination</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;For which destination?&quot;</span><span class="p">)</span>
+            <span class="n">origin</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;For which origin?&quot;</span><span class="p">)</span>
+            <span class="n">departureDate</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;When?&quot;</span><span class="p">)</span>
+        <span class="p">}</span> 
+<span class="p">}</span>
+</pre></div>
+
+
+<p>If there is no value in the current context for the destination, the bot asks to specify the destination and stays there.
+Same behaviour for the origin or date of departure.</p>
+<p>If the 3 required values are specified, then the real answer developed in the <em>SearchDef</em> class is used.</p>
+<p>Here is the full version of this first part of the code:</p>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">storyDef</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
+        <span class="s">&quot;search&quot;</span><span class="p">,</span>
+        <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
+        <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span>
+
+        <span class="c1">//handle generic location intent</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">isIntent</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">)</span> <span class="p">&amp;&amp;</span> <span class="n">location</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">destination</span> <span class="p">==</span> <span class="k">null</span> <span class="p">||</span> <span class="n">origin</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">destination</span> <span class="p">=</span> <span class="n">returnsAndRemoveLocation</span><span class="p">()</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="n">origin</span> <span class="p">=</span> <span class="n">returnsAndRemoveLocation</span><span class="p">()</span>
+            <span class="p">}</span>
+        <span class="p">}</span>    
+
+        <span class="c1">//check mandatory entities</span>
+        <span class="k">when</span> <span class="p">{</span>
+            <span class="n">destination</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;For which destination?&quot;</span><span class="p">)</span>
+            <span class="n">origin</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;For which origin?&quot;</span><span class="p">)</span>
+            <span class="n">departureDate</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;When?&quot;</span><span class="p">)</span>
+        <span class="p">}</span> 
+<span class="p">}</span>
+</pre></div>
+
+
+<p>In the case where the detected intention is <em>indicate_location</em>, we do not know if the locality represents the origin or the destination.</p>
+<p>A simple rule is then used:
+If there is already in the context an origin and no destination, the new locality is actually the destination.
+Otherwise, it is the origin.</p>
+<h4 id="handlerdef">HandlerDef<a class="headerlink" href="#handlerdef" title="Permanent link">&para;</a></h4>
+<p>In the <em>search</em> story above, you may have noted the generic <em>SearchDef</em> typing.
+Here is the code of this class:</p>
+<div class="codehilite"><pre><span></span><span class="n">@GAHandler</span><span class="p">(</span><span class="n">GASearchConnector</span><span class="o">::</span><span class="k">class</span><span class="p">)</span>
+<span class="n">@MessengerHandler</span><span class="p">(</span><span class="n">MessengerSearchConnector</span><span class="o">::</span><span class="k">class</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">SearchDef</span><span class="p">(</span><span class="n">bus</span><span class="p">:</span> <span class="n">BotBus</span><span class="p">)</span> <span class="p">:</span> <span class="n">HandlerDef</span><span class="p">&lt;</span><span class="n">SearchConnector</span><span class="p">&gt;(</span><span class="n">bus</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">private</span> <span class="k">val</span> <span class="py">d</span><span class="p">:</span> <span class="n">Place</span> <span class="p">=</span> <span class="n">bus</span><span class="p">.</span><span class="n">destination</span><span class="o">!!</span>
+    <span class="k">private</span> <span class="k">val</span> <span class="py">o</span><span class="p">:</span> <span class="n">Place</span> <span class="p">=</span> <span class="n">bus</span><span class="p">.</span><span class="n">origin</span><span class="o">!!</span>
+    <span class="k">private</span> <span class="k">val</span> <span class="py">date</span><span class="p">:</span> <span class="n">LocalDateTime</span> <span class="p">=</span> <span class="n">bus</span><span class="p">.</span><span class="n">departureDate</span><span class="o">!!</span>
+
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">answer</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">send</span><span class="p">(</span><span class="s">&quot;From {0} to {1}&quot;</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+        <span class="n">send</span><span class="p">(</span><span class="s">&quot;Departure on {0}&quot;</span><span class="p">,</span> <span class="n">date</span> <span class="k">by</span> <span class="n">datetimeFormat</span><span class="p">)</span>
+        <span class="k">val</span> <span class="py">journeys</span> <span class="p">=</span> <span class="n">SncfOpenDataClient</span><span class="p">.</span><span class="n">journey</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">date</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">journeys</span><span class="p">.</span><span class="n">isEmpty</span><span class="p">())</span> <span class="p">{</span>
+            <span class="n">end</span><span class="p">(</span><span class="s">&quot;Sorry, no routes found :(&quot;</span><span class="p">)</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="n">send</span><span class="p">(</span><span class="s">&quot;Here is the first proposal:&quot;</span><span class="p">)</span>
+            <span class="n">connector</span><span class="o">?.</span><span class="n">sendFirstJourney</span><span class="p">(</span><span class="n">journeys</span><span class="p">.</span><span class="n">first</span><span class="p">())</span>
+            <span class="n">end</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p><em>SearchDef</em> extends <em>HandlerDef</em> which is an alias of a Tock framework class.</p>
+<p>It is usually here that the code of complex <em>stories</em> is defined.</p>
+<p>The code contains an additional abstraction: <strong>SearchConnector</strong>.</p>
+<p><em>SearchConnector</em> is the class that defines the behavior specific to each connector, and the annotations
+<strong>@GAHandler</strong>(GASearchConnector::class) and <strong>@MessengerHandler</strong>(MessengerSearchConnector::class) 
+indicate the corresponding implementations for the different supported connectors (respectively Google Assistant and Messenger).
+ </p>
+<p>What would happen there is no connector for Google Assistant for example, and if a call from Google Assistant is answered?</p>
+<p>The <em>connector?.sendFirstJourney(journeys.first())</em> method call would not send the final response,
+since <em>connector</em> would be <em>null</em>.</p>
+<h4 id="connectordef">ConnectorDef<a class="headerlink" href="#connectordef" title="Permanent link">&para;</a></h4>
+<p>Here is a simplified version of <em>SearchConnector</em> :</p>
+<div class="codehilite"><pre><span></span><span class="k">sealed</span> <span class="k">class</span> <span class="nc">SearchConnector</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">SearchDef</span><span class="p">)</span> <span class="p">:</span> <span class="n">ConnectorDef</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span><span class="n">context</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">fun</span> <span class="nc">Section</span><span class="p">.</span><span class="nf">title</span><span class="p">():</span> <span class="n">CharSequence</span> <span class="p">=</span> <span class="n">i18n</span><span class="p">(</span><span class="s">&quot;{0} - {1}&quot;</span><span class="p">,</span> <span class="n">from</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span>
+
+    <span class="k">fun</span> <span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">journey</span><span class="p">:</span> <span class="n">Journey</span><span class="p">)</span> <span class="p">=</span> <span class="n">withMessage</span><span class="p">(</span><span class="n">sendFirstJourney</span><span class="p">(</span><span class="n">journey</span><span class="p">.</span><span class="n">publicTransportSections</span><span class="p">()))</span>
+
+    <span class="k">abstract</span> <span class="k">fun</span> <span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">sections</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Section</span><span class="p">&gt;):</span> <span class="n">ConnectorMessage</span>
+
+<span class="p">}</span>
+</pre></div>
+
+
+<p>And its Messenger implementation:</p>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">MessengerSearchConnector</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">SearchDef</span><span class="p">)</span> <span class="p">:</span> <span class="n">SearchConnector</span><span class="p">(</span><span class="n">context</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">sections</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Section</span><span class="p">&gt;):</span> <span class="n">ConnectorMessage</span> <span class="p">=</span>
+          <span class="n">flexibleListTemplate</span><span class="p">(</span>
+                <span class="n">sections</span><span class="p">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">section</span> <span class="p">-&gt;</span>
+                      <span class="n">with</span><span class="p">(</span><span class="n">section</span><span class="p">)</span> <span class="p">{</span>
+                          <span class="n">listElement</span><span class="p">(</span>
+                                <span class="n">title</span><span class="p">(),</span>
+                                <span class="n">content</span><span class="p">(),</span>
+                                <span class="n">trainImage</span>
+                          <span class="p">)</span>
+                      <span class="p">}</span>
+                <span class="p">},</span>
+                <span class="n">compact</span>
+          <span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>The code specific to each connector is thus decoupled correctly.
+The code common to each connector is present in <em>SearchConnector</em> and the behavior specific to
+each connector is specified in the dedicated classes.</p>
+<h4 id="storystep">StoryStep<a class="headerlink" href="#storystep" title="Permanent link">&para;</a></h4>
+<p>Sometimes you need to remember the stage at which the user is
+in the current story. For this, Tock provides the concept of <em>StoryStep</em>.</p>
+<p>There are two types of StoryStep.</p>
+<h5 id="simplestorystep">SimpleStoryStep<a class="headerlink" href="#simplestorystep" title="Permanent link">&para;</a></h5>
+<div class="codehilite"><pre><span></span><span class="k">enum</span> <span class="k">class</span> <span class="nc">MyStep</span> <span class="p">:</span> <span class="n">SimpleStoryStep</span> <span class="p">{</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="p">}</span>
+
+<span class="k">val</span> <span class="py">story</span> <span class="p">=</span> <span class="n">storyWithSteps</span><span class="p">&lt;</span><span class="n">MyStep</span><span class="p">&gt;(</span><span class="s">&quot;intent&quot;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">step</span> <span class="p">==</span> <span class="n">a</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// ...</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">step</span> <span class="p">==</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// ...</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="c1">//default case</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>To modify the current step, two methods are available:</p>
+<ul>
+<li>Manually change the step</li>
+</ul>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">story</span> <span class="p">=</span> <span class="n">storyWithSteps</span><span class="p">&lt;</span><span class="n">MyStep</span><span class="p">&gt;(</span><span class="s">&quot;intent&quot;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">//(...)</span>
+    <span class="n">step</span> <span class="p">=</span> <span class="n">MyStep</span><span class="p">.</span><span class="n">a</span>
+    <span class="c1">// the step will be persisted as long as we stay in this story</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<ul>
+<li>Use buttons or quick replies</li>
+</ul>
+<p>More details on this topic <a href="../code-a-bot/#postback-buttons-quick-replies">here</a>.</p>
+<h5 id="storysteps-with-complex-behavior">StorySteps with complex behavior<a class="headerlink" href="#storysteps-with-complex-behavior" title="Permanent link">&para;</a></h5>
+<p>In more complex cases, we want to be able to define a behavior for each step.</p>
+<div class="codehilite"><pre><span></span><span class="k">enum</span> <span class="k">class</span> <span class="nc">MySteps</span> <span class="p">:</span> <span class="n">StoryStep</span><span class="p">&lt;</span><span class="n">MyHandlerDef</span><span class="p">&gt;</span> <span class="p">{</span>
+
+    <span class="c1">//no specific behaviour</span>
+    <span class="n">display</span><span class="p">,</span>
+
+    <span class="n">select</span> <span class="p">{</span>
+
+        <span class="c1">// &quot;select&quot; step will be automatically selected if the select sub-intention is detected</span>
+        <span class="k">override</span> <span class="k">val</span> <span class="py">intent</span><span class="p">:</span> <span class="n">IntentAware</span><span class="p">?</span> <span class="p">=</span> <span class="n">SecondaryIntent</span><span class="p">.</span><span class="n">select</span>
+
+        <span class="k">override</span> <span class="k">fun</span> <span class="nf">answer</span><span class="p">():</span> <span class="n">MyHandlerDef</span><span class="p">.()</span> <span class="p">-&gt;</span> <span class="n">Any</span><span class="p">?</span> <span class="p">=</span> <span class="p">{</span>
+            <span class="n">end</span><span class="p">(</span><span class="s">&quot;I don&#39;t know yet how to select something&quot;</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+
+    <span class="n">disruption</span> <span class="p">{</span>
+        <span class="k">override</span> <span class="k">fun</span> <span class="nf">answer</span><span class="p">():</span> <span class="n">ScoreboardDef</span><span class="p">.()</span> <span class="p">-&gt;</span> <span class="n">Any</span><span class="p">?</span> <span class="p">=</span> <span class="p">{</span>
+            <span class="n">end</span><span class="p">(</span><span class="s">&quot;some perturbation&quot;</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">};</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>More configuration options are available. Check out the description of <a href="https://doc.tock.ai/tock/dokka/tock/ai.tock.bot.definition/-story-step/index.html">StoryStep</a>. </p>
+<h4 id="postback-buttons-quick-replies">Postback buttons &amp; quick replies<a class="headerlink" href="#postback-buttons-quick-replies" title="Permanent link">&para;</a></h4>
+<p>Messenger provides this type of button, as most connectors with GUI.</p>
+<p>With Tock, you can easily define the action performed after clicking on these buttons. </p>
+<p>In the following example, the button will redirect to the "search" intent:</p>
+<div class="codehilite"><pre><span></span><span class="n">buttonsTemplate</span><span class="p">(</span>
+            <span class="s">&quot;The bot is very limited! Only itineraries are supported :)&quot;</span><span class="p">,</span>
+            <span class="n">postbackButton</span><span class="p">(</span><span class="s">&quot;Itineraries&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>It is also possible to define a * StoryStep * and dedicated parameters:</p>
+<div class="codehilite"><pre><span></span><span class="c1">//to define parameters, just extend the ParameterKey interface</span>
+<span class="k">enum</span> <span class="k">class</span> <span class="nc">ChoiceParameter</span> <span class="p">:</span> <span class="n">ParameterKey</span> <span class="p">{</span>
+    <span class="n">nextResultDate</span><span class="p">,</span> <span class="n">nextResultOrigin</span>
+<span class="p">}</span>
+
+<span class="n">buttonsTemplate</span><span class="p">(</span>
+            <span class="s">&quot;The bot is very limited! Only itineraries are supported :)&quot;</span><span class="p">,</span>
+            <span class="n">postbackButton</span><span class="p">(</span>
+                <span class="s">&quot;Itineraries&quot;</span><span class="p">,</span>
+                <span class="n">intent</span> <span class="p">=</span> <span class="n">search</span><span class="p">,</span> 
+                <span class="c1">//if no step is specified, the current step is used</span>
+                <span class="n">step</span> <span class="p">=</span> <span class="n">MyStep</span><span class="p">.</span><span class="n">a</span><span class="p">,</span> 
+                <span class="n">parameters</span> <span class="p">=</span>  
+                    <span class="c1">//this parameter is stored as a string (hooks are used)</span>
+                    <span class="n">nextResultDate</span><span class="p">[</span><span class="n">nextDate</span><span class="p">]</span> <span class="p">+</span> 
+                    <span class="c1">//this parameter is stored in json (parentheses are used)</span>
+                    <span class="n">nextResultOrigin</span><span class="p">(</span><span class="n">origin</span><span class="p">)</span>
+            <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>To retrieve the parameters of the button that was clicked:</p>
+<div class="codehilite"><pre><span></span>    <span class="k">val</span> <span class="py">isClick</span> <span class="p">=</span> <span class="n">isChoiceAction</span><span class="p">()</span>
+    <span class="k">val</span> <span class="py">nextDate</span> <span class="p">=</span> <span class="n">choice</span><span class="p">(</span><span class="n">nextResultDate</span><span class="p">)</span>
+    <span class="k">val</span> <span class="py">nextOrigin</span> <span class="p">:</span> <span class="n">Locality</span> <span class="p">=</span> <span class="n">action</span><span class="p">.</span><span class="n">jsonChoice</span><span class="p">(</span><span class="n">nextResultOrigin</span><span class="p">)</span>
+</pre></div>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../bot-api/" title="Bot API mode" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Bot API mode
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../connectors/" title="Connectors" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Connectors
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017/2020 Tock
+          </div>
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+  <div class="md-footer-social">
+    <link rel="stylesheet" href="../../assets/fonts/font-awesome.css">
+    
+      <a href="https://github.com/theopenconversationkit/tock" class="md-footer-social__link fa fa-github"></a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/application.c648116f.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
+      
+    
+  </body>
+</html>

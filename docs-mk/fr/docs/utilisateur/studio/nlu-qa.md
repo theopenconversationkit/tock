@@ -1,4 +1,4 @@
-# Le menu _NLU QA_
+# Le menu NLU QA
 
 Le menu _NLU QA_ permet d'évaluer et de suivre dans le temps la qualité/pertinence/performance des modèles conversationnels.
  

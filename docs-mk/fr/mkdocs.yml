@@ -16,13 +16,23 @@ nav:
       - 'Déployer avec Docker': 'guide/plateforme.md'
   - 'Utiliser Tock':
       - 'Concepts': 'utilisateur/concepts.md'
-      - 'Tock Studio': 'utilisateur/studio.md'
+      - 'Tock Studio':
+        - 'Présentation': 'utilisateur/studio.md'
+        - 'Interface générale': 'utilisateur/studio/general.md'
+        - 'Le menu Configuration': 'utilisateur/studio/configuration.md'
+        - 'Le menu NLU': 'utilisateur/studio/nlu.md'
+        - 'Le menu NLU QA': 'utilisateur/studio/nlu-qa.md'
+        - 'Le menu Build': 'utilisateur/studio/build.md'
+        - 'Le menu Test': 'utilisateur/studio/test.md'
+        - 'Le menu Monitoring': 'utilisateur/studio/monitoring.md'
+      - 'Construire un modèle conversationnel':  'utilisateur/studio/build-model.md'
       - 'Bot multicanal': 'utilisateur/canaux.md'
       - 'Bot multilingue': 'utilisateur/i18n.md'
   - 'Développer avec Tock':
       - 'Modes disponibles': 'dev/modes.md'
       - 'Tock Bot API': 'dev/bot-api.md'
       - 'Tock Bot intégré': 'dev/bot-integre.md'
+      - 'Tester le mode intégré': 'dev/tester.md'
       - 'Connecteurs': 'dev/connecteurs.md'
       - 'i18n': 'dev/i18n.md'
       - 'Liste des APIs': 'dev/api.md'
@@ -49,8 +59,11 @@ nav:
 theme:
   name: 'material'
   language: 'fr'
-  logo: 'assets/images/logo-white.svg'
+  logo: 'assets/images/logo-white.png'
   favicon: 'img/favicon.png'
+  features:
+    - tabs
+    - instant
 plugins:
   - search:
       lang: 'fr'
@@ -61,8 +74,5 @@ markdown_extensions:
       permalink: true
 copyright: 'Copyright &copy; 2017/2020 Tock'
 extra:
-  social:
-    - type: 'github'
-      link: 'https://github.com/theopenconversationkit/tock'
   search:
     language: 'fr'

@@ -11,7 +11,7 @@ s'autorisant à passer d'un écran à un autre sans détailler exhaustivement ch
 >se limitent aux menus _Configuration_, _NLU_ et _NLU QA_. Cette page peut donc servir de tutoriel pour une utilisation 
 >de Tock restreinte au _NLU_, par exemple pour un usage comme l'[Internet des objets](https://fr.wikipedia.org/wiki/Internet_des_objets).
 
-## Rendez-vous dans la section _NLU_
+## Rendez-vous dans la section *NLU*
 
 Le menu _NLU_ renvoie sur l'onglet _Inbox_ par défaut. Au départ vous n'avez pas de phrases si personne n'a encore parlé au bot :
 
@@ -50,7 +50,7 @@ Il est bien sûr possible d'avoir plusieurs occurrences du même role, ou d'un r
 
 ![schéma Tock](../../img/try-it-4.png "Sélection de plusieurs entités")
 
-### Tirez parti des _entités prédéfinies_
+### Tirez parti des *entités prédéfinies*
 
 Par défaut, Tock propose un certain nombre de types d'_entités prédéfinies_, notamment les types supportés par la bibliothèque
 [Duckling](https://github.com/facebook/duckling) : montants, dates, etc. Si vous sélectionnez ces types d'entités, 

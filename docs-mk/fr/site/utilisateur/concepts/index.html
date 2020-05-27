@@ -1,0 +1,1146 @@
+
+
+
+<!doctype html>
+<html lang="fr" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="The Open Conversation Kit">
+      
+      
+        <link rel="canonical" href="https://theopenconversationkit.github.io/tock/fr/utilisateur/concepts/">
+      
+      
+        <meta name="author" content="Tock">
+      
+      <link rel="shortcut icon" href="../../img/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.2.2">
+    
+    
+      
+        <title>Concepts - Tock</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.a2408e81.min.css">
+      
+      
+    
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#concepts-conversationnels-pour-tock" class="md-skip">
+          Aller au contenu
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="https://theopenconversationkit.github.io/tock/fr" title="Tock" class="md-header-nav__button md-logo" aria-label="Tock">
+      
+  <img src="../../img/favicon.png" alt="logo">
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            Tock
+          </span>
+          <span class="md-header-nav__topic md-ellipsis">
+            
+              Concepts
+            
+          </span>
+        </div>
+      
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Rechercher" placeholder="Rechercher" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active">
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header-nav__source">
+        
+<a href="https://github.com/theopenconversationkit/tock" title="Aller au dépôt" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    tock
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+        
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://theopenconversationkit.github.io/tock/fr" title="Tock" class="md-nav__button md-logo" aria-label="Tock">
+      
+  <img src="../../img/favicon.png" alt="logo">
+
+    </a>
+    Tock
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/theopenconversationkit/tock" title="Aller au dépôt" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    tock
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Accueil" class="md-nav__link">
+      Accueil
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../toc/" title="Table des matières" class="md-nav__link">
+      Table des matières
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Découvrir Tock
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="Découvrir Tock" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        Découvrir Tock
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../guide/studio/" title="Créer son premier bot" class="md-nav__link">
+      Créer son premier bot
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../guide/slack/" title="Configurer Slack" class="md-nav__link">
+      Configurer Slack
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../guide/messenger/" title="Configurer Messenger" class="md-nav__link">
+      Configurer Messenger
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../guide/api/" title="Programmer des parcours" class="md-nav__link">
+      Programmer des parcours
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../guide/plateforme/" title="Déployer avec Docker" class="md-nav__link">
+      Déployer avec Docker
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" checked>
+    
+    <label class="md-nav__link" for="nav-4">
+      Utiliser Tock
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="Utiliser Tock" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        Utiliser Tock
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Concepts
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
+        </span>
+      </label>
+    
+    <a href="./" title="Concepts" class="md-nav__link md-nav__link--active">
+      Concepts
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#notions-de-base" class="md-nav__link">
+    Notions de base
+  </a>
+  
+    <nav class="md-nav" aria-label="Notions de base">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#application" class="md-nav__link">
+    Application
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connecteur" class="md-nav__link">
+    Connecteur
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#namespace" class="md-nav__link">
+    Namespace
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intentions" class="md-nav__link">
+    Intentions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#entites" class="md-nav__link">
+    Entités
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scenario-ou-story" class="md-nav__link">
+    Scénario (ou Story)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#termes-correspondances" class="md-nav__link">
+    Termes &amp; correspondances
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#continuer" class="md-nav__link">
+    Continuer...
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../studio/" title="Tock Studio" class="md-nav__link">
+      Tock Studio
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../canaux/" title="Bot multicanal" class="md-nav__link">
+      Bot multicanal
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../i18n/" title="Bot multilingue" class="md-nav__link">
+      Bot multilingue
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
+    
+    <label class="md-nav__link" for="nav-5">
+      Développer avec Tock
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="Développer avec Tock" data-md-level="1">
+      <label class="md-nav__title" for="nav-5">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        Développer avec Tock
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../dev/modes/" title="Modes disponibles" class="md-nav__link">
+      Modes disponibles
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../dev/bot-api/" title="Tock Bot API" class="md-nav__link">
+      Tock Bot API
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../dev/bot-integre/" title="Tock Bot intégré" class="md-nav__link">
+      Tock Bot intégré
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../dev/connecteurs/" title="Connecteurs" class="md-nav__link">
+      Connecteurs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../dev/i18n/" title="i18n" class="md-nav__link">
+      i18n
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../dev/api/" title="Liste des APIs" class="md-nav__link">
+      Liste des APIs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../dev/exemples-code/" title="Exemples de code" class="md-nav__link">
+      Exemples de code
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
+    
+    <label class="md-nav__link" for="nav-6">
+      Administrer Tock
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="Administrer Tock" data-md-level="1">
+      <label class="md-nav__title" for="nav-6">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        Administrer Tock
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../admin/architecture/" title="Architecture" class="md-nav__link">
+      Architecture
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../admin/installation/" title="Installation" class="md-nav__link">
+      Installation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../admin/securite/" title="Sécurité" class="md-nav__link">
+      Sécurité
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../admin/disponibilite/" title="Disponibilité" class="md-nav__link">
+      Disponibilité
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../admin/supervision/" title="Supervision" class="md-nav__link">
+      Supervision
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../admin/cloud/" title="Cloud" class="md-nav__link">
+      Cloud
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-7" type="checkbox" id="nav-7">
+    
+    <label class="md-nav__link" for="nav-7">
+      A propos
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="A propos" data-md-level="1">
+      <label class="md-nav__title" for="nav-7">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        A propos
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../apropos/pourquoi/" title="Pourquoi Tock" class="md-nav__link">
+      Pourquoi Tock
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../apropos/vitrine/" title="Vitrine utilisateurs" class="md-nav__link">
+      Vitrine utilisateurs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../apropos/recompenses/" title="Prix et récompenses" class="md-nav__link">
+      Prix et récompenses
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../apropos/ressources/" title="Ressources" class="md-nav__link">
+      Ressources
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../apropos/contact/" title="Nous contacter" class="md-nav__link">
+      Nous contacter
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../apropos/communaute/" title="Communauté" class="md-nav__link">
+      Communauté
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../apropos/contribuer/" title="Contribuer" class="md-nav__link">
+      Contribuer
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../apropos/emploi/" title="Emploi" class="md-nav__link">
+      Emploi
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="https://theopenconversationkit.github.io/tock/en/" title="🇫🇷 🇬🇧" class="md-nav__link">
+      🇫🇷 🇬🇧
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="https://doc.tock.ai" title="Tock.ai 🔗" class="md-nav__link">
+      Tock.ai 🔗
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#notions-de-base" class="md-nav__link">
+    Notions de base
+  </a>
+  
+    <nav class="md-nav" aria-label="Notions de base">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#application" class="md-nav__link">
+    Application
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connecteur" class="md-nav__link">
+    Connecteur
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#namespace" class="md-nav__link">
+    Namespace
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intentions" class="md-nav__link">
+    Intentions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#entites" class="md-nav__link">
+    Entités
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scenario-ou-story" class="md-nav__link">
+    Scénario (ou Story)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#termes-correspondances" class="md-nav__link">
+    Termes &amp; correspondances
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#continuer" class="md-nav__link">
+    Continuer...
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  
+                
+                
+                <h1 id="concepts-conversationnels-pour-tock">Concepts conversationnels pour Tock<a class="headerlink" href="#concepts-conversationnels-pour-tock" title="Permanent link">&para;</a></h1>
+<p>Cette page présente et vulgarise les principaux concepts et la terminologie conversationnelle utilisée 
+dans Tock et sa documentation.</p>
+<p>Un tableau propose également des équivalences et termes similaires dans d'autres solutions conversationnelles.</p>
+<h2 id="notions-de-base">Notions de base<a class="headerlink" href="#notions-de-base" title="Permanent link">&para;</a></h2>
+<h3 id="application"><em>Application</em><a class="headerlink" href="#application" title="Permanent link">&para;</a></h3>
+<p>Une <em>application</em> correspond à un corpus de phrases dont Tock va tirer un ensemble de modèles statistiques
+lui permettant d'analyser les phrases utilisateurs.</p>
+<p>Dans son mode conversationnel, elle correspond aussi à différent paramètres 
+qui permettent de définir les réponses et le comportement du ou des bots
+de cette application.</p>
+<h3 id="connecteur"><em>Connecteur</em><a class="headerlink" href="#connecteur" title="Permanent link">&para;</a></h3>
+<p>Un <em>connecteur</em> permet à Tock de <em>connecter</em> un bot à un canal comme Messenger, Slack, etc.</p>
+<p>Il se configure dans l'onglet <em>Bot Configurations</em>. 
+Tock permet de mutualiser très facilement le code d'un bot pour qu'il puisse répondre à 
+plusieurs connecteurs. </p>
+<h3 id="namespace"><em>Namespace</em><a class="headerlink" href="#namespace" title="Permanent link">&para;</a></h3>
+<p>Le <em>namespace</em> permet d'identifier le groupe organisationnel d'un objet. 
+Il apparaît en général comme un préfixe suivit de ":" dans une chaîne de caractères.
+Par exemple l'entité de type "duckling:datetime" est l'entité de type "datetime" qui vient
+du module "duckling" : ici "duckling" est le namespace.</p>
+<p>Si vous utilisez la plateforme de démonstration, votre namespace est votre login Github.</p>
+<h3 id="intentions"><em>Intentions</em><a class="headerlink" href="#intentions" title="Permanent link">&para;</a></h3>
+<p>Pour pouvoir définir des actions suite à une demande utilisateur, 
+il est nécessaire au préalable de classifier ou catégoriser cette demande. </p>
+<p>Ce qu'on appelle une <em>intention</em> est justement cette classification.</p>
+<p>Par exemple, les phrases "Quel temps fait-il?", "Il fait beau demain ?", "J'espère qu'il ne va pas pleuvoir à Paris ?"
+peuvent toutes être catégorisées avec l'intention "météo".</p>
+<p>A partir des phrases classifiées manuellement par un utilisateur, 
+Tock va automatiquement construire un modèle statistique qui va lui permettre,
+pour une nouvelle phrase, de déterminer quelle est l'intention la plus probable.</p>
+<p>Pour reprendre l'exemple ci-dessus, avec un modèle constitué des trois phrases d'exemple, 
+il est probable qu'une nouvelle phrase du type "Quel temps fera t'il demain ?" sera reconnue
+automatiquement par Tock comme correspondant à l'intention "météo".</p>
+<h3 id="entites"><em>Entités</em><a class="headerlink" href="#entites" title="Permanent link">&para;</a></h3>
+<p>Une fois l'intention déterminée, il est souvent utile d'identifier le sens de certains mots de la phrase.</p>
+<p>Dans la phrase "Il fait beau demain ?", le mot "demain" a une signification qu'il faudra utiliser
+pour répondre de manière pertinente à la question. </p>
+<p>On appelle <em>entités</em> ces mots significatifs de la phrase. </p>
+<p>Une entité à un type et un role. Par exemple, dans la phrase "Je pars à 11h et j'arrive à 18h", 
+les mots "à 11h" et "à 18h" sont tous les deux des entités de type 'datetime' 
+mais "11h" aura un rôle <em>depart</em> là ou "18h" aura un rôle <em>arrivée</em>.
+Dans les cas où le rôle n'apporte pas d'information supplémentaire, il est souvent égal au type.</p>
+<p>On distingue deux étapes dans la prise en compte d'une entité :</p>
+<ul>
+<li>L'<em>identification</em> : quels sont les mots de la phrase qui constituent l'entité</li>
+<li>La <em>valorisation</em> : quelle est la valeur de cette entité. Par exemple comment traduire "à 11h" en date système.</li>
+</ul>
+<p>Tock par défaut identifie l'entité, mais ne la valorise pas, sauf pour certains types.
+Par défaut, les entités de namespace "duckling" seront automatiquement valorisées.</p>
+<h3 id="scenario-ou-story"><em>Scénario</em> (ou <em>Story</em>)<a class="headerlink" href="#scenario-ou-story" title="Permanent link">&para;</a></h3>
+<p>Un scénario ou <em>story</em> est un regroupement fonctionnel qui permet de répondre aux questions
+ sur un sujet bien délimité.</p>
+<p>Il est en général initié par une intention principale et peut aussi utiliser, de manière optionelle,
+une arborescence d'intentions dites "secondaires".</p>
+<p>Pour reprendre l'exemple de la météo, à quelqu'un demandant "Quel temps fait-il ?", 
+il peut être utile de poser la question de l'endroit où il se trouve. 
+Cette question sera prise en compte dans la story "météo" puisqu'elle n'est qu'une extension
+de la question initiale.</p>
+<p>La <em>Story</em> est l'unité principale du framework conversationnel de Tock.</p>
+<h2 id="termes-correspondances">Termes &amp; correspondances<a class="headerlink" href="#termes-correspondances" title="Permanent link">&para;</a></h2>
+<p>Le tableau ci-dessous propose des correspondances entre les termes utilisés dans Tock et ceux d'autres 
+solutions conversationnelles :</p>
+<table>
+<thead>
+<tr>
+<th>Tock</th>
+<th>DialogFlow</th>
+<th>Alexa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Intent</td>
+<td>Intent</td>
+<td>Intent</td>
+</tr>
+<tr>
+<td>Entity</td>
+<td>Entity</td>
+<td></td>
+</tr>
+<tr>
+<td>Sentence</td>
+<td>Query</td>
+<td>Utterance / Slot</td>
+</tr>
+<tr>
+<td>Story</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Connector</td>
+<td>Integration</td>
+<td></td>
+</tr>
+<tr>
+<td>Application</td>
+<td>Project / Agent</td>
+<td>Skill</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>La documentation des <a href="../canaux/">connecteurs Tock</a> donne également la correspondance avec d'autres termes propres à 
+tel ou tel canal.</p>
+</blockquote>
+<h2 id="continuer">Continuer...<a class="headerlink" href="#continuer" title="Permanent link">&para;</a></h2>
+<p>Vous pouvez maintenant entamer le chapitre suivant : <a href="../studio/">Interfaces <em>Tock Studio</em></a>. </p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../../guide/plateforme/" title="Déployer avec Docker" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Précédent
+                </span>
+                Déployer avec Docker
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../studio/" title="Tock Studio" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Suivant
+                </span>
+                Tock Studio
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017/2020 Tock
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/vendor.d710d30a.min.js"></script>
+      <script src="../../assets/javascripts/bundle.5f27aba8.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copier dans le presse-papier", "clipboard.copied": "Copi\u00e9 dans le presse-papier", "search.config.lang": "fr", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s"}</script>
+      
+      <script>
+        app = initialize({
+          base: "../..",
+          features: [],
+          search: Object.assign({
+            worker: "../../assets/javascripts/worker/search.27c6a5e6.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>

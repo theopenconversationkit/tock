@@ -1,4 +1,4 @@
-# Le menu _Test_
+# Le menu Test
 
 Le menu _Test_ permet de tester un bot directement dans l'interface _Tock Studio_, ainsi que de gérer des plans de 
 tests automatiques.

@@ -1,0 +1,967 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="Build assistants & chatbots with ease.">
+      
+      
+        <link rel="canonical" href="https://theopenconversationkit.github.io/tock/en/guide/studio/">
+      
+      
+        <meta name="author" content="Tock">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../img/favicon.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.2">
+    
+    
+      
+        <title>Create your 1st bot - Tock</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/application.30686662.css">
+      
+      
+    
+    
+      <script src="../../assets/javascripts/modernizr.74668098.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
+    
+    
+    
+      
+    
+    
+  </head>
+  
+    <body dir="ltr">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#create-your-first-bot-with-tock-studio" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="https://theopenconversationkit.github.io/tock/en" title="Tock" class="md-header-nav__button md-logo">
+          
+            <img src="../../assets/images/logo.svg" width="24" height="24">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              Tock
+            </span>
+            <span class="md-header-nav__topic">
+              
+                Create your 1st bot
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/theopenconversationkit/tock" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    tock
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="https://theopenconversationkit.github.io/tock/en" title="Tock" class="md-nav__button md-logo">
+      
+        <img src="../../assets/images/logo.svg" width="48" height="48">
+      
+    </a>
+    Tock
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/theopenconversationkit/tock" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    tock
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Overview" class="md-nav__link">
+      Overview
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+    
+    <label class="md-nav__link" for="nav-2">
+      Try Tock Studio
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Try Tock Studio
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Create your 1st bot
+      </label>
+    
+    <a href="./" title="Create your 1st bot" class="md-nav__link md-nav__link--active">
+      Create your 1st bot
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-you-will-build" class="md-nav__link">
+    What you will build
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-you-need" class="md-nav__link">
+    What you need
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connect-to-the-demo-platform" class="md-nav__link">
+    Connect to the demo platform
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-a-tock-application" class="md-nav__link">
+    Create a Tock application
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#add-a-connector" class="md-nav__link">
+    Add a connector
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-a-story" class="md-nav__link">
+    Create a story
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-the-bot" class="md-nav__link">
+    Test the bot
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#improve-the-understanding" class="md-nav__link">
+    Improve the understanding
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-more-stories-optional" class="md-nav__link">
+    Create more stories (optional)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#congratulations" class="md-nav__link">
+    Congratulations!
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../build-nlp-model/" title="Build NLP models" class="md-nav__link">
+      Build NLP models
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../evaluate-the-model/" title="Monitor NLP models" class="md-nav__link">
+      Monitor NLP models
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Develop Stories
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Develop Stories
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../dev/bot-api/" title="Bot API mode" class="md-nav__link">
+      Bot API mode
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../dev/integrated-bot/" title="Integrated Bot mode" class="md-nav__link">
+      Integrated Bot mode
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../dev/connectors/" title="Connectors" class="md-nav__link">
+      Connectors
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../kdoc/" title="KDoc" class="md-nav__link">
+      KDoc
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../the-open-data-bot/" title="Code Samples" class="md-nav__link">
+      Code Samples
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+    <label class="md-nav__link" for="nav-4">
+      About
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        About
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../about/why/" title="Why Tock" class="md-nav__link">
+      Why Tock
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../about/showcase/" title="Showcase" class="md-nav__link">
+      Showcase
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../about/resources/" title="Resources" class="md-nav__link">
+      Resources
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../about/contact/" title="Contact us" class="md-nav__link">
+      Contact us
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../about/community/" title="Community" class="md-nav__link">
+      Community
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../about/contribute/" title="Contribute" class="md-nav__link">
+      Contribute
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../about/jobs/" title="Jobs" class="md-nav__link">
+      Jobs
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="https://theopenconversationkit.github.io/tock/fr/" title="🇬🇧 🇫🇷" class="md-nav__link">
+      🇬🇧 🇫🇷
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-you-will-build" class="md-nav__link">
+    What you will build
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-you-need" class="md-nav__link">
+    What you need
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connect-to-the-demo-platform" class="md-nav__link">
+    Connect to the demo platform
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-a-tock-application" class="md-nav__link">
+    Create a Tock application
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#add-a-connector" class="md-nav__link">
+    Add a connector
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-a-story" class="md-nav__link">
+    Create a story
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-the-bot" class="md-nav__link">
+    Test the bot
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#improve-the-understanding" class="md-nav__link">
+    Improve the understanding
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-more-stories-optional" class="md-nav__link">
+    Create more stories (optional)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#congratulations" class="md-nav__link">
+    Congratulations!
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="create-your-first-bot-with-tock-studio">Create your first bot with Tock Studio<a class="headerlink" href="#create-your-first-bot-with-tock-studio" title="Permanent link">&para;</a></h1>
+<p>The best way to try Tock is probably to create a first conversational bot using <em>Tock Studio</em> (the graphical user 
+interface provided with the platform).</p>
+<p>By connecting to the Tock <a href="https://demo.tock.ai/">demonstration platform</a>, it is 
+possible to both design and test a conversational assistant in a few minutes, without having to write code.</p>
+<h2 id="what-you-will-build">What you will build<a class="headerlink" href="#what-you-will-build" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p>An <em>application</em> and a <em>connector</em> on the Tock demo platform</p>
+</li>
+<li>
+<p>A <em>story</em>: user sentence / bot answer, testable through the <em>Tock Studio</em> interface</p>
+</li>
+<li>
+<p>An assistant who answers, when you say "hello"! 🙂</p>
+</li>
+</ul>
+<h2 id="what-you-need">What you need<a class="headerlink" href="#what-you-need" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p>About 5 to 15 minutes (reading the additional notes)</p>
+</li>
+<li>
+<p>A GitHub account, to connect to the demo platform</p>
+</li>
+</ul>
+<h2 id="connect-to-the-demo-platform">Connect to the demo platform<a class="headerlink" href="#connect-to-the-demo-platform" title="Permanent link">&para;</a></h2>
+<p>Open <a href="https://demo.tock.ai/">https://demo.tock.ai/</a> to access the Tock demonstration platform.</p>
+<blockquote>
+<p><strong>Important</strong>: this platform is not supposed to host bots in production. 
+This is merely a sandbox instance, in order to try the Tock solution without installing it.</p>
+</blockquote>
+<p>A login dialog invites you to connect with GitHub. Only your account ID will be read from GitHub.</p>
+<h2 id="create-a-tock-application">Create a Tock application<a class="headerlink" href="#create-a-tock-application" title="Permanent link">&para;</a></h2>
+<p>When accessing the demo platform for the first time, a wizard helps to create the first <em>application</em>:</p>
+<ul>
+<li>
+<p>Enter a name for the application</p>
+</li>
+<li>
+<p>Select a language - other languages can be added later</p>
+</li>
+<li>
+<p>Validate to create the application</p>
+</li>
+</ul>
+<blockquote>
+<p>The just-created application is now visible from the menu: <em>Configuration</em> &gt; <em>NLU Applications</em>.</p>
+<p>Once the first application has been created, you can create others using <em>Create New Application</em>.</p>
+</blockquote>
+<h2 id="add-a-connector">Add a connector<a class="headerlink" href="#add-a-connector" title="Permanent link">&para;</a></h2>
+<p>To interact with the bot (through a communication channel), a <em>connector</em> must be used. 
+Numerous connectors are provided with Tock: <a href="https://www.messenger.com/">Messenger</a>, <a href="https://www.whatsapp.com/">WhatsApp</a>,
+<a href="https://assistant.google.com/">Google Assistant</a> and <a href="https://store.google.com/fr/product/google_home">Google Home</a>,
+<a href="https://twitter.com/">Twitter</a>, <a href="https://alexa.amazon.com/">Alexa</a>, <a href="https://www.apple.com/fr/ios/business-chat/">Business Chat</a>, 
+<a href="https://products.office.com/fr-fr/microsoft-teams/">Teams</a>, <a href="https://slack.com/">Slack</a>, 
+<a href="https://rocket.chat/">Rocket.Chat</a>... 
+It is even possible to implement your own connectors to integrate with more channels.</p>
+<blockquote>
+<p>In this tutorial, you will configure a connector for <a href="https://slack.com/">Slack</a> - the collaborative and instant 
+messaging platform. 
+It will be possible to try the bot using the <em>Tock Studio</em> interface - no need to use Slack or get an account.</p>
+</blockquote>
+<p>Create the first connector for your application:</p>
+<ul>
+<li>
+<p>Go to <em>Configuration</em> &gt; <em>Bot Configurations</em></p>
+</li>
+<li>
+<p><em>Create a new Configuration</em></p>
+</li>
+<li>
+<p>Select the connector type <em>Slack</em></p>
+</li>
+<li>
+<p>Enter anything e.g. <code>token</code> in <em>Token</em> fields (for the moment)</p>
+</li>
+<li>
+<p><em>Create</em></p>
+</li>
+</ul>
+<blockquote>
+<p>Note that an <em>API Key</em> is automatically generated for the application, once the first connector is created. 
+This key is required to connect to the bot API, in order to leverage the <em>WebHook</em> or <em>WebSocket</em> modes.</p>
+<p>Clicking on <em>Display test configurations</em>, you can see another <code>Test</code> configuration has been created. 
+This connector is used when the bot is tested directly through the <em>Tock Studio</em> interface. 
+It allows to try the bot without having Slack, for instance.</p>
+</blockquote>
+<h2 id="create-a-story">Create a story<a class="headerlink" href="#create-a-story" title="Permanent link">&para;</a></h2>
+<p>A conversational bot receives and understands user sentences, using natural-language techniques to identify an <em>intent</em> 
+and possibly <em>entities</em>.</p>
+<blockquote>
+<p>Example: from the sentence "What will the weather be like tomorrow?", the Tock <em>NLU (Natural Language Understanding)</em> 
+engine should detect a "weather" intent and a "tomorrow" date/time entity precising the question 
+(like a kind of intent variable/parameter).</p>
+</blockquote>
+<p>In order to detect intents and entities, sentences must first be added and qualifieds. 
+The Tock <em>NLU</em> menu allows to manage intents and entities, qualify sentences and supervise the bot training:
+<strong>the more qualified sentences, the more relevant is the bot</strong>.</p>
+<p>Nevertheless, let's leave intents and entities for now...</p>
+<p>The Tock <em>Stories</em> mode allows to create intents automatically in a few minutes, as well as the expected answers.
+  You will now create a first template of a conversation, using the <em>Tock Studio</em> graphical tools:</p>
+<ul>
+<li>
+<p>Go to <em>Build</em> &gt; <em>New Story</em></p>
+</li>
+<li>
+<p>Enter a new user sentence - for instance "hello"</p>
+</li>
+</ul>
+<p>A form now opens to configure the new <em>story</em> creation, the intent, the type of response, etc.</p>
+<ul>
+<li>
+<p>In the <em>Add new Answer</em> field, enter the answer - for instance "what a nice day!"</p>
+</li>
+<li>
+<p>End with <em>Create Story</em></p>
+</li>
+</ul>
+<h2 id="test-the-bot">Test the bot<a class="headerlink" href="#test-the-bot" title="Permanent link">&para;</a></h2>
+<p>It is time to try the bot and its first story!</p>
+<ul>
+<li>
+<p>Go to <em>Test</em> &gt; <em>Test the bot</em></p>
+</li>
+<li>
+<p>Say "hello", the bot answers</p>
+</li>
+</ul>
+<blockquote>
+<p>Please check that the correct application and language are selected (in case there are more than one) 
+when testing: they are visible in the top-right corner of the interface.</p>
+</blockquote>
+<h2 id="improve-the-understanding">Improve the understanding<a class="headerlink" href="#improve-the-understanding" title="Permanent link">&para;</a></h2>
+<p>By entering various sentences through the <em>Test the bot</em> interface, you can see it does not understand much
+your phrases - even with sentences very similar to the one at <em>story</em> creation.</p>
+<p>The conversational model and the Tock <em>NLU</em> engine must be trained and improved by progressively adding 
+ user <em>qualified sentences</em> to feed underlying algorithms and give more and more relevant results.</p>
+<blockquote>
+<p>Although first tries can be deceiving, several qualified sentences (one or two dozens if necessary) usually make a 
+difference and the bot gets more relevant.</p>
+</blockquote>
+<ul>
+<li>Go to <em>NLU</em> &gt; <em>Inbox</em></li>
+</ul>
+<p>Here you can see the previously entered sentences, and more interestingly how the bot qualified them. For each sentence,
+Tock shows the detected intent, the language, as well as the scores (given by the algorithms according to their 
+level of confidence for the sentence).</p>
+<ul>
+<li>
+<p>Choose several sentences, for each one: select the correct intent then <em>Validate</em></p>
+</li>
+<li>
+<p>Return to <em>Test</em> &gt; <em>Test the bot</em></p>
+</li>
+<li>
+<p>Check the bot now understands these sentences correctly, as well as slightly-different ones you have never entered!</p>
+</li>
+</ul>
+<h2 id="create-more-stories-optional">Create more stories (optional)<a class="headerlink" href="#create-more-stories-optional" title="Permanent link">&para;</a></h2>
+<p>To go a little further with Tock <em>stories</em>, you could create more stories and test them directly from <em>Tock Studio</em>.</p>
+<p>Each bot response comes from the intent detected/triggered, without another form of navigation than the thread of YOUR 
+sentences. Conversational is magic: natural language is the navigation, users are not forced to use traditional 
+links and menus anymore (contrary to Websites and mobile apps).</p>
+<blockquote>
+<p>For curious users, let's have a word about managing numerous <em>stories</em> and the possible impact on understanding.</p>
+<p>If you take time and create many <em>stories</em>, you may experience unintended effects with how work <em>NLU</em> models and 
+algorithms. As an example, numerous intents and entities can make detection difficult (or more random). 
+A general recommendation is to create bots, dedicated to a limited functional perimeter. It makes it easier to train 
+each bot and focus on the model for its own domain. Qualifying a lot of sentences generally improves the bot understanding,
+however too many sentences (or too similar) can over-train the model for an intent, resulting in degraded performance.</p>
+<p>As a conclusion, remember the design and maintenance of conversational models is complex, it requires training 
+(the bot, as well as people building it), qualifying and adapting the models on a regular basis to user needs and language.</p>
+</blockquote>
+<h2 id="congratulations">Congratulations!<a class="headerlink" href="#congratulations" title="Permanent link">&para;</a></h2>
+<p>You have just created your first conversational application with Tock.</p>
+<p>With a few minutes and no particular knowledge or skill, more importantly without writing or deploying code, 
+you have been able to create a simple conversational workflow and test it online.</p>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../.." title="Overview" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Overview
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../../build-nlp-model/" title="Build NLP models" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Build NLP models
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017/2020 Tock
+          </div>
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+  <div class="md-footer-social">
+    <link rel="stylesheet" href="../../assets/fonts/font-awesome.css">
+    
+      <a href="https://github.com/theopenconversationkit/tock" class="md-footer-social__link fa fa-github"></a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/application.c648116f.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
+      
+    
+  </body>
+</html>

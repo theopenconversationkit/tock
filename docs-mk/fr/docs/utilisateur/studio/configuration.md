@@ -1,4 +1,4 @@
-# Le menu _Configuration_
+# Le menu Configuration
 
 Le menu _Configuration_ permet de créer et paramétrer les applications conversationnelles Tock (c'est-à-dire les  
 modèles / bots pouvant co-exister sur une plateforme). Plusieurs fonctions d'administration et de configuration des 

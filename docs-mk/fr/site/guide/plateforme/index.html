@@ -1,0 +1,1266 @@
+
+
+
+<!doctype html>
+<html lang="fr" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="The Open Conversation Kit">
+      
+      
+        <link rel="canonical" href="https://theopenconversationkit.github.io/tock/fr/guide/plateforme/">
+      
+      
+        <meta name="author" content="Tock">
+      
+      <link rel="shortcut icon" href="../../img/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.2.2">
+    
+    
+      
+        <title>Déployer avec Docker - Tock</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.a2408e81.min.css">
+      
+      
+    
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#deployer-une-plateforme-avec-docker" class="md-skip">
+          Aller au contenu
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="https://theopenconversationkit.github.io/tock/fr" title="Tock" class="md-header-nav__button md-logo" aria-label="Tock">
+      
+  <img src="../../img/favicon.png" alt="logo">
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            Tock
+          </span>
+          <span class="md-header-nav__topic md-ellipsis">
+            
+              Déployer avec Docker
+            
+          </span>
+        </div>
+      
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Rechercher" placeholder="Rechercher" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active">
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header-nav__source">
+        
+<a href="https://github.com/theopenconversationkit/tock" title="Aller au dépôt" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    tock
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+        
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://theopenconversationkit.github.io/tock/fr" title="Tock" class="md-nav__button md-logo" aria-label="Tock">
+      
+  <img src="../../img/favicon.png" alt="logo">
+
+    </a>
+    Tock
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/theopenconversationkit/tock" title="Aller au dépôt" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    tock
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Accueil" class="md-nav__link">
+      Accueil
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../toc/" title="Table des matières" class="md-nav__link">
+      Table des matières
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+    
+    <label class="md-nav__link" for="nav-3">
+      Découvrir Tock
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="Découvrir Tock" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        Découvrir Tock
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../studio/" title="Créer son premier bot" class="md-nav__link">
+      Créer son premier bot
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../slack/" title="Configurer Slack" class="md-nav__link">
+      Configurer Slack
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../messenger/" title="Configurer Messenger" class="md-nav__link">
+      Configurer Messenger
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../api/" title="Programmer des parcours" class="md-nav__link">
+      Programmer des parcours
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Déployer avec Docker
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
+        </span>
+      </label>
+    
+    <a href="./" title="Déployer avec Docker" class="md-nav__link md-nav__link--active">
+      Déployer avec Docker
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ce-que-vous-allez-creer" class="md-nav__link">
+    Ce que vous allez créer
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pre-requis" class="md-nav__link">
+    Pré-requis
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployer-une-plateforme-tock-sans-les-sources" class="md-nav__link">
+    Déployer une plateforme Tock - sans les sources
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployer-une-plateforme-tock-depuis-les-sources" class="md-nav__link">
+    Déployer une plateforme Tock - depuis les sources
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#acceder-a-tock-studio" class="md-nav__link">
+    Accéder à Tock Studio
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creer-une-application-un-connecteur-et-une-intention" class="md-nav__link">
+    Créer une application, un connecteur et une intention
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connecter-un-parcours-en-kotlin-optionnel" class="md-nav__link">
+    Connecter un parcours en Kotlin (optionnel)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#felicitations" class="md-nav__link">
+    Félicitations!
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#continuer" class="md-nav__link">
+    Continuer...
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+    <label class="md-nav__link" for="nav-4">
+      Utiliser Tock
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="Utiliser Tock" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        Utiliser Tock
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../utilisateur/concepts/" title="Concepts" class="md-nav__link">
+      Concepts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../utilisateur/studio/" title="Tock Studio" class="md-nav__link">
+      Tock Studio
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../utilisateur/canaux/" title="Bot multicanal" class="md-nav__link">
+      Bot multicanal
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../utilisateur/i18n/" title="Bot multilingue" class="md-nav__link">
+      Bot multilingue
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
+    
+    <label class="md-nav__link" for="nav-5">
+      Développer avec Tock
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="Développer avec Tock" data-md-level="1">
+      <label class="md-nav__title" for="nav-5">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        Développer avec Tock
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../dev/modes/" title="Modes disponibles" class="md-nav__link">
+      Modes disponibles
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../dev/bot-api/" title="Tock Bot API" class="md-nav__link">
+      Tock Bot API
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../dev/bot-integre/" title="Tock Bot intégré" class="md-nav__link">
+      Tock Bot intégré
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../dev/connecteurs/" title="Connecteurs" class="md-nav__link">
+      Connecteurs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../dev/i18n/" title="i18n" class="md-nav__link">
+      i18n
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../dev/api/" title="Liste des APIs" class="md-nav__link">
+      Liste des APIs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../dev/exemples-code/" title="Exemples de code" class="md-nav__link">
+      Exemples de code
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
+    
+    <label class="md-nav__link" for="nav-6">
+      Administrer Tock
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="Administrer Tock" data-md-level="1">
+      <label class="md-nav__title" for="nav-6">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        Administrer Tock
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../admin/architecture/" title="Architecture" class="md-nav__link">
+      Architecture
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../admin/installation/" title="Installation" class="md-nav__link">
+      Installation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../admin/securite/" title="Sécurité" class="md-nav__link">
+      Sécurité
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../admin/disponibilite/" title="Disponibilité" class="md-nav__link">
+      Disponibilité
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../admin/supervision/" title="Supervision" class="md-nav__link">
+      Supervision
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../admin/cloud/" title="Cloud" class="md-nav__link">
+      Cloud
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-7" type="checkbox" id="nav-7">
+    
+    <label class="md-nav__link" for="nav-7">
+      A propos
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="A propos" data-md-level="1">
+      <label class="md-nav__title" for="nav-7">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        A propos
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../apropos/pourquoi/" title="Pourquoi Tock" class="md-nav__link">
+      Pourquoi Tock
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../apropos/vitrine/" title="Vitrine utilisateurs" class="md-nav__link">
+      Vitrine utilisateurs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../apropos/recompenses/" title="Prix et récompenses" class="md-nav__link">
+      Prix et récompenses
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../apropos/ressources/" title="Ressources" class="md-nav__link">
+      Ressources
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../apropos/contact/" title="Nous contacter" class="md-nav__link">
+      Nous contacter
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../apropos/communaute/" title="Communauté" class="md-nav__link">
+      Communauté
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../apropos/contribuer/" title="Contribuer" class="md-nav__link">
+      Contribuer
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../apropos/emploi/" title="Emploi" class="md-nav__link">
+      Emploi
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="https://theopenconversationkit.github.io/tock/en/" title="🇫🇷 🇬🇧" class="md-nav__link">
+      🇫🇷 🇬🇧
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="https://doc.tock.ai" title="Tock.ai 🔗" class="md-nav__link">
+      Tock.ai 🔗
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ce-que-vous-allez-creer" class="md-nav__link">
+    Ce que vous allez créer
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pre-requis" class="md-nav__link">
+    Pré-requis
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployer-une-plateforme-tock-sans-les-sources" class="md-nav__link">
+    Déployer une plateforme Tock - sans les sources
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployer-une-plateforme-tock-depuis-les-sources" class="md-nav__link">
+    Déployer une plateforme Tock - depuis les sources
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#acceder-a-tock-studio" class="md-nav__link">
+    Accéder à Tock Studio
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creer-une-application-un-connecteur-et-une-intention" class="md-nav__link">
+    Créer une application, un connecteur et une intention
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connecter-un-parcours-en-kotlin-optionnel" class="md-nav__link">
+    Connecter un parcours en Kotlin (optionnel)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#felicitations" class="md-nav__link">
+    Félicitations!
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#continuer" class="md-nav__link">
+    Continuer...
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  
+                
+                
+                <h1 id="deployer-une-plateforme-avec-docker">Déployer une plateforme avec Docker<a class="headerlink" href="#deployer-une-plateforme-avec-docker" title="Permanent link">&para;</a></h1>
+<p>Dans les sections précédentes pour découvrir et tester Tock, vous avez utilisé la 
+<a href="https://demo.tock.ai/">plateforme de démonstration</a>. Cela vous a permis de découvrir 
+la construction et la configuration des bots Tock sans avoir à installer la plateforme au préalable. </p>
+<p>Dans ce guide, vous allez apprendre à déployer une plateforme complète Tock en quelques minutes, grâce 
+ aux exemples d'implémentations <a href="https://www.docker.com/">Docker</a> / <a href="https://docs.docker.com/compose/">Docker Compose</a> fournies.</p>
+<p>Notez qu'il est tout à fait possible de déployer Tock sans utiliser Docker. Une section spécifique du 
+<a href="../../toc/">manuel utilisateur</a> vous en apprendra plus sur l'architecture, les possibilités et les 
+recommandations pour le déploiement et l'utilisation de Tock en production.</p>
+<h2 id="ce-que-vous-allez-creer">Ce que vous allez créer<a class="headerlink" href="#ce-que-vous-allez-creer" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p>Une plateforme Tock complète en local : <em>Tock Studio</em>, <em>Bot API</em>, etc.</p>
+</li>
+<li>
+<p>Un bot et une configuration minimale pour tester la plateforme</p>
+</li>
+<li>
+<p>(Optionnel) Un programme <a href="https://kotlinlang.org/">Kotlin</a> se connectant à la plateforme locale en 
+<em>WebSocket</em></p>
+</li>
+</ul>
+<h2 id="pre-requis">Pré-requis<a class="headerlink" href="#pre-requis" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p>Environ 20 minutes</p>
+</li>
+<li>
+<p>Pour déployer la plateforme en local, un environnement de développement avec des versions récentes de 
+<a href="https://www.docker.com/">Docker</a> et <a href="https://docs.docker.com/compose/">Docker Compose</a> installées</p>
+</li>
+</ul>
+<blockquote>
+<p>Si vous ne souhaitez pas utiliser Docker, pas de problème. Il y a d'autres manières de déployer la base MongoDB 
+et les services Kotlin sur JVM. Vous pouvez toutefois parcourir les <code>Dockerfile</code> et 
+<code>docker-compose.yml</code> à titre d'exemples pour instancier ces services.</p>
+</blockquote>
+<ul>
+<li>(Optionnel) Pour le programme en WebSocket, un environnement de développement (ou <em>IDE</em>) supportant 
+<a href="https://kotlinlang.org/">Kotlin</a>, par exemple <a href="https://www.jetbrains.com/idea/">IntelliJ</a> avec des versions récentes 
+du <a href="https://jdk.java.net/">JDK</a> et de <a href="https://maven.apache.org/">Maven</a></li>
+</ul>
+<blockquote>
+<p>Sans <em>IDE</em> ou sans Maven, pas de problème. Il est tout à fait possible de compiler et exécuter le programme avec d'autres outils.</p>
+<p>D'autres modes que Kotlin et <em>WebSocket</em> sont présentés dans le <a href="../../toc/">manuel utilisateur Tock</a>.</p>
+</blockquote>
+<h2 id="deployer-une-plateforme-tock-sans-les-sources">Déployer une plateforme Tock - sans les sources<a class="headerlink" href="#deployer-une-plateforme-tock-sans-les-sources" title="Permanent link">&para;</a></h2>
+<p>Il est possible de récupérer seulement quelques fichiers du dépôt GitHub, sans télécharger toutes les sources Tock. 
+ En quelques lignes de commande, la plateforme est opérationnelle.</p>
+<p>Il est cependant indispensable d'avoir des versions récentes de 
+ <a href="https://www.docker.com/">Docker</a> et <a href="https://docs.docker.com/compose/">Docker Compose</a>.</p>
+<blockquote>
+<p>Pour démarrer depuis les sources du dépôt Tock Docker, passez plutôt au 
+<a href="#deployer-une-plateforme-tock-depuis-les-sources">paragraphe suivant</a>.</p>
+</blockquote>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Get the lastest docker-compose from GitHub (including Bot API)</span>
+$ curl -o docker-compose.yml https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/docker-compose-bot.yml
+<span class="c1"># Get the lastest database-init script from GitHub</span>
+$ mkdir -p scripts <span class="o">&amp;&amp;</span> curl -o scripts/setup.sh https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/scripts/setup.sh <span class="o">&amp;&amp;</span> chmod +x scripts/setup.sh
+<span class="c1"># Get the lastest Tock version/tag from GitHub</span>
+$ curl -o .env https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/.env
+
+<span class="c1"># Run the stack</span>
+$ docker-compose up
+</code></pre></div>
+
+
+<h2 id="deployer-une-plateforme-tock-depuis-les-sources">Déployer une plateforme Tock - depuis les sources<a class="headerlink" href="#deployer-une-plateforme-tock-depuis-les-sources" title="Permanent link">&para;</a></h2>
+<p>Ceci est une manière alternative de démarrer Tock, à partir du dépôt 
+ <a href="https://github.com/theopenconversationkit/tock-docker">Tock Docker</a>. </p>
+<p>Il vous faut, en plus de <a href="https://www.docker.com/">Docker</a> et <a href="https://docs.docker.com/compose/">Docker Compose</a>, 
+  soit un client <a href="https://git-scm.com/">Git</a> pour récupérer les sources (commande <code>git clone</code>) soit avoir déjà copié 
+  les sources de GitHub en local.</p>
+<blockquote>
+<p>Pour démarrer sans Git ni les sources du dépôt en local, suivez le 
+<a href="#deployer-une-plateforme-tock-sans-les-sources">paragraphe précédent</a>.</p>
+</blockquote>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Get the lastest sources from GitHub</span>
+$ git clone https://github.com/theopenconversationkit/tock-docker.git <span class="o">&amp;&amp;</span> <span class="nb">cd</span> tock-docker
+<span class="c1"># Make the database-init script executable</span>
+$ chmod +x scripts/setup.sh
+
+<span class="c1"># Run the stack (including Bot API)</span>
+$ docker-compose -f docker-compose-bot.yml up
+</code></pre></div>
+
+
+<h2 id="acceder-a-tock-studio">Accéder à <em>Tock Studio</em><a class="headerlink" href="#acceder-a-tock-studio" title="Permanent link">&para;</a></h2>
+<p>Une fois la plateforme prête, les interfaces <em>Tock Studio</em> sont sur le port <code>80</code> par défaut :</p>
+<ul>
+<li>Allez sur <a href="http://localhost">http://localhost</a></li>
+</ul>
+<blockquote>
+<p>Après le déploiement de la plateforme, celle-ci s'initialise, et il peut falloir attendre quelques secondes 
+avant que les interfaces <em>Tock Studio</em> soient accessibles.</p>
+</blockquote>
+<ul>
+<li>Connectez-vous avec les identifiants <code>admin@app.com</code> / <code>password</code> par défaut</li>
+</ul>
+<blockquote>
+<p>Il est évidemment recommandé de changer ces valeurs à l'installation d'une plateforme destinée à une utilisation pérenne
+(production, plateforme partagée entre équipes, etc.). </p>
+</blockquote>
+<h2 id="creer-une-application-un-connecteur-et-une-intention">Créer une application, un connecteur et une intention<a class="headerlink" href="#creer-une-application-un-connecteur-et-une-intention" title="Permanent link">&para;</a></h2>
+<p>Comme dans le guide <a href="../studio/">premier bot</a> utilisant la plateforme de démonstration, vous allez créer une 
+<em>application</em> Tock et un connecteur pour commencer à utiliser la plateforme locale. N'hésitez pas à retourner voir les 
+précédents guides pour plus de commentaires.</p>
+<p>Au premier accès à la plateforme locale :</p>
+<ul>
+<li>
+<p>Saisissez un nom pour l'application</p>
+</li>
+<li>
+<p>Sélectionnez une langue - vous pourrez en ajouter d'autres par la suite</p>
+</li>
+<li>
+<p>Validez pour créer l'application</p>
+</li>
+<li>
+<p>Allez dans <em>Configuration</em> &gt; <em>Bot Configurations</em></p>
+</li>
+<li>
+<p><em>Create a new Configuration</em></p>
+</li>
+<li>
+<p>Sélectionnez le type de connecteur <em>Slack</em></p>
+</li>
+<li>
+<p><em>Create</em></p>
+</li>
+</ul>
+<blockquote>
+<p>Notez l'<em>API Key</em> automatiquement générée pour votre application. Elle vous servira si vous essayez le mode <em>WebSocket</em>
+dans la suite de ce guide (optionnel).</p>
+</blockquote>
+<ul>
+<li>
+<p>Allez dans <em>Build</em> &gt; <em>New Story</em></p>
+</li>
+<li>
+<p>Saisissez une phrase utilisateur par exemple "bonjour"</p>
+</li>
+<li>
+<p>Dans le champs <em>Add new Answer</em>, saisissez une réponse par exemple "quelle belle journée!"</p>
+</li>
+<li>
+<p>Terminez avec <em>Create Story</em></p>
+</li>
+<li>
+<p>Allez dans <em>Test</em> &gt; <em>Test the bot</em></p>
+</li>
+<li>
+<p>Dites "bonjour" 🙋, le bot vous répond 🤖</p>
+</li>
+</ul>
+<h2 id="connecter-un-parcours-en-kotlin-optionnel">Connecter un parcours en Kotlin (optionnel)<a class="headerlink" href="#connecter-un-parcours-en-kotlin-optionnel" title="Permanent link">&para;</a></h2>
+<p>Comme dans le guide <a href="../api/">programmer des parcours</a> utilisant la plateforme de démonstration, vous allez créer une 
+<em>application</em> Kotlin se connectant en <em>WebSocket</em> à la plateforme Tock locale. N'hésitez pas à retourner voir les 
+précédents guides pour plus de détails.</p>
+<ul>
+<li>Créez un projet Kotlin par exemple avec Maven comme indiqué dans le guide <a href="../api/">programmer des parcours</a></li>
+</ul>
+<blockquote>
+<p>Le <em>classpath</em> doit inclure <code>tock-bot-api-websocket</code> pour utiliser le mode <em>WebSocket</em>.</p>
+</blockquote>
+<ul>
+<li>
+<p>Créez un fichier Kotlin (par exemple dans `src/main/kotlin/StartWebSocket.kt)</p>
+</li>
+<li>
+<p>Editez-le avec le code suivant :</p>
+</li>
+</ul>
+<div class="codehilite"><pre><span></span><code><span class="k">import</span> <span class="nn">ai.tock.bot.api.client.newBot</span>
+<span class="k">import</span> <span class="nn">ai.tock.bot.api.client.newStory</span>
+<span class="k">import</span> <span class="nn">ai.tock.bot.api.websocket.start</span>
+
+<span class="k">fun</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">start</span><span class="p">(</span> <span class="c1">// Do not use #startWithDemo when integrating with a local platform </span>
+        <span class="n">newBot</span><span class="p">(</span>
+            <span class="s">&quot;PUT-YOUR-TOCK-APP-API-KEY-HERE&quot;</span><span class="p">,</span> <span class="c1">// Get your app API key from Bot Configurations in Tock Studio</span>
+            <span class="n">newStory</span><span class="p">(</span><span class="s">&quot;qui-es-tu&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// Answer for the &#39;qui-es-tu&#39; story</span>
+                <span class="n">send</span><span class="p">(</span><span class="s">&quot;Je suis un assistant conversationnel construit avec Tock&quot;</span><span class="p">)</span>
+                <span class="n">end</span><span class="p">(</span><span class="s">&quot;Comment puis-je aider ?&quot;</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">),</span>
+        <span class="s">&quot;http://localhost:8080&quot;</span> <span class="c1">// Local platform URL (default host/port)</span>
+    <span class="p">)</span> 
+<span class="p">}</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>Vous pouvez retrouver ce code (et d'autres exemples) dans le dépôt <a href="https://github.com/theopenconversationkit/tock-bot-samples">tock-bot-samples</a>.</p>
+</blockquote>
+<ul>
+<li>
+<p>Remplacez la clef d'API par celle de votre propre application Tock. Pour cela, dans <em>Tock Studio</em>, 
+allez dans <em>Configuration</em> &gt; <em>Bot Configurations</em> et reportez la valeur <em>API Key</em> dans le code.</p>
+</li>
+<li>
+<p>Exécutez la fonction (<em>main</em>) dans votre environnement de développement.</p>
+</li>
+<li>
+<p>Retournez dans Tock dans <em>Test</em> &gt; <em>Test the bot</em> et dites "qui es-tu ?" : le bot ne répond pas encore.</p>
+</li>
+<li>
+<p>Allez dans <em>NLU</em> &gt; <em>Inbox</em>, pour la phrase que vous venez de saisir :</p>
+<ul>
+<li>
+<p>Changez l'intention pour <em>New intent</em></p>
+</li>
+<li>
+<p>Nommez-la "qui-es-tu" comme dans le code (pour que le lien se fasse)</p>
+</li>
+<li>
+<p>Créez l'intention avec <em>Create</em></p>
+</li>
+<li>
+<p>Terminez la qualification de la phrase avec <em>Validate</em></p>
+</li>
+</ul>
+</li>
+<li>
+<p>Retournez dans <em>Test</em> &gt; <em>Test the bot</em>. Dites "qui es-tu ?" : le bot répond !</p>
+</li>
+</ul>
+<h2 id="felicitations">Félicitations!<a class="headerlink" href="#felicitations" title="Permanent link">&para;</a></h2>
+<p>Vous venez de déployer votre propre plateforme conversationnelle Tock en local.</p>
+<p>Cela peut servir à mieux appréhender l'architecture et vérifier la <em>portabilité</em> de la solution, mais aussi lors de 
+développements, pour les contributeurs Tock ou encore si vous devez travailler sans accès à Internet 
+(en mobilité, sur un réseau restreint, etc.).</p>
+<blockquote>
+<p>Attention, l'implémentation Docker fournie ne suffit pas à garantir résilience et montée en charge de la plateforme 
+quelles que soient les conditions en production. Pour cela, quelques recommandations sont proposées dans la section 
+<a href="../../admin/disponibilite/">haute disponibilité</a> du manuel Tock.</p>
+</blockquote>
+<h2 id="continuer">Continuer...<a class="headerlink" href="#continuer" title="Permanent link">&para;</a></h2>
+<p>Vous venez de terminer les guides de démarrage rapide Tock.</p>
+<p>A partir de là, vous pouvez vous lancer directement sur une plateforme Tock, ou parcourir le 
+<a href="../../toc/">manuel utilisateur</a> pour en savoir plus sur <em>Tock Studio</em>, <em>Bot API</em> et <em>Bot Flow</em> par exemple.</p>
+<p>D'autres pages présentent aussi des études de cas clients, des exemples de code, comment contacter la communauté Tock, etc.</p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../api/" title="Programmer des parcours" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Précédent
+                </span>
+                Programmer des parcours
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../../utilisateur/concepts/" title="Concepts" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Suivant
+                </span>
+                Concepts
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017/2020 Tock
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/vendor.d710d30a.min.js"></script>
+      <script src="../../assets/javascripts/bundle.5f27aba8.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copier dans le presse-papier", "clipboard.copied": "Copi\u00e9 dans le presse-papier", "search.config.lang": "fr", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s"}</script>
+      
+      <script>
+        app = initialize({
+          base: "../..",
+          features: [],
+          search: Object.assign({
+            worker: "../../assets/javascripts/worker/search.27c6a5e6.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>

@@ -1,4 +1,4 @@
-# Le menu _NLU_
+# Le menu NLU
 
 Le menu _NLU (Natural Language Understanding)_ permet de créer, modifier, enrichir les modèles conversationnels :
  déclarer des _intentions_ et des _entités_, _qualifier_ des phrases, etc. (voir [Concepts](../concepts.md)

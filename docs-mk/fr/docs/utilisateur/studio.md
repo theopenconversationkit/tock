@@ -1,4 +1,4 @@
-# Les interfaces _Tock Studio_
+# Les interfaces Tock Studio
 
 _Tock Studio_ regroupe l'ensemble des interfaces utilisateur, techniques et métier, permettant 
 de concevoir les modèles conversationnels, créer des parcours et des réponses, suivre les conversations, 

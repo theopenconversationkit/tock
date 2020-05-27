@@ -1,4 +1,4 @@
-# Le menu _Monitoring_
+# Le menu Monitoring
 
 Le menu _Monitoring_ permet de suivre et observer les utilisateurs connectés ainsi que les conversations.
  

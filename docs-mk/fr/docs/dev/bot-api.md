@@ -1,4 +1,4 @@
-# Développer en mode _Tock Bot API_
+# Développer en mode Tock Bot API
 
 Le mode _Bot API_ de Tock permet de développer des bots en se connectant à une plateforme _Tock Studio_ en 
 utilisant l'API REST conversationnelle de Tock.

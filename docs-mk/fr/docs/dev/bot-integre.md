@@ -1,4 +1,4 @@
-# Développer en mode _Tock Bot intégré_
+# Développer en mode Tock Bot intégré
 
 Le mode _Bot intégré_ Tock permet de développer un bot en utilisant un 
 [Domain Specifique Language (DSL)](https://fr.wikipedia.org/wiki/Langage_d%C3%A9di%C3%A9) 

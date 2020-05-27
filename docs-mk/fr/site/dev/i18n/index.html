@@ -1,0 +1,1074 @@
+
+
+
+<!doctype html>
+<html lang="fr" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="The Open Conversation Kit">
+      
+      
+        <link rel="canonical" href="https://theopenconversationkit.github.io/tock/fr/dev/i18n/">
+      
+      
+        <meta name="author" content="Tock">
+      
+      <link rel="shortcut icon" href="../../img/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.2.2">
+    
+    
+      
+        <title>i18n - Tock</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.a2408e81.min.css">
+      
+      
+    
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#developper-un-bot-multilingue-i18n" class="md-skip">
+          Aller au contenu
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="https://theopenconversationkit.github.io/tock/fr" title="Tock" class="md-header-nav__button md-logo" aria-label="Tock">
+      
+  <img src="../../img/favicon.png" alt="logo">
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            Tock
+          </span>
+          <span class="md-header-nav__topic md-ellipsis">
+            
+              i18n
+            
+          </span>
+        </div>
+      
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Rechercher" placeholder="Rechercher" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active">
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header-nav__source">
+        
+<a href="https://github.com/theopenconversationkit/tock" title="Aller au dépôt" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    tock
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+        
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://theopenconversationkit.github.io/tock/fr" title="Tock" class="md-nav__button md-logo" aria-label="Tock">
+      
+  <img src="../../img/favicon.png" alt="logo">
+
+    </a>
+    Tock
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/theopenconversationkit/tock" title="Aller au dépôt" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    tock
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Accueil" class="md-nav__link">
+      Accueil
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../toc/" title="Table des matières" class="md-nav__link">
+      Table des matières
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Découvrir Tock
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="Découvrir Tock" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        Découvrir Tock
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../guide/studio/" title="Créer son premier bot" class="md-nav__link">
+      Créer son premier bot
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../guide/slack/" title="Configurer Slack" class="md-nav__link">
+      Configurer Slack
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../guide/messenger/" title="Configurer Messenger" class="md-nav__link">
+      Configurer Messenger
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../guide/api/" title="Programmer des parcours" class="md-nav__link">
+      Programmer des parcours
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../guide/plateforme/" title="Déployer avec Docker" class="md-nav__link">
+      Déployer avec Docker
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+    <label class="md-nav__link" for="nav-4">
+      Utiliser Tock
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="Utiliser Tock" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        Utiliser Tock
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../utilisateur/concepts/" title="Concepts" class="md-nav__link">
+      Concepts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../utilisateur/studio/" title="Tock Studio" class="md-nav__link">
+      Tock Studio
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../utilisateur/canaux/" title="Bot multicanal" class="md-nav__link">
+      Bot multicanal
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../utilisateur/i18n/" title="Bot multilingue" class="md-nav__link">
+      Bot multilingue
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5" checked>
+    
+    <label class="md-nav__link" for="nav-5">
+      Développer avec Tock
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="Développer avec Tock" data-md-level="1">
+      <label class="md-nav__title" for="nav-5">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        Développer avec Tock
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../modes/" title="Modes disponibles" class="md-nav__link">
+      Modes disponibles
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../bot-api/" title="Tock Bot API" class="md-nav__link">
+      Tock Bot API
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../bot-integre/" title="Tock Bot intégré" class="md-nav__link">
+      Tock Bot intégré
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connecteurs/" title="Connecteurs" class="md-nav__link">
+      Connecteurs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        i18n
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
+        </span>
+      </label>
+    
+    <a href="./" title="i18n" class="md-nav__link md-nav__link--active">
+      i18n
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pre-requis" class="md-nav__link">
+    Pré-requis
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#principes" class="md-nav__link">
+    Principes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#format-des-messages" class="md-nav__link">
+    Format des messages
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#locale-utilisateur" class="md-nav__link">
+    Locale utilisateur
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#points-dattention" class="md-nav__link">
+    Points d'attention
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tester-linternationalisation" class="md-nav__link">
+    Tester l'internationalisation
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../api/" title="Liste des APIs" class="md-nav__link">
+      Liste des APIs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../exemples-code/" title="Exemples de code" class="md-nav__link">
+      Exemples de code
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
+    
+    <label class="md-nav__link" for="nav-6">
+      Administrer Tock
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="Administrer Tock" data-md-level="1">
+      <label class="md-nav__title" for="nav-6">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        Administrer Tock
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../admin/architecture/" title="Architecture" class="md-nav__link">
+      Architecture
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../admin/installation/" title="Installation" class="md-nav__link">
+      Installation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../admin/securite/" title="Sécurité" class="md-nav__link">
+      Sécurité
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../admin/disponibilite/" title="Disponibilité" class="md-nav__link">
+      Disponibilité
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../admin/supervision/" title="Supervision" class="md-nav__link">
+      Supervision
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../admin/cloud/" title="Cloud" class="md-nav__link">
+      Cloud
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-7" type="checkbox" id="nav-7">
+    
+    <label class="md-nav__link" for="nav-7">
+      A propos
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="A propos" data-md-level="1">
+      <label class="md-nav__title" for="nav-7">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        A propos
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../apropos/pourquoi/" title="Pourquoi Tock" class="md-nav__link">
+      Pourquoi Tock
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../apropos/vitrine/" title="Vitrine utilisateurs" class="md-nav__link">
+      Vitrine utilisateurs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../apropos/recompenses/" title="Prix et récompenses" class="md-nav__link">
+      Prix et récompenses
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../apropos/ressources/" title="Ressources" class="md-nav__link">
+      Ressources
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../apropos/contact/" title="Nous contacter" class="md-nav__link">
+      Nous contacter
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../apropos/communaute/" title="Communauté" class="md-nav__link">
+      Communauté
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../apropos/contribuer/" title="Contribuer" class="md-nav__link">
+      Contribuer
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../apropos/emploi/" title="Emploi" class="md-nav__link">
+      Emploi
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="https://theopenconversationkit.github.io/tock/en/" title="🇫🇷 🇬🇧" class="md-nav__link">
+      🇫🇷 🇬🇧
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="https://doc.tock.ai" title="Tock.ai 🔗" class="md-nav__link">
+      Tock.ai 🔗
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pre-requis" class="md-nav__link">
+    Pré-requis
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#principes" class="md-nav__link">
+    Principes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#format-des-messages" class="md-nav__link">
+    Format des messages
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#locale-utilisateur" class="md-nav__link">
+    Locale utilisateur
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#points-dattention" class="md-nav__link">
+    Points d'attention
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tester-linternationalisation" class="md-nav__link">
+    Tester l'internationalisation
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  
+                
+                
+                <h1 id="developper-un-bot-multilingue-i18n">Développer un bot multilingue (<em>i18n</em>)<a class="headerlink" href="#developper-un-bot-multilingue-i18n" title="Permanent link">&para;</a></h1>
+<p>La page <a href="../../utilisateur/i18n/">Bot multilingue</a> de la documentation utilisateur présente les bases de l'internationalisation
+(<em>i18n</em>) pour construire des bots avec Tock : pré-requis, <em>Locale</em>, etc.</p>
+<p>Cette page vient compléter cette documentation avec des éléments propres au développement. </p>
+<h2 id="pre-requis">Pré-requis<a class="headerlink" href="#pre-requis" title="Permanent link">&para;</a></h2>
+<p>Pour activer l'internationalisation dans Tock, programmatiquement ou pas, voir <a href="../../utilisateur/i18n/">Bot multilingue</a>.</p>
+<h2 id="principes">Principes<a class="headerlink" href="#principes" title="Permanent link">&para;</a></h2>
+<p>Le code ne change pas une fois l'internationalisation activée. Par exemple : </p>
+<div class="codehilite"><pre><span></span><code>     <span class="n">send</span><span class="p">(</span><span class="s">&quot;Arrival at {0}&quot;</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+</code></pre></div>
+
+
+<p>est un code valide que le module soit activé ou non. </p>
+<p>Par contre, à l'exécution, le comportement diffère significativement.</p>
+<p>Si l'internationalisation est activée, les opérations suivantes vont être effectuées :</p>
+<ol>
+<li>
+<p>Une clé va être générée à partir du texte passé en paramètre, en fonction du namespace (l'organisation du créateur du bot)
+ et de la story dans laquelle est demandé ce libellé. Dans le cas ci-dessus, cela devrait ressembler à <code>app_arrivals_Arrival at {0}</code> où <em>app</em> est le namespace et 
+<em>arrivals</em> l'intention principale de la story.</p>
+</li>
+<li>
+<p>Tock vérifie ensuite si cette clé est déjà présente en base. </p>
+<ul>
+<li>Si c'est le cas, il utilise le libellé présent en base pour la langue demandée afin de trouver la traduction la plus appropriée (le connecteur ou le type d'interface peuvent également être pris en compte)</li>
+<li>Sinon, une clé est créée en base avec le libellé par défaut ("Arrival at {0}" dans notre exemple) utilisée pour la langue courante</li>
+</ul>
+</li>
+<li>
+<p>Il est ensuite possible de consulter et de modifier ce libellé dans l'interface d'administration :   </p>
+</li>
+</ol>
+<p><img alt="Internationalisation" src="../../img/i18n.png" title="Internationalisation" /></p>
+<h2 id="format-des-messages">Format des messages<a class="headerlink" href="#format-des-messages" title="Permanent link">&para;</a></h2>
+<p>Le format supporté est celui du support i18n de java, en particulier celui de la classe <a href="https://docs.oracle.com/javase/10/docs/api/java/text/MessageFormat.html">MessageFormat</a>
+en java. Cela inclut le support de <a href="https://docs.oracle.com/javase/10/docs/api/java/text/ChoiceFormat.html">ChoiceFormat</a> :</p>
+<div class="codehilite"><pre><span></span><code>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;There {0,choice,0#are no files|1#is one file|1&lt;are {0,number,integer} files}.&quot;</span><span class="p">,</span> <span class="m">2</span><span class="p">)</span>  
+</code></pre></div>
+
+
+<p>Par ailleurs, Tock met à disposition une extension <em>by</em> pour les dates qui permet d'indiquer un format dans les paramètres :</p>
+<div class="codehilite"><pre><span></span><code>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;Departure at {0}&quot;</span><span class="p">,</span> <span class="n">departureDateTime</span> <span class="k">by</span> <span class="n">timeFormat</span><span class="p">)</span> 
+</code></pre></div>
+
+
+<h2 id="locale-utilisateur">Locale utilisateur<a class="headerlink" href="#locale-utilisateur" title="Permanent link">&para;</a></h2>
+<p>Voir <a href="../../utilisateur/i18n/">Bot multilingue</a>.</p>
+<h2 id="points-dattention">Points d'attention<a class="headerlink" href="#points-dattention" title="Permanent link">&para;</a></h2>
+<p>Le module d'internationalisation de Tock est efficace, mais certaines pratiques, pourtant intuitives en Kotlin,
+ sont à bannir sous peine de mauvaises surprises.</p>
+<p>Par exemple, ce code fonctionne parfaitement bien avec le module i18n désactivé.</p>
+<div class="codehilite"><pre><span></span><code>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;There are $nb files&quot;</span><span class="p">)</span> <span class="c1">//DANGER!! </span>
+</code></pre></div>
+
+
+<p>mais pose problème si il est activé. En effet, un nouveau libellé sera créé pour chaque valeur différente de la variable <em>nb</em> !</p>
+<p>Si il est nécessaire d'envoyer des réponses "à ne pas traduire", utilisez 
+les méthodes <em>BotBus.sendRaw</em>, <em>BotBus.endRaw</em> ou <em>String.raw</em></p>
+<div class="codehilite"><pre><span></span><code>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;There are $nb files&quot;</span><span class="p">.</span><span class="n">raw</span><span class="p">)</span> <span class="c1">//CORRECT </span>
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;There are {0} files&quot;</span><span class="p">,</span> <span class="n">nb</span><span class="p">)</span> <span class="c1">//FORMAT A SUIVRE </span>
+</code></pre></div>
+
+
+<ul>
+<li>Le risque de collision entre deux libellés est faible puisque l'intention principale de la story fait partie de la clé. 
+Si vous souhaitez cependant éviter tout risque, vous pouvez utiliser la méthode <em>i18nKey</em> :</li>
+</ul>
+<div class="codehilite"><pre><span></span><code>    <span class="n">send</span><span class="p">(</span><span class="n">i18nKey</span><span class="p">(</span><span class="s">&quot;my_unique_key&quot;</span><span class="p">,</span> <span class="s">&quot;There are {0} files&quot;</span><span class="p">,</span> <span class="n">nb</span><span class="p">))</span> 
+</code></pre></div>
+
+
+<h2 id="tester-linternationalisation">Tester l'internationalisation<a class="headerlink" href="#tester-linternationalisation" title="Permanent link">&para;</a></h2>
+<p>Un exemple de dispositif de test est disponible dans le
+<a href="https://github.com/theopenconversationkit/tock-bot-open-data/tree/master/src/test/kotlin/ai.tock/bot/open/data/rule">code source du bot d'exemple</a>
+Il est nécessaire d'étendre <a href="https://github.com/theopenconversationkit/tock-bot-open-data/blob/master/src/test/kotlin/ai.tock/bot/open/data/rule/OpenDataJUnitExtension.kt">l'extension de test</a>
+pour ensuite indiquer la <a href="https://github.com/theopenconversationkit/tock-bot-open-data/blob/master/src/test/kotlin/ai.tock/bot/open/data/rule/TranslatorEngineMock.kt">correspondance des libellés</a> à tester.</p>
+<p>Il ne reste plus qu'à indiquer la locale souhaitée : </p>
+<div class="codehilite"><pre><span></span><code>    <span class="n">@Test</span>
+    <span class="k">fun</span> <span class="nf">`search story asks for departure date WHEN there is a destination and an origin but no departure date in context`</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">ext</span><span class="p">.</span><span class="n">newRequest</span><span class="p">(</span><span class="s">&quot;Recherche&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">locale</span> <span class="p">=</span> <span class="n">Locale</span><span class="p">.</span><span class="n">FRENCH</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">destination</span> <span class="p">=</span> <span class="n">lille</span>
+            <span class="n">origin</span> <span class="p">=</span> <span class="n">paris</span>
+
+            <span class="n">run</span><span class="p">()</span>
+
+            <span class="n">firstAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Quand souhaitez-vous partir?&quot;</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+</code></pre></div>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../connecteurs/" title="Connecteurs" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Précédent
+                </span>
+                Connecteurs
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../api/" title="Liste des APIs" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Suivant
+                </span>
+                Liste des APIs
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017/2020 Tock
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/vendor.d710d30a.min.js"></script>
+      <script src="../../assets/javascripts/bundle.5f27aba8.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copier dans le presse-papier", "clipboard.copied": "Copi\u00e9 dans le presse-papier", "search.config.lang": "fr", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s"}</script>
+      
+      <script>
+        app = initialize({
+          base: "../..",
+          features: [],
+          search: Object.assign({
+            worker: "../../assets/javascripts/worker/search.27c6a5e6.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>

@@ -1,4 +1,4 @@
-# Le menu _Build_
+# Le menu Build
 
 Le menu _Build_ permet de construire des parcours et des réponses aux phrases utilisateur.
  
