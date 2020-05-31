@@ -21,6 +21,7 @@ import {UserReportQueryResult, UserSearchQuery} from "./model/users";
 import {Observable} from "rxjs";
 import {DialogReportQuery, DialogReportQueryResult} from "./model/dialogs";
 import {TestPlan} from "../test/model/test";
+import {DialogReport} from "../shared/model/dialog-data";
 
 @Injectable()
 export class MonitoringService implements OnDestroy {
@@ -39,6 +40,10 @@ export class MonitoringService implements OnDestroy {
 
   dialogs(query: DialogReportQuery): Observable<DialogReportQueryResult> {
     return this.rest.post("/dialogs/search", query, DialogReportQueryResult.fromJSON);
+  }
+
+  dialog(applicationId: string, dialogId: string): Observable<DialogReport> {
+    return this.rest.get(`/dialog/${applicationId}/${dialogId}`, DialogReport.fromJSON);
   }
 
   getTestPlansByNamespaceAndNlpModel(): Observable<TestPlan[]> {

@@ -16,6 +16,9 @@
 
 import {Component, Input, OnInit} from "@angular/core";
 import {DialogReport} from "../model/dialog-data";
+import {UserRole} from "../../model/auth";
+import {StateService} from "../../core-nlp/state.service";
+import {MonitoringService} from "../../monitoring/monitoring.service";
 
 @Component({
   selector: 'tock-display-dialog',
@@ -29,10 +32,23 @@ export class DisplayDialogComponent implements OnInit {
   @Input()
   userPicture: string;
 
-  constructor() {
+  constructor(
+    private state: StateService,
+    private monitoringService: MonitoringService
+  ) {
   }
 
   ngOnInit() {
+  }
+
+  canReveal(): boolean {
+    return this.dialog.obfuscated && this.state.hasRole(UserRole.admin);
+  }
+
+  reveal() {
+    this.monitoringService.dialog(this.state.currentApplication._id, this.dialog.id).subscribe(
+      d => this.dialog = d
+    )
   }
 
 }

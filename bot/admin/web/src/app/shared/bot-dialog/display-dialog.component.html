@@ -18,6 +18,18 @@
     <div *ngIf="dialog.actions.length === 0">No dialog</div>
     <div *ngIf="dialog.actions.length !== 0">
       <ng-content></ng-content>
+      <nb-card *ngIf="canReveal()">
+        <nb-card-body>
+          <nb-actions size="small">
+            <nb-action>
+              {{dialog.actions[0].date | amDateFormat: 'YYYY-MM-DD HH:mm:ss'}}
+            </nb-action>
+            <nb-action class="control-item" nbTooltip="Deobfuscate the dialog" *ngIf="canReveal()" (click)="reveal()" style="cursor: pointer;">
+              <i class="material-icons">visibility</i>
+            </nb-action>
+          </nb-actions>
+        </nb-card-body>
+      </nb-card>
       <table>
         <tr *ngFor="let action of dialog.actions">
           <td style="min-width:200px;text-align: left">

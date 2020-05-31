@@ -22,6 +22,7 @@ import ai.tock.bot.admin.BotAdminService.getBotConfigurationByApplicationIdAndBo
 import ai.tock.bot.admin.BotAdminService.importStories
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotConfiguration
+import ai.tock.bot.admin.dialog.DialogReportQuery
 import ai.tock.bot.admin.model.BotAdminConfiguration
 import ai.tock.bot.admin.model.BotConnectorConfiguration
 import ai.tock.bot.admin.model.BotI18nLabel
@@ -85,6 +86,25 @@ open class BotAdminVerticle : AdminVerticle() {
         blockingJsonPost("/users/search", botUser) { context, query: UserSearchQuery ->
             if (context.organization == query.namespace) {
                 BotAdminService.searchUsers(query)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonGet("/dialog/:applicationId/:dialogId", admin) { context ->
+            val app = FrontClient.getApplicationById(context.pathId("applicationId"))
+            if (context.organization == app?.namespace) {
+                dialogReportDAO
+                    .search(
+                        DialogReportQuery(
+                            context.organization,
+                            app.name,
+                            dialogId = context.path("dialogId")
+                        )
+                    )
+                    .run {
+                        dialogs.firstOrNull()
+                    }
             } else {
                 unauthorized()
             }
@@ -265,7 +285,9 @@ open class BotAdminVerticle : AdminVerticle() {
         blockingDelete(
             "/feature/:botId/:category/:name/",
             botUser,
-            simpleLogger("Delete Application Feature", { listOf(it.path("botId"), it.path("category"), it.path("name")) })
+            simpleLogger(
+                "Delete Application Feature",
+                { listOf(it.path("botId"), it.path("category"), it.path("name")) })
         ) { context ->
             val category = context.path("category")
             val name = context.path("name")
@@ -276,13 +298,20 @@ open class BotAdminVerticle : AdminVerticle() {
         blockingDelete(
             "/feature/:botId/:category/:name/:applicationId",
             botUser,
-            simpleLogger("Delete Application Feature", { listOf(it.path("botId"), it.path("category"), it.path("name"), it.path("applicationId")) })
+            simpleLogger(
+                "Delete Application Feature",
+                { listOf(it.path("botId"), it.path("category"), it.path("name"), it.path("applicationId")) })
         ) { context ->
             val applicationId = context.path("applicationId")
             val category = context.path("category")
             val name = context.path("name")
             val botId = context.path("botId")
-            BotAdminService.deleteFeature(botId, context.organization, category, name, applicationId.takeUnless { it.isBlank() })
+            BotAdminService.deleteFeature(
+                botId,
+                context.organization,
+                category,
+                name,
+                applicationId.takeUnless { it.isBlank() })
         }
 
         blockingJsonGet("/application/:applicationId/plans", botUser) { context ->
@@ -321,7 +350,13 @@ open class BotAdminVerticle : AdminVerticle() {
             botUser,
             simpleLogger("JSON Import Response Labels")
         ) { context, stories: List<StoryDefinitionConfigurationDump> ->
-            importStories(context.organization, context.path("appName"), context.pathToLocale("locale"), stories, context.userLogin)
+            importStories(
+                context.organization,
+                context.path("appName"),
+                context.pathToLocale("locale"),
+                stories,
+                context.userLogin
+            )
         }
 
         blockingJsonPost(

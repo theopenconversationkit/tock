@@ -98,7 +98,7 @@
               <span *ngIf="m.locale" class="stats">
                 [{{m.locale}}]
                 <button *ngIf="m.hasNlpStats" mat-icon-button (click)="displayNlpStats(m)" matTooltip="View Nlp Stats"
-                        color="primary"><mat-icon>visibility</mat-icon></button>
+                        color="primary"><mat-icon>poll</mat-icon></button>
               </span>
               <tock-bot-message [message]="m.message" (user)="true"></tock-bot-message>
             </td>

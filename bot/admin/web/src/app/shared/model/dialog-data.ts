@@ -24,7 +24,8 @@ export class DialogReport {
   displayActions: boolean;
 
   constructor(public actions: ActionReport[],
-              public id: string) {
+              public id: string,
+              public obfuscated: boolean = false) {
   }
 
   static fromJSON(json?: any): DialogReport {

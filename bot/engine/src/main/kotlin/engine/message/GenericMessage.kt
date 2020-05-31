@@ -18,6 +18,7 @@ package ai.tock.bot.engine.message
 
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.ConnectorType.Companion.none
 
 /**
  * An aggregation of [Message]s used in [Sentence].
@@ -52,13 +53,14 @@ data class GenericMessage(
         const val TEXT_PARAM = "text"
     }
 
-    constructor(connectorMessage: ConnectorMessage,
-                attachments: List<Attachment> = emptyList(),
-                choices: List<Choice> = emptyList(),
-                texts: Map<String, String> = emptyMap(),
-                locations: List<Location> = emptyList(),
-                metadata: Map<String, String> = emptyMap(),
-                subElements: List<GenericElement> = emptyList()
+    constructor(
+        connectorMessage: ConnectorMessage,
+        attachments: List<Attachment> = emptyList(),
+        choices: List<Choice> = emptyList(),
+        texts: Map<String, String> = emptyMap(),
+        locations: List<Location> = emptyList(),
+        metadata: Map<String, String> = emptyMap(),
+        subElements: List<GenericElement> = emptyList()
     ) : this(
         connectorMessage.connectorType,
         attachments,
@@ -67,8 +69,8 @@ data class GenericMessage(
         locations,
         metadata,
         subElements,
-        connectorMessage) {
-    }
+        connectorMessage
+    )
 
     internal fun findConnectorMessage() = connectorMessage
 
@@ -87,5 +89,32 @@ data class GenericMessage(
                     subElements
                 )
         }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as GenericMessage
+
+        if (connectorType != other.connectorType && connectorType != none && other.connectorType != none) return false
+        if (attachments != other.attachments) return false
+        if (choices != other.choices) return false
+        if (texts != other.texts) return false
+        if (locations != other.locations) return false
+        if (metadata != other.metadata) return false
+        if (subElements != other.subElements) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = attachments.hashCode()
+        result = 31 * result + choices.hashCode()
+        result = 31 * result + texts.hashCode()
+        result = 31 * result + locations.hashCode()
+        result = 31 * result + metadata.hashCode()
+        result = 31 * result + subElements.hashCode()
+        return result
+    }
 
 }
