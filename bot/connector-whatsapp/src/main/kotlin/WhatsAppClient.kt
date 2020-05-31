@@ -16,13 +16,10 @@
 
 package ai.tock.bot.connector.whatsapp
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.datatype.jsr310.deser.InstantDeserializer
-import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotImageMessage
-import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotMessage
-import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotTextMessage
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppResponse
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppSendBotImageMessage
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppSendBotMessage
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppSendBotTextMessage
 import ai.tock.shared.addJacksonConverter
 import ai.tock.shared.basicAuthInterceptor
 import ai.tock.shared.create
@@ -31,10 +28,14 @@ import ai.tock.shared.jackson.addDeserializer
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.longProperty
 import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.datatype.jsr310.deser.InstantDeserializer
 import mu.KotlinLogging
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
@@ -78,7 +79,7 @@ internal class WhatsAppClient(
 
         @Headers("Content-Type: application/json")
         @POST("v1/messages")
-        fun sendMessage(@Body message: WhatsAppBotMessage): Call<WhatsAppResponse>
+        fun sendMessage(@Body message: WhatsAppSendBotMessage): Call<WhatsAppResponse>
 
         @GET("v1/media/{mediaId}")
         fun getMedia(@Path("mediaId") mediaId: String): Call<ResponseBody>
@@ -100,6 +101,7 @@ internal class WhatsAppClient(
 
     @Volatile
     private var tokenExpiration: OffsetDateTime? = null
+
     @Volatile
     private var token: String? = null
 
@@ -188,22 +190,21 @@ internal class WhatsAppClient(
         }
     }
 
-    fun sendMessage(message: WhatsAppBotMessage) {
+    fun sendMessage(message: WhatsAppSendBotMessage) {
         if (checkLogin()) {
             try {
                 when (message) {
-                    is WhatsAppBotTextMessage -> {
+                    is WhatsAppSendBotTextMessage -> {
                         val response = api.sendMessage(message).execute()
                         if (!response.isSuccessful) {
                             response.logError()
                         }
                     }
-                    is WhatsAppBotImageMessage -> {
+                    is WhatsAppSendBotImageMessage -> {
                         val response = api.sendMedia(
                             message.image.contentType,
-                            RequestBody.create(
-                                message.image.contentType.toMediaType(),
-                                message.image.byteImages!!
+                            message.image.byteImages!!.toRequestBody(
+                                message.image.contentType.toMediaType()
                             )
                         ).execute()
                         val id = response.body()?.media?.firstOrNull()?.id

@@ -25,7 +25,15 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class WhatsAppBotTextMessage(
     val text: WhatsAppTextBody,
     override val recipientType: WhatsAppBotRecipientType,
-    private val userId: String,
+    override val userId: String? = null,
     @get:JsonProperty("preview_url")
     val previewUrl: Boolean = false
-) : WhatsAppBotMessage(WhatsAppBotMessageType.text, userId)
+) : WhatsAppBotMessage(WhatsAppBotMessageType.text, userId) {
+    override fun toSendBotMessage(recipientId: String): WhatsAppSendBotMessage =
+        WhatsAppSendBotTextMessage(
+            text,
+            recipientType,
+            recipientId,
+            previewUrl
+        )
+}

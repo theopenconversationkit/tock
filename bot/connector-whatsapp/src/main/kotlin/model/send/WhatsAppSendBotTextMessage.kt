@@ -14,24 +14,15 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.whatsapp
+package ai.tock.bot.connector.whatsapp.model.send
 
-import ai.tock.bot.connector.ConnectorData
+import ai.tock.bot.connector.whatsapp.model.common.WhatsAppTextBody
+import com.fasterxml.jackson.annotation.JsonProperty
 
-/**
- * Dedicated Whatsapp parameters.
- */
-class WhatsAppConnectorData(
-    /**
-     * The callback.
-     */
-    callback: WhatsAppConnectorCallback,
-    /**
-     * An optional group id (for users group conversation handling).
-     */
-    groupId: String? = null,
-    /**
-     * The original (not encrypted) user Id.
-     */
-    val originalUserId: String
-) : ConnectorData(callback, groupId = groupId)
+internal data class WhatsAppSendBotTextMessage(
+    val text: WhatsAppTextBody,
+    override val recipientType: WhatsAppBotRecipientType,
+    override val to: String,
+    @get:JsonProperty("preview_url")
+    val previewUrl: Boolean = false
+) : WhatsAppSendBotMessage(WhatsAppBotMessageType.text)

@@ -19,7 +19,8 @@ package ai.tock.bot.connector.whatsapp
 import ai.tock.bot.connector.whatsapp.model.common.WhatsAppTextBody
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotMessage
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotRecipientType.individual
-import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotTextMessage
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppSendBotMessage
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppSendBotTextMessage
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
 
@@ -28,14 +29,18 @@ import ai.tock.bot.engine.action.SendSentence
  */
 internal object SendActionConverter {
 
-    fun toBotMessage(action: Action): WhatsAppBotMessage? {
+    fun toBotMessage(action: Action): WhatsAppSendBotMessage? {
         return if (action is SendSentence) {
-            action.message(whatsAppConnectorType) as? WhatsAppBotMessage
+            (action.message(whatsAppConnectorType) as? WhatsAppBotMessage)
+                ?.let {
+                    it.toSendBotMessage(
+                        (it.userId ?: action.recipientId.id).let { id -> UserHashedIdCache.getRealId(id) })
+                }
                 ?: action.stringText?.let { text ->
-                    WhatsAppBotTextMessage(
+                    WhatsAppSendBotTextMessage(
                         WhatsAppTextBody(text),
                         individual,
-                        action.recipientId.id
+                        UserHashedIdCache.getRealId(action.recipientId.id)
                     )
                 } ?: error("null text in action $action")
         } else {

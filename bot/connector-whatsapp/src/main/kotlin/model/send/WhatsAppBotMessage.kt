@@ -37,15 +37,18 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(value = WhatsAppBotTextMessage::class, name = "text"),
     JsonSubTypes.Type(value = WhatsAppBotImageMessage::class, name = "image")
 )
-abstract class WhatsAppBotMessage(val type: WhatsAppBotMessageType, @JsonIgnore private val userId: String) : ConnectorMessage {
+abstract class WhatsAppBotMessage(val type: WhatsAppBotMessageType, @JsonIgnore internal open val userId: String?) :
+    ConnectorMessage {
 
     @get:JsonIgnore
-    override val connectorType: ConnectorType
-        get() = whatsAppConnectorType
+    override val connectorType: ConnectorType = whatsAppConnectorType
 
     @get:JsonProperty("recipient_type")
     abstract val recipientType: WhatsAppBotRecipientType
 
-    val to: String get() = UserHashedIdCache.getRealId(userId)
+    internal abstract fun toSendBotMessage(recipientId:String) : WhatsAppSendBotMessage
+
+    @get:JsonIgnore
+    val to: String get() = userId?.let { UserHashedIdCache.getRealId(it) } ?: "unknown"
 
 }

@@ -16,17 +16,23 @@
 
 package ai.tock.bot.connector.whatsapp.model.send
 
-data class WhatsAppBotImageMessage(
-    val image: WhatsAppBotAttachment,
-    override val recipientType: WhatsAppBotRecipientType,
-    override val userId: String? = null
-) : WhatsAppBotMessage(WhatsAppBotMessageType.image, userId) {
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 
-    override fun toSendBotMessage(recipientId: String): WhatsAppSendBotMessage =
-        WhatsAppSendBotImageMessage(
-            image,
-            recipientType,
-            recipientId
-        )
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "type"
+)
+@JsonSubTypes(
+    JsonSubTypes.Type(value = WhatsAppSendBotTextMessage::class, name = "text"),
+    JsonSubTypes.Type(value = WhatsAppSendBotImageMessage::class, name = "image")
+)
+internal abstract class WhatsAppSendBotMessage(val type: WhatsAppBotMessageType) {
 
+    abstract val to: String
+
+    @get:JsonProperty("recipient_type")
+    abstract val recipientType: WhatsAppBotRecipientType
 }
