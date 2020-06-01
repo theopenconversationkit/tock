@@ -70,7 +70,7 @@ class TestCoreService : TestService {
         }
 
         blockingJsonGet("/test/plan/:planId", botUser) { context ->
-            TestPlanService.getTestPlan(context.pathId("planId"))
+            context.loadTestPlan()
         }
 
         blockingJsonGet("/test/plan/:planId/executions", botUser) { context ->
