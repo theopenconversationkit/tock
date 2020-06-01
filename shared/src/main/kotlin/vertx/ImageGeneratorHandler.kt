@@ -32,7 +32,7 @@ import mu.KotlinLogging
 /**
  * Provides a service that generates image using [imageGenerator] specified by [paramExtractor].
  */
-class ImageGeneratorHandler<T>(
+class ImageGeneratorHandler<T : Any>(
     private val imageGenerator: ImageGenerator<T>,
     private val paramExtractor: ImageParametersExtractor<T>,
     private val executor: Executor = injector.provide()
@@ -44,16 +44,20 @@ class ImageGeneratorHandler<T>(
             try {
                 val requestParams = context.request().params()
                 val imageParams = paramExtractor.extract(requestParams)
-                val format = requestParams["format"]?.let {
-                    ImageFormat.findByCode(
-                        it
-                    )
-                } ?: ImageFormat.PNG
-                val data = imageGenerator.generate(imageParams, format)
-                context.response().putHeader(HttpHeaders.CONTENT_LENGTH, data.size.toString())
-                context.response().putHeader(HttpHeaders.CONTENT_TYPE, format.contentType)
-                context.response().write(Buffer.buffer(data))
-                context.response().end()
+                if (imageParams == null) {
+                    context.response().setStatusCode(404).end()
+                } else {
+                    val format = requestParams["format"]?.let {
+                        ImageFormat.findByCode(
+                            it
+                        )
+                    } ?: ImageFormat.PNG
+                    val data = imageGenerator.generate(imageParams, format)
+                    context.response().putHeader(HttpHeaders.CONTENT_LENGTH, data.size.toString())
+                    context.response().putHeader(HttpHeaders.CONTENT_TYPE, format.contentType)
+                    context.response().write(Buffer.buffer(data))
+                    context.response().end()
+                }
             } catch (e: Throwable) {
                 logger.error(e)
                 context.fail(e)

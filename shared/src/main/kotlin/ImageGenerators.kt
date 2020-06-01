@@ -34,7 +34,7 @@ import javax.xml.transform.stream.StreamResult
 /**
  * Generates an image from a svg template.
  */
-class ImageGenerator<T>(
+class ImageGenerator<T : Any>(
     private val svgToPngConverter: SvgToPngConverter,
     private val svgGenerator: SvgGenerator<T>
 ) {
@@ -92,7 +92,7 @@ enum class ImageFormat(val contentType: String) {
 /**
  * Generates an image from a svg file.
  */
-abstract class SvgGenerator<T>(resourceName: String, resourcePath: String = "/generation/") {
+abstract class SvgGenerator<T : Any>(resourceName: String, resourcePath: String = "/generation/") {
 
     private val template = "$resourcePath$resourceName.svg"
 
@@ -112,8 +112,13 @@ abstract class SvgGenerator<T>(resourceName: String, resourcePath: String = "/ge
 /**
  * Provides a data instance from specified parameters.
  */
-interface ImageParametersExtractor<T> {
-    fun extract(params: MultiMap): T
+interface ImageParametersExtractor<T : Any> {
+
+    /**
+     * Returns the parameters data instance.
+     * If null is returned, it means the parameters can not be extracted ([ai.tock.shared.vertx.ImageGeneratorHandler] returns 404).
+     */
+    fun extract(params: MultiMap): T?
 }
 
 /**
