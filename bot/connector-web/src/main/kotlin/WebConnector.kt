@@ -36,7 +36,16 @@ import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.user.PlayerId
+import ai.tock.bot.engine.user.PlayerType.bot
+import ai.tock.bot.engine.user.PlayerType.user
 import ai.tock.bot.engine.user.UserPreferences
+import ai.tock.bot.orchestration.bot.secondary.OrchestrationCallback
+import ai.tock.bot.orchestration.bot.secondary.RestOrchestrationCallback
+import ai.tock.bot.orchestration.shared.AskEligibilityToOrchestredBotRequest
+import ai.tock.bot.orchestration.shared.OrchestrationMetaData
+import ai.tock.bot.orchestration.shared.ResumeOrchestrationRequest
+import ai.tock.bot.orchestration.shared.SecondaryBotEligibilityResponse
+import ai.tock.shared.Dice
 import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.injector
@@ -70,11 +79,12 @@ class WebConnector internal constructor(
 
     companion object {
         private val logger = KotlinLogging.logger {}
-        private val webMapper = mapper.copy().registerModule(
+        private val webMapper = mapper.copy().registerModules(
             SimpleModule().apply {
                 //fallback for serializing CharSequence
                 addSerializer(CharSequence::class.java, ToStringSerializer())
-            }
+            },
+            WebOrchestrationJacksonConfiguration.module
         )
         private val channels by lazy { Channels(ChannelMongoDAO) }
     }
@@ -134,6 +144,18 @@ class WebConnector internal constructor(
                         context.fail(e)
                     }
                 }
+
+            router.post("$path/orchestration/eligibility").handler { context ->
+                executor.executeBlocking {
+                    handleEligibility(controller, context)
+                }
+            }
+
+            router.post("$path/orchestration/proxy").handler { context ->
+                executor.executeBlocking {
+                    handleProxy(controller, context)
+                }
+            }
         }
     }
 
@@ -156,25 +178,87 @@ class WebConnector internal constructor(
         }
     }
 
+    private fun handleProxy(
+        controller: ConnectorController,
+        context: RoutingContext
+    ) {
+        val timerData = BotRepository.requestTimer.start("web_webhook_orchestred")
+        try {
+            logger.debug { "Web proxy request input : ${context.bodyAsString}" }
+            val request = mapper.readValue(context.bodyAsString, ResumeOrchestrationRequest::class.java)
+            val callback = RestOrchestrationCallback(webConnectorType, applicationId = applicationId, context = context, orchestrationMapper = webMapper)
+
+            controller.handle(request.toAction(), ConnectorData(callback))
+
+        } catch (t: Throwable) {
+            RestOrchestrationCallback(webConnectorType, applicationId, context = context).sendError()
+            BotRepository.requestTimer.throwable(t, timerData)
+        } finally {
+            BotRepository.requestTimer.end(timerData)
+        }
+    }
+
+    private fun handleEligibility(
+        controller: ConnectorController,
+        context: RoutingContext
+    ) {
+        val timerData = BotRepository.requestTimer.start("web_webhook_support")
+        try {
+            logger.debug { "Web support request input : ${context.bodyAsString}" }
+            val request = mapper.readValue(context.bodyAsString, AskEligibilityToOrchestredBotRequest::class.java)
+            val callback = RestOrchestrationCallback(webConnectorType, applicationId, context = context, orchestrationMapper = webMapper)
+
+            // TODO à quoi sert le callback dans le cas du support ?
+
+            val support = controller.support(request.toAction(applicationId), ConnectorData(callback))
+            val sendEligibility = SecondaryBotEligibilityResponse(support, OrchestrationMetaData(
+                playerId = PlayerId(applicationId, bot),
+                applicationId = applicationId,
+                recipientId = request?.metadata?.playerId ?: PlayerId(Dice.newId(), user)
+            ))
+            callback.sendResponse(sendEligibility)
+
+        } catch (t: Throwable) {
+            RestOrchestrationCallback(webConnectorType, applicationId, context = context).sendError()
+            BotRepository.requestTimer.throwable(t, timerData)
+        } finally {
+            BotRepository.requestTimer.end(timerData)
+        }
+    }
+
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
-        val c = callback as? WebConnectorCallback
-        c?.addAction(event)
         if (event is Action) {
-            if (sseEnabled) {
-                channels.send(event)
-            }
-            if (event.metadata.lastAnswer) {
-                c?.sendResponse()
+            when (callback) {
+                is WebConnectorCallback -> handleWebConnectorCallback(callback, event)
+                is OrchestrationCallback -> handleOrchestrationCallback(callback, event)
             }
         } else {
             logger.trace { "unsupported event: $event" }
         }
+
+    }
+
+    private fun handleWebConnectorCallback(callback: WebConnectorCallback, event: Action) {
+        callback.addAction(event)
+        if (sseEnabled) {
+            channels.send(event)
+        }
+        if (event.metadata.lastAnswer) {
+            callback.sendResponse()
+        }
+    }
+
+    private fun handleOrchestrationCallback(callback: OrchestrationCallback, event: Action) {
+        callback.actions.add(event)
+        if (event.metadata.lastAnswer) {
+            callback.sendResponse()
+        }
     }
 
     override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences {
-        callback as WebConnectorCallback
-        return UserPreferences().apply {
-            locale = callback.locale
+        return when(callback) {
+            is WebConnectorCallback -> UserPreferences().apply { locale = callback.locale }
+            else -> UserPreferences()
         }
     }
 
