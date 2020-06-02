@@ -96,7 +96,6 @@ class ConfiguredStoryHandlerTest {
         }
 
         val configuration: StoryDefinitionConfiguration = mockk {
-            every { findEnabledFeature("appId") } returns null
             every { mandatoryEntities } returns emptyList()
             every { findCurrentAnswer() } returns simpleAnswerConfiguration
 

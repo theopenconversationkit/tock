@@ -57,8 +57,7 @@ internal object StoryConfigurationMonitor {
         logger.debug { "Refreshing bot ${bot.botDefinition.botId} (${bot.configuration.applicationId})..." }
         bot.botDefinition.updateStories(
             storyDAO.getStoryDefinitionsByNamespaceAndBotId(bot.botDefinition.namespace, bot.botDefinition.botId)
-                .map { ConfiguredStoryDefinition(it) },
-            bot.configuration.applicationId
+                .map { ConfiguredStoryDefinition(it) }
         )
     }
 

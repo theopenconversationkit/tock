@@ -227,13 +227,11 @@ object BotRepository {
      * Register built-in story definitions.
      */
     fun registerBuiltInStoryDefinitions(botProvider: BotProvider) {
-        // TODO : register intents if necessary
         val botDefinition = botProvider.botDefinition()
         val configurationName = botProvider.botProviderId.configurationName
         executor.executeBlocking {
             storyDefinitionConfigurationDAO.createBuiltInStoriesIfNotExist(
                 botDefinition.stories
-                    .filter { it is SimpleStoryDefinition } // Only built-in
                     .filter { it.mainIntent() != Intent.unknown }
                     .map { storyDefinition ->
                         StoryDefinitionConfiguration(botDefinition, storyDefinition, configurationName)

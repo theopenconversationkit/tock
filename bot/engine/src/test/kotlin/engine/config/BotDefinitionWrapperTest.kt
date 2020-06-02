@@ -17,16 +17,22 @@
 package engine.config
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType
+import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
+import ai.tock.bot.admin.answer.AnswerConfigurationType.message
+import ai.tock.bot.admin.answer.AnswerConfigurationType.script
+import ai.tock.bot.admin.answer.AnswerConfigurationType.simple
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.IntentWithoutNamespace
+import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.BotDefinitionTest
 import ai.tock.bot.engine.TestStoryDefinition.test
 import ai.tock.bot.engine.config.BotDefinitionWrapper
 import ai.tock.bot.engine.config.ConfiguredStoryDefinition
 import io.mockk.mockk
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import kotlin.test.assertEquals
@@ -40,8 +46,23 @@ internal class BotDefinitionWrapperTest {
     val inputStoryId = "input_story"
 
     private fun story(id: String, type: AnswerConfigurationType, vararg features: StoryDefinitionConfigurationFeature) =
-            ConfiguredStoryDefinition(StoryDefinitionConfiguration(id, botDefinition.botId, IntentWithoutNamespace(id),
-                    type, emptyList(), features = features.toList()))
+        ConfiguredStoryDefinition(
+            StoryDefinitionConfiguration(
+                id, botDefinition.botId, IntentWithoutNamespace(id),
+                type, emptyList(), features = features.toList()
+            )
+        )
+
+    private fun assertSameStory(expected: ConfiguredStoryDefinition, actual: StoryDefinition) {
+        assertEquals(
+            if (expected.answerType == builtin) {
+                botDefinition.findStoryDefinition(expected.configuration.mainIntent)
+            } else {
+                expected
+            },
+            actual
+        )
+    }
 
     @Nested
     inner class NoRedirection {
@@ -54,7 +75,8 @@ internal class BotDefinitionWrapperTest {
 
         @Test
         fun `GIVEN no story redirection WHEN find story THEN return story`() {
-            val inputStory = BotDefinitionWrapper(botDefinition).findStoryDefinition(test.mainIntent().name, applicationId)
+            val inputStory =
+                BotDefinitionWrapper(botDefinition).findStoryDefinition(test.mainIntent().name, applicationId)
             assertEquals(test, inputStory)
         }
     }
@@ -68,7 +90,7 @@ internal class BotDefinitionWrapperTest {
 
             val inputStory = story(inputStoryId, type, StoryDefinitionConfigurationFeature(null, true, test.id))
             val wrapper = BotDefinitionWrapper(botDefinition)
-            wrapper.updateStories(listOf(inputStory), applicationId)
+            wrapper.updateStories(listOf(inputStory))
 
             val outputStory = wrapper.findStoryDefinition(inputStoryId, applicationId)
 
@@ -78,10 +100,14 @@ internal class BotDefinitionWrapperTest {
         @Test
         fun `GIVEN story redirection from configured to configured WHEN find story THEN return other story`() {
 
-            val inputStory = story(inputStoryId, AnswerConfigurationType.message, StoryDefinitionConfigurationFeature(null, true, "target"))
-            val targetStory = story("target", AnswerConfigurationType.message)
+            val inputStory = story(
+                inputStoryId,
+                message,
+                StoryDefinitionConfigurationFeature(null, true, "target")
+            )
+            val targetStory = story("target", message)
             val wrapper = BotDefinitionWrapper(botDefinition)
-            wrapper.updateStories(listOf(inputStory, targetStory), applicationId)
+            wrapper.updateStories(listOf(inputStory, targetStory))
 
             val outputStory = wrapper.findStoryDefinition(inputStoryId, applicationId)
 
@@ -91,36 +117,48 @@ internal class BotDefinitionWrapperTest {
         @Test
         fun `GIVEN story redirection from builtin to builtin WHEN find story THEN return other story`() {
 
-            val inputStory = story(inputStoryId, AnswerConfigurationType.builtin, StoryDefinitionConfigurationFeature(null, true, "target"))
-            val targetStory = story("target", AnswerConfigurationType.builtin)
+            val inputStory = story(
+                inputStoryId,
+                builtin,
+                StoryDefinitionConfigurationFeature(null, true, "target")
+            )
+            val targetStory = story("target", builtin)
             val wrapper = BotDefinitionWrapper(botDefinition)
-            wrapper.updateStories(listOf(inputStory, targetStory), applicationId)
+            wrapper.updateStories(listOf(inputStory, targetStory))
 
             val outputStory = wrapper.findStoryDefinition(inputStoryId, applicationId)
 
-            assertEquals(targetStory, outputStory)
+            assertSameStory(targetStory, outputStory)
         }
 
         @Test
         fun `GIVEN story redirection from configured to builtin WHEN find story THEN return builtin story`() {
 
-            val inputStory = story(inputStoryId, AnswerConfigurationType.message, StoryDefinitionConfigurationFeature(null, true, "target"))
-            val targetStory = story("target", AnswerConfigurationType.builtin)
+            val inputStory = story(
+                inputStoryId,
+                message,
+                StoryDefinitionConfigurationFeature(null, true, "target")
+            )
+            val targetStory = story("target", builtin)
             val wrapper = BotDefinitionWrapper(botDefinition)
-            wrapper.updateStories(listOf(inputStory, targetStory), applicationId)
+            wrapper.updateStories(listOf(inputStory, targetStory))
 
             val outputStory = wrapper.findStoryDefinition(inputStoryId, applicationId)
 
-            assertEquals(targetStory, outputStory)
+            assertSameStory(targetStory, outputStory)
         }
 
         @Test
         fun `GIVEN story redirection from builtin to configured WHEN find story THEN return configured story`() {
 
-            val inputStory = story(inputStoryId, AnswerConfigurationType.builtin, StoryDefinitionConfigurationFeature(null, true, "target"))
-            val targetStory = story("target", AnswerConfigurationType.message)
+            val inputStory = story(
+                inputStoryId,
+                builtin,
+                StoryDefinitionConfigurationFeature(null, true, "target")
+            )
+            val targetStory = story("target", message)
             val wrapper = BotDefinitionWrapper(botDefinition)
-            wrapper.updateStories(listOf(inputStory, targetStory), applicationId)
+            wrapper.updateStories(listOf(inputStory, targetStory))
 
             val outputStory = wrapper.findStoryDefinition(inputStoryId, applicationId)
 
@@ -134,11 +172,11 @@ internal class BotDefinitionWrapperTest {
             val inputStory = story(inputStoryId, type, StoryDefinitionConfigurationFeature(null, true, "target"))
             val targetStory = story("target", type, StoryDefinitionConfigurationFeature(null, false, null))
             val wrapper = BotDefinitionWrapper(botDefinition)
-            wrapper.updateStories(listOf(inputStory, targetStory), applicationId)
+            wrapper.updateStories(listOf(inputStory, targetStory))
 
             val outputStory = wrapper.findStoryDefinition(inputStoryId, applicationId)
 
-            assertEquals(inputStory, outputStory)
+            assertSameStory(inputStory, outputStory)
         }
 
         @ParameterizedTest
@@ -147,11 +185,11 @@ internal class BotDefinitionWrapperTest {
 
             val inputStory = story(inputStoryId, type, StoryDefinitionConfigurationFeature(null, false, test.id))
             val wrapper = BotDefinitionWrapper(botDefinition)
-            wrapper.updateStories(listOf(inputStory), applicationId)
+            wrapper.updateStories(listOf(inputStory))
 
             val outputStory = wrapper.findStoryDefinition(inputStoryId, applicationId)
 
-            assertEquals(inputStory, outputStory)
+            assertSameStory(inputStory, outputStory)
         }
 
         @ParameterizedTest
@@ -160,11 +198,11 @@ internal class BotDefinitionWrapperTest {
 
             val inputStory = story(inputStoryId, type, StoryDefinitionConfigurationFeature(null, true, null))
             val wrapper = BotDefinitionWrapper(botDefinition)
-            wrapper.updateStories(listOf(inputStory), applicationId)
+            wrapper.updateStories(listOf(inputStory))
 
             val outputStory = wrapper.findStoryDefinition(inputStoryId, applicationId)
 
-            assertEquals(inputStory, outputStory)
+            assertSameStory(inputStory, outputStory)
         }
 
         @ParameterizedTest
@@ -173,11 +211,11 @@ internal class BotDefinitionWrapperTest {
 
             val inputStory = story(inputStoryId, type, StoryDefinitionConfigurationFeature(mockk(), true, test.id))
             val wrapper = BotDefinitionWrapper(botDefinition)
-            wrapper.updateStories(listOf(inputStory), applicationId)
+            wrapper.updateStories(listOf(inputStory))
 
             val outputStory = wrapper.findStoryDefinition(inputStoryId, applicationId)
 
-            assertEquals(inputStory, outputStory)
+            assertSameStory(inputStory, outputStory)
         }
     }
 
@@ -193,7 +231,7 @@ internal class BotDefinitionWrapperTest {
             val story3 = story("story3", type, StoryDefinitionConfigurationFeature(null, true, "story4"))
             val story4 = story("story4", type, StoryDefinitionConfigurationFeature(null, true, test.id))
             val wrapper = BotDefinitionWrapper(botDefinition)
-            wrapper.updateStories(listOf(inputStory, story2, story3, story4), applicationId)
+            wrapper.updateStories(listOf(inputStory, story2, story3, story4))
 
             val outputStory = wrapper.findStoryDefinition(inputStoryId, applicationId)
 
@@ -203,12 +241,28 @@ internal class BotDefinitionWrapperTest {
         @Test
         fun `GIVEN chained redirections with various types WHEN find story THEN return last story`() {
 
-            val inputStory = story(inputStoryId, AnswerConfigurationType.message, StoryDefinitionConfigurationFeature(null, true, "story2"))
-            val story2 = story("story2", AnswerConfigurationType.script, StoryDefinitionConfigurationFeature(null, true, "story3"))
-            val story3 = story("story3", AnswerConfigurationType.simple, StoryDefinitionConfigurationFeature(null, true, "story4"))
-            val story4 = story("story4", AnswerConfigurationType.builtin, StoryDefinitionConfigurationFeature(null, true, test.id))
+            val inputStory = story(
+                inputStoryId,
+                message,
+                StoryDefinitionConfigurationFeature(null, true, "story2")
+            )
+            val story2 = story(
+                "story2",
+                script,
+                StoryDefinitionConfigurationFeature(null, true, "story3")
+            )
+            val story3 = story(
+                "story3",
+                simple,
+                StoryDefinitionConfigurationFeature(null, true, "story4")
+            )
+            val story4 = story(
+                "story4",
+                builtin,
+                StoryDefinitionConfigurationFeature(null, true, test.id)
+            )
             val wrapper = BotDefinitionWrapper(botDefinition)
-            wrapper.updateStories(listOf(inputStory, story2, story3, story4), applicationId)
+            wrapper.updateStories(listOf(inputStory, story2, story3, story4))
 
             val outputStory = wrapper.findStoryDefinition(inputStoryId, applicationId)
 
@@ -224,11 +278,11 @@ internal class BotDefinitionWrapperTest {
             val story3 = story("story3", type, StoryDefinitionConfigurationFeature(null, false, "story4"))
             val story4 = story("story4", type, StoryDefinitionConfigurationFeature(null, true, test.id))
             val wrapper = BotDefinitionWrapper(botDefinition)
-            wrapper.updateStories(listOf(inputStory, story2, story3, story4), applicationId)
+            wrapper.updateStories(listOf(inputStory, story2, story3, story4))
 
             val outputStory = wrapper.findStoryDefinition(inputStoryId, applicationId)
 
-            assertEquals(story3, outputStory)
+            assertSameStory(story3, outputStory)
         }
 
         @ParameterizedTest
@@ -239,11 +293,11 @@ internal class BotDefinitionWrapperTest {
             val story2 = story("story2", type, StoryDefinitionConfigurationFeature(null, true, "story3"))
             val story3 = story("story3", type, StoryDefinitionConfigurationFeature(null, false, null))
             val wrapper = BotDefinitionWrapper(botDefinition)
-            wrapper.updateStories(listOf(inputStory, story2, story3), applicationId)
+            wrapper.updateStories(listOf(inputStory, story2, story3))
 
             val outputStory = wrapper.findStoryDefinition(inputStoryId, applicationId)
 
-            assertEquals(story2, outputStory)
+            assertSameStory(story2, outputStory)
         }
 
 
@@ -256,13 +310,13 @@ internal class BotDefinitionWrapperTest {
             val story3 = story("story3", type, StoryDefinitionConfigurationFeature(null, true, "story4"))
             val story4 = story("story4", type, StoryDefinitionConfigurationFeature(null, true, inputStoryId))
             val wrapper = BotDefinitionWrapper(botDefinition)
-            wrapper.updateStories(listOf(inputStory, story2, story3, story4), applicationId)
+            wrapper.updateStories(listOf(inputStory, story2, story3, story4))
 
             var outputStory = wrapper.findStoryDefinition(inputStoryId, applicationId)
-            assertEquals(inputStory, outputStory)
+            assertSameStory(inputStory, outputStory)
 
             outputStory = wrapper.findStoryDefinition("story3", applicationId)
-            assertEquals(story3, outputStory)
+            assertSameStory(story3, outputStory)
         }
     }
 }

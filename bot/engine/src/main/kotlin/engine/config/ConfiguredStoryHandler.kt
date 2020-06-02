@@ -17,6 +17,7 @@
 package ai.tock.bot.engine.config
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType.simple
+import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
 import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
 import ai.tock.bot.admin.answer.SimpleAnswer
 import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
@@ -48,7 +49,8 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
             val entityTypeName = entity.entityTypeName
             if (role != entityTypeName
                 && bus.entityValueDetails(role) == null
-                && bus.hasActionEntity(entityTypeName)) {
+                && bus.hasActionEntity(entityTypeName)
+            ) {
                 bus.dialog.state.changeValue(
                     role,
                     bus.entityValueDetails(entityTypeName)
@@ -101,7 +103,10 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
                 null -> bus.fallbackAnswer()
                 is SimpleAnswerConfiguration -> bus.handleSimpleAnswer(this@send, this)
                 is ScriptAnswerConfiguration -> bus.handleScriptAnswer(this@send)
-                else -> bus.fallbackAnswer()
+                is BuiltInAnswerConfiguration ->
+                    (bus.botDefinition as BotDefinitionWrapper).builtInStory(configuration.storyId)
+                        .storyHandler.handle(bus)
+                else -> error("type not supported for now: $this")
             }
         }
     }
@@ -111,7 +116,10 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
     private fun BotBus.fallbackAnswer() =
         botDefinition.unknownStory.storyHandler.handle(this)
 
-    private fun BotBus.handleSimpleAnswer(container: StoryDefinitionAnswersContainer, simple: SimpleAnswerConfiguration?) {
+    private fun BotBus.handleSimpleAnswer(
+        container: StoryDefinitionAnswersContainer,
+        simple: SimpleAnswerConfiguration?
+    ) {
         if (simple == null) {
             fallbackAnswer()
         } else {
@@ -122,9 +130,11 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
                             send(container, a)
                         }
                     it.last().apply {
-                        send(container, this,
+                        send(
+                            container, this,
                             // Fixes #731 end only if no targetIntent will be called after answer
-                            (step as? Step)?.configuration?.targetIntent == null)
+                            (step as? Step)?.configuration?.targetIntent == null
+                        )
                     }
                 }
         }
@@ -141,11 +151,15 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
                 }
                 ?.let { messages ->
                     if (suggestions.isNotEmpty() && messages.isNotEmpty())
-                        messages.take(messages.size - 1) + (underlyingConnector.addSuggestions(messages.last(), suggestions).invoke(this)
+                        messages.take(messages.size - 1) + (underlyingConnector.addSuggestions(
+                            messages.last(),
+                            suggestions
+                        ).invoke(this)
                             ?: messages.last())
                     else messages
                 }
-                ?: listOfNotNull(suggestions.takeIf { suggestions.isNotEmpty() && end }?.let { underlyingConnector.addSuggestions(label, suggestions).invoke(this) })
+                ?: listOfNotNull(suggestions.takeIf { suggestions.isNotEmpty() && end }
+                    ?.let { underlyingConnector.addSuggestions(label, suggestions).invoke(this) })
 
 
         val actions = connectorMessages

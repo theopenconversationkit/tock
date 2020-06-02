@@ -36,7 +36,7 @@ class BotDefinitionTest
     : BotDefinitionBase(
     "test",
     "namespace",
-    stories = enumValues<TestStoryDefinition>().toList() + otherStory + testWithoutStep,
+    stories = enumValues<TestStoryDefinition>().toList() + otherStory + testWithoutStep + builtInStories,
     unknownStory = TestStoryDefinition.unknown,
     botEnabledStory = enableStory,
     botDisabledStory = disableStory
@@ -95,3 +95,9 @@ val otherStory = storyWithSteps<StepTest>("other") {
 val testWithoutStep = story("withoutStep") {
     end("withoutStep")
 }
+
+//stories in order to make BotDefinitionWrapperTest ok
+val builtInStories = listOf(
+    story("input_story") { end("input_story") },
+    story("target") { end("target") }
+)

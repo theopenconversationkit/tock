@@ -26,4 +26,11 @@ data class StoryDefinitionConfigurationFeature(
     val botApplicationConfigurationId: Id<BotApplicationConfiguration>?,
     val enabled: Boolean = true,
     val switchToStoryId: String?
-)
+) {
+    internal fun supportConfiguration(conf: BotApplicationConfiguration?): Boolean =
+        botApplicationConfigurationId == null || (conf != null && supportDedicatedConfiguration(conf))
+
+    internal fun supportDedicatedConfiguration(conf: BotApplicationConfiguration): Boolean =
+        botApplicationConfigurationId == conf._id
+                || botApplicationConfigurationId == conf.targetConfigurationId
+}
