@@ -317,9 +317,9 @@ internal class MessengerClient(val secretKey: String) {
             } else {
                 return response.body() ?: throwError(request, "null body")
             }
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             requestTimer.throwable(e, requestTimerData)
-            if (e is ConnectorMessage) {
+            if (e is ConnectorException) {
                 throw e
             } else {
                 throwError(request, e.message ?: "")
