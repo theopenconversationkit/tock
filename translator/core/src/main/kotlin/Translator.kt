@@ -16,8 +16,6 @@
 
 package ai.tock.translator
 
-import com.google.common.cache.Cache
-import com.google.common.cache.CacheBuilder
 import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.defaultLocale
@@ -29,6 +27,8 @@ import ai.tock.shared.provide
 import ai.tock.translator.UserInterfaceType.textAndVoiceAssistant
 import ai.tock.translator.UserInterfaceType.textChat
 import ai.tock.translator.UserInterfaceType.voiceAssistant
+import com.google.common.cache.Cache
+import com.google.common.cache.CacheBuilder
 import mu.KotlinLogging
 import org.litote.kmongo.toId
 import java.text.ChoiceFormat
@@ -149,23 +149,31 @@ object Translator {
      * Creates a new label. If the label key exists, increment the key with a _$count suffix.
      */
     fun create(value: I18nLabelValue, defaultLocale: Locale, alternatives: List<String> = emptyList()): I18nLabel {
-        var count = 1;
-        var v = value
-        while (getLabel(v) != null) {
-            v = I18nLabelValue(value.key + "_" + count++, value.namespace, value.category, value.defaultLabel, value.args)
+        synchronized(value.key.intern()) {
+            var count = 1;
+            var v = value
+            while (getLabel(v) != null) {
+                v = I18nLabelValue(
+                    value.key + "_" + count++,
+                    value.namespace,
+                    value.category,
+                    value.defaultLabel,
+                    value.args
+                )
+            }
+            val defaultLabelKey = v.defaultLabel.toString()
+            val defaultLabel = I18nLocalizedLabel(defaultLocale, defaultInterface, defaultLabelKey, alternatives)
+            val label =
+                I18nLabel(
+                    v.key.toId(),
+                    v.namespace,
+                    v.category,
+                    LinkedHashSet(listOf(defaultLabel)),
+                    defaultLabelKey
+                )
+            i18nDAO.save(label)
+            return label
         }
-        val defaultLabelKey = v.defaultLabel.toString()
-        val defaultLabel = I18nLocalizedLabel(defaultLocale, defaultInterface, defaultLabelKey, alternatives)
-        val label =
-            I18nLabel(
-                v.key.toId(),
-                v.namespace,
-                v.category,
-                LinkedHashSet(listOf(defaultLabel)),
-                defaultLabelKey
-            )
-        i18nDAO.save(label)
-        return label
     }
 
     /**
@@ -386,7 +394,7 @@ object Translator {
                         val b = prefix
                         val c = s.substring(index + prefix.length, s.length)
                         splitPattern = splitPattern.subList(0, i) + listOf(a) + listOf(b) + listOf(c) +
-                            splitPattern.subList(i + 1, splitPattern.size)
+                                splitPattern.subList(i + 1, splitPattern.size)
                     }
                 }
             }
@@ -447,7 +455,8 @@ object Translator {
                 if (label.validated || !label.label.isBlank()) {
                     label
                 } else {
-                    val baseValue = i.findExistingLabelForOtherLocale(label.locale, label.interfaceType, label.connectorId)
+                    val baseValue =
+                        i.findExistingLabelForOtherLocale(label.locale, label.interfaceType, label.connectorId)
                     if (!baseValue?.label.isNullOrBlank()) {
                         count++
                         label.copy(label = translate(baseValue!!.label, baseValue.locale, label.locale))
