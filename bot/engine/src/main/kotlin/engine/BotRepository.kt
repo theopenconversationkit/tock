@@ -31,7 +31,7 @@ import ai.tock.bot.definition.BotProvider
 import ai.tock.bot.definition.BotProviderId
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.IntentAware
-import ai.tock.bot.definition.SimpleStoryDefinition
+import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryHandlerDefinition
 import ai.tock.bot.definition.StoryHandlerListener
 import ai.tock.bot.definition.StoryStep
@@ -177,7 +177,8 @@ object BotRepository {
         errorListener: (Throwable) -> Unit = {}
     ) {
         val conf = getConfigurationByApplicationId(applicationId) ?: error("unknown application $applicationId")
-        connectorControllerMap.getValue(conf).notifyAndCheckState(recipientId, intent, step, parameters, stateModifier, notificationType, errorListener)
+        connectorControllerMap.getValue(conf)
+            .notifyAndCheckState(recipientId, intent, step, parameters, stateModifier, notificationType, errorListener)
     }
 
     private fun ConnectorController.notifyAndCheckState(
@@ -195,7 +196,8 @@ object BotRepository {
         val currentState = userState.botDisabled
 
         if (stateModifier == NotifyBotStateModifier.ACTIVATE_ONLY_FOR_THIS_NOTIFICATION
-            || stateModifier == NotifyBotStateModifier.REACTIVATE) {
+            || stateModifier == NotifyBotStateModifier.REACTIVATE
+        ) {
             userState.botDisabled = false
             userTimelineDAO.save(userTimeline, botDefinition)
         }
@@ -228,6 +230,7 @@ object BotRepository {
      */
     fun registerBuiltInStoryDefinitions(botProvider: BotProvider) {
         val botDefinition = botProvider.botDefinition()
+        checkBuiltInStoryCompliance(botDefinition)
         val configurationName = botProvider.botProviderId.configurationName
         executor.executeBlocking {
             storyDefinitionConfigurationDAO.createBuiltInStoriesIfNotExist(
@@ -237,6 +240,20 @@ object BotRepository {
                         StoryDefinitionConfiguration(botDefinition, storyDefinition, configurationName)
                     }
             )
+        }
+    }
+
+    private fun checkBuiltInStoryCompliance(botDefinition: BotDefinition) {
+        val starterIntentsMap: MutableMap<String, MutableList<StoryDefinition>> = mutableMapOf()
+        botDefinition.stories.map { s ->
+            s.starterIntents.forEach {
+                val l = starterIntentsMap.getOrPut(it.name) { mutableListOf() }
+                l.add(s)
+            }
+        }
+        val duplicates = starterIntentsMap.mapValues { s -> s.value.distinctBy { it.id } }.filter { it.value.size > 1 }
+        if (duplicates.isNotEmpty()) {
+            error("duplicate starter intents: $duplicates")
         }
     }
 
@@ -285,7 +302,8 @@ object BotRepository {
     fun installBots(
         routerHandlers: List<(Router) -> Any?>,
         createApplicationIfNotExists: Boolean = true,
-        startupLock: Lock? = null) {
+        startupLock: Lock? = null
+    ) {
         val bots = botProviders.values.map { it.botDefinition() }
 
         //check that nlp applications exist
@@ -371,8 +389,9 @@ object BotRepository {
         val existingConfsByPath: Map<String?, BotApplicationConfiguration> = connectorControllerMap.keys
             .groupBy { it.path }.mapValues { it.value.first() }
         //the existing confs mapped by id
-        val existingConfsById: Map<Id<BotApplicationConfiguration>, BotApplicationConfiguration> = connectorControllerMap.keys
-            .groupBy { it._id }.mapValues { it.value.first() }
+        val existingConfsById: Map<Id<BotApplicationConfiguration>, BotApplicationConfiguration> =
+            connectorControllerMap.keys
+                .groupBy { it._id }.mapValues { it.value.first() }
         //path -> botAppConf
         val confs: Map<Id<BotApplicationConfiguration>, BotApplicationConfiguration> =
             botConfigurationDAO
@@ -389,7 +408,8 @@ object BotRepository {
             //is there a configuration change ?
             if (provider != null &&
                 (provider.configurationUpdated
-                    || existingConfsByPath[c.path]?.takeIf { c.equalsWithoutId(it) } == null)) {
+                        || existingConfsByPath[c.path]?.takeIf { c.equalsWithoutId(it) } == null)
+            ) {
                 val botDefinition = provider.botDefinition()
                 if (botDefinition.namespace == c.namespace) {
                     logger.debug { "refresh configuration $c" }
@@ -443,15 +463,16 @@ object BotRepository {
         applicationsCache: MutableList<ApplicationDefinition>
     ): BotApplicationConfiguration {
 
-        val app = applicationsCache.find { it.name == botDefinition.nlpModelName && it.namespace == botDefinition.namespace }
-            ?: try {
-                nlpController.waitAvailability()
-                nlpClient.getApplicationByNamespaceAndName(botDefinition.namespace, botDefinition.nlpModelName)
-                    ?.also { applicationsCache.add(it) }
-            } catch (e: Exception) {
-                logger.error(e)
-                null
-            }
+        val app =
+            applicationsCache.find { it.name == botDefinition.nlpModelName && it.namespace == botDefinition.namespace }
+                ?: try {
+                    nlpController.waitAvailability()
+                    nlpClient.getApplicationByNamespaceAndName(botDefinition.namespace, botDefinition.nlpModelName)
+                        ?.also { applicationsCache.add(it) }
+                } catch (e: Exception) {
+                    logger.error(e)
+                    null
+                }
         if (app == null) {
             logger.warn { "model ${botDefinition.namespace}:${botDefinition.nlpModelName} not found" }
         }

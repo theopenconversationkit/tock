@@ -49,4 +49,6 @@ open class StoryDefinitionBase(
         setOf(Intent(name)) + (otherStarterIntents + secondaryIntents).map { it.wrappedIntent() }.toSet()
 
     open fun handle(bus: BotBus) = storyHandler.handle(bus)
+
+    override fun toString(): String = "Story[$name]"
 }
