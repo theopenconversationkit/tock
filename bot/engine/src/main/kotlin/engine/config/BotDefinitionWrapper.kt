@@ -17,6 +17,7 @@
 package ai.tock.bot.engine.config
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
+import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.Intent.Companion.unknown
@@ -42,8 +43,9 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
     //only built-in
     private val builtInStoriesMap: Map<String, StoryDefinition> = botDefinition.stories.associateBy { it.id }
 
-    fun updateStories(configuredStories: List<ConfiguredStoryDefinition>) {
-        this.configuredStories = configuredStories.groupBy { it.configuration.storyId }
+    fun updateStories(configuredStories: List<StoryDefinitionConfiguration>) {
+        this.configuredStories =
+            configuredStories.map { ConfiguredStoryDefinition(this, it) }.groupBy { it.storyId }
 
         allStories = (
                 this.configuredStories
@@ -77,7 +79,7 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
         BotDefinition.findStoryDefinition(
             stories.filter {
                 when (it) {
-                    is ConfiguredStoryDefinition -> !it.configuration.isDisabled(applicationId)
+                    is ConfiguredStoryDefinition -> !it.isDisabled(applicationId)
                     else -> true
                 }
             },
@@ -98,13 +100,13 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
         val story = findStory(intent, applicationId)
 
         return (story as? ConfiguredStoryDefinition)?.let {
-            val switchId = it.configuration.findEnabledStorySwitchId(applicationId)
+            val switchId = it.findEnabledStorySwitchId(applicationId)
             if (switchId != null) {
                 (configuredStories[switchId] ?: listOfNotNull(builtInStoriesMap[switchId]))
                     .let { stories ->
                         val targetStory = stories
                             .filterIsInstance<ConfiguredStoryDefinition>()
-                            .filterNot { c -> c.configuration.isDisabled(applicationId) }
+                            .filterNot { c -> c.isDisabled(applicationId) }
                             .run {
                                 firstOrNull { c -> c.answerType != builtin } ?: firstOrNull()
                             }
@@ -130,7 +132,7 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
     override fun findStoryDefinition(intent: String?, applicationId: String?): StoryDefinition =
         findStoryDefinition(intent, applicationId, intent).let {
             if (it is ConfiguredStoryDefinition && it.answerType == builtin) {
-                builtInStory(it.configuration.storyId)
+                builtInStory(it.storyId)
             } else {
                 it
             }

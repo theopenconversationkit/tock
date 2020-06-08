@@ -19,16 +19,11 @@ package ai.tock.bot.engine.config
 import ai.tock.bot.admin.answer.SimpleAnswer
 import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
-import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotDefinitionTest
-import ai.tock.bot.engine.StepTest
-import ai.tock.bot.engine.TestStoryDefinition
-import ai.tock.bot.engine.TestStoryDefinition.test
 import ai.tock.bot.engine.action.SendSentence
-import ai.tock.bot.engine.dialog.Story
 import ai.tock.bot.engine.message.ActionWrappedMessage
 import ai.tock.bot.engine.message.MessagesList
 import ai.tock.bot.engine.user.PlayerId
@@ -38,7 +33,6 @@ import ai.tock.translator.RawString
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.toId
 import kotlin.test.assertEquals
@@ -105,7 +99,7 @@ class ConfiguredStoryHandlerTest {
         every { configuration.findNextSteps(bus, configuration) } returns nextStepTranslated
 
         // When
-        val handler = ConfiguredStoryHandler(configuration)
+        val handler = ConfiguredStoryHandler(BotDefinitionWrapper(BotDefinitionTest()), configuration)
         handler.handle(bus)
 
         // Then

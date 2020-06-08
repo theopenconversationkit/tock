@@ -36,7 +36,10 @@ import mu.KotlinLogging
 /**
  *
  */
-internal class ConfiguredStoryHandler(private val configuration: StoryDefinitionConfiguration) : StoryHandler {
+internal class ConfiguredStoryHandler(
+    private val definition: BotDefinitionWrapper,
+    private val configuration: StoryDefinitionConfiguration
+) : StoryHandler {
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -192,7 +195,7 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
     }
 
     private fun BotBus.handleScriptAnswer(container: StoryDefinitionAnswersContainer) {
-        container.storyDefinition(botDefinition.botId)
+        container.storyDefinition(definition, configuration)
             ?.storyHandler
             ?.handle(this)
             ?: {

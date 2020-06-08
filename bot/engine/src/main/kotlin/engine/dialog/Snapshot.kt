@@ -40,8 +40,8 @@ data class Snapshot(
         dialog.state.currentIntent?.name,
         dialog.currentStory?.step,
         dialog.state.entityValues.values.mapNotNull { it.value },
-        (dialog.currentStory?.definition as? ConfiguredStoryDefinition)?.configuration?.currentType ?: AnswerConfigurationType.builtin,
-        (dialog.currentStory?.definition as? ConfiguredStoryDefinition)?.configuration?.name ?: dialog.state.currentIntent?.name
+        (dialog.currentStory?.definition as? ConfiguredStoryDefinition)?.answerType ?: AnswerConfigurationType.builtin,
+        (dialog.currentStory?.definition as? ConfiguredStoryDefinition)?.name ?: dialog.state.currentIntent?.name
     )
 
     /**

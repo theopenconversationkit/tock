@@ -18,10 +18,13 @@ package ai.tock.bot.admin.story
 
 import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType
+import ai.tock.bot.admin.answer.AnswerConfigurationType.*
 import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
 import ai.tock.bot.admin.bot.BotVersion
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.BotBus
+import ai.tock.bot.engine.BotRepository
+import ai.tock.bot.engine.config.BotDefinitionWrapper
 
 /**
  * Contains list of [AnswerConfiguration].
@@ -48,10 +51,14 @@ internal interface StoryDefinitionAnswersContainer {
     fun findAnswer(type: AnswerConfigurationType): AnswerConfiguration? =
         answers.firstOrNull { it.answerType == type }
 
-    fun storyDefinition(botId: String): StoryDefinition? =
-        (findCurrentAnswer() as? ScriptAnswerConfiguration)
-            ?.findBestVersion(BotVersion.getCurrentBotVersion(botId))
-            ?.storyDefinition
+    fun storyDefinition(botDefinition: BotDefinitionWrapper, storyDefinitionConfiguration: StoryDefinitionConfiguration): StoryDefinition? =
+        when(currentType) {
+            script -> (findCurrentAnswer() as? ScriptAnswerConfiguration)
+                ?.findBestVersion(BotVersion.getCurrentBotVersion(botDefinition.botId))
+                ?.storyDefinition
+            builtin -> botDefinition.builtInStory(storyDefinitionConfiguration.storyId)
+            else -> null
+        }
 
     fun findNextSteps(bus: BotBus, story: StoryDefinitionConfiguration): List<CharSequence> = emptyList()
 }

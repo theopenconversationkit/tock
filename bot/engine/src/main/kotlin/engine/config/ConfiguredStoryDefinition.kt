@@ -28,25 +28,40 @@ import ai.tock.translator.UserInterfaceType
 /**
  *
  */
-internal class ConfiguredStoryDefinition(val configuration: StoryDefinitionConfiguration) : StoryDefinition {
+internal class ConfiguredStoryDefinition(
+    definition: BotDefinitionWrapper,
+    val configuration: StoryDefinitionConfiguration
+) : StoryDefinition {
 
     val answerType: AnswerConfigurationType = configuration.currentType
 
     override val id: String = configuration._id.toString()
 
-    override val starterIntents: Set<Intent> =
-        setOf(configuration.mainIntent) + (configuration.storyDefinition(configuration.botId)?.starterIntents
-            ?: emptySet())
+    val storyId: String = configuration.storyId
 
-    override val storyHandler: StoryHandler = ConfiguredStoryHandler(configuration)
+    /**
+     * The name of the story.
+     */
+    val name: String = configuration.name
+
+    fun isDisabled(applicationId: String?): Boolean = configuration.isDisabled(applicationId)
+
+    fun findEnabledStorySwitchId(applicationId: String?): String? =
+        configuration.findEnabledStorySwitchId(applicationId)
+
+    override val starterIntents: Set<Intent> =
+        setOf(configuration.mainIntent) +
+                (configuration.storyDefinition(definition, configuration)?.starterIntents ?: emptySet())
+
+    override val storyHandler: StoryHandler = ConfiguredStoryHandler(definition, configuration)
 
     override val steps: Set<StoryStep<*>> =
-        (configuration.storyDefinition(configuration.botId)?.steps ?: emptySet()) +
+        (configuration.storyDefinition(definition, configuration)?.steps ?: emptySet()) +
                 configuration.steps.map { it.toStoryStep(configuration) }
 
     override val intents: Set<Intent> =
         starterIntents +
-                (configuration.storyDefinition(configuration.botId)?.intents ?: emptySet()) +
+                (configuration.storyDefinition(definition, configuration)?.intents ?: emptySet()) +
                 configuration.mandatoryEntities.map { it.intent.intent(configuration.namespace) } +
                 allSteps()
                     .filterIsInstance<Step>()
@@ -54,9 +69,15 @@ internal class ConfiguredStoryDefinition(val configuration: StoryDefinitionConfi
                     .mapNotNull { it.intent?.wrappedIntent() }
 
     override val unsupportedUserInterfaces: Set<UserInterfaceType> =
-        configuration.storyDefinition(configuration.botId)?.unsupportedUserInterfaces ?: emptySet()
+        configuration.storyDefinition(definition, configuration)?.unsupportedUserInterfaces ?: emptySet()
 
     override fun toString(): String {
         return "story[$id]"
     }
+
+    override fun equals(other: Any?): Boolean {
+        return (other as? ConfiguredStoryDefinition)?.id == id
+    }
+
+    override fun hashCode(): Int = id.hashCode()
 }

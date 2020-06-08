@@ -16,10 +16,10 @@
 
 package ai.tock.bot.engine.config
 
-import com.github.salomonbrys.kodein.instance
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.engine.Bot
 import ai.tock.shared.injector
+import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import java.util.concurrent.CopyOnWriteArraySet
 
@@ -57,7 +57,6 @@ internal object StoryConfigurationMonitor {
         logger.debug { "Refreshing bot ${bot.botDefinition.botId} (${bot.configuration.applicationId})..." }
         bot.botDefinition.updateStories(
             storyDAO.getStoryDefinitionsByNamespaceAndBotId(bot.botDefinition.namespace, bot.botDefinition.botId)
-                .map { ConfiguredStoryDefinition(it) }
         )
     }
 
