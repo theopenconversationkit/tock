@@ -30,6 +30,7 @@ export class StoryDialogComponent implements OnInit {
   name: string;
   intent: string;
   label: string;
+  tag: string;
   category: string = "default";
   description: string;
   categories: string[] = [];
@@ -50,6 +51,7 @@ export class StoryDialogComponent implements OnInit {
     this.intent = this.data.intent;
     this.name = this.data.name;
     this.label = this.data.label;
+    this.tag = this.data.tag;
     this.description = this.data.description;
     this.category = this.data.category;
     this.dialogType = "Story";
@@ -110,6 +112,7 @@ export class StoryDialogComponent implements OnInit {
       this.dialogRef.close({
         name: this.name.trim(),
         label: !this.label || this.label.trim().length === 0 ? this.name.trim() : this.label.trim(),
+        tag: this.tag.trim(),
         intent: this.intent.trim(),
         description: !this.description || this.description.trim().length === 0 ? "" : this.description.trim(),
         category: !this.category || this.category.trim().length === 0 ? "default" : this.category.trim(),

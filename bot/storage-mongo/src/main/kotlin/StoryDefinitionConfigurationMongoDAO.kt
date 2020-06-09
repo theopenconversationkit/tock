@@ -25,6 +25,8 @@ import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.CurrentTy
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Intent
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Namespace
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.StoryId
+import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Tags
+import ai.tock.bot.definition.StoryTag
 import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.MongoBotConfiguration.database
 import ai.tock.bot.mongo.StoryDefinitionConfigurationHistoryCol_.Companion.Date
@@ -36,6 +38,7 @@ import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.and
+import org.litote.kmongo.contains
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
@@ -45,6 +48,7 @@ import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.getCollectionOfName
 import org.litote.kmongo.ne
+import org.litote.kmongo.or
 import org.litote.kmongo.reactivestreams.getCollectionOfName
 import org.litote.kmongo.save
 import java.time.Instant
@@ -87,6 +91,13 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
 
     override fun getStoryDefinitionById(id: Id<StoryDefinitionConfiguration>): StoryDefinitionConfiguration? {
         return col.findOneById(id)
+    }
+
+    override fun getRuntimeStorySettings(namespace: String): List<StoryDefinitionConfiguration> {
+        return col.find(
+            and(Namespace eq namespace,
+                or(Tags contains (StoryTag.ENABLE), Tags contains (StoryTag.DISABLE)))
+        ).toList()
     }
 
     override fun getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(

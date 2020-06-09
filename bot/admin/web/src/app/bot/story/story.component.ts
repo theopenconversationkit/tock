@@ -47,6 +47,9 @@ export class StoryComponent implements OnInit, OnChanges {
   storyNode: StoryNode = null;
 
   @Input()
+  storyTag: string = "";
+
+  @Input()
   fullDisplay: boolean = false;
 
   @Input()
@@ -69,7 +72,6 @@ export class StoryComponent implements OnInit, OnChanges {
 
   @Output()
   close = new EventEmitter<boolean>();
-
   isSwitchingToManagedStory = false;
 
   constructor(private state: StateService,
@@ -86,11 +88,13 @@ export class StoryComponent implements OnInit, OnChanges {
       const c = (changes.storyNode as SimpleChange).currentValue;
       if (!c) {
         this.story = null;
+        this.storyTag = "";
       } else if (c.dynamic) {
         this.bot.findStory(this.storyNode.storyDefinitionId)
           .subscribe(s => {
             //explicit null value if no story found
             this.story = s.storyId ? s : null;
+            this.storyTag = s.getFirstTag();
           });
       } else {
         this.initStoryByBotIdAndIntent();
@@ -103,6 +107,7 @@ export class StoryComponent implements OnInit, OnChanges {
       .subscribe(s => {
         //explicit null value if no story found
         this.story = s.storyId ? s : null;
+        this.storyTag = s.getFirstTag();
       });
   }
 
@@ -123,6 +128,7 @@ export class StoryComponent implements OnInit, OnChanges {
           .subscribe(_ => {
             this.delete.emit(this.story._id);
             this.story = null;
+            this.storyTag = "";
             this.dialog.notify(`Story deleted`, "Delete")
           });
       }
@@ -139,6 +145,7 @@ export class StoryComponent implements OnInit, OnChanges {
             create: !this.story._id,
             name: this.story.storyId,
             label: this.story.name,
+            tag: this.story.tags && this.story.tags.length > 0 ? this.story.tags[0] : undefined,
             intent: this.story.intent.name,
             description: this.story.description,
             category: this.story.category,
@@ -152,6 +159,7 @@ export class StoryComponent implements OnInit, OnChanges {
       if (result && result.name) {
         this.story.storyId = result.name;
         this.story.name = result.label;
+        this.story.tags = [result.tag];
         this.story.intent.name = result.intent;
         this.story.category = result.category;
         this.story.description = result.description;
@@ -164,6 +172,7 @@ export class StoryComponent implements OnInit, OnChanges {
 
   private saveStory(selectStoryAfterSave: boolean) {
     this.story.steps = StoryStep.filterNew(this.story.steps);
+    this.story.tags = [this.storyTag];
     if (this.story._id) {
       this.bot.saveStory(this.story).subscribe(s => {
         this.story.selected = selectStoryAfterSave;

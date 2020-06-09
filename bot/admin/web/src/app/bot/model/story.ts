@@ -146,7 +146,8 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
               public version: number = 0,
               public mandatoryEntities: MandatoryEntity[] = [],
               public steps: StoryStep[] = [],
-              public description: string = ""
+              public description: string = "",
+              public tags: string[] = []
   ) {
     super(currentType, answers, category);
   }
@@ -154,6 +155,11 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
   containerId(): string {
     return this.storyId;
   }
+
+  getFirstTag(): string {
+    return this.tags && this.tags.length > 0 ? this.tags[0] : '';
+  }
+
 
   prepareBeforeSend(): StoryDefinitionConfiguration {
     return new StoryDefinitionConfiguration(
@@ -173,7 +179,8 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
       this.version,
       this.mandatoryEntities,
       this.steps,
-      this.description
+      this.description,
+      this.tags
     );
   }
 

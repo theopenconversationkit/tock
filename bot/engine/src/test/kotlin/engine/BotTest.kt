@@ -27,6 +27,7 @@ import ai.tock.bot.engine.message.Choice
 import ai.tock.bot.engine.message.Sentence
 import io.mockk.every
 import io.mockk.slot
+import io.mockk.spyk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -210,5 +211,21 @@ class BotTest : BotEngineTest() {
         bot.handle(sentence, userTimeline, connectorController, connectorData)
         assertTrue(connectorData.saveTimeline)
         assertFalse(userTimeline.userState.botDisabled)
+    }
+
+    @Test
+    fun `GIVEN disabled intent tagged story WHEN call intent THEN send message before disabling bot`() {
+
+        // Given
+        val sentence = action(Sentence("disable bot"))
+        val connectorControllerSpy = spyk(connectorController)
+
+        // When
+        dialog.state.currentIntent = disableBotTaggedStory.mainIntent()
+        bot.handle(sentence, userTimeline, connectorControllerSpy, connectorData)
+
+        // Then
+        verify { connectorControllerSpy.startTypingInAnswerTo(sentence, connectorData) }
+        assertTrue(userTimeline.userState.botDisabled)
     }
 }

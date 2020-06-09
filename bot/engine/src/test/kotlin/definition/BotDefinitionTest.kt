@@ -16,17 +16,26 @@
 
 package ai.tock.bot.definition
 
+import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.BotDefinitionTest
+import ai.tock.bot.engine.StoryHandlerTest
+import ai.tock.bot.engine.config.BotDefinitionWrapper
+import ai.tock.bot.engine.config.ConfiguredStoryDefinition
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.DialogState
+import ai.tock.bot.engine.dialog.Story
 import ai.tock.translator.I18nLabelValue
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
+import org.litote.kmongo.newId
 import java.util.Locale
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 /**
  *
@@ -34,6 +43,12 @@ import kotlin.test.assertFalse
 class BotDefinitionTest {
 
     private val botDef = BotDefinitionTest()
+
+    /**
+     * Finds a [StoryDefinition] from a story [id]
+     */
+    private fun BotDefinition.findStoryDefinitionById(id: String): StoryDefinition? =
+        stories.find { it.id == id || (it as? ConfiguredStoryDefinition)?.configuration?.storyId == id }
 
     @Test
     fun `i18nTranslator() returns an I18nTranslator that use BotDefinition#i18nKeyFromLabel`() {
@@ -62,5 +77,193 @@ class BotDefinitionTest {
     fun `GIVEN step only intent WHEN findIntent is called THEN the intent is found`() {
         val r = botDef.findIntent("s4_secondary")
         assertEquals(Intent("s4_secondary"), r)
+    }
+
+    @Test
+    fun `GIVEN stories containing configured story with specific id WHEN findStoryDefinitionById THEN story is found`() {
+        // Given
+        val storyConfiguration = ConfiguredStoryDefinition(
+            BotDefinitionWrapper(botDef),
+            StoryDefinitionConfiguration(
+                botDefinition = botDef,
+                storyDefinition = SimpleStoryDefinition(
+                    id = "disable_bot",
+                    storyHandler = StoryHandlerTest,
+                    starterIntents = setOf(Intent("starter_intent"))
+                ),
+                configurationName = "toto"
+            )
+        )
+
+        val botDef = BotDefinitionBase(
+            botId = "test",
+            namespace = "namespace",
+            stories = listOf(storyConfiguration)
+        )
+
+        // When
+        val result = botDef.findStoryDefinitionById("disable_bot")
+
+        // Then
+        assertNotNull(result)
+    }
+
+    @Test
+    fun `GIVEN stories containing simple story with specific id WHEN findStoryDefinitionById THEN story is found`() {
+        // Given
+        val storyConfiguration = SimpleStoryDefinition(
+            id = "disable_bot",
+            storyHandler = StoryHandlerTest,
+            starterIntents = setOf(Intent("starter_intent"))
+        )
+
+        val botDef = BotDefinitionBase(
+            botId = "test",
+            namespace = "namespace",
+            stories = listOf(storyConfiguration)
+        )
+
+        // When
+        val result = botDef.findStoryDefinitionById("disable_bot")
+
+        // Then
+        assertNotNull(result)
+    }
+
+    @Test
+    fun `GIVEN stories not containing story with specific id WHEN findStoryDefinitionById THEN story is not found`() {
+        // Given
+        val botDef = BotDefinitionBase(
+            botId = "test",
+            namespace = "namespace",
+            stories = emptyList()
+        )
+
+        // When
+        val result = botDef.findStoryDefinitionById("disable_bot")
+
+        // Then
+        assertNull(result)
+    }
+
+    @Test
+    fun `GIVEN list of stories WHEN findStoryDefinitionById with non existing id THEN story is not found`() {
+        // Given
+        val simpleStoryConfiguration = SimpleStoryDefinition(
+            id = "disable_bot",
+            storyHandler = StoryHandlerTest,
+            starterIntents = setOf(Intent("starter_intent"))
+        )
+
+        val configuredStoryConfiguration = ConfiguredStoryDefinition(
+            BotDefinitionWrapper(botDef),
+            StoryDefinitionConfiguration(
+                botDefinition = botDef,
+                storyDefinition = SimpleStoryDefinition(
+                    id = "enable_bot",
+                    storyHandler = StoryHandlerTest,
+                    starterIntents = setOf(Intent("starter_intent"))
+                ),
+                configurationName = "toto"
+            )
+        )
+
+        val botDef = BotDefinitionBase(
+            botId = "test",
+            namespace = "namespace",
+            stories = listOf(simpleStoryConfiguration, configuredStoryConfiguration)
+        )
+
+        // When
+        val result = botDef.findStoryDefinitionById("should_not_find_id")
+
+        // Then
+        assertNull(result)
+    }
+
+    @Test
+    fun `GIVEN intent story with tag disabled WHEN hasDisableTagIntent THEN return true`() {
+        // Given
+        val intent = Intent("intent")
+
+        val simpleTaggedStoryDefinition = SimpleStoryDefinition(
+            id = "tagged_story",
+            storyHandler = StoryHandlerTest,
+            starterIntents = setOf(intent),
+            tags = listOf(StoryTag.DISABLE)
+        )
+
+        val botDef = BotDefinitionBase(
+            botId = "test",
+            namespace = "namespace",
+            stories = listOf(simpleTaggedStoryDefinition)
+        )
+
+        val wrapper = BotDefinitionWrapper(botDef)
+
+        val dialog = Dialog(
+            playerIds = emptySet(),
+            id = newId(),
+            state = DialogState(
+                currentIntent = intent,
+                entityValues = mutableMapOf(),
+                context = mutableMapOf()
+            ),
+            stories = mutableListOf(
+                Story(
+                    definition = simpleTaggedStoryDefinition,
+                    starterIntent = intent
+                )
+            )
+        )
+
+        // When
+        val result = wrapper.hasDisableTagIntent(dialog)
+
+        // Then
+        assertTrue(result)
+    }
+
+    @Test
+    fun `GIVEN intent story without tag disabled WHEN hasDisableTagIntent THEN return false`() {
+        // Given
+        val intent = Intent("intent")
+
+        val simpleTaggedStoryDefinition = SimpleStoryDefinition(
+            id = "not_tagged_story",
+            storyHandler = StoryHandlerTest,
+            starterIntents = setOf(intent),
+            tags = emptyList()
+        )
+
+        val botDef = BotDefinitionBase(
+            botId = "test",
+            namespace = "namespace",
+            stories = listOf(simpleTaggedStoryDefinition)
+        )
+
+        val wrapper = BotDefinitionWrapper(botDef)
+
+        val dialog = Dialog(
+            playerIds = emptySet(),
+            id = newId(),
+            state = DialogState(
+                currentIntent = intent,
+                entityValues = mutableMapOf(),
+                context = mutableMapOf()
+            ),
+            stories = mutableListOf(
+                Story(
+                    definition = simpleTaggedStoryDefinition,
+                    starterIntent = intent
+                )
+            )
+        )
+
+        // When
+        val result = wrapper.hasDisableTagIntent(dialog)
+
+        // Then
+        assertFalse(result)
     }
 }

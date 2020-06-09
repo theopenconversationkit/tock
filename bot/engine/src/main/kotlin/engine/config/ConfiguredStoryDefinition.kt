@@ -23,10 +23,11 @@ import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryHandler
 import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.definition.StoryTag
 import ai.tock.translator.UserInterfaceType
 
 /**
- *
+ * Implementation of StoryDefinition for StoryDefinitionConfiguration.
  */
 internal class ConfiguredStoryDefinition(
     definition: BotDefinitionWrapper,
@@ -36,6 +37,8 @@ internal class ConfiguredStoryDefinition(
     val answerType: AnswerConfigurationType = configuration.currentType
 
     override val id: String = configuration._id.toString()
+
+    override val tags: List<StoryTag> = configuration.tags
 
     val storyId: String = configuration.storyId
 

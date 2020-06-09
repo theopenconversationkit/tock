@@ -29,7 +29,8 @@ open class SimpleStoryDefinition(override val id: String,
                                   */
                                  override val intents: Set<Intent> = starterIntents,
                                  override val steps: Set<StoryStep<StoryHandlerDefinition>> = emptySet(),
-                                 override val unsupportedUserInterfaces: Set<UserInterfaceType> = emptySet())
+                                 override val unsupportedUserInterfaces: Set<UserInterfaceType> = emptySet(),
+                                 override val tags: List<StoryTag> = emptyList())
     : StoryDefinition {
 
     constructor(id: String,
@@ -39,13 +40,13 @@ open class SimpleStoryDefinition(override val id: String,
                 intents: Set<IntentAware> = starterIntents,
                 unsupportedUserInterfaces: Set<UserInterfaceType> = emptySet()
     ) :
-            this(
-                    id,
-                    storyHandler,
-                    starterIntents.map { it.wrappedIntent() }.toSet(),
-                    intents.map { it.wrappedIntent() }.toSet(),
-                    steps.toSet(),
-                    unsupportedUserInterfaces
-            )
+        this(
+            id = id,
+            storyHandler = storyHandler,
+            starterIntents = starterIntents.map { it.wrappedIntent() }.toSet(),
+            intents = intents.map { it.wrappedIntent() }.toSet(),
+            steps = steps.toSet(),
+            unsupportedUserInterfaces = unsupportedUserInterfaces
+        )
 
 }

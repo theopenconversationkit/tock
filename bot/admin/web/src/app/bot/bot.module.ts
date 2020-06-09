@@ -60,6 +60,11 @@ import {
 import {ApplicationFeatureComponent} from "./feature/application-feature.component";
 import {StoryRuleComponent} from "./feature/story-rule.component";
 import {SelectEntityDialogComponent} from "./story/select-entity-dialog.component";
+import {StoryRuntimeSettingsComponent} from "./feature/story-runtime-settings.component";
+import { StoryTagIconPipe } from "./feature/story-tag.pipe";
+import {StoryTagComponent} from "./story/story-tag.component";
+import {MatCardModule} from "@angular/material/card";
+import {MatIconModule} from "@angular/material/icon";
 
 const routes: Routes = [
   {
@@ -124,7 +129,9 @@ export class BotRoutingModule {
     NbSelectModule,
     NbTooltipModule,
     NbInputModule,
-    NbRadioModule
+    NbRadioModule,
+    MatCardModule,
+    MatIconModule
   ],
   declarations: [
     BotTabsComponent,
@@ -148,7 +155,10 @@ export class BotRoutingModule {
     StepsComponent,
     MediaDialogComponent,
     ApplicationFeatureComponent,
-    StoryRuleComponent
+    StoryRuleComponent,
+    StoryRuntimeSettingsComponent,
+    StoryTagIconPipe,
+    StoryTagComponent
   ],
   exports: [],
   providers: [
@@ -164,4 +174,6 @@ export class BotRoutingModule {
   ]
 })
 export class BotModule {
+  constructor() {
+  }
 }

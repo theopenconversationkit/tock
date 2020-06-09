@@ -49,9 +49,13 @@ internal class BotDefinitionWrapperTest {
     private fun story(id: String, type: AnswerConfigurationType, vararg features: StoryDefinitionConfigurationFeature) =
         ConfiguredStoryDefinition(
             botWrapper,
-            StoryDefinitionConfiguration(
-                id, botDefinition.botId, IntentWithoutNamespace(id),
-                type, emptyList(), features = features.toList()
+            configuration = StoryDefinitionConfiguration(
+                storyId = id,
+                botId = botDefinition.botId,
+                intent = IntentWithoutNamespace(id),
+                currentType = type,
+                answers = emptyList(),
+                features = features.toList()
             )
         )
 

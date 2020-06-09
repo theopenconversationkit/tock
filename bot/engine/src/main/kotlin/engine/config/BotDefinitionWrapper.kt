@@ -23,6 +23,10 @@ import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.Intent.Companion.unknown
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.StoryDefinition
+import ai.tock.bot.definition.StoryTag
+import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.dialog.Dialog
+import ai.tock.bot.engine.user.UserTimeline
 import mu.KotlinLogging
 
 /**
@@ -39,6 +43,24 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
     //all stories
     @Volatile
     private var allStories: List<StoryDefinition> = botDefinition.stories
+
+    override fun disableBot(timeline: UserTimeline, dialog: Dialog, action: Action): Boolean =
+        super.disableBot(timeline, dialog, action)
+
+    override fun enableBot(timeline: UserTimeline, dialog: Dialog, action: Action): Boolean =
+        super.enableBot(timeline, dialog, action)
+
+    override fun hasDisableTagIntent(dialog: Dialog): Boolean =
+        super.hasDisableTagIntent(dialog)
+
+    private fun findStoryDefinitionByTag(tag: StoryTag): List<StoryDefinition> =
+        stories.filter { it.tags.contains(tag) }
+
+    override val botDisabledStories: List<StoryDefinition>
+        get() = findStoryDefinitionByTag(StoryTag.DISABLE)
+
+    override val botEnabledStories: List<StoryDefinition>
+        get() = findStoryDefinitionByTag(StoryTag.ENABLE)
 
     //only built-in
     private val builtInStoriesMap: Map<String, StoryDefinition> = botDefinition.stories.associateBy { it.id }

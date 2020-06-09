@@ -4,6 +4,7 @@ import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.definition.IntentWithoutNamespace_
+import ai.tock.bot.definition.StoryTag
 import java.util.Locale
 import kotlin.Int
 import kotlin.String
@@ -55,6 +56,8 @@ private val __Features: KProperty1<StoryDefinitionConfiguration,
     get() = StoryDefinitionConfiguration::features
 private val ___id: KProperty1<StoryDefinitionConfiguration, Id<StoryDefinitionConfiguration>?>
     get() = StoryDefinitionConfiguration::_id
+private val __Tags: KProperty1<StoryDefinitionConfiguration, List<StoryTag>?>
+    get() = StoryDefinitionConfiguration::tags
 class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         StoryDefinitionConfiguration?>) : KPropertyPath<T,
         StoryDefinitionConfiguration?>(previous,property) {
@@ -110,6 +113,9 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
     val _id: KPropertyPath<T, Id<StoryDefinitionConfiguration>?>
         get() = KPropertyPath(this,___id)
 
+    val tags: KCollectionSimplePropertyPath<T, StoryTag?>
+        get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::tags)
+
     companion object {
         val StoryId: KProperty1<StoryDefinitionConfiguration, String?>
             get() = __StoryId
@@ -148,7 +154,9 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
                 StoryDefinitionConfigurationFeature?>
             get() = KCollectionSimplePropertyPath(null, __Features)
         val _id: KProperty1<StoryDefinitionConfiguration, Id<StoryDefinitionConfiguration>?>
-            get() = ___id}
+            get() = ___id
+        val Tags: KCollectionSimplePropertyPath<StoryDefinitionConfiguration, StoryTag?>
+            get() = KCollectionSimplePropertyPath(null, __Tags)}
 }
 
 class StoryDefinitionConfiguration_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -205,6 +213,9 @@ class StoryDefinitionConfiguration_Col<T>(previous: KPropertyPath<T, *>?, proper
 
     val _id: KPropertyPath<T, Id<StoryDefinitionConfiguration>?>
         get() = KPropertyPath(this,___id)
+
+    val tags: KCollectionSimplePropertyPath<T, StoryTag?>
+        get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::tags)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): StoryDefinitionConfiguration_<T>
@@ -264,6 +275,9 @@ class StoryDefinitionConfiguration_Map<T, K>(previous: KPropertyPath<T, *>?, pro
 
     val _id: KPropertyPath<T, Id<StoryDefinitionConfiguration>?>
         get() = KPropertyPath(this,___id)
+
+    val tags: KCollectionSimplePropertyPath<T, StoryTag?>
+        get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::tags)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): StoryDefinitionConfiguration_<T>

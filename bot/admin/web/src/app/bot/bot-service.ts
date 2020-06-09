@@ -54,6 +54,10 @@ export class BotService {
     return this.rest.get(`/bot/story/${storyDefinitionId}`, StoryDefinitionConfiguration.fromJSON)
   }
 
+  findRuntimeStorySettings(): Observable<StoryDefinitionConfiguration[]> {
+    return this.rest.get(`/bot/story-settings`, StoryDefinitionConfiguration.fromJSONArray)
+  }
+
   findStoryByBotIdAndIntent(botId: string, intent: string): Observable<StoryDefinitionConfiguration> {
     return this.rest.get(`/bot/story/${botId}/${intent}`, StoryDefinitionConfiguration.fromJSON)
   }

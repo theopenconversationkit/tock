@@ -105,6 +105,17 @@ internal class StoryDefinitionConfiguration_Serializer :
         gen.writeFieldName("_id")
         val __id_ = value._id
         serializers.defaultSerializeValue(__id_, gen)
+        gen.writeFieldName("tags")
+        val _tags_ = value.tags
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.List::class.java,
+                serializers.config.typeFactory.constructType(ai.tock.bot.definition.StoryTag::class.java)
+                ),
+                true,
+                null
+                )
+                .serialize(_tags_, gen, serializers)
         gen.writeEndObject()
     }
 }

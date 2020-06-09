@@ -57,6 +57,6 @@
   </nb-card-footer>
 </nb-card>
 <mat-accordion *ngIf="stories">
-  <tock-story *ngFor="let s of stories" [story]="s" (delete)="delete($event)"
+  <tock-story *ngFor="let s of stories" [storyTag]="s.getFirstTag()" [story]="s" (delete)="delete($event)"
               [fullDisplay]="true" [displaySteps]="true" (close)="search(s)"></tock-story>
 </mat-accordion>

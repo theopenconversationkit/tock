@@ -14,6 +14,13 @@
   ~ limitations under the License.
   -->
 
-<tock-story-runtime-settings></tock-story-runtime-settings>
-<tock-story-rule></tock-story-rule>
-<tock-application-feature></tock-application-feature>
+<div class="story-tag">
+  <mat-form-field>
+    <mat-label>Tag :</mat-label>
+    <mat-select [(ngModel)]="selectedTag" (ngModelChange)="selectedTagChange.emit($event)" name="storyTag" disableRipple>
+      <mat-option *ngFor="let tag of tags" [value]="tag.value">
+        {{tag.viewValue}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>

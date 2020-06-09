@@ -99,13 +99,18 @@ internal class Bot(
 
         parseAction(action, userTimeline, dialog, connector)
 
+        var shouldRespondBeforeDisabling = false;
         if (userTimeline.userState.botDisabled && botDefinition.enableBot(userTimeline, dialog, action)) {
             logger.debug { "Enable bot for $action" }
             userTimeline.userState.botDisabled = false
             botDefinition.botEnabledListener(action)
         } else if (!userTimeline.userState.botDisabled && botDefinition.disableBot(userTimeline, dialog, action)) {
             logger.debug { "Disable bot for $action" }
-            userTimeline.userState.botDisabled = true
+            // in the case of stories with disabled tag we want to respond before disabling the bot
+            shouldRespondBeforeDisabling = botDefinition.hasDisableTagIntent(dialog)
+            if (!shouldRespondBeforeDisabling) {
+                userTimeline.userState.botDisabled = true
+            }
         } //if user state has changed, always persist the user. If not, test if the state is persisted
         else if (!botDefinition.hasToPersistAction(userTimeline, action)) {
             connectorData.saveTimeline = false
@@ -119,6 +124,9 @@ internal class Bot(
             try {
                 currentBus.set(bus)
                 story.handle(bus)
+                if (shouldRespondBeforeDisabling) {
+                    userTimeline.userState.botDisabled = true
+                }
             } finally {
                 currentBus.remove()
             }
