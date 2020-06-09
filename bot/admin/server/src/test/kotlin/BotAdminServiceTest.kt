@@ -20,7 +20,6 @@ import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.dialog.DialogReportDAO
-import ai.tock.bot.admin.model.BotAnswerConfiguration
 import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
@@ -28,16 +27,31 @@ import ai.tock.bot.admin.user.UserReportDAO
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.engine.feature.FeatureDAO
-import ai.tock.nlp.front.shared.*
+import ai.tock.nlp.front.shared.ApplicationCodec
+import ai.tock.nlp.front.shared.ApplicationConfiguration
+import ai.tock.nlp.front.shared.ApplicationMonitor
+import ai.tock.nlp.front.shared.ModelTester
+import ai.tock.nlp.front.shared.ModelUpdater
+import ai.tock.nlp.front.shared.Parser
 import ai.tock.nlp.front.shared.codec.alexa.AlexaCodec
 import ai.tock.shared.tockInternalInjector
 import ai.tock.shared.vertx.BadRequestException
-import com.github.salomonbrys.kodein.*
-import io.mockk.*
-import org.junit.jupiter.api.*
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
+import io.mockk.clearAllMocks
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
-import java.util.*
+import java.util.Locale
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotEquals
@@ -49,37 +63,42 @@ class BotAdminServiceTest {
 
         fun BotStoryDefinitionConfiguration.toStoryDefinitionConfiguration(): StoryDefinitionConfiguration {
             return StoryDefinitionConfiguration(
-                    storyId = storyId,
-                    botId = botId,
-                    intent = intent,
-                    currentType = currentType,
-                    namespace = namespace,
-                    answers = emptyList(),
-                    userSentenceLocale = userSentenceLocale,
-                    _id = _id
+                storyId = storyId,
+                botId = botId,
+                intent = intent,
+                currentType = currentType,
+                namespace = namespace,
+                answers = emptyList(),
+                userSentenceLocale = userSentenceLocale,
+                _id = _id
             )
         }
 
-        fun newTestStory(storyId: String, type: AnswerConfigurationType, _id: Id<StoryDefinitionConfiguration> = newId(), name: String = storyId): BotStoryDefinitionConfiguration {
+        fun newTestStory(
+            storyId: String,
+            type: AnswerConfigurationType,
+            _id: Id<StoryDefinitionConfiguration> = newId(),
+            name: String = storyId
+        ): BotStoryDefinitionConfiguration {
             return BotStoryDefinitionConfiguration(
-                    storyId = storyId,
-                    botId = "testBotId",
-                    intent = IntentWithoutNamespace("testIntent"),
-                    currentType = type,
-                    namespace = "testNamespace",
-                    answers = emptyList<BotAnswerConfiguration>(),
-                    userSentenceLocale = Locale.FRANCE,
-                    _id = _id,
-                    name = name
+                storyId = storyId,
+                botId = "testBotId",
+                intent = IntentWithoutNamespace("testIntent"),
+                currentType = type,
+                namespace = "testNamespace",
+                answers = emptyList(),
+                userSentenceLocale = Locale.FRANCE,
+                _id = _id,
+                name = name
             )
         }
 
         val aApplication = BotApplicationConfiguration(
-                applicationId = "testApplicationId",
-                botId = "testBotId",
-                namespace = "testNamespace",
-                nlpModel = "testNlpModel",
-                connectorType = ConnectorType.rest
+            applicationId = "testApplicationId",
+            botId = "testBotId",
+            namespace = "testNamespace",
+            nlpModel = "testNlpModel",
+            connectorType = ConnectorType.rest
         )
 
         val aBuiltinStory = newTestStory("testBuiltinStory", AnswerConfigurationType.builtin)
@@ -113,9 +132,13 @@ class BotAdminServiceTest {
 
     @BeforeEach
     internal fun initMocks() {
-        every { applicationConfigurationDAO.getConfigurationsByNamespaceAndBotId(any(), any()) } answers { listOf(aApplication) }
-        every { storyDefinitionDAO.delete(any()) } answers { null }
-        every { storyDefinitionDAO.save(any()) } answers { null }
+        every { applicationConfigurationDAO.getConfigurationsByNamespaceAndBotId(any(), any()) } answers {
+            listOf(
+                aApplication
+            )
+        }
+        every { storyDefinitionDAO.delete(any()) } returns Unit
+        every { storyDefinitionDAO.save(any()) } returns Unit
     }
 
     @AfterEach
@@ -129,10 +152,34 @@ class BotAdminServiceTest {
         internal fun initMocksForSingleStory(existingStory: StoryDefinitionConfiguration) {
             every { storyDefinitionDAO.getStoryDefinitionById(existingStory._id) } answers { existingStory }
             every { storyDefinitionDAO.getStoryDefinitionById(neq(existingStory._id)) } answers { null }
-            every { storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndTypeAndIntent(any(), any(), existingStory.currentType, any()) } answers { existingStory }
-            every { storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndTypeAndStoryId(any(), any(), existingStory.currentType, any()) } answers { existingStory }
-            every { storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndTypeAndIntent(any(), any(), neq(existingStory.currentType), any()) } answers { null }
-            every { storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndTypeAndStoryId(any(), any(), neq(existingStory.currentType), any()) } answers { null }
+            every {
+                storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
+                    any(),
+                    any(),
+                    any()
+                )
+            } answers { null }
+            every {
+                storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
+                    any(),
+                    any(),
+                    any()
+                )
+            } answers { null }
+            every {
+                storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
+                    any(),
+                    any(),
+                    existingStory.intent.name
+                )
+            } answers { existingStory }
+            every {
+                storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
+                    any(),
+                    any(),
+                    existingStory.storyId
+                )
+            } answers { existingStory }
         }
 
         @Nested
@@ -184,7 +231,8 @@ class BotAdminServiceTest {
             @Test
             fun `GIVEN builtin story exists WHEN saving a configured story with same _id THEN update the story`() {
 
-                val theNewStory = aBuiltinStory.copy(_id = aBuiltinStory._id, currentType = AnswerConfigurationType.message)
+                val theNewStory =
+                    aBuiltinStory.copy(_id = aBuiltinStory._id, currentType = AnswerConfigurationType.message)
 
                 BotAdminService.saveStory(theNewStory.namespace, theNewStory, "testUser")
 
@@ -199,7 +247,7 @@ class BotAdminServiceTest {
             }
 
             @Test
-            fun `GIVEN builtin story exists WHEN saving a configured story with different _id THEN add the story`() {
+            fun `GIVEN builtin story exists WHEN saving a configured story with different _id THEN update the existing story`() {
 
                 val theNewStory = aBuiltinStory.copy(currentType = AnswerConfigurationType.message, _id = newId())
 
@@ -212,7 +260,7 @@ class BotAdminServiceTest {
 
                 assertEquals(slot.captured.storyId, theNewStory.storyId)
                 assertEquals(slot.captured.currentType, theNewStory.currentType)
-                assertNotEquals(slot.captured._id, existingStory._id)
+                assertEquals(slot.captured._id, existingStory._id)
             }
         }
 
@@ -249,7 +297,13 @@ class BotAdminServiceTest {
 
                 val theNewStory = aMessageStory.copy(_id = newId(), name = "otherName")
 
-                assertFailsWith<BadRequestException> { BotAdminService.saveStory(existingStory.namespace, theNewStory, "testUser") }
+                assertFailsWith<BadRequestException> {
+                    BotAdminService.saveStory(
+                        existingStory.namespace,
+                        theNewStory,
+                        "testUser"
+                    )
+                }
 
                 verify(exactly = 0) { storyDefinitionDAO.delete(existingStory) }
                 verify(exactly = 0) { storyDefinitionDAO.save(any()) }
@@ -258,123 +312,38 @@ class BotAdminServiceTest {
             @Test
             fun `GIVEN configured story exists WHEN saving a builtin story with same _id THEN fail with BadRequestException`() {
 
-                val theNewStory = aMessageStory.copy(_id = aMessageStory._id, currentType = AnswerConfigurationType.builtin)
+                val theNewStory =
+                    aMessageStory.copy(_id = aMessageStory._id, currentType = AnswerConfigurationType.builtin)
 
-                assertFailsWith<BadRequestException> { BotAdminService.saveStory(theNewStory.namespace, theNewStory, "testUser") }
+                assertFailsWith<BadRequestException> {
+                    BotAdminService.saveStory(
+                        theNewStory.namespace,
+                        theNewStory,
+                        "testUser"
+                    )
+                }
 
                 verify(exactly = 0) { storyDefinitionDAO.delete(any()) }
                 verify(exactly = 0) { storyDefinitionDAO.save(any()) }
             }
 
             @Test
-            fun `GIVEN configured story exists WHEN saving a builtin story with different _id THEN add the story`() {
+            fun `GIVEN configured story exists WHEN saving a builtin story with different _id THEN fail with BadRequestException`() {
+                val theNewStory = aMessageStory.copy(
+                    currentType = AnswerConfigurationType.builtin,
+                    _id = newId(),
+                    intent = IntentWithoutNamespace("test2")
+                )
 
-                val theNewStory = aMessageStory.copy(currentType = AnswerConfigurationType.builtin, _id = newId())
+                assertFailsWith<BadRequestException> {
+                    BotAdminService.saveStory(
+                        theNewStory.namespace,
+                        theNewStory,
+                        "testUser"
+                    )
+                }
 
-                BotAdminService.saveStory(existingStory.namespace, theNewStory, "testUser")
-
-                verify(exactly = 0) { storyDefinitionDAO.delete(existingStory) }
-
-                val slot = slot<StoryDefinitionConfiguration>()
-                verify { storyDefinitionDAO.save(capture(slot)) }
-
-                assertEquals(slot.captured.storyId, theNewStory.storyId)
-                assertEquals(slot.captured.currentType, theNewStory.currentType)
-                assertNotEquals(slot.captured._id, existingStory._id)
-            }
-        }
-    }
-
-    @Nested
-    inner class BothExistingStoriesTest {
-
-        // Bot builtin and configured stories already exist
-
-        val existingBuiltinStory = aBuiltinStory.toStoryDefinitionConfiguration()
-
-        val existingMessageStory = aMessageStory.toStoryDefinitionConfiguration()
-
-        @BeforeEach
-        internal fun initMocks() {
-            every { storyDefinitionDAO.getStoryDefinitionById(existingBuiltinStory._id) } answers { existingBuiltinStory }
-            every { storyDefinitionDAO.getStoryDefinitionById(existingMessageStory._id) } answers { existingMessageStory }
-            every { storyDefinitionDAO.getStoryDefinitionById(and(neq(existingBuiltinStory._id), neq(existingMessageStory._id))) } answers { null }
-            every { storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndTypeAndIntent(any(), any(), AnswerConfigurationType.builtin, any()) } answers { existingBuiltinStory }
-            every { storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndTypeAndStoryId(any(), any(), AnswerConfigurationType.builtin, any()) } answers { existingBuiltinStory }
-            every { storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndTypeAndIntent(any(), any(), AnswerConfigurationType.message, any()) } answers { existingMessageStory }
-            every { storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndTypeAndStoryId(any(), any(), AnswerConfigurationType.message, any()) } answers { existingMessageStory }
-        }
-
-        @Nested
-        inner class SaveBuiltinStoryTest {
-
-            @Test
-            fun `GIVEN builtin and configured story exist WHEN saving the same builtin story THEN update the builtin story`() {
-
-                val theNewStory = aBuiltinStory.copy(name = "otherName")
-
-                BotAdminService.saveStory(theNewStory.namespace, theNewStory, "testUser")
-
-                verify(exactly = 0) { storyDefinitionDAO.delete(existingBuiltinStory) }
-                verify(exactly = 0) { storyDefinitionDAO.delete(existingMessageStory) }
-
-                val slot = slot<StoryDefinitionConfiguration>()
-                verify { storyDefinitionDAO.save(capture(slot)) }
-
-                assertEquals(slot.captured.storyId, theNewStory.storyId)
-                assertEquals(slot.captured.currentType, theNewStory.currentType)
-                assertEquals(slot.captured.name, theNewStory.name)
-            }
-
-            @Test
-            fun `GIVEN builtin and configured story exist WHEN saving the same builtin story with different _id THEN update the builtin story`() {
-
-                val theNewStory = aBuiltinStory.copy(_id = newId(), name = "otherName")
-
-                BotAdminService.saveStory(theNewStory.namespace, theNewStory, "testUser")
-
-                verify(exactly = 0) { storyDefinitionDAO.delete(existingBuiltinStory) }
-                verify(exactly = 0) { storyDefinitionDAO.delete(existingMessageStory) }
-
-                val slot = slot<StoryDefinitionConfiguration>()
-                verify { storyDefinitionDAO.save(capture(slot)) }
-
-                assertEquals(slot.captured.storyId, theNewStory.storyId)
-                assertEquals(slot.captured.currentType, theNewStory.currentType)
-                assertEquals(slot.captured.name, theNewStory.name)
-            }
-        }
-
-        @Nested
-        inner class SaveConfiguredStoryTest {
-
-            @Test
-            fun `GIVEN builtin and configured story exist WHEN saving the same configured story THEN update the configured story`() {
-
-                val theNewStory = aMessageStory.copy(name = "otherName")
-
-                BotAdminService.saveStory(theNewStory.namespace, theNewStory, "testUser")
-
-                verify(exactly = 0) { storyDefinitionDAO.delete(existingBuiltinStory) }
-                verify(exactly = 0) { storyDefinitionDAO.delete(existingMessageStory) }
-
-                val slot = slot<StoryDefinitionConfiguration>()
-                verify { storyDefinitionDAO.save(capture(slot)) }
-
-                assertEquals(slot.captured.storyId, theNewStory.storyId)
-                assertEquals(slot.captured.currentType, theNewStory.currentType)
-                assertEquals(slot.captured.name, theNewStory.name)
-                assertEquals(slot.captured._id, aMessageStory._id)
-            }
-
-            @Test
-            fun `GIVEN builtin and configured story exist WHEN saving the same configured story with different _id THEN fail with BadRequestException`() {
-
-                val theNewStory = aMessageStory.copy(_id = newId(), name = "otherName")
-
-                assertFailsWith<BadRequestException> { BotAdminService.saveStory(theNewStory.namespace, theNewStory, "testUser") }
-
-                verify(exactly = 0) { storyDefinitionDAO.delete(existingMessageStory) }
+                verify(exactly = 0) { storyDefinitionDAO.delete(any()) }
                 verify(exactly = 0) { storyDefinitionDAO.save(any()) }
             }
         }

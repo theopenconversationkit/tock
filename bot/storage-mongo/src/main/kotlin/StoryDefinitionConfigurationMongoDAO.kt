@@ -48,7 +48,6 @@ import org.litote.kmongo.ne
 import org.litote.kmongo.reactivestreams.getCollectionOfName
 import org.litote.kmongo.save
 import java.time.Instant
-import kotlin.collections.toList
 
 /**
  *
@@ -90,19 +89,39 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         return col.findOneById(id)
     }
 
-    override fun getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(namespace: String, botId: String, intent: String): StoryDefinitionConfiguration? {
-        return col.findOne(Namespace eq namespace, BotId eq botId, CurrentType ne AnswerConfigurationType.builtin, Intent.name_ eq intent)
+    override fun getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
+        namespace: String,
+        botId: String,
+        intent: String
+    ): StoryDefinitionConfiguration? {
+        return col.findOne(
+            Namespace eq namespace,
+            BotId eq botId,
+            CurrentType ne AnswerConfigurationType.builtin,
+            Intent.name_ eq intent
+        )
     }
 
-    override fun getStoryDefinitionByNamespaceAndBotIdAndTypeAndIntent(namespace: String, botId: String, type: AnswerConfigurationType, intent: String): StoryDefinitionConfiguration? {
-        return col.findOne(Namespace eq namespace, BotId eq botId, CurrentType eq type, Intent.name_ eq intent)
+    override fun getStoryDefinitionByNamespaceAndBotIdAndIntent(
+        namespace: String,
+        botId: String,
+        intent: String
+    ): StoryDefinitionConfiguration? {
+        return col.findOne(Namespace eq namespace, BotId eq botId, Intent.name_ eq intent)
     }
 
-    override fun getStoryDefinitionByNamespaceAndBotIdAndTypeAndStoryId(namespace: String, botId: String, type: AnswerConfigurationType, storyId: String): StoryDefinitionConfiguration? {
-        return col.findOne(Namespace eq namespace, BotId eq botId, CurrentType eq type, StoryId eq storyId)
+    override fun getStoryDefinitionByNamespaceAndBotIdAndStoryId(
+        namespace: String,
+        botId: String,
+        storyId: String
+    ): StoryDefinitionConfiguration? {
+        return col.findOne(Namespace eq namespace, BotId eq botId, StoryId eq storyId)
     }
 
-    override fun getStoryDefinitionsByNamespaceAndBotId(namespace: String, botId: String): List<StoryDefinitionConfiguration> {
+    override fun getStoryDefinitionsByNamespaceAndBotId(
+        namespace: String,
+        botId: String
+    ): List<StoryDefinitionConfiguration> {
         return col.find(and(Namespace eq namespace, BotId eq botId)).toList()
     }
 

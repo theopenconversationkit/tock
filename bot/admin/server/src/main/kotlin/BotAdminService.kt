@@ -371,18 +371,16 @@ object BotAdminService {
         controller: BotStoryDefinitionConfigurationDumpController
     ) {
 
-        storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndTypeAndIntent(
+        storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
             namespace,
             botConf.botId,
-            story.currentType,
             story.intent.name
         )?.also {
             storyDefinitionDAO.delete(it)
         }
-        storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndTypeAndStoryId(
+        storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
             namespace,
             botConf.botId,
-            story.currentType,
             story.storyId
         )?.also {
             storyDefinitionDAO.delete(it)
@@ -678,22 +676,20 @@ object BotAdminService {
         return if (botConf != null) {
 
             val application = front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)!!
-            val storyWithSameNsBotTypeAndName =
-                storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndTypeAndStoryId(
+            val storyWithSameNsBotAndName =
+                storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
                     namespace,
                     botConf.botId,
-                    story.currentType,
                     story.storyId
                 )?.also { logger.debug { "Found story with same namespace, type and name: $it" } }
-            val storyWithSameNsBotTypeAndIntent =
-                storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndTypeAndIntent(
+            val storyWithSameNsBotAndIntent =
+                storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
                     namespace,
                     botConf.botId,
-                    story.currentType,
                     story.intent.name
                 )?.also { logger.debug { "Found story with same namespace, type and intent: $it" } }
 
-            storyWithSameNsBotTypeAndIntent.let {
+            storyWithSameNsBotAndIntent.let {
                 if (it == null || it.currentType == builtin) {
                     //intent change
                     if (storyWithSameId?._id != null) {
@@ -710,19 +706,19 @@ object BotAdminService {
                     }
                 }
             }
-            if (storyWithSameNsBotTypeAndName != null && storyWithSameNsBotTypeAndName?._id != storyWithSameId?._id
+            if (storyWithSameNsBotAndName != null && storyWithSameNsBotAndName._id != storyWithSameId?._id
             ) {
-                if (storyWithSameNsBotTypeAndName?.currentType != builtin) {
+                if (storyWithSameNsBotAndName.currentType != builtin) {
                     badRequest("Story ${story.name} (${story.currentType}) already exists")
                 }
             }
 
             val newStory = if (storyWithSameId != null) {
                 mergeStory(storyWithSameId, story, application, botConf.botId)
-            } else if (storyWithSameNsBotTypeAndIntent != null) {
-                mergeStory(storyWithSameNsBotTypeAndIntent, story, application, botConf.botId)
-            } else if (storyWithSameNsBotTypeAndName != null) {
-                mergeStory(storyWithSameNsBotTypeAndName, story, application, botConf.botId)
+            } else if (storyWithSameNsBotAndIntent != null) {
+                mergeStory(storyWithSameNsBotAndIntent, story, application, botConf.botId)
+            } else if (storyWithSameNsBotAndName != null) {
+                mergeStory(storyWithSameNsBotAndName, story, application, botConf.botId)
             } else {
                 StoryDefinitionConfiguration(
                     story.storyId,

@@ -44,7 +44,7 @@ internal object DatesMerge {
 
     private val logger = KotlinLogging.logger {}
 
-    private val remodeDuplicateSpaceRegexp = "\\s+".toRegex()
+    private val removeDuplicateSpaceRegexp = "\\s+".toRegex()
     private val frenchAddRegex =
         ".*prochaine?$|.*suivante?$|.*qui suit$|.*(d')? ?apr[eèé]s$|.*plus tard$|.*derni[èe]re?$|.*pass[ée]e?$|.*pr[eé]c[eé]dente?$|.*(d')? ?avant$|.*plus t[oô]t$|lendemain|le lendemain|la veille|ce jour|(le |la )?m[eê]me jour(n[eé]e)?".toRegex()
     private val frenchChangeHourRegex =
@@ -209,7 +209,7 @@ internal object DatesMerge {
         return newValue
     }
 
-    private fun normalize(s: String): String = s.trim().replace(remodeDuplicateSpaceRegexp, " ").toLowerCase()
+    private fun normalize(s: String): String = s.trim().replace(removeDuplicateSpaceRegexp, " ").toLowerCase()
 
     fun isChangeHourPattern(content: String?): Boolean =
         content != null && frenchChangeHourRegex.matches(normalize(content))
