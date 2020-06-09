@@ -17,7 +17,7 @@
 package ai.tock.bot.orchestration.orchestrator
 
 import ai.tock.bot.engine.user.PlayerId
-import ai.tock.bot.orchestration.shared.AskEligibilityToOrchestredBotRequest
+import ai.tock.bot.orchestration.shared.AskEligibilityToOrchestratedBotRequest
 import ai.tock.bot.orchestration.shared.ResumeOrchestrationRequest
 import ai.tock.bot.orchestration.shared.OrchestrationMetaData
 import ai.tock.bot.orchestration.shared.OrchestrationTargetedBot
@@ -29,7 +29,7 @@ import ai.tock.bot.orchestration.shared.SecondaryBotNoResponse
 abstract class OrchestratedRuntimeBot(
     open val target: OrchestrationTargetedBot
 ) {
-    open fun askOrchestration(request: AskEligibilityToOrchestredBotRequest): SecondaryBotResponse =
+    open fun askOrchestration(request: AskEligibilityToOrchestratedBotRequest): SecondaryBotResponse =
         SecondaryBotNoResponse(
             status = NOT_AVAILABLE,
             metaData = request.metadata ?: OrchestrationMetaData(PlayerId("unknown"), target.botId, PlayerId("orchestrator"))

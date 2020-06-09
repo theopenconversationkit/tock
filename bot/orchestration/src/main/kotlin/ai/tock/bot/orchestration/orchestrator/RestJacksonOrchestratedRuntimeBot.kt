@@ -17,7 +17,7 @@
 package ai.tock.bot.orchestration.orchestrator
 
 import ai.tock.bot.engine.user.PlayerId
-import ai.tock.bot.orchestration.shared.AskEligibilityToOrchestredBotRequest
+import ai.tock.bot.orchestration.shared.AskEligibilityToOrchestratedBotRequest
 import ai.tock.bot.orchestration.shared.ResumeOrchestrationRequest
 import ai.tock.bot.orchestration.shared.OrchestrationMetaData
 import ai.tock.bot.orchestration.shared.OrchestrationTargetedBot
@@ -50,7 +50,7 @@ class RestJacksonOrchestratedRuntimeBot(
 
     private val targetBotClient = BotRestClient.create(urlBot, timeoutMs, serialisationModules)
 
-    override fun askOrchestration(request: AskEligibilityToOrchestredBotRequest) : SecondaryBotResponse {
+    override fun askOrchestration(request: AskEligibilityToOrchestratedBotRequest) : SecondaryBotResponse {
         return targetBotClient.askOrchestration(request).execute().body() ?: SecondaryBotNoResponse(
             status = NoOrchestrationStatus.NOT_AVAILABLE,
             metaData = request.metadata ?: OrchestrationMetaData(PlayerId("unknown"), target.botId, PlayerId("orchestrator"))
@@ -69,7 +69,7 @@ class RestJacksonOrchestratedRuntimeBot(
 interface BotRestClient {
 
     @POST("orchestration/eligibility")
-    fun askOrchestration(@Body request: AskEligibilityToOrchestredBotRequest): Call<SecondaryBotResponse>
+    fun askOrchestration(@Body request: AskEligibilityToOrchestratedBotRequest): Call<SecondaryBotResponse>
 
 
     @POST("orchestration/proxy")

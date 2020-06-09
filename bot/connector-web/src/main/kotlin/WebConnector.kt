@@ -39,9 +39,10 @@ import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType.bot
 import ai.tock.bot.engine.user.PlayerType.user
 import ai.tock.bot.engine.user.UserPreferences
+import ai.tock.bot.orchestration.bot.primary.orchestrationEnabled
 import ai.tock.bot.orchestration.bot.secondary.OrchestrationCallback
 import ai.tock.bot.orchestration.bot.secondary.RestOrchestrationCallback
-import ai.tock.bot.orchestration.shared.AskEligibilityToOrchestredBotRequest
+import ai.tock.bot.orchestration.shared.AskEligibilityToOrchestratedBotRequest
 import ai.tock.bot.orchestration.shared.OrchestrationMetaData
 import ai.tock.bot.orchestration.shared.ResumeOrchestrationRequest
 import ai.tock.bot.orchestration.shared.SecondaryBotEligibilityResponse
@@ -145,15 +146,18 @@ class WebConnector internal constructor(
                     }
                 }
 
-            router.post("$path/orchestration/eligibility").handler { context ->
-                executor.executeBlocking {
-                    handleEligibility(controller, context)
-                }
-            }
+            if (orchestrationEnabled) {
 
-            router.post("$path/orchestration/proxy").handler { context ->
-                executor.executeBlocking {
-                    handleProxy(controller, context)
+                router.post("$path/orchestration/eligibility").handler { context ->
+                    executor.executeBlocking {
+                        handleEligibility(controller, context)
+                    }
+                }
+
+                router.post("$path/orchestration/proxy").handler { context ->
+                    executor.executeBlocking {
+                        handleProxy(controller, context)
+                    }
                 }
             }
         }
@@ -168,7 +172,12 @@ class WebConnector internal constructor(
         try {
             logger.debug { "Web request input : $body" }
             val request: WebConnectorRequest = mapper.readValue(body)
-            val callback = WebConnectorCallback(applicationId = applicationId, locale = request.locale, context = context, webMapper = webMapper)
+            val callback = WebConnectorCallback(
+                applicationId = applicationId,
+                locale = request.locale,
+                context = context,
+                webMapper = webMapper
+            )
             controller.handle(request.toEvent(applicationId), ConnectorData(callback))
         } catch (t: Throwable) {
             BotRepository.requestTimer.throwable(t, timerData)
@@ -185,8 +194,13 @@ class WebConnector internal constructor(
         val timerData = BotRepository.requestTimer.start("web_webhook_orchestred")
         try {
             logger.debug { "Web proxy request input : ${context.bodyAsString}" }
-            val request = mapper.readValue(context.bodyAsString, ResumeOrchestrationRequest::class.java)
-            val callback = RestOrchestrationCallback(webConnectorType, applicationId = applicationId, context = context, orchestrationMapper = webMapper)
+            val request: ResumeOrchestrationRequest = mapper.readValue(context.bodyAsString)
+            val callback = RestOrchestrationCallback(
+                webConnectorType,
+                applicationId = applicationId,
+                context = context,
+                orchestrationMapper = webMapper
+            )
 
             controller.handle(request.toAction(), ConnectorData(callback))
 
@@ -205,17 +219,22 @@ class WebConnector internal constructor(
         val timerData = BotRepository.requestTimer.start("web_webhook_support")
         try {
             logger.debug { "Web support request input : ${context.bodyAsString}" }
-            val request = mapper.readValue(context.bodyAsString, AskEligibilityToOrchestredBotRequest::class.java)
-            val callback = RestOrchestrationCallback(webConnectorType, applicationId, context = context, orchestrationMapper = webMapper)
-
-            // TODO à quoi sert le callback dans le cas du support ?
+            val request: AskEligibilityToOrchestratedBotRequest = mapper.readValue(context.bodyAsString)
+            val callback = RestOrchestrationCallback(
+                webConnectorType,
+                applicationId,
+                context = context,
+                orchestrationMapper = webMapper
+            )
 
             val support = controller.support(request.toAction(applicationId), ConnectorData(callback))
-            val sendEligibility = SecondaryBotEligibilityResponse(support, OrchestrationMetaData(
-                playerId = PlayerId(applicationId, bot),
-                applicationId = applicationId,
-                recipientId = request?.metadata?.playerId ?: PlayerId(Dice.newId(), user)
-            ))
+            val sendEligibility = SecondaryBotEligibilityResponse(
+                support, OrchestrationMetaData(
+                    playerId = PlayerId(applicationId, bot),
+                    applicationId = applicationId,
+                    recipientId = request.metadata?.playerId ?: PlayerId(Dice.newId(), user)
+                )
+            )
             callback.sendResponse(sendEligibility)
 
         } catch (t: Throwable) {
@@ -256,7 +275,7 @@ class WebConnector internal constructor(
     }
 
     override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences {
-        return when(callback) {
+        return when (callback) {
             is WebConnectorCallback -> UserPreferences().apply { locale = callback.locale }
             else -> UserPreferences()
         }
@@ -265,7 +284,10 @@ class WebConnector internal constructor(
     override fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? =
         { WebMessage(text.toString(), suggestions.map { webPostbackButton(it) }) }
 
-    override fun addSuggestions(message: ConnectorMessage, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
+    override fun addSuggestions(
+        message: ConnectorMessage,
+        suggestions: List<CharSequence>
+    ): BotBus.() -> ConnectorMessage? = {
         (message as? WebMessage)?.takeIf { it.buttons.isEmpty() }?.let {
             it.copy(buttons = suggestions.map { webPostbackButton(it) })
         } ?: message
@@ -278,7 +300,12 @@ class WebConnector internal constructor(
                     WebMessage(card = WebCard(
                         title = message.title,
                         subTitle = message.subTitle,
-                        file = message.file?.url?.let { MediaFile(message.file?.url as String, message.file?.name as String) },
+                        file = message.file?.url?.let {
+                            MediaFile(
+                                message.file?.url as String,
+                                message.file?.name as String
+                            )
+                        },
                         buttons = message.actions.map { UrlButton(it.title.toString(), it.url.toString()) }
                     ))
                 }
@@ -287,8 +314,18 @@ class WebConnector internal constructor(
                         WebCard(
                             title = mediaCard.title,
                             subTitle = mediaCard.subTitle,
-                            file = mediaCard.file?.url?.let { MediaFile(mediaCard.file?.url as String, mediaCard.file?.name as String) },
-                            buttons = mediaCard.actions.map { button -> UrlButton(button.title.toString(), button.url.toString()) }
+                            file = mediaCard.file?.url?.let {
+                                MediaFile(
+                                    mediaCard.file?.url as String,
+                                    mediaCard.file?.name as String
+                                )
+                            },
+                            buttons = mediaCard.actions.map { button ->
+                                UrlButton(
+                                    button.title.toString(),
+                                    button.url.toString()
+                                )
+                            }
                         )
                     }))
                 }

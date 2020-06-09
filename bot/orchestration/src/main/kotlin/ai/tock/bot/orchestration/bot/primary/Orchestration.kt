@@ -20,18 +20,24 @@ import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.orchestration.shared.OrchestrationMetaData
 import ai.tock.bot.orchestration.shared.OrchestrationTargetedBot
 import ai.tock.bot.orchestration.shared.SecondaryBotAction
+import ai.tock.shared.booleanProperty
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 
+/**
+ * Is it orchestration enabled? Default to false - use tock_orchestration property to enable.
+ */
+val orchestrationEnabled = booleanProperty("tock_orchestration", false)
+
 enum class OrchestrationStatus { ACTIVE, CLOSED }
 
-data class Orchestration (
+data class Orchestration(
     val id: Id<Orchestration> = newId(),
     val playerId: PlayerId,
     val targetMetadata: OrchestrationMetaData,
-    val targetBot : OrchestrationTargetedBot,
+    val targetBot: OrchestrationTargetedBot,
     var status: OrchestrationStatus = OrchestrationStatus.ACTIVE,
-    val history : MutableList<SecondaryBotAction> = mutableListOf()
+    val history: MutableList<SecondaryBotAction> = mutableListOf()
 ) {
-    fun update(action : SecondaryBotAction) = history.add(action)
+    fun update(action: SecondaryBotAction) = history.add(action)
 }

@@ -31,7 +31,7 @@ data class AskEligibilityToOrchestratorRequest(
     val metadata : OrchestrationMetaData?
 ) : OrchestrationRequest
 
-data class AskEligibilityToOrchestredBotRequest(
+data class AskEligibilityToOrchestratedBotRequest(
     val data : OrchestrationData,
     val action: SecondaryBotAction?,
     val metadata : OrchestrationMetaData?
