@@ -23,10 +23,12 @@ import ai.tock.bot.admin.dialog.DialogReportDAO
 import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
+import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
 import ai.tock.bot.admin.user.UserReportDAO
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.engine.feature.FeatureDAO
+import ai.tock.nlp.front.service.storage.ApplicationDefinitionDAO
 import ai.tock.nlp.front.shared.ApplicationCodec
 import ai.tock.nlp.front.shared.ApplicationConfiguration
 import ai.tock.nlp.front.shared.ApplicationMonitor
@@ -34,6 +36,7 @@ import ai.tock.nlp.front.shared.ModelTester
 import ai.tock.nlp.front.shared.ModelUpdater
 import ai.tock.nlp.front.shared.Parser
 import ai.tock.nlp.front.shared.codec.alexa.AlexaCodec
+import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.shared.tockInternalInjector
 import ai.tock.shared.vertx.BadRequestException
 import com.github.salomonbrys.kodein.Kodein
@@ -55,6 +58,8 @@ import java.util.Locale
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 class BotAdminServiceTest {
 
@@ -106,6 +111,7 @@ class BotAdminServiceTest {
 
         val storyDefinitionDAO: StoryDefinitionConfigurationDAO = mockk(relaxed = false)
         val applicationConfigurationDAO: BotApplicationConfigurationDAO = mockk(relaxed = false)
+        val applicationDefininitionDAO: ApplicationDefinitionDAO = mockk(relaxed = false)
 
         init {
             // IOC
@@ -116,6 +122,7 @@ class BotAdminServiceTest {
                 bind<UserReportDAO>() with provider { mockk<UserReportDAO>(relaxed = true) }
                 bind<DialogReportDAO>() with provider { mockk<DialogReportDAO>(relaxed = true) }
                 bind<BotApplicationConfigurationDAO>() with provider { applicationConfigurationDAO }
+                bind<ApplicationDefinitionDAO>() with provider { applicationDefininitionDAO }
                 bind<FeatureDAO>() with provider { mockk<FeatureDAO>(relaxed = true) }
                 bind<Parser>() with provider { mockk<Parser>(relaxed = true) }
                 bind<ModelUpdater>() with provider { mockk<ModelUpdater>(relaxed = true) }
@@ -347,5 +354,75 @@ class BotAdminServiceTest {
                 verify(exactly = 0) { storyDefinitionDAO.save(any()) }
             }
         }
+    }
+
+    @Test
+    internal fun `GIVEN an existing story in a given namespace WHEN exporting it THEN a dump is returned`() {
+        // Given
+        val namespace = "namespace"
+        val applicationName = "applicationName"
+        val storyDefinitionId = "storyDefinitionId"
+
+        every {
+            applicationDefininitionDAO.getApplicationByNamespaceAndName(namespace, applicationName)
+        } returns ApplicationDefinition(applicationName, applicationName, namespace)
+        every {
+            applicationConfigurationDAO.getConfigurationsByNamespaceAndNlpModel(namespace, applicationName)
+        } returns listOf(aApplication)
+        every {
+            storyDefinitionDAO.getStoryDefinitionsByNamespaceBotIdStoryId(namespace, any(), storyDefinitionId)
+        } returns aBuiltinStory.toStoryDefinitionConfiguration()
+
+        // When
+        val story = BotAdminService.exportStory(namespace, applicationName, storyDefinitionId)
+
+        // Then
+        assertNotNull(story)
+        assertEquals(StoryDefinitionConfigurationDump(aBuiltinStory.toStoryDefinitionConfiguration()), story)
+    }
+
+    @Test
+    internal fun `GIVEN an existing story but a wrong given namespace WHEN exporting it THEN a null dump is returned`() {
+        // Given
+        val namespace = "namespace"
+        val applicationName = "applicationName"
+        val storyDefinitionId = "storyDefinitionId"
+
+        every {
+            applicationDefininitionDAO.getApplicationByNamespaceAndName(namespace, applicationName)
+        } returns null
+        every {
+            storyDefinitionDAO.getStoryDefinitionsByNamespaceBotIdStoryId(namespace, any(), storyDefinitionId)
+        } returns aBuiltinStory.toStoryDefinitionConfiguration()
+
+        // When
+        val story = BotAdminService.exportStory(namespace, applicationName, storyDefinitionId)
+
+        // Then
+        assertNull(story)
+    }
+
+    @Test
+    internal fun `GIVEN a non-existing story for a given namespace WHEN exporting it THEN a null dump is returned`() {
+        // Given
+        val namespace = "namespace"
+        val applicationName = "applicationName"
+        val storyDefinitionId = "storyDefinitionId"
+
+        every {
+            applicationDefininitionDAO.getApplicationByNamespaceAndName(namespace, applicationName)
+        } returns ApplicationDefinition(applicationName, applicationName, namespace)
+        every {
+            applicationConfigurationDAO.getConfigurationsByNamespaceAndNlpModel(namespace, applicationName)
+        } returns listOf(aApplication)
+        every {
+            storyDefinitionDAO.getStoryDefinitionsByNamespaceBotIdStoryId(namespace, any(), storyDefinitionId)
+        } returns null
+
+        // When
+        val story = BotAdminService.exportStory(namespace, applicationName, storyDefinitionId)
+
+        // Then
+        assertNull(story)
     }
 }

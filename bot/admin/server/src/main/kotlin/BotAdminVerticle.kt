@@ -345,6 +345,14 @@ open class BotAdminVerticle : AdminVerticle() {
             BotAdminService.exportStories(context.organization, context.path("appName"))
         }
 
+        blockingJsonGet("/bot/story/:appName/export/:storyConfigurationId", botUser) { context ->
+            val exportStory = BotAdminService.exportStory(
+                context.organization,
+                context.path("appName"),
+                context.path("storyConfigurationId"))
+            exportStory?.let { listOf(it) } ?: emptyList()
+        }
+
         blockingUploadJsonPost(
             "/bot/story/:appName/:locale/import",
             botUser,

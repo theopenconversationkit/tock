@@ -42,6 +42,10 @@ export class BotService {
     return this.rest.get(`/bot/story/${applicationName}/export`, j => new Blob([JSON.stringify(j)], {type: 'application/json'}));
   }
 
+  exportStory(applicationName: string, storyDefinitionId: string): Observable<Blob> {
+    return this.rest.get(`/bot/story/${applicationName}/export/${storyDefinitionId}`, j => new Blob([JSON.stringify(j)], {type: 'application/json'}));
+  }
+
   prepareStoryDumpUploader(uploader: FileUploader, applicationName: string, locale: string) {
     this.rest.setFileUploaderOptions(uploader, `/bot/story/${applicationName}/${locale}/import`);
   }
