@@ -35,13 +35,13 @@ val noStep = object : SimpleStoryStep {
 }
 
 /**
- * A step (the implementation is usually an enum) is a part of a [StoryDefinition].
+ * A step is a part of a [StoryDefinition].
  * Used to manage workflow in a [StoryHandler].
  */
 interface StoryStep<T : StoryHandlerDefinition> {
 
     /**
-     * The name of the step. usually automatically defined by the enum field.
+     * The name of the step.
      */
     val name: String
 

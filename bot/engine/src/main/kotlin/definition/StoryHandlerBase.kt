@@ -85,7 +85,11 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     /**
      * Selects step from [HandlerDef], optional data and [StoryDefinition].
      */
-    fun <T : StoryHandlerDefinition> selectStepFromStoryHandlerAndData(def: T, data: Any?, storyDefinition: StoryDefinition?): StoryStep<*>? {
+    fun <T : StoryHandlerDefinition> selectStepFromStoryHandlerAndData(
+        def: T,
+        data: Any?,
+        storyDefinition: StoryDefinition?
+    ): StoryStep<*>? {
         storyDefinition?.steps?.also { steps ->
             for (s in steps) {
                 @Suppress("UNCHECKED_CAST") val selected = if (s is StoryDataStep<*, *, *>) {
@@ -125,21 +129,25 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
                 // or if the [StoryStep.handle()] method of the current step returns null
                 if (step != null) {
                     @Suppress("UNCHECKED_CAST")
-                    val data = (step as? StoryDataStep<T, Any, *>)?.checkPreconditions()?.invoke(handler, mainData)?.takeUnless { it is Unit }
+                    val data = (step as? StoryDataStep<T, Any, *>)?.checkPreconditions()?.invoke(handler, mainData)
+                        ?.takeUnless { it is Unit }
                         ?: mainData
                     if (!isEndCalled(bus)) {
                         @Suppress("UNCHECKED_CAST")
                         if (step is StoryDataStep<*, *, *>) {
                             (step as StoryDataStep<T, Any, Any>).handler().invoke(handler, data)
                         } else {
-                            (step as StoryStep<T>).answer().invoke(handler)
+                            (step as? StoryStep<T>)?.answer()?.invoke(handler)
                         }
                     }
                 }
                 if (!isEndCalled(bus)) {
                     handler.handle()
 
-                    if (!bus.connectorData.skipAnswer && bus.getBusContextValue<Boolean>(SWITCH_STORY_BUS_KEY) != true && !isEndCalled(bus)) {
+                    if (!bus.connectorData.skipAnswer && bus.getBusContextValue<Boolean>(SWITCH_STORY_BUS_KEY) != true && !isEndCalled(
+                            bus
+                        )
+                    ) {
                         logger.warn { "Bus.end not called for story ${bus.story.definition.id}, user ${bus.userId.id} and connector ${bus.targetConnectorType}" }
                     }
                 }
@@ -171,7 +179,8 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
                 bus.switchStory(this)
             }
 
-        handle(bus)
+        //use the new story handler
+        bus.story.definition.storyHandler.handle(bus)
     }
 
     /**
