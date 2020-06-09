@@ -19,53 +19,23 @@
     <parent>
         <artifactId>tock-bot</artifactId>
         <groupId>ai.tock</groupId>
-        <version>20.3.3-SNAPSHOT</version>
+        <version>20.3.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>tock-bot-connector-web</artifactId>
-    <name>Tock Bot Web Connector</name>
-    <description>Bot Connector for REST API</description>
+    <artifactId>tock-bot-orchestration</artifactId>
+    <name>Tock Bot orchestration</name>
+    <description>Orchestration between bots</description>
 
     <dependencies>
         <dependency>
             <groupId>ai.tock</groupId>
-            <artifactId>tock-bot-engine-jackson</artifactId>
+            <artifactId>tock-bot-engine</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>ai.tock</groupId>
-            <artifactId>tock-bot-orchestration</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.litote.kmongo</groupId>
             <artifactId>kmongo</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.litote.kmongo</groupId>
-            <artifactId>kmongo-async</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>ai.tock</groupId>
-            <artifactId>tock-shared</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>${assertj}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
 
 </project>

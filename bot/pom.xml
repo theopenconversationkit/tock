@@ -44,6 +44,7 @@
         <module>connector-teams</module>
         <module>connector-businesschat</module>
         <module>connector-web</module>
+        <module>orchestration</module>
         <module>xray</module>
 
         <module>dialogflow</module>

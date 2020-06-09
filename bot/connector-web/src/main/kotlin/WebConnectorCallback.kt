@@ -36,12 +36,8 @@ internal class WebConnectorCallback(
 
     private val logger = KotlinLogging.logger {}
 
-    fun addAction(event: Event) {
-        if (event is Action) {
-            actions.add(event)
-        } else {
-            logger.trace { "unsupported event: $event" }
-        }
+    fun addAction(action: Action) {
+        actions.add(action)
     }
 
     fun sendResponse() {
