@@ -34,7 +34,6 @@ import java.util.Locale
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /**
@@ -43,12 +42,6 @@ import kotlin.test.assertTrue
 class BotDefinitionTest {
 
     private val botDef = BotDefinitionTest()
-
-    /**
-     * Finds a [StoryDefinition] from a story [id]
-     */
-    private fun BotDefinition.findStoryDefinitionById(id: String): StoryDefinition? =
-        stories.find { it.id == id || (it as? ConfiguredStoryDefinition)?.configuration?.storyId == id }
 
     @Test
     fun `i18nTranslator() returns an I18nTranslator that use BotDefinition#i18nKeyFromLabel`() {
@@ -82,27 +75,24 @@ class BotDefinitionTest {
     @Test
     fun `GIVEN stories containing configured story with specific id WHEN findStoryDefinitionById THEN story is found`() {
         // Given
-        val storyConfiguration = ConfiguredStoryDefinition(
-            BotDefinitionWrapper(botDef),
-            StoryDefinitionConfiguration(
-                botDefinition = botDef,
-                storyDefinition = SimpleStoryDefinition(
-                    id = "disable_bot",
-                    storyHandler = StoryHandlerTest,
-                    starterIntents = setOf(Intent("starter_intent"))
-                ),
-                configurationName = "toto"
+        val wrap = BotDefinitionWrapper(botDef)
+
+        wrap.updateStories(
+            listOf(
+                StoryDefinitionConfiguration(
+                    botDefinition = botDef,
+                    storyDefinition = SimpleStoryDefinition(
+                        id = "disable_bot",
+                        storyHandler = StoryHandlerTest,
+                        starterIntents = setOf(Intent("starter_intent"))
+                    ),
+                    configurationName = "toto"
+                )
             )
         )
 
-        val botDef = BotDefinitionBase(
-            botId = "test",
-            namespace = "namespace",
-            stories = listOf(storyConfiguration)
-        )
-
         // When
-        val result = botDef.findStoryDefinitionById("disable_bot")
+        val result = wrap.findStoryDefinitionById("disable_bot")
 
         // Then
         assertNotNull(result)
@@ -143,7 +133,7 @@ class BotDefinitionTest {
         val result = botDef.findStoryDefinitionById("disable_bot")
 
         // Then
-        assertNull(result)
+        assertEquals(botDef.unknownStory, result)
     }
 
     @Test
@@ -178,7 +168,7 @@ class BotDefinitionTest {
         val result = botDef.findStoryDefinitionById("should_not_find_id")
 
         // Then
-        assertNull(result)
+        assertEquals(botDef.unknownStory, result)
     }
 
     @Test

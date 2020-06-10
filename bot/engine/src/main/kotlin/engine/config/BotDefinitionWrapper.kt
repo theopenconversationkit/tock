@@ -40,6 +40,9 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
     @Volatile
     private var configuredStories: Map<String, List<ConfiguredStoryDefinition>> = emptyMap()
 
+    @Volatile
+    private var allStoriesById: Map<String, StoryDefinition> = botDefinition.stories.associateBy { it.id }
+
     //all stories
     @Volatile
     private var allStories: List<StoryDefinition> = botDefinition.stories
@@ -80,6 +83,8 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
                             .groupBy { it.id }
                 )
             .values.flatten()
+
+        this.allStoriesById = allStories.associateBy { it.id }
     }
 
     override val stories: List<StoryDefinition>
@@ -159,6 +164,9 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
                 it
             }
         }
+
+    override fun findStoryDefinitionById(storyId: String): StoryDefinition =
+        allStoriesById[storyId] ?: builtInStoriesMap[storyId] ?: findStoryDefinition(storyId)
 
     override fun toString(): String {
         return "Wrapper($botDefinition)"

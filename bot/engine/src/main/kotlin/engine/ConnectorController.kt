@@ -117,5 +117,7 @@ interface ConnectorController {
     /**
      * Return a story definition provider for this controller.
      */
-    fun storyDefinitionLoader(): (String) -> StoryDefinition = { botDefinition.findStoryDefinition(it) }
+    fun storyDefinitionLoader(): (String) -> StoryDefinition = {
+        botDefinition.findStoryDefinitionById(it)
+    }
 }
