@@ -19,21 +19,13 @@
 </td>
 <td>
 <p>Simple implementation for <a href="../-string-obfuscator/index.html">StringObfuscator</a>.</p>
-<code><span class="identifier">SimpleObfuscator</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared.security.SimpleObfuscator$<init>(kotlin.text.Regex, kotlin.String, kotlin.String, kotlin.text.Regex)/regex">regex</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.text/-regex/index.html"><span class="identifier">Regex</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.shared.security.SimpleObfuscator$<init>(kotlin.text.Regex, kotlin.String, kotlin.String, kotlin.text.Regex)/replacement">replacement</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.shared.security.SimpleObfuscator$<init>(kotlin.text.Regex, kotlin.String, kotlin.String, kotlin.text.Regex)/displayed">displayed</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;replacement<span class="symbol">, </span><span class="identifier" id="ai.tock.shared.security.SimpleObfuscator$<init>(kotlin.text.Regex, kotlin.String, kotlin.String, kotlin.text.Regex)/replacementRegexp">replacementRegexp</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.text/-regex/index.html"><span class="identifier">Regex</span></a>&nbsp;<span class="symbol">=</span>&nbsp;replacement.toRegex(RegexOption.LITERAL)<span class="symbol">)</span></code></td>
+<code><span class="identifier">SimpleObfuscator</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared.security.SimpleObfuscator$<init>(kotlin.text.Regex, kotlin.String)/regex">regex</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.text/-regex/index.html"><span class="identifier">Regex</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.shared.security.SimpleObfuscator$<init>(kotlin.text.Regex, kotlin.String)/replacement">replacement</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span></code></td>
 </tr>
 </tbody>
 </table>
 <h3>Properties</h3>
 <table>
 <tbody>
-<tr>
-<td>
-<h4><a href="displayed.html">displayed</a></h4>
-</td>
-<td>
-<p>Used in <a href="../-string-obfuscator-mode/display.html">StringObfuscatorMode.display</a> mode.</p>
-<code><span class="keyword">val </span><span class="identifier">displayed</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
-</tr>
 <tr>
 <td>
 <h4><a href="regex.html">regex</a></h4>
@@ -49,14 +41,6 @@
 <td>
 <p>The replacement string - should have the same size than the replaced string.</p>
 <code><span class="keyword">val </span><span class="identifier">replacement</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
-</tr>
-<tr>
-<td>
-<h4><a href="replacement-regexp.html">replacementRegexp</a></h4>
-</td>
-<td>
-<p>To match the replacement string in <a href="../-string-obfuscator-mode/display.html">StringObfuscatorMode.display</a> mode.</p>
-<code><span class="keyword">val </span><span class="identifier">replacementRegexp</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.text/-regex/index.html"><span class="identifier">Regex</span></a></code></td>
 </tr>
 </tbody>
 </table>

@@ -16,11 +16,19 @@
 <tbody>
 <tr>
 <td>
+<h4><a href="bot-disabled-stories.html">botDisabledStories</a></h4>
+</td>
+<td>
+<p>List of deactivation stories.</p>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">botDisabledStories</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
 <h4><a href="bot-disabled-story.html">botDisabledStory</a></h4>
 </td>
 <td>
 <p>To manage deactivation.</p>
-<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">botDisabledStory</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">?</span></code></td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><s><span class="identifier">botDisabledStory</span></s><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>
@@ -32,11 +40,19 @@
 </tr>
 <tr>
 <td>
+<h4><a href="bot-enabled-stories.html">botEnabledStories</a></h4>
+</td>
+<td>
+<p>List of reactivation stories.</p>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">botEnabledStories</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
 <h4><a href="bot-enabled-story.html">botEnabledStory</a></h4>
 </td>
 <td>
 <p>To manage reactivation.</p>
-<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">botEnabledStory</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">?</span></code></td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><s><span class="identifier">botEnabledStory</span></s><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>
@@ -219,6 +235,14 @@
 <code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">findStoryDefinition</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$findStoryDefinition(ai.tock.bot.definition.IntentAware)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a></code>
 <p>Finds a <a href="../-story-definition/index.html">StoryDefinition</a> from an intent name.</p>
 <code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">findStoryDefinition</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$findStoryDefinition(kotlin.String, kotlin.String)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$findStoryDefinition(kotlin.String, kotlin.String)/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="has-disable-tag-intent.html">hasDisableTagIntent</a></h4>
+</td>
+<td>
+<p>Returns true if the dialog current intent is a disabling intent.</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">hasDisableTagIntent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$hasDisableTagIntent(ai.tock.bot.engine.dialog.Dialog)/dialog">dialog</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.dialog/-dialog/index.html"><span class="identifier">Dialog</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
 </tr>
 <tr>
 <td>

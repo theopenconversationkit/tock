@@ -8,7 +8,7 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">ai.tock.shared.vertx</a>&nbsp;/&nbsp;<a href="./index.html">WebVerticle</a><br/>
 <br/>
 <h1>WebVerticle</h1>
-<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">WebVerticle</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">AbstractVerticle</span></code> <a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/vertx/WebVerticle.kt#L70">(source)</a>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">WebVerticle</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">AbstractVerticle</span></code> <a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/vertx/WebVerticle.kt#L71">(source)</a>
 <p>Base class for web Tock <a href="#">io.vertx.core.Verticle</a>s. Provides utility methods.</p>
 <h3>Constructors</h3>
 <table>
@@ -39,6 +39,22 @@
 </td>
 <td>
 <code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">basePath</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="default-cors-origin.html">defaultCorsOrigin</a></h4>
+</td>
+<td>
+<p>Default cors origin (if tock_web_use_default_cors_handler property is set to true).</p>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">defaultCorsOrigin</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="default-cors-with-credentials.html">defaultCorsWithCredentials</a></h4>
+</td>
+<td>
+<p>By default, allow credentials for cors origin (if tock_web_use_default_cors_handler property is set to true).</p>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">defaultCorsWithCredentials</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -243,11 +259,11 @@
 </td>
 <td>
 <code><span class="keyword">fun </span><span class="identifier">corsHandler</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared.vertx.WebVerticle$corsHandler(kotlin.String, kotlin.Boolean, kotlin.collections.Set((io.vertx.core.http.HttpMethod)), kotlin.collections.Set((kotlin.String)))/origin">origin</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;"*"<span class="symbol">, </span><span class="identifier" id="ai.tock.shared.vertx.WebVerticle$corsHandler(kotlin.String, kotlin.Boolean, kotlin.collections.Set((io.vertx.core.http.HttpMethod)), kotlin.collections.Set((kotlin.String)))/allowCredentials">allowCredentials</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a>&nbsp;<span class="symbol">=</span>&nbsp;false<span class="symbol">, </span><span class="identifier" id="ai.tock.shared.vertx.WebVerticle$corsHandler(kotlin.String, kotlin.Boolean, kotlin.collections.Set((io.vertx.core.http.HttpMethod)), kotlin.collections.Set((kotlin.String)))/allowedMethods">allowedMethods</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><span class="identifier">HttpMethod</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;EnumSet.of(GET, POST, PUT, DELETE)<span class="symbol">, </span><span class="identifier" id="ai.tock.shared.vertx.WebVerticle$corsHandler(kotlin.String, kotlin.Boolean, kotlin.collections.Set((io.vertx.core.http.HttpMethod)), kotlin.collections.Set((kotlin.String)))/allowedHeaders">allowedHeaders</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;listOfNotNull(
-            "X-Requested-With",
-            "Access-Control-Allow-Origin",
-            if (allowCredentials) "Authorization" else null,
-            "Content-Type"
-        ).toSet()<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">CorsHandler</span></code></td>
+                    "X-Requested-With",
+                    "Access-Control-Allow-Origin",
+                    if (allowCredentials) "Authorization" else null,
+                    "Content-Type"
+            ).toSet()<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">CorsHandler</span></code></td>
 </tr>
 <tr>
 <td>
@@ -256,6 +272,15 @@
 <td>
 <p>The auth provider provided by default.</p>
 <code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">defaultAuthProvider</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.shared.security.auth/-tock-auth-provider/index.html"><span class="identifier">TockAuthProvider</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="default-error-handler.html">defaultErrorHandler</a></h4>
+</td>
+<td>
+<p>The error handler for match failures.
+See https://vertx.io/docs/vertx-web/java/#_route_match_failures</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">defaultErrorHandler</span><span class="symbol">(</span><span class="identifier" id="ai.tock.shared.vertx.WebVerticle$defaultErrorHandler(kotlin.Int)/statusCode">statusCode</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Handler</span><span class="symbol">&lt;</span><span class="identifier">RoutingContext</span><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>

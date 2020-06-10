@@ -8,7 +8,7 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">ai.tock.bot.engine.action</a>&nbsp;/&nbsp;<a href="./index.html">Action</a><br/>
 <br/>
 <h1>Action</h1>
-<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">Action</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.event/-event/index.html"><span class="identifier">Event</span></a></code> <a href="https://github.com/theopenconversationkit/tock/blob/master/bot/engine/src/main/kotlin/engine/action/Action.kt#L35">(source)</a>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">Action</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.event/-event/index.html"><span class="identifier">Event</span></a></code> <a href="https://github.com/theopenconversationkit/tock/blob/master/bot/engine/src/main/kotlin/engine/action/Action.kt#L34">(source)</a>
 <p>A user (or bot) action.</p>
 <h3>Constructors</h3>
 <table>
@@ -79,14 +79,6 @@ or if this parameter is not set.</p>
 null if the user action is not a <a href="../-send-choice/index.html">SendChoice</a>
 or if this parameter is not set.</p>
 <code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span> <span class="identifier">jsonChoice</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.engine.action.Action$jsonChoice(ai.tock.bot.definition.ParameterKey)/key">key</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.definition/-parameter-key/index.html"><span class="identifier">ParameterKey</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span><span class="symbol">?</span></code></td>
-</tr>
-<tr>
-<td>
-<h4><a href="obfuscate.html">obfuscate</a></h4>
-</td>
-<td>
-<p>Obfuscate the event - by default this method does nothing.</p>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">obfuscate</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.engine.action.Action$obfuscate(ai.tock.shared.security.StringObfuscatorMode)/mode">mode</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.shared.security/-string-obfuscator-mode/index.html"><span class="identifier">StringObfuscatorMode</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.bot.engine.event/-event/index.html"><span class="identifier">Event</span></a></code><code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">obfuscate</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.engine.action.Action$obfuscate(ai.tock.shared.security.StringObfuscatorMode, ai.tock.bot.engine.user.PlayerId)/mode">mode</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.shared.security/-string-obfuscator-mode/index.html"><span class="identifier">StringObfuscatorMode</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.engine.action.Action$obfuscate(ai.tock.shared.security.StringObfuscatorMode, ai.tock.bot.engine.user.PlayerId)/playerId">playerId</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../ai.tock.bot.engine.event/-event/index.html"><span class="identifier">Event</span></a></code></td>
 </tr>
 <tr>
 <td>

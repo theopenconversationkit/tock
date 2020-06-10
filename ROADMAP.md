@@ -1,14 +1,17 @@
-- 20.3.2 May 2020
-    - Spacy, Rasa & Spark NLP support (external nlp support)
+
+- 20.3.3 July 2020
+    - Spacy, Rasa & Spark NLP support (external nlp support)    
     
-- 20.3.3 June 2020
+- 20.9.0 September 2020
+    - Conversational framework: support for other languages than Kotlin (multi-platform Kotlin)
     - AB test engine workflow
     - Code editor admin interface      
     
-- 20.9.0 September 2020
-    - Conversational framework: support for other languages than Kotlin (multi-platform Kotlin)    
-    
-## Latest releases  
+## Latest releases 
+
+- 20.3.2 June 2020 
+    - Bux fixes
+    - Story builder enhancements
 
 - 20.3.1 April 2020    
     - Bux fixes
