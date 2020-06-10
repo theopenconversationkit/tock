@@ -46,6 +46,10 @@
               (click)="$event.stopPropagation();editSteps()">
         <mat-icon>dns</mat-icon>
       </button>
+      <button *ngIf="story._id" mat-icon-button matTooltip="Export Story"
+              (click)="$event.stopPropagation();download(story)">
+        <mat-icon>file_download</mat-icon>
+      </button>
       <button *ngIf="story._id" mat-icon-button color="warn" matTooltip="Delete"
               (click)="$event.stopPropagation();deleteStory()">
         <mat-icon>delete</mat-icon>

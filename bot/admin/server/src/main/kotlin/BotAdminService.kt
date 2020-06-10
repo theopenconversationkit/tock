@@ -284,6 +284,20 @@ object BotAdminService {
     fun exportStories(namespace: String, applicationName: String): List<StoryDefinitionConfigurationDump> =
         findStories(namespace, applicationName).map { StoryDefinitionConfigurationDump(it) }
 
+    fun exportStory(namespace: String, applicationName: String, storyDefinitionId: String): StoryDefinitionConfigurationDump? {
+        val botConf =
+            getBotConfigurationsByNamespaceAndNlpModel(namespace, applicationName).firstOrNull()
+        return if (botConf != null) {
+            val story =
+                storyDefinitionDAO.getStoryDefinitionsByNamespaceBotIdStoryId(
+                    namespace = namespace,
+                    botId = botConf.botId,
+                    storyId = storyDefinitionId)
+            story?.let { StoryDefinitionConfigurationDump(it) }
+        }
+        else null
+    }
+
     fun findStory(namespace: String, storyDefinitionId: String): BotStoryDefinitionConfiguration? {
         val story = storyDefinitionDAO.getStoryDefinitionById(storyDefinitionId.toId())
         return loadStory(namespace, story)

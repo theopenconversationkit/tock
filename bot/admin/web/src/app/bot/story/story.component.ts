@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import {saveAs} from "file-saver";
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange, SimpleChanges} from "@angular/core";
 import {
   AnswerConfigurationType,
@@ -278,4 +279,13 @@ export class StoryComponent implements OnInit, OnChanges {
     }
   }
 
+  download(story: StoryDefinitionConfiguration) {
+    setTimeout(_ => {
+      this.bot.exportStory(this.state.currentApplication.name, story.storyId)
+        .subscribe(blob => {
+          saveAs(blob, this.state.currentApplication.name + "_" + story.storyId + ".json");
+          this.dialog.notify(`Dump provided`, "Dump");
+        })
+    }, 1);
+  }
 }
