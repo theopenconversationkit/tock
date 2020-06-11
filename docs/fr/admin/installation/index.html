@@ -1396,7 +1396,7 @@ composant ou l'application avec une commande Java classique.</p>
 <p>Pour exemple, le descripteur du composant <code>tock-docker-nlp-api</code> 
  (voir <a href="https://github.com/theopenconversationkit/tock-docker/blob/master/nlp-api/pom.xml"><code>pom.xml</code></a>)
 avec la commande suivante :</p>
-<div class="codehilite"><pre><span></span><code><span class="err">java $JAVA_ARGS -Dfile.encoding=UTF-8 -cp &#39;/maven/*&#39; ai.tock.nlp.api.StartNlpServiceKt</span>
+<div class="codehilite"><pre><span></span><code>java <span class="nv">$JAVA_ARGS</span> -Dfile.encoding<span class="o">=</span>UTF-8 -cp <span class="s1">&#39;/maven/*&#39;</span> ai.tock.nlp.api.StartNlpServiceKt
 </code></pre></div>
 
 
@@ -1573,7 +1573,7 @@ nécessitera de provisionner environ 8 Go de RAM pour le composant <code>tock/bu
 <h3 id="memoire-jvm-docker">Mémoire JVM &amp; Docker<a class="headerlink" href="#memoire-jvm-docker" title="Permanent link">&para;</a></h3>
 <p>Pour garantir que les conteneurs/instances Docker ne dépassent pas la mémoire disponible, il est recommandé
 de limiter la mémoire des JVMs en suivant l'exemple suivant :</p>
-<div class="codehilite"><pre><span></span><code><span class="err">JAVA_ARGS=-Xmx1g -XX:MaxMetaspaceSize=256m</span>
+<div class="codehilite"><pre><span></span><code><span class="nv">JAVA_ARGS</span><span class="o">=</span>-Xmx1g -XX:MaxMetaspaceSize<span class="o">=</span>256m
 </code></pre></div>
 
 

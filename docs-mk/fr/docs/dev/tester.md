@@ -17,7 +17,7 @@ Avec Maven :
 
 ou Gradle :
 
-```gradle
+```groovy
       testCompile 'ai.tock:bot-test:20.3.2-1'
 ``` 
 

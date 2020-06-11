@@ -52,7 +52,9 @@ Pour exemple, le descripteur du composant `tock-docker-nlp-api`
  (voir [`pom.xml`](https://github.com/theopenconversationkit/tock-docker/blob/master/nlp-api/pom.xml))
 avec la commande suivante :
 
-    java $JAVA_ARGS -Dfile.encoding=UTF-8 -cp '/maven/*' ai.tock.nlp.api.StartNlpServiceKt
+``` shell
+java $JAVA_ARGS -Dfile.encoding=UTF-8 -cp '/maven/*' ai.tock.nlp.api.StartNlpServiceKt
+```
 
 ### JAR exécutable
 
@@ -218,7 +220,7 @@ Cependant, des modèles importants mais contenant peu d'entités fonctionnent fa
 Pour garantir que les conteneurs/instances Docker ne dépassent pas la mémoire disponible, il est recommandé
 de limiter la mémoire des JVMs en suivant l'exemple suivant :
 
-```
+``` shell
 JAVA_ARGS=-Xmx1g -XX:MaxMetaspaceSize=256m
 ```
 

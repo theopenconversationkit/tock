@@ -40,7 +40,7 @@ Par exemple dans un projet [Maven](https://maven.apache.org/) :
 
 Ou dans un projet [Gradle](https://gradle.org/) :
 
-```gradle
+```groovy
       compile 'ai.tock:tock-bot-api-websocket:20.3.2-1'
 ```
 
@@ -60,7 +60,7 @@ Par exemple dans un projet [Maven](https://maven.apache.org/) :
 
 Ou dans un projet [Gradle](https://gradle.org/) :
 
-```gradle
+```groovy
       compile 'ai.tock:tock-bot-api-webhook:20.3.2-1'
 ```
 
