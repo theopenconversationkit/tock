@@ -166,7 +166,8 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
         }
 
     override fun findStoryDefinitionById(storyId: String): StoryDefinition =
-        allStoriesById[storyId] ?: builtInStoriesMap[storyId] ?: findStoryDefinition(storyId)
+        //first search into built-in then in configured, fallback to search by intent
+        builtInStoriesMap[storyId] ?: allStoriesById[storyId] ?: findStoryDefinition(storyId)
 
     override fun toString(): String {
         return "Wrapper($botDefinition)"

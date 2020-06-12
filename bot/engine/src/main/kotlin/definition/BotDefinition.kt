@@ -166,6 +166,11 @@ interface BotDefinition : I18nKeyProvider {
     val helloStory: StoryDefinition?
 
     /**
+     * Provides default Story when no context is known - default to [helloStory] or first [stories].
+     */
+    val defaultStory: StoryDefinition get() = helloStory ?: stories.first()
+
+    /**
      * The goodbye story. Used when closing the conversation.
      */
     val goodbyeStory: StoryDefinition?

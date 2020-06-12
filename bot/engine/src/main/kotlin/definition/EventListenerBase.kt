@@ -49,7 +49,7 @@ open class EventListenerBase : EventListener {
                 false
             } else {
                 sendChoice(event, this?.mainIntent()
-                    ?: controller.botDefinition.stories.first().mainIntent(), controller, connectorData)
+                    ?: controller.botDefinition.defaultStory.mainIntent(), controller, connectorData)
                 true
             }
 

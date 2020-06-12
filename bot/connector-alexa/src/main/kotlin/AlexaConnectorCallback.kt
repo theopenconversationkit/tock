@@ -16,17 +16,6 @@
 
 package ai.tock.bot.connector.alexa
 
-import com.amazon.speech.json.SpeechletRequestEnvelope
-import com.amazon.speech.slu.Intent
-import com.amazon.speech.speechlet.IntentRequest
-import com.amazon.speech.speechlet.LaunchRequest
-import com.amazon.speech.speechlet.SessionEndedRequest
-import com.amazon.speech.speechlet.SessionStartedRequest
-import com.amazon.speech.speechlet.SpeechletResponse
-import com.amazon.speech.speechlet.SpeechletV2
-import com.amazon.speech.ui.PlainTextOutputSpeech
-import com.amazon.speech.ui.Reprompt
-import com.amazon.speech.ui.SsmlOutputSpeech
 import ai.tock.bot.connector.ConnectorCallbackBase
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.alexa.AlexaConnector.Companion.sendTechnicalError
@@ -41,6 +30,17 @@ import ai.tock.shared.error
 import ai.tock.shared.jackson.mapper
 import ai.tock.translator.UserInterfaceType
 import ai.tock.translator.isSSML
+import com.amazon.speech.json.SpeechletRequestEnvelope
+import com.amazon.speech.slu.Intent
+import com.amazon.speech.speechlet.IntentRequest
+import com.amazon.speech.speechlet.LaunchRequest
+import com.amazon.speech.speechlet.SessionEndedRequest
+import com.amazon.speech.speechlet.SessionStartedRequest
+import com.amazon.speech.speechlet.SpeechletResponse
+import com.amazon.speech.speechlet.SpeechletV2
+import com.amazon.speech.ui.PlainTextOutputSpeech
+import com.amazon.speech.ui.Reprompt
+import com.amazon.speech.ui.SsmlOutputSpeech
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import java.util.Locale
@@ -59,8 +59,10 @@ data class AlexaConnectorCallback internal constructor(
 
     @Volatile
     private var answered: Boolean = false
+
     @Volatile
     internal var alexaResponse: SpeechletResponse? = null
+
     @Volatile
     private var locale: Locale = defaultLocale
 
@@ -228,7 +230,7 @@ data class AlexaConnectorCallback internal constructor(
 
     override fun onLaunch(requestEnvelope: SpeechletRequestEnvelope<LaunchRequest>): SpeechletResponse? {
         logRequest("onLaunch", requestEnvelope)
-        val helloStory = controller.botDefinition.run { helloStory ?: stories.first() }.mainIntent().name
+        val helloStory = controller.botDefinition.defaultStory.mainIntent().name
         return onIntent(
             SpeechletRequestEnvelope
                 .builder<IntentRequest>()

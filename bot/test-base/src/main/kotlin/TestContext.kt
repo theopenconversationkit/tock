@@ -16,13 +16,9 @@
 
 package ai.tock.bot.test
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.provider
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
-import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.dialog.DialogReportDAO
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.test.TestPlanDAO
 import ai.tock.bot.admin.user.UserReportDAO
 import ai.tock.bot.connector.ConnectorType
@@ -41,6 +37,10 @@ import ai.tock.shared.defaultLocale
 import ai.tock.shared.injector
 import ai.tock.shared.sharedTestModule
 import ai.tock.translator.I18nDAO
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
 import io.mockk.mockkClass
 import java.util.Locale
 import kotlin.reflect.KClass
@@ -193,7 +193,7 @@ open class TestContext {
      */
     open fun defaultStoryDefinition(botDefinition: BotDefinition): StoryDefinition =
         if (isInitialized()) botBusMockContext.story.definition
-        else botDefinition.helloStory ?: botDefinition.stories.first()
+        else botDefinition.defaultStory
 
     /**
      * Default [ConnectorType] if none is provided.
