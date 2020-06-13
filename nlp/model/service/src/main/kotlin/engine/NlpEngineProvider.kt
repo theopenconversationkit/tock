@@ -20,7 +20,7 @@ import ai.tock.nlp.core.NlpEngineType
 
 /**
  * Implements this interface to add a new nlp engine.
- * The implementation is loaded at runtime, using the java [java.util.ServiceLoader] - you need to provide a META-INF/services/xxx file.
+ * The implementation is loaded at runtime, using the java [java.util.ServiceLoader] - you need to provide a META-INF/services/ai.tock.nlp.model.service.engine.NlpEngineProvider file.
  */
 interface NlpEngineProvider {
 
