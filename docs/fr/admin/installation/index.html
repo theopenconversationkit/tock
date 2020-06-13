@@ -888,9 +888,49 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#memoire-jvm" class="md-nav__link">
-    Mémoire JVM
+  <a href="#memoire-jvm-docker" class="md-nav__link">
+    Mémoire JVM &amp; Docker
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#optimisation-machines" class="md-nav__link">
+    Optimisation machines
+  </a>
+  
+    <nav class="md-nav" aria-label="Optimisation machines">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exemples" class="md-nav__link">
+    Exemples
+  </a>
+  
+    <nav class="md-nav" aria-label="Exemples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#modeles-de-taille-limitee" class="md-nav__link">
+    Modèles de taille limitée
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modeles-de-taille-importante" class="md-nav__link">
+    Modèles de taille importante
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1239,9 +1279,49 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#memoire-jvm" class="md-nav__link">
-    Mémoire JVM
+  <a href="#memoire-jvm-docker" class="md-nav__link">
+    Mémoire JVM &amp; Docker
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#optimisation-machines" class="md-nav__link">
+    Optimisation machines
+  </a>
+  
+    <nav class="md-nav" aria-label="Optimisation machines">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exemples" class="md-nav__link">
+    Exemples
+  </a>
+  
+    <nav class="md-nav" aria-label="Exemples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#modeles-de-taille-limitee" class="md-nav__link">
+    Modèles de taille limitée
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modeles-de-taille-importante" class="md-nav__link">
+    Modèles de taille importante
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1316,7 +1396,7 @@ composant ou l'application avec une commande Java classique.</p>
 <p>Pour exemple, le descripteur du composant <code>tock-docker-nlp-api</code> 
  (voir <a href="https://github.com/theopenconversationkit/tock-docker/blob/master/nlp-api/pom.xml"><code>pom.xml</code></a>)
 avec la commande suivante :</p>
-<div class="codehilite"><pre><span></span><code><span class="n">java</span> <span class="err">$</span><span class="n">JAVA_ARGS</span> <span class="o">-</span><span class="n">Dfile</span><span class="p">.</span><span class="k">encoding</span><span class="o">=</span><span class="n">UTF</span><span class="o">-</span><span class="mi">8</span> <span class="o">-</span><span class="n">cp</span> <span class="s1">&#39;/maven/*&#39;</span> <span class="n">ai</span><span class="p">.</span><span class="n">tock</span><span class="p">.</span><span class="n">nlp</span><span class="p">.</span><span class="n">api</span><span class="p">.</span><span class="n">StartNlpServiceKt</span>
+<div class="codehilite"><pre><span></span><code>java <span class="nv">$JAVA_ARGS</span> -Dfile.encoding<span class="o">=</span>UTF-8 -cp <span class="s1">&#39;/maven/*&#39;</span> ai.tock.nlp.api.StartNlpServiceKt
 </code></pre></div>
 
 
@@ -1401,7 +1481,17 @@ des configurations pour IntelliJ sont fournies avec les sources de Tock :</p>
 <li>Instructions <a href="https://github.com/theopenconversationkit/tock/blob/master/nlp/admin/web/README.md">Interface <em>Tock Studio</em> (NLP uniquement)</a></li>
 </ul>
 <h2 id="base-de-donnees-mongodb">Base de données MongoDB<a class="headerlink" href="#base-de-donnees-mongodb" title="Permanent link">&para;</a></h2>
-<p>La base Mongo devant être configurée en <em>replica set</em>, c'est à dire avec au minimum 3 instances déployées.</p>
+<p>La base MongoDB doit être configurée en <em>replica set</em>, car Tock tire parti des <a href="https://docs.mongodb.com/manual/changeStreams/"><em>change streams</em></a>.  </p>
+<blockquote>
+<p>Cela implique qu'au minimum 3 <em>noeuds</em> doivent être déployés, ce qui améliore la résilience.</p>
+</blockquote>
+<p>Différents scénarios sont possibles pour la base de données :</p>
+<ul>
+<li>Installer les noeuds MongoDB sur un ou plusieurs serveurs (méthode classique)</li>
+<li>Instancier les noeuds MongoDB avec Docker (pour des tests ou le développement en local)</li>
+<li>Utiliser un service <em>cloud</em> MongoDB en <em>SaaS (Software-as-a-Service)</em>, par exemple 
+<a href="https://www.mongodb.com/cloud/atlas">MongoDB Atlas</a> disponible sur AWS, Azure et GCP </li>
+</ul>
 <blockquote>
 <p>Un <a href="https://docs.mongodb.com/manual/tutorial/deploy-replica-set/">tutoriel d'installation en <em>replica set</em></a>
  est disponible sur le site de MongoDB.</p>
@@ -1471,20 +1561,94 @@ s'intégrer, pour le fonctionnement des <em>WebHooks</em>.</p>
 <a href="https://github.com/theopenconversationkit/tock-docker/blob/master/docker-compose-bot-open-data.yml"><code>docker-compose-bot-open-data.yml</code></a>.</p>
 <p>Des exemples et indications pour packager des bots en mode <a href="../../dev/bot-api/"><em>Tock Bot API</em></a> (<em>WebHooks</em>, <em>WebSockets</em>) seront bientôt disponibles.</p>
 <h2 id="configurations-minimales">Configurations minimales<a class="headerlink" href="#configurations-minimales" title="Permanent link">&para;</a></h2>
+<p>L'architecture Tock est composée de plusieurs composants qui peuvent être déployés ensemble sur un même serveur,
+ou répartis sur plusieurs machines/instances.</p>
 <p>Le paramètre principal à surveiller est la mémoire vive disponible.</p>
 <h3 id="construction-des-modeles">Construction des modèles<a class="headerlink" href="#construction-des-modeles" title="Permanent link">&para;</a></h3>
-<p>En particulier, plus vos modèles sont importants, plus il est nécessaire d'augmenter la mémoire pour reconstruire les modèles
+<p>Plus vos modèles sont importants, plus il est nécessaire d'augmenter la mémoire pour reconstruire les modèles
 (composant <code>tock/build_worker</code>).</p>
 <p>Pour donner un ordre de grandeur, un modèle de 50000 phrases avec plusieurs intentions, comportant une vingtaine d'entités,
 nécessitera de provisionner environ 8 Go de RAM pour le composant <code>tock/build_worker</code>.</p>
 <p>Cependant, des modèles importants mais contenant peu d'entités fonctionnent facilement avec seulement 1 Go de RAM.</p>
-<h3 id="memoire-jvm">Mémoire JVM<a class="headerlink" href="#memoire-jvm" title="Permanent link">&para;</a></h3>
+<h3 id="memoire-jvm-docker">Mémoire JVM &amp; Docker<a class="headerlink" href="#memoire-jvm-docker" title="Permanent link">&para;</a></h3>
 <p>Pour garantir que les conteneurs/instances Docker ne dépassent pas la mémoire disponible, il est recommandé
 de limiter la mémoire des JVMs en suivant l'exemple suivant :</p>
-<div class="codehilite"><pre><span></span><code><span class="n">JAVA_ARGS</span><span class="o">=-</span><span class="n">Xmx1g</span> <span class="o">-</span><span class="n">XX</span><span class="p">:</span><span class="n">MaxMetaspaceSize</span><span class="o">=</span><span class="mi">256</span><span class="n">m</span>
+<div class="codehilite"><pre><span></span><code><span class="nv">JAVA_ARGS</span><span class="o">=</span>-Xmx1g -XX:MaxMetaspaceSize<span class="o">=</span>256m
 </code></pre></div>
 
 
+<h2 id="optimisation-machines">Optimisation machines<a class="headerlink" href="#optimisation-machines" title="Permanent link">&para;</a></h2>
+<p>Il est possible d'optimiser déploiements et infrastructures en prenant en compte différents éléments 
+comme :</p>
+<ul>
+<li>les besoins des composants respectifs en ressources machines : CPU, mémoire, disque</li>
+<li>l'intérêt d'avoir une ou plusieurs instances de chaque composant suivant son rôle</li>
+<li>les contraintes/objectifs de résilience et haute disponibilité</li>
+<li>les modèles de coûts, notamment chez les fournisseurs de clouds publics</li>
+</ul>
+<h3 id="exemples">Exemples<a class="headerlink" href="#exemples" title="Permanent link">&para;</a></h3>
+<p>A titre indicatif, voici quelques exemples de configurations actuellement en production. 
+Il s'agit des composants "applicatifs" de l'architecture Tock sans la base de donnée MongoDB.</p>
+<blockquote>
+<p>Les types d'instances EC2 sont donnés à titre indicatif. Tock n'a pas de dépendance à AWS.<br />
+Pour en savoir plus voir la <a href="https://aws.amazon.com/fr/ec2/pricing/on-demand/">documentation AWS</a>.</p>
+</blockquote>
+<h4 id="modeles-de-taille-limitee">Modèles de taille limitée<a class="headerlink" href="#modeles-de-taille-limitee" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Composants Tock</th>
+<th>Nombre d'instances</th>
+<th>Nombre de CPU ou vCPU</th>
+<th>Mémoire RAM</th>
+<th>Exemple type d'instance EC2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>admin-web</code> + <code>build-worker</code> + <code>kotlin-compiler</code> + <code>duckling</code></td>
+<td>1</td>
+<td>2</td>
+<td>4 Go</td>
+<td><code>t3a.medium</code> (usage général)</td>
+</tr>
+<tr>
+<td><code>bot</code> + <code>nlp-api</code> + <code>duckling</code></td>
+<td>3</td>
+<td>2</td>
+<td>4 Go</td>
+<td><code>t3a.medium</code> (usage général)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="modeles-de-taille-importante">Modèles de taille importante<a class="headerlink" href="#modeles-de-taille-importante" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Composants Tock</th>
+<th>Nombre d'instances</th>
+<th>Nombre de CPU ou vCPU</th>
+<th>Mémoire RAM</th>
+<th>Exemple type d'instance EC2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>admin-web</code> + <code>build-worker</code> + <code>kotlin-compiler</code> + <code>duckling</code></td>
+<td>1</td>
+<td>2</td>
+<td>16 Go</td>
+<td><code>r5a.large</code> (mémoire optimisée)</td>
+</tr>
+<tr>
+<td><code>bot</code> + <code>nlp-api</code> + <code>duckling</code></td>
+<td>3</td>
+<td>2</td>
+<td>4 Go</td>
+<td><code>t3a.medium</code> (usage général)</td>
+</tr>
+</tbody>
+</table>
 <h2 id="voir-aussi">Voir aussi...<a class="headerlink" href="#voir-aussi" title="Permanent link">&para;</a></h2>
 <p>Pour une utilisation de Tock en production, nous vous recommandons de parcourir également les pages suivantes :</p>
 <ul>

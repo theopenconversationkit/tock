@@ -63,7 +63,7 @@ With Maven:
 
 With Gradle:
 
-```gradle
+```groovy
       compile 'ai.tock:bot-toolkit:20.3.2-1'
 ```
 

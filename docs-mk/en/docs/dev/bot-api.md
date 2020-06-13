@@ -29,7 +29,7 @@ Using [Maven](https://maven.apache.org/) :
 
 Or [Gradle](https://gradle.org/) :
 
-```gradle
+```groovy
       compile 'ai.tock:tock-bot-api-websocket:20.3.2-1'
 ```
 
@@ -50,7 +50,7 @@ Using [Maven](https://maven.apache.org/) :
 
 Or [Gradle](https://gradle.org/) :
 
-```gradle
+```groovy
       compile 'ai.tock:tock-bot-api-webhook:20.3.2-1'
 ```
 

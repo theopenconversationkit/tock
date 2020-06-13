@@ -52,7 +52,9 @@ Pour exemple, le descripteur du composant `tock-docker-nlp-api`
  (voir [`pom.xml`](https://github.com/theopenconversationkit/tock-docker/blob/master/nlp-api/pom.xml))
 avec la commande suivante :
 
-    java $JAVA_ARGS -Dfile.encoding=UTF-8 -cp '/maven/*' ai.tock.nlp.api.StartNlpServiceKt
+``` shell
+java $JAVA_ARGS -Dfile.encoding=UTF-8 -cp '/maven/*' ai.tock.nlp.api.StartNlpServiceKt
+```
 
 ### JAR exécutable
 
@@ -143,7 +145,16 @@ Enfin pour lancer les interfaces utilisateur (_Tock Studio_), les commandes sont
 
 ## Base de données MongoDB
 
-La base Mongo devant être configurée en _replica set_, c'est à dire avec au minimum 3 instances déployées.
+La base MongoDB doit être configurée en _replica set_, car Tock tire parti des [_change streams_](https://docs.mongodb.com/manual/changeStreams/).  
+
+> Cela implique qu'au minimum 3 _noeuds_ doivent être déployés, ce qui améliore la résilience.
+
+Différents scénarios sont possibles pour la base de données :
+
+- Installer les noeuds MongoDB sur un ou plusieurs serveurs (méthode classique)
+- Instancier les noeuds MongoDB avec Docker (pour des tests ou le développement en local)
+- Utiliser un service _cloud_ MongoDB en _SaaS (Software-as-a-Service)_, par exemple 
+[MongoDB Atlas](https://www.mongodb.com/cloud/atlas) disponible sur AWS, Azure et GCP 
 
 > Un [tutoriel d'installation en _replica set_](https://docs.mongodb.com/manual/tutorial/deploy-replica-set/)
  est disponible sur le site de MongoDB.
@@ -189,11 +200,14 @@ Des exemples et indications pour packager des bots en mode [_Tock Bot API_](../d
 
 ## Configurations minimales
 
+L'architecture Tock est composée de plusieurs composants qui peuvent être déployés ensemble sur un même serveur,
+ou répartis sur plusieurs machines/instances.
+
 Le paramètre principal à surveiller est la mémoire vive disponible.
 
 ### Construction des modèles
 
-En particulier, plus vos modèles sont importants, plus il est nécessaire d'augmenter la mémoire pour reconstruire les modèles
+Plus vos modèles sont importants, plus il est nécessaire d'augmenter la mémoire pour reconstruire les modèles
 (composant `tock/build_worker`).
 
 Pour donner un ordre de grandeur, un modèle de 50000 phrases avec plusieurs intentions, comportant une vingtaine d'entités,
@@ -201,14 +215,46 @@ nécessitera de provisionner environ 8 Go de RAM pour le composant `tock/build_w
 
 Cependant, des modèles importants mais contenant peu d'entités fonctionnent facilement avec seulement 1 Go de RAM.
 
-### Mémoire JVM
+### Mémoire JVM & Docker
 
 Pour garantir que les conteneurs/instances Docker ne dépassent pas la mémoire disponible, il est recommandé
 de limiter la mémoire des JVMs en suivant l'exemple suivant :
 
-```
+``` shell
 JAVA_ARGS=-Xmx1g -XX:MaxMetaspaceSize=256m
 ```
+
+## Optimisation machines
+
+Il est possible d'optimiser déploiements et infrastructures en prenant en compte différents éléments 
+comme :
+
+- les besoins des composants respectifs en ressources machines : CPU, mémoire, disque
+- l'intérêt d'avoir une ou plusieurs instances de chaque composant suivant son rôle
+- les contraintes/objectifs de résilience et haute disponibilité
+- les modèles de coûts, notamment chez les fournisseurs de clouds publics
+
+### Exemples
+
+A titre indicatif, voici quelques exemples de configurations actuellement en production. 
+Il s'agit des composants "applicatifs" de l'architecture Tock sans la base de donnée MongoDB.
+
+> Les types d'instances EC2 sont donnés à titre indicatif. Tock n'a pas de dépendance à AWS.  
+> Pour en savoir plus voir la [documentation AWS](https://aws.amazon.com/fr/ec2/pricing/on-demand/).
+
+#### Modèles de taille limitée
+
+| Composants Tock  | Nombre d'instances | Nombre de CPU ou vCPU | Mémoire RAM | Exemple type d'instance EC2 |
+|------------------|--------------------|-------------------|-------------|-----------------------------|
+| `admin-web` + `build-worker` + `kotlin-compiler` + `duckling`| 1 | 2 | 4 Go | `t3a.medium` (usage général) |
+| `bot` + `nlp-api` + `duckling`| 3 | 2 | 4 Go | `t3a.medium` (usage général) |
+
+#### Modèles de taille importante
+
+| Composants Tock  | Nombre d'instances | Nombre de CPU ou vCPU | Mémoire RAM | Exemple type d'instance EC2 |
+|------------------|--------------------|-------------------|-------------|-----------------------------|
+| `admin-web` + `build-worker` + `kotlin-compiler` + `duckling`| 1 | 2 | 16 Go | `r5a.large` (mémoire optimisée) |
+| `bot` + `nlp-api` + `duckling`| 3 | 2 | 4 Go | `t3a.medium` (usage général) |
 
 ## Voir aussi...
 

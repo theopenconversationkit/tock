@@ -45,7 +45,7 @@ Par exemple dans un projet [Maven](https://maven.apache.org/) :
 
 Ou dans un projet [Gradle](https://gradle.org/) :
 
-```gradle
+```groovy
       compile 'ai.tock:bot-toolkit:20.3.2-1'
 ```
 
