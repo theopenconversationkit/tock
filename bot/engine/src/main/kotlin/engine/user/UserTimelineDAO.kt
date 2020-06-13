@@ -57,7 +57,7 @@ interface UserTimelineDAO {
      *
      * @param namespace the namespace of the bot
      * @param userId the user id of the last message
-     * @param priorUserId not null if this user ahs an other id before
+     * @param priorUserId not null if this user has an other id before
      * @param groupId not null if this is a conversation group
      * @param storyDefinitionProvider provides [StoryDefinition] from story ids.
      */

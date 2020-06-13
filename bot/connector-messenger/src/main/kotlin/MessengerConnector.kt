@@ -60,6 +60,7 @@ import ai.tock.bot.engine.event.TypingOnEvent
 import ai.tock.bot.engine.monitoring.logError
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType.bot
+import ai.tock.bot.engine.user.PlayerType.temporary
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
@@ -106,10 +107,12 @@ class MessengerConnector internal constructor(
         internal val connectorIdTokenMap: MutableMap<String, String> = ConcurrentHashMap()
         internal val connectorIdApplicationIdMap: MutableMap<String, String> = ConcurrentHashMap()
         private val webhookSubscriptionCheckPeriod = property("tock_messenger_webhook_check_period", "600").toLong()
-        private val webhookSubscriptionCheckEnabled = booleanProperty("tock_messenger_webhook_check_subscription", false)
+        private val webhookSubscriptionCheckEnabled =
+            booleanProperty("tock_messenger_webhook_check_subscription", false)
 
         private fun getAllConnectors(): List<MessengerConnector> =
-            connectorIdConnectorControllerMap.values.asSequence().map { it.connector }.filterIsInstance<MessengerConnector>().toList()
+            connectorIdConnectorControllerMap.values.asSequence().map { it.connector }
+                .filterIsInstance<MessengerConnector>().toList()
 
         fun getConnectorById(connectorId: String): MessengerConnector? {
             return connectorIdConnectorControllerMap[connectorId]?.connector as? MessengerConnector
@@ -309,6 +312,7 @@ class MessengerConnector internal constructor(
      * @param action the action to send
      * @exception IllegalStateException if the message is not delivered
      */
+    @Deprecated("deprecated - use BotRepository#notify")
     fun sendOptInEvent(event: Event) {
         sendEvent(
             event,
@@ -417,16 +421,33 @@ class MessengerConnector internal constructor(
                     event.metadata.notificationType = it
                 }
             }
+
             queue.add(event, delayInMs) { action ->
                 sendEvent(
                     event = action,
+                    transformMessageRequest = { request ->
+                        if (action.recipientId.type == temporary) {
+                            //need to use the user_ref here
+                            request.copy(recipient = Recipient(null, request.recipient.id))
+                        } else {
+                            request
+                        }
+                    },
+                    transformActionRequest = { request ->
+                        if (action.recipientId.type == temporary) {
+                            //need to use the user_ref here
+                            request.copy(recipient = Recipient(null, request.recipient.id))
+                        } else {
+                            request
+                        }
+                    },
                     postMessage =
                     { token ->
-                        val recipient = Recipient(action.recipientId.id)
-                        if (messengerCallback?.notificationType == null) {
+                        if (messengerCallback?.notificationType == null && action.recipientId.type != temporary) {
+                            val recipient = Recipient(action.recipientId.id)
                             if (action.metadata.lastAnswer) {
                                 client.sendAction(token, ActionRequest(recipient, typing_off, personaId))
-                                client.sendAction(token, ActionRequest(recipient, mark_seen))
+                                client.sendAction(token, ActionRequest(recipient, mark_seen, personaId))
                             } else {
                                 client.sendAction(token, ActionRequest(recipient, typing_on, personaId))
                             }
@@ -434,7 +455,6 @@ class MessengerConnector internal constructor(
                     },
                     errorListener = messengerCallback?.errorListener ?: {}
                 )
-
             }
         } else {
             if (messengerCallback?.notificationType == null || (event !is TypingOnEvent && event !is TypingOffEvent && event !is MarkSeenEvent)) {
