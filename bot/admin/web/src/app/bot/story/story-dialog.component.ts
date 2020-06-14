@@ -112,7 +112,7 @@ export class StoryDialogComponent implements OnInit {
       this.dialogRef.close({
         name: this.name.trim(),
         label: !this.label || this.label.trim().length === 0 ? this.name.trim() : this.label.trim(),
-        tag: this.tag.trim(),
+        tag: this.tag ? this.tag.trim() : null,
         intent: this.intent.trim(),
         description: !this.description || this.description.trim().length === 0 ? "" : this.description.trim(),
         category: !this.category || this.category.trim().length === 0 ? "default" : this.category.trim(),

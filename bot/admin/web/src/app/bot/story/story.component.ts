@@ -24,7 +24,7 @@ import {
   StoryStep
 } from "../model/story";
 import {BotService} from "../bot-service";
-import { MatDialog } from "@angular/material/dialog";
+import {MatDialog} from "@angular/material/dialog";
 import {StateService} from "../../core-nlp/state.service";
 import {ConfirmDialogComponent} from "../../shared-nlp/confirm-dialog/confirm-dialog.component";
 import {StoryDialogComponent} from "./story-dialog.component";
@@ -160,7 +160,7 @@ export class StoryComponent implements OnInit, OnChanges {
       if (result && result.name) {
         this.story.storyId = result.name;
         this.story.name = result.label;
-        this.story.tags = [result.tag];
+        this.storyTag = result.tag;
         this.story.intent.name = result.intent;
         this.story.category = result.category;
         this.story.description = result.description;
@@ -173,7 +173,7 @@ export class StoryComponent implements OnInit, OnChanges {
 
   private saveStory(selectStoryAfterSave: boolean) {
     this.story.steps = StoryStep.filterNew(this.story.steps);
-    this.story.tags = [this.storyTag];
+    this.story.tags = !this.storyTag || this.storyTag.length === 0 ? [] : [this.storyTag];
     if (this.story._id) {
       this.bot.saveStory(this.story).subscribe(s => {
         this.story.selected = selectStoryAfterSave;

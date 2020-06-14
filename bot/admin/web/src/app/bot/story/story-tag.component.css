@@ -17,3 +17,6 @@
 .story-tag {
   margin-top: 15px;
 }
+.story-select {
+  min-width: 300px;
+}

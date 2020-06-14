@@ -35,8 +35,8 @@ export class StoryTagComponent {
   selectedTagChange: EventEmitter<String> = new EventEmitter<String>();
 
   tags: Tag[] = [
-    {value: 'ENABLE', viewValue: 'Enable'},
-    {value: 'DISABLE', viewValue: 'Disable'}
+    {value: 'ENABLE', viewValue: 'Enable Tag (triggers a bot activation)'},
+    {value: 'DISABLE', viewValue: 'Disable Tag (triggers a bot deactivation)'}
   ];
 
 }

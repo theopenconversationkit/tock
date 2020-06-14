@@ -61,32 +61,26 @@
   <div class="content">
 
     <!-- Settings card -->
-    <mat-card class="answer-card">
-      <mat-card-header>
-        <mat-card-title>Settings</mat-card-title>
-        <mat-card-subtitle>
-          <span class="intent" matTooltip="Main Intent">{{story.intent.name}}</span>
-          <span class="category" matTooltip="Story category">&nbsp;[{{story.category}}]</span>
-        </mat-card-subtitle>
-      </mat-card-header>
+    <mat-expansion-panel class="answer-card">
+      <mat-expansion-panel-header>
+        <mat-panel-title><span class="intent" matTooltip="Main Intent">{{story.intent.name}}</span><span class="category" matTooltip="Story category">&nbsp;[{{story.category}}]</span></mat-panel-title>
+        <mat-panel-description>
+          <!-- Story description -->
+          <span *ngIf="story.description">
+            {{story.description}}
+          </span>
 
-      <mat-card-content class="answer-card-content">
-        <!-- Story description -->
-        <div *ngif="story.description">
-          Description : {{story.description}}
-        </div>
-
-        <!-- Story node -->
-        <ul *ngIf="storyNode">
-          <li *ngIf="storyNode.intent">Intent: <b>{{storyNode.intent}}</b></li>
-          <li *ngIf="storyNode.step">Step: <b>{{storyNode.step}}</b></li>
-          <li *ngIf="storyNode.entities.length !==0">Entities: <b>{{storyNode.entities}}</b></li>
-        </ul>
-
+          <!-- Story node -->
+          <ul *ngIf="storyNode">
+            <li *ngIf="storyNode.intent">Intent: <b>{{storyNode.intent}}</b></li>
+            <li *ngIf="storyNode.step">Step: <b>{{storyNode.step}}</b></li>
+            <li *ngIf="storyNode.entities.length !==0">Entities: <b>{{storyNode.entities}}</b></li>
+          </ul>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
         <!-- Story tag -->
         <tock-story-tag class="story-tag" [(selectedTag)]="storyTag"></tock-story-tag>
-      </mat-card-content>
-    </mat-card>
+    </mat-expansion-panel>
 
     <div *ngIf="!story.hideDetails && !story.isBuiltIn()">
       <!-- Mandatory entities -->
