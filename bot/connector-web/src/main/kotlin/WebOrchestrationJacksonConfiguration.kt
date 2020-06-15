@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.fasterxml.jackson.databind.module.SimpleModule
 import org.litote.jackson.JacksonModuleServiceLoader
 
-internal object WebOrchestrationJacksonConfiguration {
+object WebOrchestrationJacksonConfiguration {
 
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,

@@ -157,7 +157,7 @@ class RunOrchestrationStoryListener(
             ResumeOrchestrationRequest(
                 targetBot = orchestration.targetBot,
                 action = botAction,
-                metadata = orchestration.targetMetadata
+                metadata = OrchestrationMetaData(playerId = userId, applicationId = applicationId, recipientId = botId)
             )
         )
         return when (response) {
