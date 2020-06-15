@@ -144,9 +144,9 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
                 if (!isEndCalled(bus)) {
                     handler.handle()
 
-                    if (!bus.connectorData.skipAnswer && bus.getBusContextValue<Boolean>(SWITCH_STORY_BUS_KEY) != true && !isEndCalled(
-                            bus
-                        )
+                    if (!bus.connectorData.skipAnswer
+                        && bus.getBusContextValue<Boolean>(SWITCH_STORY_BUS_KEY) != true
+                        && !isEndCalled(bus)
                     ) {
                         logger.warn { "Bus.end not called for story ${bus.story.definition.id}, user ${bus.userId.id} and connector ${bus.targetConnectorType}" }
                     }
@@ -165,10 +165,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     /**
      * Finds the story definition of this handler.
      */
-    open fun findStoryDefinition(bus: BotBus): StoryDefinition? = bus
-        .botDefinition
-        .stories
-        .find { it.storyHandler == this }
+    open fun findStoryDefinition(bus: BotBus): StoryDefinition? = bus.botDefinition.findStoryByStoryHandler(this)
 
     /**
      * Handles the action and switches the context to the underlying story definition.
@@ -178,9 +175,9 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
             ?.apply {
                 bus.switchStory(this)
             }
+            ?: error("no story found for handler")
 
-        //use the new story handler
-        bus.story.definition.storyHandler.handle(bus)
+        handle(bus)
     }
 
     /**

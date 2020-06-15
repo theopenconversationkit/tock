@@ -136,6 +136,12 @@ interface BotDefinition : I18nKeyProvider {
     fun findStoryDefinitionById(storyId: String): StoryDefinition = stories.find { it.id == storyId } ?: unknownStory
 
     /**
+     * Search story by storyHandler.
+     */
+    fun findStoryByStoryHandler(storyHandler: StoryHandler): StoryDefinition? =
+        stories.find { it.storyHandler == storyHandler }
+
+    /**
      * Finds a [StoryDefinition] from an intent name.
      *
      * @param intent the intent name

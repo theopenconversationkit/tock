@@ -23,6 +23,7 @@ import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.Intent.Companion.unknown
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.StoryDefinition
+import ai.tock.bot.definition.StoryHandler
 import ai.tock.bot.definition.StoryTag
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.dialog.Dialog
@@ -168,6 +169,10 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
     override fun findStoryDefinitionById(storyId: String): StoryDefinition =
         //first search into built-in then in configured, fallback to search by intent
         builtInStoriesMap[storyId] ?: allStoriesById[storyId] ?: findStoryDefinition(storyId)
+
+    override fun findStoryByStoryHandler(storyHandler: StoryHandler): StoryDefinition? =
+        botDefinition.stories.find { it.storyHandler == storyHandler }
+            ?: stories.find { it.storyHandler == storyHandler }
 
     override fun toString(): String {
         return "Wrapper($botDefinition)"
