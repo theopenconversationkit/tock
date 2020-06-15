@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+import * as moment from 'moment';
 import {AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, ViewChild} from "@angular/core";
 import {StateService} from "../core-nlp/state.service";
 import {ApplicationService} from "../core-nlp/applications.service";
-import { MatPaginator } from "@angular/material/paginator";
+import {MatPaginator} from "@angular/material/paginator";
 import {DataSource} from "@angular/cdk/collections";
 import {ModelBuild} from "../model/application";
 import {BehaviorSubject, merge, Observable, Subscription} from "rxjs";
@@ -52,6 +53,17 @@ export class ModelBuildsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
+  }
+
+  duration(d: number): string {
+    const duration = moment.duration(d, 's');
+    return this.formatDuration(duration.get('hours')) + ":"
+      + this.formatDuration(duration.get('minutes')) + ":"
+      + this.formatDuration(duration.get('seconds'));
+  }
+
+  private formatDuration(d: number): string {
+    return d <= 9 ? "0" + d : d.toString()
   }
 
   intentName(build: ModelBuild): string {
