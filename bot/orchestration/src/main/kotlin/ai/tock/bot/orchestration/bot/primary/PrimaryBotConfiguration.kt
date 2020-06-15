@@ -29,7 +29,7 @@ data class PrimaryBotConfiguration(
     val noOrchestrationIntentList : List<Intent> = emptyList(),
     val comebackStory : StoryDefinition,
     private val eligibleTargetBotsByConnector: Map<ConnectorType, List<OrchestrationTargetedBot>> = emptyMap(),
-    private val dataProvider : OrchestrationDataProvider
+    private val dataProvider : OrchestrationDataProvider = DefaultOrchestrationDataProvider()
 ) {
     fun getEligibleTargetBots(connectorType: ConnectorType) : List<OrchestrationTargetedBot> = eligibleTargetBotsByConnector[connectorType] ?: emptyList()
 
