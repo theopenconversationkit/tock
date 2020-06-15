@@ -27,8 +27,11 @@ import ai.tock.nlp.core.quality.TestContext
 import ai.tock.nlp.core.sample.SampleContext
 import ai.tock.nlp.core.sample.SampleEntity
 import ai.tock.nlp.core.sample.SampleExpression
+import mu.KotlinLogging
 import java.time.ZonedDateTime
 import java.util.Locale
+
+private val logger = KotlinLogging.logger {}
 
 data class EntityContextKey(
     override val applicationName: String,
@@ -98,13 +101,13 @@ class EntityCallContextForEntity(
 ) : EntityCallContext(language, engineType, applicationName, referenceDate) {
 
     constructor(context: CallContext, entity: Entity) :
-        this(
-            entity.entityType,
-            context.language,
-            context.engineType,
-            context.application.name,
-            context.evaluationContext.referenceDateForEntity(entity)
-        )
+            this(
+                entity.entityType,
+                context.language,
+                context.engineType,
+                context.application.name,
+                context.evaluationContext.referenceDateForEntity(entity)
+            )
 
     override fun key(): EntityContextKey {
         return EntityContextKey(applicationName, null, language, engineType, entityType)
@@ -209,28 +212,32 @@ class EntityBuildContextForSubEntities(
 ) : EntityBuildContext(language, engineType, applicationName) {
 
     constructor(context: BuildContext, entityType: EntityType)
-        : this(entityType, context.language, context.engineType, context.application.name)
+            : this(entityType, context.language, context.engineType, context.application.name)
 
     override fun key(): EntityContextKey {
         return EntityContextKey(applicationName, null, language, engineType, entityType, true)
     }
 
-    private fun findSampleExpressions(text: String, e: SampleEntity): List<SampleExpression> {
-        val t = e.textValue(text)
-        val s = if (e.isType(entityType)) {
-            listOf(
-                SampleExpression(
-                    t,
-                    UNKNOWN_INTENT,
-                    e.subEntities,
-                    SampleContext(language)
+    private fun findSampleExpressions(text: String, e: SampleEntity): List<SampleExpression> =
+        try {
+            val t = e.textValue(text)
+            val s = if (e.isType(entityType)) {
+                listOf(
+                    SampleExpression(
+                        t,
+                        UNKNOWN_INTENT,
+                        e.subEntities,
+                        SampleContext(language)
+                    )
                 )
-            )
-        } else {
+            } else {
+                emptyList()
+            }
+            s + e.subEntities.flatMap { findSampleExpressions(t, it) }
+        } catch (e: Exception) {
+            logger.error("Error when extracting $text", e)
             emptyList()
         }
-        return s + e.subEntities.flatMap { findSampleExpressions(t, it) }
-    }
 
     override fun select(expressions: List<SampleExpression>): List<SampleExpression> {
         return expressions.flatMap { it.entities.flatMap { e -> findSampleExpressions(it.text, e) } }
