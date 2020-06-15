@@ -61,10 +61,11 @@ import {ApplicationFeatureComponent} from "./feature/application-feature.compone
 import {StoryRuleComponent} from "./feature/story-rule.component";
 import {SelectEntityDialogComponent} from "./story/select-entity-dialog.component";
 import {StoryRuntimeSettingsComponent} from "./feature/story-runtime-settings.component";
-import { StoryTagIconPipe } from "./feature/story-tag.pipe";
+import {StoryTagIconPipe} from "./feature/story-tag.pipe";
 import {StoryTagComponent} from "./story/story-tag.component";
 import {MatCardModule} from "@angular/material/card";
 import {MatIconModule} from "@angular/material/icon";
+import {MatGridListModule} from "@angular/material/grid-list";
 
 const routes: Routes = [
   {
@@ -131,7 +132,8 @@ export class BotRoutingModule {
     NbInputModule,
     NbRadioModule,
     MatCardModule,
-    MatIconModule
+    MatIconModule,
+    MatGridListModule
   ],
   declarations: [
     BotTabsComponent,
