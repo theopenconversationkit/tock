@@ -67,4 +67,7 @@ object UserNamespaceMongoDAO : UserNamespaceDAO {
 
     override fun isNamespaceOwner(user: String, namespace: String): Boolean =
         col.countDocuments(and(Login eq user, Namespace eq namespace, Owner eq true)) == 1L
+
+    override fun isExistingNamespace(namespace: String): Boolean =
+        col.countDocuments(Namespace eq namespace) != 0L
 }

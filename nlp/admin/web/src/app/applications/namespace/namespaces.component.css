@@ -17,6 +17,16 @@
   margin-top:20px;
 }
 
+.create {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.create-item {
+  margin: 10px;
+}
+
 .applications-applications__item {
   display: flex;
   align-items: center;

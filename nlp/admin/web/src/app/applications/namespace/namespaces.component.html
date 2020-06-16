@@ -16,19 +16,25 @@
 
 <nb-card class="applications-applications">
   <nb-card-header>
-    <div style="display: flex;">
-      <span *ngIf="state.applications.length !== 0">Namespaces</span>
+    <nb-actions size="medium">
+      <nb-action>Namespaces</nb-action>
+      <nb-action *ngIf="!create && canCreateNamespace()" icon="plus-outline" nbTooltip="Create a new Namespace" nbTooltipStatus="primary" status="primary" (click)="displayCreate()"></nb-action>
+    </nb-actions>
+    <div *ngIf="create" class="create">
+      <input #createNamespace type="text" nbInput placeholder="New Namespace" class="create-item" (keyup.enter)="createNew()" [(ngModel)]="newNamespace">
+      <button nbButton class="create-item" status="primary" (click)="createNew()" nbTooltip="Create a new Namespace" nbTooltipStatus="primary" [disabled]="newNamespace.trim().length === 0"><nb-icon icon="plus-outline"></nb-icon> Create</button>
+      <button nbButton ghost class="create-item" (click)="create = false; newNamespace = ''" nbTooltip="Cancel"><nb-icon icon="close-outline"></nb-icon></button>
     </div>
   </nb-card-header>
 
   <nb-card-body>
     <div class="applications-applications__item" *ngFor="let n of namespaces">
-      <button *ngIf="n.namespace === state.currentApplication.namespace" matTooltip="Current" mat-button
+      <button *ngIf="state.currentApplication && n.namespace === state.currentApplication.namespace" matTooltip="Current" mat-button
               class="applications-applications__select-action">
         <mat-icon>done</mat-icon>
       </button>
 
-      <button *ngIf="n.namespace !== state.currentApplication.namespace"
+      <button *ngIf="!state.currentApplication || n.namespace !== state.currentApplication.namespace"
               class="applications-applications__select-action"
               mat-button matTooltip="Select"
               (click)="selectNamespace(n.namespace)">

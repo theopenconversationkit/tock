@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
+import {Component, ElementRef, OnInit, ViewChild} from "@angular/core";
 import {StateService} from "../../core-nlp/state.service";
 import {ApplicationService} from "../../core-nlp/applications.service";
 import {UserNamespace} from "../../model/application";
 import {AuthService} from "../../core-nlp/auth/auth.service";
-import { NbToastrService } from '@nebular/theme';
+import {NbToastrService} from '@nebular/theme';
+import {UserRole} from "../../model/auth";
+import {BotSharedService} from "../../shared/bot-shared.service";
 
 @Component({
   selector: 'tock-namespaces',
@@ -36,10 +38,16 @@ export class NamespacesComponent implements OnInit {
   newLogin: string;
   newOwner: boolean;
 
+  create: boolean;
+  newNamespace: string = "";
+  //in order to focus
+  @ViewChild('createNamespace') createNamespaceElement: ElementRef;
+
   constructor(private toastrService: NbToastrService,
               public state: StateService,
               private applicationService: ApplicationService,
-              private authService: AuthService) {
+              private authService: AuthService,
+              private botSharedConfiguration: BotSharedService) {
   }
 
   ngOnInit() {
@@ -50,6 +58,28 @@ export class NamespacesComponent implements OnInit {
     this.applicationService.selectNamespace(namespace).subscribe(_ =>
       this.authService.loadUser().subscribe(_ => this.applicationService.resetConfiguration)
     );
+  }
+
+  canCreateNamespace(): boolean {
+    return this.state.hasRole(UserRole.admin) && this.botSharedConfiguration.configuration && !this.botSharedConfiguration.configuration.botApiSupport;
+  }
+
+  displayCreate() {
+    this.create = true;
+    setTimeout(_ => this.createNamespaceElement.nativeElement.focus());
+  }
+
+  createNew() {
+    const n = this.newNamespace.trim();
+    if (n.length === 0) {
+      this.toastrService.danger("Namespace may not be empty!")
+    } else {
+      this.applicationService.createNamespace(n).subscribe(b => {
+        this.create = false;
+        this.newNamespace = "";
+        this.ngOnInit();
+      })
+    }
   }
 
   closeManageUsers() {
@@ -71,7 +101,7 @@ export class NamespacesComponent implements OnInit {
   }
 
   addUserNamespace() {
-    if (!this.newLogin || this.newLogin.trim().length === 0) {
+    if (!this.newLogin || this.newLogin.trim().length === 0) {
       this.toastrService.show("Please enter a non empty login")
     } else {
       this.applicationService.saveNamespace(new UserNamespace(this.managedNamespace, this.newLogin, this.newOwner, false)).subscribe(_ =>

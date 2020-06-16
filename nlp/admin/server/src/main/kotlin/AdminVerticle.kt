@@ -98,17 +98,30 @@ open class AdminVerticle : WebVerticle() {
 
     override fun authProvider(): TockAuthProvider = defaultAuthProvider()
 
+    /**
+     * Is creating namespace is supported ?
+     */
+    open protected val supportCreateNamespace: Boolean = true
+
     fun simpleLogger(
         actionType: String,
         dataProvider: (RoutingContext) -> Any? = { null },
-        applicationIdProvider: (RoutingContext, Any?) -> Id<ApplicationDefinition>? = { context, _ -> context.pathParam("applicationId")?.toId() }
+        applicationIdProvider: (RoutingContext, Any?) -> Id<ApplicationDefinition>? = { context, _ ->
+            context.pathParam(
+                "applicationId"
+            )?.toId()
+        }
 
     ): RequestLogger = logger<Any>(actionType, dataProvider, applicationIdProvider)
 
     inline fun <T> logger(
         actionType: String,
         noinline dataProvider: (RoutingContext) -> Any? = { null },
-        crossinline applicationIdProvider: (RoutingContext, T?) -> Id<ApplicationDefinition>? = { context, _ -> context.pathParam("applicationId")?.toId() }
+        crossinline applicationIdProvider: (RoutingContext, T?) -> Id<ApplicationDefinition>? = { context, _ ->
+            context.pathParam(
+                "applicationId"
+            )?.toId()
+        }
     ): RequestLogger =
         object : RequestLogger {
             override fun log(context: RoutingContext, data: Any?, error: Boolean) {
@@ -282,7 +295,10 @@ open class AdminVerticle : WebVerticle() {
                 if (appWithSameName != null && appWithSameName._id != application._id) {
                     badRequest("Application with same name already exists")
                 }
-                val newApp = saveApplication(existingApp, application.toApplication().copy(name = application.name.toLowerCase()))
+                val newApp = saveApplication(
+                    existingApp,
+                    application.toApplication().copy(name = application.name.toLowerCase())
+                )
                 //trigger a full rebuild if nlp engine change
                 if (appWithSameName?.nlpEngineType != newApp.nlpEngineType) {
                     front.triggerBuild(ModelBuildTrigger(newApp._id, true))
@@ -561,7 +577,8 @@ open class AdminVerticle : WebVerticle() {
                             search = decrypt,
                             onlyExactMatch = true
                         )
-                    ).total != 0L) {
+                    ).total != 0L
+                ) {
                     s.copy(text = decrypt, key = null)
                 } else {
                     unauthorized()
@@ -699,7 +716,11 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingUploadJsonPost("/dump/dictionary/:entityName", admin, simpleLogger("Update Dictionary")) { context, dump: DictionaryData ->
+        blockingUploadJsonPost(
+            "/dump/dictionary/:entityName",
+            admin,
+            simpleLogger("Update Dictionary")
+        ) { context, dump: DictionaryData ->
             val data = dump.copy(namespace = context.organization, entityName = context.path("entityName"))
             front.save(data)
             data
@@ -708,7 +729,11 @@ open class AdminVerticle : WebVerticle() {
         blockingJsonGet("/nlp-engines")
         { front.getSupportedNlpEngineTypes() }
 
-        blockingJsonPost<CreateEntityQuery, EntityTypeDefinition?>("/entity-type/create", nlpUser, simpleLogger("Create Entity"))
+        blockingJsonPost<CreateEntityQuery, EntityTypeDefinition?>(
+            "/entity-type/create",
+            nlpUser,
+            simpleLogger("Create Entity")
+        )
         { context, query ->
             val entityName = "${context.organization}:${query.type.toLowerCase().name()}"
             if (front.getEntityTypeByName(entityName) == null) {
@@ -840,13 +865,13 @@ open class AdminVerticle : WebVerticle() {
                 ?.run {
                     val value = query.oldPredefinedValue ?: query.predefinedValue
                     copy(values = values.filter { it.value != value } +
-                        (values.find { it.value == value }
-                            ?.copy(value = query.predefinedValue)
-                            ?: PredefinedValue(
-                                query.predefinedValue,
-                                mapOf(query.locale to listOf(query.predefinedValue))
-                            )
-                            )
+                            (values.find { it.value == value }
+                                ?.copy(value = query.predefinedValue)
+                                ?: PredefinedValue(
+                                    query.predefinedValue,
+                                    mapOf(query.locale to listOf(query.predefinedValue))
+                                )
+                                    )
                     )
                 }
                 ?.also {
@@ -858,7 +883,8 @@ open class AdminVerticle : WebVerticle() {
         blockingDelete(
             "/dictionary/predefined-values/:entityType/:value",
             nlpUser,
-            simpleLogger("Delete Predefined Value", { it.path("entityType") to it.path("value") }))
+            simpleLogger("Delete Predefined Value", { it.path("entityType") to it.path("value") })
+        )
         { context ->
             val entityType = context.path("entityType")
             if (context.organization == entityType.namespace()) {
@@ -875,17 +901,17 @@ open class AdminVerticle : WebVerticle() {
                 ?.takeIf { it.namespace == context.organization }
                 ?.run {
                     copy(values = values.filter { it.value != query.predefinedValue } +
-                        (values.find { it.value == query.predefinedValue }
-                            ?.run {
-                                copy(labels = labels.filter { it.key != query.locale } +
-                                    mapOf(query.locale to ((labels[query.locale]?.filter { it != query.label }
-                                        ?: emptyList()) + listOf(query.label)).sorted())
-                                )
-                            }
-                            ?: PredefinedValue(
-                                query.predefinedValue,
-                                mapOf(query.locale to listOf(query.label))
-                            ))
+                            (values.find { it.value == query.predefinedValue }
+                                ?.run {
+                                    copy(labels = labels.filter { it.key != query.locale } +
+                                            mapOf(query.locale to ((labels[query.locale]?.filter { it != query.label }
+                                                ?: emptyList()) + listOf(query.label)).sorted())
+                                    )
+                                }
+                                ?: PredefinedValue(
+                                    query.predefinedValue,
+                                    mapOf(query.locale to listOf(query.label))
+                                ))
                     )
                 }
                 ?.also {
@@ -955,6 +981,25 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
+        blockingPost(
+            "/namespace/:namespace",
+            admin,
+            simpleLogger("Create Namespace")
+        )
+        { context ->
+            val n = context.path("namespace").trim()
+            //get the namespace of the current user
+            if (supportCreateNamespace) {
+                if(front.isExistingNamespace(n)) {
+                    badRequest("Namespace already exists")
+                } else {
+                    front.saveNamespace(UserNamespace(context.userLogin, n, true))
+                }
+            } else {
+                unauthorized()
+            }
+        }
+
         blockingJsonPost(
             "/namespace",
             admin,
@@ -973,7 +1018,7 @@ open class AdminVerticle : WebVerticle() {
             "/namespace/select/:namespace"
         )
         { context ->
-            val n = context.path("namespace")
+            val n = context.path("namespace").trim()
             if (front.hasNamespace(context.userLogin, n)) {
                 front.setCurrentNamespace(context.userLogin, n)
                 context.setUser(context.user!!.copy(namespace = n))
@@ -1058,7 +1103,10 @@ open class AdminVerticle : WebVerticle() {
         front.deleteApplicationById(app._id)
     }
 
-    protected open fun saveApplication(existingApp: ApplicationDefinition?, app: ApplicationDefinition): ApplicationDefinition {
+    protected open fun saveApplication(
+        existingApp: ApplicationDefinition?,
+        app: ApplicationDefinition
+    ): ApplicationDefinition {
         return front.save(app)
     }
 

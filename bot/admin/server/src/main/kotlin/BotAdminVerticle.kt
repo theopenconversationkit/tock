@@ -71,9 +71,13 @@ import org.litote.kmongo.toId
  */
 open class BotAdminVerticle : AdminVerticle() {
 
+    private val botAdminConfiguration = BotAdminConfiguration()
+
     override val logger: KLogger = KotlinLogging.logger {}
 
     private val i18n: I18nDAO by injector.instance()
+
+    override val supportCreateNamespace: Boolean = !botAdminConfiguration.botApiSupport
 
     override fun configureServices() {
         initTranslator()
@@ -349,7 +353,8 @@ open class BotAdminVerticle : AdminVerticle() {
             val exportStory = BotAdminService.exportStory(
                 context.organization,
                 context.path("appName"),
-                context.path("storyConfigurationId"))
+                context.path("storyConfigurationId")
+            )
             exportStory?.let { listOf(it) } ?: emptyList()
         }
 
@@ -540,7 +545,7 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonGet("/configuration") {
-            BotAdminConfiguration()
+            botAdminConfiguration
         }
 
         findTestService().registerServices().invoke(this)
