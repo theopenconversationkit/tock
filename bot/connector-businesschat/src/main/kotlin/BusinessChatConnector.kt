@@ -94,7 +94,7 @@ internal class BusinessChatConnector(
                     val message = mapper.readValue<ReceivedModel>(body)
 
                     if (businessId == message.sourceId && message.handoverData == null) {
-                        logger.info("Ignoring echo message")
+                        logger.debug("Ignoring echo message")
                     } else {
                         executor.executeBlocking {
                             val event = MessageConverter.toEvent(message, connectorId, cspBusinessChatClient)
