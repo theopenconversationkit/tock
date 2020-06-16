@@ -33,6 +33,7 @@ import ai.tock.bot.admin.model.CreateStoryRequest
 import ai.tock.bot.admin.model.DialogFlowRequest
 import ai.tock.bot.admin.model.DialogsSearchQuery
 import ai.tock.bot.admin.model.Feature
+import ai.tock.bot.admin.model.I18LabelQuery
 import ai.tock.bot.admin.model.StorySearchRequest
 import ai.tock.bot.admin.model.UserSearchQuery
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
@@ -64,7 +65,10 @@ import com.github.salomonbrys.kodein.instance
 import io.vertx.core.http.HttpMethod.GET
 import mu.KLogger
 import mu.KotlinLogging
+import org.litote.kmongo.Id
 import org.litote.kmongo.toId
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 /**
  *
@@ -488,6 +492,10 @@ open class BotAdminVerticle : AdminVerticle() {
             I18nCsvCodec.exportCsv(context.organization)
         }
 
+        blockingJsonPost("/i18n/export/csv", botUser) { context, query: I18LabelQuery ->
+            I18nCsvCodec.exportCsv(context.organization, query)
+        }
+
         blockingUploadPost(
             "/i18n/import/csv",
             botUser,
@@ -498,6 +506,11 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonGet("/i18n/export/json", botUser) { context ->
             mapper.writeValueAsString(i18n.getLabels(context.organization))
+        }
+
+        blockingJsonPost("/i18n/export/json", botUser) { context, query: I18LabelQuery ->
+            val labels = i18n.getLabels(context.organization, query.toI18nLabelFilter())
+            mapper.writeValueAsString(labels)
         }
 
         blockingUploadPost(
@@ -516,9 +529,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingUploadBinaryPost("/file", botUser) { context, (fileName, bytes) ->
             val file = UploadedFilesService.uploadFile(context.organization, fileName, bytes)
-            if (file == null) {
-                badRequest("file must have an extension (ie file.png)")
-            }
+                ?: badRequest("file must have an extension (ie file.png)")
             file
         }
 

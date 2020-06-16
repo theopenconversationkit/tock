@@ -239,3 +239,26 @@ export class CreateI18nLabelRequest {
               public locale: string) {
   }
 }
+
+export enum I18nLabelStateQuery {
+  ALL = "ALL",
+  VALIDATED = "VALIDATED",
+  NOT_VALIDATED = "NOT_VALIDATED"
+}
+
+export class I18LabelQuery {
+  constructor(
+    public label: string,
+    public category: string,
+    public state: I18nLabelStateQuery,
+    public notUsedSince: number) {
+  }
+
+  toString(): string {
+    const labelString = this.label && this.label.trim().length > 0 ? "_" + this.label : "";
+    const categoryString = this.category && this.category.trim().length > 0 ? "_" + this.category : "";
+    const stateString = this.state === I18nLabelStateQuery.ALL ? "" : "_" + this.state.toLowerCase();
+    const notUsedSinceString = this.notUsedSince && this.notUsedSince > 0 ? "_not_used_since_" + this.notUsedSince + "_days" : "";
+    return labelString + categoryString + stateString + notUsedSinceString;
+  }
+}

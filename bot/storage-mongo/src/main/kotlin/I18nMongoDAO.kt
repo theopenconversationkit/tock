@@ -16,7 +16,6 @@
 
 package ai.tock.bot.mongo
 
-import com.mongodb.client.model.IndexOptions
 import ai.tock.bot.mongo.I18nAlternativeIndex_.Companion.ConnectorId
 import ai.tock.bot.mongo.I18nAlternativeIndex_.Companion.ContextId
 import ai.tock.bot.mongo.I18nAlternativeIndex_.Companion.Date
@@ -32,11 +31,19 @@ import ai.tock.shared.longProperty
 import ai.tock.shared.watch
 import ai.tock.translator.I18nDAO
 import ai.tock.translator.I18nLabel
+import ai.tock.translator.I18nLabelFilter
 import ai.tock.translator.I18nLabelStat
 import ai.tock.translator.I18nLabelStat_
-import ai.tock.translator.I18nLabel_
+import ai.tock.translator.I18nLabelStateFilter.ALL
+import ai.tock.translator.I18nLabelStateFilter.VALIDATED
+import ai.tock.translator.I18nLabel_.Companion.Category
+import ai.tock.translator.I18nLabel_.Companion.DefaultLabel
+import ai.tock.translator.I18nLabel_.Companion.I18n
+import ai.tock.translator.I18nLabel_.Companion.Namespace
 import ai.tock.translator.I18nLabel_.Companion._id
 import ai.tock.translator.I18nLocalizedLabel
+import com.mongodb.client.model.Filters.regex
+import com.mongodb.client.model.IndexOptions
 import mu.KotlinLogging
 import org.bson.BsonString
 import org.bson.Document
@@ -46,6 +53,7 @@ import org.litote.kmongo.and
 import org.litote.kmongo.combine
 import org.litote.kmongo.currentDate
 import org.litote.kmongo.deleteOne
+import org.litote.kmongo.elemMatch
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
@@ -53,14 +61,22 @@ import org.litote.kmongo.excludeId
 import org.litote.kmongo.fields
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
+import org.litote.kmongo.gte
 import org.litote.kmongo.inc
 import org.litote.kmongo.include
+import org.litote.kmongo.nin
+import org.litote.kmongo.not
+import org.litote.kmongo.or
+import org.litote.kmongo.projection
 import org.litote.kmongo.reactivestreams.getCollection
+import org.litote.kmongo.regex
 import org.litote.kmongo.save
 import org.litote.kmongo.setValue
 import org.litote.kmongo.toId
 import org.litote.kmongo.upsert
 import org.litote.kmongo.withDocumentClass
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 
 /**
@@ -70,7 +86,10 @@ internal object I18nMongoDAO : I18nDAO {
 
     private val logger = KotlinLogging.logger {}
 
-    private val col = database.getCollection<I18nLabel>()
+    private val col = database.getCollection<I18nLabel>().apply {
+        ensureIndex(Namespace)
+        ensureIndex(Namespace, Category)
+    }
     private val asyncCol = asyncDatabase.getCollection<I18nLabel>()
     private val alternativeIndexCol = database.getCollection<I18nAlternativeIndex>().apply {
         ensureIndex(ContextId, LabelId, I18nAlternativeIndex_.Namespace, Locale, InterfaceType, ConnectorId)
@@ -86,6 +105,7 @@ internal object I18nMongoDAO : I18nDAO {
         I18nLabelStat_.apply {
             ensureUniqueIndex(LabelId, Locale, InterfaceType, ConnectorId)
             ensureIndex(Namespace)
+            ensureIndex(Namespace, LastUpdate)
         }
     }
 
@@ -104,9 +124,35 @@ internal object I18nMongoDAO : I18nDAO {
         }
     }
 
-    override fun getLabels(namespace: String): List<I18nLabel> {
-        return sortLabels(col.find(I18nLabel_.Namespace eq namespace).toList())
+    override fun getLabels(namespace: String, filter: I18nLabelFilter?): List<I18nLabel> {
+        val labelIds: Set<Id<I18nLabel>>? = filter?.notUsedSince?.let { notUsedSinceDays ->
+            getLabelIdsFromStats(namespace, notUsedSinceDays)
+        }
+        val filters = listOf(Namespace eq namespace) + (filter?.toFilterList(labelIds) ?: emptyList())
+        return sortLabels(col.find(and(filters)).toList())
     }
+
+    private fun I18nLabelFilter.toFilterList(labelIds: Set<Id<I18nLabel>>?): Iterable<Bson?> = listOfNotNull(
+        label?.let {
+            or(
+                DefaultLabel.regex(it.trim(), "i"),
+                I18n elemMatch (I18nLocalizedLabel::label.regex(it.trim(), "i")),
+                I18n elemMatch (I18nLocalizedLabel::alternatives elemMatch regex(it.trim(), "i"))
+            )
+        },
+        category?.let { Category eq category },
+        state.takeIf { it != ALL }?.let {
+            val atLeastOneValidated = it == VALIDATED
+            if (atLeastOneValidated) {
+                // Filters i18n labels that have at least one validated localised label
+                I18n elemMatch (I18nLocalizedLabel::validated eq true)
+            } else {
+                // Filters i18n labels that do not have even one validated localised label
+                not(I18n elemMatch (I18nLocalizedLabel::validated eq true))
+            }
+        },
+        labelIds?.takeUnless { it.isEmpty() }?.let { filteredIds -> _id nin filteredIds }
+    )
 
     override fun getLabelById(id: Id<I18nLabel>): I18nLabel? {
         return col.findOneById(id)
@@ -126,7 +172,7 @@ internal object I18nMongoDAO : I18nDAO {
     }
 
     override fun deleteByNamespaceAndId(namespace: String, id: Id<I18nLabel>) {
-        col.deleteOne(I18nLabel_.Namespace eq namespace, _id eq id)
+        col.deleteOne(Namespace eq namespace, _id eq id)
     }
 
     override fun addAlternativeIndex(
@@ -197,5 +243,15 @@ internal object I18nMongoDAO : I18nDAO {
 
     override fun getLabelStats(namespace: String): List<I18nLabelStat> {
         return statCol.find(I18nLabelStat_.Namespace eq namespace).toList()
+    }
+
+    override fun getLabelIdsFromStats(namespace: String, timeMarker: Instant): Set<Id<I18nLabel>> {
+        return statCol
+            .projection(I18nLabelStat::labelId,
+                and(
+                    I18nLabelStat_.Namespace eq namespace,
+                    I18nLabelStat_.LastUpdate gte timeMarker
+                )
+            ).distinct().toSet()
     }
 }

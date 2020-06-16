@@ -1,0 +1,33 @@
+<!--
+  ~ Copyright (C) 2017/2020 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<div *ngIf="invalidSelectedFile" class="invalid-warning">
+  <nb-icon icon="alert-triangle" status="danger"></nb-icon>&nbsp; Only .csv or .json files are allowed.
+</div>
+<div class="import-content">
+  <span class="import-label">File:&nbsp;</span>
+  <input id="file" type="file" ng2FileSelect
+         (change)="onChange($event)"
+         class="file-input"
+         [ngClass]="!invalidSelectedFile?'valid-import':'invalid-import'"/>
+</div>
+
+<div class="modal-footer">
+  <button nbButton (click)="closeWindow()" #focusElement>Cancel</button>
+  <button nbButton status="primary" type="submit" (click)="import()"
+          [disabled]="loading || invalidSelectedFile">
+    <nb-icon icon="upload-outline"></nb-icon>&nbsp;Import
+  </button>
+</div>

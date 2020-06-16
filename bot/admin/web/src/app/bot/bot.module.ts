@@ -14,58 +14,61 @@
  * limitations under the License.
  */
 
-import {RouterModule, Routes} from "@angular/router";
-import {NgModule} from "@angular/core";
-import {CommonModule} from "@angular/common";
-import {InfiniteScrollModule} from "ngx-infinite-scroll";
-import {SharedModule} from "../shared-nlp/shared.module";
-import {AuthGuard} from "../core-nlp/auth/auth.guard";
-import {BotSharedModule} from "../shared/bot-shared.module";
-import {MomentModule} from "ngx-moment";
-import {CreateStoryComponent} from "./story/create-story.component";
-import {BotService} from "./bot-service";
-import {BotTabsComponent} from "./bot-tabs.component";
-import {SearchStoryComponent} from "./story/search-story.component";
-import {NlpModule} from "../nlp-tabs/nlp.module"
-import {ApplicationResolver} from "../core-nlp/application.resolver";
-import {I18nComponent} from "./i18n/i18n.component";
-import {FileUploadModule} from "ng2-file-upload";
-import {I18nLabelComponent} from "./i18n/i18n-label.component";
-import {FeatureComponent} from "./feature/feature.component";
-import {FlowComponent} from "./flow/flow.component";
-import {CytoComponent} from "./flow/cyto.component";
-import {StoryComponent} from "./story/story.component";
-import {AnswerComponent} from "./story/answer.component";
-import {SimpleAnswerComponent} from "./story/simple-answer.component";
-import {ScriptAnswerComponent} from "./story/script-answer.component";
-import {AnswerDialogComponent} from "./story/answer-dialog.component";
-import {StoryDialogComponent} from "./story/story-dialog.component";
-import {MandatoryEntitiesDialogComponent} from "./story/mandatory-entities-dialog.component";
-import {StepDialogComponent} from "./story/step-dialog.component";
-import {StepsComponent} from "./story/steps.component";
-import {StepComponent} from "./story/step.component";
-import {MediaDialogComponent} from "./story/media/media-dialog.component";
-import {ThemeModule} from "../theme/theme.module";
+import {RouterModule, Routes} from '@angular/router';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {InfiniteScrollModule} from 'ngx-infinite-scroll';
+import {SharedModule} from '../shared-nlp/shared.module';
+import {AuthGuard} from '../core-nlp/auth/auth.guard';
+import {BotSharedModule} from '../shared/bot-shared.module';
+import {MomentModule} from 'ngx-moment';
+import {CreateStoryComponent} from './story/create-story.component';
+import {BotService} from './bot-service';
+import {BotTabsComponent} from './bot-tabs.component';
+import {SearchStoryComponent} from './story/search-story.component';
+import {NlpModule} from '../nlp-tabs/nlp.module';
+import {ApplicationResolver} from '../core-nlp/application.resolver';
+import {I18nComponent} from './i18n/i18n.component';
+import {FileUploadModule} from 'ng2-file-upload';
+import {I18nLabelComponent} from './i18n/i18n-label.component';
+import {FeatureComponent} from './feature/feature.component';
+import {FlowComponent} from './flow/flow.component';
+import {CytoComponent} from './flow/cyto.component';
+import {StoryComponent} from './story/story.component';
+import {AnswerComponent} from './story/answer.component';
+import {SimpleAnswerComponent} from './story/simple-answer.component';
+import {ScriptAnswerComponent} from './story/script-answer.component';
+import {AnswerDialogComponent} from './story/answer-dialog.component';
+import {StoryDialogComponent} from './story/story-dialog.component';
+import {MandatoryEntitiesDialogComponent} from './story/mandatory-entities-dialog.component';
+import {StepDialogComponent} from './story/step-dialog.component';
+import {StepsComponent} from './story/steps.component';
+import {StepComponent} from './story/step.component';
+import {MediaDialogComponent} from './story/media/media-dialog.component';
+import {ThemeModule} from '../theme/theme.module';
 import {
   NbAccordionModule,
   NbCardModule,
   NbCheckboxModule,
+  NbFormFieldModule,
   NbInputModule,
   NbRadioModule,
   NbRouteTabsetModule,
   NbSelectModule,
   NbSpinnerModule,
   NbTooltipModule
-} from "@nebular/theme";
-import {ApplicationFeatureComponent} from "./feature/application-feature.component";
-import {StoryRuleComponent} from "./feature/story-rule.component";
-import {SelectEntityDialogComponent} from "./story/select-entity-dialog.component";
-import {StoryRuntimeSettingsComponent} from "./feature/story-runtime-settings.component";
-import {StoryTagIconPipe} from "./feature/story-tag.pipe";
-import {StoryTagComponent} from "./story/story-tag.component";
-import {MatCardModule} from "@angular/material/card";
-import {MatIconModule} from "@angular/material/icon";
-import {MatGridListModule} from "@angular/material/grid-list";
+} from '@nebular/theme';
+import {ApplicationFeatureComponent} from './feature/application-feature.component';
+import {StoryRuleComponent} from './feature/story-rule.component';
+import {SelectEntityDialogComponent} from './story/select-entity-dialog.component';
+import {StoryRuntimeSettingsComponent} from './feature/story-runtime-settings.component';
+import {StoryTagIconPipe} from './feature/story-tag.pipe';
+import {StoryTagComponent} from './story/story-tag.component';
+import {MatCardModule} from '@angular/material/card';
+import {MatIconModule} from '@angular/material/icon';
+import {MatGridListModule} from '@angular/material/grid-list';
+import {I18nExportComponent} from './i18n/i18n-export.component';
+import {I18nImportComponent} from './i18n/i18n-import.component';
 
 const routes: Routes = [
   {
@@ -133,7 +136,8 @@ export class BotRoutingModule {
     NbRadioModule,
     MatCardModule,
     MatIconModule,
-    MatGridListModule
+    MatGridListModule,
+    NbFormFieldModule
   ],
   declarations: [
     BotTabsComponent,
@@ -141,6 +145,8 @@ export class BotRoutingModule {
     SearchStoryComponent,
     I18nComponent,
     I18nLabelComponent,
+    I18nExportComponent,
+    I18nImportComponent,
     FeatureComponent,
     FlowComponent,
     CytoComponent,

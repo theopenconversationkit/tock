@@ -15,16 +15,12 @@
   -->
 <nb-card class="responses">
   <nb-card-body>
-    <mat-toolbar class="background">
-      <span>
-        <input nbInput status="primary" placeholder="Search" [(ngModel)]="filterString"
-               (keyup)="filter($event.target.value)">
-      </span>
-      <nb-actions size="medium" style="cursor: pointer;">
-        <nb-action class="control-item" nbTooltip="Reload all" (click)="refresh()">
-          <i class="material-icons tock-toolbar-menu">refresh</i>
-        </nb-action>
-      </nb-actions>
+    <div class="background">
+      <nb-form-field class="i18n-select">
+        <nb-icon nbPrefix icon="search" pack="eva"></nb-icon>
+        <input nbInput shape="round" type="text" status="primary" placeholder="Search" [(ngModel)]="filterString"
+              (keyup)="filter($event.target.value)">
+      </nb-form-field>
       <span class="i18n-select nb-form-field-infix">
         <nb-select placeholder="Filter by category" [(ngModel)]="selectedCategory" class="nb-select" status="primary"
                    (selectedChange)="onSelectedCategoryChange()">
@@ -34,86 +30,57 @@
           <label class="label-title">Filter by category</label>
         </span>
       </span>
-      <span class="fill-remaining-space"></span>
       <span class="i18n-select nb-form-field-infix">
         <nb-select placeholder="Filter by state" [(ngModel)]="filterOption" class="nb-select" status="primary"
                    (selectedChange)="filterValidatedChange()">
           <nb-option value="">All</nb-option>
-          <nb-option value="not_validated">Only Not validated</nb-option>
+          <nb-option value="not_validated">Only not validated</nb-option>
           <nb-option value="validated">Only validated</nb-option>
         </nb-select>
         <span class="nb-form-field-label-wrapper">
           <label class="label-title">Filter by state</label>
         </span>
-        </span>
-      <span class="fill-remaining-space"></span>
+      </span>
       <span class="i18n-select nb-form-field-infix">
         <nb-select placeholder="Not used since" [(ngModel)]="notUsedFrom" class="nb-select" status="primary"
                    (selectedChange)="onNotUsedFromChange()">
-          <nb-option value="-1"></nb-option>
-          <nb-option value="1">last day</nb-option>
-          <nb-option value="7">last week</nb-option>
-          <nb-option value="30">last month</nb-option>
+          <nb-select-label>
+            {{ notUsedFromLabel(notUsedFrom) }}
+          </nb-select-label>
+          <nb-option *ngFor="let notUsedFromValue of notUsedFromPossibleValues"
+                     [value]="notUsedFromValue">{{notUsedFromLabel(notUsedFromValue)}}</nb-option>
         </nb-select>
+        <span class="nb-form-field-label-wrapper">
+          <label class="label-title">Filter by usage</label>
+        </span>
       </span>
-      <span class="fill-remaining-space"></span>
-      <nb-actions size="medium" style="cursor: pointer;">
-        <nb-action class="control-item" nbTooltip="Validate all existing labels" (click)="validateAll()">
-          <i class="material-icons tock-toolbar-menu">done</i>
-        </nb-action>
-        <nb-action *ngIf="state.currentApplication.supportedLocales.length !== 1"
-                   class="control-item" nbTooltip="Translate All Missing Labels" (click)="complete()">
-          <i class="material-icons tock-toolbar-menu">translate</i>
-        </nb-action>
-        <nb-action class="control-item" nbTooltip="Import / Export" (click)="displayImportExport = true">
-          <i class="material-icons tock-toolbar-menu">import_export</i>
-        </nb-action>
-      </nb-actions>
-    </mat-toolbar>
+    </div>
   </nb-card-body>
-</nb-card>
-
-<nb-card *ngIf="displayImportExport">
-  <nb-card-header>Import / Export</nb-card-header>
-  <nb-card-body>
-    Only validated labels are imported.
-    <button mat-button (click)="downloadCsv()" nbTooltip="Download Csv">
-      <mat-icon>file_download</mat-icon>
-      Download CSV
-    </button>
-    <button mat-button (click)="prepareCsvUpload()" nbTooltip="Upload Csv">
-      <mat-icon>file_upload</mat-icon>
-      Upload CSV
-    </button>
-    <button mat-button (click)="downloadJson()" nbTooltip="Download JSON">
-      <mat-icon>file_download</mat-icon>
-      Download JSON
-    </button>
-    <button mat-button (click)="prepareJsonUpload()" nbTooltip="Upload JSON">
-      <mat-icon>file_upload</mat-icon>
-      Upload JSON
-    </button>
-    <button mat-button (click)="displayImportExport = false"><mat-icon>close</mat-icon> Close</button>
-
-    <nb-card *ngIf="displayUpload">
-      <nb-card-header>Upload a {{uploadType}} File</nb-card-header>
-      <nb-card-body>
-        <p>
-          <label for="file">Please select a {{uploadType}} file:</label>
-          <input id="file" type="file" ng2FileSelect [uploader]="uploader"/>
-        </p>
-        <p>
-          <button (click)="displayUpload = false" mat-button>
-            Cancel
-          </button>
-          <button (click)="upload()" [disabled]="!uploader.getNotUploadedItems().length" mat-raised-button
-                  color="primary">
-            Upload
-          </button>
-        </p>
-      </nb-card-body>
-    </nb-card>
-  </nb-card-body>
+  <nb-card-footer>
+    <nb-actions size="small" style="cursor: pointer;" fullWidth>
+      <nb-action class="control-item" nbTooltip="Reload all" (click)="refresh()">
+        <nb-icon icon="refresh-outline"></nb-icon>
+        <span class="i18-action-label">Reload</span>
+      </nb-action>
+      <nb-action class="control-item" nbTooltip="Validate all existing labels" (click)="validateAll()">
+        <nb-icon icon="checkmark-outline"></nb-icon>
+        <span class="i18-action-label">Validate All</span>
+      </nb-action>
+      <nb-action *ngIf="state.currentApplication.supportedLocales.length !== 1"
+                 class="control-item" nbTooltip="Translate all missing labels" (click)="complete()">
+        <nb-icon icon="globe-outline"></nb-icon>
+        <span class="i18-action-label">Translate All</span>
+      </nb-action>
+      <nb-action class="control-item" nbTooltip="Import" (click)="openImportWindow()">
+        <nb-icon icon="upload-outline"></nb-icon>
+        <span class="i18-action-label">Import</span>
+      </nb-action>
+      <nb-action class="control-item" nbTooltip="Export" (click)="openExportWindow()">
+        <nb-icon icon="download-outline"></nb-icon>
+        <span class="i18-action-label">Export</span>
+      </nb-action>
+    </nb-actions>
+  </nb-card-footer>
 </nb-card>
 
 <nb-card [nbSpinner]="loading" nbSpinnerStatus="primary">
