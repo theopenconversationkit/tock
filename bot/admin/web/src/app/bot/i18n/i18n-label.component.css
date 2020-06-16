@@ -95,13 +95,19 @@
 }
 
 .i18n-label__entry__connector__img {
-  width: 20px;
-  height: auto;
+  width: 24px;
+  height: 24px;
 }
 
 .i18n-label__entry__input {
   flex-grow: 1;
   margin-left: 15px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.i18n-label__entry__textarea_alternative {
+  margin-top: 5px;
 }
 
 .i18n-label__entry__input__textarea {
@@ -112,7 +118,11 @@
 .i18n-label__entry__connectors {
   display: block;
   flex-basis: 100%;
-  margin-left: 70px;
+}
+
+.i18n-label__entry__connector_container {
+  display: block;
+  justify-content: flex-end;
 }
 
 .i18n-label__entry__validation {
@@ -120,11 +130,18 @@
 }
 
 .i18n-label__entry__alternative-management {
-  margin-right: 5px;
+
+}
+
+.remove_alternative {
+  margin-right: 31px;
 }
 
 .i18n-label__entry__validation {
+  display: flex;
+  align-items: center;
   margin-right: 10px;
+  margin-left: 10px;
 }
 
 .i18n-label__entry__delete {
@@ -150,8 +167,17 @@
   opacity: 0.5;
 }
 
-.connector {
-  padding-right: 5px;
-  width:24px;
-  height:24px;
+.i18n-label__entry__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.i18n-label__entry__label_details {
+  display: flex;
+  align-items: center;
+  width: 100px;
+}
+
+.i18n-label__entry__connector-list {
+  display: inline-flex;
 }
