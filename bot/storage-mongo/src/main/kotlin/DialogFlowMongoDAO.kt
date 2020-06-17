@@ -16,11 +16,11 @@
 
 package ai.tock.bot.mongo
 
-import com.mongodb.client.model.IndexOptions
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.dialog.ApplicationDialogFlowData
 import ai.tock.bot.admin.dialog.DialogFlowStateData
 import ai.tock.bot.admin.dialog.DialogFlowStateTransitionData
+import ai.tock.bot.admin.dialog.DialogFlowTransitionStatsData
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.DialogFlowDefinition
 import ai.tock.bot.definition.DialogFlowStateTransitionType
@@ -35,6 +35,7 @@ import ai.tock.bot.engine.action.SendLocation
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.DialogFlowDAO
+import ai.tock.bot.engine.dialog.FlowAnalyticsQuery
 import ai.tock.bot.engine.dialog.Snapshot
 import ai.tock.bot.mongo.BotApplicationConfigurationMongoDAO.getHackedConfigurationByApplicationIdAndBot
 import ai.tock.bot.mongo.DialogFlowStateCol_.Companion.BotId
@@ -58,12 +59,14 @@ import ai.tock.shared.error
 import ai.tock.shared.longProperty
 import ai.tock.shared.security.TockObfuscatorService.obfuscate
 import ai.tock.shared.sumByLong
+import com.mongodb.client.model.IndexOptions
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.`in`
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.all
 import org.litote.kmongo.and
+import org.litote.kmongo.ascendingSort
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.find
@@ -79,6 +82,9 @@ import org.litote.kmongo.size
 import org.litote.kmongo.sum
 import org.litote.kmongo.toId
 import java.time.ZonedDateTime
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZoneOffset
 import java.util.concurrent.TimeUnit
 
 /**
@@ -166,6 +172,33 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         }
 
         return ApplicationDialogFlowData(statesWithStats, transitionsWithStats, emptyList()/*TODO*/)
+    }
+
+    override fun search(analyticsQuery: FlowAnalyticsQuery): List<DialogFlowTransitionStatsData> {
+        with(analyticsQuery) {
+            val applicationsIds = BotApplicationConfigurationMongoDAO.getApplicationWithCollectionIds(analyticsQuery.namespace, analyticsQuery.nlpModel)
+            if (applicationsIds.isEmpty()) {
+                return listOf()
+            }
+            val filter =
+                and(
+                    ApplicationId `in` applicationsIds,
+                    Date gt from.toInstant(ZoneOffset.UTC),
+                    Date lt to.toInstant(ZoneOffset.UTC)
+                )
+            logger.debug("flow analytics search query: $filter")
+            val zoneId = ZoneId.of("Europe/Paris")
+            return flowTransitionStatsCol.find(filter).ascendingSort(Date).toList()
+                .map {
+                    DialogFlowTransitionStatsData(
+                        applicationId = it.applicationId.toString(),
+                        transitionId = it.transitionId.toString(),
+                        dialogId = it.dialogId.toString(),
+                        text = it.text,
+                        date = LocalDateTime.ofInstant(it.date, zoneId)
+                    )
+                }
+        }
     }
 
     private fun findStates(namespace: String, botId: String): List<DialogFlowStateCol> =

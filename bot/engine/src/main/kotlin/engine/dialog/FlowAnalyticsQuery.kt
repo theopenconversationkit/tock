@@ -14,13 +14,24 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.user
+package ai.tock.bot.engine.dialog
 
-/**
- * To search users, everywhere.
- */
-interface UserReportDAO {
+import java.time.LocalDateTime
+import java.time.LocalTime
 
-    fun search(query: UserReportQuery): UserReportQueryResult
-    fun search(query: AnalyticsQuery):List<UserAnalytics>
+class FlowAnalyticsQuery(
+    val namespace: String,
+    val applicationName: String = "",
+    val nlpModel: String = "",
+    val from: LocalDateTime = LocalDateTime.now().minusDays(7),
+    val to: LocalDateTime = LocalDateTime.now()
+) {
+    fun formatQuery() =
+        FlowAnalyticsQuery(
+            namespace,
+            applicationName,
+            nlpModel,
+            LocalDateTime.of(from.toLocalDate(), LocalTime.MIDNIGHT),
+            LocalDateTime.of(to.toLocalDate(), LocalTime.MAX)
+        )
 }

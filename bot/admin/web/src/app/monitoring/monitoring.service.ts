@@ -17,11 +17,12 @@
 import {Injectable, OnDestroy} from "@angular/core";
 import {RestService} from "../core-nlp/rest/rest.service";
 import {StateService} from "../core-nlp/state.service";
-import {UserReportQueryResult, UserSearchQuery} from "./model/users";
+import {UserAnalyticsQueryResult, UserReportQueryResult, UserSearchQuery} from "./model/users";
 import {Observable} from "rxjs";
 import {DialogReportQuery, DialogReportQueryResult} from "./model/dialogs";
 import {TestPlan} from "../test/model/test";
 import {DialogReport} from "../shared/model/dialog-data";
+import {MessagesAnalyticsQuery} from "./model/MessagesAnalyticsQuery";
 
 @Injectable()
 export class MonitoringService implements OnDestroy {
@@ -36,6 +37,14 @@ export class MonitoringService implements OnDestroy {
 
   users(query: UserSearchQuery): Observable<UserReportQueryResult> {
     return this.rest.post("/users/search", query, UserReportQueryResult.fromJSON);
+  }
+
+  usersAnalytics(query: UserSearchQuery): Observable<UserAnalyticsQueryResult> {
+    return this.rest.post("/analytics/users", query, UserAnalyticsQueryResult.fromJSON);
+  }
+
+  messagesAnalytics(query: MessagesAnalyticsQuery): Observable<UserAnalyticsQueryResult> {
+    return this.rest.post("/analytics/messages", query, UserAnalyticsQueryResult.fromJSON);
   }
 
   dialogs(query: DialogReportQuery): Observable<DialogReportQueryResult> {

@@ -27,10 +27,28 @@ import {MonitoringService} from "./monitoring.service";
 import {BotSharedModule} from "../shared/bot-shared.module";
 import {MomentModule} from "ngx-moment";
 import {DialogsComponent} from "./dialogs/dialogs.component";
-import { MatNativeDateModule } from "@angular/material/core";
-import { MatDatepickerModule } from "@angular/material/datepicker";
-import {NbCardModule, NbCheckboxModule, NbRouteTabsetModule, NbSpinnerModule, NbTooltipModule, NbButtonModule,
-NbInputModule, NbSelectModule, NbCalendarModule, NbUserModule, NbDatepickerModule, NbListModule, NbAccordionModule} from "@nebular/theme";
+import {MatNativeDateModule} from "@angular/material/core";
+import {MatDatepickerModule} from "@angular/material/datepicker";
+import {
+  NbAccordionModule,
+  NbButtonModule,
+  NbCalendarModule,
+  NbCardModule,
+  NbCheckboxModule,
+  NbContextMenuModule,
+  NbDatepickerModule,
+  NbInputModule,
+  NbListModule,
+  NbMenuModule,
+  NbRouteTabsetModule,
+  NbSelectModule,
+  NbSpinnerModule,
+  NbTooltipModule,
+  NbUserModule,
+  NbCalendarRangeModule
+} from "@nebular/theme";
+import {AnalyticsComponent} from './analytics/analytics.component';
+import {GoogleChartsModule} from 'angular-google-charts';
 
 const routes: Routes = [
   {
@@ -52,10 +70,15 @@ const routes: Routes = [
       {
         path: 'history',
         component: HistoryComponent
+      },
+      {
+        path: 'analytics',
+        component: AnalyticsComponent
       }
     ]
   }
 ];
+
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
@@ -85,12 +108,17 @@ export class MonitoringRoutingModule {
     NbUserModule,
     NbDatepickerModule,
     NbListModule,
-    NbAccordionModule
+    NbAccordionModule,
+    GoogleChartsModule,
+    NbContextMenuModule,
+    NbMenuModule.forRoot(),
+    NbCalendarRangeModule
   ],
   declarations: [
     MonitoringTabsComponent,
     DialogsComponent,
-    HistoryComponent
+    HistoryComponent,
+    AnalyticsComponent
   ],
   exports: [],
   providers: [

@@ -28,6 +28,7 @@ import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.bot.BotVersion
 import ai.tock.bot.admin.dialog.ApplicationDialogFlowData
+import ai.tock.bot.admin.dialog.DialogFlowTransitionStatsData
 import ai.tock.bot.admin.dialog.DialogReportDAO
 import ai.tock.bot.admin.dialog.DialogReportQueryResult
 import ai.tock.bot.admin.kotlin.compiler.KotlinFile
@@ -55,10 +56,14 @@ import ai.tock.bot.admin.story.dump.ScriptAnswerVersionedConfigurationDump
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpController
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationFeatureDump
+import ai.tock.bot.admin.user.UserAnalytics
+import ai.tock.bot.admin.user.UserAnalyticsQueryResult
 import ai.tock.bot.admin.user.UserReportDAO
 import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.ConnectorTypeConfiguration.Companion.connectorConfigurations
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.engine.dialog.DialogFlowDAO
+import ai.tock.bot.engine.dialog.FlowAnalyticsQuery
 import ai.tock.bot.engine.feature.FeatureDAO
 import ai.tock.bot.engine.feature.FeatureState
 import ai.tock.nlp.admin.AdminService
@@ -88,7 +93,11 @@ import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
 import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.Locale
+import kotlin.streams.toList
 
 /**
  *
@@ -188,6 +197,122 @@ object BotAdminService {
 
     fun searchUsers(query: UserSearchQuery): UserSearchQueryResult {
         return UserSearchQueryResult(userReportDAO.search(query.toUserReportQuery()))
+    }
+
+    private fun formatHours(hours: List<String>): List<String> {
+        return hours.map { "$it:00" }.toList()
+    }
+
+    private fun getDatesBetween(startDate: LocalDate, endDate: LocalDate): List<String> {
+        return startDate.datesUntil(endDate.plusDays(1))
+            .map { it.toString() }.toList()
+    }
+
+    private fun buildHoursList(filterDate: LocalDate): List<String> {
+        val now = LocalDateTime.now(ZoneId.of("Europe/Paris"))
+        val sameDay = now.dayOfMonth == filterDate.dayOfMonth
+        return Array(24) { it }.filter { if (sameDay) it <= now.hour else true }.map { it.toString() }.toList()
+    }
+
+    private fun isSameDay(from: LocalDateTime, to: LocalDateTime): Boolean {
+        return from.toLocalDate().isEqual(to.toLocalDate())
+    }
+
+    fun searchUsersAnalytics(query: UserSearchQuery): UserAnalyticsQueryResult {
+        val configurations = getBotConfigurationsByNamespaceAndNlpModel(query.namespace, query.applicationName)
+        val connectorTypesId = connectorConfigurations.asSequence().toList().filter { it.connectorType != ConnectorType.rest }.map { it.connectorType.id }.plus("vsc")
+        val confByTypes = configurations.filter { it.connectorType.id in connectorTypesId}.distinctBy { it.connectorType }
+        val userAnalyticsQuery = query.toUserAnalyticsQuery()
+        val groups = userReportDAO.search(userAnalyticsQuery)
+            .groupBy {groupSelector(userAnalyticsQuery.from, userAnalyticsQuery.to, it.lastUserActionDateTime)
+        }
+        val (dates, usersByDate) = if (isSameDay(userAnalyticsQuery.from, userAnalyticsQuery.to)) {
+            val hoursList = buildHoursList(userAnalyticsQuery.to.toLocalDate())
+            val usersAnalytics = hoursList.map {
+                if (groups[it] != null) {
+                    groups[it]
+                } else {
+                    listOf()
+                }
+            }.toList()
+            Pair(formatHours(hoursList), usersAnalytics)
+        } else {
+            val datesBetween = getDatesBetween(userAnalyticsQuery.from.toLocalDate(), userAnalyticsQuery.to.toLocalDate())
+            val usersAnalytics = datesBetween.map {
+                if (groups[it] != null) {
+                    groups[it]
+                } else {
+                    listOf<UserAnalytics>()
+                }
+            }.toList()
+            Pair(datesBetween, usersAnalytics)
+        }
+        val result = arrayListOf<List<Int?>>()
+        usersByDate.forEach { users ->
+            run {
+                val messagesNumber = arrayListOf<Int?>()
+                confByTypes.forEach { connector ->
+                    run {
+                        val connectorAppIds = getConnectorAppIds(connector.connectorType, configurations)
+                        val count = users?.count { user -> connectorAppIds.contains(user.applicationIds.first()) }
+                        messagesNumber.add(count)
+                    }
+                }
+                result.add(messagesNumber)
+            }
+        }
+        return UserAnalyticsQueryResult(dates, result, confByTypes.map { it.connectorType.id })
+    }
+
+    fun searchMessagesAnalytics(query: FlowAnalyticsQuery): UserAnalyticsQueryResult {
+        val connectorTypesId = connectorConfigurations.asSequence().toList().filter { it.connectorType != ConnectorType.rest }.map { it.connectorType.id }.plus("vsc")
+        val configurations = getBotConfigurationsByNamespaceAndNlpModel(query.namespace, query.applicationName)
+        val confByTypes = configurations.filter { it.connectorType.id in connectorTypesId}.distinctBy { it.connectorType }
+        val queryResult = dialogFlowDAO.search(query.formatQuery()).groupBy { groupSelector(query.from, query.to, it.date) }
+
+        val (dates, flowsByDate) = if (isSameDay(query.from, query.to)) {
+            val hoursList = buildHoursList(query.to.toLocalDate())
+            val usersAnalytics = hoursList.map {
+                if (queryResult[it] != null) {
+                    queryResult[it]
+                } else {
+                    listOf()
+                }
+            }.toList()
+            Pair(formatHours(hoursList), usersAnalytics)
+        } else {
+            val datesBetween = getDatesBetween(query.from.toLocalDate(), query.to.toLocalDate())
+            val usersAnalytics = datesBetween.map {
+                if (queryResult[it] != null) {
+                    queryResult[it]
+                } else {
+                    listOf<DialogFlowTransitionStatsData>()
+                }
+            }.toList()
+            Pair(datesBetween, usersAnalytics)
+        }
+        val result = arrayListOf<List<Int?>>()
+        flowsByDate.forEach { flows ->
+            run {
+                val messagesNumber = arrayListOf<Int?>()
+                confByTypes.forEach { connector ->
+                    run {
+                        val count = flows?.count { flow -> connector._id.toString() == flow.applicationId }
+                        messagesNumber.add(count)
+                    }
+                }
+                result.add(messagesNumber)
+            }
+        }
+
+        return UserAnalyticsQueryResult(dates, result, confByTypes.map { it.connectorType.id })
+    }
+
+    private fun groupSelector(from : LocalDateTime,to : LocalDateTime, elementDate: LocalDateTime) =
+        if (isSameDay(from, to)) elementDate.hour.toString() else elementDate.toLocalDate().toString()
+
+    private fun getConnectorAppIds(connectorType: ConnectorType, configurations: List<BotApplicationConfiguration>): List<String> {
+        return configurations.filter { config -> config.connectorType == connectorType }.map { config -> config.applicationId }
     }
 
     fun search(query: DialogsSearchQuery): DialogReportQueryResult {
@@ -884,7 +1009,7 @@ object BotAdminService {
                 val actualConfiguration = configurations.find { it._id == request.botConfigurationId }
                 val testConfiguration =
                     configurations.find { it.applicationId == "test-${actualConfiguration?.applicationId}" }
-                listOf(request.botConfigurationId, testConfiguration?._id).filterNotNull().toSet()
+                listOfNotNull(request.botConfigurationId, testConfiguration?._id).toSet()
             } else
                 setOf(request.botConfigurationId)
         } else if (configurationName != null) {

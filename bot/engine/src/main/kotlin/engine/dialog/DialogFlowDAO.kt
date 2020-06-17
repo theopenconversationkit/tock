@@ -18,6 +18,7 @@ package ai.tock.bot.engine.dialog
 
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.dialog.ApplicationDialogFlowData
+import ai.tock.bot.admin.dialog.DialogFlowTransitionStatsData
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.DialogFlowDefinition
 import org.litote.kmongo.Id
@@ -34,4 +35,6 @@ interface DialogFlowDAO {
         from: ZonedDateTime?,
         to: ZonedDateTime?
         ): ApplicationDialogFlowData
+
+    fun search(analyticsQuery: FlowAnalyticsQuery): List<DialogFlowTransitionStatsData>
 }

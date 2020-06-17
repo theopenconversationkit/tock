@@ -16,11 +16,8 @@
 
 package ai.tock.bot.admin.user
 
-/**
- * To search users, everywhere.
- */
-interface UserReportDAO {
-
-    fun search(query: UserReportQuery): UserReportQueryResult
-    fun search(query: AnalyticsQuery):List<UserAnalytics>
-}
+data class UserAnalyticsQueryResult(
+    val dates: List<String> = emptyList(),
+    val usersData: List<List<Int?>> = emptyList(),
+    val connectorsType: List<String> = emptyList()
+)

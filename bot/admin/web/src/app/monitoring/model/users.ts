@@ -55,6 +55,21 @@ export class UserReportQueryResult implements PaginatedResult<UserReport> {
   }
 }
 
+export class UserAnalyticsQueryResult {
+  constructor(public usersData: [][],
+              public dates: Date[],
+              public connectorsType: []) {
+  }
+
+  static fromJSON(json?: any): UserAnalyticsQueryResult {
+    const value = Object.create(UserAnalyticsQueryResult.prototype);
+
+    const result = Object.assign(value, json, {});
+
+    return result;
+  }
+}
+
 export class UserReport {
 
   displayDialogs: boolean = false;

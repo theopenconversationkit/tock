@@ -16,6 +16,7 @@
 
 package ai.tock.bot.mongo
 
+import ai.tock.bot.admin.user.UserAnalytics
 import ai.tock.bot.admin.user.UserReport
 import ai.tock.bot.engine.action.SendAttachment
 import ai.tock.bot.engine.action.SendChoice
@@ -44,7 +45,11 @@ import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
 import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.util.Locale
 
 @Data(internal = true)
@@ -109,6 +114,16 @@ internal data class UserTimelineCol(
             lastUpdateDate,
             lastActionText,
             lastUserActionDate
+        )
+    }
+
+    fun toUserAnalytics(): UserAnalytics {
+        val zoneId = ZoneId.of("Europe/Paris")
+        return UserAnalytics(
+            playerId,
+            applicationIds,
+            LocalDate.ofInstant(lastUserActionDate, ZoneOffset.UTC),
+            LocalDateTime.ofInstant(lastUserActionDate, zoneId)
         )
     }
 

@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.user
+package ai.tock.bot.admin.dialog
 
-/**
- * To search users, everywhere.
- */
-interface UserReportDAO {
+import java.time.LocalDateTime
 
-    fun search(query: UserReportQuery): UserReportQueryResult
-    fun search(query: AnalyticsQuery):List<UserAnalytics>
-}
+data class DialogFlowTransitionStatsData(
+    val applicationId: String?,
+    val transitionId: String?,
+    val dialogId: String?,
+    val text: String?,
+    val date: LocalDateTime
+)

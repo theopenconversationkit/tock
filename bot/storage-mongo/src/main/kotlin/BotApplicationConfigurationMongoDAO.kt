@@ -208,9 +208,20 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
             .flatMap {
                 sequenceOf(
                     it.applicationId,
+                    it._id.toString(),
                     //special messenger connector fix TODO remove this in 19.9
                     it.parameters["pageId"],
                     it.parameters["appId"]
+                ).filterNotNull()
+            }
+            .toSet()
+
+    fun getApplicationWithCollectionIds(namespace: String, nlpModel: String): Set<Id<BotApplicationConfiguration>> =
+        getConfigurationsByNamespaceAndNlpModel(namespace, nlpModel)
+            .asSequence()
+            .flatMap {
+                sequenceOf(
+                    it._id
                 ).filterNotNull()
             }
             .toSet()

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.user
-
-/**
- * To search users, everywhere.
- */
-interface UserReportDAO {
-
-    fun search(query: UserReportQuery): UserReportQueryResult
-    fun search(query: AnalyticsQuery):List<UserAnalytics>
+export class ChartData {
+  constructor(public title: string,
+              public type: string,
+              public data: (string | number)[][],
+              public columnNames: string[],
+              public options: {},
+              public height: number,
+              public width: number
+              ) {} ;
 }

@@ -45,6 +45,7 @@ import ai.tock.bot.connector.rest.addRestConnector
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.config.UploadedFilesService
 import ai.tock.bot.engine.config.UploadedFilesService.downloadFile
+import ai.tock.bot.engine.dialog.FlowAnalyticsQuery
 import ai.tock.nlp.admin.AdminVerticle
 import ai.tock.nlp.admin.model.ApplicationScopedQuery
 import ai.tock.nlp.admin.model.TranslateReport
@@ -94,6 +95,22 @@ open class BotAdminVerticle : AdminVerticle() {
         blockingJsonPost("/users/search", botUser) { context, query: UserSearchQuery ->
             if (context.organization == query.namespace) {
                 BotAdminService.searchUsers(query)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/users", botUser) { context, query: UserSearchQuery ->
+            if (context.organization == query.namespace) {
+                BotAdminService.searchUsersAnalytics(query)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages", botUser) { context, query: FlowAnalyticsQuery ->
+            if (context.organization == query.namespace) {
+                BotAdminService.searchMessagesAnalytics(query)
             } else {
                 unauthorized()
             }
