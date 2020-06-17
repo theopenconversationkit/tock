@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import {Injectable} from "@angular/core";
 import {UserRole} from "../model/auth";
 
-@Injectable()
-export class ApplicationConfig {
-
+export abstract class CoreConfig {
   /** url of the configuration menu */
   configurationUrl: string;
   /** url of the display dialogs if it exists */
@@ -27,5 +24,5 @@ export class ApplicationConfig {
   /** url to answer to sentence if it exists */
   answerToSentenceUrl: string;
   /** url map for each default rights */
-  roleMap: Map<UserRole, string>
+  roleMap: Map<UserRole, string>;
 }

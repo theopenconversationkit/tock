@@ -16,7 +16,7 @@
 
 import {SharedModule} from "../shared-nlp/shared.module";
 import {CommonModule} from "@angular/common";
-import {NgModule} from "@angular/core";
+import {Injectable, NgModule} from "@angular/core";
 import {RouterModule, Routes} from "@angular/router";
 import {AuthGuard} from "../core-nlp/auth/auth.guard";
 import {ApplicationsComponent} from "./applications/applications.component";
@@ -31,17 +31,20 @@ import {
   NbButtonModule,
   NbCardModule,
   NbCheckboxModule,
-  NbRadioModule, NbRouteTabsetModule,
+  NbDialogModule,
+  NbRadioModule,
+  NbRouteTabsetModule,
   NbSelectModule,
-  NbSpinnerModule, NbTabsetModule,
-  NbTooltipModule,
-  NbDialogModule
+  NbSpinnerModule,
+  NbTabsetModule,
+  NbTooltipModule
 } from "@nebular/theme";
 import {DisplayUserDataComponent, UserLogsComponent} from "./user/user-logs.component";
 import {MomentModule} from "ngx-moment";
 import {ConfigurationTabsComponent} from "./configuration-tabs.component";
 import {NamespacesComponent} from "./namespace/namespaces.component";
-import { NgJsonEditorModule } from 'ang-jsoneditor'
+import {NgJsonEditorModule} from 'ang-jsoneditor'
+import {ApplicationConfig} from "./application.config";
 
 const routes: Routes = [
   {
@@ -97,6 +100,16 @@ const routes: Routes = [
 export class ApplicationsRoutingModule {
 }
 
+@Injectable()
+export class NlpApplicationConfig implements ApplicationConfig {
+
+  /** is it allowed to create namespace? **/
+  canCreateNamespace(): boolean {
+    return true;
+  }
+
+}
+
 @NgModule({
   imports: [
     CommonModule,
@@ -130,6 +143,10 @@ export class ApplicationsRoutingModule {
     NamespacesComponent
   ],
   providers: [
+    {
+      provide: ApplicationConfig,
+      useClass: NlpApplicationConfig
+    },
     ApplicationsResolver
   ],
   entryComponents: [DisplayUserDataComponent]

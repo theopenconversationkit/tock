@@ -15,10 +15,30 @@
  */
 
 import {CommonModule} from "@angular/common";
-import {NgModule, Optional, SkipSelf} from "@angular/core";
+import {Injectable, NgModule, Optional, SkipSelf} from "@angular/core";
 import {BotConfigurationService} from "./bot-configuration.service";
-import {ApplicationConfig} from "../core-nlp/application.config";
+import {CoreConfig} from "../core-nlp/core.config";
 import {UserRole} from "../model/auth";
+
+@Injectable()
+export class BotCoreConfig implements CoreConfig {
+
+  /** url of the configuration menu */
+  configurationUrl: string = "/configuration/new";
+  /** url of the display dialogs if it exists */
+  displayDialogUrl: string = "/monitoring/dialogs";
+  /** url to answer to sentence if it exists */
+  answerToSentenceUrl: string = "/build/story-create";
+  /** url map for each default rights */
+  roleMap: Map<UserRole, string> = new Map(
+    [
+      [UserRole.nlpUser, "/nlp"],
+      [UserRole.botUser, "/build"],
+      [UserRole.admin, "/configuration"],
+      [UserRole.technicalAdmin, "/configuration"],
+    ]);
+
+}
 
 @NgModule({
   imports: [CommonModule],
@@ -26,20 +46,9 @@ import {UserRole} from "../model/auth";
   exports: [],
   providers: [
     {
-      provide: ApplicationConfig,
-      useValue: {
-        configurationUrl: "/configuration/new",
-        displayDialogUrl: "/monitoring/dialogs",
-        answerToSentenceUrl : "/build/story-create",
-        roleMap: new Map(
-          [
-            [UserRole.nlpUser, "/nlp"],
-            [UserRole.botUser, "/build"],
-            [UserRole.admin, "/configuration"],
-            [UserRole.technicalAdmin, "/configuration"],
-          ])
-      }
-      },
+      provide: CoreConfig,
+      useClass: BotCoreConfig
+    },
     BotConfigurationService
   ]
 })

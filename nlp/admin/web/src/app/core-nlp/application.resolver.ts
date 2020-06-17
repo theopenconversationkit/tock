@@ -21,12 +21,12 @@ import {ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot} from "@ang
 import {Observable} from "rxjs";
 import {Application} from "../model/application";
 import {ApplicationService} from "./applications.service";
-import {ApplicationConfig} from "./application.config";
+import {CoreConfig} from "./core.config";
 
 @Injectable()
 export class ApplicationResolver implements Resolve<Application> {
 
-  constructor(private config: ApplicationConfig,
+  constructor(private config: CoreConfig,
               private appService: ApplicationService,
               private router: Router) {
   }

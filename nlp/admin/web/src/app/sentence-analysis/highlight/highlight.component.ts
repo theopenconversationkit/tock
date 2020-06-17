@@ -39,7 +39,7 @@ import {NlpService} from "../../nlp-tabs/nlp.service";
 import {StateService} from "../../core-nlp/state.service";
 import {CreateEntityDialogComponent} from "../create-entity-dialog/create-entity-dialog.component";
 import {User, UserRole} from "../../model/auth";
-import {ApplicationConfig} from "../../core-nlp/application.config";
+import {CoreConfig} from "../../core-nlp/core.config";
 import {Router} from "@angular/router";
 import {isNullOrUndefined} from "../../model/commons";
 import {DialogService} from "../../core-nlp/dialog.service";
@@ -78,7 +78,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
               private dialog: DialogService,
               private matDialog: MatDialog,
               private router: Router,
-              public appConfig: ApplicationConfig,
+              public coreConfig: CoreConfig,
               private changeDetectorRef: ChangeDetectorRef) {
     this.editable = true;
     this.edited = false;
@@ -337,7 +337,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
 
   answerToSentence() {
     this.router.navigate(
-      [this.appConfig.answerToSentenceUrl],
+      [this.coreConfig.answerToSentenceUrl],
       {
         queryParams: {
           text: this.sentence.getText()

@@ -15,7 +15,7 @@
  */
 
 import {ApplicationsModule} from "../applications/applications.module";
-import {NgModule} from "@angular/core";
+import {Injectable, NgModule} from "@angular/core";
 import {SharedModule} from "../shared-nlp/shared.module";
 import {RouterModule, Routes} from "@angular/router";
 import {ApplicationsComponent} from "../applications/applications/applications.component";
@@ -36,13 +36,15 @@ import {
   NbRouteTabsetModule,
   NbSpinnerModule,
   NbTabsetModule,
-  NbTooltipModule,
-  NbToastrModule
+  NbToastrModule,
+  NbTooltipModule
 } from "@nebular/theme";
 import {NewBotComponent} from "./bot/new-bot.component";
 import {ReactiveFormsModule} from "@angular/forms";
 import {UserLogsComponent} from "../applications/user/user-logs.component";
 import {NamespacesComponent} from "../applications/namespace/namespaces.component";
+import {BotSharedService} from "../shared/bot-shared.service";
+import {ApplicationConfig} from "../applications/application.config";
 
 const routes: Routes = [
   {
@@ -113,6 +115,19 @@ const routes: Routes = [
 export class BotConfigurationRoutingModule {
 }
 
+@Injectable()
+export class BotApplicationConfig implements ApplicationConfig {
+
+  constructor(private botSharedService: BotSharedService) {
+  }
+
+  /** is it allowed to create namespace? **/
+  canCreateNamespace(): boolean {
+    return this.botSharedService.configuration && !this.botSharedService.configuration.botApiSupport;
+  }
+
+}
+
 @NgModule({
   declarations: [
     ConfigurationTabsComponent,
@@ -138,7 +153,12 @@ export class BotConfigurationRoutingModule {
     NbAccordionModule,
     NbToastrModule.forRoot(),
   ],
-  providers: [],
+  providers: [
+    {
+      provide: ApplicationConfig,
+      useClass: BotApplicationConfig
+    }
+  ],
   bootstrap: []
 })
 export class BotConfigurationModule {

@@ -14,33 +14,44 @@
  * limitations under the License.
  */
 
-import {NgModule, Optional, SkipSelf} from "@angular/core";
+import {Injectable, NgModule, Optional, SkipSelf} from "@angular/core";
 import {AuthModule} from "./auth/auth.module";
 import {SettingsService} from "./settings.service";
 import {CommonModule} from "@angular/common";
 import {RestModule} from "./rest/rest.module";
 import {StateService} from "./state.service";
 import {ApplicationService} from "./applications.service";
-import {ApplicationConfig} from "./application.config";
+import {CoreConfig} from "./core.config";
 import {ApplicationResolver} from "./application.resolver";
-import {UserRole} from "../model/auth";
 import {DialogService} from "./dialog.service";
+import {UserRole} from "../model/auth";
+
+@Injectable()
+export class NlpCoreConfig implements CoreConfig {
+
+  /** url of the configuration menu */
+  configurationUrl: string = "/applications";
+  /** url of the display dialogs if it exists */
+  displayDialogUrl: string = "a";
+  /** url to answer to sentence if it exists */
+  answerToSentenceUrl: string;
+  /** url map for each default rights */
+  roleMap: Map<UserRole, string> = new Map(
+    [
+      [UserRole.nlpUser, "/nlp"],
+      [UserRole.admin, "/configuration"],
+      [UserRole.technicalAdmin, "/configuration"],
+    ]);
+
+}
 
 @NgModule({
   imports: [CommonModule, RestModule, AuthModule],
   declarations: [],
   providers: [
     {
-      provide: ApplicationConfig,
-      useValue: {
-        configurationUrl: "/applications",
-        roleMap: new Map(
-          [
-            [UserRole.nlpUser, "/nlp"],
-            [UserRole.admin, "/configuration"],
-            [UserRole.technicalAdmin, "/configuration"],
-          ])
-      },
+      provide: CoreConfig,
+      useClass: NlpCoreConfig
     },
     SettingsService,
     StateService,
@@ -60,3 +71,5 @@ export class CoreModule {
   }
 
 }
+
+

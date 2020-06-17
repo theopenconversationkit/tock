@@ -28,6 +28,7 @@ import {DisplayDialogComponent} from "./bot-dialog/display-dialog.component";
 import {MomentModule} from "ngx-moment";
 import {SelectBotComponent} from "./select-bot/select-bot.component";
 import {NbCardModule, NbSelectModule, NbTooltipModule} from "@nebular/theme";
+
 @NgModule({
   imports: [
     CommonModule,
@@ -48,7 +49,9 @@ import {NbCardModule, NbSelectModule, NbTooltipModule} from "@nebular/theme";
     SelectBotComponent
   ],
   exports: [BotMessageComponent, DisplayDialogComponent, SelectBotComponent],
-  providers: [BotSharedService],
+  providers: [
+    BotSharedService
+  ],
   entryComponents: []
 })
 export class BotSharedModule {

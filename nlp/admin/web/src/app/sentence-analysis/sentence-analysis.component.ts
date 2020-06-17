@@ -28,7 +28,7 @@ import {Intent, nameFromQualifiedName, Sentence, SentenceStatus} from "../model/
 import {StateService} from "../core-nlp/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {IntentDialogComponent} from "./intent-dialog/intent-dialog.component";
-import {ApplicationConfig} from "../core-nlp/application.config";
+import {CoreConfig} from "../core-nlp/core.config";
 import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialog.component";
 import {ReviewRequestDialogComponent} from "./review-request-dialog/review-request-dialog.component";
 import {DialogService} from "../core-nlp/dialog.service";
@@ -55,7 +55,7 @@ export class SentenceAnalysisComponent implements OnInit {
               private nlp: NlpService,
               private dialog: DialogService,
               private matDialog: MatDialog,
-              public config: ApplicationConfig,
+              public config: CoreConfig,
               private applicationRef: ApplicationRef,
               private changeDetectorRef: ChangeDetectorRef,
               private elementRef: ElementRef) {

@@ -21,12 +21,12 @@
         <i class="material-icons">visibility</i>
       </nb-action>
       <nb-action class="control-item" nbTooltip="Display conversations using this sentence"
-                 *ngIf="displayActions && appConfig.displayDialogUrl && isRootSentence()">
-        <a class="control-item" [routerLink]="[appConfig.displayDialogUrl]"
+                 *ngIf="displayActions && coreConfig.displayDialogUrl && isRootSentence()">
+        <a class="control-item" [routerLink]="[coreConfig.displayDialogUrl]"
            [queryParams]="{ text: this.sentence.text}"><i class="material-icons">format_quote</i></a>
       </nb-action>
       <nb-action class="control-item" (click)="answerToSentence()" nbTooltip="Set a custom answer"
-                 *ngIf="displayActions && appConfig.answerToSentenceUrl && isRootSentence()">
+                 *ngIf="displayActions && coreConfig.answerToSentenceUrl && isRootSentence()">
         <i class="material-icons">question_answers</i>
       </nb-action>
       <nb-action class="control-item" (click)="$event.stopPropagation();copyToClipboard();"

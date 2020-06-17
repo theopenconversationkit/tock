@@ -21,7 +21,7 @@ import {UserNamespace} from "../../model/application";
 import {AuthService} from "../../core-nlp/auth/auth.service";
 import {NbToastrService} from '@nebular/theme';
 import {UserRole} from "../../model/auth";
-import {BotSharedService} from "../../shared/bot-shared.service";
+import {ApplicationConfig} from "../application.config";
 
 @Component({
   selector: 'tock-namespaces',
@@ -47,7 +47,7 @@ export class NamespacesComponent implements OnInit {
               public state: StateService,
               private applicationService: ApplicationService,
               private authService: AuthService,
-              private botSharedConfiguration: BotSharedService) {
+              private applicationConfig: ApplicationConfig) {
   }
 
   ngOnInit() {
@@ -61,7 +61,7 @@ export class NamespacesComponent implements OnInit {
   }
 
   canCreateNamespace(): boolean {
-    return this.state.hasRole(UserRole.admin) && this.botSharedConfiguration.configuration && !this.botSharedConfiguration.configuration.botApiSupport;
+    return this.state.hasRole(UserRole.admin) && this.applicationConfig.canCreateNamespace();
   }
 
   displayCreate() {

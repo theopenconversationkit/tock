@@ -22,7 +22,7 @@ import {StateService} from "../core-nlp/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {PaginatedQuery, SearchMark} from "../model/commons";
 import {Observable} from "rxjs";
-import {ApplicationConfig} from "../core-nlp/application.config";
+import {CoreConfig} from "../core-nlp/core.config";
 import {NbDialogRef, NbDialogService, NbToastrService} from '@nebular/theme';
 import {JsonEditorComponent, JsonEditorOptions} from 'ang-jsoneditor';
 
@@ -41,7 +41,7 @@ export class LogsComponent extends ScrollComponent<Log> {
   constructor(state: StateService,
               private nlp: NlpService,
               private dialogService: NbDialogService,
-              private config: ApplicationConfig,
+              private config: CoreConfig,
               private toastrService: NbToastrService) {
     super(state);
   }

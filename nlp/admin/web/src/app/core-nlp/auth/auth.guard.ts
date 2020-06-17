@@ -20,7 +20,7 @@ import {AuthService} from "./auth.service";
 import {environment} from "../../../environments/environment";
 import {StateService} from "../state.service";
 import {UserRole} from "../../model/auth";
-import {ApplicationConfig} from "../application.config";
+import {CoreConfig} from "../core.config";
 
 @Injectable()
 export class AuthGuard implements CanActivate, CanActivateChild {
@@ -32,7 +32,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
     private authService: AuthService,
     private router: Router,
     private userState: StateService,
-    private configuration: ApplicationConfig) {
+    private configuration: CoreConfig) {
     this.rolesMap = configuration.roleMap
   }
 
