@@ -151,7 +151,7 @@ export class RestService {
       if (e instanceof HttpErrorResponse && e.status !== 400) {
         errMsg = e.message ? e.message : e.error;
       } else {
-        errMsg = e.error ? e.error : (e.message ? e.message : e.toString());
+        errMsg = e.statusText ? e.statusText : (e.error ? e.error : (e.message ? e.message : e.toString()));
       }
     }
     rest.errorEmitter.emit(errMsg);

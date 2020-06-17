@@ -160,6 +160,10 @@ export class ApplicationService implements OnDestroy {
     return this.rest.get(`/namespaces/${namespace}`, UserNamespace.fromJSONArray);
   }
 
+  createNamespace(namespace: string): Observable<boolean> {
+    return this.rest.post(`/namespace/${namespace}`, namespace);
+  }
+
   saveNamespace(userNamespace: UserNamespace): Observable<boolean> {
     return this.rest.post(`/namespace`, userNamespace);
   }

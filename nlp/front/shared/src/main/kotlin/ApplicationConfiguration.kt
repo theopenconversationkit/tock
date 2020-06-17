@@ -238,4 +238,9 @@ interface ApplicationConfiguration {
      */
     fun hasNamespace(user: String, namespace: String): Boolean
 
+    /**
+     * Is this namespace exists ?
+     */
+    fun isExistingNamespace(namespace: String): Boolean
+
 }
