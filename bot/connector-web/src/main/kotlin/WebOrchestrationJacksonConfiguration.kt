@@ -16,34 +16,24 @@
 
 package ai.tock.bot.connector.web
 
-import ai.tock.bot.connector.ConnectorMessage
-import com.fasterxml.jackson.annotation.JsonTypeInfo
+import ai.tock.bot.connector.SerializableConnectorMessage
+import ai.tock.bot.jackson.MixinSerializableConnectorMessage
 import com.fasterxml.jackson.databind.Module
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.fasterxml.jackson.databind.module.SimpleModule
 import org.litote.jackson.JacksonModuleServiceLoader
 
-object WebOrchestrationJacksonConfiguration {
-
-    @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = "type"
-    )
-    interface MixinConnectorMessage
-
+private object WebOrchestrationJacksonConfiguration {
 
     val module: SimpleModule
         get() {
             val module = SimpleModule()
             with(module) {
-
-                setMixInAnnotation(ConnectorMessage::class.java, MixinConnectorMessage::class.java)
+                setMixInAnnotation(SerializableConnectorMessage::class.java, MixinSerializableConnectorMessage::class.java)
                 registerSubtypes(NamedType(WebMessage::class.java, "WebMessage"))
             }
             return module
         }
-
 }
 
 internal class WebOrchestrationJacksonModuleServiceLoader : JacksonModuleServiceLoader {

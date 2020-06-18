@@ -84,8 +84,7 @@ class WebConnector internal constructor(
             SimpleModule().apply {
                 //fallback for serializing CharSequence
                 addSerializer(CharSequence::class.java, ToStringSerializer())
-            },
-            WebOrchestrationJacksonConfiguration.module
+            }
         )
         private val channels by lazy { Channels(ChannelMongoDAO) }
     }

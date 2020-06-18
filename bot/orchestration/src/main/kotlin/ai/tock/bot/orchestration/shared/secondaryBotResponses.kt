@@ -16,6 +16,7 @@
 
 package ai.tock.bot.orchestration.shared
 
+import ai.tock.bot.connector.SerializableConnectorMessage
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.user.PlayerId
@@ -47,7 +48,7 @@ interface SecondaryBotResponse {
             return if (sentences.isNotEmpty()) {
                 SecondaryBotAvailableResponse(
                     actions = sentences.map { sentence ->
-                        SecondaryBotSendSentence(messages = sentence.messages, text = sentence.text?.toString())
+                        SecondaryBotSendSentence(messages = sentence.messages.filterIsInstance<SerializableConnectorMessage>(), text = sentence.text?.toString())
                     },
                     metaData = answerMetadata
                 )

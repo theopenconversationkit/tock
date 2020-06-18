@@ -195,6 +195,13 @@ private object BotEngineJacksonConfiguration {
 
 }
 
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.PROPERTY,
+    property = "type"
+)
+interface MixinSerializableConnectorMessage
+
 class BotTockEngineKMongoJacksonModuleServiceLoader : JacksonModuleServiceLoader {
 
     override fun module(): Module = BotEngineJacksonConfiguration.module

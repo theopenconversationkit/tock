@@ -16,7 +16,7 @@
 
 package ai.tock.bot.orchestration.shared
 
-import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.connector.SerializableConnectorMessage
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendSentence
@@ -38,7 +38,7 @@ interface SecondaryBotAction {
 
     companion object {
         fun from(action : Action) : SecondaryBotAction? = when (action) {
-            is SendSentence -> SecondaryBotSendSentence(messages = action.messages, text = action.text?.toString())
+            is SendSentence -> SecondaryBotSendSentence(messages = action.messages.filterIsInstance<SerializableConnectorMessage>(), text = action.text?.toString())
             is SendChoice -> SecondaryBotSendChoice(intentName = action.intentName, parameters = action.parameters)
             else -> null
         }
@@ -46,7 +46,7 @@ interface SecondaryBotAction {
 }
 
 data class SecondaryBotSendSentence(
-    val messages: List<ConnectorMessage>,
+    val messages: List<SerializableConnectorMessage>,
     val text: String?
 ) : SecondaryBotAction {
     override fun toAction(
