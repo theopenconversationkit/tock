@@ -19,6 +19,13 @@ package ai.tock.bot.connector
 import ai.tock.bot.engine.message.GenericMessage
 
 /**
+ * A json serializable [ConnectorMessage].
+ * For a [Connector] implementation, implementing this interface for all of its [ConnectorMessage] types is prerequisite
+ * in order to support bot orchestration.
+ */
+interface SerializableConnectorMessage : ConnectorMessage
+
+/**
  * Connector specific message format.
  */
 interface ConnectorMessage : ConnectorMessageProvider {
