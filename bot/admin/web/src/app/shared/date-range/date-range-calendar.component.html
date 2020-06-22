@@ -1,0 +1,17 @@
+<button outline nbButton status="{{disabled ? 'disabled' : 'primary'}}" (click)="toggle()"
+        disabled="disabled" title="From {{ range.start }} to {{ range.end }}">
+  {{ range.start | date }} - {{ range.end | date }}
+</button>
+
+<div *ngIf="displayCalendar && !disabled" class="calendar">
+  <div style="z-index: 10000;display: inline-grid;width: -webkit-fill-available; height: fit-content;">
+    <button nbButton size="small" [status]="getStatus(1)" (click)="setRangeInDays(1)">Yesterday</button>
+    <button nbButton size="small" [status]="getStatus(0)" (click)="setRangeInDays(0)">Today</button>
+    <button nbButton size="small" [status]="getStatus(7)" (click)="setRangeInDays(7)">Last 7 days</button>
+    <button nbButton size="small" [status]="getStatus(14)" (click)="setRangeInDays(14)">Last 14 days</button>
+    <button nbButton size="small" [status]="getStatus(30)" (click)="setRangeInDays(30)">Last 30 days</button>
+    <button nbButton size="small" [status]="getStatus(90)" (click)="setRangeInDays(90)">Last 90 days</button>
+  </div>
+  <nb-calendar-range [(range)]="range"></nb-calendar-range>
+  <button nbButton size="small" status="basic" (click)="update()">Update</button>
+</div>

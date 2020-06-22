@@ -148,6 +148,9 @@ export class FlowComponent implements OnInit, OnDestroy {
   displayDebug: boolean = false;
   allowSelectAllConfigs: boolean = false;
 
+  startDate: Date;
+  endDate: Date;
+
   private subscription: Subscription;
 
   statsEntity(): boolean {
@@ -197,6 +200,8 @@ export class FlowComponent implements OnInit, OnDestroy {
                           this.state.currentApplication.name,
                           this.selectedConfigurationName,
                           this.selectedConnectorId,
+                          this.startDate,
+                          this.endDate,
                           this.displayTests
                         );
         if (forceReload == true || !request.equals(this.lastFlowRequest)) {
@@ -237,6 +242,13 @@ export class FlowComponent implements OnInit, OnDestroy {
   changeLayout() {
     const layout = this.selectedLayout;
     this.layout = this.layouts.find(l => l.name === layout);
+  }
+
+  datesChanged(dates: [Date, Date]) {
+    console.debug('Date range changed: start=' + dates[0] + ', end=' + dates[1]);
+    this.startDate = dates[0];
+    this.endDate = dates[1];
+    this.reload();
   }
 
   updateCount() {
