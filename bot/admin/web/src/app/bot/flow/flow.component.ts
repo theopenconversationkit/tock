@@ -185,7 +185,7 @@ export class FlowComponent implements OnInit, OnDestroy {
     });
   }
 
-  private reload() {
+  private reload(forceReload?: boolean) {
     console.debug('Loading flow...');
     if (this.selectedConfigurationName || this.allowSelectAllConfigs) {
       // Reload user flow
@@ -199,7 +199,7 @@ export class FlowComponent implements OnInit, OnDestroy {
                           this.selectedConnectorId,
                           this.displayTests
                         );
-        if (!request.equals(this.lastFlowRequest)) {
+        if (forceReload == true || !request.equals(this.lastFlowRequest)) {
           console.debug('Fetching user flow...');
           this.lastFlowRequest = request;
           this.bot.getApplicationFlow(request).subscribe(f => {
@@ -307,7 +307,7 @@ export class FlowComponent implements OnInit, OnDestroy {
   }
 
   changeMode() {
-    this.reload();
+    this.reload(true);
   }
 
   changeAllowSelectAllConfigs() {
