@@ -42,6 +42,8 @@
 
       <div class="flow-option-group">
         <span class="flow-option-group-name">{{ statsMode ? "Scope:" : "Scope / Filters:"}}</span>
+        <nb-checkbox [(ngModel)]="allowSelectAllConfigs" class="checkbox" (change)="changeAllowSelectAllConfigs()"
+                     title="Allow selecting All Configurations at once (possible performance impact)">Allow <em>All</em></nb-checkbox>
         <tock-select-bot [allowNoConfigurationSelection]="false" noConnectorLabel="All Connectors"
                          [allowNoSelection]="allowSelectAllConfigs" noConfigurationLabel="All Configurations"
                          (selectionChange)="selectedConfigurationChanged($event)" class="select">
@@ -115,8 +117,6 @@
         </span>
         <span *ngIf="!statsMode">
           <nb-checkbox [(ngModel)]="displayDisabled" (change)="update()" class="checkbox" title="Include Stories Disabled by Rules">Disabled</nb-checkbox>
-          <nb-checkbox [(ngModel)]="allowSelectAllConfigs" class="checkbox" (change)="changeAllowSelectAllConfigs()"
-                       matTooltip="Allow Selection of All Configurations (possible performance impact)">Allow <em>All Configurations</em></nb-checkbox>
         </span>
       </div>
 
@@ -139,10 +139,6 @@
         <span>
           <nb-checkbox [(ngModel)]="mergeOldStories" (change)="update()" class="checkbox"
                        title="Merge Old Stats to Latest Stories when possible">Merge to Latest Stories</nb-checkbox>
-        </span>
-        <span>
-          <nb-checkbox [(ngModel)]="allowSelectAllConfigs" class="checkbox" (change)="changeAllowSelectAllConfigs()"
-                       title="Allow Selection of All Configurations (possible performance impact)">Allow <em>All Configurations</em></nb-checkbox>
         </span>
       </div>
 
