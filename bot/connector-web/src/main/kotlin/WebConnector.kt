@@ -21,12 +21,13 @@ import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.media.MediaAction
 import ai.tock.bot.connector.media.MediaCard
 import ai.tock.bot.connector.media.MediaCarousel
-import ai.tock.bot.connector.media.MediaFile
 import ai.tock.bot.connector.media.MediaMessage
 import ai.tock.bot.connector.web.channel.ChannelMongoDAO
 import ai.tock.bot.connector.web.channel.Channels
+import ai.tock.bot.connector.web.send.PostbackButton
 import ai.tock.bot.connector.web.send.UrlButton
 import ai.tock.bot.connector.web.send.WebCard
 import ai.tock.bot.connector.web.send.WebCarousel
@@ -287,8 +288,14 @@ class WebConnector internal constructor(
         message: ConnectorMessage,
         suggestions: List<CharSequence>
     ): BotBus.() -> ConnectorMessage? = {
-        (message as? WebMessage)?.takeIf { it.buttons.isEmpty() }?.let {
-            it.copy(buttons = suggestions.map { webPostbackButton(it) })
+        (message as? WebMessage)?.let {
+            if (it.card != null && it.card.buttons.isEmpty()) {
+                it.copy(card = it.card.copy(buttons = suggestions.map { s -> webPostbackButton(s) }))
+            } else if (it.card == null && it.buttons.isEmpty()) {
+                it.copy(buttons = suggestions.map { s -> webPostbackButton(s) })
+            } else {
+                null
+            }
         } ?: message
     }
 
@@ -296,35 +303,21 @@ class WebConnector internal constructor(
         listOfNotNull(
             when (message) {
                 is MediaCard -> {
-                    WebMessage(card = WebCard(
-                        title = message.title,
-                        subTitle = message.subTitle,
-                        file = message.file?.url?.let {
-                            MediaFile(
-                                message.file?.url as String,
-                                message.file?.name as String
-                            )
-                        },
-                        buttons = message.actions.map { UrlButton(it.title.toString(), it.url.toString()) }
-                    ))
+                    WebMessage(
+                        card = WebCard(
+                            title = message.title,
+                            subTitle = message.subTitle,
+                            file = message.file,
+                            buttons = message.actions.map { button -> button.toButton() }
+                        ))
                 }
                 is MediaCarousel -> {
                     WebMessage(carousel = WebCarousel(message.cards.map { mediaCard ->
                         WebCard(
                             title = mediaCard.title,
                             subTitle = mediaCard.subTitle,
-                            file = mediaCard.file?.url?.let {
-                                MediaFile(
-                                    mediaCard.file?.url as String,
-                                    mediaCard.file?.name as String
-                                )
-                            },
-                            buttons = mediaCard.actions.map { button ->
-                                UrlButton(
-                                    button.title.toString(),
-                                    button.url.toString()
-                                )
-                            }
+                            file = mediaCard.file,
+                            buttons = mediaCard.actions.map { button -> button.toButton() }
                         )
                     }))
                 }
@@ -332,4 +325,11 @@ class WebConnector internal constructor(
             }
         )
     }
+
+    private fun MediaAction.toButton() =
+        if (url == null) {
+            PostbackButton(title.toString(), null)
+        } else {
+            UrlButton(title.toString(), url.toString())
+        }
 }
