@@ -8,7 +8,6 @@ import {Observable} from 'rxjs';
 import {UserFilter} from '../history/history.component';
 import {ChartData} from '../model/ChartData';
 import {BotApplicationConfiguration, ConnectorType} from 'src/app/core/model/configuration';
-import {NbCalendarRange, NbDateService, NbMenuService} from '@nebular/theme';
 import * as html2pdf from 'html2pdf.js'
 import {MessagesAnalyticsQuery} from '../model/MessagesAnalyticsQuery';
 
@@ -19,27 +18,23 @@ import {MessagesAnalyticsQuery} from '../model/MessagesAnalyticsQuery';
 })
 export class AnalyticsComponent {
 
+  startDate: Date;
+  endDate: Date;
+
   filter: UserFilter = new UserFilter([], false);
   loadingUsers: boolean = false;
   usersChart: ChartData;
   messagesChart: ChartData;
-  selectedDate = '7';
   globalUsersCount: number[];
   globalMessagesCount: number[];
   configurations: BotApplicationConfiguration[];
   connectors: string[];
-  range: NbCalendarRange<Date>;
-  calendarDisplayed = false;
-  filterDays = 7
 
   constructor(private state: StateService,
               private monitoring: MonitoringService,
-              private botConfiguration: BotConfigurationService,
-              private nbMenuService: NbMenuService,
-              protected dateService: NbDateService<Date>) {
+              private botConfiguration: BotConfigurationService) {
     this.botConfiguration.configurations.subscribe(configs => {
         this.configurations = configs;
-        this.searchByDays(this.filterDays)
       }
     )
   }
@@ -96,9 +91,9 @@ export class AnalyticsComponent {
   }
 
   getFileName():string{
-    let fileName = "Export-" + this.range.start.toLocaleDateString();
-    if(this.range.end != null){
-      fileName+="-" + this.range.end.toLocaleDateString();
+    let fileName = "Export-" + this.startDate.toLocaleDateString();
+    if(this.endDate != null){
+      fileName+="-" + this.endDate.toLocaleDateString();
     }
     fileName += ".pdf";
     return fileName;
@@ -119,14 +114,6 @@ export class AnalyticsComponent {
       .save()
   }
 
-  getStatus(nbDays): string {
-    if (nbDays == this.filterDays) {
-      return "info"
-    } else {
-      return "basic"
-    }
-  }
-
   getConnector(connectorId: string): ConnectorType {
     let connectors = this.configurations.filter(config => config.connectorType.id === connectorId).map(config => config.connectorType)
     return connectors && connectors.length > 0 ? connectors[0] : null
@@ -136,51 +123,12 @@ export class AnalyticsComponent {
     return this.monitoring.usersAnalytics(this.buildUserSearchQuery(query));
   }
 
-  close() {
-    this.calendarDisplayed = false;
-  }
-
-  openCalendar() {
-    this.calendarDisplayed = !this.calendarDisplayed;
-  }
-
-  setRangeDate(days: number) {
-    if (days == 0) {
-      this.range = {
-        start: this.dateService.today(),
-        end: this.dateService.today()
-      };
-    } else if (days == 1) {
-      const yesterday = new Date()
-      yesterday.setDate(yesterday.getDate() - 1)
-      this.range = {
-        start: yesterday,
-        end: yesterday
-      };
-    } else {
-      const fromDate = new Date()
-      fromDate.setDate(fromDate.getDate() - days)
-      this.range = {
-        start: fromDate,
-        end: this.dateService.today()
-      };
-    }
-  }
-
-  setCustomDate() {
-    this.filterDays = -1;
-    this.range = {
-      start: this.dateService.today(),
-      end: this.dateService.today()
-    };
-  }
-
   search() {
     let that = this;
     this.loadingUsers = true;
-    if (this.range.start != null) {
-      this.filter.from = this.range.start;
-      this.filter.to = this.range.end;
+    if (this.startDate != null) {
+      this.filter.from = this.startDate;
+      this.filter.to = this.endDate;
       this.usersGraph(that);
       this.messagesGraph(that);
     }
@@ -210,7 +158,6 @@ export class AnalyticsComponent {
         };
         this.usersChart = new ChartData("Users", "LineChart", graphdata, columnNames, options, 500, 1000);
         this.loadingUsers = false;
-        this.close();
       }
     )
   }
@@ -238,15 +185,8 @@ export class AnalyticsComponent {
         };
         this.messagesChart = new ChartData("Messages", "LineChart", graphdata, columnNames, options, 500, 1000);
         this.loadingUsers = false;
-        this.close();
       }
     )
-  }
-
-  searchByDays(days: number) {
-    this.filterDays = days;
-    this.setRangeDate(days);
-    this.search();
   }
 
   private buildUserSearchQuery(query: PaginatedQuery): UserSearchQuery {
@@ -273,4 +213,10 @@ export class AnalyticsComponent {
     )
   }
 
+  datesChanged(dates: [Date, Date]) {
+    console.debug('Date range changed: start=' + dates[0] + ', end=' + dates[1]);
+    this.startDate = dates[0];
+    this.endDate = dates[1];
+    this.search();
+  }
 }

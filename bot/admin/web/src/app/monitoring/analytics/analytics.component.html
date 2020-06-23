@@ -2,27 +2,7 @@
   <nb-card>
     <nb-card-header style=" z-index: 1000;display: inline;padding-bottom: 0;">
       <nb-card style="position: absolute;z-index: 1000;">
-        <button outline nbButton status="primary" style="position: relative;z-index: 1000;" (click)="openCalendar()">
-          {{ range.start | date }} - {{ range.end | date }}
-        </button>
-        <div *ngIf="calendarDisplayed">
-          <div style="z-index: 1000;display: flex;">
-            <div style="z-index: 1000;display: inline-grid;width: -webkit-fill-available; height: fit-content;">
-              <button nbButton size="small" [status]="getStatus(1)" (click)="searchByDays(1)">Yesterday</button>
-              <button nbButton size="small" [status]="getStatus(0)" (click)="searchByDays(0)">Today</button>
-              <button nbButton size="small" [status]="getStatus(7)" (click)="searchByDays(7)">Last 7 days</button>
-              <button nbButton size="small" [status]="getStatus(14)" (click)="searchByDays(14)">Last 14 days</button>
-              <button nbButton size="small" [status]="getStatus(28)" (click)="searchByDays(28)">Last 28 days</button>
-              <button nbButton size="small" [status]="getStatus(90)" (click)="searchByDays(90)">Last 90 days</button>
-              <button nbButton size="small" [status]="getStatus(-1)" (click)="setCustomDate()">Custom</button>
-            </div>
-            <nb-calendar-range [(range)]="range" class="cal"></nb-calendar-range>
-          </div>
-          <div style="text-align: right;padding: 5px;">
-            <button nbButton size="small" status="basic" style="margin-right: 10px;" (click)="close()">Cancel</button>
-            <button nbButton size="small" status="primary" (click)="search()">Update</button>
-          </div>
-        </div>
+        <date-range-calendar [rangeInDays]="90" (datesChanged)="datesChanged($event)"></date-range-calendar>
       </nb-card>
       <button nbButton outline shape="round" (click)="onExportClick()" nbTooltip="Export" status="primary" style="float: right">
         <nb-icon icon="upload"></nb-icon>
