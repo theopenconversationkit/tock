@@ -472,7 +472,7 @@ export class FlowComponent implements OnInit, OnDestroy {
         }
       });
       if (finalNodes.length < 1) {
-        this.toastrService.show("No node to render - please change your options to increase the number of nodes", "Error", {duration: 5000})
+        this.toastrService.show("Please change options to find nodes to render.", "No node to render", {duration: 5000, status: "warning"})
       } else {
 
       //4 create transitions
@@ -577,7 +577,7 @@ export class FlowComponent implements OnInit, OnDestroy {
       finalNodes = tmpFinalStates;
 
       if (finalTransitions.size > 1000) {
-        this.toastrService.show("More than 1000 nodes to render - please change your options to decrease the number of nodes", "Error", {duration: 5000})
+        this.toastrService.show("More than 1000 nodes to render. Please change options to fetch less or filter out more.", "Too many nodes to render", {duration: 5000, status: "warning"})
       } else {
 
         //7 create graph edges
