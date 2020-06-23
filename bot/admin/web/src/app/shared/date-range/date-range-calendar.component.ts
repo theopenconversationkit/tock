@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit, EventEmitter, Input, Output} from "@angular/core";
-import {NbCalendarRange, NbDateService, NbMenuService} from '@nebular/theme';
+import {NbCalendarRange, NbDateService} from '@nebular/theme';
 
 @Component({
   selector: 'date-range-calendar',
@@ -36,20 +36,11 @@ export class DateRangeCalendarComponent implements OnInit {
   @Output()
   datesChanged: EventEmitter<[Date, Date]> = new EventEmitter();
 
-  constructor(private menuService: NbMenuService,
-              protected dateService: NbDateService<Date>) {
+  constructor(protected dateService: NbDateService<Date>) {
   }
 
   ngOnInit(): void {
     this.setRangeInDays(this.rangeInDays);
-  }
-
-  update() {
-    this.displayCalendar = false;
-    if (this.range.start != null) {
-      console.debug('Dates changed: start=' + this.range.start + ', end=' + this.range.end);
-      this.datesChanged.emit([this.range.start, this.range.end]);
-    }
   }
 
   toggle() {
@@ -58,6 +49,12 @@ export class DateRangeCalendarComponent implements OnInit {
 
   getStatus(nbDays): string {
     return "basic";
+  }
+
+  setRangeInDays(days: number) {
+    this.rangeInDays = days;
+    this.resetRange(days);
+    this.update();
   }
 
   resetRange(days: number) {
@@ -81,19 +78,36 @@ export class DateRangeCalendarComponent implements OnInit {
         end: this.dateService.today()
       };
     }
+    this.normalizeDateTimes();
   }
 
-  setCustomDate() {
-    this.rangeInDays = -1;
+  normalizeDateTimes() {
+    let start = null;
+    let end = null;
+    if (this.range.start != null) {
+      start = new Date(JSON.parse(JSON.stringify(this.range.start))); // clone
+      start.setHours(0);
+      start.setMinutes(0);
+      start.setSeconds(0);
+    }
+    if (this.range.end != null) {
+      end = new Date(JSON.parse(JSON.stringify(this.range.end))); // clone
+      end.setHours(23);
+      end.setMinutes(59);
+      end.setSeconds(59);
+    }
     this.range = {
-      start: this.dateService.today(),
-      end: this.dateService.today()
+      start: start,
+      end: end
     };
   }
 
-  setRangeInDays(days: number) {
-    this.rangeInDays = days;
-    this.resetRange(days);
-    this.update();
+  update() {
+    this.displayCalendar = false;
+    if (this.range.start != null) {
+      this.normalizeDateTimes();
+      console.debug('Dates changed: start=' + this.range.start + ', end=' + this.range.end);
+      this.datesChanged.emit([this.range.start, this.range.end]);
+    }
   }
 }

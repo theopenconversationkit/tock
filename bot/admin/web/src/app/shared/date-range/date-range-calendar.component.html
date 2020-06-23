@@ -11,6 +11,7 @@
     <button nbButton size="small" [status]="getStatus(14)" (click)="setRangeInDays(14)">Last 14 days</button>
     <button nbButton size="small" [status]="getStatus(30)" (click)="setRangeInDays(30)">Last 30 days</button>
     <button nbButton size="small" [status]="getStatus(90)" (click)="setRangeInDays(90)">Last 90 days</button>
+    <button nbButton size="small" [status]="getStatus(180)" (click)="setRangeInDays(180)">Last 180 days</button>
   </div>
   <nb-calendar-range [(range)]="range"></nb-calendar-range>
   <button nbButton size="small" status="basic" (click)="update()">Update</button>
