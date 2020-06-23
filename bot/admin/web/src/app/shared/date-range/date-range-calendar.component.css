@@ -1,5 +1,23 @@
-.calendar {
+.calendar-panel {
   z-index: 10000;
   display: flex;
+  flex-direction: column;
   position: fixed;
+}
+
+.calendar-body {
+  display: flex;
+  flex-direction: row;
+}
+
+.calendar-shortcuts {
+  display: inline-grid;
+  width: -webkit-fill-available;
+  height: fit-content;
+}
+
+.calendar-controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
 }

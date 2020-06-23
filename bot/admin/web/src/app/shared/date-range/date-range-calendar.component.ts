@@ -25,6 +25,7 @@ import {NbCalendarRange, NbDateService} from '@nebular/theme';
 export class DateRangeCalendarComponent implements OnInit {
 
   range: NbCalendarRange<Date>;
+  previousRange: NbCalendarRange<Date>;
   displayCalendar = false;
 
   @Input()
@@ -43,21 +44,44 @@ export class DateRangeCalendarComponent implements OnInit {
     this.setRangeInDays(this.rangeInDays);
   }
 
-  toggle() {
-    this.displayCalendar = this.disabled ? false : !this.displayCalendar;
+  disabledOrModified(): boolean {
+    return this.disabled || (this.displayCalendar && this.previousRange != this.range);
+  }
+
+  toggle(): void {
+    if (!this.disabled) {
+      if (!this.displayCalendar) {
+        this.open();
+      } else {
+        if (this.range == this.previousRange) {
+          this.cancel();
+        }
+      }
+    }
+  }
+
+  private open(): void {
+    this.previousRange = this.range;
+    this.displayCalendar = true;
+  }
+
+  cancel(): void {
+    this.range = this.previousRange;
+    this.previousRange = null;
+    this.displayCalendar = false;
   }
 
   getStatus(nbDays): string {
     return "basic";
   }
 
-  setRangeInDays(days: number) {
+  setRangeInDays(days: number): void {
     this.rangeInDays = days;
     this.resetRange(days);
     this.update();
   }
 
-  resetRange(days: number) {
+  private resetRange(days: number): void {
     if (days == 0) {
       this.range = {
         start: this.dateService.today(),
@@ -81,7 +105,7 @@ export class DateRangeCalendarComponent implements OnInit {
     this.normalizeDateTimes();
   }
 
-  normalizeDateTimes() {
+  private normalizeDateTimes(): void {
     let start = null;
     let end = null;
     if (this.range.start != null) {
@@ -102,10 +126,11 @@ export class DateRangeCalendarComponent implements OnInit {
     };
   }
 
-  update() {
+  update(): void {
     this.displayCalendar = false;
     if (this.range.start != null) {
       this.normalizeDateTimes();
+      this.previousRange = null;
       console.debug('Dates changed: start=' + this.range.start + ', end=' + this.range.end);
       this.datesChanged.emit([this.range.start, this.range.end]);
     }
