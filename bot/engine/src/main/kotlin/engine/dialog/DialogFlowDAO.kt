@@ -36,5 +36,11 @@ interface DialogFlowDAO {
         to: ZonedDateTime?
         ): ApplicationDialogFlowData
 
-    fun search(analyticsQuery: FlowAnalyticsQuery): List<DialogFlowTransitionStatsData>
+    fun search(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): List<DialogFlowTransitionStatsData>
 }

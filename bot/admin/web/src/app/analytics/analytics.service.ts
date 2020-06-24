@@ -17,15 +17,15 @@
 import {Injectable, OnDestroy} from "@angular/core";
 import {RestService} from "../core-nlp/rest/rest.service";
 import {StateService} from "../core-nlp/state.service";
-import {UserAnalyticsQueryResult, UserReportQueryResult, UserSearchQuery} from "./model/users";
+import {UserAnalyticsQueryResult, UserReportQueryResult, UserSearchQuery} from "./users/users";
 import {Observable} from "rxjs";
-import {DialogReportQuery, DialogReportQueryResult} from "./model/dialogs";
+import {DialogReportQuery, DialogReportQueryResult} from "./dialogs/dialogs";
 import {TestPlan} from "../test/model/test";
 import {DialogReport} from "../shared/model/dialog-data";
-import {MessagesAnalyticsQuery} from "./model/MessagesAnalyticsQuery";
+import {ApplicationDialogFlow, DialogFlowRequest} from './flow/flow';
 
 @Injectable()
-export class MonitoringService implements OnDestroy {
+export class AnalyticsService implements OnDestroy {
 
 
   constructor(private rest: RestService,
@@ -43,8 +43,24 @@ export class MonitoringService implements OnDestroy {
     return this.rest.post("/analytics/users", query, UserAnalyticsQueryResult.fromJSON);
   }
 
-  messagesAnalytics(query: MessagesAnalyticsQuery): Observable<UserAnalyticsQueryResult> {
-    return this.rest.post("/analytics/messages", query, UserAnalyticsQueryResult.fromJSON);
+  messagesAnalytics(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
+    return this.rest.post("/analytics/messages", request, UserAnalyticsQueryResult.fromJSON);
+  }
+
+  messagesAnalyticsByConfiguration(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
+    return this.rest.post("/analytics/messages/byConfiguration", request, UserAnalyticsQueryResult.fromJSON);
+  }
+
+  messagesAnalyticsByConnectorType(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
+    return this.rest.post("/analytics/messages/byConnectorType", request, UserAnalyticsQueryResult.fromJSON);
+  }
+
+  messagesAnalyticsByDayOfWeek(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
+    return this.rest.post("/analytics/messages/byDayOfWeek", request, UserAnalyticsQueryResult.fromJSON);
+  }
+
+  messagesAnalyticsByHour(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
+    return this.rest.post("/analytics/messages/byHour", request, UserAnalyticsQueryResult.fromJSON);
   }
 
   dialogs(query: DialogReportQuery): Observable<DialogReportQueryResult> {
@@ -61,6 +77,10 @@ export class MonitoringService implements OnDestroy {
 
   addDialogToTestPlan(planId: string, dialogId: string): Observable<boolean> {
     return this.rest.post(`/test/plan/${planId}/dialog/${dialogId}`, this.state.createApplicationScopedQuery());
+  }
+
+  getApplicationFlow(request: DialogFlowRequest): Observable<ApplicationDialogFlow> {
+    return this.rest.post(`/flow`, request, ApplicationDialogFlow.fromJSON);
   }
 
 }

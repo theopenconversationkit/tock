@@ -1,0 +1,71 @@
+
+<nb-flip-card [showToggleButton]="false" [flipped]="isFlipped" *ngIf="mainChart">
+  <nb-card-front>
+    <nb-card>
+      <nb-card-header>
+        {{title}}
+        <button nbButton shape="round" (click)="onFlipAction()" nbTooltip="Show Table"
+                status="success" style="float: right;">
+          <nb-icon icon="layout-outline"></nb-icon>
+        </button>
+        <button nbButton outline shape="round" (click)="onCsvAction()" nbTooltip="Export data as CSV"
+                status="primary" style="float: right; margin-right: 20px;">
+          CSV <nb-icon icon="download"></nb-icon>
+        </button>
+      </nb-card-header>
+      <nb-card-body>
+        <div style="display: flex;">
+          <google-chart
+            [type]="mainChart.type"
+            [data]="mainChart.data"
+            [columns]="mainChart.columnNames"
+            [options]="mainChart.options"
+            [height]="mainChart.height"
+            [dynamicResize]="true"
+            width="{{altChart ? '70%' : '100%'}}"
+            style="width: {{altChart ? '70%' : '100%'}};">
+          </google-chart>
+          <google-chart *ngIf="altChart"
+            [type]="altChart.type"
+            [data]="altChart.data"
+            [columns]="altChart.columnNames"
+            [options]="altChart.options"
+            [height]="altChart.height"
+            [dynamicResize]="true"
+            width="30%"
+            style="width: 30%;">
+          </google-chart>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </nb-card-front>
+  <nb-card-back>
+    <nb-card>
+      <nb-card-header>
+        {{title}}
+        <button nbButton shape="round" (click)="onFlipAction()" nbTooltip="Show Chart"
+                status="success" style="float: right;">
+          <nb-icon [icon]="chartIcon()"></nb-icon>
+        </button>
+        <button nbButton outline shape="round" (click)="onCsvAction()" nbTooltip="Export data as CSV"
+                status="primary" style="float: right; margin-right: 20px;">
+          CSV <nb-icon icon="download"></nb-icon>
+        </button>
+      </nb-card-header>
+      <nb-card-body>
+        <div style="width: 100%;">
+          <google-chart
+            type="Table"
+            [data]="mainChart.data"
+            [columns]="mainChart.columnNames"
+            [options]="mainChart.options"
+            [height]="mainChart.height"
+            [dynamicResize]="true"
+            width="100%"
+            style="width: 100%;">
+          </google-chart>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </nb-card-back>
+</nb-flip-card>

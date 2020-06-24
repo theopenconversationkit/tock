@@ -174,31 +174,34 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         return ApplicationDialogFlowData(statesWithStats, transitionsWithStats, emptyList()/*TODO*/)
     }
 
-    override fun search(analyticsQuery: FlowAnalyticsQuery): List<DialogFlowTransitionStatsData> {
-        with(analyticsQuery) {
-            val applicationsIds = BotApplicationConfigurationMongoDAO.getApplicationWithCollectionIds(analyticsQuery.namespace, analyticsQuery.nlpModel)
-            if (applicationsIds.isEmpty()) {
-                return listOf()
-            }
-            val filter =
+    override fun search(namespace: String,
+            botId: String,
+            applicationIds: Set<Id<BotApplicationConfiguration>>,
+            from: ZonedDateTime?,
+            to: ZonedDateTime?
+    ): List<DialogFlowTransitionStatsData> {
+        val filter =
                 and(
-                    ApplicationId `in` applicationsIds,
-                    Date gt from.toInstant(ZoneOffset.UTC),
-                    Date lt to.toInstant(ZoneOffset.UTC)
+                    listOfNotNull(
+                        if (applicationIds.isEmpty()) null else ApplicationId `in` applicationIds,
+                        if (from == null) null else Date gt from?.toInstant(),
+                        if (to == null) null else Date lt to?.toInstant()
+                    )
                 )
-            logger.debug("flow analytics search query: $filter")
-            val zoneId = ZoneId.of("Europe/Paris")
-            return flowTransitionStatsCol.find(filter).ascendingSort(Date).toList()
+        logger.debug { "Flow Message filter: $filter" }
+        val zoneId = ZoneId.of("Europe/Paris")
+        return flowTransitionStatsCol.find(filter).ascendingSort(Date).toList().also {
+            logger.debug { "Found transitions: $it"}
+        }
                 .map {
                     DialogFlowTransitionStatsData(
-                        applicationId = it.applicationId.toString(),
-                        transitionId = it.transitionId.toString(),
-                        dialogId = it.dialogId.toString(),
-                        text = it.text,
-                        date = LocalDateTime.ofInstant(it.date, zoneId)
+                            applicationId = it.applicationId.toString(),
+                            transitionId = it.transitionId.toString(),
+                            dialogId = it.dialogId.toString(),
+                            text = it.text,
+                            date = LocalDateTime.ofInstant(it.date, zoneId)
                     )
                 }
-        }
     }
 
     private fun findStates(namespace: String, botId: String): List<DialogFlowStateCol> =

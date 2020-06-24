@@ -1,0 +1,29 @@
+<div class="content" id="element-id">
+  <nb-card>
+    <nb-card-body nbSpinnerStatus="primary">
+      <date-range-calendar [rangeInDays]="7" (datesChanged)="datesChanged($event)"></date-range-calendar>
+      <tock-select-bot [allowNoConfigurationSelection]="false" noConnectorLabel="All Connectors"
+                       [allowNoSelection]="true" noConfigurationLabel="All Configurations"
+                       (selectionChange)="selectedConfigurationChanged($event)" class="select-bot">
+      </tock-select-bot>
+      <span style="float: right; padding: 5px;">
+        <nb-toggle status="success" [(ngModel)]="pretty" (change)="waitAndRefresh()">
+          Pretty (Curve Lines)
+        </nb-toggle>
+        &nbsp;&nbsp;
+        <nb-toggle status="info" [(ngModel)]="stacked" (change)="waitAndRefresh()">
+          Stacked Area
+        </nb-toggle>
+        &nbsp;&nbsp;
+        <nb-toggle status="warning" [(ngModel)]="displayTests" (change)="waitAndRefresh()">
+          Tests (Tock Studio)
+        </nb-toggle>
+      </span>
+    </nb-card-body>
+  </nb-card>
+
+  <tock-chart [data]="messagesByType" title="Messages" [pretty]="pretty" [stacked]="stacked"></tock-chart>
+  <tock-chart [data]="messagesByConfiguration" title="Messages by Configuration" [pretty]="pretty" [stacked]="stacked"></tock-chart>
+  <tock-chart [data]="messagesByConnector" title="Messages by Connector Type" [pretty]="pretty" [stacked]="stacked"></tock-chart>
+
+</div>

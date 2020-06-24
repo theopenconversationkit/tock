@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {DialogFlowStateData, DialogFlowStateTransitionData, DialogFlowStateTransitionType} from "../model/flow";
-import {AnswerConfigurationType} from "../model/story";
+import {DialogFlowStateData, DialogFlowStateTransitionData, DialogFlowStateTransitionType} from "./flow";
+import {AnswerConfigurationType} from "../../bot/model/story";
 
 export class StoryNode {
 

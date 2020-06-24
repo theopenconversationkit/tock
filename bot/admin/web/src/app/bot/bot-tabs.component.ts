@@ -26,7 +26,6 @@ const tabs = [
   new TabLink("story-create", "New Story"),
   new TabLink("story-search", "Search Stories"),
   new TabLink("story-rules", "Story Rules"),
-  new TabLink("flow", "Bot Flow"),
   new TabLink("i18n", "Responses")
 ];
 

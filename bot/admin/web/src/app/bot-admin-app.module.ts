@@ -57,8 +57,8 @@ const routes: Routes = [
     loadChildren: () => import('./test/test.module').then(m => m.BotTestModule)
   },
   {
-    path: 'monitoring',
-    loadChildren: () => import('./monitoring/monitoring.module').then(m => m.BotMonitoringModule)
+    path: 'analytics',
+    loadChildren: () => import('./analytics/analytics.module').then(m => m.BotAnalyticsModule)
   },
   {path: '**', redirectTo: '/nlp/inbox'}
 ];

@@ -1,37 +1,47 @@
 import {Component} from '@angular/core';
-import {UserAnalyticsQueryResult, UserSearchQuery} from "../model/users";
+import {UserAnalyticsQueryResult, UserSearchQuery} from "../users/users";
+import {DialogFlowRequest} from "../flow/flow";
+import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
 import {StateService} from 'src/app/core-nlp/state.service';
-import {MonitoringService} from '../monitoring.service';
+import {AnalyticsService} from '../analytics.service';
 import {BotConfigurationService} from 'src/app/core/bot-configuration.service';
 import {PaginatedQuery} from 'src/app/model/commons';
 import {Observable} from 'rxjs';
-import {UserFilter} from '../history/history.component';
-import {ChartData} from '../model/ChartData';
+import {UserFilter} from '../users/users.component';
+import {ChartData} from '../chart/ChartData';
 import {BotApplicationConfiguration, ConnectorType} from 'src/app/core/model/configuration';
 import * as html2pdf from 'html2pdf.js'
-import {MessagesAnalyticsQuery} from '../model/MessagesAnalyticsQuery';
 
 @Component({
-  selector: 'app-analytics',
-  templateUrl: './analytics.component.html',
-  styleUrls: ['./analytics.component.css']
+  selector: 'tock-activity',
+  templateUrl: './activity.component.html',
+  styleUrls: ['./activity.component.css']
 })
-export class AnalyticsComponent {
+export class ActivityComponent {
 
   startDate: Date;
   endDate: Date;
+  selectedConnectorId: string;
+  selectedConfigurationName: string;
+  displayTests = true;
+  pretty = true;
+  stacked = false;
 
   filter: UserFilter = new UserFilter([], false);
   loadingUsers: boolean = false;
   usersChart: ChartData;
-  messagesChart: ChartData;
+
+  messagesByType: UserAnalyticsQueryResult;
+  messagesByConfiguration: UserAnalyticsQueryResult;
+  messagesByConnector: UserAnalyticsQueryResult;
+
   globalUsersCount: number[];
-  globalMessagesCount: number[];
+//   globalMessagesCount: number[];
   configurations: BotApplicationConfiguration[];
   connectors: string[];
 
   constructor(private state: StateService,
-              private monitoring: MonitoringService,
+              private analytics: AnalyticsService,
               private botConfiguration: BotConfigurationService) {
     this.botConfiguration.configurations.subscribe(configs => {
         this.configurations = configs;
@@ -99,8 +109,7 @@ export class AnalyticsComponent {
     return fileName;
   }
 
-  onExportClick() {
-
+  onPdfAction() {
     const options = {
       filename: this.getFileName(),
       image: {type: 'jpeg ', quality: 0.95},
@@ -120,17 +129,19 @@ export class AnalyticsComponent {
   }
 
   findUsers(query: PaginatedQuery): Observable<UserAnalyticsQueryResult> {
-    return this.monitoring.usersAnalytics(this.buildUserSearchQuery(query));
+    return this.analytics.usersAnalytics(this.buildUserSearchQuery(query));
   }
 
-  search() {
+  private reload() {
     let that = this;
     this.loadingUsers = true;
     if (this.startDate != null) {
       this.filter.from = this.startDate;
       this.filter.to = this.endDate;
-      this.usersGraph(that);
-      this.messagesGraph(that);
+//       this.usersGraph(that);
+      this.buildMessagesCharts();
+      this.buildMessagesByConfigurationCharts();
+      this.buildMessagesByConnectorCharts();
     }
   }
 
@@ -156,34 +167,35 @@ export class AnalyticsComponent {
           colors: connectorColor,
           pointSize: 5, is3D: true
         };
-        this.usersChart = new ChartData("Users", "LineChart", graphdata, columnNames, options, 500, 1000);
+        this.usersChart = new ChartData("LineChart", graphdata, columnNames, options, '500', '1000');
         this.loadingUsers = false;
       }
     )
   }
 
-  private messagesGraph(that: this) {
-    this.monitoring.messagesAnalytics(this.buildMessagesSearchQuery()).subscribe(
+  private buildMessagesCharts() {
+    this.analytics.messagesAnalytics(this.buildMessagesSearchQuery()).subscribe(
       result => {
         this.connectors = result.connectorsType;
-        let graphdata = [];
-        result.dates.forEach(function (date, index) {
-          graphdata.push([date].concat(result.usersData[index]))
-        });
-        this.globalMessagesCount = new Array(this.connectors.length).fill(0);
-        result.usersData.forEach(function (userData) {
-          that.connectors.forEach(function (value, index,) {
-            that.globalMessagesCount[index] += userData[index]
-          })
-        })
-        let columnNames = ["Day"].concat(this.connectors.map((c, i) => c + "  " + this.globalMessagesCount[i]))
-        let connectorColor = this.connectors.map(connectorType => that.getConnectorColor(connectorType))
-        let options = {
-          legend: {position: 'right'},
-          colors: connectorColor,
-          pointSize: 5, is3D: true
-        };
-        this.messagesChart = new ChartData("Messages", "LineChart", graphdata, columnNames, options, 500, 1000);
+        this.messagesByType = result;
+        this.loadingUsers = false;
+      }
+    )
+  }
+
+  private buildMessagesByConfigurationCharts() {
+    this.analytics.messagesAnalyticsByConfiguration(this.buildMessagesSearchQuery()).subscribe(
+      result => {
+        this.messagesByConfiguration = result;
+        this.loadingUsers = false;
+      }
+    )
+  }
+
+  private buildMessagesByConnectorCharts() {
+    this.analytics.messagesAnalyticsByConnectorType(this.buildMessagesSearchQuery()).subscribe(
+      result => {
+        this.messagesByConnector = result;
         this.loadingUsers = false;
       }
     )
@@ -203,20 +215,33 @@ export class AnalyticsComponent {
       this.filter.displayTests);
   }
 
-  private buildMessagesSearchQuery(): MessagesAnalyticsQuery{
-    return new MessagesAnalyticsQuery(
+  private buildMessagesSearchQuery(): DialogFlowRequest {
+    return new DialogFlowRequest(
       this.state.currentApplication.namespace,
       this.state.currentApplication.name,
+      this.state.currentLocale,
       this.state.currentApplication.name,
+      this.selectedConfigurationName,
+      this.selectedConnectorId,
       this.filter.from,
-      this.filter.to
-    )
+      this.filter.to,
+      this.displayTests
+    );
   }
 
   datesChanged(dates: [Date, Date]) {
-    console.debug('Date range changed: start=' + dates[0] + ', end=' + dates[1]);
     this.startDate = dates[0];
     this.endDate = dates[1];
-    this.search();
+    this.reload();
+  }
+
+  selectedConfigurationChanged(event?: SelectBotEvent) {
+    this.selectedConfigurationName = !event ? null : event.configurationName;
+    this.selectedConnectorId = !event ? null : event.configurationId;
+    this.reload();
+  }
+
+  waitAndRefresh() {
+    setTimeout(_ => this.reload());
   }
 }

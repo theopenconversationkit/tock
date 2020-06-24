@@ -45,7 +45,6 @@ import ai.tock.bot.connector.rest.addRestConnector
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.config.UploadedFilesService
 import ai.tock.bot.engine.config.UploadedFilesService.downloadFile
-import ai.tock.bot.engine.dialog.FlowAnalyticsQuery
 import ai.tock.nlp.admin.AdminVerticle
 import ai.tock.nlp.admin.model.ApplicationScopedQuery
 import ai.tock.nlp.admin.model.TranslateReport
@@ -108,15 +107,47 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonPost("/analytics/messages", botUser) { context, query: FlowAnalyticsQuery ->
-            if (context.organization == query.namespace) {
-                BotAdminService.searchMessagesAnalytics(query)
+        blockingJsonPost("/analytics/messages", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                BotAdminService.reportMessages(request)
             } else {
                 unauthorized()
             }
         }
 
-        blockingJsonGet("/dialog/:applicationId/:dialogId", admin) { context ->
+        blockingJsonPost("/analytics/messages/byConfiguration", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                BotAdminService.reportMessagesByConfiguration(request)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byConnectorType", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                BotAdminService.reportMessagesByConnectorType(request)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byDayOfWeek", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                BotAdminService.reportMessagesByDayOfWeek(request)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byHour", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                BotAdminService.reportMessagesByHour(request)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonGet("/dialog/:applicationId/:dialogId", botUser) { context ->
             val app = FrontClient.getApplicationById(context.pathId("applicationId"))
             if (context.organization == app?.namespace) {
                 dialogReportDAO

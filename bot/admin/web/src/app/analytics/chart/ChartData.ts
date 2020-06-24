@@ -15,12 +15,12 @@
  */
 
 export class ChartData {
-  constructor(public title: string,
-              public type: string,
+  constructor(public type: string,
               public data: (string | number)[][],
               public columnNames: string[],
               public options: {},
-              public height: number,
-              public width: number
+              public height: string,
+              public width: string,
+              public title?: string
               ) {} ;
 }

@@ -82,9 +82,9 @@ export class BotAdminAppComponent implements OnInit, OnDestroy {
         hidden: this.state.hasRole(UserRole.botUser)
       },
       {
-        title: 'Monitoring',
+        title: 'Analytics',
         icon: 'message-circle-outline',
-        link: '/monitoring'
+        link: '/analytics'
         ,
         hidden: this.state.hasRole(UserRole.botUser)
       },

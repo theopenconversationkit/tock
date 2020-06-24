@@ -23,26 +23,28 @@ class TabLink {
 }
 
 const tabs = [
-  new TabLink("history", "History"),
-  new TabLink("dialogs", "Dialogs"),
-  new TabLink("analytics", "Analytics")
+  new TabLink("activity", "Activity"),
+  new TabLink("behavior", "Behavior"),
+  new TabLink("flow", "Flow"),
+  new TabLink("users", "Users"),
+  new TabLink("dialogs", "Search")
 ];
 
 @Component({
-  selector: 'tock-monitoring-tabs',
-  templateUrl: './monitoring-tabs.component.html',
-  styleUrls: ['./monitoring-tabs.component.css']
+  selector: 'tock-analytics-tabs',
+  templateUrl: './analytics-tabs.component.html',
+  styleUrls: ['./analytics-tabs.component.css']
 })
-export class MonitoringTabsComponent implements OnInit {
+export class AnalyticsTabsComponent implements OnInit {
 
-  monitoringTabLinks = tabs;
+  analyticsTabLinks = tabs;
 
   constructor(private router: Router) {
   }
 
   ngOnInit() {
-    if(this.router.routerState.snapshot.url.endsWith("/monitoring")) {
-       this.router.navigateByUrl("/monitoring/history");
+    if(this.router.routerState.snapshot.url.endsWith("/analytics")) {
+       this.router.navigateByUrl("/analytics/activity");
     }
   }
 

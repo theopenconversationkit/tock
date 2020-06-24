@@ -18,7 +18,7 @@ import {Component, Input, OnInit} from "@angular/core";
 import {DialogReport} from "../model/dialog-data";
 import {UserRole} from "../../model/auth";
 import {StateService} from "../../core-nlp/state.service";
-import {MonitoringService} from "../../monitoring/monitoring.service";
+import {AnalyticsService} from "../../analytics/analytics.service";
 
 @Component({
   selector: 'tock-display-dialog',
@@ -34,7 +34,7 @@ export class DisplayDialogComponent implements OnInit {
 
   constructor(
     private state: StateService,
-    private monitoringService: MonitoringService
+    private analyticsService: AnalyticsService
   ) {
   }
 
@@ -46,7 +46,7 @@ export class DisplayDialogComponent implements OnInit {
   }
 
   reveal() {
-    this.monitoringService.dialog(this.state.currentApplication._id, this.dialog.id).subscribe(
+    this.analyticsService.dialog(this.state.currentApplication._id, this.dialog.id).subscribe(
       d => this.dialog = d
     )
   }
