@@ -43,6 +43,7 @@ internal class ConfiguredStoryHandler(
 
     companion object {
         private val logger = KotlinLogging.logger {}
+        private const val VIEWED_STORIES_BUS_KEY = "_viewed_stories_tock_switch"
     }
 
     override fun handle(bus: BotBus) {
@@ -76,13 +77,16 @@ internal class ConfiguredStoryHandler(
 
         (bus.step as? Step)?.configuration
             ?.also { step ->
-                step.send(bus)
+                if (step.hasCurrentAnwser()) {
+                    step.send(bus)
+                }
                 val targetIntent = step.targetIntent?.name
                     ?: (bus.intent.takeIf { !step.hasCurrentAnwser() }?.wrappedIntent()?.name)
                 bus.botDefinition
                     .takeIf { targetIntent != null }
                     ?.findStoryDefinition(targetIntent, bus.applicationId)
                     ?.takeUnless { it == bus.botDefinition.unknownStory }
+                    ?.takeUnless { bus.viewedStories.contains(it) }
                     ?.apply {
                         bus.switchConfiguredStory(this)
                         return@handle
@@ -95,8 +99,13 @@ internal class ConfiguredStoryHandler(
         configuration.send(bus)
     }
 
+    private val BotBus.viewedStories: Set<StoryDefinition>
+        get() =
+            getBusContextValue<Set<StoryDefinition>>(VIEWED_STORIES_BUS_KEY) ?: emptySet()
+
     private fun BotBus.switchConfiguredStory(target: StoryDefinition) {
         step = step?.takeUnless { story.definition == target }
+        setBusContextValue(VIEWED_STORIES_BUS_KEY, viewedStories + target)
         handleAndSwitchStory(target)
     }
 
@@ -153,13 +162,18 @@ internal class ConfiguredStoryHandler(
                     underlyingConnector.toConnectorMessage(it.toMessage(this)).invoke(this)
                 }
                 ?.let { messages ->
-                    if (suggestions.isNotEmpty() && messages.isNotEmpty())
-                        messages.take(messages.size - 1) + (underlyingConnector.addSuggestions(
-                            messages.last(),
-                            suggestions
-                        ).invoke(this)
-                            ?: messages.last())
-                    else messages
+                    if (end && suggestions.isNotEmpty() && messages.isNotEmpty()) {
+                        messages.take(messages.size - 1) +
+                                (
+                                        underlyingConnector.addSuggestions(
+                                            messages.last(),
+                                            suggestions
+                                        ).invoke(this)
+                                            ?: messages.last()
+                                        )
+                    } else {
+                        messages
+                    }
                 }
                 ?: listOfNotNull(suggestions.takeIf { suggestions.isNotEmpty() && end }
                     ?.let { underlyingConnector.addSuggestions(label, suggestions).invoke(this) })
