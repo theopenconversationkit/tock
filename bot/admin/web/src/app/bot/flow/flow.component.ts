@@ -148,6 +148,9 @@ export class FlowComponent implements OnInit, OnDestroy {
   displayDebug: boolean = false;
   allowSelectAllConfigs: boolean = false;
 
+  startDate: Date;
+  endDate: Date;
+
   private subscription: Subscription;
 
   statsEntity(): boolean {
@@ -185,7 +188,7 @@ export class FlowComponent implements OnInit, OnDestroy {
     });
   }
 
-  private reload() {
+  private reload(forceReload?: boolean) {
     console.debug('Loading flow...');
     if (this.selectedConfigurationName || this.allowSelectAllConfigs) {
       // Reload user flow
@@ -197,9 +200,11 @@ export class FlowComponent implements OnInit, OnDestroy {
                           this.state.currentApplication.name,
                           this.selectedConfigurationName,
                           this.selectedConnectorId,
+                          this.startDate,
+                          this.endDate,
                           this.displayTests
                         );
-        if (!request.equals(this.lastFlowRequest)) {
+        if (forceReload == true || !request.equals(this.lastFlowRequest)) {
           console.debug('Fetching user flow...');
           this.lastFlowRequest = request;
           this.bot.getApplicationFlow(request).subscribe(f => {
@@ -237,6 +242,13 @@ export class FlowComponent implements OnInit, OnDestroy {
   changeLayout() {
     const layout = this.selectedLayout;
     this.layout = this.layouts.find(l => l.name === layout);
+  }
+
+  datesChanged(dates: [Date, Date]) {
+    console.debug('Date range changed: start=' + dates[0] + ', end=' + dates[1]);
+    this.startDate = dates[0];
+    this.endDate = dates[1];
+    this.reload();
   }
 
   updateCount() {
@@ -307,7 +319,7 @@ export class FlowComponent implements OnInit, OnDestroy {
   }
 
   changeMode() {
-    this.reload();
+    this.reload(true);
   }
 
   changeAllowSelectAllConfigs() {
@@ -460,7 +472,7 @@ export class FlowComponent implements OnInit, OnDestroy {
         }
       });
       if (finalNodes.length < 1) {
-        this.toastrService.show("No node to render - please change your options to increase the number of nodes", "Error", {duration: 5000})
+        this.toastrService.show("Please change options to find nodes to render.", "No node to render", {duration: 5000, status: "warning"})
       } else {
 
       //4 create transitions
@@ -565,7 +577,7 @@ export class FlowComponent implements OnInit, OnDestroy {
       finalNodes = tmpFinalStates;
 
       if (finalTransitions.size > 1000) {
-        this.toastrService.show("More than 1000 nodes to render - please change your options to decrease the number of nodes", "Error", {duration: 5000})
+        this.toastrService.show("More than 1000 nodes to render. Please change options to fetch less or filter out more.", "Too many nodes to render", {duration: 5000, status: "warning"})
       } else {
 
         //7 create graph edges

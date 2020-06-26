@@ -22,18 +22,20 @@ import {BotMessageSentenceComponent} from "./bot-message/bot-message-sentence";
 import {BotMessageChoiceComponent} from "./bot-message/bot-message-choice.component";
 import {BotMessageLocationComponent} from "./bot-message/bot-message-location";
 import {BotMessageAttachmentComponent} from "./bot-message/bot-message-attachment";
+import {DateRangeCalendarComponent} from "./date-range/date-range-calendar.component";
 import {SharedModule} from "../shared-nlp/shared.module";
 import {BotSharedService} from "./bot-shared.service";
 import {DisplayDialogComponent} from "./bot-dialog/display-dialog.component";
 import {MomentModule} from "ngx-moment";
 import {SelectBotComponent} from "./select-bot/select-bot.component";
-import {NbCardModule, NbSelectModule, NbTooltipModule} from "@nebular/theme";
+import {NbCalendarRangeModule, NbCardModule, NbSelectModule, NbTooltipModule} from "@nebular/theme";
 
 @NgModule({
   imports: [
     CommonModule,
     SharedModule,
     MomentModule,
+    NbCalendarRangeModule,
     NbCardModule,
     NbSelectModule,
     NbTooltipModule
@@ -46,9 +48,10 @@ import {NbCardModule, NbSelectModule, NbTooltipModule} from "@nebular/theme";
     BotMessageLocationComponent,
     BotMessageAttachmentComponent,
     DisplayDialogComponent,
-    SelectBotComponent
+    SelectBotComponent,
+    DateRangeCalendarComponent
   ],
-  exports: [BotMessageComponent, DisplayDialogComponent, SelectBotComponent],
+  exports: [BotMessageComponent, DisplayDialogComponent, SelectBotComponent, DateRangeCalendarComponent],
   providers: [
     BotSharedService
   ],

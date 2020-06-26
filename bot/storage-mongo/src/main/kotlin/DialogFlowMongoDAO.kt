@@ -71,11 +71,14 @@ import org.litote.kmongo.findOne
 import org.litote.kmongo.from
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.group
+import org.litote.kmongo.gt
+import org.litote.kmongo.lt
 import org.litote.kmongo.match
 import org.litote.kmongo.project
 import org.litote.kmongo.size
 import org.litote.kmongo.sum
 import org.litote.kmongo.toId
+import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
 /**
@@ -121,13 +124,15 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
     override fun loadApplicationData(
             namespace: String,
             botId: String,
-            applicationIds: Set<Id<BotApplicationConfiguration>>
+            applicationIds: Set<Id<BotApplicationConfiguration>>,
+            from: ZonedDateTime?,
+            to: ZonedDateTime?
     ): ApplicationDialogFlowData {
-        logger.debug { "namespace: $namespace, botId: $botId, appIds: $applicationIds" }
+        logger.debug { "Fetching application flow for ns $namespace, bot $botId, apps $applicationIds from $from to $to..." }
         val states = findStates(namespace, botId)
         val transitions = findTransitions(namespace, botId)
         val stats =
-                findStats(transitions.map { it._id }, applicationIds).associateBy { it.first }.mapValues { it.value.second }
+                findStats(transitions.map { it._id }, applicationIds, from, to).associateBy { it.first }.mapValues { it.value.second }
 
         @Suppress("UNCHECKED_CAST")
         val transitionsWithStats = transitions.map {
@@ -171,14 +176,18 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
 
     private fun findStats(
             transitionIds: List<Id<DialogFlowStateTransitionCol>>,
-            botAppConfIds: Set<Id<BotApplicationConfiguration>>
+            botAppConfIds: Set<Id<BotApplicationConfiguration>>,
+            from: ZonedDateTime?,
+            to: ZonedDateTime?
     ): List<Pair<Id<DialogFlowStateTransitionCol>, Long>> =
             flowTransitionStatsCol.aggregate<Pair<String, Long>>(
                     match(
                             and(
                                     listOfNotNull(
                                             TransitionId `in` transitionIds,
-                                            if (botAppConfIds.isEmpty()) null else ApplicationId `in` botAppConfIds
+                                            if (botAppConfIds.isEmpty()) null else ApplicationId `in` botAppConfIds,
+                                            if (from == null) null else Date gt from?.toInstant(),
+                                            if (to == null) null else Date lt to?.toInstant()
                                     )
                             )
                     ),

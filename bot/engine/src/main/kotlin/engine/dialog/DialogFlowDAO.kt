@@ -21,6 +21,7 @@ import ai.tock.bot.admin.dialog.ApplicationDialogFlowData
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.DialogFlowDefinition
 import org.litote.kmongo.Id
+import java.time.ZonedDateTime
 
 interface DialogFlowDAO {
 
@@ -29,6 +30,8 @@ interface DialogFlowDAO {
     fun loadApplicationData(
         namespace: String,
         botId: String,
-        applicationIds: Set<Id<BotApplicationConfiguration>>
-    ): ApplicationDialogFlowData
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+        ): ApplicationDialogFlowData
 }

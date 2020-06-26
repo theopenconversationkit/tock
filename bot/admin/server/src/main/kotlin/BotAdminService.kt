@@ -901,7 +901,7 @@ object BotAdminService {
                 .toSet()
         }
         logger.debug { "Loading Bot Flow for ${applicationIds.size} configurations: $applicationIds..." }
-        return dialogFlowDAO.loadApplicationData(namespace, botId, applicationIds)
+        return dialogFlowDAO.loadApplicationData(namespace, botId, applicationIds, request.from, request.to)
     }
 
 

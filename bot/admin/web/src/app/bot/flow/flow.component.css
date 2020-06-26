@@ -115,6 +115,11 @@ tock-cytoscape {
   min-width: 150px;
 }
 
+.flow-option-label {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
 .flow-stat {
   font-size: small;
   font-style: italic;

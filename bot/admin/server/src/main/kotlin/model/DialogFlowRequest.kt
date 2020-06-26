@@ -19,6 +19,7 @@ package ai.tock.bot.admin.model
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.nlp.admin.model.ApplicationScopedQuery
 import org.litote.kmongo.Id
+import java.time.ZonedDateTime
 
 /**
  *
@@ -27,5 +28,7 @@ data class DialogFlowRequest(
     val botId: String,
     val botConfigurationName: String?,
     val botConfigurationId: Id<BotApplicationConfiguration>?,
+    val from: ZonedDateTime? = null,
+    val to: ZonedDateTime? = null,
     val includeTestConfigurations: Boolean = false
 ) : ApplicationScopedQuery()
