@@ -19,7 +19,6 @@ package ai.tock.bot.engine
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.BotAnswerInterceptor
-import ai.tock.bot.definition.StoryHandlerBase.Companion.SWITCH_STORY_BUS_KEY
 import ai.tock.bot.engine.BotRepository.registerBotAnswerInterceptor
 import ai.tock.bot.engine.TestStoryDefinition.story_with_other_starter
 import ai.tock.bot.engine.TestStoryDefinition.test
@@ -37,6 +36,7 @@ import ai.tock.translator.I18nLabelValue
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.util.Locale
@@ -214,13 +214,13 @@ class BotBusTest : BotEngineTest() {
     @Test
     fun `switchStory set the switch story key to true`() {
         bus.switchStory(test2)
-        assertEquals(true, bus.getBusContextValue(SWITCH_STORY_BUS_KEY)!!)
+        assertTrue(bus.hasCurrentSwitchStoryProcess)
     }
 
     @Test
     fun `handleAndSwitchStory remove the switch story key`() {
         bus.handleAndSwitchStory(test2)
-        assertNull(bus.getBusContextValue(SWITCH_STORY_BUS_KEY))
+        assertFalse(bus.hasCurrentSwitchStoryProcess)
     }
 
     @Test
@@ -253,5 +253,15 @@ class BotBusTest : BotEngineTest() {
         assertEquals(test, bus.dialog.stories[0].definition)
         assertEquals(test2, bus.dialog.stories[1].definition)
         assertEquals(2, bus.dialog.stories.size)
+    }
+
+    @Test
+    fun `GIVEN sendChoice with step WHEN switchStory THEN step of send choice is not forced`() {
+        userAction = action(Choice("test", StepTest.s1))
+        bus.step = StepTest.s2
+        bus.handleAndSwitchStory(test2)
+        assertEquals(test, bus.dialog.stories[0].definition)
+        assertEquals(test2, bus.dialog.stories[1].definition)
+        assertEquals(StepTest.s2, bus.step)
     }
 }

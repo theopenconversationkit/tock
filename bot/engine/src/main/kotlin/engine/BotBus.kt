@@ -25,7 +25,6 @@ import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.ParameterKey
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryHandlerBase
-import ai.tock.bot.definition.StoryHandlerBase.Companion.SWITCH_STORY_BUS_KEY
 import ai.tock.bot.definition.StoryHandlerDefinition
 import ai.tock.bot.definition.StoryStep
 import ai.tock.bot.engine.action.Action
@@ -74,18 +73,22 @@ interface BotBus : Bus<BotBus> {
      * The bot definition of the current bot.
      */
     val botDefinition: BotDefinition
+
     /**
      * The user timeline. Gets history and data about the user.
      */
     val userTimeline: UserTimeline
+
     /**
      * The current dialog history for this user.
      */
     val dialog: Dialog
+
     /**
      * The current story.
      */
     var story: Story
+
     /**
      * The user action.
      */
@@ -415,9 +418,9 @@ interface BotBus : Bus<BotBus> {
      */
     fun switchStory(storyDefinition: StoryDefinition, starterIntent: Intent = storyDefinition.mainIntent()) {
         story = Story(storyDefinition, starterIntent, story.step)
+        hasCurrentSwitchStoryProcess = true
         story.computeCurrentStep(userTimeline, dialog, action, intent?.wrappedIntent())
         dialog.state.currentIntent = starterIntent
-        setBusContextValue(SWITCH_STORY_BUS_KEY, true)
     }
 
     /**
@@ -425,7 +428,7 @@ interface BotBus : Bus<BotBus> {
      */
     fun handleAndSwitchStory(storyDefinition: StoryDefinition, starterIntent: Intent = storyDefinition.mainIntent()) {
         switchStory(storyDefinition, starterIntent)
-        setBusContextValue(SWITCH_STORY_BUS_KEY, null)
+        hasCurrentSwitchStoryProcess = false
         @Suppress("UNCHECKED_CAST")
         storyDefinition.storyHandler.handle(this)
     }
@@ -445,7 +448,8 @@ interface BotBus : Bus<BotBus> {
      * @param default the default value if the feature state is unknown
      */
     fun isFeatureEnabled(feature: FeatureType, default: Boolean = false) =
-        injector.provide<FeatureDAO>().isEnabled(botDefinition.botId, botDefinition.namespace, feature, applicationId, default)
+        injector.provide<FeatureDAO>()
+            .isEnabled(botDefinition.botId, botDefinition.namespace, feature, applicationId, default)
 
     /**
      * Marks the current as not understood in the nlp model.
@@ -510,13 +514,21 @@ interface BotBus : Bus<BotBus> {
 
     override fun send(delay: Long): BotBus = super.send(delay)
 
-    override fun send(i18nText: CharSequence, delay: Long, vararg i18nArgs: Any?): BotBus = super.send(i18nText, delay, *i18nArgs)
+    override fun send(i18nText: CharSequence, delay: Long, vararg i18nArgs: Any?): BotBus =
+        super.send(i18nText, delay, *i18nArgs)
 
     override fun send(i18nText: CharSequence, vararg i18nArgs: Any?): BotBus = super.send(i18nText, *i18nArgs)
 
-    override fun end(i18nText: CharSequence, delay: Long, vararg i18nArgs: Any?): BotBus = super.end(i18nText, delay, *i18nArgs)
+    override fun end(i18nText: CharSequence, delay: Long, vararg i18nArgs: Any?): BotBus =
+        super.end(i18nText, delay, *i18nArgs)
 
     override fun end(i18nText: CharSequence, vararg i18nArgs: Any?): BotBus = super.end(i18nText, *i18nArgs)
 
     override fun end(delay: Long): BotBus = super.end(delay)
 }
+
+internal var BotBus.hasCurrentSwitchStoryProcess: Boolean
+    get() = dialog.state.hasCurrentSwitchStoryProcess
+    set(v) {
+        dialog.state.hasCurrentSwitchStoryProcess = v
+    }

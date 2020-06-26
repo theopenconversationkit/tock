@@ -19,6 +19,7 @@ package ai.tock.bot.definition
 import ai.tock.bot.definition.BotDefinition.Companion.defaultBreath
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.hasCurrentSwitchStoryProcess
 import ai.tock.shared.defaultNamespace
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nKeyProvider.Companion.generateKey
@@ -47,7 +48,6 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
 
     companion object {
         private val logger = KotlinLogging.logger {}
-        internal const val SWITCH_STORY_BUS_KEY = "_tock_switch"
 
         /**
          * Has [BotBus.end] been already called?
@@ -145,7 +145,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
                     handler.handle()
 
                     if (!bus.connectorData.skipAnswer
-                        && bus.getBusContextValue<Boolean>(SWITCH_STORY_BUS_KEY) != true
+                        && !bus.hasCurrentSwitchStoryProcess
                         && !isEndCalled(bus)
                     ) {
                         logger.warn { "Bus.end not called for story ${bus.story.definition.id}, user ${bus.userId.id} and connector ${bus.targetConnectorType}" }

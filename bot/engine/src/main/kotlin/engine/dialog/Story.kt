@@ -67,7 +67,13 @@ data class Story(
         }
     }
 
-    private fun findStep(steps: Collection<StoryStep<*>>, userTimeline: UserTimeline, dialog: Dialog, action: Action, intent: Intent?): StoryStep<*>? {
+    private fun findStep(
+        steps: Collection<StoryStep<*>>,
+        userTimeline: UserTimeline,
+        dialog: Dialog,
+        action: Action,
+        intent: Intent?
+    ): StoryStep<*>? {
         //first level
         steps.forEach {
             if (it.selectFromAction(userTimeline, dialog, action, intent)) {
@@ -137,8 +143,8 @@ data class Story(
      */
     fun supportAction(userTimeline: UserTimeline, dialog: Dialog, action: Action, intent: Intent): Boolean =
         supportIntent(intent)
-            || currentStep?.selectFromAction(userTimeline, dialog, action, intent) == true
-            || (currentStep?.children ?: definition.steps)
+                || currentStep?.selectFromAction(userTimeline, dialog, action, intent) == true
+                || (currentStep?.children ?: definition.steps)
             .any { it.selectFromAction(userTimeline, dialog, action, intent) }
 
 
@@ -154,7 +160,7 @@ data class Story(
     fun computeCurrentStep(userTimeline: UserTimeline, dialog: Dialog, action: Action, newIntent: Intent?) {
         //set current step if necessary
         var forced = false
-        if (action is SendChoice) {
+        if (action is SendChoice && !dialog.state.hasCurrentSwitchStoryProcess) {
             action.step()?.apply {
                 forced = true
                 step = this
@@ -175,7 +181,10 @@ data class Story(
 
         //reset the step if applicable
         if (!forced && newIntent != null
-            && ((s?.intent != null && !s.supportIntent(newIntent)) || (s?.selectFromEntityStepSelection(action, newIntent) == false))
+            && ((s?.intent != null && !s.supportIntent(newIntent)) || (s?.selectFromEntityStepSelection(
+                action,
+                newIntent
+            ) == false))
         ) {
             this.step = null
         }

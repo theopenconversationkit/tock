@@ -49,6 +49,8 @@ data class DialogState(
 ) {
 
     companion object {
+        private const val SWITCH_STORY_BUS_KEY = "_tock_switch"
+
         /**
          * Init a new state from the specified state.
          */
@@ -62,6 +64,12 @@ data class DialogState(
             )
         }
     }
+
+    internal var hasCurrentSwitchStoryProcess: Boolean
+        get() = context[SWITCH_STORY_BUS_KEY] == true
+        set(v) {
+            context[SWITCH_STORY_BUS_KEY] = v
+        }
 
     /**
      * Updates persistent context value.
@@ -107,7 +115,7 @@ data class DialogState(
      */
     fun changeValue(entity: Entity, newValue: Value?) {
         entityValues[entity.role]?.changeValue(entity, newValue)
-                ?: if (newValue != null) setValue(entity, newValue)
+            ?: if (newValue != null) setValue(entity, newValue)
     }
 
     /**
@@ -125,7 +133,7 @@ data class DialogState(
      */
     fun changeValue(role: String, newValue: EntityValue?) {
         entityValues[role]?.changeValue(newValue)
-                ?: if (newValue != null) setValue(role, newValue)
+            ?: if (newValue != null) setValue(role, newValue)
     }
 
     /**
