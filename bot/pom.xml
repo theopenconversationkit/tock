@@ -44,6 +44,7 @@
         <module>connector-teams</module>
         <module>connector-businesschat</module>
         <module>connector-web</module>
+        <module>connector-google-chat</module>
         <module>orchestration</module>
         <module>xray</module>
 
@@ -84,6 +85,11 @@
             <dependency>
                 <groupId>ai.tock</groupId>
                 <artifactId>tock-bot-connector-messenger</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ai.tock</groupId>
+                <artifactId>tock-bot-connector-google-chat</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

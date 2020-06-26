@@ -56,6 +56,7 @@
         <circuitbreaker>1.5.0</circuitbreaker>
         <guava>29.0-jre</guava>
         <google-auth>1.30.2</google-auth>
+        <google-http-client>1.35.0</google-http-client>
         <jasypt>1.9.3</jasypt>
         <commons-csv>1.8</commons-csv>
         <emoji>5.0</emoji>
@@ -525,8 +526,13 @@
             </dependency>
             <dependency>
                 <groupId>com.google.http-client</groupId>
+                <artifactId>google-http-client-apache-v2</artifactId>
+                <version>${google-http-client}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.http-client</groupId>
                 <artifactId>google-http-client-jackson2</artifactId>
-                <version>${google-auth}</version>
+                <version>${google-http-client}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>com.fasterxml.jackson.core</groupId>

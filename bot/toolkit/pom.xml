@@ -44,6 +44,10 @@
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
+            <artifactId>tock-bot-connector-google-chat</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
             <artifactId>tock-bot-connector-alexa</artifactId>
         </dependency>
         <dependency>
