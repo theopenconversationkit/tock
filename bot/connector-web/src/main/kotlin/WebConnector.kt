@@ -40,9 +40,10 @@ import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType.bot
 import ai.tock.bot.engine.user.PlayerType.user
 import ai.tock.bot.engine.user.UserPreferences
-import ai.tock.bot.orchestration.bot.primary.orchestrationEnabled
 import ai.tock.bot.orchestration.bot.secondary.OrchestrationCallback
 import ai.tock.bot.orchestration.bot.secondary.RestOrchestrationCallback
+import ai.tock.bot.orchestration.connector.OrchestrationConnector
+import ai.tock.bot.orchestration.connector.OrchestrationHandlers
 import ai.tock.bot.orchestration.shared.AskEligibilityToOrchestratedBotRequest
 import ai.tock.bot.orchestration.shared.OrchestrationMetaData
 import ai.tock.bot.orchestration.shared.ResumeOrchestrationRequest
@@ -77,7 +78,7 @@ private val sseKeepaliveDelay = longProperty("tock_web_sse_keepalive_delay", 10)
 class WebConnector internal constructor(
     val applicationId: String,
     val path: String
-) : ConnectorBase(webConnectorType) {
+) : ConnectorBase(webConnectorType), OrchestrationConnector {
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -145,23 +146,14 @@ class WebConnector internal constructor(
                         context.fail(e)
                     }
                 }
-
-            if (orchestrationEnabled) {
-
-                router.post("$path/orchestration/eligibility").handler { context ->
-                    executor.executeBlocking {
-                        handleEligibility(controller, context)
-                    }
-                }
-
-                router.post("$path/orchestration/proxy").handler { context ->
-                    executor.executeBlocking {
-                        handleProxy(controller, context)
-                    }
-                }
-            }
         }
     }
+
+    override fun getOrchestrationHandlers(): OrchestrationHandlers =
+        OrchestrationHandlers(
+            eligibilityHandler = this::handleEligibility,
+            proxyHandler = this::handleProxy
+        )
 
     private fun handleRequest(
         controller: ConnectorController,
