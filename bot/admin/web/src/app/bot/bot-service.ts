@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import {Injectable} from "@angular/core";
-import {RestService} from "../core-nlp/rest/rest.service";
-import {CreateStoryRequest, StoryDefinitionConfiguration, StorySearchQuery} from "./model/story";
-import {Intent, TranslateReport} from "../model/nlp";
-import {Observable} from "rxjs";
-import {CreateI18nLabelRequest, I18nLabel, I18nLabels} from "./model/i18n";
-import {FileUploader} from "ng2-file-upload";
-import {Feature} from "./model/feature";
-import {ApplicationDialogFlow, DialogFlowRequest} from "./model/flow";
+import {Injectable} from '@angular/core';
+import {RestService} from '../core-nlp/rest/rest.service';
+import {CreateStoryRequest, StoryDefinitionConfiguration, StorySearchQuery} from './model/story';
+import {Intent, TranslateReport} from '../model/nlp';
+import {Observable} from 'rxjs';
+import {CreateI18nLabelRequest, I18LabelQuery, I18nLabel, I18nLabels} from './model/i18n';
+import {FileUploader} from 'ng2-file-upload';
+import {Feature} from './model/feature';
+import {ApplicationDialogFlow, DialogFlowRequest} from './model/flow';
 
 @Injectable()
 export class BotService {
@@ -31,11 +31,11 @@ export class BotService {
   }
 
   newStory(request: CreateStoryRequest): Observable<Intent> {
-    return this.rest.post("/bot/story/new", request, Intent.fromJSON);
+    return this.rest.post('/bot/story/new', request, Intent.fromJSON);
   }
 
   getStories(request: StorySearchQuery): Observable<StoryDefinitionConfiguration[]> {
-    return this.rest.post("/bot/story/search", request, StoryDefinitionConfiguration.fromJSONArray);
+    return this.rest.post('/bot/story/search', request, StoryDefinitionConfiguration.fromJSONArray);
   }
 
   exportStories(applicationName: string): Observable<Blob> {
@@ -51,19 +51,19 @@ export class BotService {
   }
 
   saveStory(story: StoryDefinitionConfiguration): Observable<StoryDefinitionConfiguration> {
-    return this.rest.post("/bot/story", story.prepareBeforeSend(), StoryDefinitionConfiguration.fromJSON)
+    return this.rest.post('/bot/story', story.prepareBeforeSend(), StoryDefinitionConfiguration.fromJSON);
   }
 
   findStory(storyDefinitionId: string): Observable<StoryDefinitionConfiguration> {
-    return this.rest.get(`/bot/story/${storyDefinitionId}`, StoryDefinitionConfiguration.fromJSON)
+    return this.rest.get(`/bot/story/${storyDefinitionId}`, StoryDefinitionConfiguration.fromJSON);
   }
 
   findRuntimeStorySettings(): Observable<StoryDefinitionConfiguration[]> {
-    return this.rest.get(`/bot/story-settings`, StoryDefinitionConfiguration.fromJSONArray)
+    return this.rest.get(`/bot/story-settings`, StoryDefinitionConfiguration.fromJSONArray);
   }
 
   findStoryByBotIdAndIntent(botId: string, intent: string): Observable<StoryDefinitionConfiguration> {
-    return this.rest.get(`/bot/story/${botId}/${intent}`, StoryDefinitionConfiguration.fromJSON)
+    return this.rest.get(`/bot/story/${botId}/${intent}`, StoryDefinitionConfiguration.fromJSON);
   }
 
   deleteStory(storyDefinitionId: string): Observable<boolean> {
@@ -71,23 +71,23 @@ export class BotService {
   }
 
   i18nLabels(): Observable<I18nLabels> {
-    return this.rest.get("/i18n", I18nLabels.fromJSON);
+    return this.rest.get('/i18n', I18nLabels.fromJSON);
   }
 
   completeI18nLabels(labels: I18nLabel[]): Observable<TranslateReport> {
-    return this.rest.post("/i18n/complete", labels, TranslateReport.fromJSON);
+    return this.rest.post('/i18n/complete', labels, TranslateReport.fromJSON);
   }
 
   saveI18nLabels(labels: I18nLabel[]): Observable<boolean> {
-    return this.rest.post("/i18n/saveAll", labels);
+    return this.rest.post('/i18n/saveAll', labels);
   }
 
   saveI18nLabel(label: I18nLabel): Observable<boolean> {
-    return this.rest.post("/i18n/save", label);
+    return this.rest.post('/i18n/save', label);
   }
 
   createI18nLabel(request: CreateI18nLabelRequest): Observable<I18nLabel> {
-    return this.rest.post("/i18n/create", request, I18nLabel.fromJSON);
+    return this.rest.post('/i18n/create', request, I18nLabel.fromJSON);
   }
 
   duplicateLabel(clonedLabel: I18nLabel, callback: (i18n) => void) {
@@ -106,24 +106,32 @@ export class BotService {
     return this.rest.delete(`/i18n/${encodeURIComponent(label._id)}`);
   }
 
-  downloadI18nLabelsCsv(): Observable<Blob> {
-    return this.rest.get("/i18n/export/csv", (r => new Blob([r], {type: 'text/csv;charset=utf-8'})))
+  downloadAllI18nLabelsCsv(): Observable<Blob> {
+    return this.rest.get('/i18n/export/csv', (r => new Blob([r], {type: 'text/csv;charset=utf-8'})));
   }
 
-  downloadI18nLabelsJson(): Observable<Blob> {
-    return this.rest.get("/i18n/export/json", (r => new Blob([r], {type: 'application/json'})))
+  downloadI18nLabelsCsv(query: I18LabelQuery): Observable<Blob> {
+    return this.rest.post('/i18n/export/csv', query, (r => new Blob([r], {type: 'text/csv;charset=utf-8'})));
+  }
+
+  downloadAllI18nLabelsJson(): Observable<Blob> {
+    return this.rest.get('/i18n/export/json', (r => new Blob([r], {type: 'application/json'})));
+  }
+
+  downloadI18nLabelsJson(query: I18LabelQuery): Observable<Blob> {
+    return this.rest.post('/i18n/export/json', query, (r => new Blob([r], {type: 'application/json'})));
   }
 
   prepareI18nCsvDumpUploader(uploader: FileUploader) {
-    this.rest.setFileUploaderOptions(uploader, "/i18n/import/csv");
+    this.rest.setFileUploaderOptions(uploader, '/i18n/import/csv');
   }
 
   prepareI18nJsonDumpUploader(uploader: FileUploader) {
-    this.rest.setFileUploaderOptions(uploader, "/i18n/import/json");
+    this.rest.setFileUploaderOptions(uploader, '/i18n/import/json');
   }
 
   prepareFileDumpUploader(uploader: FileUploader) {
-    this.rest.setFileUploaderOptions(uploader, "/file");
+    this.rest.setFileUploaderOptions(uploader, '/file');
   }
 
   getFeatures(botId: string): Observable<Feature[]> {

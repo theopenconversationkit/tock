@@ -25,10 +25,24 @@
 .i18n-select {
   font-size: small;
   padding-right: 10px;
+  margin-top: 22px;
+}
+
+.i18-action-label {
+  padding-left: 2px;
+}
+
+@media (max-width: 700px) {
+  .i18-action-label {
+    display: none;
+  }
 }
 
 .background {
   background: inherit;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
 }
 
 .nb-form-field-infix {
@@ -43,12 +57,18 @@
   width: 100%;
   outline: 0;
 }
+.nb-input {
+  display: inline-block;
+  width: 100%;
+  outline: 0;
+}
+
 .nb-form-field-label-wrapper {
   position: absolute;
-  left: 0;
   pointer-events: none;
   top: -5px;
   left: -10px;
+  font-weight: bold;
 }
 .label-title{
   transform: translateY(-1.28125em) scale(.75) perspective(100px) translateZ(.001px);

@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
-import {I18nLabel} from "../model/i18n";
-import {BotService} from "../bot-service";
-import {StateService} from "../../core-nlp/state.service";
-import { PageEvent } from "@angular/material/paginator";
-import {saveAs} from "file-saver";
-import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
-import {I18nController} from "./i18n-label.component";
-import {Subject} from "rxjs";
-import {debounceTime, distinctUntilChanged} from "rxjs/operators";
-import { NbToastrService } from '@nebular/theme';
+import {Component, OnInit} from '@angular/core';
+import {I18LabelQuery, I18nLabel, I18nLabelStateQuery} from '../model/i18n';
+import {BotService} from '../bot-service';
+import {StateService} from '../../core-nlp/state.service';
+import {PageEvent} from '@angular/material/paginator';
+import {saveAs} from 'file-saver';
+import {FileUploader} from 'ng2-file-upload';
+import {I18nController} from './i18n-label.component';
+import {Subject} from 'rxjs';
+import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
+import {NbToastrService, NbWindowRef, NbWindowService} from '@nebular/theme';
+import {I18nExportComponent} from './i18n-export.component';
+import {I18nImportComponent} from './i18n-import.component';
 
 @Component({
   selector: 'tock-i18n',
@@ -36,45 +38,39 @@ export class I18nComponent extends I18nController implements OnInit {
   originalI18n: I18nLabel[];
   i18n: I18nLabel[];
   filteredI18n: I18nLabel[] = [];
-  filterString: string = "";
-  filterOption: string = "";
-  loading: boolean = false;
-  private doNotFilterByCategory = "All";
+  filterString = '';
+  filterOption = '';
+  loading = false;
+  private doNotFilterByCategory = 'All';
   selectedCategory: string = this.doNotFilterByCategory;
   allCategories: string[] = [];
-  notUsedFrom: number = -1;
-
-  displayImportExport: boolean = false;
-  displayUpload: boolean = false;
-  uploadType: string = "Csv";
-  public uploader: FileUploader;
+  notUsedFrom = -1;
+  notUsedFromPossibleValues: number[] = [-1, 1, 7, 30];
 
   pageEvent: PageEvent;
-  pageSize: number = 5;
+  pageSize = 5;
   pageSizeOptions = [5, 10, 25, 100];
+
+  exportWindow: NbWindowRef;
+  importWindow: NbWindowRef;
 
   private searchUpdated: Subject<string> = new Subject<string>();
 
   constructor(public state: StateService,
               private botService: BotService,
-              private toastrService: NbToastrService) {
+              private toastrService: NbToastrService,
+              private windowService: NbWindowService) {
     super(state, [], null);
   }
 
   ngOnInit() {
     this.load();
-    this.uploader = new FileUploader({removeAfterUpload: true});
-    this.uploader.onCompleteItem =
-      (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
-        this.displayUpload = false;
-        this.refresh();
-      };
     this.state.currentApplicationEmitter.subscribe(_ => this.load());
     this.searchUpdated.asObservable().pipe(debounceTime(200)).pipe(distinctUntilChanged()).subscribe(v => this.filterImpl(v));
   }
 
   controller(): I18nController {
-    return this
+    return this;
   }
 
   pagedItems(): I18nLabel[] {
@@ -136,7 +132,7 @@ export class I18nComponent extends I18nController implements OnInit {
         this.allCategories.push(i.category);
       }
     });
-    this.allCategories.sort()
+    this.allCategories.sort();
   }
 
   deleteLabel(label: I18nLabel) {
@@ -161,19 +157,19 @@ export class I18nComponent extends I18nController implements OnInit {
   }
 
   private filterImpl(value: string) {
-    const hideNotValidated = this.filterOption == "validated";
-    const hideValidated = this.filterOption == "not_validated";
-    const v = value ? value.trim().toLowerCase() : "";
+    const hideNotValidated = this.filterOption === 'validated';
+    const hideValidated = this.filterOption === 'not_validated';
+    const filterText = value ? value.trim().toLowerCase() : '';
     const notUsedFromDate = Date.now() - 1000 * 60 * 60 * 24 * this.notUsedFrom;
-    this.filteredI18n = this.i18n.filter(i => {
-      return (!hideValidated || i.i18n.some(label => !label.validated && label.label.length !== 0))
-        && (!hideNotValidated || i.i18n.some(label => label.validated))
-        && (v.length === 0
-          || (i.defaultLabel && i.defaultLabel.toLowerCase().indexOf(v) !== -1)
-          || i.i18n.some(label => label.label.length !== 0 && label.label.toLowerCase().indexOf(v) !== -1)
+    this.filteredI18n = this.i18n.filter(label => {
+      return (!hideValidated || label.i18n.some(i18nLabel => !i18nLabel.validated && i18nLabel.label.length !== 0))
+        && (!hideNotValidated || label.i18n.some(i18nLabel => i18nLabel.validated))
+        && (filterText.length === 0
+          || (label.defaultLabel && label.defaultLabel.toLowerCase().indexOf(filterText) !== -1)
+          || label.i18n.some(i18nLabel => i18nLabel.label.length !== 0 && i18nLabel.label.toLowerCase().indexOf(filterText) !== -1)
         )
-        && (this.selectedCategory === this.doNotFilterByCategory || i.category === this.selectedCategory)
-        && (this.notUsedFrom == -1 || !i.lastUpdate || i.lastUpdate.getTime() < notUsedFromDate)
+        && (this.selectedCategory === this.doNotFilterByCategory || label.category === this.selectedCategory)
+        && (this.notUsedFrom === -1 || !label.lastUpdate || label.lastUpdate.getTime() < notUsedFromDate);
     });
     this.setCategoryOnFirstItem(this.filteredI18n);
   }
@@ -189,11 +185,11 @@ export class I18nComponent extends I18nController implements OnInit {
       this.loading = false;
       const n = r.nbTranslations;
       if (n === 0) {
-        this.toastrService.show(`No label translated`, "UPDATE", {duration: 2000})
+        this.toastrService.show(`No label translated`, 'UPDATE', {duration: 2000});
       } else if (n === 1) {
-        this.toastrService.show(`1 label translated`, "UPDATE", {duration: 2000})
+        this.toastrService.show(`1 label translated`, 'UPDATE', {duration: 2000});
       } else {
-        this.toastrService.show(`${n} labels translated`, "UPDATE", {duration: 2000})
+        this.toastrService.show(`${n} labels translated`, 'UPDATE', {duration: 2000});
       }
     });
   }
@@ -208,42 +204,149 @@ export class I18nComponent extends I18nController implements OnInit {
     });
     this.botService
       .saveI18nLabels(this.i18n)
-      .subscribe(_ => this.toastrService.show(`All labels validated`, "Validate", {duration: 3000}));
+      .subscribe(_ => this.toastrService.show(`All labels validated`, 'Validate', {duration: 3000}));
   }
 
-  downloadCsv() {
-    this.botService.downloadI18nLabelsCsv()
-      .subscribe(blob => {
-        saveAs(blob, "labels.csv");
-        this.toastrService.show(`Export provided`, "Export", {duration: 2000});
-      })
-  }
-
-  downloadJson() {
-    this.botService.downloadI18nLabelsJson()
-      .subscribe(blob => {
-        saveAs(blob, "labels.json");
-        this.toastrService.show(`Export provided`, "Export", {duration: 2000});
-      })
-  }
-
-  prepareCsvUpload() {
-    this.displayUpload = true;
-    this.uploadType = 'Csv';
-  }
-
-  prepareJsonUpload() {
-    this.displayUpload = true;
-    this.uploadType = 'Json';
-  }
-
-  upload() {
-    if (this.uploadType === 'Csv') {
-      this.botService.prepareI18nCsvDumpUploader(this.uploader);
-    } else {
-      this.botService.prepareI18nJsonDumpUploader(this.uploader);
+  openExportWindow() {
+    if (this.exportWindow) {
+      this.exportWindow.close();
     }
-    this.uploader.uploadAll()
+    this.exportWindow = this.windowService.open(
+      I18nExportComponent,
+      {
+        title: 'Export As',
+        context: {
+          exportAs: (type: string, all: boolean) => this.download(type, all),
+        }
+      }
+    );
   }
 
+  openImportWindow() {
+    if (this.importWindow) {
+      this.importWindow.close();
+    }
+    this.importWindow = this.windowService.open(
+      I18nImportComponent,
+      {
+        title: 'Import From',
+        context: {
+          importFrom: (type: string, uploader: FileUploader) => this.upload(type, uploader),
+          refresh: () => this.refresh()
+        }
+      }
+    );
+  }
+
+  upload(type: string, uploader: FileUploader) {
+    switch (type) {
+      case 'CSV':
+        this.botService.prepareI18nCsvDumpUploader(uploader);
+        break;
+      case 'JSON':
+        this.botService.prepareI18nJsonDumpUploader(uploader);
+        break;
+    }
+    uploader.uploadAll();
+  }
+
+  download(format: string, all: boolean) {
+    switch (format) {
+      case 'CSV':
+        this.downloadCsv(all);
+        break;
+      case 'JSON':
+        this.downloadJson(all);
+        break;
+    }
+  }
+
+  downloadCsv(all: boolean) {
+    if (all) {
+      this.botService.downloadAllI18nLabelsCsv()
+        .subscribe(blob => {
+          saveAs(blob, 'labels.csv');
+          this.toastrService.show(`Export provided`, 'Export', {duration: 2000});
+        });
+    } else {
+      const query = new I18LabelQuery(
+        this.computeLabelFilter(), this.computeCategoryFilterValue(),
+        this.computeStatusFilterValue(), this.computeNotUsedSinceDaysFilterValue());
+      this.botService.downloadI18nLabelsCsv(query)
+        .subscribe(blob => {
+          saveAs(blob, 'labels' + query.toString() + '.csv');
+          this.toastrService.show(`Export provided`, 'Export', {duration: 2000});
+        });
+    }
+  }
+
+  downloadJson(all: boolean) {
+    if (all) {
+      this.botService.downloadAllI18nLabelsJson()
+        .subscribe(blob => {
+          saveAs(blob, 'labels.json');
+          this.toastrService.show(`Export provided`, 'Export', {duration: 2000});
+        });
+    } else {
+      const query = new I18LabelQuery(
+        this.computeLabelFilter(), this.computeCategoryFilterValue(),
+        this.computeStatusFilterValue(), this.computeNotUsedSinceDaysFilterValue());
+      this.botService.downloadI18nLabelsJson(query)
+        .subscribe(blob => {
+          saveAs(blob, 'labels' + query.toString() + '.json');
+          this.toastrService.show(`Export provided`, 'Export', {duration: 2000});
+        });
+    }
+  }
+
+  private computeLabelFilter() {
+    return this.filterString && this.filterString.trim().length > 0 ? this.filterString : undefined;
+  }
+
+  private computeCategoryFilterValue() {
+    if (this.selectedCategory === this.doNotFilterByCategory) {
+      return undefined;
+    }
+    if (this.selectedCategory && this.selectedCategory.trim().length > 0) {
+      return this.selectedCategory;
+    }
+    return undefined;
+  }
+
+  private computeStatusFilterValue(): I18nLabelStateQuery {
+    let statusFilter: I18nLabelStateQuery;
+    switch (this.filterOption) {
+      case 'validated':
+        statusFilter = I18nLabelStateQuery.VALIDATED;
+        break;
+      case 'not_validated':
+        statusFilter = I18nLabelStateQuery.NOT_VALIDATED;
+        break;
+      default:
+        statusFilter = I18nLabelStateQuery.ALL;
+        break;
+    }
+    return statusFilter;
+  }
+
+  private computeNotUsedSinceDaysFilterValue(): number {
+    if (this.notUsedFrom && this.notUsedFrom > 0) {
+      return this.notUsedFrom;
+    }
+    return undefined;
+  }
+
+  notUsedFromLabel(possibleNumber: number): string {
+    switch (possibleNumber) {
+      case 1:
+        return 'Not used since yesterday';
+      case 7:
+        return 'Not used since last week';
+      case 30:
+        return 'Not used since last month';
+      case -1:
+      default:
+        return 'All';
+    }
+  }
 }

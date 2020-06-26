@@ -17,6 +17,7 @@
 package ai.tock.translator
 
 import org.litote.kmongo.Id
+import java.time.Instant
 
 /**
  * I18n storage.
@@ -29,9 +30,9 @@ interface I18nDAO {
     fun listenI18n(listener: (Id<I18nLabel>) -> Unit)
 
     /**
-     * Gets all labels for the specified namespace.
+     * Gets all labels for the specified namespace with filters
      */
-    fun getLabels(namespace: String): List<I18nLabel>
+    fun getLabels(namespace: String, filter: I18nLabelFilter? = null): List<I18nLabel>
 
     /**
      * Gets label by id.
@@ -82,5 +83,10 @@ interface I18nDAO {
      * Gets all label stats for the specified namespace.
      */
     fun getLabelStats(namespace: String): List<I18nLabelStat>
+
+    /**
+     * Gets all label stats for the specified namespace.
+     */
+    fun getLabelIdsFromStats(namespace: String, timeMarker: Instant): Set<Id<I18nLabel>>
 
 }

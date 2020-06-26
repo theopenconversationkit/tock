@@ -16,7 +16,7 @@
 
 package ai.tock.bot.admin
 
-import com.github.salomonbrys.kodein.instance
+import ai.tock.bot.admin.model.I18LabelQuery
 import ai.tock.nlp.admin.CsvCodec
 import ai.tock.nlp.admin.CsvCodec.csvFormat
 import ai.tock.shared.error
@@ -25,10 +25,13 @@ import ai.tock.translator.I18nDAO
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLocalizedLabel
 import ai.tock.translator.UserInterfaceType
+import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import org.litote.kmongo.toId
 import java.io.StringReader
 import java.util.Locale
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 /**
  *
@@ -37,9 +40,9 @@ object I18nCsvCodec {
 
     private val logger = KotlinLogging.logger {}
 
-    private val i18nDAO: I18nDAO  by injector.instance()
+    private val i18nDAO: I18nDAO by injector.instance()
 
-    fun exportCsv(namespace: String): String {
+    fun exportCsv(namespace: String, query: I18LabelQuery? = null): String {
         val sb = StringBuilder()
         val printer = CsvCodec.newPrinter(sb)
         printer.printRecord(
@@ -52,20 +55,19 @@ object I18nCsvCodec {
             "Connector",
             "Alternatives"
         )
-        i18nDAO.getLabels(namespace)
-            .forEach { l ->
-                l.i18n.forEach { i ->
+        i18nDAO.getLabels(namespace, query?.toI18nLabelFilter())
+            .forEach { label ->
+                label.i18n.forEach { localizedLabel ->
                     printer.printRecord(
                         *(listOf(
-                            i.label,
-                            l.category,
-                            i.locale.language,
-                            i.interfaceType,
-                            l._id,
-                            i.validated,
-                            i.connectorId
-                                    ?: ""
-                        ) + i.alternatives).toTypedArray()
+                            localizedLabel.label,
+                            label.category,
+                            localizedLabel.locale.language,
+                            localizedLabel.interfaceType,
+                            label._id,
+                            localizedLabel.validated,
+                            localizedLabel.connectorId ?: ""
+                        ) + localizedLabel.alternatives).toTypedArray()
                     )
                 }
             }
@@ -91,7 +93,7 @@ object I18nCsvCodec {
                                         Locale(it[2]),
                                         UserInterfaceType.valueOf(it[3]),
                                         it[0],
-                                        it[5].toBoolean(),
+                                        it[5]?.toBoolean() ?: false,
                                         it[6].run { if (isBlank()) null else this },
                                         if (it.size() < 7) emptyList() else (7 until it.size()).mapNotNull { index -> if (it[index].isNullOrBlank()) null else it[index] }
                                     ))
@@ -115,7 +117,7 @@ object I18nCsvCodec {
                                                     old.locale == it.locale && old.interfaceType == it.interfaceType && old.connectorId == it.connectorId
                                                 }
                                             }
-                                                ?: emptyList())
+                                            ?: emptyList())
                                 )
                             )
                         }
