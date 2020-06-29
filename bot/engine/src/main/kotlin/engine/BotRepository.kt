@@ -86,9 +86,7 @@ object BotRepository {
     private val nlpController: NlpController get() = injector.provide()
     private val executor: Executor get() = injector.provide()
     internal val botAnswerInterceptors: MutableList<BotAnswerInterceptor> = mutableListOf()
-    private val connectorServices: MutableList<ConnectorService> = CopyOnWriteArrayList(
-        ServiceLoader.load(ConnectorService::class.java).map { it }
-    )
+    private val connectorServices: MutableList<ConnectorService> = ServiceLoader.load(ConnectorService::class.java).toMutableList()
 
     internal val connectorProviders: MutableSet<ConnectorProvider> = CopyOnWriteArraySet(
         ServiceLoader.load(ConnectorProvider::class.java).map { it }.apply {
