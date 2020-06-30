@@ -29,11 +29,14 @@ export class BehaviorComponent {
   filter: UserFilter = new UserFilter([], false);
   loadingUsers: boolean = false;
 
+  messagesByStory: UserAnalyticsQueryResult;
+  messagesByStoryType: UserAnalyticsQueryResult;
+  messagesByStoryCategory: UserAnalyticsQueryResult;
+  messagesByStoryLocale: UserAnalyticsQueryResult;
+  messagesByIntent: UserAnalyticsQueryResult;
   messagesByDayOfWeek: UserAnalyticsQueryResult;
   messagesByHour: UserAnalyticsQueryResult;
-  messagesByConfiguration: UserAnalyticsQueryResult;
-  messagesByConnector: UserAnalyticsQueryResult;
-  messagesByType: UserAnalyticsQueryResult;
+  messagesByActionType: UserAnalyticsQueryResult;
 
   globalUsersCount: number[];
 //   globalMessagesCount: number[];
@@ -138,12 +141,60 @@ export class BehaviorComponent {
     if (this.startDate != null) {
       this.filter.from = this.startDate;
       this.filter.to = this.endDate;
+      this.buildMessagesByStoryCharts();
+      this.buildMessagesByStoryCategoryCharts();
+      this.buildMessagesByStoryTypeCharts();
+      this.buildMessagesByStoryLocaleCharts();
+      this.buildMessagesByIntentCharts();
       this.buildMessagesByDayOfWeekCharts();
       this.buildMessagesByHourCharts();
-      this.buildMessagesCharts();
-      this.buildMessagesByConfigurationCharts();
-      this.buildMessagesByConnectorCharts();
+      this.buildMessagesByActionTypeCharts();
     }
+  }
+
+  private buildMessagesByStoryCharts() {
+    this.analytics.messagesAnalyticsByStory(this.buildMessagesSearchQuery()).subscribe(
+      result => {
+        this.messagesByStory = result;
+        this.loadingUsers = false;
+      }
+    )
+  }
+
+  private buildMessagesByStoryTypeCharts() {
+    this.analytics.messagesAnalyticsByStoryType(this.buildMessagesSearchQuery()).subscribe(
+      result => {
+        this.messagesByStoryType = result;
+        this.loadingUsers = false;
+      }
+    )
+  }
+
+  private buildMessagesByStoryCategoryCharts() {
+    this.analytics.messagesAnalyticsByStoryCategory(this.buildMessagesSearchQuery()).subscribe(
+      result => {
+        this.messagesByStoryCategory = result;
+        this.loadingUsers = false;
+      }
+    )
+  }
+
+  private buildMessagesByStoryLocaleCharts() {
+    this.analytics.messagesAnalyticsByStoryLocale(this.buildMessagesSearchQuery()).subscribe(
+      result => {
+        this.messagesByStoryLocale = result;
+        this.loadingUsers = false;
+      }
+    )
+  }
+
+  private buildMessagesByIntentCharts() {
+    this.analytics.messagesAnalyticsByIntent(this.buildMessagesSearchQuery()).subscribe(
+      result => {
+        this.messagesByIntent = result;
+        this.loadingUsers = false;
+      }
+    )
   }
 
   private buildMessagesByDayOfWeekCharts() {
@@ -164,29 +215,10 @@ export class BehaviorComponent {
     )
   }
 
-  private buildMessagesCharts() {
-    this.analytics.messagesAnalytics(this.buildMessagesSearchQuery()).subscribe(
+  private buildMessagesByActionTypeCharts() {
+    this.analytics.messagesAnalyticsByActionType(this.buildMessagesSearchQuery()).subscribe(
       result => {
-        this.connectors = result.connectorsType;
-        this.messagesByType = result;
-        this.loadingUsers = false;
-      }
-    )
-  }
-
-  private buildMessagesByConfigurationCharts() {
-    this.analytics.messagesAnalyticsByConfiguration(this.buildMessagesSearchQuery()).subscribe(
-      result => {
-        this.messagesByConfiguration = result;
-        this.loadingUsers = false;
-      }
-    )
-  }
-
-  private buildMessagesByConnectorCharts() {
-    this.analytics.messagesAnalyticsByConnectorType(this.buildMessagesSearchQuery()).subscribe(
-      result => {
-        this.messagesByConnector = result;
+        this.messagesByActionType = result;
         this.loadingUsers = false;
       }
     )

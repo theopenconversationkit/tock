@@ -65,10 +65,7 @@ import com.github.salomonbrys.kodein.instance
 import io.vertx.core.http.HttpMethod.GET
 import mu.KLogger
 import mu.KotlinLogging
-import org.litote.kmongo.Id
 import org.litote.kmongo.toId
-import java.time.Instant
-import java.time.temporal.ChronoUnit
 
 /**
  *
@@ -109,7 +106,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost("/analytics/messages", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
-                BotAdminService.reportMessages(request)
+                BotAdminService.reportMessagesByType(request)
             } else {
                 unauthorized()
             }
@@ -142,6 +139,70 @@ open class BotAdminVerticle : AdminVerticle() {
         blockingJsonPost("/analytics/messages/byHour", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
                 BotAdminService.reportMessagesByHour(request)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byDateAndIntent", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                BotAdminService.reportMessagesByDateAndIntent(request)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byIntent", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                BotAdminService.reportMessagesByIntent(request)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byDateAndStory", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                BotAdminService.reportMessagesByDateAndStory(request)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byStory", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                BotAdminService.reportMessagesByStory(request)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byStoryCategory", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                BotAdminService.reportMessagesByStoryCategory(request)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byStoryType", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                BotAdminService.reportMessagesByStoryType(request)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byStoryLocale", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                BotAdminService.reportMessagesByStoryLocale(request)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byActionType", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                BotAdminService.reportMessagesByActionType(request)
             } else {
                 unauthorized()
             }

@@ -204,6 +204,123 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                 }
     }
 
+    override fun searchByDateWithIntent(namespace: String,
+                                 botId: String,
+                                 applicationIds: Set<Id<BotApplicationConfiguration>>,
+                                 from: ZonedDateTime?,
+                                 to: ZonedDateTime?
+    ): List<DialogFlowTransitionStatsData> {
+        val transitions = findTransitions(namespace, botId)
+        return search(namespace, botId, applicationIds, from, to).map {
+            DialogFlowTransitionStatsData(
+                    applicationId = it.applicationId,
+                    transitionId = it.transitionId,
+                    dialogId = it.dialogId,
+                    text = transitions.find { transition ->
+                        transition._id.toString() == it.transitionId
+                    }?.intent,
+                    date = it.date
+            )
+        }
+    }
+
+    override fun searchByDateWithActionType(namespace: String,
+                                        botId: String,
+                                        applicationIds: Set<Id<BotApplicationConfiguration>>,
+                                        from: ZonedDateTime?,
+                                        to: ZonedDateTime?
+    ): List<DialogFlowTransitionStatsData> {
+        val transitions = findTransitions(namespace, botId)
+        return search(namespace, botId, applicationIds, from, to).map {
+            DialogFlowTransitionStatsData(
+                    applicationId = it.applicationId,
+                    transitionId = it.transitionId,
+                    dialogId = it.dialogId,
+                    text = transitions.find { transition ->
+                        transition._id.toString() == it.transitionId
+                    }?.type.toString(),
+                    date = it.date
+            )
+        }
+    }
+
+    override fun searchByDateWithStory(namespace: String,
+                                       botId: String,
+                                       applicationIds: Set<Id<BotApplicationConfiguration>>,
+                                       from: ZonedDateTime?,
+                                       to: ZonedDateTime?
+    ): List<DialogFlowTransitionStatsData> {
+        val states = findStates(namespace, botId)
+        val transitions = findTransitions(namespace, botId)
+        return search(namespace, botId, applicationIds, from, to).map {
+            DialogFlowTransitionStatsData(
+                    applicationId = it.applicationId,
+                    transitionId = it.transitionId,
+                    dialogId = it.dialogId,
+                    text =
+                    states.find { state ->
+                        state._id.toString() ==
+                                transitions.find { transition ->
+                                    transition._id.toString() == it.transitionId
+                                }?.nextStateId.toString()
+                    }?.storyDefinitionId,
+                    date = it.date
+            )
+        }
+    }
+
+//    override fun searchByIntent(namespace: String,
+//                                botId: String,
+//                                applicationIds: Set<Id<BotApplicationConfiguration>>,
+//                                from: ZonedDateTime?,
+//                                to: ZonedDateTime?
+//    ): Map<String?, List<DialogFlowTransitionStatsData>> {
+//        val transitions = findTransitions(namespace, botId)
+//        val transitionsStats = search(namespace, botId, applicationIds, from, to)
+//
+//        return transitionsStats.groupBy { stat ->
+//            transitions.find { transition ->
+//                transition._id.toString() == stat.transitionId
+//            }?.intent
+//        }
+//    }
+//
+//    override fun searchByTransitionType(namespace: String,
+//                                        botId: String,
+//                                        applicationIds: Set<Id<BotApplicationConfiguration>>,
+//                                        from: ZonedDateTime?,
+//                                        to: ZonedDateTime?
+//    ): Map<String?, List<DialogFlowTransitionStatsData>> {
+//        val transitions = findTransitions(namespace, botId)
+//        val transitionsStats = DialogFlowMongoDAO.search(namespace, botId, applicationIds, from, to)
+//
+//        return transitionsStats.groupBy { stat ->
+//            transitions.find { transition ->
+//                transition._id.toString() == stat.transitionId
+//            }?.type.toString()
+//        }
+//    }
+//
+//    override fun searchByStory(namespace: String,
+//                               botId: String,
+//                               applicationIds: Set<Id<BotApplicationConfiguration>>,
+//                               from: ZonedDateTime?,
+//                               to: ZonedDateTime?
+//    ): Map<String?, List<DialogFlowTransitionStatsData>> {
+//        val states = findStates(namespace, botId)
+//        val transitions = findTransitions(namespace, botId)
+//        val transitionsStats = DialogFlowMongoDAO.search(namespace, botId, applicationIds, from, to)
+//
+//        return transitionsStats.groupBy { stat ->
+//            states.find { state ->
+//                state._id.toString() ==
+//                        transitions.find { transition ->
+//                            transition._id.toString() == stat.transitionId
+//                        }?.nextStateId.toString()
+//            }?.storyDefinitionId
+//        }
+//    }
+
     private fun findStates(namespace: String, botId: String): List<DialogFlowStateCol> =
             flowStateCol.find(Namespace eq namespace, BotId eq botId).toList()
 

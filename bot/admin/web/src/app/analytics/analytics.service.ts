@@ -63,6 +63,38 @@ export class AnalyticsService implements OnDestroy {
     return this.rest.post("/analytics/messages/byHour", request, UserAnalyticsQueryResult.fromJSON);
   }
 
+  messagesAnalyticsByDateAndIntent(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
+    return this.rest.post("/analytics/messages/byDateAndIntent", request, UserAnalyticsQueryResult.fromJSON);
+  }
+
+  messagesAnalyticsByIntent(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
+    return this.rest.post("/analytics/messages/byIntent", request, UserAnalyticsQueryResult.fromJSON);
+  }
+
+  messagesAnalyticsByDateAndStory(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
+    return this.rest.post("/analytics/messages/byDateAndStory", request, UserAnalyticsQueryResult.fromJSON);
+  }
+
+  messagesAnalyticsByStory(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
+    return this.rest.post("/analytics/messages/byStory", request, UserAnalyticsQueryResult.fromJSON);
+  }
+
+  messagesAnalyticsByStoryCategory(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
+    return this.rest.post("/analytics/messages/byStoryCategory", request, UserAnalyticsQueryResult.fromJSON);
+  }
+
+  messagesAnalyticsByStoryType(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
+    return this.rest.post("/analytics/messages/byStoryType", request, UserAnalyticsQueryResult.fromJSON);
+  }
+
+  messagesAnalyticsByStoryLocale(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
+    return this.rest.post("/analytics/messages/byStoryLocale", request, UserAnalyticsQueryResult.fromJSON);
+  }
+
+  messagesAnalyticsByActionType(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
+    return this.rest.post("/analytics/messages/byActionType", request, UserAnalyticsQueryResult.fromJSON);
+  }
+
   dialogs(query: DialogReportQuery): Observable<DialogReportQueryResult> {
     return this.rest.post("/dialogs/search", query, DialogReportQueryResult.fromJSON);
   }

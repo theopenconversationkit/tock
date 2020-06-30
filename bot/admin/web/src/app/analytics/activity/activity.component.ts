@@ -32,6 +32,8 @@ export class ActivityComponent {
   usersChart: ChartData;
 
   messagesByType: UserAnalyticsQueryResult;
+  messagesByStory: UserAnalyticsQueryResult;
+  messagesByIntent: UserAnalyticsQueryResult;
   messagesByConfiguration: UserAnalyticsQueryResult;
   messagesByConnector: UserAnalyticsQueryResult;
 
@@ -140,6 +142,8 @@ export class ActivityComponent {
       this.filter.to = this.endDate;
 //       this.usersGraph(that);
       this.buildMessagesCharts();
+      this.buildMessagesByStoryCharts();
+      this.buildMessagesByIntentCharts();
       this.buildMessagesByConfigurationCharts();
       this.buildMessagesByConnectorCharts();
     }
@@ -178,6 +182,24 @@ export class ActivityComponent {
       result => {
         this.connectors = result.connectorsType;
         this.messagesByType = result;
+        this.loadingUsers = false;
+      }
+    )
+  }
+
+  private buildMessagesByStoryCharts() {
+    this.analytics.messagesAnalyticsByDateAndStory(this.buildMessagesSearchQuery()).subscribe(
+      result => {
+        this.messagesByStory = result;
+        this.loadingUsers = false;
+      }
+    )
+  }
+
+  private buildMessagesByIntentCharts() {
+    this.analytics.messagesAnalyticsByDateAndIntent(this.buildMessagesSearchQuery()).subscribe(
+      result => {
+        this.messagesByIntent = result;
         this.loadingUsers = false;
       }
     )

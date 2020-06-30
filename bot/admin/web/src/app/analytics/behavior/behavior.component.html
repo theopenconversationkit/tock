@@ -2,7 +2,7 @@
   <nb-card>
     <nb-card-body nbSpinnerStatus="primary">
       <date-range-calendar [rangeInDays]="7" (datesChanged)="datesChanged($event)"></date-range-calendar>
-      <tock-select-bot [allowNoConfigurationSelection]="false" noConnectorLabel="All Connectors"
+      <tock-select-bot [allowNoConfigurationSelection]="true" noConnectorLabel="All Connectors"
                        [allowNoSelection]="true" noConfigurationLabel="All Configurations"
                        (selectionChange)="selectedConfigurationChanged($event)" class="select-bot">
       </tock-select-bot>
@@ -22,10 +22,13 @@
     </nb-card-body>
   </nb-card>
 
+  <tock-chart [data]="messagesByStory" title="Messages by Story" [pretty]="pretty" type="PieChart"></tock-chart>
+  <tock-chart [data]="messagesByIntent" title="Messages by Intent" [pretty]="pretty" type="PieChart"></tock-chart>
   <tock-chart [data]="messagesByDayOfWeek" title="Messages by Day of Week" [pretty]="pretty" type="PieChart"></tock-chart>
   <tock-chart [data]="messagesByHour" title="Messages by Hour of Day" [pretty]="pretty" type="PieChart"></tock-chart>
-  <tock-chart [data]="messagesByConfiguration" title="Messages by Configuration" [pretty]="pretty" type="PieChart"></tock-chart>
-  <tock-chart [data]="messagesByConnector" title="Messages by Connector Type" [pretty]="pretty" type="PieChart"></tock-chart>
-  <tock-chart [data]="messagesByType" title="Messages Test Ratio" [pretty]="pretty" type="PieChart"></tock-chart>
+  <tock-chart [data]="messagesByActionType" title="Messages by Action Type" [pretty]="pretty" type="PieChart"></tock-chart>
+  <tock-chart [data]="messagesByStoryCategory" title="Messages by Story Category" [pretty]="pretty" type="PieChart"></tock-chart>
+  <tock-chart [data]="messagesByStoryType" title="Messages by Story Type" [pretty]="pretty" type="PieChart"></tock-chart>
+  <tock-chart [data]="messagesByStoryLocale" title="Messages by Locale" [pretty]="pretty" type="PieChart"></tock-chart>
 
 </div>
