@@ -27,7 +27,7 @@ import * as html2pdf from 'html2pdf.js'
 export class ChartComponent implements OnChanges {
 
   @Input()
-  pdfId: String;
+  pdfId: string;
 
   @Input()
   type: string;
@@ -193,26 +193,28 @@ export class ChartComponent implements OnChanges {
     })
     const blob = new Blob([csv], { type: 'text/csv' });
     const url= window.URL.createObjectURL(blob);
-    window.open(url);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = this.getFileName('csv');
+    a.click();
   }
-//
-//   getFileName():string{
-//     return "tock-pdfexport-" + this.title + ".pdf";
-//   }
-//
-//   onPdfAction() {
-//     console.debug('onPdfAction');
-//     const options = {
-//       filename: this.getFileName(),
-//       image: {type: 'jpeg ', quality: 0.95},
-//       html2canvas: {},
-//       jsPDF: {orientation: 'landscape'}
-//     };
-//     const content: Element = document.getElementById('' + this.pdfId);
-//     console.debug('Element ' + this.pdfId + ' = ' + content);
-//     html2pdf()
-//       .from(content)
-//       .set(options)
-//       .save()
-//   }
+
+  getFileName(exportType: string):string{
+    return `tock-${exportType}export-` + this.title + `.${exportType}`;
+  }
+
+  onPdfAction() {
+    const options = {
+      filename: this.getFileName('pdf'),
+      image: {type: 'jpeg ', quality: 0.95},
+      html2canvas: {scale: 0.9 },
+      jsPDF: {orientation: 'landscape'},
+      pagebreak: { mode: 'avoid-all' }
+    };
+    let element = document.getElementById(this.pdfId)
+    html2pdf()
+      .set(options)
+      .from(element)
+      .save()
+  }
 }
