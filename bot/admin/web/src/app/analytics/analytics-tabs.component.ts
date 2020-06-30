@@ -17,17 +17,19 @@
 import {Component, OnInit} from "@angular/core";
 import {ActivatedRoute, Router, RouterState} from "@angular/router";
 class TabLink {
-  constructor(public route: string, public title: string) {
-
-  }
+  constructor(
+    public route: string,
+    public title: string,
+    public icon?: string
+  ) { }
 }
 
 const tabs = [
-  new TabLink("activity", "Activity"),
-  new TabLink("behavior", "Behavior"),
-  new TabLink("flow", "Flow"),
-  new TabLink("users", "Users"),
-  new TabLink("dialogs", "Search")
+  new TabLink("activity", "Activity", 'activity-outline'),
+  new TabLink("behavior", "Behavior", 'pie-chart-outline'),
+  new TabLink("flow", "Flow", 'funnel-outline'),
+  new TabLink("users", "Users", 'people-outline'),
+  new TabLink("dialogs", "Search", 'search-outline')
 ];
 
 @Component({

@@ -17,14 +17,16 @@
 import {Component, OnInit} from "@angular/core";
 import {Router} from "@angular/router";
 class TabLink {
-  constructor(public route: string, public title: string) {
-
-  }
+  constructor(
+    public route: string,
+    public title: string,
+    public icon?: string
+  ) { }
 }
 
 const tabs = [
-  new TabLink("test", "Test the bot"),
-  new TabLink("plan", "Test Plans")
+  new TabLink("test", "Test the bot", 'smiling-face-outline'),
+  new TabLink("plan", "Test Plans", 'map-outline')
 ];
 
 @Component({
