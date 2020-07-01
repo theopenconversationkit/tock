@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ViewChild, AfterViewInit} from '@angular/core';
 import {UserAnalyticsQueryResult, UserSearchQuery} from "../users/users";
 import {DialogFlowRequest} from "../flow/flow";
 import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
@@ -17,7 +17,13 @@ import * as html2pdf from 'html2pdf.js'
   templateUrl: './activity.component.html',
   styleUrls: ['./activity.component.css']
 })
-export class ActivityComponent {
+export class ActivityComponent implements AfterViewInit {
+
+  @ViewChild('messagesByTypeItem') messagesByTypeItem;
+  @ViewChild('messagesByStoryItem') messagesByStoryItem;
+  @ViewChild('messagesByIntentItem') messagesByIntentItem;
+  @ViewChild('messagesByConfigurationItem') messagesByConfigurationItem;
+  @ViewChild('messagesByConnectorItem') messagesByConnectorItem;
 
   startDate: Date;
   endDate: Date;
@@ -28,14 +34,14 @@ export class ActivityComponent {
   stacked = false;
 
   filter: UserFilter = new UserFilter([], false);
-  loadingUsers: boolean = false;
+  loading = false;
   usersChart: ChartData;
 
-  messagesByType: UserAnalyticsQueryResult;
-  messagesByStory: UserAnalyticsQueryResult;
-  messagesByIntent: UserAnalyticsQueryResult;
-  messagesByConfiguration: UserAnalyticsQueryResult;
-  messagesByConnector: UserAnalyticsQueryResult;
+  messagesByTypeData: UserAnalyticsQueryResult;
+  messagesByStoryData: UserAnalyticsQueryResult;
+  messagesByIntentData: UserAnalyticsQueryResult;
+  messagesByConfigurationData: UserAnalyticsQueryResult;
+  messagesByConnectorData: UserAnalyticsQueryResult;
 
   messagesByTypeLoading = false;
   messagesByStoryLoading = false;
@@ -55,6 +61,10 @@ export class ActivityComponent {
         this.configurations = configs;
       }
     )
+  }
+
+  ngAfterViewInit() {
+    this.messagesByTypeItem.open();
   }
 
   getConnectorColor(connector: string): string {
@@ -140,18 +150,46 @@ export class ActivityComponent {
     return this.analytics.usersAnalytics(this.buildUserSearchQuery(query));
   }
 
-  private reload() {
-    let that = this;
-    this.loadingUsers = true;
-    if (this.startDate != null) {
+  private reload(force?: boolean) {
+    if (this.startDate != null && !this.loading) {
       this.filter.from = this.startDate;
       this.filter.to = this.endDate;
 //       this.usersGraph(that);
-      this.buildMessagesCharts();
-      this.buildMessagesByStoryCharts();
-      this.buildMessagesByIntentCharts();
-      this.buildMessagesByConfigurationCharts();
-      this.buildMessagesByConnectorCharts();
+      if (this.messagesByTypeItem && this.messagesByTypeItem.expanded) {
+        if (force || !this.messagesByTypeData) {
+          this.buildMessagesCharts();
+        }
+      } else if (force) {
+        this.messagesByTypeData = null;
+      }
+      if (this.messagesByStoryItem && this.messagesByStoryItem.expanded) {
+        if (force || !this.messagesByStoryData) {
+          this.buildMessagesByStoryCharts();
+        }
+      } else if (force) {
+        this.messagesByStoryData = null;
+      }
+      if (this.messagesByIntentItem && this.messagesByIntentItem.expanded) {
+        if (force || !this.messagesByIntentData) {
+          this.buildMessagesByIntentCharts();
+        }
+      } else if (force) {
+        this.messagesByIntentData = null;
+      }
+      if (this.messagesByConfigurationItem && this.messagesByConfigurationItem.expanded) {
+        if (force || !this.messagesByConfigurationData) {
+          this.buildMessagesByConfigurationCharts();
+        }
+      } else if (force) {
+        this.messagesByConfigurationData = null;
+      }
+      if (this.messagesByConnectorItem && this.messagesByConnectorItem.expanded) {
+        if (force || !this.messagesByConnectorData) {
+          this.buildMessagesByConnectorCharts();
+        }
+      } else if (force) {
+        this.messagesByConnectorData = null;
+      }
     }
   }
 
@@ -178,57 +216,72 @@ export class ActivityComponent {
           pointSize: 5, is3D: true
         };
         this.usersChart = new ChartData("LineChart", graphdata, columnNames, options, '500', '1000');
-        this.loadingUsers = false;
+        this.loading = false;
       }
     )
   }
 
   private buildMessagesCharts() {
+    this.loading = true;
     this.messagesByTypeLoading = true;
     this.analytics.messagesAnalytics(this.buildMessagesSearchQuery()).subscribe(
       result => {
         this.connectors = result.connectorsType;
-        this.messagesByType = result;
+        this.messagesByTypeData = result;
+        this.loading = false;
+        this.messagesByTypeItem.open();
         this.messagesByTypeLoading = false;
       }
     )
   }
 
   private buildMessagesByStoryCharts() {
+    this.loading = true;
     this.messagesByStoryLoading = true;
     this.analytics.messagesAnalyticsByDateAndStory(this.buildMessagesSearchQuery()).subscribe(
       result => {
-        this.messagesByStory = result;
+        this.messagesByStoryData = result;
+        this.loading = false;
+        this.messagesByStoryItem.open();
         this.messagesByStoryLoading = false;
       }
     )
   }
 
   private buildMessagesByIntentCharts() {
+    this.loading = true;
     this.messagesByIntentLoading = false;
     this.analytics.messagesAnalyticsByDateAndIntent(this.buildMessagesSearchQuery()).subscribe(
       result => {
-        this.messagesByIntent = result;
+        this.messagesByIntentData = result;
+        this.loading = false;
+        this.messagesByIntentItem.open();
         this.messagesByIntentLoading = false;
       }
     )
   }
 
   private buildMessagesByConfigurationCharts() {
+    this.loading = true;
     this.messagesByConfigurationLoading = true;
     this.analytics.messagesAnalyticsByConfiguration(this.buildMessagesSearchQuery()).subscribe(
       result => {
-        this.messagesByConfiguration = result;
+        this.messagesByConfigurationData = result;
+        this.loading = false;
+        this.messagesByConfigurationItem.open();
         this.messagesByConfigurationLoading = false;
       }
     )
   }
 
   private buildMessagesByConnectorCharts() {
+    this.loading = true;
     this.messagesByConnectorLoading = true;
     this.analytics.messagesAnalyticsByConnectorType(this.buildMessagesSearchQuery()).subscribe(
       result => {
-        this.messagesByConnector = result;
+        this.messagesByConnectorData = result;
+        this.loading = false;
+        this.messagesByConnectorItem.open();
         this.messagesByConnectorLoading = false;
       }
     )
@@ -265,16 +318,20 @@ export class ActivityComponent {
   datesChanged(dates: [Date, Date]) {
     this.startDate = dates[0];
     this.endDate = dates[1];
-    this.reload();
+    this.reload(true);
   }
 
   selectedConfigurationChanged(event?: SelectBotEvent) {
     this.selectedConfigurationName = !event ? null : event.configurationName;
     this.selectedConnectorId = !event ? null : event.configurationId;
-    this.reload();
+    this.reload(true);
+  }
+
+  collapsedChange(event?: boolean) {
+    setTimeout(_ => this.reload(false));
   }
 
   waitAndRefresh() {
-    setTimeout(_ => this.reload());
+    setTimeout(_ => this.reload(true));
   }
 }

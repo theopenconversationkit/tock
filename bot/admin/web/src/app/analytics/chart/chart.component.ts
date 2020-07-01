@@ -69,6 +69,9 @@ export class ChartComponent implements OnChanges {
           this.altChart = this.buildPieChartFromDates(this.data);
         }
       }
+    } else {
+      this.mainChart = null;
+      this.altChart = null;
     }
   }
 

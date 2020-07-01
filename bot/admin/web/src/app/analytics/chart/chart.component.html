@@ -2,17 +2,6 @@
 <nb-flip-card [showToggleButton]="false" [flipped]="isFlipped" *ngIf="mainChart">
   <nb-card-front>
     <nb-card style="min-height: 60vh">
-      <nb-card-header>
-        {{title}}
-        <button nbButton shape="round" (click)="onFlipAction()" nbTooltip="Show Table"
-                status="success" style="float: right;">
-          <nb-icon icon="layout-outline"></nb-icon>
-        </button>
-        <button nbButton outline shape="round" (click)="onCsvAction()" nbTooltip="Export data as CSV"
-                status="primary" style="float: right; margin-right: 20px;">
-          CSV <nb-icon icon="download"></nb-icon>
-        </button>
-      </nb-card-header>
       <nb-card-body [nbSpinner]="isLoading" nbSpinnerStatus="primary">
         <div style="display: flex;">
           <google-chart
@@ -35,21 +24,20 @@
           </google-chart>
         </div>
       </nb-card-body>
-    </nb-card>
-  </nb-card-front>
-  <nb-card-back>
-    <nb-card>
-      <nb-card-header>
-        {{title}}
-        <button nbButton shape="round" (click)="onFlipAction()" nbTooltip="Show Chart"
+      <nb-card-footer>
+        <button nbButton shape="round" (click)="onFlipAction()" nbTooltip="Show Table"
                 status="success" style="float: right;">
-          <nb-icon [icon]="chartIcon()"></nb-icon>
+          <nb-icon icon="layout-outline"></nb-icon>
         </button>
         <button nbButton outline shape="round" (click)="onCsvAction()" nbTooltip="Export data as CSV"
                 status="primary" style="float: right; margin-right: 20px;">
           CSV <nb-icon icon="download"></nb-icon>
         </button>
-      </nb-card-header>
+      </nb-card-footer>
+    </nb-card>
+  </nb-card-front>
+  <nb-card-back>
+    <nb-card>
       <nb-card-body>
           <google-chart
             type="Table"
@@ -62,6 +50,16 @@
             style="overflow-x: auto;">
           </google-chart>
       </nb-card-body>
+      <nb-card-footer>
+        <button nbButton shape="round" (click)="onFlipAction()" nbTooltip="Show Chart"
+                status="success" style="float: right;">
+          <nb-icon [icon]="chartIcon()"></nb-icon>
+        </button>
+        <button nbButton outline shape="round" (click)="onCsvAction()" nbTooltip="Export data as CSV"
+                status="primary" style="float: right; margin-right: 20px;">
+          CSV <nb-icon icon="download"></nb-icon>
+        </button>
+      </nb-card-footer>
     </nb-card>
   </nb-card-back>
 </nb-flip-card>

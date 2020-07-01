@@ -63,6 +63,7 @@ import ai.tock.translator.TranslatorEngine
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import io.vertx.core.http.HttpMethod.GET
+import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
 import org.litote.kmongo.toId
@@ -85,6 +86,13 @@ open class BotAdminVerticle : AdminVerticle() {
         super.configureServices()
     }
 
+    private fun <R> measureTimeMillis(context: RoutingContext, function: () -> R): R {
+        val before = System.currentTimeMillis();
+        val result = function()
+        logger.debug { "${context.normalisedPath()} took ${System.currentTimeMillis() - before} ms." }
+        return result
+    }
+
     override fun configure() {
         configureServices()
 
@@ -98,7 +106,9 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost("/analytics/users", botUser) { context, query: UserSearchQuery ->
             if (context.organization == query.namespace) {
-                BotAdminService.searchUsersAnalytics(query)
+                measureTimeMillis(context, {
+                    BotAdminService.searchUsersAnalytics(query)
+                })
             } else {
                 unauthorized()
             }
@@ -106,7 +116,9 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost("/analytics/messages", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
-                BotAdminService.reportMessagesByType(request)
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByType(request)
+                })
             } else {
                 unauthorized()
             }
@@ -114,7 +126,9 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost("/analytics/messages/byConfiguration", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
-                BotAdminService.reportMessagesByConfiguration(request)
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByConfiguration(request)
+                })
             } else {
                 unauthorized()
             }
@@ -122,7 +136,9 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost("/analytics/messages/byConnectorType", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
-                BotAdminService.reportMessagesByConnectorType(request)
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByConnectorType(request)
+                })
             } else {
                 unauthorized()
             }
@@ -130,7 +146,9 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost("/analytics/messages/byDayOfWeek", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
-                BotAdminService.reportMessagesByDayOfWeek(request)
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByDayOfWeek(request)
+                })
             } else {
                 unauthorized()
             }
@@ -138,7 +156,9 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost("/analytics/messages/byHour", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
-                BotAdminService.reportMessagesByHour(request)
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByHour(request)
+                })
             } else {
                 unauthorized()
             }
@@ -146,7 +166,9 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost("/analytics/messages/byDateAndIntent", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
-                BotAdminService.reportMessagesByDateAndIntent(request)
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByDateAndIntent(request)
+                })
             } else {
                 unauthorized()
             }
@@ -154,7 +176,9 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost("/analytics/messages/byIntent", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
-                BotAdminService.reportMessagesByIntent(request)
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByIntent(request)
+                })
             } else {
                 unauthorized()
             }
@@ -162,7 +186,9 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost("/analytics/messages/byDateAndStory", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
-                BotAdminService.reportMessagesByDateAndStory(request)
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByDateAndStory(request)
+                })
             } else {
                 unauthorized()
             }
@@ -170,7 +196,9 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost("/analytics/messages/byStory", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
-                BotAdminService.reportMessagesByStory(request)
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByStory(request)
+                })
             } else {
                 unauthorized()
             }
@@ -178,7 +206,9 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost("/analytics/messages/byStoryCategory", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
-                BotAdminService.reportMessagesByStoryCategory(request)
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByStoryCategory(request)
+                })
             } else {
                 unauthorized()
             }
@@ -186,7 +216,9 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost("/analytics/messages/byStoryType", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
-                BotAdminService.reportMessagesByStoryType(request)
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByStoryType(request)
+                })
             } else {
                 unauthorized()
             }
@@ -194,7 +226,9 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost("/analytics/messages/byStoryLocale", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
-                BotAdminService.reportMessagesByStoryLocale(request)
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByStoryLocale(request)
+                })
             } else {
                 unauthorized()
             }
@@ -202,7 +236,9 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost("/analytics/messages/byActionType", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
-                BotAdminService.reportMessagesByActionType(request)
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByActionType(request)
+                })
             } else {
                 unauthorized()
             }
@@ -532,7 +568,9 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost("/flow", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
-                BotAdminService.loadDialogFlow(request)
+                measureTimeMillis(context, {
+                    BotAdminService.loadDialogFlow(request)
+                })
             } else {
                 unauthorized()
             }

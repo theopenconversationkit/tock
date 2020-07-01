@@ -68,27 +68,4 @@ interface DialogFlowDAO {
             to: ZonedDateTime?
     ): List<DialogFlowTransitionStatsData>
 
-//    fun searchByIntent(
-//            namespace: String,
-//            botId: String,
-//            applicationIds: Set<Id<BotApplicationConfiguration>>,
-//            from: ZonedDateTime?,
-//            to: ZonedDateTime?
-//    ): Map<String?, List<DialogFlowTransitionStatsData>>
-//
-//    fun searchByTransitionType(
-//            namespace: String,
-//            botId: String,
-//            applicationIds: Set<Id<BotApplicationConfiguration>>,
-//            from: ZonedDateTime?,
-//            to: ZonedDateTime?
-//    ): Map<String?, List<DialogFlowTransitionStatsData>>
-//
-//    fun searchByStory(
-//            namespace: String,
-//            botId: String,
-//            applicationIds: Set<Id<BotApplicationConfiguration>>,
-//            from: ZonedDateTime?,
-//            to: ZonedDateTime?
-//    ): Map<String?, List<DialogFlowTransitionStatsData>>
 }

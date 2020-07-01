@@ -286,9 +286,6 @@ object BotAdminService {
         val result = arrayListOf<List<Int?>>()
         transitionsByDate.forEach { transitions ->
             run {
-                if (transitions != null && transitions.size > 0) {
-                    logger.debug { "Found ${transitions.size} messages for ${transitions.firstOrNull()?.date?.dayOfMonth}/${transitions.firstOrNull()?.date?.month}" }
-                }
                 val datesMessages = arrayListOf<Int?>()
                 series.forEach { serie ->
                     run {
@@ -323,9 +320,6 @@ object BotAdminService {
         val result = arrayListOf<List<Int?>>()
         transitionsByDate.forEach { transitions ->
             run {
-                if (transitions != null && transitions.size > 0) {
-                    logger.debug { "Found ${transitions.size} messages for ${transitions.firstOrNull()?.date?.dayOfMonth}/${transitions.firstOrNull()?.date?.month}" }
-                }
                 val datesMessages = arrayListOf<Int?>()
                 series.forEach { serie ->
                     run {
@@ -348,16 +342,12 @@ object BotAdminService {
         val namespace = request.namespace
         val botId = request.botId
         val applicationIds = applications.map { it._id }.toSet()
-        logger.debug { "Building 'Messages by Configuration' report for configurations: $applications..." }
         logger.debug { "Building 'Messages by Configuration' report for ${applications.size} configurations: $applicationIds..." }
 
         val transitions = dialogFlowDAO.search(namespace, botId, applicationIds, request.from, request.to)
 
         val result = arrayListOf<List<Int?>>()
         run {
-            if (transitions != null && transitions.size > 0) {
-                logger.debug { "Found ${transitions.size} messages" }
-            }
             val seriesMessages = arrayListOf<Int?>()
             series.forEach { serie ->
                 run {
@@ -378,18 +368,13 @@ object BotAdminService {
         val namespace = request.namespace
         val botId = request.botId
         val applicationIds = applications.map { it._id }.toSet()
-        logger.debug { "Building 'Messages by Configuration' report for configurations: $applications..." }
         logger.debug { "Building 'Messages by Configuration' report for ${applications.size} configurations: $applicationIds..." }
 
         val messages = (searchFunction) (namespace, botId, applicationIds, request.from, request.to)
         val series: Set<String> = messages.groupBy { it.text }.keys.map { serieLabel(it) }.toSet()
-        //mapKeys { serieLabel(it.key) }.keys
 
         val result = arrayListOf<List<Int?>>()
         run {
-            if (messages != null && messages.size > 0) {
-                logger.debug { "Found ${messages.size} messages" }
-            }
             val seriesMessages = arrayListOf<Int?>()
             series.forEach { serie ->
                 run {
@@ -1272,5 +1257,4 @@ object BotAdminService {
             storyDefinitionDAO.save(it.copy(botId = newApp.name))
         }
     }
-
 }
