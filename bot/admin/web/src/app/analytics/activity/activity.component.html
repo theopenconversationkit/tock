@@ -22,10 +22,15 @@
     </nb-card-body>
   </nb-card>
 
-  <tock-chart [data]="messagesByType" title="Messages" [pretty]="pretty" [stacked]="stacked"></tock-chart>
-  <tock-chart [data]="messagesByStory" title="Messages by Story" [pretty]="pretty" [stacked]="stacked"></tock-chart>
-  <tock-chart [data]="messagesByIntent" title="Messages by Intent" [pretty]="pretty" [stacked]="stacked"></tock-chart>
-  <tock-chart [data]="messagesByConfiguration" title="Messages by Configuration" [pretty]="pretty" [stacked]="stacked"></tock-chart>
-  <tock-chart [data]="messagesByConnector" title="Messages by Connector Type" [pretty]="pretty" [stacked]="stacked"></tock-chart>
+  <tock-chart [data]="messagesByType" title="Messages" [pretty]="pretty" [stacked]="stacked"
+              [isLoading]="messagesByTypeLoading"></tock-chart>
+  <tock-chart [data]="messagesByStory" title="Messages by Story" [pretty]="pretty" [stacked]="stacked"
+              [isLoading]="messagesByStoryLoading"></tock-chart>
+  <tock-chart [data]="messagesByIntent" title="Messages by Intent" [pretty]="pretty" [stacked]="stacked"
+              [isLoading]="messagesByIntentLoading"></tock-chart>
+  <tock-chart [data]="messagesByConfiguration" title="Messages by Configuration" [pretty]="pretty" [stacked]="stacked"
+              [isLoading]="messagesByConfigurationLoading"></tock-chart>
+  <tock-chart [data]="messagesByConnector" title="Messages by Connector Type" [pretty]="pretty" [stacked]="stacked"
+              [isLoading]="messagesByConnectorLoading"></tock-chart>
 
 </div>

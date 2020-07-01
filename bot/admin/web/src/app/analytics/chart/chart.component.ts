@@ -44,6 +44,9 @@ export class ChartComponent implements OnChanges {
   @Input()
   data: UserAnalyticsQueryResult;
 
+  @Input()
+  isLoading = false;
+
   mainChart: ChartData;
   altChart: ChartData;
   isFlipped = false;

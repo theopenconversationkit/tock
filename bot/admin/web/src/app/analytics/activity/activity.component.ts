@@ -37,6 +37,12 @@ export class ActivityComponent {
   messagesByConfiguration: UserAnalyticsQueryResult;
   messagesByConnector: UserAnalyticsQueryResult;
 
+  messagesByTypeLoading = false;
+  messagesByStoryLoading = false;
+  messagesByIntentLoading = false;
+  messagesByConfigurationLoading = false;
+  messagesByConnectorLoading = false;
+
   globalUsersCount: number[];
 //   globalMessagesCount: number[];
   configurations: BotApplicationConfiguration[];
@@ -178,47 +184,52 @@ export class ActivityComponent {
   }
 
   private buildMessagesCharts() {
+    this.messagesByTypeLoading = true;
     this.analytics.messagesAnalytics(this.buildMessagesSearchQuery()).subscribe(
       result => {
         this.connectors = result.connectorsType;
         this.messagesByType = result;
-        this.loadingUsers = false;
+        this.messagesByTypeLoading = false;
       }
     )
   }
 
   private buildMessagesByStoryCharts() {
+    this.messagesByStoryLoading = true;
     this.analytics.messagesAnalyticsByDateAndStory(this.buildMessagesSearchQuery()).subscribe(
       result => {
         this.messagesByStory = result;
-        this.loadingUsers = false;
+        this.messagesByStoryLoading = false;
       }
     )
   }
 
   private buildMessagesByIntentCharts() {
+    this.messagesByIntentLoading = false;
     this.analytics.messagesAnalyticsByDateAndIntent(this.buildMessagesSearchQuery()).subscribe(
       result => {
         this.messagesByIntent = result;
-        this.loadingUsers = false;
+        this.messagesByIntentLoading = false;
       }
     )
   }
 
   private buildMessagesByConfigurationCharts() {
+    this.messagesByConfigurationLoading = true;
     this.analytics.messagesAnalyticsByConfiguration(this.buildMessagesSearchQuery()).subscribe(
       result => {
         this.messagesByConfiguration = result;
-        this.loadingUsers = false;
+        this.messagesByConfigurationLoading = false;
       }
     )
   }
 
   private buildMessagesByConnectorCharts() {
+    this.messagesByConnectorLoading = true;
     this.analytics.messagesAnalyticsByConnectorType(this.buildMessagesSearchQuery()).subscribe(
       result => {
         this.messagesByConnector = result;
-        this.loadingUsers = false;
+        this.messagesByConnectorLoading = false;
       }
     )
   }
