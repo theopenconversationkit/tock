@@ -99,6 +99,8 @@ import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.time.format.TextStyle
 import java.util.Locale
+import java.util.stream.LongStream
+import java.util.stream.Stream
 import kotlin.streams.toList
 
 /**
@@ -203,6 +205,15 @@ object BotAdminService {
 
     private fun formatHours(hours: List<String>): List<String> {
         return hours.map { "$it:00" }.toList()
+    }
+
+    private fun LocalDate.datesUntil(endExclusive: LocalDate): Stream<LocalDate> {
+        val end = endExclusive.toEpochDay()
+        val start: Long = toEpochDay()
+        require(end >= start) { "$endExclusive < $this" }
+        return LongStream.range(start, end).mapToObj { epochDay: Long ->
+            LocalDate.ofEpochDay(epochDay)
+        }
     }
 
     private fun getDatesBetween(startDate: LocalDate, endDate: LocalDate): List<String> {
