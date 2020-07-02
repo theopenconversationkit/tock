@@ -23,6 +23,7 @@ import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorConfiguration
 import ai.tock.bot.connector.ConnectorProvider
+import ai.tock.bot.connector.ConnectorService
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.NotifyBotStateModifier
 import ai.tock.bot.definition.BotAnswerInterceptor
@@ -59,6 +60,7 @@ import mu.KotlinLogging
 import org.litote.kmongo.Id
 import java.util.ServiceLoader
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.locks.Lock
@@ -84,6 +86,7 @@ object BotRepository {
     private val nlpController: NlpController get() = injector.provide()
     private val executor: Executor get() = injector.provide()
     internal val botAnswerInterceptors: MutableList<BotAnswerInterceptor> = mutableListOf()
+    private val connectorServices: MutableList<ConnectorService> = ServiceLoader.load(ConnectorService::class.java).toMutableList()
 
     internal val connectorProviders: MutableSet<ConnectorProvider> = CopyOnWriteArraySet(
         ServiceLoader.load(ConnectorProvider::class.java).map { it }.apply {
@@ -276,6 +279,10 @@ object BotRepository {
      */
     fun registerNlpListener(listener: NlpListener) {
         nlpListeners.add(listener)
+    }
+
+    fun registerConnectorService(service: ConnectorService) {
+        connectorServices.add(service)
     }
 
     internal fun getConfigurationByApplicationId(applicationId: String): BotApplicationConfiguration? =
@@ -480,6 +487,10 @@ object BotRepository {
         return botConfigurationDAO.save(conf)
             .apply {
                 val controller = TockConnectorController.register(connector, bot, verticle, conf)
+                //install connector services
+                connectorServices.forEach { connectorService ->
+                    connectorService.install(controller, conf)
+                }
                 //monitor bot
                 StoryConfigurationMonitor.monitor(bot)
                 //register connector controller map

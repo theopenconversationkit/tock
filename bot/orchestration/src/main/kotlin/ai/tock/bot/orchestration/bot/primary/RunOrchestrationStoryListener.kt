@@ -38,7 +38,9 @@ import mu.KotlinLogging
 class RunOrchestrationStoryListener(
     private val configuration: PrimaryBotConfiguration,
     private val orchestrator: OrchestratorService,
-    private val orchestrationRepository: OrchestrationRepository = MongoOrchestrationRepository
+    private val orchestrationRepository: OrchestrationRepository = MongoOrchestrationRepository,
+    private val orchestrationEnabled: (() -> Boolean) = { true }
+
 ) : StoryHandlerListener {
 
     private val logger = KotlinLogging.logger {}
@@ -48,7 +50,7 @@ class RunOrchestrationStoryListener(
 
         return when {
             currentOrchestration != null -> resumeOrchestration(currentOrchestration)
-            intent.inStartOrchestrationList() -> startOrchestration()
+            intent.inStartOrchestrationList() && orchestrationEnabled() -> startOrchestration()
             else -> true // no need for orchestration, let's continue on this bot
         }
     }
