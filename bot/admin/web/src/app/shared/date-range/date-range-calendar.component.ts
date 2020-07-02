@@ -72,7 +72,11 @@ export class DateRangeCalendarComponent implements OnInit {
   }
 
   getStatus(nbDays): string {
-    return "basic";
+    if(this.rangeInDays == nbDays){
+      return "primary";
+    } else {
+      return "basic";
+    }
   }
 
   setRangeInDays(days: number): void {

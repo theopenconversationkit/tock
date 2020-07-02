@@ -45,11 +45,8 @@ import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
 import java.time.Instant
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
 import java.util.Locale
 
 @Data(internal = true)
@@ -118,11 +115,11 @@ internal data class UserTimelineCol(
     }
 
     fun toUserAnalytics(): UserAnalytics {
-        val zoneId = ZoneId.of("Europe/Paris")
+        val zoneId = defaultZoneId
         return UserAnalytics(
             playerId,
             applicationIds,
-            LocalDate.ofInstant(lastUserActionDate, ZoneOffset.UTC),
+            LocalDateTime.ofInstant(lastUserActionDate, zoneId).toLocalDate(),
             LocalDateTime.ofInstant(lastUserActionDate, zoneId)
         )
     }
@@ -182,16 +179,16 @@ internal data class UserTimelineCol(
         val flags: Map<String, TimeBoxedFlagWrapper>
     ) {
         constructor(state: UserState) :
-            this(
-                state.creationDate,
-                Instant.now(),
-                state.flags.mapValues {
-                    TimeBoxedFlagWrapper(
-                        it.value,
-                        MongoBotConfiguration.hasToEncryptFlag(it.key)
-                    )
-                }
-            )
+                this(
+                    state.creationDate,
+                    Instant.now(),
+                    state.flags.mapValues {
+                        TimeBoxedFlagWrapper(
+                            it.value,
+                            MongoBotConfiguration.hasToEncryptFlag(it.key)
+                        )
+                    }
+                )
 
         fun toUserState(): UserState {
             return UserState(

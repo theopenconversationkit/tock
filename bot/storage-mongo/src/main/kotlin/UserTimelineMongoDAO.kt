@@ -108,12 +108,8 @@ import org.litote.kmongo.updateOneById
 import org.litote.kmongo.upsert
 import java.time.Instant
 import java.time.Instant.now
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.ZoneOffset
 import java.util.concurrent.TimeUnit.DAYS
-import kotlin.streams.toList
 
 
 /**
@@ -456,7 +452,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     }
 
     override fun loadByTemporaryIdsWithoutDialogs(namespace: String, temporaryIds: List<String>): List<UserTimeline> {
-        return userTimelineCol.find(TemporaryIds `in` (temporaryIds), Namespace eq namespace).map { it.toUserTimeline() }.toList()
+        return userTimelineCol.find(TemporaryIds `in` (temporaryIds), Namespace eq namespace)
+            .map { it.toUserTimeline() }.toList()
     }
 
     private fun loadLastValidGroupDialogCol(namespace: String, groupId: String): DialogCol? {
@@ -527,7 +524,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     }.joinToString(",", "{$and:[", "]}").bson,
                     if (query.displayTests) null else UserTimelineCol_.UserPreferences.test eq false
                 )
-            logger.debug("user search query: $filter")
+            logger.debug { "user search query: $filter" }
             val c = userTimelineCol.withReadPreference(secondaryPreferred())
             val count = c.countDocuments(filter)
             return if (count > start) {
@@ -544,7 +541,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         with(query) {
             val applicationsIds = getApplicationIds(query.namespace, query.nlpModel)
             if (applicationsIds.isEmpty()) {
-                return listOf()
+                return emptyList()
             }
             val filter =
                 and(
@@ -553,7 +550,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     LastUpdateDate gt from.toInstant(ZoneOffset.UTC),
                     LastUpdateDate lt to.toInstant(ZoneOffset.UTC)
                 )
-            logger.debug("user analytics search query: $filter")
+            logger.debug { "user analytics search query: $filter" }
             val c = userTimelineCol.withReadPreference(secondaryPreferred())
             return c.find(filter).ascendingSort(LastUserActionDate)
                 .map { it.toUserAnalytics() }.toList()
