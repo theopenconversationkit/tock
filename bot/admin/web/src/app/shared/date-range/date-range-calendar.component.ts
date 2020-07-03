@@ -72,7 +72,11 @@ export class DateRangeCalendarComponent implements OnInit {
   }
 
   getStatus(nbDays): string {
-    return "basic";
+    if(this.rangeInDays == nbDays){
+      return "primary";
+    } else {
+      return "basic";
+    }
   }
 
   setRangeInDays(days: number): void {
@@ -131,7 +135,6 @@ export class DateRangeCalendarComponent implements OnInit {
     if (this.range.start != null) {
       this.normalizeDateTimes();
       this.previousRange = null;
-      console.debug('Dates changed: start=' + this.range.start + ', end=' + this.range.end);
       this.datesChanged.emit([this.range.start, this.range.end]);
     }
   }

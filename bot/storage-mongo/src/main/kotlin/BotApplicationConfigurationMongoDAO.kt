@@ -121,7 +121,10 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
             )
     }
 
-    override fun getConfigurationsByNamespaceAndBotId(namespace: String, botId: String): List<BotApplicationConfiguration> {
+    override fun getConfigurationsByNamespaceAndBotId(
+        namespace: String,
+        botId: String
+    ): List<BotApplicationConfiguration> {
         return col.find(Namespace eq namespace, BotId eq botId).toList()
     }
 
@@ -160,7 +163,11 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
         return col.find(Namespace eq namespace, NlpModel eq nlpModel).toList()
     }
 
-    override fun getConfigurationsByBotNamespaceAndConfigurationName(namespace: String, botId: String, configurationName: String): List<BotApplicationConfiguration> {
+    override fun getConfigurationsByBotNamespaceAndConfigurationName(
+        namespace: String,
+        botId: String,
+        configurationName: String
+    ): List<BotApplicationConfiguration> {
         return col.find(Namespace eq namespace, BotId eq botId, Name eq configurationName).toList()
     }
 
@@ -184,7 +191,11 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
         return botCol.find(Namespace eq namespace, BotId eq botId).toList()
     }
 
-    override fun getBotConfigurationsByNamespaceAndNameAndBotId(namespace: String, name: String, botId: String): BotConfiguration? {
+    override fun getBotConfigurationsByNamespaceAndNameAndBotId(
+        namespace: String,
+        name: String,
+        botId: String
+    ): BotConfiguration? {
         return botCol.findOne(Namespace eq namespace, Name eq name, BotId eq botId)
     }
 
@@ -208,6 +219,7 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
             .flatMap {
                 sequenceOf(
                     it.applicationId,
+                    it._id.toString(),
                     //special messenger connector fix TODO remove this in 19.9
                     it.parameters["pageId"],
                     it.parameters["appId"]

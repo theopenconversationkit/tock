@@ -32,8 +32,6 @@ import {I18nComponent} from './i18n/i18n.component';
 import {FileUploadModule} from 'ng2-file-upload';
 import {I18nLabelComponent} from './i18n/i18n-label.component';
 import {FeatureComponent} from './feature/feature.component';
-import {FlowComponent} from './flow/flow.component';
-import {CytoComponent} from './flow/cyto.component';
 import {StoryComponent} from './story/story.component';
 import {AnswerComponent} from './story/answer.component';
 import {SimpleAnswerComponent} from './story/simple-answer.component';
@@ -82,10 +80,6 @@ const routes: Routes = [
       {
         path: '',
         component: CreateStoryComponent
-      },
-      {
-        path: 'flow',
-        component: FlowComponent
       },
       {
         path: 'story-create',
@@ -148,8 +142,6 @@ export class BotRoutingModule {
     I18nExportComponent,
     I18nImportComponent,
     FeatureComponent,
-    FlowComponent,
-    CytoComponent,
     StoryComponent,
     AnswerComponent,
     SimpleAnswerComponent,

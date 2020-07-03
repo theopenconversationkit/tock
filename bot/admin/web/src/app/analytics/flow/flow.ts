@@ -15,7 +15,7 @@
  */
 
 import {ApplicationScopedQuery} from "../../model/commons";
-import {AnswerConfigurationType} from "./story";
+import {AnswerConfigurationType} from "../../bot/model/story";
 
 export class DialogFlowRequest extends ApplicationScopedQuery {
 

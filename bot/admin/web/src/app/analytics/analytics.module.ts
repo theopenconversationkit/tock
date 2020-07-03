@@ -20,57 +20,96 @@ import {CommonModule} from "@angular/common";
 import {InfiniteScrollModule} from "ngx-infinite-scroll";
 import {SharedModule} from "../shared-nlp/shared.module";
 import {AuthGuard} from "../core-nlp/auth/auth.guard";
-import {MonitoringTabsComponent} from "./monitoring-tabs.component";
+import {AnalyticsTabsComponent} from "./analytics-tabs.component";
 import {ApplicationResolver} from "../core-nlp/application.resolver";
-import {HistoryComponent} from "./history/history.component";
-import {MonitoringService} from "./monitoring.service";
+import {UsersComponent} from "./users/users.component";
+import {AnalyticsService} from "./analytics.service";
 import {BotSharedModule} from "../shared/bot-shared.module";
+import {BotModule} from "../bot/bot.module";
+import {NlpModule} from '../nlp-tabs/nlp.module';
 import {MomentModule} from "ngx-moment";
 import {DialogsComponent} from "./dialogs/dialogs.component";
-import { MatNativeDateModule } from "@angular/material/core";
-import { MatDatepickerModule } from "@angular/material/datepicker";
-import {NbCardModule, NbCheckboxModule, NbRouteTabsetModule, NbSpinnerModule, NbTooltipModule, NbButtonModule,
-NbInputModule, NbSelectModule, NbCalendarModule, NbUserModule, NbDatepickerModule, NbListModule, NbAccordionModule} from "@nebular/theme";
+import {MatNativeDateModule} from "@angular/material/core";
+import {MatDatepickerModule} from "@angular/material/datepicker";
+import {
+  NbAccordionModule,
+  NbButtonModule,
+  NbCalendarModule,
+  NbCardModule,
+  NbCheckboxModule,
+  NbContextMenuModule,
+  NbDatepickerModule,
+  NbInputModule,
+  NbListModule,
+  NbMenuModule,
+  NbRouteTabsetModule,
+  NbSelectModule,
+  NbSpinnerModule,
+  NbTooltipModule,
+  NbUserModule,
+  NbCalendarRangeModule
+} from "@nebular/theme";
+import {ChartComponent} from './chart/chart.component';
+import {ActivityComponent} from './activity/activity.component';
+import {BehaviorComponent} from './behavior/behavior.component';
+import {GoogleChartsModule} from 'angular-google-charts';
+import {FlowComponent} from './flow/flow.component';
+import {CytoComponent} from './flow/cyto.component';
 
 const routes: Routes = [
   {
     path: '',
     canActivate: [AuthGuard],
-    component: MonitoringTabsComponent,
+    component: AnalyticsTabsComponent,
     resolve: {
       application: ApplicationResolver
     },
     children: [
       {
         path: '',
-        component: HistoryComponent
+        component: ActivityComponent
+      },
+      {
+        path: 'activity',
+        component: ActivityComponent
+      },
+      {
+        path: 'behavior',
+        component: BehaviorComponent
+      },
+      {
+        path: 'flow',
+        component: FlowComponent
       },
       {
         path: 'dialogs',
         component: DialogsComponent
       },
       {
-        path: 'history',
-        component: HistoryComponent
+        path: 'users',
+        component: UsersComponent
       }
     ]
   }
 ];
+
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class MonitoringRoutingModule {
+export class AnalyticsRoutingModule {
 }
 
 @NgModule({
   imports: [
     CommonModule,
     SharedModule,
-    MonitoringRoutingModule,
+    AnalyticsRoutingModule,
     InfiniteScrollModule,
     MomentModule,
     BotSharedModule,
+    BotModule,
+    NlpModule,
     MatDatepickerModule,
     MatNativeDateModule,
     NbRouteTabsetModule,
@@ -85,18 +124,27 @@ export class MonitoringRoutingModule {
     NbUserModule,
     NbDatepickerModule,
     NbListModule,
-    NbAccordionModule
+    NbAccordionModule,
+    GoogleChartsModule,
+    NbContextMenuModule,
+    NbMenuModule.forRoot(),
+    NbCalendarRangeModule
   ],
   declarations: [
-    MonitoringTabsComponent,
+    AnalyticsTabsComponent,
     DialogsComponent,
-    HistoryComponent
+    FlowComponent,
+    CytoComponent,
+    UsersComponent,
+    ChartComponent,
+    ActivityComponent,
+    BehaviorComponent
   ],
   exports: [],
   providers: [
-    MonitoringService
+    AnalyticsService
   ],
   entryComponents: []
 })
-export class BotMonitoringModule {
+export class BotAnalyticsModule {
 }

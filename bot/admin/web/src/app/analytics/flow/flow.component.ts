@@ -15,7 +15,8 @@
  */
 
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {BotService} from "../bot-service";
+import {BotService} from "../../bot/bot-service";
+import {AnalyticsService} from "../analytics.service";
 import {NlpService} from "../../nlp-tabs/nlp.service";
 import {StateService} from "../../core-nlp/state.service";
 import {
@@ -24,13 +25,13 @@ import {
   DialogFlowStateData,
   DialogFlowStateTransitionData,
   DialogFlowStateTransitionType
-} from "../model/flow";
+} from "./flow";
 import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {entityColor} from "../../model/nlp";
 import {KeyValue} from "@angular/common";
 import {NodeTransition, StoryNode, NodeTypeFilter, NodeTypeFilters} from "./node";
 import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
-import {AnswerConfigurationType, StoryDefinitionConfiguration, StorySearchQuery, StoryStep} from "../model/story";
+import {AnswerConfigurationType, StoryDefinitionConfiguration, StorySearchQuery, StoryStep} from "../../bot/model/story";
 import {Subscription} from "rxjs";
 import { NbToastrService } from '@nebular/theme';
 
@@ -171,6 +172,7 @@ export class FlowComponent implements OnInit, OnDestroy {
 
   constructor(private nlp: NlpService,
               private state: StateService,
+              private analytics: AnalyticsService,
               private bot: BotService,
               private botConfiguration: BotConfigurationService,
               private toastrService: NbToastrService) {
@@ -207,7 +209,7 @@ export class FlowComponent implements OnInit, OnDestroy {
         if (forceReload == true || !request.equals(this.lastFlowRequest)) {
           console.debug('Fetching user flow...');
           this.lastFlowRequest = request;
-          this.bot.getApplicationFlow(request).subscribe(f => {
+          this.analytics.getApplicationFlow(request).subscribe(f => {
             this.userFlow = f;
             console.debug('Application flow retrieved, incl. ' + f.states.length + ' states ' + f.transitions.length + ' transitions.');
             this.reset();

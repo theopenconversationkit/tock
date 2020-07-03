@@ -58,43 +58,42 @@ export class BotAdminAppComponent implements OnInit, OnDestroy {
     );
     this.menu = [
       {
-        title: 'Configuration',
-        icon: 'settings-outline',
-        link: '/configuration',
-        hidden: this.state.hasRole(UserRole.admin)
-      },
-      {
-        title: 'NLU',
-        icon: 'list',
+        title: 'Language Understanding',
+        icon: 'message-circle-outline',
         link: '/nlp',
         hidden: this.state.hasRole(UserRole.nlpUser)
       },
       {
-        title: 'NLU QA',
-        icon: 'bar-chart-outline',
-        link: '/quality',
-        hidden: this.state.hasRole(UserRole.nlpUser)
-      },
-      {
-        title: 'Build',
-        icon: 'edit-outline',
+        title: 'Stories & Answers',
+        icon: 'book-open-outline',
         link: '/build',
         hidden: this.state.hasRole(UserRole.botUser)
       },
       {
-        title: 'Monitoring',
-        icon: 'message-circle-outline',
-        link: '/monitoring'
+        title: 'Test',
+        icon: 'play-circle-outline',
+        link: '/test',
+        hidden: this.state.hasRole(UserRole.botUser)
+      },
+      {
+        title: 'Analytics',
+        icon: 'trending-up-outline',
+        link: '/analytics'
         ,
         hidden: this.state.hasRole(UserRole.botUser)
       },
       {
-        title: 'Test',
-        icon: 'text-outline',
-        link: '/test',
-        hidden: this.state.hasRole(UserRole.botUser)
+        title: 'Model Quality',
+        icon: 'clipboard-outline',
+        link: '/quality',
+        hidden: this.state.hasRole(UserRole.nlpUser)
+      },
+      {
+        title: 'Settings',
+        icon: 'settings-outline',
+        link: '/configuration',
+        hidden: this.state.hasRole(UserRole.admin)
       }
-
     ];
   }
 

@@ -16,6 +16,7 @@
 
 package ai.tock.bot.mongo
 
+import ai.tock.bot.admin.user.UserAnalytics
 import ai.tock.bot.admin.user.UserReport
 import ai.tock.bot.engine.action.SendAttachment
 import ai.tock.bot.engine.action.SendChoice
@@ -44,6 +45,7 @@ import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.Locale
 
@@ -112,6 +114,16 @@ internal data class UserTimelineCol(
         )
     }
 
+    fun toUserAnalytics(): UserAnalytics {
+        val zoneId = defaultZoneId
+        return UserAnalytics(
+            playerId,
+            applicationIds,
+            LocalDateTime.ofInstant(lastUserActionDate, zoneId).toLocalDate(),
+            LocalDateTime.ofInstant(lastUserActionDate, zoneId)
+        )
+    }
+
     @Data(internal = true)
     @JacksonData(internal = true)
     data class UserPreferencesWrapper(
@@ -167,16 +179,16 @@ internal data class UserTimelineCol(
         val flags: Map<String, TimeBoxedFlagWrapper>
     ) {
         constructor(state: UserState) :
-            this(
-                state.creationDate,
-                Instant.now(),
-                state.flags.mapValues {
-                    TimeBoxedFlagWrapper(
-                        it.value,
-                        MongoBotConfiguration.hasToEncryptFlag(it.key)
-                    )
-                }
-            )
+                this(
+                    state.creationDate,
+                    Instant.now(),
+                    state.flags.mapValues {
+                        TimeBoxedFlagWrapper(
+                            it.value,
+                            MongoBotConfiguration.hasToEncryptFlag(it.key)
+                        )
+                    }
+                )
 
         fun toUserState(): UserState {
             return UserState(

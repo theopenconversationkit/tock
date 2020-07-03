@@ -26,7 +26,7 @@ export class BotCoreConfig implements CoreConfig {
   /** url of the configuration menu */
   configurationUrl: string = "/configuration/new";
   /** url of the display dialogs if it exists */
-  displayDialogUrl: string = "/monitoring/dialogs";
+  displayDialogUrl: string = "/analytics/dialogs";
   /** url to answer to sentence if it exists */
   answerToSentenceUrl: string = "/build/story-create";
   /** url map for each default rights */

@@ -15,10 +15,10 @@
  */
 
 import {Component} from "@angular/core";
-import {MonitoringService} from "../monitoring.service";
-import {UserReport, UserSearchQuery} from "../model/users";
+import {AnalyticsService} from "../analytics.service";
+import {UserReport, UserSearchQuery} from "./users";
 import {StateService} from "../../core-nlp/state.service";
-import {DialogReportQuery} from "../model/dialogs";
+import {DialogReportQuery} from "../dialogs/dialogs";
 import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {DialogReport} from "../../shared/model/dialog-data";
 import {ScrollComponent} from "../../scroll/scroll.component";
@@ -30,11 +30,11 @@ import {BotApplicationConfiguration, ConnectorType} from "../../core/model/confi
 import {TestPlan} from "../../test/model/test";
 
 @Component({
-  selector: 'tock-history',
-  templateUrl: './history.component.html',
-  styleUrls: ['./history.component.css']
+  selector: 'tock-users',
+  templateUrl: './users.component.html',
+  styleUrls: ['./users.component.css']
 })
-export class HistoryComponent extends ScrollComponent<UserReport> {
+export class UsersComponent extends ScrollComponent<UserReport> {
 
   filter: UserFilter = new UserFilter([], false);
   selectedUser: UserReport;
@@ -44,7 +44,7 @@ export class HistoryComponent extends ScrollComponent<UserReport> {
   loadingDialog: boolean = false;
 
   constructor(state: StateService,
-              private monitoring: MonitoringService,
+              private analytics: AnalyticsService,
               private botConfiguration: BotConfigurationService,
               private toastrService: NbToastrService) {
     super(state);
@@ -118,7 +118,7 @@ export class HistoryComponent extends ScrollComponent<UserReport> {
   }
 
   search(query: PaginatedQuery): Observable<PaginatedResult<UserReport>> {
-    return this.monitoring.users(this.buildUserSearchQuery(query));
+    return this.analytics.users(this.buildUserSearchQuery(query));
   }
 
   dataEquals(d1: UserReport, d2: UserReport): boolean {
@@ -154,10 +154,10 @@ export class HistoryComponent extends ScrollComponent<UserReport> {
 
   loadDialog(user: UserReport) {
     this.loadingDialog = true;
-    this.monitoring.dialogs(this.buildDialogQuery(user)).subscribe(r => {
+    this.analytics.dialogs(this.buildDialogQuery(user)).subscribe(r => {
       if (r.rows.length != 0) {
         user.userDialog = r.rows[0];
-        this.monitoring.getTestPlansByNamespaceAndNlpModel().subscribe(r => user.testPlans = r);
+        this.analytics.getTestPlansByNamespaceAndNlpModel().subscribe(r => user.testPlans = r);
       }
       user.displayDialogs = true;
       this.loadingDialog = false;
@@ -170,7 +170,7 @@ export class HistoryComponent extends ScrollComponent<UserReport> {
       this.toastrService.show(`Please select a Plan first`, "Error", {duration: 3000});
       return;
     }
-    this.monitoring.addDialogToTestPlan(planId, dialog.id)
+    this.analytics.addDialogToTestPlan(planId, dialog.id)
       .subscribe(_ => this.toastrService.show(`Dialog added to plan`, "Dialog Added", {duration: 3000}));
   }
 

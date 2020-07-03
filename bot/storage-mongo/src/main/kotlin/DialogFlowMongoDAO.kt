@@ -16,11 +16,11 @@
 
 package ai.tock.bot.mongo
 
-import com.mongodb.client.model.IndexOptions
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.dialog.ApplicationDialogFlowData
 import ai.tock.bot.admin.dialog.DialogFlowStateData
 import ai.tock.bot.admin.dialog.DialogFlowStateTransitionData
+import ai.tock.bot.admin.dialog.DialogFlowTransitionStatsData
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.DialogFlowDefinition
 import ai.tock.bot.definition.DialogFlowStateTransitionType
@@ -58,12 +58,14 @@ import ai.tock.shared.error
 import ai.tock.shared.longProperty
 import ai.tock.shared.security.TockObfuscatorService.obfuscate
 import ai.tock.shared.sumByLong
+import com.mongodb.client.model.IndexOptions
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.`in`
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.all
 import org.litote.kmongo.and
+import org.litote.kmongo.ascendingSort
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.find
@@ -79,6 +81,8 @@ import org.litote.kmongo.size
 import org.litote.kmongo.sum
 import org.litote.kmongo.toId
 import java.time.ZonedDateTime
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.concurrent.TimeUnit
 
 /**
@@ -166,6 +170,96 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         }
 
         return ApplicationDialogFlowData(statesWithStats, transitionsWithStats, emptyList()/*TODO*/)
+    }
+
+    override fun search(namespace: String,
+            botId: String,
+            applicationIds: Set<Id<BotApplicationConfiguration>>,
+            from: ZonedDateTime?,
+            to: ZonedDateTime?
+    ): List<DialogFlowTransitionStatsData> {
+        val filter =
+                and(
+                    listOfNotNull(
+                        if (applicationIds.isEmpty()) null else ApplicationId `in` applicationIds,
+                        if (from == null) null else Date gt from?.toInstant(),
+                        if (to == null) null else Date lt to?.toInstant()
+                    )
+                )
+        logger.debug { "Flow Message filter: $filter" }
+        val zoneId = ZoneId.of("Europe/Paris")
+        return flowTransitionStatsCol.find(filter).ascendingSort(Date).toList()
+                .map {
+                    DialogFlowTransitionStatsData(
+                            applicationId = it.applicationId.toString(),
+                            transitionId = it.transitionId.toString(),
+                            dialogId = it.dialogId.toString(),
+                            text = it.text,
+                            date = LocalDateTime.ofInstant(it.date, zoneId)
+                    )
+                }
+    }
+
+    override fun searchByDateWithIntent(namespace: String,
+                                 botId: String,
+                                 applicationIds: Set<Id<BotApplicationConfiguration>>,
+                                 from: ZonedDateTime?,
+                                 to: ZonedDateTime?
+    ): List<DialogFlowTransitionStatsData> {
+        val transitions = findTransitions(namespace, botId).groupBy { it._id.toString() }.mapValues { it.value.firstOrNull() }
+        val messages = search(namespace, botId, applicationIds, from, to)
+        val transitionToIntent = messages.groupBy { it.transitionId }.keys.associateBy({it}, {transitions[it]?.intent})
+        return messages.map {
+            DialogFlowTransitionStatsData(
+                    applicationId = it.applicationId,
+                    transitionId = it.transitionId,
+                    dialogId = it.dialogId,
+                    text = transitionToIntent[it.transitionId],
+                    date = it.date
+            )
+        }
+    }
+
+    override fun searchByDateWithActionType(namespace: String,
+                                        botId: String,
+                                        applicationIds: Set<Id<BotApplicationConfiguration>>,
+                                        from: ZonedDateTime?,
+                                        to: ZonedDateTime?
+    ): List<DialogFlowTransitionStatsData> {
+        val transitions = findTransitions(namespace, botId).groupBy { it._id.toString() }.mapValues { it.value.firstOrNull() }
+        val messages = search(namespace, botId, applicationIds, from, to)
+        val transitionToType = messages.groupBy { it.transitionId }.keys.associateBy({it}, {transitions[it]?.type.toString()})
+        return messages.map {
+            DialogFlowTransitionStatsData(
+                    applicationId = it.applicationId,
+                    transitionId = it.transitionId,
+                    dialogId = it.dialogId,
+                    text = transitionToType[it.transitionId],
+                    date = it.date
+            )
+        }
+    }
+
+    override fun searchByDateWithStory(namespace: String,
+                                       botId: String,
+                                       applicationIds: Set<Id<BotApplicationConfiguration>>,
+                                       from: ZonedDateTime?,
+                                       to: ZonedDateTime?
+    ): List<DialogFlowTransitionStatsData> {
+        val states = findStates(namespace, botId).groupBy { it._id.toString() }.mapValues { it.value.firstOrNull() }
+        val transitions = findTransitions(namespace, botId).groupBy { it._id.toString() }.mapValues { it.value.firstOrNull() }
+        val messages = search(namespace, botId, applicationIds, from, to)
+        val transitionToState = messages.groupBy { it.transitionId }.keys.associateBy({it}, {transitions[it]?.nextStateId.toString()})
+        val transitionToStory = transitionToState.mapValues { states[it.value]?.storyDefinitionId }
+        return messages.map {
+            DialogFlowTransitionStatsData(
+                    applicationId = it.applicationId,
+                    transitionId = it.transitionId,
+                    dialogId = it.dialogId,
+                    text = transitionToStory[it.transitionId],
+                    date = it.date
+            )
+        }
     }
 
     private fun findStates(namespace: String, botId: String): List<DialogFlowStateCol> =

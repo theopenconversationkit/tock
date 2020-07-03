@@ -29,7 +29,7 @@ import {StateService} from "../../core-nlp/state.service";
 import {ConfirmDialogComponent} from "../../shared-nlp/confirm-dialog/confirm-dialog.component";
 import {StoryDialogComponent} from "./story-dialog.component";
 import {MandatoryEntitiesDialogComponent} from "./mandatory-entities-dialog.component";
-import {StoryNode} from "../flow/node";
+import {StoryNode} from "../../analytics/flow/node";
 import {StepDialogComponent} from "./step-dialog.component";
 import {AnswerController} from "./controller";
 import {DialogService} from "../../core-nlp/dialog.service";

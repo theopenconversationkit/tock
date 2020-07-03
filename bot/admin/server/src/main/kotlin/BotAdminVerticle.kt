@@ -63,12 +63,10 @@ import ai.tock.translator.TranslatorEngine
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import io.vertx.core.http.HttpMethod.GET
+import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
-import org.litote.kmongo.Id
 import org.litote.kmongo.toId
-import java.time.Instant
-import java.time.temporal.ChronoUnit
 
 /**
  *
@@ -88,6 +86,13 @@ open class BotAdminVerticle : AdminVerticle() {
         super.configureServices()
     }
 
+    private fun <R> measureTimeMillis(context: RoutingContext, function: () -> R): R {
+        val before = System.currentTimeMillis();
+        val result = function()
+        logger.debug { "${context.normalisedPath()} took ${System.currentTimeMillis() - before} ms." }
+        return result
+    }
+
     override fun configure() {
         configureServices()
 
@@ -99,7 +104,147 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonGet("/dialog/:applicationId/:dialogId", admin) { context ->
+        blockingJsonPost("/analytics/users", botUser) { context, query: UserSearchQuery ->
+            if (context.organization == query.namespace) {
+                measureTimeMillis(context, {
+                    BotAdminService.searchUsersAnalytics(query)
+                })
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByType(request)
+                })
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byConfiguration", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByConfiguration(request)
+                })
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byConnectorType", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByConnectorType(request)
+                })
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byDayOfWeek", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByDayOfWeek(request)
+                })
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byHour", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByHour(request)
+                })
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byDateAndIntent", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByDateAndIntent(request)
+                })
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byIntent", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByIntent(request)
+                })
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byDateAndStory", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByDateAndStory(request)
+                })
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byStory", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByStory(request)
+                })
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byStoryCategory", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByStoryCategory(request)
+                })
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byStoryType", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByStoryType(request)
+                })
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byStoryLocale", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByStoryLocale(request)
+                })
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byActionType", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                measureTimeMillis(context, {
+                    BotAdminService.reportMessagesByActionType(request)
+                })
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonGet("/dialog/:applicationId/:dialogId", botUser) { context ->
             val app = FrontClient.getApplicationById(context.pathId("applicationId"))
             if (context.organization == app?.namespace) {
                 dialogReportDAO
@@ -423,7 +568,9 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost("/flow", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
-                BotAdminService.loadDialogFlow(request)
+                measureTimeMillis(context, {
+                    BotAdminService.loadDialogFlow(request)
+                })
             } else {
                 unauthorized()
             }

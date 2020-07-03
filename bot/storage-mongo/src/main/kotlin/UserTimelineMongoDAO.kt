@@ -20,6 +20,8 @@ import ai.tock.bot.admin.dialog.DialogReport
 import ai.tock.bot.admin.dialog.DialogReportDAO
 import ai.tock.bot.admin.dialog.DialogReportQuery
 import ai.tock.bot.admin.dialog.DialogReportQueryResult
+import ai.tock.bot.admin.user.AnalyticsQuery
+import ai.tock.bot.admin.user.UserAnalytics
 import ai.tock.bot.admin.user.UserReportDAO
 import ai.tock.bot.admin.user.UserReportQuery
 import ai.tock.bot.admin.user.UserReportQueryResult
@@ -50,6 +52,7 @@ import ai.tock.bot.mongo.MongoBotConfiguration.database
 import ai.tock.bot.mongo.NlpStatsCol_.Companion.AppNamespace
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.ApplicationIds
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.LastUpdateDate
+import ai.tock.bot.mongo.UserTimelineCol_.Companion.LastUserActionDate
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.Namespace
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.PlayerId
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.TemporaryIds
@@ -75,6 +78,7 @@ import org.litote.kmongo.addEachToSet
 import org.litote.kmongo.addToSet
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.and
+import org.litote.kmongo.ascendingSort
 import org.litote.kmongo.bson
 import org.litote.kmongo.contains
 import org.litote.kmongo.deleteOneById
@@ -104,7 +108,9 @@ import org.litote.kmongo.updateOneById
 import org.litote.kmongo.upsert
 import java.time.Instant
 import java.time.Instant.now
+import java.time.ZoneOffset
 import java.util.concurrent.TimeUnit.DAYS
+
 
 /**
  *
@@ -446,7 +452,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     }
 
     override fun loadByTemporaryIdsWithoutDialogs(namespace: String, temporaryIds: List<String>): List<UserTimeline> {
-        return userTimelineCol.find(TemporaryIds `in` (temporaryIds), Namespace eq namespace).map { it.toUserTimeline() }.toList()
+        return userTimelineCol.find(TemporaryIds `in` (temporaryIds), Namespace eq namespace)
+            .map { it.toUserTimeline() }.toList()
     }
 
     private fun loadLastValidGroupDialogCol(namespace: String, groupId: String): DialogCol? {
@@ -517,7 +524,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     }.joinToString(",", "{$and:[", "]}").bson,
                     if (query.displayTests) null else UserTimelineCol_.UserPreferences.test eq false
                 )
-            logger.debug("user search query: $filter")
+            logger.debug { "user search query: $filter" }
             val c = userTimelineCol.withReadPreference(secondaryPreferred())
             val count = c.countDocuments(filter)
             return if (count > start) {
@@ -527,6 +534,26 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             } else {
                 UserReportQueryResult(0, 0, 0, emptyList())
             }
+        }
+    }
+
+    override fun search(query: AnalyticsQuery): List<UserAnalytics> {
+        with(query) {
+            val applicationsIds = getApplicationIds(query.namespace, query.nlpModel)
+            if (applicationsIds.isEmpty()) {
+                return emptyList()
+            }
+            val filter =
+                and(
+                    ApplicationIds `in` applicationsIds.filter { it.isNotEmpty() },
+                    Namespace eq query.namespace,
+                    LastUpdateDate gt from.toInstant(ZoneOffset.UTC),
+                    LastUpdateDate lt to.toInstant(ZoneOffset.UTC)
+                )
+            logger.debug { "user analytics search query: $filter" }
+            val c = userTimelineCol.withReadPreference(secondaryPreferred())
+            return c.find(filter).ascendingSort(LastUserActionDate)
+                .map { it.toUserAnalytics() }.toList()
         }
     }
 

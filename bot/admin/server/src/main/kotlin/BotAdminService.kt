@@ -28,6 +28,7 @@ import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.bot.BotVersion
 import ai.tock.bot.admin.dialog.ApplicationDialogFlowData
+import ai.tock.bot.admin.dialog.DialogFlowTransitionStatsData
 import ai.tock.bot.admin.dialog.DialogReportDAO
 import ai.tock.bot.admin.dialog.DialogReportQueryResult
 import ai.tock.bot.admin.kotlin.compiler.KotlinFile
@@ -55,8 +56,11 @@ import ai.tock.bot.admin.story.dump.ScriptAnswerVersionedConfigurationDump
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpController
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationFeatureDump
+import ai.tock.bot.admin.user.UserAnalytics
+import ai.tock.bot.admin.user.UserAnalyticsQueryResult
 import ai.tock.bot.admin.user.UserReportDAO
 import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.ConnectorTypeConfiguration.Companion.connectorConfigurations
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.engine.dialog.DialogFlowDAO
 import ai.tock.bot.engine.feature.FeatureDAO
@@ -75,6 +79,7 @@ import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.config.SentencesQuery
 import ai.tock.shared.Dice
 import ai.tock.shared.defaultLocale
+import ai.tock.shared.defaultZoneId
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.security.UserLogin
@@ -87,8 +92,16 @@ import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
+import java.time.DayOfWeek
 import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZonedDateTime
+import java.time.format.TextStyle
 import java.util.Locale
+import java.util.stream.LongStream
+import java.util.stream.Stream
+import kotlin.streams.toList
 
 /**
  *
@@ -190,6 +203,353 @@ object BotAdminService {
         return UserSearchQueryResult(userReportDAO.search(query.toUserReportQuery()))
     }
 
+    private fun formatHours(hours: List<String>): List<String> {
+        return hours.map { "$it:00" }.toList()
+    }
+
+    private fun LocalDate.datesUntil(endExclusive: LocalDate): Stream<LocalDate> {
+        val end = endExclusive.toEpochDay()
+        val start: Long = toEpochDay()
+        require(end >= start) { "$endExclusive < $this" }
+        return LongStream.range(start, end).mapToObj { epochDay: Long ->
+            LocalDate.ofEpochDay(epochDay)
+        }
+    }
+
+    private fun getDatesBetween(startDate: LocalDate, endDate: LocalDate): List<String> {
+        return startDate.datesUntil(endDate.plusDays(1))
+            .map { it.toString() }.toList()
+    }
+
+    private fun buildHoursList(filterDate: LocalDate): List<String> {
+        val now = LocalDateTime.now(defaultZoneId)
+        val sameDay = now.dayOfMonth == filterDate.dayOfMonth
+        return Array(24) { it }.filter { if (sameDay) it <= now.hour else true }.map { it.toString() }.toList()
+    }
+
+    private fun isSameDay(from: LocalDateTime?, to: LocalDateTime?): Boolean {
+        return from != null && from.toLocalDate().isEqual(to?.toLocalDate())
+    }
+
+    fun searchUsersAnalytics(query: UserSearchQuery): UserAnalyticsQueryResult {
+        val configurations = getBotConfigurationsByNamespaceAndNlpModel(query.namespace, query.applicationName)
+        val connectorTypesId =
+            connectorConfigurations.asSequence().toList().filter { it.connectorType != ConnectorType.rest }
+                .map { it.connectorType.id }.plus("vsc")
+        val confByTypes =
+            configurations.filter { it.connectorType.id in connectorTypesId }.distinctBy { it.connectorType }
+        val userAnalyticsQuery = query.toUserAnalyticsQuery()
+        val groups = userReportDAO.search(userAnalyticsQuery)
+            .groupBy {
+                groupSelector(userAnalyticsQuery.from, userAnalyticsQuery.to, it.lastUserActionDateTime)
+            }
+        val (dates, usersByDate) = if (isSameDay(userAnalyticsQuery.from, userAnalyticsQuery.to)) {
+            val hoursList = buildHoursList(userAnalyticsQuery.to.toLocalDate())
+            val usersAnalytics = hoursList.map {
+                if (groups[it] != null) {
+                    groups[it]
+                } else {
+                    listOf()
+                }
+            }.toList()
+            Pair(formatHours(hoursList), usersAnalytics)
+        } else {
+            val datesBetween =
+                getDatesBetween(userAnalyticsQuery.from.toLocalDate(), userAnalyticsQuery.to.toLocalDate())
+            val usersAnalytics = datesBetween.map {
+                if (groups[it] != null) {
+                    groups[it]
+                } else {
+                    listOf<UserAnalytics>()
+                }
+            }.toList()
+            Pair(datesBetween, usersAnalytics)
+        }
+        val result = arrayListOf<List<Int?>>()
+        usersByDate.forEach { users ->
+            run {
+                val messagesNumber = arrayListOf<Int?>()
+                confByTypes.forEach { connector ->
+                    run {
+                        val connectorAppIds = getConnectorAppIds(connector.connectorType, configurations)
+                        val count = users?.count { user -> connectorAppIds.contains(user.applicationIds.first()) }
+                        messagesNumber.add(count)
+                    }
+                }
+                result.add(messagesNumber)
+            }
+        }
+        return UserAnalyticsQueryResult(dates, result, confByTypes.map { it.connectorType.id })
+    }
+
+    private fun <S> reportMessagesByDateAndSeries(
+        request: DialogFlowRequest,
+        applications: Set<BotApplicationConfiguration>,
+        series: Set<S>,
+        seriesFilter: (S) -> (DialogFlowTransitionStatsData) -> Boolean,
+        seriesLabel: (S) -> String
+    ): UserAnalyticsQueryResult {
+        val namespace = request.namespace
+        val botId = request.botId
+        val applicationIds = applications.map { it._id }.toSet()
+        val fromDate = request.from?.toLocalDateTime()
+        val toDate = request.to?.toLocalDateTime()
+        logger.debug { "Building 'Messages by Configuration' report for ${applications.size} configurations: $applicationIds..." }
+
+        val queryResult = dialogFlowDAO.search(namespace, botId, applicationIds, request.from, request.to)
+            .groupBy { groupSelector(fromDate, toDate, it.date) }
+
+        val (dates, transitionsByDate) = sortMessagesByDate(fromDate, toDate, queryResult)
+        val result = arrayListOf<List<Int?>>()
+        transitionsByDate.forEach { transitions ->
+            run {
+                val datesMessages = arrayListOf<Int?>()
+                series.forEach { serie ->
+                    run {
+                        val count = transitions?.count(seriesFilter(serie))
+                        datesMessages.add(count)
+                    }
+                }
+                result.add(datesMessages)
+            }
+        }
+        return UserAnalyticsQueryResult(dates, result, series.map { seriesLabel(it) })
+    }
+
+    private fun reportMessagesByDateAndFunction(
+        request: DialogFlowRequest,
+        applications: Set<BotApplicationConfiguration>,
+        searchFunction: (String, String, Set<Id<BotApplicationConfiguration>>, ZonedDateTime?, ZonedDateTime?) -> List<DialogFlowTransitionStatsData>,
+        seriesLabel: (String?) -> String = { "$it" }
+    )
+            : UserAnalyticsQueryResult {
+        val namespace = request.namespace
+        val botId = request.botId
+        val applicationIds = applications.map { it._id }.toSet()
+        val fromDate = request.from?.toLocalDateTime()
+        val toDate = request.to?.toLocalDateTime()
+        logger.debug { "Building 'Messages by Configuration' report for ${applications.size} configurations: $applicationIds..." }
+
+        val messages = (searchFunction)(namespace, botId, applicationIds, request.from, request.to)
+        val series = messages.groupBy { it.text }.keys
+        val messagesByDate = messages
+            .groupBy { groupSelector(fromDate, toDate, it.date) }
+
+        val (dates, transitionsByDate) = sortMessagesByDate(fromDate, toDate, messagesByDate)
+        val result = arrayListOf<List<Int?>>()
+        transitionsByDate.forEach { transitions ->
+            run {
+                val datesMessages = arrayListOf<Int?>()
+                series.forEach { serie ->
+                    run {
+                        val count = transitions?.count { it.text == serie }
+                        datesMessages.add(count)
+                    }
+                }
+                result.add(datesMessages)
+            }
+        }
+        return UserAnalyticsQueryResult(dates, result, series.map(seriesLabel))
+    }
+
+    private fun <S> reportMessagesBySeries(
+        request: DialogFlowRequest,
+        applications: Set<BotApplicationConfiguration>,
+        series: Set<S>,
+        seriesFilter: (S) -> (DialogFlowTransitionStatsData) -> Boolean,
+        seriesLabel: (S) -> String
+    ): UserAnalyticsQueryResult {
+        val namespace = request.namespace
+        val botId = request.botId
+        val applicationIds = applications.map { it._id }.toSet()
+        logger.debug { "Building 'Messages by Configuration' report for ${applications.size} configurations: $applicationIds..." }
+
+        val transitions = dialogFlowDAO.search(namespace, botId, applicationIds, request.from, request.to)
+
+        val result = arrayListOf<List<Int?>>()
+        run {
+            val seriesMessages = arrayListOf<Int?>()
+            series.forEach { serie ->
+                run {
+                    val count = transitions.count(seriesFilter(serie))
+                    seriesMessages.add(count)
+                }
+            }
+            result.add(seriesMessages)
+        }
+        return UserAnalyticsQueryResult(listOf("All Range"), result, series.map { seriesLabel(it) })
+    }
+
+    private fun reportMessagesByFunction(
+        request: DialogFlowRequest,
+        applications: Set<BotApplicationConfiguration>,
+        searchFunction: (String, String, Set<Id<BotApplicationConfiguration>>, ZonedDateTime?, ZonedDateTime?) -> List<DialogFlowTransitionStatsData>,
+        seriesLabel: (String?) -> String = { "$it" }
+    ): UserAnalyticsQueryResult {
+        val namespace = request.namespace
+        val botId = request.botId
+        val applicationIds = applications.map { it._id }.toSet()
+        logger.debug { "Building 'Messages by Configuration' report for ${applications.size} configurations: $applicationIds..." }
+
+        val messages = (searchFunction)(namespace, botId, applicationIds, request.from, request.to)
+        val series: Set<String> = messages.groupBy { it.text }.keys.map { seriesLabel(it) }.toSet()
+
+        val result = arrayListOf<List<Int?>>()
+        run {
+            val seriesMessages = arrayListOf<Int?>()
+            series.forEach { serie ->
+                run {
+                    val count = messages.count { seriesLabel(it.text) == serie }
+                    seriesMessages.add(count)
+                }
+            }
+            result.add(seriesMessages)
+        }
+        return UserAnalyticsQueryResult(listOf("All Range"), result, series.toList())
+    }
+
+    fun reportMessagesByType(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val applications = loadApplications(request)
+        return reportMessagesByDateAndSeries(request, applications,
+            setOf(false, request.includeTestConfigurations),
+            { isTests ->
+                { transition ->
+                    applications.find { it._id.toString() == transition.applicationId }?.applicationId?.startsWith(
+                        "test-"
+                    ) == isTests
+                }
+            }, { if (it) "Tests" else "Users" })
+    }
+
+    fun reportMessagesByConnectorType(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val applications = loadApplications(request)
+        return reportMessagesByDateAndSeries(request,
+            applications,
+            applications.map { it.connectorType }.toSet(),
+            { connectorType -> { transition -> applications.find { it._id.toString() == transition.applicationId }?.connectorType == connectorType } },
+            { it.id })
+    }
+
+    fun reportMessagesByConfiguration(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val applications = loadApplications(request)
+        return reportMessagesByDateAndSeries(
+            request,
+            applications,
+            applications,
+            { application -> { transition -> application._id.toString() == transition.applicationId } },
+            { it.applicationId })
+    }
+
+    fun reportMessagesByDayOfWeek(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val applications = loadApplications(request)
+        return reportMessagesBySeries(request,
+            applications,
+            DayOfWeek.values().toSet(),
+            { day -> { transition -> transition.date.dayOfWeek == day } },
+            { it.getDisplayName(TextStyle.FULL_STANDALONE, defaultLocale) })
+    }
+
+    fun reportMessagesByHour(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val applications = loadApplications(request)
+        return reportMessagesBySeries(request, applications, (0..24).toList().toSet(),
+            { hour -> { transition -> transition.date.hour == hour } }, { "${it}h" })
+    }
+
+    fun reportMessagesByIntent(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val applications = loadApplications(request)
+        return reportMessagesByFunction(request, applications, dialogFlowDAO::searchByDateWithIntent)
+    }
+
+    fun reportMessagesByDateAndIntent(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val applications = loadApplications(request)
+        return reportMessagesByDateAndFunction(request, applications, dialogFlowDAO::searchByDateWithIntent)
+    }
+
+    fun reportMessagesByStory(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val applications = loadApplications(request)
+        val stories = storyDefinitionDAO.getStoryDefinitionsByNamespaceAndBotId(request.namespace, request.botId)
+        return reportMessagesByFunction(
+            request, applications, dialogFlowDAO::searchByDateWithStory
+        ) { it?.let { stories.find { story -> story._id.toString() == it }?.name } ?: "$it" }
+    }
+
+    fun reportMessagesByDateAndStory(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val applications = loadApplications(request)
+        val stories = storyDefinitionDAO.getStoryDefinitionsByNamespaceAndBotId(request.namespace, request.botId)
+        return reportMessagesByDateAndFunction(
+            request, applications, dialogFlowDAO::searchByDateWithStory
+        ) { it?.let { stories.find { story -> story._id.toString() == it }?.name } ?: "$it" }
+    }
+
+    fun reportMessagesByStoryType(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val applications = loadApplications(request)
+        val stories = storyDefinitionDAO.getStoryDefinitionsByNamespaceAndBotId(request.namespace, request.botId)
+        return reportMessagesByFunction(
+            request, applications, dialogFlowDAO::searchByDateWithStory
+        ) { it?.let { stories.find { story -> story._id.toString() == it }?.currentType?.name } ?: "unknown" }
+    }
+
+    fun reportMessagesByStoryCategory(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val applications = loadApplications(request)
+        val stories = storyDefinitionDAO.getStoryDefinitionsByNamespaceAndBotId(request.namespace, request.botId)
+        return reportMessagesByFunction(
+            request, applications, dialogFlowDAO::searchByDateWithStory
+        ) { it?.let { stories.find { story -> story._id.toString() == it }?.category } ?: "unknown" }
+    }
+
+    fun reportMessagesByStoryLocale(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val applications = loadApplications(request)
+        val stories = storyDefinitionDAO.getStoryDefinitionsByNamespaceAndBotId(request.namespace, request.botId)
+        return reportMessagesByFunction(
+            request, applications, dialogFlowDAO::searchByDateWithStory
+        ) {
+            it?.let { stories.find { story -> story._id.toString() == it }?.userSentenceLocale.toString() } ?: "unknown"
+        }
+    }
+
+    fun reportMessagesByActionType(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val applications = loadApplications(request)
+        return reportMessagesByFunction(request, applications, dialogFlowDAO::searchByDateWithActionType)
+    }
+
+    private fun sortMessagesByDate(
+        fromDate: LocalDateTime?,
+        toDate: LocalDateTime?,
+        queryResult: Map<String, List<DialogFlowTransitionStatsData>>
+    ) =
+        if (isSameDay(fromDate, toDate)) {
+            val hoursList = buildHoursList(toDate!!.toLocalDate())
+            val usersAnalytics = hoursList.map {
+                if (queryResult[it] != null) {
+                    queryResult[it]
+                } else {
+                    listOf()
+                }
+            }.toList()
+            Pair(formatHours(hoursList), usersAnalytics)
+        } else {
+            val datesBetween = getDatesBetween(fromDate!!.toLocalDate(), toDate!!.toLocalDate())
+            val usersAnalytics = datesBetween.map {
+                if (queryResult[it] != null) {
+                    queryResult[it]
+                } else {
+                    listOf<DialogFlowTransitionStatsData>()
+                }
+            }.toList()
+            Pair(datesBetween, usersAnalytics)
+        }
+
+    private fun groupSelector(from: LocalDateTime?, to: LocalDateTime?, elementDate: LocalDateTime) =
+        if (isSameDay(from, to)) elementDate.hour.toString() else elementDate.toLocalDate().toString()
+
+    private fun getConnectorAppIds(
+        connectorType: ConnectorType,
+        configurations: List<BotApplicationConfiguration>
+    ): List<String> {
+        return configurations.filter { config -> config.connectorType == connectorType }
+            .map { config -> config.applicationId }
+    }
+
     fun search(query: DialogsSearchQuery): DialogReportQueryResult {
         return dialogReportDAO.search(query.toDialogReportQuery())
             .run {
@@ -284,7 +644,11 @@ object BotAdminService {
     fun exportStories(namespace: String, applicationName: String): List<StoryDefinitionConfigurationDump> =
         findStories(namespace, applicationName).map { StoryDefinitionConfigurationDump(it) }
 
-    fun exportStory(namespace: String, applicationName: String, storyDefinitionId: String): StoryDefinitionConfigurationDump? {
+    fun exportStory(
+        namespace: String,
+        applicationName: String,
+        storyDefinitionId: String
+    ): StoryDefinitionConfigurationDump? {
         val botConf =
             getBotConfigurationsByNamespaceAndNlpModel(namespace, applicationName).firstOrNull()
         return if (botConf != null) {
@@ -292,10 +656,10 @@ object BotAdminService {
                 storyDefinitionDAO.getStoryDefinitionsByNamespaceBotIdStoryId(
                     namespace = namespace,
                     botId = botConf.botId,
-                    storyId = storyDefinitionId)
+                    storyId = storyDefinitionId
+                )
             story?.let { StoryDefinitionConfigurationDump(it) }
-        }
-        else null
+        } else null
     }
 
     fun findStory(namespace: String, storyDefinitionId: String): BotStoryDefinitionConfiguration? {
@@ -872,9 +1236,21 @@ object BotAdminService {
     fun loadDialogFlow(request: DialogFlowRequest): ApplicationDialogFlowData {
         val namespace = request.namespace
         val botId = request.botId
+        val applicationIds = loadApplicationIds(request)
+        logger.debug { "Loading Bot Flow for ${applicationIds.size} configurations: $applicationIds..." }
+        return dialogFlowDAO.loadApplicationData(namespace, botId, applicationIds, request.from, request.to)
+    }
+
+    private fun loadApplicationIds(request: DialogFlowRequest): Set<Id<BotApplicationConfiguration>> {
+        return loadApplications(request).map { it._id }.toSet()
+    }
+
+    private fun loadApplications(request: DialogFlowRequest): Set<BotApplicationConfiguration> {
+        val namespace = request.namespace
+        val botId = request.botId
         val configurationName = request.botConfigurationName
         val tests = request.includeTestConfigurations
-        val applicationIds = if (request.botConfigurationId != null) {
+        return if (request.botConfigurationId != null) {
             if (tests && configurationName != null) {
                 val configurations = applicationConfigurationDAO.getConfigurationsByBotNamespaceAndConfigurationName(
                     namespace = namespace,
@@ -884,26 +1260,21 @@ object BotAdminService {
                 val actualConfiguration = configurations.find { it._id == request.botConfigurationId }
                 val testConfiguration =
                     configurations.find { it.applicationId == "test-${actualConfiguration?.applicationId}" }
-                listOf(request.botConfigurationId, testConfiguration?._id).filterNotNull().toSet()
+                listOfNotNull(actualConfiguration, testConfiguration).toSet()
             } else
-                setOf(request.botConfigurationId)
+                listOfNotNull(applicationConfigurationDAO.getConfigurationById(request.botConfigurationId)).toSet()
         } else if (configurationName != null) {
             applicationConfigurationDAO
                 .getConfigurationsByBotNamespaceAndConfigurationName(namespace, botId, configurationName)
                 .filter { tests || it.connectorType != ConnectorType.rest }
-                .map { it._id }
                 .toSet()
         } else {
             applicationConfigurationDAO
                 .getConfigurationsByNamespaceAndBotId(namespace, botId)
                 .filter { tests || it.connectorType != ConnectorType.rest }
-                .map { it._id }
                 .toSet()
         }
-        logger.debug { "Loading Bot Flow for ${applicationIds.size} configurations: $applicationIds..." }
-        return dialogFlowDAO.loadApplicationData(namespace, botId, applicationIds, request.from, request.to)
     }
-
 
     fun deleteApplication(app: ApplicationDefinition) {
         applicationConfigurationDAO.getConfigurationsByNamespaceAndNlpModel(
@@ -943,5 +1314,4 @@ object BotAdminService {
             storyDefinitionDAO.save(it.copy(botId = newApp.name))
         }
     }
-
 }

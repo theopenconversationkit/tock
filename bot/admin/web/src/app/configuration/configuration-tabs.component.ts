@@ -27,20 +27,24 @@ import {UserRole} from "../model/auth";
 export class ConfigurationTabsComponent implements OnInit {
   tabs = [
     {
-      title: 'NLU Applications',
-      route: 'nlp'
+      title: 'Applications',
+      route: 'nlp',
+      icon: 'browser-outline'
     },
     {
-      title: 'Bot Configurations',
+      title: 'Configurations',
       route: 'bot',
-    },
-    {
-      title: 'User Logs',
-      route: 'users/logs',
+      icon: 'link-outline'
     },
     {
       title: 'Namespaces',
       route: 'namespaces',
+      icon: 'folder-outline'
+    },
+    {
+      title: 'Log',
+      route: 'users/logs',
+      icon: 'eye-outline'
     }
   ];
 

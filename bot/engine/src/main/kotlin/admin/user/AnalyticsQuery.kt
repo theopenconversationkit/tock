@@ -16,11 +16,16 @@
 
 package ai.tock.bot.admin.user
 
-/**
- * To search users, everywhere.
- */
-interface UserReportDAO {
+import java.time.LocalDateTime
+import java.util.Locale
 
-    fun search(query: UserReportQuery): UserReportQueryResult
-    fun search(query: AnalyticsQuery):List<UserAnalytics>
-}
+/**
+ *
+ */
+data class AnalyticsQuery(
+    val namespace: String,
+    val nlpModel: String,
+    val language: Locale,
+    val from: LocalDateTime = LocalDateTime.now().minusDays(7),
+    val to: LocalDateTime = LocalDateTime.now()
+)

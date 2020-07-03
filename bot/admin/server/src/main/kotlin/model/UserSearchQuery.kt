@@ -16,31 +16,46 @@
 
 package ai.tock.bot.admin.model
 
+import ai.tock.bot.admin.user.AnalyticsQuery
 import ai.tock.bot.admin.user.UserReportQuery
 import ai.tock.nlp.admin.model.PaginatedQuery
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.ZonedDateTime
 
 /**
  *
  */
 data class UserSearchQuery(
-        val name: String?,
-        val from: ZonedDateTime?,
-        val to: ZonedDateTime?,
-        val flags: Set<String> = emptySet(),
-        val displayTests:Boolean = false) : PaginatedQuery() {
+    val name: String?,
+    val from: ZonedDateTime?,
+    val to: ZonedDateTime?,
+    val flags: Set<String> = emptySet(),
+    val displayTests: Boolean = false
+) : PaginatedQuery() {
 
     fun toUserReportQuery(): UserReportQuery {
         return UserReportQuery(
-                namespace,
-                applicationName,
-                currentLanguage,
-                start,
-                size,
-                name,
-                from,
-                to,
-                flags.map { it to null }.toMap(),
-                displayTests)
+            namespace,
+            applicationName,
+            currentLanguage,
+            start,
+            size,
+            name,
+            from,
+            to,
+            flags.map { it to null }.toMap(),
+            displayTests
+        )
+    }
+
+    fun toUserAnalyticsQuery(): AnalyticsQuery {
+        return AnalyticsQuery(
+            namespace,
+            applicationName,
+            currentLanguage,
+            LocalDateTime.of(from?.toLocalDate(), LocalTime.MIDNIGHT),
+            LocalDateTime.of(to?.toLocalDate(), LocalTime.MAX)
+        )
     }
 }

@@ -18,19 +18,21 @@ import {Component, OnInit} from "@angular/core";
 import {Router} from "@angular/router";
 
 class TabLink {
-  constructor(public route: string, public title: string) {
-
-  }
+  constructor(
+    public route: string,
+    public title: string,
+    public icon?: string
+  ) { }
 }
 
 const tabs = [
-  new TabLink("try", "Try it"),
-  new TabLink("inbox", "Inbox"),
-  new TabLink("unknown", "Unknown"),
-  new TabLink("search", "Search"),
-  new TabLink("intents", "Intents"),
-  new TabLink("entities", "Entities"),
-  new TabLink("logs", "Logs")
+  new TabLink("try", "New Sentence", 'plus-circle-outline'),
+  new TabLink("inbox", "Inbox", 'inbox-outline'),
+  new TabLink("search", "Search", 'search-outline'),
+  new TabLink("unknown", "Unknown", 'question-mark-circle-outline'),
+  new TabLink("intents", "Intents", 'compass-outline'),
+  new TabLink("entities", "Entities", 'attach-outline'),
+  new TabLink("logs", "Logs", 'list-outline')
 ];
 
 @Component({

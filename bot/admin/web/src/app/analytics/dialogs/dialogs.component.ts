@@ -22,10 +22,10 @@ import {Observable} from "rxjs";
 import {PaginatedResult} from "../../model/nlp";
 import {PaginatedQuery} from "../../model/commons";
 import {DialogReport} from "../../shared/model/dialog-data";
-import {MonitoringService} from "../monitoring.service";
+import {AnalyticsService} from "../analytics.service";
 import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {StateService} from "../../core-nlp/state.service";
-import {DialogReportQuery} from "../model/dialogs";
+import {DialogReportQuery} from "./dialogs";
 import {ActivatedRoute} from "@angular/router";
 import {ConnectorType} from "../../core/model/configuration";
 import {BotSharedService} from "../../shared/bot-shared.service";
@@ -44,7 +44,7 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
   private loaded = false;
 
   constructor(state: StateService,
-              private monitoring: MonitoringService,
+              private analytics: AnalyticsService,
               private botConfiguration: BotConfigurationService,
               private toastrService: NbToastrService,
               private route: ActivatedRoute,
@@ -74,7 +74,7 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
         if (params["intentName"]) this.filter.intentName = params["intentName"];
         this.loaded = true;
       }
-      return this.monitoring.dialogs(this.buildDialogQuery(query));
+      return this.analytics.dialogs(this.buildDialogQuery(query));
     }));
   }
 
@@ -108,7 +108,7 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
       this.toastrService.show(`Please select a Plan first`, "Error", {duration: 3000});
       return;
     }
-    this.monitoring.addDialogToTestPlan(planId, dialog.id)
+    this.analytics.addDialogToTestPlan(planId, dialog.id)
       .subscribe(_ => this.toastrService.show(`Dialog added to plan`, "Dialog Added", {duration: 3000}));
   }
 

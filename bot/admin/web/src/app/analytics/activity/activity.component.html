@@ -1,0 +1,66 @@
+<div class="content" id="element-id">
+  <nb-card>
+    <nb-card-body [nbSpinner]="loading" nbSpinnerStatus="primary">
+      <date-range-calendar [rangeInDays]="7" (datesChanged)="datesChanged($event)"></date-range-calendar>
+      <tock-select-bot [allowNoConfigurationSelection]="true" noConnectorLabel="All Connectors"
+                       [allowNoSelection]="true" noConfigurationLabel="All Configurations"
+                       (selectionChange)="selectedConfigurationChanged($event)" class="select-bot">
+      </tock-select-bot>
+      <button nbButton shape="round" (click)="waitAndRefresh()" nbTooltip="Refresh Data" status="basic">
+        <nb-icon icon="refresh-outline"></nb-icon>
+      </button>
+      <span style="float: right; padding: 5px;">
+        <nb-toggle status="success" [(ngModel)]="pretty">
+          Pretty (Curve Lines)
+        </nb-toggle>
+        &nbsp;&nbsp;
+        <nb-toggle status="info" [(ngModel)]="stacked">
+          Stacked Area
+        </nb-toggle>
+        &nbsp;&nbsp;
+        <nb-toggle status="warning" [(ngModel)]="displayTests" (change)="waitAndRefresh()">
+          Tests (Tock Studio)
+        </nb-toggle>
+      </span>
+    </nb-card-body>
+  </nb-card>
+
+  <nb-accordion>
+    <nb-accordion-item #messagesByTypeItem (collapsedChange)="collapsedChange($event)">
+      <nb-accordion-item-header>Messages</nb-accordion-item-header>
+      <nb-accordion-item-body>
+        <tock-chart [data]="messagesByTypeData" title="Messages" [pretty]="pretty" [stacked]="stacked"
+                    [isLoading]="messagesByTypeLoading"></tock-chart>
+      </nb-accordion-item-body>
+    </nb-accordion-item>
+    <nb-accordion-item #messagesByStoryItem (collapsedChange)="collapsedChange($event)">
+      <nb-accordion-item-header>Messages by Story</nb-accordion-item-header>
+      <nb-accordion-item-body>
+        <tock-chart [data]="messagesByStoryData" title="Messages by Story" [pretty]="pretty" [stacked]="stacked"
+                    [isLoading]="messagesByStoryLoading"></tock-chart>
+      </nb-accordion-item-body>
+    </nb-accordion-item>
+    <nb-accordion-item #messagesByIntentItem (collapsedChange)="collapsedChange($event)">
+      <nb-accordion-item-header>Messages by Intent</nb-accordion-item-header>
+      <nb-accordion-item-body>
+        <tock-chart [data]="messagesByIntentData" title="Messages by Intent" [pretty]="pretty" [stacked]="stacked"
+                    [isLoading]="messagesByIntentLoading"></tock-chart>
+      </nb-accordion-item-body>
+    </nb-accordion-item>
+    <nb-accordion-item #messagesByConfigurationItem (collapsedChange)="collapsedChange($event)">
+      <nb-accordion-item-header>Messages by Configuration</nb-accordion-item-header>
+      <nb-accordion-item-body>
+        <tock-chart [data]="messagesByConfigurationData" title="Messages by Configuration" [pretty]="pretty" [stacked]="stacked"
+                    [isLoading]="messagesByConfigurationLoading"></tock-chart>
+      </nb-accordion-item-body>
+    </nb-accordion-item>
+    <nb-accordion-item #messagesByConnectorItem (collapsedChange)="collapsedChange($event)">
+      <nb-accordion-item-header>Messages by Connector Type</nb-accordion-item-header>
+      <nb-accordion-item-body>
+        <tock-chart [data]="messagesByConnectorData" title="Messages by Connector Type" [pretty]="pretty" [stacked]="stacked"
+                    [isLoading]="messagesByConnectorLoading"></tock-chart>
+      </nb-accordion-item-body>
+    </nb-accordion-item>
+  </nb-accordion>
+
+</div>
