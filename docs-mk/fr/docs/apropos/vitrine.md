@@ -89,6 +89,36 @@ style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.
 * **Domaine :** voyage & transport (recherche itinéraires en multi-modal, etc.)
 * **Canaux :** vocal, sur l'application mobile SNCF pour Android et iOS
 
+## _LinTO by Linagora_
+
+La plateforme _[LinTO](https://linto.ai/fr/enterprises)_ est une boîte à outils Open Source permettant le développement 
+et l'intégration de processus d’interactions vocales répondant aux besoins des professionnels et de l’industrie.
+
+> _LinTO_ est un assistant intelligent Open Source conçu par LINAGORA : 
+> basé exclusivement sur des technologies Open Source, _LinTO_ est prêt pour le cloud mais sans GAFAM 
+> (Google-Amazon-Facebook-Apple-Microsoft), et respecte votre vie privée sans partager vos données pour usage commercial.
+>
+> _LinTO_ utilise l'IA pour capter votre voix et vous aider tout au long de la journée, même en réunion, à réduire 
+> les tâches stressantes ou chronophages : gestion d'agenda, rappels, prise de notes, emails, météo, trafic, dictionnaire ,
+> actualités, etc.
+>
+> Le projet de recherche est subventionné par le PIA (Programme d'Investissement d'Avenir) de l'état Français dans le 
+> cadre des Grands Défis du numérique. Il allie des entreprises technologiques telles que LINAGORA et ZELROS et des 
+> laboratoires de recherche comme l'IRIT, le LaaS, le CNRS et le laboratoire de recherche en informatique de l'école polytechnique.
+
+Le service _LinTO NLU (Natural Language Understanding)_ est basé sur Tock et permet l’utilisation de plusieurs 
+modèles IA dédiés à des cas d’utilisation spécifiques. Il apprend automatiquement 
+selon les usages lors de l’ajout ou suppression de compétences (_Skills_) à la plateforme.
+
+<img alt="LinTO by Linagora" 
+src="https://linagora.com/wp-content/uploads/2018/10/CES-2019-LinTO-800x600.jpg" 
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
+
+* **Nom :** _[LinTO](https://linto.ai/fr/enterprises)_
+* **Date de naissance :** en production avec Tock depuis 2019
+* **Domaine :** assistant personnel pour les entreprises (agenda, emails, prise de notes, etc.)
+* **Canaux :** vocal (portabilité Raspberry Pi, ARM, Android, Web...)
+
 ## _Tilien_, le chatbot Transilien
 
 _[Tilien](https://www.facebook.com/botsncftransilien/)_ est le chatbot Transilien sur Messenger.

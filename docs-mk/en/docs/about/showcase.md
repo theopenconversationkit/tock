@@ -87,6 +87,35 @@ style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.
 * **Field:** travel & transport (multi-modal route research, etc.)
 * **Channels:** voice, on the SNCF mobile application for Android and iOS
 
+## _LinTO by Linagora_
+
+The _[LinTO](https://linto.ai/enterprises)_ platform is an Open Source toolbox designed to address professional 
+and industry needs by enabling the development and integration of voice operated processes.
+
+> _LinTO_ is a smart Open Source assistant designed by LINAGORA: based only on 
+> Open Source technologies, LinTO is cloud enabled but GAFAM-free (Google-Amazon-Facebook-Apple-Microsoft), 
+> and respects your privacy as it doesn’t share your data for commercial use.
+>
+> LinTO is designed to reduce time-consuming & stressful tasks, using a smart AI program to understand your voice and 
+> help you all along the office day even during meetings: agenda management, reminders, notetaking, e-mails, 
+> weather forecast, traffic, words definition, newspaper headlines, etc.
+>
+> The research project, which is funded by the French government's PIA (for “Future Investment Program”) 
+> as part of the Grands Défis du Numérique, is a collaboration between French companies, LINAGORA and ZELROS, and 
+> French research laboratories, IRIT, LaaS and LIX.
+
+The _LinTO NLU (Natural Language Understanding)_ system is based on Tock to support the use of several AI models 
+dedicated to specific use cases. It automatically learns according to one's usage when adding or removing skills from the platform.
+
+<img alt="LinTO by Linagora" 
+src="https://linagora.com/wp-content/uploads/2018/10/CES-2019-LinTO-800x600.jpg" 
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
+
+* **Name:** _[LinTO](https://linto.ai/enterprises)_
+* **Date of birth:** in production, leveraging Tock since 2019
+* **Field:** Smart Business Assistant (agenda, e-mails, notetaking, etc.)
+* **Channels:** voice (portability: Raspberry Pi, ARM, Android, Web...)
+
 ## _Tilien_, the Transilien chatbot
 
 _[Tilien](https://www.facebook.com/botsncftransilien/)_ is the Transilien chatbot on Messenger.
