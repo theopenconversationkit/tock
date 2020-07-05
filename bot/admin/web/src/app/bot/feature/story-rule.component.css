@@ -26,23 +26,38 @@
   width: 100%;
   display: table-row;
   margin-bottom: 20px;
-  padding: 0 20px;
 }
 
-.category {
-  float: left;
-  width: 200px;
+.feature-property {
+  max-width: 20vw;
   font-size: small;
-  line-height: 36px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.conf {
+  max-width: 20vw;
+}
+
+.feature-property > div {
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.feature-action {
+  max-width: 10vw;
+  vertical-align: top;
+}
+
+.feature-action > button {
+  padding: 0;
 }
 
 .new-toggle {
   vertical-align: middle;
-}
-
-.toggle {
-  line-height: 36px;
-  vertical-align: bottom;
 }
 
 .i18n-label__title__delete {
@@ -51,12 +66,7 @@
 
 .cell {
   display: table-cell;
-}
-
-.delete {
-  vertical-align: bottom;
-  margin-bottom: 10px;
-  margin-left: 20px;
+  padding: 10px;
 }
 
 .new {
@@ -81,8 +91,7 @@
   height: 24px;
 }
 
-.rules-group-name {
+nb-card-body > div > p {
+  font-size: small;
   font-style: italic;
-  display: inline-block;
-  padding: 10px 0 10px 0;
 }

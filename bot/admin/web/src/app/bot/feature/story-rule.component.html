@@ -67,83 +67,98 @@
       </tock-select-bot>
     </div>
 
-    <div *ngIf="!create" class="features-table">
-      <div>
-        <div>
-          <span class="rules-group-name" title="Enabling/Disabling Stories">Activation:</span>
-        </div>
-        <div *ngFor="let f of disabledFeatures" class="feature">
-          <div class="category cell" nbTooltip="Story">
-            <nb-icon *ngIf="f.story.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
-            <nb-icon *ngIf="f.story.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
-            <nb-icon *ngIf="f.story.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
-            {{f.story.name}}
+    <div *ngIf="!create">
+      <nb-card>
+        <nb-card-header style="position: relative;">
+          <nb-badge [text]="disabledFeatures.length + ' rule(s)'" [status]="disabledFeatures.length < 1 ? 'success' : 'info'" position="top left"></nb-badge>
+          <span nbTooltip="Enabling/Disabling Stories">Activation</span>
+        </nb-card-header>
+        <nb-card-body>
+          <div *ngIf="!disabledFeatures || disabledFeatures.length < 1">
+            <p>No rules set to enable/disable Stories.</p>
           </div>
-          <div class="category cell">
-            <div *ngIf="f.conf">
-              <img src="{{f.conf.connectorType.iconUrl()}}"
-                   class="connector"
-                   [matTooltip]="f.conf.connectorType.label()"/>
-              {{ f.conf.connectorType.label() }} ( {{ f.conf.applicationId }})
-            </div>
-            <div *ngIf="!f.conf">All Configurations</div>
-          </div>
-          <div class="category cell">
-            Story is {{ f.enabled ? 'Enabled' : 'Disabled' }}
-<!--            Feature is <span *ngIf="f.enabled">Enabled</span><span *ngIf="!f.enabled">Disabled</span>-->
-          </div>
-          <div class="toggle cell">
-            <nb-toggle status="primary" [checked]="f.enabled" (checkedChange)="toggle(f, $event)"
-                       nbTooltip="{{ f.enabled ? 'Disable' : 'Enable' }} Story"></nb-toggle>
-          </div>
-          <div class="cell">
-            <button nbButton (click)="deleteFeature(f)" nbTooltip="Delete Rule" outline status="danger" size="small"
-                    class="delete">
-              <nb-icon icon="trash-2-outline"></nb-icon>
-            </button>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div>
-          <span class="rules-group-name" title="Forwarding Stories (to Other Stories)">Redirection:</span>
-        </div>
-        <div *ngFor="let f of redirectedFeatures" class="feature">
-          <div class="category cell" nbTooltip="Story">
-            <nb-icon *ngIf="f.story.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
-            <nb-icon *ngIf="f.story.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
-            <nb-icon *ngIf="f.story.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
-            {{f.story.name}}
-          </div>
-          <div class="category cell">
-            <div *ngIf="f.conf">
-              <img src="{{f.conf.connectorType.iconUrl()}}"
-                   class="connector"
-                   [matTooltip]="f.conf.connectorType.label()"/>
-              {{ f.conf.connectorType.label() }} ( {{ f.conf.applicationId }})
-            </div>
-            <div *ngIf="!f.conf">All Configurations</div>
-          </div>
-          <div class="category cell">
-            <div nbTooltip="Switch to Story">
-              <nb-icon *ngIf="f.switchToStory.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
-              <nb-icon *ngIf="f.switchToStory.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
-              <nb-icon *ngIf="f.switchToStory.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
-              <span class="story-label">{{f.switchToStory.name}}</span>
+          <div class="features-table">
+            <div *ngFor="let f of disabledFeatures" class="feature">
+              <div class="feature-property cell" [nbTooltip]="'Story: ' + f.story.name">
+                <nb-icon *ngIf="f.story.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
+                <nb-icon *ngIf="f.story.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
+                <nb-icon *ngIf="f.story.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
+                {{f.story.name}}
+              </div>
+              <div class="feature-property conf cell">
+                <div *ngIf="f.conf" [nbTooltip]="'Apply to Configuration: ' + f.conf.applicationId">
+                  <img src="{{f.conf.connectorType.iconUrl()}}"
+                       class="connector"
+                       [nbTooltip]="f.conf.connectorType.label()"/>
+                  {{ f.conf.connectorType.label() }} ( {{ f.conf.applicationId }})
+                </div>
+                <div *ngIf="!f.conf" nbTooltip="Apply to All Configurations">All Configurations</div>
+              </div>
+              <div class="feature-property cell">
+                <em>Story is {{ f.enabled ? 'Enabled' : 'Disabled' }}</em>
+              </div>
+              <div class="feature-action cell">
+                <nb-toggle status="primary" [checked]="f.enabled" (checkedChange)="toggle(f, $event)"
+                           nbTooltip="{{ f.enabled ? 'Disable' : 'Enable' }} Story"></nb-toggle>
+              </div>
+              <div class="feature-action cell">
+                <button nbButton (click)="deleteFeature(f)" nbTooltip="Delete Rule" outline status="danger" size="small">
+                  <nb-icon icon="trash-2-outline"></nb-icon>
+                </button>
+              </div>
             </div>
           </div>
-          <div class="toggle cell">
-            <nb-toggle status="primary" [checked]="f.enabled" (checkedChange)="toggle(f, $event)"
-                       nbTooltip="{{ f.enabled ? 'Disable' : 'Enable' }} Redirection"></nb-toggle>
+        </nb-card-body>
+      </nb-card>
+
+      <nb-card>
+        <nb-card-header style="position: relative;">
+          <nb-badge [text]="redirectedFeatures.length + ' rule(s)'" [status]="redirectedFeatures.length < 1 ? 'success' : 'info'" position="top left"></nb-badge>
+          <span nbTooltip="Forwarding Stories (to Other Stories)">Redirection</span>
+        </nb-card-header>
+        <nb-card-body>
+          <div *ngIf="!redirectedFeatures || redirectedFeatures.length < 1">
+            <p>No rules set to redirect Stories (to other Stories).</p>
           </div>
-          <div class="cell">
-            <button nbButton (click)="deleteFeature(f)" nbTooltip="Delete Rule" outline status="danger" size="small"
-                    class="delete">
-              <nb-icon icon="trash-2-outline"></nb-icon>
-            </button>
+          <div class="features-table">
+            <div *ngFor="let f of redirectedFeatures" class="feature">
+              <div class="feature-property cell" [nbTooltip]="'Story: ' + f.story.name">
+                <nb-icon *ngIf="f.story.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
+                <nb-icon *ngIf="f.story.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
+                <nb-icon *ngIf="f.story.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
+                {{f.story.name}}
+              </div>
+              <div class="feature-property conf cell">
+                <div *ngIf="f.conf" [nbTooltip]="'Apply to Configuration: ' + f.conf.applicationId">
+                  <img src="{{f.conf.connectorType.iconUrl()}}"
+                       class="connector"
+                       [nbTooltip]="f.conf.connectorType.label()"/>
+                  {{ f.conf.connectorType.label() }} ( {{ f.conf.applicationId }})
+                </div>
+                <div *ngIf="!f.conf" nbTooltip="Apply to All Configurations">All Configurations</div>
+              </div>
+              <div class="feature-property cell" [nbTooltip]="'Redirect to Story: ' + f.switchToStory.name">
+                <div>
+                  <nb-icon *ngIf="f.switchToStory.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
+                  <nb-icon *ngIf="f.switchToStory.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
+                  <nb-icon *ngIf="f.switchToStory.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
+                  <span class="story-label">{{f.switchToStory.name}}</span>
+                </div>
+              </div>
+              <div class="feature-action cell">
+                <nb-toggle status="primary" [checked]="f.enabled" (checkedChange)="toggle(f, $event)"
+                           nbTooltip="{{ f.enabled ? 'Disable' : 'Enable' }} Redirection"></nb-toggle>
+              </div>
+              <div class="feature-action cell">
+                <button nbButton (click)="deleteFeature(f)" nbTooltip="Delete Rule" outline status="danger" size="small"
+                        class="delete">
+                  <nb-icon icon="trash-2-outline"></nb-icon>
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </nb-card-body>
+      </nb-card>
     </div>
   </nb-card-body>
   <nb-card-footer *ngIf="create">

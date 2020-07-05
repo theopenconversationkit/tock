@@ -46,6 +46,7 @@ import {MediaDialogComponent} from './story/media/media-dialog.component';
 import {ThemeModule} from '../theme/theme.module';
 import {
   NbAccordionModule,
+  NbBadgeModule,
   NbCardModule,
   NbCheckboxModule,
   NbFormFieldModule,
@@ -120,6 +121,7 @@ export class BotRoutingModule {
     FileUploadModule,
     ThemeModule,
     NbRouteTabsetModule,
+    NbBadgeModule,
     NbCardModule,
     NbSpinnerModule,
     NbCheckboxModule,
