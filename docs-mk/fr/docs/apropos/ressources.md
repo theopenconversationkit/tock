@@ -6,9 +6,9 @@ en complément des [guides](../guide/studio.md)
 
 ## Conférences / video
 
-* _[Conversationnel & Open Source](https://www.youtube.com/watch?v=K4q8ZHw9TuI)_ @ _Paris Open Source Summit_ **2019**  
+* _[Conversationnel & Open Source](https://www.youtube.com/watch?v=fTy6uit7Ejg)_ @ _Paris Open Source Summit_ **2019**  
 (REX SNCF & invités EDF, Enedis, Orange, SogetiLabs, TOSIT)
-[📽️ 30 min](https://www.youtube.com/watch?v=K4q8ZHw9TuI) / 
+[📽️ 30 min](https://www.youtube.com/watch?v=fTy6uit7Ejg) / 
 [🔳 slides](https://www.slideshare.net/OpenWorldForum/ossparis19-conversationnel-open-source-tat-des-lieux-et-prochains-dfis)
 
 <a href="https://www.youtube.com/watch?v=fTy6uit7Ejg"

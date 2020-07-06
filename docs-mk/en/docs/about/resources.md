@@ -5,9 +5,9 @@ in addition to the main documentation and demo instance.
 
 ## Conferences / video (in French)
 
-* _[Conversational AI & Open Source](https://www.youtube.com/watch?v=K4q8ZHw9TuI)_ @ _Paris Open Source Summit_ **2019**  
+* _[Conversational AI & Open Source](https://www.youtube.com/watch?v=fTy6uit7Ejg)_ @ _Paris Open Source Summit_ **2019**  
 (SNCF REX & guests from EDF, Enedis, Orange, SogetiLabs, TOSIT)  
-[📽️ 30 min (French)](https://www.youtube.com/watch?v=K4q8ZHw9TuI) / 
+[📽️ 30 min (French)](https://www.youtube.com/watch?v=fTy6uit7Ejg) / 
 [🔳 slides (English)](https://www.slideshare.net/OpenWorldForum/ossparis19-conversationnel-open-source-tat-des-lieux-et-prochains-dfis)
 
 <a href="https://www.youtube.com/watch?v=fTy6uit7Ejg"
