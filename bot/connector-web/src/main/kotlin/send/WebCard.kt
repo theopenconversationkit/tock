@@ -1,7 +1,7 @@
 package ai.tock.bot.connector.web.send
 
 import ai.tock.bot.connector.media.MediaFile
-import ai.tock.bot.engine.action.SendAttachment.AttachmentType.image
+import ai.tock.bot.engine.config.UploadedFilesService
 import ai.tock.bot.engine.message.Attachment
 import ai.tock.bot.engine.message.GenericMessage
 import ai.tock.shared.mapNotNullValues
@@ -20,7 +20,7 @@ data class WebCard(
                 GenericMessage.SUBTITLE_PARAM to subTitle?.toString()
             ),
             attachments = file
-                ?.let { listOf(Attachment(file.url, image)) }
+                ?.let { listOf(Attachment(file.url, UploadedFilesService.attachmentType(file.url))) }
                 ?: emptyList()
         )
     }

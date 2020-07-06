@@ -44,7 +44,7 @@ object UploadedFilesService {
 
     fun attachmentType(url: String): AttachmentType =
         if (url.length > 2) {
-            url.substring(url.length - 3).let { suffix ->
+            url.substring(url.length - 3).toLowerCase().let { suffix ->
                 when {
                     imagesTypes.contains(suffix) -> AttachmentType.image
                     audioTypes.contains(suffix) -> AttachmentType.audio
