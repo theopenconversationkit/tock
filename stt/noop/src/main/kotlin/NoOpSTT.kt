@@ -15,7 +15,6 @@
  */
 package ai.tock.stt.noop
 
-import ai.tock.stt.AudioCodec
 import ai.tock.stt.STT
 import java.util.Locale
 
@@ -24,5 +23,5 @@ import java.util.Locale
  */
 internal object NoOpSTT : STT {
 
-    override fun parse(bytes: ByteArray, language: Locale, codec: AudioCodec): String? = null
+    override fun parse(bytes: ByteArray, language: Locale): String? = null
 }

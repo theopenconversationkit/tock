@@ -16,15 +16,12 @@
 
 package ai.tock.stt.google
 
+import ai.tock.shared.error
+import ai.tock.stt.STT
 import com.google.cloud.speech.v1.RecognitionAudio
 import com.google.cloud.speech.v1.RecognitionConfig
 import com.google.cloud.speech.v1.SpeechClient
 import com.google.protobuf.ByteString
-import ai.tock.shared.error
-import ai.tock.stt.AudioCodec
-import ai.tock.stt.AudioCodec.unknown
-import ai.tock.stt.AudioCodec.ogg
-import ai.tock.stt.STT
 import mu.KotlinLogging
 import ws.schild.jave.AudioAttributes
 import ws.schild.jave.Encoder
@@ -66,32 +63,19 @@ internal object GoogleSpeechClient : STT {
 
     }
 
-    override fun parse(bytes: ByteArray, language: Locale, codec: AudioCodec): String? =
+    override fun parse(bytes: ByteArray, language: Locale): String? =
         try {
             SpeechClient.create().use { speechClient ->
 
                 val config = RecognitionConfig.newBuilder()
                     .setEncoding(
-                        when (codec) {
-                            ogg -> RecognitionConfig.AudioEncoding.OGG_OPUS
-                            unknown -> RecognitionConfig.AudioEncoding.FLAC
-                        }
+                        RecognitionConfig.AudioEncoding.FLAC
                     )
                     .setLanguageCode(language.toString())
-                    .apply {
-                        if(codec == ogg) {
-                            sampleRateHertz = 16000
-                        }
-                    }
                     .build()
                 val audio = RecognitionAudio.newBuilder()
                     .setContent(
-                        ByteString.copyFrom(
-                            when (codec) {
-                                ogg -> bytes
-                                unknown -> parseUnknown(bytes)
-                            }
-                        )
+                        ByteString.copyFrom(parseUnknown(bytes))
                     )
                     .build()
                 val response = speechClient.recognize(config, audio)

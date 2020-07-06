@@ -25,7 +25,6 @@ import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.shared.injector
-import ai.tock.stt.AudioCodec
 import ai.tock.stt.STT
 import com.github.salomonbrys.kodein.instance
 
@@ -48,7 +47,7 @@ internal object WebhookActionConverter {
             is WhatsAppVoiceMessage -> {
                 client.getMedia(message.voice.id)
                     ?.let { audio ->
-                        stt.parse(audio, codec = AudioCodec.ogg)?.let { text ->
+                        stt.parse(audio)?.let { text ->
                             SendSentence(
                                 PlayerId(senderId),
                                 applicationId,

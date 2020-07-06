@@ -15,7 +15,8 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -25,11 +26,11 @@
     </parent>
 
     <artifactId>tock-stt-google-speech</artifactId>
-    <name>Tock Google Speech STT </name>
+    <name>Tock Google Speech STT</name>
     <description>Google Speech STT implementation</description>
 
     <properties>
-        <jave>2.4.6</jave>
+        <jave>2.7.3</jave>
     </properties>
 
     <dependencies>
@@ -54,7 +55,7 @@
         </dependency>
         <dependency>
             <groupId>ws.schild</groupId>
-            <artifactId>jave-native-linux64</artifactId>
+            <artifactId>jave-nativebin-linux64</artifactId>
             <version>${jave}</version>
         </dependency>
         <dependency>

@@ -51,7 +51,7 @@ class WhatsAppClientIntegrationTest {
                 }
             )
         }
-        val translate = injector.provide<STT>().parse(bytes, codec = ogg)
+        val translate = injector.provide<STT>().parse(bytes)
         println(translate)
     }
 }

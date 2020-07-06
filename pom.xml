@@ -37,13 +37,13 @@
         <slf4j>1.7.30</slf4j>
         <logback>1.2.3</logback>
 
-        <kotlin-logging>1.7.9</kotlin-logging>
+        <kotlin-logging>1.8.0.1</kotlin-logging>
 
         <kodein>4.1.0</kodein>
         <kmongo>4.0.2</kmongo>
-        <jackson>2.11.0</jackson>
-        <jackson-databind>2.11.0</jackson-databind>
-        <jackson-module>2.11.0</jackson-module>
+        <jackson>2.11.1</jackson>
+        <jackson-databind>2.11.1</jackson-databind>
+        <jackson-module>2.11.1</jackson-module>
         <jackson-module-loader>0.1.0</jackson-module-loader>
         <jackson-data>0.1.0</jackson-data>
         <jackson-generator>0.3.1</jackson-generator>
@@ -55,8 +55,8 @@
         <signpost-core>1.2.1.2</signpost-core>
         <circuitbreaker>1.5.0</circuitbreaker>
         <guava>29.0-jre</guava>
-        <google-auth>1.30.2</google-auth>
-        <google-http-client>1.35.0</google-http-client>
+        <google-auth>1.31.0</google-auth>
+        <google-http-client>1.36.0</google-http-client>
         <jasypt>1.9.3</jasypt>
         <commons-csv>1.8</commons-csv>
         <emoji>5.0</emoji>
@@ -66,16 +66,16 @@
         <httpclient>4.5.12</httpclient>
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
-        <google>5.4.0</google>
+        <google>8.0.0</google>
 
         <junit-jupiter>5.6.2</junit-jupiter>
 
         <mockk>1.10.0</mockk>
         <assertj>3.12.2</assertj>
-        <byte-buddy>1.10.11</byte-buddy>
+        <byte-buddy>1.10.13</byte-buddy>
         <atrium>0.8.0</atrium>
 
-        <plugin.surefire>3.0.0-M4</plugin.surefire>
+        <plugin.surefire>3.0.0-M5</plugin.surefire>
         <plugin.source>3.2.1</plugin.source>
         <plugin.release>3.0.0-M1</plugin.release>
         <plugin.gpg>1.6</plugin.gpg>
