@@ -15,7 +15,8 @@
   -->
 
 <nb-card class="features" [nbSpinner]="loadingApplicationsFeatures" nbSpinnerStatus="primary">
-  <nb-card-header style="display: flex;">
+  <nb-card-header style="display: flex; position: relative;">
+    <nb-badge [text]="features.length + ' rule(s)'" [status]="features.length < 1 ? 'success' : 'info'" position="top left"></nb-badge>
     Application Features
     <nb-actions size="small" style="cursor: pointer;">
       <nb-action class="control-item" nbTooltip="Refresh" (click)="refresh()" *ngIf="!create">
@@ -30,50 +31,60 @@
     <div *ngIf="create">
       <tock-select-bot [(configurationId)]="botApplicationConfigurationId" [allowNoSelection]="true"
                        noConfigurationLabel="All Configurations"><br>
-      <input #newCategory class="first_new category new" nbInput placeholder="Category" [(ngModel)]="feature.category" [autofocus]="true">
-      <input class="first_new name new" nbInput placeholder="Name" [(ngModel)]="feature.name">
-      <div class="first_new planning cell">
+      <input #newCategory class="first_new feature-property new" nbInput placeholder="Category" [(ngModel)]="feature.category" [autofocus]="true">
+      <input class="first_new feature-property new" nbInput placeholder="Name" [(ngModel)]="feature.name">
+      <div class="first_new feature-property cell">
         <input nbInput (keyup.enter)="changeStartDateNew($event)" placeholder="start date" [(ngModel)]="feature.startDate"
                [nbDatepicker]="startDate" (ngModelChange)="changeStartDateNew($event)">
         <nb-datepicker #startDate (dateChange)="changeStartDateNew($event)" [max]="feature.endDate"></nb-datepicker>
       </div>
-      <div class="first_new planning cell">
+      <div class="first_new feature-property cell">
         <input nbInput (keyup.enter)="changeEndDateNew($event)" placeholder="end date" [(ngModel)]="feature.endDate"
                [nbDatepicker]="endDate" (ngModelChange)="changeEndDateNew($event)">
         <nb-datepicker #endDate (dateChange)="changeEndDateNew($event)" [min]="feature.startDate">></nb-datepicker>
       </div>
-      <nb-toggle class="first_new toggle" status="primary" [checked]="feature.enabled" (checkedChange)="toggleNew($event)" nbTooltip="Status"></nb-toggle>
+      <nb-toggle class="first_new feature-action" status="primary" [checked]="feature.enabled" (checkedChange)="toggleNew($event)" nbTooltip="Status"></nb-toggle>
       </tock-select-bot>
     </div>
 
-    <div *ngIf="!create" class="features-table">
-      <div *ngFor="let f of features" class="feature">
-        <div class="category cell">{{f.category}}</div>
-        <div class="name cell">{{f.name}}</div>
-        <div class="application cell" *ngIf="f.configuration">
-          <img src="{{f.configuration.connectorType.iconUrl()}}"
-               class="connector"
-               [matTooltip]="f.configuration.connectorType.label()"/>
-          {{ f.configuration.connectorType.label() }} ( {{ f.applicationId }})
-        </div>
-        <div class="application cell" *ngIf="!f.configuration"></div>
-        <div class="toggle cell">
-          <nb-toggle status="primary" [checked]="f.enabled" (checkedChange)="toggle(f, $event)" nbTooltip="Status"></nb-toggle>
-        </div>
-        <div class="planning cell">
-          <input nbInput (keyup.enter)="changeStartDate(f, $event)" placeholder="start date" [(ngModel)]="f.startDate"
-                 [nbDatepicker]="startDate" (ngModelChange)="changeStartDate(f, $event)">
-          <nb-datepicker #startDate (dateChange)="changeStartDate(f, $event)" [max]="f.endDate"></nb-datepicker>
-        </div>
-        <div class="planning cell">
-          <input nbInput (keyup.enter)="changeEndDate(f, $event)" placeholder="end date" [(ngModel)]="f.endDate"
-                 [nbDatepicker]="endDate" (ngModelChange)="changeEndDate(f, $event)">
-          <nb-datepicker #endDate (dateChange)="changeEndDate(f, $event)" [min]="f.startDate"></nb-datepicker>
-        </div>
-        <div class="cell">
-          <button nbButton (click)="deleteFeature(f)" nbTooltip="Delete {{f.name}}" outline status="danger" size="small" class="delete">
-            <nb-icon icon="trash-2-outline"></nb-icon>
-          </button>
+    <div *ngIf="!create">
+      <div *ngIf="!features || features.length < 1">
+        <p>No rules set to enable/disable Features.</p>
+      </div>
+      <div class="features-table">
+        <div *ngFor="let f of features" class="feature">
+          <div class="feature-property cell" [nbTooltip]="'Category: ' + f.category">{{f.category}}</div>
+          <div class="feature-property cell" [nbTooltip]="'Feature: ' + f.name">{{f.name}}</div>
+          <div class="feature-property cell">
+            <div *ngIf="f.configuration" [nbTooltip]="'Apply to Configuration: ' + f.configuration.applicationId">
+              <img src="{{f.configuration.connectorType.iconUrl()}}"
+                   class="connector"
+                   [nbTooltip]="f.configuration.connectorType.label()"/>
+              {{ f.configuration.connectorType.label() }} ( {{ f.configuration.applicationId }})
+            </div>
+            <div *ngIf="!f.configuration" nbTooltip="Apply to All Configurations">All Configurations</div>
+          </div>
+          <div class="feature-action cell">
+            <nb-toggle status="primary" [checked]="f.enabled" (checkedChange)="toggle(f, $event)"
+                       [nbTooltip]="f.enabled ? 'Disable Feature & Reset Dates' : 'Enable Feature'"></nb-toggle>
+          </div>
+          <div class="feature-property cell">
+            <input nbInput (keyup.enter)="changeStartDate(f, $event)" placeholder="start date" [(ngModel)]="f.startDate"
+                   [nbDatepicker]="startDate" (ngModelChange)="changeStartDate(f, $event)"
+                   size="8" [nbTooltip]="f.startDate ? 'From: ' + f.startDate : 'No start date set'">
+            <nb-datepicker #startDate (dateChange)="changeStartDate(f, $event)" [max]="f.endDate"></nb-datepicker>
+          </div>
+          <div class="feature-property cell">
+            <input nbInput (keyup.enter)="changeEndDate(f, $event)" placeholder="end date" [(ngModel)]="f.endDate"
+                   [nbDatepicker]="endDate" (ngModelChange)="changeEndDate(f, $event)"
+                   size="8" [nbTooltip]="f.endDate ? 'Until: ' + f.endDate : 'No end date set'">
+            <nb-datepicker #endDate (dateChange)="changeEndDate(f, $event)" [min]="f.startDate"></nb-datepicker>
+          </div>
+          <div class="feature-action cell">
+            <button nbButton (click)="deleteFeature(f)" nbTooltip="Delete Rule" outline status="danger" size="small">
+              <nb-icon icon="trash-2-outline"></nb-icon>
+            </button>
+          </div>
         </div>
       </div>
     </div>
