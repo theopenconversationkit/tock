@@ -35,7 +35,7 @@
           (change)="changeMode()">
         </mat-slide-toggle>
         <span class="flow-option-label" nbTooltip="Show effective user trafic (dynamic mode)">User flow on</span>
-        <date-range-calendar [disabled]="!statsMode" [rangeInDays]="90" (datesChanged)="datesChanged($event)"></date-range-calendar>
+        <date-range-calendar [disabled]="!statsMode" [rangeInDays]="7" (datesChanged)="datesChanged($event)"></date-range-calendar>
       </div>
 
       <br />
