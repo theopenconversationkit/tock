@@ -20,6 +20,7 @@ import {I18nLabel} from "./i18n";
 import {BotService} from "../bot-service";
 import {Observable, of} from "rxjs";
 import {AttachmentType, BotApplicationConfiguration} from "../../core/model/configuration";
+import {StateService} from "../../core-nlp/state.service";
 
 export class CreateStoryRequest {
 
@@ -36,7 +37,10 @@ export class StorySearchQuery extends PaginatedQuery {
               public applicationName: string,
               public language: string,
               public start: number,
-              public size: number) {
+              public size: number,
+              public category?: string,
+              public textSearch?: string,
+              public onlyConfiguredStory?: boolean) {
     super(namespace, applicationName, language, start, size)
   }
 
@@ -125,6 +129,53 @@ export abstract class AnswerContainer {
 
 }
 
+export class StoryDefinitionConfigurationSummary {
+
+  constructor(public storyId: string,
+              public botId: string,
+              public intent: IntentName,
+              public currentType: AnswerConfigurationType,
+              public category: string = "default",
+              public name: string = storyId,
+              public _id: string,
+              public description: string = ""
+  ) {
+
+  }
+
+  isSimpleAnswer(): boolean {
+    return this.currentType === AnswerConfigurationType.simple;
+  }
+
+  isMessageAnswer(): boolean {
+    return this.currentType === AnswerConfigurationType.message;
+  }
+
+  isScriptAnswer(): boolean {
+    return this.currentType === AnswerConfigurationType.script;
+  }
+
+  isBuiltIn(): boolean {
+    return this.currentType === AnswerConfigurationType.builtin;
+  }
+
+  static fromJSON(json: any): StoryDefinitionConfigurationSummary {
+    const value = Object.create(StoryDefinitionConfigurationSummary.prototype);
+    const result = Object.assign(value, json, {
+      intent: IntentName.fromJSON(json.intent),
+      currentType: AnswerConfigurationType[json.currentType]
+    });
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): StoryDefinitionConfigurationSummary[] {
+    return json ? json.map(StoryDefinitionConfigurationSummary.fromJSON) : [];
+  }
+
+}
+
+
 export class StoryDefinitionConfiguration extends AnswerContainer {
 
   public hideDetails: boolean = false;
@@ -192,20 +243,20 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
     return !this.features || this.features.length < 1
       ? false
       : this.features.filter(f =>
-          !f.enabled && !f.switchToStoryId
-          && (!f.botApplicationConfigurationId || f.botApplicationConfigurationId == null
-          || f.botApplicationConfigurationId == configurationId)
-        ).length > 0;
+      !f.enabled && !f.switchToStoryId
+      && (!f.botApplicationConfigurationId || f.botApplicationConfigurationId == null
+      || f.botApplicationConfigurationId == configurationId)
+    ).length > 0;
   }
 
   isRedirected(configurationId: string): boolean {
     return !this.features || this.features.length < 1
       ? false
       : this.features.filter(f =>
-          f.enabled && f.switchToStoryId
-          && (!f.botApplicationConfigurationId || f.botApplicationConfigurationId == null
-          || f.botApplicationConfigurationId == configurationId)
-        ).length > 0;
+      f.enabled && f.switchToStoryId
+      && (!f.botApplicationConfigurationId || f.botApplicationConfigurationId == null
+      || f.botApplicationConfigurationId == configurationId)
+    ).length > 0;
   }
 
   static fromJSON(json: any): StoryDefinitionConfiguration {
@@ -405,7 +456,17 @@ export class StoryStep extends AnswerContainer {
 }
 
 export class IntentName {
+
+  private intentLabel: string;
+
   constructor(public name: string) {
+  }
+
+  getIntentLabel(state: StateService): string {
+    if (!this.intentLabel) {
+      this.intentLabel = state.intentLabelByName(this.name);
+    }
+    return this.intentLabel;
   }
 
   clone(): IntentName {

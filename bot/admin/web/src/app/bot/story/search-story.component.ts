@@ -19,10 +19,18 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {BotService} from "../bot-service";
 import {NlpService} from "../../nlp-tabs/nlp.service";
 import {StateService} from "../../core-nlp/state.service";
-import {StoryDefinitionConfiguration, StorySearchQuery} from "../model/story";
+import {StoryDefinitionConfiguration, StoryDefinitionConfigurationSummary, StorySearchQuery} from "../model/story";
 import {Subscription} from "rxjs";
 import {DialogService} from "../../core-nlp/dialog.service";
 import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
+import {MatDialog} from "@angular/material/dialog";
+import {ConfirmDialogComponent} from "../../shared-nlp/confirm-dialog/confirm-dialog.component";
+
+interface TreeNode<T> {
+  data: T;
+  children?: TreeNode<T>[];
+  expanded?: boolean;
+}
 
 @Component({
   selector: 'tock-search-story',
@@ -31,9 +39,17 @@ import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
 })
 export class SearchStoryComponent implements OnInit, OnDestroy {
 
-  loadedStories: StoryDefinitionConfiguration[];
-  stories: StoryDefinitionConfiguration[];
+  stories: StoryDefinitionConfigurationSummary[];
   categories: string[] = [];
+  selectedStory: StoryDefinitionConfiguration;
+
+  categoryColumn = "Story";
+  intentColumn = "Main Intent";
+  descriptionColumn = "Description";
+  actionsColumn = "Actions";
+  allColumns = [this.categoryColumn, this.intentColumn, this.descriptionColumn, this.actionsColumn];
+  nodes: TreeNode<any>[];
+  private lastExpandableState: Map<string, boolean> = new Map<string, boolean>();
 
   filter: string = "";
   category: string = "";
@@ -46,74 +62,135 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
 
   constructor(private nlp: NlpService,
-              private state: StateService,
+              public state: StateService,
               private bot: BotService,
-              private dialog: DialogService) {
+              private dialog: DialogService,
+              private matDialog: MatDialog) {
   }
 
   ngOnInit(): void {
-    this.load();
-    this.subscription = this.state.configurationChange.subscribe(_ => this.load());
+    this.search();
+    this.subscription = this.state.configurationChange.subscribe(_ => this.search());
   }
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
 
-  private load() {
-    let selectedStoryId;
-    if (this.loadedStories) {
-      const s = this.loadedStories.find(s => s.selected);
-      if (s) {
-        selectedStoryId = s.storyId;
+  editStory(story: StoryDefinitionConfigurationSummary) {
+    this.bot.findStory(story._id).subscribe(s => {
+      s.selected = true;
+      this.selectedStory = s;
+    });
+  }
+
+  downloadStory(story: StoryDefinitionConfigurationSummary) {
+    setTimeout(_ => {
+      this.bot.exportStory(this.state.currentApplication.name, story.storyId)
+        .subscribe(blob => {
+          saveAs(blob, this.state.currentApplication.name + "_" + story.storyId + ".json");
+          this.dialog.notify(`Dump provided`, "Dump");
+        })
+    }, 1);
+  }
+
+  deleteStory(story: StoryDefinitionConfigurationSummary) {
+    let dialogRef = this.dialog.open(
+      this.matDialog,
+      ConfirmDialogComponent,
+      {
+        data: {
+          title: `Remove the story '${story.name}'`,
+          subtitle: "Are you sure?",
+          action: "Remove"
+        }
+      });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === "remove") {
+        this.bot.deleteStory(story._id)
+          .subscribe(_ => {
+            this.delete(story.storyId)
+            this.dialog.notify(`Story deleted`, "Delete")
+          });
       }
+    });
+  }
+
+  private keepExpandableState() {
+    if (this.selectedStory) {
+      this.lastExpandableState = new Map<string, boolean>();
+      this.lastExpandableState.set(this.selectedStory.category, true);
     }
+  }
+
+  delete(storyDefinitionId: string) {
+    this.selectedStory = null;
+    this.keepExpandableStateAndSearch();
+  }
+
+  keepExpandableStateAndSearch() {
+    this.keepExpandableState();
+    this.search();
+  }
+
+  search() {
+    if (this.category === "_all_") this.category = "";
     this.loading = true;
-    this.bot.getStories(
+    this.bot.searchStories(
       new StorySearchQuery(
         this.state.currentApplication.namespace,
         this.state.currentApplication.name,
         this.state.currentLocale,
         0,
-        10000
+        10000,
+        this.category,
+        this.filter,
+        this.onlyConfigured
       )
     ).subscribe(s => {
-      if (selectedStoryId) {
-        const s2 = s.find(newS => newS.storyId === selectedStoryId);
-        if (s2) {
-          s2.selected = true;
-        }
-      }
-      this.loadedStories = s;
+      this.selectedStory = null;
+      const storyByCategories = new Map<string, StoryDefinitionConfigurationSummary[]>();
       s.forEach(story => {
-        story.hideDetails = true;
-        if (this.categories.indexOf(story.category) === -1) {
-          this.categories.push(story.category);
+        let a = storyByCategories.get(story.category);
+        if (!a) {
+          a = [];
+          storyByCategories.set(story.category, a)
+        }
+        a.push(story);
+      });
+
+      if (this.category === "") {
+        const sortStringKeys = (a, b) => a.toLowerCase() > b.toLowerCase() ? 1 : -1
+        this.categories = Array.from(storyByCategories.keys()).sort(sortStringKeys);
+      }
+      const sortedMap = new Map<string, StoryDefinitionConfigurationSummary[]>();
+      this.categories.forEach(c => {
+        const stories = storyByCategories.get(c);
+        if (stories) {
+          sortedMap.set(c, stories);
         }
       });
-      this.categories.sort();
-      this.search();
+
+      this.stories = s;
+      console.log(this.lastExpandableState);
+      this.nodes = Array.from(sortedMap, ([key, value]) => {
+          return {
+            expanded: this.categories.length < 2 || this.category != "" || this.filter !== "" || this.lastExpandableState.get(key) === true,
+            data: {
+              category: key,
+              expandable: true
+            },
+            children: value.map(s => {
+              return {
+                data: s
+              }
+            })
+          }
+        }
+      );
+      this.lastExpandableState = new Map();
       this.loading = false;
     });
-  }
-
-  delete(storyDefinitionId: string) {
-    this.stories = this.stories.filter(s => s._id !== storyDefinitionId);
-    this.loadedStories = this.loadedStories.filter(s => s._id !== storyDefinitionId);
-  }
-
-  search(story?: StoryDefinitionConfiguration) {
-    if (this.category === "_all_") this.category = "";
-    if (story && this.categories.indexOf(story.category) === -1) {
-      this.categories.push(story.category);
-      this.categories.sort();
-    }
-    this.stories = this.loadedStories.filter(s =>
-      (s.name.toLowerCase().indexOf(this.filter.toLowerCase()) !== -1
-        || s.intent.name.toLowerCase().indexOf(this.filter.toLowerCase()) !== -1)
-      && (this.category.length === 0 || this.category === s.category)
-      && (!this.onlyConfigured || !s.isBuiltIn())
-    );
   }
 
   download() {

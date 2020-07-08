@@ -17,6 +17,7 @@
 import {Component, OnInit} from "@angular/core";
 import {BotService} from "../bot-service";
 import {StoryDefinitionConfiguration} from "../model/story";
+import {StateService} from "../../core-nlp/state.service";
 
 
 @Component({
@@ -28,12 +29,16 @@ export class StoryRuntimeSettingsComponent implements OnInit {
   displayedColumns: string[] = ['storyTag', 'storyName'];
   stories: StoryDefinitionConfiguration[];
 
-  constructor(private botService: BotService) {
+  constructor(
+    private state: StateService,
+    private botService: BotService) {
   }
 
   ngOnInit(): void {
-    this.botService.findRuntimeStorySettings().subscribe(
-       stories => this.stories = stories
-    );
+    if (this.state.currentApplication) {
+      this.botService.findRuntimeStorySettings(this.state.currentApplication.name).subscribe(
+        stories => this.stories = stories
+      );
+    }
   }
 }

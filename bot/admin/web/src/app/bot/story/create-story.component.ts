@@ -25,13 +25,14 @@ import {
   CreateStoryRequest,
   IntentName,
   StoryDefinitionConfiguration,
+  StoryDefinitionConfigurationSummary,
   StorySearchQuery
 } from "../model/story";
 import {ActivatedRoute} from "@angular/router";
 import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {AnswerController} from "./controller";
 import {Subscription} from "rxjs";
-import { NbToastrService } from '@nebular/theme';
+import {NbToastrService} from '@nebular/theme';
 
 @Component({
   selector: 'tock-create-story',
@@ -51,7 +52,7 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
 
   @ViewChild('newSentence') newSentence: ElementRef;
 
-  private stories: StoryDefinitionConfiguration[] = [];
+  private stories: StoryDefinitionConfigurationSummary[] = [];
 
   private subscription: Subscription;
 
@@ -78,7 +79,7 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
     this.createStory();
     const _this = this;
     this.submit.submitListener = _ => _this.onReply();
-    this.bot.getStories(
+    this.bot.searchStories(
       new StorySearchQuery(
         this.state.currentApplication.namespace,
         this.state.currentApplication.name,
@@ -94,6 +95,7 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
     const app = this.state.currentApplication;
     const language = this.state.currentLocale;
     const v = value ? value.trim() : this.story.userSentence.trim();
+    this.sentence = null;
     if (v.length == 0) {
       this.toastrService.show(`Please enter a non-empty sentence`, "ERROR", {duration: 2000});
     } else {
@@ -136,7 +138,10 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
               this.story.userSentence = text;
               this.onSentence(text);
             } else {
-              setTimeout(_ => _this.newSentence.nativeElement.focus(), 500);
+              setTimeout(_ => {
+                if (_this.newSentence) _this.newSentence.nativeElement.focus()
+              }, 500
+              );
             }
           });
         }

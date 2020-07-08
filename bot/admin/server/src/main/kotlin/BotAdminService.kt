@@ -52,6 +52,7 @@ import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationSummary
 import ai.tock.bot.admin.story.dump.ScriptAnswerVersionedConfigurationDump
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpController
@@ -625,6 +626,9 @@ object BotAdminService {
         }
     }
 
+    fun searchStories(request: StorySearchRequest): List<StoryDefinitionConfigurationSummary> =
+        storyDefinitionDAO.searchStoryDefinitionSummaries(request.toSummaryRequest())
+
     fun loadStories(request: StorySearchRequest): List<BotStoryDefinitionConfiguration> =
         findStories(request.namespace, request.applicationName).map {
             BotStoryDefinitionConfiguration(it, request.currentLanguage)
@@ -667,13 +671,13 @@ object BotAdminService {
         return loadStory(namespace, story)
     }
 
-    fun findRuntimeStorySettings(namespace: String): List<BotStoryDefinitionConfiguration>? {
-        val stories = storyDefinitionDAO.getRuntimeStorySettings(namespace)
+    fun findRuntimeStorySettings(namespace: String, botId: String): List<BotStoryDefinitionConfiguration>? {
+        val stories = storyDefinitionDAO.getRuntimeStorySettings(namespace, botId)
         return stories.mapNotNull { story -> loadStory(namespace, story) }
     }
 
     private fun loadStory(namespace: String, conf: StoryDefinitionConfiguration?): BotStoryDefinitionConfiguration? {
-        if (conf != null) {
+        if (conf?.namespace == namespace) {
             val botConf = getBotConfigurationsByNamespaceAndBotId(namespace, conf.botId).firstOrNull()
             if (botConf != null) {
                 val applicationDefinition = applicationDAO.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)

@@ -107,7 +107,7 @@ export class StoryRuleComponent implements OnInit {
         if (s.length !== 0) {
           this.feature.story = s[0];
         }
-        var features = flatMap(s, story => {
+        const features = flatMap(s, story => {
           story.features.forEach(f => {
             f.story = story;
             f.conf = f.botApplicationConfigurationId ?

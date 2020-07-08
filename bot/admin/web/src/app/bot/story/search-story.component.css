@@ -15,11 +15,11 @@
  */
 
 .intent {
-  width:820px;
+  width: 820px;
   overflow-x: auto;
   margin-left: auto;
   margin-right: auto;
-  margin-top:20px;
+  margin-top: 20px;
 }
 
 .intent-mention {
@@ -27,16 +27,16 @@
 }
 
 .sentence-input {
-  width:80%;
+  width: 80%;
   font-size: xx-large;
 }
 
 .text-area-container {
-  min-width:800px;
+  min-width: 800px;
 }
 
 .text-area {
-  padding:5px 5px 5px 5px;
+  padding: 5px 5px 5px 5px;
   border: inset;
 }
 
@@ -44,7 +44,7 @@
   margin-right: 20px;
 }
 
-.search-input{
+.search-input {
   margin-right: 10px;
 }
 
@@ -53,5 +53,16 @@
 }
 
 .download {
-  float:right;
+  float: right;
 }
+
+.action {
+  margin-left: 10px;
+}
+
+.nb-column-Actions {
+  width: 160px;
+  padding: 0;
+}
+
+

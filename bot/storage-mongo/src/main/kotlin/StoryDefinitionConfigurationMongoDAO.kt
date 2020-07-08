@@ -19,10 +19,14 @@ package ai.tock.bot.mongo
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationSummary
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationSummaryRequest
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.BotId
+import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Category
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.ConfigurationName
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.CurrentType
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Intent
+import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Name
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Namespace
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.StoryId
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Tags
@@ -30,27 +34,34 @@ import ai.tock.bot.definition.StoryTag
 import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.MongoBotConfiguration.database
 import ai.tock.bot.mongo.StoryDefinitionConfigurationHistoryCol_.Companion.Date
+import ai.tock.shared.defaultLocale
 import ai.tock.shared.error
 import ai.tock.shared.trace
 import ai.tock.shared.watch
+import com.mongodb.client.model.Collation
 import mu.KotlinLogging
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.and
+import org.litote.kmongo.ascending
 import org.litote.kmongo.contains
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
+import org.litote.kmongo.find
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.getCollectionOfName
 import org.litote.kmongo.ne
 import org.litote.kmongo.or
+import org.litote.kmongo.projection
 import org.litote.kmongo.reactivestreams.getCollectionOfName
+import org.litote.kmongo.regex
 import org.litote.kmongo.save
+import org.litote.kmongo.withDocumentClass
 import java.time.Instant
 
 /**
@@ -93,10 +104,13 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         return col.findOneById(id)
     }
 
-    override fun getRuntimeStorySettings(namespace: String): List<StoryDefinitionConfiguration> {
+    override fun getRuntimeStorySettings(namespace: String, botId: String): List<StoryDefinitionConfiguration> {
         return col.find(
-            and(Namespace eq namespace,
-                or(Tags contains (StoryTag.ENABLE), Tags contains (StoryTag.DISABLE)))
+            and(
+                Namespace eq namespace,
+                BotId eq botId,
+                or(Tags contains (StoryTag.ENABLE), Tags contains (StoryTag.DISABLE))
+            )
         ).toList()
     }
 
@@ -136,9 +150,36 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         return col.find(and(Namespace eq namespace, BotId eq botId)).toList()
     }
 
-    override fun getStoryDefinitionsByNamespaceBotIdStoryId(namespace: String, botId: String, storyId: String): StoryDefinitionConfiguration? {
+    override fun getStoryDefinitionsByNamespaceBotIdStoryId(
+        namespace: String,
+        botId: String,
+        storyId: String
+    ): StoryDefinitionConfiguration? {
         return col.findOne(and(Namespace eq namespace, BotId eq botId, StoryId eq storyId))
     }
+
+    override fun searchStoryDefinitionSummaries(request: StoryDefinitionConfigurationSummaryRequest): List<StoryDefinitionConfigurationSummary> =
+        col.withDocumentClass<StoryDefinitionConfigurationSummary>()
+            .find(
+                Namespace eq request.namespace,
+                BotId eq request.botId,
+                if (request.category.isNullOrBlank()) null else Category eq request.category,
+                request.textSearch?.takeUnless { it.isBlank() }?.let { Name.regex(it.trim(), "i") },
+                if (request.onlyConfiguredStory) CurrentType ne AnswerConfigurationType.builtin else null
+            )
+            .projection(
+                StoryDefinitionConfigurationSummary::_id,
+                StoryDefinitionConfigurationSummary::storyId,
+                StoryDefinitionConfigurationSummary::botId,
+                StoryDefinitionConfigurationSummary::intent,
+                StoryDefinitionConfigurationSummary::currentType,
+                StoryDefinitionConfigurationSummary::name,
+                StoryDefinitionConfigurationSummary::category,
+                StoryDefinitionConfigurationSummary::description
+            )
+            .collation(Collation.builder().locale(defaultLocale.language).build())
+            .sort(ascending(StoryDefinitionConfigurationSummary::name))
+            .toList()
 
     override fun save(story: StoryDefinitionConfiguration) {
         val previous = col.findOneById(story._id)

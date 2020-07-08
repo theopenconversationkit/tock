@@ -73,6 +73,7 @@ export class StoryComponent implements OnInit, OnChanges {
 
   @Output()
   close = new EventEmitter<boolean>();
+
   isSwitchingToManagedStory = false;
 
   constructor(private state: StateService,
@@ -166,7 +167,6 @@ export class StoryComponent implements OnInit, OnChanges {
         this.story.description = result.description;
         this.story.userSentence = result.userSentence;
         this.saveStory(this.story.selected);
-        this.submitClose();
       }
     });
   }
@@ -176,8 +176,9 @@ export class StoryComponent implements OnInit, OnChanges {
     this.story.tags = !this.storyTag || this.storyTag.length === 0 ? [] : [this.storyTag];
     if (this.story._id) {
       this.bot.saveStory(this.story).subscribe(s => {
+        this.story = s;
         this.story.selected = selectStoryAfterSave;
-        this.state.resetConfiguration();
+        //this.state.resetConfiguration();
         this.dialog.notify(`Story ${this.story.name} modified`, "Update");
       })
     }
@@ -221,7 +222,6 @@ export class StoryComponent implements OnInit, OnChanges {
       if (result && result.steps) {
         this.story.steps = result.steps;
         this.saveStory(this.story.selected);
-        this.submitClose();
       }
     });
   }
@@ -277,6 +277,7 @@ export class StoryComponent implements OnInit, OnChanges {
       this.isSwitchingToManagedStory = false;
       this.story.currentType = AnswerConfigurationType.builtin;
     }
+    this.submitClose();
   }
 
   download(story: StoryDefinitionConfiguration) {

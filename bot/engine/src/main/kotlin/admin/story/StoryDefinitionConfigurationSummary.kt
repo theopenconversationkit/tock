@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
+package ai.tock.bot.admin.story
 
-import ai.tock.bot.admin.story.StoryDefinitionConfigurationSummaryRequest
-import ai.tock.nlp.admin.model.PaginatedQuery
+import ai.tock.bot.admin.answer.AnswerConfigurationType
+import ai.tock.bot.definition.IntentWithoutNamespace
+import org.litote.kmongo.Id
 
 /**
- *
+ * Summary of [StoryDefinitionConfiguration].
  */
-class StorySearchRequest(
-    val category: String? = null,
-    val textSearch: String? = null,
-    val onlyConfiguredStory: Boolean = true
-) : PaginatedQuery() {
-
-    fun toSummaryRequest(): StoryDefinitionConfigurationSummaryRequest =
-        StoryDefinitionConfigurationSummaryRequest(
-            namespace, applicationName, category, textSearch, onlyConfiguredStory
-        )
-}
+data class StoryDefinitionConfigurationSummary(
+    val _id: Id<StoryDefinitionConfiguration>,
+    val storyId: String,
+    val botId: String,
+    val intent: IntentWithoutNamespace,
+    val currentType: AnswerConfigurationType,
+    val name: String = storyId,
+    val category: String = "default",
+    val description: String = ""
+)

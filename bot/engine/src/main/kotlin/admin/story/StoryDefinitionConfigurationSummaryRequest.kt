@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
-
-import ai.tock.bot.admin.story.StoryDefinitionConfigurationSummaryRequest
-import ai.tock.nlp.admin.model.PaginatedQuery
+package ai.tock.bot.admin.story
 
 /**
- *
+ * Request to find [StoryDefinitionConfigurationSummary.
  */
-class StorySearchRequest(
-    val category: String? = null,
-    val textSearch: String? = null,
-    val onlyConfiguredStory: Boolean = true
-) : PaginatedQuery() {
-
-    fun toSummaryRequest(): StoryDefinitionConfigurationSummaryRequest =
-        StoryDefinitionConfigurationSummaryRequest(
-            namespace, applicationName, category, textSearch, onlyConfiguredStory
-        )
-}
+data class StoryDefinitionConfigurationSummaryRequest(
+    val namespace: String,
+    val botId: String,
+    val category: String?,
+    val textSearch: String?,
+    val onlyConfiguredStory: Boolean
+)
