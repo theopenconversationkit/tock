@@ -42,6 +42,9 @@ export class ChartComponent implements OnChanges {
   stacked = false;
 
   @Input()
+  allSeries = false;
+
+  @Input()
   data: UserAnalyticsQueryResult;
 
   @Input()
@@ -93,8 +96,8 @@ export class ChartComponent implements OnChanges {
       let seriesLabels = ["Date"].concat(series.map((c, i) => c + "  (" + serieCount[i] + ")"))
       let colors = series.map(serie => this.getColor(serie, series))
       let options = {
-        aggregationTarget: 'category',
-        focusTarget: 'category',
+        aggregationTarget: this.allSeries ? 'category' : 'auto',
+        focusTarget: this.allSeries ? 'category' : 'datum',
         animation: {
           startup: true,
           duration: 1000,

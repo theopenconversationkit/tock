@@ -32,6 +32,7 @@ export class ActivityComponent implements AfterViewInit {
   displayTests = true;
   pretty = true;
   stacked = false;
+  allSeries = false;
 
   filter: UserFilter = new UserFilter([], false);
   loading = false;
