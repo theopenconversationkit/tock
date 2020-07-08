@@ -156,6 +156,8 @@
         </span>
         <nb-checkbox [(ngModel)]="displayNodeType" (change)="updateCount()" class="checkbox"
                      nbTooltip="Display Story Type icon on each Node">Story Types</nb-checkbox>
+        <nb-checkbox *ngIf="statsMode" [(ngModel)]="displayNodeCount" (change)="updateCount()" class="checkbox"
+                     nbTooltip="Display Story trafic on each Node">Story Counts</nb-checkbox>
         <nb-checkbox *ngIf="!statsMode" [(ngModel)]="intent" (change)="updateCount()" class="checkbox"
                      nbTooltip="Display Story Main Intent on each Node">Main Intents</nb-checkbox>
         <nb-checkbox [(ngModel)]="displayDebug" class="checkbox"

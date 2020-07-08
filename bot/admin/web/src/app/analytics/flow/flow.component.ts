@@ -143,6 +143,7 @@ export class FlowComponent implements OnInit, OnDestroy {
   staticFlow: ApplicationDialogFlow;
   statsMode: boolean = true;
   displayNodeType: boolean = false;
+  displayNodeCount: boolean = false;
   displayTests: boolean = true;
   displayDisabled: boolean = false;
   mergeOldStories: boolean = true;
@@ -562,6 +563,7 @@ export class FlowComponent implements OnInit, OnDestroy {
                                                                     : (s.storyType == undefined ? ' ?'
                                                                     : ' 💬'))
                                                                     : '')
+                                           + (this.displayNodeCount ? ' (x' + this.displayCount(s.count) + ')' : '')
                                            + (!this.statsMode && this.displayDisabled
                                             && this.allStories.find(aStory => aStory._id == s.storyDefinitionId).isDisabled(this.selectedConnectorId)
                                             ? ' 🚫' : '');
@@ -638,5 +640,17 @@ export class FlowComponent implements OnInit, OnDestroy {
   edgeChange(key: string) {
     this.selectedEdge = this.allTransitions.get(key);
     this.selectedNode = null;
+  }
+
+  displayCount(count: number): string {
+    if (count < 1000) {
+      return count.toString();
+    } else if (count < 100000) {
+      return Math.floor(count / 1000) + "k";
+    } if (count < 1000000) {
+      return "."+ Math.floor(count / 100000) + "m";
+    } else {
+      return Math.floor(count / 1000000) + "m"
+    }
   }
 }
