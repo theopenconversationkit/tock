@@ -41,7 +41,7 @@ internal data class DialogFlowStateCol(
     val entities: Set<String>,
     val _id: Id<DialogFlowStateCol> = newId(),
     val storyType: AnswerConfigurationType? = null,
-    val storyName: String = intent
+    val storyName: String = storyDefinitionId
 )
 
 @Data(internal = true)

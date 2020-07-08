@@ -26,7 +26,7 @@ data class DialogFlowStateData(
         val step: String?,
         val entities: Set<String>,
         val storyType: AnswerConfigurationType?,
-        val storyName: String = intent,
+        val storyName: String = storyDefinitionId,
         val count:Long = 0,
         val _id: Id<DialogFlowStateData> = newId()
 )
