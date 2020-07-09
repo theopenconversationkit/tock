@@ -108,4 +108,25 @@ data class BotApplicationConfiguration(
                 && conf.parameters == parameters
                 && conf.path == path
 
+    internal fun toKey(): BotApplicationConfigurationKey =
+        BotApplicationConfigurationKey(applicationId = applicationId, botId = botId, namespace = namespace)
+
 }
+
+/**
+ * Unique key for [BotApplicationConfiguration].
+ */
+data class BotApplicationConfigurationKey(
+    /**
+     * The application identifier.
+     */
+    val applicationId: String,
+    /**
+     * The bot identifier.
+     */
+    val botId: String,
+    /**
+     * The namespace of the model.
+     */
+    val namespace: String
+)
