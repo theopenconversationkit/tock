@@ -18,6 +18,7 @@ package ai.tock.bot.engine
 
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import ai.tock.bot.admin.bot.BotApplicationConfigurationKey
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.connector.Connector
@@ -80,13 +81,14 @@ object BotRepository {
     private val botConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
     private val storyDefinitionConfigurationDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
     internal val botProviders: MutableMap<BotProviderId, BotProvider> = ConcurrentHashMap()
-    internal val storyHandlerListeners: MutableList<StoryHandlerListener> = mutableListOf()
-    private val nlpListeners: MutableList<NlpListener> = mutableListOf(BuiltInKeywordListener)
+    internal val storyHandlerListeners: MutableList<StoryHandlerListener> = CopyOnWriteArrayList()
+    private val nlpListeners: MutableList<NlpListener> = CopyOnWriteArrayList(listOf(BuiltInKeywordListener))
     internal val nlpClient: NlpClient get() = injector.provide()
     private val nlpController: NlpController get() = injector.provide()
     private val executor: Executor get() = injector.provide()
-    internal val botAnswerInterceptors: MutableList<BotAnswerInterceptor> = mutableListOf()
-    private val connectorServices: MutableList<ConnectorService> = ServiceLoader.load(ConnectorService::class.java).toMutableList()
+    internal val botAnswerInterceptors: MutableList<BotAnswerInterceptor> = CopyOnWriteArrayList()
+    private val connectorServices: MutableSet<ConnectorService> =
+        CopyOnWriteArraySet(ServiceLoader.load(ConnectorService::class.java).toList())
 
     internal val connectorProviders: MutableSet<ConnectorProvider> = CopyOnWriteArraySet(
         ServiceLoader.load(ConnectorProvider::class.java).map { it }.apply {
@@ -100,8 +102,8 @@ object BotRepository {
     internal val connectorControllerMap: ConcurrentHashMap<BotApplicationConfiguration, ConnectorController> =
         ConcurrentHashMap()
 
-    private val applicationIdBotApplicationConfigurationMap: ConcurrentHashMap<String, BotApplicationConfiguration> =
-        ConcurrentHashMap()
+    private val applicationIdBotApplicationConfigurationMap:
+            ConcurrentHashMap<BotApplicationConfigurationKey, BotApplicationConfiguration> = ConcurrentHashMap()
 
     @Volatile
     internal var botsInstalled: Boolean = false
@@ -169,6 +171,10 @@ object BotRepository {
      * @param notificationType the notification type if any
      * @param errorListener called when a message has not been delivered
      */
+    @Deprecated(
+        "use ai.tock.bot.definition.notify",
+        replaceWith = ReplaceWith("notify", "ai.tock.bot.definition.notify")
+    )
     fun notify(
         applicationId: String,
         recipientId: PlayerId,
@@ -177,9 +183,17 @@ object BotRepository {
         parameters: Map<String, String> = emptyMap(),
         stateModifier: NotifyBotStateModifier = NotifyBotStateModifier.KEEP_CURRENT_STATE,
         notificationType: ActionNotificationType? = null,
+        namespace: String? = null,
+        botId: String? = null,
         errorListener: (Throwable) -> Unit = {}
     ) {
-        val conf = getConfigurationByApplicationId(applicationId) ?: error("unknown application $applicationId")
+        val key = if (namespace == null || botId == null) {
+            logger.warn { "notify without specifying namespace or botId will be removed in next release" }
+            applicationIdBotApplicationConfigurationMap.keys.firstOrNull { it.applicationId == applicationId }
+        } else {
+            BotApplicationConfigurationKey(applicationId = applicationId, namespace = namespace, botId = botId)
+        }
+        val conf = key?.let { getConfigurationByApplicationId(it) } ?: error("unknown application $applicationId")
         connectorControllerMap.getValue(conf)
             .notifyAndCheckState(recipientId, intent, step, parameters, stateModifier, notificationType, errorListener)
     }
@@ -285,8 +299,8 @@ object BotRepository {
         connectorServices.add(service)
     }
 
-    internal fun getConfigurationByApplicationId(applicationId: String): BotApplicationConfiguration? =
-        applicationIdBotApplicationConfigurationMap[applicationId]
+    internal fun getConfigurationByApplicationId(key: BotApplicationConfigurationKey): BotApplicationConfiguration? =
+        applicationIdBotApplicationConfigurationMap[key]
 
     /**
      * Returns the current [ConnectorController] for a given predicate.
@@ -495,7 +509,7 @@ object BotRepository {
                 StoryConfigurationMonitor.monitor(bot)
                 //register connector controller map
                 connectorControllerMap[this] = controller
-                applicationIdBotApplicationConfigurationMap[this.applicationId] = this
+                applicationIdBotApplicationConfigurationMap[toKey()] = this
             }
     }
 

@@ -461,7 +461,7 @@ inline fun <reified T> storyWithSteps(
      */
     unsupportedUserInterface: UserInterfaceType? = null
 ): StoryDefinitionBase
-    where T : Enum<T>, T : StoryStep<out StoryHandlerDefinition> =
+        where T : Enum<T>, T : StoryStep<out StoryHandlerDefinition> =
     story(
         handler,
         handler,
@@ -545,6 +545,9 @@ inline fun <reified T> storyWithSteps(
  * A [Bus] is created and the corresponding story is called.
  *
  * @param applicationId the configuration connector id
+ * @param namespace the configuration namespace
+ * @param botId the configuration botId
+ * @param applicationId the configuration connector id
  * @param recipientId the recipient identifier
  * @param intent the notification intent
  * @param step the optional step target
@@ -555,6 +558,8 @@ inline fun <reified T> storyWithSteps(
  */
 fun notify(
     applicationId: String,
+    namespace: String,
+    botId: String,
     recipientId: PlayerId,
     intent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>? = null,
@@ -563,13 +568,15 @@ fun notify(
     notificationType: ActionNotificationType? = null,
     errorListener: (Throwable) -> Unit = {}
 ) = BotRepository.notify(
-    applicationId,
-    recipientId,
-    intent,
-    step,
-    parameters.toMap(),
-    stateModifier,
-    notificationType,
-    errorListener
+    applicationId = applicationId,
+    recipientId = recipientId,
+    intent = intent,
+    step = step,
+    parameters = parameters.toMap(),
+    stateModifier = stateModifier,
+    notificationType = notificationType,
+    namespace = namespace,
+    botId = botId,
+    errorListener = errorListener
 )
 

@@ -20,6 +20,7 @@ import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
 import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
+import ai.tock.bot.admin.bot.BotApplicationConfigurationKey
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.IntentWithoutNamespace
@@ -115,17 +116,17 @@ data class StoryDefinitionConfiguration(
 ) : StoryDefinitionAnswersContainer {
 
     constructor(botDefinition: BotDefinition, storyDefinition: StoryDefinition, configurationName: String?) :
-        this(
-            storyId = storyDefinition.id,
-            tags = storyDefinition.tags,
-            botId = botDefinition.botId,
-            intent = storyDefinition.mainIntent().intentWithoutNamespace(),
-            currentType = builtin,
-            answers = listOf(BuiltInAnswerConfiguration(storyDefinition.javaClass.kotlin.qualifiedName)),
-            namespace = botDefinition.namespace,
-            configurationName = configurationName,
-            steps = storyDefinition.steps.map { StoryDefinitionConfigurationStep(it) }
-        )
+            this(
+                storyId = storyDefinition.id,
+                tags = storyDefinition.tags,
+                botId = botDefinition.botId,
+                intent = storyDefinition.mainIntent().intentWithoutNamespace(),
+                currentType = builtin,
+                answers = listOf(BuiltInAnswerConfiguration(storyDefinition.javaClass.kotlin.qualifiedName)),
+                namespace = botDefinition.namespace,
+                configurationName = configurationName,
+                steps = storyDefinition.steps.map { StoryDefinitionConfigurationStep(it) }
+            )
 
     override fun findNextSteps(bus: BotBus, story: StoryDefinitionConfiguration): List<CharSequence> =
         steps.map { it.userSentenceLabel ?: it.userSentence }
@@ -135,7 +136,13 @@ data class StoryDefinitionConfiguration(
             features.isEmpty() -> emptyList()
             applicationId == null -> features.filter { it.botApplicationConfigurationId == null }
             else -> {
-                val app = BotRepository.getConfigurationByApplicationId(applicationId)
+                val app = BotRepository.getConfigurationByApplicationId(
+                    BotApplicationConfigurationKey(
+                        applicationId = applicationId,
+                        namespace = namespace,
+                        botId = botId
+                    )
+                )
                 features.filter { it.supportConfiguration(app) }
             }
         }
@@ -150,7 +157,15 @@ data class StoryDefinitionConfiguration(
 
     internal fun findEnabledStorySwitchId(applicationId: String?): String? {
         val features = findEnabledFeatures(applicationId)
-        val app = applicationId?.let { BotRepository.getConfigurationByApplicationId(it) }
+        val app = applicationId?.let {
+            BotRepository.getConfigurationByApplicationId(
+                BotApplicationConfigurationKey(
+                    applicationId = applicationId,
+                    namespace = namespace,
+                    botId = botId
+                )
+            )
+        }
 
         //search first for dedicated features
         if (app != null) {
