@@ -23,6 +23,6 @@ import ai.tock.nlp.front.ioc.FrontIoc
  */
 fun main(args: Array<String>) {
     FrontIoc.setup()
-    BuildModelWorkerVerticle.updateAllModels()
+    BuildModelWorker.updateAllModels()
     System.exit(0)
 }

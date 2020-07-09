@@ -30,20 +30,12 @@ import java.time.Duration
  */
 class CleanupModelWorkerVerticle : AbstractVerticle() {
 
-    companion object {
-        private val logger = KotlinLogging.logger {}
-
-        private val cleanupModelEnabled = booleanProperty("tock_cleanup_model_enabled", true)
-    }
-
     private val executor: Executor by injector.instance()
 
     override fun start() {
-        if(cleanupModelEnabled) {
+        if(BuildModelWorker.cleanupModelEnabled) {
             executor.setPeriodic(Duration.ofHours(12), {
-                logger.debug { "remove orphan models..." }
-                FrontClient.deleteOrphans()
-                logger.debug { "end remove orphan models" }
+                BuildModelWorker.cleanupModel()
             })
         }
     }
