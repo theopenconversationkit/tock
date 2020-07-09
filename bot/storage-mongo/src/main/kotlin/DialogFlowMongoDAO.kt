@@ -308,7 +308,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                     snapshot.step,
                     snapshot.entityValues.map { it.entity.role }.toSortedSet(),
                     storyType = snapshot.storyType,
-                    storyName = snapshot.storyName ?: intentName
+                    storyName = snapshot.storyName ?: storyDefinitionId
             ).run {
                 flowStateCol.findOne(
                         Namespace eq namespace,

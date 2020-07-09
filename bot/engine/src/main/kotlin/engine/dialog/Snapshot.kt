@@ -31,7 +31,7 @@ data class Snapshot(
     val step: String?,
     val entityValues: List<EntityValue>,
     val storyType: AnswerConfigurationType?,
-    val storyName: String? = intentName,
+    val storyName: String? = storyDefinitionId,
     val date: Instant = now()
 ) {
 
@@ -41,7 +41,7 @@ data class Snapshot(
         dialog.currentStory?.step,
         dialog.state.entityValues.values.mapNotNull { it.value },
         (dialog.currentStory?.definition as? ConfiguredStoryDefinition)?.answerType ?: AnswerConfigurationType.builtin,
-        (dialog.currentStory?.definition as? ConfiguredStoryDefinition)?.name ?: dialog.state.currentIntent?.name
+        (dialog.currentStory?.definition as? ConfiguredStoryDefinition)?.name ?: dialog.currentStory?.definition?.id
     )
 
     /**
