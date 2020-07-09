@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
-import {BotService} from "../bot-service";
-import {StoryDefinitionConfiguration} from "../model/story";
-import {StateService} from "../../core-nlp/state.service";
+import {Component, OnInit} from '@angular/core';
+import {BotService} from '../bot-service';
+import {StoryDefinitionConfiguration} from '../model/story';
+import {StateService} from '../../core-nlp/state.service';
 
 
 @Component({
@@ -26,8 +26,16 @@ import {StateService} from "../../core-nlp/state.service";
   styleUrls: ['./story-runtime-settings.component.css']
 })
 export class StoryRuntimeSettingsComponent implements OnInit {
+  storyPluralMapping = {
+    'story': {
+      '=0': '0 stories',
+      '=1': '1 story',
+      'other': '# stories'
+    }
+  };
   displayedColumns: string[] = ['storyTag', 'storyName'];
-  stories: StoryDefinitionConfiguration[];
+  disableStories: StoryDefinitionConfiguration[];
+  enableStories: StoryDefinitionConfiguration[];
 
   constructor(
     private state: StateService,
@@ -37,8 +45,10 @@ export class StoryRuntimeSettingsComponent implements OnInit {
   ngOnInit(): void {
     if (this.state.currentApplication) {
       this.botService.findRuntimeStorySettings(this.state.currentApplication.name).subscribe(
-        stories => this.stories = stories
-      );
-    }
+      stories => {
+        this.disableStories = stories.filter(story => story.tags.some(tag => tag === 'DISABLE'));
+        this.enableStories = stories.filter(story => story.tags.some(tag => tag === 'ENABLE'));
+      }
+    );
   }
 }

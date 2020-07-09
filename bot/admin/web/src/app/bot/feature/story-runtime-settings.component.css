@@ -18,19 +18,12 @@
   margin-top: 20px;
 }
 
-.runtime-settings-table {
-  width: 100%;
-  border: 1px solid darkgrey;
-}
-
-.check_circle_outline, .greetings {
-  color: green;
-}
-
-.highlight_off, .goodbye {
-  color: red;
-}
-
-.play_circle_outline {
-  color: darkgrey;
+.activation-story, .deactivation-story {
+  display: inline-block;
+  margin-right: 10px;
+  vertical-align: top;
+  text-align: right;
+  border: solid 1px;
+  border-radius: 5px;
+  padding: 3px 5px;
 }

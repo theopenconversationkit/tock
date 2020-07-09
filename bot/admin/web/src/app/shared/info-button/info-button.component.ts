@@ -14,34 +14,38 @@
  * limitations under the License.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-
-interface Tag {
-  value: string;
-  label: string;
-}
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
-  selector: 'tock-story-tag',
-  templateUrl: './story-tag.component.html',
-  styleUrls: ['./story-tag.component.css']
+  selector: 'tock-info-button',
+  templateUrl: './info-button.component.html',
+  styleUrls: ['./info-button.component.css']
 })
-export class StoryTagComponent implements OnInit {
+export class InfoButtonComponent implements OnInit {
 
+  /**
+   * the information button message
+   */
   @Input()
-  selectedTag: string;
-
-  @Output()
-  selectedTagChange: EventEmitter<String> = new EventEmitter<String>();
-
-  tags: Tag[] = [
-    {value: 'ENABLE', label: 'Bot activation'},
-    {value: 'DISABLE', label: 'Bot deactivation'}
-  ];
+  message: string;
+  /**
+   * default value is top right of a relative positioned parent
+   */
+  @Input()
+  position: string;
+  /**
+   * makes the information button clickable
+   */
+  @Input()
+  url: string;
+  /**
+   * the button icon
+   */
+  icon = 'info';
 
   ngOnInit(): void {
-    if (!this.selectedTag) {
-      this.selectedTag = '';
+    if (!this.message || this.message.trim().length < 1) {
+      this.message = 'No information provided!';
     }
   }
 
