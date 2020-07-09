@@ -534,9 +534,17 @@ open class BotAdminVerticle : AdminVerticle() {
             BotAdminService.saveStory(context.organization, story, context.userLogin) ?: unauthorized()
         }
 
-        blockingJsonPost("/bot/story/search", botUser) { context, request: StorySearchRequest ->
+        blockingJsonPost("/bot/story/load", botUser) { context, request: StorySearchRequest ->
             if (context.organization == request.namespace) {
                 BotAdminService.loadStories(request)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/bot/story/search", botUser) { context, request: StorySearchRequest ->
+            if (context.organization == request.namespace) {
+                BotAdminService.searchStories(request)
             } else {
                 unauthorized()
             }
@@ -546,8 +554,8 @@ open class BotAdminVerticle : AdminVerticle() {
             BotAdminService.findStory(context.organization, context.path("storyId"))
         }
 
-        blockingJsonGet("/bot/story-settings", botUser) { context ->
-            BotAdminService.findRuntimeStorySettings(context.organization)
+        blockingJsonGet("/bot/story/:botId/settings", botUser) { context ->
+            BotAdminService.findRuntimeStorySettings(context.organization, context.path("botId"))
         }
 
         blockingJsonGet("/bot/story/:botId/:intent", botUser) { context ->

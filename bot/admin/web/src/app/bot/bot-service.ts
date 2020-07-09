@@ -16,7 +16,12 @@
 
 import {Injectable} from '@angular/core';
 import {RestService} from '../core-nlp/rest/rest.service';
-import {CreateStoryRequest, StoryDefinitionConfiguration, StorySearchQuery} from './model/story';
+import {
+  CreateStoryRequest,
+  StoryDefinitionConfiguration,
+  StoryDefinitionConfigurationSummary,
+  StorySearchQuery
+} from './model/story';
 import {Intent, TranslateReport} from '../model/nlp';
 import {Observable} from 'rxjs';
 import {CreateI18nLabelRequest, I18LabelQuery, I18nLabel, I18nLabels} from './model/i18n';
@@ -34,7 +39,11 @@ export class BotService {
   }
 
   getStories(request: StorySearchQuery): Observable<StoryDefinitionConfiguration[]> {
-    return this.rest.post('/bot/story/search', request, StoryDefinitionConfiguration.fromJSONArray);
+    return this.rest.post('/bot/story/load', request, StoryDefinitionConfiguration.fromJSONArray);
+  }
+
+  searchStories(request: StorySearchQuery): Observable<StoryDefinitionConfigurationSummary[]> {
+    return this.rest.post('/bot/story/search', request, StoryDefinitionConfigurationSummary.fromJSONArray);
   }
 
   exportStories(applicationName: string): Observable<Blob> {
@@ -57,8 +66,8 @@ export class BotService {
     return this.rest.get(`/bot/story/${storyDefinitionId}`, StoryDefinitionConfiguration.fromJSON);
   }
 
-  findRuntimeStorySettings(): Observable<StoryDefinitionConfiguration[]> {
-    return this.rest.get(`/bot/story-settings`, StoryDefinitionConfiguration.fromJSONArray);
+  findRuntimeStorySettings(botId: string): Observable<StoryDefinitionConfiguration[]> {
+    return this.rest.get(`/bot/story/${botId}/settings`, StoryDefinitionConfiguration.fromJSONArray);
   }
 
   findStoryByBotIdAndIntent(botId: string, intent: string): Observable<StoryDefinitionConfiguration> {

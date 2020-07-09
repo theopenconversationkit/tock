@@ -57,7 +57,8 @@ import {
   NbInputModule,
   NbToggleModule,
   NbIconModule,
-  NbActionsModule
+  NbActionsModule,
+  NbTreeGridModule
 } from "@nebular/theme";
 
 @NgModule({
@@ -99,7 +100,8 @@ import {
     NbDatepickerModule,
     NbIconModule,
     NbInputModule,
-    NbToggleModule
+    NbToggleModule,
+    NbTreeGridModule,
   ],
   declarations: [ConfirmDialogComponent, MapToIterablePipe, ScrollComponent],
   providers: [],
@@ -143,7 +145,9 @@ import {
     NbDatepickerModule,
     NbIconModule,
     NbInputModule,
-    NbToggleModule],
+    NbToggleModule,
+    NbTreeGridModule
+  ],
 
   entryComponents: [
     ConfirmDialogComponent

@@ -30,7 +30,7 @@ interface StoryDefinitionConfigurationDAO {
 
     fun getStoryDefinitionById(id: Id<StoryDefinitionConfiguration>): StoryDefinitionConfiguration?
 
-    fun getRuntimeStorySettings(namespace: String): List<StoryDefinitionConfiguration>
+    fun getRuntimeStorySettings(namespace: String, botId: String): List<StoryDefinitionConfiguration>
 
     fun getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
         namespace: String,
@@ -52,11 +52,20 @@ interface StoryDefinitionConfigurationDAO {
 
     fun getStoryDefinitionsByNamespaceAndBotId(namespace: String, botId: String): List<StoryDefinitionConfiguration>
 
-    fun getStoryDefinitionsByNamespaceBotIdStoryId(namespace: String, botId: String, storyId: String): StoryDefinitionConfiguration?
+    fun getStoryDefinitionsByNamespaceBotIdStoryId(
+        namespace: String,
+        botId: String,
+        storyId: String
+    ): StoryDefinitionConfiguration?
 
     fun save(story: StoryDefinitionConfiguration)
 
     fun delete(story: StoryDefinitionConfiguration)
+
+    /**
+     * Search [StoryDefinitionConfigurationSummary].
+     */
+    fun searchStoryDefinitionSummaries(request: StoryDefinitionConfigurationSummaryRequest): List<StoryDefinitionConfigurationSummary>
 
     /**
      * Create the built-in stories if they don't exist yet.
