@@ -81,8 +81,10 @@ export class ApplicationFeatureComponent implements OnInit {
       this.loadingApplicationsFeatures = true;
       this.botService.getFeatures(this.state.currentApplication.name).subscribe(f => {
         f.forEach(feature => {
-          if(feature.applicationId) {
-            feature.configuration = this.configurationService.findApplicationConfigurationByApplicationId(feature.applicationId);
+          if (feature.applicationId) {
+            this.configurationService.configurations.subscribe(allConfigs => {
+              feature.configuration = this.configurationService.findApplicationConfigurationByApplicationId(feature.applicationId);
+            });
           }
         });
         this.features = f;
