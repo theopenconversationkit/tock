@@ -20,3 +20,7 @@
 .story-select {
   min-width: 300px;
 }
+
+.story-select-label {
+  margin-right: 5px;
+}

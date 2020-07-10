@@ -15,10 +15,11 @@
     * [Conversational concepts for Tock](user/concepts.md)
     * [_Tock Studio_ interfaces](user/studio.md) :
         * [General interface](user/studio/general.md)
+        * [The _Stories & Answers_ menu](user/studio/stories-and-answers.md)
+        * [The _Analytics_ menu](user/studio/analytics.md)
         * [The _Configuration_ menu](user/studio/configuration.md)
         * [The _NLU_ menu](user/studio/nlu.md)
         * [The _NLU QA_ menu](user/studio/nlu-qa.md)
-        * [The _Build_ menu](user/studio/build.md)
         * [The _Test_ menu](user/studio/test.md)
         * [The _Monitoring_ menu](user/studio/monitoring.md)
     * [Build your conversational model](user/studio/build-model.md)

@@ -15,13 +15,16 @@
   -->
 
 <div class="story-tag">
-  <mat-form-field>
-    <mat-label>Tag :</mat-label>
-    <mat-select [(ngModel)]="selectedTag" (ngModelChange)="selectedTagChange.emit($event)" name="storyTag" disableRipple panelClass="story-select">
-      <mat-option value="">None</mat-option>
-      <mat-option *ngFor="let tag of tags" [value]="tag.value">
-        {{tag.viewValue}}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
+  <label class="story-select-label">Triggers:</label>
+  <nb-select [(ngModel)]="selectedTag"
+             (ngModelChange)="selectedTagChange.emit($event)"
+             name="storyTag" disableRipple class="story-select">
+    <nb-option value="">No action</nb-option>
+    <nb-option *ngFor="let tag of tags" [value]="tag.value">
+      {{tag.label}}
+    </nb-option>
+  </nb-select>
+  <tock-info-button message="Depending on its value, setting a tag on a story will trigger a bot behavior when the story is interpreted.
+                             For example a 'Bot deactivation' tag will deactivate the bot and a 'Bot activation' tag will reactivate it."
+                    position="inline"></tock-info-button>
 </div>

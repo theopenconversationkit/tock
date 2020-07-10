@@ -112,7 +112,7 @@ type de réponse, etc.
 * Terminez avec _Create Story_
 
 > Il est possible de répondre par plusieurs messages, ou des messages plus évolués comme des images, des liens, des 
->boutons d'_Action_ de manière à continuer le dialogue, etc. La section [Tock Studio](../utilisateur/studio.md) du manuel
+>boutons d'_Action_ de manière à continuer le dialogue, etc. La section [Tock Studio](../user/studio.md) du manuel
 >utilisateur Tock vous en apprendra plus.
 
 

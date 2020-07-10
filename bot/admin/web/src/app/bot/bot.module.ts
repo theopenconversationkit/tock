@@ -49,7 +49,7 @@ import {
   NbBadgeModule,
   NbCardModule,
   NbCheckboxModule,
-  NbFormFieldModule,
+  NbFormFieldModule, NbIconModule,
   NbInputModule,
   NbRadioModule,
   NbRouteTabsetModule,
@@ -61,7 +61,6 @@ import {ApplicationFeatureComponent} from './feature/application-feature.compone
 import {StoryRuleComponent} from './feature/story-rule.component';
 import {SelectEntityDialogComponent} from './story/select-entity-dialog.component';
 import {StoryRuntimeSettingsComponent} from './feature/story-runtime-settings.component';
-import {StoryTagIconPipe} from './feature/story-tag.pipe';
 import {StoryTagComponent} from './story/story-tag.component';
 import {MatCardModule} from '@angular/material/card';
 import {MatIconModule} from '@angular/material/icon';
@@ -133,7 +132,8 @@ export class BotRoutingModule {
     MatCardModule,
     MatIconModule,
     MatGridListModule,
-    NbFormFieldModule
+    NbFormFieldModule,
+    NbIconModule
   ],
   declarations: [
     BotTabsComponent,
@@ -159,7 +159,6 @@ export class BotRoutingModule {
     ApplicationFeatureComponent,
     StoryRuleComponent,
     StoryRuntimeSettingsComponent,
-    StoryTagIconPipe,
     StoryTagComponent
   ],
   exports: [],

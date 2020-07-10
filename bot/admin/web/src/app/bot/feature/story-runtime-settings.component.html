@@ -13,27 +13,64 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<nb-card class="runtime-settings" *ngIf="stories && stories.length > 0">
-  <nb-card-header style="display: flex;">
-    Runtime Settings
+<nb-card class="runtime-settings">
+  <nb-card-header style="position: relative; display: flex;">
+    <span>Tagged Stories</span>
+    <tock-info-button
+      message="Stories configured to trigger the bot behaviors defined by their tags."
+      url="http://doc.tock.ai/tock"></tock-info-button>
   </nb-card-header>
   <nb-card-body>
-    <mat-table [dataSource]="stories" class="runtime-settings-table">
-      <ng-container matColumnDef="storyTag">
-        <mat-header-cell *matHeaderCellDef> Tag</mat-header-cell>
-        <mat-cell *matCellDef="let story">
-          <mat-icon class="{{story.getFirstTag() | storyTagIcon}}"></mat-icon>
-          <span>&nbsp;{{story.getFirstTag()}}</span>
-        </mat-cell>
-      </ng-container>
 
-      <ng-container matColumnDef="storyName">
-        <mat-header-cell *matHeaderCellDef> Name</mat-header-cell>
-        <mat-cell *matCellDef="let story"> {{story.name }}</mat-cell>
-      </ng-container>
-
-      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-      <mat-row *matRowDef="let story; columns: displayedColumns;"></mat-row>
-    </mat-table>
+    <nb-card>
+      <nb-card-header style="position: relative;">
+        <nb-badge
+          [text]="(!disableStories? 0 : !disableStories.length? 0: disableStories.length) | i18nPlural: storyPluralMapping['story']"
+          [status]="!disableStories || disableStories.length < 1 ? 'success' : 'info'"
+          position="top left"></nb-badge>
+        <span>Deactivation Stories</span>
+        <tock-info-button message="Stories used to disable the bot."></tock-info-button>
+      </nb-card-header>
+      <nb-card-body>
+        <div *ngIf="!disableStories || disableStories.length < 1">
+          <p>No story tagged to disable the bot.</p>
+        </div>
+        <div *ngIf="disableStories && disableStories.length > 0">
+            <div *ngFor="let story of disableStories" class="deactivation-story">
+              <div [nbTooltip]="'Story: ' + story.name">
+                <nb-icon *ngIf="story.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
+                <nb-icon *ngIf="story.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
+                <nb-icon *ngIf="story.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
+                {{story.name}}
+              </div>
+            </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+    <nb-card>
+      <nb-card-header style="position: relative;">
+        <nb-badge
+          [text]="(!enableStories? 0 : !enableStories.length? 0: enableStories.length) | i18nPlural: storyPluralMapping['story']"
+          [status]="!enableStories || enableStories.length < 1 ? 'success' : 'info'"
+          position="top left"></nb-badge>
+        <span>Activation Stories</span>
+        <tock-info-button message="Stories used to enable the bot."></tock-info-button>
+      </nb-card-header>
+      <nb-card-body>
+        <div *ngIf="!enableStories || enableStories.length < 1">
+          <p>No story tagged to enable the bot.</p>
+        </div>
+        <div *ngIf="enableStories && enableStories.length > 0">
+          <div *ngFor="let story of enableStories" class="activation-story">
+            <div [nbTooltip]="'Story: ' + story.name">
+              <nb-icon *ngIf="story.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
+              <nb-icon *ngIf="story.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
+              <nb-icon *ngIf="story.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
+              {{story.name}}
+            </div>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
   </nb-card-body>
 </nb-card>

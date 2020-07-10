@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import {Component, EventEmitter, Input, Output} from "@angular/core";
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 
 interface Tag {
   value: string;
-  viewValue: string;
+  label: string;
 }
 
 @Component({
@@ -26,7 +26,7 @@ interface Tag {
   templateUrl: './story-tag.component.html',
   styleUrls: ['./story-tag.component.css']
 })
-export class StoryTagComponent {
+export class StoryTagComponent implements OnInit {
 
   @Input()
   selectedTag: string;
@@ -35,8 +35,14 @@ export class StoryTagComponent {
   selectedTagChange: EventEmitter<String> = new EventEmitter<String>();
 
   tags: Tag[] = [
-    {value: 'ENABLE', viewValue: 'Enable Tag (triggers a bot activation)'},
-    {value: 'DISABLE', viewValue: 'Disable Tag (triggers a bot deactivation)'}
+    {value: 'ENABLE', label: 'Bot activation'},
+    {value: 'DISABLE', label: 'Bot deactivation'}
   ];
+
+  ngOnInit(): void {
+    if (!this.selectedTag) {
+      this.selectedTag = '';
+    }
+  }
 
 }

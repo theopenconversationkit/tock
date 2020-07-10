@@ -53,6 +53,7 @@ but Tock does not depend on them directly.
 Graphical interfaces _(Tock Studio)_ are made with [Angular](https://angular.io/) in [Typescript](https://www.typescriptlang.org/).
 
 ## Getting started...
-
+* [Contents](toc.md)
 * Read [Tutorial](guide/studio.md) and start using the [demo/sandbox platform](https://demo.tock.ai/)
+* User manual for [developers](dev/modes.md)
 
