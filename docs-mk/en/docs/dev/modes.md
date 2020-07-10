@@ -30,4 +30,4 @@ In consequence, you will need to :
 
 ![Bot TOCK](../img/bot_open_data.png "Bot Tock")
 
-If you want to know more, read further [_here_](bot-integre.md).
+If you want to know more, read further [_here_](integrated-bot.md).

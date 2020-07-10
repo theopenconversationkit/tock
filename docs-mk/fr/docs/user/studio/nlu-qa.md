@@ -71,6 +71,6 @@ A l'instar de _Intent Test Errors_ pour les entités, cet écran présente les r
 
 ## Continuer...
 
-Rendez-vous dans [Menu _Build_](build.md) pour la suite du manuel utilisateur. 
+Rendez-vous dans [Menu _Build_](stories-and-answers.md) pour la suite du manuel utilisateur. 
 
 > Vous pouvez aussi passer directement au chapitre suivant : [Développement](../../dev/modes.md). 

@@ -28,10 +28,10 @@ under [GPL license](https://fr.wikipedia.org/wiki/Licence_publique_g%C3%A9n%C3%A
 
 * [`tock-docker`](https://github.com/theopenconversationkit/tock-docker): [Docker](https://www.docker.com/) 
 and [Docker Compose](https://docs.docker.com/compose/) images/descriptors, for platform hands-on and fast deployment
-of various configuations.
+of various configurations.
 
 * [`tock-bot-samples`](): code samples, in particular the _WebHook_ and _WebSocket_ modes examples from 
-[Tock programing guides](../guide/api.md).
+[Tock programing guides](../dev/bot-api.md).
  
 * [`tock-bot-open-data`](https://github.com/theopenconversationkit/tock-bot-open-data): a bot example, based on 
 the [SNCF _Open Data_ API](https://www.digital.sncf.com/startup/api), also implementing basic internationalization (_i18n_)
@@ -68,7 +68,7 @@ at the root of the repository.
 
 ## Run in IDE
 
-> To run Tock using Docker Compose outside the IDE, rather see [Deploy Tock with Docker](../guide/platform.md).
+> To run Tock using Docker Compose outside the IDE, rather see [Deploy Tock with Docker](../getting-started.md).
 
 Tock components (NLU, Studio, bot...) can run in an IDE, such as  
 [IntelliJ](https://www.jetbrains.com/idea/), [Eclipse](https://www.eclipse.org/) or [Visual Studio Code](https://code.visualstudio.com/) for instance.

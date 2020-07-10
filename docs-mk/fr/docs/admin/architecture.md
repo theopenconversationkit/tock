@@ -54,7 +54,7 @@ construits dans _Tock Studio_
 * Partie conversationnelle :
     * [`tock/bot_api`](https://hub.docker.com/r/tock/bot_api) : API pour développer des bots (mode [_Tock Bot API_](../dev/bot-api.md))
     * [`tock/kotlin_compiler`](https://hub.docker.com/r/tock/kotlin_compiler) (facultatif) : compilateur de scripts 
-pour les saisir directement dans l'interface [_Build_](../user/studio/build.md) de _Tock Studio_
+pour les saisir directement dans l'interface [_Build_](../user/studio/stories-and-answers.md) de _Tock Studio_
 
 Un dernier composant, le bot lui-même, doit être ajouté et rendu accessible aux partenaires et canaux externes auxquels 
  on souhaite s'intégrer.
