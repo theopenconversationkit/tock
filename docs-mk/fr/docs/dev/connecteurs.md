@@ -1,6 +1,6 @@
 # Les connecteurs Tock
 
-La page [Bot multicanal](../utilisateur/canaux.md) de la documentation utilisateur présente la notion de _connecteur_ Tock,
+La page [Bot multicanal](../user/canaux.md) de la documentation utilisateur présente la notion de _connecteur_ Tock,
 ainsi que la liste des connecteurs déjà disponibles.
 
 Cette page n'ajoute donc que les éléments propres au développement avec les _connecteurs_ Tock ou le développement de 
@@ -163,4 +163,4 @@ contenant le nom de la classe :
 
 4) Rajouter toutes les classes et fichiers créés dans le classpath de l'admin et du bot.
 
-Le nouveau connecteur doit alors être disponible dans l'interface [_Bot Configurations_](../utilisateur/studio/configuration.md) de _Tock Studio_.
+Le nouveau connecteur doit alors être disponible dans l'interface [_Bot Configurations_](../user/studio/configuration.md) de _Tock Studio_.

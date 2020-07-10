@@ -181,7 +181,7 @@ s'intégrer, pour le fonctionnement des _WebHooks_.
 | [`tock/duckling`](https://hub.docker.com/r/tock/duckling)               | VPN / VPC uniquement   | Analyse les dates et types primitifs en utilisant [Duckling](https://duckling.wit.ai) |
 | [`tock/nlp_api`](https://hub.docker.com/r/tock/nlp_api)                 | VPN / VPC uniquement   | Analyse les phrases à partir des modèles construits dans _Tock Studio_ |
 | [`tock/bot_api`](https://hub.docker.com/r/tock/bot_api)                 | VPN / VPC uniquement   | API pour développer des bots (mode [_Tock Bot API_](../dev/bot-api.md)) |
-| [`tock/kotlin_compiler`](https://hub.docker.com/r/tock/kotlin_compiler) | VPN / VPC uniquement   | (Facultatif) Compilateur de scripts pour les saisir directement dans l'interface [_Build_](../utilisateur/studio/build.md) de _Tock Studio_ |
+| [`tock/kotlin_compiler`](https://hub.docker.com/r/tock/kotlin_compiler) | VPN / VPC uniquement   | (Facultatif) Compilateur de scripts pour les saisir directement dans l'interface [_Build_](../user/studio/build.md) de _Tock Studio_ |
 | bot (non fourni)                                                        | Internet / partenaires | Le bot lui-même, implémentant les parcours programmatiques, accessible des partenaires/canaux externes via des _WebHooks_ |
 
 Bien sûr, l'implémentation du bot lui-même n'est pas fournie avec Tock (chacun implémente ses fonctionnalités propres pour son besoin).

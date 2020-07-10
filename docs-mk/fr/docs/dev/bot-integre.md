@@ -70,7 +70,7 @@ val openBot = bot(
 Ce bot comporte un identifiant (obligatoire - "bot_open_data") et une liste de parcours ou _stories_.
  
 Une _Story_ est un regroupement fonctionnel qui correspond à une intention principale et, de manière optionelle,
-à une ou plusieurs intentions dites "secondaires" (voir [Concepts](../utilisateur/concepts.md)).
+à une ou plusieurs intentions dites "secondaires" (voir [Concepts](../user/concepts.md)).
 
 Ici le bot définit 4 parcours : `greetings`, `departures`, `arrivals` et `search`. 
 
@@ -149,7 +149,7 @@ La variable `openBot` dans l'exemple est le bot que vous avez défini plus haut.
 Une fois le bot démarré, il est également nécessaire de spécifier quels connecteurs sont utilisés
 dans l'interface d'administration du bot, du menu _Configuration_ > _Bot Configurations_ > _Create a new configuration_.
 
-Pour en savoir plus sur les différents canaux et connecteurs, voir [cette page](../utilisateur/canaux.md).
+Pour en savoir plus sur les différents canaux et connecteurs, voir [cette page](../user/canaux.md).
 
 ## Aller plus loin
 
@@ -469,4 +469,3 @@ Pour récupérer les paramètres du bouton sur lequel on a cliqué :
 ### Tests Unitaires
 
 La page [Tests Unitaires](tester.md) présente le framework fourni pour réaliser des TUs  avec Tock.
- 
