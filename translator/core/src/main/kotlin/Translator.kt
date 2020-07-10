@@ -352,8 +352,11 @@ object Translator {
         if (args.isEmpty()) {
             return label
         }
-        return MessageFormat(escapeQuotes(label), context.userLocale).format(
-            args.map { formatArg(it, context) }.toTypedArray(),
+
+        val (normalizedLabel, normalizedArgs) = NamedArgumentNormalizer.normalize(label, args)
+
+        return MessageFormat(escapeQuotes(normalizedLabel), context.userLocale).format(
+            normalizedArgs.map { formatArg(it, context) }.toTypedArray(),
             StringBuffer(),
             null
         ).toString()
@@ -367,7 +370,7 @@ object Translator {
         if (source == target) {
             return text
         }
-        val t = escapeQuotes(text)
+        val t = escapeQuotes(NamedArgumentNormalizer.normalize(text).label)
         val m = MessageFormat(t, source)
         var pattern = m.toPattern()
         val choicePrefixList: MutableList<String> = mutableListOf()
