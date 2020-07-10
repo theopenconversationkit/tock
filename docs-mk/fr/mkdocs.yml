@@ -22,7 +22,7 @@ nav:
         - 'Le menu Configuration': 'user/studio/configuration.md'
         - 'Le menu NLU': 'user/studio/nlu.md'
         - 'Le menu NLU QA': 'user/studio/nlu-qa.md'
-        - 'Le menu Build': 'user/studio/build.md'
+        - 'Le menu Build': 'user/studio/stories-and-answers.md'
         - 'Le menu Test': 'user/studio/test.md'
         - 'Le menu Monitoring': 'user/studio/monitoring.md'
       - 'Construire un modèle conversationnel':  'user/studio/build-model.md'

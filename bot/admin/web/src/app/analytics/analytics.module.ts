@@ -47,7 +47,9 @@ import {
   NbSpinnerModule,
   NbTooltipModule,
   NbUserModule,
-  NbCalendarRangeModule
+  NbCalendarRangeModule,
+  NbDialogModule,
+  NbRadioModule
 } from "@nebular/theme";
 import {ChartComponent} from './chart/chart.component';
 import {ActivityComponent} from './activity/activity.component';
@@ -55,6 +57,7 @@ import {BehaviorComponent} from './behavior/behavior.component';
 import {GoogleChartsModule} from 'angular-google-charts';
 import {FlowComponent} from './flow/flow.component';
 import {CytoComponent} from './flow/cyto.component';
+import { PreferencesComponent } from "./preferences/preferences.component";
 
 const routes: Routes = [
   {
@@ -88,6 +91,10 @@ const routes: Routes = [
       {
         path: 'users',
         component: UsersComponent
+      },
+      {
+        path: 'preferences',
+        component: PreferencesComponent
       }
     ]
   }
@@ -128,7 +135,9 @@ export class AnalyticsRoutingModule {
     GoogleChartsModule,
     NbContextMenuModule,
     NbMenuModule.forRoot(),
-    NbCalendarRangeModule
+    NbCalendarRangeModule,
+    NbDialogModule.forRoot(),
+    NbRadioModule
   ],
   declarations: [
     AnalyticsTabsComponent,
@@ -138,7 +147,8 @@ export class AnalyticsRoutingModule {
     UsersComponent,
     ChartComponent,
     ActivityComponent,
-    BehaviorComponent
+    BehaviorComponent,
+    PreferencesComponent
   ],
   exports: [],
   providers: [

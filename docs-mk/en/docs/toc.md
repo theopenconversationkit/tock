@@ -1,3 +1,4 @@
+<!---
 # Tock documentation
 
 * [Overview](index.md)
@@ -52,3 +53,4 @@
     * [Community](about/community.md)
     * [Contribute](about/contribute.md)
     * [Jobs](about/jobs.md)
+-->

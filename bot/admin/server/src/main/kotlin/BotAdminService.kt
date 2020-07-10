@@ -332,7 +332,7 @@ object BotAdminService {
         logger.debug { "Building 'Messages by Configuration' report for ${applications.size} configurations: $applicationIds..." }
 
         val messages = (searchFunction)(namespace, botId, applicationIds, request.from, request.to)
-        val series = messages.groupBy { it.text }.keys
+        val series = messages.groupingBy { it.text }.eachCount().toList().sortedByDescending { it.second }.unzip().first
         val messagesByDate = messages
             .groupBy { groupSelector(fromDate, toDate, it.date) }
 

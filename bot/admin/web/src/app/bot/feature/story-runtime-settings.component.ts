@@ -45,10 +45,11 @@ export class StoryRuntimeSettingsComponent implements OnInit {
   ngOnInit(): void {
     if (this.state.currentApplication) {
       this.botService.findRuntimeStorySettings(this.state.currentApplication.name).subscribe(
-      stories => {
-        this.disableStories = stories.filter(story => story.tags.some(tag => tag === 'DISABLE'));
-        this.enableStories = stories.filter(story => story.tags.some(tag => tag === 'ENABLE'));
-      }
-    );
+        stories => {
+          this.disableStories = stories.filter(story => story.tags.some(tag => tag === 'DISABLE'));
+          this.enableStories = stories.filter(story => story.tags.some(tag => tag === 'ENABLE'));
+        }
+      );
+    }
   }
 }

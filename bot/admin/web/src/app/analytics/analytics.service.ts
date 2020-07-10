@@ -23,13 +23,16 @@ import {DialogReportQuery, DialogReportQueryResult} from "./dialogs/dialogs";
 import {TestPlan} from "../test/model/test";
 import {DialogReport} from "../shared/model/dialog-data";
 import {ApplicationDialogFlow, DialogFlowRequest} from './flow/flow';
+import { UserAnalyticsPreferences } from "./preferences/UserAnalyticsPreferences";
 
 @Injectable()
 export class AnalyticsService implements OnDestroy {
 
+  userAnalyticsSettings: string;
 
   constructor(private rest: RestService,
               private state: StateService) {
+    this.userAnalyticsSettings = localStorage.getItem("_tock_analytics_settings");
   }
 
   ngOnDestroy(): void {
@@ -113,6 +116,19 @@ export class AnalyticsService implements OnDestroy {
 
   getApplicationFlow(request: DialogFlowRequest): Observable<ApplicationDialogFlow> {
     return this.rest.post(`/flow`, request, ApplicationDialogFlow.fromJSON);
+  }
+
+  onUserAnalyticsSettingsChange(settings: string) {
+    this.userAnalyticsSettings = settings;
+    localStorage.setItem("_tock_analytics_settings", this.userAnalyticsSettings);
+  }
+
+  getUserPreferences(): UserAnalyticsPreferences{
+    if(this.userAnalyticsSettings != null) {
+      return JSON.parse(this.userAnalyticsSettings);
+    } else {
+      return UserAnalyticsPreferences.defaultConfiguration()
+    }
   }
 
 }

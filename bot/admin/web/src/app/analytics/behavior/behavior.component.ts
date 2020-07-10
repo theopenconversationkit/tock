@@ -1,4 +1,4 @@
-import {Component, ViewChild, AfterViewInit} from '@angular/core';
+import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {UserAnalyticsQueryResult, UserSearchQuery} from "../users/users";
 import {DialogFlowRequest} from "../flow/flow";
 import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
@@ -8,9 +8,10 @@ import {BotConfigurationService} from 'src/app/core/bot-configuration.service';
 import {PaginatedQuery} from 'src/app/model/commons';
 import {Observable} from 'rxjs';
 import {UserFilter} from '../users/users.component';
-import {ChartData} from '../chart/ChartData';
 import {BotApplicationConfiguration, ConnectorType} from 'src/app/core/model/configuration';
 import * as html2pdf from 'html2pdf.js'
+import {UserAnalyticsPreferences} from '../preferences/UserAnalyticsPreferences';
+import {SettingsService} from 'src/app/core-nlp/settings.service';
 
 @Component({
   selector: 'tock-behavior',
@@ -32,8 +33,7 @@ export class BehaviorComponent implements AfterViewInit {
   endDate: Date;
   selectedConnectorId: string;
   selectedConfigurationName: string;
-  displayTests = true;
-  pretty = true;
+  displayTests = false;
 
   filter: UserFilter = new UserFilter([], false);
   loading = false;
@@ -47,10 +47,8 @@ export class BehaviorComponent implements AfterViewInit {
   messagesByHourData: UserAnalyticsQueryResult;
   messagesByActionTypeData: UserAnalyticsQueryResult;
 
-  globalUsersCount: number[];
-//   globalMessagesCount: number[];
   configurations: BotApplicationConfiguration[];
-  connectors: string[];
+  userPreferences: UserAnalyticsPreferences;
 
   constructor(private state: StateService,
               private analytics: AnalyticsService,
@@ -59,14 +57,50 @@ export class BehaviorComponent implements AfterViewInit {
         this.configurations = configs;
       }
     )
+    this.userPreferences = this.analytics.getUserPreferences();
   }
+
   ngAfterViewInit() {
-    this.messagesByStoryItem.open();
+    let selectedGraphs = this.getSelectedGraphToDisplay()
+    if (selectedGraphs.length > 0) {
+      setTimeout(() => {
+        selectedGraphs[0].open();
+      });
+    }
+  }
+
+  getSelectedGraphToDisplay(): any[] {
+    let selectedGraphs = []
+    if (this.userPreferences.graphs.behavior.messagesByStory == true) {
+      selectedGraphs.push(this.messagesByStoryItem);
+    }
+    if (this.userPreferences.graphs.behavior.messagesByIntent == true) {
+      selectedGraphs.push(this.messagesByIntentItem);
+    }
+    if (this.userPreferences.graphs.behavior.messagesByDayOfWeek == true) {
+      selectedGraphs.push(this.messagesByDayOfWeekItem);
+    }
+    if (this.userPreferences.graphs.behavior.messagesByHourOfDay == true) {
+      selectedGraphs.push(this.messagesByHourItem);
+    }
+    if (this.userPreferences.graphs.behavior.messagesByActionType == true) {
+      selectedGraphs.push(this.messagesByActionTypeItem);
+    }
+    if (this.userPreferences.graphs.behavior.messagesByStoryCategory == true) {
+      selectedGraphs.push(this.messagesByStoryCategoryItem);
+    }
+    if (this.userPreferences.graphs.behavior.messagesByStoryType == true) {
+      selectedGraphs.push(this.messagesByStoryTypeItem);
+    }
+    if (this.userPreferences.graphs.behavior.messagesByLocale == true) {
+      selectedGraphs.push(this.messagesByStoryLocaleItem);
+    }
+    return selectedGraphs
   }
 
   getConnectorColor(connector: string): string {
     let color;
-    switch(connector) {
+    switch (connector) {
       case "messenger": {
         color = "#0084ff";
         break;
@@ -115,10 +149,10 @@ export class BehaviorComponent implements AfterViewInit {
     return color;
   }
 
-  getFileName():string{
+  getFileName(): string {
     let fileName = "Export-" + this.startDate.toLocaleDateString();
-    if(this.endDate != null){
-      fileName+="-" + this.endDate.toLocaleDateString();
+    if (this.endDate != null) {
+      fileName += "-" + this.endDate.toLocaleDateString();
     }
     fileName += ".pdf";
     return fileName;
@@ -330,6 +364,7 @@ export class BehaviorComponent implements AfterViewInit {
   datesChanged(dates: [Date, Date]) {
     this.startDate = dates[0];
     this.endDate = dates[1];
+    this.state.dateRange = {start: dates[0], end: dates[1], rangeInDays: this.state.dateRange.rangeInDays}
     this.reload(true);
   }
 

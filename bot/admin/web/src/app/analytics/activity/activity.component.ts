@@ -1,4 +1,4 @@
-import {Component, ViewChild, AfterViewInit} from '@angular/core';
+import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {UserAnalyticsQueryResult, UserSearchQuery} from "../users/users";
 import {DialogFlowRequest} from "../flow/flow";
 import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
@@ -11,6 +11,9 @@ import {UserFilter} from '../users/users.component';
 import {ChartData} from '../chart/ChartData';
 import {BotApplicationConfiguration, ConnectorType} from 'src/app/core/model/configuration';
 import * as html2pdf from 'html2pdf.js'
+import { PreferencesComponent } from '../preferences/preferences.component';
+import { UserAnalyticsPreferences } from '../preferences/UserAnalyticsPreferences';
+import { SettingsService } from 'src/app/core-nlp/settings.service';
 
 @Component({
   selector: 'tock-activity',
@@ -29,9 +32,7 @@ export class ActivityComponent implements AfterViewInit {
   endDate: Date;
   selectedConnectorId: string;
   selectedConfigurationName: string;
-  displayTests = true;
-  pretty = true;
-  stacked = false;
+  displayTests = false;
 
   filter: UserFilter = new UserFilter([], false);
   loading = false;
@@ -54,6 +55,8 @@ export class ActivityComponent implements AfterViewInit {
   configurations: BotApplicationConfiguration[];
   connectors: string[];
 
+  userPreferences: UserAnalyticsPreferences;
+
   constructor(private state: StateService,
               private analytics: AnalyticsService,
               private botConfiguration: BotConfigurationService) {
@@ -61,10 +64,40 @@ export class ActivityComponent implements AfterViewInit {
         this.configurations = configs;
       }
     )
+    this.userPreferences = this.analytics.getUserPreferences();
   }
 
   ngAfterViewInit() {
-    this.messagesByTypeItem.open();
+    let selectedGraphs = this.getSelectedGraphToDisplay()
+    if(selectedGraphs.length > 0){
+      setTimeout(() => {
+        selectedGraphs[0].open();
+      });
+    }
+  }
+
+  getSelectedGraphToDisplay(): any[] {
+    let selectedGraphs = []
+    if(this.userPreferences.graphs.activity.messagesAll == true) {
+      selectedGraphs.push(this.messagesByTypeItem);
+    }
+    if(this.userPreferences.graphs.activity.messagesByStory == true) {
+      selectedGraphs.push(this.messagesByStoryItem);
+    }
+    if(this.userPreferences.graphs.activity.messagesByIntent == true) {
+      selectedGraphs.push(this.messagesByIntentItem);
+    }
+    if(this.userPreferences.graphs.activity.messagesByConfiguration == true) {
+      selectedGraphs.push(this.messagesByConfigurationItem);
+    }
+    if(this.userPreferences.graphs.activity.messagesByConnector == true) {
+      selectedGraphs.push(this.messagesByConnectorItem);
+    }
+    return selectedGraphs
+  }
+
+  isGraphTypeSelected(graphType: string): boolean {
+    return this.userPreferences.selectedChartType.toString() == "all" || this.userPreferences.selectedChartType.toString() == graphType
   }
 
   getConnectorColor(connector: string): string {
@@ -318,6 +351,7 @@ export class ActivityComponent implements AfterViewInit {
   datesChanged(dates: [Date, Date]) {
     this.startDate = dates[0];
     this.endDate = dates[1];
+    this.state.dateRange = {start: dates[0], end: dates[1], rangeInDays: this.state.dateRange.rangeInDays}
     this.reload(true);
   }
 

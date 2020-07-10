@@ -31,4 +31,4 @@ as well as the [`tock-node`](https://github.com/theopenconversationkit/tock-node
 
 > The API is under development, it will soon be documented.
 
-To know more about the _Bot API_ development framework, see [this page](bot-api.md).
+To know more about the _Bot API_ development framework, see [this page](dev/bot-api.md).

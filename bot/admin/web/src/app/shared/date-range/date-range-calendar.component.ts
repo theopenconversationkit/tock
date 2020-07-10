@@ -16,6 +16,7 @@
 
 import {Component, OnInit, EventEmitter, Input, Output} from "@angular/core";
 import {NbCalendarRange, NbDateService} from '@nebular/theme';
+import { StateService } from "src/app/core-nlp/state.service";
 
 @Component({
   selector: 'date-range-calendar',
@@ -37,10 +38,18 @@ export class DateRangeCalendarComponent implements OnInit {
   @Output()
   datesChanged: EventEmitter<[Date, Date]> = new EventEmitter();
 
-  constructor(protected dateService: NbDateService<Date>) {
+  constructor(protected dateService: NbDateService<Date>,
+              private state: StateService) {
   }
 
   ngOnInit(): void {
+    if(this.state.dateRange.start != null && this.state.dateRange.end != null && this.state.dateRange.rangeInDays != null) {
+      this.range = {
+        start: this.state.dateRange.start,
+        end: this.state.dateRange.end
+      };
+      this.rangeInDays = this.state.dateRange.rangeInDays;
+    }
     this.setRangeInDays(this.rangeInDays);
   }
 
@@ -81,6 +90,7 @@ export class DateRangeCalendarComponent implements OnInit {
 
   setRangeInDays(days: number): void {
     this.rangeInDays = days;
+    this.state.dateRange.rangeInDays = days;
     this.resetRange(days);
     this.update();
   }

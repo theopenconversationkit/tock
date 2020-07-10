@@ -19,21 +19,16 @@ import {BotService} from "../../bot/bot-service";
 import {AnalyticsService} from "../analytics.service";
 import {NlpService} from "../../nlp-tabs/nlp.service";
 import {StateService} from "../../core-nlp/state.service";
-import {
-  ApplicationDialogFlow,
-  DialogFlowRequest,
-  DialogFlowStateData,
-  DialogFlowStateTransitionData,
-  DialogFlowStateTransitionType
-} from "./flow";
+import {ApplicationDialogFlow, DialogFlowRequest, DialogFlowStateData, DialogFlowStateTransitionData, DialogFlowStateTransitionType} from "./flow";
 import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {entityColor} from "../../model/nlp";
 import {KeyValue} from "@angular/common";
-import {NodeTransition, StoryNode, NodeTypeFilter, NodeTypeFilters} from "./node";
+import {NodeTransition, NodeTypeFilter, NodeTypeFilters, StoryNode} from "./node";
 import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
 import {AnswerConfigurationType, StoryDefinitionConfiguration, StorySearchQuery, StoryStep} from "../../bot/model/story";
 import {Subscription} from "rxjs";
-import { NbToastrService } from '@nebular/theme';
+import {NbToastrService} from '@nebular/theme';
+import {ChartData} from "../../../../../../src/app/analytics/chart/ChartData";
 
 @Component({
   selector: 'tock-flow',
@@ -48,6 +43,9 @@ export class FlowComponent implements OnInit, OnDestroy {
       nodeDimensionsIncludeLabels: true,
       animate: true,
       flow: {axis: 'x', minSeparation: 30}
+    },
+    {
+      name: 'Sankey'
     },
     {
       name: 'dagre',
@@ -153,6 +151,9 @@ export class FlowComponent implements OnInit, OnDestroy {
   startDate: Date;
   endDate: Date;
 
+  flowData: ChartData;
+  loading: boolean = false;
+
   private subscription: Subscription;
 
   statsEntity(): boolean {
@@ -193,6 +194,7 @@ export class FlowComponent implements OnInit, OnDestroy {
 
   private reload(forceReload?: boolean) {
     console.debug('Loading flow...');
+    this.loading = true;
     if (this.selectedConfigurationName || this.allowSelectAllConfigs) {
       // Reload user flow
       if (this.statsMode) {
@@ -211,6 +213,7 @@ export class FlowComponent implements OnInit, OnDestroy {
           console.debug('Fetching user flow...');
           this.lastFlowRequest = request;
           this.analytics.getApplicationFlow(request).subscribe(f => {
+            this.loading = false;
             this.userFlow = f;
             console.debug('Application flow retrieved, incl. ' + f.states.length + ' states ' + f.transitions.length + ' transitions.');
             this.reset();
@@ -228,6 +231,7 @@ export class FlowComponent implements OnInit, OnDestroy {
             0,
             10000
           )).subscribe(s => {
+            this.loading = false;
             this.allStories = s;
             this.configuredStories = s.filter(story => !story.isBuiltIn());
             console.debug(this.allStories.length + ' stories retrieved, incl. ' + this.configuredStories.length + ' configured stories.');
@@ -248,9 +252,9 @@ export class FlowComponent implements OnInit, OnDestroy {
   }
 
   datesChanged(dates: [Date, Date]) {
-    console.debug('Date range changed: start=' + dates[0] + ', end=' + dates[1]);
     this.startDate = dates[0];
     this.endDate = dates[1];
+    this.state.dateRange = {start: dates[0], end: dates[1], rangeInDays:this.state.dateRange.rangeInDays}
     this.reload();
   }
 
@@ -627,8 +631,59 @@ export class FlowComponent implements OnInit, OnDestroy {
         this.allNodes = finalNodes.filter(((n): n is StoryNode => n !== null));
         this.allTransitions = finalTransitions;
         this.graphData = graph;
+
+        // create flow diagram(sankey)
+        this.createSankeyDiagram()
+
       }
       }
+    }
+  }
+
+  createSankeyDiagram(){
+    let data = [];
+    const trByNodeNamesIndex = new Map<string, number>();
+    this.allTransitions.forEach((transition, key) => {
+      const keyValues = key.split("_");
+      let count = 0;
+      transition.transitions.forEach((tr) => {
+        count += tr.count;
+      })
+      let startNodeName = this.getStoryName(keyValues);
+      let destNodeName = this.allNodes[keyValues[1]].storyName;
+      if(startNodeName !== destNodeName){
+        const mapKey = `${startNodeName}#${destNodeName}`;
+        let result = trByNodeNamesIndex.get(mapKey);
+        if(result != null) {
+          trByNodeNamesIndex.set(mapKey, count + result);
+        } else {
+          let element = Array.from(trByNodeNamesIndex.keys()).find (key => key.startsWith(destNodeName));
+          if(element == null) {
+            trByNodeNamesIndex.set(mapKey, count);
+          }
+        }
+      }
+    })
+    trByNodeNamesIndex.forEach((value, key) => {
+      const nodes = key.split("#");
+      data.push([nodes[0], nodes[1], value]);
+    });
+    let columnNames = ['From', 'To','Weight'];
+    let options = {
+      sankey : {
+        link : {
+          colorMode:'source'
+        }
+      }
+    };
+    this.flowData = new ChartData('Sankey', data, columnNames, options, '500','1000');
+  }
+
+  getStoryName(keyValues) {
+    if(keyValues[0] != "-1") {
+      return this.allNodes[keyValues[0]].storyName
+    } else {
+      return 'Startup'
     }
   }
 
