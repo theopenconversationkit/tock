@@ -6,18 +6,10 @@
                        [allowNoSelection]="true" noConfigurationLabel="All Configurations"
                        (selectionChange)="selectedConfigurationChanged($event)" class="select-bot">
       </tock-select-bot>
-      <button nbButton shape="round" (click)="waitAndRefresh()" nbTooltip="Refresh Data" status="basic">
+      <button nbButton shape="round" (click)="waitAndRefresh()" nbTooltip="Refresh" status="basic">
         <nb-icon icon="refresh-outline"></nb-icon>
       </button>
-      <span style="float: right; padding: 5px;">
-        <nb-toggle status="success" [(ngModel)]="pretty">
-          Pretty (Curve Lines)
-        </nb-toggle>
-        &nbsp;&nbsp;
-        <nb-toggle status="info" [(ngModel)]="stacked">
-          Stacked Area
-        </nb-toggle>
-        &nbsp;&nbsp;
+      <span style="float: right; padding: 5px;">&nbsp;&nbsp;
         <nb-toggle status="warning" [(ngModel)]="displayTests" (change)="waitAndRefresh()">
           Tests (Tock Studio)
         </nb-toggle>
@@ -26,38 +18,40 @@
   </nb-card>
 
   <nb-accordion>
-    <nb-accordion-item #messagesByTypeItem (collapsedChange)="collapsedChange($event)">
+    <nb-accordion-item #messagesByTypeItem (collapsedChange)="collapsedChange($event)" *ngIf="userPreferences.graphs.activity.messagesAll">
       <nb-accordion-item-header>Messages</nb-accordion-item-header>
       <nb-accordion-item-body>
-        <tock-chart [data]="messagesByTypeData" title="Messages" [pretty]="pretty" [stacked]="stacked"
+        <tock-chart [data]="messagesByTypeData" title="Messages" [chartPreferences]="userPreferences"
                     [isLoading]="messagesByTypeLoading"></tock-chart>
       </nb-accordion-item-body>
     </nb-accordion-item>
-    <nb-accordion-item #messagesByStoryItem (collapsedChange)="collapsedChange($event)">
+    <nb-accordion-item #messagesByStoryItem (collapsedChange)="collapsedChange($event)" *ngIf="userPreferences.graphs.activity.messagesByStory">
       <nb-accordion-item-header>Messages by Story</nb-accordion-item-header>
       <nb-accordion-item-body>
-        <tock-chart [data]="messagesByStoryData" title="Messages by Story" [pretty]="pretty" [stacked]="stacked"
+        <tock-chart [data]="messagesByStoryData" title="Messages by Story" [chartPreferences]="userPreferences"
                     [isLoading]="messagesByStoryLoading"></tock-chart>
       </nb-accordion-item-body>
     </nb-accordion-item>
-    <nb-accordion-item #messagesByIntentItem (collapsedChange)="collapsedChange($event)">
+    <nb-accordion-item #messagesByIntentItem (collapsedChange)="collapsedChange($event)" *ngIf="userPreferences.graphs.activity.messagesByIntent">
       <nb-accordion-item-header>Messages by Intent</nb-accordion-item-header>
       <nb-accordion-item-body>
-        <tock-chart [data]="messagesByIntentData" title="Messages by Intent" [pretty]="pretty" [stacked]="stacked"
+        <tock-chart [data]="messagesByIntentData" title="Messages by Intent" [chartPreferences]="userPreferences"
                     [isLoading]="messagesByIntentLoading"></tock-chart>
       </nb-accordion-item-body>
     </nb-accordion-item>
-    <nb-accordion-item #messagesByConfigurationItem (collapsedChange)="collapsedChange($event)">
+    <nb-accordion-item #messagesByConfigurationItem (collapsedChange)="collapsedChange($event)"
+                       *ngIf="userPreferences.graphs.activity.messagesByConfiguration">
       <nb-accordion-item-header>Messages by Configuration</nb-accordion-item-header>
       <nb-accordion-item-body>
-        <tock-chart [data]="messagesByConfigurationData" title="Messages by Configuration" [pretty]="pretty" [stacked]="stacked"
+        <tock-chart [data]="messagesByConfigurationData" title="Messages by Configuration" [chartPreferences]="userPreferences"
                     [isLoading]="messagesByConfigurationLoading"></tock-chart>
       </nb-accordion-item-body>
     </nb-accordion-item>
-    <nb-accordion-item #messagesByConnectorItem (collapsedChange)="collapsedChange($event)">
+    <nb-accordion-item #messagesByConnectorItem (collapsedChange)="collapsedChange($event)"
+                       *ngIf="userPreferences.graphs.activity.messagesByConnector">
       <nb-accordion-item-header>Messages by Connector Type</nb-accordion-item-header>
       <nb-accordion-item-body>
-        <tock-chart [data]="messagesByConnectorData" title="Messages by Connector Type" [pretty]="pretty" [stacked]="stacked"
+        <tock-chart [data]="messagesByConnectorData" title="Messages by Connector Type" [chartPreferences]="userPreferences"
                     [isLoading]="messagesByConnectorLoading"></tock-chart>
       </nb-accordion-item-body>
     </nb-accordion-item>

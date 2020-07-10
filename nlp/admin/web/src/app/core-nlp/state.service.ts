@@ -47,6 +47,9 @@ export class StateService implements AuthListener {
 
   user: User;
   applications: Application[];
+
+  dateRange = {start: null, end: null, rangeInDays: null}
+
   readonly entityTypes: BehaviorSubject<EntityType[]> = new BehaviorSubject([]);
   readonly entities: BehaviorSubject<EntityDefinition[]> = new BehaviorSubject([]);
   readonly currentIntents: BehaviorSubject<Intent[]> = new BehaviorSubject([]);

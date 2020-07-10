@@ -13,9 +13,8 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
-<nb-accordion class="flow">
-  <nb-accordion-item #accordion>
+<nb-accordion class="flow" [nbSpinner]="loading" nbSpinnerStatus="primary">
+  <nb-accordion-item #accordion >
     <nb-accordion-item-header>
       Bot Flow
       <span *ngIf="statsMode" class="status status-header statsMode-badge statsMode-true" nbTooltip="Dynamic mode (user flow)">Dynamic</span>
@@ -178,21 +177,38 @@
   </nb-accordion-item>
 </nb-accordion>
 
-<div *ngIf="graphData" class="cytoscape">
-  <tock-cytoscape [elements]="graphData" [layout]="layout" (selectedNode)="nodeChange($event)"
-                  (selectedEdge)="edgeChange($event)"></tock-cytoscape>
-</div>
 
-<div *ngIf="graphData && selectedNode" class="selected-node">
-  <tock-story [storyNode]="selectedNode" [botId]="state.currentApplication.name" [displayCount]="statsMode"></tock-story>
-</div>
+<div *ngIf="selectedLayout != 'Sankey'">
+  <div *ngIf="graphData" class="cytoscape">
+    <tock-cytoscape [elements]="graphData" [layout]="layout" (selectedNode)="nodeChange($event)"
+                    (selectedEdge)="edgeChange($event)"></tock-cytoscape>
+  </div>
 
-<div *ngIf="graphData && selectedEdge" class="selected-edge">
-  <ul>
-    <li>Count: <b>{{selectedEdge.count}}</b></li>
-  </ul>
-</div>
+  <div *ngIf="graphData && selectedNode" class="selected-node">
+    <tock-story [storyNode]="selectedNode" [botId]="state.currentApplication.name" [displayCount]="statsMode"></tock-story>
+  </div>
 
-<div *ngIf="graphData && !selectedNode && !selectedEdge" class="story-btn">
-  <button nbButton status="primary" routerLink="/build/story-create">Add a New Story</button>
+  <div *ngIf="graphData && selectedEdge" class="selected-edge">
+    <ul>
+      <li>Count: <b>{{selectedEdge.count}}</b></li>
+    </ul>
+  </div>
+
+  <div *ngIf="graphData && !selectedNode && !selectedEdge" class="story-btn">
+    <button nbButton status="primary" routerLink="/build/story-create">Add a New Story</button>
+  </div>
+</div>
+<div *ngIf="selectedLayout == 'Sankey'">
+  <nb-card>
+    <nb-card-body>
+      <google-chart *ngIf = "flowData != null"
+                    type="Sankey"
+                    [data]="flowData.data"
+                    [columns]="flowData.columnNames"
+                    [options]="flowData.options"
+                    [dynamicResize]="true"
+                    style="width: 100%;height: 50vh">
+      </google-chart>
+    </nb-card-body>
+  </nb-card>
 </div>

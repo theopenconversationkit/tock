@@ -18,6 +18,7 @@ import {Component, Input, OnChanges, SimpleChanges} from "@angular/core";
 import {UserAnalyticsQueryResult} from "../users/users";
 import {ChartData} from './ChartData';
 import * as html2pdf from 'html2pdf.js'
+import {UserAnalyticsPreferences} from "../preferences/UserAnalyticsPreferences";
 
 @Component({
   selector: 'tock-chart',
@@ -36,25 +37,29 @@ export class ChartComponent implements OnChanges {
   title: string;
 
   @Input()
-  pretty = true;
-
-  @Input()
-  stacked = false;
-
-  @Input()
   data: UserAnalyticsQueryResult;
 
   @Input()
   isLoading = false;
 
+  @Input()
+  chartPreferences: UserAnalyticsPreferences;
+
   mainChart: ChartData;
   altChart: ChartData;
   isFlipped = false;
 
-  constructor() { }
+  seriesSelectionList: number[] = [];
 
-  ngOnChanges(changes: SimpleChanges){
-     this.rebuild();
+  constructor() {
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    this.rebuild();
+  }
+
+  isGraphTypeSelected(graphType: string): boolean {
+    return this.chartPreferences.selectedChartType.toString() == "all" || this.chartPreferences.selectedChartType.toString() == graphType
   }
 
   rebuild(): void {
@@ -65,8 +70,15 @@ export class ChartComponent implements OnChanges {
         if (this.type == 'PieChart') {
           this.mainChart = this.buildPieChartFromDates(this.data, this.type);
         } else {
-          this.mainChart = this.buildChartByDate(this.data, this.type);
-          this.altChart = this.buildPieChartFromDates(this.data);
+          this.initSelectionList();
+          if (this.chartPreferences.selectedChartType.toString() == 'all') {
+            this.mainChart = this.buildChartByDate(this.data, this.type);
+            this.altChart = this.buildPieChartFromDates(this.data);
+          } else if (this.chartPreferences.selectedChartType.toString() == 'line') {
+            this.mainChart = this.buildChartByDate(this.data, this.type);
+          } else if (this.chartPreferences.selectedChartType.toString() == 'pie') {
+            this.mainChart = this.buildPieChartFromDates(this.data);
+          }
         }
       }
     } else {
@@ -75,89 +87,130 @@ export class ChartComponent implements OnChanges {
     }
   }
 
-  buildChartByDate(result: UserAnalyticsQueryResult, chartType?: string, width?: string) {
-      let dates = result.dates;
-      let series = result.connectorsType;
-      let data = result.usersData;
-      let rows = [];
+  initSelectionList() {
+    if (this.seriesSelectionList.length == 0 && this.data.connectorsType.length > 5) {
+      this.seriesSelectionList = Array.from({length: 5}, (v, k) => k);
+    }
+  }
 
-      dates.forEach(function (date, index) {
-        rows.push([date].concat(data[index]))
-      });
-      let serieCount = new Array(series.length).fill(0);
-      data.forEach(function (data) {
-        series.forEach(function (value, index,) {
-          serieCount[index] += data[index]
-        })
+  updateGraph() {
+    this.seriesSelectionList.sort((a, b) => a - b)
+    this.rebuild();
+  }
+
+  displayMultipleSelectComponent(): boolean {
+    return this.data.connectorsType.length > 5 && this.type !== 'PieChart'
+  }
+
+  getDataFromSelection(data: string[]) {
+    let result = [];
+    if (this.seriesSelectionList.length > 0) {
+      this.seriesSelectionList.forEach((value, index) => {
+        result.push(data[value]);
       })
-      let seriesLabels = ["Date"].concat(series.map((c, i) => c + "  (" + serieCount[i] + ")"))
-      let colors = series.map(serie => this.getColor(serie, series))
-      let options = {
-        aggregationTarget: 'category',
-        focusTarget: 'category',
-        animation: {
-          startup: true,
-          duration: 1000,
-          easing: 'inAndOut'
-        },
-        legend: {position: 'right'},
-        colors: colors,
+      return result
+    } else {
+      return data
+    }
+  }
+
+  getColumnsLength(series: string[]): number {
+    if (this.seriesSelectionList.length > 0) {
+      return this.seriesSelectionList.length
+    } else {
+      return series.length;
+    }
+  }
+
+  buildChartByDate(result: UserAnalyticsQueryResult, chartType?: string, width?: string) {
+    let dates = result.dates;
+    let series: any[] = result.connectorsType;
+    let that = this;
+    let data = result.usersData;
+    let rows = [];
+
+    dates.forEach(function (date, index) {
+      rows.push([date].concat(that.getDataFromSelection(data[index])))
+    });
+    let serieCount = new Array(this.getColumnsLength(series)).fill(0);
+    data.forEach(function (data) {
+      that.getDataFromSelection(series).forEach(function (value, index) {
+        serieCount[index] += that.getDataFromSelection(data)[index];
+      })
+    })
+    let seriesLabels = ["Date"].concat(this.getDataFromSelection(series).map((c, i) => c + "(" + serieCount[i] + ")"))
+    let colors = series.map(serie => this.getColor(serie, series))
+    let focusTargetValue = 'datum'
+    if (this.chartPreferences.lineConfig.focusTarget == false) {
+      focusTargetValue = 'category'
+    }
+    let options = {
+      aggregationTarget: 'category',
+      focusTarget: focusTargetValue,
+      animation: {
+        startup: true,
+        duration: 1000,
+        easing: 'inAndOut'
+      },
+      legend: {position: 'right'},
+      colors: colors,
 //         dataOpacity: 0.5,
-        pointSize: 5
-      };
-      if (this.stacked) {
-        (options as any).isStacked = true;
-      }
-      if (this.pretty) {
-        (options as any).curveType = 'function';
-      }
-      return new ChartData(chartType ? chartType : this.stacked ? "AreaChart" : "LineChart",
-        rows, seriesLabels, options, '500', width ? width : '100%');
+      pointSize: 5
+    };
+    if (this.chartPreferences.lineConfig.stacked) {
+      (options as any).isStacked = true;
+    }
+    if (this.chartPreferences.lineConfig.curvedLines) {
+      (options as any).curveType = 'function';
+    }
+    return new ChartData(chartType ? chartType : this.chartPreferences.lineConfig.stacked ? "AreaChart" : "LineChart",
+      rows, seriesLabels, options, '500', width ? width : '100%');
   }
 
   buildPieChart(result: UserAnalyticsQueryResult, chartType?: string, width?: string) {
-      let series = result.connectorsType;
-      let data = result.usersData;
-      let rows = [];
+    let series = result.connectorsType;
+    let data = result.usersData;
+    let rows = [];
 
-      series.forEach(function (serie, index) {
-        rows.push([serie].concat(data[0][index]))
-      });
-      let colors = series.map(serie => this.getColor(serie, series))
-      let options = {
-        pieHole: 0.5,
-        colors: colors
-      };
-      if (this.pretty) {
-        (options as any).is3D = true;
-      }
-      return new ChartData(chartType ? chartType : 'PieChart', rows, undefined, options, '500', width ? width : '100%');
+    series.forEach(function (serie, index) {
+      rows.push([serie].concat(data[0][index]))
+    });
+    let colors = series.map(serie => this.getColor(serie, series))
+    let options = {
+      pieHole: 0.5,
+      colors: colors
+    };
+    if (this.chartPreferences.pieConfig.is3D) {
+      (options as any).is3D = true;
+    }
+    return new ChartData(chartType ? chartType : 'PieChart', rows, undefined, options, '500', width ? width : '100%');
   }
 
   buildPieChartFromDates(result: UserAnalyticsQueryResult, chartType?: string, width?: string) {
-      let series = result.connectorsType;
-      let data = result.usersData;
-      let rows = [];
+    let series: any[] = result.connectorsType;
+    let data = result.usersData;
+    let rows = [];
+    let that = this;
 
-      let serieCount = new Array(series.length).fill(0);
-      data.forEach(function (data) {
-        series.forEach(function (value, index,) {
-          serieCount[index] += data[index]
-        })
+    let serieCount = new Array(this.getColumnsLength(series)).fill(0);
+    data.forEach(function (data) {
+      that.getDataFromSelection(series).forEach(function (value, index,) {
+        serieCount[index] += that.getDataFromSelection(data)[index];
       })
+    })
 
-      series.forEach(function (serie, index) {
-        rows.push([serie].concat(serieCount[index]))
-      });
-      let colors = series.map(serie => this.getColor(serie, series))
-      let options = {
-        pieHole: 0.5,
-        colors: colors
-      };
-      if (this.pretty) {
-        (options as any).is3D = true;
-      }
-      return new ChartData(chartType ? chartType : 'PieChart', rows, undefined, options, '500', width ? width : '100%');
+    that.getDataFromSelection(series).forEach(function (serie, index) {
+      rows.push([serie].concat(serieCount[index]))
+    });
+    let colors = series.map(serie => this.getColor(serie, series))
+    let options = {
+      pieHole: 0.5,
+      colors: colors
+    };
+    if (this.chartPreferences.pieConfig.is3D) {
+      (options as any).is3D = true;
+    }
+    return new ChartData(chartType ? chartType : 'PieChart', rows, undefined, options, '500', width ? width : '100%');
   }
 
   getColor(serie: string, series: string[]): string {
@@ -197,15 +250,15 @@ export class ChartComponent implements OnChanges {
       })
       csv += '\n';
     })
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url= window.URL.createObjectURL(blob);
+    const blob = new Blob([csv], {type: 'text/csv'});
+    const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = this.getFileName('csv');
     a.click();
   }
 
-  getFileName(exportType: string):string{
+  getFileName(exportType: string): string {
     return `tock-${exportType}export-` + this.title + `.${exportType}`;
   }
 
@@ -213,9 +266,9 @@ export class ChartComponent implements OnChanges {
     const options = {
       filename: this.getFileName('pdf'),
       image: {type: 'jpeg ', quality: 0.95},
-      html2canvas: {scale: 0.9 },
+      html2canvas: {scale: 0.9},
       jsPDF: {orientation: 'landscape'},
-      pagebreak: { mode: 'avoid-all' }
+      pagebreak: {mode: 'avoid-all'}
     };
     let element = document.getElementById(this.pdfId)
     html2pdf()

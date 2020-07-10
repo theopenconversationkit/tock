@@ -1,26 +1,35 @@
 
-<nb-flip-card [showToggleButton]="false" [flipped]="isFlipped" *ngIf="mainChart">
+<nb-flip-card [showToggleButton]="false" [flipped]="isFlipped" *ngIf="mainChart || altChart">
   <nb-card-front>
     <nb-card style="min-height: 60vh">
       <nb-card-body [nbSpinner]="isLoading" nbSpinnerStatus="primary">
+        <div style="text-align: right;">
+          <nb-select multiple status="primary" *ngIf="displayMultipleSelectComponent()" style="min-width: 15rem;max-width: 20rem;"
+                     [(selected)]="seriesSelectionList" (selectedChange)="updateGraph()">
+            <nb-select-label>
+              Nb selected: {{ seriesSelectionList.length }}
+            </nb-select-label>
+            <nb-option *ngFor="let c of data.connectorsType; index as i" [value]="i">{{c}}</nb-option>
+          </nb-select>
+        </div>
         <div style="display: flex;">
-          <google-chart
+          <google-chart *ngIf="mainChart"
             [type]="mainChart.type"
             [data]="mainChart.data"
             [columns]="mainChart.columnNames"
             [options]="mainChart.options"
             [height]="mainChart.height"
             [dynamicResize]="true"
-            [style.width]="altChart ? '70%' : '100%'">
+            [style.width]="(altChart || isGraphTypeSelected('pie')) ? '70%' : '100%'">
           </google-chart>
-          <google-chart *ngIf="altChart"
+          <google-chart *ngIf="altChart && isGraphTypeSelected('all')"
             [type]="altChart.type"
             [data]="altChart.data"
             [columns]="altChart.columnNames"
             [options]="altChart.options"
             [height]="altChart.height"
             [dynamicResize]="true"
-            style="width: 30%;">
+            [style]="isGraphTypeSelected('line') ?'width: 30%;' : 'width: 100%;'">
           </google-chart>
         </div>
       </nb-card-body>
@@ -46,7 +55,7 @@
             [options]="mainChart.options"
             [height]="mainChart.height"
             [dynamicResize]="true"
-            width="75vw"
+            width="73vw"
             style="overflow-x: auto;">
           </google-chart>
       </nb-card-body>

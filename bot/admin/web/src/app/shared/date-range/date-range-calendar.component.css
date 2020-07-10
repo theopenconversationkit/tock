@@ -3,11 +3,13 @@
   display: flex;
   flex-direction: column;
   position: fixed;
+  margin-left: -5rem;
 }
 
 .calendar-body {
   display: flex;
   flex-direction: row;
+  padding: 0;
 }
 
 .calendar-shortcuts {

@@ -29,7 +29,8 @@ const tabs = [
   new TabLink("behavior", "Behavior", 'pie-chart-outline'),
   new TabLink("flow", "Flow", 'funnel-outline'),
   new TabLink("users", "Users", 'people-outline'),
-  new TabLink("dialogs", "Search", 'search-outline')
+  new TabLink("dialogs", "Search", 'search-outline'),
+  new TabLink("preferences", "Preferences", 'settings-2-outline')
 ];
 
 @Component({
