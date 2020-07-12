@@ -28,7 +28,7 @@ import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
 import {AnswerConfigurationType, StoryDefinitionConfiguration, StorySearchQuery, StoryStep} from "../../bot/model/story";
 import {Subscription} from "rxjs";
 import {NbToastrService} from '@nebular/theme';
-import {ChartData} from "../../../../../../src/app/analytics/chart/ChartData";
+import {ChartData} from "../chart/ChartData";
 
 @Component({
   selector: 'tock-flow',

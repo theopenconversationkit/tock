@@ -19,7 +19,7 @@ import {NEVER, Observable, throwError as observableThrowError} from 'rxjs';
 
 import {catchError, map} from 'rxjs/operators';
 import {EventEmitter, Injectable} from "@angular/core";
-import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
 import {Router} from "@angular/router";
 import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
@@ -130,17 +130,18 @@ export class RestService {
   }
 
   private handleError(rest: RestService, error: Response | any) {
-    console.error(error);
+    console.log(error);
     let errMsg: string;
     const e = Array.isArray(error) ? error[0] : error;
     if (e instanceof Response) {
+      console.log("error instance of Response");
       if (e.status === 403 || e.status === 401) {
         rest.router.navigateByUrl("/login");
         return NEVER;
       }
-      errMsg = error.status === 400
-        ? (error.error && error.error.message ? error.error.message : error.statusText || '')
-        : `Server error : ${error.status} - ${error.statusText || ''}`;
+      errMsg = e.status === 400
+        ? e.statusText || ''
+        : `Server error : ${e.status} - ${e.statusText || ''}`;
     } else {
       //strange things happen
       if (e && e.status === 0 && this.isSSO()) {
@@ -148,11 +149,8 @@ export class RestService {
         location.reload();
         return NEVER;
       }
-      if (e instanceof HttpErrorResponse && e.status !== 400) {
-        errMsg = e.message ? e.message : (e.error ? e.error : e.toString());
-      } else {
-        errMsg = e.error ? e.error : (e.message ? e.message : (e.statusText ? e.statusText : e.toString()));
-      }
+      errMsg = e.error ? (e.error.message ? e.error.message : (e.error.error && e.error.error.message ? e.error.error.message : "Unknown error"))
+        : (e.message ? e.message : (e.statusText ? e.statusText : "Unknown error"));
     }
     rest.errorEmitter.emit(errMsg);
     return observableThrowError(errMsg);
