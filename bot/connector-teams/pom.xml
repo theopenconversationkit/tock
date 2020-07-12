@@ -30,7 +30,6 @@
 
     <properties>
         <microsoft.bot>4.0.0-a1</microsoft.bot>
-        <mockwebserver>4.7.2</mockwebserver>
         <nimbus-jose-jwt>8.19</nimbus-jose-jwt>
     </properties>
 
@@ -117,7 +116,6 @@
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>mockwebserver</artifactId>
-            <version>${mockwebserver}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
