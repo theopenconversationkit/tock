@@ -139,7 +139,7 @@ export class RestService {
         return NEVER;
       }
       errMsg = error.status === 400
-        ? error.statusText || ''
+        ? (error.error && error.error.message ? error.error.message : error.statusText || '')
         : `Server error : ${error.status} - ${error.statusText || ''}`;
     } else {
       //strange things happen
@@ -149,9 +149,9 @@ export class RestService {
         return NEVER;
       }
       if (e instanceof HttpErrorResponse && e.status !== 400) {
-        errMsg = e.message ? e.message : e.error;
+        errMsg = e.message ? e.message : (e.error ? e.error : e.toString());
       } else {
-        errMsg = e.statusText ? e.statusText : (e.error ? e.error : (e.message ? e.message : e.toString()));
+        errMsg = e.error ? e.error : (e.message ? e.message : (e.statusText ? e.statusText : e.toString()));
       }
     }
     rest.errorEmitter.emit(errMsg);
