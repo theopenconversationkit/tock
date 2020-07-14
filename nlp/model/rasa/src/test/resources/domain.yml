@@ -1,0 +1,16 @@
+intents:
+  - app___intentWithoutEntities:
+      use_entities: []
+  - app___intentWithOneEntity:
+      use_entities:
+        - app___e1
+  - app___intentWithTwoEntities:
+      use_entities:
+        - app___e2
+        - app___e3
+
+entities:
+  - app___e1
+  - app___e2
+  - app___e3
+

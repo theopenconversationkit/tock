@@ -25,7 +25,9 @@ import kotlin.LazyThreadSafetyMode.PUBLICATION
 /**
  * [EntityTypeProvider] that classifies entities using a rest API.
  */
-class RestEntityTypeProvider(val client: RestEntityTypeClient = RestEntityTypeClient()) : EntityTypeProvider, EntityTypeClassifier {
+class RestEntityTypeProvider(
+    private val client: RestEntityTypeClient = RestEntityTypeClient()
+) : EntityTypeProvider, EntityTypeClassifier {
 
     private val entityTypes: Set<String> by lazy(PUBLICATION) { client.retrieveSupportedEntityTypes() }
 

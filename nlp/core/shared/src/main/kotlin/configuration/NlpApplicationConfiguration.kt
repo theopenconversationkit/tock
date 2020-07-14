@@ -22,7 +22,12 @@ package ai.tock.nlp.core.configuration
 data class NlpApplicationConfiguration(
     val tokenizerConfiguration: NlpModelConfiguration = NlpModelConfiguration(),
     val intentConfiguration: NlpModelConfiguration = NlpModelConfiguration(),
-    val entityConfiguration: NlpModelConfiguration = NlpModelConfiguration()
+    val entityConfiguration: NlpModelConfiguration = NlpModelConfiguration(),
+    val applicationConfiguration: NlpModelConfiguration = NlpModelConfiguration(),
+    val hasTokenizerConfiguration: Boolean = true,
+    val hasIntentConfiguration: Boolean = true,
+    val hasEntityConfiguration: Boolean = true,
+    val hasApplicationConfiguration: Boolean = false
 ) {
     companion object {
         val EMPTY_CONFIGURATION = NlpApplicationConfiguration()

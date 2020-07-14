@@ -1,0 +1,10 @@
+## intent:app___intentWithoutEntities
+- expression 1
+
+## intent:app___intentWithOneEntity
+- expression 2 with [entity 1]{"entity":"app___e1","role":"roleE1"}
+
+## intent:app___intentWithTwoEntities
+- expression 3 with [entity 2]{"entity":"app___e2","role":"roleE2"} hey
+- [entity 3]{"entity":"app___e3","role":"roleE3"} for expression 4
+

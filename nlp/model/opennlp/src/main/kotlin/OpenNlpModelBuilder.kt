@@ -165,5 +165,10 @@ internal object OpenNlpModelBuilder : NlpEngineModelBuilder {
     override val defaultEntityClassifierConfiguration: NlpModelConfiguration =
         NlpModelConfiguration(loadProperties("/opennlp/defaultEntityClassifier.properties"))
 
-
+    override fun defaultNlpApplicationConfiguration(): NlpApplicationConfiguration =
+        NlpApplicationConfiguration(
+            intentConfiguration = defaultIntentClassifierConfiguration,
+            entityConfiguration = defaultEntityClassifierConfiguration,
+            hasTokenizerConfiguration = false
+        )
 }

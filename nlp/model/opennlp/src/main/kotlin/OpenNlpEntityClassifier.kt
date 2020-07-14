@@ -38,7 +38,7 @@ internal class OpenNlpEntityClassifier(model: EntityModelHolder) : NlpEntityClas
     override fun classifyEntities(context: EntityCallContext, text: String, tokens: Array<String>): List<EntityRecognition> {
         return when (context) {
             is EntityCallContextForIntent -> classify(context, text, tokens)
-            is EntityCallContextForEntity -> TODO()
+            is EntityCallContextForEntity -> error("EntityCallContextForEntity is not supported")
             is EntityCallContextForSubEntities -> classify(context, text, tokens)
         }
     }

@@ -28,7 +28,19 @@ data class NlpEngineType(
 ) {
 
     companion object {
+        /**
+         * The core stanford nlp engine.
+         */
         val stanford = NlpEngineType("stanford")
+
+        /**
+         * The opennlp nlp engine.
+         */
         val opennlp = NlpEngineType("opennlp")
+
+        /**
+         * The rasa-based nlp engine.
+         */
+        val rasa = NlpEngineType("rasa")
     }
 }

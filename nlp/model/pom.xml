@@ -35,6 +35,7 @@
         <module>client</module>
         <module>storage-mongo</module>
         <module>opennlp</module>
+        <module>rasa</module>
     </modules>
 
     <dependencies>

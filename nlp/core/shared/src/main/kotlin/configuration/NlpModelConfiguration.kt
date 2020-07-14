@@ -19,8 +19,11 @@ package ai.tock.nlp.core.configuration
 import java.util.Properties
 
 /**
- * The NLP model configuration properties.
+ * The NLP model configuration.
  */
 data class NlpModelConfiguration(
-    val properties: Properties = Properties()
+    val properties: Properties = Properties(),
+    val markdown: String? = null,
+    val hasProperties: Boolean = true,
+    val hasMarkdown: Boolean = false
 )
