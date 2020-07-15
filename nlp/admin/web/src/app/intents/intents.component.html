@@ -22,7 +22,7 @@
   <nb-card-body>
     <div *ngIf="!treeControl || treeControl.dataNodes.length == 0">
       <h4 class="title">No Intent found</h4>
-      <p>To create Intents, start from <em>Try it</em> or <em>New Story</em> in Tock Studio,
+      <p>To create Intents, start from <em>New Sentence</em> or <em>New Story</em> in Tock Studio,
         or the <em>API</em>.</p>
     </div>
     <mat-tree [treeControl]="treeControl" [dataSource]="intentsCategories">

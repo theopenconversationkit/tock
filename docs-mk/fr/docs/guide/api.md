@@ -170,22 +170,22 @@ de log ressemblant à celle-ci :
 
 ## Terminer la configuration dans _Tock Studio_
 
-* Retournez dans Tock et allez dans _Build_ > _Search Stories_
+* Retournez dans Tock et allez dans _Stories & Answers_ > _Stories_
 
 * Décochez l'option _Only Configured Stories_. Vous voyez alors tous parcours, y compris "qui-es-tu" que vous venez de 
 déclarer programmatiquement
 
-* Allez dans _Test_ > _Test the bot_ et saisissez une ou plusieurs phrases comme "qui es-tu ?" par exemple.
+* Allez dans _Test_ > _Test the Bot_ et saisissez une ou plusieurs phrases comme "qui es-tu ?" par exemple.
 Vous contastez que le bot ne répond pas encore à cette question - il répond peut-être même à une autre 
 intention. Il reste en effet une configuration à effectuer pour que la _qualification_ fonctionne.
 
 A ce stade, le parcours existe bien dans Tock, mais l'_intention_ n'a pas été créée automatiquement.
-Vous pouvez le vérifier en regardant la liste des intentions disponibles dans _NLU_ > _Intents_ > _build_ 
+Vous pouvez le vérifier en regardant la liste des intentions disponibles dans _Language Understanding_ > _Intents_ > _build_ 
 (la catégorie par défaut).
 
 > Ce point sera bientôt amélioré ([issue #533](https://github.com/theopenconversationkit/tock/issues/533)).
 
-* Allez dans _NLU_ > _Inbox_, pour la dernière phrase que vous venez de saisir :
+* Allez dans _Language Understanding_ > _Inbox_, pour la dernière phrase que vous venez de saisir :
 
     * Changez l'intention pour _New intent_
     
@@ -198,7 +198,7 @@ Vous pouvez le vérifier en regardant la liste des intentions disponibles dans _
 * Si vous avez saisi d'autres phrases pour cette intention, pour chacune d'elles sélectionnez l'intention dans la 
 liste puis confirmez avec _Validate_
 
-* Retournez dans _Test_ > _Test the bot_. Si vous reposez la question, le bot vous donne désormais la réponse 
+* Retournez dans _Test_ > _Test the Bot_. Si vous reposez la question, le bot vous donne désormais la réponse 
 construite dans le code Kotlin (ie. "Je suis un assistant...").
 
 

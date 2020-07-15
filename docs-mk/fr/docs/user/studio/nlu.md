@@ -1,13 +1,13 @@
-# Le menu NLU
+# Le menu _Language Understanding_
 
-Le menu _NLU (Natural Language Understanding)_ permet de créer, modifier, enrichir les modèles conversationnels :
+Le menu _Language Understanding_ (ou _NLU_) permet de créer, modifier, enrichir les modèles conversationnels :
  déclarer des _intentions_ et des _entités_, _qualifier_ des phrases, etc. (voir [Concepts](../concepts.md)
  pour en savoir plus).
  
 Dans cette page, le détail de chaque onglet est présenté. Voir aussi [Construire les modèles conversationnels](build-model.md)
 pour une présentation plus guidée par l'usage.
 
-## L'onglet _Try it_
+## L'onglet _New Sentence_
 
 Cet écran permet d'entrer des phrases et et de vérifier quelle intention/entités sont détectées.
 
@@ -59,16 +59,16 @@ ou encore d'une conversation via la page _Test the bot_ dans _Tock Studio_.
 
 Les boutons et commandes sous chaque phrase sont identiques à ceux de l'onglet _Try it_ (voir ci-dessus).
 
-## L'onglet _Unknown_
-
-Cet écran permet de parcourir les phrases dont l'intention n'a pas été reconnue (intention _unknown_).
-
 ## L'onglet _Search_
 
 Cet écran permet de faire des recherches dans l'ensemble des phrases : _Inbox_ mais aussi phrases qualifiées 
 enregistrées dans le modèle.
 
 ![schéma Tock](../../img/search.png "Recherche d'une phrase")
+
+## L'onglet _Unknown_
+
+Cet écran permet de parcourir les phrases dont l'intention n'a pas été reconnue (intention _unknown_).
 
 ## L'onglet _Intents_
 
@@ -90,6 +90,6 @@ phrases reçues et réponses du bot pour un utilisateur).
 
 ## Continuer...
 
-Rendez-vous dans [Menu _NLU QA_](nlu-qa.md) pour la suite du manuel utilisateur. 
+Rendez-vous dans [Menu _Stories & Answers_](stories-and-answers.md) pour la suite du manuel utilisateur. 
 
 > Vous pouvez aussi passer directement au chapitre suivant : [Développement](../../dev/modes.md). 

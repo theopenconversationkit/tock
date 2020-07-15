@@ -588,8 +588,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../../user/studio/configuration/" title="Le menu Configuration" class="md-nav__link">
-      Le menu Configuration
+    <a href="../../user/studio/nlu/" title="Le menu Language" class="md-nav__link">
+      Le menu Language
     </a>
   </li>
 
@@ -600,32 +600,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../../user/studio/nlu/" title="Le menu NLU" class="md-nav__link">
-      Le menu NLU
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../user/studio/nlu-qa/" title="Le menu NLU QA" class="md-nav__link">
-      Le menu NLU QA
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../user/studio/stories-and-answers/" title="Le menu Build" class="md-nav__link">
-      Le menu Build
+    <a href="../../user/studio/stories-and-answers/" title="Le menu Stories" class="md-nav__link">
+      Le menu Stories
     </a>
   </li>
 
@@ -648,8 +624,32 @@
 
 
   <li class="md-nav__item">
-    <a href="../../user/studio/monitoring/" title="Le menu Monitoring" class="md-nav__link">
-      Le menu Monitoring
+    <a href="../../user/studio/analytics/" title="Le menu Analytics" class="md-nav__link">
+      Le menu Analytics
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../user/studio/nlu-qa/" title="Le menu Quality" class="md-nav__link">
+      Le menu Quality
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../user/studio/configuration/" title="Le menu Settings" class="md-nav__link">
+      Le menu Settings
     </a>
   </li>
 
@@ -1244,7 +1244,7 @@ C'est un moyen de tester et prendre en main la solution Tock sans avoir à l'ins
 </li>
 </ul>
 <blockquote>
-<p>Vous pouvez retrouver l'application créée dans le menu : <em>Configuration</em> &gt; <em>NLU Applications</em>.</p>
+<p>Vous pouvez retrouver l'application créée dans le menu : <em>Settings</em> &gt; <em>Applications</em>.</p>
 <p>Si vous aviez déjà créé une ou plusieurs applications, vous pouvez en créer de nouvelles en revenant à cet écran puis <em>Create New Application</em>.</p>
 </blockquote>
 <h2 id="ajouter-un-connecteur">Ajouter un connecteur<a class="headerlink" href="#ajouter-un-connecteur" title="Permanent link">&para;</a></h2>
@@ -1265,7 +1265,7 @@ vous pourrez compléter la configuration côté Slack et côté Tock afin que le
 <p>Créez un premier connecteur pour votre application :</p>
 <ul>
 <li>
-<p>Allez dans <em>Configuration</em> &gt; <em>Bot Configurations</em></p>
+<p>Allez dans <em>Settings</em> &gt; <em>Configurations</em></p>
 </li>
 <li>
 <p><em>Create a new Configuration</em></p>
@@ -1296,14 +1296,14 @@ Grâce à lui, vous pourrez parler au bot sans passer par Slack.</p>
 reconnaître une intention "météo" et une entité "demain" venant préciser/paramétrer cette intention.</p>
 </blockquote>
 <p>Encore faut-il avoir déclaré les intentions et entités possibles, puis qualifié des phrases pour apprendre au bot à 
-les détecter. Le menu <em>NLU</em> de Tock permet de gérer intentions et entités, qualifier les phrases 
+les détecter. Le menu <em>Language Understanding</em> de Tock permet de gérer intentions et entités, qualifier les phrases 
 et ainsi superviser l'apprentissage du bot : <strong>plus on qualifie de phrases, plus le bot devient pertinent</strong> dans sa compréhension du langage.</p>
 <p>Mais laissons intentions et entités de côté pour le moment...</p>
 <p>Le mode <em>Stories</em> de Tock permet en quelques clics de créer automatiquement des intentions ainsi que les réponses à fournir. 
 Ainsi, sans quitter l'interface <em>Tock Studio</em>, vous allez créer un premier parcours de question(s)-réponse(s).</p>
 <ul>
 <li>
-<p>Allez dans <em>Build</em> &gt; <em>New Story</em></p>
+<p>Allez dans <em>Stories &amp; Answers</em> &gt; <em>New Story</em></p>
 </li>
 <li>
 <p>Saisissez une phrase utilisateur par exemple "bonjour"</p>
@@ -1328,10 +1328,10 @@ utilisateur Tock vous en apprendra plus.</p>
 <p>Il est maintenant temps de tester le bot et votre premier parcours!</p>
 <ul>
 <li>
-<p>Allez dans <em>Test</em> &gt; <em>Test the bot</em></p>
+<p>Allez dans <em>Test</em> &gt; <em>Test the Bot</em></p>
 </li>
 <li>
-<p>Dites "bonjour"🙋, le bot vous répond 🤖</p>
+<p>Dites "bonjour" 🙋, le bot vous répond 🤖</p>
 </li>
 </ul>
 <blockquote>
@@ -1345,17 +1345,17 @@ vous verrez comment améliorer la compréhension du bot en qualifiant plus de ph
 <p>Si vous obtenez un message d'erreur technique, il s'agit probablement d'une erreur de configuration du connecteur.</p>
 </blockquote>
 <h2 id="ameliorer-la-comprehension">Améliorer la compréhension<a class="headerlink" href="#ameliorer-la-comprehension" title="Permanent link">&para;</a></h2>
-<p>En saisissant des phrases un peu différentes dans l'écran <em>Test the bot</em>, vous pouvez constater qu'il ne comprend pas encore
+<p>En saisissant des phrases un peu différentes dans l'écran <em>Test the Bot</em>, vous pouvez constater qu'il ne comprend pas encore
 très bien votre langage - même lorsque les phrases sont proches de celle saisie à la création de la <em>story</em>.</p>
 <p>C'est normal.</p>
-<p>Le modèle conversationnel et la partie <em>NLU</em> de Tock s'enrichissent progressivement de <em>phrases qualifiées</em> pour alimenter
+<p>Le modèle conversationnel et la partie <em>Language Understanding</em> de Tock s'enrichissent progressivement de <em>phrases qualifiées</em> pour alimenter
 les algorithmes et donner des résultats de plus en plus pertinents.</p>
 <blockquote>
 <p>Les premiers essais peuvent être décevants, mais souvent après quelques qualifications, voire une ou deux dizaines 
 de phrases qualifiées si besoin, votre bot vous comprend déjà bien mieux.</p>
 </blockquote>
 <ul>
-<li>Allez dans <em>NLU</em> &gt; <em>Inbox</em></li>
+<li>Allez dans <em>Language Understanding</em> &gt; <em>Inbox</em></li>
 </ul>
 <p>Vous voyez les phrases que vous avez saisies, et comment le bot les a interprêtées. Pour chacune s'affichent
 l'intention reconnue, la langue ainsi que le score (que se donnent les algorithmes selon leur niveau de confiance sur cette phrase).</p>
@@ -1364,7 +1364,7 @@ l'intention reconnue, la langue ainsi que le score (que se donnent les algorithm
 <p>Choisissez quelques phrases, pour chacune sélectionnez la bonne intention puis <em>Validate</em></p>
 </li>
 <li>
-<p>Retournez dans <em>Test</em> &gt; <em>Test the bot</em></p>
+<p>Retournez dans <em>Test</em> &gt; <em>Test the Bot</em></p>
 </li>
 <li>
 <p>Vérifiez que le bot comprend mieux ces phrases, et mêmes d'autres un peu différentes alors que vous ne les avez pas

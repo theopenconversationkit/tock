@@ -39,7 +39,7 @@ When accessing the demo platform for the first time, a wizard helps to create th
 
 * Validate to create the application
 
-> The just-created application is now visible from the menu: _Configuration_ > _NLU Applications_.
+> The just-created application is now visible from the menu: _Settings_ > _Language Understanding_.
 >
 > Once the first application has been created, you can create others using _Create New Application_.
 
@@ -59,7 +59,7 @@ It is even possible to implement your own connectors to integrate with more chan
 
 Create the first connector for your application:
 
-* Go to _Configuration_ > _Bot Configurations_
+* Go to _Settings_ > _Configurations_
  
  * _Create a new Configuration_
  
@@ -95,7 +95,7 @@ Nevertheless, let's leave intents and entities for now...
 The Tock _Stories_ mode allows to create intents automatically in a few minutes, as well as the expected answers.
   You will now create a first template of a conversation, using the _Tock Studio_ graphical tools:
 
-* Go to _Build_ > _New Story_
+* Go to _Stories & Answers_ > _New Story_
 
 * Enter a new user sentence - for instance "hello"
 
@@ -109,7 +109,7 @@ A form now opens to configure the new _story_ creation, the intent, the type of 
 
 It is time to try the bot and its first story!
 
-* Go to _Test_ > _Test the bot_
+* Go to _Test_ > _Test the Bot_
 
 * Say "hello", the bot answers
 
@@ -127,7 +127,7 @@ The conversational model and the Tock _NLU_ engine must be trained and improved 
 > Although first tries can be deceiving, several qualified sentences (one or two dozens if necessary) usually make a 
 >difference and the bot gets more relevant.
 
-* Go to _NLU_ > _Inbox_
+* Go to _Language Understanding_ > _Inbox_
 
 Here you can see the previously entered sentences, and more interestingly how the bot qualified them. For each sentence,
 Tock shows the detected intent, the language, as well as the scores (given by the algorithms according to their 
@@ -135,7 +135,7 @@ level of confidence for the sentence).
 
 * Choose several sentences, for each one: select the correct intent then _Validate_
 
-* Return to _Test_ > _Test the bot_
+* Return to _Test_ > _Test the Bot_
 
 * Check the bot now understands these sentences correctly, as well as slightly-different ones you have never entered!
 

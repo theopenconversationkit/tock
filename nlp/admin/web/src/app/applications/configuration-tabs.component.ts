@@ -28,19 +28,22 @@ import {ApplicationsResolver} from "./applications.resolver";
 export class ConfigurationTabsComponent implements OnInit {
   tabs = [
     {
-      title: 'NLU Models',
+      title: 'Applications',
       route: 'nlu',
+      icon: 'browser-outline',
       resolve: {
         applications: ApplicationsResolver
       }
     },
     {
-      title: 'User Logs',
-      route: 'users/logs',
-    },
-    {
       title: 'Namespaces',
       route: 'namespaces',
+      icon: 'folder-outline'
+    },
+    {
+      title: 'Log',
+      route: 'users/logs',
+      icon: 'eye-outline'
     }
   ];
 

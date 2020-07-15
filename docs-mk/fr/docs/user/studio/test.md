@@ -1,9 +1,9 @@
-# Le menu Test
+# Le menu _Test_
 
 Le menu _Test_ permet de tester un bot directement dans l'interface _Tock Studio_, ainsi que de gérer des plans de 
 tests automatiques.
  
-## L'onglet _Test the bot_
+## L'onglet _Test the Bot_
 
 Via ce menu, vous pouvez parler directement au bot en simulant différentes langues et connecteurs.
 Cela permet de tester rapidement et simplement un bot dans l'interface _Tock Studio_, 
@@ -44,6 +44,6 @@ complète arrivera prochainement.
 
 ## Continuer...
 
-Rendez-vous dans [Menu _Monitoring_](monitoring.md) pour la suite du manuel utilisateur. 
+Rendez-vous dans [Menu _Analytics_](analytics.md) pour la suite du manuel utilisateur. 
 
 > Vous pouvez aussi passer directement au chapitre suivant : [Développement](../../dev/modes.md). 
