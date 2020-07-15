@@ -344,36 +344,23 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tabs" class="md-nav__link">
-    Tabs
+  <a href="#model-tests-101" class="md-nav__link">
+    Model Tests 101
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#model-tests" class="md-nav__link">
-    Model Tests
-  </a>
-  
-    <nav class="md-nav" aria-label="Model Tests">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#intent-errors" class="md-nav__link">
-    Intent errors
+  <a href="#test-intent-errors" class="md-nav__link">
+    Test Intent errors
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#entity-errors" class="md-nav__link">
-    Entity errors
+      
+        <li class="md-nav__item">
+  <a href="#test-entity-errors" class="md-nav__link">
+    Test Entity errors
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -667,36 +654,23 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tabs" class="md-nav__link">
-    Tabs
+  <a href="#model-tests-101" class="md-nav__link">
+    Model Tests 101
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#model-tests" class="md-nav__link">
-    Model Tests
-  </a>
-  
-    <nav class="md-nav" aria-label="Model Tests">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#intent-errors" class="md-nav__link">
-    Intent errors
+  <a href="#test-intent-errors" class="md-nav__link">
+    Test Intent errors
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#entity-errors" class="md-nav__link">
-    Entity errors
+      
+        <li class="md-nav__item">
+  <a href="#test-entity-errors" class="md-nav__link">
+    Test Entity errors
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -717,32 +691,32 @@
                 
                 
                 <h1 id="evaluate-the-relevance-of-a-nlp-model">Evaluate the relevance of a NLP model<a class="headerlink" href="#evaluate-the-relevance-of-a-nlp-model" title="Permanent link">&para;</a></h1>
-<h2 id="tabs">Tabs<a class="headerlink" href="#tabs" title="Permanent link">&para;</a></h2>
-<p>Five tabs are used to control the relevance of the model:</p>
+<p>In <em>Model Quality</em> various views give insights about the relevance of the model:</p>
 <ol>
-<li><strong>Stats</strong> : Monitores model perfomance in production:<ul>
+<li><strong>Model Stats</strong>: Monitores model perfomance in production:<ul>
 <li>self-evaluation of the model about its relevance in terms of recognition of intent and entities</li>
 <li>number of calls and errors</li>
 <li>average execution time</li>
 </ul>
 </li>
-<li><strong>Model Builds</strong> : the cimplete list of model builds    </li>
-<li><strong>Test Trend</strong> : evolution of the relevance of <a href="#partial-model-tests">model tests</a> </li>
-<li><strong>Intent Errors</strong> : the list of intent errors found with model tests</li>
-<li><strong>Entity Errors</strong> : the list of entity errors found with model tests</li>
+<li><strong>Intent Distance</strong>: the distance between intents    </li>
+<li><strong>Model Builds</strong>: history and details about model builds    </li>
+<li><strong>Test Trends</strong>: evolution of the relevance of <a href="#partial-model-tests">model tests</a> </li>
+<li><strong>Test Intent Errors</strong>: the list of intent errors found with model tests</li>
+<li><strong>Test Entity Errors</strong>: the list of entity errors found with model tests</li>
 </ol>
-<h2 id="model-tests">Model Tests<a class="headerlink" href="#model-tests" title="Permanent link">&para;</a></h2>
+<h2 id="model-tests-101">Model Tests 101<a class="headerlink" href="#model-tests-101" title="Permanent link">&para;</a></h2>
 <p>Model tests are used to detect qualifications errors.</p>
 <p>Temporarily models are built from a random part of the whole sentence set of the model (90% for example)
 and then tested against the remaining sentences. </p>
 <p>The process is repeated a number of times and the most frequent errors are pushed to an admin user.</p>
 <p>Model tests are useful only with large models.</p>
-<h3 id="intent-errors">Intent errors<a class="headerlink" href="#intent-errors" title="Permanent link">&para;</a></h3>
+<h2 id="test-intent-errors">Test Intent errors<a class="headerlink" href="#test-intent-errors" title="Permanent link">&para;</a></h2>
 <p>Click on the <em>Intent Errors</em> tab:</p>
 <p><img alt="schéma Tock" src="../img/intent-errors.png" title="Intent Errors Detection" /></p>
 <p>Since the picture above is built from a very simple model, no real error has been detected.
  We can nevertheless note that in some cases the model is systematically wrong with a high probability.  </p>
-<h3 id="entity-errors">Entity errors<a class="headerlink" href="#entity-errors" title="Permanent link">&para;</a></h3>
+<h2 id="test-entity-errors">Test Entity errors<a class="headerlink" href="#test-entity-errors" title="Permanent link">&para;</a></h2>
 <p>These errors can be viewed via the <em>Entity Errors</em> tab.</p>
 <p><img alt="schéma Tock" src="../img/entity-errors.png" title="Entity Errors Detection" /></p>
                 

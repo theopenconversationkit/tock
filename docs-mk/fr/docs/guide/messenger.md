@@ -47,7 +47,7 @@ _Paramètres > Général > Visibilité de la page > **Non publiée**_
 
 ## Configurer un connecteur Messenger dans Tock
 
-* Dans _Tock Studio_ allez dans _Configuration_ > _Bot Configurations_
+* Dans _Tock Studio_ allez dans _Settings_ > _Configurations_
 
 * Créez un connecteur de type _Messenger_ et ouvrez la section _Connector Custom Configuration_
 

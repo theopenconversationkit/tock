@@ -20,7 +20,7 @@ The user is redirected by default to *Inbox*.
 
 ### Add a New Sentence
 
-Click on the *Try It* menu and enter the new sentence. The add a new user intent by selecting "Create a New Intent" in the "Intent" selection list.
+Click on the *New Sentence* menu and enter the new sentence. The add a new user intent by selecting "Create a New Intent" in the "Intent" selection list.
 
 ![schéma Tock](img/try-it-1.png "Create a new intent")
  

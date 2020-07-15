@@ -1,19 +1,19 @@
 # Construire les modèles conversationnels
 
-La documentation _Tock Studio_ peut être parcourue écran par écran, notamment les menus _NLU_
-et _NLU QA_ pour la gestion des modèles conversationnels. N'hésitez pas à vous y référer si vous 
+La documentation _Tock Studio_ peut être parcourue écran par écran, notamment les menus _Language Understanding_
+et _Model Quality_ pour la gestion des modèles conversationnels. N'hésitez pas à vous y référer si vous 
 avez une question sur un onglet / une option en particulier.
 
 Cette page présente la construction des modèles en se focalisant plus sur l'usage et l'apprentissage, 
 s'autorisant à passer d'un écran à un autre sans détailler exhaustivement chaque fonctionnalité de la plateforme.
 
 > Notez qu'il est possible de déployer la plateforme Tock NLU seule, dans ce cas les interfaces graphiques Tock 
->se limitent aux menus _Configuration_, _NLU_ et _NLU QA_. Cette page peut donc servir de tutoriel pour une utilisation 
->de Tock restreinte au _NLU_, par exemple pour un usage comme l'[Internet des objets](https://fr.wikipedia.org/wiki/Internet_des_objets).
+>se limitent aux menus _Settings_, _Language Understanding_ et _Model Quality_. Cette page peut donc servir de tutoriel pour une utilisation 
+>de Tock restreinte au _Language Understanding_, par exemple pour un usage comme l'[Internet des objets](https://fr.wikipedia.org/wiki/Internet_des_objets).
 
-## Rendez-vous dans la section *NLU*
+## Rendez-vous dans la section *Language Understanding*
 
-Le menu _NLU_ renvoie sur l'onglet _Inbox_ par défaut. Au départ vous n'avez pas de phrases si personne n'a encore parlé au bot :
+Le menu _Language Understanding_ renvoie sur l'onglet _Inbox_ par défaut. Au départ vous n'avez pas de phrases si personne n'a encore parlé au bot :
 
 ![schéma Tock](../../img/inbox.png "Aucune phrase à qualifier")
 
@@ -21,7 +21,7 @@ Le menu _NLU_ renvoie sur l'onglet _Inbox_ par défaut. Au départ vous n'avez p
 
 ### Ajoutez une phrase
 
-* Rendez-vous dans l'écran _Try it_
+* Rendez-vous dans l'écran _New Sentence_
 * Saisissez une phrase
 
 ## Créez une nouvelle intention

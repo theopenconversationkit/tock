@@ -1,20 +1,19 @@
 # Evaluate the relevance of a NLP model
 
-## Tabs
+In _Model Quality_ various views give insights about the relevance of the model:
 
-Five tabs are used to control the relevance of the model:
-
-1. **Stats** : Monitores model perfomance in production:
+1. **Model Stats**: Monitores model perfomance in production:
     * self-evaluation of the model about its relevance in terms of recognition of intent and entities
     * number of calls and errors
     * average execution time
-2. **Model Builds** : the cimplete list of model builds    
-3. **Test Trend** : evolution of the relevance of [model tests](#partial-model-tests) 
-4. **Intent Errors** : the list of intent errors found with model tests
-5. **Entity Errors** : the list of entity errors found with model tests
+2. **Intent Distance**: the distance between intents    
+3. **Model Builds**: history and details about model builds    
+4. **Test Trends**: evolution of the relevance of [model tests](#partial-model-tests) 
+5. **Test Intent Errors**: the list of intent errors found with model tests
+6. **Test Entity Errors**: the list of entity errors found with model tests
 
 
-## Model Tests
+## Model Tests 101
 
 Model tests are used to detect qualifications errors.
 
@@ -25,7 +24,7 @@ The process is repeated a number of times and the most frequent errors are pushe
 
 Model tests are useful only with large models.
 
-### Intent errors
+## Test Intent errors
 
 Click on the *Intent Errors* tab:
 
@@ -34,7 +33,7 @@ Click on the *Intent Errors* tab:
 Since the picture above is built from a very simple model, no real error has been detected.
  We can nevertheless note that in some cases the model is systematically wrong with a high probability.  
 
-### Entity errors
+## Test Entity errors
 
 These errors can be viewed via the *Entity Errors* tab.
 

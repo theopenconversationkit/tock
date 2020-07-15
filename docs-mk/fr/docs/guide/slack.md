@@ -102,10 +102,10 @@ ou passer directement à [la suite](api.md).
 ## Regarder la conversation dans Tock Studio (optionnel)
 
 Quelque soient les canaux utilisés pour converser avec le bot, vous pouvez suivre les conversations directement dans 
-tous les écrans _Tock Studio_, par exemple : _NLU_ > _Inbox_ et _Logs_, _Build_ > _Bot Flow_ ou encore _Monitoring_ > 
-_Users_ et _Dialogs_ :
+tous les écrans _Tock Studio_, par exemple : _Language Understanding_ > _Inbox_ et _Logs_, 
+ou encore toutes vues du menu _Analytics_ :
 
-* Dans Tock, ouvrez _Monitoring_ > _Users_ et cliquez sur l'icône _Display dialog_ pour voir toute la 
+* Dans Tock, ouvrez _Analytics_ > _Users_ et cliquez sur l'icône _Display dialog_ pour voir toute la 
 conversation provenant de Slack
 
 

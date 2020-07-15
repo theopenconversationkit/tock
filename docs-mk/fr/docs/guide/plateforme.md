@@ -112,7 +112,7 @@ Au premier accès à la plateforme locale :
 
 * Validez pour créer l'application
 
-* Allez dans _Configuration_ > _Bot Configurations_
+* Allez dans _Settings_ > _Configurations_
  
  * _Create a new Configuration_
  
@@ -123,7 +123,7 @@ Au premier accès à la plateforme locale :
 > Notez l'_API Key_ automatiquement générée pour votre application. Elle vous servira si vous essayez le mode _WebSocket_
 > dans la suite de ce guide (optionnel).
 
-* Allez dans _Build_ > _New Story_
+* Allez dans _Stories & Answers_ > _New Story_
 
 * Saisissez une phrase utilisateur par exemple "bonjour"
 
@@ -131,7 +131,7 @@ Au premier accès à la plateforme locale :
 
 * Terminez avec _Create Story_
 
-* Allez dans _Test_ > _Test the bot_
+* Allez dans _Test_ > _Test the Bot_
 
 * Dites "bonjour" 🙋, le bot vous répond 🤖
 
@@ -171,13 +171,13 @@ fun main() {
 > Vous pouvez retrouver ce code (et d'autres exemples) dans le dépôt [tock-bot-samples](https://github.com/theopenconversationkit/tock-bot-samples).
 
 * Remplacez la clef d'API par celle de votre propre application Tock. Pour cela, dans _Tock Studio_, 
-allez dans _Configuration_ > _Bot Configurations_ et reportez la valeur _API Key_ dans le code.
+allez dans _Settings_ > _Configurations_ et reportez la valeur _API Key_ dans le code.
 
 * Exécutez la fonction (_main_) dans votre environnement de développement.
 
-* Retournez dans Tock dans _Test_ > _Test the bot_ et dites "qui es-tu ?" : le bot ne répond pas encore.
+* Retournez dans Tock dans _Test_ > _Test the Bot_ et dites "qui es-tu ?" : le bot ne répond pas encore.
 
-* Allez dans _NLU_ > _Inbox_, pour la phrase que vous venez de saisir :
+* Allez dans _Language Understanding_ > _Inbox_, pour la phrase que vous venez de saisir :
 
     * Changez l'intention pour _New intent_
     
@@ -187,7 +187,7 @@ allez dans _Configuration_ > _Bot Configurations_ et reportez la valeur _API Key
     
     * Terminez la qualification de la phrase avec _Validate_
     
-* Retournez dans _Test_ > _Test the bot_. Dites "qui es-tu ?" : le bot répond !
+* Retournez dans _Test_ > _Test the Bot_. Dites "qui es-tu ?" : le bot répond !
 
 ## Félicitations!
 

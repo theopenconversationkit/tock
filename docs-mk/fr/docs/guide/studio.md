@@ -40,7 +40,7 @@ Au premier accès à la plateforme de démonstration, un assistant invite à cr�
 
 * Validez pour créer l'application
 
-> Vous pouvez retrouver l'application créée dans le menu : _Configuration_ > _NLU Applications_.
+> Vous pouvez retrouver l'application créée dans le menu : _Settings_ > _Applications_.
 >
 > Si vous aviez déjà créé une ou plusieurs applications, vous pouvez en créer de nouvelles en revenant à cet écran puis _Create New Application_.
 
@@ -64,7 +64,7 @@ vous pourrez compléter la configuration côté Slack et côté Tock afin que le
 
 Créez un premier connecteur pour votre application :
 
-* Allez dans _Configuration_ > _Bot Configurations_
+* Allez dans _Settings_ > _Configurations_
  
  * _Create a new Configuration_
  
@@ -92,7 +92,7 @@ Un bot conversationnel analyse les phrases des utilisateurs en langage naturel, 
 reconnaître une intention "météo" et une entité "demain" venant préciser/paramétrer cette intention.
 
 Encore faut-il avoir déclaré les intentions et entités possibles, puis qualifié des phrases pour apprendre au bot à 
-les détecter. Le menu _NLU_ de Tock permet de gérer intentions et entités, qualifier les phrases 
+les détecter. Le menu _Language Understanding_ de Tock permet de gérer intentions et entités, qualifier les phrases 
 et ainsi superviser l'apprentissage du bot : **plus on qualifie de phrases, plus le bot devient pertinent** dans sa compréhension du langage.
 
 Mais laissons intentions et entités de côté pour le moment...
@@ -100,7 +100,7 @@ Mais laissons intentions et entités de côté pour le moment...
 Le mode _Stories_ de Tock permet en quelques clics de créer automatiquement des intentions ainsi que les réponses à fournir. 
 Ainsi, sans quitter l'interface _Tock Studio_, vous allez créer un premier parcours de question(s)-réponse(s).
 
-* Allez dans _Build_ > _New Story_
+* Allez dans _Stories & Answers_ > _New Story_
 
 * Saisissez une phrase utilisateur par exemple "bonjour"
 
@@ -120,9 +120,9 @@ type de réponse, etc.
 
 Il est maintenant temps de tester le bot et votre premier parcours!
 
-* Allez dans _Test_ > _Test the bot_
+* Allez dans _Test_ > _Test the Bot_
 
-* Dites "bonjour"🙋, le bot vous répond 🤖
+* Dites "bonjour" 🙋, le bot vous répond 🤖
 
 > Si le bot répond qu'il n'a pas compris, c'est certainement un problème de qualification. Vous pouvez vérifier que la 
 >_story_ et/ou l'_intention_ ont bien été créés en allant dans _Build_ > _Search Stories_.
@@ -138,25 +138,25 @@ Il est maintenant temps de tester le bot et votre premier parcours!
 
 ## Améliorer la compréhension
 
-En saisissant des phrases un peu différentes dans l'écran _Test the bot_, vous pouvez constater qu'il ne comprend pas encore
+En saisissant des phrases un peu différentes dans l'écran _Test the Bot_, vous pouvez constater qu'il ne comprend pas encore
 très bien votre langage - même lorsque les phrases sont proches de celle saisie à la création de la _story_.
 
 C'est normal.
 
-Le modèle conversationnel et la partie _NLU_ de Tock s'enrichissent progressivement de _phrases qualifiées_ pour alimenter
+Le modèle conversationnel et la partie _Language Understanding_ de Tock s'enrichissent progressivement de _phrases qualifiées_ pour alimenter
 les algorithmes et donner des résultats de plus en plus pertinents.
 
 > Les premiers essais peuvent être décevants, mais souvent après quelques qualifications, voire une ou deux dizaines 
 >de phrases qualifiées si besoin, votre bot vous comprend déjà bien mieux.
 
-* Allez dans _NLU_ > _Inbox_
+* Allez dans _Language Understanding_ > _Inbox_
 
 Vous voyez les phrases que vous avez saisies, et comment le bot les a interprêtées. Pour chacune s'affichent
 l'intention reconnue, la langue ainsi que le score (que se donnent les algorithmes selon leur niveau de confiance sur cette phrase).
 
 * Choisissez quelques phrases, pour chacune sélectionnez la bonne intention puis _Validate_
 
-* Retournez dans _Test_ > _Test the bot_
+* Retournez dans _Test_ > _Test the Bot_
 
 * Vérifiez que le bot comprend mieux ces phrases, et mêmes d'autres un peu différentes alors que vous ne les avez pas
  qualifiées explicitement!

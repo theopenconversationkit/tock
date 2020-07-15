@@ -9,13 +9,12 @@ des thèmes ou des fonctionnalités particulières :
 
 * Les interfaces de _Tock Studio_ :
     * [Interface générale](studio/general.md)
+    * [Le menu _Language Understanding_](studio/nlu.md)
     * [Le menu _Stories & Answers_](studio/stories-and-answers.md)
-    * [Le menu _Analytics_](studio/analytics.md)
-    * [Le menu _Configuration_](studio/configuration.md)
-    * [Le menu _NLU_](studio/nlu.md)
-    * [Le menu _NLU QA_](studio/nlu-qa.md)
     * [Le menu _Test_](studio/test.md)
-    * [Le menu _Monitoring_](studio/monitoring.md)
+    * [Le menu _Analytics_](studio/analytics.md)
+    * [Le menu _Model Quality_](studio/nlu-qa.md)
+    * [Le menu _Settings_](studio/configuration.md)
 
 * Voir aussi :
     * [Construire un modèle conversationnel](studio/build-model.md)

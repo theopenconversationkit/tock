@@ -560,8 +560,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../../user/studio/configuration/" title="Le menu Configuration" class="md-nav__link">
-      Le menu Configuration
+    <a href="../../user/studio/nlu/" title="Le menu Language" class="md-nav__link">
+      Le menu Language
     </a>
   </li>
 
@@ -572,32 +572,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../../user/studio/nlu/" title="Le menu NLU" class="md-nav__link">
-      Le menu NLU
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../user/studio/nlu-qa/" title="Le menu NLU QA" class="md-nav__link">
-      Le menu NLU QA
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../user/studio/stories-and-answers/" title="Le menu Build" class="md-nav__link">
-      Le menu Build
+    <a href="../../user/studio/stories-and-answers/" title="Le menu Stories" class="md-nav__link">
+      Le menu Stories
     </a>
   </li>
 
@@ -620,8 +596,32 @@
 
 
   <li class="md-nav__item">
-    <a href="../../user/studio/monitoring/" title="Le menu Monitoring" class="md-nav__link">
-      Le menu Monitoring
+    <a href="../../user/studio/analytics/" title="Le menu Analytics" class="md-nav__link">
+      Le menu Analytics
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../user/studio/nlu-qa/" title="Le menu Quality" class="md-nav__link">
+      Le menu Quality
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../user/studio/configuration/" title="Le menu Settings" class="md-nav__link">
+      Le menu Settings
     </a>
   </li>
 
@@ -1329,27 +1329,27 @@ il peut s'agir d'une erreur de configuration de la clef d'API.</p>
 <h2 id="terminer-la-configuration-dans-tock-studio">Terminer la configuration dans <em>Tock Studio</em><a class="headerlink" href="#terminer-la-configuration-dans-tock-studio" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p>Retournez dans Tock et allez dans <em>Build</em> &gt; <em>Search Stories</em></p>
+<p>Retournez dans Tock et allez dans <em>Stories &amp; Answers</em> &gt; <em>Stories</em></p>
 </li>
 <li>
 <p>Décochez l'option <em>Only Configured Stories</em>. Vous voyez alors tous parcours, y compris "qui-es-tu" que vous venez de 
 déclarer programmatiquement</p>
 </li>
 <li>
-<p>Allez dans <em>Test</em> &gt; <em>Test the bot</em> et saisissez une ou plusieurs phrases comme "qui es-tu ?" par exemple.
+<p>Allez dans <em>Test</em> &gt; <em>Test the Bot</em> et saisissez une ou plusieurs phrases comme "qui es-tu ?" par exemple.
 Vous contastez que le bot ne répond pas encore à cette question - il répond peut-être même à une autre 
 intention. Il reste en effet une configuration à effectuer pour que la <em>qualification</em> fonctionne.</p>
 </li>
 </ul>
 <p>A ce stade, le parcours existe bien dans Tock, mais l'<em>intention</em> n'a pas été créée automatiquement.
-Vous pouvez le vérifier en regardant la liste des intentions disponibles dans <em>NLU</em> &gt; <em>Intents</em> &gt; <em>build</em> 
+Vous pouvez le vérifier en regardant la liste des intentions disponibles dans <em>Language Understanding</em> &gt; <em>Intents</em> &gt; <em>build</em> 
 (la catégorie par défaut).</p>
 <blockquote>
 <p>Ce point sera bientôt amélioré (<a href="https://github.com/theopenconversationkit/tock/issues/533">issue #533</a>).</p>
 </blockquote>
 <ul>
 <li>
-<p>Allez dans <em>NLU</em> &gt; <em>Inbox</em>, pour la dernière phrase que vous venez de saisir :</p>
+<p>Allez dans <em>Language Understanding</em> &gt; <em>Inbox</em>, pour la dernière phrase que vous venez de saisir :</p>
 <ul>
 <li>
 <p>Changez l'intention pour <em>New intent</em></p>
@@ -1370,7 +1370,7 @@ Vous pouvez le vérifier en regardant la liste des intentions disponibles dans <
 liste puis confirmez avec <em>Validate</em></p>
 </li>
 <li>
-<p>Retournez dans <em>Test</em> &gt; <em>Test the bot</em>. Si vous reposez la question, le bot vous donne désormais la réponse 
+<p>Retournez dans <em>Test</em> &gt; <em>Test the Bot</em>. Si vous reposez la question, le bot vous donne désormais la réponse 
 construite dans le code Kotlin (ie. "Je suis un assistant...").</p>
 </li>
 </ul>

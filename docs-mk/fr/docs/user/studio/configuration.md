@@ -1,10 +1,10 @@
-# Le menu Configuration
+# Le menu _Settings_
 
-Le menu _Configuration_ permet de créer et paramétrer les applications conversationnelles Tock (c'est-à-dire les  
+Le menu _Settings_ permet de créer et paramétrer les applications conversationnelles Tock (c'est-à-dire les  
 modèles / bots pouvant co-exister sur une plateforme). Plusieurs fonctions d'administration et de configuration des 
 bots sont également disponibles via ce menu : importer/exporter une configuration, paramétrer la langue, les connecteurs, etc.
 
-## L'onglet _NLU Applications_
+## L'onglet _Applications_
 
 Cet écran permet de créer, modifier, supprimer des applications conversationnelles Tock.
 
@@ -53,7 +53,7 @@ La fonction _Upload dump_ (voir ci-dessus) est également accessible directement
 * Soit de modifier une application (si l'`application name` existe)
 * Soit d'en créer/importer une nouvelle
 
-## L'onglet _Bot Configurations_
+## L'onglet _Configurations_
 
 Cet écran permet d'accéder aux _connecteurs_ d'un bot, d'en ajouter, modifier ou supprimer. C'est aussi là que vous trouvez 
 les informations pour se connecter programmatiquement.
@@ -103,8 +103,22 @@ configurations_ pour les voir et éventuellement les modifier.
 >Compose par défaut, ce devrait être `http://bot_api:8080` avec le nom du conteneur et le port déclarés 
 >dans le descripteur `docker-compose-bot.yml`).
 
+
+## L'onglet _Namespaces_
+
+Cet écran permet de gérer un ou plusieurs espaces de nommage ou _namespaces_. Chaque application, chaque bot est créé 
+au sein d'un namespace. Il est possible de gérer plusieurs namespaces, et de partager certains d'entre eux avec 
+une équipe ou d'autres utilisateurs Tock Studio. Pour cela, il suffit d'éditer le namespace et d'ajouter d'autres 
+utilisateurs (en leur donnant plus ou moins de droits sur le namespace).
+
+
+## L'onglet _Log_
+
+Cette vue permet de suivre les principales modifications de configuration applicative effectuées 
+par les utilisateurs via Tock Studio: création d'applications, modifications des connecteurs, imports, etc.
+
 ## Continuer...
 
-Rendez-vous dans [Menu _NLU_](nlu.md) pour la suite du manuel utilisateur. 
+Rendez-vous dans [_Construire un modèle conversationnel_](build-model.md) pour la suite du manuel utilisateur. 
 
 > Vous pouvez aussi passer directement au chapitre suivant : [Développement](../../dev/modes.md). 
