@@ -58,22 +58,22 @@ export class NlpAdminAppComponent implements OnInit, OnDestroy {
     );
     this.menu = [
       {
-        title: 'Configuration',
-        icon: 'settings-outline',
-        link: '/applications/nlu',
-        hidden: this.state.hasRole(UserRole.admin)
-      },
-      {
-        title: 'NLU',
-        icon: 'list',
+        title: 'Language Understanding',
+        icon: 'message-circle-outline',
         link: '/nlp',
         hidden: this.state.hasRole(UserRole.nlpUser)
       },
       {
-        title: 'NLU QA',
-        icon: 'bar-chart-outline',
+        title: 'Model Quality',
+        icon: 'clipboard-outline',
         link: '/quality',
         hidden: this.state.hasRole(UserRole.nlpUser)
+      },
+      {
+        title: 'Settings',
+        icon: 'settings-outline',
+        link: '/applications/nlu',
+        hidden: this.state.hasRole(UserRole.admin)
       }
 
     ];
