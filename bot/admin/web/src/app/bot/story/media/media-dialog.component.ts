@@ -22,6 +22,7 @@ import {BotService} from "../../bot-service";
 import {StateService} from "../../../core-nlp/state.service";
 import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
 import {RestService} from "../../../core-nlp/rest/rest.service";
+import {NbToastrService} from '@nebular/theme';
 
 @Component({
   selector: 'tock-media-dialog',
@@ -43,6 +44,7 @@ export class MediaDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: any,
     public rest: RestService,
     private state: StateService,
+    private toastrService: NbToastrService,
     private bot: BotService) {
     this.category = this.data.category ? this.data.category : "build";
     this.create = this.data.media === null;
@@ -66,68 +68,86 @@ export class MediaDialogComponent {
     setTimeout(() => this.titleElement.nativeElement.focus(), 500);
   }
 
+  private isTitle() {
+    return this.media.titleLabel && this.media.titleLabel.trim().length !== 0;
+  }
+
+  private isSubtitle() {
+    return this.media.subTitleLabel && this.media.subTitleLabel.trim().length !== 0;
+  }
+
+  private isFile() {
+    return this.media.file && this.media.file != null;
+  }
+
   save() {
-    if (this.media.titleLabel && this.media.titleLabel.trim().length !== 0) {
-      if (this.media.title) {
-        this.bot.saveI18nLabel(
-          this.media.title.changeDefaultLabelForLocale(this.state.currentLocale, this.media.titleLabel.trim())
-        ).subscribe(_ => {
-        });
-      } else {
-        this.bot.createI18nLabel(
-          new CreateI18nLabelRequest(
-            this.category,
-            this.media.titleLabel.trim(),
-            this.state.currentLocale,
-          )
-        ).subscribe(i18n => this.media.title = i18n);
-      }
-    } else {
-      this.media.title = null
-    }
 
-    if (this.media.subTitleLabel && this.media.subTitleLabel.trim().length !== 0) {
-      if (this.media.subTitle) {
-        this.bot.saveI18nLabel(
-          this.media.subTitle.changeDefaultLabelForLocale(this.state.currentLocale, this.media.subTitleLabel.trim())
-        ).subscribe(_ => {
-        });
-      } else {
-        this.bot.createI18nLabel(
-          new CreateI18nLabelRequest(
-            this.category,
-            this.media.subTitleLabel.trim(),
-            this.state.currentLocale,
-          )
-        ).subscribe(i18n => this.media.subTitle = i18n);
-      }
-    } else {
-      this.media.subTitle = null
-    }
+    if (!this.isTitle() && !this.isSubtitle() && !this.isFile()) {
+      this.toastrService.show(`Please add a Title, Subtitle or File.`, "Media Message is not complete", {duration: 3000, status: "warning"});
 
-    this.media.actions = this.media.actions
-      .filter(a => a.titleLabel && a.titleLabel.trim().length !== 0)
-      .map(a => {
-        if (a.title) {
+    } else {
+      if (this.isTitle()) {
+        if (this.media.title) {
           this.bot.saveI18nLabel(
-            a.title.changeDefaultLabelForLocale(this.state.currentLocale, a.titleLabel.trim())
+            this.media.title.changeDefaultLabelForLocale(this.state.currentLocale, this.media.titleLabel.trim())
           ).subscribe(_ => {
           });
         } else {
           this.bot.createI18nLabel(
             new CreateI18nLabelRequest(
               this.category,
-              a.titleLabel.trim(),
+              this.media.titleLabel.trim(),
               this.state.currentLocale,
             )
-          ).subscribe(i18n => a.title = i18n);
+          ).subscribe(i18n => this.media.title = i18n);
         }
-        return a
-      });
+      } else {
+        this.media.title = null
+      }
 
-    this.dialogRef.close({
-      media: this.media
-    });
+      if (this.isSubtitle()) {
+        if (this.media.subTitle) {
+          this.bot.saveI18nLabel(
+            this.media.subTitle.changeDefaultLabelForLocale(this.state.currentLocale, this.media.subTitleLabel.trim())
+          ).subscribe(_ => {
+          });
+        } else {
+          this.bot.createI18nLabel(
+            new CreateI18nLabelRequest(
+              this.category,
+              this.media.subTitleLabel.trim(),
+              this.state.currentLocale,
+            )
+          ).subscribe(i18n => this.media.subTitle = i18n);
+        }
+      } else {
+        this.media.subTitle = null
+      }
+
+      this.media.actions = this.media.actions
+        .filter(a => a.titleLabel && a.titleLabel.trim().length !== 0)
+        .map(a => {
+          if (a.title) {
+            this.bot.saveI18nLabel(
+              a.title.changeDefaultLabelForLocale(this.state.currentLocale, a.titleLabel.trim())
+            ).subscribe(_ => {
+            });
+          } else {
+            this.bot.createI18nLabel(
+              new CreateI18nLabelRequest(
+                this.category,
+                a.titleLabel.trim(),
+                this.state.currentLocale,
+              )
+            ).subscribe(i18n => a.title = i18n);
+          }
+          return a
+        });
+
+      this.dialogRef.close({
+        media: this.media
+      });
+    }
   }
 
   remove() {
