@@ -32,6 +32,7 @@ $dokka.location:ai.tock.shared$provide(com.github.salomonbrys.kodein.KodeinInjec
 $dokka.location:ai.tock.shared$provideOrDefault(com.github.salomonbrys.kodein.KodeinInjector, kotlin.Any, kotlin.Function0((ai.tock.shared.provideOrDefault.T)))ai.tock.shared/com.github.salomonbrys.kodein.-kodein-injector/provide-or-default.html
 $dokka.location:ai.tock.shared$sumByLong(kotlin.collections.Iterable((ai.tock.shared.sumByLong.T)), kotlin.Function1((ai.tock.shared.sumByLong.T, kotlin.Long)))ai.tock.shared/kotlin.collections.-iterable/sum-by-long.html
 $dokka.location:ai.tock.shared$toList(kotlin.collections.Iterator((ai.tock.shared.toList.T)))ai.tock.shared/kotlin.collections.-iterator/to-list.html
+$dokka.location:ai.tock.shared$toSafeList(kotlin.collections.Iterator((ai.tock.shared.toSafeList.T)))ai.tock.shared/kotlin.collections.-iterator/to-safe-list.html
 $dokka.location:ai.tock.shared$toSet(java.util.Enumeration((ai.tock.shared.toSet.T)))ai.tock.shared/java.util.-enumeration/to-set.html
 $dokka.location:ai.tock.shared$trace(mu.KLogger, kotlin.Throwable)ai.tock.shared/mu.-k-logger/trace.html
 $dokka.location:ai.tock.shared$warn(mu.KLogger, kotlin.Throwable)ai.tock.shared/mu.-k-logger/warn.html

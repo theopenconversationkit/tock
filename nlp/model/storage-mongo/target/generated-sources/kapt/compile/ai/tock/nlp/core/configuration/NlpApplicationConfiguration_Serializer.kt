@@ -27,6 +27,21 @@ internal class NlpApplicationConfiguration_Serializer :
         gen.writeFieldName("entityConfiguration")
         val _entityConfiguration_ = value.entityConfiguration
         serializers.defaultSerializeValue(_entityConfiguration_, gen)
+        gen.writeFieldName("applicationConfiguration")
+        val _applicationConfiguration_ = value.applicationConfiguration
+        serializers.defaultSerializeValue(_applicationConfiguration_, gen)
+        gen.writeFieldName("hasTokenizerConfiguration")
+        val _hasTokenizerConfiguration_ = value.hasTokenizerConfiguration
+        gen.writeBoolean(_hasTokenizerConfiguration_)
+        gen.writeFieldName("hasIntentConfiguration")
+        val _hasIntentConfiguration_ = value.hasIntentConfiguration
+        gen.writeBoolean(_hasIntentConfiguration_)
+        gen.writeFieldName("hasEntityConfiguration")
+        val _hasEntityConfiguration_ = value.hasEntityConfiguration
+        gen.writeBoolean(_hasEntityConfiguration_)
+        gen.writeFieldName("hasApplicationConfiguration")
+        val _hasApplicationConfiguration_ = value.hasApplicationConfiguration
+        gen.writeBoolean(_hasApplicationConfiguration_)
         gen.writeEndObject()
     }
 }

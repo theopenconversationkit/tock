@@ -64,6 +64,14 @@
 </tr>
 <tr>
 <td>
+<h4><a href="default-story.html">defaultStory</a></h4>
+</td>
+<td>
+<p>Provides default Story when no context is known - default to <a href="hello-story.html">helloStory</a> or first <a href="stories.html">stories</a>.</p>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">defaultStory</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a></code></td>
+</tr>
+<tr>
+<td>
 <h4><a href="default-unknown-answer.html">defaultUnknownAnswer</a></h4>
 </td>
 <td>
@@ -228,6 +236,14 @@
 </tr>
 <tr>
 <td>
+<h4><a href="find-story-by-story-handler.html">findStoryByStoryHandler</a></h4>
+</td>
+<td>
+<p>Search story by storyHandler.</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">findStoryByStoryHandler</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$findStoryByStoryHandler(ai.tock.bot.definition.StoryHandler)/storyHandler">storyHandler</span><span class="symbol">:</span>&nbsp;<a href="../-story-handler/index.html"><span class="identifier">StoryHandler</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
 <h4><a href="find-story-definition.html">findStoryDefinition</a></h4>
 </td>
 <td>
@@ -235,6 +251,14 @@
 <code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">findStoryDefinition</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$findStoryDefinition(ai.tock.bot.definition.IntentAware)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a></code>
 <p>Finds a <a href="../-story-definition/index.html">StoryDefinition</a> from an intent name.</p>
 <code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">findStoryDefinition</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$findStoryDefinition(kotlin.String, kotlin.String)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$findStoryDefinition(kotlin.String, kotlin.String)/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="find-story-definition-by-id.html">findStoryDefinitionById</a></h4>
+</td>
+<td>
+<p>Search story by storyId.</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">findStoryDefinitionById</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$findStoryDefinitionById(kotlin.String)/storyId">storyId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a></code></td>
 </tr>
 <tr>
 <td>

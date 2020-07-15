@@ -1,13 +1,24 @@
 
-- 20.3.3 July 2020
-    - Spacy, Rasa & Spark NLP support (external nlp support)    
+- 20.3.4 August 2020
+    - Story configuration by configuration name
+    - Rasa support (production ready version)
+    - Web bot orchestration support   
     
 - 20.9.0 September 2020
-    - Conversational framework: support for other languages than Kotlin (multi-platform Kotlin)
     - AB test engine workflow
-    - Code editor admin interface      
+    - Tock Studio UI cleanup
+    
+21.3.0 March 2021
+    - Code editor admin interface 
+    - Conversational framework: support for other languages than Kotlin (multi-platform Kotlin)         
     
 ## Latest releases 
+
+- 20.3.3 July 2020
+    - Rasa support (alpha version)   
+    - Bot analytics support
+    - Story configuration view enhancements 
+    - Google Hangouts chat connector
 
 - 20.3.2 June 2020 
     - Bux fixes

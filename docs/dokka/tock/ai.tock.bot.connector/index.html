@@ -96,6 +96,15 @@ The implementation is loaded at runtime to list all available connectors, using 
 </tr>
 <tr>
 <td>
+<h4><a href="-connector-service/index.html">ConnectorService</a></h4>
+</td>
+<td>
+<p>Ability from any module to add a service to a ConnectorController
+Need to be registered using <a href="../ai.tock.bot.engine/-bot-repository/register-connector-service.html">ai.tock.bot.engine.BotRepository.registerConnectorService</a>.</p>
+<code><span class="keyword">interface </span><span class="identifier">ConnectorService</span></code></td>
+</tr>
+<tr>
+<td>
 <h4><a href="-connector-type/index.html">ConnectorType</a></h4>
 </td>
 <td>
@@ -125,6 +134,16 @@ The implementation is loaded at runtime to list all available connectors, using 
 <td>
 <p>Manage bot state and notifications.</p>
 <code><span class="keyword">enum</span> <span class="keyword">class </span><span class="identifier">NotifyBotStateModifier</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-serializable-connector-message.html">SerializableConnectorMessage</a></h4>
+</td>
+<td>
+<p>A json serializable <a href="-connector-message/index.html">ConnectorMessage</a>.
+For a <a href="-connector/index.html">Connector</a> implementation, implementing this interface for all of its <a href="-connector-message/index.html">ConnectorMessage</a> types is prerequisite
+in order to support bot orchestration.</p>
+<code><span class="keyword">interface </span><span class="identifier">SerializableConnectorMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a></code></td>
 </tr>
 </tbody>
 </table>

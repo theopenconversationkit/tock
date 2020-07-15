@@ -20,6 +20,17 @@ internal class NlpModelConfiguration_Serializer :
         gen.writeFieldName("properties")
         val _properties_ = value.properties
         serializers.defaultSerializeValue(_properties_, gen)
+        gen.writeFieldName("markdown")
+        val _markdown_ = value.markdown
+        if(_markdown_ == null) { gen.writeNull() } else {
+                gen.writeString(_markdown_)
+                }
+        gen.writeFieldName("hasProperties")
+        val _hasProperties_ = value.hasProperties
+        gen.writeBoolean(_hasProperties_)
+        gen.writeFieldName("hasMarkdown")
+        val _hasMarkdown_ = value.hasMarkdown
+        gen.writeBoolean(_hasMarkdown_)
         gen.writeEndObject()
     }
 }
