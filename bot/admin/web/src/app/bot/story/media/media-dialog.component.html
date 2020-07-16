@@ -15,7 +15,7 @@
   -->
 
 <h1 mat-dialog-title>Media Message</h1>
-<span class="subTitle">All fields are optional</span>
+<span class="subTitle">At least one of Title, Subtitle or File is required.</span>
 <div class="container">
 
   <form #mediaForm="ngForm" class="container">
@@ -39,8 +39,8 @@
     </p>
     <!-- subTitle -->
     <mat-form-field>
-      <input matInput name="subTitle" placeholder="Sub Title" [(ngModel)]="media.subTitleLabel"
-             matTooltip="Card Sub Title">
+      <input matInput name="subTitle" placeholder="Subtitle" [(ngModel)]="media.subTitleLabel"
+             matTooltip="Card Subtitle">
     </mat-form-field>
 
     <!-- actions -->
