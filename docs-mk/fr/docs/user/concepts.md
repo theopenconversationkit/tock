@@ -102,7 +102,7 @@ solutions conversationnelles :
 | Connector        | Integration          |   |   |
 | Application      | Project / Agent      | Skill             | 
 
-> La documentation des [connecteurs Tock](canaux.md) donne également la correspondance avec d'autres termes propres à 
+> La documentation des [connecteurs Tock](guides/canaux.md) donne également la correspondance avec d'autres termes propres à 
 >tel ou tel canal.
 
 ## Continuer...

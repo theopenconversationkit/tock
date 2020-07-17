@@ -25,9 +25,10 @@ nav:
         - 'Le menu Analytics': 'user/studio/analytics.md'
         - 'Le menu Quality': 'user/studio/nlu-qa.md'
         - 'Le menu Settings': 'user/studio/configuration.md'
-      - 'Construire un modèle conversationnel':  'user/studio/build-model.md'
-      - 'Bot multicanal': 'user/canaux.md'
-      - 'Bot multilingue': 'user/i18n.md'
+      - 'Guides':
+          - 'Construire un modèle conversationnel':  'user/guides/build-model.md'
+          - 'Bot multicanal': 'user/guides/canaux.md'
+          - 'Bot multilingue': 'user/guides/i18n.md'
   - 'Développer avec Tock':
       - 'Modes disponibles': 'dev/modes.md'
       - 'Tock Bot API': 'dev/bot-api.md'

@@ -15,6 +15,9 @@ Dans cette section, vous trouverez la description de chaque vue :
     * [Le menu _Model Quality_](studio/nlu-qa.md)
     * [Le menu _Settings_](studio/configuration.md)
 
-Pour des thèmes ou des fonctionnalités particulières voir les [guides utilisateur](guides.md).
+Pour des thèmes ou des fonctionnalités particulières voir les [guides utilisateur](guides.md):
+    * [Construire un modèle conversationnel](guides/build-model.md)
+    * [Créer un bot multicanal (connecteurs)](guides/canaux.md)
+    * [Créer un bot multilingue (internationalisation)](guides/i18n.md)
     
 > Vous pouvez aussi passer directement au chapitre suivant : [Développement](dev/de). 

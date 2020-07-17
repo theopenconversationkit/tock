@@ -27,6 +27,6 @@ permettant par exemple de faire du debug pas-à-pas), suivez ces instructions :
 
 * Demandez votre propre [clef SNCF Open Data](https://data.sncf.com/) (gratuite) et configurez la variable d'environnement (voir [OpenDataConfiguration](https://github.com/theopenconversationkit/tock-bot-open-data/blob/master/src/main/kotlin/ai.tock/bot/open/data/OpenDataConfiguration.kt#L29))
 
-* Configurez un connecteur : Messenger, Google Assistant ou autre (voir [canaux et connecteurs](../user/canaux.md))
+* Configurez un connecteur : Messenger, Google Assistant ou autre (voir [canaux et connecteurs](../user/guides/canaux.md))
 
 * Démarrez le lanceur `OpenDataBot` dans votre IDE, IntelliJ ou autre. Le bot est opérationnel, parlez-lui ! :)

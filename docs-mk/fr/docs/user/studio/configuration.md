@@ -22,7 +22,7 @@ Pour ajouter une application, cliquez sur _Create New Application_ :
 
 * Choisissez si le modèle pourra inclure des _entités_ voire des _sous-entités_ (cf [Concepts](../concepts.md) pour en savoir plus)
 
-* Sélectionnez une ou plusieurs langues (voir [Construire un bot multilingue](../i18n.md) pour en savoir plus)
+* Sélectionnez une ou plusieurs langues (voir [Construire un bot multilingue](../guides/i18n.md) pour en savoir plus)
 
 * Sélectionnez un moteur NLU ([Apache OpenNLP](https://opennlp.apache.org/) ou [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/), 
 voir [Installation](../../admin/installation.md) pour en savoir plus)
@@ -87,7 +87,7 @@ Tous les connecteurs possèdent la configuration suivante :
 
 Chaque connecteur possède également une configuration supplémentaire spécifique à ce type de connecteur. Ces paramètres 
 sont dans _Connector Custom Configuration_. Ces paramètres spécifiques sont documentés avec chaque type de connecteur/canal, 
-voir [Les connecteurs](../canaux.md).
+voir [Les connecteurs](../guides/canaux.md).
 
 
 ### Connecteurs de test
@@ -119,6 +119,6 @@ par les utilisateurs via Tock Studio: création d'applications, modifications de
 
 ## Continuer...
 
-Rendez-vous dans [_Construire un modèle conversationnel_](build-model.md) pour la suite du manuel utilisateur. 
+Rendez-vous dans [_Guides utilisateur_](../guides.md) pour la suite du manuel utilisateur.
 
 > Vous pouvez aussi passer directement au chapitre suivant : [Développement](../../dev/modes.md). 

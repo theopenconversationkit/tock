@@ -22,9 +22,9 @@
         - [Le menu _Model Quality_](user/studio/nlu-qa.md)
         - [Le menu _Settings_](user/studio/configuration.md)
     - [Guides](user/guides.md) :
-        - [Construire un modèle conversationnel](user/studio/build-model.md)
-        - [Créer un bot multicanal (connecteurs)](user/canaux.md)
-        - [Créer un bot multilingue (internationalisation)](user/i18n.md)
+        - [Construire un modèle conversationnel](user/guides/build-model.md)
+        - [Créer un bot multicanal (connecteurs)](user/guides/canaux.md)
+        - [Créer un bot multilingue (internationalisation)](user/guides/i18n.md)
 
 - Développer avec Tock :
     - [Modes disponibles](dev/modes.md)
