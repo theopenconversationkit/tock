@@ -149,7 +149,7 @@ La variable `openBot` dans l'exemple est le bot que vous avez défini plus haut.
 Une fois le bot démarré, il est également nécessaire de spécifier quels connecteurs sont utilisés
 dans l'interface d'administration du bot, du menu _Configuration_ > _Bot Configurations_ > _Create a new configuration_.
 
-Pour en savoir plus sur les différents canaux et connecteurs, voir [cette page](../user/canaux.md).
+Pour en savoir plus sur les différents canaux et connecteurs, voir [cette page](../user/guides/canaux.md).
 
 ## Aller plus loin
 

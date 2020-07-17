@@ -9,7 +9,7 @@ Deux composants majeurs sont disponibles :
 
 * le moteur _NLU_ : _Natural Language Understanding_ (voir [_Tock Studio_](../user/studio.md))
 * le framework conversationnel intégré aux services _NLU_ et à différents connecteurs comme 
- Messenger, Google Assistant ou Slack (voir [manuel développeur](../dev/modes.md) et [connecteurs](../user/canaux.md)).
+ Messenger, Google Assistant ou Slack (voir [manuel développeur](../dev/modes.md) et [connecteurs](../user/guides/canaux.md)).
 
 ![schéma Tock](../img/tock.png "Les différentes composantes de Tock")
  

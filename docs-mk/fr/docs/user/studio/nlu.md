@@ -4,7 +4,7 @@ Le menu _Language Understanding_ (ou _NLU_) permet de créer, modifier, enrichir
  déclarer des _intentions_ et des _entités_, _qualifier_ des phrases, etc. (voir [Concepts](../concepts.md)
  pour en savoir plus).
  
-Dans cette page, le détail de chaque onglet est présenté. Voir aussi [Construire les modèles conversationnels](build-model.md)
+Dans cette page, le détail de chaque onglet est présenté. Voir aussi [Construire les modèles conversationnels](../guides/build-model.md)
 pour une présentation plus guidée par l'usage.
 
 ## L'onglet _New Sentence_
@@ -34,7 +34,7 @@ listes de sélection sous la phrase
 ![schéma Tock](../../img/try-it-3.png "Ajout d'une entité - étape 1")
 
 > Remarque : si vous avez activé cette option au niveau de l'application/bot, il est possible de déclarer des 
->_sous-entités_. Vous en apprendrez plus dans [Construire les modèles conversationnels](build-model.md).
+>_sous-entités_. Vous en apprendrez plus dans [Construire les modèles conversationnels](../guides/build-model.md).
 
 Les boutons et commandes suivantes sont disponibles pour la phrase dans sa globalité :
 

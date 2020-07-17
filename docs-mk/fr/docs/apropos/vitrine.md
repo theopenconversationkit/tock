@@ -30,7 +30,7 @@ comme les technologies vocales [Allo-Media](https://www.allo-media.net/) et [Vox
 Le bot _AlloCovid_ est construit autour de technologies open source (à travers la plateforme Tock), 
 et lui-même open source : les sources du bot sont disponibles sur le dépôt [`allocovid`](https://github.com/theopenconversationkit/allocovid).
 
-> Avec les sources du bot on trouve également celles du [_connecteur Allo-Media_](../user/canaux.md#allo-media), 
+> Avec les sources du bot on trouve également celles du [_connecteur Allo-Media_](../user/guides/canaux.md#allo-media), 
 > quelques explications techniques sur le bot et la [spécification fonctionnelle](https://github.com/Delegation-numerique-en-sante/covid19-algorithme-orientation) 
 du questionnaire Covid.
 

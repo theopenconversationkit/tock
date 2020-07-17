@@ -1,6 +1,6 @@
 # Les connecteurs Tock
 
-La page [Bot multicanal](../user/canaux.md) de la documentation utilisateur présente la notion de _connecteur_ Tock,
+La page [Bot multicanal](../user/guides/canaux.md) de la documentation utilisateur présente la notion de _connecteur_ Tock,
 ainsi que la liste des connecteurs déjà disponibles.
 
 Cette page n'ajoute donc que les éléments propres au développement avec les _connecteurs_ Tock ou le développement de 

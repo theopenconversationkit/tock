@@ -38,7 +38,7 @@ déployable seule si besoin (pour des usages comme l'[Internet des objets](https
 * Nombreux connecteurs pour [Messenger](https://www.messenger.com/), [WhatsApp](https://www.whatsapp.com/), 
 [Google Assistant / Home](https://assistant.google.com/), [Twitter](https://twitter.com/), [Alexa](https://alexa.amazon.com/), 
 [Business Chat / iMessage](https://www.apple.com/fr/ios/business-chat/), [Teams](https://products.office.com/fr-fr/microsoft-teams/), 
-[Slack](https://slack.com/)... (voir [connecteurs](user/canaux.md))
+[Slack](https://slack.com/)... (voir [connecteurs](user/guides/canaux.md))
 * Installation _cloud_ ou _on-premise_, avec ou sans [Docker](https://www.docker.com/), 
 bot _"embarqué"_ sans Internet 
 
