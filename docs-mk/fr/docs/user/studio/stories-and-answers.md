@@ -41,7 +41,7 @@ Il est possible de présenter une arborescence d'actions pour construire un arbr
 
 ## L'onglet _Stories_
 
-Cette écran permet de parcourir et gérer les parcours ou _stories_ créées.
+Cet écran permet de parcourir et gérer les parcours ou _stories_ créées.
 
 Il peut s'agir des parcours configurés via _Tock Studio_ (ie. avec l'onglet _New Story_) mais aussi les parcours 
 déclarés programmatiquement via [_Bot API_](../../dev/bot-api.md). Pour voir ces derniers, décochez l'option 
@@ -50,6 +50,7 @@ _Only Configured Stories_.
 ## L'onglet _Rules_
 
 Cet onglet contient les sections suivantes :
+
 * _Tagged Stories_
     
     Cette section permet de visualiser les different stories qui ont une fonction particulière en fonction des tags avec lesquelles elles sont configurées.

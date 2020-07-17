@@ -4,8 +4,7 @@ _Tock Studio_ regroupe l'ensemble des interfaces utilisateur, techniques et mét
 de concevoir les modèles conversationnels, créer des parcours et des réponses, suivre les conversations, 
  analyser les tendances, etc.
 
-Dans cette section, vous trouverez la description de chaque vue mais aussi des pages dédiées à 
-des thèmes ou des fonctionnalités particulières :
+Dans cette section, vous trouverez la description de chaque vue :
 
 * Les interfaces de _Tock Studio_ :
     * [Interface générale](studio/general.md)
@@ -16,9 +15,6 @@ des thèmes ou des fonctionnalités particulières :
     * [Le menu _Model Quality_](studio/nlu-qa.md)
     * [Le menu _Settings_](studio/configuration.md)
 
-* Voir aussi :
-    * [Construire un modèle conversationnel](studio/build-model.md)
-    * [Créer un bot multicanal (connecteurs)](canaux.md)
-    * [Créer un bot multilingue (internationalisation)](i18n.md)
+Pour des thèmes ou des fonctionnalités particulières voir les [guides utilisateur](guides.md).
     
 > Vous pouvez aussi passer directement au chapitre suivant : [Développement](dev/de). 
