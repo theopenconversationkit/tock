@@ -21,6 +21,7 @@ import ai.tock.bot.orchestration.shared.OrchestrationMetaData
 import ai.tock.bot.orchestration.shared.OrchestrationTargetedBot
 import ai.tock.bot.orchestration.shared.SecondaryBotAction
 import ai.tock.shared.booleanProperty
+import com.fasterxml.jackson.annotation.JsonIgnore
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 
@@ -39,5 +40,9 @@ data class Orchestration(
     var status: OrchestrationStatus = OrchestrationStatus.ACTIVE,
     val history: MutableList<SecondaryBotAction> = mutableListOf()
 ) {
+    @get:JsonIgnore
+    val locked: Boolean
+        get() = history.lastOrNull()?.metadata?.orchestrationLock == true
+
     fun update(action: SecondaryBotAction) = history.add(action)
 }

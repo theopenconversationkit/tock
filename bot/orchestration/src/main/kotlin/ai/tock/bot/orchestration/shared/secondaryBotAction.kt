@@ -18,6 +18,7 @@ package ai.tock.bot.orchestration.shared
 
 import ai.tock.bot.connector.SerializableConnectorMessage
 import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.action.ActionMetadata
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendSentence
 import com.fasterxml.jackson.annotation.JsonSubTypes
@@ -33,13 +34,13 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(value = SecondaryBotSendChoice::class, name = "sendChoice")
 )
 interface SecondaryBotAction {
-
+    val metadata: ActionMetadata
     fun toAction(metaData: OrchestrationMetaData) : Action
 
     companion object {
         fun from(action : Action) : SecondaryBotAction? = when (action) {
-            is SendSentence -> SecondaryBotSendSentence(messages = action.messages.filterIsInstance<SerializableConnectorMessage>(), text = action.text?.toString())
-            is SendChoice -> SecondaryBotSendChoice(intentName = action.intentName, parameters = action.parameters)
+            is SendSentence -> SecondaryBotSendSentence(messages = action.messages.filterIsInstance<SerializableConnectorMessage>(), text = action.text?.toString(), metadata = action.metadata)
+            is SendChoice -> SecondaryBotSendChoice(intentName = action.intentName, parameters = action.parameters, metadata = action.metadata)
             else -> null
         }
     }
@@ -47,7 +48,8 @@ interface SecondaryBotAction {
 
 data class SecondaryBotSendSentence(
     val messages: List<SerializableConnectorMessage>,
-    val text: String?
+    val text: String?,
+    override val metadata: ActionMetadata
 ) : SecondaryBotAction {
     override fun toAction(
         metaData: OrchestrationMetaData
@@ -56,13 +58,15 @@ data class SecondaryBotSendSentence(
         applicationId = metaData.applicationId,
         recipientId = metaData.recipientId,
         text = text,
-        messages = messages.toMutableList()
+        messages = messages.toMutableList(),
+        metadata = metadata
     )
 }
 
 data class SecondaryBotSendChoice(
     val intentName: String,
-    val parameters: Map<String, String> = emptyMap()
+    val parameters: Map<String, String> = emptyMap(),
+    override val metadata: ActionMetadata
 ) : SecondaryBotAction{
     override fun toAction(
         metaData: OrchestrationMetaData
@@ -71,6 +75,7 @@ data class SecondaryBotSendChoice(
         applicationId = metaData.applicationId,
         recipientId = metaData.recipientId,
         intentName = intentName,
-        parameters = parameters
+        parameters = parameters,
+        metadata = metadata
     )
 }

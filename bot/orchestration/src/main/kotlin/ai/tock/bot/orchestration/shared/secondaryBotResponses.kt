@@ -48,7 +48,7 @@ interface SecondaryBotResponse {
             return if (sentences.isNotEmpty()) {
                 SecondaryBotAvailableResponse(
                     actions = sentences.map { sentence ->
-                        SecondaryBotSendSentence(messages = sentence.messages.filterIsInstance<SerializableConnectorMessage>(), text = sentence.text?.toString())
+                        SecondaryBotSendSentence(messages = sentence.messages.filterIsInstance<SerializableConnectorMessage>(), text = sentence.text?.toString(), metadata = sentence.metadata)
                     },
                     metaData = answerMetadata
                 )

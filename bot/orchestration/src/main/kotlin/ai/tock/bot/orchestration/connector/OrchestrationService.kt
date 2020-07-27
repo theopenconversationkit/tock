@@ -18,7 +18,9 @@ package ai.tock.bot.orchestration.connector
 
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.connector.ConnectorService
+import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.ConnectorController
+import ai.tock.bot.orchestration.bot.primary.OrchestrationSecondaryBotResponseInterceptor
 import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.injector
@@ -33,6 +35,7 @@ internal class OrchestrationService : ConnectorService {
 
     override fun install(controller: ConnectorController, configuration: BotApplicationConfiguration) {
         if (orchestrationEnabled && controller.connector is OrchestrationConnector) {
+            BotRepository.registerBotAnswerInterceptor(OrchestrationSecondaryBotResponseInterceptor())
             (controller.connector as OrchestrationConnector).getOrchestrationHandlers().apply {
                 val path = configuration.toConnectorConfiguration().path + "/orchestration"
                 controller.registerServices(path) { router ->
