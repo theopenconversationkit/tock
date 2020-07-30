@@ -42,7 +42,7 @@ class BuildModelWorker {
         private val testModelEnabled = booleanProperty("tock_test_model_enabled", true)
         internal val cleanupModelEnabled = booleanProperty("tock_cleanup_model_enabled", true)
 
-        val front = FrontClient
+        private val front = FrontClient
 
         fun updateAllModels() {
             FrontClient.getApplications().forEach { updateApplicationModels(it) }
@@ -53,7 +53,7 @@ class BuildModelWorker {
             app.supportedLocales.forEach { locale ->
                 front.updateIntentsModelForApplication(emptyList(), app, locale, app.nlpEngineType, onlyIfNotExists)
                 app.intents.forEach { intentId ->
-                    logger.info { "start model update for ${app.name}, intent ${intentId} and $locale" }
+                    logger.info { "start model update for ${app.name}, intent $intentId and $locale" }
                     front.updateEntityModelForIntent(
                         emptyList(),
                         app,
@@ -83,7 +83,7 @@ class BuildModelWorker {
 
                 front.updateIntentsModelForApplication(sentences, app, key.language, app.nlpEngineType, onlyIfNotExists)
                 sentences.groupBy { it.classification.intentId }.forEach { intentId, intentSentences ->
-                    logger.info { "start model update for ${app.name}, intent ${intentId} and ${key.language}" }
+                    logger.info { "start model update for ${app.name}, intent $intentId and ${key.language}" }
                     front.updateEntityModelForIntent(
                         intentSentences,
                         app,
@@ -175,7 +175,7 @@ class BuildModelWorker {
                     front.getApplicationById(trigger.applicationId)?.let {
                         updateApplicationModels(it, trigger.onlyIfModelNotExists)
                     } ?: logger.warn {
-                        "unknown application id trigger ${trigger} - skipped"
+                        "unknown application id trigger $trigger - skipped"
                     }
                 }
                 return true

@@ -14,26 +14,19 @@
  * limitations under the License.
  */
 
-package ai.tock.nlp.build
+package ai.tock.nlp.build.ondemand
 
-import ai.tock.shared.Executor
-import ai.tock.shared.injector
-import com.github.salomonbrys.kodein.instance
-import io.vertx.core.AbstractVerticle
-import java.time.Duration
+import java.util.ServiceLoader
 
-/**
- *
- */
-class CleanupModelWorkerVerticle : AbstractVerticle() {
+typealias WorkerOnDemandType = String
 
-    private val executor: Executor by injector.instance()
-
-    override fun start() {
-        if (BuildModelWorker.cleanupModelEnabled) {
-            executor.setPeriodic(Duration.ofHours(12)) {
-                BuildModelWorker.cleanupModel()
-            }
-        }
+interface WorkerOnDemandProvider {
+    companion object {
+        private val providers: Set<WorkerOnDemandProvider> = ServiceLoader.load(WorkerOnDemandProvider::class.java).toSet()
+        fun provide(type: WorkerOnDemandType, properties: WorkerProperties) =
+            providers.findLast { it.workerOnDemandType == type }?.provide(properties)
     }
+
+    val workerOnDemandType: WorkerOnDemandType
+    fun provide(workerProperties: WorkerProperties): WorkerOnDemand
 }

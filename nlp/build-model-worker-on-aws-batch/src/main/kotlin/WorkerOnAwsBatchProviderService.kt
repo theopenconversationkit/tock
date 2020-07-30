@@ -14,26 +14,8 @@
  * limitations under the License.
  */
 
-package ai.tock.nlp.build
+package ai.tock.nlp.build.aws
 
-import ai.tock.shared.Executor
-import ai.tock.shared.injector
-import com.github.salomonbrys.kodein.instance
-import io.vertx.core.AbstractVerticle
-import java.time.Duration
+import ai.tock.nlp.build.ondemand.WorkerOnDemandProvider
 
-/**
- *
- */
-class CleanupModelWorkerVerticle : AbstractVerticle() {
-
-    private val executor: Executor by injector.instance()
-
-    override fun start() {
-        if (BuildModelWorker.cleanupModelEnabled) {
-            executor.setPeriodic(Duration.ofHours(12)) {
-                BuildModelWorker.cleanupModel()
-            }
-        }
-    }
-}
+internal class WorkerOnAwsBatchProviderService : WorkerOnDemandProvider by WorkerOnAwsBatchProvider

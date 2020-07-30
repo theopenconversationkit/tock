@@ -16,24 +16,27 @@
 
 package ai.tock.nlp.build
 
-import ai.tock.shared.Executor
-import ai.tock.shared.injector
-import com.github.salomonbrys.kodein.instance
-import io.vertx.core.AbstractVerticle
-import java.time.Duration
-
 /**
- *
+ * Build type.
  */
-class CleanupModelWorkerVerticle : AbstractVerticle() {
+enum class BuildType {
+    /**
+     * Build is started only if at least one sentence status has changed.
+     */
+    REBUILD_DIFF,
 
-    private val executor: Executor by injector.instance()
+    /**
+     * Full rebuild.
+     */
+    REBUILD_ALL,
 
-    override fun start() {
-        if (BuildModelWorker.cleanupModelEnabled) {
-            executor.setPeriodic(Duration.ofHours(12)) {
-                BuildModelWorker.cleanupModel()
-            }
-        }
-    }
+    /**
+     * Test build.
+     */
+    TEST,
+
+    /**
+     * Cleanup orphan builds.
+     */
+    CLEANUP
 }

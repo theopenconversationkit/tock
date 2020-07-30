@@ -16,10 +16,7 @@
 
 package ai.tock.nlp.build
 
-import ai.tock.shared.TOCK_FRONT_DATABASE
-import ai.tock.shared.TOCK_MODEL_DATABASE
-import ai.tock.shared.jackson.mapper
-import ai.tock.shared.pingMongoDatabase
+import ai.tock.nlp.build.ondemand.WorkerOnDemandVerticle
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.detailedHealthcheck
 import io.vertx.ext.web.RoutingContext
@@ -27,31 +24,32 @@ import io.vertx.ext.web.RoutingContext
 /**
  *
  */
-class HealthCheckVerticle(
-    private val buildVerticle: BuildModelWorkerVerticle
+class OnDemandHealthCheckVerticle(
+    private val workerOnDemandVerticles: List<WorkerOnDemandVerticle>
 ) : WebVerticle() {
 
     override fun configure() {
         //do nothing
     }
 
-    override fun defaultHealthcheck(): (RoutingContext) -> Unit =
-        { context ->
-            context.response().end(
-                mapper.writeValueAsString(
-                    listOf(
-                    "current build" to !buildVerticle.canAnalyse.get()
-                    )
+    override fun defaultHealthcheck(): (RoutingContext) -> Unit {
+        return {
+            it.response()
+                .setStatusCode(
+                    if (workerOnDemandVerticles.none { workerOnDemandVerticle -> !workerOnDemandVerticle.isLoaded() })
+                        200
+                    else
+                        500
                 )
-            )
+                .end()
         }
+    }
 
     override fun detailedHealthcheck(): (RoutingContext) -> Unit = detailedHealthcheck(
-        listOf(
-            Pair("tock_front_database", { pingMongoDatabase(TOCK_FRONT_DATABASE) }),
-            Pair("tock_model_database", { pingMongoDatabase(TOCK_MODEL_DATABASE) })
-        ),
-        selfCheck = { buildVerticle.canAnalyse.get() }
+        workerOnDemandVerticles.map {
+            Pair(it.name(), { it.isLoaded() })
+        },
+        selfCheck = { workerOnDemandVerticles.none { !it.isLoaded() } }
     )
 
 }

@@ -20,65 +20,92 @@ import ai.tock.nlp.build.BuildType.CLEANUP
 import ai.tock.nlp.build.BuildType.REBUILD_ALL
 import ai.tock.nlp.build.BuildType.REBUILD_DIFF
 import ai.tock.nlp.build.BuildType.TEST
+import ai.tock.nlp.build.ondemand.WorkerOnDemandVerticle
 import ai.tock.nlp.front.ioc.FrontIoc
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.error
+import ai.tock.shared.listProperty
+import ai.tock.shared.longProperty
+import ai.tock.shared.property
+import ai.tock.shared.propertyExists
 import ai.tock.shared.vertx.vertx
-import com.github.salomonbrys.kodein.Kodein
 import io.vertx.core.DeploymentOptions
 import mu.KotlinLogging
 import kotlin.system.exitProcess
 
 private val logger = KotlinLogging.logger {}
+
+@Deprecated("Use tock_build_worker_mode property instead")
 private val buildWorkerVerticleEnabled = booleanProperty("tock_build_worker_verticle_enabled", true)
 
-/**
- * Build type.
- */
-enum class BuildType {
-    /**
-     * Build is started only if at least one sentence status has changed.
-     */
-    REBUILD_DIFF,
-
-    /**
-     * Full rebuild.
-     */
-    REBUILD_ALL,
-
-    /**
-     * Test build.
-     */
-    TEST,
-
-    /**
-     * Cleanup orphan builds.
-     */
-    CLEANUP
-}
-
 fun main(vararg args: String) {
-    startBuildWorker(args.getOrNull(0)?.let { arg -> BuildType.values().find { it.name == arg } }
+    val buildWorkerMode = if (buildWorkerVerticleEnabled && !propertyExists("tock_build_worker_mode"))
+        BuildMode.VERTICLE
+    else
+        BuildMode.valueOf(property("tock_build_worker_mode", "COMMAND_LINE"))
+    startBuildWorker(buildWorkerMode, args.getOrNull(0)?.let { arg -> BuildType.values().find { it.name == arg } }
         ?: REBUILD_ALL)
 }
 
-fun startBuildWorker(buildType: BuildType, vararg modules: Kodein.Module) {
-    FrontIoc.setup(*modules)
-    if (buildWorkerVerticleEnabled) {
-        startVerticle()
-    } else {
-        startProcess(buildType)
+fun startBuildWorker(buildMode: BuildMode, buildType: BuildType) {
+    logger.info { "Start worker with $buildMode mode" }
+    when (buildMode) {
+        BuildMode.ON_DEMAND -> startOnDemandVerticle()
+        BuildMode.COMMAND_LINE -> startCommandLine(buildType)
+        else -> startVerticle()
     }
 }
 
 private fun startVerticle() {
+    FrontIoc.setup()
     val buildModelWorkerVerticle = BuildModelWorkerVerticle()
     vertx.deployVerticle(buildModelWorkerVerticle, DeploymentOptions().setWorker(true))
     vertx.deployVerticle(CleanupModelWorkerVerticle(), DeploymentOptions().setWorker(true))
     vertx.deployVerticle(HealthCheckVerticle(buildModelWorkerVerticle))
 }
 
-private fun startProcess(buildType: BuildType) {
+private fun startOnDemandVerticle() {
+    val workerOnDemandType = property("tock_build_worker_on_demand_type", "AWS_BATCH")
+    val cleanupOnDemandVerticle = WorkerOnDemandVerticle(
+        workerOnDemandType = workerOnDemandType,
+        buildType = CLEANUP.toString(),
+        delayBetweenJob = longProperty("tock_build_worker_on_demand_delay_between_job_cleanup", 12 * 60),
+        timeFrame = listProperty("tock_build_worker_on_demand_timeframe_cleanup", listOf("0", "24")).map { it.toInt() }
+    )
+    val rebuildDiffOnDemandVerticle = WorkerOnDemandVerticle(
+        workerOnDemandType = workerOnDemandType,
+        buildType = REBUILD_DIFF.toString(),
+        delayBetweenJob = longProperty("tock_build_worker_on_demand_delay_between_job_rebuild_diff", 60),
+        timeFrame = listProperty("tock_build_worker_on_demand_timeframe_rebuild_diff", listOf("0", "24")).map { it.toInt() }
+    )
+    val testOnDemandVerticle = WorkerOnDemandVerticle(
+        workerOnDemandType = workerOnDemandType,
+        buildType = TEST.toString(),
+        delayBetweenJob = longProperty("tock_build_worker_on_demand_delay_between_job_test", 24 * 60),
+        timeFrame = listProperty("tock_build_worker_on_demand_timeframe_test", listOf("0", "5")).map { it.toInt() }
+    )
+    vertx.deployVerticle(
+        cleanupOnDemandVerticle,
+        DeploymentOptions().setWorker(true)
+    )
+    vertx.deployVerticle(
+        rebuildDiffOnDemandVerticle,
+        DeploymentOptions().setWorker(true)
+    )
+    vertx.deployVerticle(
+        testOnDemandVerticle,
+        DeploymentOptions().setWorker(true)
+    )
+
+    vertx.deployVerticle(OnDemandHealthCheckVerticle(listOf(
+        cleanupOnDemandVerticle,
+        rebuildDiffOnDemandVerticle,
+        testOnDemandVerticle
+    )))
+}
+
+private fun startCommandLine(buildType: BuildType) {
+    logger.info { "$buildType model from command line" }
     try {
         when (buildType) {
             REBUILD_ALL -> BuildModelWorker.updateAllModels()

@@ -38,6 +38,14 @@
             <artifactId>tock-nlp-front-client</artifactId>
         </dependency>
         <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-nlp-build-model-worker-on-demand</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-nlp-build-model-worker-on-aws-batch</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-web</artifactId>
         </dependency>

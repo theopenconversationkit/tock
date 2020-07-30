@@ -39,7 +39,10 @@
         <module>front</module>
 
         <module>admin</module>
+
         <module>build-model-worker</module>
+        <module>build-model-worker-on-demand</module>
+        <module>build-model-worker-on-aws-batch</module>
 
         <module>api</module>
 
@@ -132,6 +135,21 @@
             <dependency>
                 <groupId>ai.tock</groupId>
                 <artifactId>tock-nlp-front-ioc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ai.tock</groupId>
+                <artifactId>tock-nlp-build-model-worker</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ai.tock</groupId>
+                <artifactId>tock-nlp-build-model-worker-on-demand</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ai.tock</groupId>
+                <artifactId>tock-nlp-build-model-worker-on-aws-batch</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
