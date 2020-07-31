@@ -22,7 +22,14 @@
       <nb-accordion-item-header>Messages</nb-accordion-item-header>
       <nb-accordion-item-body>
         <tock-chart [data]="messagesByTypeData" title="Messages" [chartPreferences]="userPreferences"
-                    [isLoading]="messagesByTypeLoading"></tock-chart>
+                    [isLoading]="messagesByTypeLoading" pdfId="messages"></tock-chart>
+      </nb-accordion-item-body>
+    </nb-accordion-item>
+    <nb-accordion-item #messagesByDaysItem (collapsedChange)="collapsedChange($event)">
+      <nb-accordion-item-header>Messages by days in calendar</nb-accordion-item-header>
+      <nb-accordion-item-body>
+        <tock-chart [data]="messagesByDaysData" title="Messages by days in calendar" [chartPreferences]="userPreferences" type="Calendar" *ngIf="userPreferences.graphs.activity.messagesByDays"
+                    [isLoading]="messagesByDaysLoading" pdfId="messagesCalendar"></tock-chart>
       </nb-accordion-item-body>
     </nb-accordion-item>
     <nb-accordion-item #messagesByStoryItem (collapsedChange)="collapsedChange($event)" *ngIf="userPreferences.graphs.activity.messagesByStory">

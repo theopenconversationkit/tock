@@ -33,7 +33,8 @@ interface DialogFlowDAO {
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
         from: ZonedDateTime?,
-        to: ZonedDateTime?
+        to: ZonedDateTime?,
+        intent: String? = null
         ): ApplicationDialogFlowData
 
     fun search(
@@ -41,7 +42,8 @@ interface DialogFlowDAO {
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
         from: ZonedDateTime?,
-        to: ZonedDateTime?
+        to: ZonedDateTime?,
+        intent: String? = null
     ): List<DialogFlowTransitionStatsData>
 
     fun searchByDateWithIntent(
@@ -49,23 +51,26 @@ interface DialogFlowDAO {
             botId: String,
             applicationIds: Set<Id<BotApplicationConfiguration>>,
             from: ZonedDateTime?,
-            to: ZonedDateTime?
-    ): List<DialogFlowTransitionStatsData>
+            to: ZonedDateTime?,
+            intent: String? = null
+    ): Pair<List<DialogFlowTransitionStatsData>, List<String>>
 
     fun searchByDateWithActionType(
             namespace: String,
             botId: String,
             applicationIds: Set<Id<BotApplicationConfiguration>>,
             from: ZonedDateTime?,
-            to: ZonedDateTime?
-    ): List<DialogFlowTransitionStatsData>
+            to: ZonedDateTime?,
+            intent: String? = null
+    ): Pair<List<DialogFlowTransitionStatsData>, List<String>>
 
     fun searchByDateWithStory(
             namespace: String,
             botId: String,
             applicationIds: Set<Id<BotApplicationConfiguration>>,
             from: ZonedDateTime?,
-            to: ZonedDateTime?
-    ): List<DialogFlowTransitionStatsData>
+            to: ZonedDateTime?,
+            intent: String? = null
+    ): Pair<List<DialogFlowTransitionStatsData>, List<String>>
 
 }

@@ -28,7 +28,8 @@ export class DialogFlowRequest extends ApplicationScopedQuery {
     public botConfigurationId?: string,
     public from?: Date,
     public to?: Date,
-    public includeTestConfigurations?: boolean) {
+    public includeTestConfigurations?: boolean,
+    public intent?: string) {
     super(namespace, applicationName, language)
   }
 
@@ -43,6 +44,7 @@ export class DialogFlowRequest extends ApplicationScopedQuery {
       && this.from === r.from
       && this.to === r.to
       && this.includeTestConfigurations === r.includeTestConfigurations
+      && this.intent === r.intent
   }
 }
 

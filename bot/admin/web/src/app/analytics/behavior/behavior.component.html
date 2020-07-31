@@ -56,7 +56,7 @@
       <nb-accordion-item-header>Messages by Action Type</nb-accordion-item-header>
       <nb-accordion-item-body>
         <tock-chart [data]="messagesByActionTypeData" title="Messages by Action Type" type="PieChart"
-                    [chartPreferences]="userPreferences"></tock-chart>
+                    [chartPreferences]="userPreferences" [filter]="filter" (intentChanged)="waitAndRefresh()"></tock-chart>
       </nb-accordion-item-body>
     </nb-accordion-item>
     <nb-accordion-item #messagesByStoryCategoryItem (collapsedChange)="collapsedChange($event)"

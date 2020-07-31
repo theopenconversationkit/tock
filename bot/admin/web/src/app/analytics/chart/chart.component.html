@@ -1,8 +1,8 @@
 
 <nb-flip-card [showToggleButton]="false" [flipped]="isFlipped" *ngIf="mainChart || altChart">
-  <nb-card-front>
+  <nb-card-front >
     <nb-card style="min-height: 60vh">
-      <nb-card-body [nbSpinner]="isLoading" nbSpinnerStatus="primary">
+      <nb-card-body [nbSpinner]="isLoading" nbSpinnerStatus="primary" >
         <div style="text-align: right;">
           <nb-select multiple status="primary" *ngIf="displayMultipleSelectComponent()" style="min-width: 15rem;max-width: 20rem;"
                      [(selected)]="seriesSelectionList" (selectedChange)="updateGraph()">
@@ -11,8 +11,15 @@
             </nb-select-label>
             <nb-option *ngFor="let c of data.connectorsType; index as i" [value]="i">{{c}}</nb-option>
           </nb-select>
+          <nb-select class="select-intent" status="primary" placeholder="Intent" *ngIf="intentsList.length > 0"
+                     (selectedChange)="refresh()" [(ngModel)]="filter.intent">
+            <nb-option value="">All intents</nb-option>
+            <nb-option *ngFor="let intent of intentsList" [value]="intent">{{ intent }}</nb-option>
+          </nb-select>
         </div>
-        <div style="display: flex;">
+
+        <div style="display: flex;" [id]="pdfId">
+
           <google-chart *ngIf="mainChart"
             [type]="mainChart.type"
             [data]="mainChart.data"
@@ -33,7 +40,7 @@
           </google-chart>
         </div>
       </nb-card-body>
-      <nb-card-footer>
+      <nb-card-body>
         <button nbButton shape="round" (click)="onFlipAction()" nbTooltip="Show Table"
                 status="success" style="float: right;">
           <nb-icon icon="layout-outline"></nb-icon>
@@ -42,7 +49,7 @@
                 status="primary" style="float: right; margin-right: 20px;">
           CSV <nb-icon icon="download"></nb-icon>
         </button>
-      </nb-card-footer>
+      </nb-card-body>
     </nb-card>
   </nb-card-front>
   <nb-card-back>

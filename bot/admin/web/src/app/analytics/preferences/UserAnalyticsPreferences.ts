@@ -34,6 +34,7 @@ export class UserAnalyticsPreferences {
       messagesByStory: boolean;
       messagesByIntent: boolean;
       messagesAll: boolean;
+      messagesByDays: boolean;
     }
     behavior: {
       messagesByStory: boolean;
@@ -66,7 +67,8 @@ export class UserAnalyticsPreferences {
         messagesByConfiguration: true,
         messagesByStory: true,
         messagesByIntent: true,
-        messagesAll: true
+        messagesAll: true,
+        messagesByDays: true
       },
       behavior: {
         messagesByStory: true,
