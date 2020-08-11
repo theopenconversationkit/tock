@@ -60,6 +60,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.vertx.core.http.HttpMethod
+import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.CorsHandler
 import mu.KotlinLogging
@@ -110,7 +111,7 @@ class WebConnector internal constructor(
                         .allowedHeader("X-Requested-With")
                 )
             if (sseEnabled) {
-                router.route(path + "/sse")
+                router.route("$path/sse")
                     .handler { context ->
                         try {
                             val userId = context.queryParams()["userId"]
@@ -119,9 +120,9 @@ class WebConnector internal constructor(
                             response.headers().add("Content-Type", "text/event-stream;charset=UTF-8")
                             response.headers().add("Connection", "keep-alive")
                             response.headers().add("Cache-Control", "no-cache")
+                            response.sendSsePing()
                             val timerId = vertx.setPeriodic(Duration.ofSeconds(sseKeepaliveDelay).toMillis()) {
-                                response.write("event: ping\n")
-                                response.write("data: 1\n\n")
+                                response.sendSsePing()
                             }
                             val channelId = channels.register(applicationId, userId) { webConnectorResponse ->
                                 response.write("event: message\n")
@@ -147,6 +148,11 @@ class WebConnector internal constructor(
                     }
                 }
         }
+    }
+
+    private fun HttpServerResponse.sendSsePing() {
+        write("event: ping\n")
+        write("data: 1\n\n")
     }
 
     override fun getOrchestrationHandlers(): OrchestrationHandlers =
