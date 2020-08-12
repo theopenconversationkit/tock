@@ -17,16 +17,18 @@
 package ai.tock.bot.engine.action
 
 data class ActionMetadata(
-        /** Is it the last answer of the bot. */
-        var lastAnswer: Boolean = false,
-        /** Significance deals with the notification level. */
-        var priority: ActionPriority = ActionPriority.normal,
-        /** tag deals with type of message notification. */
-        var notificationType: ActionNotificationType? = null,
-        /** visibility of the message. */
-        var visibility: ActionVisibility = ActionVisibility.UNKNOWN,
-        /** Message which is a reply to another. */
-        var replyMessage: ActionReply = ActionReply.UNKNOWN,
-        /** Message which contains a quote. */
-        var quoteMessage: ActionQuote = ActionQuote.UNKNOWN
+    /** Is it the last answer of the bot. */
+    var lastAnswer: Boolean = false,
+    /** Significance deals with the notification level. */
+    var priority: ActionPriority = ActionPriority.normal,
+    /** tag deals with type of message notification. */
+    var notificationType: ActionNotificationType? = null,
+    /** visibility of the message. */
+    var visibility: ActionVisibility = ActionVisibility.UNKNOWN,
+    /** Message which is a reply to another. */
+    var replyMessage: ActionReply = ActionReply.UNKNOWN,
+    /** Message which contains a quote. */
+    var quoteMessage: ActionQuote = ActionQuote.UNKNOWN,
+    /** The message triggers an orchestration lock.*/
+    var orchestrationLock: Boolean = false
 )
