@@ -13,6 +13,10 @@
             All messages
             <nb-icon icon="info-outline" nbTooltip="Displays the number of messages of the users"></nb-icon>
           </nb-toggle>
+          <nb-toggle status="basic" [(ngModel)]="preferences.graphs.activity.messagesByDays" style="width: 100%;">
+            Messages by days in calendar
+            <nb-icon icon="info-outline" nbTooltip="Displays the number of messages of the users by days"></nb-icon>
+          </nb-toggle>
           <nb-toggle status="basic" [(ngModel)]="preferences.graphs.activity.messagesByStory" style="width: 100%;">
             Messages by story
             <nb-icon icon="info-outline" nbTooltip="Displays the number of messages of the users by story (does not include sub-intents of the story)"></nb-icon>

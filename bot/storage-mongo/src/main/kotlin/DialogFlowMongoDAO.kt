@@ -80,9 +80,9 @@ import org.litote.kmongo.project
 import org.litote.kmongo.size
 import org.litote.kmongo.sum
 import org.litote.kmongo.toId
-import java.time.ZonedDateTime
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
 /**
@@ -130,7 +130,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
             botId: String,
             applicationIds: Set<Id<BotApplicationConfiguration>>,
             from: ZonedDateTime?,
-            to: ZonedDateTime?
+            to: ZonedDateTime?,
+            intent: String?
     ): ApplicationDialogFlowData {
         logger.debug { "Fetching application flow for ns $namespace, bot $botId, apps $applicationIds from $from to $to..." }
         val states = findStates(namespace, botId)
@@ -176,14 +177,15 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
             botId: String,
             applicationIds: Set<Id<BotApplicationConfiguration>>,
             from: ZonedDateTime?,
-            to: ZonedDateTime?
+            to: ZonedDateTime?,
+            intent: String?
     ): List<DialogFlowTransitionStatsData> {
         val filter =
                 and(
                     listOfNotNull(
                         if (applicationIds.isEmpty()) null else ApplicationId `in` applicationIds,
-                        if (from == null) null else Date gt from?.toInstant(),
-                        if (to == null) null else Date lt to?.toInstant()
+                        if (from == null) null else Date gt from.toInstant(),
+                        if (to == null) null else Date lt to.toInstant()
                     )
                 )
         logger.debug { "Flow Message filter: $filter" }
@@ -204,12 +206,13 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                                  botId: String,
                                  applicationIds: Set<Id<BotApplicationConfiguration>>,
                                  from: ZonedDateTime?,
-                                 to: ZonedDateTime?
-    ): List<DialogFlowTransitionStatsData> {
+                                 to: ZonedDateTime?,
+                                 intent: String?
+    ): Pair<List<DialogFlowTransitionStatsData>, List<String>> {
         val transitions = findTransitions(namespace, botId).groupBy { it._id.toString() }.mapValues { it.value.firstOrNull() }
-        val messages = search(namespace, botId, applicationIds, from, to)
+        val messages = search(namespace, botId, applicationIds, from, to, intent)
         val transitionToIntent = messages.groupBy { it.transitionId }.keys.associateBy({it}, {transitions[it]?.intent})
-        return messages.map {
+        return Pair(messages.map {
             DialogFlowTransitionStatsData(
                     applicationId = it.applicationId,
                     transitionId = it.transitionId,
@@ -217,41 +220,49 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                     text = transitionToIntent[it.transitionId],
                     date = it.date
             )
-        }
+        }, emptyList())
     }
 
     override fun searchByDateWithActionType(namespace: String,
                                         botId: String,
                                         applicationIds: Set<Id<BotApplicationConfiguration>>,
                                         from: ZonedDateTime?,
-                                        to: ZonedDateTime?
-    ): List<DialogFlowTransitionStatsData> {
-        val transitions = findTransitions(namespace, botId).groupBy { it._id.toString() }.mapValues { it.value.firstOrNull() }
-        val messages = search(namespace, botId, applicationIds, from, to)
-        val transitionToType = messages.groupBy { it.transitionId }.keys.associateBy({it}, {transitions[it]?.type.toString()})
-        return messages.map {
+                                        to: ZonedDateTime?,
+                                        intent: String?
+    ): Pair<List<DialogFlowTransitionStatsData>, List<String>> {
+        val transitions = findTransitions(namespace, botId)
+        val filteredTransitions = transitions
+            .groupBy { it._id.toString() }
+            .mapValues { it.value.firstOrNull() }
+        val filteredTransitionsByIntent = filteredTransitions.filter { it.value?.intent == intent || intent.isNullOrEmpty() }
+
+        val messages = search(namespace, botId, applicationIds, from, to, null)
+        val transitionToType = messages.groupBy { it.transitionId }.keys.associateBy({it}, {filteredTransitionsByIntent[it]})
+        val intents = messages.groupBy { it.transitionId }.keys.associateBy({it}, {filteredTransitions[it]}).values.mapNotNull { it?.intent }.distinct().sorted()
+        return Pair(messages.filter { transitionToType[it.transitionId]?.type != null }.map {
             DialogFlowTransitionStatsData(
                     applicationId = it.applicationId,
                     transitionId = it.transitionId,
                     dialogId = it.dialogId,
-                    text = transitionToType[it.transitionId],
+                    text = transitionToType[it.transitionId]?.type.toString(),
                     date = it.date
             )
-        }
+        }, intents)
     }
 
     override fun searchByDateWithStory(namespace: String,
                                        botId: String,
                                        applicationIds: Set<Id<BotApplicationConfiguration>>,
                                        from: ZonedDateTime?,
-                                       to: ZonedDateTime?
-    ): List<DialogFlowTransitionStatsData> {
+                                       to: ZonedDateTime?,
+                                       intent: String?
+    ): Pair<List<DialogFlowTransitionStatsData>, List<String>> {
         val states = findStates(namespace, botId).groupBy { it._id.toString() }.mapValues { it.value.firstOrNull() }
         val transitions = findTransitions(namespace, botId).groupBy { it._id.toString() }.mapValues { it.value.firstOrNull() }
-        val messages = search(namespace, botId, applicationIds, from, to)
+        val messages = search(namespace, botId, applicationIds, from, to, intent)
         val transitionToState = messages.groupBy { it.transitionId }.keys.associateBy({it}, {transitions[it]?.nextStateId.toString()})
         val transitionToStory = transitionToState.mapValues { states[it.value]?.storyDefinitionId }
-        return messages.map {
+        return Pair(messages.map {
             DialogFlowTransitionStatsData(
                     applicationId = it.applicationId,
                     transitionId = it.transitionId,
@@ -259,7 +270,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                     text = transitionToStory[it.transitionId],
                     date = it.date
             )
-        }
+        }, emptyList())
     }
 
     private fun findStates(namespace: String, botId: String): List<DialogFlowStateCol> =
@@ -280,8 +291,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                                     listOfNotNull(
                                             TransitionId `in` transitionIds,
                                             if (botAppConfIds.isEmpty()) null else ApplicationId `in` botAppConfIds,
-                                            if (from == null) null else Date gt from?.toInstant(),
-                                            if (to == null) null else Date lt to?.toInstant()
+                                            if (from == null) null else Date gt from.toInstant(),
+                                            if (to == null) null else Date lt to.toInstant()
                                     )
                             )
                     ),

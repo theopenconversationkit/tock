@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {Component, OnInit, EventEmitter, Input, Output} from "@angular/core";
-import {NbCalendarRange, NbDateService} from '@nebular/theme';
-import { StateService } from "src/app/core-nlp/state.service";
+import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from "@angular/core";
+import {NbCalendarRange, NbDateService, NbPopoverDirective} from '@nebular/theme';
+import {StateService} from "src/app/core-nlp/state.service";
 
 @Component({
   selector: 'date-range-calendar',
@@ -38,6 +38,8 @@ export class DateRangeCalendarComponent implements OnInit {
   @Output()
   datesChanged: EventEmitter<[Date, Date]> = new EventEmitter();
 
+  @ViewChild(NbPopoverDirective) popover: NbPopoverDirective;
+
   constructor(protected dateService: NbDateService<Date>,
               private state: StateService) {
   }
@@ -57,27 +59,9 @@ export class DateRangeCalendarComponent implements OnInit {
     return this.disabled || (this.displayCalendar && this.previousRange != this.range);
   }
 
-  toggle(): void {
-    if (!this.disabled) {
-      if (!this.displayCalendar) {
-        this.open();
-      } else {
-        if (this.range == this.previousRange) {
-          this.cancel();
-        }
-      }
-    }
-  }
-
   private open(): void {
     this.previousRange = this.range;
     this.displayCalendar = true;
-  }
-
-  cancel(): void {
-    this.range = this.previousRange;
-    this.previousRange = null;
-    this.displayCalendar = false;
   }
 
   getStatus(nbDays): string {
@@ -146,6 +130,7 @@ export class DateRangeCalendarComponent implements OnInit {
       this.normalizeDateTimes();
       this.previousRange = null;
       this.datesChanged.emit([this.range.start, this.range.end]);
+      this.popover?.hide();
     }
   }
 }

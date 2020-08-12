@@ -11,7 +11,6 @@ import {UserFilter} from '../users/users.component';
 import {BotApplicationConfiguration, ConnectorType} from 'src/app/core/model/configuration';
 import * as html2pdf from 'html2pdf.js'
 import {UserAnalyticsPreferences} from '../preferences/UserAnalyticsPreferences';
-import {SettingsService} from 'src/app/core-nlp/settings.service';
 
 @Component({
   selector: 'tock-behavior',
@@ -357,7 +356,8 @@ export class BehaviorComponent implements AfterViewInit {
       this.selectedConnectorId,
       this.filter.from,
       this.filter.to,
-      this.displayTests
+      this.displayTests,
+      this.filter.intent
     );
   }
 

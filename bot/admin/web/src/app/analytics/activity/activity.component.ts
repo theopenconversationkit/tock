@@ -11,9 +11,7 @@ import {UserFilter} from '../users/users.component';
 import {ChartData} from '../chart/ChartData';
 import {BotApplicationConfiguration, ConnectorType} from 'src/app/core/model/configuration';
 import * as html2pdf from 'html2pdf.js'
-import { PreferencesComponent } from '../preferences/preferences.component';
-import { UserAnalyticsPreferences } from '../preferences/UserAnalyticsPreferences';
-import { SettingsService } from 'src/app/core-nlp/settings.service';
+import {UserAnalyticsPreferences} from '../preferences/UserAnalyticsPreferences';
 
 @Component({
   selector: 'tock-activity',
@@ -23,6 +21,7 @@ import { SettingsService } from 'src/app/core-nlp/settings.service';
 export class ActivityComponent implements AfterViewInit {
 
   @ViewChild('messagesByTypeItem') messagesByTypeItem;
+  @ViewChild('messagesByDaysItem') messagesByDaysItem;
   @ViewChild('messagesByStoryItem') messagesByStoryItem;
   @ViewChild('messagesByIntentItem') messagesByIntentItem;
   @ViewChild('messagesByConfigurationItem') messagesByConfigurationItem;
@@ -39,12 +38,14 @@ export class ActivityComponent implements AfterViewInit {
   usersChart: ChartData;
 
   messagesByTypeData: UserAnalyticsQueryResult;
+  messagesByDaysData: UserAnalyticsQueryResult;
   messagesByStoryData: UserAnalyticsQueryResult;
   messagesByIntentData: UserAnalyticsQueryResult;
   messagesByConfigurationData: UserAnalyticsQueryResult;
   messagesByConnectorData: UserAnalyticsQueryResult;
 
   messagesByTypeLoading = false;
+  messagesByDaysLoading = false;
   messagesByStoryLoading = false;
   messagesByIntentLoading = false;
   messagesByConfigurationLoading = false;
@@ -80,6 +81,9 @@ export class ActivityComponent implements AfterViewInit {
     let selectedGraphs = []
     if(this.userPreferences.graphs.activity.messagesAll == true) {
       selectedGraphs.push(this.messagesByTypeItem);
+    }
+    if(this.userPreferences.graphs.activity.messagesByDays == true) {
+      selectedGraphs.push(this.messagesByDaysItem);
     }
     if(this.userPreferences.graphs.activity.messagesByStory == true) {
       selectedGraphs.push(this.messagesByStoryItem);
@@ -195,6 +199,13 @@ export class ActivityComponent implements AfterViewInit {
       } else if (force) {
         this.messagesByTypeData = null;
       }
+      if (this.messagesByDaysItem && this.messagesByDaysItem.expanded) {
+        if (force || !this.messagesByDaysData) {
+          this.buildMessagesByDaysCharts();
+        }
+      } else if (force) {
+        this.messagesByDaysData = null;
+      }
       if (this.messagesByStoryItem && this.messagesByStoryItem.expanded) {
         if (force || !this.messagesByStoryData) {
           this.buildMessagesByStoryCharts();
@@ -264,6 +275,20 @@ export class ActivityComponent implements AfterViewInit {
         this.loading = false;
         this.messagesByTypeItem.open();
         this.messagesByTypeLoading = false;
+      }
+    )
+  }
+
+  private buildMessagesByDaysCharts() {
+    this.loading = true;
+    this.messagesByDaysLoading = true;
+    this.analytics.messagesAnalytics(this.buildMessagesSearchQuery()).subscribe(
+      result => {
+        this.connectors = result.connectorsType;
+        this.messagesByDaysData = result;
+        this.loading = false;
+        this.messagesByDaysItem.open();
+        this.messagesByDaysLoading = false;
       }
     )
   }

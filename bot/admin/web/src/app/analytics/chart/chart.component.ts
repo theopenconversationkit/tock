@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import {Component, Input, OnChanges, SimpleChanges} from "@angular/core";
+import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from "@angular/core";
 import {UserAnalyticsQueryResult} from "../users/users";
 import {ChartData} from './ChartData';
 import * as html2pdf from 'html2pdf.js'
 import {UserAnalyticsPreferences} from "../preferences/UserAnalyticsPreferences";
+import {UserFilter} from "../users/users.component";
 
 @Component({
   selector: 'tock-chart',
@@ -37,6 +38,9 @@ export class ChartComponent implements OnChanges {
   title: string;
 
   @Input()
+  filter: UserFilter
+
+  @Input()
   data: UserAnalyticsQueryResult;
 
   @Input()
@@ -50,8 +54,17 @@ export class ChartComponent implements OnChanges {
   isFlipped = false;
 
   seriesSelectionList: number[] = [];
+  intentsList : string[] = []
+
+  @Output()
+  intentChanged: EventEmitter<UserFilter> = new EventEmitter();
 
   constructor() {
+  }
+
+  refresh(){
+    console.log(this.filter)
+    this.intentChanged.emit(this.filter);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -69,6 +82,8 @@ export class ChartComponent implements OnChanges {
       } else {
         if (this.type == 'PieChart') {
           this.mainChart = this.buildPieChartFromDates(this.data, this.type);
+        } else if (this.type == 'Calendar') {
+          this.mainChart = this.buildChartByDate(this.data, this.type);
         } else {
           this.initSelectionList();
           if (this.chartPreferences.selectedChartType.toString() == 'all') {
@@ -84,6 +99,7 @@ export class ChartComponent implements OnChanges {
     } else {
       this.mainChart = null;
       this.altChart = null;
+      this.intentsList = []
     }
   }
 
@@ -108,15 +124,15 @@ export class ChartComponent implements OnChanges {
       this.seriesSelectionList.forEach((value, index) => {
         result.push(data[value]);
       })
-      return result
+      return result;
     } else {
-      return data
+      return data;
     }
   }
 
   getColumnsLength(series: string[]): number {
     if (this.seriesSelectionList.length > 0) {
-      return this.seriesSelectionList.length
+      return this.seriesSelectionList.length;
     } else {
       return series.length;
     }
@@ -130,7 +146,11 @@ export class ChartComponent implements OnChanges {
     let rows = [];
 
     dates.forEach(function (date, index) {
-      rows.push([date].concat(that.getDataFromSelection(data[index])))
+      if(chartType === 'Calendar'){
+        rows.push([new Date(date)].concat(that.getDataFromSelection(data[index]).reduce((x,y) => x + y)))
+      } else {
+        rows.push([date].concat(that.getDataFromSelection(data[index])))
+      }
     });
     let serieCount = new Array(this.getColumnsLength(series)).fill(0);
     data.forEach(function (data) {
@@ -163,6 +183,21 @@ export class ChartComponent implements OnChanges {
     if (this.chartPreferences.lineConfig.curvedLines) {
       (options as any).curveType = 'function';
     }
+    if(chartType === 'Calendar') {
+      (options as any).calendar = {
+        cellSize: 20,
+        focusedCellColor: {
+          stroke: '#00d68f',
+            strokeOpacity: 1,
+            strokeWidth: 1,
+        }
+      };
+      (options as any).colorAxis = {
+        colors:['#ffffff','#3366ff']
+      };
+      (options as any).forceIFrame = true;
+      (options as any).tooltip = {isHtml: false}
+    }
     return new ChartData(chartType ? chartType : this.chartPreferences.lineConfig.stacked ? "AreaChart" : "LineChart",
       rows, seriesLabels, options, '500', width ? width : '100%');
   }
@@ -171,7 +206,8 @@ export class ChartComponent implements OnChanges {
     let series = result.connectorsType;
     let data = result.usersData;
     let rows = [];
-
+    this.intentsList = result.intents;
+    console.log(this.filter)
     series.forEach(function (serie, index) {
       rows.push([serie].concat(data[0][index]))
     });
@@ -264,16 +300,19 @@ export class ChartComponent implements OnChanges {
 
   onPdfAction() {
     const options = {
+      margin: 0,
       filename: this.getFileName('pdf'),
       image: {type: 'jpeg ', quality: 0.95},
-      html2canvas: {scale: 0.9},
-      jsPDF: {orientation: 'landscape'},
-      pagebreak: {mode: 'avoid-all'}
+      html2canvas: {scale: 1},
+      jsPDF: {orientation: 'landscape',
+              format: 'a2',
+              compress: true},
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
     };
     let element = document.getElementById(this.pdfId)
     html2pdf()
-      .set(options)
       .from(element)
+      .set(options)
       .save()
   }
 }

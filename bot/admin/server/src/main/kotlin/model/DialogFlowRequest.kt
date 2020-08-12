@@ -30,5 +30,6 @@ data class DialogFlowRequest(
     val botConfigurationId: Id<BotApplicationConfiguration>?,
     val from: ZonedDateTime? = null,
     val to: ZonedDateTime? = null,
-    val includeTestConfigurations: Boolean = false
+    val includeTestConfigurations: Boolean = false,
+    val intent: String? = null
 ) : ApplicationScopedQuery()

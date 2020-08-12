@@ -180,6 +180,7 @@ export class UserFilter {
   constructor(public flags: string[],
               public displayTests: boolean,
               public from?: Date,
-              public to?: Date) {
+              public to?: Date,
+              public intent : string = "") {
   }
 }

@@ -31,7 +31,8 @@ export class UserSearchQuery extends PaginatedQuery {
               public from?: Date,
               public to?: Date,
               public flags?: string[],
-              public displayTests?:boolean) {
+              public displayTests?:boolean,
+              public intent?: string) {
     super(namespace, applicationName, language, start, size)
   }
 }
@@ -58,7 +59,8 @@ export class UserReportQueryResult implements PaginatedResult<UserReport> {
 export class UserAnalyticsQueryResult {
   constructor(public usersData: [][],
               public dates: Date[],
-              public connectorsType: []) {
+              public connectorsType: [],
+              public intents: []) {
   }
 
   static fromJSON(json?: any): UserAnalyticsQueryResult {
