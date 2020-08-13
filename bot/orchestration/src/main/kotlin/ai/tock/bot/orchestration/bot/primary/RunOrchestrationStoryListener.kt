@@ -102,7 +102,7 @@ class RunOrchestrationStoryListener(
                     response.targetBot,
                     response.botResponse.actions
                 )
-                send("Pour vous répondre je passe la main à mon collègue ${response.targetBot.botLabel} !")
+                configuration.primaryBotOrchestrationEventHandler.onStarOrchestration(this, response)
 
                 response.botResponse.actions.forEach {
                     send(it.toAction(response.botResponse.metaData))
@@ -155,17 +155,21 @@ class RunOrchestrationStoryListener(
                 logger.info { "End of the orchestration caused by the ${intent?.wrappedIntent()?.name ?: "???"} intent" }
                 orchestrationRepository.end(orchestration.playerId)
 
-                send("Your conversation with ${orchestration.targetBot.botLabel} is now over.")
-                handleAndSwitchStory(configuration.comebackStory)
-                return false
+                return configuration.primaryBotOrchestrationEventHandler.onStopOrchestration(this, orchestration) == ComeBackFromSecondary.EXECUTE_INITIAL_STORY
             }
 
             if (intent.inNoOrchestrationList()) {
                 logger.info { "End of the orchestration caused by the ${intent?.wrappedIntent()?.name ?: "???"} intent" }
                 orchestrationRepository.end(orchestration.playerId)
 
-                send("Your conversation with ${orchestration.targetBot.botLabel} is now over.")
-                return true
+                return configuration.primaryBotOrchestrationEventHandler.onNoOrchestration(this, orchestration) == ComeBackFromSecondary.EXECUTE_INITIAL_STORY
+            }
+
+            if(configuration.takeBackOrchestration?.invoke(this) == true) {
+                logger.info { "End of the orchestration caused by take back" }
+                orchestrationRepository.end(orchestration.playerId)
+
+                return configuration.primaryBotOrchestrationEventHandler.onTakeBackOrchestration(this, orchestration) == ComeBackFromSecondary.EXECUTE_INITIAL_STORY
             }
         }
 
