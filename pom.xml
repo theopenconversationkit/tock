@@ -67,6 +67,7 @@
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
         <google>8.0.0</google>
+        <aws-sdk>1.11.821</aws-sdk>
 
         <junit-jupiter>5.6.2</junit-jupiter>
 
@@ -568,6 +569,17 @@
                         <artifactId>commons-logging</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-java-sdk-sts</artifactId>
+                <version>${aws-sdk}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-java-sdk-batch</artifactId>
+                <version>${aws-sdk}</version>
             </dependency>
 
             <dependency>

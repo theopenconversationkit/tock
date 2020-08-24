@@ -16,24 +16,8 @@
 
 package ai.tock.nlp.build
 
-import ai.tock.shared.Executor
-import ai.tock.shared.injector
-import com.github.salomonbrys.kodein.instance
-import io.vertx.core.AbstractVerticle
-import java.time.Duration
-
-/**
- *
- */
-class CleanupModelWorkerVerticle : AbstractVerticle() {
-
-    private val executor: Executor by injector.instance()
-
-    override fun start() {
-        if (BuildModelWorker.cleanupModelEnabled) {
-            executor.setPeriodic(Duration.ofHours(12)) {
-                BuildModelWorker.cleanupModel()
-            }
-        }
-    }
+enum class BuildMode {
+    COMMAND_LINE,
+    ON_DEMAND,
+    VERTICLE
 }
