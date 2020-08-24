@@ -16,10 +16,11 @@
 
 package ai.tock.nlp.build.ondemand
 
+import ai.tock.shared.defaultZoneId
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.Handler
 import mu.KotlinLogging
-import java.time.LocalTime
+import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
 class WorkerOnDemandVerticle(
@@ -31,20 +32,30 @@ class WorkerOnDemandVerticle(
 
     private val logger = KotlinLogging.logger {}
 
+    private val PREFIX = "tock_worker_ondemand"
+
+    private val BUILD_TYPE_ARG = "TOCK_BUILD_TYPE"
+
+    private val BUILD_WORKER_MODE_ENV = "tock_build_worker_mode"
+    private val BUILD_WORKER_VERTICLE_ENABLED_ENV = "tock_build_worker_verticle_enabled"
+
+    private val DEFAULT_WORKER_MODE = "COMMAND_LINE"
+
     private var handler: Handler<Long>? = null
 
     private var workerOnDemand: WorkerOnDemand? = null
+
 
     override fun start() {
         logger.info("Starting WorkerOnDemandVerticle for $buildType ...")
 
         workerOnDemand = WorkerOnDemandProvider.provide(
             type = workerOnDemandType,
-            properties = mapOf("TOCK_BUILD_TYPE" to buildType) + workerProperties()
+            properties = workerProperties()
         )?.apply {
             logger.info { "WorkerOnDemand ${this@WorkerOnDemandVerticle.javaClass.simpleName} loaded for $buildType" }
             handler = Handler {
-                if (LocalTime.now().isInTimeFrame()) {
+                if (ZonedDateTime.now(defaultZoneId).isInTimeFrame()) {
                     start {
                         // Schedule the next execution
                         logger.info { "Next Job ${this@WorkerOnDemandVerticle.javaClass.simpleName} for $buildType is scheduled in $delayBetweenJob minutes" }
@@ -62,22 +73,24 @@ class WorkerOnDemandVerticle(
 
     }
 
-    fun name(): String = buildType
+    fun name(): String = "worker-on-demand-$buildType"
     fun isLoaded(): Boolean = workerOnDemand != null
 
-    private fun LocalTime.isInTimeFrame(): Boolean = (hour >= timeFrame[0] && hour <= timeFrame[1] && minute % 1 == 0)
+    private fun ZonedDateTime.isInTimeFrame(): Boolean = (hour >= timeFrame[0] && hour <= timeFrame[1] && minute % 1 == 0)
 
     private fun workerProperties(): WorkerProperties {
-        val prefix = "tock_worker_ondemand"
+
         return (System.getProperties() + System.getenv())
-            .filterKeys { it.toString().startsWith(prefix) }
+            .filterKeys { it.toString().startsWith(PREFIX) }
             .entries.associate {
                 it.key.toString()
-                    .replace(prefix, "tock")
+                    .replace(PREFIX, "tock")
                     .replace("tock_JAVA_ARGS", "JAVA_ARGS") to it.value.toString()
             } + mapOf(
-            "tock_build_worker_mode" to "COMMAND_LINE",
-            "tock_build_worker_verticle_enabled" to "false"
-        )
+                BUILD_WORKER_MODE_ENV to DEFAULT_WORKER_MODE,
+                BUILD_WORKER_VERTICLE_ENABLED_ENV to "false"
+            ) + mapOf(
+                BUILD_TYPE_ARG to buildType
+            )
     }
 }

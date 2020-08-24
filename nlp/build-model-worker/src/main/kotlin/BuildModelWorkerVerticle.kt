@@ -18,6 +18,7 @@ package ai.tock.nlp.build
 
 import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
+import ai.tock.shared.defaultZoneId
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.listProperty
@@ -26,7 +27,7 @@ import io.vertx.core.AbstractVerticle
 import mu.KotlinLogging
 import java.time.Duration.ofHours
 import java.time.Duration.ofSeconds
-import java.time.LocalTime
+import java.time.ZonedDateTime
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -56,7 +57,7 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
                     if (!BuildModelWorker.buildModelWithValidatedSentences()
                         && !BuildModelWorker.buildModelWithDeletedSentences()
                         && !BuildModelWorker.buildModelForTriggeredApplication()
-                        && (LocalTime.now()
+                        && (ZonedDateTime.now(defaultZoneId)
                             .run {
                                 hour >= testModelTimeframe[0]
                                         && hour <= testModelTimeframe[1]
