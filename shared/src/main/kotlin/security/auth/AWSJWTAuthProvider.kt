@@ -36,7 +36,6 @@ import io.vertx.ext.auth.User
 import io.vertx.ext.auth.jwt.JWTAuth
 import io.vertx.ext.auth.jwt.JWTAuthOptions
 import io.vertx.ext.auth.jwt.impl.JWTUser
-import io.vertx.ext.jwt.JWTOptions
 import io.vertx.ext.web.handler.AuthHandler
 import mu.KotlinLogging
 
@@ -52,6 +51,7 @@ internal class AWSJWTAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx), JW
     //cached values
     @Volatile
     private var publicKey: String? = null
+
     @Volatile
     private var jwtAuthProvider: JWTAuth? = null
 
@@ -80,7 +80,8 @@ internal class AWSJWTAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx), JW
                         } else {
                             executor.executeBlocking {
                                 val customName = token.getString("email")
-                                val u = injector.provide<TockUserListener>().registerUser(TockUser(customName, namespace, roles), true)
+                                val u = injector.provide<TockUserListener>()
+                                    .registerUser(TockUser(customName, namespace, roles), true)
                                 resultHandler.handle(Future.succeededFuture(u))
                             }
                         }
@@ -130,26 +131,26 @@ internal class AWSJWTAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx), JW
                     )
                     JWTAuth.create(
                         vertx, JWTAuthOptions(
-                        JsonObject()
-                            .put(
-                                "pubSecKeys", JsonArray()
-                                .add(
-                                    JsonObject()
-                                        .put("algorithm", jwtAlgorithm)
-                                        .put(
-                                            "publicKey",
-                                            publicKey
+                            JsonObject()
+                                .put(
+                                    "pubSecKeys", JsonArray()
+                                        .add(
+                                            JsonObject()
+                                                .put("algorithm", jwtAlgorithm)
+                                                .put(
+                                                    "publicKey",
+                                                    publicKey
+                                                )
                                         )
                                 )
-                            )
-                    )
+                        )
                     )
                 } else null
             } else null
         } else jwtAuthProvider
     }
 
-    override fun generateToken(claims: JsonObject?, options: JWTOptions?): String {
+    override fun generateToken(claims: JsonObject, options: io.vertx.ext.auth.JWTOptions): String {
         //do nothing
         return ""
     }

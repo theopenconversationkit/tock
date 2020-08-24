@@ -208,7 +208,7 @@ class BotBusTest : BotEngineTest() {
             "message"
         }
 
-        verify { connector.send(and(ofType<SendSentence>(), match { it.stringText == "message" }), any(), any()) }
+        verify { connector.send(and(ofType<SendSentence>(), match { (it as SendSentence).stringText == "message" }), any(), any()) }
     }
 
     @Test

@@ -104,9 +104,9 @@ class KotlinCompilerTest {
 
         val erroneousSourceCode = mapOf(
             "ClassToBeCompiled.kt"
-                to
-                """
-                fun main(args: Array<String>) {
+                    to
+                    """
+                fun main() {
                     println("Hello)
                 }"""
         )
@@ -123,10 +123,10 @@ class KotlinCompilerTest {
     fun `simple compilation and execution succeed`() {
         val sourceCode = mapOf(
             "ClassToBeCompiled.kt"
-                to
-                """
+                    to
+                    """
                 import ai.tock.bot.admin.kotlin.compiler.KotlinCompilerTest  
-                fun main(args: Array<String>) {
+                fun main() {
                     KotlinCompilerTest.mark = true
                 }"""
         )
@@ -136,7 +136,7 @@ class KotlinCompilerTest {
         val compiledClassLoader =
             CompilationResultClassLoader("ClassToBeCompiledKt", result.files["ClassToBeCompiledKt.class"]!!)
         val c = compiledClassLoader.loadClass("ClassToBeCompiledKt")
-        c.declaredMethods[0].invoke(null, arrayOf<String>())
+        c.declaredMethods[0].invoke(null)
         assertTrue(mark)
     }
 
@@ -151,9 +151,9 @@ class KotlinCompilerTest {
         }
         val sourceCode = mapOf(
             "ClassToBeCompiled.kt"
-                to
-                """
-                fun main(args: Array<String>) {
+                    to
+                    """
+                fun main() {
                     ai.tock.shared.Dice.newInt(2)
                 }"""
         )
