@@ -69,19 +69,19 @@ private fun startOnDemandVerticle() {
     val cleanupOnDemandVerticle = WorkerOnDemandVerticle(
         workerOnDemandType = workerOnDemandType,
         buildType = CLEANUP.toString(),
-        delayBetweenJob = longProperty("tock_build_worker_on_demand_delay_between_job_cleanup", 12 * 60),
+        delayBetweenJob = longProperty("tock_build_worker_on_demand_delay_in_minutes_between_job_cleanup", 12 * 60),
         timeFrame = listProperty("tock_build_worker_on_demand_timeframe_cleanup", listOf("0", "24")).map { it.toInt() }
     )
     val rebuildDiffOnDemandVerticle = WorkerOnDemandVerticle(
         workerOnDemandType = workerOnDemandType,
         buildType = REBUILD_DIFF.toString(),
-        delayBetweenJob = longProperty("tock_build_worker_on_demand_delay_between_job_rebuild_diff", 60),
+        delayBetweenJob = longProperty("tock_build_worker_on_demand_delay_in_minutes_between_job_rebuild_diff", 60),
         timeFrame = listProperty("tock_build_worker_on_demand_timeframe_rebuild_diff", listOf("0", "24")).map { it.toInt() }
     )
     val testOnDemandVerticle = WorkerOnDemandVerticle(
         workerOnDemandType = workerOnDemandType,
         buildType = TEST.toString(),
-        delayBetweenJob = longProperty("tock_build_worker_on_demand_delay_between_job_test", 24 * 60),
+        delayBetweenJob = longProperty("tock_build_worker_on_demand_delay_in_minutes_between_job_test", 24 * 60),
         timeFrame = listProperty("tock_build_worker_on_demand_timeframe_test", listOf("0", "5")).map { it.toInt() }
     )
     vertx.deployVerticle(

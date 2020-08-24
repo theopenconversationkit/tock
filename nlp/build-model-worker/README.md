@@ -65,7 +65,29 @@ Start your worker with these properties:
 
     tock_build_worker_mode                      =   "ON_DEMAND"
     tock_build_worker_on_demand_type            =   "AWS_BATCH"
-    
+
+Optionally you can configure delay between each job with these properties :
+
+    # Delay between each CLEANUP job (default 12H)
+    tock_build_worker_on_demand_delay_in_minutes_between_job_cleanup
+
+    # Delay between each REBUILD_DIFF job (default 60min)
+    tock_build_worker_on_demand_delay_between_job_rebuild_diff
+
+    # Delay between each TEST job (default 24H)
+    tock_build_worker_on_demand_delay_between_job_test
+
+Optionally you can configure timeframe for each job with these properties :
+
+    # CLEANUP (default 0,24)
+    tock_build_worker_on_demand_timeframe_cleanup
+
+    # CLEANUP (default 0,24)
+    tock_build_worker_on_demand_timeframe_rebuild_diff
+
+    # CLEANUP (default 0,5)
+    tock_build_worker_on_demand_timeframe_test
+
 You can pass properties on your AWS BATCH job by prefixing property name with "tock_worker_ondemand"
 
 Examples:
