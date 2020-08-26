@@ -17,6 +17,7 @@
 package ai.tock.bot.connector.web.send
 
 import ai.tock.bot.engine.action.SendChoice.Companion.EXIT_INTENT
+import ai.tock.bot.engine.action.SendChoice.Companion.IMAGE_PARAMETER
 import ai.tock.bot.engine.action.SendChoice.Companion.TITLE_PARAMETER
 import ai.tock.bot.engine.action.SendChoice.Companion.URL_PARAMETER
 import ai.tock.bot.engine.message.Choice
@@ -24,14 +25,19 @@ import ai.tock.shared.mapNotNullValues
 import com.fasterxml.jackson.annotation.JsonTypeName
 
 @JsonTypeName("url_button")
-data class UrlButton(val title: String, val url: String) : Button(ButtonType.web_url) {
+data class UrlButton(
+    val title: String,
+    val url: String,
+    val imageUrl: String? = null
+) : Button(ButtonType.web_url) {
 
     override fun toChoice(): Choice =
         Choice(
             EXIT_INTENT,
             mapNotNullValues(
                 TITLE_PARAMETER to title,
-                URL_PARAMETER to url
+                URL_PARAMETER to url,
+                IMAGE_PARAMETER to imageUrl
             )
         )
 

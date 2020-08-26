@@ -22,17 +22,21 @@ import ai.tock.shared.mapNotNullValues
 import com.fasterxml.jackson.annotation.JsonTypeName
 
 @JsonTypeName("postback_button")
-data class PostbackButton(val title: String, val payload: String?) : Button(ButtonType.postback) {
-
+data class PostbackButton(
+    val title: String,
+    val payload: String?,
+    val imageUrl: String? = null
+) : Button(ButtonType.postback) {
     override fun toChoice(): Choice =
         if (payload == null) {
-            Choice.fromText(title)
+            Choice.fromText(text = title, nlpText = title, imageUrl = imageUrl)
         } else {
             SendChoice.decodeChoiceId(payload).let { (intent, params) ->
                 Choice(
                     intent,
                     params + mapNotNullValues(
-                        SendChoice.TITLE_PARAMETER to title
+                        SendChoice.TITLE_PARAMETER to title,
+                        SendChoice.IMAGE_PARAMETER to imageUrl
                     )
                 )
             }

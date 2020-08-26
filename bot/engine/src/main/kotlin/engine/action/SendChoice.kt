@@ -60,17 +60,17 @@ class SendChoice(
         state: EventState = EventState(),
         metadata: ActionMetadata = ActionMetadata()
     ) :
-        this(
-            playerId,
-            applicationId,
-            recipientId,
-            intentName,
-            parameters + mapNotNullValues(STEP_PARAMETER to step?.name),
-            id,
-            date,
-            state,
-            metadata
-        )
+            this(
+                playerId,
+                applicationId,
+                recipientId,
+                intentName,
+                parameters + mapNotNullValues(STEP_PARAMETER to step?.name),
+                id,
+                date,
+                state,
+                metadata
+            )
 
     companion object {
 
@@ -94,10 +94,15 @@ class SendChoice(
             return "?$NLP=${encode(text, UTF_8.name())}"
         }
 
-        internal fun nlpParametersMap(text: String): Map<String, String> =
-            mapOf(
-                NLP to text,
-                TITLE_PARAMETER to text
+        internal fun nlpParametersMap(
+            title: String,
+            nlpText: String? = null,
+            imageUrl: String? = null
+        ): Map<String, String> =
+            mapNotNullValues(
+                NLP to (nlpText ?: title),
+                TITLE_PARAMETER to title,
+                IMAGE_PARAMETER to imageUrl
             )
 
         /**
@@ -233,12 +238,12 @@ class SendChoice(
             return StringBuilder().apply {
                 append(intent.wrappedIntent().name)
                 val params = parameters +
-                    listOfNotNull(
-                        if (currentStep != null) STEP_PARAMETER to currentStep else null,
-                        if (currentIntent != null && currentIntent != intent)
-                            PREVIOUS_INTENT_PARAMETER to currentIntent.name else null,
-                        if (sourceAppId != null) SOURCE_APP_ID to sourceAppId else null
-                    )
+                        listOfNotNull(
+                            if (currentStep != null) STEP_PARAMETER to currentStep else null,
+                            if (currentIntent != null && currentIntent != intent)
+                                PREVIOUS_INTENT_PARAMETER to currentIntent.name else null,
+                            if (sourceAppId != null) SOURCE_APP_ID to sourceAppId else null
+                        )
 
                 if (params.isNotEmpty()) {
                     params.map { e ->

@@ -34,28 +34,35 @@ data class Choice(
 ) : Message {
 
     companion object {
-
         /**
          * Returns a choice from text that will be analyzed by the NLP engine.
          */
-        fun fromText(text: String): Choice =
+        fun fromText(
+            text: String,
+            nlpText: String? = null,
+            imageUrl: String? = null
+        ): Choice =
             Choice(
                 "",
-                SendChoice.nlpParametersMap(text)
+                SendChoice.nlpParametersMap(text, nlpText, imageUrl)
             )
     }
 
-    constructor(intentName: String,
-                step: StoryStep<out StoryHandlerDefinition>,
-                parameters: Map<String, String> = emptyMap(),
-                delay: Long = 0)
-        : this(intentName, parameters + (SendChoice.STEP_PARAMETER to step.name), delay)
+    constructor(
+        intentName: String,
+        step: StoryStep<out StoryHandlerDefinition>,
+        parameters: Map<String, String> = emptyMap(),
+        delay: Long = 0
+    )
+            : this(intentName, parameters + (SendChoice.STEP_PARAMETER to step.name), delay)
 
     override val eventType: EventType = EventType.choice
 
-    override fun toAction(playerId: PlayerId,
-                          applicationId: String,
-                          recipientId: PlayerId): Action {
+    override fun toAction(
+        playerId: PlayerId,
+        applicationId: String,
+        recipientId: PlayerId
+    ): Action {
         return SendChoice(
             playerId,
             applicationId,
