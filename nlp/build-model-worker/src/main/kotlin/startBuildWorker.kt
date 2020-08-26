@@ -106,6 +106,7 @@ private fun startOnDemandVerticle() {
 
 private fun startCommandLine(buildType: BuildType) {
     logger.info { "$buildType model from command line" }
+    FrontIoc.setup()
     try {
         when (buildType) {
             REBUILD_ALL -> BuildModelWorker.updateAllModels()
