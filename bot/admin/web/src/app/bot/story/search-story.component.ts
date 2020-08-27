@@ -15,7 +15,7 @@
  */
 
 import {saveAs} from "file-saver";
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, Injectable, OnDestroy, OnInit} from "@angular/core";
 import {BotService} from "../bot-service";
 import {NlpService} from "../../nlp-tabs/nlp.service";
 import {StateService} from "../../core-nlp/state.service";
@@ -25,6 +25,7 @@ import {DialogService} from "../../core-nlp/dialog.service";
 import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmDialogComponent} from "../../shared-nlp/confirm-dialog/confirm-dialog.component";
+import {CanDeactivate} from "@angular/router";
 
 interface TreeNode<T> {
   data: T;
@@ -217,5 +218,19 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
     this.bot.prepareStoryDumpUploader(this.uploader, this.state.currentApplication.name, this.state.currentLocale);
     this.uploader.uploadAll();
     this.displayUpload = false;
+  }
+}
+
+@Injectable()
+export class SearchStoryNavigationGuard implements CanDeactivate<any> {
+
+  canDeactivate(component: any) {
+    // will prevent user from going back
+    if (component instanceof SearchStoryComponent
+      && ((component as SearchStoryComponent).selectedStory != null)) {
+      (component as SearchStoryComponent).keepExpandableStateAndSearch();
+      return false;
+    }
+    return true;
   }
 }
