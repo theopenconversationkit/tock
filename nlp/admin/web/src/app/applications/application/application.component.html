@@ -18,7 +18,7 @@
   <nb-card-header>
     <div>
       <div style="display: flex;">
-        <span *ngIf="applications.length !== 0">NLU Application <span
+        <span *ngIf="applications.length !== 0">Application <span
           *ngIf="application && application?.name?.length !== 0">"{{application?.name}}"</span>
         </span>
         <nb-actions>
@@ -97,7 +97,7 @@
     <nb-card>
       <nb-card-header>NLU engine</nb-card-header>
       <nb-card-body>
-        <nb-radio-group id="engines" [(ngModel)]="nlpEngineType" (valueChange)="changeNlpEngine($event)">
+        <nb-radio-group id="engines" name="engines-group" [(ngModel)]="nlpEngineType" (valueChange)="changeNlpEngine($event)">
           <nb-radio class="engine-type" *ngFor="let engine of state.supportedNlpEngines" [value]="engine.name">
             {{engine.name}}
           </nb-radio>

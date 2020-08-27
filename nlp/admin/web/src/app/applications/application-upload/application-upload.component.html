@@ -20,7 +20,7 @@
     <div *ngIf="!report">
 
       <p>
-        <nb-radio-group [(ngModel)]="type">
+        <nb-radio-group [(ngModel)]="type" name="upload-type-group">
           <nb-radio *ngIf="state.hasRole(UserRole.technicalAdmin)" value="application" class="dump-type">
             Application Dump
           </nb-radio>

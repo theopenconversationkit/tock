@@ -18,9 +18,9 @@
   <nb-card-header>
     <div style="display: flex;">
       <span *ngIf="state.applications.length === 0">
-        Welcome! Please create your first NLU Application
+        Welcome! Please create your first Application
       </span>
-      <span *ngIf="state.applications.length !== 0">NLU Applications</span>
+      <span *ngIf="state.applications.length !== 0">Applications</span>
       <nb-actions size="small" *ngIf="!uploadDump">
         <nb-action class="control-item create" routerLink="create"
                    nbTooltip="Create new application">

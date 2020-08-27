@@ -26,6 +26,7 @@ import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmDialogComponent} from "../../shared-nlp/confirm-dialog/confirm-dialog.component";
 import {CanDeactivate} from "@angular/router";
+import {LocationStrategy} from "@angular/common";
 
 interface TreeNode<T> {
   data: T;
@@ -66,10 +67,17 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
               public state: StateService,
               private bot: BotService,
               private dialog: DialogService,
-              private matDialog: MatDialog) {
+              private matDialog: MatDialog,
+              private location: LocationStrategy,
+              private backButtonHolder: BackButtonHolder) {
   }
 
   ngOnInit(): void {
+    // check if back or forward button is pressed.
+    this.location.onPopState(() => {
+      this.backButtonHolder.backButton = true
+      return false;
+    });
     this.search();
     this.subscription = this.state.configurationChange.subscribe(_ => this.search());
   }
@@ -222,15 +230,28 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
 }
 
 @Injectable()
+export class BackButtonHolder {
+  backButton: boolean = false;
+}
+
+@Injectable()
 export class SearchStoryNavigationGuard implements CanDeactivate<any> {
+
+  constructor(private backButtonHolder: BackButtonHolder) {
+  }
 
   canDeactivate(component: any) {
     // will prevent user from going back
-    if (component instanceof SearchStoryComponent
-      && ((component as SearchStoryComponent).selectedStory != null)) {
-      (component as SearchStoryComponent).keepExpandableStateAndSearch();
-      return false;
+    try {
+      if (this.backButtonHolder.backButton
+        && component instanceof SearchStoryComponent
+        && ((component as SearchStoryComponent).selectedStory != null)) {
+        (component as SearchStoryComponent).keepExpandableStateAndSearch();
+        return false;
+      }
+      return true;
+    } finally {
+      this.backButtonHolder.backButton = false;
     }
-    return true;
   }
 }

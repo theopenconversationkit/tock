@@ -25,7 +25,7 @@ import {MomentModule} from 'ngx-moment';
 import {CreateStoryComponent} from './story/create-story.component';
 import {BotService} from './bot-service';
 import {BotTabsComponent} from './bot-tabs.component';
-import {SearchStoryComponent, SearchStoryNavigationGuard} from './story/search-story.component';
+import {SearchStoryComponent, SearchStoryNavigationGuard, BackButtonHolder} from './story/search-story.component';
 import {NlpModule} from '../nlp-tabs/nlp.module';
 import {ApplicationResolver} from '../core-nlp/application.resolver';
 import {I18nComponent} from './i18n/i18n.component';
@@ -165,6 +165,7 @@ export class BotRoutingModule {
   exports: [],
   providers: [
     BotService,
+    BackButtonHolder,
     SearchStoryNavigationGuard
   ],
   entryComponents: [
