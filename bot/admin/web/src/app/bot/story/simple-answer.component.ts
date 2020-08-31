@@ -69,7 +69,7 @@ export class SimpleAnswerComponent implements OnInit {
   updateLabel(answer: SimpleAnswer) {
     this.bot
       .saveI18nLabel(answer.label)
-      .subscribe(_ => this.dialog.notify(`Label updated`, "Update"));
+      .subscribe(_ => this.dialog.notify(`Story label has been updated successfully.`, "Label Updated", {duration: 3000, status: "success"}));
   }
 
   private addAnswerIfNonEmpty(callback) {
