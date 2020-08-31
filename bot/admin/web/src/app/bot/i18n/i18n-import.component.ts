@@ -17,6 +17,7 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {NbButtonComponent, NbWindowRef} from '@nebular/theme';
 import {FileUploader} from 'ng2-file-upload';
+import {DialogService} from '../../core-nlp/dialog.service';
 
 @Component({
   selector: 'tock-i18n-import-action',
@@ -31,7 +32,8 @@ export class I18nImportComponent implements OnInit, AfterViewInit {
   uploader: FileUploader;
   invalidSelectedFile = false;
 
-  constructor(private windowRef: NbWindowRef) {
+  constructor(private windowRef: NbWindowRef,
+              private dialog: DialogService) {
   }
 
   ngOnInit(): void {
@@ -58,6 +60,7 @@ export class I18nImportComponent implements OnInit, AfterViewInit {
     }
     this.loading = false;
     this.closeWindow();
+    this.dialog.notify(`Labels have been imported successfully.`, "Labels Imported", {duration: 3000, status: "success"});
   }
 
   private getFileType() {
