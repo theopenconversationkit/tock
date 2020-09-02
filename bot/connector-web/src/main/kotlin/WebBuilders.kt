@@ -99,10 +99,15 @@ fun <T : Bus<T>> T.webButton(
 /**
  * Creates a url button
  */
-fun <T : Bus<T>> T.webUrlButton(title: CharSequence, url: String): Button =
+fun <T : Bus<T>> T.webUrlButton(
+    title: CharSequence,
+    url: String,
+    imageUrl: String? = null
+): Button =
     UrlButton(
         translate(title).toString(),
-        url
+        url,
+        imageUrl
     )
 
 /**
@@ -110,18 +115,21 @@ fun <T : Bus<T>> T.webUrlButton(title: CharSequence, url: String): Button =
  */
 fun <T : Bus<T>> T.webPostbackButton(
     title: CharSequence,
-    targetIntent: IntentAware? = null,
+    targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>? = null,
-    parameters: Parameters = Parameters()
+    parameters: Parameters = Parameters(),
+    imageUrl: String? = null
 ): Button =
     PostbackButton(
         translate(title).toString(),
-        targetIntent?.let { i -> SendChoice.encodeChoiceId(this, i, step, parameters.toMap()) }
+        targetIntent.let { i -> SendChoice.encodeChoiceId(this, i, step, parameters.toMap()) },
+        imageUrl
     )
 
 /**
  * Creates a quickreply button
  */
+@Deprecated("use other builder")
 fun <T : Bus<T>> T.webQuickReply(
     title: CharSequence,
     targetIntent: IntentAware? = null,
@@ -133,6 +141,37 @@ fun <T : Bus<T>> T.webQuickReply(
         translate(title).toString(),
         targetIntent?.let { i -> SendChoice.encodeChoiceId(this, i, step, parameters.toMap()) },
         imageUrl
+    )
+
+/**
+ * Creates a quickreply button with target intent
+ */
+fun <T : Bus<T>> T.webIntentQuickReply(
+    title: CharSequence,
+    targetIntent: IntentAware,
+    step: StoryStep<out StoryHandlerDefinition>? = null,
+    parameters: Parameters = Parameters(),
+    imageUrl: String? = null
+): Button =
+    QuickReply(
+        translate(title).toString(),
+        SendChoice.encodeChoiceId(this, targetIntent, step, parameters.toMap()),
+        imageUrl
+    )
+
+/**
+ * Creates a quickreply button with target intent
+ */
+fun <T : Bus<T>> T.webNlpQuickReply(
+    title: CharSequence,
+    nlpText: String? = null,
+    imageUrl: String? = null
+): Button =
+    QuickReply(
+        translate(title).toString(),
+        null,
+        imageUrl,
+        nlpText
     )
 
 /**

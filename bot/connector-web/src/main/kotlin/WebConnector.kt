@@ -280,7 +280,7 @@ class WebConnector internal constructor(
     }
 
     override fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? =
-        { WebMessage(text.toString(), suggestions.map { webPostbackButton(it) }) }
+        { WebMessage(text.toString(), suggestions.map { webNlpQuickReply(it) }) }
 
     override fun addSuggestions(
         message: ConnectorMessage,
@@ -288,9 +288,9 @@ class WebConnector internal constructor(
     ): BotBus.() -> ConnectorMessage? = {
         (message as? WebMessage)?.let {
             if (it.card != null && it.card.buttons.isEmpty()) {
-                it.copy(card = it.card.copy(buttons = suggestions.map { s -> webPostbackButton(s) }))
+                it.copy(card = it.card.copy(buttons = suggestions.map { s -> webNlpQuickReply(s) }))
             } else if (it.card == null && it.buttons.isEmpty()) {
-                it.copy(buttons = suggestions.map { s -> webPostbackButton(s) })
+                it.copy(buttons = suggestions.map { s -> webNlpQuickReply(s) })
             } else {
                 null
             }

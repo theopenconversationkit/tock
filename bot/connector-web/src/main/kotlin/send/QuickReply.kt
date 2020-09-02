@@ -22,11 +22,10 @@ import ai.tock.shared.mapNotNullValues
 import com.fasterxml.jackson.annotation.JsonTypeName
 
 @JsonTypeName("quick_reply")
-data class QuickReply(val title: String, val payload: String?, val imageUrl: String?) : Button(ButtonType.quick_reply) {
-
+data class QuickReply(val title: String, val payload: String?, val imageUrl: String?, val nlpText: String? = null) : Button(ButtonType.quick_reply) {
     override fun toChoice(): Choice =
         if (payload == null) {
-            Choice.fromText(title)
+            Choice.fromText(title, nlpText, imageUrl)
         } else {
             SendChoice.decodeChoiceId(payload).let { (intent, params) ->
                 Choice(
@@ -45,6 +44,7 @@ data class QuickReply(val title: String, val payload: String?, val imageUrl: Str
         if (title != other.title) return false
         if (payload != other.payload) return false
         if (imageUrl != other.imageUrl) return false
+        if (nlpText != other.nlpText) return false
         return true
     }
 
@@ -52,6 +52,7 @@ data class QuickReply(val title: String, val payload: String?, val imageUrl: Str
         var result = title.hashCode()
         result = 31 * result + (payload?.hashCode() ?: 0)
         result = 31 * result + (imageUrl?.hashCode() ?: 0)
+        result = 31 * result + (nlpText?.hashCode() ?: 0)
         return result
     }
 }
