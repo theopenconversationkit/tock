@@ -71,6 +71,7 @@ import java.time.OffsetDateTime.ofInstant
 import java.time.temporal.ChronoUnit
 import java.util.Locale
 import java.util.Base64
+import kotlin.math.log
 
 /**
  *
@@ -162,11 +163,11 @@ class XrayService(
      */
     fun executeTests(namespace: String): XrayPlanExecutionResult {
         val dummyTestPlanKey = "AUTO_${testKeys[0]}"
-        val dummyTestPlan = listOf("MOCK")
         val jiraProject = getProjectFromIssue(testKeys[0])
         val executionId = Dice.newId()
 
         logger.info { "Execute tests with namespace $namespace" }
+        logger.warn { "Execution with id : $executionId started for test plan $dummyTestPlanKey" }
         return try {
             // getBotConfiguration retrieves all configuration for the selected namespace
             // getBotConfiguration will reach information stored in tab Configuration on BotAdmin site
@@ -182,6 +183,7 @@ class XrayService(
                         execTestsOnly(XrayExecutionConfiguration(it, listOf(dummyTestPlanKey), jiraProject), dummyTestPlanKey, testKeys, executionId.toId())
                     }
                     .let {
+                        logger.warn { "Execution with id : $executionId ended for test plan $dummyTestPlanKey" }
                         sendToXray(it)
                     }
         } catch (t: Throwable) {
@@ -400,10 +402,11 @@ class XrayService(
         return configuration
                 .xrayTestPlanKeys
                 .mapNotNull { xrayPlanKey ->
-                    logger.info { "Start plan $xrayPlanKey execution" }
+                    logger.info { "Start plan $xrayPlanKey execution for test plan $planKey" }
                     try {
                         // create a test plan with all given tests
                         val testPlan = createTestPlanWithTests(configuration, planKey, testKeys)
+                        logger.warn { "Common Tock test plan created : ${testPlan.hashCode()} \t\t ${System.identityHashCode(testPlan)} for test plan $planKey" }
                         // if the current test plan has dialogs to send, then execute it, otherwise skip it and jump to the next one
                         if (testPlan.dialogs.isNotEmpty()) {
                             executePlan(configuration, testPlan.name, testPlan, executionId)
@@ -412,7 +415,7 @@ class XrayService(
                             null
                         }
                     } finally {
-                        logger.info { "Plan $xrayPlanKey executed" }
+                        logger.info { "Plan $xrayPlanKey executed for test plan $planKey" }
                     }
                 }
     }
@@ -431,9 +434,9 @@ class XrayService(
             testPlan: TestPlan,
             executionId: Id<TestPlanExecution>
     ): TestPlanExecutionReport {
-        logger.debug { "Execute test plan $testPlan" }
+        logger.debug { "Execute test plan ${testPlan.name} with execution id $executionId" }
         val execution = findTestClient().saveAndExecuteTestPlan(testPlan, executionId)
-        logger.debug { "Test plan execution $execution" }
+        logger.debug { "Test plan execution ${execution.testPlanId}" }
         return TestPlanExecutionReport(
                 configuration,
                 xrayTestPlanKey,
@@ -516,29 +519,27 @@ class XrayService(
      */
     private fun getDialogReport(configuration: XrayExecutionConfiguration, xrayTest: XrayTest): TestDialogReport {
         val userInterface = xrayTest.findUserInterface()
-        // store all steps of the given xrayTest
         val xraySteps = XrayClient.getTestSteps(xrayTest.key)
-        // return the TestDialogReport with parsed steps
         return TestDialogReport(
-                xraySteps.flatMap {
+                xraySteps.flatMap { xrayTestStep ->
                     listOfNotNull(
                             parseStepData(
                                     configuration,
                                     userInterface,
-                                    it.id,
+                                    xrayTestStep.id,
                                     userId,
-                                    it.data.raw,
-                                    it.attachments.firstOrNull { it.fileName == "user.message" }),
+                                    xrayTestStep.data.raw,
+                                    xrayTestStep.attachments.firstOrNull { it.fileName == "user.message" }),
                             parseStepData(
                                     configuration,
                                     userInterface,
-                                    it.id,
+                                    xrayTestStep.id,
                                     botId,
-                                    it.result.raw,
-                                    it.attachments.firstOrNull { it.fileName == "bot.message" })
+                                    xrayTestStep.result.raw,
+                                    xrayTestStep.attachments.firstOrNull { it.fileName == "bot.message" })
                     )
                 },
-                xrayTest.findUserInterface(),
+                userInterface,
                 xrayTest.key.toId()
         )
     }
