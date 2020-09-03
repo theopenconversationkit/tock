@@ -113,12 +113,12 @@ class XrayService(
 
     fun execute(namespace: String): XrayPlanExecutionResult {
         return when {
-            testKeys.isNotEmpty() && testPlanKeys.isNotEmpty() -> throw AssertionError("Impossible d'exécuter un test plan et un test à la fois.")
+            testKeys.isNotEmpty() && testPlanKeys.isNotEmpty() -> throw AssertionError("Cannot execute test plan and test at the same time.")
             testKeys.isNotEmpty() -> executeTests(namespace)
             testPlanKeys.isNotEmpty() -> executeTestPlans(namespace)
             else -> {
-                logger.error { "Veuillez spécifier le \"testPlanKey\" OU (xor) le \"testKey\"." }
-                XrayPlanExecutionResult(success = 0, total = 0, errorMessage = "ERREUR : Veuillez spécifier le \"testPlanKey\" OU (xor) le \"testKey\".")
+                logger.warn { "Specify \"testPlanKey\" OR (xor) \"testKey\"." }
+                XrayPlanExecutionResult(success = 0, total = 0, errorMessage = "ERROR : Specify \"testPlanKey\" OR (xor) \"testKey\".")
             }
         }
     }
@@ -167,7 +167,7 @@ class XrayService(
         val executionId = Dice.newId()
 
         logger.info { "Execute tests with namespace $namespace" }
-        logger.warn { "Execution with id : $executionId started for test plan $dummyTestPlanKey" }
+        logger.debug { "Execution with id : $executionId started for test plan $dummyTestPlanKey" }
         return try {
             // getBotConfiguration retrieves all configuration for the selected namespace
             // getBotConfiguration will reach information stored in tab Configuration on BotAdmin site
@@ -183,7 +183,7 @@ class XrayService(
                         execTestsOnly(XrayExecutionConfiguration(it, listOf(dummyTestPlanKey), jiraProject), dummyTestPlanKey, testKeys, executionId.toId())
                     }
                     .let {
-                        logger.warn { "Execution with id : $executionId ended for test plan $dummyTestPlanKey" }
+                        logger.debug { "Execution with id : $executionId ended for test plan $dummyTestPlanKey" }
                         sendToXray(it)
                     }
         } catch (t: Throwable) {
@@ -406,12 +406,12 @@ class XrayService(
                     try {
                         // create a test plan with all given tests
                         val testPlan = createTestPlanWithTests(configuration, planKey, testKeys)
-                        logger.warn { "Common Tock test plan created : ${testPlan.hashCode()} \t\t ${System.identityHashCode(testPlan)} for test plan $planKey" }
+                        logger.debug { "Common Tock test plan created : ${testPlan.hashCode()} for test plan $planKey" }
                         // if the current test plan has dialogs to send, then execute it, otherwise skip it and jump to the next one
                         if (testPlan.dialogs.isNotEmpty()) {
                             executePlan(configuration, testPlan.name, testPlan, executionId)
                         } else {
-                            logger.info { "Empty test plan for $configuration - skipped" }
+                            logger.debug { "Empty test plan for $configuration - skipped" }
                             null
                         }
                     } finally {
@@ -426,7 +426,7 @@ class XrayService(
      * @param configuration is the configuration to execute the test plan.
      * @param xrayTestPlanKey is the Xray identifier of the test plan to execute.
      * @param testPlan is the test plan to execute formatted in the common Test Plan manageable by Tock test framework.
-     * @return a TestPlanExecutionReport which contains.... TODO
+     * @return a TestPlanExecutionReport which contains test plan execution results
      */
     private fun executePlan(
             configuration: XrayExecutionConfiguration,
