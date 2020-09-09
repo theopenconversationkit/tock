@@ -37,6 +37,7 @@ import ai.tock.bot.connector.media.MediaCardDescriptor
 import ai.tock.bot.connector.media.MediaCarouselDescriptor
 import ai.tock.bot.connector.media.MediaMessageDescriptor
 import ai.tock.bot.connector.media.MediaMessageType
+import ai.tock.bot.definition.ConfiguredAnswer
 import ai.tock.bot.engine.event.EventType
 import ai.tock.bot.engine.message.Attachment
 import ai.tock.bot.engine.message.Choice
@@ -124,6 +125,11 @@ private object BotEngineJacksonConfiguration {
                         AnswerConfigurationType.builtin.name
                     )
                 )
+
+                setMixInAnnotation(ConfiguredAnswer::class.java, MixinAnswerConfiguration::class.java)
+                registerSubtypes(NamedType(ConfiguredAnswer.ConfiguredSimpleAnswer::class.java, AnswerConfigurationType.simple.name))
+                registerSubtypes(NamedType(ConfiguredAnswer.ConfiguredScriptAnswer::class.java, AnswerConfigurationType.script.name))
+                registerSubtypes(NamedType(ConfiguredAnswer.ConfiguredBuiltinAnswer::class.java, AnswerConfigurationType.builtin.name))
 
                 setMixInAnnotation(AnswerConfigurationDump::class.java, MixinAnswerConfigurationDump::class.java)
                 registerSubtypes(NamedType(SimpleAnswerConfigurationDump::class.java, AnswerConfigurationType.simple.name))

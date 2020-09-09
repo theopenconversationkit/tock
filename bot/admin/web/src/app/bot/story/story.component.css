@@ -78,12 +78,20 @@
   margin-right: 10px;
 }
 
-.answer-card {
+.section-card {
   border: 1px solid lightgrey;
   margin: 10px 0 10px 0;
 }
 
-.answer-card-content {
+.section-card-actions {
+  float: right;
+}
+
+.section-card-header-button {
+  margin-left: 10px;
+}
+
+.section-card-body {
   margin: 15px;
 }
 

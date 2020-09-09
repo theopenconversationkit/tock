@@ -66,6 +66,16 @@ interface StoryDefinition : IntentAware {
     val unsupportedUserInterfaces: Set<UserInterfaceType>
 
     /**
+     * Custom answers by bot configuration
+     */
+    val configuredAnswers: List<ConfiguredAnswer> get() = emptyList()
+
+    /**
+     * Custom steps by bot configuration
+     */
+    val configuredSteps: List<ConfiguredSteps> get() = emptyList()
+
+    /**
      * Is the specified intent is a starter intent?
      */
     fun isStarterIntent(intent: Intent) = starterIntents.contains(intent)

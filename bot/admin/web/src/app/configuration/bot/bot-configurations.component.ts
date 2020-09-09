@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import {Component, ElementRef, OnInit, ViewChild} from "@angular/core";
-import {BotConfigurationService} from "../../core/bot-configuration.service";
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {BotConfigurationService} from '../../core/bot-configuration.service';
 import {
   BotApplicationConfiguration,
   BotConfiguration,
   ConnectorType,
   UserInterfaceType
-} from "../../core/model/configuration";
-import { MatDialog } from "@angular/material/dialog";
-import {ConfirmDialogComponent} from "../../shared-nlp/confirm-dialog/confirm-dialog.component";
-import {StateService} from "../../core-nlp/state.service";
-import { NbToastrService } from '@nebular/theme';
+} from '../../core/model/configuration';
+import {MatDialog} from '@angular/material/dialog';
+import {ConfirmDialogComponent} from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
+import {StateService} from '../../core-nlp/state.service';
+import {NbToastrService} from '@nebular/theme';
 
 @Component({
   selector: 'tock-bot-configurations',
@@ -36,9 +36,9 @@ export class BotConfigurationsComponent implements OnInit {
 
   newApplicationConfiguration: BotApplicationConfiguration;
   configurations: BotConfiguration[];
-  displayTestConfigurations: boolean = false;
+  displayTestConfigurations = false;
 
-  //used to copy to clipboard
+  // used to copy to clipboard
   @ViewChild('copy') tmpTextArea: ElementRef;
 
   constructor(private state: StateService,
@@ -53,27 +53,33 @@ export class BotConfigurationsComponent implements OnInit {
 
   private load() {
     this.botConfiguration.configurations.subscribe(confs => {
-      const r = new Map<string, BotApplicationConfiguration[]>();
+      const botConfigurationsByName = new Map<string, BotApplicationConfiguration[]>();
       confs.forEach(c => {
-        const a = r.get(c.name);
-        if (!a) {
-          r.set(c.name, [c]);
+        const configs = botConfigurationsByName.get(c.name);
+        if (!configs) {
+          botConfigurationsByName.set(c.name, [c]);
         } else {
-          a.push(c);
+          configs.push(c);
         }
       });
       const bots = this.botConfiguration.bots.getValue();
-      this.configurations = Array.from(r.values()).map(
-        e => {
-          const existingConf = bots.find(b => b.name === e[0].name);
-          if (existingConf) {
-            existingConf.configurations = e;
-            return existingConf;
+      this.configurations = Array.from(botConfigurationsByName.values())
+        .map(
+          botConfigurations => {
+            const existingConf = bots.find(botConfig => botConfig.name === botConfigurations[0].name);
+            if (existingConf) {
+              existingConf.configurations = botConfigurations;
+              return existingConf;
+            }
+            const firstBotConfiguration = botConfigurations[0];
+            return new BotConfiguration(
+              firstBotConfiguration.botId,
+              firstBotConfiguration.name,
+              firstBotConfiguration.namespace,
+              firstBotConfiguration.nlpModel,
+              botConfigurations);
           }
-          const c = e[0];
-          return new BotConfiguration(c.botId, c.name, c.namespace, c.nlpModel, e)
-        }
-      );
+        );
     });
   }
 
@@ -87,7 +93,7 @@ export class BotConfigurationsComponent implements OnInit {
       this.state.currentApplication.name,
       this.state.currentApplication.namespace,
       this.state.currentApplication.name,
-      new ConnectorType("messenger", UserInterfaceType.textChat),
+      new ConnectorType('messenger', UserInterfaceType.textChat),
       this.state.currentApplication.name,
       new Map<string, string>());
   }
@@ -98,20 +104,20 @@ export class BotConfigurationsComponent implements OnInit {
 
   refresh() {
     this.botConfiguration.updateConfigurations();
-    this.toastrService.show(`Configurations reloaded`, "Refresh", {duration: 2000});
+    this.toastrService.show(`Configurations reloaded`, 'Refresh', {duration: 2000});
   }
 
   create() {
-    //black magic? welcome to the js world! :)
+    // black magic? welcome to the js world! :)
     const param = this.newApplicationConfiguration.parameters;
     Object.keys(param).forEach(k => {
-      param.set(k, param[k])
+      param.set(k, param[k]);
     });
 
     this.botConfiguration.saveConfiguration(this.newApplicationConfiguration)
       .subscribe(_ => {
         this.botConfiguration.updateConfigurations();
-        this.toastrService.show(`Configuration created`, "Creation", {duration: 5000});
+        this.toastrService.show(`Configuration created`, 'Creation', {duration: 5000});
         this.newApplicationConfiguration = null;
       });
   }
@@ -120,24 +126,24 @@ export class BotConfigurationsComponent implements OnInit {
     this.botConfiguration.saveConfiguration(conf)
       .subscribe(_ => {
         this.botConfiguration.updateConfigurations();
-        this.toastrService.show(`Configuration updated`, "Update", {duration: 5000});
+        this.toastrService.show(`Configuration updated`, 'Update', {duration: 5000});
       });
   }
 
   remove(conf: BotApplicationConfiguration) {
-    let dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: `Delete the configuration`,
-        subtitle: "Are you sure?",
-        action: "Remove"
+        subtitle: 'Are you sure?',
+        action: 'Remove'
       }
     });
     dialogRef.afterClosed().subscribe(result => {
-      if (result === "remove") {
+      if (result === 'remove') {
         this.botConfiguration.deleteConfiguration(conf)
           .subscribe(_ => {
             this.botConfiguration.updateConfigurations();
-            this.toastrService.show(`Configuration deleted`, "Delete", {duration: 5000});
+            this.toastrService.show(`Configuration deleted`, 'Delete', {duration: 5000});
           });
       }
     });
@@ -145,7 +151,7 @@ export class BotConfigurationsComponent implements OnInit {
 
   saveBot(bot: BotConfiguration) {
     this.botConfiguration.saveBot(bot).subscribe(_ => {
-        this.toastrService.show(`Webhook saved`, "Save", {duration: 5000});
+        this.toastrService.show(`Webhook saved`, 'Save', {duration: 5000});
         this.botConfiguration.updateConfigurations();
       }
     );
@@ -153,7 +159,7 @@ export class BotConfigurationsComponent implements OnInit {
 
   copyToClipboard(bot: BotConfiguration) {
     const t = this.tmpTextArea.nativeElement;
-    t.style.display = "block";
+    t.style.display = 'block';
     const text = bot.apiKey;
     t.value = text;
     t.select();
@@ -161,10 +167,10 @@ export class BotConfigurationsComponent implements OnInit {
     try {
       successful = document.execCommand('copy');
     } catch (err) {
-      //do nothing
+      // do nothing
     }
-    t.style.display = "none";
-    this.toastrService.show(successful ? `${text} copied to clipboard` : `Unable to copy to clipboard`, "Clipboard", {duration: 2000})
+    t.style.display = 'none';
+    this.toastrService.show(successful ? `${text} copied to clipboard` : `Unable to copy to clipboard`, 'Clipboard', {duration: 2000});
   }
 
 }

@@ -2,6 +2,8 @@ package ai.tock.bot.admin.story
 
 import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType
+import ai.tock.bot.definition.ConfiguredAnswer
+import ai.tock.bot.definition.ConfiguredSteps
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.definition.IntentWithoutNamespace_
 import ai.tock.bot.definition.StoryTag
@@ -58,6 +60,10 @@ private val ___id: KProperty1<StoryDefinitionConfiguration, Id<StoryDefinitionCo
     get() = StoryDefinitionConfiguration::_id
 private val __Tags: KProperty1<StoryDefinitionConfiguration, List<StoryTag>?>
     get() = StoryDefinitionConfiguration::tags
+private val __ConfiguredAnswers: KProperty1<StoryDefinitionConfiguration, List<ConfiguredAnswer>?>
+    get() = StoryDefinitionConfiguration::configuredAnswers
+private val __ConfiguredSteps: KProperty1<StoryDefinitionConfiguration, List<ConfiguredSteps>?>
+    get() = StoryDefinitionConfiguration::configuredSteps
 class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         StoryDefinitionConfiguration?>) : KPropertyPath<T,
         StoryDefinitionConfiguration?>(previous,property) {
@@ -116,6 +122,12 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
     val tags: KCollectionSimplePropertyPath<T, StoryTag?>
         get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::tags)
 
+    val configuredAnswers: KCollectionSimplePropertyPath<T, ConfiguredAnswer?>
+        get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::configuredAnswers)
+
+    val configuredSteps: KCollectionSimplePropertyPath<T, ConfiguredSteps?>
+        get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::configuredSteps)
+
     companion object {
         val StoryId: KProperty1<StoryDefinitionConfiguration, String?>
             get() = __StoryId
@@ -156,7 +168,13 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
         val _id: KProperty1<StoryDefinitionConfiguration, Id<StoryDefinitionConfiguration>?>
             get() = ___id
         val Tags: KCollectionSimplePropertyPath<StoryDefinitionConfiguration, StoryTag?>
-            get() = KCollectionSimplePropertyPath(null, __Tags)}
+            get() = KCollectionSimplePropertyPath(null, __Tags)
+        val ConfiguredAnswers: KCollectionSimplePropertyPath<StoryDefinitionConfiguration,
+                ConfiguredAnswer?>
+            get() = KCollectionSimplePropertyPath(null, __ConfiguredAnswers)
+        val ConfiguredSteps: KCollectionSimplePropertyPath<StoryDefinitionConfiguration,
+                ConfiguredSteps?>
+            get() = KCollectionSimplePropertyPath(null, __ConfiguredSteps)}
 }
 
 class StoryDefinitionConfiguration_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -216,6 +234,12 @@ class StoryDefinitionConfiguration_Col<T>(previous: KPropertyPath<T, *>?, proper
 
     val tags: KCollectionSimplePropertyPath<T, StoryTag?>
         get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::tags)
+
+    val configuredAnswers: KCollectionSimplePropertyPath<T, ConfiguredAnswer?>
+        get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::configuredAnswers)
+
+    val configuredSteps: KCollectionSimplePropertyPath<T, ConfiguredSteps?>
+        get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::configuredSteps)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): StoryDefinitionConfiguration_<T>
@@ -278,6 +302,12 @@ class StoryDefinitionConfiguration_Map<T, K>(previous: KPropertyPath<T, *>?, pro
 
     val tags: KCollectionSimplePropertyPath<T, StoryTag?>
         get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::tags)
+
+    val configuredAnswers: KCollectionSimplePropertyPath<T, ConfiguredAnswer?>
+        get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::configuredAnswers)
+
+    val configuredSteps: KCollectionSimplePropertyPath<T, ConfiguredSteps?>
+        get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::configuredSteps)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): StoryDefinitionConfiguration_<T>

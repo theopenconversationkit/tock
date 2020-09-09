@@ -35,8 +35,13 @@ import ai.tock.bot.admin.kotlin.compiler.KotlinFile
 import ai.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
 import ai.tock.bot.admin.model.BotAnswerConfiguration
 import ai.tock.bot.admin.model.BotBuiltinAnswerConfiguration
+import ai.tock.bot.admin.model.BotBuiltinConfiguredAnswer
+import ai.tock.bot.admin.model.BotConfiguredAnswer
+import ai.tock.bot.admin.model.BotConfiguredSteps
 import ai.tock.bot.admin.model.BotScriptAnswerConfiguration
+import ai.tock.bot.admin.model.BotScriptConfiguredAnswer
 import ai.tock.bot.admin.model.BotSimpleAnswerConfiguration
+import ai.tock.bot.admin.model.BotSimpleConfiguredAnswer
 import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
 import ai.tock.bot.admin.model.BotStoryDefinitionConfigurationMandatoryEntity
 import ai.tock.bot.admin.model.BotStoryDefinitionConfigurationStep
@@ -62,6 +67,8 @@ import ai.tock.bot.admin.user.UserAnalyticsQueryResult
 import ai.tock.bot.admin.user.UserReportDAO
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.ConnectorTypeConfiguration.Companion.connectorConfigurations
+import ai.tock.bot.definition.ConfiguredAnswer
+import ai.tock.bot.definition.ConfiguredSteps
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.engine.dialog.DialogFlowDAO
 import ai.tock.bot.engine.feature.FeatureDAO
@@ -131,7 +138,7 @@ object BotAdminService {
 
         override fun keepFeature(feature: StoryDefinitionConfigurationFeatureDump): Boolean =
             feature.botApplicationConfigurationId == null
-                    || getBotConfigurationById(feature.botApplicationConfigurationId!!)?.namespace == targetNamespace
+                || getBotConfigurationById(feature.botApplicationConfigurationId!!)?.namespace == targetNamespace
 
         override fun buildScript(
             script: ScriptAnswerVersionedConfigurationDump,
@@ -327,7 +334,7 @@ object BotAdminService {
         searchFunction: (String, String, Set<Id<BotApplicationConfiguration>>, ZonedDateTime?, ZonedDateTime?, String?) -> Pair<List<DialogFlowTransitionStatsData>, List<String>>,
         seriesLabel: (String?) -> String = { "$it" }
     )
-            : UserAnalyticsQueryResult {
+        : UserAnalyticsQueryResult {
         val namespace = request.namespace
         val botId = request.botId
         val applicationIds = applications.map { it._id }.toSet()
@@ -819,33 +826,34 @@ object BotAdminService {
         )
     }
 
-    private fun scriptAnswer(
-        botId: String,
-        oldAnswer: ScriptAnswerConfiguration?,
-        answer: BotScriptAnswerConfiguration
-    ): ScriptAnswerConfiguration? {
+    private fun String.toScriptConfiguration(botId: String, oldAnswer: ScriptAnswerConfiguration?): ScriptAnswerConfiguration? = this
+        .toNewScriptConfiguration(botId, oldAnswer?.current?.script, oldAnswer?.scriptVersions) ?: oldAnswer
 
-        val script = answer.current.script
-        if (!KotlinCompilerClient.compilerDisabled && oldAnswer?.current?.script != script) {
+    private fun String.toNewScriptConfiguration(
+        botId: String,
+        oldScript: String?,
+        oldScriptVersions: List<ScriptAnswerVersionedConfiguration>?,
+    ): ScriptAnswerConfiguration? {
+        if (!KotlinCompilerClient.compilerDisabled && oldScript != this) {
             val fileName = "T${Dice.newId()}.kt"
-            val result = KotlinCompilerClient.compile(KotlinFile(script, fileName))
+            val result = KotlinCompilerClient.compile(KotlinFile(this, fileName))
             if (result?.compilationResult == null) {
                 throw badRequest("Compilation error: ${result?.errors?.joinToString()}")
             } else {
                 val c = result.compilationResult!!
                 val newScript = ScriptAnswerVersionedConfiguration(
-                    script,
+                    this,
                     c.files.map { it.key.substring(0, it.key.length - ".class".length) to it.value },
                     BotVersion.getCurrentBotVersion(botId),
                     c.mainClass
                 )
                 return ScriptAnswerConfiguration(
-                    (oldAnswer?.scriptVersions ?: emptyList()) + newScript,
+                    (oldScriptVersions ?: emptyList()) + newScript,
                     newScript
                 )
             }
         } else {
-            return oldAnswer
+            return null
         }
     }
 
@@ -856,10 +864,9 @@ object BotAdminService {
         when (this) {
             is BotSimpleAnswerConfiguration -> simpleAnswer(this)
             is BotScriptAnswerConfiguration ->
-                scriptAnswer(
+                current.script.toScriptConfiguration(
                     botId,
-                    answers?.find { it.answerType == script } as? ScriptAnswerConfiguration,
-                    this
+                    answers?.find { it.answerType == script } as? ScriptAnswerConfiguration
                 )
             is BotBuiltinAnswerConfiguration -> BuiltInAnswerConfiguration(storyHandlerClassName)
             else -> error("unsupported type $this")
@@ -998,7 +1005,11 @@ object BotAdminService {
             userSentenceLocale = story.userSentenceLocale,
             configurationName = story.configurationName,
             features = story.features,
-            tags = story.tags
+            tags = story.tags,
+            configuredAnswers = story.configuredAnswers.mapNotNull {
+                it.toConfiguredAnswer(botId, oldStory)
+            },
+            configuredSteps = story.configuredSteps.mapSteps(application, botId, oldStory)
         )
     }
 
@@ -1096,7 +1107,9 @@ object BotAdminService {
                         userSentenceLocale = story.userSentenceLocale,
                         configurationName = story.configurationName,
                         features = story.features,
-                        tags = story.tags
+                        tags = story.tags,
+                        configuredAnswers = story.configuredAnswers.mapNotNull { it.toConfiguredAnswer(botConf.botId, null) },
+                        configuredSteps = story.configuredSteps.mapSteps(application, botConf.botId, null)
                     )
                 }
             }
@@ -1115,11 +1128,43 @@ object BotAdminService {
             }
 
             //save all intents of steps
-            newStory.steps.forEach { saveUserSentenceOfStep(application, it, user) }
+            val storySteps = newStory.steps + newStory.configuredSteps.flatMap { it.steps }
+            storySteps.forEach { saveUserSentenceOfStep(application, it, user) }
 
             BotStoryDefinitionConfiguration(newStory, story.userSentenceLocale)
         } else {
             null
+        }
+    }
+
+    private fun List<BotConfiguredSteps>.mapSteps(
+        app: ApplicationDefinition,
+        botId: String,
+        oldStory: StoryDefinitionConfiguration?): List<ConfiguredSteps> =
+        map {
+            ConfiguredSteps(it.botConfiguration, it.steps.map { step ->
+                step.toStepConfiguration(app, botId, oldStory)
+            })
+        }
+
+
+    private fun BotConfiguredAnswer.toConfiguredAnswer(botId: String, oldStory: StoryDefinitionConfiguration?)
+        : ConfiguredAnswer? {
+        val oldAnswers = oldStory?.configuredAnswers?.find { it.botConfiguration == botConfiguration }?.answers
+        return when (this) {
+            is BotSimpleConfiguredAnswer -> ConfiguredAnswer.ConfiguredSimpleAnswer(
+                botConfiguration,
+                answers.mapNotNull { it.toConfiguration(botId, oldAnswers) }
+            )
+            is BotScriptConfiguredAnswer -> ConfiguredAnswer.ConfiguredScriptAnswer(
+                botConfiguration,
+                answers.mapNotNull { it.toConfiguration(botId, oldAnswers) }
+            )
+            is BotBuiltinConfiguredAnswer -> ConfiguredAnswer.ConfiguredBuiltinAnswer(
+                botConfiguration,
+                answers.mapNotNull { it.toConfiguration(botId, oldAnswers) }
+            )
+            else -> error("unsupported conf $this")
         }
     }
 

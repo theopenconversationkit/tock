@@ -1,0 +1,58 @@
+<!--
+  ~ Copyright (C) 2017/2020 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<nb-card>
+  <nb-card-header>{{title}}</nb-card-header>
+  <nb-card-body>
+    <div *ngIf="!valid">
+      <nb-icon icon="alert-triangle" status="danger"></nb-icon>
+      Please select a Bot Configuration value.
+    </div>
+    <nb-select placeholder="Select a Bot Application Configuration..." [(selected)]="selectedConfig"
+               class="configuration-select" [status]="validationStatus()">
+      <nb-select-label>
+        <span class="configuration-select-label" *ngIf="selectedConfig">
+            <span class="configuration-name">{{selectedConfig.name}}</span>
+            <span class="configuration-connectors">
+              <img *ngFor="let connectorConfig of selectedConfig.configurations"
+                   [src]="connectorConfig.connectorType.iconUrl()"
+                   [alt]="connectorConfig.connectorType.label()"
+                   class="connector-icon"/>
+            </span>
+        </span>
+        <span class="configuration-select-label" *ngIf="!selectedConfig || selectedConfig === DEFAULT_EMPTY_VALUE">
+          <span class="configuration-name">{{NO_VALUE_SELECTED}}</span>
+        </span>
+      </nb-select-label>
+      <nb-option [value]="DEFAULT_EMPTY_VALUE">{{NO_VALUE_SELECTED}}</nb-option>
+      <nb-option *ngFor="let config of botApplicationConfigurations" [value]="config">
+        <span class="configuration-select-label">
+          <span class="configuration-name">{{config.name}}</span>
+          <span class="configuration-connectors">
+            <img *ngFor="let connectorConfig of config.configurations"
+                 [src]="connectorConfig.connectorType.iconUrl()"
+                 [alt]="connectorConfig.connectorType.label()"
+                 class="connector-icon"/>
+          </span>
+        </span>
+      </nb-option>
+    </nb-select>
+  </nb-card-body>
+  <nb-card-footer class="button-footer">
+    <button nbButton (click)="close()">Cancel</button>
+    <button nbButton status="primary" (click)="submit()" (submit)="submit()">OK</button>
+  </nb-card-footer>
+</nb-card>

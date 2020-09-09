@@ -66,7 +66,7 @@ export class I18nLabel {
       this.lastUpdate,
       this.unhandledLocaleStats,
       this.version
-    )
+    );
   }
 
   defaultLocalizedLabel(): I18nLocalizedLabel {
@@ -161,7 +161,7 @@ export class I18nLocalizedLabel {
       this.connectorId,
       this.alternatives.slice(0),
       this.stats
-    )
+    );
   }
 
   iconUrl(): string {

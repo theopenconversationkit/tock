@@ -21,7 +21,9 @@ import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
 import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationKey
+import ai.tock.bot.definition.ConfiguredSteps
 import ai.tock.bot.definition.BotDefinition
+import ai.tock.bot.definition.ConfiguredAnswer
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.definition.StoryDefinition
@@ -107,26 +109,35 @@ data class StoryDefinitionConfiguration(
      * The configuration identifier.
      */
     val _id: Id<StoryDefinitionConfiguration> = newId(),
-
     /**
      * The story definition tags that specify different story types or roles.
      */
-    val tags: List<StoryTag> = emptyList()
+    val tags: List<StoryTag> = emptyList(),
+    /**
+     * Answers by bot application configuration
+     */
+    val configuredAnswers: List<ConfiguredAnswer> = emptyList(),
+    /**
+     * Steps by bot application configuration
+     */
+    val configuredSteps: List<ConfiguredSteps> = emptyList()
 
 ) : StoryDefinitionAnswersContainer {
 
     constructor(botDefinition: BotDefinition, storyDefinition: StoryDefinition, configurationName: String?) :
-            this(
-                storyId = storyDefinition.id,
-                tags = storyDefinition.tags,
-                botId = botDefinition.botId,
-                intent = storyDefinition.mainIntent().intentWithoutNamespace(),
-                currentType = builtin,
-                answers = listOf(BuiltInAnswerConfiguration(storyDefinition.javaClass.kotlin.qualifiedName)),
-                namespace = botDefinition.namespace,
-                configurationName = configurationName,
-                steps = storyDefinition.steps.map { StoryDefinitionConfigurationStep(it) }
-            )
+        this(
+            storyId = storyDefinition.id,
+            tags = storyDefinition.tags,
+            botId = botDefinition.botId,
+            intent = storyDefinition.mainIntent().intentWithoutNamespace(),
+            currentType = builtin,
+            answers = listOf(BuiltInAnswerConfiguration(storyDefinition.javaClass.kotlin.qualifiedName)),
+            namespace = botDefinition.namespace,
+            configurationName = configurationName,
+            steps = storyDefinition.steps.map { StoryDefinitionConfigurationStep(it) },
+            configuredAnswers = storyDefinition.configuredAnswers,
+            configuredSteps = storyDefinition.configuredSteps
+        )
 
     override fun findNextSteps(bus: BotBus, story: StoryDefinitionConfiguration): List<CharSequence> =
         steps.map { it.userSentenceLabel ?: it.userSentence }

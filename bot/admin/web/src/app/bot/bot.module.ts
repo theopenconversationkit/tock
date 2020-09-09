@@ -21,11 +21,12 @@ import {InfiniteScrollModule} from 'ngx-infinite-scroll';
 import {SharedModule} from '../shared-nlp/shared.module';
 import {AuthGuard} from '../core-nlp/auth/auth.guard';
 import {BotSharedModule} from '../shared/bot-shared.module';
+import {BotConfigurationModule} from '../configuration/configuration.module';
 import {MomentModule} from 'ngx-moment';
 import {CreateStoryComponent} from './story/create-story.component';
 import {BotService} from './bot-service';
 import {BotTabsComponent} from './bot-tabs.component';
-import {SearchStoryComponent, SearchStoryNavigationGuard, BackButtonHolder} from './story/search-story.component';
+import {BackButtonHolder, SearchStoryComponent, SearchStoryNavigationGuard} from './story/search-story.component';
 import {NlpModule} from '../nlp-tabs/nlp.module';
 import {ApplicationResolver} from '../core-nlp/application.resolver';
 import {I18nComponent} from './i18n/i18n.component';
@@ -47,9 +48,11 @@ import {ThemeModule} from '../theme/theme.module';
 import {
   NbAccordionModule,
   NbBadgeModule,
+  NbButtonModule,
   NbCardModule,
   NbCheckboxModule,
-  NbFormFieldModule, NbIconModule,
+  NbFormFieldModule,
+  NbIconModule,
   NbInputModule,
   NbRadioModule,
   NbRouteTabsetModule,
@@ -119,6 +122,7 @@ export class BotRoutingModule {
     MomentModule,
     NlpModule,
     FileUploadModule,
+    BotConfigurationModule,
     ThemeModule,
     NbRouteTabsetModule,
     NbBadgeModule,
@@ -134,7 +138,8 @@ export class BotRoutingModule {
     MatIconModule,
     MatGridListModule,
     NbFormFieldModule,
-    NbIconModule
+    NbIconModule,
+    NbButtonModule
   ],
   declarations: [
     BotTabsComponent,
