@@ -61,7 +61,7 @@ open class OrchestratorService(
         return eligibleBots
             .map { it to it.askOrchestration(request.toBotRequest()) } // TODO to run in parallel
             .filter { (_, response) -> response.indice > 0 }
-            .maxBy { (_, response) -> response.indice }
+            .maxByOrNull { (_, response) -> response.indice }
             ?.let { (bot, response) -> response.toOrchestratorResponse(bot.target) }
     }
 

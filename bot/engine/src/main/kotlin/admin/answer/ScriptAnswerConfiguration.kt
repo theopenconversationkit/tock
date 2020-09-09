@@ -23,7 +23,8 @@ import ai.tock.bot.admin.bot.BotVersion
  */
 data class ScriptAnswerConfiguration(
     val scriptVersions: List<ScriptAnswerVersionedConfiguration>,
-    val current: ScriptAnswerVersionedConfiguration = scriptVersions.maxBy { it.date }!!
+    val current: ScriptAnswerVersionedConfiguration = scriptVersions.maxByOrNull { it.date }
+        ?: error("no script version found")
 ) : AnswerConfiguration(AnswerConfigurationType.script) {
 
     internal fun findBestVersion(version: BotVersion): ScriptAnswerVersionedConfiguration? {

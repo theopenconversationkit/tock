@@ -309,7 +309,7 @@ object Translator {
                     if (isNullOrBlank()) {
                         labelWithoutUserInterface(i18nLabel, defaultLabel, context)
                     } else {
-                        this!!
+                        this
                     }
                 }
         }

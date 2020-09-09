@@ -66,7 +66,7 @@ data class BotI18nLabel(
             label.defaultLabel,
             label.defaultLocale,
             stats.sumBy { it.count },
-            stats.maxBy { it.lastUpdate }?.lastUpdate,
+            stats.maxByOrNull { it.lastUpdate }?.lastUpdate,
             stats.filter { label.i18n.none { l -> it.hasSameLanguage(l) } },
             label.version
         )

@@ -108,9 +108,9 @@ internal object DatesMerge {
                                 referenceDateTime,
                                 sortedBy { it.position }.map { it.content }.joinToString(" ")
                             )
-                                ?: maxBy { it.probability }!!
+                                ?: maxByOrNull { it.probability }!!
                         } else {
-                            maxBy { it.probability }!!
+                            maxByOrNull { it.probability }!!
                         }
                     }
                 }

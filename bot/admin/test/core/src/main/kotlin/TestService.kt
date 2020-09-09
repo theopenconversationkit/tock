@@ -24,7 +24,7 @@ import org.litote.kmongo.Id
  * Retrieve a test service from [ServiceLoader].
  */
 fun findTestService(): TestService =
-    Loader.loadServices<TestService>().maxBy { it.priority() } ?: error("no test service found")
+    Loader.loadServices<TestService>().maxByOrNull { it.priority() } ?: error("no test service found")
 
 interface TestService {
 

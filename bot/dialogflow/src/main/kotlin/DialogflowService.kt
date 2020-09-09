@@ -96,7 +96,6 @@ internal object DialogflowService {
                     }
                 }
         }
-        return null
     }
 
     /**

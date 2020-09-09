@@ -24,7 +24,7 @@ import org.litote.kmongo.Id
  * Retrieve a test client from [ServiceLoader].
  */
 fun findTestClient(): TestClientService =
-        Loader.loadServices<TestClientService>().maxBy { it.priority() } ?: error("no test client found")
+        Loader.loadServices<TestClientService>().maxByOrNull { it.priority() } ?: error("no test client found")
 
 
 /**

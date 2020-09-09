@@ -36,13 +36,13 @@ data class BotVersion(val botVersion: ArtifactVersion, val tockVersion: Artifact
         internal fun findBestMatchVersion(versions: List<BotVersion>, targetVersion: BotVersion): BotVersion? {
             //1 use the tock version
             return versions.groupBy { it.tockVersion.distanceFrom(targetVersion.tockVersion) }
-                    .minBy { it.key }
+                    .minByOrNull { it.key }
                     ?.value
                     ?.run {
                         if (size > 1) {
                             //2 use bot version
                             groupBy { it.botVersion.distanceFrom(targetVersion.botVersion) }
-                                    .minBy { it.key }
+                                    .minByOrNull { it.key }
                                     ?.value
                                     ?.firstOrNull()
                         } else {

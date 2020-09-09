@@ -55,7 +55,7 @@ internal object DictionaryEntityTypeEvaluator : EntityTypeEvaluator {
             }
         } else {
             val acceptableValues = values.mapNotNull { e ->
-                val max = e.value.asSequence().map { levenshtein.compare(textToCompare, it) }.max()
+                val max = e.value.asSequence().map { levenshtein.compare(textToCompare, it) }.maxOrNull()
                 if (max != null && (max > minDistance || (textSearch && e.value.any { textToCompare.contains(it) }))) {
                     ValueWithProbability(e.key.value, max.toDouble())
                 } else {

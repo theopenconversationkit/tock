@@ -24,7 +24,7 @@ import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
  */
 data class BotScriptAnswerConfiguration(
         val scriptVersions: List<BotScriptAnswerVersionedConfiguration>,
-        val current: BotScriptAnswerVersionedConfiguration = scriptVersions.maxBy { it.date }!!) :
+        val current: BotScriptAnswerVersionedConfiguration = scriptVersions.maxByOrNull { it.date }!!) :
         BotAnswerConfiguration(AnswerConfigurationType.script) {
 
     constructor(conf: ScriptAnswerConfiguration) : this(conf.scriptVersions.map {

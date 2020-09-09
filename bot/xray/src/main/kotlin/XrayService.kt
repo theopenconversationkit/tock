@@ -206,7 +206,7 @@ class XrayService(
                     if (plans.map { it.testPlan.dialogs.map { dialogExecutionReport -> dialogExecutionReport.id } }
                                     //no duplicate
                                     .run { toSet().size == size }) {
-                        val firstExecution = plans.map { it.execution.date }.min()!!
+                        val firstExecution = plans.map { it.execution.date }.minOrNull()!!
                         sendXrayExecution(
                                 planKey,
                                 ofInstant(firstExecution, defaultZoneId),

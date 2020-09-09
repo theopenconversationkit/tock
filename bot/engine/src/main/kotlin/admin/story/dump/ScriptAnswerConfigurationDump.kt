@@ -26,7 +26,7 @@ import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
  */
 data class ScriptAnswerConfigurationDump(
     val scriptVersions: List<ScriptAnswerVersionedConfigurationDump>,
-    val current: ScriptAnswerVersionedConfigurationDump = scriptVersions.maxBy { it.date }!!
+    val current: ScriptAnswerVersionedConfigurationDump = scriptVersions.maxByOrNull { it.date } ?: error("no script version found")
 ) : AnswerConfigurationDump(AnswerConfigurationType.script) {
 
     constructor(conf: ScriptAnswerConfiguration) : this(

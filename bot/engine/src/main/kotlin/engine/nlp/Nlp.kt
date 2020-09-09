@@ -371,7 +371,7 @@ internal class Nlp : NlpController {
                 //force intents qualifiers if unknown answer
                 if (intentsQualifiers!!.none { it.intent == result.intent }) {
                     return result.copy(
-                        intent = intentsQualifiers.maxBy { it.modifier }?.intent ?: intentsQualifiers.first().intent
+                        intent = intentsQualifiers.maxByOrNull { it.modifier }?.intent ?: intentsQualifiers.first().intent
                     ).also {
                         logger.warn { "${result.intent} not in intents qualifier $intentsQualifiers - use $it" }
                     }

@@ -294,7 +294,7 @@ object TestPlanService {
         var botAnswerText = (botAnswer as ClientSentence).text
         botAnswer.text?.forEach { c -> if (c.isSurrogate()) botAnswerText = botAnswerText?.replace("$c", "") }
 
-        return expectedMessage is ClientSentence && botAnswer is ClientSentence && (expectedMessage == botAnswer || expectedMessage.text?.trim() == botAnswerText?.trim())
+        return expectedMessage is ClientSentence && (expectedMessage == botAnswer || expectedMessage.text?.trim() == botAnswerText?.trim())
     }
 
 }

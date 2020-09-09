@@ -58,7 +58,7 @@ data class ArtifactVersion(
                 (0 until t.length).fold(mutableListOf(u + 1), { row, v ->
                     row.add(listOf(row.last() + 1,
                             previous[v + 1] + 1,
-                            previous[v] + charScore(s[u], t[v])).min()!!)
+                            previous[v] + charScore(s[u], t[v])).minOrNull()!!)
                     row
                 })
             }).last()
