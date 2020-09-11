@@ -16,6 +16,9 @@
 
 package ai.tock.bot.test
 
+import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.definition.ParameterKey
+import ai.tock.bot.engine.action.SendAttachment
 import ch.tutteli.atrium.api.cc.en_GB.contains
 import ch.tutteli.atrium.api.cc.en_GB.property
 import ch.tutteli.atrium.api.cc.en_GB.returnValueOf
@@ -28,10 +31,14 @@ import ch.tutteli.atrium.reporting.translating.Untranslatable
 import ch.tutteli.atrium.verbs.expect
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.message.Attachment
+import ai.tock.bot.engine.message.Choice
 import ai.tock.bot.engine.message.GenericElement
 import ai.tock.bot.engine.message.GenericMessage
+import ch.tutteli.atrium.api.cc.en_GB.any
 import ch.tutteli.atrium.api.cc.en_GB.containsExactly
 import ch.tutteli.atrium.api.cc.en_GB.containsNot
+import ch.tutteli.atrium.api.cc.en_GB.notToBeNull
 
 fun Assert<BotBusMockLog>.toBeSimpleTextMessage(expectedText: String) =
     returnValueOf(BotBusMockLog::text).toBe(expectedText)
@@ -115,4 +122,45 @@ fun Assert<GenericElement>.toHaveExactlyChoices(expectedChoice  : String, vararg
         }).containsExactly(expectedChoice, *otherExpectedChoices)
     }
 
+fun ConnectorMessage.asGenericMessage(assertionCreator: Assert<GenericMessage>.() -> Unit) {
+    expect(toGenericMessage()).notToBeNull(assertionCreator)
+}
 
+fun Assert<GenericElement>.toHaveAttachment(assertionCreator: Assert<Attachment>.() -> Unit) =
+    property(GenericElement::attachments).addAssertionsCreatedBy {
+        any {
+            addAssertionsCreatedBy(assertionCreator)
+        }
+    }
+
+fun Assert<Attachment>.toHaveUrl(url:String) = property(Attachment::url).toBe(url)
+
+fun Assert<Attachment>.toBeImage() = property(Attachment::type).toBe(SendAttachment.AttachmentType.image)
+
+fun Assert<GenericMessage>.toHaveChoice(title: String, assertionCreator: Assert<Choice>.() -> Unit) =
+    property(GenericMessage::choices).addAssertionsCreatedBy {
+        any {
+            toHaveTitle(title)
+            addAssertionsCreatedBy(assertionCreator)
+        }
+    }
+
+fun Assert<Choice>.toHaveTitle(title: String) {
+    toHaveParameter(SendChoice.TITLE_PARAMETER, title)
+}
+
+fun Assert<Choice>.toHaveIntent(intentName: String) {
+    property(Choice::intentName).toBe(intentName)
+}
+
+fun Assert<Choice>.toHaveParameter(key: ParameterKey, value: String) {
+    property(Choice::parameters).addAssertionsCreatedBy {
+        returnValueOf(Map<String, String>::get, key.name).toBe(value)
+    }
+}
+
+fun Assert<Choice>.toHaveParameter(key: String, value: String) {
+    property(Choice::parameters).addAssertionsCreatedBy {
+        returnValueOf(Map<String, String>::get, key).toBe(value)
+    }
+}
