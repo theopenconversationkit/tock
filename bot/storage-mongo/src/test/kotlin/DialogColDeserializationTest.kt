@@ -26,6 +26,7 @@ import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserLocation
 import ai.tock.bot.engine.user.UserTimeline
+import ai.tock.bot.mongo.DialogCol.ActionMongoWrapper
 import ai.tock.bot.mongo.DialogCol.DialogStateMongoWrapper
 import ai.tock.bot.mongo.DialogCol.EntityStateValueWrapper
 import ai.tock.bot.mongo.DialogCol.SendChoiceMongoWrapper
@@ -43,6 +44,7 @@ import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
+import org.litote.kmongo.toId
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -126,49 +128,35 @@ class DialogColDeserializationTest : AbstractTest(false) {
     }
 
     @Test
-    fun `GIVEN a parameter obfuscator WHEN serializing a SendChoiceMongoWrapper THEN obfuscates the parameters`() {
-        val testParameterObfuscator = spyk(TestParamObfuscator())
-        TockObfuscatorService.registerMapObfuscator(testParameterObfuscator)
-        val parameters: Map<String, String> = mapOf("key" to "value")
-
-        val stateWrapper = SendChoiceMongoWrapper(
-            "test",
-            parameters
-        )
-
-        assertTrue {
-            stateWrapper.parameters.all { it.value == "" }
-        }
-        verify(exactly = 1) { testParameterObfuscator.obfuscate(parameters) }
-        TockObfuscatorService.deregisterObfuscators()
-    }
-
-    @Test
     fun `GIVEN a parameter obfuscator WHEN serializing a SendChoiceMongoWrapper instantiated from SendChoice THEN obfuscates the parameters`() {
 
         val testParameterObfuscator = spyk(TestParamObfuscator())
         TockObfuscatorService.registerMapObfuscator(testParameterObfuscator)
         val parameters: Map<String, String> = mapOf("key" to "value")
 
-        val stateWrapper = SendChoiceMongoWrapper(
-            SendChoice(
-                PlayerId(
-                    UUID.randomUUID().toString()
-                ),
-                "",
-                PlayerId(
-                    UUID.randomUUID().toString()
-                ),
-                "test",
-                parameters
-            )
+        val choice = SendChoice(
+            PlayerId(
+                UUID.randomUUID().toString()
+            ),
+            "",
+            PlayerId(
+                UUID.randomUUID().toString()
+            ),
+            "test",
+            parameters
         )
+        val stateWrapper = SendChoiceMongoWrapper(choice)
 
         assertTrue {
             stateWrapper.parameters.all { it.value == "" }
         }
         verify(exactly = 1) { testParameterObfuscator.obfuscate(parameters) }
         TockObfuscatorService.deregisterObfuscators()
+
+        //test deserialization
+        val json = mapper.writeValueAsString(stateWrapper)
+        val stateWrapper2 : ActionMongoWrapper = mapper.readValue(json)
+        assertEquals(stateWrapper.toAction("id".toId()).toString(), stateWrapper2.toAction("id".toId()).toString())
     }
 
     @Test

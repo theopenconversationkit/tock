@@ -308,11 +308,10 @@ internal data class DialogCol(
     }
 
     @JsonTypeName(value = "choice")
-    class SendChoiceMongoWrapper(
+    class SendChoiceMongoWrapper private constructor (
         val intentName: String,
-        parameters: Map<String, String>
+        val parameters: Map<String, String>
     ) : ActionMongoWrapper() {
-        val parameters = obfuscate(parameters)
 
         constructor(choice: SendChoice) :
             this(
