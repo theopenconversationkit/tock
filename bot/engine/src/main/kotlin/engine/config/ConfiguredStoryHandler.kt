@@ -24,6 +24,7 @@ import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionAnswersContainer
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep.Step
+import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryHandler
 import ai.tock.bot.engine.BotBus
@@ -88,7 +89,7 @@ internal class ConfiguredStoryHandler(
                     ?.takeUnless { it == bus.botDefinition.unknownStory }
                     ?.takeUnless { bus.viewedStories.contains(it) }
                     ?.apply {
-                        bus.switchConfiguredStory(this)
+                        bus.switchConfiguredStory(this, targetIntent!! /* should not happen */)
                         return@handle
                     }
                 if (step.hasCurrentAnwser()) {
@@ -103,10 +104,10 @@ internal class ConfiguredStoryHandler(
         get() =
             getBusContextValue<Set<StoryDefinition>>(VIEWED_STORIES_BUS_KEY) ?: emptySet()
 
-    private fun BotBus.switchConfiguredStory(target: StoryDefinition) {
+    private fun BotBus.switchConfiguredStory(target: StoryDefinition, newIntent: String) {
         step = step?.takeUnless { story.definition == target }
         setBusContextValue(VIEWED_STORIES_BUS_KEY, viewedStories + target)
-        handleAndSwitchStory(target)
+        handleAndSwitchStory(target, Intent(newIntent))
     }
 
     private fun StoryDefinitionAnswersContainer.send(bus: BotBus) {

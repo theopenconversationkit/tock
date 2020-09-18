@@ -31,9 +31,7 @@ import ai.tock.translator.RawString
 import ai.tock.translator.TranslatedString
 
 /**
- * A new bus instance is created for each user request.
- *
- * The bus is used by bot implementations to reply to the user request.
+ * Bus implementation for Tock Bot APÏ mode.
  */
 interface ClientBus : Bus<ClientBus> {
 

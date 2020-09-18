@@ -23,7 +23,9 @@ import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.engine.user.PlayerId
 
 /**
- * Base methods for the bus.
+ * A new bus instance is created for each user request.
+ *
+ * The bus is used by bot implementations to reply to the user request.
  */
 interface Bus<T : Bus<T>> : I18nTranslator {
 
@@ -41,7 +43,7 @@ interface Bus<T : Bus<T>> : I18nTranslator {
     val userId: PlayerId
 
     /**
-     * The current intent.
+     * The current intent of the dialog at Bus (ie request) initialization.
      */
     val intent: IntentAware?
 

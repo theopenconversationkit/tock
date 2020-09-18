@@ -54,9 +54,7 @@ import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nLabelValue
 
 /**
- * A new bus instance is created for each user request.
- *
- * The bus is used by bot implementations to reply to the user request.
+ * Bus implementation for Tock integrated mode.
  */
 interface BotBus : Bus<BotBus> {
 
@@ -419,7 +417,7 @@ interface BotBus : Bus<BotBus> {
     fun switchStory(storyDefinition: StoryDefinition, starterIntent: Intent = storyDefinition.mainIntent()) {
         story = Story(storyDefinition, starterIntent, story.step)
         hasCurrentSwitchStoryProcess = true
-        story.computeCurrentStep(userTimeline, dialog, action, intent?.wrappedIntent())
+        story.computeCurrentStep(userTimeline, dialog, action, starterIntent)
         dialog.state.currentIntent = starterIntent
     }
 
