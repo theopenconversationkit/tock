@@ -18,6 +18,7 @@ package ai.tock.bot.connector.whatsapp
 
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppResponse
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppSendBotImageMessage
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppSendBotInteractiveMessage
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppSendBotMessage
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppSendBotTextMessage
 import ai.tock.shared.addJacksonConverter
@@ -218,6 +219,12 @@ internal class WhatsAppClient(
                             }
                         }
 
+                    }
+                    is WhatsAppSendBotInteractiveMessage -> {
+                        val response = api.sendMessage(message).execute()
+                        if (!response.isSuccessful) {
+                            response.logError()
+                        }
                     }
                 }
 

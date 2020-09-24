@@ -17,6 +17,7 @@
 package ai.tock.bot.connector.whatsapp
 
 import ai.tock.bot.connector.whatsapp.UserHashedIdCache.createHashedId
+import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppButtonMessage
 import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppMessage
 import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppTextMessage
 import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppVoiceMessage
@@ -57,6 +58,12 @@ internal object WebhookActionConverter {
                         }
                     }
             }
+            is WhatsAppButtonMessage -> SendSentence(
+                PlayerId(senderId),
+                applicationId,
+                PlayerId(applicationId, PlayerType.bot),
+                message.button.text
+            )
             else -> null
         }
     }

@@ -20,5 +20,5 @@ package ai.tock.bot.connector.whatsapp.model.send
  *
  */
 enum class WhatsAppBotMessageType {
-    audio, contact, document, hsm, image, location, text
+    audio, contact, document, hsm, image, location, text, template
 }
