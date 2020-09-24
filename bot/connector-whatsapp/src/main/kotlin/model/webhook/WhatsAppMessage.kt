@@ -36,6 +36,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     Type(value = WhatsAppDocumentMessage::class, name = "document"),
     Type(value = WhatsAppVoiceMessage::class, name = "voice"),
     Type(value = WhatsAppSystemMessage::class, name = "system"),
+    Type(value = WhatsAppButtonMessage::class, name = "button"),
     Type(value = WhatsAppUnknownMessage::class, name = "unknown")
 )
 abstract class WhatsAppMessage(val type: WhatsAppMessageType) {

@@ -20,9 +20,13 @@ import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.whatsapp.model.common.WhatsAppTextBody
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotAttachment
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotImageMessage
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotInteractiveMessage
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotMessage
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotRecipientType
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotTextMessage
+import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppComponent
+import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppLanguage
+import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppTemplate
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.Bus
 
@@ -81,7 +85,8 @@ fun BotBus.whatsAppText(
 ): WhatsAppBotTextMessage =
     WhatsAppBotTextMessage(
         text = WhatsAppTextBody(translate(text).toString()),
-        recipientType = (connectorData.callback as? WhatsAppConnectorCallback)?.recipientType ?: WhatsAppBotRecipientType.individual,
+        recipientType = (connectorData.callback as? WhatsAppConnectorCallback)?.recipientType
+            ?: WhatsAppBotRecipientType.individual,
         userId = userId.id,
         previewUrl = previewUrl
     )
@@ -100,6 +105,38 @@ fun BotBus.whatsAppImage(
             contentType,
             caption?.let { translate(it).toString() }
         ),
-        recipientType = (connectorData.callback as? WhatsAppConnectorCallback)?.recipientType ?: WhatsAppBotRecipientType.individual,
+        recipientType = (connectorData.callback as? WhatsAppConnectorCallback)?.recipientType
+            ?: WhatsAppBotRecipientType.individual,
         userId = userId.id
     )
+
+/**
+ * Creates a [WhatsAppBotInteractiveMessage]
+ */
+fun BotBus.whatsAppInteractiveMessage(
+    nameSpace: String,
+    templateName: String,
+    components: List<WhatsAppComponent>? = emptyList()
+): WhatsAppBotInteractiveMessage =
+    WhatsAppBotInteractiveMessage(
+        template = buildTemplate(nameSpace, templateName, components),
+        recipientType = (connectorData.callback as? WhatsAppConnectorCallback)?.recipientType
+            ?: WhatsAppBotRecipientType.individual,
+        userId = userId.id
+    )
+
+private fun buildTemplate(
+    nameSpace: String,
+    templateName: String,
+    components: List<WhatsAppComponent>?
+): WhatsAppTemplate {
+    return WhatsAppTemplate(
+        namespace = nameSpace,
+        name = templateName,
+        language = WhatsAppLanguage(
+            code = "fr",
+            policy = "deterministic"
+        ),
+        components = components
+    )
+}

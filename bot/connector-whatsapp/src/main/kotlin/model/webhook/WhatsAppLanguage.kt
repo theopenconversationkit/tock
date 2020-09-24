@@ -16,9 +16,7 @@
 
 package ai.tock.bot.connector.whatsapp.model.webhook
 
-/**
- *
- */
-enum class WhatsAppMessageType {
-    audio, contacts, document, image, location, text, unknown, video, voice, system, button
-}
+data class WhatsAppLanguage(
+    val policy: String,
+    val code: String
+)

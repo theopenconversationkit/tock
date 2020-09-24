@@ -16,9 +16,20 @@
 
 package ai.tock.bot.connector.whatsapp.model.webhook
 
-/**
- *
- */
-enum class WhatsAppMessageType {
-    audio, contacts, document, image, location, text, unknown, video, voice, system, button
+import com.fasterxml.jackson.annotation.JsonProperty
+
+data class WhatsAppComponent(
+    val type: WhatsAppComponentType,
+    @get:JsonProperty("sub_type")
+    val subType: WhatsAppComponentSubType? = null,
+    val index: Int? = null,
+    val parameters: List<WhatsAppParameter>
+)
+
+enum class WhatsAppComponentType {
+    header, body, button
+}
+
+enum class WhatsAppComponentSubType {
+    url, quick_reply
 }

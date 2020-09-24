@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.whatsapp.model.webhook
+package ai.tock.bot.connector.whatsapp.model.send
 
-/**
- *
- */
-enum class WhatsAppMessageType {
-    audio, contacts, document, image, location, text, unknown, video, voice, system, button
-}
+import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppTemplate
+
+internal data class WhatsAppSendBotInteractiveMessage(
+    override val to: String,
+    override val recipientType: WhatsAppBotRecipientType,
+    val template: WhatsAppTemplate
+) : WhatsAppSendBotMessage(WhatsAppBotMessageType.template)
