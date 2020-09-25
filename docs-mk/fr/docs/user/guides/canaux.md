@@ -2,28 +2,20 @@
 
 ## Notion de _connecteur_
 
-Un _connecteur_ Tock permet d'intégrer un bot à un canal de communication textuel ou vocal externe.
-Mis à part le type _connecteur de test_, dédié aux tests via l'interface _Tock Studio_, les connecteurs 
+Un _connecteur_ Tock permet d'intégrer un bot à un canal de communication (textuel ou vocal) externe.
+Mis à part le type _connecteur de test_ (utilisé en interne par l'interface _Tock Studio_), les connecteurs 
 sont associés à des canaux externes à la plateforme Tock.
 
 Tout l'intérêt des connecteurs Tock réside dans la possibilité de développer des assistants conversationnels 
 indépendamment du ou des canaux utilisés pour lui parler. Il est ainsi possible de créer un bot pour un canal,
 puis le rendre multicanal par la suite en ajoutant des connecteurs.
 
-Outre les connecteurs fournis avec la distribution Tock, des intégrations possibles 
-pour le traitement de la voix sont mentionnées plus bas.
+Le _connecteur Web_ a la particularité d'exposer une API générique pour interagir avec un bot Tock.
+En conséquence, il permet encore davantage d'intégrations côté "frontend", utilisant cette API comme passerelle.
 
-## Connecteurs fournis avec Tock
+Cette page liste en fait :
 
-Tock fournit de nombreux connecteurs pour différents types de canaux (voir ci-dessous). De nouveaux connecteurs sont 
-régulièrement ajoutés à la plateforme, en fonction des besoins projets mais aussi du calendrier d'ouverture aux bots 
-des canaux grand public.
- 
- > Exemples : arrivée de Google Home en France en 2017, Alexa en 2018, ouverture des API WhatsApp puis Business Chat en 2019, etc. 
-
-Pour en savoir plus sur les bots référencés utilisant tel ou tel connecteur en production, 
-n'hésitez pas à consulter la page [vitrine Tock](../../apropos/vitrine.md).
-
+- Les [_connecteurs_](canaux.md#connecteurs-fournis-avec-tock) fournis avec la distribution Tock :  
 [<img alt="Logo Messenger" title="Facebook Messenger"
       src="https://cdn.iconscout.com/icon/free/png-256/facebook-messenger-2-569346.png" 
       style="width: 50px;">](canaux.md#messenger)
@@ -63,7 +55,61 @@ n'hésitez pas à consulter la page [vitrine Tock](../../apropos/vitrine.md).
 [<img alt="Logo Test" title="Test (générique)"
  src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcR_8-ubeyOzkkKclCUX3V-LSJVik_u8wtbJs6FBGWp9P19kzAQH&usqp=CAU" 
  style="width: 50px;">](canaux.md#test-generique)
+
+- Les [kits utilisant le _connecteur Web_](canaux.md#integrations-via-le-connecteur-web) pour intégrer d'autres canaux :  
+[<img alt="Logo React" title="React"
+      src="https://blog.octo.com/wp-content/uploads/2015/12/react-logo-1000-transparent.png" 
+      style="width: 50px;">](canaux.md#react)
+[<img alt="Logo Flutter" title="Google Flutter"
+ src="https://plugins.jetbrains.com/files/9212/97400/icon/pluginIcon.png" 
+ style="width: 60px;">](canaux.md#flutter-beta)
+[<img alt="Logo SharePoint" title="Microsoft SharePoint"
+ src="https://expertime.com/wp-content/uploads/2019/12/Logo_SharePoint-expertime.png" 
+ style="width: 50px;">](canaux.md#sharepoint-beta)
+
+- Les [intégrations possibles pour le traitement de la voix](canaux.md#technologies-vocales) :  
+[<img alt="Logo Android" title="Google Android"
+ src="https://www.wortis.fr/wp-content/uploads/2019/05/icon-wortis-android.png" 
+ style="width: 50px;">](canaux.md#google-android)
+[<img alt="Logo Google Assistant" title="Google Assistant"
+ src="https://res-5.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_120,w_120,f_auto,b_white,q_auto:eco/g0oshbe7blfnsrylchxd" 
+ style="width: 50px;">](canaux.md#google-android)
+[<img alt="Logo Google Home" title="Google Home"
+ src="https://phoneky.co.uk/thumbs/android/thumbs/ico/3/chromecast-android.jpg" 
+ style="width: 50px;">](canaux.md#google-android)
+[<img alt="Logo Teams" title="Microsoft Teams"
+ src="https://cdn.worldvectorlogo.com/logos/microsoft-teams.svg" 
+ style="width: 50px;">](canaux.md#google-android)
+[<img alt="Logo iOS" title="Apple iOS"
+ src="https://www.freeiconspng.com/uploads/app-ios-png-4.png" 
+ style="width: 50px;">](canaux.md#apple-ios)
+[<img alt="Logo BusinessChat" title="Apple Business Chat"
+ src="http://cdn.osxdaily.com/wp-content/uploads/2014/11/Messages-icon-300x300.png" 
+ style="width: 50px;">](canaux.md#apple-ios)
+[<img alt="Logo Alexa" title="Amazon Alexa"
+ src="https://cognyapps.com/wp-content/uploads/2018/09/amazon-alexa-logo-e1538253665426.png" 
+ style="width: 50px;">](canaux.md#amazon-alexa)
+[<img alt="Logo Allo-Media" title="Allo-Media"
+ src="https://s3-eu-central-1.amazonaws.com/glassdollar/logos/GD_5bcf9307048f6.png" 
+ style="width: 50px;">](canaux.md#allo-media-voxygen)
+[<img alt="Logo Voxygen" title="Voxygen" 
+ src="https://res-1.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_256,w_256,f_auto,q_auto:eco/v1502521579/dyuj1cgjsnzhpo6ojwq0.png" 
+ style="width: 50px;">](canaux.md#allo-media-voxygen)
+[<img alt="Logo Nuance" title="Nuance"
+ src="https://www.dicteedragon.fr/img/m/2.jpg" 
+ style="width: 50px;">](canaux.md#nuance)
+
+## Connecteurs fournis avec Tock
+
+Tock fournit de nombreux connecteurs pour différents types de canaux (voir ci-dessous). De nouveaux connecteurs sont 
+régulièrement ajoutés à la plateforme, en fonction des besoins projets mais aussi du calendrier d'ouverture aux bots 
+des canaux grand public.
  
+ > Exemples : arrivée de Google Home en France en 2017, Alexa en 2018, ouverture des API WhatsApp puis Business Chat en 2019, etc. 
+
+Pour en savoir plus sur les bots référencés utilisant tel ou tel connecteur en production, 
+n'hésitez pas à consulter la page [vitrine Tock](../../apropos/vitrine.md).
+
 ### Messenger
 
 <img alt="Logo Messenger" title="Facebook Messenger"
@@ -220,9 +266,10 @@ portail, application Web ou mobile, client REST, etc.
 
 Le connecteur expose une API REST vers le bot, facilement intégrable depuis n'importe quelle application Web ou mobile, ou langage de programmation.
 
-A noter, les développeurs [React](https://reactjs.org/) / Javascript peuvent tirer parti du composant 
-[`tock-react-kit`](https://github.com/theopenconversationkit/tock-react-kit)
-fourni avec Tock pour consommer cette API.
+Plusieurs kits et composants basés sur le connecteur Web sont déjà disponibles pour intégrer des bots Tock à 
+différents sites et applications, comme des sites Web avec [React](canaux.md#react), 
+des applications mobiles natives avec [Flutter](canaux.md#flutter-beta) ou encore des 
+intranets [SharePoint](canaux.md#sharepoint-beta).
 
 * **Canal** : Web (générique pour tous sites & applications Web)
 * **Type** : texte
@@ -242,6 +289,62 @@ Il contient exemples et documentation format _Swagger_ de l'API REST.
 Ce connecteur est interne à Tock, il sert à dialoguer avec un bot directement dans l'interface 
 _Tock Studio_ (vue _Test_ > _Test the bot_) en émulant d'autres connecteurs.
 
+
+## Intégrations via le connecteur Web
+
+Le _connecteur Web_ expose une API générique pour interagir avec un bot Tock.
+En conséquence, il permet encore davantage d'intégrations côté "frontend", utilisant cette API comme passerelle.
+
+### React
+
+<img alt="Logo React" title="React"
+src="https://blog.octo.com/wp-content/uploads/2015/12/react-logo-1000-transparent.png" 
+style="width: 100px;">
+
+Ce composant React intègre un bot Tock et en assure le rendu graphique dans une application Web.  
+L'application Web communique avec le bot via un [connecteur Web](canaux.md#web-generique).
+
+* **Intégration** : [React](https://fr.reactjs.org/) (JavaScript / JSX)
+* **Type** : applications Web
+* **Status** : utilisé en production depuis 2020
+
+Pour en savoir plus, voir les sources et le _README_ dans le dépôt 
+[`tock-react-kit`](https://github.com/theopenconversationkit/tock-react-kit) sur GitHub.
+
+### Flutter _(beta)_
+
+<img alt="Logo Flutter" title="Google Flutter"
+src="https://plugins.jetbrains.com/files/9212/97400/icon/pluginIcon.png" 
+style="width: 100px;">
+
+Ce composant Flutter intègre un bot Tock et en assure le rendu graphique dans une application mobile ou Web.  
+L'application communique avec le bot via un [connecteur Web](canaux.md#web-generique).
+
+* **Intégration** : [Flutter](https://flutter.dev/) (Dart)
+* **Type** : applications mobiles natives et Web
+* **Status** : beta, en développement
+
+Pour en savoir plus, voir les sources et le _README_ dans le dépôt 
+[`tock-flutter-kit`](https://github.com/theopenconversationkit/tock-flutter-kit) sur GitHub.
+
+### SharePoint _(beta)_
+
+<img alt="Logo SharePoint" title="Microsoft SharePoint"
+src="https://expertime.com/wp-content/uploads/2019/12/Logo_SharePoint-expertime.png" 
+style="width: 100px;">
+
+Ce composant _WebPart_ permet d'intégrer un bot Tock dans un site SharePoint.  
+Il embarque le [tock-react-kit](canaux.md#react) pour communiquer avec le bot 
+via un [connecteur Web](canaux.md#web-generique) et gérer le rendu graphique du bot dans la page SharePoint.
+
+* **Intégration** : [Microsoft SharePoint](https://www.microsoft.com/fr-fr/microsoft-365/sharepoint/collaboration)
+* **Type** : sites Web & intranets
+* **Status** : beta, en développement
+
+Pour en savoir plus, voir les sources et le _README_ dans le dépôt 
+[`tock-sharepoint`](https://github.com/theopenconversationkit/tock-sharepoint) sur GitHub.
+
+
 ## Technologies vocales
 
 Les bots Tock traitent des phrases en format texte par défaut (_chatbots_). Néanmoins, on peut 
@@ -255,37 +358,6 @@ gérant les aspects vocaux STT et TTS.
 
 En outre, d'autres technologies vocales ont pu être intégrées à Tock ces dernières années.
 Elles sont mentionnées à titre indicatif, même quand il n'est pas fourni de _connecteur_ prêt à l'emploi.
-
-[<img alt="Logo Android" title="Google Android"
- src="https://www.wortis.fr/wp-content/uploads/2019/05/icon-wortis-android.png" 
- style="width: 50px;">](canaux.md#google-android)
-[<img alt="Logo Google Assistant" title="Google Assistant"
- src="https://res-5.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_120,w_120,f_auto,b_white,q_auto:eco/g0oshbe7blfnsrylchxd" 
- style="width: 50px;">](canaux.md#google-android)
-[<img alt="Logo Google Home" title="Google Home"
- src="https://phoneky.co.uk/thumbs/android/thumbs/ico/3/chromecast-android.jpg" 
- style="width: 50px;">](canaux.md#google-android)
-[<img alt="Logo Teams" title="Microsoft Teams"
- src="https://cdn.worldvectorlogo.com/logos/microsoft-teams.svg" 
- style="width: 50px;">](canaux.md#google-android)
-[<img alt="Logo iOS" title="Apple iOS"
- src="https://www.freeiconspng.com/uploads/app-ios-png-4.png" 
- style="width: 50px;">](canaux.md#apple-ios)
-[<img alt="Logo BusinessChat" title="Apple Business Chat"
- src="http://cdn.osxdaily.com/wp-content/uploads/2014/11/Messages-icon-300x300.png" 
- style="width: 50px;">](canaux.md#apple-ios)
-[<img alt="Logo Alexa" title="Amazon Alexa"
- src="https://cognyapps.com/wp-content/uploads/2018/09/amazon-alexa-logo-e1538253665426.png" 
- style="width: 50px;">](canaux.md#amazon-alexa)
-[<img alt="Logo Allo-Media" title="Allo-Media"
- src="https://s3-eu-central-1.amazonaws.com/glassdollar/logos/GD_5bcf9307048f6.png" 
- style="width: 50px;">](canaux.md#allo-media-voxygen)
-[<img alt="Logo Voxygen" title="Voxygen" 
- src="https://res-1.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_256,w_256,f_auto,q_auto:eco/v1502521579/dyuj1cgjsnzhpo6ojwq0.png" 
- style="width: 50px;">](canaux.md#allo-media-voxygen)
-[<img alt="Logo Nuance" title="Nuance"
- src="https://www.dicteedragon.fr/img/m/2.jpg" 
- style="width: 50px;">](canaux.md#nuance)
 
 ### Google / Android
 

@@ -724,6 +724,40 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#integrations-via-le-connecteur-web" class="md-nav__link">
+    Intégrations via le connecteur Web
+  </a>
+  
+    <nav class="md-nav" aria-label="Intégrations via le connecteur Web">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#react" class="md-nav__link">
+    React
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flutter-beta" class="md-nav__link">
+    Flutter (beta)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sharepoint-beta" class="md-nav__link">
+    SharePoint (beta)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#technologies-vocales" class="md-nav__link">
     Technologies vocales
   </a>
@@ -1308,6 +1342,40 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#integrations-via-le-connecteur-web" class="md-nav__link">
+    Intégrations via le connecteur Web
+  </a>
+  
+    <nav class="md-nav" aria-label="Intégrations via le connecteur Web">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#react" class="md-nav__link">
+    React
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flutter-beta" class="md-nav__link">
+    Flutter (beta)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sharepoint-beta" class="md-nav__link">
+    SharePoint (beta)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#technologies-vocales" class="md-nav__link">
     Technologies vocales
   </a>
@@ -1387,24 +1455,19 @@
                 
                 <h1 id="construire-un-bot-multicanal-avec-tock">Construire un bot multicanal avec Tock<a class="headerlink" href="#construire-un-bot-multicanal-avec-tock" title="Permanent link">&para;</a></h1>
 <h2 id="notion-de-connecteur">Notion de <em>connecteur</em><a class="headerlink" href="#notion-de-connecteur" title="Permanent link">&para;</a></h2>
-<p>Un <em>connecteur</em> Tock permet d'intégrer un bot à un canal de communication textuel ou vocal externe.
-Mis à part le type <em>connecteur de test</em>, dédié aux tests via l'interface <em>Tock Studio</em>, les connecteurs 
+<p>Un <em>connecteur</em> Tock permet d'intégrer un bot à un canal de communication (textuel ou vocal) externe.
+Mis à part le type <em>connecteur de test</em> (utilisé en interne par l'interface <em>Tock Studio</em>), les connecteurs 
 sont associés à des canaux externes à la plateforme Tock.</p>
 <p>Tout l'intérêt des connecteurs Tock réside dans la possibilité de développer des assistants conversationnels 
 indépendamment du ou des canaux utilisés pour lui parler. Il est ainsi possible de créer un bot pour un canal,
 puis le rendre multicanal par la suite en ajoutant des connecteurs.</p>
-<p>Outre les connecteurs fournis avec la distribution Tock, des intégrations possibles 
-pour le traitement de la voix sont mentionnées plus bas.</p>
-<h2 id="connecteurs-fournis-avec-tock">Connecteurs fournis avec Tock<a class="headerlink" href="#connecteurs-fournis-avec-tock" title="Permanent link">&para;</a></h2>
-<p>Tock fournit de nombreux connecteurs pour différents types de canaux (voir ci-dessous). De nouveaux connecteurs sont 
-régulièrement ajoutés à la plateforme, en fonction des besoins projets mais aussi du calendrier d'ouverture aux bots 
-des canaux grand public.</p>
-<blockquote>
-<p>Exemples : arrivée de Google Home en France en 2017, Alexa en 2018, ouverture des API WhatsApp puis Business Chat en 2019, etc. </p>
-</blockquote>
-<p>Pour en savoir plus sur les bots référencés utilisant tel ou tel connecteur en production, 
-n'hésitez pas à consulter la page <a href="../../../apropos/vitrine/">vitrine Tock</a>.</p>
-<p><a href="./#messenger"><img alt="Logo Messenger" title="Facebook Messenger"
+<p>Le <em>connecteur Web</em> a la particularité d'exposer une API générique pour interagir avec un bot Tock.
+En conséquence, il permet encore davantage d'intégrations côté "frontend", utilisant cette API comme passerelle.</p>
+<p>Cette page liste en fait :</p>
+<ul>
+<li>
+<p>Les <a href="./#connecteurs-fournis-avec-tock"><em>connecteurs</em></a> fournis avec la distribution Tock :<br />
+<a href="./#messenger"><img alt="Logo Messenger" title="Facebook Messenger"
       src="https://cdn.iconscout.com/icon/free/png-256/facebook-messenger-2-569346.png" 
       style="width: 50px;"></a>
 <a href="./#slack"><img alt="Logo Slack" title="Slack"
@@ -1443,6 +1506,62 @@ n'hésitez pas à consulter la page <a href="../../../apropos/vitrine/">vitrine 
 <a href="./#test-generique"><img alt="Logo Test" title="Test (générique)"
  src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcR_8-ubeyOzkkKclCUX3V-LSJVik_u8wtbJs6FBGWp9P19kzAQH&usqp=CAU" 
  style="width: 50px;"></a></p>
+</li>
+<li>
+<p>Les <a href="./#integrations-via-le-connecteur-web">kits utilisant le <em>connecteur Web</em></a> pour intégrer d'autres canaux :<br />
+<a href="./#react"><img alt="Logo React" title="React"
+      src="https://blog.octo.com/wp-content/uploads/2015/12/react-logo-1000-transparent.png" 
+      style="width: 50px;"></a>
+<a href="./#flutter-beta"><img alt="Logo Flutter" title="Google Flutter"
+ src="https://plugins.jetbrains.com/files/9212/97400/icon/pluginIcon.png" 
+ style="width: 60px;"></a>
+<a href="./#sharepoint-beta"><img alt="Logo SharePoint" title="Microsoft SharePoint"
+ src="https://expertime.com/wp-content/uploads/2019/12/Logo_SharePoint-expertime.png" 
+ style="width: 50px;"></a></p>
+</li>
+<li>
+<p>Les <a href="./#technologies-vocales">intégrations possibles pour le traitement de la voix</a> :<br />
+<a href="./#google-android"><img alt="Logo Android" title="Google Android"
+ src="https://www.wortis.fr/wp-content/uploads/2019/05/icon-wortis-android.png" 
+ style="width: 50px;"></a>
+<a href="./#google-android"><img alt="Logo Google Assistant" title="Google Assistant"
+ src="https://res-5.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_120,w_120,f_auto,b_white,q_auto:eco/g0oshbe7blfnsrylchxd" 
+ style="width: 50px;"></a>
+<a href="./#google-android"><img alt="Logo Google Home" title="Google Home"
+ src="https://phoneky.co.uk/thumbs/android/thumbs/ico/3/chromecast-android.jpg" 
+ style="width: 50px;"></a>
+<a href="./#google-android"><img alt="Logo Teams" title="Microsoft Teams"
+ src="https://cdn.worldvectorlogo.com/logos/microsoft-teams.svg" 
+ style="width: 50px;"></a>
+<a href="./#apple-ios"><img alt="Logo iOS" title="Apple iOS"
+ src="https://www.freeiconspng.com/uploads/app-ios-png-4.png" 
+ style="width: 50px;"></a>
+<a href="./#apple-ios"><img alt="Logo BusinessChat" title="Apple Business Chat"
+ src="http://cdn.osxdaily.com/wp-content/uploads/2014/11/Messages-icon-300x300.png" 
+ style="width: 50px;"></a>
+<a href="./#amazon-alexa"><img alt="Logo Alexa" title="Amazon Alexa"
+ src="https://cognyapps.com/wp-content/uploads/2018/09/amazon-alexa-logo-e1538253665426.png" 
+ style="width: 50px;"></a>
+<a href="./#allo-media-voxygen"><img alt="Logo Allo-Media" title="Allo-Media"
+ src="https://s3-eu-central-1.amazonaws.com/glassdollar/logos/GD_5bcf9307048f6.png" 
+ style="width: 50px;"></a>
+<a href="./#allo-media-voxygen"><img alt="Logo Voxygen" title="Voxygen" 
+ src="https://res-1.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_256,w_256,f_auto,q_auto:eco/v1502521579/dyuj1cgjsnzhpo6ojwq0.png" 
+ style="width: 50px;"></a>
+<a href="./#nuance"><img alt="Logo Nuance" title="Nuance"
+ src="https://www.dicteedragon.fr/img/m/2.jpg" 
+ style="width: 50px;"></a></p>
+</li>
+</ul>
+<h2 id="connecteurs-fournis-avec-tock">Connecteurs fournis avec Tock<a class="headerlink" href="#connecteurs-fournis-avec-tock" title="Permanent link">&para;</a></h2>
+<p>Tock fournit de nombreux connecteurs pour différents types de canaux (voir ci-dessous). De nouveaux connecteurs sont 
+régulièrement ajoutés à la plateforme, en fonction des besoins projets mais aussi du calendrier d'ouverture aux bots 
+des canaux grand public.</p>
+<blockquote>
+<p>Exemples : arrivée de Google Home en France en 2017, Alexa en 2018, ouverture des API WhatsApp puis Business Chat en 2019, etc. </p>
+</blockquote>
+<p>Pour en savoir plus sur les bots référencés utilisant tel ou tel connecteur en production, 
+n'hésitez pas à consulter la page <a href="../../../apropos/vitrine/">vitrine Tock</a>.</p>
 <h3 id="messenger">Messenger<a class="headerlink" href="#messenger" title="Permanent link">&para;</a></h3>
 <p><img alt="Logo Messenger" title="Facebook Messenger"
 src="https://cdn.iconscout.com/icon/free/png-256/facebook-messenger-2-569346.png" 
@@ -1572,9 +1691,10 @@ avec les <a href="https://github.com/theopenconversationkit/allocovid">sources d
 <p>Ce connecteur générique permet d'intégrer un bot Tock à n'importe quel site Web ou application :
 portail, application Web ou mobile, client REST, etc.</p>
 <p>Le connecteur expose une API REST vers le bot, facilement intégrable depuis n'importe quelle application Web ou mobile, ou langage de programmation.</p>
-<p>A noter, les développeurs <a href="https://reactjs.org/">React</a> / Javascript peuvent tirer parti du composant 
-<a href="https://github.com/theopenconversationkit/tock-react-kit"><code>tock-react-kit</code></a>
-fourni avec Tock pour consommer cette API.</p>
+<p>Plusieurs kits et composants basés sur le connecteur Web sont déjà disponibles pour intégrer des bots Tock à 
+différents sites et applications, comme des sites Web avec <a href="./#react">React</a>, 
+des applications mobiles natives avec <a href="./#flutter-beta">Flutter</a> ou encore des 
+intranets <a href="./#sharepoint-beta">SharePoint</a>.</p>
 <ul>
 <li><strong>Canal</strong> : Web (générique pour tous sites &amp; applications Web)</li>
 <li><strong>Type</strong> : texte</li>
@@ -1589,6 +1709,49 @@ Il contient exemples et documentation format <em>Swagger</em> de l'API REST.</p>
  style="width: 100px;"></p>
 <p>Ce connecteur est interne à Tock, il sert à dialoguer avec un bot directement dans l'interface 
 <em>Tock Studio</em> (vue <em>Test</em> &gt; <em>Test the bot</em>) en émulant d'autres connecteurs.</p>
+<h2 id="integrations-via-le-connecteur-web">Intégrations via le connecteur Web<a class="headerlink" href="#integrations-via-le-connecteur-web" title="Permanent link">&para;</a></h2>
+<p>Le <em>connecteur Web</em> expose une API générique pour interagir avec un bot Tock.
+En conséquence, il permet encore davantage d'intégrations côté "frontend", utilisant cette API comme passerelle.</p>
+<h3 id="react">React<a class="headerlink" href="#react" title="Permanent link">&para;</a></h3>
+<p><img alt="Logo React" title="React"
+src="https://blog.octo.com/wp-content/uploads/2015/12/react-logo-1000-transparent.png" 
+style="width: 100px;"></p>
+<p>Ce composant React intègre un bot Tock et en assure le rendu graphique dans une application Web.<br />
+L'application Web communique avec le bot via un <a href="./#web-generique">connecteur Web</a>.</p>
+<ul>
+<li><strong>Intégration</strong> : <a href="https://fr.reactjs.org/">React</a> (JavaScript / JSX)</li>
+<li><strong>Type</strong> : applications Web</li>
+<li><strong>Status</strong> : utilisé en production depuis 2020</li>
+</ul>
+<p>Pour en savoir plus, voir les sources et le <em>README</em> dans le dépôt 
+<a href="https://github.com/theopenconversationkit/tock-react-kit"><code>tock-react-kit</code></a> sur GitHub.</p>
+<h3 id="flutter-beta">Flutter <em>(beta)</em><a class="headerlink" href="#flutter-beta" title="Permanent link">&para;</a></h3>
+<p><img alt="Logo Flutter" title="Google Flutter"
+src="https://plugins.jetbrains.com/files/9212/97400/icon/pluginIcon.png" 
+style="width: 100px;"></p>
+<p>Ce composant Flutter intègre un bot Tock et en assure le rendu graphique dans une application mobile ou Web.<br />
+L'application communique avec le bot via un <a href="./#web-generique">connecteur Web</a>.</p>
+<ul>
+<li><strong>Intégration</strong> : <a href="https://flutter.dev/">Flutter</a> (Dart)</li>
+<li><strong>Type</strong> : applications mobiles natives et Web</li>
+<li><strong>Status</strong> : beta, en développement</li>
+</ul>
+<p>Pour en savoir plus, voir les sources et le <em>README</em> dans le dépôt 
+<a href="https://github.com/theopenconversationkit/tock-flutter-kit"><code>tock-flutter-kit</code></a> sur GitHub.</p>
+<h3 id="sharepoint-beta">SharePoint <em>(beta)</em><a class="headerlink" href="#sharepoint-beta" title="Permanent link">&para;</a></h3>
+<p><img alt="Logo SharePoint" title="Microsoft SharePoint"
+src="https://expertime.com/wp-content/uploads/2019/12/Logo_SharePoint-expertime.png" 
+style="width: 100px;"></p>
+<p>Ce composant <em>WebPart</em> permet d'intégrer un bot Tock dans un site SharePoint.<br />
+Il embarque le <a href="./#react">tock-react-kit</a> pour communiquer avec le bot 
+via un <a href="./#web-generique">connecteur Web</a> et gérer le rendu graphique du bot dans la page SharePoint.</p>
+<ul>
+<li><strong>Intégration</strong> : <a href="https://www.microsoft.com/fr-fr/microsoft-365/sharepoint/collaboration">Microsoft SharePoint</a></li>
+<li><strong>Type</strong> : sites Web &amp; intranets</li>
+<li><strong>Status</strong> : beta, en développement</li>
+</ul>
+<p>Pour en savoir plus, voir les sources et le <em>README</em> dans le dépôt 
+<a href="https://github.com/theopenconversationkit/tock-sharepoint"><code>tock-sharepoint</code></a> sur GitHub.</p>
 <h2 id="technologies-vocales">Technologies vocales<a class="headerlink" href="#technologies-vocales" title="Permanent link">&para;</a></h2>
 <p>Les bots Tock traitent des phrases en format texte par défaut (<em>chatbots</em>). Néanmoins, on peut 
 intégrer des technologies vocales aux "bornes" du bot afin d'obtenir des conversations vocales (<em>voicebots</em> et <em>callbots</em>) :</p>
@@ -1600,36 +1763,6 @@ intégrer des technologies vocales aux "bornes" du bot afin d'obtenir des conver
 gérant les aspects vocaux STT et TTS.</p>
 <p>En outre, d'autres technologies vocales ont pu être intégrées à Tock ces dernières années.
 Elles sont mentionnées à titre indicatif, même quand il n'est pas fourni de <em>connecteur</em> prêt à l'emploi.</p>
-<p><a href="./#google-android"><img alt="Logo Android" title="Google Android"
- src="https://www.wortis.fr/wp-content/uploads/2019/05/icon-wortis-android.png" 
- style="width: 50px;"></a>
-<a href="./#google-android"><img alt="Logo Google Assistant" title="Google Assistant"
- src="https://res-5.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_120,w_120,f_auto,b_white,q_auto:eco/g0oshbe7blfnsrylchxd" 
- style="width: 50px;"></a>
-<a href="./#google-android"><img alt="Logo Google Home" title="Google Home"
- src="https://phoneky.co.uk/thumbs/android/thumbs/ico/3/chromecast-android.jpg" 
- style="width: 50px;"></a>
-<a href="./#google-android"><img alt="Logo Teams" title="Microsoft Teams"
- src="https://cdn.worldvectorlogo.com/logos/microsoft-teams.svg" 
- style="width: 50px;"></a>
-<a href="./#apple-ios"><img alt="Logo iOS" title="Apple iOS"
- src="https://www.freeiconspng.com/uploads/app-ios-png-4.png" 
- style="width: 50px;"></a>
-<a href="./#apple-ios"><img alt="Logo BusinessChat" title="Apple Business Chat"
- src="http://cdn.osxdaily.com/wp-content/uploads/2014/11/Messages-icon-300x300.png" 
- style="width: 50px;"></a>
-<a href="./#amazon-alexa"><img alt="Logo Alexa" title="Amazon Alexa"
- src="https://cognyapps.com/wp-content/uploads/2018/09/amazon-alexa-logo-e1538253665426.png" 
- style="width: 50px;"></a>
-<a href="./#allo-media-voxygen"><img alt="Logo Allo-Media" title="Allo-Media"
- src="https://s3-eu-central-1.amazonaws.com/glassdollar/logos/GD_5bcf9307048f6.png" 
- style="width: 50px;"></a>
-<a href="./#allo-media-voxygen"><img alt="Logo Voxygen" title="Voxygen" 
- src="https://res-1.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_256,w_256,f_auto,q_auto:eco/v1502521579/dyuj1cgjsnzhpo6ojwq0.png" 
- style="width: 50px;"></a>
-<a href="./#nuance"><img alt="Logo Nuance" title="Nuance"
- src="https://www.dicteedragon.fr/img/m/2.jpg" 
- style="width: 50px;"></a></p>
 <h3 id="google-android">Google / Android<a class="headerlink" href="#google-android" title="Permanent link">&para;</a></h3>
 <p>Les fonctions <em>Speech-To-Text</em> et <em>Text-To-Speech</em> de Google sont utilisées à travers le 
 <a href="./#google-assistant-home">connecteur Google Assistant / Home</a>, également par les fonctions 

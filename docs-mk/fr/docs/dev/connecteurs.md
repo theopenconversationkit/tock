@@ -3,61 +3,28 @@
 La page [Bot multicanal](../user/guides/canaux.md) de la documentation utilisateur présente la notion de _connecteur_ Tock,
 ainsi que la liste des connecteurs déjà disponibles.
 
-Cette page n'ajoute donc que les éléments propres au développement avec les _connecteurs_ Tock ou le développement de 
+Cette page n'ajoute donc que des éléments propres au développement avec les _connecteurs_ Tock ou le développement de 
 nouveaux connecteurs.
 
-## Messenger
+## Connecteurs fournis avec Tock
 
-Pour en savoir plus sur ce connecteur, vous pouvez aussi vous rendre dans le dossier 
-[connector-messenger](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-messenger) sur GitHub, 
-où vous retrouverez les sources et le _README_ du connecteur.
+Pour en savoir plus sur les connecteurs fournis avec la distribution Tock, 
+vous pouvez aussi vous rendre dans le dossier de chaque connecteur.
+La page [Bot multicanal](../user/guides/canaux.md) liste tous les connecteurs disponibles.
 
-### Slack
+> Par exemple, le dossier 
+[connector-messenger](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-messenger) 
+contient les sources et le _README_ du connecteur Tock pour Messenger.
 
-Pour en savoir plus sur ce connecteur, vous pouvez aussi vous rendre dans le dossier 
-[connector-slack](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-slack) sur GitHub, 
-où vous retrouverez les sources et le _README_ du connecteur.
+## Kits basés sur le connecteur Web
 
-### Google Assistant / Google Home
+Les composants utilisant le connecteur Web pour intégrer des bots Tock à d'autres canaux 
+sont fournis sur leur propre dépôt GitHub à côté du dépôt principal Tock.
+La page [Bot multicanal](../user/guides/canaux.md) liste tous les kits disponibles.
 
-Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
-[connector-ga](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-ga) sur GitHub.
-
-### Alexa / Echo
-
-Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
-[connector-alexa](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-alexa) sur GitHub.
-
-### Rocket.Chat
-
-Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
-[connector-rocketchat](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-rocketchat) sur GitHub.
-
-### WhatsApp
-
-Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
-[connector-whatsapp](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-whatsapp) sur GitHub.
-
-### Teams
-
-Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
-[connector-teams](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-teams) sur GitHub.
-
-### Business Chat / iMessages
-
-Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
-[connector-businesschat](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-businesschat) sur GitHub.
-
-### Twitter
-
-Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
-[connector-twitter](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-twitter) sur GitHub.
-
-### Web
-
-Ce connecteur permet de déployer une API REST dédiée à la création d'un chatbot sur une interface Web par exemple.
-Consultez ses sources et son _README_ dans le dossier 
-[connector-web](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-web) sur GitHub.
+> Par exemple, le dépôt 
+[`tock-react-kit`](https://github.com/theopenconversationkit/tock-react-kit) 
+contient les sources et le _README_ du kit pour React.
 
 ## Développer son propre connecteur
 
