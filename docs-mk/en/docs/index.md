@@ -31,7 +31,8 @@ can be deployed alone (for use cases like the [Internet Of Things](https://fr.wi
     * Internationalization (_i18n_) support for multilingual bots
     * Conversations, performance et model errors monitoring
     * Interactive trends / users flow analytics (_Bot Flow_)
-* Frameworks available to develop complex stories and integrate with 3rd-party services: <br/> [Kotlin](https://kotlinlang.org/) _DSL_ plus any-language _API_
+* Frameworks available to develop complex stories and integrate with 3rd-party services: <br/> [Kotlin](https://kotlinlang.org/), 
+[Javascript/Nodejs](https://nodejs.org/) and [Python](https://www.python.org/) _DSLs_ plus any-language [_REST API_](api.md)
 * Numerous connectors to [Messenger](https://www.messenger.com/), [WhatsApp](https://www.whatsapp.com/), 
 [Google Assistant / Home](https://assistant.google.com/), [Twitter](https://twitter.com/), [Alexa](https://alexa.amazon.com/), 
 [Business Chat / iMessage](https://www.apple.com/fr/ios/business-chat/), [Teams](https://products.office.com/fr-fr/microsoft-teams/), 

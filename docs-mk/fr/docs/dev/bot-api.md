@@ -9,18 +9,37 @@ base de données serait un problème.
 > Seul le mode _Bot API_ est disponible sur la [plateforme de démonstration](https://demo.tock.ai/)
 > publique Tock.
 
-Cette page présente le développement de bots Tock en mode _Bot API_ en [Kotlin](https://kotlinlang.org/). 
-Notez qu'il est possible de développer dans n'importe quel langage via la _Bot API_.
-En particulier, un [client nodejs](https://github.com/theopenconversationkit/tock-node) est disponible.
+Cette page présente le développement de bots Tock en mode _Bot API_ en [Kotlin](bot-api.md#developper-en-kotlin). 
+Des clients sont aussi disponibles pour [Javascript/Node](bot-api.md#developper-en-javascript) et [Python](bot-api.md#developper-en-python).
+Il est possible de développer des parcours Tock dans n'importe quel langage via la [_Bot API_](bot-api.md#developper-via-lapi).
 
-> Une autre section présente le mode [_Bot Framework_](bot-integre.md), plus intégré mais aussi plus couplé à la plateforme Tock.
+[<img alt="Logo Kotlin" title="Kotlin"
+      src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin-logo.svg/1024px-Kotlin-logo.svg.png" 
+      style="width: 50px;">](bot-api.md#developper-en-kotlin)
+[<img alt="Logo Nodejs" title="Nodejs"
+      src="https://o7planning.org/fr/11931/images/20938929.png" 
+      style="width: 50px;">](bot-api.md#developper-en-javascript)
+[<img alt="Logo Python" title="Python"
+      src="https://www.libraries.rutgers.edu/sites/default/files/styles/resize_to_300px_width/public/events/2020/01/python_3_2.png" 
+      style="width: 50px;">](bot-api.md#developper-en-python)
+[<img alt="API" title="Bot API"
+      src="https://zappysys.com/blog/wp-content/uploads/2018/06/REST-API-icon.jpg" 
+      style="width: 50px;">](bot-api.md#developper-via-lapi)
+
+
+> Une autre section présente le mode [_Bot Framework_](bot-integre.md) disponible pour Kotlin uniquement, 
+> plus intégré mais aussi plus couplé à la plateforme Tock.
 
 ## Se connecter sur la plateforme de démonstration
 
 Plutôt que déployer se propre plateforme Tock, il est possible de tester les modes _WebSocket_ ou _Webhook_ directement sur la
 [plateforme de démonstration Tock](https://demo.tock.ai/). 
 
-## Développer un bot en mode _Bot API_ avec Kotlin
+## Développer en Kotlin
+
+<img alt="Logo Kotlin" title="Kotlin"
+src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin-logo.svg/1024px-Kotlin-logo.svg.png" 
+style="width: 100px;">
 
 ### Activer le mode WebSocket
 
@@ -125,17 +144,34 @@ fun main() {
 
 Le [code source complet de l'exemple](https://github.com/theopenconversationkit/tock-bot-demo) est disponible.
  
-## Développer dans un autre langage
+## Développer en Javascript
 
-### Node
+<img alt="Logo Nodejs" title="Nodejs"
+src="https://o7planning.org/fr/11931/images/20938929.png" 
+style="width: 100px;">
 
-Veuillez consulter la documentation dédiée au [client nodejs](https://github.com/theopenconversationkit/tock-node) pour plus de détails.
+Un client est fourni pour développer des parcours en Javascript avec [Nodejs](https://nodejs.org/).  
+Pour en savoir plus, voir la documentation sur le dépôt [`tock-node`](https://github.com/theopenconversationkit/tock-node).
 
-### API
+## Développer en Python
 
-Il est possible de développer dans n'importe quel langage en programmant directement via l'API.
+<img alt="Logo Python" title="Python"
+src="https://www.libraries.rutgers.edu/sites/default/files/styles/resize_to_300px_width/public/events/2020/01/python_3_2.png" 
+style="width: 100px;">
 
-### Installer Bot API sur vos propres serveurs
+Un client est fourni pour développer des parcours en [Python](https://www.python.org/).  
+Pour en savoir plus, voir la documentation sur le dépôt [`tock-py`](https://github.com/theopenconversationkit/tock-py).
+
+## Développer via l'API
+
+<img alt="Logo API" title="REST API"
+src="https://zappysys.com/blog/wp-content/uploads/2018/06/REST-API-icon.jpg" 
+style="width: 100px;">
+
+Il est possible de développer des parcours Tock dans n'importe quel langage, en s'interfaçant directement avec 
+l'[API](api.md#tock-bot-definition-api).
+
+## Installer Bot API côté serveur
 
 Pour utiliser le mode _Bot API_ de Tock, un module spécifique doit être déployé avec la plateforme. Généralement appelé 
 `bot-api` dans les descripteurs Docker Compose par exemple, ce service a pour rôle :

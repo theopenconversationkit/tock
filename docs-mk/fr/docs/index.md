@@ -34,7 +34,9 @@ déployable seule si besoin (pour des usages comme l'[Internet des objets](https
     * Support de l'internationalisation (_i18n_) pour les bots multilingues
     * Suivi des conversations, performances et erreurs des modèles
     * Analyse interactive des tendances / parcours utilisateurs (_Bot Flow_)
-* Frameworks pour développer des parcours complexes et intégrer des services tiers : <br/> _DSL_ en [Kotlin](https://kotlinlang.org/) ou [Node](https://nodejs.org) et _API_ tous langages
+* Frameworks pour développer des parcours complexes et intégrer des services tiers : <br/> _DSLs_ en 
+[Kotlin](https://kotlinlang.org/), [Javascript/Nodejs](https://nodejs.org/) ou [Python](https://www.python.org/) 
+et [_API_](dev/api.md) tous langages
 * Nombreux connecteurs pour [Messenger](https://www.messenger.com/), [WhatsApp](https://www.whatsapp.com/), 
 [Google Assistant / Home](https://assistant.google.com/), [Twitter](https://twitter.com/), [Alexa](https://alexa.amazon.com/), 
 [Business Chat / iMessage](https://www.apple.com/fr/ios/business-chat/), [Teams](https://products.office.com/fr-fr/microsoft-teams/), 

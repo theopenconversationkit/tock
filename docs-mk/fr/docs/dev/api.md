@@ -38,8 +38,7 @@ Un bot Tock peut être composé de parcours configurés dans Tock Studio, compl�
  développés dans un langage de programmation pour implémenter des règles complexes, interagir avec 
   d'autres APIs, etc.
   
-Cette API est utilisée par les clients Kotlin en modes _WebHook_ et _WebSocket_, 
-ainsi que le composant [`tock-node`](https://github.com/theopenconversationkit/tock-node) en Javascript.
+Cette API est utilisée par les clients Kotlin, Javascript/Nodejs et Python disponibles en modes _WebHook_ et _WebSocket_.
 
 > L'API est toutefois encore en développement (béta) et sa documentation arrivera bientôt.
 

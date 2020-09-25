@@ -64,7 +64,7 @@ Le paramétrage pour se connecter au bot programmatiquement (ie. via un programm
 se trouve dans cet écran :
 
 * L'_API Key_ peut être copiée et embarquée dans le code client de la _Bot API_ pour connecter des parcours programmés 
-en Kotlin ou dans un autre langage de programmation
+en Kotlin ou dans un autre langage de programmation comme Javascript/Nodejs ou Python
 
 * Une adresse / URL peut être configurée pour utiliser le mode _WebHook_ de _Bot API_
 

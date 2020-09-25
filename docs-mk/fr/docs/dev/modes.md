@@ -1,14 +1,30 @@
 # Développer des bots avec Tock
 
-Pour aller plus loin que les possibilités de _Tock Studio_ pour construire bots & assistants conversationnels, 
-on peut programmer des parcours, en [Kotlin](https://kotlinlang.org/) ou dans d'autres langages.
+_Tock Studio_ permet de construire des parcours conversationnels (ou _stories_) incluant du texte, des boutons, images, 
+caroussels, etc. Pour aller plus loin il est possible de programmer des parcours des parcours 
+en [Kotlin](https://kotlinlang.org/), [Javascript](https://nodejs.org/), [Python](https://www.python.org/) 
+ou d'autres langages.
+
+<img alt="Logo Kotlin" title="Kotlin"
+      src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin-logo.svg/1024px-Kotlin-logo.svg.png" 
+      style="width: 50px;">
+<img alt="Logo Nodejs" title="Nodejs"
+      src="https://o7planning.org/fr/11931/images/20938929.png" 
+      style="width: 50px;">
+<img alt="Logo Python" title="Python"
+      src="https://www.libraries.rutgers.edu/sites/default/files/styles/resize_to_300px_width/public/events/2020/01/python_3_2.png" 
+      style="width: 50px;">
+<img alt="API" title="Bot API"
+      src="https://zappysys.com/blog/wp-content/uploads/2018/06/REST-API-icon.jpg" 
+      style="width: 50px;">
 
 Deux modes / frameworks / architectures sont proposés :
 
 ## Le mode _Bot API_
 
 Le mode _Tock Bot API_ (recommandé pour la plupart des cas) permet de développer en [Kotlin](https://kotlinlang.org/) 
-ou un autre langage à travers l'API conversationnelle de Tock :
+ou d'autres langages avec les clients fournis pour [Javascript/Nodejs](https://nodejs.org/) et 
+[Python](https://www.python.org/) ou n'importe quel langage grâce à l'API de Tock :
 
 ![BOT API](../img/bot_api.png "BOT API")
 

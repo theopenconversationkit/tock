@@ -26,9 +26,8 @@ This API allows to create bots and stories with any programing language.
 Tock bots can be composed of configured stories (using Tock Studio builder) and 
 programatic stories, possibly implementing complex rules or leveraging other external APIs.
   
-This API is used by provided Kotlin clients in _WebHook_ or _WebSocket_ mode, 
-as well as the [`tock-node`](https://github.com/theopenconversationkit/tock-node) component in Javascript.
+This API is used by provided Kotlin, Javascript/Nodejs and Python clients available in _WebHook_ or _WebSocket_ mode.
 
 > The API is under development, it will soon be documented.
 
-To know more about the _Bot API_ development framework, see [this page](dev/bot-api.md).
+To know more about the _Bot API_ development frameworks, see [this page](dev/bot-api.md).

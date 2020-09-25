@@ -435,36 +435,30 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#develop-in-another-language" class="md-nav__link">
-    Develop in another language
-  </a>
-  
-    <nav class="md-nav" aria-label="Develop in another language">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#node" class="md-nav__link">
-    Node
+  <a href="#develop-with-javascript" class="md-nav__link">
+    Develop with Javascript
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#api" class="md-nav__link">
-    API
+      
+        <li class="md-nav__item">
+  <a href="#develop-with-python" class="md-nav__link">
+    Develop with Python
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#install-bot-api-on-your-own-servers" class="md-nav__link">
-    Install Bot API on your own servers
+      
+        <li class="md-nav__item">
+  <a href="#develop-through-the-api" class="md-nav__link">
+    Develop through the API
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#install-bot-api-server-side" class="md-nav__link">
+    Install Bot API server-side
+  </a>
   
 </li>
       
@@ -758,36 +752,30 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#develop-in-another-language" class="md-nav__link">
-    Develop in another language
-  </a>
-  
-    <nav class="md-nav" aria-label="Develop in another language">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#node" class="md-nav__link">
-    Node
+  <a href="#develop-with-javascript" class="md-nav__link">
+    Develop with Javascript
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#api" class="md-nav__link">
-    API
+      
+        <li class="md-nav__item">
+  <a href="#develop-with-python" class="md-nav__link">
+    Develop with Python
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#install-bot-api-on-your-own-servers" class="md-nav__link">
-    Install Bot API on your own servers
+      
+        <li class="md-nav__item">
+  <a href="#develop-through-the-api" class="md-nav__link">
+    Develop through the API
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#install-bot-api-server-side" class="md-nav__link">
+    Install Bot API server-side
+  </a>
   
 </li>
       
@@ -808,15 +796,35 @@
                 
                 
                 <h1 id="tock-bot-api-mode"><em>Tock Bot API Mode</em><a class="headerlink" href="#tock-bot-api-mode" title="Permanent link">&para;</a></h1>
-<p>This is the recommended way to start to develop with Tock. </p>
-<p>You add custom answers using a REST API. Kotlin client and <a href="https://github.com/theopenconversationkit/tock-node">Node client</a> are available.</p>
+<blockquote>
+<p>This is the recommended way to start developing stories with Tock. </p>
+</blockquote>
+<p><a href="https://kotlinlang.org/">Kotlin</a>, <a href="https://nodejs.org/">Javascript</a> and <a href="https://www.python.org/">Python</a> clients are available.
+Any programing language can be used, leveraging the Tock <a href="../../api/#tock-bot-definition-api">Bot API</a>. </p>
+<p><a href="./#develop-with-kotlin"><img alt="Kotlin logo" title="Kotlin"
+      src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin-logo.svg/1024px-Kotlin-logo.svg.png" 
+      style="width: 50px;"></a>
+<a href="./#develop-with-javascript"><img alt="Nodejs logo" title="Nodejs"
+      src="https://o7planning.org/fr/11931/images/20938929.png" 
+      style="width: 50px;"></a>
+<a href="./#develop-with-python"><img alt="Python logo" title="Python"
+      src="https://www.libraries.rutgers.edu/sites/default/files/styles/resize_to_300px_width/public/events/2020/01/python_3_2.png" 
+      style="width: 50px;"></a>
+<a href="./#develop-through-the-api"><img alt="API logo" title="Bot API"
+      src="https://zappysys.com/blog/wp-content/uploads/2018/06/REST-API-icon.jpg" 
+      style="width: 50px;"></a></p>
 <h2 id="connect-to-the-demo-platform">Connect to the demo platform<a class="headerlink" href="#connect-to-the-demo-platform" title="Permanent link">&para;</a></h2>
 <p>Rather than deploying its own Tock platform, it is possible to test the <em>WebSocket</em> or <em>Webhook</em> modes directly on the
 <a href="https://demo.tock.ai/">Tock demo platform</a>.</p>
 <h2 id="develop-with-kotlin">Develop with Kotlin<a class="headerlink" href="#develop-with-kotlin" title="Permanent link">&para;</a></h2>
+<p><img alt="Kotlin logo" title="Kotlin"
+src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin-logo.svg/1024px-Kotlin-logo.svg.png" 
+style="width: 100px;"></p>
 <h3 id="enable-websocket-mode">Enable WebSocket mode<a class="headerlink" href="#enable-websocket-mode" title="Permanent link">&para;</a></h3>
-<p>This is the preferred mode at startup.</p>
-<p>To use the websocket client, add the <code>tock-bot-api-websocket</code> dependency to your <a href="https://kotlinlang.org/">Kotlin</a> application / project.</p>
+<blockquote>
+<p>This is the preferred mode at startup, requiring no additional tunnel / setup.</p>
+</blockquote>
+<p>To use the <em>WebSocket</em> client, add the <code>tock-bot-api-websocket</code> dependency to your <a href="https://kotlinlang.org/">Kotlin</a> application / project.</p>
 <p>Using <a href="https://maven.apache.org/">Maven</a> :</p>
 <div class="codehilite"><pre><span></span><code>        <span class="nt">&lt;dependency&gt;</span>
             <span class="nt">&lt;groupId&gt;</span>ai.tock<span class="nt">&lt;/groupId&gt;</span>
@@ -851,6 +859,11 @@ Add the <code>tock-bot-api-webhook</code> dependency to your <a href="https://ko
 <p>In this case, unlike the <em>WebSocket</em> mode, the bot application must be reachable by the
 Tock platform and so has to expose a public URL (you can use <a href="https://ngrok.com/">ngrok</a> in order to provide this URL). </p>
 <p>This URL must be specified in the <em>webhook url</em> field in the <em>Configuration</em>&gt; <em>Bot Configurations</em> view of <em>Tock Studio</em>.</p>
+<blockquote>
+<p>Note that the <em>WebHook</em> mode may require the setup of a secure tunnel to the Bot API running client. 
+As a matter of fact, the client may not be reachable from the server. 
+For development, tools like <a href="https://ngrok.com/">ngrok</a> may help. </p>
+</blockquote>
 <h3 id="set-up-the-api-key">Set up the API key<a class="headerlink" href="#set-up-the-api-key" title="Permanent link">&para;</a></h3>
 <p>In <em>Tock Studio</em>, after configuring a bot, go to <em>Configuration</em>&gt; <em>Bot Configurations</em> and copy
 the API key of the bot to which you want to connect.
@@ -901,12 +914,25 @@ You can enter / paste this key into the Kotlin code (see below).</p>
 
 
 <p>Please consult the <a href="https://github.com/theopenconversationkit/tock-bot-demo">full source code sample</a>.</p>
-<h2 id="develop-in-another-language">Develop in another language<a class="headerlink" href="#develop-in-another-language" title="Permanent link">&para;</a></h2>
-<h3 id="node">Node<a class="headerlink" href="#node" title="Permanent link">&para;</a></h3>
-<p>Please consult the dedicated <a href="https://github.com/theopenconversationkit/tock-node">node client</a> documentation.</p>
-<h3 id="api">API<a class="headerlink" href="#api" title="Permanent link">&para;</a></h3>
-<p>It is possible to develop in the language of your choice by using directly the underlying REST API.</p>
-<h3 id="install-bot-api-on-your-own-servers">Install Bot API on your own servers<a class="headerlink" href="#install-bot-api-on-your-own-servers" title="Permanent link">&para;</a></h3>
+<h2 id="develop-with-javascript">Develop with Javascript<a class="headerlink" href="#develop-with-javascript" title="Permanent link">&para;</a></h2>
+<p><img alt="Nodejs logo" title="Nodejs"
+src="https://o7planning.org/fr/11931/images/20938929.png" 
+style="width: 100px;"></p>
+<p>A <a href="https://nodejs.org/">Nodejs</a> client is available to program Tock stories in Javascript.<br />
+Please visit the <a href="https://github.com/theopenconversationkit/tock-node"><code>tock-node</code></a> repository and documentation.</p>
+<h2 id="develop-with-python">Develop with Python<a class="headerlink" href="#develop-with-python" title="Permanent link">&para;</a></h2>
+<p><img alt="Python logo" title="Python"
+src="https://www.libraries.rutgers.edu/sites/default/files/styles/resize_to_300px_width/public/events/2020/01/python_3_2.png" 
+style="width: 100px;"></p>
+<p>A client is available to program Tock stories in <a href="https://www.python.org/">Python</a>.<br />
+Please visit the <a href="https://github.com/theopenconversationkit/tock-py"><code>tock-py</code></a> repository and documentation.</p>
+<h2 id="develop-through-the-api">Develop through the API<a class="headerlink" href="#develop-through-the-api" title="Permanent link">&para;</a></h2>
+<p><img alt="API logo" title="REST API"
+src="https://zappysys.com/blog/wp-content/uploads/2018/06/REST-API-icon.jpg" 
+style="width: 100px;"></p>
+<p>It is possible to develop in the language of your choice by using directly the underlying REST<br />
+<a href="../../api/#tock-bot-definition-api">API</a>.</p>
+<h2 id="install-bot-api-server-side">Install Bot API server-side<a class="headerlink" href="#install-bot-api-server-side" title="Permanent link">&para;</a></h2>
 <p>To use Tock's <em>Bot API</em> mode without the demo platform, a specific module must be deployed on your own server. </p>
 <p>Called <code>bot-api</code> in Docker Compose descriptors, this service:</p>
 <ul>

@@ -1,8 +1,22 @@
 # _Tock Bot API Mode_
 
-This is the recommended way to start to develop with Tock. 
+> This is the recommended way to start developing stories with Tock. 
 
-You add custom answers using a REST API. Kotlin client and [Node client](https://github.com/theopenconversationkit/tock-node) are available.
+[Kotlin](https://kotlinlang.org/), [Javascript](https://nodejs.org/) and [Python](https://www.python.org/) clients are available.
+Any programing language can be used, leveraging the Tock [Bot API](../api.md#tock-bot-definition-api). 
+
+[<img alt="Kotlin logo" title="Kotlin"
+      src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin-logo.svg/1024px-Kotlin-logo.svg.png" 
+      style="width: 50px;">](bot-api.md#develop-with-kotlin)
+[<img alt="Nodejs logo" title="Nodejs"
+      src="https://o7planning.org/fr/11931/images/20938929.png" 
+      style="width: 50px;">](bot-api.md#develop-with-javascript)
+[<img alt="Python logo" title="Python"
+      src="https://www.libraries.rutgers.edu/sites/default/files/styles/resize_to_300px_width/public/events/2020/01/python_3_2.png" 
+      style="width: 50px;">](bot-api.md#develop-with-python)
+[<img alt="API logo" title="Bot API"
+      src="https://zappysys.com/blog/wp-content/uploads/2018/06/REST-API-icon.jpg" 
+      style="width: 50px;">](bot-api.md#develop-through-the-api)
 
 ## Connect to the demo platform
 
@@ -11,11 +25,15 @@ Rather than deploying its own Tock platform, it is possible to test the _WebSock
 
 ## Develop with Kotlin
 
+<img alt="Kotlin logo" title="Kotlin"
+src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin-logo.svg/1024px-Kotlin-logo.svg.png" 
+style="width: 100px;">
+
 ### Enable WebSocket mode
 
-This is the preferred mode at startup.
+> This is the preferred mode at startup, requiring no additional tunnel / setup.
 
-To use the websocket client, add the `tock-bot-api-websocket` dependency to your [Kotlin](https://kotlinlang.org/) application / project.
+To use the _WebSocket_ client, add the `tock-bot-api-websocket` dependency to your [Kotlin](https://kotlinlang.org/) application / project.
 
 Using [Maven](https://maven.apache.org/) :
 
@@ -58,6 +76,10 @@ In this case, unlike the _WebSocket_ mode, the bot application must be reachable
 Tock platform and so has to expose a public URL (you can use [ngrok](https://ngrok.com/) in order to provide this URL). 
 
 This URL must be specified in the _webhook url_ field in the _Configuration_> _Bot Configurations_ view of _Tock Studio_.
+
+> Note that the _WebHook_ mode may require the setup of a secure tunnel to the Bot API running client. 
+> As a matter of fact, the client may not be reachable from the server. 
+> For development, tools like [ngrok](https://ngrok.com/) may help. 
  
 ### Set up the API key
  
@@ -115,17 +137,34 @@ fun main() {
 
 Please consult the [full source code sample](https://github.com/theopenconversationkit/tock-bot-demo).
  
-## Develop in another language
+## Develop with Javascript
 
-### Node
+<img alt="Nodejs logo" title="Nodejs"
+src="https://o7planning.org/fr/11931/images/20938929.png" 
+style="width: 100px;">
 
-Please consult the dedicated [node client](https://github.com/theopenconversationkit/tock-node) documentation.
+A [Nodejs](https://nodejs.org/) client is available to program Tock stories in Javascript.  
+Please visit the [`tock-node`](https://github.com/theopenconversationkit/tock-node) repository and documentation.
+ 
+## Develop with Python
 
-### API
+<img alt="Python logo" title="Python"
+src="https://www.libraries.rutgers.edu/sites/default/files/styles/resize_to_300px_width/public/events/2020/01/python_3_2.png" 
+style="width: 100px;">
 
-It is possible to develop in the language of your choice by using directly the underlying REST API.
+A client is available to program Tock stories in [Python](https://www.python.org/).  
+Please visit the [`tock-py`](https://github.com/theopenconversationkit/tock-py) repository and documentation.
 
-### Install Bot API on your own servers
+## Develop through the API
+
+<img alt="API logo" title="REST API"
+src="https://zappysys.com/blog/wp-content/uploads/2018/06/REST-API-icon.jpg" 
+style="width: 100px;">
+
+It is possible to develop in the language of your choice by using directly the underlying REST  
+[API](../api.md#tock-bot-definition-api).
+
+## Install Bot API server-side
 
 To use Tock's _Bot API_ mode without the demo platform, a specific module must be deployed on your own server. 
 
