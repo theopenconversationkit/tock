@@ -262,10 +262,10 @@ open class BotBusMock(
             context.userInterfaceType = it
         }
         if (a is SendChoice) {
-            context.dialog.state.currentIntent = context.botDefinition.findIntent(a.intentName)
+            context.dialog.state.currentIntent = context.botDefinition.findIntent(a.intentName, a.applicationId)
         }
         if (a.state.intent != null) {
-            context.dialog.state.currentIntent = context.botDefinition.findIntent(a.state.intent!!)
+            context.dialog.state.currentIntent = context.botDefinition.findIntent(a.state.intent!!, a.applicationId)
         }
 
         a.state.entityValues.forEach {
@@ -275,7 +275,8 @@ open class BotBusMock(
         if (context.dialog.state.currentIntent != null
             && !context.story.supportIntent(context.dialog.state.currentIntent!!)
         ) {
-            val storyDefinition = context.botDefinition.findStoryDefinition(context.dialog.state.currentIntent!!)
+            val storyDefinition =
+                context.botDefinition.findStoryDefinition(context.dialog.state.currentIntent!!, a.applicationId)
             context.story = Story(storyDefinition, storyDefinition.mainIntent())
             context.dialog.stories.add(context.story)
         } else if (context.dialog.stories.isEmpty()) {
@@ -393,7 +394,11 @@ open class BotBusMock(
         return this
     }
 
-    override fun withMessage(connectorType: ConnectorType, connectorId: String, messageProvider: () -> ConnectorMessage): BotBus {
+    override fun withMessage(
+        connectorType: ConnectorType,
+        connectorId: String,
+        messageProvider: () -> ConnectorMessage
+    ): BotBus {
         if (applicationId == connectorId && targetConnectorType == connectorType) {
             mockData.addMessage(messageProvider.invoke())
         }
@@ -437,5 +442,6 @@ open class BotBusMock(
     /**
      * Assert that logs contains specified messages.
      */
-    fun assert(vararg messages: ConnectorMessageProvider): Unit = messages.forEachIndexed { i, m -> busAnswers[i].assert(m) }
+    fun assert(vararg messages: ConnectorMessageProvider): Unit =
+        messages.forEachIndexed { i, m -> busAnswers[i].assert(m) }
 }

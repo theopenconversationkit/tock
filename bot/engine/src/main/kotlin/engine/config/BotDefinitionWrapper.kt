@@ -17,6 +17,7 @@
 package ai.tock.bot.engine.config
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
+import ai.tock.bot.admin.bot.BotApplicationConfigurationKey
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.Intent
@@ -91,26 +92,30 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
     override val stories: List<StoryDefinition>
         get() = allStories
 
-    override fun findIntent(intent: String): Intent {
-        val i = super.findIntent(intent)
+    override fun findIntent(intent: String, applicationId: String): Intent {
+        val i = super.findIntent(intent, applicationId)
         return if (i == unknown) {
-            val i2 = botDefinition.findIntent(intent)
+            val i2 = botDefinition.findIntent(intent, applicationId)
             if (i2 == unknown) BotDefinition.findIntent(stories, intent) else i2
         } else i
     }
 
-    override fun findStoryDefinition(intent: IntentAware?): StoryDefinition {
-        return findStoryDefinition(intent?.wrappedIntent()?.name)
+    override fun findStoryDefinition(intent: IntentAware?, applicationId: String): StoryDefinition {
+        return findStoryDefinition(intent?.wrappedIntent()?.name, applicationId)
     }
 
-    private fun findStory(intent: String?, applicationId: String?): StoryDefinition =
+    private fun findStory(intent: String?, applicationId: String): StoryDefinition =
         BotDefinition.findStoryDefinition(
-            stories.filter {
-                when (it) {
-                    is ConfiguredStoryDefinition -> !it.isDisabled(applicationId)
-                    else -> true
+            stories
+                .asSequence()
+                .filter {
+                    when (it) {
+                        is ConfiguredStoryDefinition -> !it.isDisabled(applicationId)
+                        else -> true
+                    }
                 }
-            },
+                .map { it.checkApplicationId(applicationId) }
+                .toList(),
             intent,
             unknownStory,
             keywordStory
@@ -124,7 +129,7 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
             logger.warn { "unknown story: $storyId" }
         }
 
-    private fun findStoryDefinition(intent: String?, applicationId: String?, initialIntent: String?): StoryDefinition {
+    private fun findStoryDefinition(intent: String?, applicationId: String, initialIntent: String?): StoryDefinition {
         val story = findStory(intent, applicationId)
 
         return (story as? ConfiguredStoryDefinition)?.let {
@@ -133,6 +138,7 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
                 (configuredStories[switchId] ?: listOfNotNull(builtInStoriesMap[switchId]))
                     .let { stories ->
                         val targetStory = stories
+                            .asSequence()
                             .filterIsInstance<ConfiguredStoryDefinition>()
                             .filterNot { c -> c.isDisabled(applicationId) }
                             .run {
@@ -144,7 +150,7 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
                             ?.let { toStory ->
                                 val storyMainIntent = toStory.mainIntent().name
                                 if (storyMainIntent == initialIntent) {
-                                    toStory
+                                    toStory.checkApplicationId(applicationId)
                                 } else {
                                     findStoryDefinition(storyMainIntent, applicationId, initialIntent)
                                 }
@@ -157,7 +163,7 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
         } ?: story
     }
 
-    override fun findStoryDefinition(intent: String?, applicationId: String?): StoryDefinition =
+    override fun findStoryDefinition(intent: String?, applicationId: String): StoryDefinition =
         findStoryDefinition(intent, applicationId, intent).let {
             if (it is ConfiguredStoryDefinition && it.answerType == builtin) {
                 builtInStory(it.storyId)
@@ -166,13 +172,31 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
             }
         }
 
-    override fun findStoryDefinitionById(storyId: String): StoryDefinition =
+    override fun findStoryDefinitionById(storyId: String, applicationId: String): StoryDefinition =
         //first search into built-in then in configured, fallback to search by intent
-        builtInStoriesMap[storyId] ?: allStoriesById[storyId] ?: findStoryDefinition(storyId)
+        builtInStoriesMap[storyId] ?: allStoriesById[storyId]?.checkApplicationId(applicationId) ?: findStoryDefinition(
+            storyId,
+            applicationId
+        )
 
-    override fun findStoryByStoryHandler(storyHandler: StoryHandler): StoryDefinition? =
-        botDefinition.stories.find { it.storyHandler == storyHandler }
-            ?: stories.find { it.storyHandler == storyHandler }
+    override fun findStoryByStoryHandler(storyHandler: StoryHandler, applicationId: String): StoryDefinition? =
+        (botDefinition.stories.find { it.storyHandler == storyHandler }
+            ?: stories.find { it.storyHandler == storyHandler })
+            ?.checkApplicationId(applicationId)
+
+    private fun StoryDefinition.checkApplicationId(applicationId: String): StoryDefinition =
+        if (this is ConfiguredStoryDefinition
+            && configuration.configuredSteps.isNotEmpty()
+            && answerType != builtin
+        ) {
+            ConfiguredStoryDefinition(
+                this@BotDefinitionWrapper,
+                configuration,
+                BotApplicationConfigurationKey(applicationId, this@BotDefinitionWrapper)
+            )
+        } else {
+            this
+        }
 
     override fun toString(): String {
         return "Wrapper($botDefinition)"

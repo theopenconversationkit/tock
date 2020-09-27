@@ -226,13 +226,13 @@ internal class Bot(
     }
 
     private fun parseChoice(choice: SendChoice, dialog: Dialog) {
-        botDefinition.findIntent(choice.intentName).let { intent ->
+        botDefinition.findIntent(choice.intentName, choice.applicationId).let { intent ->
             //restore state if it's possible (old dialog choice case)
             if (intent != Intent.unknown) {
                 //TODO use story id
                 val previousIntentName = choice.previousIntent()
                 if (previousIntentName != null) {
-                    val previousStory = botDefinition.findStoryDefinition(previousIntentName)
+                    val previousStory = botDefinition.findStoryDefinition(previousIntentName, choice.applicationId)
                     if (previousStory != botDefinition.unknownStory && previousStory.supportIntent(intent)) {
                         //the previous intent is a primary intent that support the new intent
                         val storyDefinition = botDefinition.findStoryDefinition(choice.intentName, choice.applicationId)
@@ -241,9 +241,19 @@ internal class Bot(
                             val currentStory = dialog.currentStory
                             if (currentStory == null
                                 || !currentStory.supportIntent(intent)
-                                || !currentStory.supportIntent(botDefinition.findIntent(previousIntentName))
+                                || !currentStory.supportIntent(
+                                    botDefinition.findIntent(
+                                        previousIntentName,
+                                        choice.applicationId
+                                    )
+                                )
                             ) {
-                                dialog.stories.add(Story(previousStory, intent))
+                                dialog.stories.add(
+                                    Story(
+                                        previousStory,
+                                        intent
+                                    )
+                                )
                             }
                         }
                     }

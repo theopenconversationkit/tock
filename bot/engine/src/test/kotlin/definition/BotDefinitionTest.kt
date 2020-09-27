@@ -68,7 +68,7 @@ class BotDefinitionTest {
 
     @Test
     fun `GIVEN step only intent WHEN findIntent is called THEN the intent is found`() {
-        val r = botDef.findIntent("s4_secondary")
+        val r = botDef.findIntent("s4_secondary", "appId")
         assertEquals(Intent("s4_secondary"), r)
     }
 
@@ -92,7 +92,7 @@ class BotDefinitionTest {
         )
 
         // When
-        val result = wrap.findStoryDefinitionById("disable_bot")
+        val result = wrap.findStoryDefinitionById("disable_bot", "appId")
 
         // Then
         assertNotNull(result)
@@ -114,7 +114,7 @@ class BotDefinitionTest {
         )
 
         // When
-        val result = botDef.findStoryDefinitionById("disable_bot")
+        val result = botDef.findStoryDefinitionById("disable_bot", "appId")
 
         // Then
         assertNotNull(result)
@@ -130,7 +130,7 @@ class BotDefinitionTest {
         )
 
         // When
-        val result = botDef.findStoryDefinitionById("disable_bot")
+        val result = botDef.findStoryDefinitionById("disable_bot", "appId")
 
         // Then
         assertEquals(botDef.unknownStory, result)
@@ -165,7 +165,7 @@ class BotDefinitionTest {
         )
 
         // When
-        val result = botDef.findStoryDefinitionById("should_not_find_id")
+        val result = botDef.findStoryDefinitionById("should_not_find_id", "appId")
 
         // Then
         assertEquals(botDef.unknownStory, result)

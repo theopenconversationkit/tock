@@ -20,6 +20,7 @@ import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
 import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
+import ai.tock.bot.admin.answer.DedicatedAnswerConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationKey
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.Intent
@@ -107,11 +108,18 @@ data class StoryDefinitionConfiguration(
      * The configuration identifier.
      */
     val _id: Id<StoryDefinitionConfiguration> = newId(),
-
     /**
      * The story definition tags that specify different story types or roles.
      */
-    val tags: List<StoryTag> = emptyList()
+    val tags: List<StoryTag> = emptyList(),
+    /**
+     * Answers by bot application configuration
+     */
+    val configuredAnswers: List<DedicatedAnswerConfiguration> = emptyList(),
+    /**
+     * Steps by bot application configuration
+     */
+    val configuredSteps: List<StoryDefinitionConfigurationByBotStep> = emptyList()
 
 ) : StoryDefinitionAnswersContainer {
 
@@ -129,7 +137,14 @@ data class StoryDefinitionConfiguration(
             )
 
     override fun findNextSteps(bus: BotBus, story: StoryDefinitionConfiguration): List<CharSequence> =
-        steps.map { it.userSentenceLabel ?: it.userSentence }
+        findSteps(BotApplicationConfigurationKey(bus)).map { it.userSentenceLabel ?: it.userSentence }
+
+    internal fun findSteps(key: BotApplicationConfigurationKey?): List<StoryDefinitionConfigurationStep> =
+        (key?.let {
+            val configurationName =
+                BotRepository.getConfigurationByApplicationId(key)?.name
+            configuredSteps.firstOrNull { it.botConfiguration == configurationName }?.steps
+        } ?: steps)
 
     private fun findFeatures(applicationId: String?): List<StoryDefinitionConfigurationFeature> =
         when {
@@ -183,4 +198,5 @@ data class StoryDefinitionConfiguration(
 
     @Transient
     internal val mainIntent: Intent = intent.intent(namespace)
+
 }

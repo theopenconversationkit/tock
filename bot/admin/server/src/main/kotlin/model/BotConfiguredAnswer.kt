@@ -17,19 +17,19 @@
 package ai.tock.bot.admin.model
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType
-import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
+import ai.tock.bot.admin.answer.DedicatedAnswerConfiguration
 
 /**
  *
  */
-data class BotScriptAnswerConfiguration(
-    val scriptVersions: List<BotScriptAnswerVersionedConfiguration>,
-    val current: BotScriptAnswerVersionedConfiguration = scriptVersions.maxByOrNull { it.date }
-        ?: error("at least one script version is necessary")) :
-    BotAnswerConfiguration(AnswerConfigurationType.script) {
-
-    constructor(conf: ScriptAnswerConfiguration) : this(conf.scriptVersions.map {
-        BotScriptAnswerVersionedConfiguration(it)
-    })
-
+class BotConfiguredAnswer(
+    val botConfiguration: String,
+    val currentType: AnswerConfigurationType,
+    val answers: List<BotAnswerConfiguration>
+) {
+    constructor(conf: DedicatedAnswerConfiguration) : this(
+        conf.botConfiguration,
+        conf.currentType,
+        conf.answers.mapAnswers()
+    )
 }

@@ -18,6 +18,8 @@ package ai.tock.bot.admin.bot
 
 import ai.tock.bot.connector.ConnectorConfiguration
 import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.definition.BotDefinition
+import ai.tock.bot.engine.BotBus
 import ai.tock.shared.property
 import ai.tock.shared.tryToFindLocalIp
 import org.litote.kmongo.Id
@@ -129,4 +131,12 @@ data class BotApplicationConfigurationKey(
      * The namespace of the model.
      */
     val namespace: String
-)
+) {
+    constructor(applicationId: String, botDefinition: BotDefinition) : this(
+        applicationId,
+        botDefinition.botId,
+        botDefinition.namespace
+    )
+
+    constructor(bus: BotBus) : this(bus.applicationId, bus.botDefinition)
+}

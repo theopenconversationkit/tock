@@ -38,7 +38,6 @@ import ai.tock.bot.test.TestContext
 import ai.tock.bot.test.TestLifecycle
 import ai.tock.bot.test.newBusMockContext
 import ai.tock.translator.UserInterfaceType
-import io.mockk.clearAllMocks
 import mu.KotlinLogging
 import org.junit.jupiter.api.extension.AfterEachCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
@@ -133,7 +132,8 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         tests: BotBusMock.() -> Unit
     ): BotBusMock {
         return sendMessage(
-            message = busMockLog.choice(buttonTitle) ?: error("No choice $buttonTitle found in bus message $busMockLog"),
+            message = busMockLog.choice(buttonTitle)
+                ?: error("No choice $buttonTitle found in bus message $busMockLog"),
             tests = tests
         )
     }
@@ -148,7 +148,8 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         tests: BotBusMock.() -> Unit
     ): BotBusMock {
         return sendMessage(
-            message = busMockLog.elementChoice(elementIndex, buttonTitle) ?: error("No choice $buttonTitle found in element $elementIndex of bus message $busMockLog"),
+            message = busMockLog.elementChoice(elementIndex, buttonTitle)
+                ?: error("No choice $buttonTitle found in element $elementIndex of bus message $busMockLog"),
             tests = tests
         )
     }
@@ -214,7 +215,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
                 testContext.botBusMockContext
             } else {
                 newBusMockContext(
-                    findStoryDefinition(intent),
+                    findStoryDefinition(intent, action.applicationId),
                     connectorType,
                     locale,
                     userId,
@@ -325,7 +326,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
                     testContext.botBusMockContext
                 } else {
                     newBusMockContext(
-                        findStoryDefinition(intent),
+                        findStoryDefinition(intent, action.applicationId),
                         connectorType,
                         locale,
                         userId,
@@ -340,7 +341,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         )
     }
 
-    private fun findStoryDefinition(intent: IntentAware): StoryDefinition =
+    private fun findStoryDefinition(intent: IntentAware, applicationId: String): StoryDefinition =
         if (intent is StoryDefinition) {
             intent
         } else {
@@ -349,7 +350,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
             ) {
                 testContext.defaultStoryDefinition(botDefinition)
             } else {
-                botDefinition.findStoryDefinition(intent)
+                botDefinition.findStoryDefinition(intent, applicationId)
             }
         }
 

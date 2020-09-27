@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
-
-import ai.tock.bot.admin.answer.AnswerConfigurationType
-import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
+package ai.tock.bot.admin.story
 
 /**
- *
+ * Steps configured for a dedicated [botConfiguration] name.
  */
-data class BotScriptAnswerConfiguration(
-    val scriptVersions: List<BotScriptAnswerVersionedConfiguration>,
-    val current: BotScriptAnswerVersionedConfiguration = scriptVersions.maxByOrNull { it.date }
-        ?: error("at least one script version is necessary")) :
-    BotAnswerConfiguration(AnswerConfigurationType.script) {
-
-    constructor(conf: ScriptAnswerConfiguration) : this(conf.scriptVersions.map {
-        BotScriptAnswerVersionedConfiguration(it)
-    })
-
-}
+data class StoryDefinitionConfigurationByBotStep(
+    val botConfiguration: String,
+    val steps: List<StoryDefinitionConfigurationStep> = emptyList()
+)

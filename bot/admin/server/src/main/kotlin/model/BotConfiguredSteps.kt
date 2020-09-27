@@ -16,20 +16,20 @@
 
 package ai.tock.bot.admin.model
 
-import ai.tock.bot.admin.answer.AnswerConfigurationType
-import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
+import ai.tock.bot.admin.story.StoryDefinitionConfiguration
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationByBotStep
 
-/**
- *
- */
-data class BotScriptAnswerConfiguration(
-    val scriptVersions: List<BotScriptAnswerVersionedConfiguration>,
-    val current: BotScriptAnswerVersionedConfiguration = scriptVersions.maxByOrNull { it.date }
-        ?: error("at least one script version is necessary")) :
-    BotAnswerConfiguration(AnswerConfigurationType.script) {
 
-    constructor(conf: ScriptAnswerConfiguration) : this(conf.scriptVersions.map {
-        BotScriptAnswerVersionedConfiguration(it)
-    })
+data class BotConfiguredSteps(
+    val botConfiguration: String,
+    val steps: List<BotStoryDefinitionConfigurationStep> = emptyList()
+)
 
-}
+fun List<StoryDefinitionConfigurationByBotStep>.mapSteps(story: StoryDefinitionConfiguration): List<BotConfiguredSteps> =
+    map {
+        BotConfiguredSteps(
+            it.botConfiguration,
+            it.steps.map { step ->
+                BotStoryDefinitionConfigurationStep(story, step)
+            })
+    }

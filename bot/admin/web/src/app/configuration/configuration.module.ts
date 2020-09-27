@@ -14,37 +14,38 @@
  * limitations under the License.
  */
 
-import {ApplicationsModule} from "../applications/applications.module";
-import {Injectable, NgModule} from "@angular/core";
-import {SharedModule} from "../shared-nlp/shared.module";
-import {RouterModule, Routes} from "@angular/router";
-import {ApplicationsComponent} from "../applications/applications/applications.component";
-import {ApplicationComponent} from "../applications/application/application.component";
-import {AuthGuard} from "../core-nlp/auth/auth.guard";
-import {BotConfigurationsComponent} from "./bot/bot-configurations.component";
-import {ConfigurationTabsComponent} from "./configuration-tabs.component";
-import {ApplicationsResolver} from "../applications/applications.resolver";
-import {CommonModule} from "@angular/common";
-import {BotSharedModule} from "../shared/bot-shared.module";
-import {BotConfigurationComponent} from "./bot/bot-configuration.component";
+import {ApplicationsModule} from '../applications/applications.module';
+import {Injectable, NgModule} from '@angular/core';
+import {SharedModule} from '../shared-nlp/shared.module';
+import {RouterModule, Routes} from '@angular/router';
+import {ApplicationsComponent} from '../applications/applications/applications.component';
+import {ApplicationComponent} from '../applications/application/application.component';
+import {AuthGuard} from '../core-nlp/auth/auth.guard';
+import {BotConfigurationsComponent} from './bot/bot-configurations.component';
+import {ConfigurationTabsComponent} from './configuration-tabs.component';
+import {ApplicationsResolver} from '../applications/applications.resolver';
+import {CommonModule} from '@angular/common';
+import {BotSharedModule} from '../shared/bot-shared.module';
+import {BotConfigurationComponent} from './bot/bot-configuration.component';
 import {
   NbAccordionModule,
   NbActionsModule,
   NbButtonModule,
-  NbCardModule,
+  NbCardModule, NbIconModule,
   NbInputModule,
-  NbRouteTabsetModule,
+  NbRouteTabsetModule, NbSelectModule,
   NbSpinnerModule,
   NbTabsetModule,
   NbToastrModule,
   NbTooltipModule
-} from "@nebular/theme";
-import {NewBotComponent} from "./bot/new-bot.component";
-import {ReactiveFormsModule} from "@angular/forms";
-import {UserLogsComponent} from "../applications/user/user-logs.component";
-import {NamespacesComponent} from "../applications/namespace/namespaces.component";
-import {BotSharedService} from "../shared/bot-shared.service";
-import {ApplicationConfig} from "../applications/application.config";
+} from '@nebular/theme';
+import {NewBotComponent} from './bot/new-bot.component';
+import {ReactiveFormsModule} from '@angular/forms';
+import {UserLogsComponent} from '../applications/user/user-logs.component';
+import {NamespacesComponent} from '../applications/namespace/namespaces.component';
+import {BotSharedService} from '../shared/bot-shared.service';
+import {ApplicationConfig} from '../applications/application.config';
+import {SelectBotConfigurationDialogComponent} from './bot/selection-dialog/select-bot-configuration-dialog.component';
 
 const routes: Routes = [
   {
@@ -134,6 +135,7 @@ export class BotApplicationConfig implements ApplicationConfig {
     BotConfigurationsComponent,
     BotConfigurationComponent,
     NewBotComponent,
+    SelectBotConfigurationDialogComponent
   ],
   imports: [
     CommonModule,
@@ -152,6 +154,8 @@ export class BotApplicationConfig implements ApplicationConfig {
     NbSpinnerModule,
     NbAccordionModule,
     NbToastrModule.forRoot(),
+    NbIconModule,
+    NbSelectModule,
   ],
   providers: [
     {

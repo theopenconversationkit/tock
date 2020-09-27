@@ -150,7 +150,7 @@ internal class TockConnectorController constructor(
                             action.playerId,
                             data.priorUserId,
                             data.groupId,
-                            storyDefinitionLoader()
+                            storyDefinitionLoader(action.applicationId)
                         )
 
                     val transformedAction = tryToParseVoiceAudio(action, userTimeline)
@@ -194,7 +194,7 @@ internal class TockConnectorController constructor(
                     action.playerId,
                     data.priorUserId,
                     data.groupId,
-                    storyDefinitionLoader()
+                    storyDefinitionLoader(action.applicationId)
                 )
             bot.support(action, userTimeline, this, data)
         } catch (t: Throwable) {

@@ -19,7 +19,9 @@ package ai.tock.bot.admin
 import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
 import ai.tock.bot.admin.answer.AnswerConfigurationType.script
+import ai.tock.bot.admin.answer.AnswerConfigurationType.simple
 import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
+import ai.tock.bot.admin.answer.DedicatedAnswerConfiguration
 import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
 import ai.tock.bot.admin.answer.ScriptAnswerVersionedConfiguration
 import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
@@ -35,6 +37,8 @@ import ai.tock.bot.admin.kotlin.compiler.KotlinFile
 import ai.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
 import ai.tock.bot.admin.model.BotAnswerConfiguration
 import ai.tock.bot.admin.model.BotBuiltinAnswerConfiguration
+import ai.tock.bot.admin.model.BotConfiguredAnswer
+import ai.tock.bot.admin.model.BotConfiguredSteps
 import ai.tock.bot.admin.model.BotScriptAnswerConfiguration
 import ai.tock.bot.admin.model.BotSimpleAnswerConfiguration
 import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
@@ -49,6 +53,7 @@ import ai.tock.bot.admin.model.StorySearchRequest
 import ai.tock.bot.admin.model.UserSearchQuery
 import ai.tock.bot.admin.model.UserSearchQueryResult
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationByBotStep
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep
@@ -335,8 +340,10 @@ object BotAdminService {
         val toDate = atTimeOfDay(request.to, LocalTime.MAX)
         logger.debug { "Building 'Messages by Configuration' report for ${applications.size} configurations: $applicationIds..." }
 
-        val functionResult = (searchFunction)(namespace, botId, applicationIds, request.from, request.to, request.intent)
-        val series = functionResult.first.groupingBy { it.text }.eachCount().toList().sortedByDescending { it.second }.unzip().first
+        val functionResult =
+            (searchFunction)(namespace, botId, applicationIds, request.from, request.to, request.intent)
+        val series = functionResult.first.groupingBy { it.text }.eachCount().toList().sortedByDescending { it.second }
+            .unzip().first
         val messagesByDate = functionResult.first.groupBy { groupSelector(fromDate, toDate, it.date) }
 
         val (dates, transitionsByDate) = sortMessagesByDate(fromDate, toDate, messagesByDate)
@@ -395,7 +402,8 @@ object BotAdminService {
         val applicationIds = applications.map { it._id }.toSet()
         logger.debug { "Building 'Messages by Configuration' report for ${applications.size} configurations: $applicationIds..." }
 
-        val functionResult = (searchFunction)(namespace, botId, applicationIds, request.from, request.to, request.intent)
+        val functionResult =
+            (searchFunction)(namespace, botId, applicationIds, request.from, request.to, request.intent)
         val series: Set<String> = functionResult.first.groupBy { it.text }.keys.map { seriesLabel(it) }.toSet()
 
         val result = arrayListOf<List<Int?>>()
@@ -819,33 +827,37 @@ object BotAdminService {
         )
     }
 
-    private fun scriptAnswer(
+    private fun String.toScriptConfiguration(
         botId: String,
-        oldAnswer: ScriptAnswerConfiguration?,
-        answer: BotScriptAnswerConfiguration
-    ): ScriptAnswerConfiguration? {
+        oldAnswer: ScriptAnswerConfiguration?
+    ): ScriptAnswerConfiguration? = this
+        .toNewScriptConfiguration(botId, oldAnswer?.current?.script, oldAnswer?.scriptVersions) ?: oldAnswer
 
-        val script = answer.current.script
-        if (!KotlinCompilerClient.compilerDisabled && oldAnswer?.current?.script != script) {
+    private fun String.toNewScriptConfiguration(
+        botId: String,
+        oldScript: String?,
+        oldScriptVersions: List<ScriptAnswerVersionedConfiguration>?,
+    ): ScriptAnswerConfiguration? {
+        if (!KotlinCompilerClient.compilerDisabled && oldScript != this) {
             val fileName = "T${Dice.newId()}.kt"
-            val result = KotlinCompilerClient.compile(KotlinFile(script, fileName))
+            val result = KotlinCompilerClient.compile(KotlinFile(this, fileName))
             if (result?.compilationResult == null) {
                 throw badRequest("Compilation error: ${result?.errors?.joinToString()}")
             } else {
                 val c = result.compilationResult!!
                 val newScript = ScriptAnswerVersionedConfiguration(
-                    script,
+                    this,
                     c.files.map { it.key.substring(0, it.key.length - ".class".length) to it.value },
                     BotVersion.getCurrentBotVersion(botId),
                     c.mainClass
                 )
                 return ScriptAnswerConfiguration(
-                    (oldAnswer?.scriptVersions ?: emptyList()) + newScript,
+                    (oldScriptVersions ?: emptyList()) + newScript,
                     newScript
                 )
             }
         } else {
-            return oldAnswer
+            return null
         }
     }
 
@@ -856,10 +868,9 @@ object BotAdminService {
         when (this) {
             is BotSimpleAnswerConfiguration -> simpleAnswer(this)
             is BotScriptAnswerConfiguration ->
-                scriptAnswer(
+                current.script.toScriptConfiguration(
                     botId,
-                    answers?.find { it.answerType == script } as? ScriptAnswerConfiguration,
-                    this
+                    answers?.find { it.answerType == script } as? ScriptAnswerConfiguration
                 )
             is BotBuiltinAnswerConfiguration -> BuiltInAnswerConfiguration(storyHandlerClassName)
             else -> error("unsupported type $this")
@@ -998,7 +1009,11 @@ object BotAdminService {
             userSentenceLocale = story.userSentenceLocale,
             configurationName = story.configurationName,
             features = story.features,
-            tags = story.tags
+            tags = story.tags,
+            configuredAnswers = story.configuredAnswers.mapNotNull {
+                it.toConfiguredAnswer(botId, oldStory)
+            },
+            configuredSteps = story.configuredSteps.mapSteps(application, botId, oldStory)
         )
     }
 
@@ -1096,7 +1111,14 @@ object BotAdminService {
                         userSentenceLocale = story.userSentenceLocale,
                         configurationName = story.configurationName,
                         features = story.features,
-                        tags = story.tags
+                        tags = story.tags,
+                        configuredAnswers = story.configuredAnswers.mapNotNull {
+                            it.toConfiguredAnswer(
+                                botConf.botId,
+                                null
+                            )
+                        },
+                        configuredSteps = story.configuredSteps.mapSteps(application, botConf.botId, null)
                     )
                 }
             }
@@ -1115,12 +1137,35 @@ object BotAdminService {
             }
 
             //save all intents of steps
-            newStory.steps.forEach { saveUserSentenceOfStep(application, it, user) }
+            val storySteps = newStory.steps + newStory.configuredSteps.flatMap { it.steps }
+            storySteps.forEach { saveUserSentenceOfStep(application, it, user) }
 
             BotStoryDefinitionConfiguration(newStory, story.userSentenceLocale)
         } else {
             null
         }
+    }
+
+    private fun List<BotConfiguredSteps>.mapSteps(
+        app: ApplicationDefinition,
+        botId: String,
+        oldStory: StoryDefinitionConfiguration?
+    ): List<StoryDefinitionConfigurationByBotStep> =
+        map {
+            StoryDefinitionConfigurationByBotStep(it.botConfiguration, it.steps.map { step ->
+                step.toStepConfiguration(app, botId, oldStory)
+            })
+        }
+
+
+    private fun BotConfiguredAnswer.toConfiguredAnswer(botId: String, oldStory: StoryDefinitionConfiguration?)
+            : DedicatedAnswerConfiguration? {
+        val oldConf = oldStory?.configuredAnswers?.find { it.botConfiguration == botConfiguration }
+        return DedicatedAnswerConfiguration(
+            botConfiguration,
+            oldConf?.currentType ?: simple,
+            oldConf?.answers ?: emptyList()
+        )
     }
 
     private fun saveSentence(

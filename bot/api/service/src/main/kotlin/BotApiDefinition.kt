@@ -68,7 +68,8 @@ internal class ApiStep(s: StepConfiguration) : StoryStep<StoryHandlerDefinition>
 internal class BotApiDefinition(
     configuration: BotConfiguration,
     clientConfiguration: ClientConfiguration?,
-    handler: BotApiHandler) :
+    handler: BotApiHandler
+) :
     BotDefinitionBase(
         configuration.botId,
         configuration.namespace,
@@ -80,7 +81,11 @@ internal class BotApiDefinition(
                     s.name,
                     FallbackStoryHandler(defaultUnknownStory, handler),
                     setOf(Intent(s.mainIntent)) + s.otherStarterIntents.map { Intent(it) },
-                    setOf(Intent(s.mainIntent)) + s.otherStarterIntents.map { Intent(it) } + s.secondaryIntents.map { Intent(it) },
+                    setOf(Intent(s.mainIntent)) + s.otherStarterIntents.map { Intent(it) } + s.secondaryIntents.map {
+                        Intent(
+                            it
+                        )
+                    },
                     s.steps.map { ApiStep(it) }.toSet()
                 )
             } ?: emptyList(),
@@ -88,8 +93,8 @@ internal class BotApiDefinition(
         FallbackStoryDefinition(defaultUnknownStory, handler)
     ) {
 
-    override fun findIntent(intent: String): Intent =
-        super.findIntent(intent).let {
+    override fun findIntent(intent: String, applicationId: String): Intent =
+        super.findIntent(intent, applicationId).let {
             if (it.wrap(Intent.unknown)) {
                 Intent(intent)
             } else {

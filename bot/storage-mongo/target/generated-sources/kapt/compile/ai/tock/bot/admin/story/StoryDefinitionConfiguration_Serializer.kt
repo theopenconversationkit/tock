@@ -116,6 +116,28 @@ internal class StoryDefinitionConfiguration_Serializer :
                 null
                 )
                 .serialize(_tags_, gen, serializers)
+        gen.writeFieldName("configuredAnswers")
+        val _configuredAnswers_ = value.configuredAnswers
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.List::class.java,
+                serializers.config.typeFactory.constructType(ai.tock.bot.admin.answer.DedicatedAnswerConfiguration::class.java)
+                ),
+                true,
+                null
+                )
+                .serialize(_configuredAnswers_, gen, serializers)
+        gen.writeFieldName("configuredSteps")
+        val _configuredSteps_ = value.configuredSteps
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.List::class.java,
+                serializers.config.typeFactory.constructType(ai.tock.bot.admin.story.StoryDefinitionConfigurationByBotStep::class.java)
+                ),
+                true,
+                null
+                )
+                .serialize(_configuredSteps_, gen, serializers)
         gen.writeEndObject()
     }
 }

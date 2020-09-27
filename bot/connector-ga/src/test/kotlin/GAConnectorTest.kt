@@ -16,7 +16,6 @@
 
 package ai.tock.bot.connector.ga
 
-import com.google.common.io.Resources
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ga.GAAccountLinking.Companion.isUserAuthenticated
 import ai.tock.bot.connector.ga.GAAccountLinking.Companion.switchTimeLine
@@ -26,6 +25,7 @@ import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType.user
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.shared.resource
+import com.google.common.io.Resources
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -136,6 +136,7 @@ class GAConnectorTest {
         mockkObject(GAAccountLinking)
         every {
             switchTimeLine(
+                "appId",
                 PlayerId("jarvisteam@yopmail.com", user),
                 PlayerId(
                     "ABwppHHaWSlfkEc3cou4A-K_rzAfjSsLZTkNEq3NLM_d8bVanmj61irxpfM8bPE1DA4NJD6Lw-4ZOQY43LIp9sWNj7w",
@@ -156,6 +157,7 @@ class GAConnectorTest {
         assertTrue { connectorData.captured.saveTimeline }
         verify(exactly = 1) {
             switchTimeLine(
+                "appId",
                 PlayerId("jarvisteam@yopmail.com", user),
                 PlayerId(
                     "ABwppHHaWSlfkEc3cou4A-K_rzAfjSsLZTkNEq3NLM_d8bVanmj61irxpfM8bPE1DA4NJD6Lw-4ZOQY43LIp9sWNj7w",

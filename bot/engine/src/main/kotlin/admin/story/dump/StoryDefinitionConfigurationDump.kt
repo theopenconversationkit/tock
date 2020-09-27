@@ -18,6 +18,8 @@ package ai.tock.bot.admin.story.dump
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationByBotStep
+import ai.tock.bot.admin.answer.DedicatedAnswerConfiguration
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.definition.StoryTag
 import ai.tock.shared.defaultNamespace
@@ -94,7 +96,15 @@ data class StoryDefinitionConfigurationDump(
     /**
      * The story definition tags that specify different story types or roles.
      */
-    val tags: List<StoryTag> = emptyList()
+    val tags: List<StoryTag> = emptyList(),
+    /**
+     * Answers by bot application configuration
+     */
+    val configuredAnswers: List<DedicatedAnswerConfiguration> = emptyList(),
+    /**
+     * Steps by bot application configuration
+     */
+    val configuredSteps: List<StoryDefinitionConfigurationByBotStep> = emptyList()
 ) {
 
     constructor(def: StoryDefinitionConfiguration) :
@@ -115,7 +125,9 @@ data class StoryDefinitionConfigurationDump(
             userSentenceLocale = def.userSentenceLocale,
             configurationName = def.configurationName,
             features = def.features.map { StoryDefinitionConfigurationFeatureDump(it) },
-            tags = def.tags
+            tags = def.tags,
+            configuredAnswers = def.configuredAnswers,
+            configuredSteps = def.configuredSteps
         )
 
     fun toStoryDefinitionConfiguration(controller: StoryDefinitionConfigurationDumpController): StoryDefinitionConfiguration =
@@ -136,6 +148,8 @@ data class StoryDefinitionConfigurationDump(
             userSentenceLocale = userSentenceLocale,
             configurationName = null,
             features = features.mapNotNull { it.toFeature(controller) },
-            tags = tags
+            tags = tags,
+            configuredAnswers = configuredAnswers,
+            configuredSteps = configuredSteps
         )
 }

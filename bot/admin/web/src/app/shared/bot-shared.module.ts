@@ -28,8 +28,17 @@ import {BotSharedService} from './bot-shared.service';
 import {DisplayDialogComponent} from './bot-dialog/display-dialog.component';
 import {MomentModule} from 'ngx-moment';
 import {SelectBotComponent} from './select-bot/select-bot.component';
-import {NbCalendarRangeModule, NbCardModule, NbIconModule, NbSelectModule, NbTooltipModule, NbPopoverModule} from '@nebular/theme';
+import {
+  NbCalendarRangeModule,
+  NbCardModule,
+  NbIconModule,
+  NbSelectModule,
+  NbTooltipModule,
+  NbPopoverModule,
+  NbButtonModule
+} from '@nebular/theme';
 import {InfoButtonComponent} from './info-button/info-button.component';
+import {ConfirmationDialogComponent} from './confirmation-dialog/confirmation-dialog.component';
 
 @NgModule({
   imports: [
@@ -41,7 +50,8 @@ import {InfoButtonComponent} from './info-button/info-button.component';
     NbSelectModule,
     NbTooltipModule,
     NbIconModule,
-    NbPopoverModule
+    NbPopoverModule,
+    NbButtonModule
   ],
   declarations: [
     BotMessageComponent,
@@ -53,7 +63,8 @@ import {InfoButtonComponent} from './info-button/info-button.component';
     DisplayDialogComponent,
     SelectBotComponent,
     DateRangeCalendarComponent,
-    InfoButtonComponent
+    InfoButtonComponent,
+    ConfirmationDialogComponent
   ],
   exports: [
     BotMessageComponent,

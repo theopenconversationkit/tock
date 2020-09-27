@@ -113,7 +113,7 @@ class GAConnector internal constructor(
 
                 when {
                     event is LoginEvent -> {
-                        switchTimeLine(event.userId, event.previousUserId, controller)
+                        switchTimeLine(applicationId, event.userId, event.previousUserId, controller)
                         sendRequest()
                     }
                     isUserAuthenticated(request) -> {
@@ -209,11 +209,11 @@ class GAConnector internal constructor(
             if (m != null && m.suggestions.isEmpty()) {
                 message.copy(
                     expectedInputs = message.expectedInputs.take(message.expectedInputs.size - 1) +
-                        message.expectedInputs.last().copy(
-                            inputPrompt = message.expectedInputs.last().inputPrompt.copy(
-                                richInitialPrompt = m.copy(suggestions = suggestions.map { suggestion(it) })
+                            message.expectedInputs.last().copy(
+                                inputPrompt = message.expectedInputs.last().inputPrompt.copy(
+                                    richInitialPrompt = m.copy(suggestions = suggestions.map { suggestion(it) })
+                                )
                             )
-                        )
                 )
             } else {
                 null

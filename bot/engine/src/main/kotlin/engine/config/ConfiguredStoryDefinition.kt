@@ -17,6 +17,7 @@
 package ai.tock.bot.engine.config
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType
+import ai.tock.bot.admin.bot.BotApplicationConfigurationKey
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep.Step
 import ai.tock.bot.definition.Intent
@@ -31,7 +32,8 @@ import ai.tock.translator.UserInterfaceType
  */
 internal class ConfiguredStoryDefinition(
     definition: BotDefinitionWrapper,
-    val configuration: StoryDefinitionConfiguration
+    val configuration: StoryDefinitionConfiguration,
+    val botApplicationConfigurationKey: BotApplicationConfigurationKey? = null
 ) : StoryDefinition {
 
     val answerType: AnswerConfigurationType = configuration.currentType
@@ -60,7 +62,7 @@ internal class ConfiguredStoryDefinition(
 
     override val steps: Set<StoryStep<*>> =
         (configuration.storyDefinition(definition, configuration)?.steps ?: emptySet()) +
-                configuration.steps.map { it.toStoryStep(configuration) }
+                configuration.findSteps(botApplicationConfigurationKey).map { it.toStoryStep(configuration) }
 
     override val intents: Set<Intent> =
         starterIntents +

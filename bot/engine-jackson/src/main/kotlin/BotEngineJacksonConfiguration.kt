@@ -126,8 +126,18 @@ private object BotEngineJacksonConfiguration {
                 )
 
                 setMixInAnnotation(AnswerConfigurationDump::class.java, MixinAnswerConfigurationDump::class.java)
-                registerSubtypes(NamedType(SimpleAnswerConfigurationDump::class.java, AnswerConfigurationType.simple.name))
-                registerSubtypes(NamedType(ScriptAnswerConfigurationDump::class.java, AnswerConfigurationType.script.name))
+                registerSubtypes(
+                    NamedType(
+                        SimpleAnswerConfigurationDump::class.java,
+                        AnswerConfigurationType.simple.name
+                    )
+                )
+                registerSubtypes(
+                    NamedType(
+                        ScriptAnswerConfigurationDump::class.java,
+                        AnswerConfigurationType.script.name
+                    )
+                )
                 registerSubtypes(
                     NamedType(
                         MessageAnswerConfigurationDump::class.java,
@@ -160,7 +170,8 @@ private object BotEngineJacksonConfiguration {
                     ): List<BeanPropertyWriter> {
                         return when {
                             beanDesc.beanClass == ScriptAnswerVersionedConfiguration::class.java -> {
-                                beanProperties.filter { it.name != ScriptAnswerVersionedConfiguration::storyDefinition.name }.toList()
+                                beanProperties.filter { it.name != ScriptAnswerVersionedConfiguration::storyDefinition.name }
+                                    .toList()
                             }
                             CharSequence::class.java.isAssignableFrom(beanDesc.beanClass) -> {
                                 beanProperties.filter { it.name != "length" }.toList()

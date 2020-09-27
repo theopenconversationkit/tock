@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import {PaginatedQuery} from "../../model/commons";
-import {Dictionary, EntityDefinition, EntityType, Intent, Sentence} from "../../model/nlp";
-import {I18nLabel} from "./i18n";
-import {BotService} from "../bot-service";
-import {Observable, of} from "rxjs";
-import {AttachmentType, BotApplicationConfiguration} from "../../core/model/configuration";
-import {StateService} from "../../core-nlp/state.service";
+import {PaginatedQuery} from '../../model/commons';
+import {Dictionary, EntityDefinition, EntityType, Intent, Sentence} from '../../model/nlp';
+import {I18nLabel} from './i18n';
+import {BotService} from '../bot-service';
+import {Observable, of} from 'rxjs';
+import {AttachmentType, BotApplicationConfiguration} from '../../core/model/configuration';
+import {StateService} from '../../core-nlp/state.service';
 
 export class CreateStoryRequest {
 
@@ -41,7 +41,7 @@ export class StorySearchQuery extends PaginatedQuery {
               public category?: string,
               public textSearch?: string,
               public onlyConfiguredStory?: boolean) {
-    super(namespace, applicationName, language, start, size)
+    super(namespace, applicationName, language, start, size);
   }
 
 }
@@ -77,9 +77,9 @@ export abstract class AnswerContainer {
     public category: string) {
   }
 
-  abstract containerId(): string
+  abstract containerId(): string;
 
-  abstract save(bot: BotService): Observable<AnswerContainer>
+  abstract save(bot: BotService): Observable<AnswerContainer>;
 
   allowNoAnwser(): boolean {
     return false;
@@ -118,15 +118,24 @@ export abstract class AnswerContainer {
   }
 
   private findAnswer(type: AnswerConfigurationType): AnswerConfiguration {
-    return this.answers.find(c => c.answerType === type)
+    return this.answers.find(c => c.answerType === type);
   }
 
   simpleTextView(wide: boolean): string {
     const current = this.currentAnswer();
-    if (current) return current.simpleTextView(wide);
-    return "";
+    if (current) {
+      return current.simpleTextView(wide);
+    }
+    return '';
   }
 
+  addNewAnswerType(newAnswer: AnswerConfiguration) {
+    this.answers.push(newAnswer);
+  }
+
+  changeCurrentType(value: AnswerConfigurationType) {
+    this.currentType = value;
+  }
 }
 
 export class StoryDefinitionConfigurationSummary {
@@ -135,12 +144,24 @@ export class StoryDefinitionConfigurationSummary {
               public botId: string,
               public intent: IntentName,
               public currentType: AnswerConfigurationType,
-              public category: string = "default",
+              public category: string = 'default',
               public name: string = storyId,
               public _id: string,
-              public description: string = ""
+              public description: string = ''
   ) {
 
+  }
+
+  static fromJSON(json: any): StoryDefinitionConfigurationSummary {
+    const value = Object.create(StoryDefinitionConfigurationSummary.prototype);
+    return Object.assign(value, json, {
+      intent: IntentName.fromJSON(json.intent),
+      currentType: AnswerConfigurationType[json.currentType]
+    });
+  }
+
+  static fromJSONArray(json?: Array<any>): StoryDefinitionConfigurationSummary[] {
+    return json ? json.map(StoryDefinitionConfigurationSummary.fromJSON) : [];
   }
 
   isSimpleAnswer(): boolean {
@@ -159,27 +180,10 @@ export class StoryDefinitionConfigurationSummary {
     return this.currentType === AnswerConfigurationType.builtin;
   }
 
-  static fromJSON(json: any): StoryDefinitionConfigurationSummary {
-    const value = Object.create(StoryDefinitionConfigurationSummary.prototype);
-    const result = Object.assign(value, json, {
-      intent: IntentName.fromJSON(json.intent),
-      currentType: AnswerConfigurationType[json.currentType]
-    });
-
-    return result;
-  }
-
-  static fromJSONArray(json?: Array<any>): StoryDefinitionConfigurationSummary[] {
-    return json ? json.map(StoryDefinitionConfigurationSummary.fromJSON) : [];
-  }
-
 }
 
 
 export class StoryDefinitionConfiguration extends AnswerContainer {
-
-  public hideDetails: boolean = false;
-  public selected: boolean = true;
 
   constructor(public storyId: string,
               public botId: string,
@@ -187,9 +191,9 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
               public currentType: AnswerConfigurationType,
               public namespace: string,
               answers: AnswerConfiguration[] = [],
-              category: string = "default",
+              category: string = 'default',
               public name: string = storyId,
-              public userSentence: string = "",
+              public userSentence: string = '',
               public userSentenceLocale: string,
               public features: StoryFeature[],
               public configurationName?: string,
@@ -197,10 +201,33 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
               public version: number = 0,
               public mandatoryEntities: MandatoryEntity[] = [],
               public steps: StoryStep[] = [],
-              public description: string = "",
-              public tags: string[] = []
+              public description: string = '',
+              public tags: string[] = [],
+              public configuredAnswers: BotConfiguredAnswer[] = [],
+              public configuredSteps: BotConfiguredSteps[] = []
   ) {
     super(currentType, answers, category);
+  }
+
+  public hideDetails = false;
+  public selected = true;
+
+  static fromJSON(json: any): StoryDefinitionConfiguration {
+    const value = Object.create(StoryDefinitionConfiguration.prototype);
+    return Object.assign(value, json, {
+      intent: IntentName.fromJSON(json.intent),
+      currentType: AnswerConfigurationType[json.currentType],
+      answers: AnswerConfiguration.fromJSONArray(json.answers),
+      mandatoryEntities: MandatoryEntity.fromJSONArray(json.mandatoryEntities),
+      steps: StoryStep.fromJSONArray(json.steps),
+      features: StoryFeature.fromJSONArray(json.features),
+      configuredAnswers: BotConfiguredAnswer.fromJSONArray(json.configuredAnswers),
+      configuredSteps: BotConfiguredSteps.fromJSONArray(json.configuredSteps)
+    });
+  }
+
+  static fromJSONArray(json?: Array<any>): StoryDefinitionConfiguration[] {
+    return json ? json.map(StoryDefinitionConfiguration.fromJSON) : [];
   }
 
   containerId(): string {
@@ -231,12 +258,14 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
       this.mandatoryEntities,
       this.steps,
       this.description,
-      this.tags
+      this.tags,
+      this.configuredAnswers,
+      this.configuredSteps
     );
   }
 
   save(bot: BotService): Observable<AnswerContainer> {
-    return bot.saveStory(this)
+    return bot.saveStory(this);
   }
 
   isDisabled(configurationId: string): boolean {
@@ -244,38 +273,10 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
       ? false
       : this.features.filter(f =>
       !f.enabled && !f.switchToStoryId
-      && (!f.botApplicationConfigurationId || f.botApplicationConfigurationId == null
-      || f.botApplicationConfigurationId == configurationId)
+      && (!f.botApplicationConfigurationId || f.botApplicationConfigurationId === configurationId)
     ).length > 0;
   }
 
-  isRedirected(configurationId: string): boolean {
-    return !this.features || this.features.length < 1
-      ? false
-      : this.features.filter(f =>
-      f.enabled && f.switchToStoryId
-      && (!f.botApplicationConfigurationId || f.botApplicationConfigurationId == null
-      || f.botApplicationConfigurationId == configurationId)
-    ).length > 0;
-  }
-
-  static fromJSON(json: any): StoryDefinitionConfiguration {
-    const value = Object.create(StoryDefinitionConfiguration.prototype);
-    const result = Object.assign(value, json, {
-      intent: IntentName.fromJSON(json.intent),
-      currentType: AnswerConfigurationType[json.currentType],
-      answers: AnswerConfiguration.fromJSONArray(json.answers),
-      mandatoryEntities: MandatoryEntity.fromJSONArray(json.mandatoryEntities),
-      steps: StoryStep.fromJSONArray(json.steps),
-      features: StoryFeature.fromJSONArray(json.features)
-    });
-
-    return result;
-  }
-
-  static fromJSONArray(json?: Array<any>): StoryDefinitionConfiguration[] {
-    return json ? json.map(StoryDefinitionConfiguration.fromJSON) : [];
-  }
 }
 
 export class EntityStepSelection {
@@ -305,29 +306,17 @@ export enum AnswerConfigurationType {
 
 export class MandatoryEntity extends AnswerContainer {
 
-  public entity: EntityDefinition;
-  public intentDefinition: Intent;
-
   constructor(public role: string,
               public entityType: string,
               public intent: IntentName,
               answers: AnswerConfiguration[],
               currentType: AnswerConfigurationType,
               category: string) {
-    super(currentType, answers, category)
+    super(currentType, answers, category);
   }
 
-  containerId(): string {
-    return this.role;
-  }
-
-  save(bot: BotService): Observable<AnswerContainer> {
-    return of(this);
-  }
-
-  clone(): MandatoryEntity {
-    return new MandatoryEntity(this.role, this.entityType, this.intent.clone(), this.answers.slice(0).map(a => a.clone()), this.currentType, this.category);
-  }
+  public entity: EntityDefinition;
+  public intentDefinition: Intent;
 
   static fromJSON(json: any): MandatoryEntity {
     const value = Object.create(MandatoryEntity.prototype);
@@ -343,14 +332,46 @@ export class MandatoryEntity extends AnswerContainer {
   static fromJSONArray(json?: Array<any>): MandatoryEntity[] {
     return json ? json.map(MandatoryEntity.fromJSON) : [];
   }
+
+  containerId(): string {
+    return this.role;
+  }
+
+  save(bot: BotService): Observable<AnswerContainer> {
+    return of(this);
+  }
+
+  clone(): MandatoryEntity {
+    return new MandatoryEntity(
+      this.role,
+      this.entityType,
+      this.intent.clone(),
+      this.answers.slice(0).map(a => a.clone()),
+      this.currentType,
+      this.category
+    );
+  }
 }
 
 export class StoryStep extends AnswerContainer {
 
+  constructor(public name: string,
+              public intent: IntentName,
+              public targetIntent: IntentName,
+              answers: AnswerConfiguration[],
+              currentType: AnswerConfigurationType,
+              category: string,
+              public userSentence: I18nLabel,
+              public children: StoryStep[],
+              public level: number,
+              public entity?: EntityStepSelection) {
+    super(currentType, answers, category);
+  }
+
   public intentDefinition: Intent;
   public targetIntentDefinition: Intent;
   public new: boolean;
-  public newUserSentence: string = "";
+  public newUserSentence = '';
 
   static generateEntitySteps(
     intent: IntentName,
@@ -361,9 +382,9 @@ export class StoryStep extends AnswerContainer {
     level: number): StoryStep[] {
     return dictionary.values.map(v => {
       const s = new StoryStep(
-        v.value + "_" + level,
+        v.value + '_' + level,
         intent,
-        new IntentName(""),
+        new IntentName(''),
         [new SimpleAnswerConfiguration([])],
         AnswerConfigurationType.simple,
         category,
@@ -389,24 +410,30 @@ export class StoryStep extends AnswerContainer {
         if (s.targetIntent.name.length !== 0) {
           intents.add(s.targetIntent.name);
         } else if (!s.currentAnswer() || s.currentAnswer().isEmpty()) {
-          intents.add(s.intent.name)
+          intents.add(s.intent.name);
         }
       }
-      StoryStep.findOutcomingIntent(intents, s.children)
+      StoryStep.findOutcomingIntent(intents, s.children);
     });
   }
 
-  constructor(public name: string,
-              public intent: IntentName,
-              public targetIntent: IntentName,
-              answers: AnswerConfiguration[],
-              currentType: AnswerConfigurationType,
-              category: string,
-              public userSentence: I18nLabel,
-              public children: StoryStep[],
-              public level: number,
-              public entity?: EntityStepSelection) {
-    super(currentType, answers, category)
+  static fromJSON(json: any): StoryStep {
+    const value = Object.create(StoryStep.prototype);
+    const result = Object.assign(value, json, {
+      intent: IntentName.fromJSON(json.intent),
+      targetIntent: IntentName.fromJSON(json.targetIntent),
+      currentType: AnswerConfigurationType[json.currentType],
+      answers: AnswerConfiguration.fromJSONArray(json.answers),
+      children: StoryStep.fromJSONArray(json.children),
+      userSentence: I18nLabel.fromJSON(json.userSentence),
+      entity: EntityStepSelection.fromJSON(json.entity)
+    });
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): StoryStep[] {
+    return json ? json.map(StoryStep.fromJSON) : [];
   }
 
   containerId(): string {
@@ -435,31 +462,42 @@ export class StoryStep extends AnswerContainer {
     );
   }
 
-  static fromJSON(json: any): StoryStep {
-    const value = Object.create(StoryStep.prototype);
-    const result = Object.assign(value, json, {
-      intent: IntentName.fromJSON(json.intent),
-      targetIntent: IntentName.fromJSON(json.targetIntent),
-      currentType: AnswerConfigurationType[json.currentType],
-      answers: AnswerConfiguration.fromJSONArray(json.answers),
-      children: StoryStep.fromJSONArray(json.children),
-      userSentence: I18nLabel.fromJSON(json.userSentence),
-      entity: EntityStepSelection.fromJSON(json.entity)
+  duplicate(bot: BotService) {
+    const storyStep = new StoryStep(
+      this.name,
+      this.intent.clone(),
+      this.targetIntent.clone(),
+      this.answers.slice(0).map(a => a.duplicate(bot)),
+      this.currentType,
+      this.category,
+      this.userSentence.clone(),
+      this.children.map(c => c.duplicate(bot)),
+      this.level
+    );
+    bot.duplicateLabel(storyStep.userSentence, i18n => {
+      storyStep.userSentence = i18n;
     });
-
-    return result;
-  }
-
-  static fromJSONArray(json?: Array<any>): StoryStep[] {
-    return json ? json.map(StoryStep.fromJSON) : [];
+    return storyStep;
   }
 }
 
 export class IntentName {
 
+  constructor(public name: string) {
+  }
+
   private intentLabel: string;
 
-  constructor(public name: string) {
+  static fromJSON(json: any): IntentName {
+    const value = Object.create(IntentName.prototype);
+    const result = Object.assign(value, json, {
+      name: json && json.name ? json.name : ''
+    });
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): IntentName[] {
+    return json ? json.map(IntentName.fromJSON) : [];
   }
 
   getIntentLabel(state: StateService): string {
@@ -472,41 +510,14 @@ export class IntentName {
   clone(): IntentName {
     return new IntentName(this.name);
   }
-
-  static fromJSON(json: any): IntentName {
-    const value = Object.create(IntentName.prototype);
-    const result = Object.assign(value, json, {
-      name: json && json.name ? json.name : ""
-    });
-    return result;
-  }
-
-  static fromJSONArray(json?: Array<any>): IntentName[] {
-    return json ? json.map(IntentName.fromJSON) : [];
-  }
 }
 
 export abstract class AnswerConfiguration {
 
-  public allowNoAnswer: boolean = false;
-
   protected constructor(public answerType: AnswerConfigurationType) {
   }
 
-  abstract simpleTextView(wide: boolean): string
-
-  invalidMessage(): string {
-    return null;
-  }
-
-  abstract isEmpty(): boolean
-
-  checkAfterReset(bot: BotService) {
-  }
-
-  abstract clone(): AnswerConfiguration
-
-  abstract duplicate(bot: BotService): AnswerConfiguration
+  public allowNoAnswer = false;
 
   static fromJSON(json: any): AnswerConfiguration {
     if (!json) {
@@ -522,19 +533,43 @@ export abstract class AnswerConfiguration {
       case AnswerConfigurationType.builtin :
         return BuiltinAnswerConfiguration.fromJSON(json);
       default:
-        throw "unknown type : " + json.answerType
+        throw new Error('unknown type : ' + json.answerType);
     }
   }
 
   static fromJSONArray(json?: Array<any>): AnswerConfiguration[] {
     return json ? json.map(AnswerConfiguration.fromJSON) : [];
   }
+
+  abstract simpleTextView(wide: boolean): string;
+
+  invalidMessage(): string {
+    return null;
+  }
+
+  abstract isEmpty(): boolean;
+
+  checkAfterReset(bot: BotService) {
+  }
+
+  abstract clone(): AnswerConfiguration;
+
+  abstract duplicate(bot: BotService): AnswerConfiguration;
 }
 
 export class SimpleAnswerConfiguration extends AnswerConfiguration {
 
   constructor(public answers: SimpleAnswer[]) {
-    super(AnswerConfigurationType.simple)
+    super(AnswerConfigurationType.simple);
+  }
+
+  static fromJSON(json: any): SimpleAnswerConfiguration {
+    const value = Object.create(SimpleAnswerConfiguration.prototype);
+    const result = Object.assign(value, json, {
+      answers: SimpleAnswer.fromJSONArray(json.answers),
+      answerType: AnswerConfigurationType.simple
+    });
+    return result;
   }
 
   isEmpty(): boolean {
@@ -542,14 +577,14 @@ export class SimpleAnswerConfiguration extends AnswerConfiguration {
   }
 
   simpleTextView(wide: boolean): string {
-    const r = this.answers && this.answers.length > 0 ? this.answers[0].label.defaultLocalizedLabel().label : "[no text yet]";
+    const r = this.answers && this.answers.length > 0 ? this.answers[0].label.defaultLocalizedLabel().label : '[no text yet]';
     const limit = wide ? 80 : 25;
-    return r.substring(0, Math.min(r.length, limit)) + (r.length > limit || this.answers.length > 1 ? "..." : "");
+    return r.substring(0, Math.min(r.length, limit)) + (r.length > limit || this.answers.length > 1 ? '...' : '');
   }
 
   invalidMessage(): string {
     if (!this.allowNoAnswer && this.answers.length === 0) {
-      return "Please set at least one sentence";
+      return 'Please set at least one sentence';
     } else {
       return null;
     }
@@ -594,18 +629,9 @@ export class SimpleAnswerConfiguration extends AnswerConfiguration {
 
   checkAfterReset(bot: BotService) {
     super.checkAfterReset(bot);
-    //save again label if useful
+    // save again label if useful
     let count = 0;
     this.answers.forEach(a => bot.saveI18nLabel(a.label).subscribe(r => count++));
-  }
-
-  static fromJSON(json: any): SimpleAnswerConfiguration {
-    const value = Object.create(SimpleAnswerConfiguration.prototype);
-    const result = Object.assign(value, json, {
-      answers: SimpleAnswer.fromJSONArray(json.answers),
-      answerType: AnswerConfigurationType.simple
-    });
-    return result;
   }
 }
 
@@ -614,10 +640,6 @@ export class SimpleAnswer {
   constructor(public label: I18nLabel,
               public delay: number = -1,
               public mediaMessage?: Media) {
-  }
-
-  clone(): SimpleAnswer {
-    return new SimpleAnswer(this.label.clone(), this.delay, this.mediaMessage ? this.mediaMessage.clone() : null);
   }
 
   static fromJSON(json: any): SimpleAnswer {
@@ -632,6 +654,10 @@ export class SimpleAnswer {
   static fromJSONArray(json?: Array<any>): SimpleAnswer[] {
     return json ? json.map(SimpleAnswer.fromJSON) : [];
   }
+
+  clone(): SimpleAnswer {
+    return new SimpleAnswer(this.label.clone(), this.delay, this.mediaMessage ? this.mediaMessage.clone() : null);
+  }
 }
 
 export enum MediaType {
@@ -642,10 +668,6 @@ export enum MediaType {
 export class Media {
 
   constructor(public type: MediaType) {
-  }
-
-  clone(): Media {
-    return this;
   }
 
   static fromJSON(json: any): Media {
@@ -660,15 +682,16 @@ export class Media {
       case MediaType.card :
         return MediaCard.fromJSON(json);
       default:
-        throw "unknown type : " + json.type
+        throw new Error('unknown type : ' + json.type);
     }
+  }
+
+  clone(): Media {
+    return this;
   }
 }
 
 export class MediaCard extends Media {
-
-  public titleLabel: string;
-  public subTitleLabel: string;
 
   constructor(
     public actions: MediaAction[],
@@ -679,14 +702,8 @@ export class MediaCard extends Media {
     super(MediaType.card);
   }
 
-  clone(): Media {
-    return new MediaCard(
-      this.actions.map(a => a.clone()),
-      this.title ? this.title.clone() : null,
-      this.subTitle ? this.subTitle.clone() : null,
-      this.file
-    );
-  }
+  public titleLabel: string;
+  public subTitleLabel: string;
 
   static fromJSON(json: any): MediaCard {
 
@@ -701,11 +718,18 @@ export class MediaCard extends Media {
     return result;
   }
 
+  clone(): Media {
+    return new MediaCard(
+      this.actions.map(a => a.clone()),
+      this.title ? this.title.clone() : null,
+      this.subTitle ? this.subTitle.clone() : null,
+      this.file
+    );
+  }
+
 }
 
 export class MediaAction extends Media {
-
-  public titleLabel: string = "";
 
   constructor(
     public title: I18nLabel,
@@ -714,12 +738,7 @@ export class MediaAction extends Media {
     super(MediaType.action);
   }
 
-  clone(): MediaAction {
-    return new MediaAction(
-      this.title ? this.title.clone() : null,
-      this.url
-    );
-  }
+  public titleLabel = '';
 
   static fromJSON(json: any): MediaAction {
     const value = Object.create(MediaAction.prototype);
@@ -733,6 +752,13 @@ export class MediaAction extends Media {
   static fromJSONArray(json?: Array<any>): MediaAction[] {
     return json ? json.map(MediaAction.fromJSON) : [];
   }
+
+  clone(): MediaAction {
+    return new MediaAction(
+      this.title ? this.title.clone() : null,
+      this.url
+    );
+  }
 }
 
 export class MediaFile {
@@ -743,10 +769,6 @@ export class MediaFile {
     public id: string,
     public type: AttachmentType
   ) {
-  }
-
-  isImage(): boolean {
-    return this.type === AttachmentType.image;
   }
 
   static fromJSON(json: any): MediaFile {
@@ -760,6 +782,10 @@ export class MediaFile {
     return result;
   }
 
+  isImage(): boolean {
+    return this.type === AttachmentType.image;
+  }
+
 }
 
 export class ScriptAnswerConfiguration extends AnswerConfiguration {
@@ -767,34 +793,7 @@ export class ScriptAnswerConfiguration extends AnswerConfiguration {
   constructor(
     public scriptVersions: ScriptAnswerVersionedConfiguration[],
     public current: ScriptAnswerVersionedConfiguration) {
-    super(AnswerConfigurationType.script)
-  }
-
-  invalidMessage(): string {
-    if (this.current.script.trim().length === 0) {
-      return "Please set a non empty script";
-    } else {
-      return null;
-    }
-  }
-
-  simpleTextView(wide: boolean): string {
-    return "[Script]";
-  }
-
-  isEmpty(): boolean {
-    return false;
-  }
-
-  clone(): AnswerConfiguration {
-    return new ScriptAnswerConfiguration(
-      this.scriptVersions.map(s => new ScriptAnswerVersionedConfiguration(s.script, s.date)),
-      new ScriptAnswerVersionedConfiguration(this.current.script, this.current.date)
-    )
-  }
-
-  duplicate(bot: BotService): AnswerConfiguration {
-    return this.clone()
+    super(AnswerConfigurationType.script);
   }
 
   static fromJSON(json: any): ScriptAnswerConfiguration {
@@ -805,6 +804,33 @@ export class ScriptAnswerConfiguration extends AnswerConfiguration {
       answerType: AnswerConfigurationType.script
     });
     return result;
+  }
+
+  invalidMessage(): string {
+    if (this.current.script.trim().length === 0) {
+      return 'Please set a non empty script';
+    } else {
+      return null;
+    }
+  }
+
+  simpleTextView(wide: boolean): string {
+    return '[Script]';
+  }
+
+  isEmpty(): boolean {
+    return false;
+  }
+
+  clone(): AnswerConfiguration {
+    return new ScriptAnswerConfiguration(
+      this.scriptVersions.map(s => new ScriptAnswerVersionedConfiguration(s.script, s.date)),
+      new ScriptAnswerVersionedConfiguration(this.current.script, this.current.date)
+    );
+  }
+
+  duplicate(bot: BotService): AnswerConfiguration {
+    return this.clone();
   }
 }
 
@@ -828,7 +854,13 @@ export class BuiltinAnswerConfiguration extends AnswerConfiguration {
 
   constructor(
     public storyHandlerClassName?: string) {
-    super(AnswerConfigurationType.builtin)
+    super(AnswerConfigurationType.builtin);
+  }
+
+  static fromJSON(json: any): BuiltinAnswerConfiguration {
+    const value = Object.create(BuiltinAnswerConfiguration.prototype);
+    const result = Object.assign(value, json, {});
+    return result;
   }
 
   invalidMessage(): string {
@@ -836,7 +868,7 @@ export class BuiltinAnswerConfiguration extends AnswerConfiguration {
   }
 
   simpleTextView(wide: boolean): string {
-    return "[Built in]";
+    return '[Built in]';
   }
 
   isEmpty(): boolean {
@@ -850,13 +882,7 @@ export class BuiltinAnswerConfiguration extends AnswerConfiguration {
   }
 
   duplicate(bot: BotService): AnswerConfiguration {
-    return this.clone()
-  }
-
-  static fromJSON(json: any): BuiltinAnswerConfiguration {
-    const value = Object.create(BuiltinAnswerConfiguration.prototype);
-    const result = Object.assign(value, json, {});
-    return result;
+    return this.clone();
   }
 }
 
@@ -881,5 +907,73 @@ export class StoryFeature {
 
   static fromJSONArray(json?: Array<any>): StoryFeature[] {
     return json ? json.map(StoryFeature.fromJSON) : [];
+  }
+}
+
+export class BotConfiguredAnswer {
+  constructor(public botConfiguration: String,
+              public currentType: AnswerConfigurationType,
+              public answers: AnswerConfiguration[]) {
+  }
+
+  static fromJSONArray(json?: Array<any>): BotConfiguredAnswer[] {
+    return json ? json.map(BotConfiguredAnswer.fromJSON) : [];
+  }
+
+
+  static fromJSON(json: any): BotConfiguredAnswer {
+    if (!json) {
+      return null;
+    }
+
+    const value = Object.create(BotConfiguredAnswer.prototype);
+    return Object.assign(value, json, {
+      currentType: AnswerConfigurationType[json.currentType],
+      answers: AnswerConfiguration.fromJSONArray(json.answers)
+    });
+  }
+
+  containedIn(story: StoryDefinitionConfiguration): CustomAnswerContainer {
+    return new CustomAnswerContainer(this, story);
+  }
+}
+
+export class CustomAnswerContainer extends AnswerContainer {
+
+  constructor(
+    public botConfigurationAnswer: BotConfiguredAnswer,
+    public story: StoryDefinitionConfiguration
+  ) {
+    super(botConfigurationAnswer.currentType, botConfigurationAnswer.answers, story.category);
+  }
+
+  containerId(): string {
+    return this.story.storyId;
+  }
+
+  save(bot: BotService): Observable<AnswerContainer> {
+    return of(this);
+  }
+
+  changeCurrentType(value: AnswerConfigurationType) {
+    super.changeCurrentType(value);
+    this.botConfigurationAnswer.currentType = value;
+  }
+}
+
+export class BotConfiguredSteps {
+  constructor(public botConfiguration: String,
+              public steps: StoryStep[]) {
+  }
+
+  static fromJSONArray(json?: Array<any>): BotConfiguredSteps[] {
+    return json ? json.map(BotConfiguredSteps.fromJSON) : [];
+  }
+
+  static fromJSON(json: any): BotConfiguredSteps {
+    const value = Object.create(BotConfiguredSteps.prototype);
+    return Object.assign(value, json, {
+      steps: StoryStep.fromJSONArray(json.steps)
+    });
   }
 }

@@ -21,6 +21,7 @@ import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
 import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
 import ai.tock.bot.admin.answer.SimpleAnswer
 import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
+import ai.tock.bot.admin.bot.BotApplicationConfigurationKey
 import ai.tock.bot.admin.story.StoryDefinitionAnswersContainer
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep.Step
@@ -28,6 +29,7 @@ import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryHandler
 import ai.tock.bot.engine.BotBus
+import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.message.ActionWrappedMessage
 import ai.tock.bot.engine.message.MessagesList
@@ -66,7 +68,7 @@ internal class ConfiguredStoryHandler(
                 bus.removeEntityValue(entityTypeName)
             }
 
-            if (bus.entityValueDetails(role) == null && entity.hasCurrentAnwser()) {
+            if (bus.entityValueDetails(role) == null && entity.hasCurrentAnswer()) {
                 //if the role is generic and there is an other role in the entity list: skip
                 if (role != entityTypeName || bus.entities.none { entity.entityType == it.value.value?.entity?.entityType?.name }) {
                     //else send entity question
@@ -78,11 +80,11 @@ internal class ConfiguredStoryHandler(
 
         (bus.step as? Step)?.configuration
             ?.also { step ->
-                if (step.hasCurrentAnwser()) {
+                if (step.hasCurrentAnswer()) {
                     step.send(bus)
                 }
                 val targetIntent = step.targetIntent?.name
-                    ?: (bus.intent.takeIf { !step.hasCurrentAnwser() }?.wrappedIntent()?.name)
+                    ?: (bus.intent.takeIf { !step.hasCurrentAnswer() }?.wrappedIntent()?.name)
                 bus.botDefinition
                     .takeIf { targetIntent != null }
                     ?.findStoryDefinition(targetIntent, bus.applicationId)
@@ -92,12 +94,16 @@ internal class ConfiguredStoryHandler(
                         bus.switchConfiguredStory(this, targetIntent!! /* should not happen */)
                         return@handle
                     }
-                if (step.hasCurrentAnwser()) {
+                if (step.hasCurrentAnswer()) {
                     return@handle
                 }
             }
 
-        configuration.send(bus)
+        val configurationName = BotRepository.getConfigurationByApplicationId(BotApplicationConfigurationKey(bus))?.name
+        val answerContainer =
+            configurationName?.let { name -> configuration.configuredAnswers.firstOrNull { it.botConfiguration == name } }
+                ?: configuration
+        answerContainer.send(bus)
     }
 
     private val BotBus.viewedStories: Set<StoryDefinition>
@@ -218,4 +224,10 @@ internal class ConfiguredStoryHandler(
                 handleSimpleAnswer(container, container.findAnswer(simple) as? SimpleAnswerConfiguration)
             }.invoke()
     }
+
+    override fun equals(other: Any?): Boolean {
+        return (other as? ConfiguredStoryHandler)?.configuration == configuration
+    }
+
+    override fun hashCode(): Int = configuration.hashCode()
 }
