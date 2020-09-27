@@ -108,10 +108,10 @@ internal class Nlp : NlpController {
                         }
 
                         val entityEvaluations = customEntityEvaluations +
-                            nlpResult.entities
-                                .asSequence()
-                                .filter { e -> customEntityEvaluations.none { it.entity == e.entity } }
-                                .map { EntityValue(nlpResult, it) }
+                                nlpResult.entities
+                                    .asSequence()
+                                    .filter { e -> customEntityEvaluations.none { it.entity == e.entity } }
+                                    .map { EntityValue(nlpResult, it) }
                         sentence.state.entityValues.addAll(entityEvaluations)
 
                         dialog.apply {
@@ -154,7 +154,7 @@ internal class Nlp : NlpController {
                 }
             }
 
-            return i ?: botDefinition.findIntent(nlpResult.intent)
+            return i ?: botDefinition.findIntent(nlpResult.intent, sentence.applicationId)
         }
 
         private fun evaluateEntitiesForPrecomputedNlp(nlpQuery: NlpQuery, nlpResult: NlpResult): NlpResult {
@@ -181,7 +181,7 @@ internal class Nlp : NlpController {
                     if (result != null) {
                         nlpResult.copy(
                             entities = result.values
-                                + nlpResult.entities.filter { e ->
+                                    + nlpResult.entities.filter { e ->
                                 result.values.none { it.start == e.start }
                             })
                     } else {
@@ -371,7 +371,8 @@ internal class Nlp : NlpController {
                 //force intents qualifiers if unknown answer
                 if (intentsQualifiers!!.none { it.intent == result.intent }) {
                     return result.copy(
-                        intent = intentsQualifiers.maxByOrNull { it.modifier }?.intent ?: intentsQualifiers.first().intent
+                        intent = intentsQualifiers.maxByOrNull { it.modifier }?.intent
+                            ?: intentsQualifiers.first().intent
                     ).also {
                         logger.warn { "${result.intent} not in intents qualifier $intentsQualifiers - use $it" }
                     }

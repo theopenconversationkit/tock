@@ -910,87 +910,31 @@ export class StoryFeature {
   }
 }
 
-export abstract class BotConfiguredAnswer {
-  protected constructor(public botConfiguration: String,
-                        public answerType: AnswerConfigurationType,
-                        public answers: AnswerConfiguration[]) {
+export class BotConfiguredAnswer {
+  constructor(public botConfiguration: String,
+              public currentType: AnswerConfigurationType,
+              public answers: AnswerConfiguration[]) {
   }
 
   static fromJSONArray(json?: Array<any>): BotConfiguredAnswer[] {
     return json ? json.map(BotConfiguredAnswer.fromJSON) : [];
   }
 
+
   static fromJSON(json: any): BotConfiguredAnswer {
     if (!json) {
       return null;
     }
 
-    const answerType = AnswerConfigurationType[json.answerType as string];
-    switch (answerType) {
-      case AnswerConfigurationType.simple :
-        return BotConfiguredSimpleAnswer.fromJSON(json);
-      case AnswerConfigurationType.script :
-        return BotConfiguredScriptAnswer.fromJSON(json);
-      case AnswerConfigurationType.builtin :
-        return BotConfiguredBuiltinAnswer.fromJSON(json);
-      default:
-        throw new Error('unknown type : ' + json.answerType);
-    }
+    const value = Object.create(BotConfiguredAnswer.prototype);
+    return Object.assign(value, json, {
+      currentType: AnswerConfigurationType[json.currentType],
+      answers: AnswerConfiguration.fromJSONArray(json.answers)
+    });
   }
 
   containedIn(story: StoryDefinitionConfiguration): CustomAnswerContainer {
     return new CustomAnswerContainer(this, story);
-  }
-}
-
-export class BotConfiguredSimpleAnswer extends BotConfiguredAnswer {
-  constructor(
-    public botConfiguration: String,
-    public answers: AnswerConfiguration[]
-  ) {
-    super(botConfiguration, AnswerConfigurationType.simple, answers);
-  }
-
-  static fromJSON(json: any): BotConfiguredSimpleAnswer {
-    const value = Object.create(BotConfiguredSimpleAnswer.prototype);
-    return Object.assign(value, json, {
-      answerType: AnswerConfigurationType.simple,
-      answers: AnswerConfiguration.fromJSONArray(json.answers)
-    });
-  }
-}
-
-export class BotConfiguredScriptAnswer extends BotConfiguredAnswer {
-  constructor(
-    public botConfiguration: String,
-    public answers: AnswerConfiguration[]
-  ) {
-    super(botConfiguration, AnswerConfigurationType.script, answers);
-  }
-
-  static fromJSON(json: any): BotConfiguredScriptAnswer {
-    const value = Object.create(BotConfiguredScriptAnswer.prototype);
-    return Object.assign(value, json, {
-      answerType: AnswerConfigurationType.script,
-      answers: AnswerConfiguration.fromJSONArray(json.answers)
-    });
-  }
-}
-
-export class BotConfiguredBuiltinAnswer extends BotConfiguredAnswer {
-  constructor(
-    public botConfiguration: String,
-    public answers: AnswerConfiguration[]
-  ) {
-    super(botConfiguration, AnswerConfigurationType.builtin, answers);
-  }
-
-  static fromJSON(json: any): BotConfiguredBuiltinAnswer {
-    const value = Object.create(BotConfiguredBuiltinAnswer.prototype);
-    return Object.assign(value, json, {
-      answerType: AnswerConfigurationType.script,
-      answers: AnswerConfiguration.fromJSONArray(json.answers)
-    });
   }
 }
 
@@ -1000,7 +944,7 @@ export class CustomAnswerContainer extends AnswerContainer {
     public botConfigurationAnswer: BotConfiguredAnswer,
     public story: StoryDefinitionConfiguration
   ) {
-    super(botConfigurationAnswer.answerType, botConfigurationAnswer.answers, story.category);
+    super(botConfigurationAnswer.currentType, botConfigurationAnswer.answers, story.category);
   }
 
   containerId(): string {
@@ -1013,7 +957,7 @@ export class CustomAnswerContainer extends AnswerContainer {
 
   changeCurrentType(value: AnswerConfigurationType) {
     super.changeCurrentType(value);
-    this.botConfigurationAnswer.answerType = value;
+    this.botConfigurationAnswer.currentType = value;
   }
 }
 

@@ -33,11 +33,7 @@
                    class="connector-icon"/>
             </span>
         </span>
-        <span class="configuration-select-label" *ngIf="!selectedConfig || selectedConfig === DEFAULT_EMPTY_VALUE">
-          <span class="configuration-name">{{NO_VALUE_SELECTED}}</span>
-        </span>
       </nb-select-label>
-      <nb-option [value]="DEFAULT_EMPTY_VALUE">{{NO_VALUE_SELECTED}}</nb-option>
       <nb-option *ngFor="let config of botApplicationConfigurations" [value]="config">
         <span class="configuration-select-label">
           <span class="configuration-name">{{config.name}}</span>

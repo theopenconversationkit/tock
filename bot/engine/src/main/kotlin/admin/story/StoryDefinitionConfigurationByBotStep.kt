@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
-
-import ai.tock.bot.admin.answer.AnswerConfigurationType
-import ai.tock.bot.admin.answer.DedicatedAnswerConfiguration
+package ai.tock.bot.admin.story
 
 /**
- *
+ * Steps configured for a dedicated [botConfiguration] name.
  */
-class BotConfiguredAnswer(
+data class StoryDefinitionConfigurationByBotStep(
     val botConfiguration: String,
-    val currentType: AnswerConfigurationType,
-    val answers: List<BotAnswerConfiguration>
-) {
-    constructor(conf: DedicatedAnswerConfiguration) : this(
-        conf.botConfiguration,
-        conf.currentType,
-        conf.answers.mapAnswers()
-    )
-}
+    val steps: List<StoryDefinitionConfigurationStep> = emptyList()
+)

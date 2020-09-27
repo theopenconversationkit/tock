@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.definition
+package ai.tock.bot.admin.answer
 
-import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep
+import ai.tock.bot.admin.story.StoryDefinitionAnswersContainer
+import ai.tock.bot.admin.story.StoryDefinitionConfiguration
+import ai.tock.bot.engine.BotBus
 
-data class ConfiguredSteps(
+/**
+ * Answers configured for a dedicated [botConfiguration] name.
+ */
+class DedicatedAnswerConfiguration(
     val botConfiguration: String,
-    val steps: List<StoryDefinitionConfigurationStep> = emptyList()
-)
+    override val currentType: AnswerConfigurationType,
+    override val answers: List<AnswerConfiguration>
+) : StoryDefinitionAnswersContainer {
+    override fun findNextSteps(bus: BotBus, story: StoryDefinitionConfiguration): List<CharSequence> =
+        story.findNextSteps(bus, story)
+}

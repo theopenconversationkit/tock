@@ -151,7 +151,7 @@ internal class DialogflowNlp : NlpController {
                 }
             }
 
-            return i ?: botDefinition.findIntent(nlpResult.intent)
+            return i ?: botDefinition.findIntent(nlpResult.intent, sentence.applicationId)
         }
 
         private fun findKeyword(sentence: String?): Intent? {
@@ -216,7 +216,7 @@ internal class DialogflowNlp : NlpController {
                 toQueryContext(),
                 NlpQueryState(
                     dialog.state.nextActionState?.states
-                            ?: listOfNotNull(dialog.currentStory?.definition?.mainIntent()?.name).toSet()
+                        ?: listOfNotNull(dialog.currentStory?.definition?.mainIntent()?.name).toSet()
                 )
             )
         }
@@ -242,7 +242,8 @@ internal class DialogflowNlp : NlpController {
                 //force intents qualifiers if unknown answer
                 if (intentsQualifiers!!.none { it.intent == result.intent }) {
                     return result.copy(
-                        intent = intentsQualifiers.maxByOrNull { it.modifier }?.intent ?: intentsQualifiers.first().intent
+                        intent = intentsQualifiers.maxByOrNull { it.modifier }?.intent
+                            ?: intentsQualifiers.first().intent
                     ).also {
                         logger.warn { "${result.intent} not in intents qualifier $intentsQualifiers - use $it" }
                     }

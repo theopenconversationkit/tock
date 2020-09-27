@@ -17,7 +17,7 @@
 package ai.tock.bot.admin.model
 
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
-import ai.tock.bot.definition.ConfiguredSteps
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationByBotStep
 
 
 data class BotConfiguredSteps(
@@ -25,7 +25,7 @@ data class BotConfiguredSteps(
     val steps: List<BotStoryDefinitionConfigurationStep> = emptyList()
 )
 
-fun List<ConfiguredSteps>.mapSteps(story: StoryDefinitionConfiguration): List<BotConfiguredSteps> =
+fun List<StoryDefinitionConfigurationByBotStep>.mapSteps(story: StoryDefinitionConfiguration): List<BotConfiguredSteps> =
     map {
         BotConfiguredSteps(
             it.botConfiguration,

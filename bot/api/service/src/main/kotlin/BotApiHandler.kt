@@ -16,6 +16,7 @@
 
 package ai.tock.bot.api.service
 
+import ai.tock.bot.admin.bot.BotApplicationConfigurationKey
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.api.model.BotResponse
 import ai.tock.bot.api.model.UserRequest
@@ -61,7 +62,8 @@ private val timeoutInSeconds: Long = longProperty("tock_api_timout_in_s", 10)
 private class WSHolder(
     @Volatile
     private var response: ResponseData? = null,
-    private val latch: CountDownLatch = CountDownLatch(1)) {
+    private val latch: CountDownLatch = CountDownLatch(1)
+) {
 
     fun receive(response: ResponseData) {
         this.response = response
@@ -80,7 +82,8 @@ private val wsRepository: Cache<String, WSHolder> =
 
 internal class BotApiHandler(
     private val provider: BotApiDefinitionProvider,
-    configuration: BotConfiguration) {
+    configuration: BotConfiguration
+) {
 
     private val logger = KotlinLogging.logger {}
 
@@ -201,15 +204,15 @@ internal class BotApiHandler(
 
             //switch story if new story
             if (response.storyId != request.storyId) {
-                botDefinition.stories.find { it.id == response.storyId }
-                    ?.also {
+                botDefinition.findStoryDefinitionById(response.storyId, request.context.applicationId)
+                    .also {
                         switchStory(it)
                     }
 
             }
             //set step
             if (response.step != null) {
-                step = story.definition.steps.find { it.name == response.step }
+                step = story.definition.allSteps().find { it.name == response.step }
             }
         }
     }
@@ -249,7 +252,9 @@ internal class BotApiHandler(
     private fun BotBus.toAction(sentence: Sentence): Action {
         val text = translateText(sentence.text)
         if (sentence.suggestions.isNotEmpty() && text != null) {
-            val message = underlyingConnector.addSuggestions(text, sentence.suggestions.mapNotNull { translateText(it.title) }).invoke(this)
+            val message =
+                underlyingConnector.addSuggestions(text, sentence.suggestions.mapNotNull { translateText(it.title) })
+                    .invoke(this)
             if (message != null) {
                 return SendSentence(
                     botId,
@@ -332,10 +337,12 @@ private fun BotBus.translateText(i18n: I18nText?): TranslatedSequence? =
         i18n.toBeTranslated -> translate(i18n.text, i18n.args)
         else -> Translator.formatMessage(
             i18n.text,
-            I18nContext(userLocale,
+            I18nContext(
+                userLocale,
                 userInterfaceType,
                 targetConnectorType.id,
-                contextId),
+                contextId
+            ),
             i18n.args
         ).raw
     }

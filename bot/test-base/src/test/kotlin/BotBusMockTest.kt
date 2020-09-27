@@ -74,7 +74,7 @@ class BotBusMockTest {
 
         every { botDefinition.defaultDelay(any()) } returns 1000
         every { botDefinition.botId } returns "botId"
-        every { botDefinition.findIntent(any()) } returns intent
+        every { botDefinition.findIntent(any(), any()) } returns intent
 
         every { testContext.storyHandlerListeners } returns mutableListOf()
 

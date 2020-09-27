@@ -26,12 +26,9 @@ import {BotConfigurationService} from '../../../core/bot-configuration.service';
 })
 export class SelectBotConfigurationDialogComponent implements OnInit {
 
-  NO_VALUE_SELECTED = 'No value selected...';
-  DEFAULT_EMPTY_VALUE = BotConfiguration.fromJSON('{}');
-
   @Input()
   title: string;
-  selectedConfig: BotConfiguration = this.DEFAULT_EMPTY_VALUE;
+  selectedConfig: BotConfiguration;
 
   botApplicationConfigurations: BotConfiguration[];
   valid = true;
@@ -85,7 +82,7 @@ export class SelectBotConfigurationDialogComponent implements OnInit {
   }
 
   submit() {
-    this.valid = this.selectedConfig && this.selectedConfig !== this.DEFAULT_EMPTY_VALUE;
+    this.valid = this.selectedConfig != null;
     if (this.valid) {
       this.dialogRef.close(this.selectedConfig);
     }

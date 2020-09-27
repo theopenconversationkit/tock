@@ -19,8 +19,6 @@ import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange,
 import {
   AnswerConfigurationType,
   BotConfiguredAnswer,
-  BotConfiguredScriptAnswer,
-  BotConfiguredSimpleAnswer,
   BotConfiguredSteps,
   CreateStoryRequest,
   IntentName,
@@ -318,9 +316,7 @@ export class StoryComponent implements OnInit, OnChanges {
       const answerConfigurations = this.story.answers
         .filter(answer => answer.answerType === this.story.currentType)
         .map(answer => answer.duplicate(this.bot));
-      const configuredAnswer = this.story.currentType === AnswerConfigurationType.simple ?
-        new BotConfiguredSimpleAnswer(selectedConfig.name, answerConfigurations) :
-        new BotConfiguredScriptAnswer(selectedConfig.name, answerConfigurations);
+      const configuredAnswer = new BotConfiguredAnswer(selectedConfig.name, this.story.currentType, answerConfigurations);
       this.story.configuredAnswers.push(configuredAnswer);
     });
   }

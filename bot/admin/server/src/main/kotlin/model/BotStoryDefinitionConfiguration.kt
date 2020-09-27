@@ -84,7 +84,7 @@ data class BotStoryDefinitionConfiguration(
         story.configurationName,
         story.features,
         story.tags,
-        story.configuredAnswers.mapAnswers(),
+        story.configuredAnswers.map { BotConfiguredAnswer(it) },
         story.configuredSteps.mapSteps(story),
         story._id
     )

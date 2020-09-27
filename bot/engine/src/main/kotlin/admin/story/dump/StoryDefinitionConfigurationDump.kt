@@ -18,8 +18,8 @@ package ai.tock.bot.admin.story.dump
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
-import ai.tock.bot.definition.ConfiguredSteps
-import ai.tock.bot.definition.ConfiguredAnswer
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationByBotStep
+import ai.tock.bot.admin.answer.DedicatedAnswerConfiguration
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.definition.StoryTag
 import ai.tock.shared.defaultNamespace
@@ -100,11 +100,11 @@ data class StoryDefinitionConfigurationDump(
     /**
      * Answers by bot application configuration
      */
-    val configuredAnswers: List<ConfiguredAnswer> = emptyList(),
+    val configuredAnswers: List<DedicatedAnswerConfiguration> = emptyList(),
     /**
      * Steps by bot application configuration
      */
-    val configuredSteps: List<ConfiguredSteps> = emptyList()
+    val configuredSteps: List<StoryDefinitionConfigurationByBotStep> = emptyList()
 ) {
 
     constructor(def: StoryDefinitionConfiguration) :

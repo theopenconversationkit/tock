@@ -165,7 +165,8 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     /**
      * Finds the story definition of this handler.
      */
-    open fun findStoryDefinition(bus: BotBus): StoryDefinition? = bus.botDefinition.findStoryByStoryHandler(this)
+    open fun findStoryDefinition(bus: BotBus): StoryDefinition? =
+        bus.botDefinition.findStoryByStoryHandler(this, bus.applicationId)
 
     /**
      * Handles the action and switches the context to the underlying story definition.

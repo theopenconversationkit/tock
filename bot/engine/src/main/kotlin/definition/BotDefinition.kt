@@ -58,7 +58,7 @@ interface BotDefinition : I18nKeyProvider {
          * Finds an intent from an intent name and a list of [StoryDefinition].
          * Is no valid intent found, returns [unknown].
          */
-        fun findIntent(stories: List<StoryDefinition>, intent: String): Intent {
+        internal fun findIntent(stories: List<StoryDefinition>, intent: String): Intent {
             val targetIntent = Intent(intent)
             return if (stories.any { it.supportIntent(targetIntent) }
                 || stories.any { it.allSteps().any { s -> s.supportIntent(targetIntent) } }) {
@@ -76,7 +76,7 @@ interface BotDefinition : I18nKeyProvider {
          * Finds a [StoryDefinition] from a list of [StoryDefinition] and an intent name.
          * Is no valid [StoryDefinition] found, returns the [unknownStory].
          */
-        fun findStoryDefinition(
+        internal fun findStoryDefinition(
             stories: List<StoryDefinition>,
             intent: String?,
             unknownStory: StoryDefinition,
@@ -115,30 +115,30 @@ interface BotDefinition : I18nKeyProvider {
     /**
      * Finds an [Intent] from an intent name.
      */
-    fun findIntent(intent: String): Intent {
+    fun findIntent(intent: String, applicationId: String): Intent {
         return findIntent(stories, intent)
     }
 
     /**
      * Finds a [StoryDefinition] from an [Intent].
      */
-    fun findStoryDefinition(intent: IntentAware?): StoryDefinition {
+    fun findStoryDefinition(intent: IntentAware?, applicationId: String): StoryDefinition {
         return if (intent is StoryDefinition) {
             intent
         } else {
-            findStoryDefinition(intent?.wrappedIntent()?.name)
+            findStoryDefinition(intent?.wrappedIntent()?.name, applicationId)
         }
     }
 
     /**
      * Search story by storyId.
      */
-    fun findStoryDefinitionById(storyId: String): StoryDefinition = stories.find { it.id == storyId } ?: unknownStory
+    fun findStoryDefinitionById(storyId: String, applicationId: String): StoryDefinition = stories.find { it.id == storyId } ?: unknownStory
 
     /**
      * Search story by storyHandler.
      */
-    fun findStoryByStoryHandler(storyHandler: StoryHandler): StoryDefinition? =
+    fun findStoryByStoryHandler(storyHandler: StoryHandler, applicationId: String): StoryDefinition? =
         stories.find { it.storyHandler == storyHandler }
 
     /**
@@ -147,7 +147,7 @@ interface BotDefinition : I18nKeyProvider {
      * @param intent the intent name
      * @param applicationId the optional applicationId
      */
-    fun findStoryDefinition(intent: String?, applicationId: String? = null): StoryDefinition {
+    fun findStoryDefinition(intent: String?, applicationId: String): StoryDefinition {
         return findStoryDefinition(stories, intent, unknownStory, keywordStory)
     }
 

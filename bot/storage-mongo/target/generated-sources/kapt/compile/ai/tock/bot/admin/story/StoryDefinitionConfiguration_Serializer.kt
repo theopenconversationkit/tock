@@ -121,7 +121,7 @@ internal class StoryDefinitionConfiguration_Serializer :
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.List::class.java,
-                serializers.config.typeFactory.constructType(ai.tock.bot.definition.ConfiguredAnswer::class.java)
+                serializers.config.typeFactory.constructType(ai.tock.bot.admin.answer.DedicatedAnswerConfiguration::class.java)
                 ),
                 true,
                 null
@@ -132,7 +132,7 @@ internal class StoryDefinitionConfiguration_Serializer :
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.List::class.java,
-                serializers.config.typeFactory.constructType(ai.tock.bot.definition.ConfiguredSteps::class.java)
+                serializers.config.typeFactory.constructType(ai.tock.bot.admin.story.StoryDefinitionConfigurationByBotStep::class.java)
                 ),
                 true,
                 null

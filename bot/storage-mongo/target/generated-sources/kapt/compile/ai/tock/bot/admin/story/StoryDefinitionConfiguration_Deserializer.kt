@@ -2,8 +2,7 @@ package ai.tock.bot.admin.story
 
 import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType
-import ai.tock.bot.definition.ConfiguredAnswer
-import ai.tock.bot.definition.ConfiguredSteps
+import ai.tock.bot.admin.answer.DedicatedAnswerConfiguration
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.definition.StoryTag
 import com.fasterxml.jackson.core.JsonParser
@@ -70,9 +69,9 @@ internal class StoryDefinitionConfiguration_Deserializer :
             var __id_set : Boolean = false
             var _tags_: MutableList<StoryTag>? = null
             var _tags_set : Boolean = false
-            var _configuredAnswers_: MutableList<ConfiguredAnswer>? = null
+            var _configuredAnswers_: MutableList<DedicatedAnswerConfiguration>? = null
             var _configuredAnswers_set : Boolean = false
-            var _configuredSteps_: MutableList<ConfiguredSteps>? = null
+            var _configuredSteps_: MutableList<StoryDefinitionConfigurationByBotStep>? = null
             var _configuredSteps_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
@@ -300,10 +299,11 @@ internal class StoryDefinitionConfiguration_Deserializer :
         private val _tags__reference: TypeReference<List<StoryTag>> = object :
                 TypeReference<List<StoryTag>>() {}
 
-        private val _configuredAnswers__reference: TypeReference<List<ConfiguredAnswer>> = object :
-                TypeReference<List<ConfiguredAnswer>>() {}
+        private val _configuredAnswers__reference: TypeReference<List<DedicatedAnswerConfiguration>>
+                = object : TypeReference<List<DedicatedAnswerConfiguration>>() {}
 
-        private val _configuredSteps__reference: TypeReference<List<ConfiguredSteps>> = object :
-                TypeReference<List<ConfiguredSteps>>() {}
+        private val _configuredSteps__reference:
+                TypeReference<List<StoryDefinitionConfigurationByBotStep>> = object :
+                TypeReference<List<StoryDefinitionConfigurationByBotStep>>() {}
     }
 }
