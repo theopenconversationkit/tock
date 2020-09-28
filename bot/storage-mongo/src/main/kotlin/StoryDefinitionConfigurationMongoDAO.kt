@@ -23,7 +23,6 @@ import ai.tock.bot.admin.story.StoryDefinitionConfigurationSummary
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationSummaryRequest
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.BotId
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Category
-import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.ConfigurationName
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.CurrentType
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Intent
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Name
@@ -88,7 +87,7 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         try {
             col.ensureIndex(Namespace, BotId)
             col.ensureIndex(Namespace, BotId, Intent.name_)
-            col.ensureUniqueIndex(Namespace, BotId, Intent.name_, ConfigurationName)
+            col.ensureUniqueIndex(Namespace, BotId, Intent.name_)
 
             historyCol.ensureIndex(Date)
         } catch (e: Exception) {
