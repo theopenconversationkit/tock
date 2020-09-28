@@ -147,8 +147,9 @@ pendant et après leur trajet.
 >services à bord (le bar, les prises électriques, etc.). Il permet aussi de parler avec un agent SNCF tout 
 >en restant dans la même conversation.
 
-Présent sur la page Facebook _TGV INOUI_, l'assistant qui s'appuie sur Tock est également accessible depuis le 
-SMS de rappel E-Billet ou directement depuis l'application.
+Présent sur la page Facebook _TGV INOUI_ et le 
+[portail Wifi à Bord](https://www.sncf.com/fr/offres-voyageurs/tgv-inoui/connectez-vous-pendant-votre-voyage), l'assistant 
+s'appuie sur Tock et le [`tock-react-kit`](../user/guides/canaux.md#react).
 
 <img alt="Mon Assistant TGV INOUI" 
 src="https://www.thetrainline.com/cmsmedia/cms/10783/tgv-inoui-interieur.jpg?width=500&height=333.5" 
@@ -157,7 +158,8 @@ style="width: 500px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rg
 * **Nom :** _[Mon Assistant TGV INOUI](https://www.facebook.com/TGVINOUI/)_
 * **Date de naissance :** en production depuis 2019
 * **Domaine :** assistance & info voyageur (info quai, infos voyage en cours, services à bord), relai vers un agent
-* **Canaux :** texte, sur Messenger ([_TGV INOUI_](https://www.facebook.com/TGVINOUI/))
+* **Canaux :** texte, sur le [portail Wifi à Bord](https://www.sncf.com/fr/offres-voyageurs/tgv-inoui/connectez-vous-pendant-votre-voyage) 
+et Messenger ([_TGV INOUI_](https://www.facebook.com/TGVINOUI/))
 
 ## _L'Agent virtuel SNCF_
 
@@ -165,16 +167,19 @@ L'_[Agent virtuel SNCF](https://www.facebook.com/SNCFOFFICIEL/)_ présente de ma
 voyageur et les éventuelles perturbations sur tous les trains (TGV, IC, TER, Eurostar...).
 
 > On peut interroger le bot par numéro de train, dossier voyageur, prochains départs, etc. pour obtenir les dernières 
->informations et l'état du trafic.
+>informations et l'état du trafic, ou encore parler à un Agent.
 
-Accessible via la page Facebook de la SNCF, l'_Agent virtuel_ est basé sur Tock.
+Accessible sur le site Web [_sncf.com_](https://www.sncf.com/fr/itineraire-reservation/info-trafic/), la page Facebook 
+et la page Twitter de la SNCF, l'_Agent virtuel_ est basé sur Tock et utilise le [`tock-react-kit`](../user/guides/canaux.md#react) 
+pour l'intégration Web.
 
 ![L'Agent virtuel SNCF](https://pbs.twimg.com/media/D_HqJrjXYAEOrhE.jpg:large)
 
 * **Nom :** _[Agent virtuel SNCF](https://www.facebook.com/SNCFOFFICIEL/)_
 * **Date de naissance :** en production depuis 2019
 * **Domaine :** voyage & transport (état du trafic, travaux, prochains départs), relai vers un agent
-* **Canaux :** texte, sur Messenger ([_SNCFOFFICIEL_](https://www.facebook.com/SNCFOFFICIEL)) et 
+* **Canaux :** texte, sur [_sncf.com_](https://www.sncf.com/fr/itineraire-reservation/info-trafic/) 
+([lien direct](https://bot.assistant.sncf/)), Messenger ([_SNCFOFFICIEL_](https://www.facebook.com/SNCFOFFICIEL)) et 
 Twitter ([_@sncf_](https://twitter.com/SNCF))
 
 ## _Eve_, le bot interne e-voyageurs

@@ -143,8 +143,8 @@ during and after their journey.
 > The chatbot can tell you all about the service status, train departure platforms, customer seats, onboard services 
 >(bar, electrical outlets, etc.). It also allows you to talk with a SNCF agents while remaining in the same conversation.
 
-Located on the _TGV INOUI_ Facebook page, the assistant based on Tock is also accessible from the E-Ticket reminder SMS 
- or directly from the application.
+Located on the _TGV INOUI_ Facebook page and the [WiFi Portal](https://www.sncf.com/en/passenger-offer/tgv-inoui/stay-connected-during-your-journey) 
+aboard the train, the assistant is based on Tock and the [`tock-react-kit`](../dev/connectors.md#react).
 
 <img alt="Mon Assistant TGV INOUI" 
 src="https://www.thetrainline.com/cmsmedia/cms/10783/tgv-inoui-interieur.jpg?width=500&height=333.5" 
@@ -154,7 +154,8 @@ style="width: 500px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rg
 * **Date of birth:** in production since 2019
 * **Field:** assistance & passenger information (dock information, current travel information, on-board services), 
 relay to an agent
-* **Channels:** text, on Messenger ([_TGV INOUI_](https://www.facebook.com/TGVINOUI/))
+* **Channels:** text, on Messenger ([_TGV INOUI_](https://www.facebook.com/TGVINOUI/)) and the 
+[WiFi Portal](https://www.sncf.com/en/passenger-offer/tgv-inoui/stay-connected-during-your-journey) aboard the train
 
 ## _L' Agent virtuel SNCF_
 
@@ -163,14 +164,16 @@ and any disruptions on all trains (TGV, Intercites, TER, Eurostar, etc.) in a co
 
 > Query the bot by train number, passenger file, next departures, etc. to get the latest information and traffic status.
 
-Accessible via the SNCF Facebook page, the _Agent virtuel_ is based on Tock.
+Accessible via the SNCF Facebook page, Twitter and [_sncf.com_](https://www.sncf.com/fr/itineraire-reservation/info-trafic/), 
+the _Agent virtuel_ leverages Tock and the [`tock-react-kit`](../dev/connectors.md#react).
 
 ![L'Agent virtuel SNCF](https://pbs.twimg.com/media/D_HqJrjXYAEOrhE.jpg:large)
 
 * **Name:** _[Agent virtuel SNCF](https://www.facebook.com/SNCFOFFICIEL/)_
 * **Date of birth:** in production since 2019
 * **Field:** travel & transport (traffic situation, works, next departures), relay to an agent
-* **Channels:** text, on Messenger ([_SNCFOFFICIEL_](https://www.facebook.com/SNCFOFFICIEL)) 
+* **Channels:** text, on [_sncf.com_](https://www.sncf.com/fr/itineraire-reservation/info-trafic/) 
+([direct link](https://bot.assistant.sncf/)), Messenger ([_SNCFOFFICIEL_](https://www.facebook.com/SNCFOFFICIEL))
 and Twitter ([_@sncf_](https://twitter.com/SNCF))
 
 ## _Eve_, the e-voyageurs internal assistant
