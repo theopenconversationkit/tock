@@ -5,10 +5,21 @@ in addition to the main documentation and demo instance.
 
 ## Conferences / video (in French)
 
+* _[Tock & Melusine](https://fr.slideshare.net/FrancoisN0/tock-mlusine-rex-ia-open-source-aiparis-2020)_ @ _AI Paris_ 
+**2020** (SNCF & MAIF)
+[🔳 slides (French)](https://fr.slideshare.net/FrancoisN0/tock-mlusine-rex-ia-open-source-aiparis-2020)
+
+<a href="https://fr.slideshare.net/FrancoisN0/tock-mlusine-rex-ia-open-source-aiparis-2020"
+target="tock_aiparis">
+<img alt="Tock & Melusine @ AI Paris 2020" 
+src="https://doc.tock.ai/fr/images/aiparis2020rex.jpg" 
+style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
+</a>
+
 * _[Conversational AI & Open Source](https://www.youtube.com/watch?v=fTy6uit7Ejg)_ @ _Paris Open Source Summit_ **2019**  
-(SNCF REX & guests from EDF, Enedis, Orange, SogetiLabs, TOSIT)  
+(SNCF & guests from EDF, Enedis, Orange, SogetiLabs, TOSIT.fr)  
 [📽️ 30 min (French)](https://www.youtube.com/watch?v=fTy6uit7Ejg) / 
-[🔳 slides (English)](https://www.slideshare.net/OpenWorldForum/ossparis19-conversationnel-open-source-tat-des-lieux-et-prochains-dfis)
+[🔳 slides (English)](https://fr.slideshare.net/FrancoisN0/conversational-ai-open-source-ossparis19)
 
 <a href="https://www.youtube.com/watch?v=fTy6uit7Ejg"
 target="tock_poss">
