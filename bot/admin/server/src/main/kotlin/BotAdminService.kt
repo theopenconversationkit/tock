@@ -938,8 +938,8 @@ object BotAdminService {
         oldStory: StoryDefinitionConfiguration?
     ): StoryDefinitionConfigurationStep =
         StoryDefinitionConfigurationStep(
-            name.takeUnless { it.isBlank() }
-                ?: "${intent?.name}${(entity?.value ?: entity?.entityRole)?.let { "_$it" }}_$level",
+            name.takeIf { it.startsWith("##") }
+                ?: "##${Dice.newId()}_${intent?.name}_${(entity?.value ?: entity?.entityRole)?.let { "_$it" }}_$level",
             intent?.takeIf { it.name.isNotBlank() },
             targetIntent?.takeIf { it.name.isNotBlank() },
             answers.mapNotNull { botAnswerConfiguration ->

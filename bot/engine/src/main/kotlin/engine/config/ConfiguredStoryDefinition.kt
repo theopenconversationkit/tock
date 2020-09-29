@@ -33,7 +33,7 @@ import ai.tock.translator.UserInterfaceType
 internal class ConfiguredStoryDefinition(
     definition: BotDefinitionWrapper,
     val configuration: StoryDefinitionConfiguration,
-    val botApplicationConfigurationKey: BotApplicationConfigurationKey? = null
+    private val botApplicationConfigurationKey: BotApplicationConfigurationKey? = null
 ) : StoryDefinition {
 
     val answerType: AnswerConfigurationType = configuration.currentType
