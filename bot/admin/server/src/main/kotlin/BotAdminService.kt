@@ -1163,8 +1163,8 @@ object BotAdminService {
         val oldConf = oldStory?.configuredAnswers?.find { it.botConfiguration == botConfiguration }
         return DedicatedAnswerConfiguration(
             botConfiguration,
-            oldConf?.currentType ?: simple,
-            oldConf?.answers ?: emptyList()
+            currentType,
+            answers.mapNotNull { it.toConfiguration(botId, oldConf?.answers) }
         )
     }
 
