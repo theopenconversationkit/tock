@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import java.util.Locale
 import kotlin.Boolean
+import kotlin.Double
 import kotlin.String
 import kotlin.collections.Map
 import kotlin.collections.MutableMap
@@ -47,6 +48,8 @@ internal class ApplicationDefinition_Deserializer : JsonDeserializer<Application
             var _useEntityModels_set : Boolean = false
             var _supportSubEntities_: Boolean? = null
             var _supportSubEntities_set : Boolean = false
+            var _unknownIntentThreshold_: Double? = null
+            var _unknownIntentThreshold_set : Boolean = false
             var __id_: Id<ApplicationDefinition>? = null
             var __id_set : Boolean = false
             var _token_ : JsonToken? = currentToken
@@ -109,6 +112,11 @@ internal class ApplicationDefinition_Deserializer : JsonDeserializer<Application
                              else p.booleanValue;
                             _supportSubEntities_set = true
                             }
+                    "unknownIntentThreshold" -> {
+                            _unknownIntentThreshold_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.doubleValue;
+                            _unknownIntentThreshold_set = true
+                            }
                     "_id" -> {
                             __id_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(__id__reference);
@@ -125,13 +133,14 @@ internal class ApplicationDefinition_Deserializer : JsonDeserializer<Application
             return if(_name_set && _label_set && _namespace_set && _intents_set &&
                     _supportedLocales_set && _intentStatesMap_set && _nlpEngineType_set &&
                     _mergeEngineTypes_set && _useEntityModels_set && _supportSubEntities_set &&
-                    __id_set)
+                    _unknownIntentThreshold_set && __id_set)
                     ApplicationDefinition(name = _name_!!, label = _label_!!, namespace =
                             _namespace_!!, intents = _intents_!!, supportedLocales =
                             _supportedLocales_!!, intentStatesMap = _intentStatesMap_!!,
                             nlpEngineType = _nlpEngineType_!!, mergeEngineTypes =
                             _mergeEngineTypes_!!, useEntityModels = _useEntityModels_!!,
-                            supportSubEntities = _supportSubEntities_!!, _id = __id_!!)
+                            supportSubEntities = _supportSubEntities_!!, unknownIntentThreshold =
+                            _unknownIntentThreshold_!!, _id = __id_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_name_set)
@@ -154,6 +163,8 @@ internal class ApplicationDefinition_Deserializer : JsonDeserializer<Application
                     map[parameters.getValue("useEntityModels")] = _useEntityModels_
                     if(_supportSubEntities_set)
                     map[parameters.getValue("supportSubEntities")] = _supportSubEntities_
+                    if(_unknownIntentThreshold_set)
+                    map[parameters.getValue("unknownIntentThreshold")] = _unknownIntentThreshold_
                     if(__id_set)
                     map[parameters.getValue("_id")] = __id_ 
                     primaryConstructor.callBy(map) 
@@ -176,7 +187,9 @@ internal class ApplicationDefinition_Deserializer : JsonDeserializer<Application
                 primaryConstructor.findParameterByName("nlpEngineType")!!, "mergeEngineTypes" to
                 primaryConstructor.findParameterByName("mergeEngineTypes")!!, "useEntityModels" to
                 primaryConstructor.findParameterByName("useEntityModels")!!, "supportSubEntities" to
-                primaryConstructor.findParameterByName("supportSubEntities")!!, "_id" to
+                primaryConstructor.findParameterByName("supportSubEntities")!!,
+                "unknownIntentThreshold" to
+                primaryConstructor.findParameterByName("unknownIntentThreshold")!!, "_id" to
                 primaryConstructor.findParameterByName("_id")!!) }
 
         private val _intents__reference: TypeReference<Set<Id<IntentDefinition>>> = object :

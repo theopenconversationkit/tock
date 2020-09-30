@@ -3,6 +3,7 @@ package ai.tock.nlp.front.shared.config
 import ai.tock.nlp.core.NlpEngineType
 import java.util.Locale
 import kotlin.Boolean
+import kotlin.Double
 import kotlin.String
 import kotlin.Suppress
 import kotlin.collections.Collection
@@ -37,6 +38,8 @@ private val __UseEntityModels: KProperty1<ApplicationDefinition, Boolean?>
     get() = ApplicationDefinition::useEntityModels
 private val __SupportSubEntities: KProperty1<ApplicationDefinition, Boolean?>
     get() = ApplicationDefinition::supportSubEntities
+private val __UnknownIntentThreshold: KProperty1<ApplicationDefinition, Double?>
+    get() = ApplicationDefinition::unknownIntentThreshold
 private val ___id: KProperty1<ApplicationDefinition, Id<ApplicationDefinition>?>
     get() = ApplicationDefinition::_id
 class ApplicationDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -71,6 +74,9 @@ class ApplicationDefinition_<T>(previous: KPropertyPath<T, *>?, property: KPrope
     val supportSubEntities: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__SupportSubEntities)
 
+    val unknownIntentThreshold: KPropertyPath<T, Double?>
+        get() = KPropertyPath(this,__UnknownIntentThreshold)
+
     val _id: KPropertyPath<T, Id<ApplicationDefinition>?>
         get() = KPropertyPath(this,___id)
 
@@ -96,6 +102,8 @@ class ApplicationDefinition_<T>(previous: KPropertyPath<T, *>?, property: KPrope
             get() = __UseEntityModels
         val SupportSubEntities: KProperty1<ApplicationDefinition, Boolean?>
             get() = __SupportSubEntities
+        val UnknownIntentThreshold: KProperty1<ApplicationDefinition, Double?>
+            get() = __UnknownIntentThreshold
         val _id: KProperty1<ApplicationDefinition, Id<ApplicationDefinition>?>
             get() = ___id}
 }
@@ -132,6 +140,9 @@ class ApplicationDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KPr
 
     val supportSubEntities: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__SupportSubEntities)
+
+    val unknownIntentThreshold: KPropertyPath<T, Double?>
+        get() = KPropertyPath(this,__UnknownIntentThreshold)
 
     val _id: KPropertyPath<T, Id<ApplicationDefinition>?>
         get() = KPropertyPath(this,___id)
@@ -172,6 +183,9 @@ class ApplicationDefinition_Map<T, K>(previous: KPropertyPath<T, *>?, property: 
 
     val supportSubEntities: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__SupportSubEntities)
+
+    val unknownIntentThreshold: KPropertyPath<T, Double?>
+        get() = KPropertyPath(this,__UnknownIntentThreshold)
 
     val _id: KPropertyPath<T, Id<ApplicationDefinition>?>
         get() = KPropertyPath(this,___id)

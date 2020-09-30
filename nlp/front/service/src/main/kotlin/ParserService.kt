@@ -20,7 +20,6 @@ import ai.tock.nlp.core.BuildContext
 import ai.tock.nlp.core.CallContext
 import ai.tock.nlp.core.Entity
 import ai.tock.nlp.core.EntityEvaluationContext
-import ai.tock.nlp.core.Intent
 import ai.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT_NAME
 import ai.tock.nlp.core.ModelCore
 import ai.tock.nlp.core.NlpCore
@@ -48,6 +47,7 @@ import ai.tock.nlp.front.shared.parser.ParseResult
 import ai.tock.nlp.front.shared.parser.ParsedEntityValue
 import ai.tock.nlp.front.shared.value.ValueTransformer
 import ai.tock.shared.Executor
+import ai.tock.shared.TOCK_NAMESPACE
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.error
@@ -179,7 +179,7 @@ object ParserService : Parser {
                 logger.warn { "empty query after format - $query" }
                 return ParseResult(
                     UNKNOWN_INTENT_NAME,
-                    application.namespace,
+                    TOCK_NAMESPACE,
                     query.context.language,
                     emptyList(),
                     emptyList(),
@@ -250,9 +250,11 @@ object ParserService : Parser {
             val intentSelector = IntentSelectorService.selector(data)
             val result = core.parse(callContext, q, intentSelector)
                 .run {
+                    val realIntent =
+                        if (intentsQualifiers.isEmpty() && intentProbability < application.unknownIntentThreshold) UNKNOWN_INTENT_NAME else intent
                     ParseResult(
-                        intent.withoutNamespace(),
-                        intent.namespace(),
+                        realIntent.withoutNamespace(),
+                        realIntent.namespace(),
                         language,
                         entities.map {
                             ParsedEntityValue(
@@ -276,7 +278,9 @@ object ParserService : Parser {
                 }
 
             fun toClassifiedSentence(): ClassifiedSentence {
-                val intentId = config.getIntentIdByQualifiedName(result.intent.withNamespace(result.intentNamespace))!!
+                val intentName = result.intent.withNamespace(result.intentNamespace)
+                val intentId = config.getIntentIdByQualifiedName(intentName)
+                    ?: error("unknown intent: $intentName")
                 return ClassifiedSentence(
                     result,
                     language,
@@ -390,7 +394,7 @@ object ParserService : Parser {
 
     private fun loadApplication(namespace: String, applicationName: String): ApplicationDefinition =
         ConfigurationRepository.getApplicationByNamespaceAndName(namespace, applicationName)
-                ?: throw UnknownApplicationException(namespace, applicationName)
+            ?: throw UnknownApplicationException(namespace, applicationName)
 
     override fun healthcheck(): Boolean {
         return core.healthcheck()

@@ -67,6 +67,10 @@ data class ApplicationDefinition(
      */
     val supportSubEntities: Boolean = false,
     /**
+     * Unknown intent threshold level.
+     */
+    val unknownIntentThreshold: Double = 0.0,
+    /**
      * The id of the app.
      */
     val _id: Id<ApplicationDefinition> = newId()

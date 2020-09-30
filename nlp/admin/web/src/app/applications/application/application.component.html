@@ -57,6 +57,12 @@
           </mat-form-field>
         </p>
         <p>
+          <mat-form-field>
+            <input matInput type="number" placeholder="Unknown intent threshold" [(ngModel)]="application.unknownIntentThreshold" min="0"
+                   max="1" matTooltip="Number between 0 and 1 - if the probability of the intent is below the threshold, unknown intent is returned">
+          </mat-form-field>
+        </p>
+        <p>
           <nb-checkbox class="separator" [(ngModel)]="application.mergeEngineTypes"
                        nbTooltip="If selected, this option uses built-in entity models (like dates) in conjunction with standard NER">
             Use entity models

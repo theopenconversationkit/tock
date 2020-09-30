@@ -75,6 +75,9 @@ internal class ApplicationDefinition_Serializer :
         gen.writeFieldName("supportSubEntities")
         val _supportSubEntities_ = value.supportSubEntities
         gen.writeBoolean(_supportSubEntities_)
+        gen.writeFieldName("unknownIntentThreshold")
+        val _unknownIntentThreshold_ = value.unknownIntentThreshold
+        gen.writeNumber(_unknownIntentThreshold_)
         gen.writeFieldName("_id")
         val __id_ = value._id
         serializers.defaultSerializeValue(__id_, gen)

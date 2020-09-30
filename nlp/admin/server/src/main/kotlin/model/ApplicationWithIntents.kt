@@ -64,6 +64,10 @@ data class ApplicationWithIntents(
      */
     val supportSubEntities: Boolean = false,
     /**
+     * Unknown intent threshold level.
+     */
+    val unknownIntentThreshold: Double = 0.0,
+    /**
      * The id of the app.
      */
     val _id: Id<ApplicationDefinition>?
@@ -80,6 +84,7 @@ data class ApplicationWithIntents(
                 application.mergeEngineTypes,
                 application.useEntityModels,
                 application.supportSubEntities,
+                application.unknownIntentThreshold,
                 application._id
             )
 
@@ -95,6 +100,7 @@ data class ApplicationWithIntents(
             mergeEngineTypes,
             useEntityModels,
             supportSubEntities,
+            unknownIntentThreshold,
             _id ?: newId()
         )
     }

@@ -28,6 +28,7 @@ export class Application {
               public mergeEngineTypes: boolean,
               public useEntityModels: boolean,
               public supportSubEntities: boolean,
+              public unknownIntentThreshold: number,
               public _id?: string) {
   }
 
@@ -42,6 +43,7 @@ export class Application {
       this.mergeEngineTypes,
       this.useEntityModels,
       this.supportSubEntities,
+      this.unknownIntentThreshold,
       this._id)
   }
 
