@@ -4,6 +4,7 @@ import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.web.send.Button
 import ai.tock.bot.connector.web.send.WebCard
 import ai.tock.bot.connector.web.send.WebCarousel
+import ai.tock.bot.connector.web.send.WebImage
 import ai.tock.bot.connector.web.send.WebWidget
 import ai.tock.bot.engine.message.GenericMessage
 import ai.tock.shared.mapNotNullValues
@@ -17,6 +18,7 @@ data class WebMessage(
     val card: WebCard? = null,
     val carousel: WebCarousel? = null,
     val widget: WebWidget? = null,
+    val image: WebImage? = null,
     val version: String = "1"
 ) : WebConnectorMessage {
 
@@ -27,6 +29,7 @@ data class WebMessage(
         card?.toGenericMessage()
             ?: carousel?.toGenericMessage()
             ?: widget?.toGenericMessage()
+            ?: image?.toGenericMessage()
             ?: GenericMessage(
                 connectorType = webConnectorType,
                 texts = mapNotNullValues(GenericMessage.TEXT_PARAM to text),
@@ -44,6 +47,7 @@ data class WebMessage(
         if (card != other.card) return false
         if (carousel != other.carousel) return false
         if (widget != other.widget) return false
+        if (image != other.image) return false
         return true
     }
 
@@ -53,6 +57,7 @@ data class WebMessage(
         result = 31 * result + (card?.hashCode() ?: 0)
         result = 31 * result + (carousel?.hashCode() ?: 0)
         result = 31 * result + (widget?.hashCode() ?: 0)
+        result = 31 * result + (image?.hashCode() ?: 0)
         result = 31 * result + version.hashCode()
         return result
     }
