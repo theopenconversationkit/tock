@@ -67,11 +67,11 @@
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
         <google>11.0.0</google>
-        <aws-sdk>1.11.870</aws-sdk>
+        <aws-sdk>1.11.872</aws-sdk>
 
         <junit-jupiter>5.7.0</junit-jupiter>
 
-        <mockk>1.10.0</mockk>
+        <mockk>1.10.2</mockk>
         <assertj>3.12.2</assertj>
         <byte-buddy>1.10.16</byte-buddy>
         <atrium>0.8.0</atrium>

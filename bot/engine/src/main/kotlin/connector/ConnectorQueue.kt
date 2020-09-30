@@ -5,7 +5,9 @@ import ai.tock.shared.Executor
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import java.time.Duration
+import java.util.Collections
 import java.util.LinkedList
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.TimeUnit
 
 /**
@@ -15,7 +17,7 @@ class ConnectorQueue(private val executor: Executor) {
 
     private data class ActionWithTimestamp(val action: Action, val timestamp: Long)
 
-    private val messagesByRecipientMap: Cache<String, LinkedList<ActionWithTimestamp>> =
+    private val messagesByRecipientMap: Cache<String, ConcurrentLinkedQueue<ActionWithTimestamp>> =
         CacheBuilder.newBuilder()
             .expireAfterAccess(1, TimeUnit.MINUTES)
             .build()
@@ -33,7 +35,7 @@ class ConnectorQueue(private val executor: Executor) {
         val actionWrapper = ActionWithTimestamp(action, System.currentTimeMillis() + delayInMs)
 
         val queue = messagesByRecipientMap
-            .get(action.recipientId.id) { LinkedList() }
+            .get(action.recipientId.id) { ConcurrentLinkedQueue() }
             .apply {
                 synchronized(this) {
                     peek().also { existingAction ->
@@ -51,7 +53,7 @@ class ConnectorQueue(private val executor: Executor) {
 
     private fun sendActionFromConnector(
         action: ActionWithTimestamp,
-        queue: LinkedList<ActionWithTimestamp>,
+        queue: ConcurrentLinkedQueue<ActionWithTimestamp>,
         send: (action: Action) -> Unit
     ) {
         try {
