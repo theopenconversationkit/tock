@@ -26,6 +26,7 @@ import ai.tock.bot.connector.web.send.QuickReply
 import ai.tock.bot.connector.web.send.UrlButton
 import ai.tock.bot.connector.web.send.WebCard
 import ai.tock.bot.connector.web.send.WebCarousel
+import ai.tock.bot.connector.web.send.WebImage
 import ai.tock.bot.connector.web.send.WebWidget
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.Parameters
@@ -215,12 +216,23 @@ fun <T : Bus<T>> T.webCardWithAttachment(
 }
 
 /**
+ * Creates a [WebMessage] from a [WebImage].
+ */
+
+fun <T : Bus<T>> T.webImage(imageUrl: String, title: CharSequence): WebMessage =
+    WebMessage(
+        image = WebImage(MediaFile(imageUrl, title.toString(), AttachmentType.image), title)
+    )
+
+/**
  * Creates a [WebMessage] from a [WebCarousel].
  */
 
-fun <T : Bus<T>> T.webCarousel(vararg cards: WebCard, buttons: List<Button> = emptyList()): WebMessage = WebMessage(carousel = WebCarousel(cards = cards.toList()), buttons = buttons)
+fun <T : Bus<T>> T.webCarousel(vararg cards: WebCard, buttons: List<Button> = emptyList()): WebMessage =
+    WebMessage(carousel = WebCarousel(cards = cards.toList()), buttons = buttons)
 
-fun <T : Bus<T>> T.webCarousel(cards: List<WebCard>, buttons: List<Button> = emptyList()): WebMessage = WebMessage(carousel = WebCarousel(cards = cards), buttons = buttons)
+fun <T : Bus<T>> T.webCarousel(cards: List<WebCard>, buttons: List<Button> = emptyList()): WebMessage =
+    WebMessage(carousel = WebCarousel(cards = cards), buttons = buttons)
 
 /**
  * Creates a [OldWebMessage] from a [MediaCard].
