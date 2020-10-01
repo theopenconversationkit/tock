@@ -232,7 +232,7 @@
 </td>
 <td>
 <p>Finds an <a href="../-intent/index.html">Intent</a> from an intent name.</p>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">findIntent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$findIntent(kotlin.String)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-intent/index.html"><span class="identifier">Intent</span></a></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">findIntent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$findIntent(kotlin.String, kotlin.String)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$findIntent(kotlin.String, kotlin.String)/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-intent/index.html"><span class="identifier">Intent</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -240,7 +240,7 @@
 </td>
 <td>
 <p>Search story by storyHandler.</p>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">findStoryByStoryHandler</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$findStoryByStoryHandler(ai.tock.bot.definition.StoryHandler)/storyHandler">storyHandler</span><span class="symbol">:</span>&nbsp;<a href="../-story-handler/index.html"><span class="identifier">StoryHandler</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">?</span></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">findStoryByStoryHandler</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$findStoryByStoryHandler(ai.tock.bot.definition.StoryHandler, kotlin.String)/storyHandler">storyHandler</span><span class="symbol">:</span>&nbsp;<a href="../-story-handler/index.html"><span class="identifier">StoryHandler</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$findStoryByStoryHandler(ai.tock.bot.definition.StoryHandler, kotlin.String)/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>
@@ -248,9 +248,9 @@
 </td>
 <td>
 <p>Finds a <a href="../-story-definition/index.html">StoryDefinition</a> from an <a href="../-intent/index.html">Intent</a>.</p>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">findStoryDefinition</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$findStoryDefinition(ai.tock.bot.definition.IntentAware)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a></code>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">findStoryDefinition</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$findStoryDefinition(ai.tock.bot.definition.IntentAware, kotlin.String)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$findStoryDefinition(ai.tock.bot.definition.IntentAware, kotlin.String)/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a></code>
 <p>Finds a <a href="../-story-definition/index.html">StoryDefinition</a> from an intent name.</p>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">findStoryDefinition</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$findStoryDefinition(kotlin.String, kotlin.String)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$findStoryDefinition(kotlin.String, kotlin.String)/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">findStoryDefinition</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$findStoryDefinition(kotlin.String, kotlin.String)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$findStoryDefinition(kotlin.String, kotlin.String)/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -258,7 +258,7 @@
 </td>
 <td>
 <p>Search story by storyId.</p>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">findStoryDefinitionById</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$findStoryDefinitionById(kotlin.String)/storyId">storyId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">findStoryDefinitionById</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$findStoryDefinitionById(kotlin.String, kotlin.String)/storyId">storyId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.BotDefinition$findStoryDefinitionById(kotlin.String, kotlin.String)/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -303,29 +303,6 @@
 <td>
 <p>Convenient default value in ms to wait before next answer sentence. 1s by default.</p>
 <code><span class="keyword">var </span><span class="identifier">defaultBreath</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a></code></td>
-</tr>
-</tbody>
-</table>
-<h3>Companion Object Functions</h3>
-<table>
-<tbody>
-<tr>
-<td>
-<h4><a href="find-intent.html">findIntent</a></h4>
-</td>
-<td>
-<p>Finds an intent from an intent name and a list of <a href="../-story-definition/index.html">StoryDefinition</a>.
-Is no valid intent found, returns <a href="../-intent/unknown.html">unknown</a>.</p>
-<code><span class="keyword">fun </span><span class="identifier">findIntent</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition.Companion$findIntent(kotlin.collections.List((ai.tock.bot.definition.StoryDefinition)), kotlin.String)/stories">stories</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.BotDefinition.Companion$findIntent(kotlin.collections.List((ai.tock.bot.definition.StoryDefinition)), kotlin.String)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-intent/index.html"><span class="identifier">Intent</span></a></code></td>
-</tr>
-<tr>
-<td>
-<h4><a href="find-story-definition.html">findStoryDefinition</a></h4>
-</td>
-<td>
-<p>Finds a <a href="../-story-definition/index.html">StoryDefinition</a> from a list of <a href="../-story-definition/index.html">StoryDefinition</a> and an intent name.
-Is no valid <a href="../-story-definition/index.html">StoryDefinition</a> found, returns the <a href="find-story-definition.html#ai.tock.bot.definition.BotDefinition.Companion$findStoryDefinition(kotlin.collections.List((ai.tock.bot.definition.StoryDefinition)), kotlin.String, ai.tock.bot.definition.StoryDefinition, ai.tock.bot.definition.StoryDefinition)/unknownStory">unknownStory</a>.</p>
-<code><span class="keyword">fun </span><span class="identifier">findStoryDefinition</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.BotDefinition.Companion$findStoryDefinition(kotlin.collections.List((ai.tock.bot.definition.StoryDefinition)), kotlin.String, ai.tock.bot.definition.StoryDefinition, ai.tock.bot.definition.StoryDefinition)/stories">stories</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.BotDefinition.Companion$findStoryDefinition(kotlin.collections.List((ai.tock.bot.definition.StoryDefinition)), kotlin.String, ai.tock.bot.definition.StoryDefinition, ai.tock.bot.definition.StoryDefinition)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.BotDefinition.Companion$findStoryDefinition(kotlin.collections.List((ai.tock.bot.definition.StoryDefinition)), kotlin.String, ai.tock.bot.definition.StoryDefinition, ai.tock.bot.definition.StoryDefinition)/unknownStory">unknownStory</span><span class="symbol">:</span>&nbsp;<a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.BotDefinition.Companion$findStoryDefinition(kotlin.collections.List((ai.tock.bot.definition.StoryDefinition)), kotlin.String, ai.tock.bot.definition.StoryDefinition, ai.tock.bot.definition.StoryDefinition)/keywordStory">keywordStory</span><span class="symbol">:</span>&nbsp;<a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a></code></td>
 </tr>
 </tbody>
 </table>
