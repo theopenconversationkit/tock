@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from "@angular/core";
-import {NlpService} from "../../nlp-tabs/nlp.service";
-import {StateService} from "../../core-nlp/state.service";
-import {NormalizeUtil} from "../../model/commons";
-import {ParseQuery, Sentence} from "../../model/nlp";
-import {BotService} from "../bot-service";
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {NlpService} from '../../nlp-tabs/nlp.service';
+import {StateService} from '../../core-nlp/state.service';
+import {NormalizeUtil} from '../../model/commons';
+import {ParseQuery, Sentence} from '../../model/nlp';
+import {BotService} from '../bot-service';
 import {
   AnswerConfigurationType,
   CreateStoryRequest,
@@ -27,11 +27,11 @@ import {
   StoryDefinitionConfiguration,
   StoryDefinitionConfigurationSummary,
   StorySearchQuery
-} from "../model/story";
-import {ActivatedRoute} from "@angular/router";
-import {BotConfigurationService} from "../../core/bot-configuration.service";
-import {AnswerController} from "./controller";
-import {Subscription} from "rxjs";
+} from '../model/story';
+import {ActivatedRoute} from '@angular/router';
+import {BotConfigurationService} from '../../core/bot-configuration.service';
+import {AnswerController} from './controller';
+import {Subscription} from 'rxjs';
 import {NbToastrService} from '@nebular/theme';
 
 @Component({
@@ -42,19 +42,21 @@ import {NbToastrService} from '@nebular/theme';
 export class CreateStoryComponent implements OnInit, OnDestroy {
 
   sentence: Sentence;
-  displayStory: boolean = false;
+  loading = false;
+  displayStory = false;
 
   botConfigurationId: string;
 
   story: StoryDefinitionConfiguration;
   submit = new AnswerController();
-  textRetrieved: boolean = false;
+  textRetrieved = false;
 
   @ViewChild('newSentence') newSentence: ElementRef;
 
   private stories: StoryDefinitionConfigurationSummary[] = [];
 
   private subscription: Subscription;
+
 
   constructor(private nlp: NlpService,
               public state: StateService,
@@ -96,9 +98,10 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
     const language = this.state.currentLocale;
     const v = value ? value.trim() : this.story.userSentence.trim();
     this.sentence = null;
-    if (v.length == 0) {
-      this.toastrService.show(`Please enter a non-empty sentence`, "ERROR", {duration: 2000});
+    if (v.length === 0) {
+      this.toastrService.show(`Please enter a non-empty sentence`, 'ERROR', {duration: 2000});
     } else {
+      this.loading = true;
       this.nlp.parse(new ParseQuery(app.namespace, app.name, language, v, true)).subscribe(sentence => {
         this.sentence = sentence;
         const intent = this.initIntentName(v, sentence.classification.intentId);
@@ -107,6 +110,7 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
         this.story.intent = new IntentName(intent);
         this.story.name = v;
         this.displayStory = true;
+        this.loading = false;
       });
     }
   }
@@ -118,29 +122,31 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
       const conf = confs.find(c => c._id === this.botConfigurationId);
       if (conf) {
         this.story = new StoryDefinitionConfiguration(
-          "",
+          '',
           conf.botId,
-          new IntentName(""),
+          new IntentName(''),
           AnswerConfigurationType.simple,
           this.state.user.organization,
           [],
-          "build",
-          "",
-          "",
+          'build',
+          '',
+          '',
           this.state.currentLocale,
           []
         );
         if (!this.textRetrieved) {
           this.route.queryParams.subscribe(params => {
             this.textRetrieved = true;
-            const text = params["text"];
+            const text = params['text'];
             if (text) {
               this.story.userSentence = text;
               this.onSentence(text);
             } else {
               setTimeout(_ => {
-                if (_this.newSentence) _this.newSentence.nativeElement.focus()
-              }, 500
+                  if (_this.newSentence) {
+                    _this.newSentence.nativeElement.focus();
+                  }
+                }, 500
               );
             }
           });
@@ -163,14 +169,14 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
       const intent = this.state.findIntentById(intentId);
       if (intent) {
         const story = this.stories.find(s => s.intent.name === intent.name && !s.isBuiltIn());
-        //if there is no existing story with this intent, select the intent
+        // if there is no existing story with this intent, select the intent
         if (!story) {
           return intent.name;
         }
       }
     }
-    //else suggest a new intent
-    const v = NormalizeUtil.normalize(sentence.trim().toLowerCase()).replace(new RegExp(" ", 'g'), "_");
+    // else suggest a new intent
+    const v = NormalizeUtil.normalize(sentence.trim().toLowerCase()).replace(new RegExp(' ', 'g'), '_');
     let candidate = v.substring(0, Math.min(sentence.length, 10));
     let count = 1;
     const candidateBase = candidate;
@@ -182,9 +188,9 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
 
   onReply() {
     this.submit.checkAnswer(_ => {
-        let invalidMessage = this.story.currentAnswer().invalidMessage();
+        const invalidMessage = this.story.currentAnswer().invalidMessage();
         if (invalidMessage) {
-          this.toastrService.show(`Error: ${invalidMessage}`, "ERROR", {duration: 5000, status: "danger"});
+          this.toastrService.show(`Error: ${invalidMessage}`, 'ERROR', {duration: 5000, status: 'danger'});
         } else {
           this.story.steps = this.story.steps.filter(s => !s.new);
           this.bot.newStory(
@@ -195,7 +201,11 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
             )
           ).subscribe(intent => {
             this.state.resetConfiguration();
-            this.toastrService.show(`New story ${this.story.name} created for language ${this.state.currentLocale}`, "New Story", {duration: 3000});
+            this.toastrService.show(
+              `New story ${this.story.name} created for language ${this.state.currentLocale}`,
+              'New Story',
+              {duration: 3000}
+            );
 
             this.newSentence.nativeElement.focus();
             setTimeout(_ => this.resetState(), 200);
