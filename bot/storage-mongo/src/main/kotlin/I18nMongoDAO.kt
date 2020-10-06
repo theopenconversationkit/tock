@@ -26,6 +26,8 @@ import ai.tock.bot.mongo.I18nAlternativeIndex_.Companion.Locale
 import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.MongoBotConfiguration.database
 import ai.tock.shared.defaultLocale
+import ai.tock.shared.ensureIndex
+import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.error
 import ai.tock.shared.longProperty
 import ai.tock.shared.watch
@@ -54,8 +56,6 @@ import org.litote.kmongo.combine
 import org.litote.kmongo.currentDate
 import org.litote.kmongo.deleteOne
 import org.litote.kmongo.elemMatch
-import org.litote.kmongo.ensureIndex
-import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.excludeId
 import org.litote.kmongo.fields

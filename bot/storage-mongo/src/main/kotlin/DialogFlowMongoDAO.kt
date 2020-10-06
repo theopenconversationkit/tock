@@ -54,6 +54,7 @@ import ai.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.Application
 import ai.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.Date
 import ai.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.DialogId
 import ai.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.TransitionId
+import ai.tock.shared.ensureIndex
 import ai.tock.shared.error
 import ai.tock.shared.longProperty
 import ai.tock.shared.security.TockObfuscatorService.obfuscate
@@ -66,7 +67,6 @@ import org.litote.kmongo.aggregate
 import org.litote.kmongo.all
 import org.litote.kmongo.and
 import org.litote.kmongo.ascendingSort
-import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.find
 import org.litote.kmongo.findOne
