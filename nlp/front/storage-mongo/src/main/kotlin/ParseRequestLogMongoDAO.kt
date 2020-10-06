@@ -68,8 +68,8 @@ import org.litote.kmongo.cond
 import org.litote.kmongo.dayOfYear
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.document
-import org.litote.kmongo.ensureIndex
-import org.litote.kmongo.ensureUniqueIndex
+import ai.tock.shared.ensureIndex
+import ai.tock.shared.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.excludeId
 import org.litote.kmongo.fields

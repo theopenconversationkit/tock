@@ -35,7 +35,7 @@ import ai.tock.nlp.model.service.storage.mongo.MongoModelConfiguration.asyncData
 import ai.tock.nlp.model.service.storage.mongo.MongoModelConfiguration.database
 import ai.tock.shared.watch
 import mu.KotlinLogging
-import org.litote.kmongo.ensureIndex
+import ai.tock.shared.ensureIndex
 import java.io.InputStream
 import java.time.Instant
 

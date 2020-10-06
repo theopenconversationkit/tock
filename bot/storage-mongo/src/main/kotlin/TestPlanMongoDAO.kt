@@ -28,7 +28,7 @@ import org.litote.kmongo.Id
 import org.litote.kmongo.ascendingSort
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.descendingSort
-import org.litote.kmongo.ensureIndex
+import ai.tock.shared.ensureIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection

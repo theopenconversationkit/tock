@@ -23,8 +23,10 @@ import ai.tock.shared.security.mongo.MongoCredentialsProvider
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonTokenId
 import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 import com.fasterxml.jackson.datatype.jsr310.DecimalUtils
 import com.fasterxml.jackson.datatype.jsr310.deser.DurationDeserializer
@@ -34,14 +36,21 @@ import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoDatabase
+import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import com.mongodb.client.model.changestream.FullDocument
 import com.mongodb.connection.netty.NettyStreamFactoryFactory
 import com.mongodb.reactivestreams.client.MongoCollection
 import de.undercouch.bson4jackson.types.Decimal128
+import com.fasterxml.jackson.core.JsonGenerator
 import mu.KotlinLogging
+import org.bson.BsonDocument
 import org.bson.Document
+import org.bson.conversions.Bson
 import org.litote.kmongo.KMongo
+import org.litote.kmongo.ascending
+import org.litote.kmongo.ensureIndex
+import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.id.IdGenerator
 import org.litote.kmongo.id.ObjectIdToStringGenerator
 import org.litote.kmongo.reactivestreams.watchIndefinitely
@@ -49,6 +58,7 @@ import org.litote.kmongo.runCommand
 import org.litote.kmongo.util.CollectionNameFormatter
 import org.litote.kmongo.util.KMongoConfiguration
 import org.litote.kmongo.util.KMongoConfiguration.registerBsonModule
+import org.litote.kmongo.util.KMongoUtil
 import java.time.Duration
 import java.time.Period
 import java.time.ZoneId
@@ -80,7 +90,15 @@ internal object TockKMongoConfiguration {
             addDeserializer(ZoneOffset::class, JSR310StringParsableDeserializer.ZONE_OFFSET)
             addDeserializer(Period::class, JSR310StringParsableDeserializer.PERIOD)
             addSerializer(Period::class, ToStringSerializer(Period::class.java))
-            addSerializer(Duration::class, DurationSerializer.INSTANCE)
+            if (isDocumentDB()) {
+                addSerializer(Duration::class, object : StdScalarSerializer<Duration>(Duration::class.java) {
+                    override fun serialize(duration: Duration?, generator: JsonGenerator?, provider: SerializerProvider?) {
+                        generator?.writeString(duration?.toString())
+                    }
+                })
+            } else {
+                addSerializer(Duration::class, DurationSerializer.INSTANCE)
+            }
             addDeserializer(Duration::class, object : StdScalarDeserializer<Duration>(Duration::class.java) {
 
                 override fun deserialize(parser: JsonParser, context: DeserializationContext): Duration? {
@@ -202,8 +220,72 @@ inline fun <reified T : Any> MongoCollection<T>.watch(
     )
 }
 
+fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(vararg properties: kotlin.reflect.KProperty<*>,
+                                                          indexOptions: IndexOptions = IndexOptions()): String {
+    generateIndex(ascending(*properties), indexOptions = indexOptions)?.let { indexOptions.name(it) }
+    return ensureIndex(*properties, indexOptions = indexOptions)
+}
+
+fun <T> com.mongodb.client.MongoCollection<T>.ensureUniqueIndex(vararg properties: kotlin.reflect.KProperty<*>,
+                                                                indexOptions: IndexOptions = IndexOptions()): String {
+    generateIndex(ascending(*properties), indexOptions = indexOptions)?.let { indexOptions.name(it) }
+    return ensureUniqueIndex(*properties, indexOptions = indexOptions)
+}
+
+fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(keys: Bson,
+                                                          indexOptions: IndexOptions = IndexOptions()): String {
+    generateIndex(keys, indexOptions = indexOptions)?.let { indexOptions.name(it) }
+    return ensureIndex(keys, indexOptions = indexOptions)
+}
+
+fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(keys: String,
+                                                          indexOptions: IndexOptions = IndexOptions()): String {
+    generateIndex(KMongoUtil.toBson(keys), indexOptions = indexOptions)?.let { indexOptions.name(it) }
+    return ensureIndex(keys, indexOptions = indexOptions)
+}
+
+fun isDocumentDB(): Boolean {
+    return (booleanProperty("tock_document_db_on", false))
+}
+
+/**
+ * Generate and return an index matching DocumentDB limits (32 characters maximum in a compound index) with the given document keys and options
+ */
+private fun generateIndex(document: Bson, indexOptions: IndexOptions): String? {
+    // Don't generate an index if the database isn't DocumentDB
+    if (!isDocumentDB()) {
+        return null
+    }
+
+    if (indexOptions.name?.let { it.length > DocumentDBIndexLimitSize } != false) {
+        var index = ""
+        var reducedIndex = ""
+
+        for ((key, value) in (document as BsonDocument).entries) {
+            val sort: String = value.takeIf { it.isInt32 }?.asInt32()?.value.toString()
+            index += key + sort
+            reducedIndex += key.let { if (it.length > DocumentDBIndexReducedSize) it.substring(0, DocumentDBIndexReducedSize) else it } + sort
+        }
+
+        if (index.length <= DocumentDBIndexLimitSize) {
+            return index
+        }
+        if (reducedIndex.length <= DocumentDBIndexLimitSize) {
+            return reducedIndex
+        } else {
+            logger.error("Generated reduced index too long : $index")
+        }
+        return index
+    }
+    return null
+}
+
 fun pingMongoDatabase(databaseName: String): Boolean {
     val database = getDatabase(databaseName)
     val result = database.runCommand<Document>("{ ping: 1 }")
     return result["ok"] == 1.0
 }
+
+private const val DocumentDBIndexLimitSize = 32
+
+private const val DocumentDBIndexReducedSize = 3
