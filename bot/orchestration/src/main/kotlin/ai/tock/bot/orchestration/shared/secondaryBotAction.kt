@@ -38,9 +38,9 @@ interface SecondaryBotAction {
     fun toAction(metaData: OrchestrationMetaData) : Action
 
     companion object {
-        fun from(action : Action) : SecondaryBotAction? = when (action) {
-            is SendSentence -> SecondaryBotSendSentence(messages = action.messages.filterIsInstance<SerializableConnectorMessage>(), text = action.text?.toString(), metadata = action.metadata)
-            is SendChoice -> SecondaryBotSendChoice(intentName = action.intentName, parameters = action.parameters, metadata = action.metadata)
+        fun from(action: Action, botId: String) : SecondaryBotAction? = when (action) {
+            is SendSentence -> SecondaryBotSendSentence(messages = action.messages.filterIsInstance<SerializableConnectorMessage>(), text = action.text?.toString(), metadata = action.metadata.copy(orchestratedBy = botId))
+            is SendChoice -> SecondaryBotSendChoice(intentName = action.intentName, parameters = action.parameters, metadata = action.metadata.copy(orchestratedBy = botId))
             else -> null
         }
     }

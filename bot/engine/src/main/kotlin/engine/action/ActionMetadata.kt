@@ -30,5 +30,7 @@ data class ActionMetadata(
     /** Message which contains a quote. */
     var quoteMessage: ActionQuote = ActionQuote.UNKNOWN,
     /** The message triggers an orchestration lock.*/
-    var orchestrationLock: Boolean = false
+    var orchestrationLock: Boolean = false,
+    /** Message delegated by another bot.*/
+    val orchestratedBy: String? = null
 )
