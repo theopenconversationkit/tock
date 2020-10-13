@@ -36,6 +36,17 @@
             <groupId>org.litote.kmongo</groupId>
             <artifactId>kmongo</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.mockk</groupId>
+            <artifactId>mockk</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>

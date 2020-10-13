@@ -70,7 +70,7 @@ class RunOrchestrationStoryListener(
     private fun BotBus.startOrchestration(): Boolean {
         logger.info { "Try to start an orchestration for intent ${intent?.wrappedIntent()?.name ?: "???"}" }
 
-        val botAction: SecondaryBotAction? = SecondaryBotAction.from(action)
+        val botAction: SecondaryBotAction? = SecondaryBotAction.from(action, botDefinition.botId)
         if (botAction == null) {
             logger.info { "Failed to start orchestration caused by an unhandled Tock action ${action.javaClass.name}" }
             return true
@@ -173,7 +173,7 @@ class RunOrchestrationStoryListener(
             }
         }
 
-        val botAction: SecondaryBotAction? = SecondaryBotAction.from(action)
+        val botAction: SecondaryBotAction? = SecondaryBotAction.from(action, botDefinition.botId)
         if (botAction == null) {
             logger.info { "End of the orchestration caused by an unhandled Tock action ${action.javaClass.name}" }
             orchestrationRepository.end(orchestration.playerId)
