@@ -23,6 +23,7 @@
 
 .try-input {
   width:80%;
-  font-size: xx-large;
+  font-size: x-large;
+  max-width: unset!important;
 }
 

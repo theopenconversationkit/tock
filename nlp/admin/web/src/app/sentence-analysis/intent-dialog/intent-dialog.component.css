@@ -17,7 +17,8 @@
 .container {
   display: flex;
   flex-direction: column;
-  width:400px;
+  width:50vh;
+  padding: 0;
 }
 
 .container > * {
@@ -35,3 +36,8 @@
 .submit-button {
   margin-left: 20px;
 }
+
+.footer {
+  text-align: right;
+}
+

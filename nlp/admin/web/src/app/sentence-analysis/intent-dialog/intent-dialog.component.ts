@@ -15,8 +15,9 @@
  */
 
 import {Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import {StateService} from "../../core-nlp/state.service";
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { NbDialogRef } from '@nebular/theme';
+import {StateService} from '../../core-nlp/state.service';
 
 @Component({
   selector: 'tock-intent-dialog',
@@ -28,26 +29,21 @@ export class IntentDialogComponent implements OnInit {
   create: boolean;
   name: string;
   label: string;
-  category: string = "default";
+  category: string;
   description: string;
   categories: string[] = [];
   originalCategories: string[] = [];
   dialogType: string;
+  story: string;
   private nameInitialized = false;
 
   @ViewChild('labelElement') labelElement: ElementRef;
 
   constructor(
-    public dialogRef: MatDialogRef<IntentDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
+    public dialogRef: NbDialogRef<IntentDialogComponent>,
     private state: StateService) {
-    this.create = this.data.create;
-    this.name = this.data.name;
-    this.label = this.data.label;
-    this.description = this.data.description;
-    this.category = this.data.category;
-    this.dialogType = this.data.story ? "Story" : "Intent";
-    setTimeout(() => this.labelElement.nativeElement.focus(), 500);
+      this.dialogType = this.story ? 'Story' : 'Intent';
+      setTimeout(() => this.labelElement.nativeElement.focus(), 500);
   }
 
   ngOnInit() {
@@ -65,7 +61,7 @@ export class IntentDialogComponent implements OnInit {
 
   categoryChange() {
     if (this.category) {
-      let cat = this.category.toLowerCase().trim();
+      const cat = this.category.toLowerCase().trim();
       this.categories = cat.length === 0
         ? this.originalCategories
         : this.originalCategories.filter(c => c.toLowerCase().startsWith(cat));
@@ -81,6 +77,10 @@ export class IntentDialogComponent implements OnInit {
     if (name) {
       this.name = name.replace(/[^A-Za-z_-]*/g, '').toLowerCase().trim();
     }
+  }
+
+  cancel() {
+    this.dialogRef.close({});
   }
 
   save() {

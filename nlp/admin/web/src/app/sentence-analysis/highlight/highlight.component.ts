@@ -25,7 +25,7 @@ import {
   OnInit,
   SimpleChange,
   ViewChild
-} from "@angular/core";
+} from '@angular/core';
 import {
   ClassifiedEntity,
   EntityContainer,
@@ -34,16 +34,17 @@ import {
   EntityWithSubEntities,
   Intent,
   Sentence
-} from "../../model/nlp";
-import {NlpService} from "../../nlp-tabs/nlp.service";
-import {StateService} from "../../core-nlp/state.service";
-import {CreateEntityDialogComponent} from "../create-entity-dialog/create-entity-dialog.component";
-import {User, UserRole} from "../../model/auth";
-import {CoreConfig} from "../../core-nlp/core.config";
-import {Router} from "@angular/router";
-import {isNullOrUndefined} from "../../model/commons";
-import {DialogService} from "../../core-nlp/dialog.service";
-import {MatDialog} from "@angular/material/dialog";
+} from '../../model/nlp';
+import {NlpService} from '../../nlp-tabs/nlp.service';
+import {StateService} from '../../core-nlp/state.service';
+import {CreateEntityDialogComponent} from '../create-entity-dialog/create-entity-dialog.component';
+import {User, UserRole} from '../../model/auth';
+import {CoreConfig} from '../../core-nlp/core.config';
+import {Router} from '@angular/router';
+import {isNullOrUndefined} from '../../model/commons';
+import {DialogService} from '../../core-nlp/dialog.service';
+import {MatDialog} from '@angular/material/dialog';
+import { NbDialogService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-highlight',
@@ -54,8 +55,8 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
 
   @Input() sentence: EntityContainer;
   @Input() readOnly: boolean = false;
-  @Input() fontSize: string = "inherit";
-  @Input() prefix: string = "s";
+  @Input() fontSize: string = 'inherit';
+  @Input() prefix: string = 's';
   @Input() leftPadding: number = 0;
   @Input() displayActions: boolean = true;
 
@@ -70,13 +71,13 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
   //used to copy to clipboard
   @ViewChild('copy') tmpTextArea: ElementRef;
 
-  //the tokens container
+  // the tokens container
   @ViewChild('tokensContainer') tokensContainer: ElementRef;
 
   constructor(private nlp: NlpService,
               public state: StateService,
+              private nbDialogService: NbDialogService,
               private dialog: DialogService,
-              private matDialog: MatDialog,
               private router: Router,
               public coreConfig: CoreConfig,
               private changeDetectorRef: ChangeDetectorRef) {
@@ -223,19 +224,18 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   addEntity() {
-    let dialogRef = this.dialog.open(
-      this.matDialog,
+    const dialogRef = this.nbDialogService.open(
       CreateEntityDialogComponent,
       {
-        data: {
+        context: {
           entityProvider: this.entityProvider
         }
       }
     );
-    dialogRef.afterClosed().subscribe(result => {
-      if (result && result !== "cancel") {
-        let name = result.name;
-        let role = result.role;
+    dialogRef.onClose.subscribe(result => {
+      if (result && result !== 'cancel') {
+        const name = result.name;
+        const role = result.role;
         const existingEntityType = this.state.findEntityTypeByName(name);
         if (existingEntityType) {
           const entity = new EntityDefinition(name, role);
@@ -265,7 +265,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
 
   notifyAddEntity(entity: EntityDefinition) {
     this.onSelect(entity);
-    this.dialog.notify(`Entity Type ${entity.qualifiedRole} added`, "Entity added");
+    this.dialog.notify(`Entity Type ${entity.qualifiedRole} added`, 'Entity added');
   }
 
   private rebuild() {
@@ -348,7 +348,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
 
   copyToClipboard() {
     const t = this.tmpTextArea.nativeElement;
-    t.style.display = "block";
+    t.style.display = 'block';
     const text = this.sentence.getText();
     t.value = text;
     t.select();
@@ -358,8 +358,8 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
     } catch (err) {
       //do nothing
     }
-    t.style.display = "none";
-    this.dialog.notify(successful ? `${text} copied to clipboard` : `Unable to copy to clipboard`, "Clipboard");
+    t.style.display = 'none';
+    this.dialog.notify(successful ? `${text} copied to clipboard` : `Unable to copy to clipboard`, 'Clipboard');
   }
 
   canReveal(): boolean {
@@ -398,9 +398,9 @@ export class Token {
 
   display(sentence: Sentence, user: User): string {
     if (!this.entity) {
-      return "";
+      return '';
     } else {
-      return this.entity.qualifiedName(user) + " = " + sentence.entityValue(this.entity);
+      return this.entity.qualifiedName(user) + ' = ' + sentence.entityValue(this.entity);
     }
   }
 
@@ -408,7 +408,7 @@ export class Token {
     if (this.entity) {
       return this.entity.entityColor;
     } else {
-      return "";
+      return '';
     }
   }
 }
@@ -479,7 +479,7 @@ export class SubEntityProvider implements EntityProvider {
   addEntity(entity: EntityDefinition, highlight: HighlightComponent): string {
     if (this.entity.root.containsEntityType(entity.entityTypeName)
       || this.containsEntityType(this.state.findEntityTypeByName(entity.entityTypeName), this.entity.root.type, new Set())) {
-      return "adding recursive sub entity is not allowed";
+      return 'adding recursive sub entity is not allowed';
     }
     this.entityType.addEntity(entity);
     this.nlp.updateEntityType(this.entityType).subscribe(_ => {

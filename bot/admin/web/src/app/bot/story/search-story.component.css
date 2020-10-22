@@ -65,4 +65,8 @@
   padding: 0;
 }
 
+.toggle {
+  position: relative;
+  top: 10px;
+}
 

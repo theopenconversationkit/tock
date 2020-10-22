@@ -13,23 +13,24 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
-<h1 mat-dialog-title>{{data.title}}</h1>
-<div mat-dialog-content>
-  <p>
-    If at least one mandatory state is set for an intent,
-    <br>
-    only query with at least one mandatory state of the intent
-    <br>
-    is able to returns this intent.
-  </p>
-  <form #stateForm="ngForm">
-    <mat-form-field>
-      <input matInput required name="name" placeholder="New State" [(ngModel)]="name">
-    </mat-form-field>
-  </form>
-</div>
-<div mat-dialog-actions>
-  <button mat-button (click)="dialogRef.close('cancel')">Cancel</button>
-  <button mat-button (click)="save()" [disabled]="!stateForm.form.valid">Add</button>
-</div>
+<nb-card status="info">
+  <nb-card-header>{{title}}</nb-card-header>
+  <nb-card-body>
+    <p>
+      If at least one mandatory state is set for an intent,
+      <br>
+      only query with at least one mandatory state of the intent
+      <br>
+      is able to returns this intent.
+    </p>
+    <form #stateForm="ngForm">
+      <mat-form-field>
+        <input matInput required name="name" placeholder="New State" [(ngModel)]="name">
+      </mat-form-field>
+    </form>
+  </nb-card-body>
+  <nb-card-footer class="footer">
+    <button nbButton size="small" (click)="dialogRef.close('cancel')">Cancel</button>
+    <button nbButton size="small" status="success" class="submit-button" (click)="save()" [disabled]="!stateForm.form.valid">Add</button>
+  </nb-card-footer>
+</nb-card>

@@ -56,7 +56,8 @@ import {
   NbSelectModule,
   NbSpinnerModule,
   NbTabsetModule,
-  NbTooltipModule
+  NbTooltipModule,
+  NbTreeGridModule
 } from "@nebular/theme";
 import {ThemeModule} from "../theme/theme.module";
 import { NgJsonEditorModule } from 'ang-jsoneditor'
@@ -137,7 +138,8 @@ export class NlpRoutingModule {
     NbButtonModule,
     NbTooltipModule,
     NbInputModule,
-    NgJsonEditorModule
+    NgJsonEditorModule,
+    NbTreeGridModule
   ],
   declarations: [
     NlpTabsComponent,

@@ -17,12 +17,12 @@
 <div class="search">
 
   <nb-card [nbSpinner]="loading">
-    <nb-card-body>
-      <mat-form-field class="search-input">
-        <input matInput placeholder="Search Logs" [(ngModel)]="text" (keyup.enter)="refresh()">
-      </mat-form-field>
-      <mat-slide-toggle class="choice" [(ngModel)]="onlyCurrentLocale" (change)="refresh()">Only current locale</mat-slide-toggle>
-      <mat-slide-toggle [(ngModel)]="test" (change)="refresh()">Display tests</mat-slide-toggle>
+    <nb-card-body style="display: flex;">
+      <div class="search-input">
+        <input nbInput placeholder="Search Logs" [(ngModel)]="text" (keyup.enter)="refresh()" style="width: -webkit-fill-available;">
+      </div>
+      <nb-toggle status="primary" class="choice" [(ngModel)]="onlyCurrentLocale" (change)="refresh()">Only current locale</nb-toggle>
+      <nb-toggle status="primary" [(ngModel)]="test" (change)="refresh()">Display tests</nb-toggle>
       <button nbButton outline status="primary" size="small" (click)="refresh()" class="go-btn">GO</button>
     </nb-card-body>
   </nb-card>
@@ -42,6 +42,7 @@
       <mat-icon>refresh</mat-icon>
     </button>
   </h1>
+  
   <p></p>
   <div
     infinite-scroll

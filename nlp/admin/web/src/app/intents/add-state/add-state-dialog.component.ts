@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {Component, Inject, OnInit} from "@angular/core";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import {Component, Input, OnInit} from '@angular/core';
+import { NbDialogRef } from '@nebular/theme';
 
 @Component({
   selector: 'tock-add-state-dialog',
@@ -25,10 +25,11 @@ import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 export class AddStateDialogComponent implements OnInit {
 
   name: string;
+  @Input() title: string;
 
   constructor(
-    public dialogRef: MatDialogRef<AddStateDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any) {
+    public dialogRef: NbDialogRef<AddStateDialogComponent>
+    ) {
   }
 
   ngOnInit() {

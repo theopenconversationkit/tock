@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {Component, Inject} from "@angular/core";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import {Component, Inject, Input} from '@angular/core';
+import { NbDialogRef } from '@nebular/theme';
 
 @Component({
   selector: 'tock-confirm-dialog',
@@ -23,9 +23,10 @@ import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
   styleUrls: ['./confirm-dialog.component.css']
 })
 export class ConfirmDialogComponent {
-
-  constructor(public dialogRef: MatDialogRef<ConfirmDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: any) {
+  @Input() title: string;
+  @Input() subtitle: string;
+  @Input() action: string;
+  constructor(public dialogRef: NbDialogRef<ConfirmDialogComponent>) {
 
   }
 
