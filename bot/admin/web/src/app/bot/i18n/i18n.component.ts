@@ -229,7 +229,7 @@ export class I18nComponent extends I18nController implements OnInit {
     this.importWindow = this.windowService.open(
       I18nImportComponent,
       {
-        title: 'Import From',
+        title: 'Import Labels from File',
         context: {
           importFrom: (type: string, uploader: FileUploader) => this.upload(type, uploader),
           refresh: () => this.refresh()

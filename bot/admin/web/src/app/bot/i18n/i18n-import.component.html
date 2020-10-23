@@ -17,7 +17,8 @@
   <nb-icon icon="alert-triangle" status="danger"></nb-icon>&nbsp; Only .csv or .json files are allowed.
 </div>
 <div class="import-content">
-  <p>Only validated labels will be imported.</p>
+  <p>Select a JSON or CSV (with headers) file to import labels.</p>
+  <p>Only validated labels will be imported to current namespace.</p>
   <span class="import-label">File:&nbsp;</span>
   <input id="file" type="file" ng2FileSelect
          [uploader]="uploader"
