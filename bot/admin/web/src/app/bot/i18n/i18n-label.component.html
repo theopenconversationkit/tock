@@ -21,7 +21,7 @@
     <div class="i18n-label__title">
       <div style="display: flex;">
         <span class="i18n-label__title__label"
-              nbTooltip="key:{{i._id}}">{{i.defaultLocalizedLabel().label.length === 0 ? i._id : i.defaultLocalizedLabel().label}}
+              nbTooltip="ns: {{i.namespace}}, key: {{i._id}}">{{i.defaultLocalizedLabel().label.length === 0 ? i._id : i.defaultLocalizedLabel().label}}
         </span>
         <button class="i18n-label__title__delete" *ngIf="deleteAllowed" nbButton  outline status="danger" size="small" (click)="deleteLabel(i)"
         nbTooltip="Delete Label" color="warn">
@@ -34,7 +34,7 @@
         <span *ngIf="i.defaultLocalizedLabel().label !== i.defaultLabel" class="i18n-label__title__original_label"
         nbTooltip="Original Label">{{i.defaultLabel}}</span>
 
-        
+
 
         <span class="i18n-label__title__usage">
           <span *ngIf="i.statCount">used {{ i.statCount }} times,</span>

@@ -21,6 +21,7 @@ import ai.tock.nlp.admin.CsvCodec
 import ai.tock.nlp.admin.CsvCodec.csvFormat
 import ai.tock.shared.error
 import ai.tock.shared.injector
+import ai.tock.shared.vertx.WebVerticle
 import ai.tock.translator.I18nDAO
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLocalizedLabel
@@ -42,25 +43,29 @@ object I18nCsvCodec {
 
     private val i18nDAO: I18nDAO by injector.instance()
 
+    internal enum class CsvColumn {
+        Label,
+        Namespace,
+        Category,
+        Language,
+        Interface,
+        Id,
+        Validated,
+        Connector,
+        Alternatives
+    }
+
     fun exportCsv(namespace: String, query: I18LabelQuery? = null): String {
         val sb = StringBuilder()
         val printer = CsvCodec.newPrinter(sb)
-        printer.printRecord(
-            "Label",
-            "Category",
-            "Language",
-            "Interface",
-            "Id",
-            "Validated",
-            "Connector",
-            "Alternatives"
-        )
+        printer.printRecord(CsvColumn.values().map { it.name })
         i18nDAO.getLabels(namespace, query?.toI18nLabelFilter())
             .forEach { label ->
                 label.i18n.forEach { localizedLabel ->
                     printer.printRecord(
                         *(listOf(
                             localizedLabel.label,
+                            label.namespace,
                             label.category,
                             localizedLabel.locale.language,
                             localizedLabel.interfaceType,
@@ -76,26 +81,35 @@ object I18nCsvCodec {
 
     fun importCsv(namespace: String, content: String): Boolean {
         return try {
-            csvFormat()
+            val parsedCsv = csvFormat().withFirstRecordAsHeader()
                 .parse(StringReader(content))
+            val headers = parsedCsv.headerNames
+            val isNamespaceInCsv = headers.contains(CsvColumn.Namespace.name)
+            parsedCsv
                 .records
                 .mapIndexedNotNull { i, it ->
                     if (i == 0) {
                         null
                     } else {
                         I18nLabel(
-                            it[4].toId(),
+                            if (isNamespaceInCsv)
+                                it.get(CsvColumn.Id.name).replaceFirst(it.get(CsvColumn.Namespace.name), namespace).toId()
+                            else
+                                it.get(CsvColumn.Id.name).toId(),
                             namespace,
-                            it[1],
+                            it.get(CsvColumn.Category.name),
                             LinkedHashSet(
                                 listOf(
                                     I18nLocalizedLabel(
-                                        Locale(it[2]),
-                                        UserInterfaceType.valueOf(it[3]),
-                                        it[0],
-                                        it[5]?.toBoolean() ?: false,
-                                        it[6].run { if (isBlank()) null else this },
-                                        if (it.size() < 7) emptyList() else (7 until it.size()).mapNotNull { index -> if (it[index].isNullOrBlank()) null else it[index] }
+                                        Locale(it.get(CsvColumn.Language.name)),
+                                        UserInterfaceType.valueOf(it.get(CsvColumn.Interface.name)),
+                                        it[0], // First header has a strange char before it, simpler with index
+                                        it.get(CsvColumn.Validated.name)?.toBoolean() ?: false,
+                                        it.get(CsvColumn.Connector.name).run { if (isBlank()) null else this },
+                                        if (it.size() < headers.indexOf(CsvColumn.Alternatives.name).also { logger.info { "Alt index is $it" } })
+                                            emptyList()
+                                        else
+                                            (headers.indexOf(CsvColumn.Alternatives.name).also { logger.info { "Alt index is $it" } } until it.size()).mapNotNull { index -> if (it[index].isNullOrBlank()) null else it[index] }
                                     ))
                             )
                         )
@@ -127,6 +141,9 @@ object I18nCsvCodec {
                     i18nDAO.save(it)
                 }
             true
+        } catch (t: IllegalArgumentException) {
+            logger.error(t)
+            WebVerticle.badRequest("Error importing CSV: ${t.message}")
         } catch (t: Throwable) {
             logger.error(t)
             false

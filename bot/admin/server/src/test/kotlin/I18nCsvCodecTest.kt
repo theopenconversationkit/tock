@@ -20,7 +20,6 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import ai.tock.shared.defaultNamespace
 import ai.tock.shared.tockInternalInjector
 import ai.tock.translator.I18nDAO
 import ai.tock.translator.I18nLabel
@@ -55,10 +54,15 @@ class I18nCsvCodecTest {
             })
         }
 
-        val id = "departuresarrivals_départs_suivants"
+        val namespace = "mynamespace"
+        val category = "departuresarrivals"
+        val id = namespace + "_" + category + "_départs_suivants"
         val export = """Label;Category;Language;Interface;Id;Validated;Connector;Alternatives
-Départs suivants;departuresarrivals;fr;textChat;departuresarrivals_départs_suivants;false;
-Départs suivants;departuresarrivals;fr;voiceAssistant;departuresarrivals_départs_suivants;true;"""
+Départs suivants;departuresarrivals;fr;textChat;mynamespace_departuresarrivals_départs_suivants;false;
+Départs suivants;departuresarrivals;fr;voiceAssistant;mynamespace_departuresarrivals_départs_suivants;true;"""
+        val exportWithNs = """Label;Namespace;Category;Language;Interface;Id;Validated;Connector;Alternatives
+Départs suivants;mynamespace;departuresarrivals;fr;textChat;mynamespace_departuresarrivals_départs_suivants;false;
+Départs suivants;mynamespace;departuresarrivals;fr;voiceAssistant;mynamespace_departuresarrivals_départs_suivants;true;"""
     }
 
 
@@ -67,8 +71,8 @@ Départs suivants;departuresarrivals;fr;voiceAssistant;departuresarrivals_dépar
         every { i18nDAO.getLabelById(id.toId()) } answers {
             I18nLabel(
                 id.toId(),
-                defaultNamespace,
-                "departuresarrivals",
+                namespace,
+                category,
                 LinkedHashSet(
                     listOf(
                         I18nLocalizedLabel(
@@ -99,5 +103,36 @@ Départs suivants;departuresarrivals;fr;voiceAssistant;departuresarrivals_dépar
 
     }
 
+    @Test
+    fun `importCsv_should_update_id_when_namespace_in_csv`() {
+        val targetNamespace = "other"
+        I18nCsvCodec.importCsv(targetNamespace, exportWithNs)
+
+        val slot = slot<I18nLabel>()
+        verify {
+            i18nDAO.save(capture(slot))
+        }
+
+        val importedLabel = slot.captured
+        assertEquals("Départs suivants", importedLabel.i18n.first { it.interfaceType == voiceAssistant }.label)
+        assertEquals(targetNamespace, importedLabel.namespace)
+        assertEquals(id.replaceFirst(namespace + "_", targetNamespace + "_"), importedLabel._id.toString())
+    }
+
+    @Test
+    fun `importCsv_should_not_update_id_when_no_namespace_in_csv`() {
+        val targetNamespace = "other"
+        I18nCsvCodec.importCsv(targetNamespace, export)
+
+        val slot = slot<I18nLabel>()
+        verify {
+            i18nDAO.save(capture(slot))
+        }
+
+        val importedLabel = slot.captured
+        assertEquals("Départs suivants", importedLabel.i18n.first { it.interfaceType == voiceAssistant }.label)
+        assertEquals(targetNamespace, importedLabel.namespace)
+        assertEquals(id, importedLabel._id.toString())
+    }
 
 }
