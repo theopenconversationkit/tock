@@ -668,12 +668,11 @@ open class BotAdminVerticle : AdminVerticle() {
             mapper.writeValueAsString(labels)
         }
 
-        blockingUploadPost(
+        blockingUploadJsonPost(
             "/i18n/import/json",
             botUser,
             simpleLogger("JSON Import Response Labels")
-        ) { context, content ->
-            val labels: List<I18nLabel> = mapper.readValue(content)
+        ) { context, labels: List<I18nLabel> ->
             i18n.save(labels.filter { it.i18n.any { it.validated } }.map {
                 it.copy(
                     _id = it._id.toString().replaceFirst(it.namespace, context.organization).toId(),

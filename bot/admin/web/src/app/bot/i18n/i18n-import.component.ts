@@ -16,7 +16,7 @@
 
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {NbButtonComponent, NbWindowRef} from '@nebular/theme';
-import {FileUploader} from 'ng2-file-upload';
+import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
 import {DialogService} from '../../core-nlp/dialog.service';
 
 @Component({
@@ -37,12 +37,18 @@ export class I18nImportComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    const refresh = this.windowRef.config.context['refresh'];
     this.uploader = new FileUploader({
       removeAfterUpload: true,
-      allowedMimeType: ['text/csv', 'text/json'],
-      queueLimit: 1,
       isHTML5: true
     });
+    this.uploader.onCompleteItem =
+      (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
+        this.loading = false;
+        this.closeWindow();
+        this.dialog.notify(`Labels have been imported successfully.`, "Labels Imported", {duration: 3000, status: "success"});
+        refresh();
+      };
   }
 
   ngAfterViewInit(): void {
@@ -58,9 +64,6 @@ export class I18nImportComponent implements OnInit, AfterViewInit {
     if (!this.invalidSelectedFile && importFrom) {
       importFrom(this.getFileType(), this.uploader);
     }
-    this.loading = false;
-    this.closeWindow();
-    this.dialog.notify(`Labels have been imported successfully.`, "Labels Imported", {duration: 3000, status: "success"});
   }
 
   private getFileType() {
