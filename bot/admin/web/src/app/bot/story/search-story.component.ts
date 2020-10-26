@@ -21,12 +21,11 @@ import {NlpService} from "../../nlp-tabs/nlp.service";
 import {StateService} from "../../core-nlp/state.service";
 import {StoryDefinitionConfiguration, StoryDefinitionConfigurationSummary, StorySearchQuery} from "../model/story";
 import {Subscription} from "rxjs";
-import {DialogService} from "../../core-nlp/dialog.service";
 import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
-import {MatDialog} from "@angular/material/dialog";
 import {ConfirmDialogComponent} from "../../shared-nlp/confirm-dialog/confirm-dialog.component";
 import {CanDeactivate} from "@angular/router";
 import {LocationStrategy} from "@angular/common";
+import { NbToastrService, NbDialogService } from '@nebular/theme';
 
 interface TreeNode<T> {
   data: T;
@@ -66,8 +65,8 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
   constructor(private nlp: NlpService,
               public state: StateService,
               private bot: BotService,
-              private dialog: DialogService,
-              private matDialog: MatDialog,
+              private dialogService: NbDialogService,
+              private toastrService: NbToastrService,
               private location: LocationStrategy,
               private backButtonHolder: BackButtonHolder) {
   }
@@ -98,28 +97,27 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
       this.bot.exportStory(this.state.currentApplication.name, story.storyId)
         .subscribe(blob => {
           saveAs(blob, this.state.currentApplication.name + "_" + story.storyId + ".json");
-          this.dialog.notify(`Dump provided`, "Dump");
+          this.toastrService.show(`Dump provided`, "Dump", {duration: 3000, status: "success"});
         })
     }, 1);
   }
 
   deleteStory(story: StoryDefinitionConfigurationSummary) {
-    let dialogRef = this.dialog.open(
-      this.matDialog,
+    const dialogRef = this.dialogService.open(
       ConfirmDialogComponent,
       {
-        data: {
+        context: {
           title: `Remove the story '${story.name}'`,
           subtitle: "Are you sure?",
           action: "Remove"
         }
       });
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.onClose.subscribe(result => {
       if (result === "remove") {
         this.bot.deleteStory(story._id)
           .subscribe(_ => {
             this.delete(story.storyId)
-            this.dialog.notify(`Story deleted`, "Delete")
+            this.toastrService.show(`Story deleted`, "Delete", {duration: 3000, status: "success"});
           });
       }
     });
@@ -207,7 +205,7 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
       this.bot.exportStories(this.state.currentApplication.name)
         .subscribe(blob => {
           saveAs(blob, this.state.currentApplication.name + "_stories.json");
-          this.dialog.notify(`Dump provided`, "Dump");
+          this.toastrService.show(`Dump provided`, "Dump", {duration: 3000, status: "success"});
         })
     }, 1);
   }
@@ -216,7 +214,7 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
     this.uploader = new FileUploader({removeAfterUpload: true});
     this.uploader.onCompleteItem =
       (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
-        this.dialog.notify(`Dump uploaded`, "Dump");
+        this.toastrService.show(`Dump uploaded`, "Dump", {duration: 3000, status: "success"});
         this.state.resetConfiguration();
       };
     this.displayUpload = true;
