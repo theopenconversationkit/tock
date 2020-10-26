@@ -27,12 +27,9 @@
 </div>
 
 <div class="header-container">
-  <button *ngIf="isDarkTheme()" nbButton ghost (click)="switchTheme()">
-    <nb-icon icon="sun-outline"></nb-icon>
-  </button>
-  <button *ngIf="!isDarkTheme()" nbButton ghost (click)="switchTheme()">
-    <nb-icon icon="moon-outline"></nb-icon>
-  </button>
+  <nb-icon icon="sun-outline" nbTooltip="Light Mode"></nb-icon>
+  <nb-toggle [ngModel]="isDarkTheme()" (change)="switchTheme()" class="darkmode-toggle" nbTooltip="Switch Mode"></nb-toggle>
+  <nb-icon icon="moon-outline" nbTooltip="Dark Mode"></nb-icon>
   <nb-select status="primary"
              *ngIf="state.currentApplication"
              (selectedChange)="changeApplication($event)"
