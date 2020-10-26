@@ -16,29 +16,35 @@
 
 <div class="i18n-label" *ngIf="i.i18n.length !== 0">
 
-  <mat-card>
+  <nb-card>
+    <nb-card-header>
     <div class="i18n-label__title">
-      <span class="i18n-label__title__label"
-            matTooltip="key:{{i._id}}">{{i.defaultLocalizedLabel().label.length === 0 ? i._id : i.defaultLocalizedLabel().label}}</span>
-
-      <span class="i18n-label__title__intent">{{intent}}</span>
-
-      <span *ngIf="i.defaultLocalizedLabel().label !== i.defaultLabel" class="i18n-label__title__original_label"
-            matTooltip="Original Label">{{i.defaultLabel}}</span>
-
-      <button class="i18n-label__title__delete" *ngIf="deleteAllowed" mat-button (click)="deleteLabel(i)"
-              matTooltip="Delete Label" color="warn">
-        Delete
-      </button>
-
-      <span class="i18n-label__title__usage">
-        <span *ngIf="i.statCount">used {{ i.statCount }} times,</span>
-        <span *ngIf="i.lastUpdate">last used {{ i.lastUpdate | amTimeAgo }}</span>
-      </span>
+      <div style="display: flex;">
+        <span class="i18n-label__title__label"
+              nbTooltip="key:{{i._id}}">{{i.defaultLocalizedLabel().label.length === 0 ? i._id : i.defaultLocalizedLabel().label}}
+        </span>
+        <button class="i18n-label__title__delete" *ngIf="deleteAllowed" nbButton  outline status="danger" size="small" (click)="deleteLabel(i)"
+        nbTooltip="Delete Label" color="warn">
+          Delete
+        </button>
     </div>
+      <div>
+        <div class="i18n-label__title__intent">{{intent}}</div>
 
+        <span *ngIf="i.defaultLocalizedLabel().label !== i.defaultLabel" class="i18n-label__title__original_label"
+        nbTooltip="Original Label">{{i.defaultLabel}}</span>
 
-    <mat-card-content>
+        
+
+        <span class="i18n-label__title__usage">
+          <span *ngIf="i.statCount">used {{ i.statCount }} times,</span>
+          <span *ngIf="i.lastUpdate">last used {{ i.lastUpdate | amTimeAgo }}</span>
+        </span>
+    </div>
+    </div>
+  </nb-card-header>
+
+    <nb-card-body>
       <div
         class="i18n-label__entry i18n-label__entry--language-{{l.locale}} i18n-label__entry--mode-{{l.interfaceType}}"
         *ngFor="let l of i.i18n; let isLast = last; let index = index">
@@ -61,7 +67,7 @@
             <img *ngIf="l.connectorId"
                  src="{{l.iconUrl()}}"
                  class="i18n-label__entry__connector__img"
-                 [matTooltip]="l.connectorId"/>
+                 [nbTooltip]="l.connectorId"/>
           </div>
         </div>
 
@@ -78,10 +84,12 @@
           <!-- Add alternative -->
           <div class="i18n-label__entry__alternative-management">
             <button class="i18n-label__entry__alternatives__button"
-                    mat-icon-button
-                    matTooltip="Add an alternative"
+                    nbButton
+                    ghost
+                    nbTooltip="Add an alternative"
+                    status="info"
                     (click)="addNewAlternative(l)">
-              <mat-icon>add</mat-icon>
+                    <nb-icon icon="plus-outline"></nb-icon>
             </button>
           </div>
 
@@ -89,16 +97,17 @@
           <div class="i18n-label__entry__delete">
             <button *ngIf="deleteAllowed"
                     (click)="removeLocalizedLabel(i, l)"
-                    mat-icon-button
-                    matTooltip="Delete Label"
-                    color="warn">
-              <mat-icon>delete_forever</mat-icon>
+                    nbButton
+                    nbTooltip="Delete Label"
+                    status="danger"
+                    ghost>
+              <nb-icon icon="trash-2-outline"></nb-icon>
             </button>
           </div>
 
           <!-- Validate label -->
           <div class="i18n-label__entry__validation">
-            <nb-checkbox [(ngModel)]="l.validated" (change)="save(i)" nbTooltip="Validate label"></nb-checkbox>
+            <nb-checkbox [(ngModel)]="l.validated" (change)="save(i)" nbTooltip="Validate label" status="info"></nb-checkbox>
           </div>
         </div>
 
@@ -120,7 +129,7 @@
               <img *ngIf="l.connectorId"
                    src="{{l.iconUrl()}}"
                    class="i18n-label__entry__connector__img"
-                   [matTooltip]="l.connectorId"/>
+                   [nbTooltip]="l.connectorId"/>
             </div>
           </div>
 
@@ -135,9 +144,9 @@
           <div class="i18n-label__entry__actions">
             <!-- Remove alternative -->
             <div class="i18n-label__entry__alternative-management remove_alternative">
-              <button class="i18n-label__entry__alternatives__button" mat-icon-button matTooltip="Remove alternative"
+              <button class="i18n-label__entry__alternatives__button" nbButton ghost nbTooltip="Remove alternative" status="danger"
                       (click)="removeAlternative(i, l, index)">
-                <mat-icon>remove</mat-icon>
+                <nb-icon icon="minus-outline"></nb-icon>
               </button>
             </div>
           </div>
@@ -153,7 +162,7 @@
               <button
                 *ngIf="!i.hasLocaleAndInterfaceAndConnector(l.locale, l.interfaceType, connector.connectorType.id)"
                 (click)="addLocalizedLabelForConnector(i, l, connector.connectorType.id)"
-                matTooltip="Add specific label for connector {{connector.connectorType.id}}"
+                nbTooltip="Add specific label for connector {{connector.connectorType.id}}"
                 mat-list-item>
                  <img src="{{connector.connectorType.iconUrl()}}" class="i18n-label__entry__connector__img"/>
               </button>
@@ -163,6 +172,6 @@
           <mat-divider *ngIf="!isLast"></mat-divider>
         </div>
       </div>
-    </mat-card-content>
-  </mat-card>
+    </nb-card-body>
+  </nb-card>
 </div>

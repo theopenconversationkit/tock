@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import {saveAs} from "file-saver";
-import {Component, ElementRef, OnInit} from "@angular/core";
-import {StateService} from "../core-nlp/state.service";
-import {EntityDefinition, Intent, IntentsCategory} from "../model/nlp";
-import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
-import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialog.component";
-import {NlpService} from "../nlp-tabs/nlp.service";
-import {ApplicationService} from "../core-nlp/applications.service";
-import {AddStateDialogComponent} from "./add-state/add-state-dialog.component";
-import {UserRole} from "../model/auth";
-import {IntentDialogComponent} from "../sentence-analysis/intent-dialog/intent-dialog.component";
-import {FlatTreeControl} from "@angular/cdk/tree";
-import {BehaviorSubject} from "rxjs";
-import {DialogService} from "../core-nlp/dialog.service";
+import {saveAs} from 'file-saver';
+import {Component, ElementRef, OnInit} from '@angular/core';
+import {StateService} from '../core-nlp/state.service';
+import {EntityDefinition, Intent, IntentsCategory} from '../model/nlp';
+import {ConfirmDialogComponent} from '../shared-nlp/confirm-dialog/confirm-dialog.component';
+import {NlpService} from '../nlp-tabs/nlp.service';
+import {ApplicationService} from '../core-nlp/applications.service';
+import {AddStateDialogComponent} from './add-state/add-state-dialog.component';
+import {UserRole} from '../model/auth';
+import {IntentDialogComponent} from '../sentence-analysis/intent-dialog/intent-dialog.component';
+import {FlatTreeControl} from '@angular/cdk/tree';
+import {BehaviorSubject} from 'rxjs';
+import {DialogService} from '../core-nlp/dialog.service';
+import { NbDialogService } from '@nebular/theme';
 
 
 @Component({
@@ -40,14 +40,14 @@ export class IntentsComponent implements OnInit {
   UserRole = UserRole;
   treeControl: FlatTreeControl<IntentsCategory>;
   intentsCategories: BehaviorSubject<IntentsCategory[]> = new BehaviorSubject([]);
-  expandedCategories: Set<string> = new Set(["default"]);
+  expandedCategories: Set<string> = new Set(['default']);
   display = true;
   selectedIntent: Intent;
 
   constructor(public state: StateService,
               private nlp: NlpService,
               private dialog: DialogService,
-              private matDialog: MatDialog,
+              private nbDialogService: NbDialogService,
               private applicationService: ApplicationService,
               private elementRef: ElementRef) {
   }
@@ -70,11 +70,10 @@ export class IntentsComponent implements OnInit {
   }
 
   updateIntent(intent: Intent) {
-    let dialogRef = this.dialog.open(
-      this.matDialog,
+    const dialogRef = this.nbDialogService.open(
       IntentDialogComponent,
       {
-        data:
+        context:
           {
             name: intent.name,
             label: intent.label,
@@ -84,7 +83,7 @@ export class IntentsComponent implements OnInit {
       }
     );
     this.display = false;
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.onClose.subscribe(result => {
       this.display = true;
       if (result.name) {
         this.captureExpanded();
@@ -102,32 +101,31 @@ export class IntentsComponent implements OnInit {
               result.category,
               intent._id)
           )
-          .subscribe(intent => {
-              this.state.updateIntent(intent);
+          .subscribe(_intent => {
+              this.state.updateIntent(_intent);
             }
-          )
+          );
       }
     });
   }
 
   deleteIntent(intent: Intent) {
-    let dialogRef = this.dialog.open(
-      this.matDialog,
+    const dialogRef = this.nbDialogService.open(
       ConfirmDialogComponent,
       {
-        data: {
+        context: {
           title: `Remove the Intent ${intent.name}`,
-          subtitle: "Are you sure?",
-          action: "Remove"
+          subtitle: 'Are you sure?',
+          action: 'Remove'
         }
-      } as MatDialogConfig);
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === "remove") {
+      });
+    dialogRef.onClose.subscribe(result => {
+      if (result === 'remove') {
         this.captureExpanded();
         this.nlp.removeIntent(this.state.currentApplication, intent).subscribe(
           _ => {
             this.state.removeIntent(intent);
-            this.dialog.notify(`Intent ${intent.name} removed`, "Remove Intent");
+            this.dialog.notify(`Intent ${intent.name} removed`, 'Remove Intent');
           },
           _ => this.dialog.notify(`Delete Intent ${intent.name} failed`)
         )
@@ -139,7 +137,7 @@ export class IntentsComponent implements OnInit {
     this.nlp.removeState(this.state.currentApplication, intent, state).subscribe(
       result => {
         intent.mandatoryStates.splice(intent.mandatoryStates.indexOf(state), 1);
-        this.dialog.notify(`State ${state} removed from Intent ${intent.name}`, "Remove State");
+        this.dialog.notify(`State ${state} removed from Intent ${intent.name}`, 'Remove State');
       },
       _ => {
         this.dialog.notify(`Remove State failed`)
@@ -148,22 +146,21 @@ export class IntentsComponent implements OnInit {
   }
 
   addState(intent: Intent) {
-    let dialogRef = this.dialog.open(
-      this.matDialog,
+    const dialogRef = this.nbDialogService.open(
       AddStateDialogComponent,
       {
-        data: {
+        context: {
           title: `Add a state for intent \"${intent.name}\"`
         }
-      } as MatDialogConfig);
+      });
     this.display = false;
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.onClose.subscribe(result => {
       this.display = true;
-      if (result !== "cancel") {
+      if (result !== 'cancel') {
         intent.mandatoryStates.push(result.name);
         this.nlp.saveIntent(intent).subscribe(
           result => {
-            this.dialog.notify(`State ${result.name} added for Intent ${intent.name}`, "Add State");
+            this.dialog.notify(`State ${result.name} added for Intent ${intent.name}`, 'Add State');
           },
           _ => {
             intent.mandatoryStates.splice(intent.mandatoryStates.length - 1, 1);
@@ -176,25 +173,24 @@ export class IntentsComponent implements OnInit {
 
   removeEntity(intent: Intent, entity: EntityDefinition) {
     const entityName = entity.qualifiedName(this.state.user);
-    let dialogRef = this.dialog.open(
-      this.matDialog,
+    const dialogRef = this.nbDialogService.open(
       ConfirmDialogComponent,
       {
-        data: {
+        context: {
           title: `Remove the Entity ${entityName}`,
-          subtitle: "Are you sure?",
-          action: "Remove"
+          subtitle: 'Are you sure?',
+          action: 'Remove'
         }
-      } as MatDialogConfig);
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === "remove") {
+      });
+    dialogRef.onClose.subscribe(result => {
+      if (result === 'remove') {
         this.nlp.removeEntity(this.state.currentApplication, intent, entity).subscribe(
           deleted => {
             this.state.currentApplication.intentById(intent._id).removeEntity(entity);
             if (deleted) {
               this.state.removeEntityTypeByName(entity.entityTypeName)
             }
-            this.dialog.notify(`Entity ${entityName} removed from intent`, "Remove Entity");
+            this.dialog.notify(`Entity ${entityName} removed from intent`, 'Remove Entity');
           });
       }
     });
@@ -204,7 +200,7 @@ export class IntentsComponent implements OnInit {
     this.nlp.removeSharedIntent(this.state.currentApplication, intent, intentId).subscribe(
       result => {
         intent.sharedIntents.splice(intent.sharedIntents.indexOf(intentId), 1);
-        this.dialog.notify(`Shared Intent removed from Intent ${intent.name}`, "Remove Intent");
+        this.dialog.notify(`Shared Intent removed from Intent ${intent.name}`, 'Remove Intent');
       },
       _ => {
         this.dialog.notify(`Remove Shared Intent failed`)
@@ -217,7 +213,7 @@ export class IntentsComponent implements OnInit {
       intent.sharedIntents.push(intentId);
       this.nlp.saveIntent(intent).subscribe(
         _ => {
-          this.dialog.notify(`Shared intent added for Intent ${intent.name}`, "Add Shared Intent");
+          this.dialog.notify(`Shared intent added for Intent ${intent.name}`, 'Add Shared Intent');
         },
         _ => {
           intent.mandatoryStates.splice(intent.mandatoryStates.length - 1, 1);
@@ -234,15 +230,15 @@ export class IntentsComponent implements OnInit {
       this.state.currentLocale,
       this.state.hasRole(UserRole.technicalAdmin))
       .subscribe(blob => {
-        saveAs(blob, intent.name + "_sentences.json");
-        this.dialog.notify(`Dump provided`, "Dump");
+        saveAs(blob, intent.name + '_sentences.json');
+        this.dialog.notify(`Dump provided`, 'Dump');
       })
   }
 
   displaySharedIntent(intent: Intent) {
     this.selectedIntent = intent;
     setTimeout(_ => {
-      const e = this.elementRef.nativeElement.querySelector("nb-select");
+      const e = this.elementRef.nativeElement.querySelector('nb-select');
       e.click();
       e.focus();
     });

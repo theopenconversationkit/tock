@@ -14,26 +14,33 @@
  * limitations under the License.
  */
 
-import {Injectable} from "@angular/core";
+import {Injectable} from '@angular/core';
 
 @Injectable()
 export class SettingsService {
 
   currentApplicationName: string;
   currentLocale: string;
+  currentTheme: string;
 
   constructor() {
-    this.currentApplicationName = localStorage.getItem("_tock_current_app");
-    this.currentLocale = localStorage.getItem("_tock_current_locale")
+    this.currentApplicationName = localStorage.getItem('_tock_current_app');
+    this.currentLocale = localStorage.getItem('_tock_current_locale');
+    this.currentTheme = localStorage.getItem('_tock_current_theme')
   }
 
   onApplicationChange(applicationName: string): void {
     this.currentApplicationName = applicationName;
-    localStorage.setItem("_tock_current_app", this.currentApplicationName);
+    localStorage.setItem('_tock_current_app', this.currentApplicationName);
   }
 
   onLocaleChange(locale: string): void {
     this.currentLocale = locale;
-    localStorage.setItem("_tock_current_locale", this.currentLocale);
+    localStorage.setItem('_tock_current_locale', this.currentLocale);
+  }
+
+  onThemeChange(theme: string): void {
+    this.currentTheme = theme;
+    localStorage.setItem('_tock_current_theme', this.currentTheme);
   }
 }

@@ -32,7 +32,6 @@ export class HeaderComponent implements OnInit {
 
   @Input() position = 'normal';
 
-  isDark = false;
   currentTheme = 'default';
   private destroy$: Subject<void> = new Subject<void>();
 
@@ -41,31 +40,42 @@ export class HeaderComponent implements OnInit {
               public state: StateService,
               public auth: AuthService,
               public settings: SettingsService,
-              private themeService: NbThemeService,) {
+              private themeService: NbThemeService, ) {
 
   }
 
   ngOnInit() {
-    this.currentTheme = this.themeService.currentTheme;
-    this.themeService.onThemeChange()
-      .pipe(
-        map(({name}) => name),
-        takeUntil(this.destroy$),
-      )
-      .subscribe(themeName => this.currentTheme = themeName);
+    this.currentTheme = this.settings.currentTheme ? this.settings.currentTheme : 'default';
+    // this.themeService.onThemeChange()
+    //   .pipe(
+    //     map(({name}) => name),
+    //     takeUntil(this.destroy$),
+    //   )
+    //   .subscribe(themeName => this.currentTheme = themeName);
+      if (this.currentTheme !== this.themeService.currentTheme) {
+        this.themeService.changeTheme(this.currentTheme);
+      }
+    if (this.settings.currentLocale != null) {
+      this.state.currentLocale = this.settings.currentLocale;
+    }
   }
 
   changeTheme(themeName: string) {
+    this.settings.onThemeChange(themeName);
     this.themeService.changeTheme(themeName);
+    this.currentTheme = themeName;
   }
 
   switchTheme() {
-    this.isDark = !this.isDark;
-    if (this.isDark) {
-      this.changeTheme('dark')
+    if (!this.isDarkTheme()) {
+      this.changeTheme('dark');
     } else {
-      this.changeTheme('default')
+      this.changeTheme('default');
     }
+  }
+
+  isDarkTheme() {
+    return this.currentTheme === 'dark';
   }
 
   toggleSidebar(): boolean {

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import {Component, Inject, OnInit} from "@angular/core";
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from "@angular/material/dialog";
-import {StateService} from "../../core-nlp/state.service";
-import {AnswerConfigurationType, IntentName, MandatoryEntity, SimpleAnswerConfiguration} from "../model/story";
-import {EntityDefinition, entityNameFromQualifiedName, Intent, IntentsCategory} from "../../model/nlp";
-import {CreateEntityDialogComponent} from "../../sentence-analysis/create-entity-dialog/create-entity-dialog.component";
-import {IntentDialogComponent} from "../../sentence-analysis/intent-dialog/intent-dialog.component";
-import { NbToastrService } from '@nebular/theme';
+import {Component, Inject, OnInit} from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import {StateService} from '../../core-nlp/state.service';
+import {AnswerConfigurationType, IntentName, MandatoryEntity, SimpleAnswerConfiguration} from '../model/story';
+import {EntityDefinition, entityNameFromQualifiedName, Intent, IntentsCategory} from '../../model/nlp';
+import {CreateEntityDialogComponent} from '../../sentence-analysis/create-entity-dialog/create-entity-dialog.component';
+import {IntentDialogComponent} from '../../sentence-analysis/intent-dialog/intent-dialog.component';
+import { NbToastrService, NbDialogService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-mandatory-entities-dialog',
@@ -46,11 +46,11 @@ export class MandatoryEntitiesDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any,
     public state: StateService,
     private toastrService: NbToastrService,
-    private dialog: MatDialog) {
+    private dialog: NbDialogService) {
 
     this.setNewEntity();
     this.entities = this.data.entities ? this.data.entities.slice(0).map(a => {
-      let newA = a.clone();
+      const newA = a.clone();
       newA.intentDefinition = this.state.findIntentByName(a.intent.name);
       return newA;
     }) : [];
@@ -71,12 +71,12 @@ export class MandatoryEntitiesDialogComponent implements OnInit {
   private setNewEntity() {
     const c = this.newEntity ? this.newEntity.category : null;
     this.newEntity = new MandatoryEntity(
-      "",
-      "",
-      new IntentName(""),
+      '',
+      '',
+      new IntentName(''),
       [new SimpleAnswerConfiguration([])],
       AnswerConfigurationType.simple,
-      c ? c : "");
+      c ? c : '');
   }
 
   onIntentChange(entity: MandatoryEntity, name: string) {
@@ -106,21 +106,21 @@ export class MandatoryEntitiesDialogComponent implements OnInit {
     setTimeout(_ => {
       const intentName = entity.intent.name.trim();
       if (intentName.length !== 0 && (!entity.intentDefinition || entity.intentDefinition.name !== intentName)) {
-        let intent = this.state.findIntentByName(intentName);
+        const intent = this.state.findIntentByName(intentName);
         if (intent) {
           entity.intentDefinition = intent;
         } else {
-          let dialogRef = this.dialog.open(
+          const dialogRef = this.dialog.open(
             IntentDialogComponent,
             {
-              data: {
+              context: {
                 create: true,
                 category: this.defaultCategory,
                 name: intentName,
                 label: intentName
               }
             });
-          dialogRef.afterClosed().subscribe(result => {
+          dialogRef.onClose.subscribe(result => {
             if (result.name) {
               entity.intentDefinition =
                 new Intent(
@@ -135,7 +135,7 @@ export class MandatoryEntitiesDialogComponent implements OnInit {
                   result.category
                 )
             } else {
-              entity.intent.name = entity.intentDefinition ? entity.intentDefinition.name : "";
+              entity.intent.name = entity.intentDefinition ? entity.intentDefinition.name : '';
             }
           })
         }
@@ -144,15 +144,15 @@ export class MandatoryEntitiesDialogComponent implements OnInit {
   }
 
   selectEntity(e: MandatoryEntity) {
-    let dialogRef = this.dialog.open(CreateEntityDialogComponent,
+    const dialogRef = this.dialog.open(CreateEntityDialogComponent,
       {
-        data: {}
+        context: {}
       }
     );
-    dialogRef.afterClosed().subscribe(result => {
-      if (result && result !== "cancel") {
-        let name = result.name;
-        let role = result.role;
+    dialogRef.onClose.subscribe(result => {
+      if (result && result !== 'cancel') {
+        const name = result.name;
+        const role = result.role;
         e.entity = new EntityDefinition(name, role);
         e.role = role;
         e.entityType = name;
@@ -165,9 +165,9 @@ export class MandatoryEntitiesDialogComponent implements OnInit {
   }
 
   addEntity() {
-    let invalidMessage = this.newEntity.currentAnswer().invalidMessage();
+    const invalidMessage = this.newEntity.currentAnswer().invalidMessage();
     if (invalidMessage) {
-      this.toastrService.show(`Error: ${invalidMessage}`, "ERROR", {duration: 5000});
+      this.toastrService.show(`Error: ${invalidMessage}`, 'ERROR', {duration: 5000});
     } else {
       this.entities.push(this.newEntity);
       this.setNewEntity();

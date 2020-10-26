@@ -23,14 +23,13 @@
       <img class="logo-img" src="/assets/images/logo-black.svg"/>
       Tock Studio
     </div>
-    <i class="material-icons small">wb_sunny</i>
-    <nb-toggle  [(ngModel)]="isDark" (checkedChange)="switchTheme()" status="basic"></nb-toggle>
-    <i class="material-icons small">brightness_2</i>
   </div>
 </div>
 
 <div class="header-container">
-
+  <nb-icon icon="sun-outline" nbTooltip="Light Mode"></nb-icon>
+  <nb-toggle [ngModel]="isDarkTheme()" (change)="switchTheme()" class="darkmode-toggle" nbTooltip="Switch Mode"></nb-toggle>
+  <nb-icon icon="moon-outline" nbTooltip="Dark Mode"></nb-icon>
   <nb-select status="primary"
              *ngIf="state.currentApplication"
              (selectedChange)="changeApplication($event)"

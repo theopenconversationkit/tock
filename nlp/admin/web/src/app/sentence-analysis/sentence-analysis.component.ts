@@ -23,16 +23,16 @@ import {
   Input,
   OnInit,
   Output
-} from "@angular/core";
-import {Intent, nameFromQualifiedName, Sentence, SentenceStatus} from "../model/nlp";
-import {StateService} from "../core-nlp/state.service";
-import {NlpService} from "../nlp-tabs/nlp.service";
-import {IntentDialogComponent} from "./intent-dialog/intent-dialog.component";
-import {CoreConfig} from "../core-nlp/core.config";
-import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialog.component";
-import {ReviewRequestDialogComponent} from "./review-request-dialog/review-request-dialog.component";
-import {DialogService} from "../core-nlp/dialog.service";
-import {MatDialog} from "@angular/material/dialog";
+} from '@angular/core';
+import {Intent, nameFromQualifiedName, Sentence, SentenceStatus} from '../model/nlp';
+import {StateService} from '../core-nlp/state.service';
+import {NlpService} from '../nlp-tabs/nlp.service';
+import {IntentDialogComponent} from './intent-dialog/intent-dialog.component';
+import {CoreConfig} from '../core-nlp/core.config';
+import {ConfirmDialogComponent} from '../shared-nlp/confirm-dialog/confirm-dialog.component';
+import {ReviewRequestDialogComponent} from './review-request-dialog/review-request-dialog.component';
+import {DialogService} from '../core-nlp/dialog.service';
+import { NbDialogService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-sentence-analysis',
@@ -53,8 +53,8 @@ export class SentenceAnalysisComponent implements OnInit {
 
   constructor(public state: StateService,
               private nlp: NlpService,
+              private nbDialogService: NbDialogService,
               private dialog: DialogService,
-              private matDialog: MatDialog,
               public config: CoreConfig,
               private applicationRef: ApplicationRef,
               private changeDetectorRef: ChangeDetectorRef,
@@ -87,16 +87,16 @@ export class SentenceAnalysisComponent implements OnInit {
   }
 
   newIntent() {
-    //cleanup entities
+    // cleanup entities
     this.sentence.classification.entities = [];
-    let dialogRef = this.dialog.open(this.matDialog, IntentDialogComponent, {data: {create: true}});
-    dialogRef.afterClosed().subscribe(result => {
-      if (result.name) {
+    const dialogRef = this.nbDialogService.open(IntentDialogComponent, {context: {create: true}});
+    dialogRef.onClose.subscribe(result => {
+      if (result && result.name) {
         if (this.createIntent(result.name, result.label, result.description, result.category)) {
           return;
         }
       }
-      //we need to be sure the selected value has changed to avoid side effects
+      // we need to be sure the selected value has changed to avoid side effects
       if (!this.sentence.classification.intentId) {
         this.sentence.classification.intentId = Intent.unknown;
         this.onIntentChange();
@@ -114,7 +114,7 @@ export class SentenceAnalysisComponent implements OnInit {
   focusOnIntentSelect() {
     this.displayAllView();
     setTimeout(_ => {
-      const e = this.elementRef.nativeElement.querySelector("nb-select");
+      const e = this.elementRef.nativeElement.querySelector('nb-select');
       e.click();
       e.focus();
     });
@@ -125,12 +125,12 @@ export class SentenceAnalysisComponent implements OnInit {
   }
 
   onLanguageChange() {
-    //do nothing
+    // do nothing
   }
 
   onValidate() {
     this.sentence.forReview = false;
-    this.sentence.reviewComment = "";
+    this.sentence.reviewComment = '';
     this.validate();
   }
 
@@ -147,16 +147,15 @@ export class SentenceAnalysisComponent implements OnInit {
 
   onReviewRequest() {
     setTimeout(_ => {
-      let dialogRef = this.dialog.open(
-        this.matDialog,
+      const dialogRef = this.nbDialogService.open(
         ReviewRequestDialogComponent,
         {
-          data: {
+          context: {
             beforeClassification: this.intentBeforeClassification,
             reviewComment: this.sentence.reviewComment
           }
         });
-      dialogRef.afterClosed().subscribe(result => {
+      dialogRef.onClose.subscribe(result => {
         if (result && result.status === 'confirm') {
           this.sentence.forReview = true;
           this.sentence.reviewComment = result.description;
@@ -182,14 +181,14 @@ export class SentenceAnalysisComponent implements OnInit {
       .subscribe((s) => {
         this.closed.emit(this.sentence);
       });
-    //delete old language
+    // delete old language
     if (this.sentence.language !== this.state.currentLocale) {
       const s = this.sentence.clone();
       s.language = this.state.currentLocale;
       s.status = SentenceStatus.deleted;
       this.nlp.updateSentence(s)
         .subscribe((s) => {
-          this.dialog.notify(`Language change to ${this.state.localeName(this.sentence.language)}`, "Language change");
+          this.dialog.notify(`Language change to ${this.state.localeName(this.sentence.language)}`, 'Language change');
         });
     }
   }
@@ -197,18 +196,18 @@ export class SentenceAnalysisComponent implements OnInit {
   private createIntent(name: string, label: string, description: string, category: string): boolean {
     if (StateService.intentExistsInApp(this.state.currentApplication, name) || name === nameFromQualifiedName(Intent.unknown)) {
       this.dialog.notify(`Intent ${name} already exists`);
-      return false
+      return false;
     } else {
       if (this.state.intentExistsInOtherApplication(name)) {
-        let dialogRef = this.dialog.open(this.matDialog, ConfirmDialogComponent, {
-          data: {
-            title: "This intent is already used in an other application",
-            subtitle: "If you confirm the name, the intent will be shared between the two applications.",
-            action: "Confirm"
+        const dialogRef = this.nbDialogService.open(ConfirmDialogComponent, {
+          context: {
+            title: 'This intent is already used in an other application',
+            subtitle: 'If you confirm the name, the intent will be shared between the two applications.',
+            action: 'Confirm'
           }
         });
-        dialogRef.afterClosed().subscribe(result => {
-          if (result === "confirm") {
+        dialogRef.onClose.subscribe(result => {
+          if (result === 'confirm') {
             this.saveIntent(name, label, description, category);
           }
         });

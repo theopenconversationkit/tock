@@ -27,7 +27,9 @@
     <span class="search-input">
       <input nbInput status="primary" placeholder="Search Stories" [(ngModel)]="filter" (keyup)="search()">
     </span>
-    <mat-slide-toggle [(ngModel)]="onlyConfigured" (change)="search()">Only Configured Stories</mat-slide-toggle>
+
+    <span class="toggle"><nb-toggle status="primary" [(ngModel)]="onlyConfigured" (change)="search()">Only Configured Stories</nb-toggle></span>
+    
     <div class="download">
       <button nbButton ghost (click)="download()" matTooltip="Export Stories">
         <mat-icon>file_download</mat-icon>

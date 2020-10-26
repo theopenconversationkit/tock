@@ -19,16 +19,15 @@
     <a (click)="toggleSidebar()" href="#" class="sidebar-toggle">
       <nb-icon icon="menu-2-outline"></nb-icon>
     </a>
-    <img style="width: 45px;" src="/assets/images/Logo_Tock_White.svg"/>
+    <img src="/assets/images/logo-black.svg" class="logo-img"/>
     <div class="logo" (click)="goToHome()">Tock Studio</div>
-    <i class="material-icons small">wb_sunny</i>
-    <mat-slide-toggle class="choice" [checked]="isDark" (change)="switchTheme()" color="primary"></mat-slide-toggle>
-    <i class="material-icons small">brightness_2</i>
   </div>
 </div>
 
 <div class="header-container">
-
+  <nb-icon icon="sun-outline" nbTooltip="Light Mode"></nb-icon>
+  <nb-toggle [ngModel]="isDarkTheme()" (change)="switchTheme()" class="darkmode-toggle" nbTooltip="Switch Mode"></nb-toggle>
+  <nb-icon icon="moon-outline" nbTooltip="Dark Mode"></nb-icon>
   <nb-select status="primary"
              *ngIf="state.currentApplication"
              (selectedChange)="changeApplication($event)"

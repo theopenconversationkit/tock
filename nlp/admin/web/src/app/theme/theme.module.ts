@@ -27,10 +27,11 @@ import {
   NbButtonModule,
   NbSelectModule,
   NbIconModule,
-  NbThemeModule
+  NbThemeModule,
+  NbToggleModule,
+  NbTooltipModule
 } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 import {
   FooterComponent,
@@ -58,7 +59,8 @@ const NB_MODULES = [
   NbSelectModule,
   NbIconModule,
   NbEvaIconsModule,
-  MatSlideToggleModule
+  NbToggleModule,
+  NbTooltipModule
 ];
 
 const COMPONENTS = [

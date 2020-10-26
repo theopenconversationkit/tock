@@ -16,18 +16,19 @@
 
 <nb-card class="try">
   <nb-card-body>
-    <mat-form-field class="try-input">
-      <input matInput placeholder="Write some text" #tryIt (keyup.enter)="onTry(tryIt.value)">
-    </mat-form-field>
-    <button nbButton outline status="primary" (click)="onTry(tryIt.value)" style="margin-left: 10px;">GO</button>
+    <div class=" form-group">
+      <input nbInput fieldSize="large" status="primary" placeholder="Write some text" class="try-input" #tryIt (keyup.enter)="onTry(tryIt.value)">
+      <button nbButton outline status="primary" (click)="onTry(tryIt.value)" style="margin-left: 10px;">GO</button>
+    </div>
+    
     &nbsp;
     <nb-accordion>
       <nb-accordion-item>
         <nb-accordion-item-header>Advanced options</nb-accordion-item-header>
         <nb-accordion-item-body>
-          <mat-form-field>
-            <input matInput [(ngModel)]="queryState" placeholder="Enter query state">
-          </mat-form-field>
+          <div class=" form-group">
+            <input nbInput [(ngModel)]="queryState" placeholder="Enter query state" status="info">
+          </div>
           <br>
           <nb-checkbox [(ngModel)]="skipCache" nbTooltip="Force NLP model query (skip cache)">skip cache</nb-checkbox>
         </nb-accordion-item-body>

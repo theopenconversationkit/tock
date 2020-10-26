@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {StateService} from "../../core-nlp/state.service";
-import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
-import {I18nLabel, I18nLocalizedLabel, userInterfaces} from "../model/i18n";
-import {BotService} from "../bot-service";
-import {ConnectorTypeConfiguration} from "../../core/model/configuration";
-import {BotSharedService} from "../../shared/bot-shared.service";
+import {StateService} from '../../core-nlp/state.service';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {I18nLabel, I18nLocalizedLabel, userInterfaces} from '../model/i18n';
+import {BotService} from '../bot-service';
+import {ConnectorTypeConfiguration} from '../../core/model/configuration';
+import {BotSharedService} from '../../shared/bot-shared.service';
 import { NbToastrService } from '@nebular/theme';
 
 @Component({
@@ -72,7 +72,7 @@ export class I18nLabelComponent implements OnInit {
 
   deleteLabel(label: I18nLabel) {
     this.i18nController.deleteLabel(label);
-    let l = "";
+    let l = '';
     if (label.i18n.length !== 0) {
       l = label.defaultLocalizedLabel().label;
       if (!l || l.trim().length === 0) {
@@ -82,13 +82,13 @@ export class I18nLabelComponent implements OnInit {
     this.delete.emit(label);
     this.botService
       .deleteI18nLabel(label)
-      .subscribe(_ => this.toastrService.show(`Label ${l} deleted`, "Delete", {duration: 3000}));
+      .subscribe(_ => this.toastrService.show(`Label ${l} deleted`, 'Delete', {duration: 3000}));
   }
 
   save(i18n: I18nLabel) {
     this.botService
       .saveI18nLabel(i18n)
-      .subscribe(_ => this.toastrService.show(`Label updated`, "Update", {duration: 3000}));
+      .subscribe(_ => this.toastrService.show(`Label updated`, 'Update', {duration: 3000}));
   }
 
   removeLocalizedLabel(i18n: I18nLabel, label: I18nLocalizedLabel) {
@@ -101,7 +101,7 @@ export class I18nLabelComponent implements OnInit {
   }
 
   addLocalizedLabelForConnector(i18n: I18nLabel, label: I18nLocalizedLabel, connectorId: string) {
-    i18n.i18n.push(new I18nLocalizedLabel(label.locale, label.interfaceType, "", false, connectorId, []));
+    i18n.i18n.push(new I18nLocalizedLabel(label.locale, label.interfaceType, '', false, connectorId, []));
     this.save(i18n);
     this.i18nController.fillLabels();
   }
@@ -117,7 +117,7 @@ export class I18nLabelComponent implements OnInit {
   }
 
   addNewAlternative(label: I18nLocalizedLabel) {
-    label.alternatives.push("");
+    label.alternatives.push('');
   }
 }
 
@@ -140,7 +140,7 @@ export class I18nController {
         locales.forEach(locale => {
           userInterfaces.forEach(userInterface => {
             if (!i.label(locale, userInterface)) {
-              i.i18n.push(new I18nLocalizedLabel(locale, userInterface, "", false, null, []));
+              i.i18n.push(new I18nLocalizedLabel(locale, userInterface, '', false, null, []));
             }
           })
         });

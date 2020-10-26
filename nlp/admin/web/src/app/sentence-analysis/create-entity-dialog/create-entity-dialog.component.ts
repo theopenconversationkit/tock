@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import {Component, Inject, OnInit} from "@angular/core";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import {StateService} from "../../core-nlp/state.service";
-import {entityNameFromQualifiedName, EntityType, qualifiedNameWithoutRole} from "../../model/nlp";
-import {EntityProvider} from "../highlight/highlight.component";
+import {Component, Input, OnInit} from '@angular/core';
+import { NbDialogRef } from '@nebular/theme';
+import {StateService} from '../../core-nlp/state.service';
+import {entityNameFromQualifiedName, EntityType, qualifiedNameWithoutRole} from '../../model/nlp';
+import {EntityProvider} from '../highlight/highlight.component';
 
 @Component({
   selector: 'tock-create-entity-dialog',
@@ -27,7 +27,7 @@ import {EntityProvider} from "../highlight/highlight.component";
 })
 export class CreateEntityDialogComponent implements OnInit {
 
-  entityProvider: EntityProvider;
+  @Input() entityProvider: EntityProvider;
   entityType: EntityType;
   type: string;
   role: string;
@@ -37,10 +37,8 @@ export class CreateEntityDialogComponent implements OnInit {
   error: string;
   entityTypes: EntityType[];
 
-  constructor(public dialogRef: MatDialogRef<CreateEntityDialogComponent>,
-              private state: StateService,
-              @Inject(MAT_DIALOG_DATA) private data: any) {
-    this.entityProvider = data.entityProvider;
+  constructor(public dialogRef: NbDialogRef<CreateEntityDialogComponent>,
+              private state: StateService) {
     this.state.entityTypesSortedByName().subscribe(entities => this.entityTypes = entities);
   }
 
@@ -79,7 +77,7 @@ export class CreateEntityDialogComponent implements OnInit {
       if (this.entityType) {
         name = this.entityType.name;
       } else {
-        this.error = "Please select or create an entity";
+        this.error = 'Please select or create an entity';
         return;
       }
     } else if (name.indexOf(':') === -1) {
@@ -90,7 +88,7 @@ export class CreateEntityDialogComponent implements OnInit {
       role = entityNameFromQualifiedName(name);
     }
     if (this.entityProvider && this.entityProvider.hasEntityRole(role)) {
-      this.error = "Entity role already exists";
+      this.error = 'Entity role already exists';
     } else {
       this.dialogRef.close({name: name, role: role});
     }

@@ -13,10 +13,13 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
-<h1 mat-dialog-title>{{data.title}}</h1>
-<div mat-dialog-content class="subtitle">{{data.subtitle}}</div>
-<div mat-dialog-actions>
-  <button nbButton status="primary" class="btn" (click)="dialogRef.close('cancel')">Cancel</button>
-  <button nbButton status="danger" class="btn" (click)="dialogRef.close(data.action.toLowerCase())">{{data.action}}</button>
-</div>
+<nb-card status="danger">
+  <nb-card-header>{{title}}</nb-card-header>
+  <nb-card-body class="message">
+    <label>{{subtitle}}</label>
+  </nb-card-body>
+  <nb-card-footer class="footer">
+    <button nbButton size="small" status="primary" (click)="dialogRef.close('cancel')">Cancel</button>
+    <button nbButton size="small" status="danger" class="submit-button" (click)="dialogRef.close(action.toLowerCase())">{{action}}</button>
+  </nb-card-footer>
+</nb-card>

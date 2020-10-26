@@ -15,20 +15,16 @@
  */
 
 .i18n-label {
-  width: 100%;
+  width: 90%;
   display: block;
-  max-width: 800px;
-  margin-bottom: 60px;
   padding: 0 20px;
 
   font-family: Roboto,"Helvetica Neue",sans-serif;
 }
 
 .i18n-label__title {
-  display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  margin-bottom: 20px;
 }
 
 .i18n-label__title__label {
@@ -113,6 +109,7 @@
 .i18n-label__entry__input__textarea {
   width: 100%;
   border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+  max-width: unset!important;
 }
 
 .i18n-label__entry__connectors {
