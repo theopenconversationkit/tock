@@ -83,7 +83,7 @@ data class BotStoryDefinitionConfigurationStep(
             e.name.takeUnless { it.isBlank() } ?: "${e.intent?.name}_${e.level}",
             e.intent,
             e.targetIntent,
-            e.answers.mapAnswers(),
+            e.answers.mapAnswers(story.userSentenceLocale),
             e.currentType,
             story.category,
             (e.userSentenceLabel

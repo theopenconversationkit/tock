@@ -18,6 +18,7 @@ package ai.tock.bot.admin.model
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.DedicatedAnswerConfiguration
+import java.util.Locale
 
 /**
  *
@@ -27,9 +28,9 @@ class BotConfiguredAnswer(
     val currentType: AnswerConfigurationType,
     val answers: List<BotAnswerConfiguration>
 ) {
-    constructor(conf: DedicatedAnswerConfiguration) : this(
+    constructor(conf: DedicatedAnswerConfiguration, locale: Locale?) : this(
         conf.botConfiguration,
         conf.currentType,
-        conf.answers.mapAnswers()
+        conf.answers.mapAnswers(locale)
     )
 }
