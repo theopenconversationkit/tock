@@ -24,8 +24,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>tock-bot-orchestration</artifactId>
-    <name>Tock Bot orchestration</name>
-    <description>Orchestration between bots</description>
+    <name>Tock Bot Orchestration</name>
+    <description>Orchestration between bots.</description>
 
     <dependencies>
         <dependency>
@@ -38,8 +38,17 @@
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>RELEASE</version>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
