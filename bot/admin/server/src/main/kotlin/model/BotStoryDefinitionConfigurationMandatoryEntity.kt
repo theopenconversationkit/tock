@@ -63,7 +63,7 @@ data class BotStoryDefinitionConfigurationMandatoryEntity(
             e.role,
             e.entityType,
             e.intent,
-            e.answers.mapAnswers(),
+            e.answers.mapAnswers(story.userSentenceLocale),
             e.currentType,
             story.category
         )

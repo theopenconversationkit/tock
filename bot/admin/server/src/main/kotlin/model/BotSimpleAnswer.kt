@@ -20,15 +20,16 @@ import ai.tock.bot.admin.answer.SimpleAnswer
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.Translator
+import java.util.Locale
 
 /**
  *
  */
 data class BotSimpleAnswer(val label: I18nLabel, val delay: Long, val mediaMessage: BotMediaMessageDescriptor? = null) {
 
-    constructor(answer: SimpleAnswer) :
+    constructor(answer: SimpleAnswer, locale: Locale?) :
         this(
-            Translator.saveIfNotExist(answer.key),
+            Translator.saveIfNotExist(answer.key, locale),
             answer.delay,
             answer.mediaMessage?.let { BotMediaMessageDescriptor.fromDescriptor(it) }
         )

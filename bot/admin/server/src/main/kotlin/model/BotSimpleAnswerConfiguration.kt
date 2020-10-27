@@ -18,6 +18,7 @@ package ai.tock.bot.admin.model
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
+import java.util.Locale
 
 /**
  *
@@ -25,6 +26,6 @@ import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
 data class BotSimpleAnswerConfiguration(val answers: List<BotSimpleAnswer>)
     : BotAnswerConfiguration(AnswerConfigurationType.simple) {
 
-    constructor(conf: SimpleAnswerConfiguration) : this(conf.answers.map { BotSimpleAnswer(it) })
+    constructor(conf: SimpleAnswerConfiguration, locale: Locale?) : this(conf.answers.map { BotSimpleAnswer(it, locale) })
 
 }

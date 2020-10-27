@@ -29,10 +29,10 @@ import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.util.Locale
 
-internal fun List<AnswerConfiguration>.mapAnswers(): List<BotAnswerConfiguration> =
+internal fun List<AnswerConfiguration>.mapAnswers(locale: Locale?): List<BotAnswerConfiguration> =
     map {
         when (it) {
-            is SimpleAnswerConfiguration -> BotSimpleAnswerConfiguration(it)
+            is SimpleAnswerConfiguration -> BotSimpleAnswerConfiguration(it, locale)
             is ScriptAnswerConfiguration -> BotScriptAnswerConfiguration(it)
             is BuiltInAnswerConfiguration -> BotBuiltinAnswerConfiguration(it)
             else -> error("unsupported conf $it")
@@ -73,7 +73,7 @@ data class BotStoryDefinitionConfiguration(
         story.intent,
         story.currentType,
         story.namespace,
-        story.answers.mapAnswers(),
+        story.answers.mapAnswers(story.userSentenceLocale),
         story.mandatoryEntities.map { BotStoryDefinitionConfigurationMandatoryEntity(story, it) },
         story.steps.map { BotStoryDefinitionConfigurationStep(story, it) },
         story.name,
@@ -84,7 +84,7 @@ data class BotStoryDefinitionConfiguration(
         story.configurationName,
         story.features,
         story.tags,
-        story.configuredAnswers.map { BotConfiguredAnswer(it) },
+        story.configuredAnswers.map { BotConfiguredAnswer(it, story.userSentenceLocale) },
         story.configuredSteps.mapSteps(story),
         story._id
     )

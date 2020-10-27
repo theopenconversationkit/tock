@@ -20,10 +20,14 @@ import ai.tock.shared.defaultLocale
 import ai.tock.shared.defaultNamespace
 import ai.tock.translator.UserInterfaceType.textChat
 import io.mockk.every
+import io.mockk.slot
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.toId
+import java.util.Locale
+import kotlin.collections.LinkedHashSet
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 /**
  *
@@ -194,5 +198,67 @@ class TranslatorTest : AbstractTest() {
 
         val index = 1
         assertEquals("b", Translator.randomText(l, label, "contextId", index))
+    }
+
+    @Test
+    fun `saveIfNotExist should use default locale when none provided`() {
+
+        val locale = Locale("fr")
+        assertNotEquals(locale, defaultLocale)
+
+        val localizedLabel = I18nLocalizedLabel(
+                locale,
+                defaultUserInterface,
+                "a",
+                listOf("b")
+        )
+        val label = I18nLabel(
+                "".toId(),
+                defaultNamespace,
+                "",
+                LinkedHashSet(listOf(localizedLabel))
+        )
+
+        every { i18nDAO.getLabelById(any()) }.returns(null)
+
+        Translator.saveIfNotExist(I18nLabelValue(label))
+
+        val slot = slot<I18nLabel>()
+        verify { i18nDAO.save(capture(slot)) }
+        val savedLabel = slot.captured
+
+        assertEquals(defaultLocale, savedLabel.defaultLocale)
+        assert(savedLabel.i18n.all { it.locale == defaultLocale })
+    }
+
+    @Test
+    fun `saveIfNotExist should use locale when provided`() {
+
+        val locale = Locale("fr")
+        assertNotEquals(locale, defaultLocale)
+
+        val localizedLabel = I18nLocalizedLabel(
+                locale,
+                defaultUserInterface,
+                "a",
+                listOf("b")
+        )
+        val label = I18nLabel(
+                "".toId(),
+                defaultNamespace,
+                "",
+                LinkedHashSet(listOf(localizedLabel))
+        )
+
+        every { i18nDAO.getLabelById(any()) }.returns(null)
+
+        Translator.saveIfNotExist(I18nLabelValue(label), locale)
+
+        val slot = slot<I18nLabel>()
+        verify { i18nDAO.save(capture(slot)) }
+        val savedLabel = slot.captured
+
+        assertEquals(locale, savedLabel.defaultLocale)
+        assert(savedLabel.i18n.all { it.locale == locale })
     }
 }

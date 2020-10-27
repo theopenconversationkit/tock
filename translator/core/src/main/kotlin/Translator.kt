@@ -130,9 +130,9 @@ object Translator {
 
     fun saveIfNotExist(value: I18nLabelValue): I18nLabel = saveIfNotExist(value, defaultLocale)
 
-    private fun saveIfNotExist(value: I18nLabelValue, defaultLocale: Locale): I18nLabel = getLabel(value) ?: {
+    fun saveIfNotExist(value: I18nLabelValue, locale: Locale?): I18nLabel = getLabel(value) ?: {
         val defaultLabelKey = value.defaultLabel.toString()
-        val defaultLabel = I18nLocalizedLabel(defaultLocale, defaultInterface, defaultLabelKey)
+        val defaultLabel = I18nLocalizedLabel(locale ?: defaultLocale, defaultInterface, defaultLabelKey)
         val label =
             I18nLabel(
                 value.key.toId(),
