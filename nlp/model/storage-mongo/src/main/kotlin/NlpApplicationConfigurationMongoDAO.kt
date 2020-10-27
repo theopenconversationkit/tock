@@ -27,7 +27,7 @@ import org.litote.kmongo.Data
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.descending
 import org.litote.kmongo.descendingSort
-import org.litote.kmongo.ensureIndex
+import ai.tock.shared.ensureIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.find
 import org.litote.kmongo.getCollection
