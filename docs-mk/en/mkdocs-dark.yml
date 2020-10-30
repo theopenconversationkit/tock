@@ -42,6 +42,7 @@ theme:
     - instant
 plugins:
   - macros
+  - git-revision-date-localized
 markdown_extensions:
   - admonition
   - codehilite
