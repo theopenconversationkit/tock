@@ -9,7 +9,7 @@ ou d'autres langages.
       src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin-logo.svg/1024px-Kotlin-logo.svg.png" 
       style="width: 50px;">
 <img alt="Logo Nodejs" title="Nodejs"
-      src="https://o7planning.org/fr/11931/images/20938929.png" 
+      src="https://www.boostit.net/wp-content/uploads/2016/08/node-js-icon.png" 
       style="width: 50px;">
 <img alt="Logo Python" title="Python"
       src="https://www.libraries.rutgers.edu/sites/default/files/styles/resize_to_300px_width/public/events/2020/01/python_3_2.png" 

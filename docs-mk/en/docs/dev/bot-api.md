@@ -9,7 +9,7 @@ Any programing language can be used, leveraging the Tock [Bot API](../api.md#toc
       src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin-logo.svg/1024px-Kotlin-logo.svg.png" 
       style="width: 50px;">](bot-api.md#develop-with-kotlin)
 [<img alt="Nodejs logo" title="Nodejs"
-      src="https://o7planning.org/fr/11931/images/20938929.png" 
+      src="https://www.boostit.net/wp-content/uploads/2016/08/node-js-icon.png" 
       style="width: 50px;">](bot-api.md#develop-with-javascript)
 [<img alt="Python logo" title="Python"
       src="https://www.libraries.rutgers.edu/sites/default/files/styles/resize_to_300px_width/public/events/2020/01/python_3_2.png" 
@@ -140,7 +140,7 @@ Please consult the [full source code sample](https://github.com/theopenconversat
 ## Develop with Javascript
 
 <img alt="Nodejs logo" title="Nodejs"
-src="https://o7planning.org/fr/11931/images/20938929.png" 
+src="https://www.boostit.net/wp-content/uploads/2016/08/node-js-icon.png" 
 style="width: 100px;">
 
 A [Nodejs](https://nodejs.org/) client is available to program Tock stories in Javascript.  
