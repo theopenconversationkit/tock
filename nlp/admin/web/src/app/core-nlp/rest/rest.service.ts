@@ -150,7 +150,7 @@ export class RestService {
         return NEVER;
       }
       errMsg = e.error ? (e.error.message ? e.error.message : (e.error.error && e.error.error.message ? e.error.error.message : "Unknown error"))
-        : (e.message ? e.message : (e.statusText ? e.statusText : "Unknown error"));
+        : (e.message ? e.message : (e.statusText ? e.statusText : typeof e === 'string' ? e : "Unknown error"));
     }
     rest.errorEmitter.emit(errMsg);
     return observableThrowError(errMsg);
