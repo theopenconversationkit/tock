@@ -675,12 +675,16 @@ open class BotAdminVerticle : AdminVerticle() {
             botUser,
             simpleLogger("JSON Import Response Labels")
         ) { context, labels: List<I18nLabel> ->
-            i18n.save(labels.filter { it.i18n.any { it.validated } }.map {
-                it.copy(
-                    _id = it._id.toString().replaceFirst(it.namespace, context.organization).toId(),
-                    namespace = context.organization
-                )
-            })
+            measureTimeMillis(context) {
+                labels.filter { it.i18n.any { it.validated } }.map {
+                    it.copy(
+                            _id = it._id.toString().replaceFirst(it.namespace, context.organization).toId(),
+                            namespace = context.organization
+                    )
+                }.also {
+                    i18n.save(labels)
+                }.size
+            }
         }
 
         blockingUploadBinaryPost("/file", botUser) { context, (fileName, bytes) ->
