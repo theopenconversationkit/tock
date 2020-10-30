@@ -656,7 +656,9 @@ open class BotAdminVerticle : AdminVerticle() {
             botUser,
             simpleLogger("CSV Import Response Labels")
         ) { context, content ->
-            I18nCsvCodec.importCsv(context.organization, content)
+            measureTimeMillis(context, {
+                I18nCsvCodec.importCsv(context.organization, content)
+            })
         }
 
         blockingJsonGet("/i18n/export/json", botUser) { context ->

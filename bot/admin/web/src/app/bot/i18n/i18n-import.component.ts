@@ -39,14 +39,15 @@ export class I18nImportComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     const refresh = this.windowRef.config.context['refresh'];
     this.uploader = new FileUploader({
-      removeAfterUpload: true,
       isHTML5: true
     });
     this.uploader.onCompleteItem =
       (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
         this.loading = false;
         this.closeWindow();
-        this.dialog.notify(`Labels have been imported successfully.`, "Labels Imported", {duration: 3000, status: "success"});
+        if (status === 200) {
+          this.dialog.notify(`Labels have been imported successfully.`, "Labels Imported", {duration: 3000, status: "success"});
+        }
         refresh();
       };
   }
