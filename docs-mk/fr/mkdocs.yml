@@ -55,6 +55,7 @@ nav:
       - 'Contribuer': 'apropos/contribuer.md'
       - 'Emploi': 'apropos/emploi.md'
   - '🇫🇷 🇬🇧': 'https://theopenconversationkit.github.io/tock/en/'
+  - 'Mode sombre': 'https://theopenconversationkit.github.io/tock/fr-dark/'
   - 'Tock.ai 🔗': 'https://doc.tock.ai'
 
 theme:
@@ -68,6 +69,7 @@ theme:
 plugins:
   - search:
       lang: 'fr'
+  - macros
 markdown_extensions:
   - admonition
   - codehilite
@@ -77,3 +79,5 @@ copyright: 'Copyright &copy; 2017/2020 Tock'
 extra:
   search:
     language: 'fr'
+  tock:
+    logo: 'assets/images/logo.svg'

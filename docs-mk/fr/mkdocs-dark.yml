@@ -1,0 +1,85 @@
+site_name: 'Tock'
+site_description: 'The Open Conversation Kit'
+site_author: 'Tock'
+site_url: 'https://theopenconversationkit.github.io/tock/fr'
+repo_name: 'tock'
+repo_url: 'https://github.com/theopenconversationkit/tock'
+edit_uri: ''
+nav:
+  - 'Accueil': 'index.md'
+  - 'Table des matières': 'toc.md'
+  - 'Découvrir Tock': # Guides / Découvrir
+      - 'Créer son premier bot': 'guide/studio.md'
+      - 'Configurer Slack': 'guide/slack.md'
+      - 'Configurer Messenger': 'guide/messenger.md'
+      - 'Programmer des parcours': 'guide/api.md'
+      - 'Déployer avec Docker': 'guide/plateforme.md'
+  - 'Utiliser Tock':
+      - 'Concepts': 'user/concepts.md'
+      - 'Tock Studio':
+        - 'Présentation': 'user/studio.md'
+        - 'Interface générale': 'user/studio/general.md'
+        - 'Le menu Language': 'user/studio/nlu.md'
+        - 'Le menu Stories': 'user/studio/stories-and-answers.md'
+        - 'Le menu Test': 'user/studio/test.md'
+        - 'Le menu Analytics': 'user/studio/analytics.md'
+        - 'Le menu Quality': 'user/studio/nlu-qa.md'
+        - 'Le menu Settings': 'user/studio/configuration.md'
+      - 'Guides':
+          - 'Construire un modèle conversationnel':  'user/guides/build-model.md'
+          - 'Bot multicanal': 'user/guides/canaux.md'
+          - 'Bot multilingue': 'user/guides/i18n.md'
+  - 'Développer avec Tock':
+      - 'Modes disponibles': 'dev/modes.md'
+      - 'Tock Bot API': 'dev/bot-api.md'
+      - 'Tock Bot intégré': 'dev/bot-integre.md'
+      - 'Tester le mode intégré': 'dev/tester.md'
+      - 'Connecteurs': 'dev/connecteurs.md'
+      - 'i18n': 'dev/i18n.md'
+      - 'Liste des APIs': 'dev/api.md'
+      - 'Exemples de code': 'dev/exemples-code.md'
+  - 'Administrer Tock':
+      - 'Architecture': 'admin/architecture.md'
+      - 'Installation': 'admin/installation.md'
+      - 'Sécurité': 'admin/securite.md'
+      - 'Disponibilité': 'admin/disponibilite.md'
+      - 'Supervision': 'admin/supervision.md'
+      - 'Cloud': 'admin/cloud.md'
+  - 'A propos':
+      - 'Pourquoi Tock': 'apropos/pourquoi.md'
+      - 'Vitrine utilisateurs': 'apropos/vitrine.md'
+      - 'Prix et récompenses': 'apropos/recompenses.md'
+      - 'Ressources': 'apropos/ressources.md'
+      - 'Nous contacter': 'apropos/contact.md'
+      - 'Communauté': 'apropos/communaute.md'
+      - 'Contribuer': 'apropos/contribuer.md'
+      - 'Emploi': 'apropos/emploi.md'
+  - '🇫🇷 🇬🇧': 'https://theopenconversationkit.github.io/tock/en-dark/'
+  - 'Mode clair': 'https://theopenconversationkit.github.io/tock/fr/'
+  - 'Tock.ai 🔗': 'https://doc.tock.ai'
+
+theme:
+  name: 'material'
+  language: 'fr'
+  logo: 'assets/images/logo-white.png'
+  favicon: 'img/favicon.png'
+  palette:
+    scheme: slate
+  features:
+    - tabs
+    - instant
+plugins:
+  - search:
+      lang: 'fr'
+  - macros
+markdown_extensions:
+  - admonition
+  - codehilite
+  - toc:
+      permalink: true
+copyright: 'Copyright &copy; 2017/2020 Tock'
+extra:
+  search:
+    language: 'fr'
+  tock:
+    logo: 'assets/images/logo-white.svg'

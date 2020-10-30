@@ -7,6 +7,7 @@ In order to modify Tock documentation please install the following :
 * Python
 * Markdown documentation generator [MkDocs](http://www.mkdocs.org/)
 * [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
+* [Macros for MkDocs](https://squidfunk.github.io/mkdocs-material/reference/variables/)
 
 ### Documentation
 

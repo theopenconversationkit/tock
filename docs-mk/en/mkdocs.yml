@@ -28,6 +28,7 @@ nav:
       - 'Contribute': 'about/contribute.md'
       - 'Jobs': 'about/jobs.md'
   - '🇬🇧 🇫🇷': 'https://theopenconversationkit.github.io/tock/fr/'
+  - 'Dark Mode': 'https://theopenconversationkit.github.io/tock/en-dark/'
   - 'Tock.ai 🔗': 'https://doc.tock.ai'
 
 theme:
@@ -37,9 +38,14 @@ theme:
   features:
     - tabs
     - instant
+plugins:
+  - macros
 markdown_extensions:
   - admonition
   - codehilite
   - toc:
       permalink: true
 copyright: 'Copyright &copy; 2017/2020 Tock'
+extra:
+  tock:
+    logo: 'assets/images/logo.svg'
