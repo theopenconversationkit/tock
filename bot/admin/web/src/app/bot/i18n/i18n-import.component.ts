@@ -46,7 +46,11 @@ export class I18nImportComponent implements OnInit, AfterViewInit {
         this.loading = false;
         this.closeWindow();
         if (status === 200) {
-          this.dialog.notify(`Labels have been imported successfully.`, "Labels Imported", {duration: 3000, status: "success"});
+          if (parseInt(response) > 0) {
+            this.dialog.notify(response + ' labels have been created or updated.', "Labels Imported", {duration: 5000, status: "success"});
+          } else {
+            this.dialog.notify('No label created or updated: file might be empty or no label is validated.', "No Label Imported", {duration: 5000, status: "warning"});
+          }
         }
         refresh();
       };

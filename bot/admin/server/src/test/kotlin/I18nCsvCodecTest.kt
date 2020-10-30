@@ -32,7 +32,6 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.toId
 import java.util.Locale.FRENCH
@@ -72,6 +71,12 @@ Départs suivants;mynamespace;departuresarrivals;fr;voiceAssistant;mynamespace_d
         val exportMultipleWithNs = """Label;Namespace;Category;Language;Interface;Id;Validated;Connector;Alternatives
 Départs suivants;mynamespace;departuresarrivals;fr;textChat;id1;true;
 Départs suivants;mynamespace;departuresarrivals;fr;voiceAssistant;id2;true;"""
+        val exportValidatedSameId = """Label;Namespace;Category;Language;Interface;Id;Validated;Connector;Alternatives
+Départs suivants;mynamespace;departuresarrivals;fr;textChat;id1;true;
+Départs suivants;mynamespace;departuresarrivals;fr;voiceAssistant;id1;true;"""
+        val exportValidatedDifferentId = """Label;Namespace;Category;Language;Interface;Id;Validated;Connector;Alternatives
+Départs suivants;mynamespace;departuresarrivals;fr;textChat;id1;true;
+Départs suivants;mynamespace;departuresarrivals;fr;textChat;id2;true;"""
     }
 
     @AfterEach
@@ -103,13 +108,14 @@ Départs suivants;mynamespace;departuresarrivals;fr;voiceAssistant;id2;true;"""
             )
         }
 
-        I18nCsvCodec.importCsv("app", export)
+        val result = I18nCsvCodec.importCsv("app", export)
 
         val slot = slot<I18nLabel>()
         verify(exactly = 1) {
             i18nDAO.save(capture(slot))
         }
 
+        assertEquals(1, result)
         assertEquals(2, slot.captured.i18n.size)
         assertEquals("ok", slot.captured.i18n.first { it.interfaceType == textChat }.label)
         assertEquals("Départs suivants", slot.captured.i18n.first { it.interfaceType == voiceAssistant }.label)
@@ -119,7 +125,7 @@ Départs suivants;mynamespace;departuresarrivals;fr;voiceAssistant;id2;true;"""
     @Test
     fun `importCsv_should_update_id_when_namespace_in_csv`() {
         val targetNamespace = "other"
-        I18nCsvCodec.importCsv(targetNamespace, exportWithNs)
+        val result = I18nCsvCodec.importCsv(targetNamespace, exportWithNs)
 
         val slot = slot<I18nLabel>()
         verify(exactly = 1) {
@@ -127,6 +133,7 @@ Départs suivants;mynamespace;departuresarrivals;fr;voiceAssistant;id2;true;"""
         }
 
         val importedLabel = slot.captured
+        assertEquals(1, result)
         assertEquals("Départs suivants", importedLabel.i18n.first { it.interfaceType == voiceAssistant }.label)
         assertEquals(targetNamespace, importedLabel.namespace)
         assertEquals(id.replaceFirst(namespace + "_", targetNamespace + "_"), importedLabel._id.toString())
@@ -135,7 +142,7 @@ Départs suivants;mynamespace;departuresarrivals;fr;voiceAssistant;id2;true;"""
     @Test
     fun `importCsv_should_not_update_id_when_no_namespace_in_csv`() {
         val targetNamespace = "other"
-        I18nCsvCodec.importCsv(targetNamespace, export)
+        val result = I18nCsvCodec.importCsv(targetNamespace, export)
 
         val slot = slot<I18nLabel>()
         verify(exactly = 1) {
@@ -143,6 +150,7 @@ Départs suivants;mynamespace;departuresarrivals;fr;voiceAssistant;id2;true;"""
         }
 
         val importedLabel = slot.captured
+        assertEquals(1, result)
         assertEquals("Départs suivants", importedLabel.i18n.first { it.interfaceType == voiceAssistant }.label)
         assertEquals(targetNamespace, importedLabel.namespace)
         assertEquals(id, importedLabel._id.toString())
@@ -150,18 +158,42 @@ Départs suivants;mynamespace;departuresarrivals;fr;voiceAssistant;id2;true;"""
 
     @Test
     fun `importCsv_should_not_skip_lines_when_ns`() {
-        I18nCsvCodec.importCsv(namespace, exportMultipleWithNs)
+        val result = I18nCsvCodec.importCsv(namespace, exportMultipleWithNs)
         verify(exactly = 2) {
             i18nDAO.save(any<I18nLabel>())
         }
+        assertEquals(2, result)
     }
 
     @Test
     fun `importCsv_should_not_skip_lines_when_no_ns`() {
-        I18nCsvCodec.importCsv(namespace, exportMultiple)
+        val result = I18nCsvCodec.importCsv(namespace, exportMultiple)
         verify(exactly = 2) {
             i18nDAO.save(any<I18nLabel>())
         }
+        assertEquals(2, result)
     }
 
+    @Test
+    fun `importCsv_should_return_number_of_inserts`() {
+        assertEquals(1, I18nCsvCodec.importCsv(namespace, export))
+        assertEquals(1, I18nCsvCodec.importCsv(namespace, exportWithNs))
+        assertEquals(2, I18nCsvCodec.importCsv(namespace, exportMultiple))
+        assertEquals(2, I18nCsvCodec.importCsv(namespace, exportMultipleWithNs))
+        assertEquals(1, I18nCsvCodec.importCsv(namespace, exportValidatedSameId))
+        assertEquals(2, I18nCsvCodec.importCsv(namespace, exportValidatedDifferentId))
+    }
+
+    @Test
+    fun `importCsv_should_insert_each_id_once`() {
+        val result = I18nCsvCodec.importCsv(namespace, exportValidatedSameId)
+
+        val slot = slot<I18nLabel>()
+        verify {
+            i18nDAO.save(capture(slot))
+        }
+
+        assertEquals(1, result)
+        assertEquals(2, slot.captured.i18n.size)
+    }
 }

@@ -79,7 +79,7 @@ object I18nCsvCodec {
         return sb.toString()
     }
 
-    fun importCsv(namespace: String, content: String): Boolean {
+    fun importCsv(namespace: String, content: String): Int {
         return try {
             val parsedCsv = csvFormat().withFirstRecordAsHeader()
                 .parse(StringReader(content))
@@ -131,18 +131,18 @@ object I18nCsvCodec {
                                 )
                             )
                         }
-                }
-                .forEach {
-                    logger.info { "Save $it" }
-                    i18nDAO.save(it)
-                }
-            true
+                }.also {
+                    it.forEach {
+                        logger.info { "Save $it" }
+                        i18nDAO.save(it)
+                    }
+                }.size
         } catch (t: IllegalArgumentException) {
             logger.error(t)
             WebVerticle.badRequest("Error importing CSV: ${t.message}")
         } catch (t: Throwable) {
             logger.error(t)
-            false
+            0
         }
     }
 }
