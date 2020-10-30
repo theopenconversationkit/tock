@@ -70,6 +70,7 @@ plugins:
   - search:
       lang: 'fr'
   - macros
+  - git-revision-date-localized
 markdown_extensions:
   - admonition
   - codehilite

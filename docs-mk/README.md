@@ -8,6 +8,7 @@ In order to modify Tock documentation please install the following :
 * Markdown documentation generator [MkDocs](http://www.mkdocs.org/)
 * [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
 * [Macros for MkDocs](https://squidfunk.github.io/mkdocs-material/reference/variables/)
+* [Git Revision Date Localized for Mkdocs](https://github.com/timvink/mkdocs-git-revision-date-localized-plugin)
 
 ### Documentation
 
