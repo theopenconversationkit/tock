@@ -48,6 +48,9 @@ This page actually lists:
 [<img alt="Allo-Media Logo" title="Allo-Media"
   src="https://s3-eu-central-1.amazonaws.com/glassdollar/logos/GD_5bcf9307048f6.png" 
   style="width: 50px;">](connectors.md#allo-media)
+[<img alt="Google Chat Logo" title="Google Chat"
+ src="https://cdn.zapier.com/storage/photos/bfbce5bee25b1b50d8a910c30588c61e.png" 
+ style="width: 50px;">](connectors.md#google-chat)  
 [<img alt="Web Logo" title="Web (generic)"
  src="https://static.vecteezy.com/system/resources/previews/000/425/842/non_2x/vector-web-search-icon.jpg" 
  style="width: 50px;">](connectors.md#web-generic)
@@ -247,6 +250,19 @@ style="width: 100px;">
 This connector has been developped for the French [AlloCovid](https://www.allocovid.com/) bot.
 To know more, please check the [AlloMediaConnector](https://github.com/theopenconversationkit/allocovid/blob/master/src/main/kotlin/AlloMediaConnector.kt)
 class and the [bot sources](https://github.com/theopenconversationkit/allocovid) also on GitHub.
+
+### Google Chat
+
+<img alt="Google Chat Logo" title="Google Chat"
+src="https://cdn.zapier.com/storage/photos/bfbce5bee25b1b50d8a910c30588c61e.png" 
+style="width: 100px;">
+
+* **Channel** : [Google Chat](https://www.allo-media.net/) (aka Google Hangouts)
+* **Type** : text
+* **Status** : Tock connector not used for production (no use case yet)
+
+Please refer to [connector-google-chat](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-google-chat)
+for sources and _README_ instructions.
 
 ### Web (generic)
 
