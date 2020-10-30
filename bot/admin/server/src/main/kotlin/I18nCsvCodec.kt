@@ -88,9 +88,6 @@ object I18nCsvCodec {
             parsedCsv
                 .records
                 .mapIndexedNotNull { i, it ->
-                    if (i == 0) {
-                        null
-                    } else {
                         I18nLabel(
                             if (isNamespaceInCsv)
                                 it.get(CsvColumn.Id.name).replaceFirst(it.get(CsvColumn.Namespace.name), namespace).toId()
@@ -106,14 +103,13 @@ object I18nCsvCodec {
                                         it[0], // First header has a strange char before it, simpler with index
                                         it.get(CsvColumn.Validated.name)?.toBoolean() ?: false,
                                         it.get(CsvColumn.Connector.name).run { if (isBlank()) null else this },
-                                        if (it.size() < headers.indexOf(CsvColumn.Alternatives.name).also { logger.info { "Alt index is $it" } })
+                                        if (it.size() < headers.indexOf(CsvColumn.Alternatives.name))
                                             emptyList()
                                         else
-                                            (headers.indexOf(CsvColumn.Alternatives.name).also { logger.info { "Alt index is $it" } } until it.size()).mapNotNull { index -> if (it[index].isNullOrBlank()) null else it[index] }
+                                            (headers.indexOf(CsvColumn.Alternatives.name) until it.size()).mapNotNull { index -> if (it[index].isNullOrBlank()) null else it[index] }
                                     ))
                             )
                         )
-                    }
                 }
                 .filter { it.i18n.any { it.validated } }
                 .groupBy { it._id }

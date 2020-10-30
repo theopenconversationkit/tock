@@ -26,10 +26,13 @@ import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLocalizedLabel
 import ai.tock.translator.UserInterfaceType.textChat
 import ai.tock.translator.UserInterfaceType.voiceAssistant
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.toId
 import java.util.Locale.FRENCH
@@ -60,11 +63,21 @@ class I18nCsvCodecTest {
         val export = """Label;Category;Language;Interface;Id;Validated;Connector;Alternatives
 Départs suivants;departuresarrivals;fr;textChat;mynamespace_departuresarrivals_départs_suivants;false;
 Départs suivants;departuresarrivals;fr;voiceAssistant;mynamespace_departuresarrivals_départs_suivants;true;"""
+        val exportMultiple = """Label;Category;Language;Interface;Id;Validated;Connector;Alternatives
+Départs suivants;departuresarrivals;fr;textChat;id1;true;
+Départs suivants;departuresarrivals;fr;voiceAssistant;id2;true;"""
         val exportWithNs = """Label;Namespace;Category;Language;Interface;Id;Validated;Connector;Alternatives
 Départs suivants;mynamespace;departuresarrivals;fr;textChat;mynamespace_departuresarrivals_départs_suivants;false;
 Départs suivants;mynamespace;departuresarrivals;fr;voiceAssistant;mynamespace_departuresarrivals_départs_suivants;true;"""
+        val exportMultipleWithNs = """Label;Namespace;Category;Language;Interface;Id;Validated;Connector;Alternatives
+Départs suivants;mynamespace;departuresarrivals;fr;textChat;id1;true;
+Départs suivants;mynamespace;departuresarrivals;fr;voiceAssistant;id2;true;"""
     }
 
+    @AfterEach
+    fun resetMockk() {
+        clearAllMocks()
+    }
 
     @Test
     fun importCsv_shouldKeepOldI18nLabels_ifNewLabelsAreNotValidated() {
@@ -93,7 +106,7 @@ Départs suivants;mynamespace;departuresarrivals;fr;voiceAssistant;mynamespace_d
         I18nCsvCodec.importCsv("app", export)
 
         val slot = slot<I18nLabel>()
-        verify {
+        verify(exactly = 1) {
             i18nDAO.save(capture(slot))
         }
 
@@ -109,7 +122,7 @@ Départs suivants;mynamespace;departuresarrivals;fr;voiceAssistant;mynamespace_d
         I18nCsvCodec.importCsv(targetNamespace, exportWithNs)
 
         val slot = slot<I18nLabel>()
-        verify {
+        verify(exactly = 1) {
             i18nDAO.save(capture(slot))
         }
 
@@ -125,7 +138,7 @@ Départs suivants;mynamespace;departuresarrivals;fr;voiceAssistant;mynamespace_d
         I18nCsvCodec.importCsv(targetNamespace, export)
 
         val slot = slot<I18nLabel>()
-        verify {
+        verify(exactly = 1) {
             i18nDAO.save(capture(slot))
         }
 
@@ -133,6 +146,22 @@ Départs suivants;mynamespace;departuresarrivals;fr;voiceAssistant;mynamespace_d
         assertEquals("Départs suivants", importedLabel.i18n.first { it.interfaceType == voiceAssistant }.label)
         assertEquals(targetNamespace, importedLabel.namespace)
         assertEquals(id, importedLabel._id.toString())
+    }
+
+    @Test
+    fun `importCsv_should_not_skip_lines_when_ns`() {
+        I18nCsvCodec.importCsv(namespace, exportMultipleWithNs)
+        verify(exactly = 2) {
+            i18nDAO.save(any<I18nLabel>())
+        }
+    }
+
+    @Test
+    fun `importCsv_should_not_skip_lines_when_no_ns`() {
+        I18nCsvCodec.importCsv(namespace, exportMultiple)
+        verify(exactly = 2) {
+            i18nDAO.save(any<I18nLabel>())
+        }
     }
 
 }
