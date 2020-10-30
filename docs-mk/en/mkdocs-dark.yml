@@ -1,0 +1,53 @@
+site_name: 'Tock'
+site_description: 'The Open Conversation Kit'
+site_author: 'Tock'
+site_url: 'https://theopenconversationkit.github.io/tock/en'
+repo_name: 'tock'
+repo_url: 'https://github.com/theopenconversationkit/tock'
+edit_uri: ''
+nav:
+  - 'Overview': 'index.md'
+  - 'Try Tock Studio':
+    - 'Create your 1st bot': 'guide/studio.md'
+    - 'Build NLP models': 'build-nlp-model.md'
+    - 'Monitor NLP models': 'evaluate-the-model.md'
+  - 'Develop Stories':
+    - 'Bot API mode': 'dev/bot-api.md'
+    - 'Integrated Bot mode': 'dev/integrated-bot.md'
+    - 'Connectors': 'dev/connectors.md'
+    - 'KDoc': 'kdoc.md'
+    - 'Code Samples': 'the-open-data-bot.md'
+    - 'API documentation': 'api.md'
+  - 'About':
+      - 'Why Tock': 'about/why.md'
+      - 'Showcase': 'about/showcase.md'
+      - 'Awards': 'about/awards.md'
+      - 'Resources': 'about/resources.md'
+      - 'Contact us': 'about/contact.md'
+      - 'Community': 'about/community.md'
+      - 'Contribute': 'about/contribute.md'
+      - 'Jobs': 'about/jobs.md'
+  - '🇬🇧 🇫🇷': 'https://theopenconversationkit.github.io/tock/fr-dark/'
+  - 'Light Mode': 'https://theopenconversationkit.github.io/tock/en/'
+  - 'Tock.ai 🔗': 'https://doc.tock.ai'
+
+theme:
+  name: 'material'
+  logo: 'assets/images/logo-white.png'
+  favicon: 'img/favicon.png'
+  palette:
+    scheme: slate
+  features:
+    - tabs
+    - instant
+plugins:
+  - macros
+markdown_extensions:
+  - admonition
+  - codehilite
+  - toc:
+      permalink: true
+copyright: 'Copyright &copy; 2017/2020 Tock'
+extra:
+  tock:
+    logo: 'assets/images/logo-white.svg'
