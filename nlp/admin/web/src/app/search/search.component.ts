@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {Component, OnInit, ViewChild} from "@angular/core";
-import {SentenceFilter, SentencesScrollComponent} from "../sentences-scroll/sentences-scroll.component";
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {SentenceFilter, SentencesScrollComponent} from '../sentences-scroll/sentences-scroll.component';
 import {
   EntityDefinition,
   EntityType,
@@ -25,12 +25,13 @@ import {
   SentenceStatus,
   TranslateSentencesQuery,
   UpdateSentencesQuery
-} from "../model/nlp";
-import {StateService} from "../core-nlp/state.service";
-import {ActivatedRoute} from "@angular/router";
-import {NlpService} from "../nlp-tabs/nlp.service";
-import {UserRole} from "../model/auth";
-import { NbToastrService } from '@nebular/theme';
+} from '../model/nlp';
+import {StateService} from '../core-nlp/state.service';
+import {ActivatedRoute} from '@angular/router';
+import {NlpService} from '../nlp-tabs/nlp.service';
+import {UserRole} from '../model/auth';
+import {NbToastrService} from '@nebular/theme';
+import {FilterOption, Group} from './filter/search-filter.component';
 
 @Component({
   selector: 'tock-search',
@@ -53,6 +54,9 @@ export class SearchComponent implements OnInit {
   private firstSearch = false;
   @ViewChild(SentencesScrollComponent) scroll;
 
+  NO_INTENT_FILTER = new FilterOption('-1', 'All');
+  UNKNOWN_INTENT_FILTER = new FilterOption('tock:unknown', 'Unknown');
+
   constructor(public state: StateService,
               private nlp: NlpService,
               private toastrService: NbToastrService,
@@ -62,11 +66,11 @@ export class SearchComponent implements OnInit {
   ngOnInit() {
     this.status = null;
     this.route.queryParams.subscribe(params => {
-      if (params["text"]) {
-        this.filter.search = params["text"];
+      if (params['text']) {
+        this.filter.search = params['text'];
       }
-      if (params["status"]) {
-        this.status = SentenceStatus[SentenceStatus[params["status"]]];
+      if (params['status']) {
+        this.status = SentenceStatus[SentenceStatus[params['status']]];
       }
       this.state.currentIntents.subscribe(i => {
         this.nlp.findUsers(this.state.currentApplication).subscribe(u => this.users = u);
@@ -80,8 +84,19 @@ export class SearchComponent implements OnInit {
           this.firstSearch = true;
           this.search();
         }
-      })
+      });
     });
+  }
+
+  intentGroups(): Group[] {
+    const currentIntentsCategories = this.state.currentIntentsCategories.getValue();
+    return currentIntentsCategories.map(entry =>
+      new Group(
+        entry.category,
+        entry.intents.map(intent =>
+          new FilterOption(intent._id, intent.intentLabel()))
+      )
+    );
   }
 
   private findEntitiesAndSubEntities(entities: EntityType[], intent: Intent): EntityType[] {
@@ -94,7 +109,7 @@ export class SearchComponent implements OnInit {
   private fillEntitiesFilter() {
     this.state.entityTypesSortedByName()
       .subscribe(entities => {
-          if (!this.filter.intentId || this.filter.intentId === "-1") {
+          if (!this.filter.intentId || this.filter.intentId === this.NO_INTENT_FILTER.value) {
             this.entityTypes = entities;
             this.entityRolesToInlude = getRoles(this.state.currentIntents.value, entities, this.filter.entityType);
             this.entityRolesToExclude = getRoles(this.state.currentIntents.value, entities, this.filter.entityType);
@@ -127,8 +142,15 @@ export class SearchComponent implements OnInit {
       );
   }
 
+  changeIntentFilter = (intentId: string) => {
+    if (this.filter.intentId !== intentId) {
+      this.filter.intentId = intentId;
+      this.changeIntent();
+    }
+  }
+
   changeIntent() {
-    this.filter.entityType = "";
+    this.filter.entityType = '';
     this.changeEntityType();
   }
 
@@ -142,7 +164,7 @@ export class SearchComponent implements OnInit {
     setTimeout(_ => {
       this.filter.onlyToReview = false;
       if (this.status) {
-        if (this.status == "review") {
+        if (this.status == 'review') {
           this.filter.onlyToReview = true;
           this.filter.status = [];
         } else {
@@ -151,13 +173,13 @@ export class SearchComponent implements OnInit {
       } else {
         this.filter.status = [];
       }
-      if (this.filter.intentId === "-1") {
+      if (this.filter.intentId === this.NO_INTENT_FILTER.value) {
         this.filter.intentId = null;
       }
       this.fillEntitiesFilter();
 
       if (this.filter.search) {
-        this.filter.search = this.filter.search.trim()
+        this.filter.search = this.filter.search.trim();
       }
 
       const theActualMin = Math.round(Math.min(this.filter.maxIntentProbability, this.filter.minIntentProbability));
@@ -182,7 +204,7 @@ export class SearchComponent implements OnInit {
 
   updateSentences() {
     if (this.selectedSentences && this.selectedSentences.length === 0) {
-      this.toastrService.show(`Please select at least one sentence first`, "UPDATE", {duration: 2000})
+      this.toastrService.show(`Please select at least one sentence first`, 'UPDATE', {duration: 2000});
     } else {
       this.nlp.updateSentences(
         new UpdateSentencesQuery(
@@ -200,11 +222,11 @@ export class SearchComponent implements OnInit {
       ).subscribe(r => {
         const n = r.nbUpdates;
         if (n === 0) {
-          this.toastrService.show(`No sentence updated`, "UPDATE", {duration: 2000})
+          this.toastrService.show(`No sentence updated`, 'UPDATE', {duration: 2000});
         } else if (n === 1) {
-          this.toastrService.show(`1 sentence updated`, "UPDATE", {duration: 2000})
+          this.toastrService.show(`1 sentence updated`, 'UPDATE', {duration: 2000});
         } else {
-          this.toastrService.show(`${n} sentences updated`, "UPDATE", {duration: 2000})
+          this.toastrService.show(`${n} sentences updated`, 'UPDATE', {duration: 2000});
         }
         this.scroll.refresh();
       });
@@ -213,9 +235,9 @@ export class SearchComponent implements OnInit {
 
   translateSentences() {
     if (!this.targetLocale || this.targetLocale.length === 0) {
-      this.toastrService.show(`Please select a target language first`, "UPDATE", {duration: 2000})
+      this.toastrService.show(`Please select a target language first`, 'UPDATE', {duration: 2000});
     } else if (this.selectedSentences && this.selectedSentences.length === 0) {
-      this.toastrService.show(`Please select at least one sentence first`, "UPDATE", {duration: 2000})
+      this.toastrService.show(`Please select at least one sentence first`, 'UPDATE', {duration: 2000});
     } else {
       this.nlp.translateSentences(
         new TranslateSentencesQuery(
@@ -231,11 +253,11 @@ export class SearchComponent implements OnInit {
       ).subscribe(r => {
         const n = r.nbTranslations;
         if (n === 0) {
-          this.toastrService.show(`No sentence translated`, "UPDATE", {duration: 2000})
+          this.toastrService.show(`No sentence translated`, 'UPDATE', {duration: 2000});
         } else if (n === 1) {
-          this.toastrService.show(`1 sentence translated`, "UPDATE", {duration: 2000})
+          this.toastrService.show(`1 sentence translated`, 'UPDATE', {duration: 2000});
         } else {
-          this.toastrService.show(`${n} sentences translated`, "UPDATE", {duration: 2000})
+          this.toastrService.show(`${n} sentences translated`, 'UPDATE', {duration: 2000});
         }
       });
     }

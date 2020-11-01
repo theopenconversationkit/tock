@@ -29,19 +29,11 @@
         <br>
         <div class="search-box">
           <div class="search-criterion">
-            <nb-select placeholder="Intent" status="primary"
-                       [(ngModel)]="filter.intentId"
-                       (selectedChange)="changeIntent()"
-                       style="width: 12rem;">
-              <nb-option value="-1">All</nb-option>
-              <nb-option-group *ngFor="let category of state.currentIntentsCategories | async"
-                               [title]="category.category">
-                <nb-option *ngFor="let intent of category.intents" [value]="intent._id">
-                  {{intent.intentLabel()}}
-                </nb-option>
-              </nb-option-group>
-              <nb-option value="tock:unknown">Unknown</nb-option>
-            </nb-select>
+            <tock-search-filter [groups]="intentGroups()"
+                                [noFilter]="NO_INTENT_FILTER"
+                                [unknownFilter]="UNKNOWN_INTENT_FILTER"
+                                (filterChange)="changeIntentFilter($event)"
+                                name="Intent"></tock-search-filter>
           </div>
           <div class="search-criterion">
             <nb-select *ngIf="entityTypes" placeholder="Entity Type" status="primary"
