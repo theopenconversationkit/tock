@@ -1,0 +1,19 @@
+<nb-form-field>
+  <nb-icon nbPrefix icon="search" pack="eva"></nb-icon>
+  <input nbInput shape="round" type="text" status="primary"
+    [ngModel]="selectedValue"
+    (ngModelChange)="onModelChange($event)"
+    [placeholder]="name"
+    [nbAutocomplete]="auto"
+  />
+</nb-form-field>
+
+<nb-autocomplete #auto [handleDisplayFn]="displayOption" (selectedChange)="onSelectedChange($event)">
+  <nb-option [value]="noFilter">{{noFilter.label}}</nb-option>
+  <nb-option-group *ngFor="let group of filteredGroups$ | async; trackBy: trackByFn" [title]="group.name">
+    <nb-option *ngFor="let option of group.children" [value]="option">
+      {{ option.label }}
+    </nb-option>
+  </nb-option-group>
+  <nb-option *ngIf="unknownFilter" [value]="unknownFilter">{{unknownFilter.label}}</nb-option>
+</nb-autocomplete>
