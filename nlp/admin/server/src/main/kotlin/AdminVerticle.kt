@@ -76,6 +76,8 @@ import ai.tock.shared.vertx.RequestLogger
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.detailedHealthcheck
 import io.netty.handler.codec.http.HttpHeaderNames
+import io.vertx.core.Handler
+import io.vertx.core.buffer.Buffer
 import io.vertx.core.http.HttpMethod.GET
 import io.vertx.ext.web.FileUpload
 import io.vertx.ext.web.RoutingContext
@@ -84,7 +86,7 @@ import mu.KLogger
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
-import java.nio.charset.StandardCharsets
+import java.nio.charset.StandardCharsets.UTF_8
 import java.util.Locale
 
 /**
@@ -990,7 +992,7 @@ open class AdminVerticle : WebVerticle() {
             val n = context.path("namespace").trim()
             //get the namespace of the current user
             if (supportCreateNamespace) {
-                if(front.isExistingNamespace(n)) {
+                if (front.isExistingNamespace(n)) {
                     badRequest("Namespace already exists")
                 } else {
                     front.saveNamespace(UserNamespace(context.userLogin, n, true))
@@ -1047,16 +1049,25 @@ open class AdminVerticle : WebVerticle() {
         }
     }
 
+    private val baseHref = verticleProperty("base_href", "/")
+        .run {
+            takeIf { endsWith("/") } ?: "$this/"
+        }
+
+    //cache index.html content
+    @Volatile
+    private var indexContent: Buffer? = null
+
     fun configureStaticHandling() {
         if (!devEnvironment) {
             //serve statics in docker image
             val webRoot = verticleProperty("content_path", "/maven/dist")
             //swagger yaml
-            router.get("/doc/nlp.yaml").handler { context ->
+            router.get("${baseHref}doc/nlp.yaml").handler { context ->
                 context.vertx().fileSystem().readFile("$webRoot/doc/nlp.yaml") {
                     if (it.succeeded()) {
                         context.response().end(
-                            it.result().toString(StandardCharsets.UTF_8).replace(
+                            it.result().toString(UTF_8).replace(
                                 "_HOST_",
                                 verticleProperty("nlp_external_host", "localhost:8888")
                             )
@@ -1066,27 +1077,31 @@ open class AdminVerticle : WebVerticle() {
                     }
                 }
             }
-            router.get("/doc/admin.yaml").handler { context ->
+            router.get("${baseHref}doc/admin.yaml").handler { context ->
                 context.vertx().fileSystem().readFile("$webRoot/doc/admin.yaml") {
                     if (it.succeeded()) {
-                        context.response().end(it.result().toString(StandardCharsets.UTF_8))
+                        context.response().end(it.result().toString(UTF_8))
                     } else {
                         context.fail(it.cause())
                     }
                 }
             }
-            router.route(GET, "/")
-                .handler(
-                    StaticHandler.create()
-                        .setAllowRootFileSystemAccess(true).setCachingEnabled(false).setWebRoot(webRoot)
-                )
-            router.route(GET, "/*")
-                .handler(StaticHandler.create().setAllowRootFileSystemAccess(true).setWebRoot(webRoot))
-                .handler { context ->
+
+            val indexContentHandler = Handler<RoutingContext> { context ->
+                if (indexContent != null) {
+                    context.response().end(indexContent)
+                } else {
                     context.vertx().fileSystem().readFile("$webRoot/index.html") {
                         if (it.succeeded()) {
-                            logger.debug { "redirecting to $webRoot/index.html" }
-                            context.response().end(it.result())
+                            val result = Buffer.buffer(
+                                it.result()
+                                    .toString(UTF_8)
+                                    .replace("<base href=\"/\">", "<base href=\"$baseHref\">")
+                            )
+                            if (!devEnvironment) {
+                                indexContent = result
+                            }
+                            context.response().end(result)
                         } else {
                             logger.warn { "Can't find $webRoot/index.html" }
                             context.response().statusCode = 404
@@ -1096,6 +1111,17 @@ open class AdminVerticle : WebVerticle() {
                         }
                     }
                 }
+            }
+
+            if (baseHref != "/") {
+                router.route(GET, baseHref.substring(0, baseHref.length - 1)).handler(indexContentHandler)
+            }
+            router.route(GET, baseHref).handler(indexContentHandler)
+            router.route(GET, "${baseHref}index.html").handler(indexContentHandler)
+
+            router.route(GET, "${baseHref}*")
+                .handler(StaticHandler.create().setAllowRootFileSystemAccess(true).setWebRoot(webRoot))
+                .handler(indexContentHandler)
         }
     }
 

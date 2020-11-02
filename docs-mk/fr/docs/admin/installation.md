@@ -256,6 +256,16 @@ Il s'agit des composants "applicatifs" de l'architecture Tock sans la base de do
 | `admin-web` + `build-worker` + `kotlin-compiler` + `duckling`| 1 | 2 | 16 Go | `r5a.large` (mémoire optimisée) |
 | `bot` + `nlp-api` + `duckling`| 3 | 2 | 4 Go | `t3a.medium` (usage général) |
 
+## Questions fréquentes
+
+### Mettre à disposition l'interface d'administration dans un sous-repertoire
+
+Par défaut l'interface d'administration est servie à la racine (Exemple : `https://[domain host]`)
+Si vous souhaitez la rendre disponible sur un chemin relatif (`https://[domain host]/tock`), 
+utilisez dans la configuration de l'image docker `tock_admin` la variable d'environnement `botadminverticle_base_href`.
+
+Par exemple : `botadminverticle_base_href=tock`
+
 ## Voir aussi...
 
 Pour une utilisation de Tock en production, nous vous recommandons de parcourir également les pages suivantes :

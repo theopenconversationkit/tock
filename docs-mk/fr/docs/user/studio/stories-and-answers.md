@@ -4,7 +4,7 @@ Le menu permet de construire des parcours et des réponses aux phrases de l'util
  
 Dans cette page, le détail de chaque onglet est présenté. Voir aussi 
 [Créer son premier bot avec Tock Studio](../../guide/studio.md) pour un exemple de création 
-de parcours ou [Construire un bot multilingue](../i18n.md) pour l'utilisation de l'onglet _Answers_.
+de parcours ou [Construire un bot multilingue](../../dev/i18n.md) pour l'utilisation de l'onglet _Answers_.
 
 ## L'onglet _New Story_
 
@@ -84,7 +84,7 @@ roulement afin de ne pas toujours répondre la même chose.
 
 ![Internationalisation](../../img/i18n.png "Internationalisation")
 
-Voir aussi [Construire un bot multilingue](../i18n.md) pour l'utilisation de l'onglet _Responses_ mais aussi  
+Voir aussi [Construire un bot multilingue](../../dev/i18n.md) pour l'utilisation de l'onglet _Responses_ mais aussi  
 les aspects développement sur ce thème. 
 
 ## Continuer...
