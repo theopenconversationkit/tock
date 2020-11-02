@@ -30,6 +30,10 @@ $dokka.location:ai.tock.shared$addJacksonConverter(retrofit2.Retrofit.Builder, c
 $dokka.location:ai.tock.shared$changeNamespace(kotlin.String, kotlin.String)ai.tock.shared/kotlin.-string/change-namespace.html
 $dokka.location:ai.tock.shared$create(retrofit2.Retrofit)ai.tock.shared/retrofit2.-retrofit/create.html
 $dokka.location:ai.tock.shared$debug(mu.KLogger, kotlin.Throwable)ai.tock.shared/mu.-k-logger/debug.html
+$dokka.location:ai.tock.shared$ensureIndex(com.mongodb.client.MongoCollection((ai.tock.shared.ensureIndex.T)), kotlin.Array((kotlin.reflect.KProperty((kotlin.Any)))), com.mongodb.client.model.IndexOptions)ai.tock.shared/com.mongodb.client.-mongo-collection/ensure-index.html
+$dokka.location:ai.tock.shared$ensureIndex(com.mongodb.client.MongoCollection((ai.tock.shared.ensureIndex.T)), kotlin.String, com.mongodb.client.model.IndexOptions)ai.tock.shared/com.mongodb.client.-mongo-collection/ensure-index.html
+$dokka.location:ai.tock.shared$ensureIndex(com.mongodb.client.MongoCollection((ai.tock.shared.ensureIndex.T)), org.bson.conversions.Bson, com.mongodb.client.model.IndexOptions)ai.tock.shared/com.mongodb.client.-mongo-collection/ensure-index.html
+$dokka.location:ai.tock.shared$ensureUniqueIndex(com.mongodb.client.MongoCollection((ai.tock.shared.ensureUniqueIndex.T)), kotlin.Array((kotlin.reflect.KProperty((kotlin.Any)))), com.mongodb.client.model.IndexOptions)ai.tock.shared/com.mongodb.client.-mongo-collection/ensure-unique-index.html
 $dokka.location:ai.tock.shared$error(mu.KLogger, kotlin.Throwable)ai.tock.shared/mu.-k-logger/error.html
 $dokka.location:ai.tock.shared$info(mu.KLogger, kotlin.Throwable)ai.tock.shared/mu.-k-logger/info.html
 $dokka.location:ai.tock.shared$mapNotNullValues(kotlin.collections.Iterable((ai.tock.shared.mapNotNullValues.T)), kotlin.Function1((ai.tock.shared.mapNotNullValues.T, kotlin.Pair((ai.tock.shared.mapNotNullValues.K, ai.tock.shared.mapNotNullValues.V)))))ai.tock.shared/kotlin.collections.-iterable/map-not-null-values.html
