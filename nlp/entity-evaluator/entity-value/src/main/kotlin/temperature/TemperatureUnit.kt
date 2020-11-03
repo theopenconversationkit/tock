@@ -20,5 +20,5 @@ package ai.tock.nlp.entity.temperature
  *
  */
 enum class TemperatureUnit {
-    celsius, fahrenheit
+    celsius, fahrenheit, degree
 }
