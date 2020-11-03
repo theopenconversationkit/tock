@@ -729,23 +729,70 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#chiffrage-et-anonymisation" class="md-nav__link">
-    Chiffrage et anonymisation
+  <a href="#donnees" class="md-nav__link">
+    Données
   </a>
   
-    <nav class="md-nav" aria-label="Chiffrage et anonymisation">
+    <nav class="md-nav" aria-label="Données">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#chiffrage" class="md-nav__link">
-    Chiffrage
+  <a href="#chiffrement-des-donnees" class="md-nav__link">
+    Chiffrement des données
   </a>
+  
+    <nav class="md-nav" aria-label="Chiffrement des données">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chiffrement-de-la-base" class="md-nav__link">
+    Chiffrement de la base
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chiffrement-applicatif" class="md-nav__link">
+    Chiffrement applicatif
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#anonymisation" class="md-nav__link">
     Anonymisation
+  </a>
+  
+    <nav class="md-nav" aria-label="Anonymisation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#par-le-framework" class="md-nav__link">
+    Par le framework
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#par-le-modele-nlp" class="md-nav__link">
+    Par le modèle NLP
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stockage-conservation" class="md-nav__link">
+    Stockage &amp; conservation
   </a>
   
 </li>
@@ -992,23 +1039,70 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#chiffrage-et-anonymisation" class="md-nav__link">
-    Chiffrage et anonymisation
+  <a href="#donnees" class="md-nav__link">
+    Données
   </a>
   
-    <nav class="md-nav" aria-label="Chiffrage et anonymisation">
+    <nav class="md-nav" aria-label="Données">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#chiffrage" class="md-nav__link">
-    Chiffrage
+  <a href="#chiffrement-des-donnees" class="md-nav__link">
+    Chiffrement des données
   </a>
+  
+    <nav class="md-nav" aria-label="Chiffrement des données">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chiffrement-de-la-base" class="md-nav__link">
+    Chiffrement de la base
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chiffrement-applicatif" class="md-nav__link">
+    Chiffrement applicatif
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#anonymisation" class="md-nav__link">
     Anonymisation
+  </a>
+  
+    <nav class="md-nav" aria-label="Anonymisation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#par-le-framework" class="md-nav__link">
+    Par le framework
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#par-le-modele-nlp" class="md-nav__link">
+    Par le modèle NLP
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stockage-conservation" class="md-nav__link">
+    Stockage &amp; conservation
   </a>
   
 </li>
@@ -1050,20 +1144,56 @@ Le code est disponible dans la classe <a href="https://github.com/theopenconvers
 </ul>
 <p>Si ces modèles ne correspondent pas à votre besoin, il est relativement simple d'en développer d'autres
 en se basant sur les exemples ci-dessus. N'hésitez pas à contribuer au projet et à nous contacter pour toute question!</p>
-<h2 id="chiffrage-et-anonymisation">Chiffrage et anonymisation<a class="headerlink" href="#chiffrage-et-anonymisation" title="Permanent link">&para;</a></h2>
-<h3 id="chiffrage">Chiffrage<a class="headerlink" href="#chiffrage" title="Permanent link">&para;</a></h3>
+<h2 id="donnees">Données<a class="headerlink" href="#donnees" title="Permanent link">&para;</a></h2>
+<p>Les utilisateurs pouvant transmettre aux bots des données personnelles à travers leurs conversations, il est important 
+de réfléchir à la nature des données manipulées dans <em>Tock Studio</em> ou stockées par Tock, et 
+de mettre en oeuvre des mécanismes de protection appropriés (anonymisation, chiffrement, 
+durée de rétention, restrictions d'accès basées sur des rôles, etc.).</p>
+<blockquote>
+<p>Voir en particulier la réglementation <a href="https://en.wikipedia.org/wiki/General_Data_Protection_Regulation">RGPD</a>.</p>
+</blockquote>
+<h3 id="chiffrement-des-donnees">Chiffrement des données<a class="headerlink" href="#chiffrement-des-donnees" title="Permanent link">&para;</a></h3>
+<h4 id="chiffrement-de-la-base">Chiffrement de la base<a class="headerlink" href="#chiffrement-de-la-base" title="Permanent link">&para;</a></h4>
 <p>Il est recommandé de déployer vos bases de données MongoDB en <a href="https://docs.mongodb.com/manual/tutorial/configure-encryption/">mode <em>chiffré</em></a>.</p>
-<p>Vous pouvez cependant ajouter un chiffrage applicatif (facultatif) de certains champs en base de données.</p>
-<p>C'est le rôle de la propriété <code>tock_encrypt_pass</code> qui permet d'indiquer un mot de passe
-pour chiffrer et déchiffrer ces champs. Par défaut, Tock chiffre toutes les données utilisateurs
-jugées sensibles à condition que ce mot de passe soit spécifié. 
-Pour plus de détails, vous pouvez vous réferrer au <a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/Encryptors.kt">code source</a>.</p>
+<h4 id="chiffrement-applicatif">Chiffrement applicatif<a class="headerlink" href="#chiffrement-applicatif" title="Permanent link">&para;</a></h4>
+<p>Tock peut réaliser un chiffrement applicatif (facultatif) de certains champs en base de données, indépendamment du 
+chiffrement de la base elle-même.</p>
+<p>C'est le rôle de la variable d'environnement <code>tock_encrypt_pass</code>, qui permet d'indiquer un mot de passe
+pour chiffrer et déchiffrer ces champs. Par défaut en environnement <code>prod</code>, Tock chiffre toutes les données utilisateurs
+jugées sensibles à condition que <code>tock_encrypt_pass</code> soit défini.</p>
+<blockquote>
+<p>Pour plus de détails, vous pouvez vous réferrer au <a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/Encryptors.kt">code source</a>.</p>
+<p>Remarque : définir <code>tock_encrypt_pass</code> est requis pour utiliser les fonctions d'anonymisation d'entités NLP dans 
+les interfaces <em>Tock Studio</em>.</p>
+</blockquote>
 <h3 id="anonymisation">Anonymisation<a class="headerlink" href="#anonymisation" title="Permanent link">&para;</a></h3>
 <p>Il est souvent souhaitable que certaines phrases soient anonymisées que ce soit dans les <em>logs</em> (journalisation)
  ou dans l'interface (<em>Tock Studio</em>). Par exemple, des coordonnées, numéros de cartes de fidélité, etc.
    ne devraient être lus ni par les utilisateurs de <em>Tock Studio</em> ni par les administrateurs de la plateforme.</p>
+<h4 id="par-le-framework">Par le framework<a class="headerlink" href="#par-le-framework" title="Permanent link">&para;</a></h4>
 <p>Pour anonymiser ces données, Tock met à disposition dans son framework une solution basée sur des 
 <em>expressions régulières (RegExp)</em> dont l'interface de base est <a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/StringObfuscator.kt"><code>StringObfuscator</code></a>.</p>
+<h4 id="par-le-modele-nlp">Par le modèle NLP<a class="headerlink" href="#par-le-modele-nlp" title="Permanent link">&para;</a></h4>
+<p>Tock permet également d'anonymiser dans <em>Tock Studio</em> (vue <em>Inbox</em> notamment.) les valeurs des entités 
+reconnues par le modèle NLP.</p>
+<p>Cette anonymisation par types d'entités se configure dans la vue <em>Language Understanding &gt; Entities</em>. Seuls les 
+utilisateurs ayant un rôle <code>admin</code> ou <code>techAdmin</code> dans <em>Tock Studio</em> peuvent activer/désactiver cette fonctionnalité.</p>
+<p>Dans les vues où les phrases sont affichées anonymisées (<em>Inbox</em>, <em>Search</em> par exemple), un <code>admin</code> ou 
+<code>techAdmin</code> peut décider d'afficher quand même (pour lui-même uniquement) une phrase non anonymisée grâce à l'action 
+<em>Reveal the sentence</em> (oeil ouvert).</p>
+<blockquote>
+<p>Remarque : définir <code>tock_encrypt_pass</code> est requis pour utiliser les fonctions d'anonymisation d'entités NLP dans 
+les interfaces <em>Tock Studio</em>.</p>
+</blockquote>
+<h3 id="stockage-conservation">Stockage &amp; conservation<a class="headerlink" href="#stockage-conservation" title="Permanent link">&para;</a></h3>
+<p>Tock stocke automatiquement différents types de données, allant d'informations peu sensibles (configuration de Stories 
+et réponses du bot, structure des intentions, statistiques de navigation tous utilisateurs confondus, etc.) à des données 
+plus personnelles (détails des conversations, préférences utilisateurs, etc.).</p>
+<p>En fonction de leur nature et leur utilisation dans le fonctionnement de Tock (modèle NLP, supervision, debug...), 
+ces données ont des durées de rétention spécifiques, et configurables. <strong>Chaque utilisateur de Tock décide 
+et configure combien de temps les données stockées sont conservées, en fonction de ses besoins.</strong></p>
+<p>La section <a href="../installation/#conservation-des-donnees"><em>Installation &gt; Conservation des données</em></a> décrit les différents 
+types de données conservées et comment modifier leur durée de rétention.</p>
                 
                   
                     
@@ -1072,7 +1202,7 @@ Pour plus de détails, vous pouvez vous réferrer au <a href="https://github.com
 <div class="md-source-date">
   <small>
     
-      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">27 septembre 2019</span>
+      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">3 novembre 2020</span>
     
   </small>
 </div>

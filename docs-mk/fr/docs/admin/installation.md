@@ -145,6 +145,8 @@ Enfin pour lancer les interfaces utilisateur (_Tock Studio_), les commandes sont
 
 ## Base de données MongoDB
 
+### Architecture _replica set_
+
 La base MongoDB doit être configurée en _replica set_, car Tock tire parti des [_change streams_](https://docs.mongodb.com/manual/changeStreams/).  
 
 > Cela implique qu'au minimum 3 _noeuds_ doivent être déployés, ce qui améliore la résilience.
@@ -158,6 +160,36 @@ Différents scénarios sont possibles pour la base de données :
 
 > Un [tutoriel d'installation en _replica set_](https://docs.mongodb.com/manual/tutorial/deploy-replica-set/)
  est disponible sur le site de MongoDB.
+
+### Conservation des données
+
+Tock conserve en base différents types de données et applique des _TTL (Time To Live)_ à ces données, afin que certaines 
+données expirent et soient purgées automatiquement après un certain temps.
+
+> En pratique, les variables d'environnement et l'application des _TTL_ ont lieu à l'initialisation des composant _DAO 
+>(Data Access Object)_ au démarrage de Tock.
+
+Les _TTL_ appliquées par Tock possèdent une valeur par défaut et sont configurables au moyen de différentes variables 
+d'environnement. Certaines sont présentes sur toutes les plateformes Tock (notées _*_), d'autres uniquement pour le 
+conversationnel (_Bot_).
+
+| Catégorie | Variable d'environnement                       | Valeur par défaut       | Description                          |
+|-----------|------------------------------------------------|-------------------------|--------------------------------------|
+| _*_       | `tock_nlp_log_index_ttl_days`                  | `7`                     | Logs NLP & phrases non qualifiées (_Inbox_). |
+| _*_       | `tock_nlp_classified_sentences_index_ttl_days` | `-1` (pas d'expiration) | Phrases qualifiées (dans le modèle NLP). <br><em>Remarque : définir aussi quelles intentions sont concernées par l'expiration avec la variable `tock_nlp_classified_sentences_index_ttl_intent_names`).</em> |
+| _*_       | `tock_nlp_log_stats_index_ttl_days`            | `30`                    | Statistiques NLP : nombre d'occurrences d'une phrase, scores de probabilité, etc. |
+| _*_       | `tock_user_log_index_ttl_days`                 | `365`                   | Log des action utilisateur dans _Tock Studio_ : modifications de _Stories_, etc. |
+| _Bot_       | `tock_bot_alternative_index_ttl_hours`       | `1`                     | Itération sur les alternatives à un label (_Answers_). |
+| _Bot_       | `tock_bot_dialog_index_ttl_days`             | `7`                     | Conversations (_Analytics > Users/Search_). |
+| _Bot_       | `tock_bot_flow_stats_index_ttl_days`         | `365`                   | Statistiques de navigation (_Analytics > Activity/Behavior_). |
+| _Bot_       | `tock_bot_timeline_index_ttl_days`           | `365`                   | Profils/historique utilisateurs : préférences, locale, dernière connexion, etc. <em>(hors détail des conversations)</em> |
+
+Selon le mode de déploiement utilisé, ces variables d'environnement peuvent être ajoutées soit 
+directement dans une ligne de commande, soit dans un descripteur `docker-compose.yml`, `dockerrun.aws.json` ou autre.
+
+> La conservation des données, au même titre que le chiffrement et l'anonymisation, est un aspect essentiel de la protection 
+> des données, en particulier si elles sont personnelles. 
+> Pour en savoir plus, voir la section [_Sécurité > Données_](securite.md#donnees).
 
 ## Composants applicatifs
 
