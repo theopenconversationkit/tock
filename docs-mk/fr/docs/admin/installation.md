@@ -163,15 +163,15 @@ Différents scénarios sont possibles pour la base de données :
 
 ### Conservation des données
 
-Tock conserve en base différents types de données et applique des _TTL (Time To Live)_ à ces données, afin que certaines 
-données expirent et soient purgées automatiquement après un certain temps.
+Tock conserve en base différents types de données et applique des [_TTL (Time To Live)_](https://en.wikipedia.org/wiki/Time_to_live), 
+afin que certaines expirent et soient purgées automatiquement après un certain temps.
 
 > En pratique, les variables d'environnement et l'application des _TTL_ ont lieu à l'initialisation des composant _DAO 
->(Data Access Object)_ au démarrage de Tock.
+>(Data Access Object)_, au démarrage de Tock.
 
-Les _TTL_ appliquées par Tock possèdent une valeur par défaut et sont configurables au moyen de différentes variables 
-d'environnement. Certaines sont présentes sur toutes les plateformes Tock (notées _*_), d'autres uniquement pour le 
-conversationnel (_Bot_).
+Les _TTL_ appliquées par Tock possèdent une valeur par défaut et sont configurables au moyen de variables 
+d'environnement. Certaines sont utilisables sur toutes les plateformes Tock (notées _*_), d'autres uniquement pour les 
+usages conversationnels (_Bot_).
 
 | Catégorie | Variable d'environnement                       | Valeur par défaut       | Description                          |
 |-----------|------------------------------------------------|-------------------------|--------------------------------------|
@@ -185,7 +185,7 @@ conversationnel (_Bot_).
 | _Bot_       | `tock_bot_timeline_index_ttl_days`           | `365`                   | Profils/historique utilisateurs : préférences, locale, dernière connexion, etc. <em>(hors détail des conversations)</em> |
 
 Selon le mode de déploiement utilisé, ces variables d'environnement peuvent être ajoutées soit 
-directement dans une ligne de commande, soit dans un descripteur `docker-compose.yml`, `dockerrun.aws.json` ou autre.
+directement en ligne de commande, soit dans un descripteur type `docker-compose.yml`, `dockerrun.aws.json` ou autre.
 
 > La conservation des données, au même titre que le chiffrement et l'anonymisation, est un aspect essentiel de la protection 
 > des données, en particulier si elles sont personnelles. 

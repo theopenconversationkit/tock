@@ -722,9 +722,50 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#utilisateurs-tock-studio" class="md-nav__link">
+    Utilisateurs Tock Studio
+  </a>
+  
+    <nav class="md-nav" aria-label="Utilisateurs Tock Studio">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#authentification" class="md-nav__link">
     Authentification
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#roles" class="md-nav__link">
+    Rôles
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-par-proprietes" class="md-nav__link">
+    Implémentation par propriétés
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-0authgithub" class="md-nav__link">
+    Implémentation 0Auth/GitHub
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-awsjwt" class="md-nav__link">
+    Implémentation AWS/JWT
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1032,9 +1073,50 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#utilisateurs-tock-studio" class="md-nav__link">
+    Utilisateurs Tock Studio
+  </a>
+  
+    <nav class="md-nav" aria-label="Utilisateurs Tock Studio">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#authentification" class="md-nav__link">
     Authentification
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#roles" class="md-nav__link">
+    Rôles
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-par-proprietes" class="md-nav__link">
+    Implémentation par propriétés
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-0authgithub" class="md-nav__link">
+    Implémentation 0Auth/GitHub
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-awsjwt" class="md-nav__link">
+    Implémentation AWS/JWT
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1126,14 +1208,15 @@
                 
                 
                 <h1 id="securite">Sécurité<a class="headerlink" href="#securite" title="Permanent link">&para;</a></h1>
-<h2 id="authentification">Authentification<a class="headerlink" href="#authentification" title="Permanent link">&para;</a></h2>
+<h2 id="utilisateurs-tock-studio">Utilisateurs <em>Tock Studio</em><a class="headerlink" href="#utilisateurs-tock-studio" title="Permanent link">&para;</a></h2>
+<h3 id="authentification">Authentification<a class="headerlink" href="#authentification" title="Permanent link">&para;</a></h3>
 <p>Tock supporte plusieurs systèmes d'authentification pour l'interface d'administration. 
 Il utilise les librairies <a href="https://vertx.io/docs/vertx-auth-common/java/">vert.x</a> correspondantes. </p>
-<p>Voici les systèmes disponibles par défaut :  </p>
+<p>Voici les systèmes disponibles par défaut (tous implémentations de <code>TockAuthProvider</code>) :  </p>
 <ul>
 <li>
 <p>Un modèle par "propriétés", utilisé par défaut.
-Le code est disponible dans la classe <a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/PropertyBasedAuthProvider.kt#L61"><code>PropertyBasedAuthProvider</code></a></p>
+Le code est disponible dans la classe <a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/PropertyBasedAuthProvider.kt"><code>PropertyBasedAuthProvider</code></a></p>
 </li>
 <li>
 <p>Un modèle <a href="https://oauth.net/2/"><em>OAuth2</em></a> dont un exemple est donné par <a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/GithubOAuthProvider.kt"><code>GithubOAuthProvider</code></a></p>
@@ -1142,8 +1225,203 @@ Le code est disponible dans la classe <a href="https://github.com/theopenconvers
 <p>Un modèle basé sur des jetons <a href="https://jwt.io/"><em>JWT</em></a>, dont une implémentation pour AWS est disponible dans <a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/AWSJWTAuthProvider.kt"><code>AWSJWTAuthProvider</code></a>    </p>
 </li>
 </ul>
+<p>Des détails et exemples de configuration sont donnés plus bas dans cette page.</p>
 <p>Si ces modèles ne correspondent pas à votre besoin, il est relativement simple d'en développer d'autres
 en se basant sur les exemples ci-dessus. N'hésitez pas à contribuer au projet et à nous contacter pour toute question!</p>
+<h3 id="roles">Rôles<a class="headerlink" href="#roles" title="Permanent link">&para;</a></h3>
+<p>Tock permet d'affecter plusieurs <em>rôles</em> ou niveaux d'habilitations aux utilisateurs dans les interfaces <em>Tock Studio</em>.
+En fonction du système d'authentification utilisé (par propriétés, <em>0Auth</em>, etc.) chaque utilisateur se voit assigné 
+un ou plusieurs de ces rôles, lui donnant différents accès dans l'application.</p>
+<p>Les rôles disponibles sont définis dans l'enum <code>TockUserRole</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Rôle</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>nlpUser</code></td>
+<td>NLP platform user, allowed to qualify and search sentences.</td>
+</tr>
+<tr>
+<td><code>botUser</code></td>
+<td>Bot platform user, allowed to create and modify stories, rules and answers.</td>
+</tr>
+<tr>
+<td><code>admin</code></td>
+<td>Allowed to update applications and configurations/connectors, import/export intents, sentences, stories, etc..</td>
+</tr>
+<tr>
+<td><code>technicalAdmin</code></td>
+<td>Allowed to access encrypted data, import/export application dumps, etc.</td>
+</tr>
+</tbody>
+</table>
+<p>La manière de configurer quel utilisateur <em>Tock Studio</em> a quel rôle dépend du mode d'authentification, 
+autrement dit l'implémentation de <code>TockAuthProvider</code> utilisée.</p>
+<h3 id="implementation-par-proprietes">Implémentation par propriétés<a class="headerlink" href="#implementation-par-proprietes" title="Permanent link">&para;</a></h3>
+<p>La configuration par "propriétés" est utilisée par défaut. Elle ne dépend d'aucun système tiers
+pour fonctionner.</p>
+<p>Ce mode consiste a configurer utilisateurs et rôles par des propriétés ou variables d'environnement. 
+Selon le mode de déploiement utilisé, ces variables peuvent être définies soit directement en ligne de commande, 
+soit dans un descripteur type <code>docker-compose.yml</code>, <code>dockerrun.aws.json</code> ou autre.</p>
+<blockquote>
+<p>Si aucune variable n'est définie (par exemple dans les descripteurs fournis dans le dépôt 
+<a href="https://github.com/theopenconversationkit/tock-docker"><code>tock-docker</code></a>), des valeurs par défaut sont utilisées.</p>
+</blockquote>
+<p>Voici les propriétés et leurs valeurs par défaut :</p>
+<table>
+<thead>
+<tr>
+<th>Variable d'environnement</th>
+<th>Valeur par défaut</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tock_users</code></td>
+<td><code>admin@app.com</code></td>
+<td>Identifiants (séparés par des virgules).</td>
+</tr>
+<tr>
+<td><code>tock_passwords</code></td>
+<td><code>password</code></td>
+<td>Mots de passe (séparés par des virgules).</td>
+</tr>
+<tr>
+<td><code>tock_organizations</code></td>
+<td><code>app</code></td>
+<td>Organisations (séparées par des virgules).</td>
+</tr>
+<tr>
+<td><code>tock_roles</code></td>
+<td>Vide (ie. tous les rôles)</td>
+<td>Rôles séparés par des <code>|</code> (puis par des virgules).</td>
+</tr>
+</tbody>
+</table>
+<p>Pour définir l'identité et les rôles de plusieurs utilisateurs, on sépare les valeurs par des virgules.</p>
+<blockquote>
+<p><strong>Attention :</strong> chacune de ces propriétés doit posséder le même nombre de valeurs (et dans le même ordre) pour
+permettre de corréler ces valeurs (index par index, pour chaque utilisateur).</p>
+</blockquote>
+<p>Ci-dessous un exemple au format Docker-Compose :</p>
+<div class="codehilite"><pre><span></span><code><span class="p p-Indicator">{</span> <span class="s">&quot;name&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;tock_users&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;value&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;alice@tock.ai,bob@tock.ai&quot;</span> <span class="p p-Indicator">}</span><span class="err">,</span>
+<span class="p p-Indicator">{</span> <span class="s">&quot;name&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;tock_passwords&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;value&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;secret1,secret2&quot;</span> <span class="p p-Indicator">}</span><span class="err">,</span>
+<span class="p p-Indicator">{</span> <span class="s">&quot;name&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;tock_organizations&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;value&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;tock,tock&quot;</span> <span class="p p-Indicator">}</span><span class="err">,</span>
+<span class="p p-Indicator">{</span> <span class="s">&quot;name&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;tock_roles&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;value&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;botUser,nlpUser|botUser|admin|technicalAdmin&quot;</span> <span class="p p-Indicator">}</span><span class="err">,</span>
+</code></pre></div>
+
+
+<p>Dans cet exemple, Alice a le rôle <code>botUser</code>, alors que Bob a tous les rôles.</p>
+<blockquote>
+<p>Pour en savoir plus sur le fonctionnement précis de cette implémentation, voir la classe 
+<a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/PropertyBasedAuthProvider.kt"><code>PropertyBasedAuthProvider</code></a>.</p>
+</blockquote>
+<h3 id="implementation-0authgithub">Implémentation 0Auth/GitHub<a class="headerlink" href="#implementation-0authgithub" title="Permanent link">&para;</a></h3>
+<p>Cette implémentation assez simpliste est utilisée à titre d'exemple, ainsi que pour la plateforme publique de démo
+ <a href="https://demo.tock.ai">https://demo.tock.ai</a>.</p>
+<p>Elle consiste à interroger l'API GitHub pour vérifier l'identité d'un utilisateur à partir de son jeton (<code>access_token</code>).</p>
+<blockquote>
+<p>Remarque : aucune autre donnée du profil GitHub n'est accédée par Tock, à part l'identifiant.</p>
+</blockquote>
+<p>Dans ce mode, activé par la propriété <code>tock_github_oauth_enabled</code>, chaque utilisateur reçoit automatiquement tous 
+les rôles <em>Tock Studio</em> et une organisation (ie. namespace) du même nom que son identifiant.</p>
+<p>Voici les propriétés et leurs valeurs par défaut :</p>
+<table>
+<thead>
+<tr>
+<th>Variable d'environnement</th>
+<th>Valeur par défaut</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tock_github_oauth_enabled</code></td>
+<td><code>false</code></td>
+<td>Activation de l'authentification 0Auth/GitHub.</td>
+</tr>
+<tr>
+<td><code>tock_github_oauth_client_id</code></td>
+<td><code>CLIENT_ID</code></td>
+<td>Identifiant pour interroger l'API GitHub.</td>
+</tr>
+<tr>
+<td><code>tock_github_oauth_secret_key</code></td>
+<td><code>SECRET_KEY</code></td>
+<td>Mot de passe pour interroger l'API GitHub.</td>
+</tr>
+<tr>
+<td><code>tock_github_api_request_timeout_ms</code></td>
+<td><code>5000</code></td>
+<td>Timeout vérification de l'identité (API GitHub).</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Pour en savoir plus sur le fonctionnement précis de cette implémentation, voir la classe 
+<a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/GithubOAuthProvider.kt"><code>GithubOAuthProvider</code></a>.</p>
+</blockquote>
+<h3 id="implementation-awsjwt">Implémentation AWS/JWT<a class="headerlink" href="#implementation-awsjwt" title="Permanent link">&para;</a></h3>
+<p>Une implémentation est fournie utilisant des jetons au format <a href="https://jwt.io/"><em>JWT</em></a> vérifiés par un service 
+<em>AWS (Amazon Web Services)</em>.</p>
+<p>Ce mode permet de créer une authentification unique (<em><a href="https://en.wikipedia.org/wiki/Single_sign-on">SSO (Single Sign-On)</a></em> 
+ou <a href="https://en.wikipedia.org/wiki/Federated_identity"><em>Fédération d'identité</em></a>) dans une infrastructure Cloud AWS. 
+Par défaut, la région ciblée pour vérifier les clefs publiques est la région Irlande (<code>eu-west-1</code>).</p>
+<p>Dans ce mode, activé par la propriété <code>tock_aws_jwt_enabled</code>, l'affectation des rôles <em>Tock Studio</em> aux utilisateurs 
+se fait à travers leur jeton JWT et la propriété <code>tock_jwt_custom_roles_mapping</code>.</p>
+<p>Voici les propriétés et leurs valeurs par défaut :</p>
+<table>
+<thead>
+<tr>
+<th>Variable d'environnement</th>
+<th>Valeur par défaut</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tock_aws_jwt_enabled</code></td>
+<td><code>false</code></td>
+<td>Activation de l'authentification AWS/JWT.</td>
+</tr>
+<tr>
+<td><code>tock_jwt_custom_namespace_mapping</code></td>
+<td>Vide</td>
+<td>Organisations (séparées par des virgules).</td>
+</tr>
+<tr>
+<td><code>tock_jwt_custom_roles_mapping</code></td>
+<td>Vide</td>
+<td>Correspondances groupe=rôles séparés par des virgules (puis par des <code>|</code>).</td>
+</tr>
+<tr>
+<td><code>jwt_algorithm</code></td>
+<td><code>ES256</code></td>
+<td>Algorithme de décodage du jeton JWT.</td>
+</tr>
+<tr>
+<td><code>tock_aws_public_key_request_timeout_ms</code></td>
+<td><code>30000</code></td>
+<td>Timeout vérification des clefs (API AWS).</td>
+</tr>
+</tbody>
+</table>
+<p>Ci-dessous un exemple au format Docker-Compose :</p>
+<div class="codehilite"><pre><span></span><code><span class="p p-Indicator">{</span> <span class="s">&quot;name&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;tock_jwt_custom_roles_mapping&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;value&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;MY_USER_GROUP=nlpUser,botUser|MY_ADMIN_GROUP=nlpUser,botUser,admin,technicalAdmin&quot;</span> <span class="p p-Indicator">}</span><span class="err">,</span>
+</code></pre></div>
+
+
+<p>Dans cet exemple, les utilisateurs appartenant au groupe <code>MY_USER_GROUP</code> possèdent les rôles <code>nlpUser</code> et <code>botUser</code>, 
+alors que les membres de <code>MY_ADMIN_GROUP</code> ont tous les rôles.</p>
+<blockquote>
+<p>Pour en savoir plus sur le fonctionnement précis de cette implémentation, voir la classe 
+<a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/AWSJWTAuthProvider.kt"><code>AWSJWTAuthProvider</code></a>.</p>
+</blockquote>
 <h2 id="donnees">Données<a class="headerlink" href="#donnees" title="Permanent link">&para;</a></h2>
 <p>Les utilisateurs pouvant transmettre aux bots des données personnelles à travers leurs conversations, il est important 
 de réfléchir à la nature des données manipulées dans <em>Tock Studio</em> ou stockées par Tock, et 
@@ -1177,9 +1455,12 @@ les interfaces <em>Tock Studio</em>.</p>
 <p>Tock permet également d'anonymiser dans <em>Tock Studio</em> (vue <em>Inbox</em> notamment.) les valeurs des entités 
 reconnues par le modèle NLP.</p>
 <p>Cette anonymisation par types d'entités se configure dans la vue <em>Language Understanding &gt; Entities</em>. Seuls les 
-utilisateurs ayant un rôle <code>admin</code> ou <code>techAdmin</code> dans <em>Tock Studio</em> peuvent activer/désactiver cette fonctionnalité.</p>
+utilisateurs ayant un rôle <code>admin</code> ou <code>technicalAdmin</code> dans <em>Tock Studio</em> peuvent activer/désactiver cette fonctionnalité.</p>
+<blockquote>
+<p>Pour en savoir plus, voir <a href="./#roles"><em>Rôles</em></a>.</p>
+</blockquote>
 <p>Dans les vues où les phrases sont affichées anonymisées (<em>Inbox</em>, <em>Search</em> par exemple), un <code>admin</code> ou 
-<code>techAdmin</code> peut décider d'afficher quand même (pour lui-même uniquement) une phrase non anonymisée grâce à l'action 
+<code>technicalAdmin</code> peut décider d'afficher quand même (pour lui-même uniquement) une phrase non anonymisée grâce à l'action 
 <em>Reveal the sentence</em> (oeil ouvert).</p>
 <blockquote>
 <p>Remarque : définir <code>tock_encrypt_pass</code> est requis pour utiliser les fonctions d'anonymisation d'entités NLP dans 

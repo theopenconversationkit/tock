@@ -1500,15 +1500,15 @@ des configurations pour IntelliJ sont fournies avec les sources de Tock :</p>
  est disponible sur le site de MongoDB.</p>
 </blockquote>
 <h3 id="conservation-des-donnees">Conservation des données<a class="headerlink" href="#conservation-des-donnees" title="Permanent link">&para;</a></h3>
-<p>Tock conserve en base différents types de données et applique des <em>TTL (Time To Live)</em> à ces données, afin que certaines 
-données expirent et soient purgées automatiquement après un certain temps.</p>
+<p>Tock conserve en base différents types de données et applique des <a href="https://en.wikipedia.org/wiki/Time_to_live"><em>TTL (Time To Live)</em></a>, 
+afin que certaines expirent et soient purgées automatiquement après un certain temps.</p>
 <blockquote>
 <p>En pratique, les variables d'environnement et l'application des <em>TTL</em> ont lieu à l'initialisation des composant <em>DAO 
-(Data Access Object)</em> au démarrage de Tock.</p>
+(Data Access Object)</em>, au démarrage de Tock.</p>
 </blockquote>
-<p>Les <em>TTL</em> appliquées par Tock possèdent une valeur par défaut et sont configurables au moyen de différentes variables 
-d'environnement. Certaines sont présentes sur toutes les plateformes Tock (notées <em>*</em>), d'autres uniquement pour le 
-conversationnel (<em>Bot</em>).</p>
+<p>Les <em>TTL</em> appliquées par Tock possèdent une valeur par défaut et sont configurables au moyen de variables 
+d'environnement. Certaines sont utilisables sur toutes les plateformes Tock (notées <em>*</em>), d'autres uniquement pour les 
+usages conversationnels (<em>Bot</em>).</p>
 <table>
 <thead>
 <tr>
@@ -1570,7 +1570,7 @@ conversationnel (<em>Bot</em>).</p>
 </tbody>
 </table>
 <p>Selon le mode de déploiement utilisé, ces variables d'environnement peuvent être ajoutées soit 
-directement dans une ligne de commande, soit dans un descripteur <code>docker-compose.yml</code>, <code>dockerrun.aws.json</code> ou autre.</p>
+directement en ligne de commande, soit dans un descripteur type <code>docker-compose.yml</code>, <code>dockerrun.aws.json</code> ou autre.</p>
 <blockquote>
 <p>La conservation des données, au même titre que le chiffrement et l'anonymisation, est un aspect essentiel de la protection 
 des données, en particulier si elles sont personnelles. 
