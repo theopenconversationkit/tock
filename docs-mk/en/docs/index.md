@@ -57,7 +57,3 @@ Graphical interfaces _(Tock Studio)_ are made with [Angular](https://angular.io/
 * [Contents](toc.md)
 * Read [Tutorial](guide/studio.md) and start using the [demo/sandbox platform](https://demo.tock.ai/)
 * User manual for [developers](dev/modes.md)
-
-> _Last documentation site update:  
-> {{ git.date}} by {{ git.author}} 
-> ([commit](https://github.com/theopenconversationkit/tock/commit/{{git.commit}}))._

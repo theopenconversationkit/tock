@@ -52,7 +52,3 @@
     - [Communauté](apropos/communaute.md)
     - [Contribuer](apropos/contribuer.md)
     - [Emploi](apropos/emploi.md)
-
-> _Dernière mise à jour de la documentation:  
-> {{ git.author}} le {{ git.date}} 
-> ([commit](https://github.com/theopenconversationkit/tock/commit/{{git.commit}}))._
