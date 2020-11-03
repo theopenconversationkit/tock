@@ -137,13 +137,16 @@
                 </div>
                 <div *ngIf="!f.conf" nbTooltip="Apply to All Configurations">All Configurations</div>
               </div>
-              <div class="feature-property cell" [nbTooltip]="'Redirect to Story: ' + f.switchToStory.name">
+              <div *ngIf="f.switchToStory" class="feature-property cell" [nbTooltip]="'Redirect to Story: ' + f.switchToStory.name">
                 <div>
                   <nb-icon *ngIf="f.switchToStory.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
                   <nb-icon *ngIf="f.switchToStory.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
                   <nb-icon *ngIf="f.switchToStory.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
                   <span class="story-label">{{f.switchToStory.name}}</span>
                 </div>
+              </div>
+              <div *ngIf="!f.switchToStory" class="feature-property cell">
+                <em>Unknown story</em>
               </div>
               <div class="feature-action cell">
                 <nb-toggle status="primary" [checked]="f.enabled" (checkedChange)="toggle(f, $event)"
