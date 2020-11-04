@@ -55,6 +55,7 @@ interface ClassifiedSentenceDAO {
     fun switchSentencesIntent(sentences: List<ClassifiedSentence>, newIntentId: Id<IntentDefinition>)
 
     fun switchSentencesEntity(
+        allowedNamespace:String,
         sentences: List<ClassifiedSentence>,
         oldEntity: EntityDefinition,
         newEntity: EntityDefinition

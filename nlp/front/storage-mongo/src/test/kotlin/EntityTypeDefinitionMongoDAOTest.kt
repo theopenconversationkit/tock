@@ -32,20 +32,20 @@ import kotlin.test.assertEquals
  */
 internal class EntityTypeDefinitionMongoDAOTest : AbstractTest() {
 
-    val entityType = EntityTypeDefinition(
+    private val entityType = EntityTypeDefinition(
         "test:desc",
         "desc",
         dictionary = true
     )
 
-    val dictionary = DictionaryData("test", "desc", listOf(
+    private val dictionary = DictionaryData("test", "desc", listOf(
         PredefinedValue(
             "A",
             mapOf(ENGLISH to listOf("B", "C"))
         )
     ))
 
-    val entityTypeDAO: EntityTypeDefinitionDAO get() = injector.provide()
+    private val entityTypeDAO: EntityTypeDefinitionDAO get() = injector.provide()
 
     @AfterEach
     fun cleanup() {

@@ -17,16 +17,20 @@
 package ai.tock.nlp.front.storage.mongo
 
 import ai.tock.nlp.front.service.storage.ClassifiedSentenceDAO
+import ai.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.Classification
 import ai.tock.nlp.front.shared.config.ClassifiedEntity
 import ai.tock.nlp.front.shared.config.ClassifiedSentence
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
+import ai.tock.nlp.front.shared.config.EntityDefinition
+import ai.tock.nlp.front.shared.config.EntityTypeDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition
+import ai.tock.nlp.front.shared.config.SentencesQuery
+import ai.tock.shared.Dice.newId
 import ai.tock.shared.defaultLocale
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.newId
-import org.litote.kmongo.toId
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import kotlin.test.assertEquals
@@ -36,72 +40,125 @@ import kotlin.test.assertEquals
  */
 class ClassifiedSentenceMongoDAOTest : AbstractTest() {
 
-    val classifiedSentenceDAO: ClassifiedSentenceDAO get() = ClassifiedSentenceMongoDAO
+    private val classifiedSentenceDAO: ClassifiedSentenceDAO get() = ClassifiedSentenceMongoDAO
+    private val entityTypeDAO: EntityTypeDefinitionDAO get() = EntityTypeDefinitionMongoDAO
 
-    @Test
-    fun `removeSubEntityFromSentences remove sub entities a 2 levels`() {
-        val applicationId = newId<ApplicationDefinition>()
-        val intentId = newId<IntentDefinition>()
-        val now = Instant.now().truncatedTo(ChronoUnit.MILLIS)
-        val sentence = ClassifiedSentence(
-            "a b c a",
-            defaultLocale,
-            applicationId,
-            now,
-            now,
-            model,
-            Classification(
-                intentId,
-                listOf(
-                    ClassifiedEntity(
-                        "abc",
-                        "abc",
-                        0,
-                        3,
-                        listOf(
-                            ClassifiedEntity(
-                                "ab",
-                                "ab",
-                                0,
-                                2,
-                                listOf(
-                                    ClassifiedEntity(
-                                        "a",
-                                        "a",
-                                        0,
-                                        1
-                                    ),
-                                    ClassifiedEntity(
-                                        "b",
-                                        "b",
-                                        1,
-                                        2
-                                    )
+    private val applicationId = newId<ApplicationDefinition>()
+    private val intentId = newId<IntentDefinition>()
+    private val now = Instant.now().truncatedTo(ChronoUnit.MILLIS)
+    private val namespace = "test"
+    private val entityTypeA = EntityTypeDefinition("$namespace:a")
+    private val entityTypeB = EntityTypeDefinition("$namespace:a")
+    private val entityTypeAB = EntityTypeDefinition(
+        "$namespace:ab",
+        subEntities = listOf(
+            EntityDefinition(entityTypeA, "a"),
+            EntityDefinition(entityTypeB, "b")
+        )
+    )
+
+    private val entityTypeABC = EntityTypeDefinition(
+        "$namespace:abc",
+        subEntities = listOf(EntityDefinition(entityTypeAB, "ab"))
+    )
+
+    private val sentence = ClassifiedSentence(
+        "a b c a",
+        defaultLocale,
+        applicationId,
+        now,
+        now,
+        model,
+        Classification(
+            intentId,
+            listOf(
+                ClassifiedEntity(
+                    entityTypeABC.name,
+                    "abc",
+                    0,
+                    3,
+                    listOf(
+                        ClassifiedEntity(
+                            entityTypeAB.name,
+                            "ab",
+                            0,
+                            2,
+                            listOf(
+                                ClassifiedEntity(
+                                    entityTypeA.name,
+                                    "a",
+                                    0,
+                                    1
+                                ),
+                                ClassifiedEntity(
+                                    entityTypeB.name,
+                                    "b",
+                                    1,
+                                    2
                                 )
                             )
                         )
-                    ),
-                    ClassifiedEntity(
-                        "a",
-                        "a",
-                        3,
-                        4
                     )
+                ),
+                ClassifiedEntity(
+                    entityTypeA.name,
+                    "a",
+                    3,
+                    4
                 )
-            ),
-            1.0,
-            1.0
-        )
+            )
+        ),
+        1.0,
+        1.0
+    )
 
+    private fun waitForSentence(count: Long = 0L): ClassifiedSentence {
+        when {
+            count == 0L -> Thread.sleep(100L)
+            count < 100 -> Thread.sleep(count)
+            else -> error("no sentence found")
+        }
+        return classifiedSentenceDAO.search(
+            SentencesQuery(
+                applicationId = applicationId,
+                language = sentence.language,
+                search = sentence.text
+            )
+        ).sentences.firstOrNull() ?: waitForSentence(count + 1)
+    }
+
+    @Test
+    fun `switchSentencesEntity switch entity and create sub entity type if needed`() {
+        entityTypeDAO.save(entityTypeABC)
+        entityTypeDAO.save(entityTypeB)
         classifiedSentenceDAO.save(sentence)
 
-        classifiedSentenceDAO.removeSubEntityFromSentences(applicationId, "ab", "a")
+        classifiedSentenceDAO.switchSentencesEntity(
+            namespace,
+            listOf(sentence),
+            EntityDefinition(entityTypeABC, "abc"),
+            EntityDefinition(entityTypeB, "b")
+        )
 
-        val s = classifiedSentenceDAO.getSentences(null, null, model).first()
+        //check
+        assertEquals(entityTypeB.name, waitForSentence().classification.entities.first().type)
+
+        entityTypeDAO.getEntityTypeByName(entityTypeB.name)!!.apply {
+            assertEquals(entityTypeABC.subEntities.map { it.role }, subEntities.map { it.role })
+        }
+    }
+
+    @Test
+    fun `removeSubEntityFromSentences remove sub entities a 2 levels`() {
+        classifiedSentenceDAO.save(sentence)
+
+        classifiedSentenceDAO.removeSubEntityFromSentences(applicationId, entityTypeAB.name, "a")
+
+        val s = waitForSentence()
 
         assertEquals(
             ClassifiedSentence(
-                text = "a b c a",
+                text = sentence.text,
                 language = defaultLocale,
                 applicationId = applicationId,
                 creationDate = now,
@@ -111,18 +168,18 @@ class ClassifiedSentenceMongoDAOTest : AbstractTest() {
                     intentId = intentId,
                     entities = listOf(
                         ClassifiedEntity(
-                            type = "abc", role = "abc", start = 0, end = 3,
+                            type = entityTypeABC.name, role = "abc", start = 0, end = 3,
                             subEntities = listOf(
                                 ClassifiedEntity(
-                                    type = "ab", role = "ab", start = 0, end = 2,
+                                    type = entityTypeAB.name, role = "ab", start = 0, end = 2,
                                     subEntities = listOf(
-                                        ClassifiedEntity(type = "b", role = "b", start = 1, end = 2)
+                                        ClassifiedEntity(type = entityTypeB.name, role = "b", start = 1, end = 2)
                                     )
                                 )
                             )
                         ),
                         ClassifiedEntity(
-                            "a",
+                            entityTypeA.name,
                             "a",
                             3,
                             4
