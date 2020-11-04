@@ -621,35 +621,41 @@ under the <a href="https://github.com/theopenconversationkit/tock/blob/master/LI
 </table>
 <h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h2>
 <ul>
-<li><em>Standalone</em> bots or integrated with Web sites, mobile apps, social networks, smart speakers.</li>
-<li>Full-featured <em>NLU</em> <em>(Natural Language Understanding)</em> platform, compatible with algorithms such as 
-<a href="https://opennlp.apache.org/">OpenNLP</a>, <a href="https://stanfordnlp.github.io/CoreNLP/">Stanford CoreNLP</a>, <a href="https://github.com/facebook/duckling">Duckling</a>,
-can be deployed alone (for use cases like the <a href="https://fr.wikipedia.org/wiki/Internet_des_objets">Internet Of Things</a> for instance)</li>
-<li><em>Tock Studio</em> user interfaces:<ul>
-<li>Models management, bot training</li>
-<li>Conversational no-code story builder</li>
-<li>Internationalization (<em>i18n</em>) support for multilingual bots</li>
-<li>Conversations, performance et model errors monitoring</li>
-<li>Interactive trends / users flow analytics (<em>Bot Flow</em>)</li>
+<li>Bots <em>standalone</em> or integrated with Web sites, mobile apps, social networks, smart speakers.</li>
+<li>Full-featured <em>NLU</em> <em><sup>(<a href="https://en.wikipedia.org/wiki/Natural-language_understanding">Natural Language Understanding</a>)</sup></em> platform:<ul>
+<li>Leveraging open technologies, such as 
+<a href="https://opennlp.apache.org/">OpenNLP</a>, <a href="https://stanfordnlp.github.io/CoreNLP/">Stanford CoreNLP</a>, 
+<a href="https://github.com/facebook/duckling">Duckling</a>, <a href="https://rasa.com/">Rasa</a> 
+(later <a href="https://spacy.io/">Spacy</a>, <a href="https://en.wikipedia.org/wiki/BERT_(language_model)">BERT</a>, ...)</li>
+<li>Can be deployed alone (for use cases like <a href="https://en.wikipedia.org/wiki/Internet_of_Things"><em>Internet Of Things</em></a>)</li>
 </ul>
 </li>
-<li>Frameworks available to develop complex stories and integrate with 3rd-party services: <br/> <a href="https://kotlinlang.org/">Kotlin</a>, 
-<a href="https://nodejs.org/">Javascript/Nodejs</a> and <a href="https://www.python.org/">Python</a> <em>DSLs</em> plus any-language <a href="api/"><em>REST API</em></a></li>
-<li>Numerous connectors to <a href="https://www.messenger.com/">Messenger</a>, <a href="https://www.whatsapp.com/">WhatsApp</a>, 
-<a href="https://assistant.google.com/">Google Assistant / Home</a>, <a href="https://twitter.com/">Twitter</a>, <a href="https://alexa.amazon.com/">Alexa</a>, 
-<a href="https://www.apple.com/fr/ios/business-chat/">Business Chat / iMessage</a>, <a href="https://products.office.com/fr-fr/microsoft-teams/">Teams</a>, 
+<li><em>Tock Studio</em> user interfaces:<ul>
+<li>NLU model management, bot training and performance monitoring</li>
+<li>Zero-code conversational stories and decision trees builder</li>
+<li>Internationalization support (<em>i18n</em>) for multilingual bots</li>
+<li>Dialog monitoring and user flow analytics</li>
+</ul>
+</li>
+<li>Frameworks provided to develop complex stories and integrate with 3<sup>rd</sup>-party services:<br />
+<a href="https://kotlinlang.org/">Kotlin</a>, <a href="https://nodejs.org/">Javascript/Nodejs</a>, <a href="https://www.python.org/">Python</a> <em>DSLs</em> 
+and any-language <em>REST API</em> (see <a href="dev/bot-api/"><em>Bot API</em></a>)</li>
+<li>Numerous text/voice integrations available with <a href="https://www.messenger.com/">Messenger</a>, <a href="https://www.whatsapp.com/">WhatsApp</a>, 
+<a href="https://assistant.google.com/">Google Assistant</a>, <a href="https://alexa.amazon.com/">Alexa</a>, <a href="https://twitter.com/">Twitter</a>, 
+<a href="https://www.apple.com/fr/ios/business-chat/">Apple Business Chat</a>, <a href="https://products.office.com/fr-fr/microsoft-teams/">Teams</a>, 
 <a href="https://slack.com/">Slack</a>... (see <a href="dev/connectors/">connectors</a>)</li>
 <li><em>Cloud</em> or <em>on-premise</em> setups, with or without <a href="https://www.docker.com/">Docker</a>, 
 <em>"embedded"</em> bots without Internet </li>
 </ul>
 <p><img alt="NLU interface example - qualifying a sentence" src="img/tock-nlp-admin.png" title="NLU interface example - qualifying a sentence" /></p>
 <h2 id="technologies">Technologies<a class="headerlink" href="#technologies" title="Permanent link">&para;</a></h2>
-<p>Tock runs on <a href="https://fr.wikipedia.org/wiki/Machine_virtuelle_Java">JVM</a> platforms. The reference language is <a href="https://kotlinlang.org/">Kotlin</a>,
- but other programming languages can be leveraged through the available APIs.</p>
-<p>Tock relies on <a href="http://vertx.io/">Vert.x</a> and <a href="https://www.mongodb.com">MongoDB</a>. 
-Various <em>NLU</em> libraries and algorithms can be used, such as <a href="https://opennlp.apache.org/">Apache OpenNLP</a> or <a href="https://stanfordnlp.github.io/CoreNLP/">Stanford CoreNLP</a>,
-but Tock does not depend on them directly.</p>
-<p>Graphical interfaces <em>(Tock Studio)</em> are made with <a href="https://angular.io/">Angular</a> in <a href="https://www.typescriptlang.org/">Typescript</a>.</p>
+<p>Tock components can run as <em>containers</em> (provided implementation for <a href="https://www.docker.com/">Docker</a>). </p>
+<p>The application runs on <a href="https://fr.wikipedia.org/wiki/Machine_virtuelle_Java">JVM</a> platforms. 
+The reference language is <a href="https://kotlinlang.org/">Kotlin</a>, but other programming languages can be leveraged through the available APIs.</p>
+<p>On the server side, Tock relies on <a href="http://vertx.io/">Vert.x</a> and <a href="https://www.mongodb.com">MongoDB</a> <sup>(alt. <a href="https://aws.amazon.com/fr/documentdb/">DocumentDB</a>)</sup>. 
+Various <em>NLU</em> libraries and algorithms can be used, but Tock does not depend on them directly.</p>
+<p><em>Tock Studio</em> graphical user interfaces are built with <a href="https://angular.io/">Angular</a> in <a href="https://www.typescriptlang.org/">Typescript</a>.</p>
+<p><a href="https://reactjs.org">React</a> and <a href="https://flutter.dev/">Flutter</a> toolkits are provided for Web and Mobile integrations.</p>
 <h2 id="getting-started">Getting started...<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="toc/">Contents</a></li>
@@ -664,7 +670,7 @@ but Tock does not depend on them directly.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 3, 2020</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 4, 2020</span>
     
   </small>
 </div>

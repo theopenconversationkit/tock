@@ -1032,37 +1032,42 @@ sous une <a href="https://github.com/theopenconversationkit/tock/blob/master/LIC
 </table>
 <h2 id="fonctionnalites">Fonctionnalités<a class="headerlink" href="#fonctionnalites" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Assitants <em>embarqués</em> ou intégrés à des sites Web, applications mobiles, réseaux sociaux, enceintes connectées etc.</li>
-<li>Plateforme <em>NLU</em> complète <em>(Natural Language Understanding - ou TALN en français (Traitement automatique du langage))</em>, qui utilise différentes librairies open-source comme
-<a href="https://opennlp.apache.org/">OpenNLP</a>, <a href="https://stanfordnlp.github.io/CoreNLP/">Stanford CoreNLP</a>, <a href="https://github.com/facebook/duckling">Duckling</a>,
-(et demain <a href="https://spacy.io/">Spacy</a>, <a href="https://rasa.com/">Rasa</a>, ...)
-déployable seule si besoin (pour des usages comme l'<a href="https://fr.wikipedia.org/wiki/Internet_des_objets">Internet des objets</a>)</li>
+<li>Assistants autonomes ou intégrés à des sites Web, applications mobiles, réseaux sociaux, enceintes connectées etc. 
+sans dépendre d'un canal particulier</li>
+<li>Plateforme <em>NLU</em> complète <em><sup>(<a href="https://en.wikipedia.org/wiki/Natural-language_understanding">Natural Language Understanding</a> 
+ou <a href="https://fr.wikipedia.org/wiki/Traitement_automatique_du_langage_naturel">TAL</a> en français)</sup></em><ul>
+<li>Utilisant des briques open-source comme <a href="https://opennlp.apache.org/">OpenNLP</a>, <a href="https://stanfordnlp.github.io/CoreNLP/">Stanford CoreNLP</a>,
+<a href="https://github.com/facebook/duckling">Duckling</a>, <a href="https://rasa.com/">Rasa</a> 
+(demain <a href="https://spacy.io/">Spacy</a>, <a href="https://camembert-model.fr/">CamemBERT</a>, ...)</li>
+<li>Déployable seule si besoin pour des usages comme l'<a href="https://fr.wikipedia.org/wiki/Internet_des_objets"><em>Internet des objets</em></a></li>
+</ul>
+</li>
 <li>Interfaces <em>Tock Studio</em> :<ul>
-<li>Gestion des modèles, entraînement du bot</li>
-<li>Construction de parcours conversationnels sans code</li>
+<li>Gestion des modèles, entraînement du bot et performances</li>
+<li>Construction de parcours conversationnels et arbres de décision sans code</li>
 <li>Support de l'internationalisation (<em>i18n</em>) pour les bots multilingues</li>
-<li>Suivi des conversations, performances et erreurs des modèles</li>
-<li>Analyse interactive des tendances / parcours utilisateurs (<em>Bot Flow</em>)</li>
+<li>Suivi des conversations et tendances / parcours utilisateurs (<em>Analytics</em>)</li>
 </ul>
 </li>
 <li>Frameworks pour développer des parcours complexes et intégrer des services tiers : <br/> <em>DSLs</em> en 
-<a href="https://kotlinlang.org/">Kotlin</a>, <a href="https://nodejs.org/">Javascript/Nodejs</a> ou <a href="https://www.python.org/">Python</a> 
-et <a href="dev/api/"><em>API</em></a> tous langages</li>
-<li>Nombreux connecteurs pour <a href="https://www.messenger.com/">Messenger</a>, <a href="https://www.whatsapp.com/">WhatsApp</a>, 
-<a href="https://assistant.google.com/">Google Assistant / Home</a>, <a href="https://twitter.com/">Twitter</a>, <a href="https://alexa.amazon.com/">Alexa</a>, 
-<a href="https://www.apple.com/fr/ios/business-chat/">Business Chat / iMessage</a>, <a href="https://products.office.com/fr-fr/microsoft-teams/">Teams</a>, 
-<a href="https://slack.com/">Slack</a>... (voir <a href="user/guides/canaux/">connecteurs</a>)</li>
+<a href="https://kotlinlang.org/">Kotlin</a>, <a href="https://nodejs.org/">Javascript/Nodejs</a>, <a href="https://www.python.org/">Python</a> 
+et <em>API</em> tous langages (voir <a href="dev/bot-api/"><em>Bot API</em></a>)</li>
+<li>Nombreux connecteurs texte et voix : <a href="https://www.messenger.com/">Messenger</a>, <a href="https://www.whatsapp.com/">WhatsApp</a>, 
+<a href="https://assistant.google.com/">Google Assistant</a>, <a href="https://alexa.amazon.com/">Alexa</a>, <a href="https://twitter.com/">Twitter</a>, 
+<a href="https://www.apple.com/fr/ios/business-chat/">Apple Business Chat</a>, <a href="https://products.office.com/fr-fr/microsoft-teams/">Teams</a>, 
+<a href="https://slack.com/">Slack</a>... (voir <a href="user/guides/canaux/">canaux</a>)</li>
 <li>Installation <em>cloud</em> ou <em>on-premise</em>, avec ou sans <a href="https://www.docker.com/">Docker</a>, 
-bot <em>"embarqué"</em> sans Internet </li>
+même <em>"embarqué"</em> sans Internet </li>
 </ul>
 <p><img alt="Interface d'admin NLU - qualification de phrase" src="img/tock-nlp-admin.png" title="Exemple de qualification de phrase" /></p>
 <h2 id="technologies">Technologies<a class="headerlink" href="#technologies" title="Permanent link">&para;</a></h2>
-<p>L'ensemble de la plateforme est <em>containerisée</em> avec <a href="https://www.docker.com/">Docker</a>. </p>
-<p>La plateforme applicative par défaut est la <a href="https://fr.wikipedia.org/wiki/Machine_virtuelle_Java">JVM</a>.</p>
-<p>Le langage de référence est <a href="https://kotlinlang.org/">Kotlin</a> mais d'autres langages de programmation peuvent être utilisés via les API mises à disposition.</p>
-<p>Tock utilise notamment <a href="http://vertx.io/">Vert.x</a> et <a href="https://www.mongodb.com">MongoDB</a>. </p>
-<p>Les interfaces graphiques <em>(Tock Studio)</em> sont écrites avec <a href="https://angular.io/">Angular</a> en <a href="https://www.typescriptlang.org/">Typescript</a>.</p>
-<p>Un widget <a href="https://reactjs.org">React</a> de base est disponible pour les interfaces Web.</p>
+<p>L'ensemble de la plateforme peut fonctionner <em>conteneurisée</em> (implémentation <a href="https://www.docker.com/">Docker</a> fournie). </p>
+<p>La plateforme applicative par défaut est la <a href="https://fr.wikipedia.org/wiki/Machine_virtuelle_Java">JVM</a>. 
+Le langage de référence est <a href="https://kotlinlang.org/">Kotlin</a> mais d'autres langages de programmation peuvent être utilisés via les API mises à disposition.</p>
+<p>Côté serveur, Tock utilise <a href="http://vertx.io/">Vert.x</a> et <a href="https://www.mongodb.com">MongoDB</a> <sup>(alt. <a href="https://aws.amazon.com/fr/documentdb/">DocumentDB</a>)</sup>. 
+Différentes briques <em>NLU</em> peuvent être utilisées, mais Tock n'a pas de dépendance forte envers l'une d'elles.</p>
+<p>Les interfaces graphiques <em>Tock Studio</em> sont écrites avec <a href="https://angular.io/">Angular</a> en <a href="https://www.typescriptlang.org/">Typescript</a>.</p>
+<p>Des intégrations <a href="https://reactjs.org">React</a> et <a href="https://flutter.dev/">Flutter</a> sont fournies pour les interfaces Web et Mobile.</p>
 <h2 id="demarrer">Démarrer...<a class="headerlink" href="#demarrer" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="toc/">Table des matières</a></li>
@@ -1078,7 +1083,7 @@ bot <em>"embarqué"</em> sans Internet </li>
 <div class="md-source-date">
   <small>
     
-      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">30 octobre 2020</span>
+      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">4 novembre 2020</span>
     
   </small>
 </div>

@@ -169,20 +169,23 @@ afin que certaines expirent et soient purgées automatiquement après un certain
 > En pratique, les variables d'environnement et l'application des _TTL_ ont lieu à l'initialisation des composant _DAO 
 >(Data Access Object)_, au démarrage de Tock.
 
-Les _TTL_ appliquées par Tock possèdent une valeur par défaut et sont configurables au moyen de variables 
-d'environnement. Certaines sont utilisables sur toutes les plateformes Tock (notées _*_), d'autres uniquement pour les 
-usages conversationnels (_Bot_).
+Les _TTL_ de Tock possèdent une valeur par défaut et sont configurables au moyen de variables 
+d'environnement.
 
-| Catégorie | Variable d'environnement                       | Valeur par défaut       | Description                          |
-|-----------|------------------------------------------------|-------------------------|--------------------------------------|
-| _*_       | `tock_nlp_log_index_ttl_days`                  | `7`                     | Logs NLP & phrases non qualifiées (_Inbox_). |
-| _*_       | `tock_nlp_classified_sentences_index_ttl_days` | `-1` (pas d'expiration) | Phrases qualifiées (dans le modèle NLP). <br><em>Remarque : définir aussi quelles intentions sont concernées par l'expiration avec la variable `tock_nlp_classified_sentences_index_ttl_intent_names`).</em> |
-| _*_       | `tock_nlp_log_stats_index_ttl_days`            | `30`                    | Statistiques NLP : nombre d'occurrences d'une phrase, scores de probabilité, etc. |
-| _*_       | `tock_user_log_index_ttl_days`                 | `365`                   | Log des action utilisateur dans _Tock Studio_ : modifications de _Stories_, etc. |
-| _Bot_       | `tock_bot_alternative_index_ttl_hours`       | `1`                     | Itération sur les alternatives à un label (_Answers_). |
-| _Bot_       | `tock_bot_dialog_index_ttl_days`             | `7`                     | Conversations (_Analytics > Users/Search_). |
-| _Bot_       | `tock_bot_flow_stats_index_ttl_days`         | `365`                   | Statistiques de navigation (_Analytics > Activity/Behavior_). |
-| _Bot_       | `tock_bot_timeline_index_ttl_days`           | `365`                   | Profils/historique utilisateurs : préférences, locale, dernière connexion, etc. <em>(hors détail des conversations)</em> |
+> Tock pouvant être utilisé comme plateforme conversationnelle complète ou 
+uniquement la partie NLU/NLP, on indique les variables spécifiques au conversationnel (notées _Bot_) 
+ou utilisables sur tous les types de plateformes (notées _*_).
+
+| Plateforme(s) | Variable d'environnement                       | Valeur par défaut       | Description |
+|---------------|------------------------------------------------|-------------------------|-------------|
+| _*_           | `tock_nlp_log_index_ttl_days`                  | `7`                     | Logs NLP & phrases non qualifiées (_Inbox_). |
+| _*_           | `tock_nlp_classified_sentences_index_ttl_days` | `-1` (pas d'expiration) | Phrases qualifiées (dans le modèle NLP). <br><em>Remarque : définir aussi quelles intentions sont concernées par l'expiration avec la variable `tock_nlp_classified_sentences_index_ttl_intent_names`).</em> |
+| _*_           | `tock_nlp_log_stats_index_ttl_days`            | `30`                    | Statistiques NLP : nombre d'occurrences d'une phrase, scores de probabilité, etc. |
+| _*_           | `tock_user_log_index_ttl_days`                 | `365`                   | Log des action utilisateur dans _Tock Studio_ : modifications de _Stories_, etc. |
+| _Bot_         | `tock_bot_alternative_index_ttl_hours`         | `1`                     | Itération sur les alternatives à un label (_Answers_). |
+| _Bot_         | `tock_bot_dialog_index_ttl_days`               | `7`                     | Conversations (_Analytics > Users/Search_). |
+| _Bot_         | `tock_bot_flow_stats_index_ttl_days`           | `365`                   | Statistiques de navigation (_Analytics > Activity/Behavior_). |
+| _Bot_         | `tock_bot_timeline_index_ttl_days`             | `365`                   | Profils/historique utilisateurs : préférences, locale, dernière connexion, etc. <em>(hors détail des conversations)</em> |
 
 Selon le mode de déploiement utilisé, ces variables d'environnement peuvent être ajoutées soit 
 directement en ligne de commande, soit dans un descripteur type `docker-compose.yml`, `dockerrun.aws.json` ou autre.

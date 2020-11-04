@@ -1506,13 +1506,17 @@ afin que certaines expirent et soient purgées automatiquement après un certain
 <p>En pratique, les variables d'environnement et l'application des <em>TTL</em> ont lieu à l'initialisation des composant <em>DAO 
 (Data Access Object)</em>, au démarrage de Tock.</p>
 </blockquote>
-<p>Les <em>TTL</em> appliquées par Tock possèdent une valeur par défaut et sont configurables au moyen de variables 
-d'environnement. Certaines sont utilisables sur toutes les plateformes Tock (notées <em>*</em>), d'autres uniquement pour les 
-usages conversationnels (<em>Bot</em>).</p>
+<p>Les <em>TTL</em> de Tock possèdent une valeur par défaut et sont configurables au moyen de variables 
+d'environnement.</p>
+<blockquote>
+<p>Tock pouvant être utilisé comme plateforme conversationnelle complète ou 
+uniquement la partie NLU/NLP, on indique les variables spécifiques au conversationnel (notées <em>Bot</em>) 
+ou utilisables sur tous les types de plateformes (notées <em>*</em>).</p>
+</blockquote>
 <table>
 <thead>
 <tr>
-<th>Catégorie</th>
+<th>Plateforme(s)</th>
 <th>Variable d'environnement</th>
 <th>Valeur par défaut</th>
 <th>Description</th>
@@ -1751,7 +1755,7 @@ utilisez dans la configuration de l'image docker <code>tock_admin</code> la vari
 <div class="md-source-date">
   <small>
     
-      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">3 novembre 2020</span>
+      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">4 novembre 2020</span>
     
   </small>
 </div>

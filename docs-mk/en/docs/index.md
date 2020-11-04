@@ -21,21 +21,24 @@ Users choose which components to embed and decide to keep (or share) ownership o
 
 ## Features
 
-* _Standalone_ bots or integrated with Web sites, mobile apps, social networks, smart speakers.
-* Full-featured _NLU_ _(Natural Language Understanding)_ platform, compatible with algorithms such as 
-[OpenNLP](https://opennlp.apache.org/), [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/), [Duckling](https://github.com/facebook/duckling),
-can be deployed alone (for use cases like the [Internet Of Things](https://fr.wikipedia.org/wiki/Internet_des_objets) for instance)
+* Bots _standalone_ or integrated with Web sites, mobile apps, social networks, smart speakers.
+* Full-featured _NLU_ _<sup>([Natural Language Understanding](https://en.wikipedia.org/wiki/Natural-language_understanding))</sup>_ platform:
+    * Leveraging open technologies, such as 
+[OpenNLP](https://opennlp.apache.org/), [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/), 
+[Duckling](https://github.com/facebook/duckling), [Rasa](https://rasa.com/) 
+(later [Spacy](https://spacy.io/), [BERT](https://en.wikipedia.org/wiki/BERT_(language_model)), ...)
+    * Can be deployed alone (for use cases like [_Internet Of Things_](https://en.wikipedia.org/wiki/Internet_of_Things))
 * _Tock Studio_ user interfaces:
-    * Models management, bot training
-    * Conversational no-code story builder
-    * Internationalization (_i18n_) support for multilingual bots
-    * Conversations, performance et model errors monitoring
-    * Interactive trends / users flow analytics (_Bot Flow_)
-* Frameworks available to develop complex stories and integrate with 3rd-party services: <br/> [Kotlin](https://kotlinlang.org/), 
-[Javascript/Nodejs](https://nodejs.org/) and [Python](https://www.python.org/) _DSLs_ plus any-language [_REST API_](api.md)
-* Numerous connectors to [Messenger](https://www.messenger.com/), [WhatsApp](https://www.whatsapp.com/), 
-[Google Assistant / Home](https://assistant.google.com/), [Twitter](https://twitter.com/), [Alexa](https://alexa.amazon.com/), 
-[Business Chat / iMessage](https://www.apple.com/fr/ios/business-chat/), [Teams](https://products.office.com/fr-fr/microsoft-teams/), 
+    * NLU model management, bot training and performance monitoring
+    * Zero-code conversational stories and decision trees builder
+    * Internationalization support (_i18n_) for multilingual bots
+    * Dialog monitoring and user flow analytics
+* Frameworks provided to develop complex stories and integrate with 3<sup>rd</sup>-party services:  
+[Kotlin](https://kotlinlang.org/), [Javascript/Nodejs](https://nodejs.org/), [Python](https://www.python.org/) _DSLs_ 
+and any-language _REST API_ (see [_Bot API_](dev/bot-api.md))
+* Numerous text/voice integrations available with [Messenger](https://www.messenger.com/), [WhatsApp](https://www.whatsapp.com/), 
+[Google Assistant](https://assistant.google.com/), [Alexa](https://alexa.amazon.com/), [Twitter](https://twitter.com/), 
+[Apple Business Chat](https://www.apple.com/fr/ios/business-chat/), [Teams](https://products.office.com/fr-fr/microsoft-teams/), 
 [Slack](https://slack.com/)... (see [connectors](dev/connectors.md))
 * _Cloud_ or _on-premise_ setups, with or without [Docker](https://www.docker.com/), 
 _"embedded"_ bots without Internet 
@@ -44,14 +47,17 @@ _"embedded"_ bots without Internet
 
 ## Technologies
 
-Tock runs on [JVM](https://fr.wikipedia.org/wiki/Machine_virtuelle_Java) platforms. The reference language is [Kotlin](https://kotlinlang.org/),
- but other programming languages can be leveraged through the available APIs.
- 
-Tock relies on [Vert.x](http://vertx.io/) and [MongoDB](https://www.mongodb.com ). 
-Various _NLU_ libraries and algorithms can be used, such as [Apache OpenNLP](https://opennlp.apache.org/) or [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/),
-but Tock does not depend on them directly.
+Tock components can run as _containers_ (provided implementation for [Docker](https://www.docker.com/)). 
 
-Graphical interfaces _(Tock Studio)_ are made with [Angular](https://angular.io/) in [Typescript](https://www.typescriptlang.org/).
+The application runs on [JVM](https://fr.wikipedia.org/wiki/Machine_virtuelle_Java) platforms. 
+The reference language is [Kotlin](https://kotlinlang.org/), but other programming languages can be leveraged through the available APIs.
+ 
+On the server side, Tock relies on [Vert.x](http://vertx.io/) and [MongoDB](https://www.mongodb.com ) <sup>(alt. [DocumentDB](https://aws.amazon.com/fr/documentdb/))</sup>. 
+Various _NLU_ libraries and algorithms can be used, but Tock does not depend on them directly.
+
+_Tock Studio_ graphical user interfaces are built with [Angular](https://angular.io/) in [Typescript](https://www.typescriptlang.org/).
+
+[React](https://reactjs.org) and [Flutter](https://flutter.dev/) toolkits are provided for Web and Mobile integrations.
 
 ## Getting started...
 * [Contents](toc.md)
