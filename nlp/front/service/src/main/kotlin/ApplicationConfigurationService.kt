@@ -258,7 +258,7 @@ object ApplicationConfigurationService :
         }
 
         //switch entity
-        sentenceDAO.switchSentencesEntity(sentences, oldEntity, newEntity)
+        sentenceDAO.switchSentencesEntity(targetApplication.namespace, sentences, oldEntity, newEntity)
 
         return sentences.size
     }
