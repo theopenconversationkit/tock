@@ -19,3 +19,35 @@
   display: flex;
   justify-content: flex-end;
 }
+
+.user-bubble {
+  border: 5px solid transparent;
+  border-radius: 50px 0px 50px 50px;
+  padding: 25px;
+  width: 50%;
+  background-color: #e8e8e8;
+  color: #222b45;
+  display: inline-block;
+}
+
+.text{
+  width: 100%;
+}
+
+.second-container{
+  display: flex;
+  margin-top: 15px;
+}
+
+.intent-combo {
+  display: flex;
+  justify-content: flex-start;
+  width: 50%;
+}
+
+.edit-button {
+  display: flex;
+  justify-content: flex-end;
+  width: 50%;
+}
+

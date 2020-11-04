@@ -23,6 +23,7 @@ import {Component, OnInit} from '@angular/core';
   styleUrls: ['./user-bubble.component.css']
 })
 export class UserBubbleComponent implements OnInit {
+  selectedIntent: any;
   ngOnInit(): void {
   }
 }

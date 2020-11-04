@@ -19,3 +19,46 @@
   display: flex;
   justify-content: flex-start;
 }
+
+.bot-bubble {
+  border: 5px solid transparent;
+  border-radius: 0px 50px 50px 50px;
+  padding: 25px;
+  width: 50%;
+  background: #3366ff;
+  color: #ffffff;
+}
+
+.text{
+  width: 100%;
+}
+
+.edit-button {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.action-button {
+  margin: 10px 0px 10px 10px;
+}
+
+.flex-start{
+  width: 50%;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.flex-end{
+  width: 50%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.bubble-footer{
+  display: flex;
+}
+
+.actions{
+  width: 50%;
+  display: flex;
+}
