@@ -200,9 +200,9 @@ Tock stocke automatiquement différents types de données, allant d'informations
 et réponses du bot, structure des intentions, statistiques de navigation tous utilisateurs confondus, etc.) à des données 
 plus personnelles (détails des conversations, préférences utilisateurs, etc.).
 
-En fonction de leur nature et leur utilisation dans le fonctionnement de Tock (modèle NLP, supervision, debug...), 
-ces données ont des durées de rétention spécifiques, et configurables. **Chaque utilisateur de Tock décide 
-et configure combien de temps les données stockées sont conservées, en fonction de ses besoins.**
+En fonction de leur nature et leur utilisation dans le fonctionnement de Tock (NLP, supervision, debug...), 
+ces données ont des durées de rétention spécifiques, et configurables. **Chaque utilisateur de Tock décide et configure 
+combien de temps les données stockées sont conservées, en fonction de ses besoins.**
 
 La section [_Installation > Conservation des données_](installation.md#conservation-des-donnees) décrit les différents 
 types de données conservées et comment modifier leur durée de rétention.

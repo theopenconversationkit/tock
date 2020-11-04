@@ -1508,6 +1508,10 @@ afin que certaines expirent et soient purgées automatiquement après un certain
 </blockquote>
 <p>Les <em>TTL</em> de Tock possèdent une valeur par défaut et sont configurables au moyen de variables 
 d'environnement.</p>
+<p>Selon le mode de déploiement utilisé, ces variables d'environnement peuvent être ajoutées soit 
+directement en ligne de commande, soit dans un descripteur type <code>docker-compose.yml</code>, <code>dockerrun.aws.json</code> ou autre.
+Selon le type de variables, certaines concernent un composant Tock en particulier, d'autres doivent être définies sur 
+plusieurs composants.</p>
 <blockquote>
 <p>Tock pouvant être utilisé comme plateforme conversationnelle complète ou 
 uniquement la partie NLU/NLP, on indique les variables spécifiques au conversationnel (notées <em>Bot</em>) 
@@ -1520,63 +1524,96 @@ ou utilisables sur tous les types de plateformes (notées <em>*</em>).</p>
 <th>Variable d'environnement</th>
 <th>Valeur par défaut</th>
 <th>Description</th>
+<th>Composant(s) concerné(s)</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><em>*</em></td>
-<td><code>tock_nlp_log_index_ttl_days</code></td>
-<td><code>7</code></td>
-<td>Logs NLP &amp; phrases non qualifiées (<em>Inbox</em>).</td>
+<td><code>tock_nlp_classified_sentences_index_ttl_days</code></td>
+<td><code>-1</code> (pas d'expiration)</td>
+<td>Phrases non validées (<em>Inbox</em>).</td>
+<td><code>nlp_api</code>, <code>nlp_admin</code>/<code>bot_admin</code>, <code>worker</code></td>
 </tr>
 <tr>
 <td><em>*</em></td>
-<td><code>tock_nlp_classified_sentences_index_ttl_days</code></td>
-<td><code>-1</code> (pas d'expiration)</td>
-<td>Phrases qualifiées (dans le modèle NLP). <br><em>Remarque : définir aussi quelles intentions sont concernées par l'expiration avec la variable <code>tock_nlp_classified_sentences_index_ttl_intent_names</code>).</em></td>
+<td><code>tock_nlp_classified_sentences_index_ttl_intent_names</code></td>
+<td>Vide (toutes intentions)</td>
+<td>Phrases non validées (<em>Inbox</em>) &gt;&gt; restriction à certaines intentions, séparées par des virgules.<br><em>(Exemple ci-dessous).</em></td>
+<td><code>nlp_api</code></td>
+</tr>
+<tr>
+<td><em>*</em></td>
+<td><code>tock_nlp_log_index_ttl_days</code></td>
+<td><code>7</code></td>
+<td>Logs NLP : phrase, intentions, scores, détail des entités, etc.</td>
+<td><code>nlp_api</code></td>
 </tr>
 <tr>
 <td><em>*</em></td>
 <td><code>tock_nlp_log_stats_index_ttl_days</code></td>
 <td><code>30</code></td>
-<td>Statistiques NLP : nombre d'occurrences d'une phrase, scores de probabilité, etc.</td>
+<td>Statistiques NLP : nombre d'occurrences d'une phrase, scores, etc.</td>
+<td><code>nlp_api</code></td>
 </tr>
 <tr>
 <td><em>*</em></td>
 <td><code>tock_user_log_index_ttl_days</code></td>
 <td><code>365</code></td>
-<td>Log des action utilisateur dans <em>Tock Studio</em> : modifications de <em>Stories</em>, etc.</td>
+<td>Log des actions dans <em>Tock Studio</em> : modifications de <em>Stories</em>, etc.</td>
+<td><code>nlp_admin</code>/<code>bot_admin</code></td>
 </tr>
 <tr>
 <td><em>Bot</em></td>
 <td><code>tock_bot_alternative_index_ttl_hours</code></td>
 <td><code>1</code></td>
-<td>Itération sur les alternatives à un label (<em>Answers</em>).</td>
+<td>Index sur les alternatives d'un label (<em>Answers</em>).</td>
+<td><code>bot</code>/<code>bot_api</code></td>
 </tr>
 <tr>
 <td><em>Bot</em></td>
 <td><code>tock_bot_dialog_index_ttl_days</code></td>
 <td><code>7</code></td>
 <td>Conversations (<em>Analytics &gt; Users/Search</em>).</td>
+<td><code>bot</code>/<code>bot_api</code>, <code>nlp_admin</code>/<code>bot_admin</code></td>
+</tr>
+<tr>
+<td><em>Bot</em></td>
+<td><code>tock_bot_dialog_max_validity_in_seconds</code></td>
+<td><code>60 * 60 * 24</code> (24h)</td>
+<td>Contextes des conversations (intention courante, entités dans le <em>bus</em>, etc.).</td>
+<td><code>bot</code>/<code>bot_api</code>, <code>nlp_admin</code>/<code>bot_admin</code></td>
 </tr>
 <tr>
 <td><em>Bot</em></td>
 <td><code>tock_bot_flow_stats_index_ttl_days</code></td>
 <td><code>365</code></td>
 <td>Statistiques de navigation (<em>Analytics &gt; Activity/Behavior</em>).</td>
+<td><code>bot</code>/<code>bot_api</code>, <code>nlp_admin</code>/<code>bot_admin</code></td>
 </tr>
 <tr>
 <td><em>Bot</em></td>
 <td><code>tock_bot_timeline_index_ttl_days</code></td>
 <td><code>365</code></td>
 <td>Profils/historique utilisateurs : préférences, locale, dernière connexion, etc. <em>(hors détail des conversations)</em></td>
+<td><code>bot</code>/<code>bot_api</code>, <code>nlp_admin</code>/<code>bot_admin</code></td>
 </tr>
 </tbody>
 </table>
-<p>Selon le mode de déploiement utilisé, ces variables d'environnement peuvent être ajoutées soit 
-directement en ligne de commande, soit dans un descripteur type <code>docker-compose.yml</code>, <code>dockerrun.aws.json</code> ou autre.</p>
+<p>Il est possible de supprimer automatiquement les phrases non validées (<em>Inbox</em>) pour certaines intentions uniquement, 
+grâce à <code>tock_nlp_classified_sentences_index_ttl_intent_names</code> :</p>
+<div class="codehilite"><pre><span></span><code><span class="p p-Indicator">{</span> <span class="s">&quot;name&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;tock_nlp_classified_sentences_index_ttl_days&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;value&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;10&quot;</span> <span class="p p-Indicator">}</span><span class="err">,</span>
+<span class="p p-Indicator">{</span> <span class="s">&quot;name&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;tock_nlp_classified_sentences_index_ttl_intent_names&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;value&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;greetings,unknown&quot;</span> <span class="p p-Indicator">}</span><span class="err">,</span>
+</code></pre></div>
+
+
+<p>Dans cet exemple, seules les phrases détectées comme intentions <code>greetings</code> ou <code>unknown</code> (mais non validées) seront 
+supprimées au bout de <code>10</code> jours ; les autres phrases ne seront pas supprimées.</p>
+<p>Seules les phrases validées par un utilisateur dans <em>Tock Studio</em>, intégrant le modèle NLP du bot, n'expirent jamais 
+par défaut (même s'il reste possible de les supprimer du modèle via la vue <em>Search &gt; Status: Included in model</em>) : 
+il est donc important de ne pas valider des phrases comportant des données personnelles par exemple.</p>
 <blockquote>
-<p>La conservation des données, au même titre que le chiffrement et l'anonymisation, est un aspect essentiel de la protection 
+<p>La conservation des données, le chiffrement et l'anonymisation sont essentiels à la protection 
 des données, en particulier si elles sont personnelles. 
 Pour en savoir plus, voir la section <a href="../securite/#donnees"><em>Sécurité &gt; Données</em></a>.</p>
 </blockquote>

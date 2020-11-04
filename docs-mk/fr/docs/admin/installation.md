@@ -172,25 +172,44 @@ afin que certaines expirent et soient purgées automatiquement après un certain
 Les _TTL_ de Tock possèdent une valeur par défaut et sont configurables au moyen de variables 
 d'environnement.
 
+Selon le mode de déploiement utilisé, ces variables d'environnement peuvent être ajoutées soit 
+directement en ligne de commande, soit dans un descripteur type `docker-compose.yml`, `dockerrun.aws.json` ou autre.
+Selon le type de variables, certaines concernent un composant Tock en particulier, d'autres doivent être définies sur 
+plusieurs composants.
+
 > Tock pouvant être utilisé comme plateforme conversationnelle complète ou 
 uniquement la partie NLU/NLP, on indique les variables spécifiques au conversationnel (notées _Bot_) 
 ou utilisables sur tous les types de plateformes (notées _*_).
 
-| Plateforme(s) | Variable d'environnement                       | Valeur par défaut       | Description |
-|---------------|------------------------------------------------|-------------------------|-------------|
-| _*_           | `tock_nlp_log_index_ttl_days`                  | `7`                     | Logs NLP & phrases non qualifiées (_Inbox_). |
-| _*_           | `tock_nlp_classified_sentences_index_ttl_days` | `-1` (pas d'expiration) | Phrases qualifiées (dans le modèle NLP). <br><em>Remarque : définir aussi quelles intentions sont concernées par l'expiration avec la variable `tock_nlp_classified_sentences_index_ttl_intent_names`).</em> |
-| _*_           | `tock_nlp_log_stats_index_ttl_days`            | `30`                    | Statistiques NLP : nombre d'occurrences d'une phrase, scores de probabilité, etc. |
-| _*_           | `tock_user_log_index_ttl_days`                 | `365`                   | Log des action utilisateur dans _Tock Studio_ : modifications de _Stories_, etc. |
-| _Bot_         | `tock_bot_alternative_index_ttl_hours`         | `1`                     | Itération sur les alternatives à un label (_Answers_). |
-| _Bot_         | `tock_bot_dialog_index_ttl_days`               | `7`                     | Conversations (_Analytics > Users/Search_). |
-| _Bot_         | `tock_bot_flow_stats_index_ttl_days`           | `365`                   | Statistiques de navigation (_Analytics > Activity/Behavior_). |
-| _Bot_         | `tock_bot_timeline_index_ttl_days`             | `365`                   | Profils/historique utilisateurs : préférences, locale, dernière connexion, etc. <em>(hors détail des conversations)</em> |
+| Plateforme(s) | Variable d'environnement                               | Valeur par défaut        | Description | Composant(s) concerné(s) |
+|---------------|--------------------------------------------------------|--------------------------|-------------|-|
+| _*_           | `tock_nlp_classified_sentences_index_ttl_days`         | `-1` (pas d'expiration)  | Phrases non validées (_Inbox_). | `nlp_api`, `nlp_admin`/`bot_admin`, `worker` |
+| _*_           | `tock_nlp_classified_sentences_index_ttl_intent_names` | Vide (toutes intentions) | Phrases non validées (_Inbox_) >> restriction à certaines intentions, séparées par des virgules.<br><em>(Exemple ci-dessous).</em> | `nlp_api` |
+| _*_           | `tock_nlp_log_index_ttl_days`                          | `7`                      | Logs NLP : phrase, intentions, scores, détail des entités, etc. | `nlp_api` |
+| _*_           | `tock_nlp_log_stats_index_ttl_days`                    | `30`                     | Statistiques NLP : nombre d'occurrences d'une phrase, scores, etc. | `nlp_api` |
+| _*_           | `tock_user_log_index_ttl_days`                         | `365`                    | Log des actions dans _Tock Studio_ : modifications de _Stories_, etc. | `nlp_admin`/`bot_admin` |
+| _Bot_         | `tock_bot_alternative_index_ttl_hours`                 | `1`                      | Index sur les alternatives d'un label (_Answers_). | `bot`/`bot_api` |
+| _Bot_         | `tock_bot_dialog_index_ttl_days`                       | `7`                      | Conversations (_Analytics > Users/Search_). | `bot`/`bot_api`, `nlp_admin`/`bot_admin` |
+| _Bot_         | `tock_bot_dialog_max_validity_in_seconds`              | `60 * 60 * 24` (24h)     | Contextes des conversations (intention courante, entités dans le _bus_, etc.). | `bot`/`bot_api`, `nlp_admin`/`bot_admin` |
+| _Bot_         | `tock_bot_flow_stats_index_ttl_days`                   | `365`                    | Statistiques de navigation (_Analytics > Activity/Behavior_). | `bot`/`bot_api`, `nlp_admin`/`bot_admin` |
+| _Bot_         | `tock_bot_timeline_index_ttl_days`                     | `365`                    | Profils/historique utilisateurs : préférences, locale, dernière connexion, etc. <em>(hors détail des conversations)</em> | `bot`/`bot_api`, `nlp_admin`/`bot_admin` |
 
-Selon le mode de déploiement utilisé, ces variables d'environnement peuvent être ajoutées soit 
-directement en ligne de commande, soit dans un descripteur type `docker-compose.yml`, `dockerrun.aws.json` ou autre.
+Il est possible de supprimer automatiquement les phrases non validées (_Inbox_) pour certaines intentions uniquement, 
+grâce à `tock_nlp_classified_sentences_index_ttl_intent_names` :
 
-> La conservation des données, au même titre que le chiffrement et l'anonymisation, est un aspect essentiel de la protection 
+```yaml
+{ "name" : "tock_nlp_classified_sentences_index_ttl_days", "value" : "10" },
+{ "name" : "tock_nlp_classified_sentences_index_ttl_intent_names", "value" : "greetings,unknown" },
+```
+
+Dans cet exemple, seules les phrases détectées comme intentions `greetings` ou `unknown` (mais non validées) seront 
+supprimées au bout de `10` jours ; les autres phrases ne seront pas supprimées.
+
+Seules les phrases validées par un utilisateur dans _Tock Studio_, intégrant le modèle NLP du bot, n'expirent jamais 
+par défaut (même s'il reste possible de les supprimer du modèle via la vue _Search > Status: Included in model_) : 
+il est donc important de ne pas valider des phrases comportant des données personnelles par exemple.
+
+> La conservation des données, le chiffrement et l'anonymisation sont essentiels à la protection 
 > des données, en particulier si elles sont personnelles. 
 > Pour en savoir plus, voir la section [_Sécurité > Données_](securite.md#donnees).
 
