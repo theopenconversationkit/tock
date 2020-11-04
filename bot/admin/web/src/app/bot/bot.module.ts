@@ -44,6 +44,7 @@ import {StepDialogComponent} from './story/step-dialog.component';
 import {StepsComponent} from './story/steps.component';
 import {StepComponent} from './story/step.component';
 import {MediaDialogComponent} from './story/media/media-dialog.component';
+import {StoryBuilderComponent} from './story-builder/story-builder.component';
 import {ThemeModule} from '../theme/theme.module';
 import {
   NbAccordionModule,
@@ -53,7 +54,7 @@ import {
   NbCheckboxModule,
   NbFormFieldModule,
   NbIconModule,
-  NbInputModule,
+  NbInputModule, NbLayoutModule,
   NbRadioModule,
   NbRouteTabsetModule,
   NbSelectModule,
@@ -70,6 +71,8 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {I18nExportComponent} from './i18n/i18n-export.component';
 import {I18nImportComponent} from './i18n/i18n-import.component';
+import {BotBubbleComponent} from "./story-builder/bot-bubble/bot-bubble.component";
+import {UserBubbleComponent} from "./story-builder/user-bubble/user-bubble.component";
 
 const routes: Routes = [
   {
@@ -91,6 +94,11 @@ const routes: Routes = [
       {
         path: 'story-search',
         component: SearchStoryComponent,
+        canDeactivate: [SearchStoryNavigationGuard]
+      },
+      {
+        path: 'story-builder',
+        component: StoryBuilderComponent,
         canDeactivate: [SearchStoryNavigationGuard]
       },
       {
@@ -139,7 +147,8 @@ export class BotRoutingModule {
     MatGridListModule,
     NbFormFieldModule,
     NbIconModule,
-    NbButtonModule
+    NbButtonModule,
+    NbLayoutModule
   ],
   declarations: [
     BotTabsComponent,
@@ -165,7 +174,10 @@ export class BotRoutingModule {
     ApplicationFeatureComponent,
     StoryRuleComponent,
     StoryRuntimeSettingsComponent,
-    StoryTagComponent
+    StoryTagComponent,
+    StoryBuilderComponent,
+    BotBubbleComponent,
+    UserBubbleComponent
   ],
   exports: [],
   providers: [

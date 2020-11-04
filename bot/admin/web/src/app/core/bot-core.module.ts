@@ -14,28 +14,30 @@
  * limitations under the License.
  */
 
-import {CommonModule} from "@angular/common";
-import {Injectable, NgModule, Optional, SkipSelf} from "@angular/core";
-import {BotConfigurationService} from "./bot-configuration.service";
-import {CoreConfig} from "../core-nlp/core.config";
-import {UserRole} from "../model/auth";
+import {CommonModule} from '@angular/common';
+import {Injectable, NgModule, Optional, SkipSelf} from '@angular/core';
+import {BotConfigurationService} from './bot-configuration.service';
+import {CoreConfig} from '../core-nlp/core.config';
+import {UserRole} from '../model/auth';
 
 @Injectable()
 export class BotCoreConfig implements CoreConfig {
 
   /** url of the configuration menu */
-  configurationUrl: string = "/configuration/new";
+  configurationUrl = '/configuration/new';
   /** url of the display dialogs if it exists */
-  displayDialogUrl: string = "/analytics/dialogs";
+  displayDialogUrl = '/analytics/dialogs';
   /** url to answer to sentence if it exists */
-  answerToSentenceUrl: string = "/build/story-create";
+  answerToSentenceUrl = '/build/story-create';
+  /** url to story builder */
+  storyBuilderUrl = '/build/story-builder';
   /** url map for each default rights */
   roleMap: Map<UserRole, string> = new Map(
     [
-      [UserRole.nlpUser, "/nlp"],
-      [UserRole.botUser, "/build"],
-      [UserRole.admin, "/configuration"],
-      [UserRole.technicalAdmin, "/configuration"],
+      [UserRole.nlpUser, '/nlp'],
+      [UserRole.botUser, '/build'],
+      [UserRole.admin, '/configuration'],
+      [UserRole.technicalAdmin, '/configuration'],
     ]);
 
 }
