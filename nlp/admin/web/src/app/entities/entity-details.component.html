@@ -18,11 +18,11 @@
   <mat-icon matListIcon [style.color]="entity.entityColor">extension</mat-icon>
   <span class="status" [style.background-color]="entity.entityColor">{{entity.qualifiedName(state.user)}}</span>
   <div *ngIf="entity.isDateType()" class="dateType">
-    <nb-checkbox [(ngModel)]="entity.atStartOfDay" matTooltip="useful for non relative time">Evaluate at start of day
+    <nb-checkbox [(ngModel)]="entity.atStartOfDay" matTooltip="Useful for non relative time">Evaluate at start of day
     </nb-checkbox>
     <button nbButton (click)="update()" status="primary" outline>Update</button>
   </div>
-  <button *ngIf="entityType" mat-icon-button (click)="remove()" color="warn">
+  <button *ngIf="entityType" mat-icon-button (click)="remove()" color="warn" matTooltip="Remove sub entity type">
     <mat-icon>delete</mat-icon>
   </button>
 </mat-list-item>

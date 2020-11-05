@@ -43,8 +43,7 @@ import {CoreConfig} from '../../core-nlp/core.config';
 import {Router} from '@angular/router';
 import {isNullOrUndefined} from '../../model/commons';
 import {DialogService} from '../../core-nlp/dialog.service';
-import {MatDialog} from '@angular/material/dialog';
-import { NbDialogService } from '@nebular/theme';
+import {NbDialogService} from '@nebular/theme';
 
 @Component({
   selector: 'tock-highlight',
@@ -438,6 +437,10 @@ export class IntentEntityProvider implements EntityProvider {
 
   addEntity(entity: EntityDefinition, highlight: HighlightComponent): string {
     this.intent.addEntity(entity);
+    const allEntities = this.state.entities.getValue();
+    if (!allEntities.some(e => e.entityTypeName === entity.entityTypeName && e.role === entity.role)) {
+      this.state.entities.next(this.state.currentApplication.allEntities());
+    }
     this.nlp.saveIntent(this.intent).subscribe(_ => {
         highlight.notifyAddEntity(entity)
       }
