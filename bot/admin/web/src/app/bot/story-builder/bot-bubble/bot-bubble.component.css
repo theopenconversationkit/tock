@@ -24,7 +24,7 @@
   border: 5px solid transparent;
   border-radius: 0px 50px 50px 50px;
   padding: 25px;
-  width: 50%;
+  width: 45%;
   background: #3366ff;
   color: #ffffff;
 }
@@ -61,4 +61,12 @@
 .actions{
   width: 50%;
   display: flex;
+}
+
+.avatar-bot {
+  width: 40px;
+  height: 40px;
+  margin-right: 5px;
+  display: inline-table;
+  content:url("https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/robot-face.png");
 }

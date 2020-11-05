@@ -24,7 +24,7 @@
   border: 5px solid transparent;
   border-radius: 50px 0px 50px 50px;
   padding: 25px;
-  width: 50%;
+  width: 45%;
   background-color: #e8e8e8;
   color: #222b45;
   display: inline-block;
@@ -49,5 +49,13 @@
   display: flex;
   justify-content: flex-end;
   width: 50%;
+}
+
+.avatar-user {
+  width: 40px;
+  height: 40px;
+  margin-left: 5px;
+  display: inline-table;
+  content:url("https://embodiedfacilitator.com/wp-content/uploads/2018/05/human-icon-png-1901.png");
 }
 
