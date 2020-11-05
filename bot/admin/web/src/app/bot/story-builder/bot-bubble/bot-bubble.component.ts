@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'tock-bot-bubble',
@@ -22,6 +22,13 @@ import {Component, OnInit} from '@angular/core';
   styleUrls: ['./bot-bubble.component.css']
 })
 export class BotBubbleComponent implements OnInit {
+
+  @Input()
+  label: string;
+
+  @Input()
+  actions: string[];
+
   ngOnInit(): void {
   }
 }

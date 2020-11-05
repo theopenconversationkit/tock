@@ -15,28 +15,21 @@
  */
 
 
-.user-sentence-input-container{
-  margin: 10px 20px;
+import {Interaction} from './Interaction';
+
+export class InteractionEntry {
+  type: 'bot' | 'user';
+  content: InteractionEntryContent[];
+  interactions: Interaction[];
 }
 
-.add-bubble-buttons-container{
-  width: 100%;
+export class InteractionEntryContent {
+  type: 'text' | 'carrousel';
+  text: string;
 }
 
-.add-bubble-button {
-  width: 50%;
-  display: inline-block;
-}
-
-.story-builder-footer {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.user-sentence{
-  width: 100%;
-}
-
-.story-builder-actions {
-  padding: 10px;
+export class CarouselCard {
+  label: string;
+  url: string;
+  interaction_id: string;
 }

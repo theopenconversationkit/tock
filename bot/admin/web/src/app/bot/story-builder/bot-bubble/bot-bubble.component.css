@@ -21,10 +21,15 @@
 }
 
 .bot-bubble {
+  display: flex;
+  width: 50%;
+}
+
+.bot-bubble-content {
   border: 5px solid transparent;
   border-radius: 0px 50px 50px 50px;
   padding: 25px;
-  width: 45%;
+  width: 100%;
   background: #3366ff;
   color: #ffffff;
 }
@@ -61,6 +66,7 @@
 .actions{
   width: 50%;
   display: flex;
+  padding-left: 40px;
 }
 
 .avatar-bot {

@@ -15,7 +15,7 @@
  */
 
 
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'tock-user-bubble',
@@ -23,7 +23,15 @@ import {Component, OnInit} from '@angular/core';
   styleUrls: ['./user-bubble.component.css']
 })
 export class UserBubbleComponent implements OnInit {
-  selectedIntent: any;
+  @Input()
+  intent: string;
+
+  @Input()
+  intents: string[];
+
+  @Input()
+  label: string;
+
   ngOnInit(): void {
   }
 }

@@ -15,28 +15,26 @@
  */
 
 
-.user-sentence-input-container{
-  margin: 10px 20px;
-}
+import {InteractionEntry} from './InteractionEntry';
 
-.add-bubble-buttons-container{
-  width: 100%;
-}
+export class Interaction {
+  id: string;
+  intent: string;
+  label: string;
+  entries: InteractionEntry[];
 
-.add-bubble-button {
-  width: 50%;
-  display: inline-block;
-}
+  constructor(id, intent, label, entries) {
+    this.id = id;
+    this.intent = intent;
+    this.label = label;
+    this.entries = entries;
+  }
 
-.story-builder-footer {
-  display: flex;
-  justify-content: flex-end;
-}
+  public getActions(): string[] {
+    return this.entries[0].interactions.map(item => item.label);
+  }
 
-.user-sentence{
-  width: 100%;
-}
-
-.story-builder-actions {
-  padding: 10px;
+  public getLabel(): string {
+    return this.entries[0].content[0].text;
+  }
 }

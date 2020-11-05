@@ -21,10 +21,15 @@
 }
 
 .user-bubble {
+  display: flex;
+  width: 50%;
+}
+
+.user-bubble-content {
   border: 5px solid transparent;
   border-radius: 50px 0px 50px 50px;
   padding: 25px;
-  width: 45%;
+  width: 100%;
   background-color: #e8e8e8;
   color: #222b45;
   display: inline-block;
@@ -39,10 +44,14 @@
   margin-top: 15px;
 }
 
-.intent-combo {
+.intent-combo-container {
   display: flex;
   justify-content: flex-start;
   width: 50%;
+}
+
+.intent-combo {
+  width: 100%;
 }
 
 .edit-button {

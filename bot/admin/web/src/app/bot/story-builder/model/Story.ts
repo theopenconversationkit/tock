@@ -15,28 +15,10 @@
  */
 
 
-.user-sentence-input-container{
-  margin: 10px 20px;
-}
+import {Interaction} from './Interaction';
 
-.add-bubble-buttons-container{
-  width: 100%;
-}
-
-.add-bubble-button {
-  width: 50%;
-  display: inline-block;
-}
-
-.story-builder-footer {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.user-sentence{
-  width: 100%;
-}
-
-.story-builder-actions {
-  padding: 10px;
+export class Story {
+  name: string;
+  intent: string;
+  interactions: Interaction[];
 }

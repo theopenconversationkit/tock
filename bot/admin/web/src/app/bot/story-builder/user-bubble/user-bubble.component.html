@@ -1,22 +1,21 @@
 <div class="user-content">
 
   <div class="user-bubble">
-    <span class="text">Some user text</span>
-    <div class="second-container">
-      <div class="intent-combo">
-        <nb-select placeholder="Select intent" [(selected)]="selectedIntent" >
-          <nb-option value="">New</nb-option>
-          <nb-option value="0">Option 0</nb-option>
-          <nb-option value="1">Option 1</nb-option>
-          <nb-option value="2">Option 2</nb-option>
-          <nb-option value="3">Option 3</nb-option>
-          <nb-option value="4">Option 4</nb-option>
-        </nb-select>
-      </div>
-      <div class="edit-button">
-        <button nbButton><nb-icon icon="edit-2"></nb-icon></button>
+    <div class="user-bubble-content">
+      <span class="text">{{label}}</span>
+      <div class="second-container">
+        <div class="intent-combo-container">
+          <nb-select class="intent-combo" placeholder="Select intent" [(selected)]="intent" >
+            <nb-option value="-1">New</nb-option>
+            <nb-option *ngFor="let intentOption of intents" [value]="intentOption">{{intentOption}}</nb-option>
+          </nb-select>
+        </div>
+        <div class="edit-button">
+          <button nbButton><nb-icon icon="edit-2"></nb-icon></button>
+        </div>
       </div>
     </div>
+    <div class="avatar-user"></div>
   </div>
-  <div class="avatar-user"></div>
+
 </div>
