@@ -18,3 +18,12 @@
 .user-sentence-input-container{
   margin: 10px 20px;
 }
+
+.add-bubble-buttons-container{
+  width: 100%;
+}
+
+.add-bubble-button {
+  width: 50%;
+  display: inline-block;
+}

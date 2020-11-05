@@ -6,6 +6,16 @@
     <div class="bot-user-content">
       <tock-user-bubble></tock-user-bubble>
       <tock-bot-bubble></tock-bot-bubble>
+      <div class="add-bubble-buttons-container">
+        <tock-add-bubble-button class="add-bubble-button" [action]="addBotResponse"></tock-add-bubble-button>
+        <tock-add-bubble-button class="add-bubble-button" [action]="addUserAction"></tock-add-bubble-button>
+      </div>
+      <tock-user-bubble></tock-user-bubble>
+      <tock-bot-bubble></tock-bot-bubble>
+      <div class="add-bubble-buttons-container">
+        <tock-add-bubble-button class="add-bubble-button" [action]="addBotResponse"></tock-add-bubble-button>
+        <tock-add-bubble-button class="add-bubble-button" [action]="addUserAction"></tock-add-bubble-button>
+      </div>
     </div>
 
   </nb-card-body>

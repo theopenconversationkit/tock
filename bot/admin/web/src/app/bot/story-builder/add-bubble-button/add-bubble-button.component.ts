@@ -15,26 +15,19 @@
  */
 
 
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
-  selector: 'tock-story-builder',
-  templateUrl: './story-builder.component.html',
-  styleUrls: ['./story-builder.component.css']
+  selector: 'tock-add-bubble-button',
+  templateUrl: './add-bubble-button.component.html',
+  styleUrls: ['./add-bubble-button.component.css']
 })
-export class StoryBuilderComponent implements OnInit {
+export class AddBubbleButtonComponent implements OnInit {
+  @Input()
+  type: string;
+  @Input()
+  action: () => {};
+
   ngOnInit(): void {
-  }
-
-  addUserSentence = () => {
-    console.log('User sentence');
-  }
-
-  addUserAction = () => {
-    console.log('Add user action');
-  }
-
-  addBotResponse = () => {
-    console.log('Add bot response');
   }
 }

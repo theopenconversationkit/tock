@@ -14,27 +14,10 @@
  * limitations under the License.
  */
 
+.align-center{
+  width: 100%;
+}
 
-import {Component, OnInit} from '@angular/core';
-
-@Component({
-  selector: 'tock-story-builder',
-  templateUrl: './story-builder.component.html',
-  styleUrls: ['./story-builder.component.css']
-})
-export class StoryBuilderComponent implements OnInit {
-  ngOnInit(): void {
-  }
-
-  addUserSentence = () => {
-    console.log('User sentence');
-  }
-
-  addUserAction = () => {
-    console.log('Add user action');
-  }
-
-  addBotResponse = () => {
-    console.log('Add bot response');
-  }
+.button-container {
+  width: 100%;
 }
