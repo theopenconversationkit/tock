@@ -101,8 +101,7 @@ export class StoryBuilderComponent implements OnInit {
     }
     ;
     this.currentPath = [
-      this.story.interactions[0]
-      , this.story.interactions[0].entries[0].interactions[0]
+      this.story.interactions[0], this.story.interactions[0].entries[0].interactions[0]
     ];
   }
 
@@ -120,5 +119,9 @@ export class StoryBuilderComponent implements OnInit {
 
   save() {
     console.log('Saved the story');
+  }
+
+  addFirstInteraction() {
+    console.log('Add first interaction');
   }
 }

@@ -4,6 +4,14 @@
   </nb-card-header>
   <nb-card-body>
     <div class="bot-user-content">
+      <div class="user-sentence" *ngIf="!story.interactions || story.interactions.length === 0">
+        <nb-form-field class="user-sentence-input-container">
+          <input type="text" nbInput fullWidth shape="round" placeholder="Enter user sentence...">
+          <button nbSuffix nbButton ghost (click)="addUserSentence()" (click)="addFirstInteraction()">
+            <nb-icon icon="arrow-right"></nb-icon>
+          </button>
+        </nb-form-field>
+      </div>
       <div *ngFor="let interaction of currentPath">
         <tock-user-bubble [label]="interaction.label"
                           [intent]="interaction.intent"
@@ -21,14 +29,6 @@
 
   </nb-card-body>
   <nb-card-footer class="story-builder-footer">
-    <div class="user-sentence">
-      <nb-form-field class="user-sentence-input-container">
-        <input type="text" nbInput fullWidth shape="round" placeholder="Enter user sentence...">
-        <button nbSuffix nbButton ghost (click)="addUserSentence()">
-          <nb-icon icon="arrow-right"></nb-icon>
-        </button>
-      </nb-form-field>
-    </div>
     <div class="story-builder-actions">
       <button nbSuffix nbButton status="primary" (click)="save()">
         <nb-icon icon="save"></nb-icon> Save
