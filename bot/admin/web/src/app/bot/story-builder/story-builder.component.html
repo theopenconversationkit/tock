@@ -1,13 +1,17 @@
 <nb-card>
-  <nb-card-header>
-    Je ne trouve pas mon train
+  <nb-card-header class="story-header">
+    <tock-input-label class="story-name" [text]="story.name" placeholder="Enter story name..."></tock-input-label>
+    <span class="main-intent">{{story.intent}}</span>
+    <span class="edit-button">
+      <button nbButton><nb-icon icon="edit-2"></nb-icon></button>
+    </span>
   </nb-card-header>
   <nb-card-body>
     <div class="bot-user-content">
       <div class="user-sentence" *ngIf="!story.interactions || story.interactions.length === 0">
         <nb-form-field class="user-sentence-input-container">
           <input type="text" nbInput fullWidth shape="round" placeholder="Enter user sentence...">
-          <button nbSuffix nbButton ghost (click)="addUserSentence()" (click)="addFirstInteraction()">
+          <button nbSuffix nbButton ghost (click)="addFirstInteraction()">
             <nb-icon icon="arrow-right"></nb-icon>
           </button>
         </nb-form-field>

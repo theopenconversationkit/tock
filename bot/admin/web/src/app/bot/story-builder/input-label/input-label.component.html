@@ -1,0 +1,16 @@
+<span class="label-container" *ngIf="!editing">
+  <span class="text-label">{{text}}</span>
+  <button nbButton ghost (click)="edit()">
+    <nb-icon icon="edit-2"></nb-icon>
+  </button>
+</span>
+<nb-form-field class="input-container" *ngIf="editing">
+  <input #input type="text" nbInput fullWidth
+         shape="round"
+         [placeholder]="placeholder"
+         [ngModel]="text"
+         (keyup.enter)="save($event.target.value)">
+  <button nbSuffix nbButton ghost (click)="save(input.value)">
+    <nb-icon icon="arrow-right"></nb-icon>
+  </button>
+</nb-form-field>

@@ -15,11 +15,33 @@
  */
 
 
-.user-sentence-input-container{
+.story-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.story-name {
+  font-weight: bold;
+  width: 100%;
+}
+
+.main-intent {
+  font-size: x-small;
+  border: 5px solid transparent;
+  border-radius: 20px;
+  padding: 3px 10px 0px 10px;
+  height: 40px;
+  background-color: #e8e8e8;
+  color: #222b45;
+  margin-right: 10px;
+}
+
+
+.user-sentence-input-container {
   margin: 10px 20px;
 }
 
-.add-bubble-buttons-container{
+.add-bubble-buttons-container {
   width: 100%;
 }
 
@@ -33,7 +55,7 @@
   justify-content: flex-end;
 }
 
-.user-sentence{
+.user-sentence {
   width: 100%;
 }
 

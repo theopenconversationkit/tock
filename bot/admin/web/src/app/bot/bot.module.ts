@@ -71,9 +71,10 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {I18nExportComponent} from './i18n/i18n-export.component';
 import {I18nImportComponent} from './i18n/i18n-import.component';
-import {BotBubbleComponent} from "./story-builder/bot-bubble/bot-bubble.component";
-import {UserBubbleComponent} from "./story-builder/user-bubble/user-bubble.component";
-import {AddBubbleButtonComponent} from "./story-builder/add-bubble-button/add-bubble-button.component";
+import {BotBubbleComponent} from './story-builder/bot-bubble/bot-bubble.component';
+import {UserBubbleComponent} from './story-builder/user-bubble/user-bubble.component';
+import {AddBubbleButtonComponent} from './story-builder/add-bubble-button/add-bubble-button.component';
+import {InputLabelComponent} from './story-builder/input-label/input-label.component';
 
 const routes: Routes = [
   {
@@ -180,6 +181,7 @@ export class BotRoutingModule {
     BotBubbleComponent,
     UserBubbleComponent,
     AddBubbleButtonComponent,
+    InputLabelComponent
   ],
   exports: [],
   providers: [
