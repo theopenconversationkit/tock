@@ -2,7 +2,7 @@
 
   <div class="user-bubble">
     <div class="user-bubble-content">
-      <span class="text">{{label}}</span>
+      <tock-input-label [text]="label" placeholder="Enter user phrase..."></tock-input-label>
       <div class="second-container">
         <div class="intent-combo-container">
           <nb-select class="intent-combo" placeholder="Select intent" [(selected)]="intent" >
