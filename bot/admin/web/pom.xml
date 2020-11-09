@@ -46,6 +46,19 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>pl.project13.maven</groupId>
+        <artifactId>git-commit-id-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-source-info</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>revision</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
@@ -81,7 +94,30 @@
                     <include>src/**</include>
                     <include>*.json</include>
                   </includes>
+                  <excludes>
+                    <exclude>**/manifest.ts</exclude>
+                  </excludes>
                   <filtering>false</filtering>
+                </resource>
+              </resources>
+              <outputDirectory>${project.build.frontend.directory}</outputDirectory>
+              <overwrite>true</overwrite>
+            </configuration>
+          </execution>
+          <execution>
+            <id>merge-tock-info</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <resources>
+                <resource>
+                  <directory>.</directory>
+                  <includes>
+                    <include>**/manifest.ts</include>
+                  </includes>
+                  <filtering>true</filtering>
                 </resource>
               </resources>
               <outputDirectory>${project.build.frontend.directory}</outputDirectory>

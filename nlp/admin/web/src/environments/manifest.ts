@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-import { Component } from '@angular/core';
-import {tock_info} from "../../../../environments/manifest";
-
-@Component({
-  selector: 'ngx-footer',
-  templateUrl: './footer.component.html',
-  styleUrls: ['./footer.component.scss']
-})
-export class FooterComponent {
-
-  tock_info = tock_info;
-}
+export const tock_info = {
+  // Platform properties
+  platform_type: "NLP",
+  // Maven build properties
+  build_version: "${project.version}",
+  build_date: "${session.startTime}",
+  // Git source properties
+  source_commit_id: "${git.commit.id}"
+};

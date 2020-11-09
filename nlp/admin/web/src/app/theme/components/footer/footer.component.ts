@@ -15,15 +15,14 @@
  */
 
 import { Component } from '@angular/core';
+import {tock_info} from "../../../../environments/manifest";
 
 @Component({
   selector: 'ngx-footer',
-  styleUrls: ['./footer.component.scss'],
-  template: `
-    <div class="socials">
-      <a href="https://github.com/theopenconversationkit/tock" target="_blank" class="ion ion-social-github"></a>
-    </div>
-  `,
+  templateUrl: './footer.component.html',
+  styleUrls: ['./footer.component.scss']
 })
 export class FooterComponent {
+
+  tock_info = tock_info;
 }
