@@ -777,6 +777,17 @@
                         <retryFailedDeploymentCount>5</retryFailedDeploymentCount>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>pl.project13.maven</groupId>
+                    <artifactId>git-commit-id-plugin</artifactId>
+                    <version>2.2.1</version>
+                    <configuration>
+                        <skipPoms>false</skipPoms>
+                        <!-- Do not fail the build -->
+                        <failOnNoGitDirectory>false</failOnNoGitDirectory>
+                        <failOnUnableToExtractRepoInfo>false</failOnUnableToExtractRepoInfo>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>

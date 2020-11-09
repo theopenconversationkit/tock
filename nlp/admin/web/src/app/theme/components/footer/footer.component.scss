@@ -21,6 +21,8 @@
 @include nb-install-component() {
   display: flex;
   align-items: center;
+  text-align: center;
+  color: nb-theme(text-hint-color);
 
   .socials {
     font-size: 2rem;
@@ -33,6 +35,14 @@
       &:hover {
         color: nb-theme(text-basic-color);
       }
+    }
+  }
+
+  .info {
+    font-size: 0.8rem;
+
+    nb-icon {
+      font-size: 0.9rem;
     }
   }
 
