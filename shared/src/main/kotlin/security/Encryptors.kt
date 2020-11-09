@@ -36,7 +36,7 @@ private val textEncryptor: BasicTextEncryptor by lazy {
                     if (devEnvironment) {
                         setPassword("dev")
                     } else {
-                        error("no tock_encrypt_pass set")
+                        throw NoEncryptionPassException()
                     }
                 } else {
                     setPassword(this)

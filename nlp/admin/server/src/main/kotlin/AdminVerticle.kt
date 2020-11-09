@@ -64,6 +64,7 @@ import ai.tock.shared.name
 import ai.tock.shared.namespace
 import ai.tock.shared.pingMongoDatabase
 import ai.tock.shared.provide
+import ai.tock.shared.security.NoEncryptionPassException
 import ai.tock.shared.security.TockUserRole.admin
 import ai.tock.shared.security.TockUserRole.nlpUser
 import ai.tock.shared.security.TockUserRole.technicalAdmin
@@ -557,7 +558,15 @@ open class AdminVerticle : WebVerticle() {
         blockingJsonPost("/sentences/search", nlpUser)
         { context, s: SearchQuery ->
             if (context.organization == s.namespace) {
-                service.searchSentences(s)
+                try {
+                    service.searchSentences(s)
+                } catch (t: NoEncryptionPassException) {
+                    logger.error(t)
+                    badRequest("Error obfuscating sentences: ${t.message}")
+                } catch (t: Exception) {
+                    logger.error(t)
+                    badRequest("Error searching sentences: ${t.message}")
+                }
             } else {
                 unauthorized()
             }
