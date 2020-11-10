@@ -76,4 +76,9 @@ export class BotConfigurationComponent implements OnInit {
     this.configuration.path = this.botConfiguration.findValidPath(this.configuration.connectorType);
     this.configuration.applicationId = this.botConfiguration.findValidId(this.configuration.name);
   }
+
+  changePath() {
+    this.configuration.path = this.configuration.path.toLowerCase();
+  }
+
 }
