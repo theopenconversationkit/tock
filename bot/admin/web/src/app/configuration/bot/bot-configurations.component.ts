@@ -22,10 +22,9 @@ import {
   ConnectorType,
   UserInterfaceType
 } from '../../core/model/configuration';
-import {MatDialog} from '@angular/material/dialog';
 import {ConfirmDialogComponent} from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import {StateService} from '../../core-nlp/state.service';
-import {NbToastrService} from '@nebular/theme';
+import {NbToastrService, NbDialogService} from '@nebular/theme';
 
 @Component({
   selector: 'tock-bot-configurations',
@@ -43,8 +42,8 @@ export class BotConfigurationsComponent implements OnInit {
 
   constructor(private state: StateService,
               private botConfiguration: BotConfigurationService,
-              private toastrService: NbToastrService,
-              private dialog: MatDialog) {
+              private dialogService: NbDialogService,
+              private toastrService: NbToastrService) {
   }
 
   ngOnInit() {
@@ -131,14 +130,14 @@ export class BotConfigurationsComponent implements OnInit {
   }
 
   remove(conf: BotApplicationConfiguration) {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: {
+    const dialogRef = this.dialogService.open(ConfirmDialogComponent, {
+      context: {
         title: `Delete the configuration`,
         subtitle: 'Are you sure?',
         action: 'Remove'
       }
     });
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.onClose.subscribe(result => {
       if (result === 'remove') {
         this.botConfiguration.deleteConfiguration(conf)
           .subscribe(_ => {
