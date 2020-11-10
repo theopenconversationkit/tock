@@ -36,7 +36,7 @@ data class I18nLocalizedLabel(
         locale,
         interfaceType,
         label,
-        false,
+        true,
         null,
         alternatives
     )
