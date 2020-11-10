@@ -1154,34 +1154,30 @@ style="width: 100px;"></p>
 <p>C'est le mode à privilégier au démarrage car le plus simple à mettre en oeuvre.</p>
 <p>Pour utiliser le client websocket, il faut ajouter la dépendance <code>tock-bot-api-websocket</code> à votre application/projet <a href="https://kotlinlang.org/">Kotlin</a>.</p>
 <p>Par exemple dans un projet <a href="https://maven.apache.org/">Maven</a> :</p>
-<div class="codehilite"><pre><span></span><code>        <span class="nt">&lt;dependency&gt;</span>
+<div class="highlight"><pre><span></span><code>        <span class="nt">&lt;dependency&gt;</span>
             <span class="nt">&lt;groupId&gt;</span>ai.tock<span class="nt">&lt;/groupId&gt;</span>
             <span class="nt">&lt;artifactId&gt;</span>tock-bot-api-websocket<span class="nt">&lt;/artifactId&gt;</span>
             <span class="nt">&lt;version&gt;</span>20.9.1<span class="nt">&lt;/version&gt;</span>
         <span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div>
 
-
 <p>Ou dans un projet <a href="https://gradle.org/">Gradle</a> :</p>
-<div class="codehilite"><pre><span></span><code>      <span class="n">compile</span> <span class="s1">&#39;ai.tock:tock-bot-api-websocket:20.9.1&#39;</span>
+<div class="highlight"><pre><span></span><code>      <span class="n">compile</span> <span class="s1">&#39;ai.tock:tock-bot-api-websocket:20.9.1&#39;</span>
 </code></pre></div>
-
 
 <h3 id="activer-le-mode-webhook">Activer le mode WebHook<a class="headerlink" href="#activer-le-mode-webhook" title="Permanent link">&para;</a></h3>
 <p>De manière alternative, vous pouvez choisir d'utiliser le client <em>WebHook</em>, il faut ajouter la dépendance <code>tock-bot-api-webhook</code> à votre application/projet <a href="https://kotlinlang.org/">Kotlin</a>.</p>
 <p>Par exemple dans un projet <a href="https://maven.apache.org/">Maven</a> :</p>
-<div class="codehilite"><pre><span></span><code>        <span class="nt">&lt;dependency&gt;</span>
+<div class="highlight"><pre><span></span><code>        <span class="nt">&lt;dependency&gt;</span>
             <span class="nt">&lt;groupId&gt;</span>ai.tock<span class="nt">&lt;/groupId&gt;</span>
             <span class="nt">&lt;artifactId&gt;</span>tock-bot-api-webhook<span class="nt">&lt;/artifactId&gt;</span>
             <span class="nt">&lt;version&gt;</span>20.9.1<span class="nt">&lt;/version&gt;</span>
         <span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div>
 
-
 <p>Ou dans un projet <a href="https://gradle.org/">Gradle</a> :</p>
-<div class="codehilite"><pre><span></span><code>      <span class="n">compile</span> <span class="s1">&#39;ai.tock:tock-bot-api-webhook:20.9.1&#39;</span>
+<div class="highlight"><pre><span></span><code>      <span class="n">compile</span> <span class="s1">&#39;ai.tock:tock-bot-api-webhook:20.9.1&#39;</span>
 </code></pre></div>
-
 
 <p>Dans ce cas, contrairement au mode <em>WebSocket</em>, il faut que l'application/bot démarrée soit joignable par la 
  plateforme Tock via une URL publique (vous pouvez utilisez par exemple <a href="https://ngrok.com/">ngrok</a>). </p>
@@ -1200,7 +1196,7 @@ la clé d'API du bot auquel vous souhaitez vous connecter.</p>
 <li>Formats spécifiques aux différents canaux intégrés</li>
 </ul>
 <p>Voici un exemple de bot simple avec quelques parcours déclarés : </p>
-<div class="codehilite"><pre><span></span><code><span class="k">fun</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre><span></span><code><span class="k">fun</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="n">startWithDemo</span><span class="p">(</span>
         <span class="n">newBot</span><span class="p">(</span>
             <span class="s">&quot;PUT-YOUR-TOCK-APP-API-KEY-HERE&quot;</span><span class="p">,</span> <span class="c1">// Récupérer la clé d&#39;API à partir de l&#39;onglet &quot;Bot Configurations&quot; dans Tock Studio</span>
@@ -1233,7 +1229,6 @@ la clé d'API du bot auquel vous souhaitez vous connecter.</p>
     <span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
-
 
 <p>Le <a href="https://github.com/theopenconversationkit/tock-bot-demo">code source complet de l'exemple</a> est disponible.</p>
 <h2 id="developper-en-javascript">Développer en Javascript<a class="headerlink" href="#developper-en-javascript" title="Permanent link">&para;</a></h2>

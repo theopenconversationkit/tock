@@ -74,6 +74,8 @@ plugins:
 markdown_extensions:
   - admonition
   - codehilite
+  - pymdownx.tabbed
+  - pymdownx.superfences
   - toc:
       permalink: true
 copyright: 'Copyright &copy; 2017/2020 Tock'

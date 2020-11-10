@@ -1036,7 +1036,7 @@ s'ouvre aux bots conversationnels et que le connecteur Tock n'existe pas encore.
 <p>Pour définir son propre connecteur, quatres étapes sont nécessaires :</p>
 <p>1) Implémenter l'interface <a href="https://doc.tock.ai/tock/dokka/tock/ai.tock.bot.connector/-connector/index.html"><code>Connector</code></a> </p>
 <p>Voici un exemple d'implémentation :</p>
-<div class="codehilite"><pre><span></span><code><span class="k">val</span> <span class="py">testConnectorType</span> <span class="p">=</span> <span class="n">ConnectorType</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="k">val</span> <span class="py">testConnectorType</span> <span class="p">=</span> <span class="n">ConnectorType</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">TestConnector</span><span class="p">(</span><span class="k">val</span> <span class="py">applicationId</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span> <span class="k">val</span> <span class="py">path</span><span class="p">:</span> <span class="n">String</span><span class="p">)</span> <span class="p">:</span> <span class="n">Connector</span> <span class="p">{</span>
 
@@ -1093,10 +1093,9 @@ s'ouvre aux bots conversationnels et que le connecteur Tock n'existe pas encore.
 <span class="p">}</span>         
 </code></pre></div>
 
-
 <p>2) Implémenter l'interface <a href="https://doc.tock.ai/tock/dokka/tock/ai.tock.bot.connector/-connector-provider/index.html"><code>ConnectorProvider</code></a></p>
 <p>Voici un exemple d'implémentation :</p>
-<div class="codehilite"><pre><span></span><code><span class="k">object</span> <span class="nc">TestConnectorProvider</span> <span class="p">:</span> <span class="n">ConnectorProvider</span> <span class="p">{</span>
+<div class="highlight"><pre><span></span><code><span class="k">object</span> <span class="nc">TestConnectorProvider</span> <span class="p">:</span> <span class="n">ConnectorProvider</span> <span class="p">{</span>
 
     <span class="k">override</span> <span class="k">val</span> <span class="py">connectorType</span><span class="p">:</span> <span class="n">ConnectorType</span> <span class="p">=</span> <span class="n">testConnectorType</span>
 
@@ -1110,7 +1109,6 @@ s'ouvre aux bots conversationnels et que le connecteur Tock n'existe pas encore.
 
 <span class="k">class</span> <span class="nc">TestConnectorProviderService</span><span class="p">:</span> <span class="n">ConnectorProvider</span> <span class="k">by</span> <span class="n">TestConnectorProvider</span>
 </code></pre></div>
-
 
 <p>3) Rendre disponible ce connecteur via un <em>Service Loader</em> :</p>
 <p>Pour cela, placez un fichier <code>META-INF/services/ai.tock.bot.connector.ConnectorProvider</code> dans le classpath, 

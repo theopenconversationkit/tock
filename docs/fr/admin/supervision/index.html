@@ -765,11 +765,38 @@
     Logs applicatifs
   </a>
   
+    <nav class="md-nav" aria-label="Logs applicatifs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#auto-configuration" class="md-nav__link">
+    Auto-configuration
+  </a>
+  
 </li>
         
           <li class="md-nav__item">
-  <a href="#chiffrage-et-anonymisation" class="md-nav__link">
-    Chiffrage et anonymisation
+  <a href="#fichiers-logback" class="md-nav__link">
+    Fichiers Logback
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-compose" class="md-nav__link">
+    Docker Compose
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chiffrement-et-anonymisation" class="md-nav__link">
+    Chiffrement et anonymisation
   </a>
   
 </li>
@@ -1004,11 +1031,38 @@
     Logs applicatifs
   </a>
   
+    <nav class="md-nav" aria-label="Logs applicatifs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#auto-configuration" class="md-nav__link">
+    Auto-configuration
+  </a>
+  
 </li>
         
           <li class="md-nav__item">
-  <a href="#chiffrage-et-anonymisation" class="md-nav__link">
-    Chiffrage et anonymisation
+  <a href="#fichiers-logback" class="md-nav__link">
+    Fichiers Logback
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-compose" class="md-nav__link">
+    Docker Compose
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chiffrement-et-anonymisation" class="md-nav__link">
+    Chiffrement et anonymisation
   </a>
   
 </li>
@@ -1047,9 +1101,269 @@ technologies de monitoring classiques. N'hésitez pas à partager les vôtres.</
 </ul>
 <h2 id="journalisation-logs">Journalisation (logs)<a class="headerlink" href="#journalisation-logs" title="Permanent link">&para;</a></h2>
 <h3 id="logs-applicatifs">Logs applicatifs<a class="headerlink" href="#logs-applicatifs" title="Permanent link">&para;</a></h3>
-<p>Tock utilise <a href="http://www.slf4j.org">SLF4J</a> pour générer ses logs. </p>
-<h3 id="chiffrage-et-anonymisation">Chiffrage et anonymisation<a class="headerlink" href="#chiffrage-et-anonymisation" title="Permanent link">&para;</a></h3>
-<p>Voir la page <a href="../securite/">sécurité</a> concernant les possibilités de chiffrage et anonymisation des logs.</p>
+<p>Tock utilise <a href="http://www.slf4j.org">SLF4J</a> et <a href="http://logback.qos.ch/">Logback</a> pour générer ses logs applicatifs côté serveur.</p>
+<p>Par défaut Tock configure automatiquement ses logs et quelques propriétés permettent de modifier la configuration.</p>
+<p>Il est possible de configurer finement les logs en fonction des besoins, notamment avec des fichiers de 
+configuration Logback ou avec Docker Compose.</p>
+<h4 id="auto-configuration">Auto-configuration<a class="headerlink" href="#auto-configuration" title="Permanent link">&para;</a></h4>
+<p>Par défaut, en l'absence de configuration spécifique, Tock configure ses logs automatiquement grâce à la classe 
+<a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/LogbackConfigurator.kt"><code>LogbackConfigurator</code></a>.
+Celle-ci configure <a href="http://logback.qos.ch/">Logback</a> programmatiquement, avec le comportement suivant :</p>
+<ul>
+<li>Niveau de log général <code>DEBUG</code> si <code>tock_env=dev</code> (par défaut), ou <code>INFO</code> pour les autres environnements et la production<ul>
+<li>Exception pour les logs <code>org.mongodb.driver</code> toujours à <code>INFO</code></li>
+<li>Exception pour les logs <code>io.netty</code> toujours à <code>INFO</code></li>
+<li>Exception pour les logs <code>okhttp3</code> toujours à <code>INFO</code></li>
+<li>Exception pour les logs <code>io.mockk</code> toujours à <code>INFO</code></li>
+</ul>
+</li>
+<li>Logs dirigés vers la console (sortie standard) par défaut, mais possibilité d'écrire dans des fichiers<ul>
+<li>En mode logs fichiers, écriture dans <code>log/logFile.log</code>, archivage d'un fichier chaque jour 
+(<code>log/logFile.%d{yyyy-MM-dd}.log</code>), maximum <code>30</code> jours ou <code>3GB</code> de logs conservés</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>Pour en savoir plus sur la configuration automatiques des logs Tock, se référer à l'implémentation 
+<a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/LogbackConfigurator.kt"><code>LogbackConfigurator</code></a>.</p>
+</blockquote>
+<p>Des variables d'environnement permettent de configurer ces différents modes de journalisation. 
+Elles peuvent être définies indépendamment sur chaque composant produisant des logs.</p>
+<table>
+<thead>
+<tr>
+<th>Variable d'environnement</th>
+<th>Valeur par défaut</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tock_env</code></td>
+<td><code>dev</code></td>
+<td>Environnement (attention : contrôle d'autres mécanismes que les logs).</td>
+</tr>
+<tr>
+<td><code>tock_logback_enabled</code></td>
+<td><code>true</code></td>
+<td>Activation des logs.</td>
+</tr>
+<tr>
+<td><code>tock_default_log_level</code></td>
+<td><code>DEBUG</code> si <code>tock_env=dev</code> (autrement <code>INFO</code>)</td>
+<td>Niveau de log général (hors exceptions, voir plus haut).</td>
+</tr>
+<tr>
+<td><code>tock_logback_file_appender</code></td>
+<td><code>false</code></td>
+<td>Logs fichiers (voir détails plus haut) à la place des logs console (sortie standard).</td>
+</tr>
+</tbody>
+</table>
+<p>Selon le mode de déploiement utilisé, ces variables d'environnement peuvent être ajoutées soit 
+directement en ligne de commande, soit dans un descripteur type <code>docker-compose.yml</code>, <code>dockerrun.aws.json</code> ou autre.</p>
+<p>Voici un exemple configurant les logs de Tock Studio (<code>admin_web</code>) dans Docker :</p>
+<div class="tabbed-set" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><label for="__tabbed_1_1">docker-compose.yml</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span> <span class="s">&#39;3&#39;</span>
+<span class="nt">services</span><span class="p">:</span>
+  <span class="nt">admin_web</span><span class="p">:</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">tock/bot_admin:$TAG</span>
+    <span class="nt">environment</span><span class="p">:</span>
+<span class="hll">    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">tock_default_log_level=WARN</span>
+</span><span class="hll">    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">tock_logback_file_appender=true</span>
+</span></code></pre></div>
+
+</div>
+<input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><label for="__tabbed_1_2">dockerrun.aws.json</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+  <span class="nt">&quot;AWSEBDockerrunVersion&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="nt">&quot;containerDefinitions&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;admin_web&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;image&quot;</span><span class="p">:</span> <span class="s2">&quot;tock/bot_admin:${TAG}&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;environment&quot;</span><span class="p">:</span> <span class="p">[</span>
+<span class="hll">        <span class="p">{</span> <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;tock_default_log_level&quot;</span><span class="p">,</span> <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;WARN&quot;</span> <span class="p">},</span>
+</span><span class="hll">        <span class="p">{</span> <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;tock_logback_file_appender&quot;</span><span class="p">,</span> <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span> <span class="p">}</span>
+</span>      <span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+</div>
+</div>
+<h4 id="fichiers-logback">Fichiers Logback<a class="headerlink" href="#fichiers-logback" title="Permanent link">&para;</a></h4>
+<p>Il est possible de configurer finement les logs Tock en configurant directement <a href="http://logback.qos.ch/">Logback</a>.
+Pour cela, différentes possibilités existent, notamment des fichiers de configuration en format XML ou Groovy. 
+Ci-dessous un exemple de configuration :</p>
+<div class="tabbed-set" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><label for="__tabbed_2_1">logback.xml</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;configuration</span> <span class="na">debug=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>
+
+    <span class="nt">&lt;logger</span> <span class="na">name=</span><span class="s">&quot;ai.tock&quot;</span> <span class="na">level=</span><span class="s">&quot;DEBUG&quot;</span> <span class="nt">/&gt;</span>
+
+    <span class="nt">&lt;logger</span> <span class="na">name=</span><span class="s">&quot;org.mongodb&quot;</span> <span class="na">level=</span><span class="s">&quot;WARN&quot;</span> <span class="nt">/&gt;</span>
+
+    <span class="nt">&lt;appender</span> <span class="na">name=</span><span class="s">&quot;console&quot;</span> <span class="na">class=</span><span class="s">&quot;ch.qos.logback.core.ConsoleAppender&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;encoder&gt;</span>
+            <span class="nt">&lt;pattern&gt;</span>
+                %d %-5level [%thread] %logger{1}: %msg%n
+            <span class="nt">&lt;/pattern&gt;</span>
+        <span class="nt">&lt;/encoder&gt;</span>
+    <span class="nt">&lt;/appender&gt;</span>
+
+    <span class="nt">&lt;root</span> <span class="na">level=</span><span class="s">&quot;INFO&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;appender-ref</span> <span class="na">ref=</span><span class="s">&quot;console&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/root&gt;</span>
+
+<span class="nt">&lt;/configuration&gt;</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><label for="__tabbed_2_2">logback.groovy</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">ch.qos.logback.classic.encoder.PatternLayoutEncoder</span>
+<span class="kn">import</span> <span class="nn">ch.qos.logback.core.ConsoleAppender</span>
+
+<span class="kn">import</span> <span class="nn">static</span> <span class="n">ch</span><span class="o">.</span><span class="na">qos</span><span class="o">.</span><span class="na">logback</span><span class="o">.</span><span class="na">classic</span><span class="o">.</span><span class="na">Level</span><span class="o">.</span><span class="na">DEBUG</span>
+<span class="kn">import</span> <span class="nn">static</span> <span class="n">ch</span><span class="o">.</span><span class="na">qos</span><span class="o">.</span><span class="na">logback</span><span class="o">.</span><span class="na">classic</span><span class="o">.</span><span class="na">Level</span><span class="o">.</span><span class="na">INFO</span>
+<span class="kn">import</span> <span class="nn">static</span> <span class="n">ch</span><span class="o">.</span><span class="na">qos</span><span class="o">.</span><span class="na">logback</span><span class="o">.</span><span class="na">classic</span><span class="o">.</span><span class="na">Level</span><span class="o">.</span><span class="na">WARN</span>
+
+<span class="nf">appender</span><span class="o">(</span><span class="s2">&quot;console&quot;</span><span class="o">,</span> <span class="n">ConsoleAppender</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">encoder</span><span class="o">(</span><span class="n">PatternLayoutEncoder</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="s2">&quot;%d %-5level [%thread] %logger{1}: %msg%n&quot;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+<span class="n">logger</span><span class="o">(</span><span class="s2">&quot;ai.tock&quot;</span><span class="o">,</span> <span class="n">DEBUG</span><span class="o">)</span>
+<span class="n">logger</span><span class="o">(</span><span class="s2">&quot;org.mongodb&quot;</span><span class="o">,</span> <span class="n">WARN</span><span class="o">)</span>
+<span class="n">root</span><span class="o">(</span><span class="n">INFO</span><span class="o">,</span> <span class="o">[</span><span class="s2">&quot;console&quot;</span><span class="o">])</span>
+</code></pre></div>
+
+</div>
+</div>
+<p>Dans cet exemple :</p>
+<ul>
+<li>Le niveau de log général est <code>INFO</code>, avec des exceptions :<ul>
+<li>Exception pour les logs <code>ai.tock</code> toujours à <code>DEBUG</code></li>
+<li>Exception pour les logs <code>org.mongodb</code> toujours à <code>WARN</code></li>
+</ul>
+</li>
+<li>Les logs sont dirigés vers la console (sortie standard)</li>
+</ul>
+<p>De nombreuses possibilités sont offertes pour configurer les logs grâce à ces fichiers de configuration :
+niveaux de logs ajustés en fonction des packages/frameworks embarqués, modification du pattern par défaut, 
+journalisation de logs fichiers et archivage auto avec un 
+<a href="http://logback.qos.ch/manual/appenders.html#RollingFileAppender"><code>RollingFileAppender</code></a>, redirection des logs 
+vers un serveur de base de données ou email, etc.
+Pour en savoir plus, se référer à la <a href="http://logback.qos.ch/manual/configuration.html">documentation Logback</a>.</p>
+<p>Une fois le fichier de configuration Logback créé, il faut s'assurer que celui-ci est dans la <em>classpath</em> du 
+composant Tock et que Logback l'identifie comme la configuration à suivre (pour cela on utilise généralement 
+la propriété <code>-Dlogback.configurationFile</code> au démarrage du composant Java).</p>
+<p>Ci-dessous un exemple complet dans Docker Compose avec :</p>
+<ul>
+<li>Un fichier <code>logback.xml</code> embarqué par Maven (<code>pom.xml</code>) dans l'image Docker</li>
+<li>Quelques variables d'environnement définies pour pouvoir rapidement ajuste les principaux niveaux de log 
+directement dans Docker-Compose (sans avoir à modifier le fichier XML ni l'image Docker)'</li>
+</ul>
+<div class="tabbed-set" data-tabs="3:3"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><label for="__tabbed_3_1">logback.xml</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;configuration</span> <span class="na">debug=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>
+
+    <span class="c">&lt;!-- Leverage env variables with defaults, for more flexibility --&gt;</span>
+    <span class="nt">&lt;variable</span> <span class="na">name=</span><span class="s">&quot;tock_default_log_level&quot;</span> <span class="na">value=</span><span class="s">&quot;${tock_default_log_level:-WARN}&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;variable</span> <span class="na">name=</span><span class="s">&quot;tock_service_log_level&quot;</span> <span class="na">value=</span><span class="s">&quot;${tock_service_log_level:-INFO}&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;variable</span> <span class="na">name=</span><span class="s">&quot;tock_database_log_level&quot;</span> <span class="na">value=</span><span class="s">&quot;${tock_database_log_level:-WARN}&quot;</span> <span class="nt">/&gt;</span>
+
+    <span class="nt">&lt;logger</span> <span class="na">name=</span><span class="s">&quot;ai.tock&quot;</span> <span class="na">level=</span><span class="s">&quot;${tock_service_log_level}&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;logger</span> <span class="na">name=</span><span class="s">&quot;org.mongodb&quot;</span> <span class="na">level=</span><span class="s">&quot;${tock_database_log_level}&quot;</span> <span class="nt">/&gt;</span>
+
+    <span class="nt">&lt;appender</span> <span class="na">name=</span><span class="s">&quot;console&quot;</span> <span class="na">class=</span><span class="s">&quot;ch.qos.logback.core.ConsoleAppender&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;encoder&gt;</span>
+            <span class="nt">&lt;pattern&gt;</span>
+                %d %-5level [%thread] %logger{1}: %msg%n
+            <span class="nt">&lt;/pattern&gt;</span>
+        <span class="nt">&lt;/encoder&gt;</span>
+    <span class="nt">&lt;/appender&gt;</span>
+
+    <span class="nt">&lt;root</span> <span class="na">level=</span><span class="s">&quot;${tock_default_log_level}&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;appender-ref</span> <span class="na">ref=</span><span class="s">&quot;console&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/root&gt;</span>
+
+<span class="nt">&lt;/configuration&gt;</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><label for="__tabbed_3_2">pom.xml</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>tock-docker-bot-admin<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;build&gt;</span>
+        <span class="nt">&lt;plugins&gt;</span>
+            <span class="nt">&lt;plugin&gt;</span>
+                <span class="nt">&lt;groupId&gt;</span>io.fabric8<span class="nt">&lt;/groupId&gt;</span>
+                <span class="nt">&lt;artifactId&gt;</span>docker-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+                <span class="nt">&lt;configuration&gt;</span>
+                    <span class="nt">&lt;images&gt;</span>
+                        <span class="nt">&lt;image&gt;</span>
+                            <span class="nt">&lt;name&gt;</span>tock/bot_admin:${project.version}<span class="nt">&lt;/name&gt;</span>
+                            <span class="nt">&lt;build&gt;</span>
+                                <span class="nt">&lt;assembly&gt;</span>
+                                    <span class="nt">&lt;inline&gt;</span>
+                                        <span class="nt">&lt;dependencySets&gt;</span>
+                                            ...
+                                        <span class="nt">&lt;/dependencySets&gt;</span>
+                                        <span class="nt">&lt;files&gt;</span>
+<span class="hll">                                            <span class="nt">&lt;file&gt;</span>
+</span><span class="hll">                                                <span class="nt">&lt;source&gt;</span>logback.xml<span class="nt">&lt;/source&gt;</span>
+</span><span class="hll">                                                <span class="nt">&lt;outputDirectory&gt;</span>.<span class="nt">&lt;/outputDirectory&gt;</span>
+</span><span class="hll">                                            <span class="nt">&lt;/file&gt;</span>
+</span>                                        <span class="nt">&lt;/files&gt;</span>
+                                    <span class="nt">&lt;/inline&gt;</span>
+                                <span class="nt">&lt;/assembly&gt;</span>
+                                <span class="nt">&lt;cmd&gt;</span>
+<span class="hll">                                    <span class="nt">&lt;shell&gt;</span>java $JAVA_ARGS -Dlogback.configurationFile=&#39;file:///maven/logback.xml&#39; -Dfile.encoding=UTF-8 -Dtock_nlp_model_refresh_rate=10 -cp &#39;/maven/*&#39; ai.tock.bot.admin.StartBotAdminServerKt<span class="nt">&lt;/shell&gt;</span>
+</span>                                <span class="nt">&lt;/cmd&gt;</span>
+                                ...
+</code></pre></div>
+
+</div>
+<input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><label for="__tabbed_3_3">docker-compose.yml</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span> <span class="s">&#39;3&#39;</span>
+<span class="nt">services</span><span class="p">:</span>
+  <span class="nt">admin_web</span><span class="p">:</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">tock/bot_admin:$TAG</span>
+    <span class="nt">environment</span><span class="p">:</span>
+<span class="hll">    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">tock_default_log_level=WARN</span> <span class="c1"># Default, see logback.xml</span>
+</span><span class="hll">    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">tock_service_log_level=INFO</span> <span class="c1"># Default, see logback.xml</span>
+</span><span class="hll">    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">tock_database_log_level=WARN</span> <span class="c1"># Default, see logback.xml</span>
+</span></code></pre></div>
+
+</div>
+</div>
+<blockquote>
+<p>Le code complet de cet exemple appliqué à tous les modules Tock est disponible dans le dépôt <code>tock-docker</code> 
+sur la branche <a href="https://github.com/theopenconversationkit/tock-docker/tree/logbackxml"><code>logbackxml</code></a>.</p>
+</blockquote>
+<h4 id="docker-compose">Docker Compose<a class="headerlink" href="#docker-compose" title="Permanent link">&para;</a></h4>
+<p>Pour les utilisateurs de <a href="">Docker Compose</a>, un mécanisme permet de configurer les logs directement dans les 
+descripteurs en YAML. Voir le dépot <a href="https://github.com/theopenconversationkit/tock-docker"><code>tock-docker</code></a> pour un 
+exemple d'implémentation de Tock dans Docker Compose.</p>
+<p>Chaque composant applicatif peut avoir sa propre configuration :</p>
+<div class="tabbed-set" data-tabs="4:1"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><label for="__tabbed_4_1">docker-compose.yml</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="nt">logging</span><span class="p">:</span>
+  <span class="nt">driver</span><span class="p">:</span> <span class="s">&quot;json-file&quot;</span>
+  <span class="nt">options</span><span class="p">:</span>
+    <span class="nt">max-size</span><span class="p">:</span> <span class="s">&quot;10m&quot;</span>
+    <span class="nt">max-file</span><span class="p">:</span> <span class="s">&quot;5&quot;</span>
+</code></pre></div>
+
+</div>
+</div>
+<p>L'exemple ci-dessus configure une rotation automatique des fichiers de logs, de manière à avoir maximum 
+<code>5</code> fichiers de logs de maximum <code>10 Mo</code> chacun (le plus ancien étant supprimé pour en créer un nouveau si besoin).</p>
+<p>Pour en savoir plus, voir la <a href="https://docs.docker.com/compose/compose-file/#logging">documentation Docker Compose</a> de ce mécanisme.</p>
+<h3 id="chiffrement-et-anonymisation">Chiffrement et anonymisation<a class="headerlink" href="#chiffrement-et-anonymisation" title="Permanent link">&para;</a></h3>
+<p>Voir la page <a href="../securite/">sécurité</a> concernant les possibilités de chiffrement et anonymisation des logs.</p>
                 
                   
                     
@@ -1058,7 +1372,7 @@ technologies de monitoring classiques. N'hésitez pas à partager les vôtres.</
 <div class="md-source-date">
   <small>
     
-      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">2 août 2019</span>
+      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">10 novembre 2020</span>
     
   </small>
 </div>

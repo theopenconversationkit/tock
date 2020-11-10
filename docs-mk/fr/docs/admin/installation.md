@@ -170,11 +170,7 @@ afin que certaines expirent et soient purgées automatiquement après un certain
 >(Data Access Object)_, au démarrage de Tock.
 
 Les _TTL_ de Tock possèdent une valeur par défaut et sont configurables au moyen de variables 
-d'environnement.
-
-Selon le mode de déploiement utilisé, ces variables d'environnement peuvent être ajoutées soit 
-directement en ligne de commande, soit dans un descripteur type `docker-compose.yml`, `dockerrun.aws.json` ou autre.
-Selon le type de variables, certaines concernent un composant Tock en particulier, d'autres doivent être définies sur 
+d'environnement. Certaines concernent un composant Tock en particulier, d'autres doivent être définies sur 
 plusieurs composants.
 
 > Tock pouvant être utilisé comme plateforme conversationnelle complète ou 
@@ -194,13 +190,42 @@ ou utilisables sur tous les types de plateformes (notées _*_).
 | _Bot_         | `tock_bot_flow_stats_index_ttl_days`                   | `365`                    | Statistiques de navigation (_Analytics > Activity/Behavior_). | `bot`/`bot_api`, `nlp_admin`/`bot_admin` |
 | _Bot_         | `tock_bot_timeline_index_ttl_days`                     | `365`                    | Profils/historique utilisateurs : préférences, locale, dernière connexion, etc. <em>(hors détail des conversations)</em> | `bot`/`bot_api`, `nlp_admin`/`bot_admin` |
 
+Selon le mode de déploiement utilisé, ces variables d'environnement peuvent être ajoutées soit 
+directement en ligne de commande, soit dans un descripteur type `docker-compose.yml`, `dockerrun.aws.json` ou autre 
+(exemple ci-dessous).
+
 Il est possible de supprimer automatiquement les phrases non validées (_Inbox_) pour certaines intentions uniquement, 
 grâce à `tock_nlp_classified_sentences_index_ttl_intent_names` :
 
-```yaml
-{ "name" : "tock_nlp_classified_sentences_index_ttl_days", "value" : "10" },
-{ "name" : "tock_nlp_classified_sentences_index_ttl_intent_names", "value" : "greetings,unknown" },
-```
+=== "docker-compose.yml"
+
+    ```yaml hl_lines="6 7"
+    version: '3'
+    services:
+      admin_web:
+        image: tock/bot_admin:$TAG
+        environment:
+        - tock_nlp_classified_sentences_index_ttl_days=10
+        - tock_nlp_classified_sentences_index_ttl_intent_names=greetings,unknown
+    ```
+
+=== "dockerrun.aws.json"
+
+    ```json hl_lines="8 9"
+    {
+      "AWSEBDockerrunVersion": 2,
+      "containerDefinitions": [
+        {
+          "name": "admin_web",
+          "image": "tock/bot_admin:${TAG}",
+          "environment": [
+            { "name": "tock_nlp_classified_sentences_index_ttl_days", "value": "10" },
+            { "name": "tock_nlp_classified_sentences_index_ttl_intent_names", "value": "greetings,unknown" }
+          ]
+        }
+      ]
+    }
+    ```
 
 Dans cet exemple, seules les phrases détectées comme intentions `greetings` ou `unknown` (mais non validées) seront 
 supprimées au bout de `10` jours ; les autres phrases ne seront pas supprimées.

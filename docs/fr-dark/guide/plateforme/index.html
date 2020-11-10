@@ -1144,7 +1144,7 @@ du <a href="https://jdk.java.net/">JDK</a> et de <a href="https://maven.apache.o
 <p>Pour démarrer depuis les sources du dépôt Tock Docker, passez plutôt au 
 <a href="#deployer-une-plateforme-tock-depuis-les-sources">paragraphe suivant</a>.</p>
 </blockquote>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Get the lastest docker-compose from GitHub (including Bot API)</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># Get the lastest docker-compose from GitHub (including Bot API)</span>
 $ curl -o docker-compose.yml https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/docker-compose-bot.yml
 <span class="c1"># Get the lastest database-init script from GitHub</span>
 $ mkdir -p scripts <span class="o">&amp;&amp;</span> curl -o scripts/setup.sh https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/scripts/setup.sh <span class="o">&amp;&amp;</span> chmod +x scripts/setup.sh
@@ -1154,7 +1154,6 @@ $ curl -o .env https://raw.githubusercontent.com/theopenconversationkit/tock-doc
 <span class="c1"># Run the stack</span>
 $ docker-compose up
 </code></pre></div>
-
 
 <h2 id="deployer-une-plateforme-tock-depuis-les-sources">Déployer une plateforme Tock - depuis les sources<a class="headerlink" href="#deployer-une-plateforme-tock-depuis-les-sources" title="Permanent link">&para;</a></h2>
 <p>Ceci est une manière alternative de démarrer Tock, à partir du dépôt 
@@ -1166,7 +1165,7 @@ $ docker-compose up
 <p>Pour démarrer sans Git ni les sources du dépôt en local, suivez le 
 <a href="#deployer-une-plateforme-tock-sans-les-sources">paragraphe précédent</a>.</p>
 </blockquote>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Get the lastest sources from GitHub</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># Get the lastest sources from GitHub</span>
 $ git clone https://github.com/theopenconversationkit/tock-docker.git <span class="o">&amp;&amp;</span> <span class="nb">cd</span> tock-docker
 <span class="c1"># Make the database-init script executable</span>
 $ chmod +x scripts/setup.sh
@@ -1174,7 +1173,6 @@ $ chmod +x scripts/setup.sh
 <span class="c1"># Run the stack (including Bot API)</span>
 $ docker-compose -f docker-compose-bot.yml up
 </code></pre></div>
-
 
 <h2 id="acceder-a-tock-studio">Accéder à <em>Tock Studio</em><a class="headerlink" href="#acceder-a-tock-studio" title="Permanent link">&para;</a></h2>
 <p>Une fois la plateforme prête, les interfaces <em>Tock Studio</em> sont sur le port <code>80</code> par défaut :</p>
@@ -1262,7 +1260,7 @@ précédents guides pour plus de détails.</p>
 <p>Editez-le avec le code suivant :</p>
 </li>
 </ul>
-<div class="codehilite"><pre><span></span><code><span class="k">import</span> <span class="nn">ai.tock.bot.api.client.newBot</span>
+<div class="highlight"><pre><span></span><code><span class="k">import</span> <span class="nn">ai.tock.bot.api.client.newBot</span>
 <span class="k">import</span> <span class="nn">ai.tock.bot.api.client.newStory</span>
 <span class="k">import</span> <span class="nn">ai.tock.bot.api.websocket.start</span>
 
@@ -1279,7 +1277,6 @@ précédents guides pour plus de détails.</p>
     <span class="p">)</span> 
 <span class="p">}</span>
 </code></pre></div>
-
 
 <blockquote>
 <p>Vous pouvez retrouver ce code (et d'autres exemples) dans le dépôt <a href="https://github.com/theopenconversationkit/tock-bot-samples">tock-bot-samples</a>.</p>

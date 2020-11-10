@@ -1309,12 +1309,11 @@ soit dans un descripteur type <code>docker-compose.yml</code>, <code>dockerrun.a
 permettre de corréler ces valeurs (index par index, pour chaque utilisateur).</p>
 </blockquote>
 <p>Ci-dessous un exemple au format Docker-Compose :</p>
-<div class="codehilite"><pre><span></span><code><span class="p p-Indicator">{</span> <span class="s">&quot;name&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;tock_users&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;value&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;alice@tock.ai,bob@tock.ai&quot;</span> <span class="p p-Indicator">}</span><span class="err">,</span>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">{</span> <span class="s">&quot;name&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;tock_users&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;value&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;alice@tock.ai,bob@tock.ai&quot;</span> <span class="p p-Indicator">}</span><span class="err">,</span>
 <span class="p p-Indicator">{</span> <span class="s">&quot;name&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;tock_passwords&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;value&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;secret1,secret2&quot;</span> <span class="p p-Indicator">}</span><span class="err">,</span>
 <span class="p p-Indicator">{</span> <span class="s">&quot;name&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;tock_organizations&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;value&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;tock,tock&quot;</span> <span class="p p-Indicator">}</span><span class="err">,</span>
 <span class="p p-Indicator">{</span> <span class="s">&quot;name&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;tock_roles&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;value&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;botUser,nlpUser|botUser|admin|technicalAdmin&quot;</span> <span class="p p-Indicator">}</span><span class="err">,</span>
 </code></pre></div>
-
 
 <p>Dans cet exemple, Alice a le rôle <code>botUser</code>, alors que Bob a tous les rôles.</p>
 <blockquote>
@@ -1412,9 +1411,8 @@ se fait à travers leur jeton JWT et la propriété <code>tock_jwt_custom_roles_
 </tbody>
 </table>
 <p>Ci-dessous un exemple au format Docker-Compose :</p>
-<div class="codehilite"><pre><span></span><code><span class="p p-Indicator">{</span> <span class="s">&quot;name&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;tock_jwt_custom_roles_mapping&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;value&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;MY_USER_GROUP=nlpUser,botUser|MY_ADMIN_GROUP=nlpUser,botUser,admin,technicalAdmin&quot;</span> <span class="p p-Indicator">}</span><span class="err">,</span>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">{</span> <span class="s">&quot;name&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;tock_jwt_custom_roles_mapping&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;value&quot;</span><span class="nt"> </span><span class="p">:</span> <span class="s">&quot;MY_USER_GROUP=nlpUser,botUser|MY_ADMIN_GROUP=nlpUser,botUser,admin,technicalAdmin&quot;</span> <span class="p p-Indicator">}</span><span class="err">,</span>
 </code></pre></div>
-
 
 <p>Dans cet exemple, les utilisateurs appartenant au groupe <code>MY_USER_GROUP</code> possèdent les rôles <code>nlpUser</code> et <code>botUser</code>, 
 alors que les membres de <code>MY_ADMIN_GROUP</code> ont tous les rôles.</p>

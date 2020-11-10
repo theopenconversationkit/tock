@@ -1055,9 +1055,8 @@
 <p>Pour activer l'internationalisation dans Tock, programmatiquement ou pas, voir <a href="../../user/guides/i18n/">Bot multilingue</a>.</p>
 <h2 id="principes">Principes<a class="headerlink" href="#principes" title="Permanent link">&para;</a></h2>
 <p>Le code ne change pas une fois l'internationalisation activée. Par exemple : </p>
-<div class="codehilite"><pre><span></span><code>     <span class="n">send</span><span class="p">(</span><span class="s">&quot;Arrival at {0}&quot;</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code>     <span class="n">send</span><span class="p">(</span><span class="s">&quot;Arrival at {0}&quot;</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
 </code></pre></div>
-
 
 <p>est un code valide que le module soit activé ou non. </p>
 <p>Par contre, à l'exécution, le comportement diffère significativement.</p>
@@ -1083,14 +1082,12 @@
 <h2 id="format-des-messages">Format des messages<a class="headerlink" href="#format-des-messages" title="Permanent link">&para;</a></h2>
 <p>Le format supporté est celui du support i18n de java, en particulier celui de la classe <a href="https://docs.oracle.com/javase/10/docs/api/java/text/MessageFormat.html">MessageFormat</a>
 en java. Cela inclut le support de <a href="https://docs.oracle.com/javase/10/docs/api/java/text/ChoiceFormat.html">ChoiceFormat</a> :</p>
-<div class="codehilite"><pre><span></span><code>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;There {0,choice,0#are no files|1#is one file|1&lt;are {0,number,integer} files}.&quot;</span><span class="p">,</span> <span class="m">2</span><span class="p">)</span>  
+<div class="highlight"><pre><span></span><code>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;There {0,choice,0#are no files|1#is one file|1&lt;are {0,number,integer} files}.&quot;</span><span class="p">,</span> <span class="m">2</span><span class="p">)</span>  
 </code></pre></div>
-
 
 <p>Par ailleurs, Tock met à disposition une extension <em>by</em> pour les dates qui permet d'indiquer un format dans les paramètres :</p>
-<div class="codehilite"><pre><span></span><code>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;Departure at {0}&quot;</span><span class="p">,</span> <span class="n">departureDateTime</span> <span class="k">by</span> <span class="n">timeFormat</span><span class="p">)</span> 
+<div class="highlight"><pre><span></span><code>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;Departure at {0}&quot;</span><span class="p">,</span> <span class="n">departureDateTime</span> <span class="k">by</span> <span class="n">timeFormat</span><span class="p">)</span> 
 </code></pre></div>
-
 
 <h2 id="locale-utilisateur">Locale utilisateur<a class="headerlink" href="#locale-utilisateur" title="Permanent link">&para;</a></h2>
 <p>Voir <a href="../../user/guides/i18n/">Bot multilingue</a>.</p>
@@ -1098,28 +1095,24 @@ en java. Cela inclut le support de <a href="https://docs.oracle.com/javase/10/do
 <p>Le module d'internationalisation de Tock est efficace, mais certaines pratiques, pourtant intuitives en Kotlin,
  sont à bannir sous peine de mauvaises surprises.</p>
 <p>Par exemple, ce code fonctionne parfaitement bien avec le module i18n désactivé.</p>
-<div class="codehilite"><pre><span></span><code>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;There are $nb files&quot;</span><span class="p">)</span> <span class="c1">//DANGER!! </span>
+<div class="highlight"><pre><span></span><code>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;There are $nb files&quot;</span><span class="p">)</span> <span class="c1">//DANGER!! </span>
 </code></pre></div>
-
 
 <p>mais pose problème si il est activé. En effet, un nouveau libellé sera créé pour chaque valeur différente de la variable <em>nb</em> !</p>
 <p>Si il est nécessaire d'envoyer des réponses "à ne pas traduire", utilisez 
 les méthodes <em>BotBus.sendRaw</em>, <em>BotBus.endRaw</em> ou <em>String.raw</em></p>
-<div class="codehilite"><pre><span></span><code>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;There are $nb files&quot;</span><span class="p">.</span><span class="n">raw</span><span class="p">)</span> <span class="c1">//CORRECT </span>
+<div class="highlight"><pre><span></span><code>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;There are $nb files&quot;</span><span class="p">.</span><span class="n">raw</span><span class="p">)</span> <span class="c1">//CORRECT </span>
 </code></pre></div>
 
-
-<div class="codehilite"><pre><span></span><code>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;There are {0} files&quot;</span><span class="p">,</span> <span class="n">nb</span><span class="p">)</span> <span class="c1">//FORMAT A SUIVRE </span>
+<div class="highlight"><pre><span></span><code>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;There are {0} files&quot;</span><span class="p">,</span> <span class="n">nb</span><span class="p">)</span> <span class="c1">//FORMAT A SUIVRE </span>
 </code></pre></div>
-
 
 <ul>
 <li>Le risque de collision entre deux libellés est faible puisque l'intention principale de la story fait partie de la clé. 
 Si vous souhaitez cependant éviter tout risque, vous pouvez utiliser la méthode <em>i18nKey</em> :</li>
 </ul>
-<div class="codehilite"><pre><span></span><code>    <span class="n">send</span><span class="p">(</span><span class="n">i18nKey</span><span class="p">(</span><span class="s">&quot;my_unique_key&quot;</span><span class="p">,</span> <span class="s">&quot;There are {0} files&quot;</span><span class="p">,</span> <span class="n">nb</span><span class="p">))</span> 
+<div class="highlight"><pre><span></span><code>    <span class="n">send</span><span class="p">(</span><span class="n">i18nKey</span><span class="p">(</span><span class="s">&quot;my_unique_key&quot;</span><span class="p">,</span> <span class="s">&quot;There are {0} files&quot;</span><span class="p">,</span> <span class="n">nb</span><span class="p">))</span> 
 </code></pre></div>
-
 
 <h2 id="tester-linternationalisation">Tester l'internationalisation<a class="headerlink" href="#tester-linternationalisation" title="Permanent link">&para;</a></h2>
 <p>Un exemple de dispositif de test est disponible dans le
@@ -1127,7 +1120,7 @@ Si vous souhaitez cependant éviter tout risque, vous pouvez utiliser la méthod
 Il est nécessaire d'étendre <a href="https://github.com/theopenconversationkit/tock-bot-open-data/blob/master/src/test/kotlin/ai.tock/bot/open/data/rule/OpenDataJUnitExtension.kt">l'extension de test</a>
 pour ensuite indiquer la <a href="https://github.com/theopenconversationkit/tock-bot-open-data/blob/master/src/test/kotlin/ai.tock/bot/open/data/rule/TranslatorEngineMock.kt">correspondance des libellés</a> à tester.</p>
 <p>Il ne reste plus qu'à indiquer la locale souhaitée : </p>
-<div class="codehilite"><pre><span></span><code>    <span class="n">@Test</span>
+<div class="highlight"><pre><span></span><code>    <span class="n">@Test</span>
     <span class="k">fun</span> <span class="nf">`search story asks for departure date WHEN there is a destination and an origin but no departure date in context`</span><span class="p">()</span> <span class="p">{</span>
         <span class="n">ext</span><span class="p">.</span><span class="n">newRequest</span><span class="p">(</span><span class="s">&quot;Recherche&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">locale</span> <span class="p">=</span> <span class="n">Locale</span><span class="p">.</span><span class="n">FRENCH</span><span class="p">)</span> <span class="p">{</span>
             <span class="n">destination</span> <span class="p">=</span> <span class="n">lille</span>

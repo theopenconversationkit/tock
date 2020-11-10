@@ -1129,7 +1129,7 @@ langages que Kotlin. Vous en apprendrez plus dans le <a href="../../toc/">manuel
 <p>Ajoutez au <em>classpath</em> la bibliothèque <code>tock-bot-api-websocket</code> pour le mode <em>WebSocket</em>.</p>
 <p>Si vous utilisez <a href="https://maven.apache.org/">Apache Maven</a>, voici un exemple de <em>POM</em> (<code>pom.xml</code>) pour Kotlin avec 
 la dépendance <code>tock-bot-api-websocket</code> incluse :</p>
-<div class="codehilite"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
 <span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="nt">&gt;</span>
     <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
 
@@ -1195,7 +1195,6 @@ la dépendance <code>tock-bot-api-websocket</code> incluse :</p>
 <span class="nt">&lt;/project&gt;</span>
 </code></pre></div>
 
-
 <blockquote>
 <p>Vous pouvez retrouver ce code et d'autres exemples dans le dépôt <a href="https://github.com/theopenconversationkit/tock-bot-samples">tock-bot-samples</a>.</p>
 </blockquote>
@@ -1208,7 +1207,7 @@ la dépendance <code>tock-bot-api-websocket</code> incluse :</p>
 <p>Editez-le avec le code suivant :</p>
 </li>
 </ul>
-<div class="codehilite"><pre><span></span><code><span class="k">import</span> <span class="nn">ai.tock.bot.api.client.newBot</span>
+<div class="highlight"><pre><span></span><code><span class="k">import</span> <span class="nn">ai.tock.bot.api.client.newBot</span>
 <span class="k">import</span> <span class="nn">ai.tock.bot.api.client.newStory</span>
 <span class="k">import</span> <span class="nn">ai.tock.bot.api.websocket.startWithDemo</span>
 
@@ -1225,7 +1224,6 @@ la dépendance <code>tock-bot-api-websocket</code> incluse :</p>
 <span class="p">}</span>
 </code></pre></div>
 
-
 <blockquote>
 <p>Vous pouvez retrouver ce code (et d'autres exemples) dans le dépôt <a href="https://github.com/theopenconversationkit/tock-bot-samples">tock-bot-samples</a>.</p>
 </blockquote>
@@ -1239,9 +1237,8 @@ allez dans <em>Configuration</em> &gt; <em>Bot Configurations</em> et reportez l
 de log ressemblant à celle-ci :</p>
 </li>
 </ul>
-<div class="codehilite"><pre><span></span><code><span class="o">[</span><span class="n">main</span><span class="o">]</span><span class="w"> </span><span class="n">INFO</span><span class="w">  </span><span class="n">ai</span><span class="p">.</span><span class="n">tock</span><span class="p">.</span><span class="n">bot</span><span class="p">.</span><span class="n">api</span><span class="p">.</span><span class="n">websocket</span><span class="p">.</span><span class="n">BotApiWebSocketClient</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="k">start</span><span class="w"> </span><span class="n">web</span><span class="w"> </span><span class="n">socket</span><span class="w"> </span><span class="nl">client</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="p">...</span><span class="err">}</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code>[main] INFO  ai.tock.bot.api.websocket.BotApiWebSocketClient - start web socket client: {...}
 </code></pre></div>
-
 
 <blockquote>
 <p>Vérifiez éventuellement que d'autres logs provenant de <code>BotApiWebSocketClient</code> n'indiquent pas d'erreur. Si c'est le cas,
