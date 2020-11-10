@@ -51,7 +51,7 @@ data class BotConnectorConfiguration(
             name,
             if (baseUrl.isNullOrBlank() && _id == null) defaultBaseUrl else baseUrl,
             parameters,
-            path,
+            path?.toLowerCase(),
             _id ?: newId(),
             targetConfigurationId
         )

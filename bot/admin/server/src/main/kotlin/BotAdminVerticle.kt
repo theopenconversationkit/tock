@@ -19,6 +19,7 @@ package ai.tock.bot.admin
 import ai.tock.bot.admin.BotAdminService.createI18nRequest
 import ai.tock.bot.admin.BotAdminService.dialogReportDAO
 import ai.tock.bot.admin.BotAdminService.getBotConfigurationByApplicationIdAndBotId
+import ai.tock.bot.admin.BotAdminService.getBotConfigurationsByNamespaceAndBotId
 import ai.tock.bot.admin.BotAdminService.importStories
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotConfiguration
@@ -323,6 +324,11 @@ open class BotAdminVerticle : AdminVerticle() {
                         badRequest("Connector identifier already exists")
                     }
                 }
+                bot.path?.let {
+                    if (getBotConfigurationsByNamespaceAndBotId(bot.namespace, bot.botId).any {
+                                conf -> conf._id != bot._id && conf.path?.toLowerCase() == it.toLowerCase() })
+                        badRequest("Connector path already exists (case-insensitive)")
+                }
                 val conf = bot.toBotApplicationConfiguration()
                 val connectorProvider = BotRepository.findConnectorProvider(conf.connectorType)
                 if (connectorProvider != null) {
@@ -345,25 +351,29 @@ open class BotAdminVerticle : AdminVerticle() {
                                 badRequest(joinToString())
                             }
                         }
-                    BotAdminService.saveApplicationConfiguration(filledConf)
-                    //add rest connector
-                    if (bot._id == null && bot.connectorType != rest) {
-                        addRestConnector(filledConf).apply {
-                            BotAdminService.saveApplicationConfiguration(
-                                BotApplicationConfiguration(
-                                    connectorId,
-                                    filledConf.botId,
-                                    filledConf.namespace,
-                                    filledConf.nlpModel,
-                                    type,
-                                    ownerConnectorType,
-                                    getName(),
-                                    getBaseUrl(),
-                                    path = path,
-                                    targetConfigurationId = conf._id
+                    try {
+                        BotAdminService.saveApplicationConfiguration(filledConf)
+                        //add rest connector
+                        if (bot._id == null && bot.connectorType != rest) {
+                            addRestConnector(filledConf).apply {
+                                BotAdminService.saveApplicationConfiguration(
+                                        BotApplicationConfiguration(
+                                                connectorId,
+                                                filledConf.botId,
+                                                filledConf.namespace,
+                                                filledConf.nlpModel,
+                                                type,
+                                                ownerConnectorType,
+                                                getName(),
+                                                getBaseUrl(),
+                                                path = path,
+                                                targetConfigurationId = conf._id
+                                        )
                                 )
-                            )
+                            }
                         }
+                    } catch (t: Throwable) {
+                        badRequest("Error creating/updating configuration: ${t.message}")
                     }
                 } else {
                     badRequest("unknown connector provider ${conf.connectorType}")

@@ -116,7 +116,7 @@ export class BotConfigurationsComponent implements OnInit {
     this.botConfiguration.saveConfiguration(this.newApplicationConfiguration)
       .subscribe(_ => {
         this.botConfiguration.updateConfigurations();
-        this.toastrService.show(`Configuration created`, 'Creation', {duration: 5000});
+        this.toastrService.show(`Configuration created`, 'Creation', {duration: 5000, status: "success"});
         this.newApplicationConfiguration = null;
       });
   }
@@ -125,9 +125,10 @@ export class BotConfigurationsComponent implements OnInit {
     this.botConfiguration.saveConfiguration(conf)
       .subscribe(_ => {
         this.botConfiguration.updateConfigurations();
-        this.toastrService.show(`Configuration updated`, 'Update', {duration: 5000});
-      });
-  }
+        this.toastrService.show(`Configuration updated`, 'Update', {duration: 5000, status: "success"});
+      }, (error) => {
+        this.botConfiguration.updateConfigurations();
+      });  }
 
   remove(conf: BotApplicationConfiguration) {
     const dialogRef = this.dialogService.open(ConfirmDialogComponent, {
@@ -142,7 +143,7 @@ export class BotConfigurationsComponent implements OnInit {
         this.botConfiguration.deleteConfiguration(conf)
           .subscribe(_ => {
             this.botConfiguration.updateConfigurations();
-            this.toastrService.show(`Configuration deleted`, 'Delete', {duration: 5000});
+            this.toastrService.show(`Configuration deleted`, 'Delete', {duration: 5000, status: "success"});
           });
       }
     });
@@ -150,7 +151,7 @@ export class BotConfigurationsComponent implements OnInit {
 
   saveBot(bot: BotConfiguration) {
     this.botConfiguration.saveBot(bot).subscribe(_ => {
-        this.toastrService.show(`Webhook saved`, 'Save', {duration: 5000});
+        this.toastrService.show(`Webhook saved`, 'Save', {duration: 5000, status: "success"});
         this.botConfiguration.updateConfigurations();
       }
     );

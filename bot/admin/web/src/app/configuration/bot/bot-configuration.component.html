@@ -80,7 +80,7 @@
     <input matInput placeholder="Connector identifier" [(ngModel)]="configuration.applicationId">
   </mat-form-field>
   <mat-form-field class="bot-input">
-    <input matInput placeholder="Relative REST path" [(ngModel)]="configuration.path" title="e.g. /messenger">
+    <input matInput placeholder="Relative REST path" [(ngModel)]="configuration.path" (change)="changePath()" title="e.g. /messenger">
   </mat-form-field>
   <span *ngIf="botSharedService.configuration && botSharedService.configuration.botApiSupport" class="targetUrl">Connector url: {{botSharedService.configuration.botApiBaseUrl}}{{configuration.path}}</span>
   <nb-accordion
