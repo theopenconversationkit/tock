@@ -868,6 +868,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#tldr" class="md-nav__link">
+    TL;DR
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#principales-technologies" class="md-nav__link">
     Principales technologies
   </a>
@@ -909,6 +916,14 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#build-run" class="md-nav__link">
+    Build &amp; run
+  </a>
+  
+    <nav class="md-nav" aria-label="Build &amp; run">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#construire-tock-a-partir-des-sources" class="md-nav__link">
     Construire Tock à partir des sources
   </a>
@@ -934,18 +949,50 @@
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#executer-dans-un-ide" class="md-nav__link">
     Exécuter dans un IDE
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#conventions" class="md-nav__link">
-    Conventions
+  <a href="#code" class="md-nav__link">
+    Code
   </a>
+  
+    <nav class="md-nav" aria-label="Code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#commits-merge-requests" class="md-nav__link">
+    Commits &amp; merge requests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conventions-de-code" class="md-nav__link">
+    Conventions de code
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests-unitaires" class="md-nav__link">
+    Tests unitaires
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1040,6 +1087,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#tldr" class="md-nav__link">
+    TL;DR
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#principales-technologies" class="md-nav__link">
     Principales technologies
   </a>
@@ -1081,6 +1135,14 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#build-run" class="md-nav__link">
+    Build &amp; run
+  </a>
+  
+    <nav class="md-nav" aria-label="Build &amp; run">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#construire-tock-a-partir-des-sources" class="md-nav__link">
     Construire Tock à partir des sources
   </a>
@@ -1106,18 +1168,50 @@
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#executer-dans-un-ide" class="md-nav__link">
     Exécuter dans un IDE
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#conventions" class="md-nav__link">
-    Conventions
+  <a href="#code" class="md-nav__link">
+    Code
   </a>
+  
+    <nav class="md-nav" aria-label="Code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#commits-merge-requests" class="md-nav__link">
+    Commits &amp; merge requests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conventions-de-code" class="md-nav__link">
+    Conventions de code
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests-unitaires" class="md-nav__link">
+    Tests unitaires
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1144,11 +1238,17 @@
                 <h1 id="contribuer-a-tock">Contribuer à Tock<a class="headerlink" href="#contribuer-a-tock" title="Permanent link">&para;</a></h1>
 <p>Le projet Tock est ouvert à la contribution et toute proposition est la bienvenue !</p>
 <p>Cette page donne des indications sur la structure et les conventions du code de la plateforme.</p>
+<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
+<p>Voir <a href="https://github.com/theopenconversationkit/tock/blob/master/CONTRIBUTING.md"><code>CONTRIBUTING.md</code></a> 
+(anglais uniquement).</p>
 <h2 id="principales-technologies">Principales technologies<a class="headerlink" href="#principales-technologies" title="Permanent link">&para;</a></h2>
-<p>La plateforme applicative est la <a href="https://fr.wikipedia.org/wiki/Machine_virtuelle_Java">JVM</a>.</p>
-<p>Le langage de référence est <a href="https://kotlinlang.org/">Kotlin</a> mais d'autres langages de programmation peuvent être utilisés via les API mises à disposition.</p>
-<p>Tock utilise <a href="http://vertx.io/">Vert.x</a> et <a href="https://www.mongodb.com">MongoDB</a>.</p>
-<p>Les interfaces graphiques <em>(Tock Studio)</em> sont écrites avec <a href="https://angular.io/">Angular</a> en <a href="https://www.typescriptlang.org/">Typescript</a>.</p>
+<p>L'ensemble de la plateforme peut fonctionner <em>conteneurisée</em> (implémentation <a href="https://www.docker.com/">Docker</a> fournie). </p>
+<p>La plateforme applicative par défaut est la <a href="https://fr.wikipedia.org/wiki/Machine_virtuelle_Java">JVM</a>. 
+Le langage de référence est <a href="https://kotlinlang.org/">Kotlin</a> mais d'autres langages de programmation peuvent être utilisés via les API mises à disposition.</p>
+<p>Côté serveur, Tock utilise <a href="http://vertx.io/">Vert.x</a> et <a href="https://www.mongodb.com">MongoDB</a> <sup>(alt. <a href="https://aws.amazon.com/fr/documentdb/">DocumentDB</a>)</sup>. 
+Différentes briques <em>NLU</em> peuvent être utilisées, mais Tock n'a pas de dépendance forte envers l'une d'elles.</p>
+<p>Les interfaces graphiques <em>Tock Studio</em> sont écrites avec <a href="https://angular.io/">Angular</a> en <a href="https://www.typescriptlang.org/">Typescript</a>.</p>
+<p>Des intégrations <a href="https://reactjs.org">React</a> et <a href="https://flutter.dev/">Flutter</a> sont fournies pour les interfaces Web et Mobile.</p>
 <h2 id="structure-des-sources">Structure des sources<a class="headerlink" href="#structure-des-sources" title="Permanent link">&para;</a></h2>
 <h3 id="les-depots">Les dépôts<a class="headerlink" href="#les-depots" title="Permanent link">&para;</a></h3>
 <ul>
@@ -1204,18 +1304,19 @@ Chacun de ces modules porte une implémentation Docker du composant en s'appuie 
 en se basant sur les images déjà construites. Différentes configurations existent, notamment en mode <em>Bot API</em> 
 ou en mode <em>intégré</em>, avec la plateforme <em>NLU</em> standalone, etc. Le descripteur de référence pour le mode 
 <em>Bot API</em> est <code>docker-compose-bot.yml</code>.</p>
-<h2 id="construire-tock-a-partir-des-sources">Construire Tock à partir des sources<a class="headerlink" href="#construire-tock-a-partir-des-sources" title="Permanent link">&para;</a></h2>
-<h3 id="tock-core">Tock (core)<a class="headerlink" href="#tock-core" title="Permanent link">&para;</a></h3>
+<h2 id="build-run">Build &amp; run<a class="headerlink" href="#build-run" title="Permanent link">&para;</a></h2>
+<h3 id="construire-tock-a-partir-des-sources">Construire Tock à partir des sources<a class="headerlink" href="#construire-tock-a-partir-des-sources" title="Permanent link">&para;</a></h3>
+<h4 id="tock-core">Tock (core)<a class="headerlink" href="#tock-core" title="Permanent link">&para;</a></h4>
 <p>Le projet est construit avec <a href="https://maven.apache.org/">Maven</a>, y compris les modules Web impliquant 
 <a href="https://www.npmjs.com/">NPM</a> et <a href="https://angular.io/">Angular</a> :</p>
 <p><code>$ mvn package</code></p>
 <p>Un build d'intégration continue est disponible sur <a href="https://travis-ci.org/theopenconversationkit/tock">Travis</a>.</p>
-<h3 id="images-docker">Images Docker<a class="headerlink" href="#images-docker" title="Permanent link">&para;</a></h3>
+<h4 id="images-docker">Images Docker<a class="headerlink" href="#images-docker" title="Permanent link">&para;</a></h4>
 <p>Les images Docker de Tock peuvent être reconstruites à partir des sources du dépôt <a href="https://github.com/theopenconversationkit/tock-docker"><code>tock-docker</code></a>.
 Pour cela, utilisez <a href="https://maven.apache.org/">Maven</a> qui déclenchera le build <a href="https://www.docker.com/">Docker</a> :</p>
-<p><code>$ mvn docker:build</code></p>
+<p><code>$ mvn package docker:build</code></p>
 <p>Vous pouvez ensuite instancier ces images via Docker ou les stacks Docker Compose avec les descripteurs à la racine du dépôt.</p>
-<h2 id="executer-dans-un-ide">Exécuter dans un IDE<a class="headerlink" href="#executer-dans-un-ide" title="Permanent link">&para;</a></h2>
+<h3 id="executer-dans-un-ide">Exécuter dans un IDE<a class="headerlink" href="#executer-dans-un-ide" title="Permanent link">&para;</a></h3>
 <blockquote>
 <p>Pour démarrer Tock avec Docker Compose hors d'un IDE, voir <a href="../../guide/plateforme/">Déployer Tock avec Docker</a>.</p>
 </blockquote>
@@ -1223,9 +1324,56 @@ Pour cela, utilisez <a href="https://maven.apache.org/">Maven</a> qui déclenche
 Des configurations sont fournies pour <a href="https://www.jetbrains.com/idea/">IntelliJ</a>.</p>
 <p>Voir la section <a href="../../admin/installation/">Installation Tock</a>.  </p>
 <p>Pour exécuter le bot/exemple en mode intégré, une configuration est aussi disponible : <a href="https://github.com/theopenconversationkit/tock-bot-open-data/blob/master/.idea/runConfigurations/OpenDataBot.xml">OpenDataBot</a>.</p>
-<h2 id="conventions">Conventions<a class="headerlink" href="#conventions" title="Permanent link">&para;</a></h2>
+<h2 id="code">Code<a class="headerlink" href="#code" title="Permanent link">&para;</a></h2>
+<h3 id="commits-merge-requests">Commits &amp; merge requests<a class="headerlink" href="#commits-merge-requests" title="Permanent link">&para;</a></h3>
+<p>Pour soumettre une évolution ou un correctif :</p>
+<ol>
+<li><a href="https://github.com/theopenconversationkit/tock/issues/new">Créer une <em>issue</em></a>:<ul>
+<li>Format recommandé pour le titre :<ul>
+<li><code>[Component] Title</code></li>
+<li>De préférence en anglais</li>
+<li>Composant : par exemple 
+<em>Studio</em>, <em>Core</em>, <em>Doc</em>, etc.</li>
+<li>Titre : par exemple <em>Do or fix something</em></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="https://github.com/theopenconversationkit/tock/pulls">Créer une <em>pull request</em></a> et la lier à l'<em>issue</em>:<ul>
+<li>Tous les commits doivent être <a href="https://help.github.com/en/github/authenticating-to-github/managing-commit-signature-verification"><em>signés</em></a> </li>
+<li>SVP <em>rebase</em> ou <em>squash</em> les commits superflus<ul>
+<li>Astuce : vous pouvez noter la PR comme <em>Draft</em> avant de la soumettre</li>
+</ul>
+</li>
+<li>Format recommandé pour le nom de la branche :<ul>
+<li><code>ISSUEID_short_title</code></li>
+</ul>
+</li>
+<li>Format recommandé pour le(s) message(s) de commit(s) :<ul>
+<li><code>resolves #ISSUEID Component: title</code> pour les évolutions</li>
+<li><code>fixes #ISSUEID Component: title</code> pour les correctifs</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Avant d'être intégrée, une <em>pull request</em> doit passer les tests et être approuvée par au moins deux de ces développeurs :<ul>
+<li><a href="https://github.com/vsct-jburet">@vsct-jburet</a>,
+<a href="https://github.com/francoisno">@francoisno</a>,
+<a href="https://github.com/NainJaune">@NainJaune</a>,
+<a href="https://github.com/elebescond">@elebescond</a>,
+<a href="https://github.com/SarukaUsagi">@SarukaUsagi</a>,
+<a href="https://github.com/MaximeLeFrancois">@MaximeLeFrancois</a>,
+<a href="https://github.com/bakic">@bakic</a>,
+<a href="https://github.com/broxmik">@broxmik</a>,
+<a href="https://github.com/mrboizo">@mrboizo</a></li>
+</ul>
+</li>
+</ol>
+<h3 id="conventions-de-code">Conventions de code<a class="headerlink" href="#conventions-de-code" title="Permanent link">&para;</a></h3>
 <p>Les <a href="https://kotlinlang.org/docs/reference/coding-conventions.html">Kotlin Code Conventions</a> sont utilisées pour 
 développer le code de Tock.</p>
+<h3 id="tests-unitaires">Tests unitaires<a class="headerlink" href="#tests-unitaires" title="Permanent link">&para;</a></h3>
+<p>Chaque nouvelle évolution ou correctif devrait embarquer ses tests unitaires.</p>
 <h2 id="nous-contacter">Nous contacter<a class="headerlink" href="#nous-contacter" title="Permanent link">&para;</a></h2>
 <p><em>Un problème ? Une question sur l'implémentation ? Une idée à partager ?</em></p>
 <p>Pour contribuer au projet ou simplement en savoir plus, n'hésitez pas à <a href="../contact/">nous contacter</a>.</p>
@@ -1237,7 +1385,7 @@ développer le code de Tock.</p>
 <div class="md-source-date">
   <small>
     
-      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">23 avril 2020</span>
+      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">12 novembre 2020</span>
     
   </small>
 </div>

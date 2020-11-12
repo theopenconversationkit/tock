@@ -458,6 +458,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#tldr" class="md-nav__link">
+    TL;DR
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#main-technologies" class="md-nav__link">
     Main technologies
   </a>
@@ -499,6 +506,14 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#build-run" class="md-nav__link">
+    Build &amp; run
+  </a>
+  
+    <nav class="md-nav" aria-label="Build &amp; run">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#build-tock-from-sources" class="md-nav__link">
     Build Tock from sources
   </a>
@@ -524,18 +539,50 @@
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#run-in-ide" class="md-nav__link">
-    Run in IDE
+        
+          <li class="md-nav__item">
+  <a href="#run-tock-in-ide" class="md-nav__link">
+    Run Tock in IDE
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#conventions" class="md-nav__link">
-    Conventions
+  <a href="#code" class="md-nav__link">
+    Code
   </a>
+  
+    <nav class="md-nav" aria-label="Code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#commits-merge-requests" class="md-nav__link">
+    Commits &amp; merge requests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-conventions" class="md-nav__link">
+    Code conventions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unit-tests" class="md-nav__link">
+    Unit tests
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -630,6 +677,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#tldr" class="md-nav__link">
+    TL;DR
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#main-technologies" class="md-nav__link">
     Main technologies
   </a>
@@ -671,6 +725,14 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#build-run" class="md-nav__link">
+    Build &amp; run
+  </a>
+  
+    <nav class="md-nav" aria-label="Build &amp; run">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#build-tock-from-sources" class="md-nav__link">
     Build Tock from sources
   </a>
@@ -696,18 +758,50 @@
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#run-in-ide" class="md-nav__link">
-    Run in IDE
+        
+          <li class="md-nav__item">
+  <a href="#run-tock-in-ide" class="md-nav__link">
+    Run Tock in IDE
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#conventions" class="md-nav__link">
-    Conventions
+  <a href="#code" class="md-nav__link">
+    Code
   </a>
+  
+    <nav class="md-nav" aria-label="Code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#commits-merge-requests" class="md-nav__link">
+    Commits &amp; merge requests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-conventions" class="md-nav__link">
+    Code conventions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unit-tests" class="md-nav__link">
+    Unit tests
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -734,12 +828,16 @@
                 <h1 id="contribute-to-tock">Contribute to Tock<a class="headerlink" href="#contribute-to-tock" title="Permanent link">&para;</a></h1>
 <p>The Tock project is open to contribution and any feedback is welcome!</p>
 <p>This page details the source structure and coding conventions for the platform.</p>
+<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
+<p>See <a href="https://github.com/theopenconversationkit/tock/blob/master/CONTRIBUTING.md"><code>CONTRIBUTING.md</code></a>.</p>
 <h2 id="main-technologies">Main technologies<a class="headerlink" href="#main-technologies" title="Permanent link">&para;</a></h2>
-<p>The applicative platform is the <a href="https://fr.wikipedia.org/wiki/Machine_virtuelle_Java">JVM</a>.</p>
-<p>The reference language is <a href="https://kotlinlang.org/">Kotlin</a>, but other programming languages can be used through the 
-provided API.</p>
-<p>Tock leverages <a href="http://vertx.io/">Vert.x</a> and <a href="https://www.mongodb.com">MongoDB</a>.</p>
-<p>Graphical interfaces (namely <em>Tock Studio</em>) are powered by <a href="https://angular.io/">Angular</a> in <a href="https://www.typescriptlang.org/">Typescript</a>.</p>
+<p>Tock components can run as <em>containers</em> (provided implementation for <a href="https://www.docker.com/">Docker</a>). </p>
+<p>The application runs on <a href="https://fr.wikipedia.org/wiki/Machine_virtuelle_Java">JVM</a> platforms. 
+The reference language is <a href="https://kotlinlang.org/">Kotlin</a>, but other programming languages can be leveraged through the available APIs.</p>
+<p>On the server side, Tock relies on <a href="http://vertx.io/">Vert.x</a> and <a href="https://www.mongodb.com">MongoDB</a> <sup>(alt. <a href="https://aws.amazon.com/fr/documentdb/">DocumentDB</a>)</sup>. 
+Various <em>NLU</em> libraries and algorithms can be used, but Tock does not depend on them directly.</p>
+<p><em>Tock Studio</em> graphical user interfaces are built with <a href="https://angular.io/">Angular</a> in <a href="https://www.typescriptlang.org/">Typescript</a>.</p>
+<p><a href="https://reactjs.org">React</a> and <a href="https://flutter.dev/">Flutter</a> toolkits are provided for Web and Mobile integrations.</p>
 <h2 id="source-structure">Source structure<a class="headerlink" href="#source-structure" title="Permanent link">&para;</a></h2>
 <h3 id="repositories">Repositories<a class="headerlink" href="#repositories" title="Permanent link">&para;</a></h3>
 <ul>
@@ -775,19 +873,20 @@ the <a href="https://www.digital.sncf.com/startup/api">SNCF <em>Open Data</em> A
 <blockquote>
 <p>TODO : detail modules and repo structure, how Maven and Docker builds work, etc.</p>
 </blockquote>
-<h2 id="build-tock-from-sources">Build Tock from sources<a class="headerlink" href="#build-tock-from-sources" title="Permanent link">&para;</a></h2>
-<h3 id="tock-core">Tock (core)<a class="headerlink" href="#tock-core" title="Permanent link">&para;</a></h3>
+<h2 id="build-run">Build &amp; run<a class="headerlink" href="#build-run" title="Permanent link">&para;</a></h2>
+<h3 id="build-tock-from-sources">Build Tock from sources<a class="headerlink" href="#build-tock-from-sources" title="Permanent link">&para;</a></h3>
+<h4 id="tock-core">Tock (core)<a class="headerlink" href="#tock-core" title="Permanent link">&para;</a></h4>
 <p>Tock is built with <a href="https://maven.apache.org/">Maven</a>, including the Web modules leveraging 
 <a href="https://www.npmjs.com/">NPM</a> et <a href="https://angular.io/">Angular</a>:</p>
 <p><code>$ mvn package</code></p>
 <p>Continuous integration build jobs are available on <a href="https://travis-ci.org/theopenconversationkit/tock">Travis</a>.</p>
-<h3 id="docker-images">Docker images<a class="headerlink" href="#docker-images" title="Permanent link">&para;</a></h3>
+<h4 id="docker-images">Docker images<a class="headerlink" href="#docker-images" title="Permanent link">&para;</a></h4>
 <p>Tock Docker images can be rebuilt from sources, included in repository <a href="https://github.com/theopenconversationkit/tock-docker"><code>tock-docker</code></a>.
 One can use <a href="https://maven.apache.org/">Maven</a> to trigger the <a href="https://www.docker.com/">Docker</a> build:</p>
-<p><code>$ mvn docker:build</code></p>
+<p><code>$ mvn package docker:build</code></p>
 <p>Docker containers can then be instantiated from images, or Docker Compose stacks from the various descriptors 
 at the root of the repository.</p>
-<h2 id="run-in-ide">Run in IDE<a class="headerlink" href="#run-in-ide" title="Permanent link">&para;</a></h2>
+<h3 id="run-tock-in-ide">Run Tock in IDE<a class="headerlink" href="#run-tock-in-ide" title="Permanent link">&para;</a></h3>
 <blockquote>
 <p>To run Tock using Docker Compose outside the IDE, rather see <a href="../../getting-started/">Deploy Tock with Docker</a>.</p>
 </blockquote>
@@ -812,8 +911,49 @@ IntelliJ configurations are provided with Tock sources:</p>
 <li><a href="https://github.com/theopenconversationkit/tock/blob/master/bot/admin/web/README.md">Full <em>Tock Studio</em> server commands</a></li>
 <li><a href="https://github.com/theopenconversationkit/tock/blob/master/nlp/admin/web/README.md">Standalone NLU server commands</a></li>
 </ul>
-<h2 id="conventions">Conventions<a class="headerlink" href="#conventions" title="Permanent link">&para;</a></h2>
-<p><a href="https://kotlinlang.org/docs/reference/coding-conventions.html">Kotlin Code Conventions</a> are used to develop Tock.</p>
+<h2 id="code">Code<a class="headerlink" href="#code" title="Permanent link">&para;</a></h2>
+<h3 id="commits-merge-requests">Commits &amp; merge requests<a class="headerlink" href="#commits-merge-requests" title="Permanent link">&para;</a></h3>
+<p>To submit a feature or bugfix:</p>
+<ol>
+<li><a href="https://github.com/theopenconversationkit/tock/issues/new">Create an <em>issue</em></a>:<ul>
+<li>Reccommended format for the title:<ul>
+<li><code>[Component] Title</code> where component might be 
+<em>Studio</em>, <em>Core</em>, <em>Doc</em>, etc. and title usually is like <em>Do or fix something</em></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="https://github.com/theopenconversationkit/tock/pulls">Create a <em>pull request</em></a> and link it to the issue(s):<ul>
+<li>All commits should be <a href="https://help.github.com/en/github/authenticating-to-github/managing-commit-signature-verification"><em>signed</em></a> </li>
+<li>Please rebase and squash unnecessary commits (tips: PR can be tagged as <em>Draft</em>) before submitting</li>
+<li>Recommended format for the branch name :<ul>
+<li><code>ISSUEID_short_title</code></li>
+</ul>
+</li>
+<li>Recommended format for the commit(s) message(s):<ul>
+<li><code>resolves #ISSUEID Component: title</code> for features</li>
+<li><code>fixes #ISSUEID Component: title</code> for fixes</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>To be merged, a <em>pull request</em> must pass the tests and be reviewed by at least two of these developers:<ul>
+<li><a href="https://github.com/vsct-jburet">@vsct-jburet</a>,
+<a href="https://github.com/francoisno">@francoisno</a>,
+<a href="https://github.com/NainJaune">@NainJaune</a>,
+<a href="https://github.com/elebescond">@elebescond</a>,
+<a href="https://github.com/SarukaUsagi">@SarukaUsagi</a>,
+<a href="https://github.com/MaximeLeFrancois">@MaximeLeFrancois</a>,
+<a href="https://github.com/bakic">@bakic</a>,
+<a href="https://github.com/broxmik">@broxmik</a>,
+<a href="https://github.com/mrboizo">@mrboizo</a></li>
+</ul>
+</li>
+</ol>
+<h3 id="code-conventions">Code conventions<a class="headerlink" href="#code-conventions" title="Permanent link">&para;</a></h3>
+<p><a href="https://kotlinlang.org/docs/reference/coding-conventions.html">Kotlin Code Conventions</a> are used.</p>
+<h3 id="unit-tests">Unit tests<a class="headerlink" href="#unit-tests" title="Permanent link">&para;</a></h3>
+<p>Every new feature or fix should embed its unit test(s).</p>
 <h2 id="contact-us">Contact us<a class="headerlink" href="#contact-us" title="Permanent link">&para;</a></h2>
 <p>To contribute to the project or to known more about the implementation, feel free to <a href="../contact/">contact us</a>. 
 Ideas and feedback is more than welcome.</p>
@@ -825,7 +965,7 @@ Ideas and feedback is more than welcome.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 10, 2020</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 12, 2020</span>
     
   </small>
 </div>

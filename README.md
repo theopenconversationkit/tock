@@ -12,14 +12,25 @@
 
 # Tock - The Open Conversation Kit
 
-Open conversational AI & bot platform:
+<img alt="Tock Logo" src="http://doc.tock.ai/tock/en/assets/images/logo.svg" style="width: 150px;"><br>
 
-* _Natural Language Processing_ open source stack
-* _Conversational DSL_ for various languages: Kotlin, Nodejs, REST API
-* _Built-in connectors_ for numerous text/voice channels : Messenger, WhatsApp, Google Assistant, Alexa, Twitter, Web/React and more
+_Curious about what Tock is or, who is using it? Check out our [website](https://doc.tock.ai)!_
+
+Open Conversational AI platform to build Bots:
+
+* _Natural Language Processing_ open source stack, compatible with OpenNLP, Stanford, Rasa and more
+* _Tock Studio_ user interface to build stories and analytics
+* _Conversational DSL_ for Kotlin, Nodejs, Python and REST API
+* _Built-in connectors_ for numerous text/voice channels: Messenger, WhatsApp, Google Assistant, Alexa, Twitter and more
+* _Provided toolkits_ for custom Web/Mobile integration with React and Flutter
+* _Deploy anywhere_ in the Cloud or On-Premise with Docker
  
-Home page: [https://doc.tock.ai](https://doc.tock.ai)
+🏠 Home: [https://doc.tock.ai](https://doc.tock.ai)
  
-Documentation: [https://doc.tock.ai/tock](https://doc.tock.ai/tock/index.html)
+🕮 Documentation: [https://doc.tock.ai/tock](https://doc.tock.ai/tock/index.html)
+
+🐋 Docker configurations: [https://github.com/theopenconversationkit/tock-docker](https://github.com/theopenconversationkit/tock-docker)
+
+▶️ Live demo: [https://demo.tock.ai](https://demo.tock.ai)
   
-Docker images: [https://github.com/theopenconversationkit/tock-docker](https://github.com/theopenconversationkit/tock-docker)
+💬 Contact: [https://gitter.im/tockchat/Lobby](https://gitter.im/tockchat/Lobby)

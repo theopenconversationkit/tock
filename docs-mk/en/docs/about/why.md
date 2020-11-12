@@ -21,3 +21,9 @@ requirement for their own projects.
 
 The complete Tock solution is shared with the community in order to federate and mutualize efforts from assistant builders. 
 
+> Starting 2019, Tock is a recommended solution at Group SNCF. 
+> Several other companies leverage Tock in production (see [showcase](showcase.md)).
+
+> Eventually, we believe that Tock should join an Open Source organization,
+> such as the [_TOSIT (The Open Source I Trust)_](http://tosit.fr/) association 
+> or an [Open Source foundation](https://opensource.com/resources/organizations) or consortium.

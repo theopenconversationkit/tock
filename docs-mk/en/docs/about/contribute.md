@@ -4,16 +4,23 @@ The Tock project is open to contribution and any feedback is welcome!
 
 This page details the source structure and coding conventions for the platform.
 
+## TL;DR
+
+See [`CONTRIBUTING.md`](https://github.com/theopenconversationkit/tock/blob/master/CONTRIBUTING.md).
+
 ## Main technologies
 
-The applicative platform is the [JVM](https://fr.wikipedia.org/wiki/Machine_virtuelle_Java).
+Tock components can run as _containers_ (provided implementation for [Docker](https://www.docker.com/)). 
 
-The reference language is [Kotlin](https://kotlinlang.org/), but other programming languages can be used through the 
-provided API.
+The application runs on [JVM](https://fr.wikipedia.org/wiki/Machine_virtuelle_Java) platforms. 
+The reference language is [Kotlin](https://kotlinlang.org/), but other programming languages can be leveraged through the available APIs.
  
-Tock leverages [Vert.x](http://vertx.io/) and [MongoDB](https://www.mongodb.com ).
+On the server side, Tock relies on [Vert.x](http://vertx.io/) and [MongoDB](https://www.mongodb.com ) <sup>(alt. [DocumentDB](https://aws.amazon.com/fr/documentdb/))</sup>. 
+Various _NLU_ libraries and algorithms can be used, but Tock does not depend on them directly.
 
-Graphical interfaces (namely _Tock Studio_) are powered by [Angular](https://angular.io/) in [Typescript](https://www.typescriptlang.org/).
+_Tock Studio_ graphical user interfaces are built with [Angular](https://angular.io/) in [Typescript](https://www.typescriptlang.org/).
+
+[React](https://reactjs.org) and [Flutter](https://flutter.dev/) toolkits are provided for Web and Mobile integrations.
 
 ## Source structure
 
@@ -45,9 +52,11 @@ the [SNCF _Open Data_ API](https://www.digital.sncf.com/startup/api), also imple
 
 > TODO : detail modules and repo structure, how Maven and Docker builds work, etc.
 
-## Build Tock from sources
+## Build & run
 
-### Tock (core)
+### Build Tock from sources
+
+#### Tock (core)
 
 Tock is built with [Maven](https://maven.apache.org/), including the Web modules leveraging 
 [NPM](https://www.npmjs.com/) et [Angular](https://angular.io/):
@@ -56,17 +65,17 @@ Tock is built with [Maven](https://maven.apache.org/), including the Web modules
 
 Continuous integration build jobs are available on [Travis](https://travis-ci.org/theopenconversationkit/tock).
 
-### Docker images
+#### Docker images
 
 Tock Docker images can be rebuilt from sources, included in repository [`tock-docker`](https://github.com/theopenconversationkit/tock-docker).
 One can use [Maven](https://maven.apache.org/) to trigger the [Docker](https://www.docker.com/) build:
 
-`$ mvn docker:build`
+`$ mvn package docker:build`
 
 Docker containers can then be instantiated from images, or Docker Compose stacks from the various descriptors 
 at the root of the repository.
 
-## Run in IDE
+### Run Tock in IDE
 
 > To run Tock using Docker Compose outside the IDE, rather see [Deploy Tock with Docker](../getting-started.md).
 
@@ -92,9 +101,42 @@ To start the _Tock Studio_ interfaces, please refer to the commands described in
 - [Full _Tock Studio_ server commands](https://github.com/theopenconversationkit/tock/blob/master/bot/admin/web/README.md)
 - [Standalone NLU server commands](https://github.com/theopenconversationkit/tock/blob/master/nlp/admin/web/README.md)
 
-## Conventions
+## Code
 
-[Kotlin Code Conventions](https://kotlinlang.org/docs/reference/coding-conventions.html) are used to develop Tock.
+### Commits & merge requests
+
+To submit a feature or bugfix:
+
+1. [Create an _issue_](https://github.com/theopenconversationkit/tock/issues/new):
+    - Reccommended format for the title:
+        - `[Component] Title` where component might be 
+    _Studio_, _Core_, _Doc_, etc. and title usually is like _Do or fix something_
+2. [Create a _pull request_](https://github.com/theopenconversationkit/tock/pulls) and link it to the issue(s):
+    - All commits should be [_signed_](https://help.github.com/en/github/authenticating-to-github/managing-commit-signature-verification) 
+    - Please rebase and squash unnecessary commits (tips: PR can be tagged as _Draft_) before submitting
+    - Recommended format for the branch name :
+        - `ISSUEID_short_title`
+    - Recommended format for the commit(s) message(s):
+        - `resolves #ISSUEID Component: title` for features
+        - `fixes #ISSUEID Component: title` for fixes
+3. To be merged, a _pull request_ must pass the tests and be reviewed by at least two of these developers:
+    - [@vsct-jburet](https://github.com/vsct-jburet),
+    [@francoisno](https://github.com/francoisno),
+    [@NainJaune](https://github.com/NainJaune),
+    [@elebescond](https://github.com/elebescond),
+    [@SarukaUsagi](https://github.com/SarukaUsagi),
+    [@MaximeLeFrancois](https://github.com/MaximeLeFrancois),
+    [@bakic](https://github.com/bakic),
+    [@broxmik](https://github.com/broxmik),
+    [@mrboizo](https://github.com/mrboizo)
+        
+### Code conventions
+
+[Kotlin Code Conventions](https://kotlinlang.org/docs/reference/coding-conventions.html) are used.
+
+### Unit tests
+
+Every new feature or fix should embed its unit test(s).
 
 ## Contact us
 
