@@ -69,6 +69,24 @@ style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.
 * **Canaux :** texte & voix, sur le site Web entreprise, Messenger, WhatsApp, Business Chat (Messages), Google Assistant, 
 Google Home, Alexa, IAffiches JCDecaux
 
+## _Chatbot interne Enedis_
+
+Le _Chatbot interne Enedis_ permet aux 39 000 salariés [Enedis](https://www.enedis.fr/) un accès simplifié aux 
+services logistiques de l’entreprise.
+
+> Cet agent conversationnel intelligent offre un support de 1<sup>er</sup> niveau en répondant 
+aux questions les plus fréquentes des salariés et en orientant vers les outils Métiers de gestion de demande. 
+Il a également vocation à mieux appréhender les besoins des salariés via l’analyse des questions fréquentes.
+
+Construit avec Tock, le chatbot est disponible sur un site Web interne à l'entreprise.
+
+![Chatbot interne Enedis](../img/enedis_bot1.png "Chatbot interne Enedis")
+
+* **Nom :** _Chatbot interne Enedis_
+* **Date de naissance :** en production depuis 2020
+* **Domaine :** services logistiques internes
+* **Canaux :** texte, sur un site Web interne
+
 ## _L'Assistant SNCF_
 
 _[L'Assistant SNCF](https://www.sncf.com/fr/itineraire-reservation/informations-trafic/application-sncf)_ est 
@@ -202,12 +220,11 @@ déploiements, gestion de production, etc.)
 ## Autres bots Tock...
 
 D'autres assistants conversationnels développés avec Tock sont utilisés par différentes organisations
-notamment les membres du [TOSIT](http://tosit.fr/) et pas uniquement la SNCF.
-
+(notamment les membres du [TOSIT](http://tosit.fr/)). 
 Ces bots ne sont pas toujours destinés au grand public et leurs organisations ne communiquent pas 
-nécessairement dessus. Nous ajouterons des détails sur ces projets si l'occasion se présente :)
+nécessairement dessus. Nous mentionnons ces projets si l'occasion se présente ;)
 
-Par ailleurs, n'hésitez pas à faire un tour sur le [tchat Gitter](https://gitter.im/tockchat/Lobby) 
+N'hésitez pas à faire un tour sur le [tchat Gitter](https://gitter.im/tockchat/Lobby) 
 de la communauté, vous pourrez constater que de plus en plus de professionnels et particuliers, étudiants,
 PME et ESN, expérimentent ou utilisent Tock pour leurs projets d'assistants ou d'applications _NLP_.
 

@@ -67,6 +67,24 @@ style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.
 * **Channels:** text & voice, on the company Website, Messenger, WhatsApp, Business Chat (Messages), Google Assistant, 
 Google Home, Alexa, JCDecaux SmartBrics
 
+## _Enedis internal Chatbot_
+
+The _[Enedis](https://www.enedis.fr/) internal Chatbot_ gives the 39 000 employees a simplified means to 
+access the company logistics services.
+
+> The conversational agent provides level-1 support by answering frequent employee questions, 
+>as well as guiding them to Business service-desk tools. 
+It also aims at better understanding employee needs through the analysis of most frequent demands.
+
+Built with Tock, the chatbot is available on an internal company Website.
+
+![Enedis internal Chatbot](../img/enedis_bot1.png "Enedis internal Chatbot")
+
+* **Name:** _Chatbot interne Enedis_
+* **Date of birth:** in production since 2020
+* **Field:** internal logistics services
+* **Channels:** text, on an internal Website
+
 ## _L'Assistant SNCF_
 
 _[L' Assistant SNCF](https://www.sncf.com/fr/itineraire-reservation/informations-trafic/application-sncf)_ is 
@@ -195,13 +213,12 @@ deployments, production management, etc.)
 
 ## Other Tock bots...
 
-Various organizations already leverage Tock to build conversational agents (which are not mentionned here).
-Among them, some of the [TOSIT](http://tosit.fr/) companies - not only [SNCF](https://www.sncf.com/).
-
+Various organizations already leverage Tock to build conversational agents, which are not mentionned here 
+(among them, several of the [TOSIT](http://tosit.fr/) companies). 
 Sometimes these applications are not dedicated to public usage and their organization will not communicate
-about them. We will mention them here when it is possible :)
+about them. We will mention them here when it is possible ;)
 
-By the way, do not hesitate to look at the [Gitter](https://gitter.im/tockchat/Lobby) 
+Do not hesitate to look at the [Gitter](https://gitter.im/tockchat/Lobby) 
 community chat to see professionals, students, large and smaller companies
  currently using or experimenting with Tock for their conversational or _NLU_ projects.
 
