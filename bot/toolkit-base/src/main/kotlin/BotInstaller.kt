@@ -21,6 +21,7 @@ import ai.tock.bot.definition.BotProvider
 import ai.tock.bot.definition.BotProviderBase
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.nlp.NlpController
+import ai.tock.nlp.api.client.model.dump.ApplicationDump
 import ai.tock.nlp.api.client.model.dump.IntentDefinition
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
@@ -32,6 +33,9 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.instance
 import io.vertx.ext.web.Router
+import mu.KotlinLogging
+
+private val logger = KotlinLogging.logger {}
 
 /**
  * Register a new bot.
@@ -123,4 +127,21 @@ fun importI18nDump(path: String, replaceAllLabels: Boolean = false) {
     } else {
         i18n.saveIfNotExist(labels)
     }
+}
+
+/**
+ * Import a dump of a full application.
+ *
+ * @path the dump path in the classpath
+ */
+fun importApplicationDump(path: String) {
+    val nlp: NlpController by injector.instance()
+    val application = mapper.readValue<ApplicationDump>(resource(path))
+    val name = application.application.name
+    logger.info { "Importing application '$name' to namespace '${application.application.namespace}'..." }
+
+    if (nlp.importNlpPlainDump(application))
+        logger.info { "Application '$name' successfully imported." }
+    else
+        logger.warn { "Application '$name' not imported (application might already exist)." }
 }

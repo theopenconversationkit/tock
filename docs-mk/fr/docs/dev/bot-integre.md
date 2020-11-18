@@ -151,6 +151,40 @@ dans l'interface d'administration du bot, du menu _Configuration_ > _Bot Configu
 
 Pour en savoir plus sur les différents canaux et connecteurs, voir [cette page](../user/guides/canaux.md).
 
+### Importer la configuration (dumps)
+
+Il est possible d'exporter différentes configurations depuis Tock Studio, puis les
+importer automatiquement au démarrage du bot.
+
+Une fois exportés les fichiers _dumps_ de Tock Studio dans le _classpath_ du bot, 
+on peut appeler une ou plusieurs des fonctions suivantes depuis le `main` :
+
+* `importApplicationDump` : importe une application à partir d'un 
+  [_dump_ d'application](../user/studio/configuration.md#modifier-importer-et-exporter-une-application).
+  Remarque : l'import est ignoré si l'application cible existe déjà.
+* `importNlpDump` : importe un modèle NLP (intentions, phrases, entités) à partir d'un
+  [_dump_ NLP](../user/studio/configuration.md#modifier-importer-et-exporter-une-application).
+* `importI18nDump` : importe des labels (aka _i18n_) à partir d'un
+  [_dump_ de labels](../user/studio/stories-and-answers.md#longlet-answers).
+
+Exemple :
+
+```kotlin
+fun main(args: Array<String>) {
+
+  registerAndInstallBot(bot)
+
+  // Import application
+  importApplicationDump("/bot_app_dump.json")
+
+  // Import NLP model (intents, sentences, entities...)
+  importNlpDump("/bot_nlp_dump.json")
+  
+  // Import story labels (aka i18n)
+  importI18nDump("/bot_labels_dump.json")
+}
+```
+
 ## Aller plus loin
 
 Bien sûr, le `StoryHandler` de `greetings` ne dépend pas du contexte : la réponse est toujours la même.
