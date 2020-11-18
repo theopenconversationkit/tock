@@ -32,7 +32,7 @@ A dedicated extension for Tock is [available](https://doc.tock.ai/tock/dokka/toc
 
     @RegisterExtension
     @JvmField
-    val ext = TockJUnit5Extension()
+    val ext = TockJUnit5Extension(bot)
 ```
 
 To test the **greetings** story of the Open Data bot, just use the *ext.send()* method: 

@@ -32,7 +32,7 @@ Une extension dédiée à Tock et JUnit5 est [disponible](https://doc.tock.ai/to
 
     @RegisterExtension
     @JvmField
-    val ext = TockJUnit5Extension()
+    val ext = TockJUnit5Extension(bot)
 ```
 
 

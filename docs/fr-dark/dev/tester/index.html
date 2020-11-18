@@ -1027,7 +1027,7 @@
 Une extension dédiée à Tock et JUnit5 est <a href="https://doc.tock.ai/tock/dokka/tock/ai.tock.bot.test.junit/-tock-j-unit5-extension/index.html">disponible</a>.</p>
 <div class="highlight"><pre><span></span><code>    <span class="n">@RegisterExtension</span>
     <span class="n">@JvmField</span>
-    <span class="k">val</span> <span class="py">ext</span> <span class="p">=</span> <span class="n">TockJUnit5Extension</span><span class="p">()</span>
+    <span class="k">val</span> <span class="py">ext</span> <span class="p">=</span> <span class="n">TockJUnit5Extension</span><span class="p">(</span><span class="n">bot</span><span class="p">)</span>
 </code></pre></div>
 
 <p>Afin de tester la story <strong>greetings</strong> du bot Open Data, il suffit d'utiliser la méthode <em>ext.send()</em>
@@ -1138,7 +1138,7 @@ afin d'indiquer l'origine : </p>
 <div class="md-source-date">
   <small>
     
-      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">2 novembre 2020</span>
+      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">18 novembre 2020</span>
     
   </small>
 </div>
