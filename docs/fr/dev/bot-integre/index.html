@@ -642,6 +642,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#importer-la-configuration-dumps" class="md-nav__link">
+    Importer la configuration (dumps)
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1123,6 +1130,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#importer-la-configuration-dumps" class="md-nav__link">
+    Importer la configuration (dumps)
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1347,6 +1361,36 @@ Ici un texte avec des boutons pour Messenger, et un texte avec des suggestions p
 <p>Une fois le bot démarré, il est également nécessaire de spécifier quels connecteurs sont utilisés
 dans l'interface d'administration du bot, du menu <em>Configuration</em> &gt; <em>Bot Configurations</em> &gt; <em>Create a new configuration</em>.</p>
 <p>Pour en savoir plus sur les différents canaux et connecteurs, voir <a href="../../user/guides/canaux/">cette page</a>.</p>
+<h3 id="importer-la-configuration-dumps">Importer la configuration (dumps)<a class="headerlink" href="#importer-la-configuration-dumps" title="Permanent link">&para;</a></h3>
+<p>Il est possible d'exporter différentes configurations depuis Tock Studio, puis les
+importer automatiquement au démarrage du bot.</p>
+<p>Une fois exportés les fichiers <em>dumps</em> de Tock Studio dans le <em>classpath</em> du bot, 
+on peut appeler une ou plusieurs des fonctions suivantes depuis le <code>main</code> :</p>
+<ul>
+<li><code>importApplicationDump</code> : importe une application à partir d'un 
+  <a href="../../user/studio/configuration/#modifier-importer-et-exporter-une-application"><em>dump</em> d'application</a>.
+  Remarque : l'import est ignoré si l'application cible existe déjà.</li>
+<li><code>importNlpDump</code> : importe un modèle NLP (intentions, phrases, entités) à partir d'un
+  <a href="../../user/studio/configuration/#modifier-importer-et-exporter-une-application"><em>dump</em> NLP</a>.</li>
+<li><code>importI18nDump</code> : importe des labels (aka <em>i18n</em>) à partir d'un
+  <a href="../../user/studio/stories-and-answers/#longlet-answers"><em>dump</em> de labels</a>.</li>
+</ul>
+<p>Exemple :</p>
+<div class="highlight"><pre><span></span><code><span class="k">fun</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">Array</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;)</span> <span class="p">{</span>
+
+  <span class="n">registerAndInstallBot</span><span class="p">(</span><span class="n">bot</span><span class="p">)</span>
+
+  <span class="c1">// Import application</span>
+  <span class="n">importApplicationDump</span><span class="p">(</span><span class="s">&quot;/bot_app_dump.json&quot;</span><span class="p">)</span>
+
+  <span class="c1">// Import NLP model (intents, sentences, entities...)</span>
+  <span class="n">importNlpDump</span><span class="p">(</span><span class="s">&quot;/bot_nlp_dump.json&quot;</span><span class="p">)</span>
+
+  <span class="c1">// Import story labels (aka i18n)</span>
+  <span class="n">importI18nDump</span><span class="p">(</span><span class="s">&quot;/bot_labels_dump.json&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+
 <h2 id="aller-plus-loin">Aller plus loin<a class="headerlink" href="#aller-plus-loin" title="Permanent link">&para;</a></h2>
 <p>Bien sûr, le <code>StoryHandler</code> de <code>greetings</code> ne dépend pas du contexte : la réponse est toujours la même.</p>
 <p>Pour le développement de stories complexes, nous avons besoin d'une abstraction supplémentaire.</p>
@@ -1610,7 +1654,7 @@ L'utilisation de <a href="#utiliser-handlerdef"><code>HandlerDef</code></a> est 
 <div class="md-source-date">
   <small>
     
-      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">2 novembre 2020</span>
+      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">18 novembre 2020</span>
     
   </small>
 </div>

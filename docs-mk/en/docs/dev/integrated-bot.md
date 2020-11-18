@@ -167,11 +167,45 @@ in the web administration interface: Configuration -> Bot Configurations -> Crea
 
 See [Connectors](connectors.md) page for the list of available connectors.
 
-### Advanced options
+### Import configuration (dumps)
+
+It is possible to export various types of configurations from Tock Studio, then 
+import them programmatically at bot startup.
+
+Once the _dump_ files exported to the bot _classpath_, you can use one or more of 
+the following functions from the bot `main`:
+
+* `importApplicationDump`: import an application from an 
+  _application dump_ (_Tock Studio > Settings > Applications_).
+  Note that import is skipped when application exists already.
+* `importNlpDump`: import a NLP model (intents, sentences, entities) from a
+  _NLP dump_ (_Tock Studio > Settings > Applications_).
+* `importI18nDump`: import labels (aka _i18n_) from a
+  _labels dump_ (_Tock Studio > Stories & Answers > Answers_).
+
+Example:
+
+```kotlin
+fun main(args: Array<String>) {
+
+  registerAndInstallBot(bot)
+
+  // Import application
+  importApplicationDump("/bot_app_dump.json")
+
+  // Import NLP model (intents, sentences, entities...)
+  importNlpDump("/bot_nlp_dump.json")
+
+  // Import story labels (aka i18n)
+  importI18nDump("/bot_labels_dump.json")
+}
+```
+
+## Advanced options
 
 Of course, the *StoryHandler* of *greetings* does not depend on the context: the answer is always the same.
 
-#### Secondary Intentions
+### Secondary Intentions
 
 Here is the beginning of the definition of the *search* story :
 
@@ -194,7 +228,7 @@ the story *search* is called.
 For a *classic* secondary intent, on the other hand, the story will be executed only if the current story of the context
 is *already* the **search** story. Different stories can therefore share the same secondary intents.
 
-#### Handle Entities
+### Handle Entities
 
 To retrieve entity values, it is good practice to define Kotlin **extensions**.
 For example here is the code used to retrieve the *destination* entity:
@@ -277,7 +311,7 @@ A simple rule is then used:
 If there is already in the context an origin and no destination, the new locality is actually the destination.
 Otherwise, it is the origin.
 
-#### HandlerDef
+### HandlerDef
 
 In the *search* story above, you may have noted the generic *SearchDef* typing.
 Here is the code of this class:
@@ -323,7 +357,7 @@ What would happen there is no connector for Google Assistant for example, and if
 The *connector?.sendFirstJourney(journeys.first())* method call would not send the final response,
 since *connector* would be *null*.
 
-#### ConnectorDef
+### ConnectorDef
 
 Here is a simplified version of *SearchConnector* :
 
@@ -364,14 +398,14 @@ The code specific to each connector is thus decoupled correctly.
 The code common to each connector is present in *SearchConnector* and the behavior specific to
 each connector is specified in the dedicated classes.
 
-#### StoryStep
+### StoryStep
 
 Sometimes you need to remember the stage at which the user is
 in the current story. For this, Tock provides the concept of *StoryStep*.
 
 There are two types of StoryStep.
 
-##### SimpleStoryStep
+#### SimpleStoryStep
 
 ```kotlin
 enum class MyStep : SimpleStoryStep { a, b }
@@ -404,7 +438,7 @@ val story = storyWithSteps<MyStep>("intent") {
 More details on this topic [here](../code-a-bot/#postback-buttons-quick-replies).
 
 
-##### StorySteps with complex behavior
+#### StorySteps with complex behavior
 
 In more complex cases, we want to be able to define a behavior for each step.
 
@@ -434,7 +468,7 @@ enum class MySteps : StoryStep<MyHandlerDef> {
 
 More configuration options are available. Check out the description of [StoryStep](https://doc.tock.ai/tock/dokka/tock/ai.tock.bot.definition/-story-step/index.html). 
 
-#### Postback buttons & quick replies
+### Postback buttons & quick replies
 
 Messenger provides this type of button, as most connectors with GUI.
 
