@@ -23,14 +23,16 @@ import {Component, Input, OnInit} from '@angular/core';
   styleUrls: ['./input-label.component.css']
 })
 export class InputLabelComponent implements OnInit {
-  editing: boolean;
+  @Input()
+  editing = false;
   @Input()
   text: string;
   @Input()
   placeholder: string;
+  @Input()
+  saveAction: (text: string) => void;
 
   ngOnInit(): void {
-    this.editing = false;
   }
 
   edit() {
@@ -39,6 +41,7 @@ export class InputLabelComponent implements OnInit {
 
   save(value: string) {
     this.text = value;
+    this.saveAction(value);
     this.editing = false;
   }
 }

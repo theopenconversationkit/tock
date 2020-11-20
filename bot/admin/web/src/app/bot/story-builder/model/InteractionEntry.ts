@@ -15,12 +15,13 @@
  */
 
 
-import {Interaction} from './Interaction';
-
 export class InteractionEntry {
-  type: 'bot' | 'user';
-  content: InteractionEntryContent[];
-  interactions: Interaction[];
+  content: string;
+
+  constructor(sentence: string) {
+    this.content = sentence;
+  }
+
 }
 
 export class InteractionEntryContent {

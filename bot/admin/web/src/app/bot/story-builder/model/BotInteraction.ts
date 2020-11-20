@@ -16,25 +16,20 @@
 
 
 import {InteractionEntry} from './InteractionEntry';
+import {UserInteraction} from './UserInteraction';
 
-export class Interaction {
-  id: string;
-  intent: string;
-  label: string;
-  entries: InteractionEntry[];
+export class BotInteraction {
+  entries: InteractionEntry[] = [{content: ''}];
+  userInteractions: UserInteraction[] = [];
 
-  constructor(id, intent, label, entries) {
-    this.id = id;
-    this.intent = intent;
-    this.label = label;
-    this.entries = entries;
+  getSelectedUserInteraction: () => UserInteraction = () => {
+    if (!this.userInteractions) {
+      return undefined;
+    }
+    return this.userInteractions.find(value => value.selected);
   }
 
-  public getActions(): string[] {
-    return this.entries[0].interactions.map(item => item.label);
-  }
-
-  public getLabel(): string {
-    return this.entries[0].content[0].text;
+  hasSelectedUserInteraction: () => boolean = () => {
+    return !!this.getSelectedUserInteraction();
   }
 }

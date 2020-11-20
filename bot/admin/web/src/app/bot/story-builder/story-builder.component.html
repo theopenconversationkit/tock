@@ -1,32 +1,37 @@
 <nb-card>
   <nb-card-header class="story-header">
     <tock-input-label class="story-name" [text]="story.name" placeholder="Enter story name..."></tock-input-label>
-    <span class="main-intent">{{story.intent}}</span>
+    <span class="main-intent">{{story.getIntent()}}</span>
     <span class="edit-button">
       <button nbButton><nb-icon icon="edit-2"></nb-icon></button>
     </span>
   </nb-card-header>
   <nb-card-body>
     <div class="bot-user-content">
-      <div class="user-sentence" *ngIf="!story.interactions || story.interactions.length === 0">
+      <div class="user-sentence" *ngIf="!story.rootUserInteraction">
         <nb-form-field class="user-sentence-input-container">
-          <input type="text" nbInput fullWidth shape="round" placeholder="Enter user sentence...">
-          <button nbSuffix nbButton ghost (click)="addFirstInteraction()">
+          <input #userSentenceInput type="text" nbInput fullWidth shape="round" placeholder="Enter user sentence..."
+                 (keyup.enter)="addFirstInteraction(userSentenceInput.value)">
+          <button nbSuffix nbButton ghost (click)="addFirstInteraction(userSentenceInput.value)">
             <nb-icon icon="arrow-right"></nb-icon>
           </button>
         </nb-form-field>
       </div>
-      <div *ngFor="let interaction of currentPath">
-        <tock-user-bubble [label]="interaction.label"
-                          [intent]="interaction.intent"
-                          [intents]="['selfcare_notrain_found','yes','no']">
+      <div *ngFor="let dialog of currentPath">
+        <tock-user-bubble *ngIf="dialog.userInteraction"
+                          [label]="dialog.userInteraction.sentence"
+                          [intent]="dialog.userInteraction.intent"
+                          [intents]="intents">
         </tock-user-bubble>
-        <tock-bot-bubble [label]="interaction.getLabel()"
-                         [actions]="interaction.getActions()">
+        <tock-bot-bubble *ngIf="dialog.botInteraction"
+                         [botInteraction]="dialog.botInteraction"
+                         [actions]="dialog.botInteraction.userInteractions">
         </tock-bot-bubble>
         <div class="add-bubble-buttons-container">
-          <tock-add-bubble-button class="add-bubble-button" [action]="addBotResponse"></tock-add-bubble-button>
-          <tock-add-bubble-button class="add-bubble-button" [action]="addUserAction"></tock-add-bubble-button>
+          <tock-add-bubble-button class="add-bubble-button" [parentInteraction]="dialog.userInteraction"
+                                  [action]="addBotResponse"></tock-add-bubble-button>
+          <tock-add-bubble-button *ngIf="dialog.botInteraction" class="add-bubble-button" [parentInteraction]="dialog.botInteraction"
+                                  [action]="addUserAction"></tock-add-bubble-button>
         </div>
       </div>
     </div>
@@ -35,7 +40,8 @@
   <nb-card-footer class="story-builder-footer">
     <div class="story-builder-actions">
       <button nbSuffix nbButton status="primary" (click)="save()">
-        <nb-icon icon="save"></nb-icon> Save
+        <nb-icon icon="save"></nb-icon>
+        Save
       </button>
     </div>
   </nb-card-footer>

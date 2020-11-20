@@ -2,7 +2,7 @@
   <div class="bot-bubble">
     <div class="avatar-bot"></div>
     <div class="bot-bubble-content">
-      <tock-input-label [text]="label" placeholder="Enter bot phrase..."></tock-input-label>
+      <tock-input-label [text]="botInteraction.entries[0].content" [editing]="!botInteraction.entries[0].content" placeholder="Enter bot phrase..." [saveAction]="save"></tock-input-label>
       <div class="edit-button">
         <button nbButton>
           <nb-icon icon="edit-2"></nb-icon>
@@ -14,9 +14,10 @@
 <div class="bubble-footer">
   <span class="actions">
     <span class="flex-start">
-      <button *ngFor="let action of actions" nbButton class="action-button" [status]="action === 'Oui'?'primary':'default'">
+      <button *ngFor="let action of actions" nbButton class="action-button"
+              [status]="action.selected ? 'primary':'default'">
         <nb-icon icon="flash"></nb-icon>
-        {{action}}
+        {{action.sentence}}
       </button>
     </span>
     <span class="flex-end">

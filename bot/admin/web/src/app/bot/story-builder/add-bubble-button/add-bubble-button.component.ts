@@ -16,6 +16,8 @@
 
 
 import {Component, Input, OnInit} from '@angular/core';
+import {BotInteraction} from '../model/BotInteraction';
+import {UserInteraction} from '../model/UserInteraction';
 
 @Component({
   selector: 'tock-add-bubble-button',
@@ -26,8 +28,16 @@ export class AddBubbleButtonComponent implements OnInit {
   @Input()
   type: string;
   @Input()
-  action: () => {};
+  action: (botInteraction: BotInteraction | UserInteraction, sentence: string) => {};
+  @Input()
+  parentInteraction: BotInteraction | UserInteraction;
+  showInputLabel: boolean;
 
   ngOnInit(): void {
+    this.showInputLabel = false;
+  }
+
+  save(sentence: string) {
+    this.action(this.parentInteraction, sentence);
   }
 }

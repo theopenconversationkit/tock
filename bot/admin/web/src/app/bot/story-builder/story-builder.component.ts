@@ -17,7 +17,10 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {Story} from './model/Story';
-import {Interaction} from './model/Interaction';
+import {UserInteraction} from './model/UserInteraction';
+import {BotInteraction} from './model/BotInteraction';
+import {InteractionEntry} from './model/InteractionEntry';
+import {InteractionDialog} from './model/InteractionDialog';
 
 @Component({
   selector: 'tock-story-builder',
@@ -29,99 +32,37 @@ export class StoryBuilderComponent implements OnInit {
   @Input()
   story: Story;
 
-  currentPath: Interaction[];
+  currentPath: InteractionDialog[];
+
+  intents: string[] = ['selfcare_notrain_found', 'yes', 'no'];
 
   ngOnInit(): void {
-    this.story = {
-      name: 'Je ne trouve pas mon train',
-      intent: 'selfcare_notrain_found',
-      interactions: [
-        new Interaction('question_1',
-          'selfcare_notrain_found',
-          'Je ne trouve pas mon train',
-          [
-            {
-              type: 'bot',
-              content: [
-                {
-                  type: 'text',
-                  text: 'Votre trajet se déroule en Ile-de-France ?'
-                }
-              ],
-              interactions: [
-                new Interaction('yes_1', 'yes', 'Oui', [
-                  {
-                    type: 'bot',
-                    content: [
-                      {
-                        type: 'text',
-                        text: 'Quel est votre mode de transport ?',
-                      },
-                    ],
-                    interactions: []
-                  },
-                  {
-                    type: 'user',
-                    content: [
-                      {
-                        'type': 'text',
-                        'text': 'Je pars de Paris Saint-Lazare',
-                      }
-                    ],
-                    interactions: []
-                  }
-                ]),
-                new Interaction('no_1', 'no', 'Non', [
-                    {
-                      'type': 'user',
-                      'content': [
-                        {
-                          'type': 'text',
-                          'text': 'Non'
-                        }
-                      ],
-                      interactions: []
-                    },
-                    {
-                      'type': 'bot',
-                      'content': [
-                        {
-                          'type': 'text',
-                          'text': 'Désolé, nous ne supportons que les trajets IDF'
-                        }
-                      ],
-                      interactions: []
-                    }
-                  ]
-                )
-              ]
-            }
-          ])
-      ]
-    }
-    ;
-    this.currentPath = [
-      this.story.interactions[0], this.story.interactions[0].entries[0].interactions[0]
-    ];
+    this.story = new Story('new user story');
+    this.currentPath = this.story.getSelectedInteractionDialogs();
   }
 
-  addUserSentence = () => {
-    console.log('User sentence');
+  addUserSentence = (botInteraction: BotInteraction, sentence: string) => {
+    botInteraction.userInteractions.forEach(value => value.selected = false);
+    botInteraction.userInteractions.push(new UserInteraction(sentence, 'sentence'));
   }
 
-  addUserAction = () => {
-    console.log('Add user action');
+  addUserAction = (botInteraction: BotInteraction, sentence: string) => {
+    botInteraction.userInteractions.forEach(value => value.selected = false);
+    botInteraction.userInteractions.push(new UserInteraction(sentence, 'action'));
   }
 
-  addBotResponse = () => {
-    console.log('Add bot response');
+  addBotResponse = (userInteraction: UserInteraction, sentence) => {
+    userInteraction.botInteraction.entries.push(new InteractionEntry(sentence));
   }
 
   save() {
-    console.log('Saved the story');
+    // TODO: transform to server model and save
+    console.log('Saved the story : ' + this.story);
   }
 
-  addFirstInteraction() {
-    console.log('Add first interaction');
+  addFirstInteraction = (sentence: string) => {
+    const userInteraction = new UserInteraction(sentence, 'sentence');
+    this.story.setRootUserInteraction(userInteraction);
+    this.currentPath = this.story.getSelectedInteractionDialogs();
   }
 }

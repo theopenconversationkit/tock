@@ -14,27 +14,24 @@
  * limitations under the License.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
-import {UserInteraction} from '../model/UserInteraction';
-import {BotInteraction} from '../model/BotInteraction';
 
-@Component({
-  selector: 'tock-bot-bubble',
-  templateUrl: './bot-bubble.component.html',
-  styleUrls: ['./bot-bubble.component.css']
-})
-export class BotBubbleComponent implements OnInit {
+import {BotInteraction} from './BotInteraction';
 
-  @Input()
+export class UserInteraction {
+
+  sentence: string;
+  intent: string;
+  type: 'sentence' | 'action';
   botInteraction: BotInteraction;
+  selected: boolean;
 
-  @Input()
-  actions: UserInteraction[];
-
-  save: (sentence: string) => void = sentence => {
-    this.botInteraction.entries[0].content = sentence;
+  constructor(sentence: string, type: 'sentence' | 'action') {
+    this.sentence = sentence;
+    this.intent = 'unknown';
+    this.selected = true;
+    this.botInteraction = new BotInteraction();
+    this.type = type;
   }
 
-  ngOnInit(): void {
-  }
+
 }

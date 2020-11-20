@@ -15,7 +15,8 @@
   -->
 
 <div class="button-container">
-  <button nbButton ghost (click)="action()" class="align-center">
+  <tock-input-label *ngIf="showInputLabel" [editing]="true" [saveAction]="save"></tock-input-label>
+  <button *ngIf="!showInputLabel" nbButton ghost (click)="showInputLabel=true" class="align-center">
     <nb-icon icon="plus-circle"></nb-icon>
   </button>
 </div>
