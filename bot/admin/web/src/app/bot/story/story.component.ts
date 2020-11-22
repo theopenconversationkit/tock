@@ -120,17 +120,16 @@ export class StoryComponent implements OnInit, OnChanges {
   }
 
   deleteStory() {
-    const dialogRef = this.dialog.open(
-      this.matDialog,
+    const dialogRef = this.dialog.openDialog(
       ConfirmDialogComponent,
       {
-        data: {
+        context: {
           title: `Remove the story ${this.story.name}`,
           subtitle: 'Are you sure?',
           action: 'Remove'
         }
       });
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.onClose.subscribe(result => {
       if (result === 'remove') {
         this.bot.deleteStory(this.story._id)
           .subscribe(_ => {

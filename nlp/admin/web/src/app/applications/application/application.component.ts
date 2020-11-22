@@ -15,7 +15,6 @@
  */
 
 import {Component, ElementRef, OnInit, ViewChild} from "@angular/core";
-import { MatDialog } from "@angular/material/dialog";
 import {ActivatedRoute, Router} from "@angular/router";
 import {StateService} from "../../core-nlp/state.service";
 import {Application} from "../../model/application";
@@ -23,7 +22,8 @@ import {ConfirmDialogComponent} from "../../shared-nlp/confirm-dialog/confirm-di
 import {ApplicationService} from "../../core-nlp/applications.service";
 import {Subject} from "rxjs";
 import {NlpEngineType} from "../../model/nlp";
-import { NbToastrService } from '@nebular/theme';
+import {NbToastrService} from '@nebular/theme';
+import {DialogService} from "../../core-nlp/dialog.service";
 
 @Component({
   selector: 'tock-application',
@@ -43,7 +43,7 @@ export class ApplicationComponent implements OnInit {
 
   constructor(private route: ActivatedRoute,
               private toastrService: NbToastrService,
-              private dialog: MatDialog,
+              private dialog: DialogService,
               public state: StateService,
               private applicationService: ApplicationService,
               private router: Router) {
@@ -118,14 +118,14 @@ export class ApplicationComponent implements OnInit {
   }
 
   deleteApplication() {
-    let dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: {
+    let dialogRef = this.dialog.openDialog(ConfirmDialogComponent, {
+      context: {
         title: "Delete the Application",
         subtitle: "Are you sure?",
         action: "Delete"
       }
     });
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.onClose.subscribe(result => {
       if (result === "delete") {
         this.applicationService.deleteApplication(this.application).subscribe(
           result => {

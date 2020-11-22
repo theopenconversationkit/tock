@@ -27,7 +27,6 @@ import {IntentDialogComponent} from '../sentence-analysis/intent-dialog/intent-d
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {BehaviorSubject} from 'rxjs';
 import {DialogService} from '../core-nlp/dialog.service';
-import { NbDialogService } from '@nebular/theme';
 
 
 @Component({
@@ -47,7 +46,6 @@ export class IntentsComponent implements OnInit {
   constructor(public state: StateService,
               private nlp: NlpService,
               private dialog: DialogService,
-              private nbDialogService: NbDialogService,
               private applicationService: ApplicationService,
               private elementRef: ElementRef) {
   }
@@ -70,7 +68,7 @@ export class IntentsComponent implements OnInit {
   }
 
   updateIntent(intent: Intent) {
-    const dialogRef = this.nbDialogService.open(
+    const dialogRef = this.dialog.openDialog(
       IntentDialogComponent,
       {
         context:
@@ -110,7 +108,7 @@ export class IntentsComponent implements OnInit {
   }
 
   deleteIntent(intent: Intent) {
-    const dialogRef = this.nbDialogService.open(
+    const dialogRef = this.dialog.openDialog(
       ConfirmDialogComponent,
       {
         context: {
@@ -146,7 +144,7 @@ export class IntentsComponent implements OnInit {
   }
 
   addState(intent: Intent) {
-    const dialogRef = this.nbDialogService.open(
+    const dialogRef = this.dialog.openDialog(
       AddStateDialogComponent,
       {
         context: {
@@ -173,7 +171,7 @@ export class IntentsComponent implements OnInit {
 
   removeEntity(intent: Intent, entity: EntityDefinition) {
     const entityName = entity.qualifiedName(this.state.user);
-    const dialogRef = this.nbDialogService.open(
+    const dialogRef = this.dialog.openDialog(
       ConfirmDialogComponent,
       {
         context: {

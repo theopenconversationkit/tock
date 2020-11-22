@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import {ChangeDetectorRef, Injectable, TemplateRef} from "@angular/core";
+import {ChangeDetectorRef, Injectable, TemplateRef, Type} from "@angular/core";
 import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material/dialog";
 import {ComponentType} from "@angular/cdk/overlay";
-import { NbToastrService } from '@nebular/theme';
+import {NbDialogConfig, NbDialogRef, NbDialogService, NbToastrService} from '@nebular/theme';
 import { NbToastrConfig } from '@nebular/theme';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class DialogService {
 
   private changeDetectorRef: ChangeDetectorRef;
 
-  constructor(private toastrService: NbToastrService) {
+  constructor(private toastrService: NbToastrService, private nbDialogService:NbDialogService) {
   }
 
   private doFreeze() {
@@ -63,6 +63,18 @@ export class DialogService {
     this.doFreeze();
     const d = scopedDialog.open(componentOrTemplateRef, config);
     d.beforeClosed().subscribe(_ => this.undoFreeze());
+    return d;
+  }
+
+  /**
+   * Opens a modal dialog containing the given component.
+   *
+   * @returns Reference to the newly-opened dialog.
+   */
+  openDialog<T, D = any, R = any>(content: Type<T> | TemplateRef<T>, userConfig?: Partial<NbDialogConfig<Partial<T> | string>>): NbDialogRef<T> {
+    this.doFreeze();
+    const d = this.nbDialogService.open(content, userConfig);
+    d.onClose.subscribe(_ => this.undoFreeze());
     return d;
   }
 

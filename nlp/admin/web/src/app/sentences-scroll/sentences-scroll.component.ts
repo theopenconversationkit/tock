@@ -29,13 +29,12 @@ import {StateService} from "../core-nlp/state.service";
 import {ScrollComponent} from "../scroll/scroll.component";
 import {Entry, PaginatedQuery, SearchMark} from "../model/commons";
 import {BehaviorSubject, Observable} from "rxjs";
-import { MatPaginator } from "@angular/material/paginator";
+import {MatPaginator} from "@angular/material/paginator";
 import {UserRole} from "../model/auth";
 import {DataSource, SelectionModel} from "@angular/cdk/collections";
 import {Sort} from "@angular/material/sort";
 import {DialogService} from "../core-nlp/dialog.service";
 import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialog.component";
-import {MatDialog} from "@angular/material/dialog";
 
 @Component({
   selector: 'tock-sentences-scroll',
@@ -68,8 +67,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
 
   constructor(state: StateService,
               private nlp: NlpService,
-              private dialog: DialogService,
-              private matDialog: MatDialog) {
+              private dialog: DialogService) {
     super(state);
   }
 
@@ -250,14 +248,14 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
   }
 
   onDelete() {
-    let dialogRef = this.dialog.open(this.matDialog, ConfirmDialogComponent, {
-      data: {
+    let dialogRef = this.dialog.openDialog(ConfirmDialogComponent, {
+      context: {
         title: "Delete Selected Sentences",
         subtitle: "Are you sure?",
         action: "Delete"
       }
     });
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.onClose.subscribe(result => {
         if (result === "delete") {
           this.update(SentenceStatus.deleted);
         }
