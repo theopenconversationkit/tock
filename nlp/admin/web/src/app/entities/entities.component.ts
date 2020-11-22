@@ -19,14 +19,14 @@ import {map} from 'rxjs/operators';
 import {Component, OnInit} from "@angular/core";
 import {StateService} from "../core-nlp/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
-import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
-import { MatInput } from "@angular/material/input";
+import {MatInput} from "@angular/material/input";
 import {ApplicationService} from "../core-nlp/applications.service";
 import {Dictionary, EntityDefinition, EntityType, PredefinedValue} from "../model/nlp";
 import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialog.component";
 import {JsonUtils} from "../model/commons";
 import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
 import {NbToastrService} from '@nebular/theme';
+import {DialogService} from "../core-nlp/dialog.service";
 
 @Component({
   selector: 'tock-entities',
@@ -42,7 +42,7 @@ export class EntitiesComponent implements OnInit {
   constructor(public state: StateService,
               private nlp: NlpService,
               private toastrService: NbToastrService,
-              private dialog: MatDialog,
+              private dialog: DialogService,
               private applicationService: ApplicationService) {
   }
 
@@ -73,14 +73,14 @@ export class EntitiesComponent implements OnInit {
   }
 
   deleteEntityType(entityType: EntityType) {
-    let dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: {
+    let dialogRef = this.dialog.openDialog(ConfirmDialogComponent, {
+      context: {
         title: `Remove the entity type ${entityType.name}`,
         subtitle: "Are you sure? This can completely cleanup your model!",
         action: "Remove"
       }
-    } as MatDialogConfig<any>);
-    dialogRef.afterClosed().subscribe(result => {
+    });
+    dialogRef.onClose.subscribe(result => {
       if (result === "remove") {
         this.nlp.removeEntityType(entityType).subscribe(
           _ => {

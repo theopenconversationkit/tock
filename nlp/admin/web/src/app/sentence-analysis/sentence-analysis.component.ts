@@ -32,7 +32,6 @@ import {CoreConfig} from '../core-nlp/core.config';
 import {ConfirmDialogComponent} from '../shared-nlp/confirm-dialog/confirm-dialog.component';
 import {ReviewRequestDialogComponent} from './review-request-dialog/review-request-dialog.component';
 import {DialogService} from '../core-nlp/dialog.service';
-import { NbDialogService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-sentence-analysis',
@@ -53,7 +52,6 @@ export class SentenceAnalysisComponent implements OnInit {
 
   constructor(public state: StateService,
               private nlp: NlpService,
-              private nbDialogService: NbDialogService,
               private dialog: DialogService,
               public config: CoreConfig,
               private applicationRef: ApplicationRef,
@@ -89,7 +87,7 @@ export class SentenceAnalysisComponent implements OnInit {
   newIntent() {
     // cleanup entities
     this.sentence.classification.entities = [];
-    const dialogRef = this.nbDialogService.open(IntentDialogComponent, {context: {create: true}});
+    const dialogRef = this.dialog.openDialog(IntentDialogComponent, {context: {create: true}});
     dialogRef.onClose.subscribe(result => {
       if (result && result.name) {
         if (this.createIntent(result.name, result.label, result.description, result.category)) {
@@ -147,7 +145,7 @@ export class SentenceAnalysisComponent implements OnInit {
 
   onReviewRequest() {
     setTimeout(_ => {
-      const dialogRef = this.nbDialogService.open(
+      const dialogRef = this.dialog.openDialog(
         ReviewRequestDialogComponent,
         {
           context: {
@@ -199,7 +197,7 @@ export class SentenceAnalysisComponent implements OnInit {
       return false;
     } else {
       if (this.state.intentExistsInOtherApplication(name)) {
-        const dialogRef = this.nbDialogService.open(ConfirmDialogComponent, {
+        const dialogRef = this.dialog.openDialog(ConfirmDialogComponent, {
           context: {
             title: 'This intent is already used in an other application',
             subtitle: 'If you confirm the name, the intent will be shared between the two applications.',

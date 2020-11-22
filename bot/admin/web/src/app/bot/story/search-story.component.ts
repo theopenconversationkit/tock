@@ -25,7 +25,8 @@ import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
 import {ConfirmDialogComponent} from "../../shared-nlp/confirm-dialog/confirm-dialog.component";
 import {CanDeactivate} from "@angular/router";
 import {LocationStrategy} from "@angular/common";
-import { NbToastrService, NbDialogService } from '@nebular/theme';
+import {NbToastrService} from '@nebular/theme';
+import {DialogService} from "src/app/core-nlp/dialog.service";
 
 interface TreeNode<T> {
   data: T;
@@ -65,7 +66,7 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
   constructor(private nlp: NlpService,
               public state: StateService,
               private bot: BotService,
-              private dialogService: NbDialogService,
+              private dialogService: DialogService,
               private toastrService: NbToastrService,
               private location: LocationStrategy,
               private backButtonHolder: BackButtonHolder) {
@@ -103,7 +104,7 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
   }
 
   deleteStory(story: StoryDefinitionConfigurationSummary) {
-    const dialogRef = this.dialogService.open(
+    const dialogRef = this.dialogService.openDialog(
       ConfirmDialogComponent,
       {
         context: {

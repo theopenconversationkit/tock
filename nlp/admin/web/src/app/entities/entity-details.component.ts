@@ -19,11 +19,11 @@ import {map} from 'rxjs/operators';
 import {Component, Input, OnInit} from "@angular/core";
 import {StateService} from "../core-nlp/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
-import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
 import {ApplicationService} from "../core-nlp/applications.service";
 import {EntityDefinition, EntityType} from "../model/nlp";
 import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialog.component";
-import { NbToastrService } from '@nebular/theme';
+import {NbToastrService} from '@nebular/theme';
+import {DialogService} from "../core-nlp/dialog.service";
 
 @Component({
   selector: 'tock-entity-details',
@@ -42,7 +42,7 @@ export class EntityDetailsComponent implements OnInit {
   constructor(public state: StateService,
               private nlp: NlpService,
               private toastrService: NbToastrService,
-              private dialog: MatDialog,
+              private dialog: DialogService,
               private applicationService: ApplicationService) {
   }
 
@@ -61,14 +61,14 @@ export class EntityDetailsComponent implements OnInit {
   }
 
   remove() {
-    let dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: {
+    let dialogRef = this.dialog.openDialog(ConfirmDialogComponent, {
+      context: {
         title: `Remove the subentity ${this.entity.entityTypeName}`,
         subtitle: "Are you sure?",
         action: "Remove"
       }
-    } as MatDialogConfig);
-    dialogRef.afterClosed().subscribe(result => {
+    });
+    dialogRef.onClose.subscribe(result => {
       if (result === "remove") {
         this.nlp.removeSubEntity(this.state.currentApplication, this.entityType, this.entity).subscribe(
           _ => {

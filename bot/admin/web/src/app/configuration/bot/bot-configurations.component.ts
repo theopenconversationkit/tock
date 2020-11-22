@@ -25,6 +25,7 @@ import {
 import {ConfirmDialogComponent} from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import {StateService} from '../../core-nlp/state.service';
 import {NbToastrService, NbDialogService} from '@nebular/theme';
+import { DialogService } from 'src/app/core-nlp/dialog.service';
 
 @Component({
   selector: 'tock-bot-configurations',
@@ -42,7 +43,7 @@ export class BotConfigurationsComponent implements OnInit {
 
   constructor(private state: StateService,
               private botConfiguration: BotConfigurationService,
-              private dialogService: NbDialogService,
+              private dialogService: DialogService,
               private toastrService: NbToastrService) {
   }
 
@@ -131,7 +132,7 @@ export class BotConfigurationsComponent implements OnInit {
       });  }
 
   remove(conf: BotApplicationConfiguration) {
-    const dialogRef = this.dialogService.open(ConfirmDialogComponent, {
+    const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
       context: {
         title: `Delete the configuration`,
         subtitle: 'Are you sure?',
