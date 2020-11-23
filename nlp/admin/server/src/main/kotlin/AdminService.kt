@@ -33,7 +33,7 @@ import ai.tock.nlp.admin.model.TranslateReport
 import ai.tock.nlp.admin.model.TranslateSentencesQuery
 import ai.tock.nlp.admin.model.UpdateSentencesQuery
 import ai.tock.nlp.admin.model.UpdateSentencesReport
-import ai.tock.nlp.core.Intent
+import ai.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT_NAME
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.ClassifiedSentence
@@ -48,10 +48,10 @@ import ai.tock.shared.security.UNKNOWN_USER_LOGIN
 import ai.tock.shared.vertx.WebVerticle.Companion.badRequest
 import ai.tock.shared.withNamespace
 import ai.tock.translator.TranslatorEngine
-import org.litote.kmongo.Id
-import org.litote.kmongo.toId
 import java.time.Duration
 import java.time.Instant.now
+import org.litote.kmongo.Id
+import org.litote.kmongo.toId
 
 /**
  *
@@ -63,7 +63,7 @@ object AdminService {
     fun parseSentence(query: ParseQuery): SentenceReport {
         val result = front.parse(query.toQuery())
         val intentId =
-            if (result.intent.withNamespace(result.intentNamespace) == Intent.UNKNOWN_INTENT_NAME) Intent.UNKNOWN_INTENT_NAME.toId()
+            if (result.intent.withNamespace(result.intentNamespace) == UNKNOWN_INTENT_NAME) UNKNOWN_INTENT_NAME.toId()
             else front.getIntentIdByQualifiedName(result.intent.withNamespace(result.intentNamespace))!!
         val application = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
         return SentenceReport(result, query.currentLanguage, application._id, intentId)
@@ -82,7 +82,9 @@ object AdminService {
         } else {
             front.search(query.searchQuery.toSentencesQuery(application._id)).sentences
         }
-        return if (query.newIntentId != null && application.intents.contains(query.newIntentId)) {
+        return if (query.newIntentId != null &&
+            (query.unknownNewIntent || application.intents.contains(query.newIntentId))
+        ) {
             val nbUpdates = front.switchSentencesIntent(sentences, application, query.newIntentId)
             UpdateSentencesReport(nbUpdates)
         } else if (query.oldEntity != null && query.newEntity != null) {

@@ -16,6 +16,7 @@
 
 package ai.tock.nlp.admin.model
 
+import ai.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT_NAME
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import ai.tock.nlp.front.shared.config.EntityDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition
@@ -31,4 +32,7 @@ data class UpdateSentencesQuery(
     val searchQuery: SearchQuery?,
     val selectedSentences: List<SentenceReport> = emptyList(),
     val newStatus: ClassifiedSentenceStatus? = null
-) : ApplicationScopedQuery()
+) : ApplicationScopedQuery() {
+
+    val unknownNewIntent: Boolean get() = UNKNOWN_INTENT_NAME == newIntentId?.toString()
+}
