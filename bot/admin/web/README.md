@@ -62,6 +62,30 @@ ln -s "$(pwd)/../../../nlp/admin/web/src/app/test-nlp" src/app/test-nlp
 ln -s "$(pwd)/../../../nlp/admin/web/src/app/try" src/app/try
 ```
 
+> For Windows users, in the current directory (bot/admin/web):
+
+Use the CMD and not PowerShell to execute these commands
+```
+mklink /D "src/app/applications" "%cd%/../../../nlp/admin/web/src/app/applications/"
+mklink /D "src/app/archive" "%cd%/../../../nlp/admin/web/src/app/archive/"
+mklink /D "src/app/build" "%cd%/../../../nlp/admin/web/src/app/build/"
+mklink /D "src/app/core-nlp" "%cd%/../../../nlp/admin/web/src/app/core-nlp/"
+mklink /D "src/app/entities" "%cd%/../../../nlp/admin/web/src/app/entities/"
+mklink /D "src/app/inbox" "%cd%/../../../nlp/admin/web/src/app/inbox/"
+mklink /D "src/app/intents" "%cd%/../../../nlp/admin/web/src/app/intents/"
+mklink /D "src/app/logs" "%cd%/../../../nlp/admin/web/src/app/logs/"
+mklink /D "src/app/model" "%cd%/../../../nlp/admin/web/src/app/model/"
+mklink /D "src/app/nlp-tabs" "%cd%/../../../nlp/admin/web/src/app/nlp-tabs/"
+mklink /D "src/app/quality-nlp" "%cd%/../../../nlp/admin/web/src/app/quality-nlp/"
+mklink /D "src/app/scroll" "%cd%/../../../nlp/admin/web/src/app/scroll/"
+mklink /D "src/app/search" "%cd%/../../../nlp/admin/web/src/app/search/"
+mklink /D "src/app/sentence-analysis" "%cd%/../../../nlp/admin/web/src/app/sentence-analysis/"
+mklink /D "src/app/sentences-scroll" "%cd%/../../../nlp/admin/web/src/app/sentences-scroll/"
+mklink /D "src/app/shared-nlp" "%cd%/../../../nlp/admin/web/src/app/shared-nlp/"
+mklink /D "src/app/test-nlp" "%cd%/../../../nlp/admin/web/src/app/test-nlp/"
+mklink /D "src/app/try" "%cd%/../../../nlp/admin/web/src/app/try/"
+```
+
 Then run NPM to setup and launch [Angular CLI](https://cli.angular.io/):
 
 ```
