@@ -16,6 +16,7 @@
 
 package ai.tock.bot.admin.bot
 
+import java.util.Locale
 import java.util.UUID
 
 /**
@@ -45,5 +46,9 @@ data class BotConfiguration(
     /**
      * Optional webhook url.
      */
-    val webhookUrl: String? = null
+    val webhookUrl: String? = null,
+    /**
+     * Supported locales.
+     */
+    val supportedLocales: Set<Locale> = emptySet()
 )

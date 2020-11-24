@@ -19,6 +19,7 @@ package ai.tock.bot.engine
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.BotApplicationConfigurationKey
+import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.connector.Connector
@@ -46,7 +47,6 @@ import ai.tock.bot.engine.nlp.NlpListener
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.nlp.api.client.NlpClient
-import ai.tock.nlp.api.client.model.dump.ApplicationDefinition
 import ai.tock.shared.Executor
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.error
@@ -57,14 +57,14 @@ import ai.tock.shared.provide
 import ai.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
-import mu.KotlinLogging
-import org.litote.kmongo.Id
 import java.util.ServiceLoader
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.locks.Lock
+import mu.KotlinLogging
+import org.litote.kmongo.Id
 
 /**
  * Advanced bot configuration.
@@ -289,7 +289,7 @@ object BotRepository {
     }
 
     /**
-     * Registers an new [NlpListener].
+     * Registers a new [NlpListener].
      */
     fun registerNlpListener(listener: NlpListener) {
         nlpListeners.add(listener)
@@ -352,7 +352,7 @@ object BotRepository {
 
         //load configurations
         try {
-            checkBotConfigurations(true)
+            checkBotConfigurations(startup = true)
         } catch (e: Exception) {
             logger.error(e)
         }
@@ -379,7 +379,8 @@ object BotRepository {
                         logger.info { "Bots installed" }
                         botsInstalled = true
                         //listen future changes
-                        botConfigurationDAO.listenChanges { executor.executeBlocking { checkBotConfigurations() } }
+                        botConfigurationDAO.listenChanges { checkAsyncBotConfigurations() }
+                        botConfigurationDAO.listenBotChanges { checkAsyncBotConfigurations(true) }
                     } else {
                         logger.error("Bots installation failure", it.cause() ?: IllegalArgumentException())
                     }
@@ -398,14 +399,18 @@ object BotRepository {
         return connectorProviders.firstOrNull { it.connectorType == connectorType }
     }
 
+    private fun checkAsyncBotConfigurations(botConfigurationChanged: Boolean = false) {
+        executor.executeBlocking { checkBotConfigurations(botConfigurationChanged = botConfigurationChanged) }
+    }
+
     /**
      * Checks that configurations are synchronized with the database.
      */
     @Synchronized
-    fun checkBotConfigurations(startup: Boolean = false) {
+    fun checkBotConfigurations(startup: Boolean = false, botConfigurationChanged: Boolean = false) {
         logger.debug { "check configurations" }
         //the application definition cache
-        val applicationsCache = mutableListOf<ApplicationDefinition>()
+        val botConfigurationsCache = mutableSetOf<BotConfiguration>()
         //the existing confs mapped by path
         val existingConfsByPath: Map<String?, BotApplicationConfiguration> = connectorControllerMap.keys
             .groupBy { it.path }.mapValues { it.value.first() }
@@ -429,6 +434,7 @@ object BotRepository {
             //is there a configuration change ?
             if (provider != null &&
                 (provider.configurationUpdated
+                        || botConfigurationChanged
                         || existingConfsByPath[c.path]?.takeIf { c.equalsWithoutId(it) } == null)
             ) {
                 val botDefinition = provider.botDefinition()
@@ -440,7 +446,7 @@ object BotRepository {
                         val connector = findConnectorProvider(c.connectorType)?.connector(ConnectorConfiguration(c))
                         if (connector != null) {
                             //install new conf
-                            createBot(botDefinition, connector, c, applicationsCache)
+                            createBot(botDefinition, connector, c, botConfigurationsCache)
                             if (oldConfigurationController != null) {
                                 //remove old conf
                                 removeBot(oldConfigurationController)
@@ -481,23 +487,53 @@ object BotRepository {
         botDefinition: BotDefinition,
         connector: Connector,
         conf: BotApplicationConfiguration,
-        applicationsCache: MutableList<ApplicationDefinition>
+        botConfigurationsCache: MutableSet<BotConfiguration>
     ): BotApplicationConfiguration {
 
-        val app =
-            applicationsCache.find { it.name == botDefinition.nlpModelName && it.namespace == botDefinition.namespace }
-                ?: try {
-                    nlpController.waitAvailability()
-                    nlpClient.getApplicationByNamespaceAndName(botDefinition.namespace, botDefinition.nlpModelName)
-                        ?.also { applicationsCache.add(it) }
-                } catch (e: Exception) {
-                    logger.error(e)
-                    null
+        val botConfiguration =
+            botConfigurationsCache.find { it.botId == conf.botId && it.namespace == conf.namespace && it.name == conf.name }
+                ?: botConfigurationDAO.getBotConfigurationsByNamespaceAndNameAndBotId(
+                    conf.namespace,
+                    conf.name,
+                    conf.botId
+                )
+                ?: BotConfiguration(
+                    name = conf.name,
+                    botId = conf.botId,
+                    namespace = conf.namespace,
+                    nlpModel = conf.nlpModel
+                )
+
+        val supportedLocales = if (botConfiguration.supportedLocales.isEmpty()) {
+            try {
+                nlpController.waitAvailability()
+                val app = nlpClient.getApplicationByNamespaceAndName(
+                    botDefinition.namespace,
+                    botDefinition.nlpModelName
+                )
+
+                val locales = app?.supportedLocales
+                if (locales != null) {
+                    val newBotConf = botConfiguration.copy(supportedLocales = locales)
+                    botConfigurationDAO.save(newBotConf)
+                    botConfigurationsCache.add(newBotConf)
                 }
-        if (app == null) {
-            logger.warn { "model ${botDefinition.namespace}:${botDefinition.nlpModelName} not found" }
+                locales ?: emptySet()
+            } catch (e: Exception) {
+                logger.error(e)
+                emptySet()
+            }
+        } else {
+            botConfigurationsCache.add(botConfiguration)
+            botConfiguration.supportedLocales
         }
-        val bot = Bot(botDefinition, conf, app?.supportedLocales ?: emptySet())
+
+        if (supportedLocales.isEmpty()) {
+            logger.warn { "no supported locales found for ${botDefinition.namespace}:${botDefinition.nlpModelName}" }
+        } else {
+            logger.debug { "locales for ${botDefinition.namespace}:${botDefinition.nlpModelName}: $supportedLocales" }
+        }
+        val bot = Bot(botDefinition, conf, supportedLocales)
         return botConfigurationDAO.save(conf)
             .apply {
                 val controller = TockConnectorController.register(connector, bot, verticle, conf)

@@ -2,11 +2,15 @@ package ai.tock.bot.admin.bot
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
+import java.util.Locale
 import kotlin.String
 import kotlin.collections.Map
+import kotlin.collections.MutableSet
+import kotlin.collections.Set
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.findParameterByName
@@ -31,6 +35,8 @@ internal class BotConfiguration_Deserializer : JsonDeserializer<BotConfiguration
             var _apiKey_set : Boolean = false
             var _webhookUrl_: String? = null
             var _webhookUrl_set : Boolean = false
+            var _supportedLocales_: MutableSet<Locale>? = null
+            var _supportedLocales_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -71,6 +77,11 @@ internal class BotConfiguration_Deserializer : JsonDeserializer<BotConfiguration
                              else p.text;
                             _webhookUrl_set = true
                             }
+                    "supportedLocales" -> {
+                            _supportedLocales_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_supportedLocales__reference);
+                            _supportedLocales_set = true
+                            }
                     else -> {
                             if (_token_?.isStructStart == true)
                             p.skipChildren()
@@ -80,9 +91,10 @@ internal class BotConfiguration_Deserializer : JsonDeserializer<BotConfiguration
                 _token_ = currentToken
                         } 
             return if(_name_set && _botId_set && _namespace_set && _nlpModel_set && _apiKey_set &&
-                    _webhookUrl_set)
+                    _webhookUrl_set && _supportedLocales_set)
                     BotConfiguration(name = _name_!!, botId = _botId_!!, namespace = _namespace_!!,
-                            nlpModel = _nlpModel_!!, apiKey = _apiKey_!!, webhookUrl = _webhookUrl_)
+                            nlpModel = _nlpModel_!!, apiKey = _apiKey_!!, webhookUrl = _webhookUrl_,
+                            supportedLocales = _supportedLocales_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_name_set)
@@ -96,7 +108,9 @@ internal class BotConfiguration_Deserializer : JsonDeserializer<BotConfiguration
                     if(_apiKey_set)
                     map[parameters.getValue("apiKey")] = _apiKey_
                     if(_webhookUrl_set)
-                    map[parameters.getValue("webhookUrl")] = _webhookUrl_ 
+                    map[parameters.getValue("webhookUrl")] = _webhookUrl_
+                    if(_supportedLocales_set)
+                    map[parameters.getValue("supportedLocales")] = _supportedLocales_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -113,6 +127,10 @@ internal class BotConfiguration_Deserializer : JsonDeserializer<BotConfiguration
                 primaryConstructor.findParameterByName("namespace")!!, "nlpModel" to
                 primaryConstructor.findParameterByName("nlpModel")!!, "apiKey" to
                 primaryConstructor.findParameterByName("apiKey")!!, "webhookUrl" to
-                primaryConstructor.findParameterByName("webhookUrl")!!) }
+                primaryConstructor.findParameterByName("webhookUrl")!!, "supportedLocales" to
+                primaryConstructor.findParameterByName("supportedLocales")!!) }
+
+        private val _supportedLocales__reference: TypeReference<Set<Locale>> = object :
+                TypeReference<Set<Locale>>() {}
     }
 }
