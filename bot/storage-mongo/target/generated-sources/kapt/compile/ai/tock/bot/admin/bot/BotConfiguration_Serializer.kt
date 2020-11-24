@@ -36,6 +36,17 @@ internal class BotConfiguration_Serializer :
         if(_webhookUrl_ == null) { gen.writeNull() } else {
                 gen.writeString(_webhookUrl_)
                 }
+        gen.writeFieldName("supportedLocales")
+        val _supportedLocales_ = value.supportedLocales
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.Set::class.java,
+                serializers.config.typeFactory.constructType(java.util.Locale::class.java)
+                ),
+                true,
+                null
+                )
+                .serialize(_supportedLocales_, gen, serializers)
         gen.writeEndObject()
     }
 }

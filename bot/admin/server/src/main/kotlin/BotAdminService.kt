@@ -19,7 +19,6 @@ package ai.tock.bot.admin
 import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
 import ai.tock.bot.admin.answer.AnswerConfigurationType.script
-import ai.tock.bot.admin.answer.AnswerConfigurationType.simple
 import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
 import ai.tock.bot.admin.answer.DedicatedAnswerConfiguration
 import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
@@ -95,9 +94,6 @@ import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.Translator
 import com.github.salomonbrys.kodein.instance
-import mu.KotlinLogging
-import org.litote.kmongo.Id
-import org.litote.kmongo.toId
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
@@ -109,6 +105,9 @@ import java.util.Locale
 import java.util.stream.LongStream
 import java.util.stream.Stream
 import kotlin.streams.toList
+import mu.KotlinLogging
+import org.litote.kmongo.Id
+import org.litote.kmongo.toId
 
 /**
  *
@@ -203,7 +202,10 @@ object BotAdminService {
     }
 
     fun save(conf: BotConfiguration) {
-        applicationConfigurationDAO.save(conf)
+        val locales = conf.supportedLocales.takeUnless { it.isEmpty() }
+            ?: applicationDAO.getApplicationByNamespaceAndName(conf.namespace, conf.nlpModel)?.supportedLocales
+            ?: emptySet()
+        applicationConfigurationDAO.save(conf.copy(supportedLocales = locales))
     }
 
     fun searchUsers(query: UserSearchQuery): UserSearchQueryResult {
@@ -626,12 +628,16 @@ object BotAdminService {
                 conf.botId
             ) == null
         ) {
+            val applicationDefinition = applicationDAO.getApplicationByNamespaceAndName(
+                namespace = conf.namespace, name = conf.nlpModel
+            ) ?: error("no application definition found for $conf")
             applicationConfigurationDAO.save(
                 BotConfiguration(
-                    conf.name,
-                    conf.botId,
-                    conf.namespace,
-                    conf.nlpModel
+                    name = conf.name,
+                    botId = conf.botId,
+                    namespace = conf.namespace,
+                    nlpModel = conf.nlpModel,
+                    supportedLocales = applicationDefinition.supportedLocales
                 )
             )
         }
@@ -1345,6 +1351,14 @@ object BotAdminService {
             app.namespace, app.name
         ).forEach {
             storyDefinitionDAO.delete(it)
+        }
+    }
+
+    fun changeSupportedLocales(newApp: ApplicationDefinition) {
+        applicationConfigurationDAO.getBotConfigurationsByNamespaceAndBotId(
+            newApp.namespace, newApp.name
+        ).forEach {
+            applicationConfigurationDAO.save(it.copy(supportedLocales = newApp.supportedLocales))
         }
     }
 

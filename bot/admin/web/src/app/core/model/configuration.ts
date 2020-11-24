@@ -25,9 +25,9 @@ export class BotConfiguration {
     public nlpModel: string,
     public configurations?: BotApplicationConfiguration[],
     public webhookUrl?: string,
-    public apiKey?: string
+    public apiKey?: string,
+    public supportedLocales?: string[]
   ) {
-
   }
 
   static fromJSON(json?: any): BotConfiguration {

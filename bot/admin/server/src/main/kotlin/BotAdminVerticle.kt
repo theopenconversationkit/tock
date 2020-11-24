@@ -325,8 +325,11 @@ open class BotAdminVerticle : AdminVerticle() {
                     }
                 }
                 bot.path?.let {
-                    if (getBotConfigurationsByNamespaceAndBotId(bot.namespace, bot.botId).any {
-                                conf -> conf._id != bot._id && conf.path?.toLowerCase() == it.toLowerCase() })
+                    if (getBotConfigurationsByNamespaceAndBotId(
+                            bot.namespace,
+                            bot.botId
+                        ).any { conf -> conf._id != bot._id && conf.path?.toLowerCase() == it.toLowerCase() }
+                    )
                         badRequest("Connector path already exists (case-insensitive)")
                 }
                 val conf = bot.toBotApplicationConfiguration()
@@ -357,18 +360,18 @@ open class BotAdminVerticle : AdminVerticle() {
                         if (bot._id == null && bot.connectorType != rest) {
                             addRestConnector(filledConf).apply {
                                 BotAdminService.saveApplicationConfiguration(
-                                        BotApplicationConfiguration(
-                                                connectorId,
-                                                filledConf.botId,
-                                                filledConf.namespace,
-                                                filledConf.nlpModel,
-                                                type,
-                                                ownerConnectorType,
-                                                getName(),
-                                                getBaseUrl(),
-                                                path = path,
-                                                targetConfigurationId = conf._id
-                                        )
+                                    BotApplicationConfiguration(
+                                        connectorId,
+                                        filledConf.botId,
+                                        filledConf.namespace,
+                                        filledConf.nlpModel,
+                                        type,
+                                        ownerConnectorType,
+                                        getName(),
+                                        getBaseUrl(),
+                                        path = path,
+                                        targetConfigurationId = conf._id
+                                    )
                                 )
                             }
                         }
@@ -688,8 +691,8 @@ open class BotAdminVerticle : AdminVerticle() {
             measureTimeMillis(context) {
                 labels.filter { it.i18n.any { it.validated } }.map {
                     it.copy(
-                            _id = it._id.toString().replaceFirst(it.namespace, context.organization).toId(),
-                            namespace = context.organization
+                        _id = it._id.toString().replaceFirst(it.namespace, context.organization).toId(),
+                        namespace = context.organization
                     )
                 }.also {
                     i18n.save(labels)
@@ -745,6 +748,9 @@ open class BotAdminVerticle : AdminVerticle() {
     ): ApplicationDefinition {
         if (existingApp != null && existingApp.name != app.name) {
             BotAdminService.changeApplicationName(existingApp, app)
+        }
+        if (app.supportedLocales != existingApp?.supportedLocales) {
+            BotAdminService.changeSupportedLocales(app)
         }
         return super.saveApplication(existingApp, app)
     }

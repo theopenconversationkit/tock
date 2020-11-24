@@ -1,11 +1,14 @@
 package ai.tock.bot.admin.bot
 
+import java.util.Locale
 import kotlin.String
 import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.collections.Map
+import kotlin.collections.Set
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.property.KCollectionPropertyPath
+import org.litote.kmongo.property.KCollectionSimplePropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
@@ -21,6 +24,8 @@ private val __ApiKey: KProperty1<BotConfiguration, String?>
     get() = BotConfiguration::apiKey
 private val __WebhookUrl: KProperty1<BotConfiguration, String?>
     get() = BotConfiguration::webhookUrl
+private val __SupportedLocales: KProperty1<BotConfiguration, Set<Locale>?>
+    get() = BotConfiguration::supportedLocales
 class BotConfiguration_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         BotConfiguration?>) : KPropertyPath<T, BotConfiguration?>(previous,property) {
     val name_: KPropertyPath<T, String?>
@@ -41,6 +46,9 @@ class BotConfiguration_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<
     val webhookUrl: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__WebhookUrl)
 
+    val supportedLocales: KCollectionSimplePropertyPath<T, Locale?>
+        get() = KCollectionSimplePropertyPath(this,BotConfiguration::supportedLocales)
+
     companion object {
         val Name: KProperty1<BotConfiguration, String?>
             get() = __Name
@@ -53,7 +61,9 @@ class BotConfiguration_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<
         val ApiKey: KProperty1<BotConfiguration, String?>
             get() = __ApiKey
         val WebhookUrl: KProperty1<BotConfiguration, String?>
-            get() = __WebhookUrl}
+            get() = __WebhookUrl
+        val SupportedLocales: KCollectionSimplePropertyPath<BotConfiguration, Locale?>
+            get() = KCollectionSimplePropertyPath(null, __SupportedLocales)}
 }
 
 class BotConfiguration_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -76,6 +86,9 @@ class BotConfiguration_Col<T>(previous: KPropertyPath<T, *>?, property: KPropert
 
     val webhookUrl: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__WebhookUrl)
+
+    val supportedLocales: KCollectionSimplePropertyPath<T, Locale?>
+        get() = KCollectionSimplePropertyPath(this,BotConfiguration::supportedLocales)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): BotConfiguration_<T> =
@@ -101,6 +114,9 @@ class BotConfiguration_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProp
 
     val webhookUrl: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__WebhookUrl)
+
+    val supportedLocales: KCollectionSimplePropertyPath<T, Locale?>
+        get() = KCollectionSimplePropertyPath(this,BotConfiguration::supportedLocales)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): BotConfiguration_<T> =
