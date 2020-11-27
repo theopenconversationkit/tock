@@ -72,7 +72,7 @@
   <mat-list dense>
     <tock-i18n-label
       *ngFor="let a of answer.answers"
-      [deleteAllowed]="answer.answers.length !== 1"
+      [deleteLabelAllowed]="answer.answers.length !== 1"
       [i]="a.label"
       (delete)="deleteAnswer(a, false)"></tock-i18n-label>
   </mat-list>

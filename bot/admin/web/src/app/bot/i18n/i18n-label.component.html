@@ -23,8 +23,9 @@
         <span class="i18n-label__title__label"
               nbTooltip="ns: {{i.namespace}}, key: {{i._id}}">{{i.defaultLocalizedLabel().label.length === 0 ? i._id : i.defaultLocalizedLabel().label}}
         </span>
-        <button class="i18n-label__title__delete" *ngIf="deleteAllowed" nbButton  outline status="danger" size="small" (click)="deleteLabel(i)"
-        nbTooltip="Delete Label" color="warn">
+        <button class="i18n-label__title__delete" nbButton outline status="danger" color="warn" size="small"
+                nbTooltip="Delete Label (including alternative, type, connector and localized configs)"
+                [disabled]="!deleteLabelAllowed" (click)="deleteLabel(i)">
           Delete
         </button>
     </div>
@@ -45,78 +46,16 @@
   </nb-card-header>
 
     <nb-card-body>
-      <div
-        class="i18n-label__entry i18n-label__entry--language-{{l.locale}} i18n-label__entry--mode-{{l.interfaceType}}"
-        *ngFor="let l of i.i18n; let isLast = last; let index = index">
+      <div *ngFor="let l of i.i18n; let isLast = last; let index = index">
 
-        <div class="i18n-label__entry__label_details">
-          <!-- Locale -->
-          <div class="i18n-label__entry__locale" title="{{l.displayStats()}}">{{l.locale}}</div>
-
-          <!-- Interface type -->
-          <div class="i18n-label__entry__mode">
-            <mat-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 0" mat-list-avatar>chat
-            </mat-icon>
-            <mat-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 1" mat-list-avatar>
-              record_voice_over
-            </mat-icon>
-          </div>
-
-          <!-- Connector -->
-          <div class="i18n-label__entry__connector" *ngIf="l.connectorId">
-            <img *ngIf="l.connectorId"
-                 src="{{l.iconUrl()}}"
-                 class="i18n-label__entry__connector__img"
-                 [nbTooltip]="l.connectorId"/>
-          </div>
-        </div>
-
-        <!-- Label -->
-        <div class="i18n-label__entry__input">
-          <textarea class="i18n-label__entry__input__textarea"
-                    nbInput rows="1"
-                    [(ngModel)]="l.label"
-                    (change)="save(i)"
-                    [title]="l.stats && l.stats.length !== 0 ? ('used '+ l.mergedStats().count +' times, last used ' + (l.mergedStats().lastUpdate | amTimeAgo)) : 'No stats'"></textarea>
-        </div>
-
-        <div class="i18n-label__entry__actions">
-          <!-- Add alternative -->
-          <div class="i18n-label__entry__alternative-management">
-            <button class="i18n-label__entry__alternatives__button"
-                    nbButton
-                    ghost
-                    nbTooltip="Add an alternative"
-                    status="info"
-                    (click)="addNewAlternative(l)">
-                    <nb-icon icon="plus-outline"></nb-icon>
-            </button>
-          </div>
-
-          <!-- Delete label -->
-          <div class="i18n-label__entry__delete">
-            <button *ngIf="deleteAllowed"
-                    (click)="removeLocalizedLabel(i, l)"
-                    nbButton
-                    nbTooltip="Delete Label"
-                    status="danger"
-                    ghost>
-              <nb-icon icon="trash-2-outline"></nb-icon>
-            </button>
-          </div>
-
-          <!-- Validate label -->
-          <div class="i18n-label__entry__validation">
-            <nb-checkbox [(ngModel)]="l.validated" (change)="save(i)" nbTooltip="Validate label" status="info"></nb-checkbox>
-          </div>
-        </div>
-
-        <!-- Alternatives -->
-        <div class="i18n-label__entry__alternatives" *ngFor="let a of l.alternatives;let index=index;">
+        <div *ngIf="isLocalizedVisible(l)"
+             class="i18n-label__entry i18n-label__entry--language-{{l.locale}} i18n-label__entry--mode-{{l.interfaceType}}">
 
           <div class="i18n-label__entry__label_details">
-            <div class="i18n-label__entry__locale">{{l.locale}}</div>
+            <!-- Locale -->
+            <div class="i18n-label__entry__locale" title="{{l.displayStats()}}">{{l.locale}}</div>
 
+            <!-- Interface type -->
             <div class="i18n-label__entry__mode">
               <mat-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 0" mat-list-avatar>chat
               </mat-icon>
@@ -125,6 +64,7 @@
               </mat-icon>
             </div>
 
+            <!-- Connector -->
             <div class="i18n-label__entry__connector" *ngIf="l.connectorId">
               <img *ngIf="l.connectorId"
                    src="{{l.iconUrl()}}"
@@ -133,43 +73,113 @@
             </div>
           </div>
 
+          <!-- Label -->
           <div class="i18n-label__entry__input">
-            <textarea class="i18n-label__entry__input__textarea i18n-label__entry__textarea_alternative"
-                      nbInput
-                      [value]="a"
-                      (change)="addAlternative(i, l, index, $event.target.value)"
-                      rows="1"></textarea>
+            <textarea class="i18n-label__entry__input__textarea"
+                      nbInput rows="1"
+                      [(ngModel)]="l.label"
+                      (change)="save(i)"
+                      [nbTooltip]="isSupportedLocale(l)
+                        ? (l.stats && l.stats.length !== 0 ? ('used '+ l.mergedStats().count +' times, last used ' + (l.mergedStats().lastUpdate | amTimeAgo)) : 'No stats')
+                        : 'Delete-only since locale is not supported by current application'"
+                      [disabled]="!isSupportedLocale(l)"></textarea>
           </div>
 
           <div class="i18n-label__entry__actions">
-            <!-- Remove alternative -->
-            <div class="i18n-label__entry__alternative-management remove_alternative">
-              <button class="i18n-label__entry__alternatives__button" nbButton ghost nbTooltip="Remove alternative" status="danger"
-                      (click)="removeAlternative(i, l, index)">
-                <nb-icon icon="minus-outline"></nb-icon>
+            <!-- Add alternative -->
+            <div class="i18n-label__entry__alternative-management">
+              <button class="i18n-label__entry__alternatives__button"
+                      nbButton
+                      ghost
+                      [nbTooltip]="isSupportedLocale(l) ? 'Add an alternative' : 'Delete-only since locale is not supported by current application'"
+                      status="info"
+                      (click)="addNewAlternative(l)"
+                      [disabled]="!isSupportedLocale(l)">
+                      <nb-icon icon="plus-outline"></nb-icon>
               </button>
             </div>
-          </div>
-        </div>
 
-        <!-- Add specific label for connector -->
-        <div class="i18n-label__entry__connectors"
-             *ngIf="isLast || i.i18n[index + 1].interfaceType !== l.interfaceType || i.i18n[index + 1].locale !== l.locale">
-          <div class="i18n-label__entry__connector_container">
-            <span *ngFor="let connector of connectorTypes">
-              <!-- Connectors buttons -->
-              <mat-action-list class="i18n-label__entry__connector-list">
-              <button
-                *ngIf="!i.hasLocaleAndInterfaceAndConnector(l.locale, l.interfaceType, connector.connectorType.id)"
-                (click)="addLocalizedLabelForConnector(i, l, connector.connectorType.id)"
-                nbTooltip="Add specific label for connector {{connector.connectorType.id}}"
-                mat-list-item>
-                 <img src="{{connector.connectorType.iconUrl()}}" class="i18n-label__entry__connector__img"/>
+            <!-- Delete label -->
+            <div class="i18n-label__entry__delete">
+              <button *ngIf="deleteLocalizedAllowed"
+                      (click)="removeLocalizedLabel(i, l)"
+                      nbButton
+                      nbTooltip="Delete Localized Label"
+                      status="danger"
+                      ghost>
+                <nb-icon icon="trash-2-outline"></nb-icon>
               </button>
-              </mat-action-list>
-            </span>
+            </div>
+
+            <!-- Validate label -->
+            <div class="i18n-label__entry__validation">
+              <nb-checkbox [(ngModel)]="l.validated" (change)="save(i)" status="info"
+                           [nbTooltip]="isSupportedLocale(l) ? 'Validate label (for exports/imports)' : 'Delete-only since locale is not supported by current application'"
+                           [disabled]="!isSupportedLocale(l)"></nb-checkbox>
+            </div>
           </div>
-          <mat-divider *ngIf="!isLast"></mat-divider>
+
+          <!-- Alternatives -->
+          <div class="i18n-label__entry__alternatives" *ngFor="let a of l.alternatives;let index=index;">
+
+            <div class="i18n-label__entry__label_details">
+              <div class="i18n-label__entry__locale">{{l.locale}}</div>
+
+              <div class="i18n-label__entry__mode">
+                <mat-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 0" mat-list-avatar>chat
+                </mat-icon>
+                <mat-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 1" mat-list-avatar>
+                  record_voice_over
+                </mat-icon>
+              </div>
+
+              <div class="i18n-label__entry__connector" *ngIf="l.connectorId">
+                <img *ngIf="l.connectorId"
+                     src="{{l.iconUrl()}}"
+                     class="i18n-label__entry__connector__img"
+                     [nbTooltip]="l.connectorId"/>
+              </div>
+            </div>
+
+            <div class="i18n-label__entry__input">
+              <textarea class="i18n-label__entry__input__textarea i18n-label__entry__textarea_alternative"
+                        nbInput
+                        [value]="a"
+                        [disabled]="!isSupportedLocale(l)"
+                        (change)="addAlternative(i, l, index, $event.target.value)"
+                        rows="1"></textarea>
+            </div>
+
+            <div class="i18n-label__entry__actions">
+              <!-- Remove alternative -->
+              <div class="i18n-label__entry__alternative-management remove_alternative">
+                <button class="i18n-label__entry__alternatives__button" nbButton ghost nbTooltip="Remove alternative" status="danger"
+                        (click)="removeAlternative(i, l, index)">
+                  <nb-icon icon="minus-outline"></nb-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add specific label for connector -->
+          <div class="i18n-label__entry__connectors"
+               *ngIf="isLast || i.i18n[index + 1].interfaceType !== l.interfaceType || i.i18n[index + 1].locale !== l.locale">
+            <div class="i18n-label__entry__connector_container">
+              <span *ngFor="let connector of connectorTypes">
+                <!-- Connectors buttons -->
+                <mat-action-list class="i18n-label__entry__connector-list">
+                <button
+                  *ngIf="isSupportedLocale(l) && !i.hasLocaleAndInterfaceAndConnector(l.locale, l.interfaceType, connector.connectorType.id)"
+                  (click)="addLocalizedLabelForConnector(i, l, connector.connectorType.id)"
+                  nbTooltip="Add specific label for connector {{connector.connectorType.id}}"
+                  mat-list-item>
+                   <img src="{{connector.connectorType.iconUrl()}}" class="i18n-label__entry__connector__img"/>
+                </button>
+                </mat-action-list>
+              </span>
+            </div>
+            <mat-divider *ngIf="!isLast"></mat-divider>
+          </div>
         </div>
       </div>
     </nb-card-body>

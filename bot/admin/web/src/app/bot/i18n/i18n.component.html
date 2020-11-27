@@ -22,8 +22,20 @@
               (keyup)="filter($event.target.value)">
       </nb-form-field>
       <span class="i18n-select nb-form-field-infix">
+        <nb-select placeholder="Filter by locale" [(ngModel)]="filterLocale" class="nb-select" status="primary"
+                   (selectedChange)="filterChanged()">
+          <nb-option value="" title="All locales, including not supported by application">All</nb-option>
+          <nb-option value="current" title="Only current locale">Current locale</nb-option>
+          <nb-option value="supported" title="Only locales, currently supported by application">Supported locales</nb-option>
+          <nb-option value="not_supported" title="Only locales, not supported by application">Not supported locales</nb-option>
+        </nb-select>
+        <span class="nb-form-field-label-wrapper">
+          <label class="label-title">Filter by locale</label>
+        </span>
+      </span>
+      <span class="i18n-select nb-form-field-infix">
         <nb-select placeholder="Filter by category" [(ngModel)]="selectedCategory" class="nb-select" status="primary"
-                   (selectedChange)="onSelectedCategoryChange()">
+                   (selectedChange)="filterChanged()">
           <nb-option *ngFor="let c of allCategories" [value]="c">{{c}}</nb-option>
         </nb-select>
         <span class="nb-form-field-label-wrapper">
@@ -32,7 +44,7 @@
       </span>
       <span class="i18n-select nb-form-field-infix">
         <nb-select placeholder="Filter by state" [(ngModel)]="filterOption" class="nb-select" status="primary"
-                   (selectedChange)="filterValidatedChange()">
+                   (selectedChange)="filterChanged()">
           <nb-option value="">All</nb-option>
           <nb-option value="not_validated">Only not validated</nb-option>
           <nb-option value="validated">Only validated</nb-option>
@@ -43,7 +55,7 @@
       </span>
       <span class="i18n-select nb-form-field-infix">
         <nb-select placeholder="Not used since" [(ngModel)]="notUsedFrom" class="nb-select" status="primary"
-                   (selectedChange)="onNotUsedFromChange()">
+                   (selectedChange)="filterChanged()">
           <nb-select-label>
             {{ notUsedFromLabel(notUsedFrom) }}
           </nb-select-label>
@@ -88,7 +100,9 @@
     <mat-list dense *ngIf="!loading">
       <div *ngFor="let i of pagedItems()">
         <tock-i18n-label [i]="i" [i18nController]="controller()" [intent]="i.category"
-                         [localeBase]="localeBase"></tock-i18n-label>
+                         [localeBase]="localeBase" [locales]="locales"
+                         [deleteLabelAllowed]="isDeleteLabelAllowed()">
+        </tock-i18n-label>
       </div>
     </mat-list>
 
