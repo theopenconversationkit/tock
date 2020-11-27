@@ -40,6 +40,8 @@ export class I18nComponent extends I18nController implements OnInit {
   filteredI18n: I18nLabel[] = [];
   filterString = '';
   filterOption = '';
+  filterLocale = 'supported';
+  locales = new Set<string>();
   loading = false;
   private doNotFilterByCategory = 'All';
   selectedCategory: string = this.doNotFilterByCategory;
@@ -92,22 +94,22 @@ export class I18nComponent extends I18nController implements OnInit {
       this.loading = false;
       this.localeBase = r.localeBase;
       this.originalI18n = r.labels;
-      this.filterBySupportedLocales();
+      this.i18n = this.originalI18n;
       this.initCategories(this.i18n);
-      this.fillLabels();
 
       this.i18n.sort((a, b) => {
           return a.category.localeCompare(b.category);
         }
       );
       this.filterImpl(this.filterString);
+      this.fillLabels(this.locales);
+      this.filterByLocales();
     });
   }
 
-  private filterBySupportedLocales() {
-    const supportedLocales = this.state.currentApplication.supportedLocales;
-    this.i18n = this.originalI18n.map(l => {
-        l.i18n = l.i18n.filter(i => supportedLocales.indexOf(i.locale) !== -1);
+  private filterByLocales() {
+    this.i18n = this.i18n.map(l => {
+        l.i18n = l.i18n.filter(i => this.locales.has(i.locale));
         return l;
       }
     );
@@ -140,29 +142,55 @@ export class I18nComponent extends I18nController implements OnInit {
     this.filteredI18n.splice(this.filteredI18n.indexOf(label), 1);
   }
 
-  onSelectedCategoryChange() {
+  filterChanged() {
     this.filterImpl(this.filterString);
-  }
-
-  onNotUsedFromChange() {
-    this.filterImpl(this.filterString);
-  }
-
-  filterValidatedChange() {
-    this.filterImpl(this.filterString);
+    this.refresh();
   }
 
   filter(value: string) {
     this.searchUpdated.next(value);
   }
 
+  isDeleteLabelAllowed() {
+    const noLocaleFilter = this.filterLocale === '';
+    const currentLocale = this.filterLocale === 'current';
+    const supportedLocales = this.filterLocale === 'supported';
+    return noLocaleFilter || supportedLocales
+      || (currentLocale && this.state.currentApplication.supportedLocales.length == 1);
+  }
+
   private filterImpl(value: string) {
+    // Set locales filter (labels eventually filtered)
+    const currentLocale = this.filterLocale === 'current';
+    const supportedLocales = this.filterLocale === 'supported';
+    const notSupportedLocales = this.filterLocale === 'not_supported';
+    const filteredLocales = new Set<string>();
+    if (currentLocale) {
+      filteredLocales.add(this.state.currentLocale);
+    } else if (supportedLocales) {
+      this.state.currentApplication.supportedLocales.forEach(locale => {
+        filteredLocales.add(locale);
+      });
+    } else if (notSupportedLocales) {
+      this.i18n.forEach(label => {
+        label.i18n.forEach(i18nLabel => {
+          if (!this.state.currentApplication.supportedLocales.includes(i18nLabel.locale)) {
+            filteredLocales.add(i18nLabel.locale);
+          }
+        });
+      });
+    } else {
+      this.i18n.forEach(l => l.i18n.forEach(i => filteredLocales.add(i.locale)));
+    }
+
+    // Filter labels
     const hideNotValidated = this.filterOption === 'validated';
     const hideValidated = this.filterOption === 'not_validated';
     const filterText = value ? value.trim().toLowerCase() : '';
     const notUsedFromDate = Date.now() - 1000 * 60 * 60 * 24 * this.notUsedFrom;
     this.filteredI18n = this.i18n.filter(label => {
-      return (!hideValidated || label.i18n.some(i18nLabel => !i18nLabel.validated && i18nLabel.label.length !== 0))
+      return (filteredLocales.size < 1 || label.i18n.some(i18nLabel => filteredLocales.has(i18nLabel.locale)))
+        && (!hideValidated || label.i18n.some(i18nLabel => !i18nLabel.validated && i18nLabel.label.length !== 0))
         && (!hideNotValidated || label.i18n.some(i18nLabel => i18nLabel.validated))
         && (filterText.length === 0
           || (label.defaultLabel && label.defaultLabel.toLowerCase().indexOf(filterText) !== -1)
@@ -172,6 +200,9 @@ export class I18nComponent extends I18nController implements OnInit {
         && (this.notUsedFrom === -1 || !label.lastUpdate || label.lastUpdate.getTime() < notUsedFromDate);
     });
     this.setCategoryOnFirstItem(this.filteredI18n);
+
+    this.locales = filteredLocales;
+    this.filterByLocales();
   }
 
   refresh() {

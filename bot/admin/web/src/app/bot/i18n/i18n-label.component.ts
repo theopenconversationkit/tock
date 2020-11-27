@@ -32,10 +32,16 @@ export class I18nLabelComponent implements OnInit {
   localeBase: string = null;
 
   @Input()
+  locales = new Set<string>();
+
+  @Input()
   i: I18nLabel;
 
   @Input()
-  deleteAllowed: boolean = true;
+  deleteLabelAllowed: boolean = true;
+
+  @Input()
+  deleteLocalizedAllowed: boolean = true;
 
   @Input()
   i18nController: I18nController;
@@ -66,8 +72,18 @@ export class I18nLabelComponent implements OnInit {
 
     if (!this.i18nController) {
       this.i18nController = new I18nController(this.state, [this.i], this.localeBase);
-      this.i18nController.fillLabels();
+      this.i18nController.fillLabels(this.locales);
     }
+  }
+
+  isSupportedLocale(i18n: I18nLocalizedLabel) {
+    const supportedLocales = this.state.currentApplication.supportedLocales;
+    return supportedLocales == null || supportedLocales.indexOf(i18n.locale) != -1;
+  }
+
+  isLocalizedVisible(i18n: I18nLocalizedLabel) {
+    const isNew = !i18n.label || i18n.label.length == 0;
+    return this.isSupportedLocale(i18n) || !isNew;
   }
 
   deleteLabel(label: I18nLabel) {
@@ -103,7 +119,7 @@ export class I18nLabelComponent implements OnInit {
   addLocalizedLabelForConnector(i18n: I18nLabel, label: I18nLocalizedLabel, connectorId: string) {
     i18n.i18n.push(new I18nLocalizedLabel(label.locale, label.interfaceType, '', false, connectorId, []));
     this.save(i18n);
-    this.i18nController.fillLabels();
+    this.i18nController.fillLabels(this.locales);
   }
 
   addAlternative(i18n: I18nLabel, label: I18nLocalizedLabel, index: number, value: string) {
@@ -133,8 +149,7 @@ export class I18nController {
     //do nothing
   }
 
-  fillLabels() {
-    const locales = this.state.currentApplication.supportedLocales;
+  fillLabels(locales: Set<string>) {
     this.i18n.forEach(i => {
         //add non present i18n
         locales.forEach(locale => {
