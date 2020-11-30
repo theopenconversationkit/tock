@@ -63,24 +63,26 @@
                 <img *ngIf="isFirstLevelConfiguration(a, conf)"
                      src="{{conf.connectorType.iconUrl()}}"
                      class="connector"
-                     [matTooltip]="conf.connectorType.label()"/>
+                     [nbTooltip]="conf.connectorType.label()"/>
               </div>
             </nb-accordion-item-header>
             <nb-accordion-item-body>
-              <mat-form-field class="configuration-input">
-                <input matInput placeholder="API Key" [ngModel]="a.apiKey"
-                       nbTooltip="API Key for Bot API" [readonly]="true">
-              </mat-form-field>
-              <button mat-button (click)="copyToClipboard(a)" nbTooltip="Copy API Key" class="copy-button">
-                <mat-icon>content_copy</mat-icon>
-              </button>
-              <mat-form-field class="configuration-input">
-                <input matInput placeholder="Webhook url" [(ngModel)]="a.webhookUrl"
-                       nbTooltip="Optional webhook for Bot API" (keyup.enter)="saveBot(a)">
-              </mat-form-field>
-              <button mat-button (click)="saveBot(a)" nbTooltip="Save Webhook">
-                <mat-icon>save</mat-icon>
-              </button>
+              <span class="nb-form-field inline">
+                <label>API Key</label>
+                <input nbInput type="text" placeholder="API Key" nbTooltip="API Key for Bot API"
+                       [(ngModel)]="a.apiKey" [readonly]="true">
+                <button nbButton (click)="copyToClipboard(a)" nbTooltip="Copy API Key" class="copy-button">
+                  <nb-icon icon="copy-outline"></nb-icon>
+                </button>
+              </span>
+              <span class="nb-form-field inline">
+                <label>Webhook url</label>
+                <input nbInput type="text" placeholder="Webhook url" nbTooltip="Optional webhook for Bot API"
+                       [(ngModel)]="a.webhookUrl" (keyup.enter)="saveBot(a)">
+                <button nbButton status="primary" (click)="saveBot(a)" nbTooltip="Save Webhook">
+                  <nb-icon icon="save-outline"></nb-icon>
+                </button>
+              </span>
               <h5>Connectors</h5>
               <div *ngFor="let conf of a.configurations">
                 <tock-bot-configuration

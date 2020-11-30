@@ -16,91 +16,106 @@
 
 <nb-card *ngIf="configuration" [ngClass]="{'conf': configuration._id, 'newConf': !configuration._id}">
   <nb-card-body>
-  <mat-form-field class="bot-input">
-    <input matInput placeholder="Configuration name" [(ngModel)]="configuration.name">
-  </mat-form-field>
-  <img *ngIf="configuration._id"
-       src="{{configuration.connectorType.iconUrl()}}"
-       class="connector-icon"
-       [matTooltip]="configuration.connectorType.label()"/>
-  <mat-form-field *ngIf="configuration._id" class="bot-input">
-    <input matInput
-           placeholder="Connector type"
-           [ngModel]="configuration.connectorType.label()"
-           [disabled]="true"
-           class="connector">
-  </mat-form-field>
 
-  <mat-form-field class="bot-input" *ngIf="!configuration._id">
-    <mat-select
-      placeholder="Connector type"
-      [(ngModel)]="configuration.connectorType"
-      (selectionChange)="changeConnectorType()">
-      <mat-select-trigger>
-            <span *ngIf="configuration.connectorType" class="connector">
-              <img src="{{configuration.connectorType.iconUrl()}}" class="connector-icon"
-                   [matTooltip]="configuration.connectorType.label()"/> {{ configuration.connectorType.label() }}
+    <span class="nb-form-field inline">
+      <label>Configuration name</label>
+      <input nbInput type="text" status="primary" placeholder="Configuration name" [(ngModel)]="configuration.name">
+    </span>
+
+    <span class="nb-form-field inline" *ngIf="configuration._id">
+      <label>Connector type</label>
+      <img *ngIf="configuration._id"
+           src="{{configuration.connectorType.iconUrl()}}"
+           class="connector-icon"
+           [nbTooltip]="configuration.connectorType.label()"/>
+      <input nbInput type="text" status="primary"
+             placeholder="Connector type"
+             [ngModel]="configuration.connectorType.label()"
+             [disabled]="true"
+             class="connector">
+    </span>
+
+    <span>
+      <span *ngIf="!configuration._id">
+        <span class="nb-form-field inline">
+          <label>Connector type</label>
+          <nb-select class="nb-select" status="primary" placeholder="Connector type"
+                     [(ngModel)]="configuration.connectorType" (selectedChange)="changeConnectorType()">
+            <nb-option class="connector" *ngFor="let c of connectorTypesAndRestType" [value]="c">
+              <img src="{{c.iconUrl()}}" class="connector-icon" [nbTooltip]="c.label()"/> {{ c.label() }}
+            </nb-option>
+            <nb-select-label *ngIf="configuration.connectorType" class="connector">
+                <img src="{{configuration.connectorType.iconUrl()}}" class="connector-icon"
+                     [nbTooltip]="configuration.connectorType.label()"/> {{ configuration.connectorType.label() }}
+              </nb-select-label>
+          </nb-select>
+        </span>
+        <span class="nb-form-field inline" *ngIf="configuration.connectorType.isRest()">
+          <label>Target connector type</label>
+          <nb-select class="nb-select" status="primary" placeholder="Target connector type"
+                     [(ngModel)]="configuration.ownerConnectorType" (selectedChange)="changeConnectorType()">
+            <nb-option class="connector"
+                       *ngFor="let c of connectorTypes"
+                       [value]="c">
+              <img src="{{c.iconUrl()}}" class="connector-icon" [nbTooltip]="c.label()"/> {{ c.label() }}
+            </nb-option>
+            <nb-select-label *ngIf="configuration.ownerConnectorType" class="connector">
+                <img src="{{configuration.ownerConnectorType.iconUrl()}}" class="connector-icon"
+                     [nbTooltip]="configuration.ownerConnectorType.label()"/> {{ configuration.ownerConnectorType.label() }}
+              </nb-select-label>
+          </nb-select>
+        </span>
+      </span>
+
+      <span *ngIf="configuration._id">
+        <span *ngIf="configuration.connectorType.isRest() && configuration.ownerConnectorType">
+          <span *ngIf="configuration.ownerConnectorType">
+            <img class="connector-icon" [nbTooltip]="configuration.ownerConnectorType.label()"
+                 src="{{configuration.ownerConnectorType.iconUrl()}}" />
+            <span class="nb-form-field inline">
+              <input nbInput type="text" status="primary" class="connector" placeholder="Target connector type"
+                     [ngModel]="configuration.ownerConnectorType?.label()" [disabled]="true">
             </span>
-      </mat-select-trigger>
-      <mat-option *ngFor="let c of connectorTypesAndRestType"
-                  [value]="c" class="connector"><img src="{{c.iconUrl()}}" class="connector-icon"
-                                                     [matTooltip]="c.label()"/> {{ c.label() }}</mat-option>
-    </mat-select>
-  </mat-form-field>
+          </span>
+        </span>
+      </span>
+    </span>
 
-  <img *ngIf="configuration._id && configuration.connectorType.isRest() && configuration.ownerConnectorType"
-       src="{{configuration.ownerConnectorType.iconUrl()}}" class="connector-icon"
-       [matTooltip]="configuration.ownerConnectorType.label()"/>
-  <mat-form-field *ngIf="configuration._id && configuration.connectorType.isRest() && configuration.ownerConnectorType"
-                  class="bot-input">
+    <span class="nb-form-field inline">
+      <label>Connector identifier</label>
+      <input nbInput type="text" placeholder="Connector identifier" [(ngModel)]="configuration.applicationId">
+    </span>
 
-    <input matInput
-           placeholder="Target connector type"
-           class="connector"
-           [ngModel]="configuration.ownerConnectorType?.label()"
-           [disabled]="true">
-  </mat-form-field>
+    <span class="nb-form-field inline">
+      <label>Relative REST path</label>
+      <input nbInput type="text" placeholder="Relative REST path" nbTooltip="e.g. /messenger"
+             [(ngModel)]="configuration.path" (change)="changePath()">
+    </span>
 
-  <mat-form-field class="bot-input" *ngIf="!configuration._id && configuration.connectorType.isRest()">
-    <mat-select placeholder="Target connector type"
-                [(ngModel)]="configuration.ownerConnectorType" #owner>
-      <mat-select-trigger>
-            <span *ngIf="owner.value" class="connector">
-              <img src="{{owner.value.iconUrl()}}" class="connector-icon"
-                   [matTooltip]="owner.value.label()"/> {{ owner.value.label() }}
-            </span>
-      </mat-select-trigger>
-      <mat-option *ngFor="let c of connectorTypes"
-                  [value]="c" class="connector"><img src="{{c.iconUrl()}}" class="connector-icon"
-                                                     [matTooltip]="c.label()"/> {{ c.label() }}</mat-option>
-    </mat-select>
-  </mat-form-field>
+    <span *ngIf="botSharedService.configuration && botSharedService.configuration.botApiSupport" class="targetUrl">
+      Connector url: {{botSharedService.configuration.botApiBaseUrl}}{{configuration.path}}
+    </span>
 
-  <mat-form-field class="bot-input">
-    <input matInput placeholder="Connector identifier" [(ngModel)]="configuration.applicationId">
-  </mat-form-field>
-  <mat-form-field class="bot-input">
-    <input matInput placeholder="Relative REST path" [(ngModel)]="configuration.path" (change)="changePath()" title="e.g. /messenger">
-  </mat-form-field>
-  <span *ngIf="botSharedService.configuration && botSharedService.configuration.botApiSupport" class="targetUrl">Connector url: {{botSharedService.configuration.botApiBaseUrl}}{{configuration.path}}</span>
-  <nb-accordion
-  *ngIf="botSharedService.findConnectorConfiguration(configuration.connectorType) &&
-        botSharedService.findConnectorConfiguration(configuration.connectorType).fields.length !== 0">
-      <nb-accordion-item [expanded]="!configuration._id">
-       <nb-accordion-item-header>Connector Custom Configuration</nb-accordion-item-header>
-       <nb-accordion-item-body>
-          <mat-form-field class="bot-input" *ngIf="!botSharedService.configuration || !botSharedService.configuration.botApiSupport">
-              <input matInput placeholder="Application base url" [(ngModel)]="configuration.baseUrl" title="optional">
-            </mat-form-field>
-            <mat-form-field class="long-text bot-input"
-                            *ngFor="let f of botSharedService.findConnectorConfiguration(configuration.connectorType).fields"
-                            [hideRequiredMarker]="!f.mandatory">
-              <input matInput [placeholder]="f.label" [(ngModel)]="configuration.parameters[f.key]" required>
-            </mat-form-field>
-       </nb-accordion-item-body>
+    <nb-accordion *ngIf="botSharedService.findConnectorConfiguration(configuration.connectorType) &&
+          botSharedService.findConnectorConfiguration(configuration.connectorType).fields.length !== 0">
+      <nb-accordion-item [expanded]="!configuration._id" class="block">
+        <nb-accordion-item-header>Connector Custom Configuration</nb-accordion-item-header>
+        <nb-accordion-item-body>
+          <span class="nb-form-field block" *ngIf="!botSharedService.configuration || !botSharedService.configuration.botApiSupport">
+            <label>Application base url</label>
+            <input nbInput type="text" placeholder="Application base url" nbTooltip="optional"
+                   [(ngModel)]="configuration.baseUrl">
+          </span>
+          <span class="nb-form-field block"
+                *ngFor="let f of botSharedService.findConnectorConfiguration(configuration.connectorType).fields">
+            <label>Application base url</label>
+            <input nbInput type="text" class="long-text" [placeholder]="f.label"
+                   [(ngModel)]="configuration.parameters[f.key]" [required]="f.mandatory">
+          </span>
+        </nb-accordion-item-body>
       </nb-accordion-item>
-     </nb-accordion>
-</nb-card-body>
+    </nb-accordion>
+  </nb-card-body>
 
   <nb-card-footer style="text-align: right;">
     <button nbButton outline status="danger" size="small" (click)="remove()">

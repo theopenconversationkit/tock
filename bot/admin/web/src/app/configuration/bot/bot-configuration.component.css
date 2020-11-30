@@ -23,7 +23,7 @@
 }
 
 .long-text {
-  width: 90%;
+  min-width: 100%;
 }
 
 .bot-input {
@@ -45,3 +45,26 @@
   font-size: x-small;
 }
 
+.inline {
+  display: inline-block;
+}
+
+.block {
+  display: block;
+}
+
+.nb-form-field {
+  position: relative;
+  padding-right: 10px;
+}
+
+.nb-form-field > label {
+  display: block;
+  font-size: x-small;
+  pointer-events: none;
+  font-weight: bold;
+}
+
+.nb-form-field > nb-select {
+  min-width: 180px;
+}

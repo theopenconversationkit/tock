@@ -48,3 +48,18 @@
   margin-top: 20px;
 }
 
+.inline {
+  display: inline-block;
+}
+
+.nb-form-field {
+  position: relative;
+  padding-right: 10px;
+}
+
+.nb-form-field > label {
+  display: block;
+  font-size: x-small;
+  pointer-events: none;
+  font-weight: bold;
+}
