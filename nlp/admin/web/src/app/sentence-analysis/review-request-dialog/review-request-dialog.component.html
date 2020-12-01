@@ -14,15 +14,15 @@
   ~ limitations under the License.
   -->
 
-<h1 mat-dialog-title>Request Review</h1>
-<div mat-dialog-content class="container">
-  <p>
-    <mat-form-field class="description">
-      <textarea dkTextareaAutosize rows="10" matInput name="description" placeholder="Description" [(ngModel)]="description"></textarea>
-    </mat-form-field>
-  </p>
-</div>
-<div mat-dialog-actions>
-  <button mat-button (click)="dialogRef.close({status:'cancel'})">Cancel</button>
-  <button mat-button class="submit-button" color="primary" (click)="save()">Add</button>
-</div>
+  <nb-card class="container">
+    <nb-card-header>
+      Request Review
+    </nb-card-header>
+    <nb-card-body>
+        <textarea nbInput rows="10" name="description" placeholder="Description" [(ngModel)]="description" class="description"></textarea>
+    </nb-card-body>
+    <nb-card-footer class="footer">
+      <button nbButton (click)="dialogRef.close({status:'cancel'})">Cancel</button>
+      <button nbButton class="submit-button" status="primary" (click)="save()">Add</button>
+    </nb-card-footer>
+  </nb-card>

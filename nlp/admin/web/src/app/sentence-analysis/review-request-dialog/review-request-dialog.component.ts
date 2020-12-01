@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import {Component, Inject, OnInit} from "@angular/core";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import {StateService} from "../../core-nlp/state.service";
-import {flatMap} from "../../model/commons";
+import {Component, Inject, Input, OnInit} from '@angular/core';
+import { NbDialogRef } from '@nebular/theme';
+import {StateService} from '../../core-nlp/state.service';
+import {flatMap} from '../../model/commons';
 
 @Component({
   selector: 'tock-create-entity-dialog',
@@ -26,23 +26,20 @@ import {flatMap} from "../../model/commons";
 })
 export class ReviewRequestDialogComponent implements OnInit {
   description: string;
-  beforeClassification: string;
-  reviewComment: string;
+  @Input() beforeClassification: string;
+  @Input() reviewComment: string;
 
-  constructor(public dialogRef: MatDialogRef<ReviewRequestDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: any,
+  constructor(public dialogRef: NbDialogRef<ReviewRequestDialogComponent>,
               private state: StateService) {
-    this.beforeClassification = data.beforeClassification;
-    this.reviewComment = data.reviewComment
   }
 
   ngOnInit() {
     if (this.reviewComment) {
-      this.description = this.reviewComment
+      this.description = this.reviewComment;
     } else {
       this.state.currentIntentsCategories.subscribe(c => {
         let intent = flatMap(c, cat => cat.intents).find(intent => intent._id === this.beforeClassification);
-        this.description = "Initial intent: " + (intent ? intent.name : "") + "\n\n";
+        this.description = 'Initial intent: ' + (intent ? intent.name : '') + '\n\n';
       });
     }
   }

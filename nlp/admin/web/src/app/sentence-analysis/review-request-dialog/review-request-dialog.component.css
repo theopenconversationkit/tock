@@ -33,9 +33,13 @@
 }
 
 .description {
-  min-width: 350px;
+  min-width: 100%;
 }
 
 .submit-button {
   margin-left: 20px;
+}
+
+.footer {
+  text-align: right;
 }
