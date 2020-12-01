@@ -110,12 +110,12 @@
                           [displayProbabilities]="displayProbabilities"
                           (containerChange)="onSentenceChange()"></tock-edit-entities>
     </div>
-    <mat-card *ngIf="!minimalView && sentence.forReview && sentence.reviewComment">
-      <mat-card-subtitle>Comment</mat-card-subtitle>
-      <mat-card-content class="reviewComment">
+    <nb-card *ngIf="!minimalView && sentence.forReview && sentence.reviewComment">
+      <nb-card-header>Comment</nb-card-header>
+      <nb-card-body class="reviewComment">
         {{sentence.reviewComment}}
-      </mat-card-content>
-    </mat-card>
+      </nb-card-body>
+    </nb-card>
   </nb-card-body>
   <nb-card-footer *ngIf="!minimalView" class="sentence-analysis-content">
     <button nbButton status="danger" size="small" shape="semi-round" class="btn" (click)="onDelete()">Delete</button>
