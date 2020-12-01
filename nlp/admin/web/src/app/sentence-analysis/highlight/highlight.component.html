@@ -22,8 +22,10 @@
       </nb-action>
       <nb-action class="control-item" nbTooltip="Display conversations using this sentence"
                  *ngIf="displayActions && coreConfig.displayDialogUrl && isRootSentence()">
-        <a class="control-item" [routerLink]="[coreConfig.displayDialogUrl]"
-           [queryParams]="{ text: this.sentence.text}" target="_blank"><i class="material-icons">format_quote</i></a>
+        <a [routerLink]="[coreConfig.displayDialogUrl]"
+           [queryParams]="{ text: this.sentence.text}" target="_blank">
+          <i class="material-icons">format_quote</i>
+        </a>
       </nb-action>
       <nb-action class="control-item" (click)="answerToSentence()" nbTooltip="Set a custom answer"
                  *ngIf="displayActions && coreConfig.answerToSentenceUrl && isRootSentence()">
