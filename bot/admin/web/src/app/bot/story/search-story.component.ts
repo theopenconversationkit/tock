@@ -180,7 +180,6 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
       });
 
       this.stories = s;
-      //console.log(this.lastExpandableState);
       this.nodes = Array.from(sortedMap, ([key, value]) => {
           return {
             expanded: this.categories.length < 2 || this.category != "" || this.filter !== "" || this.lastExpandableState.get(key) === true,

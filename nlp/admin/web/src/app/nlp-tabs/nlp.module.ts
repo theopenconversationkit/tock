@@ -39,6 +39,7 @@ import {SentencesScrollComponent} from '../sentences-scroll/sentences-scroll.com
 
 import {MomentModule} from 'ngx-moment';
 import {AddStateDialogComponent} from '../intents/add-state/add-state-dialog.component';
+import {AddSharedIntentDialogComponent} from '../intents/add-shared-intent/add-shared-intent-dialog.component';
 import {EntitiesComponent} from '../entities/entities.component';
 import {EditEntitiesComponent} from '../sentence-analysis/entities/edit-entities.component';
 import {EntityDetailsComponent} from '../entities/entity-details.component';
@@ -165,6 +166,7 @@ export class NlpRoutingModule {
     SentencesScrollComponent,
     DisplayFullLogComponent,
     AddStateDialogComponent,
+    AddSharedIntentDialogComponent,
     EntitiesComponent,
     EntityDetailsComponent,
     ReviewRequestDialogComponent
@@ -181,7 +183,8 @@ export class NlpRoutingModule {
     IntentDialogComponent,
     DisplayFullLogComponent,
     AddStateDialogComponent,
-    ReviewRequestDialogComponent
+    ReviewRequestDialogComponent,
+    AddSharedIntentDialogComponent
   ]
 })
 export class NlpModule {

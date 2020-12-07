@@ -35,12 +35,7 @@
   top: 7px;
 }
 
-.intent {
-  width:200px;
-}
-
 .intent_name {
-  font-size: larger;
   /* Fixes #733 Responsiveness issues. */
   display: inline-block;
   max-width: 200px;
@@ -70,6 +65,7 @@
 
 .shared {
   vertical-align: top;
+  text-align: center;
 }
 
 .shared_list {
@@ -78,9 +74,14 @@
 
 .states {
   vertical-align: top;
+  text-align: center;
 }
 
 .actions {
+  text-align: center;
+}
+.action {
+  margin-right: 2px;
 }
 
 .entity {
@@ -94,6 +95,7 @@
 
 .removeEntity {
   transform: translateX(-8px);
+  padding-left: 5px !important;
 }
 
 .intents {
@@ -103,4 +105,17 @@
 button:focus {
   outline: 1px dotted;
   outline: 0px auto transparent;
+}
+
+.entities {
+  width: 30%;
+  text-align: center;
+}
+
+.description {
+  text-align: center;
+}
+
+.intent {
+  width: 15%;
 }
