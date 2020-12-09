@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-<nb-card *ngIf="display" class="intents">
+<nb-card class="intents">
   <nb-card-header *ngIf="nodes && nodes.length !== 0">
     The <span class="default_category">default</span> intent category is expanded by default.
   </nb-card-header>
@@ -24,7 +24,7 @@
       <p>To create Intents, start from <em>New Sentence</em> or <em>New Story</em> in Tock Studio,
         or the <em>API</em>.</p>
     </div>
-    <table [nbTreeGrid]="nodes"> 
+    <table *ngIf="nodes && nodes.length != 0" [nbTreeGrid]="nodes">
 
       <tr nbTreeGridHeaderRow *nbTreeGridHeaderRowDef="allColumns"></tr>
       <tr nbTreeGridRow *nbTreeGridRowDef="let row; columns: allColumns"></tr>
@@ -69,7 +69,7 @@
         <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef class="shared">{{sharedIntentsColumn}}</th>
         <td nbTreeGridCell *nbTreeGridCellDef="let row" class="shared">
           <div *ngIf="!row.data.expandable">
-            <button *ngIf="selectedIntent !== row.data" nbButton size="small" ghost nbTooltip="Add shared intent" status="primary"
+            <button [disabled]="selectedIntent == row.data" nbButton size="small" ghost nbTooltip="Add shared intent" status="primary"
                     (click)="displayAddSharedIntentDialog(row.data)">
               <mat-icon>add_box</mat-icon>
             </button>
@@ -124,7 +124,7 @@
               <button nbButton outline status="primary" size="small" nbTooltip="Edit the intent" (click)="updateIntent(row.data)" class="action">
                 <nb-icon icon="edit-outline"></nb-icon>
               </button>
-              <button *ngIf="state.hasRole(UserRole.admin)" 
+              <button *ngIf="state.hasRole(UserRole.admin)"
                       nbButton outline status="basic" size="small" nbTooltip="Download a sentences dump" (click)="downloadSentencesDump(row.data)" class="action">
                 <nb-icon icon="download-outline"></nb-icon>
               </button>

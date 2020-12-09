@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {saveAs} from 'file-saver';
+import {Component, ElementRef, OnInit} from '@angular/core';
 import {StateService} from '../core-nlp/state.service';
 import {EntityDefinition, Intent, IntentsCategory} from '../model/nlp';
 import {ConfirmDialogComponent} from '../shared-nlp/confirm-dialog/confirm-dialog.component';
 import {NlpService} from '../nlp-tabs/nlp.service';
+import {ApplicationService} from '../core-nlp/applications.service';
 import {AddStateDialogComponent} from './add-state/add-state-dialog.component';
 import {UserRole} from '../model/auth';
 import {IntentDialogComponent} from '../sentence-analysis/intent-dialog/intent-dialog.component';
@@ -42,7 +44,6 @@ export class IntentsComponent implements OnInit {
   UserRole = UserRole;
   intentsCategories: BehaviorSubject<IntentsCategory[]> = new BehaviorSubject([]);
   expandedCategories: Set<string> = new Set(['default']);
-  display = true;
   selectedIntent: Intent;
 
   intentColumn = 'Intent';
@@ -57,7 +58,8 @@ export class IntentsComponent implements OnInit {
 
   constructor(public state: StateService,
               private nlp: NlpService,
-              private dialog: DialogService) {
+              private dialog: DialogService,
+              private applicationService: ApplicationService) {
   }
 
   ngOnInit() {
@@ -94,9 +96,7 @@ export class IntentsComponent implements OnInit {
           }
       }
     );
-    this.display = false;
     dialogRef.onClose.subscribe(result => {
-      this.display = true;
       if (result.name) {
         this.nlp
           .saveIntent(
@@ -163,9 +163,7 @@ export class IntentsComponent implements OnInit {
           title: `Add a state for intent \"${intent.name}\"`
         }
       });
-    this.display = false;
     dialogRef.onClose.subscribe(result => {
-      this.display = true;
       if (result !== 'cancel') {
         intent.mandatoryStates.push(result.name);
         this.nlp.saveIntent(intent).subscribe(
@@ -230,7 +228,6 @@ export class IntentsComponent implements OnInit {
       });
 
       dialogRef.onClose.subscribe(result => {
-        this.display = true;
         if (result !== 'cancel') {
           this.addSharedIntent(this.selectedIntent, result.intent);
         } else {
@@ -254,4 +251,17 @@ export class IntentsComponent implements OnInit {
       );
     }
   }
+
+  downloadSentencesDump(intent: Intent) {
+    this.applicationService.getSentencesDumpForIntent(
+      this.state.currentApplication,
+      intent,
+      this.state.currentLocale,
+      this.state.hasRole(UserRole.technicalAdmin))
+      .subscribe(blob => {
+        saveAs(blob, intent.name + '_sentences.json');
+        this.dialog.notify(`Dump provided`, 'Dump');
+      })
+  }
+
 }

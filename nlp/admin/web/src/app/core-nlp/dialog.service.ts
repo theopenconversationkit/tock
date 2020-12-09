@@ -30,6 +30,9 @@ export class DialogService {
 
   private doFreeze() {
     this.changeDetectorRef.detach();
+    setTimeout(() => {
+      this.changeDetectorRef.detectChanges();
+    }, 500);
   }
 
   private undoFreeze() {
