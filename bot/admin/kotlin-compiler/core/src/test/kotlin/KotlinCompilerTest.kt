@@ -31,7 +31,7 @@ class KotlinCompilerTest {
         @BeforeAll
         @JvmStatic
         fun beforeClass() {
-            KotlinCompiler.init(listOf("target/dependency/", "target/test-classes/"))
+            KotlinCompiler.init(listOf("target/test-classes/"))
         }
 
         var mark = false
