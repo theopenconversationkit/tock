@@ -27,7 +27,6 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.extensions.Extensions
 import com.intellij.openapi.extensions.ExtensionsArea
 import com.intellij.openapi.fileTypes.FileType
-import com.intellij.openapi.fileTypes.FileTypeExtensionPoint
 import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Computable
@@ -124,7 +123,6 @@ internal object EnvironmentManager {
     }
 
     private fun registerExtensionPoints(area: ExtensionsArea) {
-        registerExtensionPoint(area, BinaryFileStubBuilders.EP_NAME, FileTypeExtensionPoint::class.java)
         registerExtensionPoint(area, FileContextProvider.EP_NAME, FileContextProvider::class.java)
 
         registerExtensionPoint(area, MetaDataContributor.EP_NAME, MetaDataContributor::class.java)

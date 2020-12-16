@@ -31,7 +31,7 @@ internal class AWSJWTAuthHandler(authProvider: JWTAuth, skip: String?) : JWTAuth
     private val skip: String? = null
     private val logger: KLogger = KotlinLogging.logger {}
 
-    private val options: JsonObject? = JsonObject()
+    private val options: JsonObject = JsonObject()
 
     override fun parseCredentials(context: RoutingContext, handler: Handler<AsyncResult<JsonObject>>) {
 
