@@ -27,11 +27,11 @@ import java.util.Locale
  */
 data class BotSimpleAnswer(val label: I18nLabel, val delay: Long, val mediaMessage: BotMediaMessageDescriptor? = null) {
 
-    constructor(answer: SimpleAnswer, locale: Locale?) :
+    constructor(answer: SimpleAnswer, locale: Locale?, readOnly: Boolean = false) :
         this(
-            Translator.saveIfNotExist(answer.key, locale),
+            Translator.saveIfNotExist(answer.key, locale, readOnly),
             answer.delay,
-            answer.mediaMessage?.let { BotMediaMessageDescriptor.fromDescriptor(it) }
+            answer.mediaMessage?.let { BotMediaMessageDescriptor.fromDescriptor(it, readOnly) }
         )
 
     fun toConfiguration(): SimpleAnswer =

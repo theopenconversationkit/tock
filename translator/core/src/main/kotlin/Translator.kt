@@ -128,22 +128,27 @@ object Translator {
         statsCache.get(I18nLabelStatKey(value, context)) { LongAdder() }.increment()
     }
 
-    fun saveIfNotExist(value: I18nLabelValue): I18nLabel = saveIfNotExist(value, defaultLocale)
+    fun saveIfNotExist(value: I18nLabelValue, readOnly: Boolean = false): I18nLabel =
+        saveIfNotExist(value, defaultLocale, readOnly)
 
-    fun saveIfNotExist(value: I18nLabelValue, locale: Locale?): I18nLabel = getLabel(value) ?: {
-        val defaultLabelKey = value.defaultLabel.toString()
-        val defaultLabel = I18nLocalizedLabel(locale ?: defaultLocale, defaultInterface, defaultLabelKey)
-        val label =
-            I18nLabel(
+    fun saveIfNotExist(value: I18nLabelValue, locale: Locale?, readOnly: Boolean = false): I18nLabel {
+        val i18nLabel: I18nLabel? = if (readOnly) null else getLabel(value)
+        return i18nLabel ?: run {
+            val defaultLabelKey = value.defaultLabel.toString()
+            val defaultLabel = I18nLocalizedLabel(locale ?: defaultLocale, defaultInterface, defaultLabelKey)
+            val label = I18nLabel(
                 value.key.toId(),
                 value.namespace,
                 value.category,
                 LinkedHashSet(listOf(defaultLabel)),
                 defaultLabelKey
             )
-        i18nDAO.save(label)
-        label
-    }.invoke()
+            if (!readOnly) {
+                i18nDAO.save(label)
+            }
+            label
+        }
+    }
 
     /**
      * Creates a new label. If the label key exists, increment the key with a _$count suffix.
@@ -397,7 +402,7 @@ object Translator {
                         val b = prefix
                         val c = s.substring(index + prefix.length, s.length)
                         splitPattern = splitPattern.subList(0, i) + listOf(a) + listOf(b) + listOf(c) +
-                                splitPattern.subList(i + 1, splitPattern.size)
+                            splitPattern.subList(i + 1, splitPattern.size)
                     }
                 }
             }

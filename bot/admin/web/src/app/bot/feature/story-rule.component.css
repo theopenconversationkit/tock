@@ -76,6 +76,7 @@
 .story-type {
   margin-right: 10px;
   font-size: 18px;
+  vertical-align: baseline;
 }
 
 .story {
@@ -84,7 +85,7 @@
 }
 
 .story-label {
-  vertical-align: super;
+  vertical-align: baseline;
 }
 
 .connector {
@@ -94,4 +95,17 @@
 nb-card-body > div > p {
   font-size: small;
   font-style: italic;
+}
+
+.rule-type-radio {
+  display: block;
+  margin-top: 15px;
+}
+
+.rule-type-radio-label{
+  padding: 15px 15px 15px 0;
+}
+
+.rule-type-radio-group {
+  display: inline-flex;
 }

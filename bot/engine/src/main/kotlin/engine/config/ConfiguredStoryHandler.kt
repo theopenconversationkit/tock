@@ -24,6 +24,7 @@ import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationKey
 import ai.tock.bot.admin.story.StoryDefinitionAnswersContainer
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep.Step
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.StoryDefinition
@@ -78,7 +79,8 @@ internal class ConfiguredStoryHandler(
             }
         }
 
-        (bus.step as? Step)?.configuration
+        val busStep = bus.step as? Step
+        busStep?.configuration
             ?.also { step ->
                 if (step.hasCurrentAnswer()) {
                     step.send(bus)
@@ -95,6 +97,7 @@ internal class ConfiguredStoryHandler(
                         return@handle
                     }
                 if (step.hasCurrentAnswer()) {
+                    switchStoryIfEnding(step, bus)
                     return@handle
                 }
             }
@@ -104,6 +107,19 @@ internal class ConfiguredStoryHandler(
             configurationName?.let { name -> configuration.configuredAnswers.firstOrNull { it.botConfiguration == name } }
                 ?: configuration
         answerContainer.send(bus)
+    }
+
+    private fun switchStoryIfEnding(
+        step: StoryDefinitionConfigurationStep,
+        bus: BotBus
+    ) {
+        if (step.hasNoChildren) {
+            configuration.findEnabledEndWithStoryId(bus.applicationId)
+                ?.let { bus.botDefinition.findStoryDefinitionById(it, bus.applicationId) }
+                ?.let {
+                    bus.switchConfiguredStory(it, it.mainIntent().name)
+                }
+        }
     }
 
     private val BotBus.viewedStories: Set<StoryDefinition>
@@ -149,10 +165,13 @@ internal class ConfiguredStoryHandler(
                             send(container, a)
                         }
                     it.last().apply {
+                        val configurationStep = (step as? Step)?.configuration
+                        val hasEndingStory = configuration.findEnabledEndWithStoryId(applicationId) == null
+                        val isNotInStep = configurationStep == null
                         send(
                             container, this,
                             // Fixes #731 end only if no targetIntent will be called after answer
-                            (step as? Step)?.configuration?.targetIntent == null
+                            configurationStep?.targetIntent == null && (hasEndingStory || isNotInStep)
                         )
                     }
                 }
@@ -171,13 +190,13 @@ internal class ConfiguredStoryHandler(
                 ?.let { messages ->
                     if (end && suggestions.isNotEmpty() && messages.isNotEmpty()) {
                         messages.take(messages.size - 1) +
-                                (
-                                        underlyingConnector.addSuggestions(
-                                            messages.last(),
-                                            suggestions
-                                        ).invoke(this)
-                                            ?: messages.last()
-                                        )
+                            (
+                                underlyingConnector.addSuggestions(
+                                    messages.last(),
+                                    suggestions
+                                ).invoke(this)
+                                    ?: messages.last()
+                                )
                     } else {
                         messages
                     }
@@ -219,10 +238,10 @@ internal class ConfiguredStoryHandler(
         container.storyDefinition(definition, configuration)
             ?.storyHandler
             ?.handle(this)
-            ?: {
+            ?: run {
                 logger.warn { "no story definition for configured script for $container - use unknown" }
                 handleSimpleAnswer(container, container.findAnswer(simple) as? SimpleAnswerConfiguration)
-            }.invoke()
+            }
     }
 
     override fun equals(other: Any?): Boolean {

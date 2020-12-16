@@ -78,9 +78,19 @@ interface BotBus : Bus<BotBus> {
     val userTimeline: UserTimeline
 
     /**
-     * The current dialog history for this user.
+     * The initial dialog for this user.
      */
     val dialog: Dialog
+
+    /**
+     * The current dialog for this user (may be different from the initial [dialog]).
+     */
+    val currentDialog: Dialog
+
+    /**
+     * The current intent for this user (may be different from the initial [intent]).
+     */
+    override val currentIntent: IntentAware? get() = currentDialog.state.currentIntent
 
     /**
      * The current story.
@@ -141,7 +151,7 @@ interface BotBus : Bus<BotBus> {
     /**
      * To know if the current intent is owned by the [IntentAware].
      */
-    fun isIntent(intentOwner: IntentAware): Boolean = intentOwner.wrap(intent?.wrappedIntent())
+    fun isIntent(intentOwner: IntentAware): Boolean = intentOwner.wrap(currentIntent?.wrappedIntent())
 
     /**
      * Returns the NLP call stats if an NLP call has occurred, null either.
@@ -417,8 +427,8 @@ interface BotBus : Bus<BotBus> {
     fun switchStory(storyDefinition: StoryDefinition, starterIntent: Intent = storyDefinition.mainIntent()) {
         story = Story(storyDefinition, starterIntent, story.step)
         hasCurrentSwitchStoryProcess = true
-        story.computeCurrentStep(userTimeline, dialog, action, starterIntent)
-        dialog.state.currentIntent = starterIntent
+        story.computeCurrentStep(userTimeline, currentDialog, action, starterIntent)
+        currentDialog.state.currentIntent = starterIntent
     }
 
     /**
