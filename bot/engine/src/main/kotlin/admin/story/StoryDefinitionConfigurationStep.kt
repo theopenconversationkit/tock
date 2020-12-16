@@ -90,8 +90,12 @@ data class StoryDefinitionConfigurationStep(
         override val children: Set<StoryStep<StoryHandlerDefinition>>
             get() = configuration.children.map { it.toStoryStep(storyConfiguration) }.toSet()
 
+        override val hasNoChildren: Boolean get() = children.isEmpty()
+
         override val entityStepSelection: EntityStepSelection? = configuration.entity
     }
+
+    val hasNoChildren: Boolean get() = children.isEmpty()
 
     constructor(step: StoryStep<*>) :
         this(

@@ -20,17 +20,35 @@ import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import org.litote.kmongo.Id
 
 /**
- * In order to manage story activation and redirection.
+ * In order to manage story activation, redirection and handling with configured "end story".
  */
 data class StoryDefinitionConfigurationFeature(
     val botApplicationConfigurationId: Id<BotApplicationConfiguration>?,
     val enabled: Boolean = true,
-    val switchToStoryId: String?
+    val switchToStoryId: String?,
+    val endWithStoryId: String?
 ) {
+    constructor(
+        botApplicationConfigurationId: Id<BotApplicationConfiguration>?,
+        enabled: Boolean = true,
+        switchToStoryId: String?
+    ) : this(botApplicationConfigurationId, enabled, switchToStoryId, null)
+
+    constructor(
+        botApplicationConfigurationId: Id<BotApplicationConfiguration>?,
+        enabled: Boolean = true,
+        endingRedirection: Boolean,
+        switchToStoryId: String?
+    ) : this(
+        botApplicationConfigurationId,
+        enabled,
+        switchToStoryId.takeUnless { endingRedirection },
+        switchToStoryId.takeIf { endingRedirection })
+
     internal fun supportConfiguration(conf: BotApplicationConfiguration?): Boolean =
         botApplicationConfigurationId == null || (conf != null && supportDedicatedConfiguration(conf))
 
     internal fun supportDedicatedConfiguration(conf: BotApplicationConfiguration): Boolean =
         botApplicationConfigurationId == conf._id
-                || botApplicationConfigurationId == conf.targetConfigurationId
+            || botApplicationConfigurationId == conf.targetConfigurationId
 }

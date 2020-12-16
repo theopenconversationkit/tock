@@ -33,10 +33,12 @@ interface Bus<T : Bus<T>> : I18nTranslator {
      * The current application id.
      */
     val applicationId: String
+
     /**
      * The current bot id.
      */
     val botId: PlayerId
+
     /**
      * The current user id.
      */
@@ -46,6 +48,11 @@ interface Bus<T : Bus<T>> : I18nTranslator {
      * The current intent of the dialog at Bus (ie request) initialization.
      */
     val intent: IntentAware?
+
+    /**
+     * The current intent for this user (may be different from the initial [intent]).
+     */
+    val currentIntent: IntentAware? get() = intent
 
     /**
      * The name of the step if any.

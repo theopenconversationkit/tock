@@ -25,11 +25,11 @@ data class BotConfiguredSteps(
     val steps: List<BotStoryDefinitionConfigurationStep> = emptyList()
 )
 
-fun List<StoryDefinitionConfigurationByBotStep>.mapSteps(story: StoryDefinitionConfiguration): List<BotConfiguredSteps> =
+fun List<StoryDefinitionConfigurationByBotStep>.mapSteps(story: StoryDefinitionConfiguration, readOnly: Boolean = false): List<BotConfiguredSteps> =
     map {
         BotConfiguredSteps(
             it.botConfiguration,
             it.steps.map { step ->
-                BotStoryDefinitionConfigurationStep(story, step)
+                BotStoryDefinitionConfigurationStep(story, step, readOnly)
             })
     }

@@ -58,12 +58,12 @@ data class BotStoryDefinitionConfigurationMandatoryEntity(
     val intentDefinition: IntentDefinition? = null
 ) {
 
-    constructor(story: StoryDefinitionConfiguration, e: StoryDefinitionConfigurationMandatoryEntity) :
+    constructor(story: StoryDefinitionConfiguration, e: StoryDefinitionConfigurationMandatoryEntity, readOnly: Boolean = false) :
         this(
             e.role,
             e.entityType,
             e.intent,
-            e.answers.mapAnswers(story.userSentenceLocale),
+            e.answers.mapAnswers(story.userSentenceLocale, readOnly),
             e.currentType,
             story.category
         )

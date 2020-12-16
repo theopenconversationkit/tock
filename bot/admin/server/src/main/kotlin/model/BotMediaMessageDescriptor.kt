@@ -39,10 +39,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 interface BotMediaMessageDescriptor {
 
     companion object {
-        fun fromDescriptor(desc: MediaMessageDescriptor): BotMediaMessageDescriptor =
+        fun fromDescriptor(desc: MediaMessageDescriptor, readOnly: Boolean = false): BotMediaMessageDescriptor =
             when (desc) {
-                is MediaActionDescriptor -> BotMediaActionDescriptor(desc)
-                is MediaCardDescriptor -> BotMediaCardDescriptor(desc)
+                is MediaActionDescriptor -> BotMediaActionDescriptor(desc, readOnly)
+                is MediaCardDescriptor -> BotMediaCardDescriptor(desc, readOnly)
                 else -> error("unsupported type: $desc")
             }
     }

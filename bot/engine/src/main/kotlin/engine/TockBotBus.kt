@@ -52,7 +52,7 @@ internal class TockBotBus(
 
     private val bot = connector.bot
 
-    private val currentDialog: Dialog get() = userTimeline.currentDialog ?: dialog
+    override val currentDialog: Dialog get() = userTimeline.currentDialog ?: dialog
 
     override var story: Story
         get() = currentDialog.currentStory ?: dialog.currentStory!!

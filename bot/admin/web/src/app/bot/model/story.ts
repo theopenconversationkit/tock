@@ -251,7 +251,7 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
       this.name,
       this.userSentence,
       this.userSentenceLocale,
-      this.features.map(f => new StoryFeature(f.botApplicationConfigurationId, f.enabled, f.switchToStoryId)),
+      this.features.map(f => new StoryFeature(f.botApplicationConfigurationId, f.enabled, f.switchToStoryId, f.endWithStoryId)),
       this.configurationName,
       this._id,
       this.version,
@@ -886,27 +886,51 @@ export class BuiltinAnswerConfiguration extends AnswerConfiguration {
   }
 }
 
+export enum RuleType {
+  Activation = 'Activation',
+  Redirection = 'Redirection',
+  Ending = 'Ending'
+}
+
+export function ruleTypeValues() {
+  return [
+    RuleType.Activation,
+    RuleType.Redirection,
+    RuleType.Ending
+  ];
+}
+
 export class StoryFeature {
 
   public story: StoryDefinitionConfiguration;
   public conf: BotApplicationConfiguration;
   public switchToStory: StoryDefinitionConfiguration;
+  public endWithStory: StoryDefinitionConfiguration;
 
   constructor(public botApplicationConfigurationId: string,
               public enabled: boolean,
-              public switchToStoryId: string
+              public switchToStoryId: string,
+              public endWithStoryId: string
   ) {
   }
 
   static fromJSON(json: any): StoryFeature {
     const value = Object.create(StoryFeature.prototype);
-    const result = Object.assign(value, json, {});
-
-    return result;
+    return Object.assign(value, json, {});
   }
 
   static fromJSONArray(json?: Array<any>): StoryFeature[] {
     return json ? json.map(StoryFeature.fromJSON) : [];
+  }
+
+  getRuleType(): RuleType {
+    if (this.switchToStory || this.switchToStoryId) {
+      return RuleType.Redirection;
+    }
+    if (this.endWithStory || this.endWithStoryId) {
+      return RuleType.Ending;
+    }
+    return RuleType.Activation;
   }
 }
 

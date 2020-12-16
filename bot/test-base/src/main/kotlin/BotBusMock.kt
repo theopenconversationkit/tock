@@ -185,6 +185,8 @@ open class BotBusMock(
             context.dialog = value
         }
 
+    override val currentDialog: Dialog get() = dialog
+
     override var story: Story
         get() = context.story
         set(value) {

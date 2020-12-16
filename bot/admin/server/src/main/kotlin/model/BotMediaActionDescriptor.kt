@@ -25,7 +25,7 @@ import ai.tock.translator.Translator
 
 data class BotMediaActionDescriptor(val title: I18nLabel, var url: String? = null) : BotMediaMessageDescriptor {
 
-    constructor(desc: MediaActionDescriptor) : this(Translator.saveIfNotExist(desc.title), desc.url)
+    constructor(desc: MediaActionDescriptor, readOnly: Boolean = false) : this(Translator.saveIfNotExist(desc.title, readOnly), desc.url)
 
     override val type: MediaMessageType = action
 

@@ -31,12 +31,12 @@ data class BotMediaCardDescriptor(
     val file: MediaFileDescriptor?,
     val actions: List<BotMediaActionDescriptor> = emptyList()) : BotMediaMessageDescriptor {
 
-    constructor(desc: MediaCardDescriptor) :
+    constructor(desc: MediaCardDescriptor, readOnly: Boolean = false) :
         this(
-            desc.title?.let { Translator.saveIfNotExist(it) },
-            desc.subTitle?.let { Translator.saveIfNotExist(it) },
+            desc.title?.let { Translator.saveIfNotExist(it, readOnly) },
+            desc.subTitle?.let { Translator.saveIfNotExist(it, readOnly) },
             desc.file,
-            desc.actions.map { BotMediaActionDescriptor(it) }
+            desc.actions.map { BotMediaActionDescriptor(it, readOnly) }
         )
 
     override val type: MediaMessageType = card

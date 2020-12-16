@@ -28,9 +28,9 @@ class BotConfiguredAnswer(
     val currentType: AnswerConfigurationType,
     val answers: List<BotAnswerConfiguration>
 ) {
-    constructor(conf: DedicatedAnswerConfiguration, locale: Locale?) : this(
+    constructor(conf: DedicatedAnswerConfiguration, locale: Locale?, readOnly: Boolean = false) : this(
         conf.botConfiguration,
         conf.currentType,
-        conf.answers.mapAnswers(locale)
+        conf.answers.mapAnswers(locale, readOnly)
     )
 }

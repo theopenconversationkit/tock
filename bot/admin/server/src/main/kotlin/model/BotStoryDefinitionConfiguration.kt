@@ -29,10 +29,10 @@ import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.util.Locale
 
-internal fun List<AnswerConfiguration>.mapAnswers(locale: Locale?): List<BotAnswerConfiguration> =
+internal fun List<AnswerConfiguration>.mapAnswers(locale: Locale?, readOnly: Boolean = false): List<BotAnswerConfiguration> =
     map {
         when (it) {
-            is SimpleAnswerConfiguration -> BotSimpleAnswerConfiguration(it, locale)
+            is SimpleAnswerConfiguration -> BotSimpleAnswerConfiguration(it, locale, readOnly)
             is ScriptAnswerConfiguration -> BotScriptAnswerConfiguration(it)
             is BuiltInAnswerConfiguration -> BotBuiltinAnswerConfiguration(it)
             else -> error("unsupported conf $it")
@@ -67,15 +67,15 @@ data class BotStoryDefinitionConfiguration(
     val _id: Id<StoryDefinitionConfiguration> = newId()
 ) {
 
-    constructor(story: StoryDefinitionConfiguration, userLocale: Locale) : this(
+    constructor(story: StoryDefinitionConfiguration, userLocale: Locale, readOnly: Boolean = false) : this(
         story.storyId,
         story.botId,
         story.intent,
         story.currentType,
         story.namespace,
-        story.answers.mapAnswers(story.userSentenceLocale),
-        story.mandatoryEntities.map { BotStoryDefinitionConfigurationMandatoryEntity(story, it) },
-        story.steps.map { BotStoryDefinitionConfigurationStep(story, it) },
+        story.answers.mapAnswers(story.userSentenceLocale, readOnly),
+        story.mandatoryEntities.map { BotStoryDefinitionConfigurationMandatoryEntity(story, it, readOnly) },
+        story.steps.map { BotStoryDefinitionConfigurationStep(story, it, readOnly) },
         story.name,
         story.category,
         story.description,
@@ -84,8 +84,8 @@ data class BotStoryDefinitionConfiguration(
         story.configurationName,
         story.features,
         story.tags,
-        story.configuredAnswers.map { BotConfiguredAnswer(it, story.userSentenceLocale) },
-        story.configuredSteps.mapSteps(story),
+        story.configuredAnswers.map { BotConfiguredAnswer(it, story.userSentenceLocale, readOnly) },
+        story.configuredSteps.mapSteps(story, readOnly),
         story._id
     )
 

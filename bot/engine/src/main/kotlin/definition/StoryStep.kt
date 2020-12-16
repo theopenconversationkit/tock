@@ -119,6 +119,11 @@ interface StoryStep<T : StoryHandlerDefinition> {
     val children: Set<StoryStep<T>> get() = emptySet()
 
     /**
+     * Flag indicating if it's the step has no children.
+     */
+    val hasNoChildren: Boolean get() = children.isEmpty()
+
+    /**
      * If not null, entity has to be set in the current action to trigger the step.
      */
     val entityStepSelection: EntityStepSelection? get() = null

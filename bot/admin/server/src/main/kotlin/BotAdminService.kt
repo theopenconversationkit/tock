@@ -94,6 +94,9 @@ import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.Translator
 import com.github.salomonbrys.kodein.instance
+import mu.KotlinLogging
+import org.litote.kmongo.Id
+import org.litote.kmongo.toId
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
@@ -105,9 +108,6 @@ import java.util.Locale
 import java.util.stream.LongStream
 import java.util.stream.Stream
 import kotlin.streams.toList
-import mu.KotlinLogging
-import org.litote.kmongo.Id
-import org.litote.kmongo.toId
 
 /**
  *
@@ -135,7 +135,7 @@ object BotAdminService {
 
         override fun keepFeature(feature: StoryDefinitionConfigurationFeatureDump): Boolean =
             feature.botApplicationConfigurationId == null
-                    || getBotConfigurationById(feature.botApplicationConfigurationId!!)?.namespace == targetNamespace
+                || getBotConfigurationById(feature.botApplicationConfigurationId!!)?.namespace == targetNamespace
 
         override fun buildScript(
             script: ScriptAnswerVersionedConfigurationDump,
@@ -334,7 +334,7 @@ object BotAdminService {
         searchFunction: (String, String, Set<Id<BotApplicationConfiguration>>, ZonedDateTime?, ZonedDateTime?, String?) -> Pair<List<DialogFlowTransitionStatsData>, List<String>>,
         seriesLabel: (String?) -> String = { "$it" }
     )
-            : UserAnalyticsQueryResult {
+        : UserAnalyticsQueryResult {
         val namespace = request.namespace
         val botId = request.botId
         val applicationIds = applications.map { it._id }.toSet()
@@ -648,7 +648,7 @@ object BotAdminService {
 
     fun loadStories(request: StorySearchRequest): List<BotStoryDefinitionConfiguration> =
         findStories(request.namespace, request.applicationName).map {
-            BotStoryDefinitionConfiguration(it, request.currentLanguage)
+            BotStoryDefinitionConfiguration(it, request.currentLanguage, true)
         }
 
     private fun findStories(namespace: String, applicationName: String): List<StoryDefinitionConfiguration> {
@@ -1019,7 +1019,7 @@ object BotAdminService {
             configuredAnswers = story.configuredAnswers.mapNotNull {
                 it.toConfiguredAnswer(botId, oldStory)
             },
-            configuredSteps = story.configuredSteps.mapSteps(application, botId, oldStory)
+            configuredSteps = story.configuredSteps.mapSteps(application, botId, oldStory),
         )
     }
 
@@ -1165,7 +1165,7 @@ object BotAdminService {
 
 
     private fun BotConfiguredAnswer.toConfiguredAnswer(botId: String, oldStory: StoryDefinitionConfiguration?)
-            : DedicatedAnswerConfiguration? {
+        : DedicatedAnswerConfiguration? {
         val oldConf = oldStory?.configuredAnswers?.find { it.botConfiguration == botConfiguration }
         return DedicatedAnswerConfiguration(
             botConfiguration,

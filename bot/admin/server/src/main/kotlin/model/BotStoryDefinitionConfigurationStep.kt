@@ -78,12 +78,12 @@ data class BotStoryDefinitionConfigurationStep(
     val targetIntentDefinition: IntentDefinition? = null
 ) {
 
-    constructor(story: StoryDefinitionConfiguration, e: StoryDefinitionConfigurationStep) :
+    constructor(story: StoryDefinitionConfiguration, e: StoryDefinitionConfigurationStep, readOnly: Boolean = false) :
         this(
             e.name.takeUnless { it.isBlank() } ?: "${e.intent?.name}_${e.level}",
             e.intent,
             e.targetIntent,
-            e.answers.mapAnswers(story.userSentenceLocale),
+            e.answers.mapAnswers(story.userSentenceLocale, readOnly),
             e.currentType,
             story.category,
             (e.userSentenceLabel
@@ -93,8 +93,8 @@ data class BotStoryDefinitionConfigurationStep(
                     story.category,
                     e.userSentence
                 ))
-                .let { Translator.saveIfNotExist(it) },
-            e.children.map { BotStoryDefinitionConfigurationStep(story, it) },
+                .let { Translator.saveIfNotExist(it, readOnly) },
+            e.children.map { BotStoryDefinitionConfigurationStep(story, it, readOnly) },
             e.level,
             e.entity
         )
