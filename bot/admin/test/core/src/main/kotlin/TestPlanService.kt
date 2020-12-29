@@ -19,12 +19,13 @@ package ai.tock.bot.admin.test
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.dialog.DialogReportDAO
 import ai.tock.bot.connector.rest.client.ConnectorRestClient
+import ai.tock.bot.connector.rest.client.model.ClientChoice
+import ai.tock.bot.connector.rest.client.model.ClientGenericElement
+import ai.tock.bot.connector.rest.client.model.ClientGenericMessage
 import ai.tock.bot.connector.rest.client.model.ClientMessage
 import ai.tock.bot.connector.rest.client.model.ClientMessageRequest
 import ai.tock.bot.connector.rest.client.model.ClientSentence
 import ai.tock.bot.engine.dialog.Dialog
-import ai.tock.bot.engine.message.Message
-import ai.tock.bot.engine.message.Sentence
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserTimelineDAO
@@ -53,7 +54,7 @@ object TestPlanService {
     private val botConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
 
     private val applicationIdPathCache: Cache<String, String> =
-            CacheBuilder.newBuilder().expireAfterAccess(Duration.ofMinutes(1)).build()
+        CacheBuilder.newBuilder().expireAfterAccess(Duration.ofMinutes(1)).build()
 
     fun getPlanExecutions(plan: TestPlan): List<TestPlanExecution> {
         return testPlanDAO.getPlanExecutions(plan._id)
@@ -106,7 +107,11 @@ object TestPlanService {
      * @param plan is the common test plan to run.
      * @return the results of the test plan execution as a TestPlanExecution object.
      */
-    fun saveAndRunTestPlan(client: ConnectorRestClient, plan: TestPlan, executionId: Id<TestPlanExecution>): TestPlanExecution {
+    fun saveAndRunTestPlan(
+        client: ConnectorRestClient,
+        plan: TestPlan,
+        executionId: Id<TestPlanExecution>,
+    ): TestPlanExecution {
         testPlanDAO.saveTestPlan(plan)
         return runTestPlan(client, plan, executionId)
     }
@@ -119,19 +124,23 @@ object TestPlanService {
      * @param plan is the common test plan to run.
      * @return the results of the test plan execution as a TestPlanExecution object.
      */
-    fun runTestPlan(client: ConnectorRestClient, plan: TestPlan, executionId: Id<TestPlanExecution>): TestPlanExecution {
+    fun runTestPlan(
+        client: ConnectorRestClient,
+        plan: TestPlan,
+        executionId: Id<TestPlanExecution>
+    ): TestPlanExecution {
         val start = Instant.now()
         val dialogs: MutableList<DialogExecutionReport> = mutableListOf()
         var nbErrors = 0
 
         // store the test plan execution into the right Object
         val exec = TestPlanExecution(
-                plan._id,
-                dialogs,
-                nbErrors,
-                duration = Duration.between(start, Instant.now()),
-                _id = executionId,
-                status = TestPlanExecutionStatus.PENDING
+            plan._id,
+            dialogs,
+            nbErrors,
+            duration = Duration.between(start, Instant.now()),
+            _id = executionId,
+            status = TestPlanExecutionStatus.PENDING
         )
         // save the test plan execution into the database
         testPlanDAO.saveTestExecution(exec)
@@ -165,7 +174,11 @@ object TestPlanService {
      *                          val id: Id<Dialog>
      * @return the result of the dialog as a DialogExecutionReport object.
      */
-    private fun runDialog(client: ConnectorRestClient, testPlan: TestPlan, dialog: TestDialogReport): DialogExecutionReport {
+    private fun runDialog(
+        client: ConnectorRestClient,
+        testPlan: TestPlan,
+        dialog: TestDialogReport
+    ): DialogExecutionReport {
         val playerId = Dice.newId()
         val botId = Dice.newId()
         return try {
@@ -174,29 +187,27 @@ object TestPlanService {
             // first action is just saying Hi!
             if (testPlan.startAction != null) {
                 client.talk(
-                        getPath(testPlan),
-                        testPlan.locale,
-                        ClientMessageRequest(
-                                playerId,
-                                botId,
-                                testPlan.startAction!!.toClientMessage(),
-                                testPlan.targetConnectorType.toClientConnectorType(),
-                                true
-                        )
+                    getPath(testPlan),
+                    testPlan.locale,
+                    ClientMessageRequest(
+                        playerId,
+                        botId,
+                        testPlan.startAction!!.toClientMessage(),
+                        testPlan.targetConnectorType.toClientConnectorType(),
+                        true
+                    )
                 )
             }
 
-            // run each test step
-            // "it" represents here a TestActionReport
-            dialog.actions.forEachIndexed { testActionIndex, testActionReport ->
-                if (testActionReport.playerId.type == PlayerType.user) {
+            dialog.actions.forEachIndexed { testStepIndex, testStepMessages ->
+                if (testStepMessages.playerId.type == PlayerType.user) {
                     // convert the current test step as a request formatted to be understandable by the bot
                     val request = ClientMessageRequest(
-                            playerId,
-                            botId,
-                            testActionReport.findFirstMessage().toClientMessage(),
-                            testPlan.targetConnectorType.toClientConnectorType(),
-                            true
+                        playerId,
+                        botId,
+                        testStepMessages.findFirstMessage().toClientMessage(),
+                        testPlan.targetConnectorType.toClientConnectorType(),
+                        true
                     )
                     logger.debug { "ASK -- : $request" }
                     // send the converted test step to the bot
@@ -206,48 +217,38 @@ object TestPlanService {
                         val body = answer.body()
                         logger.debug { "ANSWER -- : $body" }
                         // go over the bot answer to remove emoticons
-                        val list = body?.messages?.toMutableList() ?: mutableListOf()
-                        list.forEachIndexed { messageIndex, message ->
-                            var text = (message as ClientSentence).text
-                            text?.forEach { c ->
-                                // if emoticon is found, remove it
-                                if (c.isSurrogate()) {
-                                    text = text?.replace("$c", "")?.trim()
-                                    list[messageIndex] = ClientSentence(text)
-                                }
-                            }
-                        }
-                        // then store the bot answer into a proper variable
-                        botMessages = list
+                        botMessages = body?.messages?.map { it as ClientSentence }
+                            ?.map { it.copy(text = it.text?.cleanSurrogateChars()) }?.toMutableList() ?: mutableListOf()
                         logger.debug { "ANSWER without surrogate -- : $botMessages" }
                     } else {
                         logger.error { "ERROR : " + answer.errorBody()?.string() }
                         return DialogExecutionReport(
-                                dialog.id, true, errorMessage = answer.errorBody()?.toString()
+                            dialog.id, true, errorMessage = answer.errorBody()?.toString()
                                 ?: "Unknown error"
                         )
                     }
                 } else {
                     if (botMessages.isEmpty()) {
                         return DialogExecutionReport(
-                                dialog.id,
-                                true,
-                                testActionReport.id,
-                                errorMessage = "(no answer but one expected)"
+                            dialog.id,
+                            true,
+                            testStepMessages.id,
+                            errorMessage = "(no answer but one expected)"
                         )
                     }
                     val botMessage = botMessages.removeAt(0)
                     // if the bot's answer does not equal to the test step
-                    if (!botMessage.convertAndDeepEquals(testActionReport)) {
-                        logger.error { "Not the same messages:\n\t\tObtained ----- $botMessage\n\t\tExpected ----- ${testActionReport.messages.map { m -> m.toClientMessage() }}" }
+                    val errorMessage = botMessage.convertAndEquals(testStepMessages)
+                    if (null != errorMessage) {
                         val givenAnswer = botMessage.toMessage().toPrettyString()
-                        val expectedAnswer = testActionReport.messages.map { message -> message.toPrettyString() }.joinToString(" - ")
+                        val expectedAnswer =
+                            testStepMessages.messages.joinToString(" - ") { message -> message.toPrettyString() }
                         return DialogExecutionReport(
-                                dialogReportId = dialog.id,
-                                error = true,
-                                errorActionId = testActionReport.id,
-                                errorMessage = "Réponse inattendue : \"$givenAnswer\" au lieu de \"$expectedAnswer\"",
-                                indexOfStepError = testActionIndex
+                            dialogReportId = dialog.id,
+                            error = true,
+                            errorActionId = testStepMessages.id,
+                            errorMessage = "Error : $errorMessage - during steps comparison : $givenAnswer / expected : $expectedAnswer",
+                            indexOfStepError = testStepIndex
                         )
                     }
                 }
@@ -265,7 +266,7 @@ object TestPlanService {
         val applicationId = testPlan.applicationId
         return applicationIdPathCache.get(applicationId) {
             botConfigurationDAO.getConfigurationById(testPlan.botApplicationConfigurationId)?.path
-                    ?: "/$applicationId"
+                ?: "/$applicationId"
         }
     }
 
@@ -274,13 +275,18 @@ object TestPlanService {
      * Test step is first converted into a bot client message before starting the comparison using another function.
      * This conversion is essential to compare the same objects.
      *
-     * @param action is the xray step formatted as a TestActionReport which contains the message sent to the bot.
+     * @param step is the xray step formatted as a TestActionReport which contains the message sent to the bot.
      * @return true if the messages are equals, false otherwise.
      */
-    private fun ClientMessage.convertAndDeepEquals(action: TestActionReport): Boolean {
-        return action.messages.any {
-            // convert the user message stored in xray to a bot message format
-            deepEquals(it.toClientMessage(), this)
+    private fun ClientMessage.convertAndEquals(step: TestActionReport): String? {
+        val result = step.messages.map {
+            this.checkEquality(it.toClientMessage())
+        }
+
+        return if (result.any { it == null }) {
+            null
+        } else {
+            result.joinToString("\t")
         }
     }
 
@@ -290,11 +296,57 @@ object TestPlanService {
      * @param expectedMessage is the message to expect as an answer from the bot.
      * @return true if messages are the same, false otherwise.
      */
-    private fun deepEquals(expectedMessage: ClientMessage, botAnswer: ClientMessage): Boolean {
-        var botAnswerText = (botAnswer as ClientSentence).text
-        botAnswer.text?.forEach { c -> if (c.isSurrogate()) botAnswerText = botAnswerText?.replace("$c", "") }
+    fun ClientMessage.checkEquality(expectedMessage: ClientMessage): String? {
+        if (expectedMessage !is ClientSentence || this !is ClientSentence) {
+            return if (expectedMessage == this) null else "Messages differs : \"$this\" / expected \"$expectedMessage\""
+        }
 
-        return expectedMessage is ClientSentence && (expectedMessage == botAnswer || expectedMessage.text?.trim() == botAnswerText?.trim())
+        if (text?.cleanSurrogateChars()?.trim() != expectedMessage.text?.cleanSurrogateChars()?.trim()) {
+            return "Text differs : \"${this.text}\" / expected \"${expectedMessage.text}\""
+        }
+
+        return messages.zip(expectedMessage.messages)
+            .mapNotNull { (subMessage, expectedSubMessage) -> subMessage.partiallyEquals(expectedSubMessage) }
+            .firstOrNull()
     }
 
 }
+
+private fun ClientGenericMessage.partiallyEquals(expected: ClientGenericMessage): String? {
+    if (texts.cleanTexts() != expected.texts.cleanTexts()) {
+        return "Message text differs : \"$texts\" / expected \"${expected.texts}\""
+    }
+
+    choices.zip(expected.choices)
+        .mapNotNull { (obtainedChoice, expectedChoice) -> obtainedChoice.partiallyEquals(expectedChoice) }
+        .firstOrNull()?.let { return it }
+
+    subElements.zip(expected.subElements)
+        .mapNotNull { (obtainedSubElement, expectedSubElement) -> obtainedSubElement.partiallyEquals(expectedSubElement) }
+        .firstOrNull()?.let { return it }
+
+    return null
+}
+
+private fun ClientGenericElement.partiallyEquals(expected: ClientGenericElement): String? {
+    if (texts.cleanTexts() != expected.texts.cleanTexts()) {
+        return "Sub-element text differs : \"$texts\" / expected \"${expected.texts}\""
+    }
+
+    return choices.zip(expected.choices)
+        .mapNotNull { (obtainedChoice, expectedChoice) -> obtainedChoice.partiallyEquals(expectedChoice) }
+        .firstOrNull()
+}
+
+private fun ClientChoice.partiallyEquals(expected: ClientChoice): String? {
+    val parameter = "_title"
+    return if (parameters[parameter] != expected.parameters[parameter]) {
+        "Choices differs ${this.parameters[parameter]} / ${expected.parameters[parameter]}"
+    } else null
+}
+
+private fun Map<String, String>.cleanTexts() =
+    mapValues { (_, v) -> v.cleanSurrogateChars().replace(Regex("<[^>]*>"), "") }
+
+private fun String.cleanSurrogateChars(): String =
+    filterNot { it.isSurrogate() }
