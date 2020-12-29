@@ -31,9 +31,9 @@ import ai.tock.shared.provide
 import mu.KotlinLogging
 
 class XrayKeywordHandler {
-    val logger = KotlinLogging.logger {}
-    val dialogReportDAO: DialogReportDAO = injector.provide()
-    val jiraKeyProject = property("tock_bot_test_jira_project", "Set a key for the jira project.")
+    private val logger = KotlinLogging.logger {}
+    private val dialogReportDAO: DialogReportDAO = injector.provide()
+    private val jiraKeyProject = property("tock_bot_test_jira_project", "Set a key for the jira project.")
 
     internal fun createXray(keyword: String, bus: BotBus) {
         val params = keyword.replace(XRAY_KEYWORD, "").split(",")
