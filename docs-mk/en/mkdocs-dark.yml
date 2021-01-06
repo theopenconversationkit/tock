@@ -33,6 +33,7 @@ nav:
 
 theme:
   name: 'material'
+  language: 'en'
   logo: 'assets/images/logo-white.png'
   favicon: 'img/favicon.png'
   palette:
@@ -41,6 +42,8 @@ theme:
     - tabs
     - instant
 plugins:
+  - search:
+      lang: 'en'
   - macros
   - git-revision-date-localized
 markdown_extensions:
@@ -50,5 +53,7 @@ markdown_extensions:
       permalink: true
 copyright: 'Copyright &copy; 2017/2020 Tock'
 extra:
+  search:
+    language: 'en'
   tock:
     logo: 'assets/images/logo-white.svg'
