@@ -63,6 +63,9 @@ ou passer directement à [la suite](api.md).
 
 * Terminez avec _Update_
 
+> Attention : en cas de réinstallation de l'application Slack dans le _workspace_, URL et jetons sont changés
+> et doivent être reportés dans la configuration côté Tock.
+
 ## Activer la reception de messages depuis Slack
 
 * Dans la page de votre application Slack, allez dans _Event Subscriptions_ et activez _Enable Events_
@@ -75,7 +78,11 @@ ou passer directement à [la suite](api.md).
 > Le chemin relatif du connecteur est indiqué dans la page _Bot Configurations_. Sur la ligne correspondant à votre
 >connecteur Slack, il s'agit du champ _Relative REST path_
 
-* Ouvrez _Add Workspace Event_ et sélectionnez l'évenement _message.channels_
+* Ouvrez _Add Workspace Event_ et sélectionnez l'évenement _message.channels_ pour 
+utiliser le bot sur une _chaîne_ Slack.
+  
+> D'autres événements "message" sont également disponibles : _message.im_ pour les messages privés,
+  _message.groups_, etc. Cf la [documentation Slack](https://api.slack.com/events).
 
 * Validez avec _Save Changes_
 
@@ -97,7 +104,9 @@ ou passer directement à [la suite](api.md).
 
 * Sélectionnez la _chaîne_ Slack puis _Installer_
 
-* Dans Slack, allez sur la _chaîne_ et parlez au bot (par exemple "bonjour"). Le bot vous répond maintenant dans Slack !
+* Dans Slack, allez sur la _chaîne_ et ajoutez le bot à la _chaîne_
+  
+* Parlez au bot (par exemple "bonjour"). Il vous répond maintenant dans Slack !
 
 ## Regarder la conversation dans Tock Studio (optionnel)
 
