@@ -1181,6 +1181,10 @@ https://hooks.slack.com/services/{workspaceToken}/{webhookToken}/{authToken}</p>
 <p>Terminez avec <em>Update</em></p>
 </li>
 </ul>
+<blockquote>
+<p>Attention : en cas de réinstallation de l'application Slack dans le <em>workspace</em>, URL et jetons sont changés
+et doivent être reportés dans la configuration côté Tock.</p>
+</blockquote>
 <h2 id="activer-la-reception-de-messages-depuis-slack">Activer la reception de messages depuis Slack<a class="headerlink" href="#activer-la-reception-de-messages-depuis-slack" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -1197,9 +1201,14 @@ https://demo.tock.ai/{chemin_relatif_du_connecteur_slack}</p>
 connecteur Slack, il s'agit du champ <em>Relative REST path</em></p>
 </blockquote>
 <ul>
-<li>
-<p>Ouvrez <em>Add Workspace Event</em> et sélectionnez l'évenement <em>message.channels</em></p>
-</li>
+<li>Ouvrez <em>Add Workspace Event</em> et sélectionnez l'évenement <em>message.channels</em> pour 
+utiliser le bot sur une <em>chaîne</em> Slack.</li>
+</ul>
+<blockquote>
+<p>D'autres événements "message" sont également disponibles : <em>message.im</em> pour les messages privés,
+  <em>message.groups</em>, etc. Cf la <a href="https://api.slack.com/events">documentation Slack</a>.</p>
+</blockquote>
+<ul>
 <li>
 <p>Validez avec <em>Save Changes</em></p>
 </li>
@@ -1231,7 +1240,10 @@ connecteur Slack, il s'agit du champ <em>Relative REST path</em></p>
 <p>Sélectionnez la <em>chaîne</em> Slack puis <em>Installer</em></p>
 </li>
 <li>
-<p>Dans Slack, allez sur la <em>chaîne</em> et parlez au bot (par exemple "bonjour"). Le bot vous répond maintenant dans Slack !</p>
+<p>Dans Slack, allez sur la <em>chaîne</em> et ajoutez le bot à la <em>chaîne</em></p>
+</li>
+<li>
+<p>Parlez au bot (par exemple "bonjour"). Il vous répond maintenant dans Slack !</p>
 </li>
 </ul>
 <h2 id="regarder-la-conversation-dans-tock-studio-optionnel">Regarder la conversation dans Tock Studio (optionnel)<a class="headerlink" href="#regarder-la-conversation-dans-tock-studio-optionnel" title="Permanent link">&para;</a></h2>
@@ -1274,7 +1286,7 @@ parcourir le <a href="../../toc/">manuel utilisateur</a>, plus complet.</p>
 <div class="md-source-date">
   <small>
     
-      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">15 juillet 2020</span>
+      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">6 janvier 2021</span>
     
   </small>
 </div>
