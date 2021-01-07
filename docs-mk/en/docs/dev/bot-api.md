@@ -3,7 +3,7 @@
 > This is the recommended way to start developing stories with Tock. 
 
 [Kotlin](https://kotlinlang.org/), [Javascript](https://nodejs.org/) and [Python](https://www.python.org/) clients are available.
-Any programing language can be used, leveraging the Tock [Bot API](../api.md#tock-bot-definition-api). 
+Any programming language can be used, leveraging the Tock [Bot API](../api.md#tock-bot-definition-api). 
 
 [<img alt="Kotlin logo" title="Kotlin"
       src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin-logo.svg/1024px-Kotlin-logo.svg.png" 

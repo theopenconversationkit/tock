@@ -22,7 +22,7 @@ and open [http://localhost/doc/admin.html](http://localhost/doc/admin.html).
 
 ## _Tock Bot Definition API_
 
-This API allows to create bots and stories with any programing language.
+This API allows to create bots and stories with any programming language.
 Tock bots can be composed of configured stories (using Tock Studio builder) and 
 programatic stories, possibly implementing complex rules or leveraging other external APIs.
   

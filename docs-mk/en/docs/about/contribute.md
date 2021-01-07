@@ -38,7 +38,7 @@ and [Docker Compose](https://docs.docker.com/compose/) images/descriptors, for p
 of various configurations.
 
 * [`tock-bot-samples`](): code samples, in particular the _WebHook_ and _WebSocket_ modes examples from 
-[Tock programing guides](../dev/bot-api.md).
+[Tock programming guides](../dev/bot-api.md).
  
 * [`tock-bot-open-data`](https://github.com/theopenconversationkit/tock-bot-open-data): a bot example, based on 
 the [SNCF _Open Data_ API](https://www.digital.sncf.com/startup/api), also implementing basic internationalization (_i18n_)
