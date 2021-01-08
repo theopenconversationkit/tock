@@ -1,16 +1,15 @@
-import {AfterViewInit, Component, ViewChild} from '@angular/core';
-import {UserAnalyticsQueryResult, UserSearchQuery} from "../users/users";
-import {DialogFlowRequest} from "../flow/flow";
-import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
-import {StateService} from 'src/app/core-nlp/state.service';
-import {AnalyticsService} from '../analytics.service';
-import {BotConfigurationService} from 'src/app/core/bot-configuration.service';
-import {PaginatedQuery} from 'src/app/model/commons';
-import {Observable} from 'rxjs';
-import {UserFilter} from '../users/users.component';
-import {BotApplicationConfiguration, ConnectorType} from 'src/app/core/model/configuration';
-import * as html2pdf from 'html2pdf.js'
-import {UserAnalyticsPreferences} from '../preferences/UserAnalyticsPreferences';
+import { AfterViewInit, Component } from '@angular/core';
+import * as html2pdf from 'html2pdf.js';
+import { StateService } from 'src/app/core-nlp/state.service';
+import { BotConfigurationService } from 'src/app/core/bot-configuration.service';
+import { BotApplicationConfiguration, ConnectorType } from 'src/app/core/model/configuration';
+
+import { SelectBotEvent } from '../../shared/select-bot/select-bot.component';
+import { AnalyticsService } from '../analytics.service';
+import { DialogFlowRequest } from '../flow/flow';
+import { UserAnalyticsPreferences } from '../preferences/UserAnalyticsPreferences';
+import { UserAnalyticsQueryResult } from '../users/users';
+import { UserFilter } from '../users/users.component';
 
 @Component({
   selector: 'tock-behavior',
@@ -18,15 +17,6 @@ import {UserAnalyticsPreferences} from '../preferences/UserAnalyticsPreferences'
   styleUrls: ['./behavior.component.css']
 })
 export class BehaviorComponent implements AfterViewInit {
-
-  @ViewChild('messagesByStoryItem') messagesByStoryItem;
-  @ViewChild('messagesByIntentItem') messagesByIntentItem;
-  @ViewChild('messagesByDayOfWeekItem') messagesByDayOfWeekItem;
-  @ViewChild('messagesByHourItem') messagesByHourItem;
-  @ViewChild('messagesByActionTypeItem') messagesByActionTypeItem;
-  @ViewChild('messagesByStoryCategoryItem') messagesByStoryCategoryItem;
-  @ViewChild('messagesByStoryTypeItem') messagesByStoryTypeItem;
-  @ViewChild('messagesByStoryLocaleItem') messagesByStoryLocaleItem;
 
   startDate: Date;
   endDate: Date;
@@ -46,6 +36,15 @@ export class BehaviorComponent implements AfterViewInit {
   messagesByHourData: UserAnalyticsQueryResult;
   messagesByActionTypeData: UserAnalyticsQueryResult;
 
+  messagesByStoryLoading: boolean = false;
+  messagesByStoryTypeLoading: boolean = false;
+  messagesByStoryCategoryLoading: boolean = false;
+  messagesByStoryLocaleLoading: boolean = false;
+  messagesByIntentLoading: boolean = false;
+  messagesByDayOfWeekLoading: boolean = false;
+  messagesByHourLoading: boolean = false;
+  messagesByActionTypeLoading: boolean = false;
+
   configurations: BotApplicationConfiguration[];
   userPreferences: UserAnalyticsPreferences;
 
@@ -60,41 +59,18 @@ export class BehaviorComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    let selectedGraphs = this.getSelectedGraphToDisplay()
-    if (selectedGraphs.length > 0) {
-      setTimeout(() => {
-        selectedGraphs[0].open();
-      });
-    }
+    this.search();
   }
 
-  getSelectedGraphToDisplay(): any[] {
-    let selectedGraphs = []
-    if (this.userPreferences.graphs.behavior.messagesByStory == true) {
-      selectedGraphs.push(this.messagesByStoryItem);
-    }
-    if (this.userPreferences.graphs.behavior.messagesByIntent == true) {
-      selectedGraphs.push(this.messagesByIntentItem);
-    }
-    if (this.userPreferences.graphs.behavior.messagesByDayOfWeek == true) {
-      selectedGraphs.push(this.messagesByDayOfWeekItem);
-    }
-    if (this.userPreferences.graphs.behavior.messagesByHourOfDay == true) {
-      selectedGraphs.push(this.messagesByHourItem);
-    }
-    if (this.userPreferences.graphs.behavior.messagesByActionType == true) {
-      selectedGraphs.push(this.messagesByActionTypeItem);
-    }
-    if (this.userPreferences.graphs.behavior.messagesByStoryCategory == true) {
-      selectedGraphs.push(this.messagesByStoryCategoryItem);
-    }
-    if (this.userPreferences.graphs.behavior.messagesByStoryType == true) {
-      selectedGraphs.push(this.messagesByStoryTypeItem);
-    }
-    if (this.userPreferences.graphs.behavior.messagesByLocale == true) {
-      selectedGraphs.push(this.messagesByStoryLocaleItem);
-    }
-    return selectedGraphs
+  search() {
+    this.buildMessagesByStoryCharts();
+    this.buildMessagesByIntentCharts();
+    this.buildMessagesByDayOfWeekCharts();
+    this.buildMessagesByHourCharts();
+    this.buildMessagesByActionTypeCharts();
+    this.buildMessagesByStoryCategoryCharts();
+    this.buildMessagesByStoryTypeCharts();
+    this.buildMessagesByStoryLocaleCharts();
   }
 
   getConnectorColor(connector: string): string {
@@ -176,174 +152,100 @@ export class BehaviorComponent implements AfterViewInit {
     return connectors && connectors.length > 0 ? connectors[0] : null
   }
 
-  findUsers(query: PaginatedQuery): Observable<UserAnalyticsQueryResult> {
-    return this.analytics.usersAnalytics(this.buildUserSearchQuery(query));
-  }
-
   private reload(force?: boolean) {
     if (this.startDate != null && !this.loading) {
       this.filter.from = this.startDate;
       this.filter.to = this.endDate;
-//       this.usersGraph(that);
-      if (this.messagesByStoryItem && this.messagesByStoryItem.expanded) {
-        if (force || !this.messagesByStoryData) {
-          this.buildMessagesByStoryCharts();
-        }
-      } else if (force) {
-        this.messagesByStoryData = null;
-      }
-      if (this.messagesByIntentItem && this.messagesByIntentItem.expanded) {
-        if (force || !this.messagesByIntentData) {
-          this.buildMessagesByIntentCharts();
-        }
-      } else if (force) {
-        this.messagesByIntentData = null;
-      }
-      if (this.messagesByDayOfWeekItem && this.messagesByDayOfWeekItem.expanded) {
-        if (force || !this.messagesByDayOfWeekData) {
-          this.buildMessagesByDayOfWeekCharts();
-        }
-      } else if (force) {
-        this.messagesByDayOfWeekData = null;
-      }
-      if (this.messagesByHourItem && this.messagesByHourItem.expanded) {
-        if (force || !this.messagesByHourData) {
-          this.buildMessagesByHourCharts();
-        }
-      } else if (force) {
-        this.messagesByHourData = null;
-      }
-      if (this.messagesByActionTypeItem && this.messagesByActionTypeItem.expanded) {
-        if (force || !this.messagesByActionTypeData) {
-          this.buildMessagesByActionTypeCharts();
-        }
-      } else if (force) {
-        this.messagesByActionTypeData = null;
-      }
-      if (this.messagesByStoryCategoryItem && this.messagesByStoryCategoryItem.expanded) {
-        if (force || !this.messagesByStoryCategoryData) {
-          this.buildMessagesByStoryCategoryCharts();
-        }
-      } else if (force) {
-        this.messagesByStoryCategoryData = null;
-      }
-      if (this.messagesByStoryTypeItem && this.messagesByStoryTypeItem.expanded) {
-        if (force || !this.messagesByStoryTypeData) {
-          this.buildMessagesByStoryTypeCharts();
-        }
-      } else if (force) {
-        this.messagesByStoryTypeData = null;
-      }
-      if (this.messagesByStoryLocaleItem && this.messagesByStoryLocaleItem.expanded) {
-        if (force || !this.messagesByStoryLocaleData) {
-          this.buildMessagesByStoryLocaleCharts();
-        }
-      } else if (force) {
-        this.messagesByStoryLocaleData = null;
-      }
+      this.search();
     }
   }
 
   private buildMessagesByStoryCharts() {
-    this.loading = true;
+    if(!this.userPreferences.graphs.behavior.messagesByStory) return;
+    this.messagesByStoryLoading = true;
     this.analytics.messagesAnalyticsByStory(this.buildMessagesSearchQuery()).subscribe(
       result => {
         this.messagesByStoryData = result;
-        this.loading = false;
-        this.messagesByStoryItem.open();
+        this.messagesByStoryLoading = false;
       }
     )
   }
 
   private buildMessagesByStoryTypeCharts() {
-    this.loading = true;
+    if(!this.userPreferences.graphs.behavior.messagesByStoryType) return;
+    this.messagesByStoryTypeLoading = true;
     this.analytics.messagesAnalyticsByStoryType(this.buildMessagesSearchQuery()).subscribe(
       result => {
         this.messagesByStoryTypeData = result;
-        this.loading = false;
-        this.messagesByStoryTypeItem.open();
+        this.messagesByStoryTypeLoading = false;
       }
     )
   }
 
   private buildMessagesByStoryCategoryCharts() {
-    this.loading = true;
+    if(!this.userPreferences.graphs.behavior.messagesByStoryCategory) return;
+    this.messagesByStoryCategoryLoading = true;
     this.analytics.messagesAnalyticsByStoryCategory(this.buildMessagesSearchQuery()).subscribe(
       result => {
         this.messagesByStoryCategoryData = result;
-        this.loading = false;
-        this.messagesByStoryCategoryItem.open();
+        this.messagesByStoryCategoryLoading = false;
       }
     )
   }
 
   private buildMessagesByStoryLocaleCharts() {
-    this.loading = true;
+    if(!this.userPreferences.graphs.behavior.messagesByLocale) return;
+    this.messagesByStoryLocaleLoading = true;
     this.analytics.messagesAnalyticsByStoryLocale(this.buildMessagesSearchQuery()).subscribe(
       result => {
         this.messagesByStoryLocaleData = result;
-        this.loading = false;
-        this.messagesByStoryLocaleItem.open();
+        this.messagesByStoryLocaleLoading = false;
       }
     )
   }
 
   private buildMessagesByIntentCharts() {
-    this.loading = true;
+    if(!this.userPreferences.graphs.behavior.messagesByIntent) return;
+    this.messagesByIntentLoading = true;
     this.analytics.messagesAnalyticsByIntent(this.buildMessagesSearchQuery()).subscribe(
       result => {
         this.messagesByIntentData = result;
-        this.loading = false;
-        this.messagesByIntentItem.open();
+        this.messagesByIntentLoading = false;
       }
     )
   }
 
   private buildMessagesByDayOfWeekCharts() {
-    this.loading = true;
+    if(!this.userPreferences.graphs.behavior.messagesByDayOfWeek) return;
+    this.messagesByDayOfWeekLoading = true;
     this.analytics.messagesAnalyticsByDayOfWeek(this.buildMessagesSearchQuery()).subscribe(
       result => {
         this.messagesByDayOfWeekData = result;
-        this.loading = false;
-        this.messagesByDayOfWeekItem.open();
+        this.messagesByDayOfWeekLoading = false;
       }
     )
   }
 
   private buildMessagesByHourCharts() {
-    this.loading = true;
+    if(!this.userPreferences.graphs.behavior.messagesByHourOfDay) return;
+    this.messagesByHourLoading = true;
     this.analytics.messagesAnalyticsByHour(this.buildMessagesSearchQuery()).subscribe(
       result => {
         this.messagesByHourData = result;
-        this.loading = false;
-        this.messagesByHourItem.open();
+        this.messagesByHourLoading = false;
       }
     )
   }
 
   private buildMessagesByActionTypeCharts() {
-    this.loading = true;
+    if(!this.userPreferences.graphs.behavior.messagesByActionType) return;
+    this.messagesByActionTypeLoading = true;
     this.analytics.messagesAnalyticsByActionType(this.buildMessagesSearchQuery()).subscribe(
       result => {
         this.messagesByActionTypeData = result;
-        this.loading = false;
-        this.messagesByActionTypeItem.open();
+        this.messagesByActionTypeLoading = false;
       }
     )
-  }
-
-  private buildUserSearchQuery(query: PaginatedQuery): UserSearchQuery {
-    return new UserSearchQuery(
-      query.namespace,
-      query.applicationName,
-      query.language,
-      query.start,
-      query.size,
-      null,
-      this.filter.from,
-      this.filter.to,
-      this.filter.flags,
-      this.filter.displayTests);
   }
 
   private buildMessagesSearchQuery(): DialogFlowRequest {

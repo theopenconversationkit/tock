@@ -13,30 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { NbDialogRef, NbDialogService } from '@nebular/theme';
+import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
 
-import {AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, ViewChild} from "@angular/core";
-import {StateService} from "../../core-nlp/state.service";
-import {ApplicationService} from "../../core-nlp/applications.service";
-import { MatPaginator } from "@angular/material/paginator";
-import {DataSource} from "@angular/cdk/collections";
-import {UserLog} from "../../model/application";
-import {BehaviorSubject, merge, Observable, Subscription} from "rxjs";
-import {PaginatedQuery} from "../../model/commons";
-import {JsonEditorComponent, JsonEditorOptions} from 'ang-jsoneditor';
-import {NbDialogRef, NbDialogService} from '@nebular/theme';
+import { ApplicationService } from '../../core-nlp/applications.service';
+import { StateService } from '../../core-nlp/state.service';
+import { UserLog } from '../../model/application';
+import { PaginatedQuery } from '../../model/commons';
+
 
 @Component({
   selector: 'tock-user-logs',
   templateUrl: './user-logs.component.html',
   styleUrls: ['./user-logs.component.css']
 })
-export class UserLogsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class UserLogsComponent implements OnInit {
 
-  displayedColumns = ['date', 'type', 'user', 'application', 'data', 'error'];
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  dataSource: UserLogsDataSource | null;
-
-  private subscription: Subscription;
+  dataSource: UserLog[];
+  totalSize: number;
+  pageSize: number = 10;
+  pageIndex: number = 0;
+  loading: boolean = false;
 
   constructor(private state: StateService,
               private applicationService: ApplicationService,
@@ -45,16 +43,7 @@ export class UserLogsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.dataSource = new UserLogsDataSource(this, this.state, this.applicationService);
-    this.subscription = this.state.configurationChange.subscribe(_ => this.dataSource.refresh());
-  }
-
-  ngAfterViewInit(): void {
-    this.dataSource.refresh();
-  }
-
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.search();
   }
 
   appName(appId: string): string {
@@ -72,52 +61,28 @@ export class UserLogsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
   }
-}
 
-export class UserLogsDataSource extends DataSource<UserLog> {
-
-  size: number = 0;
-  private refreshEvent = new EventEmitter();
-  private subject = new BehaviorSubject<UserLog[]>([]);
-
-  constructor(private component: UserLogsComponent,
-              private state: StateService,
-              private  applicationService: ApplicationService) {
-    super();
+  getIndex(){
+    if(this.pageIndex > 0) return this.pageIndex - 1;
+    else return this.pageIndex
   }
 
-  refresh() {
-    this.refreshEvent.emit(true);
-  }
-
-  /** Connect function called by the table to retrieve one stream containing the data to render. */
-  connect(): Observable<UserLog[]> {
-    const displayDataChanges = [
-      this.component.paginator.page,
-      this.refreshEvent
-    ];
-
-    merge(...displayDataChanges).subscribe(() => {
-      const startIndex = this.component.paginator.pageIndex * this.component.paginator.pageSize;
-
-      this.applicationService.searchUserLogs(
-        new PaginatedQuery(
-          this.state.currentApplication.namespace,
-          this.state.currentApplication.name,
-          this.state.currentLocale,
-          startIndex,
-          this.component.paginator.pageSize
-        )
-      ).subscribe(r => {
-        this.size = r.total;
-        this.subject.next(r.logs);
-      });
+  search(){
+    this.loading = true;
+    const startIndex = this.getIndex() * this.pageSize;
+    this.applicationService.searchUserLogs(
+      new PaginatedQuery(
+        this.state.currentApplication.namespace,
+        this.state.currentApplication.name,
+        this.state.currentLocale,
+        startIndex,
+        this.pageSize
+      )
+    ).subscribe(r => {
+      this.loading = false;
+      this.totalSize = r.total;
+      this.dataSource = r.logs;
     });
-
-    return this.subject;
-  }
-
-  disconnect() {
   }
 }
 

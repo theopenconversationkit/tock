@@ -43,3 +43,8 @@
 .toggle {
   vertical-align: text-top;
 }
+
+.chart {
+  height: 500px;
+  width: 100%;
+}

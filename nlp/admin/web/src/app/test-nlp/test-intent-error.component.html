@@ -14,90 +14,80 @@
   ~ limitations under the License.
   -->
 
-<mat-card class="search">
-  <mat-card-content>
-    <mat-form-field class="intent">
-      <mat-select placeholder="Intent" [(ngModel)]="dataSource.intent" (selectionChange)="search()"
+<nb-card class="search">
+  <nb-card-body>
+    <span class="nb-form-field inline">
+      <label>Intent</label>
+      <nb-select placeholder="Intent" [(ngModel)]="intent" (selectedChange)="search()"
                   class="search-input">
-        <mat-option value="">All</mat-option>
-        <mat-optgroup *ngFor="let category of state.currentIntentsCategories | async" [label]="category.category">
-          <mat-option *ngFor="let intent of category.intents" [value]="intent.qualifiedName()">
+        <nb-option value="">All</nb-option>
+        <nb-option-group *ngFor="let category of state.currentIntentsCategories | async" [title]="category.category">
+          <nb-option *ngFor="let intent of category.intents" [value]="intent.qualifiedName()">
             {{intent.intentLabel()}}
-          </mat-option>
-        </mat-optgroup>
-        <mat-option value="unknown">Unknown</mat-option>
-      </mat-select>
-    </mat-form-field>
-    <button nbButton ghost (click)="download()" matTooltip="Download the whole error list">
+          </nb-option>
+        </nb-option-group>
+        <nb-option value="unknown">Unknown</nb-option>
+      </nb-select>
+    </span>
+    <button nbButton ghost size="small" (click)="download()" nbTooltip="Download the whole error list">
       <mat-icon>cloud_download</mat-icon>
     </button>
-  </mat-card-content>
-</mat-card>
+  </nb-card-body>
+</nb-card>
 
-<div>
-
-  <mat-table #table [dataSource]="dataSource">
-
-    <ng-container matColumnDef="text">
-      <mat-header-cell *matHeaderCellDef> Text</mat-header-cell>
-      <mat-cell *matCellDef="let row"> {{row.sentence.text}} </mat-cell>
-    </ng-container>
-
-    <ng-container matColumnDef="currentIntent">
-      <mat-header-cell *matHeaderCellDef> Current Intent</mat-header-cell>
-      <mat-cell *matCellDef="let row"><span style="color:green">{{state.intentLabelByName(row.currentIntent)}}</span>
-      </mat-cell>
-    </ng-container>
-
-    <ng-container matColumnDef="wrongIntent">
-      <mat-header-cell *matHeaderCellDef> Intent Found</mat-header-cell>
-      <mat-cell *matCellDef="let row"><span style="color:red">{{state.intentLabelByName(row.wrongIntent)}}</span>
-      </mat-cell>
-    </ng-container>
-
-    <ng-container matColumnDef="count">
-      <mat-header-cell *matHeaderCellDef> Errors</mat-header-cell>
-      <mat-cell *matCellDef="let row"> {{row.count}} </mat-cell>
-    </ng-container>
-
-    <ng-container matColumnDef="percent">
-      <mat-header-cell *matHeaderCellDef matTooltip="(after first error)"> Test Errors / Tests</mat-header-cell>
-      <mat-cell *matCellDef="let row"> {{(row.count / row.total)| percent:'1.0-2'}} </mat-cell>
-    </ng-container>
-
-    <ng-container matColumnDef="probability">
-      <mat-header-cell *matHeaderCellDef> Average Intent Error Probability</mat-header-cell>
-      <mat-cell *matCellDef="let row"> {{row.averageErrorProbability | percent:'1.0-2'}} </mat-cell>
-    </ng-container>
-
-    <ng-container matColumnDef="firstErrorDate">
-      <mat-header-cell *matHeaderCellDef> Detection Date</mat-header-cell>
-      <mat-cell *matCellDef="let row"> {{row.firstDetectionDate | amCalendar}} </mat-cell>
-    </ng-container>
-
-    <ng-container matColumnDef="actions">
-      <mat-header-cell *matHeaderCellDef> Actions</mat-header-cell>
-      <mat-cell *matCellDef="let row">
-        <button mat-icon-button (click)="validate(row)">
-          <mat-icon matTooltip="Validate Intent" style="color:green">sentiment_very_satisfied</mat-icon>
-        </button>
-        <button mat-icon-button (click)="change(row)">
-          <mat-icon matTooltip="Change the Intent" style="color:red">update</mat-icon>
-        </button>
-        <button mat-icon-button *ngIf="canReveal(row)" (click)="reveal(row)">
-          <mat-icon matTooltip="Reveal the sentence">visibility</mat-icon>
-        </button>
-      </mat-cell>
-    </ng-container>
-
-    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-  </mat-table>
-
-  <mat-paginator #paginator
-                 [length]="dataSource.size"
-                 [pageIndex]="0"
-                 [pageSize]="10"
-                 [pageSizeOptions]="[5, 10, 25, 100]">
-  </mat-paginator>
-</div>
+<nb-card [nbSpinner]="loading">
+  <nb-card-body>
+    <div>
+      <div *ngIf="dataSource.length === 0 && !loading" style="text-align: center;">
+        <h5>No records found</h5>
+      </div>
+      <table *ngIf="dataSource.length !== 0" class="table table-sm table-fixed">
+        <thead>
+        <tr>
+          <th style="width: 20%;"><p>Text</p></th>
+          <th style="width: 15%;"><p>Current Intent</p></th>
+          <th style="width: 15%;"><p>Intent Found</p></th>
+          <th style="width: 10%;"><p>Errors</p></th>
+          <th style="width: 10%;" nbTooltip="After first error"><p>Test Errors / Tests</p></th>
+          <th style="width: 10%;"><p>Average Intent Error Probability</p></th>
+          <th style="width: 10%;"><p>Detection Date</p></th>
+          <th style="width: 10%;"><p>Actions</p></th>
+        </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of dataSource; index as i">
+            <td style="width: 20%;"><p>{{row.sentence.text}}</p></td>
+            <td><p><span style="color:#00d68f">{{state.intentLabelByName(row.currentIntent)}}</span></p></td>
+            <td><p><span style="color:#ff3d71">{{state.intentLabelByName(row.wrongIntent)}}</span></p></td>
+            <td><p>{{row.count}}</p></td>
+            <td><p>{{(row.count / row.total)| percent:'1.0-2'}}</p></td>
+            <td><p>{{row.averageErrorProbability | percent:'1.0-2'}}</p></td>
+            <td><p>{{row.firstDetectionDate | amCalendar}}</p></td>
+            <td><p>
+              <button nbButton ghost size="tiny" status="success" (click)="validate(row)">
+                <mat-icon nbTooltip="Validate Intent">check_circle</mat-icon>
+              </button>
+              <button nbButton ghost size="tiny" status="danger" (click)="change(row)">
+                <mat-icon nbTooltip="Change the Intent">update</mat-icon>
+              </button>
+              <button nbButton ghost size="tiny" *ngIf="canReveal(row)" (click)="reveal(row)">
+                <mat-icon nbTooltip="Reveal the sentence">visibility</mat-icon>
+              </button>
+                </p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="dataSource.length !== 0" class="d-flex justify-content-center">
+        <nb-select [(ngModel)]="pageSize" (ngModelChange)="search()" nbTooltip="Items per page:">
+          <nb-option [value]="10">10</nb-option >
+          <nb-option [value]="20">20</nb-option >
+          <nb-option [value]="50">50</nb-option >
+        </nb-select>
+        <ngb-pagination [collectionSize]="totalSize" [(page)]="pageIndex" [maxSize]="10"
+                        [pageSize]="pageSize" (pageChange)="search()">
+        </ngb-pagination>
+      </div>
+    </div>    
+  </nb-card-body>
+</nb-card>

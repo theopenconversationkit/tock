@@ -1,31 +1,23 @@
-import {AfterViewInit, Component, ViewChild} from '@angular/core';
-import {UserAnalyticsQueryResult, UserSearchQuery} from "../users/users";
-import {DialogFlowRequest} from "../flow/flow";
-import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
-import {StateService} from 'src/app/core-nlp/state.service';
-import {AnalyticsService} from '../analytics.service';
-import {BotConfigurationService} from 'src/app/core/bot-configuration.service';
-import {PaginatedQuery} from 'src/app/model/commons';
-import {Observable} from 'rxjs';
-import {UserFilter} from '../users/users.component';
-import {ChartData} from '../chart/ChartData';
-import {BotApplicationConfiguration, ConnectorType} from 'src/app/core/model/configuration';
-import * as html2pdf from 'html2pdf.js'
-import {UserAnalyticsPreferences} from '../preferences/UserAnalyticsPreferences';
+import { Component, OnInit } from '@angular/core';
+import * as html2pdf from 'html2pdf.js';
+import { StateService } from 'src/app/core-nlp/state.service';
+import { BotConfigurationService } from 'src/app/core/bot-configuration.service';
+import { BotApplicationConfiguration, ConnectorType } from 'src/app/core/model/configuration';
+
+import { SelectBotEvent } from '../../shared/select-bot/select-bot.component';
+import { AnalyticsService } from '../analytics.service';
+import { ChartData } from '../chart/ChartData';
+import { DialogFlowRequest } from '../flow/flow';
+import { UserAnalyticsPreferences } from '../preferences/UserAnalyticsPreferences';
+import { UserAnalyticsQueryResult } from '../users/users';
+import { UserFilter } from '../users/users.component';
 
 @Component({
   selector: 'tock-activity',
   templateUrl: './activity.component.html',
   styleUrls: ['./activity.component.css']
 })
-export class ActivityComponent implements AfterViewInit {
-
-  @ViewChild('messagesByTypeItem') messagesByTypeItem;
-  @ViewChild('messagesByDaysItem') messagesByDaysItem;
-  @ViewChild('messagesByStoryItem') messagesByStoryItem;
-  @ViewChild('messagesByIntentItem') messagesByIntentItem;
-  @ViewChild('messagesByConfigurationItem') messagesByConfigurationItem;
-  @ViewChild('messagesByConnectorItem') messagesByConnectorItem;
+export class ActivityComponent implements OnInit {
 
   startDate: Date;
   endDate: Date;
@@ -34,7 +26,6 @@ export class ActivityComponent implements AfterViewInit {
   displayTests = false;
 
   filter: UserFilter = new UserFilter([], false);
-  loading = false;
   usersChart: ChartData;
 
   messagesByTypeData: UserAnalyticsQueryResult;
@@ -51,12 +42,24 @@ export class ActivityComponent implements AfterViewInit {
   messagesByConfigurationLoading = false;
   messagesByConnectorLoading = false;
 
+  messagesPercentageLoading = false;
+
   globalUsersCount: number[];
 //   globalMessagesCount: number[];
   configurations: BotApplicationConfiguration[];
   connectors: string[];
 
   userPreferences: UserAnalyticsPreferences;
+
+  currentFilterNbMessages = 0;
+  beforeCurrentFilterNbMessages = 0;
+  variationMessagesPercentage = 0;
+  activeUsersLoading: boolean;
+  usersPercentageLoading: boolean;
+  activeUsersData: UserAnalyticsQueryResult;
+  currentFilterNbUsers: number;
+  beforeCurrentFilterNbUsers: number;
+  variationUsersPercentage: number;
 
   constructor(private state: StateService,
               private analytics: AnalyticsService,
@@ -67,41 +70,12 @@ export class ActivityComponent implements AfterViewInit {
     )
     this.userPreferences = this.analytics.getUserPreferences();
   }
-
-  ngAfterViewInit() {
-    let selectedGraphs = this.getSelectedGraphToDisplay()
-    if(selectedGraphs.length > 0){
-      setTimeout(() => {
-        selectedGraphs[0].open();
-      });
-    }
+  ngOnInit(): void {
+    this.reload();
   }
 
-  getSelectedGraphToDisplay(): any[] {
-    let selectedGraphs = []
-    if(this.userPreferences.graphs.activity.messagesAll == true) {
-      selectedGraphs.push(this.messagesByTypeItem);
-    }
-    if(this.userPreferences.graphs.activity.messagesByDays == true) {
-      selectedGraphs.push(this.messagesByDaysItem);
-    }
-    if(this.userPreferences.graphs.activity.messagesByStory == true) {
-      selectedGraphs.push(this.messagesByStoryItem);
-    }
-    if(this.userPreferences.graphs.activity.messagesByIntent == true) {
-      selectedGraphs.push(this.messagesByIntentItem);
-    }
-    if(this.userPreferences.graphs.activity.messagesByConfiguration == true) {
-      selectedGraphs.push(this.messagesByConfigurationItem);
-    }
-    if(this.userPreferences.graphs.activity.messagesByConnector == true) {
-      selectedGraphs.push(this.messagesByConnectorItem);
-    }
-    return selectedGraphs
-  }
-
-  isGraphTypeSelected(graphType: string): boolean {
-    return this.userPreferences.selectedChartType.toString() == "all" || this.userPreferences.selectedChartType.toString() == graphType
+  getNumberOfDays(): number{
+    return Number(((this.filter.to.getTime() - this.filter.from.getTime())/ (1000 * 3600 * 24)).toFixed(0));
   }
 
   getConnectorColor(connector: string): string {
@@ -183,180 +157,165 @@ export class ActivityComponent implements AfterViewInit {
     return connectors && connectors.length > 0 ? connectors[0] : null
   }
 
-  findUsers(query: PaginatedQuery): Observable<UserAnalyticsQueryResult> {
-    return this.analytics.usersAnalytics(this.buildUserSearchQuery(query));
-  }
-
-  private reload(force?: boolean) {
-    if (this.startDate != null && !this.loading) {
+  private reload() {
+    if (this.startDate != null) {
       this.filter.from = this.startDate;
       this.filter.to = this.endDate;
-//       this.usersGraph(that);
-      if (this.messagesByTypeItem && this.messagesByTypeItem.expanded) {
-        if (force || !this.messagesByTypeData) {
-          this.buildMessagesCharts();
-        }
-      } else if (force) {
-        this.messagesByTypeData = null;
-      }
-      if (this.messagesByDaysItem && this.messagesByDaysItem.expanded) {
-        if (force || !this.messagesByDaysData) {
-          this.buildMessagesByDaysCharts();
-        }
-      } else if (force) {
-        this.messagesByDaysData = null;
-      }
-      if (this.messagesByStoryItem && this.messagesByStoryItem.expanded) {
-        if (force || !this.messagesByStoryData) {
-          this.buildMessagesByStoryCharts();
-        }
-      } else if (force) {
-        this.messagesByStoryData = null;
-      }
-      if (this.messagesByIntentItem && this.messagesByIntentItem.expanded) {
-        if (force || !this.messagesByIntentData) {
-          this.buildMessagesByIntentCharts();
-        }
-      } else if (force) {
-        this.messagesByIntentData = null;
-      }
-      if (this.messagesByConfigurationItem && this.messagesByConfigurationItem.expanded) {
-        if (force || !this.messagesByConfigurationData) {
-          this.buildMessagesByConfigurationCharts();
-        }
-      } else if (force) {
-        this.messagesByConfigurationData = null;
-      }
-      if (this.messagesByConnectorItem && this.messagesByConnectorItem.expanded) {
-        if (force || !this.messagesByConnectorData) {
-          this.buildMessagesByConnectorCharts();
-        }
-      } else if (force) {
-        this.messagesByConnectorData = null;
-      }
+      this.buildMessagesCharts();
+      this.buildMessagesByDaysCharts();
+      this.buildMessagesByStoryCharts();
+      this.buildMessagesByIntentCharts();
+      this.buildMessagesByConfigurationCharts();
+      this.buildMessagesByConnectorCharts();
+      this.buildActiveUsersCharts();
     }
   }
 
-  private usersGraph(that: this) {
-    this.findUsers(this.state.createPaginatedQuery(0)).subscribe(
-      result => {
-        this.connectors = result.connectorsType;
-        let graphdata = [];
-
-        result.dates.forEach(function (date, index) {
-          graphdata.push([date].concat(result.usersData[index]))
-        });
-        this.globalUsersCount = new Array(this.connectors.length).fill(0);
-        result.usersData.forEach(function (userData) {
-          that.connectors.forEach(function (value, index,) {
-            that.globalUsersCount[index] += userData[index]
-          })
-        })
-        let columnNames = ["Day"].concat(this.connectors.map((c, i) => c + "  " + this.globalUsersCount[i]))
-        let connectorColor = this.connectors.map(connectorType => that.getConnectorColor(connectorType))
-        let options = {
-          legend: {position: 'right'},
-          colors: connectorColor,
-          pointSize: 5, is3D: true
-        };
-        this.usersChart = new ChartData("LineChart", graphdata, columnNames, options, '500', '1000');
-        this.loading = false;
-      }
-    )
+  private getTotalNumber(usersData): number{
+    let count = []
+      usersData.forEach((value)=> {
+        count.push(value.reduce((x,y)=> x + y))
+      })
+      return count.reduce((x,y)=> x+y);
   }
 
   private buildMessagesCharts() {
-    this.loading = true;
     this.messagesByTypeLoading = true;
+    this.messagesPercentageLoading = true;
     this.analytics.messagesAnalytics(this.buildMessagesSearchQuery()).subscribe(
       result => {
         this.connectors = result.connectorsType;
         this.messagesByTypeData = result;
-        this.loading = false;
-        this.messagesByTypeItem.open();
         this.messagesByTypeLoading = false;
+        this.currentFilterNbMessages = this.getTotalNumber(result.usersData)
+        
+        this.analytics.messagesAnalytics(this.buildPreviousDateSearchQuery(this.getNumberOfDays())).subscribe(
+          result => {
+            this.beforeCurrentFilterNbMessages = this.getTotalNumber(result.usersData);
+            this.variationMessagesPercentage = this.messagesVariationPercentage(this.beforeCurrentFilterNbMessages, this.currentFilterNbMessages);
+            this.messagesPercentageLoading = false;
+          }
+        )
       }
     )
   }
 
+  private buildActiveUsersCharts() {
+    this.activeUsersLoading = true;
+    this.usersPercentageLoading = true;
+    this.analytics.usersAnalytics(this.buildMessagesSearchQuery()).subscribe(
+      result => {
+        this.connectors = result.connectorsType;
+        this.activeUsersData = result;
+        this.activeUsersLoading = false;
+        this.currentFilterNbUsers = this.getTotalNumber(result.usersData)
+        
+        this.analytics.usersAnalytics(this.buildPreviousDateSearchQuery(this.getNumberOfDays())).subscribe(
+          result => {
+            this.beforeCurrentFilterNbUsers = this.getTotalNumber(result.usersData);
+            this.variationUsersPercentage = this.messagesVariationPercentage(this.beforeCurrentFilterNbUsers, this.currentFilterNbUsers);
+            this.usersPercentageLoading = false;
+          }
+        )
+      }
+    )
+  }
+
+  metricIncreased(before, current): boolean {
+    return current > before;
+  }
+
+  getBigIcon(before, current) {
+    if(current == before){
+      return 'minus-outline'
+    } else {
+      return this.metricIncreased(before, current)? 'diagonal-arrow-right-up-outline':'diagonal-arrow-right-down-outline'
+    }
+  }
+
+  getSmallIcon(before, current) {
+    if(current == before){
+      return 'minus-outline'
+    } else {
+      return this.metricIncreased(before, current)? 'arrow-upward-outline':'arrow-downward-outline'
+    }
+  }
+
+  getIconStatus(before, current) {
+    if(current == before){
+      return 'basic'
+    } else {
+      return this.metricIncreased(before, current)? 'success':'danger'
+    }
+  }
+
+  messagesVariationPercentage(before, current): number {
+    if(before == current){
+      return 0;
+    }
+    if(current == 0){
+      return 100;
+    }
+    if(before == 0){
+      before = 1;
+    }
+    return Number(((current/before)*100).toFixed(0))
+  }
+
   private buildMessagesByDaysCharts() {
-    this.loading = true;
+    if(!this.userPreferences.graphs.activity.messagesByDays) return;
     this.messagesByDaysLoading = true;
     this.analytics.messagesAnalytics(this.buildMessagesSearchQuery()).subscribe(
       result => {
         this.connectors = result.connectorsType;
         this.messagesByDaysData = result;
-        this.loading = false;
-        this.messagesByDaysItem.open();
         this.messagesByDaysLoading = false;
       }
     )
   }
 
   private buildMessagesByStoryCharts() {
-    this.loading = true;
+    if(!this.userPreferences.graphs.activity.messagesByStory) return;
     this.messagesByStoryLoading = true;
     this.analytics.messagesAnalyticsByDateAndStory(this.buildMessagesSearchQuery()).subscribe(
       result => {
         this.messagesByStoryData = result;
-        this.loading = false;
-        this.messagesByStoryItem.open();
         this.messagesByStoryLoading = false;
       }
     )
   }
 
   private buildMessagesByIntentCharts() {
-    this.loading = true;
+    if(!this.userPreferences.graphs.activity.messagesByIntent) return;
     this.messagesByIntentLoading = false;
     this.analytics.messagesAnalyticsByDateAndIntent(this.buildMessagesSearchQuery()).subscribe(
       result => {
         this.messagesByIntentData = result;
-        this.loading = false;
-        this.messagesByIntentItem.open();
         this.messagesByIntentLoading = false;
       }
     )
   }
 
   private buildMessagesByConfigurationCharts() {
-    this.loading = true;
+    if(!this.userPreferences.graphs.activity.messagesByConfiguration) return;
     this.messagesByConfigurationLoading = true;
     this.analytics.messagesAnalyticsByConfiguration(this.buildMessagesSearchQuery()).subscribe(
       result => {
         this.messagesByConfigurationData = result;
-        this.loading = false;
-        this.messagesByConfigurationItem.open();
         this.messagesByConfigurationLoading = false;
       }
     )
   }
 
   private buildMessagesByConnectorCharts() {
-    this.loading = true;
+    if(!this.userPreferences.graphs.activity.messagesByConnector) return;
     this.messagesByConnectorLoading = true;
     this.analytics.messagesAnalyticsByConnectorType(this.buildMessagesSearchQuery()).subscribe(
       result => {
         this.messagesByConnectorData = result;
-        this.loading = false;
-        this.messagesByConnectorItem.open();
         this.messagesByConnectorLoading = false;
       }
     )
-  }
-
-  private buildUserSearchQuery(query: PaginatedQuery): UserSearchQuery {
-    return new UserSearchQuery(
-      query.namespace,
-      query.applicationName,
-      query.language,
-      query.start,
-      query.size,
-      null,
-      this.filter.from,
-      this.filter.to,
-      this.filter.flags,
-      this.filter.displayTests);
   }
 
   private buildMessagesSearchQuery(): DialogFlowRequest {
@@ -373,24 +332,42 @@ export class ActivityComponent implements AfterViewInit {
     );
   }
 
+  private buildPreviousDateSearchQuery(nbDays: number): DialogFlowRequest {
+    const oldFromDate = new Date(this.filter.from.getTime())
+    oldFromDate.setDate(oldFromDate.getDate() - nbDays);
+    const oldToDate = new Date(this.filter.to.getTime())
+    oldToDate.setDate(oldToDate.getDate() - nbDays);
+    return new DialogFlowRequest(
+      this.state.currentApplication.namespace,
+      this.state.currentApplication.name,
+      this.state.currentLocale,
+      this.state.currentApplication.name,
+      this.selectedConfigurationName,
+      this.selectedConnectorId,
+      oldFromDate,
+      oldToDate,
+      this.displayTests
+    );
+  }
+
   datesChanged(dates: [Date, Date]) {
     this.startDate = dates[0];
     this.endDate = dates[1];
     this.state.dateRange = {start: dates[0], end: dates[1], rangeInDays: this.state.dateRange.rangeInDays}
-    this.reload(true);
+    this.reload();
   }
 
   selectedConfigurationChanged(event?: SelectBotEvent) {
     this.selectedConfigurationName = !event ? null : event.configurationName;
     this.selectedConnectorId = !event ? null : event.configurationId;
-    this.reload(true);
+    this.reload();
   }
 
   collapsedChange(event?: boolean) {
-    setTimeout(_ => this.reload(false));
+    setTimeout(_ => this.reload());
   }
 
   waitAndRefresh() {
-    setTimeout(_ => this.reload(true));
+    setTimeout(_ => this.reload());
   }
 }

@@ -25,7 +25,6 @@ import {ApplicationResolver} from "../core-nlp/application.resolver";
 import {MomentModule} from "ngx-moment";
 import {TestIntentErrorComponent} from "../test-nlp/test-intent-error.component";
 import {TestEntityErrorComponent} from "../test-nlp/test-entity-error.component";
-import {ChartsModule} from "ng2-charts";
 import {TestBuildsComponent} from "../test-nlp/test-builds.component";
 import {QualityTabsComponent} from "./quality-tabs.component";
 import {QualityService} from "./quality.service";
@@ -33,8 +32,10 @@ import {NlpModule} from "../nlp-tabs/nlp.module";
 import {LogStatsComponent} from "../logs/log-stats.component";
 import {ModelBuildsComponent} from "../build/model-builds.component";
 import {IntentQAComponent} from "../intents/quality/intent-qa.component";
-import {NbThemeModule, NbRouteTabsetModule, NbCardModule, NbButtonModule, NbSelectModule } from "@nebular/theme";
+import {NbThemeModule, NbRouteTabsetModule, NbCardModule, NbButtonModule, NbSelectModule, NbTooltipModule, NbSpinnerModule } from "@nebular/theme";
 import {ThemeModule} from "../theme/theme.module";
+import { NgxEchartsModule } from 'ngx-echarts';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 const routes: Routes = [
   {
@@ -92,13 +93,18 @@ export class QualityRoutingModule {
     ApplicationsModule,
     NlpModule,
     MomentModule,
-    ChartsModule,
     NbThemeModule,
     ThemeModule,
     NbRouteTabsetModule,
     NbCardModule,
     NbButtonModule,
-    NbSelectModule
+    NbSelectModule,
+    NgxEchartsModule.forRoot({
+      echarts: () => import('echarts')
+    }),
+    NbTooltipModule,
+    NgbModule,
+    NbSpinnerModule,
   ],
   declarations: [
     QualityTabsComponent,

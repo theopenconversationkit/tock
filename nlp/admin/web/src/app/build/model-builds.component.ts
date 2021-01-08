@@ -13,29 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { Component, OnInit } from '@angular/core';
 import * as moment from 'moment';
-import {AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, ViewChild} from "@angular/core";
-import {StateService} from "../core-nlp/state.service";
-import {ApplicationService} from "../core-nlp/applications.service";
-import {MatPaginator} from "@angular/material/paginator";
-import {DataSource} from "@angular/cdk/collections";
-import {ModelBuild} from "../model/application";
-import {BehaviorSubject, merge, Observable, Subscription} from "rxjs";
-import {PaginatedQuery} from "../model/commons";
+
+import { ApplicationService } from '../core-nlp/applications.service';
+import { StateService } from '../core-nlp/state.service';
+import { ModelBuild } from '../model/application';
+import { PaginatedQuery } from '../model/commons';
+
 
 @Component({
   selector: 'tock-model-builds',
   templateUrl: './model-builds.component.html',
   styleUrls: ['./model-builds.component.css']
 })
-export class ModelBuildsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ModelBuildsComponent implements OnInit{
 
-  displayedColumns = ['date', 'type', 'intent', 'count', 'duration', 'error'];
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  dataSource: ModelBuildDataSource | null;
-
-  private subscription: Subscription;
+  dataSource: ModelBuild[] = [];
+  totalSize: number;
+  pageSize: number = 10;
+  pageIndex: number = 0;
+  loading: boolean = false;
 
   constructor(private state: StateService,
               private applicationService: ApplicationService) {
@@ -43,16 +41,7 @@ export class ModelBuildsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.dataSource = new ModelBuildDataSource(this, this.state, this.applicationService);
-    this.subscription = this.state.configurationChange.subscribe(_ => this.dataSource.refresh());
-  }
-
-  ngAfterViewInit(): void {
-    this.dataSource.refresh();
-  }
-
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.refresh();
   }
 
   duration(d: number): string {
@@ -84,51 +73,27 @@ export class ModelBuildsComponent implements OnInit, AfterViewInit, OnDestroy {
       return e ? e.simpleName() : "";
     }
   }
-}
 
-export class ModelBuildDataSource extends DataSource<ModelBuild> {
-
-  size: number = 0;
-  private refreshEvent = new EventEmitter();
-  private subject = new BehaviorSubject<ModelBuild[]>([]);
-
-  constructor(private component: ModelBuildsComponent,
-              private state: StateService,
-              private  applicationService: ApplicationService) {
-    super();
+  getIndex(){
+    if(this.pageIndex > 0) return this.pageIndex - 1;
+    else return this.pageIndex
   }
 
   refresh() {
-    this.refreshEvent.emit(true);
-  }
-
-  /** Connect function called by the table to retrieve one stream containing the data to render. */
-  connect(): Observable<ModelBuild[]> {
-    const displayDataChanges = [
-      this.component.paginator.page,
-      this.refreshEvent
-    ];
-
-    merge(...displayDataChanges).subscribe(() => {
-      const startIndex = this.component.paginator.pageIndex * this.component.paginator.pageSize;
-
-      this.applicationService.builds(
-        new PaginatedQuery(
-          this.state.currentApplication.namespace,
-          this.state.currentApplication.name,
-          this.state.currentLocale,
-          startIndex,
-          this.component.paginator.pageSize
-        )
-      ).subscribe(r => {
-        this.size = r.total;
-        this.subject.next(r.data);
-      });
+    this.loading = true;
+    const startIndex = this.getIndex() * this.pageSize;
+    this.applicationService.builds(
+      new PaginatedQuery(
+        this.state.currentApplication.namespace,
+        this.state.currentApplication.name,
+        this.state.currentLocale,
+        startIndex,
+        this.pageSize
+      )
+    ).subscribe(r => {
+      this.loading = false;
+      this.totalSize = r.total;
+      this.dataSource = r.data;
     });
-
-    return this.subject;
-  }
-
-  disconnect() {
   }
 }

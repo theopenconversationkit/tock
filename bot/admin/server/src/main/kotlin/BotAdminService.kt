@@ -328,6 +328,40 @@ object BotAdminService {
         return UserAnalyticsQueryResult(dates, result, series.map { seriesLabel(it) })
     }
 
+    private fun <S> reportUsersByDateAndSeries(
+        request: DialogFlowRequest,
+        applications: Set<BotApplicationConfiguration>,
+        series: Set<S>,
+        seriesFilter: (S) -> (DialogFlowTransitionStatsData) -> Boolean,
+        seriesLabel: (S) -> String
+    ): UserAnalyticsQueryResult {
+        val namespace = request.namespace
+        val botId = request.botId
+        val applicationIds = applications.map { it._id }.toSet()
+        val fromDate = atTimeOfDay(request.from, LocalTime.MIDNIGHT)
+        val toDate = atTimeOfDay(request.to, LocalTime.MAX)
+        logger.debug { "Building 'Users by Configuration' report for ${applications.size} configurations: $applicationIds..." }
+
+        val queryResult = dialogFlowDAO.search(namespace, botId, applicationIds, request.from, request.to)
+            .groupBy { groupSelector(fromDate, toDate, it.date) }
+
+        val (dates, transitionsByDate) = sortMessagesByDate(fromDate, toDate, queryResult)
+        val result = arrayListOf<List<Int?>>()
+        transitionsByDate.forEach { transitions ->
+            run {
+                val datesMessages = arrayListOf<Int?>()
+                series.forEach { serie ->
+                    run {
+                        val count = transitions?.distinctBy { it.dialogId }?.count(seriesFilter(serie))
+                        datesMessages.add(count)
+                    }
+                }
+                result.add(datesMessages)
+            }
+        }
+        return UserAnalyticsQueryResult(dates, result, series.map { seriesLabel(it) })
+    }
+
     private fun reportMessagesByDateAndFunction(
         request: DialogFlowRequest,
         applications: Set<BotApplicationConfiguration>,
@@ -425,6 +459,19 @@ object BotAdminService {
     fun reportMessagesByType(request: DialogFlowRequest): UserAnalyticsQueryResult {
         val applications = loadApplications(request)
         return reportMessagesByDateAndSeries(request, applications,
+            setOf(false, request.includeTestConfigurations),
+            { isTests ->
+                { transition ->
+                    applications.find { it._id.toString() == transition.applicationId }?.applicationId?.startsWith(
+                        "test-"
+                    ) == isTests
+                }
+            }, { if (it) "Tests" else "Messages" })
+    }
+
+    fun reportUsersByType(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val applications = loadApplications(request)
+        return reportUsersByDateAndSeries(request, applications,
             setOf(false, request.includeTestConfigurations),
             { isTests ->
                 { transition ->

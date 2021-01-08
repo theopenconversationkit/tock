@@ -45,6 +45,8 @@ import {ConfigurationTabsComponent} from "./configuration-tabs.component";
 import {NamespacesComponent} from "./namespace/namespaces.component";
 import {NgJsonEditorModule} from 'ang-jsoneditor'
 import {ApplicationConfig} from "./application.config";
+import {NgbPaginationModule} from '@ng-bootstrap/ng-bootstrap';
+
 
 const routes: Routes = [
   {
@@ -130,7 +132,8 @@ export class NlpApplicationConfig implements ApplicationConfig {
     NbSpinnerModule,
     NbRadioModule,
     NgJsonEditorModule,
-    NbDialogModule.forRoot()
+    NbDialogModule.forRoot(),
+    NgbPaginationModule
   ],
   declarations: [
     ApplicationsComponent,

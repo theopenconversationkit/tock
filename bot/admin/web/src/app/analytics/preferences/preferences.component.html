@@ -13,6 +13,10 @@
             All messages
             <nb-icon icon="info-outline" nbTooltip="Displays the number of messages of the users"></nb-icon>
           </nb-toggle>
+          <nb-toggle status="basic" [(ngModel)]="preferences.graphs.activity.users" style="width: 100%;">
+            Users
+            <nb-icon icon="info-outline" nbTooltip="Displays the number of users"></nb-icon>
+          </nb-toggle>
           <nb-toggle status="basic" [(ngModel)]="preferences.graphs.activity.messagesByDays" style="width: 100%;">
             Messages by days in calendar
             <nb-icon icon="info-outline" nbTooltip="Displays the number of messages of the users by days"></nb-icon>
@@ -73,17 +77,6 @@
         </nb-card-body>
       </nb-card>
     </div>
-
-    <nb-card status="info" style="margin-bottom: 0;">
-      <nb-card-header>Chart types</nb-card-header>
-      <nb-card-body>
-        <nb-radio-group [(value)]="preferences.selectedChartType" style="display: flex;">
-          <nb-radio value="all">Both</nb-radio>
-          <nb-radio value="line">Line chart</nb-radio>
-          <nb-radio value="pie">Pie chart</nb-radio>
-        </nb-radio-group>
-      </nb-card-body>
-    </nb-card>
     <nb-card status="info" style="margin-bottom: 0;">
       <nb-card-header>Chart options</nb-card-header>
       <nb-card-body>
@@ -102,16 +95,7 @@
             <nb-icon icon="info-outline" nbTooltip="Focus on a single data point instead of grouping all data points along the major axis."></nb-icon>
           </nb-toggle>
         </div>
-        <hr/>
-        <div>
-          <label style="font-weight: bold;">Pie Chart</label><br>
-          <nb-toggle status="success" [(ngModel)]="preferences.pieConfig.is3D">
-            is3D
-            <nb-icon icon="info-outline" nbTooltip="Displays a three-dimensional chart."></nb-icon>
-          </nb-toggle>
-        </div>
       </nb-card-body>
     </nb-card>
-
   </nb-card-body>
 </nb-card>

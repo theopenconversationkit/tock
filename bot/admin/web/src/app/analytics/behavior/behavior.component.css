@@ -6,3 +6,30 @@
   display: inline-flex;
   margin-left: 10px;
 }
+
+.graph {
+  min-height: 35rem;
+  min-width: 50%;
+  flex-basis: 0;
+  flex-direction: row;
+  align-items: center;
+  align-content: center;
+  margin-bottom: 0.4rem;
+}
+
+.graph-list {
+  height: auto;
+  min-height: 2rem;
+  width: 100%;
+  align-items: flex-start;
+  align-content: flex-start;
+  justify-content: flex-start;
+  flex-direction: row;
+  padding: 0;
+  overflow: visible;
+}
+
+.space {
+  flex-wrap: wrap;
+  display: flex;
+}

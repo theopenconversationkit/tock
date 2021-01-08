@@ -30,7 +30,7 @@ export class IntentQAComponent implements OnInit, OnDestroy {
 
   displayedColumns = ['intent1', 'intent2', 'occurrences', 'average'];
 
-  public dataSource: IntentQADataSource | null;
+  public dataSource :IntentQA[];
   public minOccurrences: number = 30;
 
   private subscription: Subscription;
@@ -64,22 +64,7 @@ export class IntentQAComponent implements OnInit, OnDestroy {
             p.average
           );
         });
-        this.dataSource = new IntentQADataSource(r);
+        this.dataSource = r;
       });
   }
-}
-
-export class IntentQADataSource extends DataSource<IntentQA> {
-
-  constructor(private intentQa: IntentQA[]) {
-    super();
-  }
-
-  connect(): Observable<IntentQA[]> {
-    return of(this.intentQa);
-  }
-
-  disconnect() {
-  }
-
 }

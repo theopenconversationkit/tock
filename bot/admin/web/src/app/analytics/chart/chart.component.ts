@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { NbDialogRef, NbDialogService } from '@nebular/theme';
+import * as html2pdf from 'html2pdf.js';
+import { ChartDialogComponent } from '../chart-dialog/chart-dialog.component';
 
-import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from "@angular/core";
-import {UserAnalyticsQueryResult} from "../users/users";
-import {ChartData} from './ChartData';
-import * as html2pdf from 'html2pdf.js'
-import {UserAnalyticsPreferences} from "../preferences/UserAnalyticsPreferences";
-import {UserFilter} from "../users/users.component";
+import { UserAnalyticsPreferences } from '../preferences/UserAnalyticsPreferences';
+import { UserAnalyticsQueryResult } from '../users/users';
+import { UserFilter } from '../users/users.component';
+import { ChartData, GraphInfo } from './ChartData';
+
 
 @Component({
   selector: 'tock-chart',
@@ -32,7 +35,7 @@ export class ChartComponent implements OnChanges {
   pdfId: string;
 
   @Input()
-  type: string;
+  type: string = 'line';
 
   @Input()
   title: string;
@@ -49,6 +52,12 @@ export class ChartComponent implements OnChanges {
   @Input()
   chartPreferences: UserAnalyticsPreferences;
 
+  @Input()
+  isFullScreen = false;
+
+  @Input()
+  isMultiChart = true;
+
   mainChart: ChartData;
   altChart: ChartData;
   isFlipped = false;
@@ -56,23 +65,33 @@ export class ChartComponent implements OnChanges {
   seriesSelectionList: number[] = [];
   intentsList : string[] = []
 
+  chartOptions: any;
+  pieChartOptions: any;
+
   @Output()
   intentChanged: EventEmitter<UserFilter> = new EventEmitter();
 
-  constructor() {
+  constructor(private dialogService: NbDialogService) {
+  }
+
+  expand(){
+    this.dialogService.open(ChartDialogComponent, {
+      context: {
+        data: this.data,
+        title: this.title,
+        type: this.type,
+        userPreferences: this.chartPreferences,
+        isMultiChart: this.isMultiChart
+      }
+    });
   }
 
   refresh(){
-    console.log(this.filter)
     this.intentChanged.emit(this.filter);
   }
 
   ngOnChanges(changes: SimpleChanges) {
     this.rebuild();
-  }
-
-  isGraphTypeSelected(graphType: string): boolean {
-    return this.chartPreferences.selectedChartType.toString() == "all" || this.chartPreferences.selectedChartType.toString() == graphType
   }
 
   rebuild(): void {
@@ -83,15 +102,12 @@ export class ChartComponent implements OnChanges {
         if (this.type == 'PieChart') {
           this.mainChart = this.buildPieChartFromDates(this.data, this.type);
         } else if (this.type == 'Calendar') {
-          this.mainChart = this.buildChartByDate(this.data, this.type);
+          this.mainChart = this.buildCalendarChart(this.data);
         } else {
           this.initSelectionList();
-          if (this.chartPreferences.selectedChartType.toString() == 'all') {
+          if (this.type == 'line') {
             this.mainChart = this.buildChartByDate(this.data, this.type);
-            this.altChart = this.buildPieChartFromDates(this.data);
-          } else if (this.chartPreferences.selectedChartType.toString() == 'line') {
-            this.mainChart = this.buildChartByDate(this.data, this.type);
-          } else if (this.chartPreferences.selectedChartType.toString() == 'pie') {
+          } else if (this.type == 'pie') {
             this.mainChart = this.buildPieChartFromDates(this.data);
           }
         }
@@ -111,6 +127,11 @@ export class ChartComponent implements OnChanges {
 
   updateGraph() {
     this.seriesSelectionList.sort((a, b) => a - b)
+    this.rebuild();
+  }
+
+  changeChartType(type: string) {
+    this.type = type;
     this.rebuild();
   }
 
@@ -138,7 +159,64 @@ export class ChartComponent implements OnChanges {
     }
   }
 
+  buildCalendarChart(result: UserAnalyticsQueryResult) {
+    let dates = result.dates;
+    let that = this;
+    let data = result.usersData;
+    let rows = [];
+
+    const unique = (value, index, self) => {
+      return self.indexOf(value) === index
+    }
+    const years = dates.map(date=>(new Date(date)).getFullYear()).filter(unique);
+
+    dates.forEach(function (date, index) {
+        rows.push([new Date(date)].concat(that.getDataFromSelection(data[index]).reduce((x,y) => x + y)))
+    });
+    this.chartOptions = {
+      tooltip: {
+        position: 'top'
+      },
+      visualMap: {
+        min: 0,
+        calculable: true,
+        orient: 'horizontal',
+        left: 'center',
+        top: 'top',
+        color: ['#143db8', "#3366ff", '#f0f4ff'],
+      },
+      calendar:this.getCalendarList(years) ,
+      series: this.getSeriesList(years, rows)
+  };
+    return new ChartData('Calendar', rows, null, null, '500', '100%');
+  }
+
+  getCalendarList(years: any[]){
+    return years.map((year, index) => {
+      return {
+        cellSize: ['auto', 15],
+        top: index != 0 ? (190*(index-1)) + 260:90,
+        range: year,
+        itemStyle: {
+            borderWidth: 0.5
+        }
+      }
+    })
+  }
+
+  getSeriesList(years: any[], rows: any[]) {
+    return years.map((_, index) => {
+      return {
+        type: 'heatmap',
+        coordinateSystem: 'calendar',
+        calendarIndex: index,
+        data: rows
+    }
+    })
+  }
+
   buildChartByDate(result: UserAnalyticsQueryResult, chartType?: string, width?: string) {
+
     let dates = result.dates;
     let series: any[] = result.connectorsType;
     let that = this;
@@ -153,73 +231,132 @@ export class ChartComponent implements OnChanges {
       }
     });
     let serieCount = new Array(this.getColumnsLength(series)).fill(0);
-    data.forEach(function (data) {
+    const finalData = [];
+    for (let index = 0; index < data[0].length; index++) {
+      finalData.push([]);
+    }
+    data.forEach(function (d, index) {
+      for (let i = 0; i < d.length; i++) {
+        finalData[i].push(d[i]);
+      }
+      //finalData[index].push(d[index]);
       that.getDataFromSelection(series).forEach(function (value, index) {
-        serieCount[index] += that.getDataFromSelection(data)[index];
+        serieCount[index] += that.getDataFromSelection(d)[index];
       })
     })
-    let seriesLabels = ["Date"].concat(this.getDataFromSelection(series).map((c, i) => c + "(" + serieCount[i] + ")"))
+    let seriesLabels = this.getDataFromSelection(series).map((c, i) => c + "(" + serieCount[i] + ")")
     let colors = series.map(serie => this.getColor(serie, series))
-    let focusTargetValue = 'datum'
-    if (this.chartPreferences.lineConfig.focusTarget == false) {
-      focusTargetValue = 'category'
-    }
-    let options = {
-      aggregationTarget: 'category',
-      focusTarget: focusTargetValue,
-      animation: {
-        startup: true,
-        duration: 1000,
-        easing: 'inAndOut'
-      },
-      legend: {position: 'right'},
-      colors: colors,
-//         dataOpacity: 0.5,
-      pointSize: 5
-    };
-    if (this.chartPreferences.lineConfig.stacked) {
-      (options as any).isStacked = true;
-    }
-    if (this.chartPreferences.lineConfig.curvedLines) {
-      (options as any).curveType = 'function';
-    }
-    if(chartType === 'Calendar') {
-      (options as any).calendar = {
-        cellSize: 20,
-        focusedCellColor: {
-          stroke: '#00d68f',
-            strokeOpacity: 1,
-            strokeWidth: 1,
+    this.chartOptions = {
+      tooltip: {
+        trigger: this.getTooltipType(this.chartPreferences.lineConfig.focusTarget),
+        axisPointer: {
+          type: 'cross',
+          label: {
+              backgroundColor: '#6a7985'
+          }
         }
-      };
-      (options as any).colorAxis = {
-        colors:['#ffffff','#3366ff']
-      };
-      (options as any).forceIFrame = true;
-      (options as any).tooltip = {isHtml: false}
-    }
+      },
+      grid: {
+        left: '3%',
+        right: '5%'
+    },
+      legend: {
+        data: seriesLabels,
+        type: 'scroll',
+        orient: 'horizontal',
+        bottom: 0,
+        textStyle: {
+          color: '#8f9bb3',
+        }
+      },
+      color: colors,
+      xAxis: {
+          type: 'category',
+          data: dates
+      },
+      yAxis: {
+          type: 'value'
+      },
+      series: this.getSeriesData(finalData, seriesLabels, this.chartPreferences.lineConfig.curvedLines,
+        this.chartPreferences.lineConfig.stacked)
+  };
+
     return new ChartData(chartType ? chartType : this.chartPreferences.lineConfig.stacked ? "AreaChart" : "LineChart",
-      rows, seriesLabels, options, '500', width ? width : '100%');
+      rows, ['Date'].concat(seriesLabels), null, '500', width ? width : '100%');
   }
+
+  getTooltipType(isItem){
+    if(isItem){
+      return 'item';
+    }
+    return 'axis';
+  }
+
+  getSeriesData(result, columns, smooth, area){
+    return result.slice(0, columns.length).map((element, index) => {
+      return {
+        name:columns[index],
+        data: element,
+        type: 'line',
+        smooth: smooth,
+        areaStyle: this.isAreaChart(area)
+    }
+    });
+  }
+  isAreaChart(area){
+    if(area) {
+      return {}
+    } 
+    return null
+  }
+  
 
   buildPieChart(result: UserAnalyticsQueryResult, chartType?: string, width?: string) {
     let series = result.connectorsType;
-    let data = result.usersData;
     let rows = [];
     this.intentsList = result.intents;
-    console.log(this.filter)
     series.forEach(function (serie, index) {
-      rows.push([serie].concat(data[0][index]))
+    let data = result.usersData;
+      rows.push(new GraphInfo(data[0][index], serie))
     });
     let colors = series.map(serie => this.getColor(serie, series))
-    let options = {
-      pieHole: 0.5,
-      colors: colors
-    };
-    if (this.chartPreferences.pieConfig.is3D) {
-      (options as any).is3D = true;
-    }
-    return new ChartData(chartType ? chartType : 'PieChart', rows, undefined, options, '500', width ? width : '100%');
+
+    this.chartOptions =  {
+      tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b} : {c} ({d}%)'
+      },
+      legend: {
+        type: 'scroll',
+        orient: 'horizontal',
+        bottom: 0,
+        textStyle: {
+          color: '#8f9bb3',
+        }
+      },
+      color: colors,
+      grid: {
+        left: '0%',
+        right: '0%',
+        top: '0%',
+        bottom: '0%'
+      },
+      series: [
+          {
+              type: 'pie',
+              center: ['50%', '50%'],
+              data: rows,
+              emphasis: {
+                  itemStyle: {
+                      shadowBlur: 10,
+                      shadowOffsetX: 0,
+                      shadowColor: 'rgba(0, 0, 0, 0.5)'
+                  }
+              }
+          }
+      ]
+  }
+    return new ChartData(chartType ? chartType : 'PieChart', rows, series, null, '500', width ? width : '100%');
   }
 
   buildPieChartFromDates(result: UserAnalyticsQueryResult, chartType?: string, width?: string) {
@@ -236,17 +373,38 @@ export class ChartComponent implements OnChanges {
     })
 
     that.getDataFromSelection(series).forEach(function (serie, index) {
-      rows.push([serie].concat(serieCount[index]))
+      rows.push(new GraphInfo(serieCount[index], serie))
     });
     let colors = series.map(serie => this.getColor(serie, series))
-    let options = {
-      pieHole: 0.5,
-      colors: colors
-    };
-    if (this.chartPreferences.pieConfig.is3D) {
-      (options as any).is3D = true;
-    }
-    return new ChartData(chartType ? chartType : 'PieChart', rows, undefined, options, '500', width ? width : '100%');
+    this.chartOptions =  {
+      tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b} : {c} ({d}%)'
+      },
+      legend: {
+        type: 'scroll',
+        orient: 'horizontal',
+        bottom: 0,
+        textStyle: {
+          color: '#8f9bb3',
+        }
+      },
+      color: colors,
+      series: [
+          {
+              type: 'pie',
+              data: rows,
+              emphasis: {
+                  itemStyle: {
+                      shadowBlur: 10,
+                      shadowOffsetX: 0,
+                      shadowColor: 'rgba(0, 0, 0, 0.5)'
+                  }
+              }
+          }
+      ]
+  };
+    return new ChartData(chartType ? chartType : 'PieChart', rows, ['Date'].concat(series), undefined, '500', width ? width : '100%');
   }
 
   getColor(serie: string, series: string[]): string {
@@ -267,6 +425,9 @@ export class ChartComponent implements OnChanges {
 
   onCsvAction() {
     let columnsNumber = this.mainChart.data[0].length;
+    if(this.mainChart.type == 'PieChart'){
+      columnsNumber = this.mainChart.data.length;
+    }
     let csv = '';
     if (this.mainChart.columnNames) {
       this.mainChart.columnNames.forEach(function (column, index) {
@@ -277,15 +438,27 @@ export class ChartComponent implements OnChanges {
       })
       csv += '\n';
     }
-    this.mainChart.data.forEach(function (row) {
-      row.forEach(function (value, index) {
-        csv += value;
-        if (index + 1 < columnsNumber) {
-          csv += ',';
-        }
+    if(this.mainChart.type == 'PieChart'){
+      this.mainChart.data.forEach(function (data, index) {
+        
+          csv += (data as unknown as GraphInfo).value;
+          if (index + 1 < columnsNumber) {
+            csv += ',';
+          }
       })
       csv += '\n';
-    })
+    } else {
+      this.mainChart.data.forEach(function (row) {
+        row.forEach(function (value, index) {
+          csv += value;
+          if (index + 1 < columnsNumber) {
+            csv += ',';
+          }
+        })
+        csv += '\n';
+      })
+    }
+    
     const blob = new Blob([csv], {type: 'text/csv'});
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");

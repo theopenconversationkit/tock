@@ -16,15 +16,10 @@
 
 export class UserAnalyticsPreferences {
 
-  selectedChartType: ChartType
   lineConfig: {
     stacked: boolean,
     curvedLines: boolean,
     focusTarget: boolean,
-  }
-
-  pieConfig: {
-    is3D: boolean;
   }
 
   graphs: {
@@ -35,6 +30,7 @@ export class UserAnalyticsPreferences {
       messagesByIntent: boolean;
       messagesAll: boolean;
       messagesByDays: boolean;
+      users: boolean;
     }
     behavior: {
       messagesByStory: boolean;
@@ -50,15 +46,10 @@ export class UserAnalyticsPreferences {
 
 
   private constructor() {
-    this.selectedChartType = ChartType.all
     this.lineConfig = {
       stacked: false,
       curvedLines: true,
       focusTarget: true
-    };
-
-    this.pieConfig = {
-      is3D: true,
     };
 
     this.graphs = {
@@ -68,7 +59,8 @@ export class UserAnalyticsPreferences {
         messagesByStory: true,
         messagesByIntent: true,
         messagesAll: true,
-        messagesByDays: true
+        messagesByDays: true,
+        users: true
       },
       behavior: {
         messagesByStory: true,

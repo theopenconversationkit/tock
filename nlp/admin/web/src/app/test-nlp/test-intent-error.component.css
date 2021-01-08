@@ -14,16 +14,33 @@
  * limitations under the License.
  */
 
-.intent {
-  margin-right: 20px;
-}
-
 .search {
-  width:80%;
   text-align:center;
   margin: 20px auto;
 }
 
 .search-input {
   font-size: large;
+  width: 18rem;
+}
+
+.inline {
+  display: inline-block;
+}
+
+.nb-form-field {
+  position: relative;
+  padding-right: 10px;
+}
+
+.nb-form-field > label {
+  display: block;
+  font-size: x-small;
+  pointer-events: none;
+  font-weight: bold;
+  text-align: left;
+}
+
+.table thead tr th p{
+  font-weight: bold;
 }

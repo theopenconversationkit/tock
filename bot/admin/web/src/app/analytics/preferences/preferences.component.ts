@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Component } from '@angular/core';
+import { NbToastrService } from '@nebular/theme';
+import { SettingsService } from 'src/app/core-nlp/settings.service';
 
-import {Component, Input, Output, EventEmitter} from "@angular/core";
-import {NbDialogRef, NbToastrService} from '@nebular/theme';
-import {UserAnalyticsPreferences} from "./UserAnalyticsPreferences";
-import { SettingsService } from "src/app/core-nlp/settings.service";
-import { AnalyticsService } from "../analytics.service";
+import { AnalyticsService } from '../analytics.service';
+import { UserAnalyticsPreferences } from './UserAnalyticsPreferences';
+
 
 @Component({
   selector: 'tock-preferences',
@@ -42,9 +43,5 @@ export class PreferencesComponent {
 
   cancel() {
     this.preferences = this.analytics.getUserPreferences();
-  }
-
-  isGraphTypeSelected(graphType: string): boolean {
-    return this.preferences.selectedChartType.toString() == "all" || this.preferences.selectedChartType.toString() == graphType
   }
 }

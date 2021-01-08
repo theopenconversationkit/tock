@@ -1225,7 +1225,7 @@ function increaseBrightness(initialHex: string, percent: number): string {
 }
 
 export function entityColor(str: string): string {
-  return increaseBrightness(intToRGB(hashCode(str)), 50);
+  return increaseBrightness(intToRGB(hashCode(str)), 30);
 }
 
 export function qualifiedRole(type: string, role: string): string {
