@@ -16,8 +16,6 @@
 
 #intent-qa-update-container {
   text-align: center;
-  margin-top: 20px;
-  margin-bottom: 20px;
 }
 
 #minOccurrence {
@@ -26,4 +24,25 @@
 
 .intents {
   margin-top:20px;
+}
+
+.inline {
+  display: inline-block;
+}
+
+.nb-form-field {
+  position: relative;
+  padding-right: 10px;
+}
+
+.nb-form-field > label {
+  display: block;
+  font-size: x-small;
+  pointer-events: none;
+  font-weight: bold;
+  text-align: left;
+}
+
+.table thead tr th p{
+  font-weight: bold;
 }

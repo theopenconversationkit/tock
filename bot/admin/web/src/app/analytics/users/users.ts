@@ -57,7 +57,7 @@ export class UserReportQueryResult implements PaginatedResult<UserReport> {
 }
 
 export class UserAnalyticsQueryResult {
-  constructor(public usersData: [][],
+  constructor(public usersData: any[][],
               public dates: Date[],
               public connectorsType: [],
               public intents: []) {

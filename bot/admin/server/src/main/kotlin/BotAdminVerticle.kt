@@ -105,20 +105,20 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonPost("/analytics/users", botUser) { context, query: UserSearchQuery ->
-            if (context.organization == query.namespace) {
+        blockingJsonPost("/analytics/messages", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
                 measureTimeMillis(context, {
-                    BotAdminService.searchUsersAnalytics(query)
+                    BotAdminService.reportMessagesByType(request)
                 })
             } else {
                 unauthorized()
             }
         }
 
-        blockingJsonPost("/analytics/messages", botUser) { context, request: DialogFlowRequest ->
+        blockingJsonPost("/analytics/users", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
                 measureTimeMillis(context, {
-                    BotAdminService.reportMessagesByType(request)
+                    BotAdminService.reportUsersByType(request)
                 })
             } else {
                 unauthorized()

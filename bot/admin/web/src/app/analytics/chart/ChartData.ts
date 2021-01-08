@@ -16,11 +16,18 @@
 
 export class ChartData {
   constructor(public type: string,
-              public data: (string | number)[][],
+              public data: GraphInfo[][],
               public columnNames: string[],
               public options: {},
               public height: string,
               public width: string,
               public title?: string
               ) {} ;
+}
+
+export class GraphInfo{
+  constructor(
+    public value: string,
+    public name: string
+    ){}
 }

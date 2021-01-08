@@ -30,3 +30,7 @@
   max-width: 50px;
 }
 
+.table thead tr th p{
+  font-weight: bold;
+}
+

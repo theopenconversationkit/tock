@@ -15,10 +15,7 @@
  */
 
 import {saveAs} from "file-saver";
-import {AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, ViewChild} from "@angular/core";
-import {MatPaginator} from "@angular/material/paginator";
-import {DataSource} from "@angular/cdk/collections";
-import {BehaviorSubject, merge, Observable, Subscription} from "rxjs";
+import {Component, OnInit} from "@angular/core";
 import {EntityTestError, TestErrorQuery} from "../model/nlp";
 import {StateService} from "../core-nlp/state.service";
 import {Router} from "@angular/router";
@@ -34,15 +31,17 @@ import {NlpService} from "../nlp-tabs/nlp.service";
   templateUrl: './test-entity-error.component.html',
   styleUrls: ['./test-entity-error.component.css']
 })
-export class TestEntityErrorComponent implements OnInit, AfterViewInit, OnDestroy {
+export class TestEntityErrorComponent implements OnInit {
 
-  displayedColumns = ['text', 'intent', 'error', 'count', 'percent', 'probability', 'firstErrorDate', 'actions'];
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  dataSource: TestEntityErrorDataSource | null;
-  private subscription: Subscription;
+  dataSource: EntityTestError[] = [];
+  intent = "";
+  totalSize: number;
+  pageSize: number = 10;
+  pageIndex: number = 0;
+  loading: boolean = false;
 
   constructor(public state: StateService,
-              private quality: QualityService,
+              private qualityService: QualityService,
               private toastrService: NbToastrService,
               private router: Router,
               private dialog: DialogService,
@@ -50,21 +49,29 @@ export class TestEntityErrorComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   ngOnInit(): void {
-    this.dataSource = new TestEntityErrorDataSource(this.paginator, this.state, this.quality);
-    this.subscription = this.state.configurationChange.subscribe(_ => this.search());
-  }
-
-  ngAfterViewInit(): void {
     this.search();
   }
 
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+  getIndex(){
+    if(this.pageIndex > 0) return this.pageIndex - 1;
+    else return this.pageIndex
   }
 
-
   search() {
-    this.dataSource.refresh();
+    this.loading = true;
+    const startIndex = this.getIndex() * this.pageSize;
+    this.qualityService.searchEntityErrors(
+      TestErrorQuery.create(
+        this.state,
+        startIndex,
+        this.pageSize,
+        this.intent === "" ? undefined : this.intent
+      )
+    ).subscribe(r => {
+      this.loading = false;
+      this.totalSize = r.total;
+      this.dataSource = r.data;
+    });
   }
 
   intentName(error: EntityTestError) {
@@ -73,16 +80,16 @@ export class TestEntityErrorComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   validate(error: EntityTestError) {
-    this.quality.deleteEntityError(error).subscribe(
+    this.qualityService.deleteEntityError(error).subscribe(
       e => {
         this.toastrService.show(`Sentence validated`, "Validate Entities", {duration: 2000});
-        this.dataSource.refresh()
+        this.search()
       }
     )
   }
 
   change(error: EntityTestError) {
-    this.quality.deleteEntityError(error).subscribe(
+    this.qualityService.deleteEntityError(error).subscribe(
       e => {
         this.router.navigate(
           ['/nlp/search'],
@@ -99,12 +106,12 @@ export class TestEntityErrorComponent implements OnInit, AfterViewInit, OnDestro
 
   download() {
     setTimeout(_ => {
-      this.quality.searchEntityErrorsBlob(
+      this.qualityService.searchEntityErrorsBlob(
         TestErrorQuery.create(
           this.state,
           0,
           100000,
-          this.dataSource.intent === "" ? undefined : this.dataSource.intent
+          this.intent === "" ? undefined : this.intent
         )
       ).subscribe(blob => {
         saveAs(blob, this.state.currentApplication.name + "_entity_errors.json");
@@ -127,52 +134,5 @@ export class TestEntityErrorComponent implements OnInit, AfterViewInit, OnDestro
       error.originalSentence = sentence.clone();
       error.sentence = error.sentence.clone();
     });
-  }
-}
-
-export class TestEntityErrorDataSource extends DataSource<EntityTestError> {
-
-  intent: string = "";
-  size: number = 0;
-  private refreshEvent = new EventEmitter();
-  private subject = new BehaviorSubject([]);
-
-  constructor(private _paginator: MatPaginator,
-              private state: StateService,
-              private qualityService: QualityService) {
-    super();
-  }
-
-  refresh() {
-    this.refreshEvent.emit(true);
-  }
-
-  /** Connect function called by the table to retrieve one stream containing the data to render. */
-  connect(): Observable<EntityTestError[]> {
-    const displayDataChanges = [
-      this._paginator.page,
-      this.refreshEvent
-    ];
-
-    merge(...displayDataChanges).subscribe(() => {
-      const startIndex = this._paginator.pageIndex * this._paginator.pageSize;
-
-      this.qualityService.searchEntityErrors(
-        TestErrorQuery.create(
-          this.state,
-          startIndex,
-          this._paginator.pageSize,
-          this.intent === "" ? undefined : this.intent
-        )
-      ).subscribe(r => {
-        this.size = r.total;
-        this.subject.next(r.data);
-      });
-    });
-
-    return this.subject;
-  }
-
-  disconnect() {
   }
 }

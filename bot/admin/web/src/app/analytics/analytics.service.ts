@@ -42,7 +42,7 @@ export class AnalyticsService implements OnDestroy {
     return this.rest.post("/users/search", query, UserReportQueryResult.fromJSON);
   }
 
-  usersAnalytics(query: UserSearchQuery): Observable<UserAnalyticsQueryResult> {
+  usersAnalytics(query: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
     return this.rest.post("/analytics/users", query, UserAnalyticsQueryResult.fromJSON);
   }
 

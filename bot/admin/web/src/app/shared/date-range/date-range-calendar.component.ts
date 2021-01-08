@@ -94,7 +94,7 @@ export class DateRangeCalendarComponent implements OnInit {
       };
     } else {
       const fromDate = new Date()
-      fromDate.setDate(fromDate.getDate() - days)
+      fromDate.setDate(fromDate.getDate() - days + 1)
       this.range = {
         start: fromDate,
         end: this.dateService.today()

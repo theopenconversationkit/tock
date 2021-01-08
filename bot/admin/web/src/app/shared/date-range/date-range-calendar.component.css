@@ -3,7 +3,8 @@
   display: flex;
   flex-direction: column;
   position: fixed;
-  margin-left: -5rem;
+  margin-left: -5.5rem;
+  margin-top: -1rem;
 }
 
 .calendar-body {

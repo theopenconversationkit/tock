@@ -61,7 +61,8 @@ internal data class UserTimelineCol(
     var lastActionText: String? = null,
     val lastUpdateDate: Instant = Instant.now(),
     var lastUserActionDate: Instant = lastUpdateDate,
-    val namespace: String? = null
+    val namespace: String? = null,
+    val creationDate: Instant = Instant.now()
 ) {
 
     constructor(timelineId: String, namespace: String, newTimeline: UserTimeline, oldTimeline: UserTimelineCol?) : this(

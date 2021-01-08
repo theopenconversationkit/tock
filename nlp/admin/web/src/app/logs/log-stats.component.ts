@@ -26,70 +26,12 @@ import {Subscription} from "rxjs";
   styleUrls: ['./log-stats.component.css']
 })
 export class LogStatsComponent implements OnInit, OnDestroy {
-
+  public probabilityChartOptions: any;
   public stats: Array<any>;
   public probability: Array<any>;
   public duration: Array<any>;
-  public statsChartOptions: any = {
-    scales: {
-      xAxes: [{
-        type: "time",
-        time: {
-          unit: "day",
-          displayFormats: {
-            day: 'D/M'
-          }
-        }
-      }]
-    }
-  };
-  public probabilityChartOptions: any = {
-    scales: {
-      yAxes: [{
-        type: "linear",
-        min: 0,
-        max: 100,
-        ticks: {
-          callback: function (value) {
-            return value + "%"
-          }
-        },
-        scaleLabel: {
-          display: true,
-          labelString: "Percentage"
-        }
-      }],
-      xAxes: [{
-        type: "time",
-        time: {
-          unit: "day",
-          displayFormats: {
-            day: 'D/M'
-          }
-        }
-      }]
-    }
-  };
-  public durationChartOptions: any = {
-    scales: {
-      yAxes: [{
-        ticks: {
-          callback: function (value) {
-            return value + "ms"
-          }
-        }
-      }],
-      xAxes: [{
-        type: "time",
-        time: {
-          unit: "day",
-          displayFormats: {
-            day: 'D/M'
-          }
-        }
-      }]
-    }
-  };
+  public statsChartOptions: any;
+  public durationChartOptions: any;
   public lineChartLegend: boolean = true;
   public lineChartType: string = 'line';
   public intent: string = "";
@@ -126,70 +68,179 @@ export class LogStatsComponent implements OnInit, OnDestroy {
         } else {
           this.nodata = false;
 
-          const countData = result.map(p => {
-            return {
-              x: p.day,
-              y: p.count,
-            };
-          });
+          this.buildStatsChart(result);
 
-          const errorData = result.map(p => {
-            return {
-              x: p.day,
-              y: p.error,
-            };
-          });
+          this.buildProbabilityChart(result);
 
-          this.stats = [
-            {
-              data: errorData,
-              label: "Errors"
-            },
-            {
-              data: countData,
-              label: "Calls"
-            }
-          ];
-
-          const intentsData = result.map(p => {
-            return {
-              x: p.day,
-              y: Math.round(10000 * p.averageIntentProbability) / 100,
-            };
-          });
-
-          const entitiesData = result.map(p => {
-            return {
-              x: p.day,
-              y: Math.round(10000 * p.averageEntitiesProbability) / 100,
-            };
-          });
-
-          this.probability = [
-            {
-              data: intentsData,
-              label: "Intent average probability"
-            },
-            {
-              data: entitiesData,
-              label: "Entity average probability"
-            }
-          ];
-
-          const durationData = result.map(p => {
-            return {
-              x: p.day,
-              y: p.averageDuration,
-            };
-          });
-
-          this.duration = [
-            {
-              data: durationData,
-              label: "Average call duration"
-            }
-          ];
+          this.buildDurationChart(result);
         }
       })
+  }
+
+  buildStatsChart(result) {
+    const countData = result.map(p => {
+      return [p.day, p.count]
+    });
+
+    const errorData = result.map(p => {
+      return [p.day, p.error]
+    });
+    this.statsChartOptions = {
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'cross',
+          label: {
+              backgroundColor: '#6a7985'
+          }
+      }
+      },
+      legend: {
+          data: ['Calls', 'Errors'],
+          textStyle: {
+            color: '#8f9bb3',
+          }
+      },
+      color: ['#0095ff', '#ff3d71'],
+      yAxis: {
+        type: 'value'
+      },
+      xAxis: {
+        type: 'category',
+        boundaryGap:false,
+        axisLabel: {
+            formatter: (function(value){
+              const date = new Date(value);
+              return date.getDate() + '/' + (date.getMonth()+1);
+            })
+        }
+      },
+      series: [
+          {
+              name: 'Calls',
+              type: 'line',
+              areaStyle: {},
+              smooth: true,
+              data: countData
+          },
+          {
+              name: 'Errors',
+              type: 'line',
+              areaStyle: {},
+              smooth: true,
+              data: errorData
+          }
+      ]
+  }
+  }
+  buildProbabilityChart(result) {
+    const intentsData = result.map(p => {
+      return [p.day,Math.round(10000 * p.averageIntentProbability) / 100];
+    });
+
+    const entitiesData = result.map(p => {
+      return [p.day, Math.round(10000 * p.averageEntitiesProbability) / 100];
+    });
+    this.probabilityChartOptions = {
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'cross',
+          label: {
+              backgroundColor: '#6a7985'
+          }
+        }
+      },
+      legend: {
+          data: ['Intent average probability', 'Entity average probability'],
+          textStyle: {
+            color: '#8f9bb3',
+          }
+      },
+      color: ['#ff3d71', '#0095ff'],
+      yAxis: {
+        axisLabel: {
+          formatter: (function(value){
+            return value + '%';
+          })
+      }
+      },
+      xAxis: {
+        type: 'category',
+        boundaryGap:false,
+        axisLabel: {
+            formatter: (function(value){
+              const date = new Date(value);
+              return date.getDate() + '/' + (date.getMonth()+1);
+            })
+        }
+      },
+      series: [
+          {
+              name: 'Intent average probability',
+              type: 'line',
+              areaStyle: {},
+              smooth: true,
+              data: intentsData
+          },
+          {
+              name: 'Entity average probability',
+              type: 'line',
+              areaStyle: {},
+              smooth: true,
+              data: entitiesData
+          }
+      ]
+    }
+  }
+
+  buildDurationChart(result){
+    const durationData = result.map(p => {
+      return [p.day, p.averageDuration]
+    });
+    this.durationChartOptions = {
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'cross',
+          label: {
+              backgroundColor: '#6a7985'
+          }
+      }
+      },
+      legend: {
+          data: ['Average call duration'],
+          textStyle: {
+            color: '#8f9bb3',
+          }
+      },
+      color: ['#0095ff'],
+      yAxis: {
+        axisLabel: {
+          formatter: (function(value){
+            return value + 'ms';
+          })
+      }
+      },
+      xAxis: {
+        type: 'category',
+        boundaryGap:false,
+        axisLabel: {
+            formatter: (function(value){
+              const date = new Date(value);
+              return date.getDate() + '/' + (date.getMonth()+1);
+            })
+        }
+      },
+      series: [
+          {
+              name: 'Average call duration',
+              type: 'line',
+              areaStyle: {},
+              smooth: true,
+              data: durationData
+          }
+      ]
+    }
   }
 }

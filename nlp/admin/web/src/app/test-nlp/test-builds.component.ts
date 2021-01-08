@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import {Component, OnDestroy, OnInit} from "@angular/core";
-import {StateService} from "../core-nlp/state.service";
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import moment from 'moment';
-import {QualityService} from "../quality-nlp/quality.service";
-import {TestErrorQuery} from "../model/nlp";
-import {Subscription} from "rxjs";
+import { Subscription } from 'rxjs';
+
+import { StateService } from '../core-nlp/state.service';
+import { TestErrorQuery } from '../model/nlp';
+import { QualityService } from '../quality-nlp/quality.service';
+
 
 let maxDurationUnit: string = "ms";
 
@@ -142,16 +143,16 @@ export class TestBuildsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.search();
-    this.subscription = this.state.configurationChange.subscribe(_ => this.search());
+    this.search(this.modifiedAfter);
+    this.subscription = this.state.configurationChange.subscribe(_ => this.search(this.modifiedAfter));
   }
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
 
-  search(): void {
-    //console.log(this.modifiedAfter)
+  search(date): void {
+    if(date) this.modifiedAfter = date;
     this.quality.buildStats(
       TestErrorQuery.createWithoutSize(this.state, this.intent === "" ? undefined : this.intent, this.modifiedAfter)
     )

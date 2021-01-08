@@ -15,10 +15,7 @@
  */
 
 import {saveAs} from "file-saver";
-import {AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, ViewChild} from "@angular/core";
-import {MatPaginator} from "@angular/material/paginator";
-import {DataSource} from "@angular/cdk/collections";
-import {BehaviorSubject, merge, Observable, Subscription} from "rxjs";
+import {Component, OnInit} from "@angular/core";
 import {IntentTestError, TestErrorQuery} from "../model/nlp";
 import {StateService} from "../core-nlp/state.service";
 import {Router} from "@angular/router";
@@ -34,15 +31,17 @@ import {NlpService} from "../nlp-tabs/nlp.service";
   templateUrl: './test-intent-error.component.html',
   styleUrls: ['./test-intent-error.component.css']
 })
-export class TestIntentErrorComponent implements OnInit, AfterViewInit, OnDestroy {
+export class TestIntentErrorComponent implements OnInit {
 
-  displayedColumns = ['text', 'currentIntent', 'wrongIntent', 'count', 'percent', 'probability', 'firstErrorDate', 'actions'];
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  dataSource: TestIntentErrorDataSource | null;
-  private subscription: Subscription;
+  dataSource: IntentTestError[] = [];
+  intent: string = "";
+  totalSize: number;
+  pageSize: number = 10;
+  pageIndex: number = 0;
+  loading: boolean = false;
 
   constructor(public state: StateService,
-              private quality: QualityService,
+              private qualityService: QualityService,
               private toastrService: NbToastrService,
               private router: Router,
               private dialog: DialogService,
@@ -50,33 +49,41 @@ export class TestIntentErrorComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   ngOnInit(): void {
-    this.dataSource = new TestIntentErrorDataSource(this.paginator, this.state, this.quality);
-    this.subscription = this.state.configurationChange.subscribe(_ => this.search());
-  }
-
-  ngAfterViewInit(): void {
     this.search();
   }
 
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+  getIndex(){
+    if(this.pageIndex > 0) return this.pageIndex - 1;
+    else return this.pageIndex
   }
-
   search() {
-    this.dataSource.refresh();
+    this.loading = true;
+    const startIndex = this.getIndex() * this.pageSize;
+    this.qualityService.searchIntentErrors(
+      TestErrorQuery.create(
+        this.state,
+        startIndex,
+        this.pageSize,
+        this.intent === "" ? undefined : this.intent
+      )
+    ).subscribe(r => {
+      this.loading = false;
+      this.totalSize = r.total;
+      this.dataSource = r.data;
+    });
   }
 
   validate(error: IntentTestError) {
-    this.quality.deleteIntentError(error).subscribe(
+    this.qualityService.deleteIntentError(error).subscribe(
       e => {
         this.toastrService.show(`Sentence validated`, "Validate Intent", {duration: 2000});
-        this.dataSource.refresh()
+        this.search();
       }
     )
   }
 
   change(error: IntentTestError) {
-    this.quality.deleteIntentError(error).subscribe(
+    this.qualityService.deleteIntentError(error).subscribe(
       e => {
         this.router.navigate(
           ['/nlp/search'],
@@ -93,12 +100,12 @@ export class TestIntentErrorComponent implements OnInit, AfterViewInit, OnDestro
 
   download() {
     setTimeout(_ => {
-      this.quality.searchIntentErrorsBlob(
+      this.qualityService.searchIntentErrorsBlob(
         TestErrorQuery.create(
           this.state,
           0,
           100000,
-          this.dataSource.intent === "" ? undefined : this.dataSource.intent
+          this.intent === "" ? undefined : this.intent
         )
       ).subscribe(blob => {
         saveAs(blob, this.state.currentApplication.name + "_intent_errors.json");
@@ -118,52 +125,5 @@ export class TestIntentErrorComponent implements OnInit, AfterViewInit, OnDestro
       sentence.key = null;
       error.sentence = sentence.clone();
     });
-  }
-}
-
-export class TestIntentErrorDataSource extends DataSource<IntentTestError> {
-
-  size: number = 0;
-  intent: string = "";
-  private refreshEvent = new EventEmitter();
-  private subject = new BehaviorSubject([]);
-
-  constructor(private _paginator: MatPaginator,
-              public state: StateService,
-              private qualityService: QualityService) {
-    super();
-  }
-
-  refresh() {
-    this.refreshEvent.emit(true);
-  }
-
-  /** Connect function called by the table to retrieve one stream containing the data to render. */
-  connect(): Observable<IntentTestError[]> {
-    const displayDataChanges = [
-      this._paginator.page,
-      this.refreshEvent
-    ];
-
-    merge(...displayDataChanges).subscribe(() => {
-      const startIndex = this._paginator.pageIndex * this._paginator.pageSize;
-
-      this.qualityService.searchIntentErrors(
-        TestErrorQuery.create(
-          this.state,
-          startIndex,
-          this._paginator.pageSize,
-          this.intent === "" ? undefined : this.intent
-        )
-      ).subscribe(r => {
-        this.size = r.total;
-        this.subject.next(r.data);
-      });
-    });
-
-    return this.subject;
-  }
-
-  disconnect() {
   }
 }

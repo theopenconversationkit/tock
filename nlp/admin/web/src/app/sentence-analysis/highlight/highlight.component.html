@@ -53,7 +53,7 @@
                                        [style.font-size]="fontSize"
                                        [style.background]="t.color()"
                                        [id]="t.index"
-                                       [matTooltip]="t.display(sentence, state.user)">{{t.text}}</span>
+                                       [nbTooltip]="t.display(sentence, state.user)">{{t.text}}</span>
     </div>
 
 
@@ -63,7 +63,7 @@
     <div *ngFor="let e of sentence.getEditedSubEntities();let idx = index" [style.padding-left]="leftPadding+'px'">
       <mat-chip-list class="role-container">
         <mat-chip [style.background-color]="e.entityColor"
-                  [matTooltip]="e.qualifiedName(state.user)"
+                  [nbTooltip]="e.qualifiedName(state.user)"
                   selected="false"
                   color="primary">
           {{e.role}}
@@ -81,7 +81,7 @@
   <div *ngIf="!readOnly && edited" class="highlight">
     <mat-chip-list *ngIf="entityProvider" class="inner-highlight">
       <mat-chip *ngFor="let entity of entityProvider.getEntities()"
-                matTooltip="Select {{entity.qualifiedName(state.user)}}"
+                nbTooltip="Select {{entity.qualifiedName(state.user)}}"
                 selected="false"
                 (click)="onSelect(entity)"
                 [style.background-color]="entity.entityColor"

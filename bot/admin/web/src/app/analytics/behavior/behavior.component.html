@@ -1,12 +1,12 @@
 <div class="content" id="element-id">
-  <nb-card>
-    <nb-card-body [nbSpinner]="loading" nbSpinnerStatus="primary">
+  <nb-card style="margin-bottom: unset;">
+    <nb-card-body nbSpinnerStatus="primary">
       <date-range-calendar [rangeInDays]="7" (datesChanged)="datesChanged($event)"></date-range-calendar>
       <tock-select-bot [allowNoConfigurationSelection]="true" noConnectorLabel="All Connectors"
                        [allowNoSelection]="true" noConfigurationLabel="All Configurations"
                        (selectionChange)="selectedConfigurationChanged($event)" class="select-bot">
       </tock-select-bot>
-      <button nbButton shape="round" (click)="waitAndRefresh()" nbTooltip="Refresh Data" status="basic">
+      <button nbButton ghost shape="round" (click)="waitAndRefresh()" nbTooltip="Refresh Data" status="basic">
         <nb-icon icon="refresh-outline"></nb-icon>
       </button>
       <span style="float: right; padding: 5px;">
@@ -21,66 +21,53 @@
     </nb-card-body>
   </nb-card>
 
-  <nb-accordion>
-    <nb-accordion-item #messagesByStoryItem (collapsedChange)="collapsedChange($event)"
-                       *ngIf="userPreferences.graphs.behavior.messagesByStory">
-      <nb-accordion-item-header>Messages by Story</nb-accordion-item-header>
-      <nb-accordion-item-body>
-        <tock-chart [data]="messagesByStoryData" title="Messages by Story" type="PieChart" [chartPreferences]="userPreferences"></tock-chart>
-      </nb-accordion-item-body>
-    </nb-accordion-item>
-    <nb-accordion-item #messagesByIntentItem (collapsedChange)="collapsedChange($event)"
-                       *ngIf="userPreferences.graphs.behavior.messagesByIntent">
-      <nb-accordion-item-header>Messages by Intent</nb-accordion-item-header>
-      <nb-accordion-item-body>
-        <tock-chart [data]="messagesByIntentData" title="Messages by Intent" type="PieChart" [chartPreferences]="userPreferences"></tock-chart>
-      </nb-accordion-item-body>
-    </nb-accordion-item>
-    <nb-accordion-item #messagesByDayOfWeekItem (collapsedChange)="collapsedChange($event)"
-                       *ngIf="userPreferences.graphs.behavior.messagesByDayOfWeek">
-      <nb-accordion-item-header>Messages by Day of Week</nb-accordion-item-header>
-      <nb-accordion-item-body>
-        <tock-chart [data]="messagesByDayOfWeekData" title="Messages by Day of Week" type="PieChart"
-                    [chartPreferences]="userPreferences"></tock-chart>
-      </nb-accordion-item-body>
-    </nb-accordion-item>
-    <nb-accordion-item #messagesByHourItem (collapsedChange)="collapsedChange($event)"
-                       *ngIf="userPreferences.graphs.behavior.messagesByHourOfDay">
-      <nb-accordion-item-header>Messages by Hour of Day</nb-accordion-item-header>
-      <nb-accordion-item-body>
-        <tock-chart [data]="messagesByHourData" title="Messages by Hour of Day" type="PieChart" [chartPreferences]="userPreferences"></tock-chart>
-      </nb-accordion-item-body>
-    </nb-accordion-item>
-    <nb-accordion-item #messagesByActionTypeItem (collapsedChange)="collapsedChange($event)"
-                       *ngIf="userPreferences.graphs.behavior.messagesByActionType">
-      <nb-accordion-item-header>Messages by Action Type</nb-accordion-item-header>
-      <nb-accordion-item-body>
+  <div class="space graph-list">
+
+    <nb-card class="space graph" *ngIf="userPreferences.graphs.behavior.messagesByStory" [nbSpinner]="messagesByStoryLoading">
+      <nb-card-body>
+        <tock-chart [data]="messagesByStoryData" title="Messages by Story" type="PieChart" [chartPreferences]="userPreferences" isMultiChart="false"></tock-chart>
+      </nb-card-body>
+    </nb-card>
+    <nb-card class="space graph" *ngIf="userPreferences.graphs.behavior.messagesByIntent" [nbSpinner]="messagesByIntentLoading">
+      <nb-card-body>
+        <tock-chart [data]="messagesByIntentData" title="Messages by Intent" type="PieChart" [chartPreferences]="userPreferences" isMultiChart="false"></tock-chart>
+      </nb-card-body>
+    </nb-card>
+    <nb-card class="space graph" *ngIf="userPreferences.graphs.behavior.messagesByDayOfWeek" [nbSpinner]="messagesByDayOfWeekLoading">
+      <nb-card-body>
+        <tock-chart [data]="messagesByDayOfWeekData" title="Messages by Day of Week" type="PieChart" [chartPreferences]="userPreferences" isMultiChart="false"></tock-chart>
+      </nb-card-body>
+    </nb-card>
+    <nb-card class="space graph" *ngIf="userPreferences.graphs.behavior.messagesByHourOfDay" [nbSpinner]="messagesByDayOfWeekLoading">
+      <nb-card-body>
+        <tock-chart [data]="messagesByHourData" title="Messages by Hour of Day" type="PieChart" [chartPreferences]="userPreferences" isMultiChart="false"></tock-chart>
+      </nb-card-body>
+    </nb-card>
+
+    <nb-card class="space graph" *ngIf="userPreferences.graphs.behavior.messagesByActionType" [nbSpinner]="messagesByActionTypeLoading">
+      <nb-card-body>
         <tock-chart [data]="messagesByActionTypeData" title="Messages by Action Type" type="PieChart"
-                    [chartPreferences]="userPreferences" [filter]="filter" (intentChanged)="waitAndRefresh()"></tock-chart>
-      </nb-accordion-item-body>
-    </nb-accordion-item>
-    <nb-accordion-item #messagesByStoryCategoryItem (collapsedChange)="collapsedChange($event)"
-                       *ngIf="userPreferences.graphs.behavior.messagesByStoryCategory">
-      <nb-accordion-item-header>Messages by Story Category</nb-accordion-item-header>
-      <nb-accordion-item-body>
+                    [chartPreferences]="userPreferences" [filter]="filter" (intentChanged)="waitAndRefresh()" isMultiChart="false"></tock-chart>
+      </nb-card-body>
+    </nb-card>
+
+    <nb-card class="space graph" *ngIf="userPreferences.graphs.behavior.messagesByStoryCategory" [nbSpinner]="messagesByStoryCategoryLoading">
+      <nb-card-body>
         <tock-chart [data]="messagesByStoryCategoryData" title="Messages by Story Category" type="PieChart"
-                    [chartPreferences]="userPreferences"></tock-chart>
-      </nb-accordion-item-body>
-    </nb-accordion-item>
-    <nb-accordion-item #messagesByStoryTypeItem (collapsedChange)="collapsedChange($event)"
-                       *ngIf="userPreferences.graphs.behavior.messagesByStoryType">
-      <nb-accordion-item-header>Messages by Story Type</nb-accordion-item-header>
-      <nb-accordion-item-body>
-        <tock-chart [data]="messagesByStoryTypeData" title="Messages by Story Type" type="PieChart" [chartPreferences]="userPreferences"></tock-chart>
-      </nb-accordion-item-body>
-    </nb-accordion-item>
-    <nb-accordion-item #messagesByStoryLocaleItem (collapsedChange)="collapsedChange($event)"
-                       *ngIf="userPreferences.graphs.behavior.messagesByLocale">
-      <nb-accordion-item-header>Messages by Locale</nb-accordion-item-header>
-      <nb-accordion-item-body>
-        <tock-chart [data]="messagesByStoryLocaleData" title="Messages by Locale" type="PieChart" [chartPreferences]="userPreferences"></tock-chart>
-      </nb-accordion-item-body>
-    </nb-accordion-item>
-  </nb-accordion>
+                    [chartPreferences]="userPreferences" isMultiChart="false"></tock-chart>
+      </nb-card-body>
+    </nb-card>
+
+    <nb-card class="space graph" *ngIf="userPreferences.graphs.behavior.messagesByStoryType" [nbSpinner]="messagesByStoryTypeLoading">
+      <nb-card-body>
+        <tock-chart [data]="messagesByStoryTypeData" title="Messages by Story Type" type="PieChart" [chartPreferences]="userPreferences" isMultiChart="false"></tock-chart>
+      </nb-card-body>
+    </nb-card>
+    <nb-card class="space graph" *ngIf="userPreferences.graphs.behavior.messagesByLocale" [nbSpinner]="messagesByStoryLocaleLoading">
+      <nb-card-body>
+        <tock-chart [data]="messagesByStoryLocaleData" title="Messages by Locale" type="PieChart" [chartPreferences]="userPreferences" isMultiChart="false"></tock-chart>
+      </nb-card-body>
+    </nb-card>
+  </div>
 
 </div>

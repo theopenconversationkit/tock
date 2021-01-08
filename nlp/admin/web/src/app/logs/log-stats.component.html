@@ -37,29 +37,23 @@
 <p></p>
 
 <div *ngIf="!nodata">
-  <canvas *ngIf="probability" baseChart
-          [datasets]="probability"
-          [options]="probabilityChartOptions"
-          [legend]="lineChartLegend"
-          [chartType]="lineChartType">
-  </canvas>
-
+  <nb-card>
+    <nb-card-body>
+      <div echarts [options]="probabilityChartOptions" class="chart"></div>
+    </nb-card-body>
+  </nb-card>
 </div>
 <div *ngIf="!nodata">
-  <canvas *ngIf="stats" baseChart
-          [datasets]="stats"
-          [options]="statsChartOptions"
-          [legend]="lineChartLegend"
-          [chartType]="lineChartType">
-
-  </canvas>
+  <nb-card>
+    <nb-card-body>
+      <div echarts [options]="statsChartOptions" class="chart"></div>
+    </nb-card-body>
+  </nb-card>
 </div>
 <div *ngIf="!nodata">
-  <canvas *ngIf="duration" baseChart
-          [datasets]="duration"
-          [options]="durationChartOptions"
-          [legend]="lineChartLegend"
-          [chartType]="lineChartType">
-
-  </canvas>
+  <nb-card>
+    <nb-card-body>
+      <div echarts [options]="durationChartOptions" class="chart"></div>
+    </nb-card-body>
+  </nb-card>
 </div>
