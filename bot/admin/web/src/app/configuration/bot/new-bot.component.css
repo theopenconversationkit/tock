@@ -43,3 +43,20 @@
   height:800px;
   background-color: white;
 }
+
+.submit-btn {
+  text-align: center;
+  display: block;
+}
+
+.btn-margin {
+  margin: 5px;
+}
+
+.list {
+  width: 15rem;
+}
+
+.group-margin-top {
+  margin-top: 2rem;
+}
