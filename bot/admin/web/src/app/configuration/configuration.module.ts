@@ -37,7 +37,8 @@ import {
   NbSpinnerModule,
   NbTabsetModule,
   NbToastrModule,
-  NbTooltipModule
+  NbTooltipModule,
+  NbStepperModule
 } from '@nebular/theme';
 import {NewBotComponent} from './bot/new-bot.component';
 import {ReactiveFormsModule} from '@angular/forms';
@@ -156,6 +157,7 @@ export class BotApplicationConfig implements ApplicationConfig {
     NbToastrModule.forRoot(),
     NbIconModule,
     NbSelectModule,
+    NbStepperModule
   ],
   providers: [
     {
