@@ -5,6 +5,15 @@
 /tmp
 target
 
+# Python venv - Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
 # IDEs and editors
 /.idea
 .project
