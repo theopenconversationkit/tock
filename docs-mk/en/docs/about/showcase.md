@@ -67,6 +67,28 @@ style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.
 * **Channels:** text & voice, on the company Website, Messenger, WhatsApp, Business Chat (Messages), Google Assistant, 
 Google Home, Alexa, JCDecaux SmartBrics
 
+## _MaxBot_, bank bot for Aumax pour moi
+
+[Aumax pour moi](https://www.aumaxpourmoi.fr/) is an application that allows you to gather your cards in one and only place. Your every day is eased by using only one application and an unique card. To support you every day, Aumax allow you to :
+
+* earn cashback ;
+* send and receive money ;
+* use a concierge service ;
+* ask for financial advice, plan for life's projects, etc.
+* and so much more !
+
+![Mobile app Aumax pour moi](../img/maxbot.jpg "MaxBot in Aumax pour moi, mobile app")
+
+Through the app, the Aumax pour moi's bot, based on Tock, assists you through every question you may have on the app, your accounts or on your card.
+
+The bot is available on the [Aumax pour moi](https://www.aumaxpourmoi.fr/)'s app.
+Aumax pour moi takes care and answers up to 5 000 requests a day.
+
+* **Nom :** _Aumax pour moi_
+* **Date of birth:** in production since 2019
+* **Field:** banking, services, personal assistant
+* **Channels:** text, on the mobile app
+
 ## _Enedis internal Chatbot_
 
 The _[Enedis](https://www.enedis.fr/) internal Chatbot_ gives the 39 000 employees a simplified means to 
