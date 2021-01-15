@@ -69,6 +69,30 @@ style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.
 * **Canaux :** texte & voix, sur le site Web entreprise, Messenger, WhatsApp, Business Chat (Messages), Google Assistant, 
 Google Home, Alexa, IAffiches JCDecaux
 
+## _MaxBot_, bot bancaire chez Aumax pour moi
+
+[Aumax pour moi](https://www.aumaxpourmoi.fr/) est une application qui vous permet de regrouper tous vos comptes et toutes vos cartes dans un seul et même endroit. Vous facilitez votre quotidien en n'utilisant qu'une seule application et une unique carte. Pour vous accompagner au quotidien, Aumax pour moi vous permet :
+
+* de gagner du cashback ; 
+* d'envoyer et recevoir de l'argent ;
+* de faire appel à un service de conciergerie ;
+* de demander des conseils d'ordres financiers, pour des projets de vie etc. 
+* et bien plus encore !
+
+<img title="MaxBot, support bancaire chez Aumax pour moi"
+alt="Application mobile Aumax pour moi" src="../../img/maxbot.jpg"
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
+
+Au sein de cette application, le bot Aumax pour moi, basé sur Tock, vous assiste sur toutes les questions d'ordre pratique, sur le fonctionnement de l'application, de vos comptes et de la carte max.
+
+Le bot est disponible sur le chat de l'application [Aumax pour moi](https://www.aumaxpourmoi.fr/).
+Aumax pour moi prend en charge et répond à près de 5 000 sollicitations quotidiennes. 
+
+* **Nom :** _Aumax pour moi_
+* **Date de naissance :** en production depuis 2019
+* **Domaine :** bancaire, service, assistant personnel 
+* **Canaux :** texte, sur l'application mobile
+
 ## _Chatbot interne Enedis_
 
 Le _Chatbot interne Enedis_ permet aux 39 000 salariés [Enedis](https://www.enedis.fr/) un accès simplifié aux 
