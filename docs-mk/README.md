@@ -2,9 +2,22 @@
 
 ### Tools
 
-In order to modify Tock documentation please install the following: 
+In order to modify Tock documentation you will need Python 3 on somes dependencies.
 
-* Python
+Optionnaly, create a clean python virtual env :
+```sh
+$ python3 -m venv .venv
+$ source .venv/bin/activate
+```
+
+Install dependencies :
+```sh
+$ pip install -r requirements.txt
+```
+
+#### Dependencies references
+
+These dependencies are needed and referenced in `requirements.txt` :
 * Markdown documentation generator [MkDocs](http://www.mkdocs.org/)
 * [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
 * [Macros for MkDocs](https://squidfunk.github.io/mkdocs-material/reference/variables/)
