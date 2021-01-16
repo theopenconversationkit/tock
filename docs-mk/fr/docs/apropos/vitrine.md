@@ -60,7 +60,7 @@ En 2019, _OUIbot_ accompagne près de 10 000 utilisateurs par jour. Il a été �
  pour la deuxième année consécutive.
 
 <img alt="Recompense OUIbot 2019" 
-src="https://blog-cultures-services.com/wp-content/uploads/2019/06/Blog-768x512.png" 
+src="https://www.academieduservice.com/wp-content/uploads/2020/10/blog.png" 
 style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
  
 * **Nom :** _[OUIbot](https://www.oui.sncf/services/assistant)_

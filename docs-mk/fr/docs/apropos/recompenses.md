@@ -33,7 +33,7 @@ Pour en savoir plus, voir aussi [_Les Acteurs Du Libre_](https://lesacteursdulib
 ## _Best Robot Experience 2019_ (OUI.sncf)
 
 <img alt="Recompense OUIbot 2019" 
-src="https://blog-cultures-services.com/wp-content/uploads/2019/06/Blog-768x512.png" 
+src="https://www.academieduservice.com/wp-content/uploads/2020/10/blog.png" 
 style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
 
 En 2019, _OUIbot_ a reçu le prix 

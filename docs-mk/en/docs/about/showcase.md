@@ -58,7 +58,7 @@ In 2019, _OUIbot_ answers approximately 10.000 users a day. It has been awarded 
  for the second year in a row.
 
 <img alt="OUIbot award 2019" 
-src="https://blog-cultures-services.com/wp-content/uploads/2019/06/Blog-768x512.png" 
+src="https://www.academieduservice.com/wp-content/uploads/2020/10/blog.png" 
 style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
  
 * **Name:** _[OUIbot](https://www.oui.sncf/services/assistant)_
