@@ -4,10 +4,22 @@ Les différents supports et présentations ci-dessous donnent un aperçu de la s
 en complément des [guides](../guide/studio.md)
  pour tester soi-même la plateforme.
 
-## Conférences / video
+## Conférences / Video
+
+* _AlloCovid_ @ _Voice Tech Paris_
+  **2020** (REX INSERM, Allo-Media & SNCF)
+  [ℹ️ info](https://www.voicetechparis.com/conferences-2/)
+
+<a href="https://www.voicetechparis.com/conferences-2/"
+target="tock_voicetech">
+<img alt="AlloCovid @ Voice Tech Paris 2020"
+src="https://www.voicetechparis.com/wp-content/uploads/2020/10/img-digitale-orange.png"
+style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
+</a>
 
 * _[Tock & Mélusine](https://fr.slideshare.net/FrancoisN0/tock-mlusine-rex-ia-open-source-aiparis-2020)_ @ _AI Paris_ 
 **2020** (REX SNCF & MAIF)
+[ℹ️ info](https://aiparis.fr/2020/les-conferences/) /
 [🔳 slides](https://fr.slideshare.net/FrancoisN0/tock-mlusine-rex-ia-open-source-aiparis-2020)
 
 <a href="https://fr.slideshare.net/FrancoisN0/tock-mlusine-rex-ia-open-source-aiparis-2020"
@@ -41,10 +53,22 @@ style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rg
 </a>
 
 
-## Supports de présentation / meetup
+## Meetup / Supports
+
+* [Présentation de Tock (avec SNCF & Enedis)](https://www.ima-dt.org/ima/event/detail.html/idConf/952)
+  @ _Innovation Makers Alliance_ **(2021)**
+  [ℹ️ info](https://www.ima-dt.org/ima/event/detail.html/idConf/952)
+
+<a href="https://www.ima-dt.org/ima/event/detail.html/idConf/952"
+target="tock_ima_01_2021">
+<img alt="Tock @ Innovation Makers Alliance 2021"
+src="https://doc.tock.ai/fr/images/ima.png"
+style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
+</a>
 
 * [Tock - _The Open Conversation Kit_](https://fr.slideshare.net/FrancoisN0/tock-the-open-conversation-kit-meetup-open-transport-161569957)
  @ _Meetup Open Transport_ **(2019)**
+ [🔳 slides](https://fr.slideshare.net/FrancoisN0/tock-the-open-conversation-kit-meetup-open-transport-161569957)
 
 <a href="https://fr.slideshare.net/FrancoisN0/tock-the-open-conversation-kit-meetup-open-transport-161569957"
 target="tock_opentransport">
@@ -55,6 +79,7 @@ style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rg
 
 * [Tock - _The Open Conversation Kit_](https://fr.slideshare.net/FrancoisN0/tock-the-open-conversation-kit-crip-open-source)
  @ _CRiP OpenSource & Co-développement_ **(2017)**
+ [🔳 slides](https://fr.slideshare.net/FrancoisN0/tock-the-open-conversation-kit-crip-open-source)
 
 <a href="https://fr.slideshare.net/FrancoisN0/tock-the-open-conversation-kit-crip-open-source"
 target="tock_crip">
