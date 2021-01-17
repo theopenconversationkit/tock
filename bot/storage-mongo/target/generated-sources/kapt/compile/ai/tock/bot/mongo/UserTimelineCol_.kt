@@ -35,6 +35,8 @@ private val __LastUserActionDate: KProperty1<UserTimelineCol, Instant?>
     get() = UserTimelineCol::lastUserActionDate
 private val __Namespace: KProperty1<UserTimelineCol, String?>
     get() = UserTimelineCol::namespace
+private val __CreationDate: KProperty1<UserTimelineCol, Instant?>
+    get() = UserTimelineCol::creationDate
 internal class UserTimelineCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         UserTimelineCol?>) : KPropertyPath<T, UserTimelineCol?>(previous,property) {
     val _id: KPropertyPath<T, Id<UserTimelineCol>?>
@@ -67,6 +69,9 @@ internal class UserTimelineCol_<T>(previous: KPropertyPath<T, *>?, property: KPr
     val namespace: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Namespace)
 
+    val creationDate: KPropertyPath<T, Instant?>
+        get() = KPropertyPath(this,__CreationDate)
+
     companion object {
         val _id: KProperty1<UserTimelineCol, Id<UserTimelineCol>?>
             get() = ___id
@@ -87,7 +92,9 @@ internal class UserTimelineCol_<T>(previous: KPropertyPath<T, *>?, property: KPr
         val LastUserActionDate: KProperty1<UserTimelineCol, Instant?>
             get() = __LastUserActionDate
         val Namespace: KProperty1<UserTimelineCol, String?>
-            get() = __Namespace}
+            get() = __Namespace
+        val CreationDate: KProperty1<UserTimelineCol, Instant?>
+            get() = __CreationDate}
 }
 
 internal class UserTimelineCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -122,6 +129,9 @@ internal class UserTimelineCol_Col<T>(previous: KPropertyPath<T, *>?, property: 
 
     val namespace: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Namespace)
+
+    val creationDate: KPropertyPath<T, Instant?>
+        get() = KPropertyPath(this,__CreationDate)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): UserTimelineCol_<T> =
@@ -159,6 +169,9 @@ internal class UserTimelineCol_Map<T, K>(previous: KPropertyPath<T, *>?, propert
 
     val namespace: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Namespace)
+
+    val creationDate: KPropertyPath<T, Instant?>
+        get() = KPropertyPath(this,__CreationDate)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): UserTimelineCol_<T> =
