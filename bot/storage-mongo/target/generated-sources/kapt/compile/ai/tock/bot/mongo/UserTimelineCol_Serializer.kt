@@ -66,6 +66,9 @@ internal class UserTimelineCol_Serializer :
         if(_namespace_ == null) { gen.writeNull() } else {
                 gen.writeString(_namespace_)
                 }
+        gen.writeFieldName("creationDate")
+        val _creationDate_ = value.creationDate
+        serializers.defaultSerializeValue(_creationDate_, gen)
         gen.writeEndObject()
     }
 }

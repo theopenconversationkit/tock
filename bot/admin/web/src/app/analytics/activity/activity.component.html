@@ -17,33 +17,33 @@
     </nb-card-body>
   </nb-card>
   <div class="space graph-list">
-    <nb-card class="stats" [nbSpinner]="usersPercentageLoading">
-      <div class="space space-component3">
-        <span class="text text-hint caption">Users</span>
-        <h5 class="heading1 text-basic">{{currentFilterNbUsers}}</h5>
-        <span class="text text-hint caption">
-          <nb-icon  [icon]="getSmallIcon(beforeCurrentFilterNbUsers, currentFilterNbUsers)" 
-          [status]="getIconStatus(beforeCurrentFilterNbUsers, currentFilterNbUsers)"></nb-icon>
-          {{variationUsersPercentage}}% vs prev. {{getNumberOfDays()}} days</span>
-      </div>
-      <div class="space icon-space">
-        <button nbButton [status]="getIconStatus(beforeCurrentFilterNbUsers, currentFilterNbUsers)" shape="round">
-          <nb-icon [icon]="getBigIcon(beforeCurrentFilterNbUsers, currentFilterNbUsers)"></nb-icon>
-        </button>
-      </div>
-    </nb-card>
     <nb-card class="stats" [nbSpinner]="messagesPercentageLoading">
       <div class="space space-component3">
         <span class="text text-hint caption">Messages</span>
         <h5 class="heading1 text-basic">{{currentFilterNbMessages}}</h5>
         <span class="text text-hint caption">
-          <nb-icon  [icon]="getSmallIcon(beforeCurrentFilterNbMessages, currentFilterNbMessages)" 
+          <nb-icon [icon]="getSmallIcon(beforeCurrentFilterNbMessages, currentFilterNbMessages)"
           [status]="getIconStatus(beforeCurrentFilterNbMessages, currentFilterNbMessages)"></nb-icon>
           {{variationMessagesPercentage}}% vs prev. {{getNumberOfDays()}} days</span>
       </div>
       <div class="space icon-space" >
         <button nbButton [status]="getIconStatus(beforeCurrentFilterNbMessages, currentFilterNbMessages)" shape="round">
           <nb-icon [icon]="getBigIcon(beforeCurrentFilterNbMessages, currentFilterNbMessages)"></nb-icon>
+        </button>
+      </div>
+    </nb-card>
+    <nb-card class="stats" [nbSpinner]="usersPercentageLoading">
+      <div class="space space-component3">
+        <span class="text text-hint caption">Users (Dialogs)</span>
+        <h5 class="heading1 text-basic">{{currentFilterNbUsers}}</h5>
+        <span class="text text-hint caption">
+          <nb-icon  [icon]="getSmallIcon(beforeCurrentFilterNbUsers, currentFilterNbUsers)"
+                    [status]="getIconStatus(beforeCurrentFilterNbUsers, currentFilterNbUsers)"></nb-icon>
+          {{variationUsersPercentage}}% vs prev. {{getNumberOfDays()}} days</span>
+      </div>
+      <div class="space icon-space">
+        <button nbButton [status]="getIconStatus(beforeCurrentFilterNbUsers, currentFilterNbUsers)" shape="round">
+          <nb-icon [icon]="getBigIcon(beforeCurrentFilterNbUsers, currentFilterNbUsers)"></nb-icon>
         </button>
       </div>
     </nb-card>
@@ -73,7 +73,7 @@
     </nb-card>
     <nb-card class="space graph" *ngIf="userPreferences.graphs.activity.users">
       <nb-card-body>
-        <tock-chart [data]="activeUsersData" title="Users" [chartPreferences]="userPreferences"
+        <tock-chart [data]="activeUsersData" title="Users (Dialogs)" [chartPreferences]="userPreferences"
                     [isLoading]="activeUsersLoading"></tock-chart>
       </nb-card-body>
     </nb-card>
