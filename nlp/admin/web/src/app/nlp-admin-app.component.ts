@@ -46,7 +46,6 @@ export class NlpAdminAppComponent implements OnInit, OnDestroy {
               private dialog: DialogService,
               iconRegistry: MatIconRegistry,
               sanitizer: DomSanitizer) {
-    dialog.setupRootChangeDetector(changeDetectorRef);
     iconRegistry.addSvgIcon(
       'logo',
       sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo.svg'));

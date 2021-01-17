@@ -40,6 +40,7 @@ $nb-themes: nb-register-theme((
   slide-out-background: #f7f9fc,
   slide-out-shadow-color: 0 4px 14px 0 #8f9bb3,
   slide-out-shadow-color-rtl: 0 4px 14px 0 #8f9bb3,
+  tree-grid-cell-border-width: 3px,
 ), default, default);
 
 $nb-themes: nb-register-theme((
@@ -86,6 +87,8 @@ $nb-themes: nb-register-theme((
   slide-out-background: linear-gradient(270deg, #edf1f7 0%, #e4e9f2 100%),
   slide-out-shadow-color: 0 4px 14px 0 #8f9bb3,
   slide-out-shadow-color-rtl: 0 4px 14px 0 #8f9bb3,
+
+  tree-grid-cell-border-width: 3px,
 ), corporate, corporate);
 
 $nb-themes: nb-register-theme((
@@ -109,4 +112,6 @@ $nb-themes: nb-register-theme((
   slide-out-background: linear-gradient(270deg, #222b45 0%, #151a30 100%),
   slide-out-shadow-color: 0 4px 14px 0 #8f9bb3,
   slide-out-shadow-color-rtl: 0 4px 14px 0 #8f9bb3,
+
+  tree-grid-cell-border-width: 3px,
 ), dark, dark);

@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
+import { NbMenuItem, NbToastrService } from '@nebular/theme';
 
-import {ChangeDetectorRef, Component, OnDestroy, OnInit} from "@angular/core";
-import {AuthService} from "./core-nlp/auth/auth.service";
-import {StateService} from "./core-nlp/state.service";
-import {DialogService} from "./core-nlp/dialog.service";
-import {RestService} from "./core-nlp/rest/rest.service";
-import { MatIconRegistry } from "@angular/material/icon";
-import {UserRole} from "./model/auth";
-import {DomSanitizer} from "@angular/platform-browser";
-import {NbMenuItem} from "@nebular/theme";
-import { NbToastrService } from '@nebular/theme';
+import { AuthService } from './core-nlp/auth/auth.service';
+import { RestService } from './core-nlp/rest/rest.service';
+import { StateService } from './core-nlp/state.service';
+import { UserRole } from './model/auth';
+
 
 
 @Component({
@@ -41,12 +40,9 @@ export class BotAdminAppComponent implements OnInit, OnDestroy {
   constructor(public auth: AuthService,
               public state: StateService,
               private rest: RestService,
-              private dialog: DialogService,
-              private changeDetectorRef: ChangeDetectorRef,
               private toastrService: NbToastrService,
               iconRegistry: MatIconRegistry,
               sanitizer: DomSanitizer) {
-    dialog.setupRootChangeDetector(changeDetectorRef);
     iconRegistry.addSvgIcon(
       'logo',
       sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo.svg'));

@@ -13,31 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ComponentType } from '@angular/cdk/overlay';
+import { Injectable, TemplateRef, Type } from '@angular/core';
+import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { NbDialogConfig, NbDialogRef, NbDialogService, NbToastrConfig, NbToastrService } from '@nebular/theme';
 
-import {ChangeDetectorRef, Injectable, TemplateRef, Type} from "@angular/core";
-import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material/dialog";
-import {ComponentType} from "@angular/cdk/overlay";
-import {NbDialogConfig, NbDialogRef, NbDialogService, NbToastrService} from '@nebular/theme';
-import { NbToastrConfig } from '@nebular/theme';
 
 @Injectable()
 export class DialogService {
 
-  private changeDetectorRef: ChangeDetectorRef;
-
   constructor(private toastrService: NbToastrService, private nbDialogService:NbDialogService) {
-  }
-
-  private doFreeze() {
-    this.changeDetectorRef.detach();
-  }
-
-  private undoFreeze() {
-    this.changeDetectorRef.reattach();
-  }
-
-  setupRootChangeDetector(changeDetectorRef: ChangeDetectorRef) {
-    this.changeDetectorRef = changeDetectorRef;
   }
 
   /**
@@ -60,10 +45,7 @@ export class DialogService {
    * @returns Reference to the newly-opened dialog.
    */
   open<T, D = any, R = any>(scopedDialog: MatDialog, componentOrTemplateRef: ComponentType<T> | TemplateRef<T>, config?: MatDialogConfig<D>): MatDialogRef<T, R> {
-    this.doFreeze();
-    const d = scopedDialog.open(componentOrTemplateRef, config);
-    d.beforeClosed().subscribe(_ => this.undoFreeze());
-    return d;
+    return scopedDialog.open(componentOrTemplateRef, config);
   }
 
   /**
@@ -72,10 +54,7 @@ export class DialogService {
    * @returns Reference to the newly-opened dialog.
    */
   openDialog<T, D = any, R = any>(content: Type<T> | TemplateRef<T>, userConfig?: Partial<NbDialogConfig<Partial<T> | string>>): NbDialogRef<T> {
-    this.doFreeze();
-    const d = this.nbDialogService.open(content, userConfig);
-    d.onClose.subscribe(_ => this.undoFreeze());
-    return d;
+    return this.nbDialogService.open(content, userConfig);
   }
 
 
