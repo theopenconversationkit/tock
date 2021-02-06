@@ -31,7 +31,7 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
-        <kotlin>1.4.21</kotlin>
+        <kotlin>1.4.30</kotlin>
         <couroutine>1.4.2</couroutine>
 
         <slf4j>1.7.30</slf4j>
@@ -40,10 +40,10 @@
         <kotlin-logging>2.0.4</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>4.2.3</kmongo>
-        <jackson>2.11.3</jackson>
-        <jackson-databind>2.11.3</jackson-databind>
-        <jackson-module>2.11.3</jackson-module>
+        <kmongo>4.2.4</kmongo>
+        <jackson>2.12.1</jackson>
+        <jackson-databind>2.12.1</jackson-databind>
+        <jackson-module>2.12.1</jackson-module>
         <jackson-module-loader>0.1.0</jackson-module-loader>
         <jackson-data>0.1.0</jackson-data>
         <jackson-generator>0.3.1</jackson-generator>
@@ -53,10 +53,10 @@
         <okhttp>4.9.0</okhttp>
         <okhttp-signpost>1.1.0</okhttp-signpost>
         <signpost-core>1.2.1.2</signpost-core>
-        <circuitbreaker>1.6.1</circuitbreaker>
+        <circuitbreaker>1.7.0</circuitbreaker>
         <guava>30.1-jre</guava>
-        <google-auth>1.31.2</google-auth>
-        <google-http-client>1.38.0</google-http-client>
+        <google-auth>1.31.4</google-auth>
+        <google-http-client>1.38.1</google-http-client>
         <jasypt>1.9.3</jasypt>
         <commons-csv>1.8</commons-csv>
         <emoji>5.0</emoji>
@@ -66,14 +66,14 @@
         <httpclient>4.5.13</httpclient>
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
-        <google>16.1.0</google>
-        <aws-sdk>1.11.919</aws-sdk>
+        <google>16.3.0</google>
+        <aws-sdk>1.11.950</aws-sdk>
 
-        <junit-jupiter>5.7.0</junit-jupiter>
+        <junit-jupiter>5.7.1</junit-jupiter>
 
-        <mockk>1.10.3-jdk8</mockk>
+        <mockk>1.10.5</mockk>
         <assertj>3.12.2</assertj>
-        <byte-buddy>1.10.18</byte-buddy>
+        <byte-buddy>1.10.20</byte-buddy>
         <atrium>0.8.0</atrium>
 
         <plugin.surefire>3.0.0-M5</plugin.surefire>
@@ -83,7 +83,7 @@
         <plugin.nexus-staging>1.6.8</plugin.nexus-staging>
         <plugin.dokka>1.4.10.2</plugin.dokka>
         <plugin.assembly>3.3.0</plugin.assembly>
-        <plugin.frontend>1.10.4</plugin.frontend>
+        <plugin.frontend>1.11.0</plugin.frontend>
         <plugin.clean>3.1.0</plugin.clean>
         <plugin.jar>3.2.0</plugin.jar>
         <plugin.ant>3.0.0</plugin.ant>

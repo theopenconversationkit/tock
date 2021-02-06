@@ -100,7 +100,6 @@ internal object EnvironmentManager {
                 error = true
             }
         })
-        //configuration.put(JVMConfigurationKeys.JDK_HOME, File(CommonSettings.JAVA_HOME))
 
         configuration.put(CommonConfigurationKeys.MODULE_NAME, "tockScript")
 
@@ -131,7 +130,6 @@ internal object EnvironmentManager {
 
         registerExtensionPoint(area, ContainerProvider.EP_NAME, ContainerProvider::class.java)
         registerExtensionPoint(area, ClsCustomNavigationPolicy.EP_NAME, ClsCustomNavigationPolicy::class.java)
-        registerExtensionPoint<Decompiler>(area, ClassFileDecompilers.EP_NAME, Decompiler::class.java)
     }
 
     private fun getClasspath(arguments: K2JVMCompilerArguments, libraries: List<Path>): List<File> {
