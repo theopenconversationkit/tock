@@ -51,6 +51,7 @@ internal class ConfiguredStoryHandler(
     }
 
     override fun handle(bus: BotBus) {
+
         configuration.mandatoryEntities.forEach { entity ->
             //fallback from "generic" entity if the role is not present
             val role = entity.role
@@ -74,6 +75,7 @@ internal class ConfiguredStoryHandler(
                 if (role != entityTypeName || bus.entities.none { entity.entityType == it.value.value?.entity?.entityType?.name }) {
                     //else send entity question
                     entity.send(bus)
+                    switchStoryIfEnding(null, bus)
                     return@handle
                 }
             }
@@ -107,13 +109,29 @@ internal class ConfiguredStoryHandler(
             configurationName?.let { name -> configuration.configuredAnswers.firstOrNull { it.botConfiguration == name } }
                 ?: configuration
         answerContainer.send(bus)
+
+        switchStoryIfEnding(null, bus)
+    }
+
+    private fun isMissingMandatoryEntities(bus: BotBus): Boolean {
+        configuration.mandatoryEntities.forEach { entity ->
+            val role = entity.role
+            val entityTypeName = entity.entityTypeName
+            if (bus.entityValueDetails(role) == null && entity.hasCurrentAnswer()) {
+                //if the role is generic and there is an other role in the entity list: skip
+                if (role != entityTypeName || bus.entities.none { entity.entityType == it.value.value?.entity?.entityType?.name }) {
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     private fun switchStoryIfEnding(
-        step: StoryDefinitionConfigurationStep,
+        step: StoryDefinitionConfigurationStep?,
         bus: BotBus
     ) {
-        if (step.hasNoChildren) {
+        if (!isMissingMandatoryEntities(bus) && bus.story.definition.steps.isEmpty() || step?.hasNoChildren == true) {
             configuration.findEnabledEndWithStoryId(bus.applicationId)
                 ?.let { bus.botDefinition.findStoryDefinitionById(it, bus.applicationId) }
                 ?.let {
@@ -158,6 +176,8 @@ internal class ConfiguredStoryHandler(
         if (simple == null) {
             fallbackAnswer()
         } else {
+            val isMissingMandatoryEntities = isMissingMandatoryEntities(this)
+            val steps = story.definition.steps.isNotEmpty()
             simple.answers.takeUnless { it.isEmpty() }
                 ?.let {
                     it.subList(0, it.size - 1)
@@ -165,13 +185,19 @@ internal class ConfiguredStoryHandler(
                             send(container, a)
                         }
                     it.last().apply {
-                        val configurationStep = (step as? Step)?.configuration
-                        val hasEndingStory = configuration.findEnabledEndWithStoryId(applicationId) == null
-                        val isNotInStep = configurationStep == null
+                        val currentStep = (step as? Step)?.configuration
+                        val endingStoryRule = configuration.findEnabledEndWithStoryId(applicationId) != null
                         send(
                             container, this,
-                            // Fixes #731 end only if no targetIntent will be called after answer
-                            configurationStep?.targetIntent == null && (hasEndingStory || isNotInStep)
+                            isMissingMandatoryEntities
+                                    // No steps and no ending story
+                                    || (!steps && !endingStoryRule)
+                                    // Steps not started
+                                    || (steps && currentStep == null)
+                                    // Steps started with children
+                                    || (currentStep?.hasNoChildren == false)
+                                    // Steps started with no children, no target intent, no ending story
+                                    || (currentStep?.hasNoChildren == true && currentStep?.targetIntent == null && !endingStoryRule)
                         )
                     }
                 }

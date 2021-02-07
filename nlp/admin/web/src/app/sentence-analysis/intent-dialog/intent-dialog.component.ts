@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {Component, ElementRef, Inject, Input, OnInit, ViewChild} from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
 import {StateService} from '../../core-nlp/state.service';
 
@@ -26,11 +25,11 @@ import {StateService} from '../../core-nlp/state.service';
 })
 export class IntentDialogComponent implements OnInit {
 
-  create: boolean;
-  name: string;
-  label: string;
-  category: string;
-  description: string;
+  @Input() create: boolean;
+  @Input() name: string;
+  @Input() label: string;
+  @Input() category: string;
+  @Input() description: string;
   categories: string[] = [];
   originalCategories: string[] = [];
   dialogType: string;
