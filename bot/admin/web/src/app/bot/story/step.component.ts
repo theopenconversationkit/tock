@@ -123,18 +123,17 @@ export class StepComponent implements OnInit {
           }
           this.checkStep();
         } else {
-          let dialogRef = this.dialog.open(
-            this.matDialog,
+          let dialogRef = this.dialog.openDialog(
             IntentDialogComponent,
             {
-              data: {
+              context: {
                 create: true,
                 category: this.defaultCategory,
                 name: intentName,
                 label: intentName
               }
             });
-          dialogRef.afterClosed().subscribe(result => {
+          dialogRef.onClose.subscribe(result => {
             if (result.name) {
               const newIntent =
                 new Intent(
