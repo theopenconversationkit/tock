@@ -94,9 +94,6 @@ import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.Translator
 import com.github.salomonbrys.kodein.instance
-import mu.KotlinLogging
-import org.litote.kmongo.Id
-import org.litote.kmongo.toId
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
@@ -108,6 +105,9 @@ import java.util.Locale
 import java.util.stream.LongStream
 import java.util.stream.Stream
 import kotlin.streams.toList
+import mu.KotlinLogging
+import org.litote.kmongo.Id
+import org.litote.kmongo.toId
 
 /**
  *
@@ -135,7 +135,7 @@ object BotAdminService {
 
         override fun keepFeature(feature: StoryDefinitionConfigurationFeatureDump): Boolean =
             feature.botApplicationConfigurationId == null
-                || getBotConfigurationById(feature.botApplicationConfigurationId!!)?.namespace == targetNamespace
+                    || getBotConfigurationById(feature.botApplicationConfigurationId!!)?.namespace == targetNamespace
 
         override fun buildScript(
             script: ScriptAnswerVersionedConfigurationDump,
@@ -368,7 +368,7 @@ object BotAdminService {
         searchFunction: (String, String, Set<Id<BotApplicationConfiguration>>, ZonedDateTime?, ZonedDateTime?, String?) -> Pair<List<DialogFlowTransitionStatsData>, List<String>>,
         seriesLabel: (String?) -> String = { "$it" }
     )
-        : UserAnalyticsQueryResult {
+            : UserAnalyticsQueryResult {
         val namespace = request.namespace
         val botId = request.botId
         val applicationIds = applications.map { it._id }.toSet()
@@ -1079,12 +1079,11 @@ object BotAdminService {
         // Two stories (built-in or configured) should not have the same _id
         // There should be max one built-in (resp. configured) story for given namespace+bot+intent (or namespace+bot+storyId)
         // It can be updated if storyId remains the same, fails otherwise
-        // Only a built-in story can change its type (to "manage it")
 
         val storyWithSameId = storyDefinitionDAO.getStoryDefinitionById(story._id)
         storyWithSameId?.let {
             val existingType = it.currentType
-            if (existingType != story.currentType && existingType != builtin) {
+            if (story.currentType == builtin && existingType != builtin) {
                 badRequest("Story ${it.name} ($existingType) already exists with the ID")
             }
         }
@@ -1212,7 +1211,7 @@ object BotAdminService {
 
 
     private fun BotConfiguredAnswer.toConfiguredAnswer(botId: String, oldStory: StoryDefinitionConfiguration?)
-        : DedicatedAnswerConfiguration? {
+            : DedicatedAnswerConfiguration? {
         val oldConf = oldStory?.configuredAnswers?.find { it.botConfiguration == botConfiguration }
         return DedicatedAnswerConfiguration(
             botConfiguration,

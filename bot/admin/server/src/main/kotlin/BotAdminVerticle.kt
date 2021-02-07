@@ -539,7 +539,7 @@ open class BotAdminVerticle : AdminVerticle() {
             botUser,
             logger<BotStoryDefinitionConfiguration>("Update Story") { context, r ->
                 r?.let { s ->
-                    BotAdminService.getBotConfigurationsByNamespaceAndBotId(context.organization, s.botId)
+                    getBotConfigurationsByNamespaceAndBotId(context.organization, s.botId)
                         .firstOrNull()
                         ?.let { FrontClient.getApplicationByNamespaceAndName(context.organization, it.nlpModel)?._id }
                 }
