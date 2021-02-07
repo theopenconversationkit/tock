@@ -16,12 +16,12 @@
 
 package ai.tock.bot.engine.event
 
-import ai.tock.bot.engine.dialog.EntityValue
 import ai.tock.bot.engine.dialog.EventState
-import ai.tock.nlp.entity.StringValue
+import ai.tock.bot.engine.dialog.hasEntityPredefinedValue
+import ai.tock.bot.engine.dialog.hasSubEntity
+import java.time.Instant
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
-import java.time.Instant
 
 /**
  * The base class for all events or actions.
@@ -56,18 +56,6 @@ abstract class Event(
      */
     fun hasEntityPredefinedValue(role: String, value: String): Boolean {
         return hasEntityPredefinedValue(state.entityValues, role, value)
-    }
-
-    private fun hasEntityPredefinedValue(entities: List<EntityValue>, role: String, value: String): Boolean {
-        return entities.filter { it.entity.role == role || hasEntityPredefinedValue(it.subEntities, role, value) }
-            .firstOrNull {
-                (it.value as? StringValue)?.value == value
-                    || hasEntityPredefinedValue(it.subEntities, role, value)
-            } != null
-    }
-
-    private fun hasSubEntity(entities: List<EntityValue>, role: String): Boolean {
-        return entities.any { it.entity.role == role } || entities.any { hasSubEntity(it.subEntities, role) }
     }
 
 }

@@ -75,15 +75,34 @@ data class Story(
         intent: Intent?
     ): StoryStep<*>? {
         //first level
-        steps.forEach {
-            if (it.selectFromAction(userTimeline, dialog, action, intent)) {
-                return it
-            }
+        findStepInTree(steps, userTimeline, dialog, action, intent)?.also {
+            return it
         }
+
         //then iterate on children
         steps.forEach { s ->
             findStep(s.children, userTimeline, dialog, action, intent)?.also {
                 return it
+            }
+        }
+        return null
+    }
+
+    private fun findStepInTree(
+        steps: Collection<StoryStep<*>>,
+        userTimeline: UserTimeline,
+        dialog: Dialog,
+        action: Action,
+        intent: Intent?
+    ): StoryStep<*>? {
+        //first level
+        steps.forEach { s ->
+            if (s.selectFromAction(userTimeline, dialog, action, intent)) {
+                //check children
+                findStepInTree(s.children, userTimeline, dialog, action, intent)?.also {
+                    return it
+                }
+                return s
             }
         }
         return null
@@ -173,7 +192,7 @@ data class Story(
 
         //check the children of the step
         if (!forced) {
-            s?.children?.find { it.selectFromAction(userTimeline, dialog, action, newIntent) }?.apply {
+            s?.children?.let { findStepInTree(it, userTimeline, dialog, action, newIntent) }?.apply {
                 forced = true
                 this@Story.step = name
             }
@@ -181,10 +200,10 @@ data class Story(
 
         //reset the step if applicable
         if (!forced && newIntent != null
-            && ((s?.intent != null && !s.supportIntent(newIntent)) || (s?.selectFromEntityStepSelection(
-                action,
-                newIntent
-            ) == false))
+            && (
+                    (s?.intent != null && !s.supportIntent(newIntent)) ||
+                            s?.selectFromActionAndEntityStepSelection(action, newIntent) == false
+                    )
         ) {
             this.step = null
         }
@@ -196,7 +215,7 @@ data class Story(
                 var parent: StoryStep<*>? = s
                 do {
                     parent = parent?.let { findParentStep(it) }
-                    parent?.children?.find { it.selectFromAction(userTimeline, dialog, action, newIntent) }?.apply {
+                    parent?.children?.let { findStepInTree(it, userTimeline, dialog, action, newIntent) }?.apply {
                         this@Story.step = name
                         return
                     }

@@ -93,7 +93,7 @@ internal class ConfiguredStoryHandler(
                     ?.takeUnless { it == bus.botDefinition.unknownStory }
                     ?.takeUnless { bus.viewedStories.contains(it) }
                     ?.apply {
-                        bus.switchConfiguredStory(this, targetIntent!! /* should not happen */)
+                        bus.switchConfiguredStory(this, targetIntent ?: error("targetIntent is null??"))
                         return@handle
                     }
                 if (step.hasCurrentAnswer()) {
@@ -190,13 +190,13 @@ internal class ConfiguredStoryHandler(
                 ?.let { messages ->
                     if (end && suggestions.isNotEmpty() && messages.isNotEmpty()) {
                         messages.take(messages.size - 1) +
-                            (
-                                underlyingConnector.addSuggestions(
-                                    messages.last(),
-                                    suggestions
-                                ).invoke(this)
-                                    ?: messages.last()
-                                )
+                                (
+                                        underlyingConnector.addSuggestions(
+                                            messages.last(),
+                                            suggestions
+                                        ).invoke(this)
+                                            ?: messages.last()
+                                        )
                     } else {
                         messages
                     }

@@ -19,6 +19,7 @@ package ai.tock.bot.engine.dialog
 import ai.tock.nlp.api.client.model.Entity
 import ai.tock.nlp.api.client.model.NlpEntityValue
 import ai.tock.nlp.api.client.model.NlpResult
+import ai.tock.nlp.entity.StringValue
 import ai.tock.nlp.entity.Value
 
 /**
@@ -32,6 +33,25 @@ infix fun Entity.setTo(value: Value?): EntityValue =
  */
 infix fun Entity.setTo(text: String): EntityValue =
     EntityValue(null, null, this, text, null, false)
+
+/**
+ * Does this event contains specified role entity?
+ */
+internal fun List<EntityValue>.hasEntity(role: String): Boolean {
+    return hasSubEntity(this, role)
+}
+
+internal fun hasEntityPredefinedValue(entities: List<EntityValue>, role: String, value: String): Boolean {
+    return entities.filter { it.entity.role == role || hasEntityPredefinedValue(it.subEntities, role, value) }
+        .firstOrNull {
+            (it.value as? StringValue)?.value == value
+                    || hasEntityPredefinedValue(it.subEntities, role, value)
+        } != null
+}
+
+internal fun hasSubEntity(entities: List<EntityValue>, role: String): Boolean {
+    return entities.any { it.entity.role == role } || entities.any { hasSubEntity(it.subEntities, role) }
+}
 
 /**
  * A (may be not yet evaluated) value linked to an entity stored in the context.
@@ -78,7 +98,7 @@ data class EntityValue(
     constructor(nlpResult: NlpResult, value: NlpEntityValue) : this(nlpResult.retainedQuery, value)
 
     constructor(sentence: String, value: NlpEntityValue)
-        : this(
+            : this(
         value.start,
         value.end,
         value.entity,
@@ -91,7 +111,7 @@ data class EntityValue(
     )
 
     constructor(entity: Entity, value: Value?, content: String? = null)
-        : this(
+            : this(
         null,
         null,
         entity,
@@ -104,6 +124,7 @@ data class EntityValue(
         return if (evaluated) value?.toString() ?: "null" else content ?: "no content"
     }
 
-    internal fun toClosedRange(): IntRange? = if (start != null && end != null && start < end) IntRange(start, end - 1) else null
+    internal fun toClosedRange(): IntRange? =
+        if (start != null && end != null && start < end) IntRange(start, end - 1) else null
 
 }

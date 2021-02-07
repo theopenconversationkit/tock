@@ -85,21 +85,39 @@ interface StoryStep<T : StoryHandlerDefinition> {
     fun selectFromBus(): BotBus.() -> Boolean = { false }
 
     /**
-     * Does this Step has to be automatically selected?
+     * Does this Step has to be automatically selected from the action context?
      * if returns true, the step is selected.
      */
     fun selectFromAction(userTimeline: UserTimeline, dialog: Dialog, action: Action, intent: Intent?): Boolean =
-        intent != null && selectFromEntityStepSelection(action, intent) ?: supportStarterIntent(intent)
+        intent != null && selectFromActionAndEntityStepSelection(action, intent) ?: supportStarterIntent(intent)
+
+    /**
+     * Does this Step has to be automatically selected from the dialog context?
+     * if returns true, the step is selected.
+     */
+    fun selectFromDialog(userTimeline: UserTimeline, dialog: Dialog, intent: Intent?): Boolean =
+        intent != null && selectFromDialogAndEntityStepSelection(dialog, intent) ?: supportStarterIntent(intent)
 
     /**
      * Does this step hast to be selected from its [entityStepSelection]?
      * Returns null if there is no [entityStepSelection].
      */
-    fun selectFromEntityStepSelection(action: Action, intent: Intent? = null): Boolean? =
+    fun selectFromActionAndEntityStepSelection(action: Action, intent: Intent? = null): Boolean? =
         entityStepSelection?.let { e ->
             if (intent != null && this.intent != null && !supportStarterIntent(intent)) false
             else if (e.value == null) action.hasEntity(e.entityRole)
             else action.hasEntityPredefinedValue(e.entityRole, e.value)
+        }
+
+    /**
+     * Does this step hast to be selected from its [entityStepSelection]?
+     * Returns null if there is no [entityStepSelection].
+     */
+    fun selectFromDialogAndEntityStepSelection(dialog: Dialog, intent: Intent? = null): Boolean? =
+        entityStepSelection?.let { e ->
+            if (intent != null && this.intent != null && !supportStarterIntent(intent)) false
+            else if (e.value == null) dialog.state.hasEntity(e.entityRole)
+            else dialog.state.hasEntityPredefinedValue(e.entityRole, e.value)
         }
 
     /**

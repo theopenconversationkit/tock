@@ -175,4 +175,17 @@ data class DialogState(
         nextActionState = null
     }
 
+    private fun currentEntityValues(): List<EntityValue> = entityValues.mapNotNull { it.value.value }
+
+    fun hasEntity(role: String): Boolean {
+        return hasSubEntity(currentEntityValues(), role)
+    }
+
+    /**
+     * Does this event contains specified predefined value entity?
+     */
+    fun hasEntityPredefinedValue(role: String, value: String): Boolean {
+        return hasEntityPredefinedValue(currentEntityValues(), role, value)
+    }
+
 }
