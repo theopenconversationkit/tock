@@ -1,13 +1,14 @@
-- 20.9.3 December 2020
-    - Rasa production version
-    - Web bot orchestration support   
-    
 - 21.3.0 March 2021
+    - Rasa production version
+    - Web bot orchestration support
     - AB test engine workflow
     - Code editor admin interface 
     - Conversational framework: support for other languages than Kotlin (multi-platform Kotlin)         
     
 ## Latest releases
+
+- 20.9.3 February 2020
+  - Bug fixes release
 
 - 20.9.2 November 2020
     - Tock Studio UI cleanup 

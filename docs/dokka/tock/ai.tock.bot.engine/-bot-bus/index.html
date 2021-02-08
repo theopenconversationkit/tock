@@ -47,10 +47,26 @@
 </tr>
 <tr>
 <td>
+<h4><a href="current-dialog.html">currentDialog</a></h4>
+</td>
+<td>
+<p>The current dialog for this user (may be different from the initial <a href="dialog.html">dialog</a>).</p>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">currentDialog</span><span class="symbol">: </span><a href="../../ai.tock.bot.engine.dialog/-dialog/index.html"><span class="identifier">Dialog</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="current-intent.html">currentIntent</a></h4>
+</td>
+<td>
+<p>The current intent for this user (may be different from the initial <a href="../-bus/intent.html">intent</a>).</p>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">currentIntent</span><span class="symbol">: </span><a href="../../ai.tock.bot.definition/-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
 <h4><a href="dialog.html">dialog</a></h4>
 </td>
 <td>
-<p>The current dialog history for this user.</p>
+<p>The initial dialog for this user.</p>
 <code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">dialog</span><span class="symbol">: </span><a href="../../ai.tock.bot.engine.dialog/-dialog/index.html"><span class="identifier">Dialog</span></a></code></td>
 </tr>
 <tr>

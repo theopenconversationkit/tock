@@ -40,6 +40,14 @@ Used to manage workflow in a <a href="../-story-handler/index.html">StoryHandler
 </tr>
 <tr>
 <td>
+<h4><a href="has-no-children.html">hasNoChildren</a></h4>
+</td>
+<td>
+<p>Flag indicating if it's the step has no children.</p>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">hasNoChildren</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
 <h4><a href="intent.html">intent</a></h4>
 </td>
 <td>
@@ -93,9 +101,18 @@ it means that the step is not able to answer to the current request.</p>
 <h4><a href="select-from-action.html">selectFromAction</a></h4>
 </td>
 <td>
-<p>Does this Step has to be automatically selected?
+<p>Does this Step has to be automatically selected from the action context?
 if returns true, the step is selected.</p>
 <code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">selectFromAction</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryStep$selectFromAction(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.engine.action.Action, ai.tock.bot.definition.Intent)/userTimeline">userTimeline</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.user/-user-timeline/index.html"><span class="identifier">UserTimeline</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.StoryStep$selectFromAction(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.engine.action.Action, ai.tock.bot.definition.Intent)/dialog">dialog</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.dialog/-dialog/index.html"><span class="identifier">Dialog</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.StoryStep$selectFromAction(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.engine.action.Action, ai.tock.bot.definition.Intent)/action">action</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.StoryStep$selectFromAction(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.engine.action.Action, ai.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="select-from-action-and-entity-step-selection.html">selectFromActionAndEntityStepSelection</a></h4>
+</td>
+<td>
+<p>Does this step hast to be selected from its <a href="entity-step-selection.html">entityStepSelection</a>?
+Returns null if there is no <a href="entity-step-selection.html">entityStepSelection</a>.</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">selectFromActionAndEntityStepSelection</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryStep$selectFromActionAndEntityStepSelection(ai.tock.bot.engine.action.Action, ai.tock.bot.definition.Intent)/action">action</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.StoryStep$selectFromActionAndEntityStepSelection(ai.tock.bot.engine.action.Action, ai.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>
@@ -109,12 +126,21 @@ If this functions returns true, the step is selected and remaining steps are not
 </tr>
 <tr>
 <td>
-<h4><a href="select-from-entity-step-selection.html">selectFromEntityStepSelection</a></h4>
+<h4><a href="select-from-dialog.html">selectFromDialog</a></h4>
+</td>
+<td>
+<p>Does this Step has to be automatically selected from the dialog context?
+if returns true, the step is selected.</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">selectFromDialog</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryStep$selectFromDialog(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.definition.Intent)/userTimeline">userTimeline</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.user/-user-timeline/index.html"><span class="identifier">UserTimeline</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.StoryStep$selectFromDialog(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.definition.Intent)/dialog">dialog</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.dialog/-dialog/index.html"><span class="identifier">Dialog</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.StoryStep$selectFromDialog(ai.tock.bot.engine.user.UserTimeline, ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="select-from-dialog-and-entity-step-selection.html">selectFromDialogAndEntityStepSelection</a></h4>
 </td>
 <td>
 <p>Does this step hast to be selected from its <a href="entity-step-selection.html">entityStepSelection</a>?
 Returns null if there is no <a href="entity-step-selection.html">entityStepSelection</a>.</p>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">selectFromEntityStepSelection</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryStep$selectFromEntityStepSelection(ai.tock.bot.engine.action.Action, ai.tock.bot.definition.Intent)/action">action</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.StoryStep$selectFromEntityStepSelection(ai.tock.bot.engine.action.Action, ai.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">?</span></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">selectFromDialogAndEntityStepSelection</span><span class="symbol">(</span><span class="identifier" id="ai.tock.bot.definition.StoryStep$selectFromDialogAndEntityStepSelection(ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.definition.Intent)/dialog">dialog</span><span class="symbol">:</span>&nbsp;<a href="../../ai.tock.bot.engine.dialog/-dialog/index.html"><span class="identifier">Dialog</span></a><span class="symbol">, </span><span class="identifier" id="ai.tock.bot.definition.StoryStep$selectFromDialogAndEntityStepSelection(ai.tock.bot.engine.dialog.Dialog, ai.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>
