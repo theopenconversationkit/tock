@@ -44,4 +44,19 @@ class WebVerticleTest {
 
         verify { response.end() }
     }
+
+    @Test
+    fun `GIVEN WebVerticle simple implementation THEN ping returns HTTP 200`() {
+        val verticle = WebVerticleImpl()
+        val response: HttpServerResponse = mockk {
+            every { end() } returns Unit
+        }
+        val context: RoutingContext = mockk {
+            every { response() } returns response
+        }
+
+        verticle.ping().invoke(context)
+
+        verify { response.end() }
+    }
 }

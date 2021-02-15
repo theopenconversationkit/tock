@@ -128,6 +128,11 @@ abstract class WebVerticle : AbstractVerticle() {
      */
     open val healthcheckPath: String? get() = "$rootPath/healthcheck"
 
+    /**
+     * If not null, add a [ping()] for this verticle.
+     */
+    open val pingPath: String? get() = "$rootPath/ping"
+
     private val cachedAuthProvider: TockAuthProvider? by lazy(PUBLICATION) {
         authProvider()
     }
@@ -147,6 +152,12 @@ abstract class WebVerticle : AbstractVerticle() {
     open fun defaultHealthcheck(): (RoutingContext) -> Unit = { it.response().end() }
 
     /**
+     * Provide basic ping information
+     */
+    open fun ping(): (RoutingContext) -> Unit = { it.response().end() }
+
+
+    /**
      * Provide enhanced information: HTTP response has JSON body with health status of resources
      */
     open fun detailedHealthcheck(): (RoutingContext) -> Unit = defaultHealthcheck()
@@ -162,6 +173,7 @@ abstract class WebVerticle : AbstractVerticle() {
                     }
 
                     healthcheckPath?.let { router.get(it).handler(healthcheck()) }
+                    pingPath?.let { router.get(it).handler(ping()) }
                     configure()
 
                     it.complete()
