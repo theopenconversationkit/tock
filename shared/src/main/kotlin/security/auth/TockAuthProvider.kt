@@ -39,6 +39,7 @@ interface TockAuthProvider : AuthProvider {
     fun excludedPaths(verticle: WebVerticle): Set<Regex> =
         listOfNotNull(
             verticle.healthcheckPath?.toRegex(),
+            verticle.pingPath?.toRegex(),
             ".*\\.(css|html|js|ico|woff2?|ttf|eot)".toRegex()
         ).toSet()
 
