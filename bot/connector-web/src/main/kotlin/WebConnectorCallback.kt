@@ -19,8 +19,8 @@ package ai.tock.bot.connector.web
 import ai.tock.bot.connector.ConnectorCallbackBase
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
-import ai.tock.bot.engine.event.Event
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.vertx.core.http.HttpHeaders
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import java.util.Locale
@@ -46,11 +46,13 @@ internal class WebConnectorCallback(
             .mapNotNull {
                 if (it.stringText != null) {
                     WebMessage(it.stringText!!)
-                } else it.message(webConnectorType)?.let {
-                    it as? WebMessage
+                } else {
+                    it.message(webConnectorType) as? WebMessage
                 }
 
             }
-        context.response().end(webMapper.writeValueAsString(WebConnectorResponse(messages)))
+        context.response()
+            .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+            .end(webMapper.writeValueAsString(WebConnectorResponse(messages)))
     }
 }
