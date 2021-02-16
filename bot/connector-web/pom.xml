@@ -28,6 +28,12 @@
     <description>Bot Connector for REST API</description>
 
     <dependencies>
+
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-bot-connector-web-model</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-bot-engine-jackson</artifactId>
