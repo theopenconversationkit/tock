@@ -46,7 +46,7 @@ class WebVerticleTest {
     }
 
     @Test
-    fun `GIVEN WebVerticle simple implementation THEN ping returns HTTP 200`() {
+    fun `GIVEN WebVerticle simple implementation THEN livenesscheck returns HTTP 200`() {
         val verticle = WebVerticleImpl()
         val response: HttpServerResponse = mockk {
             every { end() } returns Unit
@@ -55,7 +55,22 @@ class WebVerticleTest {
             every { response() } returns response
         }
 
-        verticle.ping().invoke(context)
+        verticle.livenesscheck().invoke(context)
+
+        verify { response.end() }
+    }
+
+    @Test
+    fun `GIVEN WebVerticle simple implementation THEN readinesscheck returns HTTP 200`() {
+        val verticle = WebVerticleImpl()
+        val response: HttpServerResponse = mockk {
+            every { end() } returns Unit
+        }
+        val context: RoutingContext = mockk {
+            every { response() } returns response
+        }
+
+        verticle.readinesscheck().invoke(context)
 
         verify { response.end() }
     }

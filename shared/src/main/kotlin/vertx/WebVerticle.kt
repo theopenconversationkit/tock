@@ -53,10 +53,6 @@ import io.vertx.ext.web.handler.CorsHandler
 import io.vertx.ext.web.handler.ErrorHandler
 import io.vertx.ext.web.handler.SessionHandler
 import io.vertx.ext.web.sstore.LocalSessionStore
-import mu.KLogger
-import mu.KotlinLogging
-import org.litote.kmongo.Id
-import org.litote.kmongo.toId
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
@@ -64,6 +60,10 @@ import java.nio.file.Paths
 import java.util.EnumSet
 import java.util.Locale
 import kotlin.LazyThreadSafetyMode.PUBLICATION
+import mu.KLogger
+import mu.KotlinLogging
+import org.litote.kmongo.Id
+import org.litote.kmongo.toId
 
 /**
  * Base class for web Tock [io.vertx.core.Verticle]s. Provides utility methods.
@@ -126,12 +126,17 @@ abstract class WebVerticle : AbstractVerticle() {
     /**
      * If not null, add a [healthcheck()] for this verticle.
      */
-    open val healthcheckPath: String? get() = "$rootPath/healthcheck"
+    open val healthcheckPath: String? get() = verticleProperty("tock_vertx_healthcheck_path", "$rootPath/healthcheck")
 
     /**
-     * If not null, add a [ping()] for this verticle.
+     * If not null, add a [readiness()] for this verticle.
      */
-    open val pingPath: String? get() = "$rootPath/ping"
+    open val readinesscheckPath: String? get() = verticleProperty("tock_vertx_readinesscheck_path", "/health/readiness")
+
+    /**
+     * If not null, add a [liveness()] for this verticle.
+     */
+    open val livenesscheckPath: String? get() = verticleProperty("tock_vertx_livenesscheck_path", "/health/liveness")
 
     private val cachedAuthProvider: TockAuthProvider? by lazy(PUBLICATION) {
         authProvider()
@@ -152,9 +157,14 @@ abstract class WebVerticle : AbstractVerticle() {
     open fun defaultHealthcheck(): (RoutingContext) -> Unit = { it.response().end() }
 
     /**
-     * Provide basic ping information
+     * Provide basic readiness information: indicates whether the container is ready to respond to requests
      */
-    open fun ping(): (RoutingContext) -> Unit = { it.response().end() }
+    open fun readinesscheck(): (RoutingContext) -> Unit = { it.response().end() }
+
+    /**
+     * Provide basic liveness information: indicates whether the verticle is running
+     */
+    open fun livenesscheck(): (RoutingContext) -> Unit = healthcheck()
 
 
     /**
@@ -173,7 +183,8 @@ abstract class WebVerticle : AbstractVerticle() {
                     }
 
                     healthcheckPath?.let { router.get(it).handler(healthcheck()) }
-                    pingPath?.let { router.get(it).handler(ping()) }
+                    livenesscheckPath?.let { router.get(it).handler(livenesscheck()) }
+                    readinesscheckPath?.let { router.get(it).handler(readinesscheck()) }
                     configure()
 
                     it.complete()
