@@ -10,7 +10,9 @@ import ai.tock.bot.connector.web.send.WebWidget
 import ai.tock.bot.engine.message.GenericMessage
 import ai.tock.shared.mapNotNullValues
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonInclude
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class WebMessage(
     val text: String? = null,
     val buttons: List<Button> = emptyList(),
