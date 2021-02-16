@@ -5,13 +5,12 @@ import ai.tock.bot.connector.web.send.Button
 import ai.tock.bot.connector.web.send.WebCard
 import ai.tock.bot.connector.web.send.WebCarousel
 import ai.tock.bot.connector.web.send.WebImage
+import ai.tock.bot.connector.web.send.WebMessageContent
 import ai.tock.bot.connector.web.send.WebWidget
 import ai.tock.bot.engine.message.GenericMessage
 import ai.tock.shared.mapNotNullValues
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonInclude
 
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class WebMessage(
     val text: String? = null,
     val buttons: List<Button> = emptyList(),
@@ -22,10 +21,20 @@ data class WebMessage(
     val version: String = "1"
 ) : WebConnectorMessage {
 
+    constructor(content: WebMessageContent) : this(
+        content.text,
+        content.buttons,
+        content.card,
+        content.carousel,
+        content.widget,
+        content.image,
+        content.version
+    )
+
     @get:JsonIgnore
     override val connectorType: ConnectorType = webConnectorType
 
-    override fun toGenericMessage(): GenericMessage? =
+    override fun toGenericMessage(): GenericMessage =
         card?.toGenericMessage()
             ?: carousel?.toGenericMessage()
             ?: widget?.toGenericMessage()
@@ -35,30 +44,5 @@ data class WebMessage(
                 texts = mapNotNullValues(GenericMessage.TEXT_PARAM to text),
                 choices = buttons.map { it.toChoice() }
             )
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is WebMessage) return false
-
-        if (text != other.text) return false
-        if (version != other.version) return false
-
-        if (buttons != other.buttons) return false
-        if (card != other.card) return false
-        if (carousel != other.carousel) return false
-        if (widget != other.widget) return false
-        if (image != other.image) return false
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = text?.hashCode() ?: 0
-        result = 31 * result + buttons.hashCode()
-        result = 31 * result + (card?.hashCode() ?: 0)
-        result = 31 * result + (carousel?.hashCode() ?: 0)
-        result = 31 * result + (widget?.hashCode() ?: 0)
-        result = 31 * result + (image?.hashCode() ?: 0)
-        result = 31 * result + version.hashCode()
-        return result
-    }
 }
+

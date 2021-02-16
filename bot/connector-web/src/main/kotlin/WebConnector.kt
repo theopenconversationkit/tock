@@ -63,8 +63,8 @@ import io.vertx.core.http.HttpMethod
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.CorsHandler
-import mu.KotlinLogging
 import java.time.Duration
+import mu.KotlinLogging
 
 internal const val WEB_CONNECTOR_ID = "web"
 
@@ -305,7 +305,7 @@ class WebConnector internal constructor(
                         card = WebCard(
                             title = message.title,
                             subTitle = message.subTitle,
-                            file = message.file,
+                            file = message.file?.toWebMediaFile(),
                             buttons = message.actions.map { button -> button.toButton() }
                         ))
                 }
@@ -314,7 +314,7 @@ class WebConnector internal constructor(
                         WebCard(
                             title = mediaCard.title,
                             subTitle = mediaCard.subTitle,
-                            file = mediaCard.file,
+                            file = mediaCard.file?.toWebMediaFile(),
                             buttons = mediaCard.actions.map { button -> button.toButton() }
                         )
                     }))

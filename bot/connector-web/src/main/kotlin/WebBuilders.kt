@@ -19,7 +19,6 @@ package ai.tock.bot.connector.web
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.media.MediaCard
 import ai.tock.bot.connector.media.MediaCarousel
-import ai.tock.bot.connector.media.MediaFile
 import ai.tock.bot.connector.web.send.Button
 import ai.tock.bot.connector.web.send.PostbackButton
 import ai.tock.bot.connector.web.send.QuickReply
@@ -208,7 +207,7 @@ fun <T : Bus<T>> T.webCardWithAttachment(
     return WebCard(
         title = translate(title).toString(),
         subTitle = translate(subTitle).toString(),
-        file = MediaFile(
+        file = WebMediaFile(
             attachmentUrl.toString(), attachementName, type
         ),
         buttons = buttons
@@ -221,7 +220,7 @@ fun <T : Bus<T>> T.webCardWithAttachment(
 
 fun <T : Bus<T>> T.webImage(imageUrl: String, title: CharSequence): WebMessage =
     WebMessage(
-        image = WebImage(MediaFile(imageUrl, title.toString(), AttachmentType.image), title)
+        image = WebImage(WebMediaFile(imageUrl, title.toString(), AttachmentType.image), title)
     )
 
 /**
@@ -249,4 +248,5 @@ fun <T : Bus<T>> T.webCarousel(carousel: MediaCarousel): OldWebMessage = OldWebM
 /**
  * Creates a custom payload
  */
-fun <T : Bus<T>> T.webWidget(widget: WebWidget, buttons: List<Button> = emptyList()): WebMessage = WebMessage(widget = widget, buttons = buttons)
+fun <T : Bus<T>> T.webWidget(widget: WebWidget, buttons: List<Button> = emptyList()): WebMessage =
+    WebMessage(widget = widget, buttons = buttons)

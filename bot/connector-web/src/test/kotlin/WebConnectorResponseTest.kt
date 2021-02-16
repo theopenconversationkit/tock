@@ -1,5 +1,5 @@
-import ai.tock.bot.connector.media.MediaFile
 import ai.tock.bot.connector.web.WebConnectorResponse
+import ai.tock.bot.connector.web.WebMediaFile
 import ai.tock.bot.connector.web.WebMessage
 import ai.tock.bot.connector.web.send.PostbackButton
 import ai.tock.bot.connector.web.send.QuickReply
@@ -63,7 +63,7 @@ internal class WebConnectorResponseTest {
                     card = WebCard(
                         title = "title",
                         subTitle = "subTitle",
-                        file = MediaFile(
+                        file = WebMediaFile(
                             url = "http://www.sncf.com/image.png",
                             name = "imageName",
                             type = SendAttachment.AttachmentType.image
@@ -97,7 +97,7 @@ internal class WebConnectorResponseTest {
                             WebCard(
                                 title = "item 1",
                                 subTitle = "subtitle 1",
-                                file = MediaFile(
+                                file = WebMediaFile(
                                     url = "http://www.sncf.com/image1.png",
                                     name = "imageName 1",
                                     type = SendAttachment.AttachmentType.image
@@ -112,7 +112,7 @@ internal class WebConnectorResponseTest {
                             WebCard(
                                 title = "item 2",
                                 subTitle = "subtitle 2",
-                                file = MediaFile(
+                                file = WebMediaFile(
                                     url = "http://www.sncf.com/image2.png",
                                     name = "imageName 2",
                                     type = SendAttachment.AttachmentType.image
@@ -135,7 +135,8 @@ internal class WebConnectorResponseTest {
                 )
             )
         )
-        val deserializedEvent = mapper.readValue<WebConnectorResponse>(resourceAsStream("/carousel_with_2_cards_and_1_button.json"))
+        val deserializedEvent =
+            mapper.readValue<WebConnectorResponse>(resourceAsStream("/carousel_with_2_cards_and_1_button.json"))
         Assertions.assertThat(deserializedEvent).isEqualTo(expected)
     }
 
