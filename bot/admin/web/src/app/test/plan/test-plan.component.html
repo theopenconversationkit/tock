@@ -35,7 +35,7 @@
 
     <button mat-button (click)="executeXRay()" color="primary">Create</button>
     <div *ngIf="executeXray"><br>
-      <img src="/assets/images/loading.gif" width="40px" height="40px"/>
+      <img src="{{baseHref}}assets/images/loading.gif" width="40px" height="40px"/>
     </div>
   </nb-card-body>
 </nb-card>
@@ -79,7 +79,7 @@
               <mat-icon>launch</mat-icon>
             </button>
             <div *ngIf="executePlan && p == this.runningTestPlan"><br>
-              <img src="/assets/images/loading.gif" width="40px" height="40px"/>
+              <img src="{{baseHref}}assets/images/loading.gif" width="40px" height="40px"/>
             </div>
             <nb-actions size="small" style="cursor: pointer;float: right">
               <nb-action class="control-item" (click)="deleteTestPlan(p)" nbTooltip="Delete" style="color: #ff708d;">

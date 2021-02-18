@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
+import {Component, Inject, OnInit} from "@angular/core";
 import {TestPlan, XRayPlanExecutionConfiguration} from "../model/test";
 import {TestService} from "../test.service";
 import {StateService} from "../../core-nlp/state.service";
@@ -23,6 +23,8 @@ import {DialogReport} from "../../shared/model/dialog-data";
 import {BotSharedService} from "../../shared/bot-shared.service";
 import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
 import { NbToastrService } from '@nebular/theme';
+import {AnalyticsService} from "../../analytics/analytics.service";
+import {APP_BASE_HREF} from "@angular/common";
 
 @Component({
   selector: 'tock-bot-test-plan',
@@ -51,7 +53,8 @@ export class TestPlanComponent implements OnInit {
               private test: TestService,
               private toastrService: NbToastrService,
               public botConfiguration: BotConfigurationService,
-              private shared: BotSharedService) {
+              private shared: BotSharedService,
+              @Inject(APP_BASE_HREF) public baseHref: string) {
   }
 
   // loop to check test plan executions status

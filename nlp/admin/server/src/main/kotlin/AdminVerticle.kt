@@ -63,6 +63,7 @@ import ai.tock.shared.injector
 import ai.tock.shared.name
 import ai.tock.shared.namespace
 import ai.tock.shared.pingMongoDatabase
+import ai.tock.shared.property
 import ai.tock.shared.provide
 import ai.tock.shared.security.NoEncryptionPassException
 import ai.tock.shared.security.TockUserRole.admin
@@ -83,12 +84,12 @@ import io.vertx.core.http.HttpMethod.GET
 import io.vertx.ext.web.FileUpload
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.StaticHandler
+import java.nio.charset.StandardCharsets.UTF_8
+import java.util.Locale
 import mu.KLogger
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
-import java.nio.charset.StandardCharsets.UTF_8
-import java.util.Locale
 
 /**
  *
@@ -97,7 +98,13 @@ open class AdminVerticle : WebVerticle() {
 
     override val logger: KLogger = KotlinLogging.logger {}
 
-    override val rootPath: String = "/rest/admin"
+    private val baseHref: String = verticleProperty("base_href", "/")
+        .run {
+            takeIf { endsWith("/") } ?: "$this/"
+        }
+
+    override val basePath: String = "${baseHref}rest"
+    override val rootPath: String = "$basePath/admin"
 
     override fun authProvider(): TockAuthProvider = defaultAuthProvider()
 
@@ -1057,11 +1064,6 @@ open class AdminVerticle : WebVerticle() {
             }
         }
     }
-
-    private val baseHref = verticleProperty("base_href", "/")
-        .run {
-            takeIf { endsWith("/") } ?: "$this/"
-        }
 
     //cache index.html content
     @Volatile

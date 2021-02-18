@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Inject, Input, OnInit} from '@angular/core';
 
 import {NbMenuService, NbSidebarService, NbThemeService} from '@nebular/theme';
 import {StateService} from "../../../core-nlp/state.service";
@@ -22,6 +22,8 @@ import {AuthService} from "../../../core-nlp/auth/auth.service";
 import {SettingsService} from "../../../core-nlp/settings.service";
 import {map, takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
+import {AnalyticsService} from "../../../analytics/analytics.service";
+import {APP_BASE_HREF} from "@angular/common";
 
 @Component({
   selector: 'ngx-header',
@@ -40,7 +42,8 @@ export class HeaderComponent implements OnInit {
               public state: StateService,
               public auth: AuthService,
               public settings: SettingsService,
-              private themeService: NbThemeService, ) {
+              private themeService: NbThemeService,
+              @Inject(APP_BASE_HREF) public baseHref: string) {
 
   }
 

@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
+import {Component, Inject, OnInit} from "@angular/core";
 import {AuthService} from "../auth.service";
 import {Router} from "@angular/router";
+import {APP_BASE_HREF} from "@angular/common";
 
 @Component({
   selector: 'login',
@@ -31,7 +32,7 @@ export class LoginComponent implements OnInit {
   errorMessage: string;
   sendLogin: boolean;
 
-  constructor(public authService: AuthService, private router: Router) {
+  constructor(public authService: AuthService, private router: Router, @Inject(APP_BASE_HREF) public baseHref: string) {
   }
 
   ngOnInit(): void {

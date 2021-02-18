@@ -18,12 +18,13 @@
 import {NEVER, Observable, throwError as observableThrowError} from 'rxjs';
 
 import {catchError, map} from 'rxjs/operators';
-import {EventEmitter, Injectable} from "@angular/core";
+import {EventEmitter, Inject, Injectable} from "@angular/core";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
 import {Router} from "@angular/router";
 import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
 import {JsonUtils} from "../../model/commons";
+import {APP_BASE_HREF} from "@angular/common";
 
 @Injectable()
 export class RestService {
@@ -34,10 +35,12 @@ export class RestService {
 
   readonly errorEmitter: EventEmitter<string> = new EventEmitter();
 
-  constructor(private http: HttpClient,
-              private router: Router) {
-    this.notAuthenticatedUrl = environment.serverUrl;
-    this.url = `${environment.serverUrl}/admin`;
+  constructor(
+    @Inject(APP_BASE_HREF) private baseHref: string,
+    private http: HttpClient,
+    private router: Router) {
+    this.notAuthenticatedUrl = `${baseHref.substring(0, baseHref.length - 1)}${environment.serverUrl}`;
+    this.url = `${this.notAuthenticatedUrl}/admin`;
   }
 
   isSSO(): boolean {

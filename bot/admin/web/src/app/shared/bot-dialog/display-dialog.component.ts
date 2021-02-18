@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import {Component, Input, OnInit} from "@angular/core";
+import {Component, Inject, Input, OnInit} from "@angular/core";
 import {DialogReport} from "../model/dialog-data";
 import {UserRole} from "../../model/auth";
 import {StateService} from "../../core-nlp/state.service";
 import {AnalyticsService} from "../../analytics/analytics.service";
+import {Router} from "@angular/router";
+import {APP_BASE_HREF} from "@angular/common";
 
 @Component({
   selector: 'tock-display-dialog',
@@ -34,7 +36,8 @@ export class DisplayDialogComponent implements OnInit {
 
   constructor(
     private state: StateService,
-    private analyticsService: AnalyticsService
+    private analyticsService: AnalyticsService,
+    @Inject(APP_BASE_HREF) public baseHref: string
   ) {
   }
 

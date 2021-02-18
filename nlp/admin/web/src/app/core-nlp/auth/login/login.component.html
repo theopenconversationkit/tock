@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-<div class="row container-login100" style="background-image: url('/assets/images/back-blur.jpg');" *ngIf="!authService.isLoggedIn()">
+<div class="row container-login100" style="background-image: url('{{baseHref}}assets/images/back-blur.jpg');" *ngIf="!authService.isLoggedIn()">
   <div class="col-md-3">
   </div>
   <div class="col-md-6">
@@ -22,7 +22,7 @@
       <nb-card-header></nb-card-header>
       <nb-card-body>
         <div style="text-align: center">
-          <img style="width: 250px; margin-bottom: 50px;" src="/assets/images/Logo_Tock_bleu.svg"/>
+          <img style="width: 250px; margin-bottom: 50px;" src="{{baseHref}}assets/images/Logo_Tock_bleu.svg"/>
         </div>
         <div class="row">
           <div class="col-md-2">
@@ -63,7 +63,7 @@
                        id="input-password"
                        placeholder="Password"
                        [required]="true">
-                <ng-container *ngIf="errorMessage || (userPassword.invalid && userPassword.touched)">
+                <ng-container *ngIf="errorMessage || (userPassword.invalid && userPassword.touched)">
                   <p class="error-message" *ngIf="userPassword.errors?.required">
                     Password is required!
                   </p>

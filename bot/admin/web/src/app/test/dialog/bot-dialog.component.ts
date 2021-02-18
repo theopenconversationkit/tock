@@ -27,6 +27,8 @@ import {Subscription} from "rxjs";
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from "@angular/material/dialog";
 import {SentenceFilter} from "../../sentences-scroll/sentences-scroll.component";
 import { NbToastrService } from '@nebular/theme';
+import {AnalyticsService} from "../../analytics/analytics.service";
+import {APP_BASE_HREF} from "@angular/common";
 
 @Component({
   selector: 'tock-bot-dialog',
@@ -62,7 +64,8 @@ export class BotDialogComponent implements OnInit, OnDestroy {
               private rest: RestService,
               private shared: BotSharedService,
               private toastrService: NbToastrService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              @Inject(APP_BASE_HREF) public baseHref: string) {
   }
 
   ngOnInit() {
