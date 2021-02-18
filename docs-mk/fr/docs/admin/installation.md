@@ -341,9 +341,11 @@ Il s'agit des composants "applicatifs" de l'architecture Tock sans la base de do
 
 Par défaut l'interface d'administration est servie à la racine (Exemple : `https://[domain host]`)
 Si vous souhaitez la rendre disponible sur un chemin relatif (`https://[domain host]/tock`), 
-utilisez dans la configuration de l'image docker `tock_admin` la variable d'environnement `botadminverticle_base_href`.
+utilisez dans la configuration de l'image docker `tock/bot_admin` la variable d'environnement `botadminverticle_base_href`.
 
 Par exemple : `botadminverticle_base_href=tock`
+
+Pour `tock/nlp_admin`, il faut utiliser la propriété `adminverticle_base_href`.
 
 ## Voir aussi...
 

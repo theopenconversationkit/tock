@@ -1794,8 +1794,9 @@ Pour en savoir plus voir la <a href="https://aws.amazon.com/fr/ec2/pricing/on-de
 <h3 id="mettre-a-disposition-linterface-dadministration-dans-un-sous-repertoire">Mettre à disposition l'interface d'administration dans un sous-repertoire<a class="headerlink" href="#mettre-a-disposition-linterface-dadministration-dans-un-sous-repertoire" title="Permanent link">&para;</a></h3>
 <p>Par défaut l'interface d'administration est servie à la racine (Exemple : <code>https://[domain host]</code>)
 Si vous souhaitez la rendre disponible sur un chemin relatif (<code>https://[domain host]/tock</code>), 
-utilisez dans la configuration de l'image docker <code>tock_admin</code> la variable d'environnement <code>botadminverticle_base_href</code>.</p>
+utilisez dans la configuration de l'image docker <code>tock/bot_admin</code> la variable d'environnement <code>botadminverticle_base_href</code>.</p>
 <p>Par exemple : <code>botadminverticle_base_href=tock</code></p>
+<p>Pour <code>tock/nlp_admin</code>, il faut utiliser la propriété <code>adminverticle_base_href</code>.</p>
 <h2 id="voir-aussi">Voir aussi...<a class="headerlink" href="#voir-aussi" title="Permanent link">&para;</a></h2>
 <p>Pour une utilisation de Tock en production, nous vous recommandons de parcourir également les pages suivantes :</p>
 <ul>
