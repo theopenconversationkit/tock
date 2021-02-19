@@ -4,8 +4,10 @@ import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.web.send.Button
 import ai.tock.bot.connector.web.send.WebCard
 import ai.tock.bot.connector.web.send.WebCarousel
+import ai.tock.bot.connector.web.send.WebDeepLink
 import ai.tock.bot.connector.web.send.WebImage
 import ai.tock.bot.connector.web.send.WebMessageContent
+import ai.tock.bot.connector.web.send.WebMessageContract
 import ai.tock.bot.connector.web.send.WebWidget
 import ai.tock.bot.engine.message.GenericMessage
 import ai.tock.shared.mapNotNullValues
@@ -14,14 +16,15 @@ import com.fasterxml.jackson.annotation.JsonInclude
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class WebMessage(
-    val text: String? = null,
-    val buttons: List<Button> = emptyList(),
-    val card: WebCard? = null,
-    val carousel: WebCarousel? = null,
-    val widget: WebWidget? = null,
-    val image: WebImage? = null,
-    val version: String = "1"
-) : WebConnectorMessage {
+    override val text: String? = null,
+    override val buttons: List<Button> = emptyList(),
+    override val card: WebCard? = null,
+    override val carousel: WebCarousel? = null,
+    override val widget: WebWidget? = null,
+    override val image: WebImage? = null,
+    override val version: String = "1",
+    override val deepLink: WebDeepLink? = null,
+) : WebMessageContract, WebConnectorMessage {
 
     constructor(content: WebMessageContent) : this(
         content.text,
@@ -30,7 +33,8 @@ data class WebMessage(
         content.carousel,
         content.widget,
         content.image,
-        content.version
+        content.version,
+        content.deepLink
     )
 
     @get:JsonIgnore

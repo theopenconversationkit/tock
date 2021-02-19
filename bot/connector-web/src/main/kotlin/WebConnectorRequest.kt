@@ -26,7 +26,13 @@ import ai.tock.bot.engine.user.PlayerType.bot
 import ai.tock.shared.defaultLocale
 import java.util.Locale
 
-data class WebConnectorRequest(val query: String? = null, val payload: String? = null, val userId: String, val locale: Locale = defaultLocale, val ref: String? = null) {
+data class WebConnectorRequest(
+    override val query: String? = null,
+    override val payload: String? = null,
+    override val userId: String,
+    override val locale: Locale = defaultLocale,
+    override val ref: String? = null
+) : WebConnectorRequestContract {
 
     fun toEvent(applicationId: String): Event =
         if (query != null) {

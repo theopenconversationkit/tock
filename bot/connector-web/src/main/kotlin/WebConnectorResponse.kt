@@ -70,4 +70,4 @@ data class WebButton(val title: String, val payload: String? = null, val imageUr
         }
 }
 
-internal data class WebConnectorResponse(val responses: List<WebMessage>)
+internal data class WebConnectorResponse(override val responses: List<WebMessage>) : WebConnectorResponseContract
