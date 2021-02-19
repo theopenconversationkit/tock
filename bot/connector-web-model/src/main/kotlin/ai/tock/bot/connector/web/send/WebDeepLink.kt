@@ -16,24 +16,4 @@
 
 package ai.tock.bot.connector.web.send
 
-interface WebMessageContract {
-    val text: String?
-    val buttons: List<Button>
-    val deepLink: WebDeepLink?
-    val card: WebCard?
-    val carousel: WebCarousel?
-    val widget: WebWidget?
-    val image: WebImage?
-    val version: String
-}
-
-data class WebMessageContent(
-    override val text: String? = null,
-    override val buttons: List<Button> = emptyList(),
-    override val deepLink: WebDeepLink? = null,
-    override val card: WebCard? = null,
-    override val carousel: WebCarousel? = null,
-    override val widget: WebWidget? = null,
-    override val image: WebImage? = null,
-    override val version: String = "1"
-) : WebMessageContract
+data class WebDeepLink(val ref: String)

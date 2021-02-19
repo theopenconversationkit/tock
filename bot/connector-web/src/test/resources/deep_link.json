@@ -1,0 +1,11 @@
+{
+  "responses": [
+    {
+      "deepLink": {
+        "ref": "aaa-bbb-123"
+      },
+      "version": "1",
+      "type": "WebMessage"
+    }
+  ]
+}

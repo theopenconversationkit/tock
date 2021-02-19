@@ -25,6 +25,7 @@ import ai.tock.bot.connector.web.send.QuickReply
 import ai.tock.bot.connector.web.send.UrlButton
 import ai.tock.bot.connector.web.send.WebCard
 import ai.tock.bot.connector.web.send.WebCarousel
+import ai.tock.bot.connector.web.send.WebDeepLink
 import ai.tock.bot.connector.web.send.WebImage
 import ai.tock.bot.connector.web.send.WebWidget
 import ai.tock.bot.definition.IntentAware
@@ -250,3 +251,6 @@ fun <T : Bus<T>> T.webCarousel(carousel: MediaCarousel): OldWebMessage = OldWebM
  */
 fun <T : Bus<T>> T.webWidget(widget: WebWidget, buttons: List<Button> = emptyList()): WebMessage =
     WebMessage(widget = widget, buttons = buttons)
+
+
+fun <T : Bus<T>> T.webDeepLink(ref: String): WebMessage = WebMessage(deepLink = WebDeepLink(ref))
