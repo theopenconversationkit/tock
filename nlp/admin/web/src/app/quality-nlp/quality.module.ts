@@ -36,6 +36,11 @@ import {NbThemeModule, NbRouteTabsetModule, NbCardModule, NbButtonModule, NbSele
 import {ThemeModule} from "../theme/theme.module";
 import { NgxEchartsModule } from 'ngx-echarts';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {ChartsModule} from "ng2-charts";
+
+export function importEcharts() {
+  return import('echarts')
+}
 
 const routes: Routes = [
   {
@@ -87,6 +92,7 @@ export class QualityRoutingModule {
 
 @NgModule({
   imports: [
+    ChartsModule,
     CommonModule,
     SharedModule,
     QualityRoutingModule,
@@ -100,7 +106,7 @@ export class QualityRoutingModule {
     NbButtonModule,
     NbSelectModule,
     NgxEchartsModule.forRoot({
-      echarts: () => import('echarts')
+      echarts: importEcharts
     }),
     NbTooltipModule,
     NgbModule,

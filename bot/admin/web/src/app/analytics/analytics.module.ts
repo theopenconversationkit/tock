@@ -15,7 +15,7 @@
  */
 
 import {RouterModule, Routes} from "@angular/router";
-import {NgModule} from "@angular/core";
+import {NgModule, NO_ERRORS_SCHEMA} from "@angular/core";
 import {CommonModule} from "@angular/common";
 import {InfiniteScrollModule} from "ngx-infinite-scroll";
 import {SharedModule} from "../shared-nlp/shared.module";
@@ -60,6 +60,10 @@ import {FlowComponent} from './flow/flow.component';
 import {CytoComponent} from './flow/cyto.component';
 import { PreferencesComponent } from "./preferences/preferences.component";
 import { NgxEchartsModule } from 'ngx-echarts';
+
+export function importEcharts() {
+  return import('echarts')
+}
 
 const routes: Routes = [
   {
@@ -110,6 +114,7 @@ export class AnalyticsRoutingModule {
 }
 
 @NgModule({
+  schemas: [NO_ERRORS_SCHEMA],
   imports: [
     CommonModule,
     SharedModule,
@@ -141,7 +146,7 @@ export class AnalyticsRoutingModule {
     NbDialogModule.forRoot(),
     NbRadioModule,
     NgxEchartsModule.forRoot({
-      echarts: () => import('echarts')
+      echarts: importEcharts
     }),
   ],
   declarations: [

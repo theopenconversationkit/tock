@@ -53,7 +53,7 @@
     "ng2-file-upload": "^1.4.0",
     "ngx-echarts": "^5.2.2",
     "ngx-infinite-scroll": "^8.0.2",
-    "ngx-moment": "^3.5.0",
+    "ngx-moment": "^5.0.0",
     "node-sass": "^4.14.1",
     "normalize.css": "6.0.0",
     "pace-js": "1.0.2",
