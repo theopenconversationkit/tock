@@ -1,5 +1,5 @@
-<button outline nbButton status="{{disabledOrModified() ? 'disabled' : 'primary'}}" size="small"
-        disabled="disabledOrModified()" title="From {{ range.start }} to {{ range.end }}"
+<button outline nbButton [status]="disabledOrModified() ? 'disabled' : 'primary'" size="small"
+        [disabled]="disabledOrModified()" title="From {{ range.start }} to {{ range.end }}"
         [nbPopover]="templateRef" nbPopoverPlacement="bottom" nbPopoverTrigger="click">
   {{ range.start | date }} - {{ range.end | date }}
 </button>
