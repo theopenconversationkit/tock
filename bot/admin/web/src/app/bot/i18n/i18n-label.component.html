@@ -57,9 +57,9 @@
 
             <!-- Interface type -->
             <div class="i18n-label__entry__mode">
-              <mat-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 0" mat-list-avatar>chat
+              <mat-icon class="i18n-label__entry__mode__icon" nbTooltip="Answer in Text Channels" *ngIf="l.interfaceType === 0" mat-list-avatar>chat
               </mat-icon>
-              <mat-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 1" mat-list-avatar>
+              <mat-icon class="i18n-label__entry__mode__icon" nbTooltip="Answer in Voice Channels" *ngIf="l.interfaceType === 1" mat-list-avatar>
                 record_voice_over
               </mat-icon>
             </div>
