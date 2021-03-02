@@ -56,7 +56,7 @@ class TeamsBotTextMessage(text: String) : TeamsBotMessage(text) {
 }
 
 class TeamsHeroCard(
-    val title: String,
+    val title: String?,
     val subtitle: String?,
     val attachmentContent: String,
     val images: List<CardImage>?,
