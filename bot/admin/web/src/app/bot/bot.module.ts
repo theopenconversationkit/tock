@@ -70,6 +70,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {I18nExportComponent} from './i18n/i18n-export.component';
 import {I18nImportComponent} from './i18n/i18n-import.component';
+import {ApplicationFeaturesTableComponent} from "./feature/application-features-table.component";
 
 const routes: Routes = [
   {
@@ -163,6 +164,7 @@ export class BotRoutingModule {
     StepsComponent,
     MediaDialogComponent,
     ApplicationFeatureComponent,
+    ApplicationFeaturesTableComponent,
     StoryRuleComponent,
     StoryRuntimeSettingsComponent,
     StoryTagComponent

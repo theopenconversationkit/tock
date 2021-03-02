@@ -28,6 +28,7 @@ import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.config.BotDefinitionWrapper
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.Story
+import ai.tock.bot.engine.feature.DefaultFeatureType
 import ai.tock.bot.engine.nlp.NlpController
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.shared.injector
@@ -121,6 +122,12 @@ internal class Bot(
             val story = getStory(userTimeline, dialog, action)
             val bus = TockBotBus(connector, userTimeline, dialog, action, connectorData, botDefinition)
 
+            if (bus.isFeatureEnabled(DefaultFeatureType.DISABLE_BOT)) {
+                logger.info { "bot is disabled for the application" }
+                bus.end("Bot is disabled")
+                return
+            }
+
             try {
                 currentBus.set(bus)
                 story.handle(bus)
@@ -133,7 +140,7 @@ internal class Bot(
         } else {
             //refresh intent flag
             userTimeline.userState.botDisabled = true
-            logger.debug { "bot is disabled" }
+            logger.debug { "bot is disabled for the user" }
         }
     }
 

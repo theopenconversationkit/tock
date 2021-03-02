@@ -28,12 +28,12 @@ import {BotConfigurationService} from "../../core/bot-configuration.service";
 export class ApplicationFeatureComponent implements OnInit {
 
   private currentApplicationUnsuscriber: any;
-  features: Feature[] = [];
+  botFeatures: Feature[] = [];
+  tockFeatures: Feature[] = [];
   create: boolean = false;
   feature: Feature = new Feature("", "", false);
   botApplicationConfigurationId: string;
   loadingApplicationsFeatures: boolean = false;
-  @ViewChild('newCategory') newCategory: ElementRef;
 
   constructor(private state: StateService,
               private botService: BotService,
@@ -45,85 +45,27 @@ export class ApplicationFeatureComponent implements OnInit {
     this.refresh();
   }
 
-  prepareCreate() {
-    this.create = true;
-    setTimeout(_ => this.newCategory.nativeElement.focus());
-  }
-
-  cancelCreate() {
-    this.create = false;
-  }
-
-  changeStartDateNew(newState: Date) {
-    this.feature.startDate = newState;
-  }
-
-  changeEndDateNew(newState: Date) {
-    this.feature.endDate = newState;
-  }
-
-  toggleNew(newState: boolean) {
-    this.feature.enabled = newState;
-  }
-
-  changeStartDate(f: Feature, newState) {
-    f.startDate = newState;
-    this.update(f);
-  }
-
-  changeEndDate(f: Feature, newState) {
-    f.endDate = newState;
-    this.update(f);
-  }
-
   refresh() {
     if (this.state.currentApplication) {
       this.loadingApplicationsFeatures = true;
       this.botService.getFeatures(this.state.currentApplication.name).subscribe(f => {
         f.forEach(feature => {
           if (feature.applicationId) {
-            this.configurationService.configurations.subscribe(allConfigs => {
+            this.configurationService.configurations.subscribe(_ => {
               feature.configuration = this.configurationService.findApplicationConfigurationByApplicationId(feature.applicationId);
             });
           }
         });
-        this.features = f;
+
+        this.botFeatures = f.filter(story => story.category !== 'tock');
+        this.tockFeatures = f.filter(story => story.category === 'tock');
         this.loadingApplicationsFeatures = false;
       });
     }
   }
 
-  addFeature() {
-    const conf = this.configurationService.findApplicationConfigurationById(this.botApplicationConfigurationId);
-    if (conf) {
-      this.feature.applicationId = conf.applicationId;
-    }
-    this.botService.addFeature(this.state.currentApplication.name, this.feature).subscribe(
-      _ => {
-        this.refresh();
-        this.create = false;
-        this.botApplicationConfigurationId = undefined;
-        this.feature.applicationId = undefined;
-      }
-    );
-  }
 
-  toggle(f: Feature, newState) {
-    f.enabled = newState;
-    if (!newState) {
-      f.startDate = null;
-      f.endDate = null;
-    }
-    this.botService.toggleFeature(this.state.currentApplication.name, f).subscribe();
-  }
 
-  update(f: Feature) {
-    this.botService.updateDateAndEnableFeature(this.state.currentApplication.name, f).subscribe(_ => this.refresh());
-  }
 
-  deleteFeature(f: Feature) {
-    this.botService.deleteFeature(this.state.currentApplication.name, f.category, f.name, f.applicationId)
-      .subscribe(_ => this.refresh());
-  }
 
 }

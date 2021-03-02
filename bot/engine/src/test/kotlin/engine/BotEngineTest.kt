@@ -33,6 +33,7 @@ import ai.tock.bot.engine.TestStoryDefinition.test
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.Story
+import ai.tock.bot.engine.feature.FeatureDAO
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.message.Sentence
 import ai.tock.bot.engine.nlp.NlpController
@@ -79,6 +80,7 @@ abstract class BotEngineTest {
     val i18nDAO: I18nDAO = mockk(relaxed = true)
     val translator: TranslatorEngine = mockk(relaxed = true)
     val storyDefinitionConfigurationDAO: StoryDefinitionConfigurationDAO = mockk(relaxed = true)
+    val featureDAO: FeatureDAO = mockk(relaxed = true)
 
     val entityA = Entity(EntityType("a"), "a")
     val entityAValue = NlpEntityValue(0, 1, entityA, null, false)
@@ -125,6 +127,7 @@ abstract class BotEngineTest {
             bind<TranslatorEngine>() with provider { translator }
             bind<BotApplicationConfigurationDAO>() with provider { botConfDAO }
             bind<StoryDefinitionConfigurationDAO>() with provider { storyDefinitionConfigurationDAO }
+            bind<FeatureDAO>() with provider { featureDAO }
         }
     }
 

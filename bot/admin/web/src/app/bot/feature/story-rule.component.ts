@@ -33,6 +33,7 @@ export class StoryRuleComponent implements OnInit {
   loadingStoryRules = false;
   stories: StoryDefinitionConfiguration[] = [];
   configuredStories: StoryDefinitionConfiguration[] = [];
+  storiesToDisplay: StoryDefinitionConfiguration[] = [];
   disabledFeatures: StoryFeature[] = [];
   redirectedFeatures: StoryFeature[] = [];
   endingFeatures: StoryFeature[] = [];
@@ -56,6 +57,10 @@ export class StoryRuleComponent implements OnInit {
     this.initNewFeature();
     this.currentApplicationSubscription = this.state.currentApplicationEmitter.subscribe(a => this.refresh());
     this.refresh();
+  }
+
+  updateStoriesToDisplay() {
+    this.storiesToDisplay = this.isEndingRule() ? this.configuredStories : this.stories
   }
 
   prepareCreate() {
@@ -124,6 +129,7 @@ export class StoryRuleComponent implements OnInit {
         )).subscribe(result => {
         this.stories = result;
         this.configuredStories = result.filter(story => story.isConfiguredAnswer());
+        this.updateStoriesToDisplay()
         if (result.length !== 0) {
           this.feature.story = result[0];
         }
@@ -197,5 +203,6 @@ export class StoryRuleComponent implements OnInit {
       }
     }
 
+    this.updateStoriesToDisplay()
   }
 }
