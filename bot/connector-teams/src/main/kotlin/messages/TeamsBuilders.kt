@@ -38,7 +38,7 @@ fun I18nTranslator.teamsMessageWithButtonCard(
 ): TeamsCardAction = TeamsCardAction(translate(urlText).toString(), links)
 
 fun I18nTranslator.teamsHeroCard(
-    title: CharSequence,
+    title: CharSequence? = null,
     subtitle: CharSequence? = null,
     attachmentContent: CharSequence,
     images: List<CardImage>? = null,
