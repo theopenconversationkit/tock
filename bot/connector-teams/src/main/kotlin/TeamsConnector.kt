@@ -176,9 +176,9 @@ internal class TeamsConnector(
             is MediaCard -> {
                 listOf(
                     teamsHeroCard(
-                        message.title ?: message.subTitle ?: "",
+                        message.title ?: "",
                         null,
-                        message.subTitle ?: message.title ?: "",
+                        message.subTitle ?: "",
                         listOfNotNull(
                             message.file?.takeIf { it.type == image }?.let { cardImage(it.url) }
                         ),
