@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
-.features {
-  margin-top: 20px;
+package ai.tock.bot.engine.feature
+
+import ai.tock.shared.TOCK_NAMESPACE
+
+enum class DefaultFeatureType : FeatureType {
+    /**
+     * Disable the bot, when active send automatic message.
+     *
+     * "Le bot est désactivé" can be oerride in i18n.
+     */
+    DISABLE_BOT;
+
+
+    override val category: String = TOCK_NAMESPACE
 }

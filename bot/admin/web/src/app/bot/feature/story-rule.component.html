@@ -27,6 +27,7 @@
     </nb-actions>
   </nb-card-header>
   <nb-card-body>
+    <!-- Create new rule -->
     <div *ngIf="create">
       <tock-select-bot [(configurationId)]="feature.botApplicationConfigurationId" [allowNoSelection]="true"
                        noConfigurationLabel="All Configurations">
@@ -36,28 +37,15 @@
             <nb-radio *ngFor="let type of ruleTypes" [value]="type">{{type}}</nb-radio>
           </nb-radio-group>
         </span>
-        <nb-select outline status="primary" [(selected)]="feature.story" class="story new" nbTooltip="Story" *ngIf="!isEndingRule()">
-          <nb-select-label *ngIf="feature && feature.story" class="story-selector-label">
+
+        <nb-select outline status="primary" [(selected)]="feature.story" class="story new" nbTooltip="Story">
+          <nb-select-label *ngIf="feature" class="story-selector-label">
             <nb-icon *ngIf="feature.story.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
             <nb-icon *ngIf="feature.story.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
             <nb-icon *ngIf="feature.story.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
             <span class="story-label">{{feature.story.name}}</span>
           </nb-select-label>
-          <nb-option *ngFor="let s of stories" [value]="s" class="story-label">
-            <nb-icon *ngIf="s.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
-            <nb-icon *ngIf="s.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
-            <nb-icon *ngIf="s.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
-            {{s.name}}
-          </nb-option>
-        </nb-select>
-        <nb-select outline status="primary" [(selected)]="feature.story" class="story new" nbTooltip="Story" *ngIf="isEndingRule()">
-          <nb-select-label *ngIf="feature && feature.story" class="story-selector-label">
-            <nb-icon *ngIf="feature.story.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
-            <nb-icon *ngIf="feature.story.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
-            <nb-icon *ngIf="feature.story.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
-            <span class="story-label">{{feature.story.name}}</span>
-          </nb-select-label>
-          <nb-option *ngFor="let s of configuredStories" [value]="s" class="story-label">
+          <nb-option *ngFor="let s of storiesToDisplay" [value]="s" class="story-label">
             <nb-icon *ngIf="s.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
             <nb-icon *ngIf="s.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
             <nb-icon *ngIf="s.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
@@ -103,7 +91,9 @@
       </tock-select-bot>
     </div>
 
+    <!-- Rules to display -->
     <div *ngIf="!create">
+      <!-- Activation rules -->
       <nb-card>
         <nb-card-header style="position: relative;">
           <nb-badge [text]="(!disabledFeatures ? 0 : !disabledFeatures.length ? 0 : disabledFeatures.length) | i18nPlural: rulesPluralMapping['rule']"
@@ -150,6 +140,7 @@
         </nb-card-body>
       </nb-card>
 
+      <!-- Redirection rules -->
       <nb-card>
         <nb-card-header style="position: relative;">
           <nb-badge [text]="(!redirectedFeatures? 0 : !redirectedFeatures.length? 0: redirectedFeatures.length) | i18nPlural: rulesPluralMapping['rule']"
@@ -205,6 +196,8 @@
           </div>
         </nb-card-body>
       </nb-card>
+
+      <!-- Ending rules -->
       <nb-card>
         <nb-card-header style="position: relative;">
           <nb-badge [text]="(!endingFeatures? 0 : !endingFeatures.length ? 0 : endingFeatures.length) | i18nPlural: rulesPluralMapping['rule']"
