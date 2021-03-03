@@ -24,7 +24,6 @@ import ai.tock.bot.admin.story.StoryDefinitionConfigurationSummaryRequest
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.BotId
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Category
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.CurrentType
-import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Features
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Intent
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Name
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Namespace
@@ -35,7 +34,10 @@ import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.MongoBotConfiguration.database
 import ai.tock.bot.mongo.StoryDefinitionConfigurationHistoryCol_.Companion.Date
 import ai.tock.shared.defaultLocale
+import ai.tock.shared.ensureIndex
+import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.error
+import ai.tock.shared.safeCollation
 import ai.tock.shared.trace
 import ai.tock.shared.watch
 import com.mongodb.client.model.Collation
@@ -47,11 +49,7 @@ import org.litote.kmongo.and
 import org.litote.kmongo.ascending
 import org.litote.kmongo.contains
 import org.litote.kmongo.deleteOneById
-import ai.tock.shared.ensureIndex
-import ai.tock.shared.ensureUniqueIndex
-import org.litote.kmongo.`in`
 import org.litote.kmongo.eq
-import org.litote.kmongo.exists
 import org.litote.kmongo.find
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
@@ -179,7 +177,7 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
                 StoryDefinitionConfigurationSummary::category,
                 StoryDefinitionConfigurationSummary::description
             )
-            .collation(Collation.builder().locale(defaultLocale.language).build())
+            .safeCollation(Collation.builder().locale(defaultLocale.language).build())
             .sort(ascending(StoryDefinitionConfigurationSummary::name))
             .toList()
 

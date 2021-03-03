@@ -20,6 +20,7 @@ import ai.tock.shared.jackson.addDeserializer
 import ai.tock.shared.jackson.addSerializer
 import ai.tock.shared.jackson.jacksonAdditionalModules
 import ai.tock.shared.security.mongo.MongoCredentialsProvider
+import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonTokenId
 import com.fasterxml.jackson.databind.DeserializationContext
@@ -34,15 +35,16 @@ import com.fasterxml.jackson.datatype.jsr310.deser.JSR310StringParsableDeseriali
 import com.fasterxml.jackson.datatype.jsr310.ser.DurationSerializer
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
+import com.mongodb.client.FindIterable
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoDatabase
+import com.mongodb.client.model.Collation
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import com.mongodb.client.model.changestream.FullDocument
 import com.mongodb.connection.netty.NettyStreamFactoryFactory
 import com.mongodb.reactivestreams.client.MongoCollection
 import de.undercouch.bson4jackson.types.Decimal128
-import com.fasterxml.jackson.core.JsonGenerator
 import mu.KotlinLogging
 import org.bson.BsonDocument
 import org.bson.Document
@@ -92,7 +94,11 @@ internal object TockKMongoConfiguration {
             addSerializer(Period::class, ToStringSerializer(Period::class.java))
             if (isDocumentDB()) {
                 addSerializer(Duration::class, object : StdScalarSerializer<Duration>(Duration::class.java) {
-                    override fun serialize(duration: Duration?, generator: JsonGenerator?, provider: SerializerProvider?) {
+                    override fun serialize(
+                        duration: Duration?,
+                        generator: JsonGenerator?,
+                        provider: SerializerProvider?
+                    ) {
                         generator?.writeString(duration?.toString())
                     }
                 })
@@ -220,33 +226,41 @@ inline fun <reified T : Any> MongoCollection<T>.watch(
     )
 }
 
-fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(vararg properties: kotlin.reflect.KProperty<*>,
-                                                          indexOptions: IndexOptions = IndexOptions()): String {
+fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(
+    vararg properties: kotlin.reflect.KProperty<*>,
+    indexOptions: IndexOptions = IndexOptions()
+): String {
     generateIndexName(ascending(*properties), indexOptions = indexOptions)?.let { indexOptions.name(it) }
     return ensureIndex(*properties, indexOptions = indexOptions)
 }
 
-fun <T> com.mongodb.client.MongoCollection<T>.ensureUniqueIndex(vararg properties: kotlin.reflect.KProperty<*>,
-                                                                indexOptions: IndexOptions = IndexOptions()): String {
+fun <T> com.mongodb.client.MongoCollection<T>.ensureUniqueIndex(
+    vararg properties: kotlin.reflect.KProperty<*>,
+    indexOptions: IndexOptions = IndexOptions()
+): String {
     generateIndexName(ascending(*properties), indexOptions = indexOptions)?.let { indexOptions.name(it) }
     return ensureUniqueIndex(*properties, indexOptions = indexOptions)
 }
 
-fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(keys: Bson,
-                                                          indexOptions: IndexOptions = IndexOptions()): String {
+fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(
+    keys: Bson,
+    indexOptions: IndexOptions = IndexOptions()
+): String {
     generateIndexName(keys, indexOptions = indexOptions)?.let { indexOptions.name(it) }
     return ensureIndex(keys, indexOptions = indexOptions)
 }
 
-fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(keys: String,
-                                                          indexOptions: IndexOptions = IndexOptions()): String {
+fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(
+    keys: String,
+    indexOptions: IndexOptions = IndexOptions()
+): String {
     generateIndexName(KMongoUtil.toBson(keys), indexOptions = indexOptions)?.let { indexOptions.name(it) }
     return ensureIndex(keys, indexOptions = indexOptions)
 }
 
-fun isDocumentDB(): Boolean {
-    return (booleanProperty("tock_document_db_on", false))
-}
+private val isDocumentDB = booleanProperty("tock_document_db_on", false)
+
+fun isDocumentDB(): Boolean = isDocumentDB
 
 /**
  * Generate and return an index matching DocumentDB limits (32 characters maximum in a compound index) with the given document keys and options
@@ -264,7 +278,12 @@ private fun generateIndexName(document: Bson, indexOptions: IndexOptions): Strin
         for ((key, value) in (document as BsonDocument).entries) {
             val sort: String = value.takeIf { it.isInt32 }?.asInt32()?.value.toString()
             index += key + sort
-            reducedIndex += key.let { if (it.length > DocumentDBIndexReducedSize) it.substring(0, DocumentDBIndexReducedSize) else it } + sort
+            reducedIndex += key.let {
+                if (it.length > DocumentDBIndexReducedSize) it.substring(
+                    0,
+                    DocumentDBIndexReducedSize
+                ) else it
+            } + sort
         }
 
         if (index.length <= DocumentDBIndexLimitSize) {
@@ -285,6 +304,17 @@ fun pingMongoDatabase(databaseName: String): Boolean {
     val result = database.runCommand<Document>("{ ping: 1 }")
     return result["ok"] == 1.0
 }
+
+/**
+ * Set collation if database supports it (ie not with DocumentDB)
+ */
+fun <T> FindIterable<T>.safeCollation(collation: Collation): FindIterable<T> =
+    if (isDocumentDB()) {
+        this
+    } else {
+        collation(collation)
+    }
+
 
 private const val DocumentDBIndexLimitSize = 32
 

@@ -57,6 +57,7 @@ import ai.tock.shared.listProperty
 import ai.tock.shared.longProperty
 import ai.tock.shared.namespace
 import ai.tock.shared.provide
+import ai.tock.shared.safeCollation
 import ai.tock.shared.security.UserLogin
 import com.mongodb.ReadPreference.secondaryPreferred
 import com.mongodb.client.MongoCollection
@@ -332,7 +333,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                     }
                     .run {
                         if (query.sort.isNotEmpty()) {
-                            collation(
+                            safeCollation(
                                 Collation
                                     .builder()
                                     .caseLevel(false)
