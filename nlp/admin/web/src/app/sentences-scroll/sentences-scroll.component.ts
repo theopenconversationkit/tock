@@ -28,18 +28,24 @@ import {NlpService} from "../nlp-tabs/nlp.service";
 import {StateService} from "../core-nlp/state.service";
 import {ScrollComponent} from "../scroll/scroll.component";
 import {Entry, PaginatedQuery, SearchMark} from "../model/commons";
-import {BehaviorSubject, Observable} from "rxjs";
+import {Observable} from "rxjs";
 import {MatPaginator} from "@angular/material/paginator";
 import {UserRole} from "../model/auth";
-import {DataSource, SelectionModel} from "@angular/cdk/collections";
-import {Sort} from "@angular/material/sort";
+import {SelectionModel} from "@angular/cdk/collections";
 import {DialogService} from "../core-nlp/dialog.service";
 import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialog.component";
+import {NbSortDirection, NbSortRequest} from "@nebular/theme";
+
+interface TreeNode<T> {
+  data: T;
+  children?: TreeNode<T>[];
+  expanded?: boolean;
+}
 
 @Component({
   selector: 'tock-sentences-scroll',
   templateUrl: './sentences-scroll.component.html',
-  styleUrls: ['./sentences-scroll.component.css'],
+  styleUrls: ['./sentences-scroll.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class SentencesScrollComponent extends ScrollComponent<Sentence> implements AfterViewInit {
@@ -59,11 +65,11 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
   advancedView: boolean = false;
   displayedColumns = [];
   @ViewChild(MatPaginator) paginator: MatPaginator;
-  dataSource: SentencesDataSource | null;
   selection: SelectionModel<Sentence> = new SelectionModel<Sentence>(true, []);
   sentenceToUpdate: Sentence;
+  nodes: TreeNode<Sentence>[] = [];
 
-  private sort: Sort[] = [];
+  private sort: NbSortRequest[] = [];
 
   constructor(state: StateService,
               private nlp: NlpService,
@@ -79,26 +85,31 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
   }
 
   private initColumns() {
+    let columns = ['select', 'text', 'currentIntent', 'update'];
     if (this.displayStatus) {
-      if (this.advancedView) {
-        this.displayedColumns = ['select', 'text', 'currentIntent', 'update', 'status', 'lastUpdate', 'intentProbability', 'entitiesProbability', 'lastUsage', 'usageCount', 'unknownCount'];
-      } else {
-        this.displayedColumns = ['select', 'text', 'currentIntent', 'update', 'status'];
-      }
-    } else {
-      if (this.advancedView) {
-        this.displayedColumns = ['select', 'text', 'currentIntent', 'update', 'lastUpdate', 'intentProbability', 'entitiesProbability', 'lastUsage', 'usageCount', 'unknownCount'];
-      } else {
-        this.displayedColumns = ['select', 'text', 'currentIntent', 'update'];
-      }
+      columns.push('status');
     }
+    if (this.advancedView) {
+      columns.push('lastUpdate', 'intentProbability', 'entitiesProbability', 'lastUsage', 'usageCount', 'unknownCount');
+    }
+    this.displayedColumns = columns;
   }
 
   ngOnInit(): void {
     this.initColumns();
-    this.dataSource = new SentencesDataSource();
 
     super.ngOnInit();
+  }
+
+  toNodes(data: Sentence[]): TreeNode<Sentence>[] {
+    return Array.from(data, element => {
+        return {
+          expanded: false,
+          data: element,
+          children: []
+        };
+      }
+    );
   }
 
   ngAfterViewInit(): void {
@@ -111,7 +122,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
         this.pageSize = e.pageSize;
       }
       this.load();
-    })
+    });
   }
 
   resetCursor() {
@@ -138,7 +149,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
       this.filter.modifiedAfter,
       this.filter.modifiedBefore,
       this.tableView && this.sort.length !== 0
-        ? this.sort.map(s => new Entry<string, boolean>(s.active, s.direction === 'asc'))
+        ? this.sort.map(s => new Entry<string, boolean>(s.column, s.direction === 'asc'))
         : null,
       this.filter.onlyToReview,
       this.filter.searchSubEntities,
@@ -183,10 +194,10 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
     this.refresh();
   }
 
-  sortChange(s: Sort) {
+  sortChange(s: NbSortRequest) {
     this.sort.splice(0, 0, s);
     for (let i = this.sort.length - 1; i >= 0; --i) {
-      if (this.sort[i].direction === '' || (i > 0 && this.sort[i].active === s.active)) {
+      if (this.sort[i].direction === '' || (i > 0 && this.sort[i].column === s.column)) {
         this.sort.splice(i, 1)
       }
     }
@@ -198,12 +209,12 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
   switchAdvancedView(advanced: boolean) {
     this.advancedView = advanced;
     this.initColumns();
-    this.dataSource.refreshDataSource();
+    this.nodes = [...this.nodes]; // Just refresh the table
   }
 
   protected loadResults(result: PaginatedResult<Sentence>, init: boolean): boolean {
     if (super.loadResults(result, init)) {
-      this.dataSource.setNewValues(result.rows);
+      this.nodes = this.toNodes(result.rows);
       this.pageIndex = Math.floor(result.start / this.pageSize);
       this.add = true;
       return true;
@@ -224,7 +235,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.dataSource.getData().length;
+    const numRows = this.nodes.length;
     return numSelected == numRows;
   }
 
@@ -232,7 +243,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
   masterToggle() {
     this.isAllSelected() ?
       this.selection.clear() :
-      this.dataSource.getData().forEach(row => this.selection.select(row));
+      this.nodes.forEach(row => this.selection.select(row.data));
     this.fireSelectionChange();
   }
 
@@ -315,6 +326,13 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
         });
     }
   }
+
+  getDirection(col: string) {
+    for (let s of this.sort) {
+      if (s.column === col) return s.direction;
+    }
+    return NbSortDirection.NONE;
+  }
 }
 
 export class SentenceFilter {
@@ -340,29 +358,5 @@ export class SentenceFilter {
       this.entityRolesToInclude, this.modifiedAfter, this.modifiedBefore, this.onlyToReview, this.searchSubEntities,
       this.user, this.allButUser, this.maxIntentProbability, this.minIntentProbability
     );
-  }
-}
-
-export class SentencesDataSource extends DataSource<Sentence> {
-
-  private subject = new BehaviorSubject([]);
-
-  refreshDataSource() {
-    this.subject.next(this.subject.value.slice(0));
-  }
-
-  setNewValues(values: Sentence[]) {
-    this.subject.next(values);
-  }
-
-  getData(): Sentence[] {
-    return this.subject.getValue();
-  }
-
-  connect(): Observable<Sentence[]> {
-    return this.subject;
-  }
-
-  disconnect() {
   }
 }
