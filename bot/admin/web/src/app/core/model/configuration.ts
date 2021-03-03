@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {environment} from '../../../environments/environment';
+import {RestService} from "../../core-nlp/rest/rest.service";
 
 export class BotConfiguration {
 
@@ -99,7 +99,7 @@ export class ConnectorType {
   }
 
   iconUrl(): string {
-    return environment.serverUrl + "/connectorIcon/" + this.id + "/icon.svg";
+    return RestService.connectorIconUrl(this.id);
   }
 
   isRest(): boolean {

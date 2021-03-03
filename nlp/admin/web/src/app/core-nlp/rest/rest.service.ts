@@ -26,8 +26,15 @@ import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
 import {JsonUtils} from "../../model/commons";
 import {APP_BASE_HREF} from "@angular/common";
 
+
 @Injectable()
 export class RestService {
+
+  private static defaultNotAuthenticatedUrl: string = environment.serverUrl;
+
+  static connectorIconUrl(connectorId: string): string {
+    return RestService.defaultNotAuthenticatedUrl + "/connectorIcon/" + connectorId + "/icon.svg";
+  }
 
   readonly url: string;
   readonly notAuthenticatedUrl: string;
@@ -41,6 +48,7 @@ export class RestService {
     private router: Router) {
     this.notAuthenticatedUrl = `${baseHref.substring(0, baseHref.length - 1)}${environment.serverUrl}`;
     this.url = `${this.notAuthenticatedUrl}/admin`;
+    RestService.defaultNotAuthenticatedUrl = this.notAuthenticatedUrl;
   }
 
   isSSO(): boolean {

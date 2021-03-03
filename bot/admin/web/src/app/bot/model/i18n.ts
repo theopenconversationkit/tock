@@ -16,8 +16,8 @@
 
 
 import {defaultUserInterfaceType, UserInterfaceType} from "../../core/model/configuration";
-import {environment} from "../../../environments/environment";
 import {isNullOrUndefined} from "util";
+import {RestService} from "../../core-nlp/rest/rest.service";
 
 export const userInterfaces = [UserInterfaceType.textChat, UserInterfaceType.voiceAssistant];
 
@@ -165,7 +165,7 @@ export class I18nLocalizedLabel {
   }
 
   iconUrl(): string {
-    return environment.serverUrl + "/connectorIcon/" + this.connectorId + "/icon.svg";
+    return RestService.connectorIconUrl(this.connectorId);
   }
 
   displayStats(): string {
