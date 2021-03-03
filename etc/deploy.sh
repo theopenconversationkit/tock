@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+export MAVEN_OPTS="-Dkotlin.environment.keepalive=true"
 echo "branch : $TRAVIS_BRANCH"
 echo "pull_request : $TRAVIS_PULL_REQUEST"
 echo "tag : $TRAVIS_TAG"
