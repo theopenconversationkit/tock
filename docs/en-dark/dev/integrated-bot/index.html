@@ -1264,6 +1264,8 @@ in the current story. For this, Tock provides the concept of <em>StoryStep</em>.
 <p>More details on this topic <a href="../code-a-bot/#postback-buttons-quick-replies">here</a>.</p>
 <h4 id="storysteps-with-complex-behavior">StorySteps with complex behavior<a class="headerlink" href="#storysteps-with-complex-behavior" title="Permanent link">&para;</a></h4>
 <p>In more complex cases, we want to be able to define a behavior for each step.</p>
+The use of<a href="#handlerdef"><code>HandlerDef</code></a> is a prerequisite for StorySteps.</p>
+<p>The exemple below is inspired by <a href="https://github.com/theopenconversationkit/tock-bot-open-data/blob/master/src/main/kotlin/story/Scoreboard.kt"><code>ScoredBoard</code></a> from the repository <a href="https://github.com/theopenconversationkit/tock-bot-open-data/">tock-bot-open-data</a>.</p>
 <div class="codehilite"><pre><span></span><code><span class="k">enum</span> <span class="k">class</span> <span class="nc">MySteps</span> <span class="p">:</span> <span class="n">StoryStep</span><span class="p">&lt;</span><span class="n">MyHandlerDef</span><span class="p">&gt;</span> <span class="p">{</span>
 
     <span class="c1">//no specific behaviour</span>
@@ -1280,7 +1282,7 @@ in the current story. For this, Tock provides the concept of <em>StoryStep</em>.
     <span class="p">},</span>
 
     <span class="n">disruption</span> <span class="p">{</span>
-        <span class="k">override</span> <span class="k">fun</span> <span class="nf">answer</span><span class="p">():</span> <span class="n">ScoreboardDef</span><span class="p">.()</span> <span class="p">-&gt;</span> <span class="n">Any</span><span class="p">?</span> <span class="p">=</span> <span class="p">{</span>
+        <span class="k">override</span> <span class="k">fun</span> <span class="nf">answer</span><span class="p">():</span> <span class="n">MyHandlerDef</span><span class="p">.()</span> <span class="p">-&gt;</span> <span class="n">Any</span><span class="p">?</span> <span class="p">=</span> <span class="p">{</span>
             <span class="n">end</span><span class="p">(</span><span class="s">&quot;some perturbation&quot;</span><span class="p">)</span>
         <span class="p">}</span>
     <span class="p">};</span>

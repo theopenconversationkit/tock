@@ -1579,7 +1579,8 @@ dans la story courante. Pour cela Tock met à disposition la notion de <code>Sto
 <p>Plus de détails sur ce sujet <a href="#postback-buttons-quick-replies">plus bas</a>.</p>
 <h4 id="les-storystep-avec-comportement">Les <code>StoryStep</code> avec comportement<a class="headerlink" href="#les-storystep-avec-comportement" title="Permanent link">&para;</a></h4>
 <p>Dans des cas plus complexes, on souhaite pouvoir définir un comportement pour chaque étape. 
-L'utilisation de <a href="#utiliser-handlerdef"><code>HandlerDef</code></a> est alors un prérequis.</p>
+  L'utilisation de <a href="#utiliser-handlerdef"><code>HandlerDef</code></a> est alors un prérequis.</p>
+              <p>L'exemple d'implémentation ci-dessous s'inspire de <a href="https://github.com/theopenconversationkit/tock-bot-open-data/blob/master/src/main/kotlin/story/Scoreboard.kt"><code>ScoredBoard</code></a> du dépôt <a href="https://github.com/theopenconversationkit/tock-bot-open-data/">tock-bot-open-data</a>.</p>
 <div class="highlight"><pre><span></span><code><span class="k">enum</span> <span class="k">class</span> <span class="nc">MySteps</span> <span class="p">:</span> <span class="n">StoryStep</span><span class="p">&lt;</span><span class="n">MyHandlerDef</span><span class="p">&gt;</span> <span class="p">{</span>
 
     <span class="c1">//pas de comportement spécifique</span>
@@ -1597,7 +1598,7 @@ L'utilisation de <a href="#utiliser-handlerdef"><code>HandlerDef</code></a> est 
 
     <span class="n">disruption</span> <span class="p">{</span>
         <span class="c1">//seule la réponse est configurée</span>
-        <span class="k">override</span> <span class="k">fun</span> <span class="nf">answer</span><span class="p">():</span> <span class="n">ScoreboardDef</span><span class="p">.()</span> <span class="p">-&gt;</span> <span class="n">Any</span><span class="p">?</span> <span class="p">=</span> <span class="p">{</span>
+        <span class="k">override</span> <span class="k">fun</span> <span class="nf">answer</span><span class="p">():</span> <span class="n">MyHandlerDef</span><span class="p">.()</span> <span class="p">-&gt;</span> <span class="n">Any</span><span class="p">?</span> <span class="p">=</span> <span class="p">{</span>
             <span class="n">end</span><span class="p">(</span><span class="s">&quot;some perturbation&quot;</span><span class="p">)</span>
         <span class="p">}</span>
     <span class="p">};</span>
@@ -1654,7 +1655,7 @@ L'utilisation de <a href="#utiliser-handlerdef"><code>HandlerDef</code></a> est 
 <div class="md-source-date">
   <small>
     
-      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">18 novembre 2020</span>
+      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">3 mars 2021</span>
     
   </small>
 </div>
