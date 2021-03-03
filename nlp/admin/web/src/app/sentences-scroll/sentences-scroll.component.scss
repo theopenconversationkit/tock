@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@import '../theme/styles/themes';
 
 .paginator {
   height: 64px;
@@ -40,41 +41,53 @@
   margin: auto;
 }
 
+button:focus {
+  outline: none;
+}
+
 .status {
   border-radius: 25px;
   padding: 8px;
   white-space: nowrap;
 }
 
-.mat-column-select {
+.green-text {
+  color: nb-theme(text-success-color)
+}
+
+.green-text:hover {
+  color: nb-theme(text-success-hover-color)
+}
+
+.nb-column-select {
   overflow: initial;
   max-width: 48px;
 }
-.mat-column-currentIntent {
+.nb-column-currentIntent {
   max-width: 256px;
 }
-.mat-column-status {
+.nb-column-status {
   max-width: 156px;
 }
-.mat-column-intentProbability {
+.nb-column-intentProbability {
   max-width: 72px;
 }
-.mat-column-entitiesProbability {
+.nb-column-entitiesProbability {
   max-width: 72px;
 }
-.mat-column-usageCount {
+.nb-column-usageCount {
   max-width: 44px;
 }
-.mat-column-unknownCount {
+.nb-column-unknownCount {
   max-width: 52px;
 }
-.mat-column-lastUpdate {
+.nb-column-lastUpdate {
   max-width: 128px;
 }
-.mat-column-lastUsage {
+.nb-column-lastUsage {
   max-width: 128px;
 }
-.mat-column-update {
+.nb-column-update {
   max-width: 48px;
 }
 
@@ -82,8 +95,7 @@
   max-width: 36px;
 }
 
-.mat-sort-header-container {
-  display:flex;
+.nb-tree-grid-header-cell * {
   justify-content:center;
 }
 

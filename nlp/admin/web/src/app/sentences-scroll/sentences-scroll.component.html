@@ -102,26 +102,27 @@
                             [displayProbabilities]="displayProbabilities"
                             [displayStatus]="displayStatus"></tock-sentence-analysis>
 
-    <mat-table [hidden]="sentenceToUpdate" #table matSort [dataSource]="dataSource"
-               (matSortChange)="sortChange($event)">
+    <table [hidden]="sentenceToUpdate" *ngIf="tableView" [nbTreeGrid]="nodes" nbSort
+           equalColumnsWidth (sort)="sortChange($event)">
+      <tr nbTreeGridHeaderRow *nbTreeGridHeaderRowDef="displayedColumns"></tr>
+      <tr nbTreeGridRow [clickToToggle]="false" *nbTreeGridRowDef="let row; columns: displayedColumns"></tr>
 
-      <ng-container matColumnDef="select">
-        <mat-header-cell *matHeaderCellDef>
-          <mat-checkbox (change)="$event ? masterToggle() : null"
-                        [checked]="selection.hasValue() && isAllSelected()"
-                        [indeterminate]="selection.hasValue() && !isAllSelected()">
-          </mat-checkbox>
-        </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-          <mat-checkbox (click)="$event.stopPropagation()"
-                        (change)="$event ? toggle(row) : null"
-                        [checked]="selection.isSelected(row)">
-          </mat-checkbox>
-        </mat-cell>
+      <ng-container nbTreeGridColumnDef="select">
+        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef>
+          <nb-checkbox (checkedChange)="masterToggle()"
+                       [checked]="selection.hasValue() && isAllSelected()"
+                       [indeterminate]="selection.hasValue() && !isAllSelected()">
+          </nb-checkbox>
+        </th>
+        <td nbTreeGridCell *nbTreeGridCellDef="let row">
+          <nb-checkbox (checkedChange)="toggle(row.data)"
+                       [checked]="selection.isSelected(row.data)">
+          </nb-checkbox>
+        </td>
       </ng-container>
 
-      <ng-container matColumnDef="text">
-        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">
+      <ng-container nbTreeGridColumnDef="text">
+        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef class="sort-header">
           <button nbButton outline status="primary" size="small" shape="semi-round" class="btn"
                   (click)="onDownloadSelected();$event.stopPropagation()">Download Selected
           </button>
@@ -131,74 +132,77 @@
           <button nbButton status="primary" size="small" shape="semi-round" class="btn"
                   (click)="onValidate();$event.stopPropagation()">Validate Selected
           </button>
-        </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-          <tock-highlight [sentence]="row" [readOnly]="true" [displayActions]="false"></tock-highlight>
-        </mat-cell>
+        </th>
+        <td nbTreeGridCell *nbTreeGridCellDef="let row">
+          <tock-highlight [sentence]="row.data" [readOnly]="true" [displayActions]="false"></tock-highlight>
+        </td>
       </ng-container>
 
-      <ng-container matColumnDef="currentIntent">
-        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Intent</mat-header-cell>
-        <mat-cell *matCellDef="let row"><span style="color:green">{{row.getIntentLabel(state)}}</span></mat-cell>
+      <ng-container nbTreeGridColumnDef="currentIntent">
+        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef [nbSortHeader]="getDirection('currentIntent')" class="sort-header">Intent</th>
+        <td nbTreeGridCell *nbTreeGridCellDef="let row"><span
+          class="green-text">{{row.data.getIntentLabel(state)}}</span></td>
       </ng-container>
 
-      <ng-container matColumnDef="update">
-        <mat-header-cell *matHeaderCellDef></mat-header-cell>
-        <mat-cell *matCellDef="let row">
+      <ng-container nbTreeGridColumnDef="update">
+        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef></th>
+        <td nbTreeGridCell *nbTreeGridCellDef="let row">
           <button nbButton class="update-button" status="primary" size="small" shape="semi-round"
-                  (click)="onUpdate(row)">
-            <mat-icon>edit</mat-icon>
+                  (click)="onUpdate(row.data)">
+            <nb-icon icon="edit"></nb-icon>
           </button>
-        </mat-cell>
+        </td>
       </ng-container>
 
-      <ng-container matColumnDef="status" *ngIf="displayStatus">
-        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Status</mat-header-cell>
-        <mat-cell *matCellDef="let row"><span class="status"
-                                              [style.background]="row.statusColor()">{{row.statusDisplayed()}}</span>
-        </mat-cell>
+      <ng-container nbTreeGridColumnDef="status" *ngIf="displayStatus">
+        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef [nbSortHeader]="getDirection('status')" class="sort-header">
+          Status
+        </th>
+        <td nbTreeGridCell *nbTreeGridCellDef="let row">
+          <span class="status"
+                [style.background]="row.data.statusColor()">{{row.data.statusDisplayed()}}</span>
+        </td>
       </ng-container>
 
-      <ng-container matColumnDef="lastUpdate" *ngIf="advancedView">
-        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Last update</mat-header-cell>
-        <mat-cell *matCellDef="let row"><span style="color:green">{{row.updateDate | date:'yyyy-MM-dd HH:mm'}}</span>
-        </mat-cell>
+      <ng-container nbTreeGridColumnDef="lastUpdate" *ngIf="advancedView">
+        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef [nbSortHeader]="getDirection('lastUpdate')" class="sort-header">Last update</th>
+        <td nbTreeGridCell *nbTreeGridCellDef="let row"><span class="green-text">{{row.data.updateDate | date:'yyyy-MM-dd HH:mm'}}</span>
+        </td>
       </ng-container>
 
 
-      <ng-container matColumnDef="intentProbability" *ngIf="advancedView">
-        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Intent probability</mat-header-cell>
-        <mat-cell *matCellDef="let row"><span
-          style="color:green">{{row.classification.intentProbability | percent:'1.0-2'}}</span></mat-cell>
+      <ng-container nbTreeGridColumnDef="intentProbability" *ngIf="advancedView">
+        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef [nbSortHeader]="getDirection('intentProbability')" class="sort-header">Intent probability</th>
+        <td nbTreeGridCell *nbTreeGridCellDef="let row"><span
+          class="green-text">{{row.data.classification.intentProbability | percent:'1.0-2'}}</span></td>
       </ng-container>
 
-      <ng-container matColumnDef="entitiesProbability" *ngIf="advancedView">
-        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header" nbTooltip="Average entity probability">
-          Entities probability</mat-header-cell>
-        <mat-cell *matCellDef="let row"><span
-          style="color:green">{{row.classification.entitiesProbability| percent:'1.0-2'}}</span></mat-cell>
+      <ng-container nbTreeGridColumnDef="entitiesProbability" *ngIf="advancedView">
+        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef [nbSortHeader]="getDirection('entitiesProbability')" class="sort-header" nbTooltip="Average entity probability">
+          Entities probability
+        </th>
+        <td nbTreeGridCell *nbTreeGridCellDef="let row"><span
+          class="green-text">{{row.data.classification.entitiesProbability| percent:'1.0-2'}}</span></td>
       </ng-container>
 
-      <ng-container matColumnDef="lastUsage" *ngIf="advancedView">
-        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Last use</mat-header-cell>
-        <mat-cell *matCellDef="let row"><span
-          style="color:green">{{row.classification.lastUsage| date:'yyyy-MM-dd HH:mm'}}</span></mat-cell>
+      <ng-container nbTreeGridColumnDef="lastUsage" *ngIf="advancedView">
+        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef [nbSortHeader]="getDirection('lastUsage')" class="sort-header">Last use</th>
+        <td nbTreeGridCell *nbTreeGridCellDef="let row"><span
+          class="green-text">{{row.data.classification.lastUsage| date:'yyyy-MM-dd HH:mm'}}</span></td>
       </ng-container>
 
-      <ng-container matColumnDef="usageCount" *ngIf="advancedView">
-        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Uses</mat-header-cell>
-        <mat-cell *matCellDef="let row"><span style="color:green">{{row.classification.usageCount}}</span></mat-cell>
+      <ng-container nbTreeGridColumnDef="usageCount" *ngIf="advancedView">
+        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef [nbSortHeader]="getDirection('usageCount')" class="sort-header">Uses</th>
+        <td nbTreeGridCell *nbTreeGridCellDef="let row"><span class="green-text">{{row.data.classification.usageCount}}</span></td>
       </ng-container>
 
-      <ng-container matColumnDef="unknownCount" *ngIf="advancedView">
-        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Unknown</mat-header-cell>
-        <mat-cell *matCellDef="let row"><span style="color:green">{{row.classification.unknownCount}}</span></mat-cell>
+      <ng-container nbTreeGridColumnDef="unknownCount" *ngIf="advancedView">
+        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef [nbSortHeader]="getDirection('unknownCount')" class="sort-header">Unknown</th>
+        <td nbTreeGridCell *nbTreeGridCellDef="let row"><span class="green-text">{{row.data.classification.unknownCount}}</span></td>
       </ng-container>
 
-      <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-    </mat-table>
 
+    </table>
   </div>
 
 </div>
