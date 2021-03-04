@@ -49,10 +49,10 @@ export class SelectBotComponent implements OnInit {
   returnsRestConfiguration: boolean = false;
 
   @Input()
-  noConfigurationLabel:string = "No Configuration";
+  noConfigurationLabel: string = "No Configuration";
 
   @Input()
-  noConnectorLabel:string = "No Connector";
+  noConnectorLabel: string = "No Connector";
 
   configurations: BotApplicationConfiguration[];
 
@@ -86,14 +86,16 @@ export class SelectBotComponent implements OnInit {
   private updateConfigurations(conf: BotApplicationConfiguration[], forceUpdate: boolean) {
     setTimeout(_ => {
       if (conf.length !== 0 && conf !== this.configurations) {
-        const retainedConfs = conf.filter(c => c.targetConfigurationId == null);
+        const retainedConfs = conf
+          .filter(c => c.targetConfigurationId == null)
+          .sort((c1, c2) => c1.applicationId.localeCompare(c2.applicationId));
         this.botNames = Array.from(new Set(retainedConfs.map(c => this.getName(c)))).sort();
         const containsCurrentSelection = this.configurationId && retainedConfs.some(c => c._id === this.configurationId);
         if (!this.allowNoSelection && !containsCurrentSelection && retainedConfs.length !== 0) {
           this.configurationId = retainedConfs[0]._id;
         }
         if (this.configurationId) {
-          if (!containsCurrentSelection || forceUpdate) {
+          if (!containsCurrentSelection || forceUpdate) {
             this.changeConf(conf.find(c => c._id === this.configurationId), retainedConfs, this.allowNoConfigurationSelection);
           }
         } else {
