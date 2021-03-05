@@ -58,6 +58,7 @@ export class SearchFilterComponent implements OnInit {
   @Output()
   filterChange: EventEmitter<string> = new EventEmitter<string>();
 
+  @Input()
   selectedValue: string;
   filteredGroups$: Observable<Group[]>;
 
@@ -107,7 +108,7 @@ export class SearchFilterComponent implements OnInit {
   onModelChange(value: string) {
     const inputValue = value.toString().trim();
     this.filteredGroups$ = of(this.filter(inputValue));
-    if (inputValue === '') {
+    if (inputValue === '' && this.noFilter) {
       this.filterChange.emit(this.noFilter.value);
     }
   }
