@@ -32,20 +32,11 @@
       </button>
     </div>
     <div *ngIf="!minimalView" class="sentence-analysis-content">
-      <nb-select
-                 placeholder="Intent"
-                 size="small"
-                 status="primary"
-                 [(ngModel)]="sentence.classification.intentId"
-                 (selectedChange)="onIntentChange()"
-                 class="intent-select">
-        <nb-option-group *ngFor="let category of state.currentIntentsCategories | async" [title]="category.category">
-          <nb-option *ngFor="let intent of category.intents" [value]="intent._id">
-            {{intent.intentLabel()}}
-          </nb-option>
-        </nb-option-group>
-        <nb-option value="tock:unknown">Unknown</nb-option>
-      </nb-select>
+      <tock-search-filter [groups]="intentGroups()"
+                          (filterChange)="changeIntentFilter($event)"
+                          [selectedValue]="selectedValueLabel"
+                          name="Intent">
+                        </tock-search-filter>
       <button nbButton ghost (click)="newIntent()" nbTooltip="Create New Intent" size="small">
         <mat-icon>library_add</mat-icon>
       </button>

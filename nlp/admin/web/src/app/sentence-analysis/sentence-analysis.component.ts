@@ -32,6 +32,7 @@ import {CoreConfig} from '../core-nlp/core.config';
 import {ConfirmDialogComponent} from '../shared-nlp/confirm-dialog/confirm-dialog.component';
 import {ReviewRequestDialogComponent} from './review-request-dialog/review-request-dialog.component';
 import {DialogService} from '../core-nlp/dialog.service';
+import { FilterOption, Group } from '../search/filter/search-filter.component';
 
 @Component({
   selector: 'tock-sentence-analysis',
@@ -49,6 +50,9 @@ export class SentenceAnalysisComponent implements OnInit {
   @Input() minimalView: boolean = true;
   @Input() displayClose: boolean = false;
   intentBeforeClassification: string;
+  UNKNOWN_INTENT_FILTER = new FilterOption('tock:unknown', 'Unknown');
+  intentId: string;
+  selectedValueLabel: string;
 
   constructor(public state: StateService,
               private nlp: NlpService,
@@ -61,10 +65,24 @@ export class SentenceAnalysisComponent implements OnInit {
 
   ngOnInit() {
     this.intentBeforeClassification = this.sentence.classification.intentId;
+    if(this.intentBeforeClassification === this.UNKNOWN_INTENT_FILTER.value){
+      this.selectedValueLabel = this.UNKNOWN_INTENT_FILTER.label;
+    } else {
+      this.selectedValueLabel = this.state.findIntentById(this.intentBeforeClassification).name;
+    }
     if (this.minimalView) {
       setTimeout(_ => {
         this.changeDetectorRef.detach()
       });
+    }
+  }
+
+
+  changeIntentFilter = (intentId: string) => {
+    if (intentId && this.sentence.classification.intentId !== intentId) {
+      this.sentence.classification.intentId = intentId;
+      this.selectedValueLabel = this.state.findIntentById(intentId).name;
+      this.onIntentChange();
     }
   }
 
@@ -82,6 +100,17 @@ export class SentenceAnalysisComponent implements OnInit {
         .entities
         .filter(e => intent && intent.containsEntity(e.type, e.role));
     this.sentence = newSentence;
+  }
+
+  intentGroups(): Group[] {
+    const currentIntentsCategories = this.state.currentIntentsCategories.getValue();
+    return currentIntentsCategories.map(entry =>
+      new Group(
+        entry.category,
+        entry.intents.map(intent =>
+          new FilterOption(intent._id, intent.intentLabel()))
+      )
+    );
   }
 
   newIntent() {
@@ -112,10 +141,13 @@ export class SentenceAnalysisComponent implements OnInit {
   focusOnIntentSelect() {
     this.displayAllView();
     setTimeout(_ => {
-      const e = this.elementRef.nativeElement.querySelector('nb-select');
+      const e = this.elementRef.nativeElement.querySelector('input');
       e.click();
       e.focus();
-    });
+      if (e.value.length !== 0) {
+        e.setSelectionRange(0, e.value.length);
+      }
+    }, 200);
   }
 
   onSentenceChange() {

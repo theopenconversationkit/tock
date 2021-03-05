@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {Observable, of} from 'rxjs';
 
 export class FilterOption {
@@ -44,7 +43,7 @@ export class Group {
   templateUrl: './search-filter.component.html',
   styleUrls: ['./search-filter.component.css']
 })
-export class SearchFilterComponent implements OnInit {
+export class SearchFilterComponent implements OnInit, AfterViewInit {
 
   @Input()
   name: String;
@@ -58,16 +57,33 @@ export class SearchFilterComponent implements OnInit {
   @Output()
   filterChange: EventEmitter<string> = new EventEmitter<string>();
 
-  selectedValue: string;
+  @Input()
+  selectedValue: any;
   filteredGroups$: Observable<Group[]>;
+  private cachedValue: string;
+  private skipBlur:boolean;
 
+  @ViewChild('autoBlur') autoBlurElement: ElementRef;
 
   ngOnInit() {
     this.filteredGroups$ = of(this.groups);
+    this.cachedValue = this.selectedValue;
+  }
+
+  ngAfterViewInit() {
+    //force blur
+    setTimeout(() => {
+      this.skipBlur = true;
+      this.autoBlurElement.nativeElement.blur()
+    });
   }
 
   private filterChildren(children: FilterOption[], filterValue: string) {
     return children.filter(optionValue => optionValue.label.toLowerCase().includes(filterValue));
+  }
+
+  private findChildren(children: FilterOption[], value: string): FilterOption[] {
+    return children.filter(optionValue => optionValue.label.toLowerCase() === value);
   }
 
   filter(value: string): Group[] {
@@ -80,6 +96,18 @@ export class SearchFilterComponent implements OnInit {
         };
       })
       .filter(group => group.children.length);
+  }
+
+  private find(value: string): Group[] {
+    const normalizedValue = value.toLowerCase();
+    return this.groups
+      .map(group => {
+        return {
+          name: group.name,
+          children: this.findChildren(group.children, normalizedValue),
+        };
+      })
+      .filter(group => group.children.length > 0);
   }
 
   trackByFn(index, item) {
@@ -100,6 +128,7 @@ export class SearchFilterComponent implements OnInit {
       this.filteredGroups$ = of(this.filter(selected.toString()));
     }
     if (selected) {
+      this.cachedValue = selected.label ?? selected.toString();
       this.filterChange.emit(selected.value);
     }
   }
@@ -107,8 +136,37 @@ export class SearchFilterComponent implements OnInit {
   onModelChange(value: string) {
     const inputValue = value.toString().trim();
     this.filteredGroups$ = of(this.filter(inputValue));
-    if (inputValue === '') {
+    if (inputValue === '' && this.noFilter) {
       this.filterChange.emit(this.noFilter.value);
+    }
+  }
+
+  onBlur() {
+    if(!this.skipBlur) {
+      // Reset initial value when loosing focus
+      setTimeout(() => this.resetInitialValue(), 100);
+    }
+    this.skipBlur = false;
+  }
+
+  private resetInitialValue() {
+    if (this.selectedValue && !(this.selectedValue ! instanceof FilterOption)) {
+      if (this.selectedValue.trim().length !== 0) {
+        const selectedGroup = this.find(this.selectedValue);
+        if (selectedGroup.length !== 0) {
+          this.onSelectedChange(selectedGroup[0].children[0]);
+          return;
+        }
+      }
+      if (this.cachedValue) {
+        this.autoBlurElement.nativeElement.disabled = true;
+        this.selectedValue = this.cachedValue;
+        setTimeout(() => {
+            this.autoBlurElement.nativeElement.disabled = false;
+            this.cachedValue = this.selectedValue
+          },
+          0);
+      }
     }
   }
 }
