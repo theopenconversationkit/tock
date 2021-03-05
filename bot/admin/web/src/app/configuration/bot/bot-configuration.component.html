@@ -108,7 +108,7 @@
           </span>
           <span class="nb-form-field block"
                 *ngFor="let f of botSharedService.findConnectorConfiguration(configuration.connectorType).fields">
-            <label>Application base url</label>
+            <label>{{f.label}}</label>
             <input nbInput type="text" class="long-text" [placeholder]="f.label"
                    [(ngModel)]="configuration.parameters[f.key]" [required]="f.mandatory">
           </span>
