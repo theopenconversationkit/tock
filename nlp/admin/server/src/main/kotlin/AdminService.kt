@@ -48,10 +48,11 @@ import ai.tock.shared.security.UNKNOWN_USER_LOGIN
 import ai.tock.shared.vertx.WebVerticle.Companion.badRequest
 import ai.tock.shared.withNamespace
 import ai.tock.translator.TranslatorEngine
-import java.time.Duration
-import java.time.Instant.now
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
+import java.time.Duration
+import java.time.Instant.now
+import java.time.temporal.ChronoUnit.MINUTES
 
 /**
  *
@@ -257,7 +258,7 @@ object AdminService {
             .getTestBuilds(query.toTestErrorQuery(app))
             .map {
                 TestBuildStat(
-                    it.startDate,
+                    it.startDate.truncatedTo(MINUTES),
                     it.nbErrors,
                     it.intentErrors,
                     it.entityErrors,
@@ -268,9 +269,9 @@ object AdminService {
                 )
             }
             .sortedBy { it.date }
-        //only one point each 10 minutes
+        //only one point each 1 minutes
         return stats.filterIndexed { i, s ->
-            i == 0 || Duration.between(stats[i - 1].date, s.date) >= Duration.ofMinutes(10)
+            i == 0 || Duration.between(stats[i - 1].date, s.date) >= Duration.ofMinutes(1)
         }
     }
 }

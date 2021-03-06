@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import moment from 'moment';
-import { Subscription } from 'rxjs';
+import {Subscription} from 'rxjs';
 
-import { StateService } from '../core-nlp/state.service';
-import { TestErrorQuery } from '../model/nlp';
-import { QualityService } from '../quality-nlp/quality.service';
+import {StateService} from '../core-nlp/state.service';
+import {TestErrorQuery} from '../model/nlp';
+import {QualityService} from '../quality-nlp/quality.service';
+import {formatStatDateTime} from "../model/commons";
 
 
 let maxDurationUnit: string = "ms";
@@ -34,7 +35,7 @@ function parseDuration(d): number {
     maxDurationUnit = "s";
   }
 
-  return r.asMilliseconds()
+  return Math.round(r.asMilliseconds());
 }
 
 function displayDuration(d): string {
@@ -61,75 +62,9 @@ export class TestBuildsComponent implements OnInit, OnDestroy {
   public errors: Array<any>;
   public durations: Array<any>;
   public sizes: Array<any>;
-  public errorChartOptions: any = {
-    scales: {
-      yAxes: [{
-        type: "linear",
-        min: 0,
-        max: 100,
-        ticks: {
-          callback: function (value) {
-            return value + "%"
-          }
-        },
-        scaleLabel: {
-          display: true,
-          labelString: "Percentage"
-        }
-      }],
-      xAxes: [{
-        type: "time",
-        time: {
-          unit: "hour",
-          displayFormats: {
-            hour: 'D/M H[h]'
-          }
-        }
-      }]
-    }
-  };
-  public durationChartOptions: any = {
-    tooltips: {
-      callbacks: {
-        label: function (i, d) {
-          return displayDuration(d.datasets[i.datasetIndex].data[i.index].y);
-        }
-      }
-    },
-    scales: {
-      yAxes: [{
-        ticks: {
-          userCallback: function (value) {
-            return displayDuration(value);
-          }
-        }
-      }],
-      xAxes: [{
-        type: "time",
-        time: {
-          unit: "hour",
-          displayFormats: {
-            hour: 'D/M H[h]'
-          }
-        }
-      }]
-    }
-  };
-  public sizeChartOptions: any = {
-    scales: {
-      xAxes: [{
-        type: "time",
-        time: {
-          unit: "hour",
-          displayFormats: {
-            hour: 'D/M H[h]'
-          }
-        }
-      }]
-    }
-  };
-  public lineChartLegend: boolean = true;
-  public lineChartType: string = 'line';
+  public errorChartOptions: any;
+  public durationChartOptions: any;
+  public sizeChartOptions: any;
   public nodata: boolean = false;
 
   public intent: string = "";
@@ -152,94 +87,232 @@ export class TestBuildsComponent implements OnInit, OnDestroy {
   }
 
   search(date): void {
-    if(date) this.modifiedAfter = date;
+    if (date) this.modifiedAfter = date;
     this.quality.buildStats(
       TestErrorQuery.createWithoutSize(this.state, this.intent === "" ? undefined : this.intent, this.modifiedAfter)
     )
       .subscribe(result => {
-        if (result.length === 0) {
-          this.nodata = true;
-          return;
+          if (result.length === 0) {
+            this.nodata = true;
+            return;
+          }
+          this.nodata = false;
+          maxDurationUnit = "ms";
+          const errorData = result.map(p => [
+            p.date,
+            p.nbSentencesTested === 0 ? 0 : Math.round(10000 * (p.errors / p.nbSentencesTested)) / 100,
+          ]);
+          const intentData = result.map(p => [p.date,
+            p.nbSentencesTested === 0 ? 0 : Math.round(10000 * (p.intentErrors / p.nbSentencesTested)) / 100,
+          ]);
+          const entityData = result.map(p => [p.date,
+            p.nbSentencesTested === 0 ? 0 : Math.round(10000 * (p.entityErrors / p.nbSentencesTested)) / 100,
+          ]);
+
+          this.errorChartOptions = {
+            tooltip: {
+              trigger: 'axis',
+              axisPointer: {
+                type: 'cross',
+                label: {
+                  backgroundColor: '#6a7985'
+                }
+              }
+            },
+            legend: {
+              data: ['Errors', 'Intent Errors', 'Entity Errors'],
+              textStyle: {
+                color: '#8f9bb3',
+              }
+            },
+            color: ['#ff3d71', '#0095ff', '#028A0F'],
+            yAxis: {
+              axisLabel: {
+                formatter: (value) => value + '%'
+              }
+            },
+            xAxis: {
+              type: 'category',
+              boundaryGap: false,
+              axisLabel: {
+                formatter: formatStatDateTime
+              }
+            },
+            series: [
+              {
+                name: 'Errors',
+                type: 'line',
+                areaStyle: {},
+                smooth: true,
+                data: errorData,
+                formatter: (value) => value + '%'
+              },
+              {
+                name: 'Intent Errors',
+                type: 'line',
+                areaStyle: {},
+                smooth: true,
+                data: intentData,
+                formatter: (value) => value + '%'
+              },
+              {
+                name: 'Entity Errors',
+                type: 'line',
+                areaStyle: {},
+                smooth: true,
+                data: entityData,
+                formatter: (value) => value + '%'
+              }
+            ]
+          }
+
+          const modelData = result.map(p => [
+            p.date,
+            p.nbSentencesInModel,
+          ]);
+          const testData = result.map(p => [
+            p.date,
+            p.nbSentencesTested,
+          ]);
+          this.sizes = [
+            {
+              data: modelData,
+              label: "Model size"
+            },
+            {
+              data: testData,
+              label: "Test set size"
+            }
+          ];
+          this.sizeChartOptions = {
+            tooltip: {
+              trigger: 'axis',
+              axisPointer: {
+                type: 'cross',
+                label: {
+                  backgroundColor: '#6a7985'
+                }
+              }
+            },
+            legend: {
+              data: ['Model size', 'Test set size'],
+              textStyle: {
+                color: '#8f9bb3',
+              }
+            },
+            color: ['#0095ff', '#028A0F'],
+            yAxis: {},
+            xAxis: {
+              type: 'category',
+              boundaryGap: false,
+              axisLabel: {
+                formatter: formatStatDateTime
+              }
+            },
+            series: [
+              {
+                name: 'Model size',
+                type: 'line',
+                areaStyle: {},
+                smooth: true,
+                data: modelData
+              },
+              {
+                name: 'Test set size',
+                type: 'line',
+                areaStyle: {},
+                smooth: true,
+                data: testData
+              }
+            ]
+          }
+
+          const modelDurationData = result.map(p => [
+              p.date,
+              parseDuration(p.buildModelDuration),
+            ]
+          );
+          const testDurationData = result.map(p => [
+            p.date,
+            parseDuration(p.testModelDuration),
+          ]);
+          this.durationChartOptions = {
+            tooltip: {
+              trigger: 'axis',
+              axisPointer: {
+                type: 'cross',
+                label: {
+                  backgroundColor: '#6a7985'
+                }
+              }
+            },
+            legend: {
+              data: ['Build Model duration', 'Test Model duration'],
+              textStyle: {
+                color: '#8f9bb3',
+              }
+            },
+            color: ['#0095ff', '#028A0F'],
+            yAxis: {
+              axisLabel: {
+                formatter: displayDuration
+              }
+            },
+            xAxis: {
+              type: 'category',
+              boundaryGap: false,
+              axisLabel: {
+                formatter: formatStatDateTime
+              }
+            },
+            series: [
+              {
+                name: 'Build Model duration',
+                type: 'line',
+                areaStyle: {},
+                smooth: true,
+                data: modelDurationData
+              },
+              {
+                name: 'Test Model duration',
+                type: 'line',
+                areaStyle: {},
+                smooth: true,
+                data: testDurationData
+              }
+            ]
+          };
+          /*
+           = {
+          tooltips: {
+            callbacks: {
+              label: function (i, d) {
+                return displayDuration(d.datasets[i.datasetIndex].data[i.index].y);
+              }
+            }
+          },
+          scales: {
+            yAxes: [{
+              ticks: {
+                userCallback: function (value) {
+                  return displayDuration(value);
+                }
+              }
+            }],
+            xAxes: [{
+              type: "time",
+              time: {
+                unit: "hour",
+                displayFormats: {
+                  hour: 'D/M H[h]'
+                }
+              }
+            }]
+          }
+        };
+           */
         }
-        this.nodata = false;
-        maxDurationUnit = "ms";
-        const errorData = result.map(p => {
-          return {
-            x: p.date,
-            y: p.nbSentencesTested === 0 ? 0 : Math.round(10000 * (p.errors / p.nbSentencesTested)) / 100,
-          };
-        });
-        const intentData = result.map(p => {
-          return {
-            x: p.date,
-            y: p.nbSentencesTested === 0 ? 0 : Math.round(10000 * (p.intentErrors / p.nbSentencesTested)) / 100,
-          };
-        });
-        const entityData = result.map(p => {
-          return {
-            x: p.date,
-            y: p.nbSentencesTested === 0 ? 0 : Math.round(10000 * (p.entityErrors / p.nbSentencesTested)) / 100,
-          };
-        });
-        this.errors = [
-          {
-            data: errorData,
-            label: "Errors"
-          },
-          {
-            data: intentData,
-            label: "Intent Errors"
-          },
-          {
-            data: entityData,
-            label: "Entity Errors"
-          }
-        ];
-        const modelData = result.map(p => {
-          return {
-            x: p.date,
-            y: p.nbSentencesInModel,
-          };
-        });
-        const testData = result.map(p => {
-          return {
-            x: p.date,
-            y: p.nbSentencesTested,
-          };
-        });
-        this.sizes = [
-          {
-            data: modelData,
-            label: "Model size"
-          },
-          {
-            data: testData,
-            label: "Test set size"
-          }
-        ];
-        const modelDurationData = result.map(p => {
-          return {
-            x: p.date,
-            y: parseDuration(p.buildModelDuration),
-          };
-        });
-        const testDurationData = result.map(p => {
-          return {
-            x: p.date,
-            y: parseDuration(p.testModelDuration),
-          };
-        });
-        this.durations = [
-          {
-            data: modelDurationData,
-            label: "Build Model duration"
-          },
-          {
-            data: testDurationData,
-            label: "Test Model duration"
-          }
-        ]
-      });
+      )
   }
 
 }

@@ -71,7 +71,6 @@ export class JsonUtils {
 }
 
 
-
 export class ApplicationScopedQuery {
   constructor(public namespace: string,
               public applicationName: string,
@@ -110,7 +109,7 @@ export function isNullOrUndefined<T>(obj: T | null | undefined): obj is null | u
   return typeof obj === "undefined" || obj === null;
 }
 
-export function randomString() : string {
+export function randomString(): string {
   return '_' + Math.random().toString(36).substr(2, 9);
 }
 
@@ -126,6 +125,17 @@ export function groupBy(list, keyGetter) {
     }
   });
   return map;
+}
+
+export function formatStatDate(value): String {
+  const date = new Date(value);
+  return date.getDate().toString().padStart(2, '0') + '/' + (date.getMonth() + 1).toString().padStart(2, '0');
+}
+
+export function formatStatDateTime(value): String {
+  const date = new Date(value);
+  return date.getDate().toString().padStart(2, '0') + '/' + (date.getMonth() + 1).toString().padStart(2, '0')
+    + ' ' + date.getHours().toString().padStart(2, '0') + 'h' + date.getMinutes().toString().padStart(2, '0');
 }
 
 

@@ -33,38 +33,32 @@
       <input nbInput placeholder="Data after" [nbDatepicker]="dateTimePicker" [(ngModel)]="modifiedAfter">
       <nb-datepicker #dateTimePicker (dateChange)="search($event)"></nb-datepicker>
     </span>
-    
+
   </nb-card-body>
 </nb-card>
 <h2 *ngIf="nodata" class="search">
   No Data
 </h2>
 <div *ngIf="!nodata">
-  <canvas *ngIf="errors" baseChart
-          [datasets]="errors"
-          [options]="errorChartOptions"
-          [legend]="lineChartLegend"
-          [chartType]="lineChartType">
-
-  </canvas>
+  <nb-card *ngIf="errorChartOptions">
+    <nb-card-body>
+      <div echarts [options]="errorChartOptions" class="chart"></div>
+    </nb-card-body>
+  </nb-card>
 </div>
 <br>
 <div *ngIf="!nodata">
-  <canvas *ngIf="durations" baseChart
-          [datasets]="durations"
-          [options]="durationChartOptions"
-          [legend]="lineChartLegend"
-          [chartType]="lineChartType">
-
-  </canvas>
+  <nb-card *ngIf="durationChartOptions">
+    <nb-card-body>
+      <div echarts [options]="durationChartOptions" class="chart"></div>
+    </nb-card-body>
+  </nb-card>
 </div>
 <br>
 <div *ngIf="!nodata">
-  <canvas *ngIf="sizes" baseChart
-          [datasets]="sizes"
-          [options]="sizeChartOptions"
-          [legend]="lineChartLegend"
-          [chartType]="lineChartType">
-
-  </canvas>
+  <nb-card *ngIf="sizeChartOptions">
+    <nb-card-body>
+      <div echarts [options]="sizeChartOptions" class="chart"></div>
+    </nb-card-body>
+  </nb-card>
 </div>

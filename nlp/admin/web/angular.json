@@ -36,9 +36,7 @@
               "node_modules/bootstrap/dist/css/bootstrap.css",
               "src/jsoneditor.css"
             ],
-            "scripts": [
-              "node_modules/chart.js/dist/Chart.min.js"
-            ]
+            "scripts": []
           },
           "configurations": {
             "production": {

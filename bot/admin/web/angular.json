@@ -43,8 +43,7 @@
               "node_modules/cytoscape-cola/cytoscape-cola.js",
               "node_modules/cytoscape-cose-bilkent/cytoscape-cose-bilkent.js",
               "node_modules/dagre/dist/dagre.min.js",
-              "node_modules/cytoscape-dagre/cytoscape-dagre.js",
-              "node_modules/chart.js/dist/Chart.min.js"
+              "node_modules/cytoscape-dagre/cytoscape-dagre.js"
             ]
           },
           "configurations": {

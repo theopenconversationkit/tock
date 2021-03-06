@@ -19,6 +19,7 @@ import {QualityService} from "../quality-nlp/quality.service";
 import {StateService} from "../core-nlp/state.service";
 import {LogStatsQuery} from "../model/nlp";
 import {Subscription} from "rxjs";
+import {formatStatDate} from "../model/commons";
 
 @Component({
   selector: 'tock-log-stats',
@@ -32,7 +33,6 @@ export class LogStatsComponent implements OnInit, OnDestroy {
   public duration: Array<any>;
   public statsChartOptions: any;
   public durationChartOptions: any;
-  public lineChartLegend: boolean = true;
   public lineChartType: string = 'line';
   public intent: string = "";
   public nodata: boolean = false;
@@ -40,7 +40,6 @@ export class LogStatsComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
 
   constructor(public state: StateService, private quality: QualityService) {
-
   }
 
   ngOnInit(): void {
@@ -91,15 +90,15 @@ export class LogStatsComponent implements OnInit, OnDestroy {
         axisPointer: {
           type: 'cross',
           label: {
-              backgroundColor: '#6a7985'
+            backgroundColor: '#6a7985'
           }
-      }
+        }
       },
       legend: {
-          data: ['Calls', 'Errors'],
-          textStyle: {
-            color: '#8f9bb3',
-          }
+        data: ['Calls', 'Errors'],
+        textStyle: {
+          color: '#8f9bb3',
+        }
       },
       color: ['#0095ff', '#ff3d71'],
       yAxis: {
@@ -107,35 +106,33 @@ export class LogStatsComponent implements OnInit, OnDestroy {
       },
       xAxis: {
         type: 'category',
-        boundaryGap:false,
+        boundaryGap: false,
         axisLabel: {
-            formatter: (function(value){
-              const date = new Date(value);
-              return date.getDate() + '/' + (date.getMonth()+1);
-            })
+          formatter: formatStatDate
         }
       },
       series: [
-          {
-              name: 'Calls',
-              type: 'line',
-              areaStyle: {},
-              smooth: true,
-              data: countData
-          },
-          {
-              name: 'Errors',
-              type: 'line',
-              areaStyle: {},
-              smooth: true,
-              data: errorData
-          }
+        {
+          name: 'Calls',
+          type: 'line',
+          areaStyle: {},
+          smooth: true,
+          data: countData
+        },
+        {
+          name: 'Errors',
+          type: 'line',
+          areaStyle: {},
+          smooth: true,
+          data: errorData
+        }
       ]
+    }
   }
-  }
+
   buildProbabilityChart(result) {
     const intentsData = result.map(p => {
-      return [p.day,Math.round(10000 * p.averageIntentProbability) / 100];
+      return [p.day, Math.round(10000 * p.averageIntentProbability) / 100];
     });
 
     const entitiesData = result.map(p => {
@@ -147,56 +144,53 @@ export class LogStatsComponent implements OnInit, OnDestroy {
         axisPointer: {
           type: 'cross',
           label: {
-              backgroundColor: '#6a7985'
+            backgroundColor: '#6a7985'
           }
         }
       },
       legend: {
-          data: ['Intent average probability', 'Entity average probability'],
-          textStyle: {
-            color: '#8f9bb3',
-          }
+        data: ['Intent average probability', 'Entity average probability'],
+        textStyle: {
+          color: '#8f9bb3',
+        }
       },
       color: ['#ff3d71', '#0095ff'],
       yAxis: {
         axisLabel: {
-          formatter: (function(value){
+          formatter: (function (value) {
             return value + '%';
           })
-      }
+        }
       },
       xAxis: {
         type: 'category',
-        boundaryGap:false,
+        boundaryGap: false,
         axisLabel: {
-            formatter: (function(value){
-              const date = new Date(value);
-              return date.getDate() + '/' + (date.getMonth()+1);
-            })
+          formatter: formatStatDate
         }
       },
       series: [
-          {
-              name: 'Intent average probability',
-              type: 'line',
-              areaStyle: {},
-              smooth: true,
-              data: intentsData
-          },
-          {
-              name: 'Entity average probability',
-              type: 'line',
-              areaStyle: {},
-              smooth: true,
-              data: entitiesData
-          }
+        {
+          name: 'Intent average probability',
+          type: 'line',
+          areaStyle: {},
+          smooth: true,
+          data: intentsData
+        },
+        {
+          name: 'Entity average probability',
+          type: 'line',
+          areaStyle: {},
+          smooth: true,
+          data: entitiesData
+        }
       ]
     }
   }
 
-  buildDurationChart(result){
+  buildDurationChart(result) {
     const durationData = result.map(p => {
-      return [p.day, p.averageDuration]
+      return [p.day, Math.round(10000 * p.averageDuration) / 100];
     });
     this.durationChartOptions = {
       tooltip: {
@@ -204,42 +198,39 @@ export class LogStatsComponent implements OnInit, OnDestroy {
         axisPointer: {
           type: 'cross',
           label: {
-              backgroundColor: '#6a7985'
+            backgroundColor: '#6a7985'
           }
-      }
+        }
       },
       legend: {
-          data: ['Average call duration'],
-          textStyle: {
-            color: '#8f9bb3',
-          }
+        data: ['Average call duration'],
+        textStyle: {
+          color: '#8f9bb3',
+        }
       },
       color: ['#0095ff'],
       yAxis: {
         axisLabel: {
-          formatter: (function(value){
+          formatter: (function (value) {
             return value + 'ms';
           })
-      }
+        }
       },
       xAxis: {
         type: 'category',
-        boundaryGap:false,
+        boundaryGap: false,
         axisLabel: {
-            formatter: (function(value){
-              const date = new Date(value);
-              return date.getDate() + '/' + (date.getMonth()+1);
-            })
+          formatter: formatStatDate
         }
       },
       series: [
-          {
-              name: 'Average call duration',
-              type: 'line',
-              areaStyle: {},
-              smooth: true,
-              data: durationData
-          }
+        {
+          name: 'Average call duration',
+          type: 'line',
+          areaStyle: {},
+          smooth: true,
+          data: durationData
+        }
       ]
     }
   }
