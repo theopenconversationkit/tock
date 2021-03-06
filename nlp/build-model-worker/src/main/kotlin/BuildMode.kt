@@ -19,5 +19,6 @@ package ai.tock.nlp.build
 enum class BuildMode {
     COMMAND_LINE,
     ON_DEMAND,
-    VERTICLE
+    VERTICLE,
+    DEV
 }

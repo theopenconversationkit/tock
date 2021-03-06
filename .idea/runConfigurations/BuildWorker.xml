@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="BuildWorker" type="JetRunConfigurationType" factoryName="Kotlin">
+  <configuration default="false" name="BuildWorker" type="JetRunConfigurationType">
     <module name="tock-nlp-build-model-worker" />
     <option name="VM_PARAMETERS" value="-Xmx4g" />
     <option name="PROGRAM_PARAMETERS" value="" />
@@ -10,6 +10,7 @@
     <option name="WORKING_DIRECTORY" value="" />
     <envs>
       <env name="tock_test_model_timeframe" value="0,24" />
+      <env name="tock_build_worker_mode" value="DEV" />
     </envs>
     <method v="2">
       <option name="Make" enabled="true" />

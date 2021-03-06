@@ -16,6 +16,7 @@
 
 package ai.tock.nlp.build
 
+import ai.tock.nlp.build.BuildMode.DEV
 import ai.tock.nlp.build.BuildType.CLEANUP
 import ai.tock.nlp.build.BuildType.REBUILD_ALL
 import ai.tock.nlp.build.BuildType.REBUILD_DIFF
@@ -52,16 +53,18 @@ fun startBuildWorker(buildMode: BuildMode, buildType: BuildType) {
     when (buildMode) {
         BuildMode.ON_DEMAND -> startOnDemandVerticle()
         BuildMode.COMMAND_LINE -> startCommandLine(buildType)
-        else -> startVerticle()
+        else -> startVerticle(buildMode)
     }
 }
 
-private fun startVerticle() {
+private fun startVerticle(buildMode: BuildMode) {
     FrontIoc.setup()
     val buildModelWorkerVerticle = BuildModelWorkerVerticle()
     vertx.deployVerticle(buildModelWorkerVerticle, DeploymentOptions().setWorker(true))
     vertx.deployVerticle(CleanupModelWorkerVerticle(), DeploymentOptions().setWorker(true))
-    vertx.deployVerticle(HealthCheckVerticle(buildModelWorkerVerticle))
+    if(buildMode != DEV) {
+        vertx.deployVerticle(HealthCheckVerticle(buildModelWorkerVerticle))
+    }
 }
 
 private fun startOnDemandVerticle() {
