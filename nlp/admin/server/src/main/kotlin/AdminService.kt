@@ -249,7 +249,7 @@ object AdminService {
                         )
                     }
                 }
-                EntityTestErrorQueryResultReport(results.size, results)
+                EntityTestErrorQueryResultReport(total, results)
             }
     }
 

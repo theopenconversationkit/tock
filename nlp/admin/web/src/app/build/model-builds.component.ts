@@ -32,7 +32,7 @@ export class ModelBuildsComponent implements OnInit{
   dataSource: ModelBuild[] = [];
   totalSize: number;
   pageSize: number = 10;
-  pageIndex: number = 0;
+  pageIndex: number = 1;
   loading: boolean = false;
 
   constructor(private state: StateService,

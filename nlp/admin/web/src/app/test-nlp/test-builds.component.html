@@ -18,7 +18,7 @@
   <nb-card-body>
     <span class="intent nb-form-field inline">
       <label>Intent</label>
-      <nb-select placeholder="Intent" [(ngModel)]="intent" (selectedChange)="search(null)" class="search-input">
+      <nb-select [nbSpinner]="loading" nbSpinnerStatus="primary" placeholder="Intent" [(ngModel)]="intent" (selectedChange)="search(null)" class="search-input">
         <nb-option value="">All</nb-option>
         <nb-option-group *ngFor="let category of state.currentIntentsCategories | async" [title]="category.category">
           <nb-option *ngFor="let intent of category.intents" [value]="intent.qualifiedName()">

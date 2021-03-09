@@ -37,7 +37,7 @@ export class TestIntentErrorComponent implements OnInit {
   intent: string = "";
   totalSize: number;
   pageSize: number = 10;
-  pageIndex: number = 0;
+  pageIndex: number = 1;
   loading: boolean = false;
 
   constructor(public state: StateService,

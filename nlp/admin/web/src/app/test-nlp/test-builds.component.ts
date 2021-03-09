@@ -66,6 +66,7 @@ export class TestBuildsComponent implements OnInit, OnDestroy {
   public durationChartOptions: any;
   public sizeChartOptions: any;
   public nodata: boolean = false;
+  public loading: boolean = false;
 
   public intent: string = "";
   public modifiedAfter?: Date;
@@ -88,10 +89,12 @@ export class TestBuildsComponent implements OnInit, OnDestroy {
 
   search(date): void {
     if (date) this.modifiedAfter = date;
+    this.loading = true;
     this.quality.buildStats(
       TestErrorQuery.createWithoutSize(this.state, this.intent === "" ? undefined : this.intent, this.modifiedAfter)
     )
       .subscribe(result => {
+          this.loading = false;
           if (result.length === 0) {
             this.nodata = true;
             return;
