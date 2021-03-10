@@ -22,5 +22,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 data class UrlButton(
     val title: String,
     val url: String,
+    val openInSameWindow: Boolean = false,
     val imageUrl: String? = null
 ) : Button(ButtonType.web_url)

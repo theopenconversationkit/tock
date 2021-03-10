@@ -20,6 +20,7 @@
             "title": "title",
             "url": "http://www.sncf.com",
             "type": "web_url",
+            "openInSameWindow": "false",
             "clazz": "url_button"
           }
         ]

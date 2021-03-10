@@ -103,11 +103,13 @@ fun <T : Bus<T>> T.webButton(
 fun <T : Bus<T>> T.webUrlButton(
     title: CharSequence,
     url: String,
+    openInSameWindow: Boolean = false,
     imageUrl: String? = null
 ): Button =
     UrlButton(
         translate(title).toString(),
         url,
+        openInSameWindow,
         imageUrl
     )
 
