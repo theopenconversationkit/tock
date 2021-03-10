@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Observable, of } from 'rxjs';
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Observable, of} from 'rxjs';
 
 export class FilterOption {
   value: any;
@@ -59,12 +59,14 @@ export class SearchFilterComponent implements OnInit {
   filterChange: EventEmitter<string> = new EventEmitter<string>();
 
   @Input()
-  selectedValue: string;
+  selectedValue: any;
   filteredGroups$: Observable<Group[]>;
+  cachedValue: string;
 
 
   ngOnInit() {
     this.filteredGroups$ = of(this.groups);
+    this.cachedValue = this.selectedValue;
   }
 
   private filterChildren(children: FilterOption[], filterValue: string) {
@@ -110,6 +112,13 @@ export class SearchFilterComponent implements OnInit {
     this.filteredGroups$ = of(this.filter(inputValue));
     if (inputValue === '' && this.noFilter) {
       this.filterChange.emit(this.noFilter.value);
+    }
+  }
+
+  resetInitialValue() {
+    if(!(this.selectedValue !instanceof FilterOption) && (this.selectedValue && this.filter(this.selectedValue).length == 0) 
+    || this.selectedValue == ""){
+      this.selectedValue = this.cachedValue;
     }
   }
 }

@@ -33,7 +33,6 @@
     </div>
     <div *ngIf="!minimalView" class="sentence-analysis-content">
       <tock-search-filter [groups]="intentGroups()"
-                          [unknownFilter]="UNKNOWN_INTENT_FILTER"
                           (filterChange)="changeIntentFilter($event)"
                           [selectedValue]="selectedValueLabel"
                           name="Intent">

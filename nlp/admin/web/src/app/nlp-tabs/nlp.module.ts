@@ -66,6 +66,7 @@ import {
 import {ThemeModule} from '../theme/theme.module';
 import {NgJsonEditorModule} from 'ang-jsoneditor';
 import {ReactiveFormsModule} from '@angular/forms';
+import { OutsideClickDirective } from '../search/directive/OutsideClickDirective';
 
 const routes: Routes = [
   {
@@ -169,7 +170,8 @@ export class NlpRoutingModule {
     AddSharedIntentDialogComponent,
     EntitiesComponent,
     EntityDetailsComponent,
-    ReviewRequestDialogComponent
+    ReviewRequestDialogComponent,
+    OutsideClickDirective
   ],
   exports: [
     SentenceAnalysisComponent,
