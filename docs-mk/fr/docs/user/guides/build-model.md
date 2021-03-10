@@ -36,7 +36,7 @@ Selon ce à quoi est destinée l'intention, vous pouvez spécifier les entités 
 dans la phrase :
 
 * Sélectionnez une portion de phrase correspondant à l'entité (ie. un groupe de mots à sélectionner avec la souris)
-* Cliquez sur _Choose or Add New Entity_ qui vient d'apparaître
+* Cliquez sur _Choose or Add an Entity_ qui vient d'apparaître
 
 ![schéma Tock](../../img/try-it-2.png "Sélection d'une entité")
  
