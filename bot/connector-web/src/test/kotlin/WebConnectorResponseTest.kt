@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import ai.tock.bot.connector.web.HrefTargetType
 import ai.tock.bot.connector.web.WebConnectorResponseContent
 import ai.tock.bot.connector.web.WebMediaFile
 import ai.tock.bot.connector.web.send.PostbackButton
@@ -76,11 +77,31 @@ internal class WebConnectorResponseTest {
                         )
                     )
                 )
-
             )
         )
         val deserializedEvent =
             mapper.readValue<WebConnectorResponseContent>(resourceAsStream("/text_with_buttons.json"))
+        Assertions.assertThat(deserializedEvent).isEqualTo(expected)
+    }
+
+    @Test
+    fun `text with url button opened in the same window`() {
+        val expected = WebConnectorResponseContent(
+            responses = listOf(
+                WebMessageContent(
+                    text = "Text with UrlButton",
+                    buttons = listOf(
+                        UrlButton(
+                            title = "title",
+                            url = "http://www.sncf.com",
+                            target = HrefTargetType._self.name
+                        )
+                    )
+                )
+            )
+        )
+        val deserializedEvent =
+            mapper.readValue<WebConnectorResponseContent>(resourceAsStream("/card_with_url_button_opened_same_window.json"))
         Assertions.assertThat(deserializedEvent).isEqualTo(expected)
     }
 

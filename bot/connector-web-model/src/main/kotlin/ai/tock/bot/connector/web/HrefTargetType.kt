@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.web.send
+package ai.tock.bot.connector.web
 
-import ai.tock.bot.connector.web.HrefTargetType
-import com.fasterxml.jackson.annotation.JsonTypeName
-
-@JsonTypeName("url_button")
-data class UrlButton(
-    val title: String,
-    val url: String,
-    val imageUrl: String? = null,
-    val target: String? = HrefTargetType._blank.name
-) : Button(ButtonType.web_url)
+/**
+ * Common target types for href.
+ */
+enum class HrefTargetType{
+    _blank,
+    _self,
+    _parent,
+    _top
+}
