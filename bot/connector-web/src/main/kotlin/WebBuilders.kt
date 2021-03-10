@@ -102,12 +102,25 @@ fun <T : Bus<T>> T.webButton(
 fun <T : Bus<T>> T.webUrlButton(
     title: CharSequence,
     url: String,
-    imageUrl: String? = null
+    imageUrl: String? = null,
+    target: HrefTargetType = HrefTargetType._blank
+): Button =
+    webUrlButton(title, url, imageUrl, target.name)
+
+/**
+ * Creates a url button
+ */
+fun <T : Bus<T>> T.webUrlButton(
+    title: CharSequence,
+    url: String,
+    imageUrl: String? = null,
+    target: String? = null
 ): Button =
     UrlButton(
         translate(title).toString(),
         url,
-        imageUrl
+        imageUrl,
+        target
     )
 
 /**

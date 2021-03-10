@@ -1,0 +1,18 @@
+{
+  "responses": [
+    {
+      "text": "Text with UrlButton",
+      "buttons": [
+        {
+          "title": "title",
+          "url": "http://www.sncf.com",
+          "target": "_self",
+          "type": "web_url",
+          "clazz": "url_button"
+        }
+      ],
+      "version": "1",
+      "type": "WebMessage"
+    }
+  ]
+}
