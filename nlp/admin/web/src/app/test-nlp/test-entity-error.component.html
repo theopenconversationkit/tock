@@ -68,10 +68,10 @@
             <td><p>{{row.firstDetectionDate | amCalendar}}</p></td>
             <td><p>
               <button nbButton ghost size="tiny" status="success" (click)="validate(row)">
-                <mat-icon nbTooltip="Validate Intent">check_circle</mat-icon>
+                <mat-icon nbTooltip="Validate entities">check_circle</mat-icon>
               </button>
               <button nbButton ghost size="tiny" status="danger" (click)="change(row)">
-                <mat-icon nbTooltip="Change the Intent">update</mat-icon>
+                <mat-icon nbTooltip="Change entities">update</mat-icon>
               </button>
               <button nbButton ghost size="tiny" *ngIf="canReveal(row)" (click)="reveal(row)">
                 <mat-icon nbTooltip="Reveal the sentence">visibility</mat-icon>
@@ -91,6 +91,6 @@
                         [pageSize]="pageSize" (pageChange)="search()">
         </ngb-pagination>
       </div>
-    </div>    
+    </div>
   </nb-card-body>
 </nb-card>
