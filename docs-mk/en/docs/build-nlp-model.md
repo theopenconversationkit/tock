@@ -26,7 +26,7 @@ Click on the *New Sentence* menu and enter the new sentence. The add a new user 
  
 ### Declaring Entities
  
-If necessary, you can specify the entities of this new intent, by selecting the text of these entities, and then clicking on the "Choose or Add an Entity" button that has just appeared.
+If necessary, you can specify the entities of this new intent, by selecting the text of these entities, and then clicking on the "Add Entity" button that has just appeared.
 ![schéma Tock](img/try-it-2.png "Select Entity")
  
 It's up to you to choose an existing entity type, or create a new one, and then give that entity a role.
