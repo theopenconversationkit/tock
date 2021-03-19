@@ -9,6 +9,7 @@ nav:
   - 'Overview': 'index.md'
   - 'Try Tock Studio':
     - 'Create your 1st bot': 'guide/studio.md'
+    - 'Set up Messenger': 'guide/messenger.md'
     - 'Build NLP models': 'build-nlp-model.md'
     - 'Monitor NLP models': 'evaluate-the-model.md'
   - 'Develop Stories':

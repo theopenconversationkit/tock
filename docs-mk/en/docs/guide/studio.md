@@ -166,3 +166,12 @@ You have just created your first conversational application with Tock.
 
 With a few minutes and no particular knowledge or skill, more importantly without writing or deploying code, 
 you have been able to create a simple conversational workflow and test it online.
+
+## Continue...
+
+In the following sections, you will learn to:
+
+* [Configure the bot for the Messenger channel](messenger.md) (requires a Facebook account)
+
+To learn more about _Tock Studio_ and about Tock's features and deployment modes, you can also
+browse the more complete [user guide](../toc.md).

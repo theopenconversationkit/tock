@@ -2,12 +2,12 @@
 
 Si vous avez suivi le guide [Créer son premier bot avec _Tock Studio_](studio.md), vous avez déclaré un connecteur
  de type Slack.
- 
+
 Dans ce guide, vous allez créer une configuration pour [Facebook Messenger](https://fr-fr.facebook.com/messenger/) 
 et intégrer le bot pour dialoguer avec lui sur ce réseau social.
 
 Si vous le souhaitez, vous pouvez aussi sauter cette étape et passer directement à [la suite](api.md).
- 
+
 ## Ce que vous allez créer
 
 * Une configuration (dans Facebook et dans Tock) pour recevoir et envoyer des messages via Messenger
@@ -26,9 +26,18 @@ Si vous le souhaitez, vous pouvez aussi sauter cette étape et passer directemen
 
 * Créez une page Facebook
 
+<img src="https://doc.tock.ai/fr/images/doc/connector-messenger/create-page-0.png" alt="Créer une page partie 1"
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" />
+
+<img src="https://doc.tock.ai/fr/images/doc/connector-messenger/create-page-1.png" alt="Créer une page partie 2" 
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width: 33%;" />
+
 * Donnez-lui un nom (par exemple _My Tock Bot_)
 
-* Recommandation : ne publiez pas la page pour limiter son accès des utilisateurs Messenger : 
+<img src="https://doc.tock.ai/fr/images/doc/connector-messenger/create-page-2.png" alt="Créer une page partie 3"
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" />
+
+> Recommandation : ne publiez pas la page pour limiter son accès des utilisateurs Messenger : 
 _Paramètres > Général > Visibilité de la page > **Non publiée**_
 
 ## Créer une application Facebook
@@ -37,35 +46,95 @@ _Paramètres > Général > Visibilité de la page > **Non publiée**_
 
 * _Ajouter une app_
 
+<img src="https://doc.tock.ai/fr/images/doc/connector-messenger/create-app-0.png" alt="Créer une application partie 1"
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" />
+
+* _Créer une app_ > _Gérer les intégrations professionnelles_
+
+<img src="https://doc.tock.ai/fr/images/doc/connector-messenger/create-app-1.png" alt="Créer une application partie 2"
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" />
+
 * Entrez un nom pour l'_application_
 
-* _Créer un ID d'app_... Notez l'ID de la page, vous en aurez besoin plus tard.
+<img src="https://doc.tock.ai/fr/images/doc/connector-messenger/create-app-2.png" alt="Créer une application partie 3" 
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width: 75%;" />
 
 * Ajoutez un produit : _Messenger_
 
-* Dans les paramètres, générez un jeton (_token_) pour votre page. Notez ce _token_ pour la suite.
+<img src="https://doc.tock.ai/fr/images/doc/connector-messenger/add-messenger-page-0.png" alt="Ajouter messenger à une application partie 1"
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" />
 
-## Configurer un connecteur Messenger dans Tock
+<img src="https://doc.tock.ai/fr/images/doc/connector-messenger/add-messenger-page-1.png" alt="Ajouter messenger à une application partie 2" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width:  40%;" />
 
-* Dans _Tock Studio_ allez dans _Settings_ > _Configurations_
+## Créer un connecteur Messenger
+
+* Dans _Tock Studio_ allez dans _Settings_ > _Configurations_ :
+
+<img src="https://doc.tock.ai/fr/images/doc/connector-messenger/create-connector-0.png" 
+alt="Créer un connecteur messenger partie 1" 
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width: 75%;" />
 
 * Créez un connecteur de type _Messenger_ et ouvrez la section _Connector Custom Configuration_
 
-* Configurez l'ID de page et le _token_ précédemment générés côté Facebook
+<img src="https://doc.tock.ai/fr/images/doc/connector-messenger/create-connector-1.png" 
+alt="Créer un connecteur messenger partie 2" 
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width: 75%;" />
 
-* Comme _Webhook token_, saisissez `token` (par exemple)
+* Compléter les champs (voir ci-dessous champ par champ) :
 
-* Dans le champ _Secret_, entrez la clef secrète que vous trouverez dans le portail Facebook for developers :
-_paramètres > général > afficher la clef secrète_ 
+  <img src="https://doc.tock.ai/fr/images/doc/connector-messenger/connect-tock-0.png" alt="Connecter Tock partie 1" 
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width: 75%;" />
+
+* _Application Id_ : il se trouve sur la page de votre application sur [https://developers.facebook.com](https://developers.facebook.com)
+
+<img src="https://doc.tock.ai/fr/images/doc/connector-messenger/app-id.png" alt="Trouver l'id d'application" 
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width:  75%;" />
+
+* _Page Id_ : il se trouve sur la page liée à votre application sur [https://facebook.com](https://facebook.com)
+
+<img src="https://doc.tock.ai/fr/images/doc/connector-messenger/page-id-0.png" alt="ID de page partie 1" 
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width:  75%;" />
+
+<img src="https://doc.tock.ai/fr/images/doc/connector-messenger/page-id-1.png" alt="ID de page partie 2" 
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width: 75%;" />
+
+* _Call Token_ : le jeton se trouve sur la page de votre application sur [https://developers.facebook.com](https://developers.facebook.com) 
+
+<img src="https://doc.tock.ai/fr/images/doc/connector-messenger/generate-token.png" alt="Générer un token" 
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width:  75%;" />
+
+* _Webhook Token_ : choisissez un jeton quelconque (même `jeton` si vous voulez) et notez-le pour plus tard -
+  chaque appel à Tock provenant de Facebook sera passé en transmettant ce jeton
+
+* _Secret_ : à copier de la page de votre application sur [https://developers.facebook.com](https://developers.facebook.com)
+
+<img src="https://doc.tock.ai/fr/images/doc/connector-messenger/app-secret.png" alt="Secret"
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" />
+
+* _Persona Id_ : vous pouvez laisser ce champ vide
 
 * Vérifiez que la configuration du connecteur est bien enregistrée
 
-* ...
+## Configurer l'URL de rappel
+
+* Retournez sur la page de configuration de votre application sur [https://developers.facebook.com](https://developers.facebook.com) :
+  _Produits_ > _Messenger_ > _Paramètres_ > **_Webhooks_**
+
+* Cliquez sur _Ajouter l'URL de rappel_ (ou _Modifier l'URL de rappel_ si vous aviez précédemment une autre URL)
+
+* Entrez l'URL à laquelle votre connecteur Tock est actuellement déployé, et le jeton de webhook que vous avez choisi
+  lors de la configuration du connecteur
+  
+> Pour retrouver l'URL de votre connecteur, allez sur la page de configuration _Tock Studio_ > _Settings_ > _Configurations_,
+> déroulez la configuration de votre connecteur Messenger, et concaténez le contenu du champ _Application base url_ et celui du champ
+> _Relative REST path_.
+  
+* Cliquez sur _Vérifier et enregistrer_
 
 * Testez votre bot sur Messenger !
 
 
-## Félicitations!
+## Félicitations !
 
 Votre bot dialogue désormais sur Messenger, en plus des autres canaux auquel vous l'avez intégré.
 
@@ -79,15 +148,15 @@ spécifiques, etc.
 
 ## Continuer...
 
-Dans les sections suivantes vous apprendez à :
+Dans les sections suivantes vous apprendrez à :
 
 * [Créer des parcours programmés en Kotlin](api.md), ouvrant la voie à des comportements complexes et 
 l'intégration d'API tierces si besoin
 
 * [Déployer une plateforme Tock](plateforme.md) en quelques minutes avec Docker
 
-Pour en savoir plus sur le connecteur Slack fourni avec Tock, rendez-vous dans le dossier 
-[connector-slack](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-slack) sur GitHub, 
+Pour en savoir plus sur le connecteur Messenger fourni avec Tock, rendez-vous dans le dossier 
+[connector-messenger](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-messenger) sur GitHub, 
 où vous retrouverez les sources et le _README_ du connecteur.
 
 Pour en savoir plus sur _Tock Studio_, les fonctionnalités et les modes de déploiement de Tock, vous pouvez aussi 

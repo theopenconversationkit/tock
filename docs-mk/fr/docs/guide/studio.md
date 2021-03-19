@@ -196,7 +196,7 @@ pour créer des parcours conversationnels simples sans écrire ni déployer de c
 
 ## Continuer...
 
-Dans les sections suivantes vous apprendez à :
+Dans les sections suivantes vous apprendrez à :
 
 * [Configurer le bot pour le canal Slack](slack.md) (requiert un compte Slack)
 

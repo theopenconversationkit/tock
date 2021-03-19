@@ -336,15 +336,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configurer-un-connecteur-messenger-dans-tock" class="md-nav__link">
-    Configurer un connecteur Messenger dans Tock
+  <a href="#creer-un-connecteur-messenger" class="md-nav__link">
+    Créer un connecteur Messenger
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configurer-lurl-de-rappel" class="md-nav__link">
+    Configurer l'URL de rappel
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#felicitations" class="md-nav__link">
-    Félicitations!
+    Félicitations !
   </a>
   
 </li>
@@ -1102,15 +1109,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configurer-un-connecteur-messenger-dans-tock" class="md-nav__link">
-    Configurer un connecteur Messenger dans Tock
+  <a href="#creer-un-connecteur-messenger" class="md-nav__link">
+    Créer un connecteur Messenger
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configurer-lurl-de-rappel" class="md-nav__link">
+    Configurer l'URL de rappel
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#felicitations" class="md-nav__link">
-    Félicitations!
+    Félicitations !
   </a>
   
 </li>
@@ -1164,17 +1178,21 @@ et intégrer le bot pour dialoguer avec lui sur ce réseau social.</p>
 </ul>
 <h2 id="creer-une-page-facebook">Créer une page Facebook<a class="headerlink" href="#creer-une-page-facebook" title="Permanent link">&para;</a></h2>
 <ul>
-<li>
-<p>Créez une page Facebook</p>
-</li>
-<li>
-<p>Donnez-lui un nom (par exemple <em>My Tock Bot</em>)</p>
-</li>
-<li>
+<li>Créez une page Facebook</li>
+</ul>
+<p><img src="https://doc.tock.ai/fr/images/doc/connector-messenger/create-page-0.png" alt="Créer une page partie 1"
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" /></p>
+<p><img src="https://doc.tock.ai/fr/images/doc/connector-messenger/create-page-1.png" alt="Créer une page partie 2" 
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width: 33%;" /></p>
+<ul>
+<li>Donnez-lui un nom (par exemple <em>My Tock Bot</em>)</li>
+</ul>
+<p><img src="https://doc.tock.ai/fr/images/doc/connector-messenger/create-page-2.png" alt="Créer une page partie 3"
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" /></p>
+<blockquote>
 <p>Recommandation : ne publiez pas la page pour limiter son accès des utilisateurs Messenger : 
 <em>Paramètres &gt; Général &gt; Visibilité de la page &gt; <strong>Non publiée</strong></em></p>
-</li>
-</ul>
+</blockquote>
 <h2 id="creer-une-application-facebook">Créer une application Facebook<a class="headerlink" href="#creer-une-application-facebook" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -1183,48 +1201,107 @@ et intégrer le bot pour dialoguer avec lui sur ce réseau social.</p>
 <li>
 <p><em>Ajouter une app</em></p>
 </li>
-<li>
-<p>Entrez un nom pour l'<em>application</em></p>
-</li>
-<li>
-<p><em>Créer un ID d'app</em>... Notez l'ID de la page, vous en aurez besoin plus tard.</p>
-</li>
-<li>
-<p>Ajoutez un produit : <em>Messenger</em></p>
-</li>
-<li>
-<p>Dans les paramètres, générez un jeton (<em>token</em>) pour votre page. Notez ce <em>token</em> pour la suite.</p>
-</li>
 </ul>
-<h2 id="configurer-un-connecteur-messenger-dans-tock">Configurer un connecteur Messenger dans Tock<a class="headerlink" href="#configurer-un-connecteur-messenger-dans-tock" title="Permanent link">&para;</a></h2>
+<p><img src="https://doc.tock.ai/fr/images/doc/connector-messenger/create-app-0.png" alt="Créer une application partie 1"
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" /></p>
+<ul>
+<li><em>Créer une app</em> &gt; <em>Gérer les intégrations professionnelles</em></li>
+</ul>
+<p><img src="https://doc.tock.ai/fr/images/doc/connector-messenger/create-app-1.png" alt="Créer une application partie 2"
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" /></p>
+<ul>
+<li>Entrez un nom pour l'<em>application</em></li>
+</ul>
+<p><img src="https://doc.tock.ai/fr/images/doc/connector-messenger/create-app-2.png" alt="Créer une application partie 3" 
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width: 75%;" /></p>
+<ul>
+<li>Ajoutez un produit : <em>Messenger</em></li>
+</ul>
+<p><img src="https://doc.tock.ai/fr/images/doc/connector-messenger/add-messenger-page-0.png" alt="Ajouter messenger à une application partie 1"
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" /></p>
+<p><img src="https://doc.tock.ai/fr/images/doc/connector-messenger/add-messenger-page-1.png" alt="Ajouter messenger à une application partie 2" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width:  40%;" /></p>
+<h2 id="creer-un-connecteur-messenger">Créer un connecteur Messenger<a class="headerlink" href="#creer-un-connecteur-messenger" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Dans <em>Tock Studio</em> allez dans <em>Settings</em> &gt; <em>Configurations</em> :</li>
+</ul>
+<p><img src="https://doc.tock.ai/fr/images/doc/connector-messenger/create-connector-0.png" 
+alt="Créer un connecteur messenger partie 1" 
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width: 75%;" /></p>
+<ul>
+<li>Créez un connecteur de type <em>Messenger</em> et ouvrez la section <em>Connector Custom Configuration</em></li>
+</ul>
+<p><img src="https://doc.tock.ai/fr/images/doc/connector-messenger/create-connector-1.png" 
+alt="Créer un connecteur messenger partie 2" 
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width: 75%;" /></p>
+<ul>
+<li>Compléter les champs (voir ci-dessous champ par champ) :</li>
+</ul>
+<p><img src="https://doc.tock.ai/fr/images/doc/connector-messenger/connect-tock-0.png" alt="Connecter Tock partie 1" 
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width: 75%;" /></p>
+<ul>
+<li><em>Application Id</em> : il se trouve sur la page de votre application sur <a href="https://developers.facebook.com">https://developers.facebook.com</a></li>
+</ul>
+<p><img src="https://doc.tock.ai/fr/images/doc/connector-messenger/app-id.png" alt="Trouver l'id d'application" 
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width:  75%;" /></p>
+<ul>
+<li><em>Page Id</em> : il se trouve sur la page liée à votre application sur <a href="https://facebook.com">https://facebook.com</a></li>
+</ul>
+<p><img src="https://doc.tock.ai/fr/images/doc/connector-messenger/page-id-0.png" alt="ID de page partie 1" 
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width:  75%;" /></p>
+<p><img src="https://doc.tock.ai/fr/images/doc/connector-messenger/page-id-1.png" alt="ID de page partie 2" 
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width: 75%;" /></p>
+<ul>
+<li><em>Call Token</em> : le jeton se trouve sur la page de votre application sur <a href="https://developers.facebook.com">https://developers.facebook.com</a> </li>
+</ul>
+<p><img src="https://doc.tock.ai/fr/images/doc/connector-messenger/generate-token.png" alt="Générer un token" 
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width:  75%;" /></p>
 <ul>
 <li>
-<p>Dans <em>Tock Studio</em> allez dans <em>Settings</em> &gt; <em>Configurations</em></p>
+<p><em>Webhook Token</em> : choisissez un jeton quelconque (même <code>jeton</code> si vous voulez) et notez-le pour plus tard -
+  chaque appel à Tock provenant de Facebook sera passé en transmettant ce jeton</p>
 </li>
 <li>
-<p>Créez un connecteur de type <em>Messenger</em> et ouvrez la section <em>Connector Custom Configuration</em></p>
+<p><em>Secret</em> : à copier de la page de votre application sur <a href="https://developers.facebook.com">https://developers.facebook.com</a></p>
 </li>
+</ul>
+<p><img src="https://doc.tock.ai/fr/images/doc/connector-messenger/app-secret.png" alt="Secret"
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" /></p>
+<ul>
 <li>
-<p>Configurez l'ID de page et le <em>token</em> précédemment générés côté Facebook</p>
-</li>
-<li>
-<p>Comme <em>Webhook token</em>, saisissez <code>token</code> (par exemple)</p>
-</li>
-<li>
-<p>Dans le champ <em>Secret</em>, entrez la clef secrète que vous trouverez dans le portail Facebook for developers :
-<em>paramètres &gt; général &gt; afficher la clef secrète</em> </p>
+<p><em>Persona Id</em> : vous pouvez laisser ce champ vide</p>
 </li>
 <li>
 <p>Vérifiez que la configuration du connecteur est bien enregistrée</p>
 </li>
+</ul>
+<h2 id="configurer-lurl-de-rappel">Configurer l'URL de rappel<a class="headerlink" href="#configurer-lurl-de-rappel" title="Permanent link">&para;</a></h2>
+<ul>
 <li>
-<p>...</p>
+<p>Retournez sur la page de configuration de votre application sur <a href="https://developers.facebook.com">https://developers.facebook.com</a> :
+  <em>Produits</em> &gt; <em>Messenger</em> &gt; <em>Paramètres</em> &gt; <strong><em>Webhooks</em></strong></p>
+</li>
+<li>
+<p>Cliquez sur <em>Ajouter l'URL de rappel</em> (ou <em>Modifier l'URL de rappel</em> si vous aviez précédemment une autre URL)</p>
+</li>
+<li>
+<p>Entrez l'URL à laquelle votre connecteur Tock est actuellement déployé, et le jeton de webhook que vous avez choisi
+  lors de la configuration du connecteur</p>
+</li>
+</ul>
+<blockquote>
+<p>Pour retrouver l'URL de votre connecteur, allez sur la page de configuration <em>Tock Studio</em> &gt; <em>Settings</em> &gt; <em>Configurations</em>,
+déroulez la configuration de votre connecteur Messenger, et concaténez le contenu du champ <em>Application base url</em> et celui du champ
+<em>Relative REST path</em>.</p>
+</blockquote>
+<ul>
+<li>
+<p>Cliquez sur <em>Vérifier et enregistrer</em></p>
 </li>
 <li>
 <p>Testez votre bot sur Messenger !</p>
 </li>
 </ul>
-<h2 id="felicitations">Félicitations!<a class="headerlink" href="#felicitations" title="Permanent link">&para;</a></h2>
+<h2 id="felicitations">Félicitations !<a class="headerlink" href="#felicitations" title="Permanent link">&para;</a></h2>
 <p>Votre bot dialogue désormais sur Messenger, en plus des autres canaux auquel vous l'avez intégré.</p>
 <p>Le modèle conversationnel, les fonctionnalités et la personnalité de votre assistant sont construits et 
 restent indépendants des canaux sur lesquels le bot est présent. Toutefois, rien ne vous empêche de créer 
@@ -1233,7 +1310,7 @@ de différents outils Tock : écran de gestion des <em>Responses</em>, activatio
 avec l'écran <em>Story Rules</em>, utilisation des <em>DSLs</em> et de la <em>Bot API</em> pour tirer parti de composants graphiques 
 spécifiques, etc.</p>
 <h2 id="continuer">Continuer...<a class="headerlink" href="#continuer" title="Permanent link">&para;</a></h2>
-<p>Dans les sections suivantes vous apprendez à :</p>
+<p>Dans les sections suivantes vous apprendrez à :</p>
 <ul>
 <li>
 <p><a href="../api/">Créer des parcours programmés en Kotlin</a>, ouvrant la voie à des comportements complexes et 
@@ -1243,8 +1320,8 @@ l'intégration d'API tierces si besoin</p>
 <p><a href="../plateforme/">Déployer une plateforme Tock</a> en quelques minutes avec Docker</p>
 </li>
 </ul>
-<p>Pour en savoir plus sur le connecteur Slack fourni avec Tock, rendez-vous dans le dossier 
-<a href="https://github.com/theopenconversationkit/tock/tree/master/bot/connector-slack">connector-slack</a> sur GitHub, 
+<p>Pour en savoir plus sur le connecteur Messenger fourni avec Tock, rendez-vous dans le dossier 
+<a href="https://github.com/theopenconversationkit/tock/tree/master/bot/connector-messenger">connector-messenger</a> sur GitHub, 
 où vous retrouverez les sources et le <em>README</em> du connecteur.</p>
 <p>Pour en savoir plus sur <em>Tock Studio</em>, les fonctionnalités et les modes de déploiement de Tock, vous pouvez aussi 
 parcourir le <a href="../../toc/">manuel utilisateur</a>, plus complet.</p>
@@ -1256,7 +1333,7 @@ parcourir le <a href="../../toc/">manuel utilisateur</a>, plus complet.</p>
 <div class="md-source-date">
   <small>
     
-      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">15 juillet 2020</span>
+      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">19 mars 2021</span>
     
   </small>
 </div>
