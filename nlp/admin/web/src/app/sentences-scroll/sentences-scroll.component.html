@@ -103,7 +103,7 @@
                             [displayStatus]="displayStatus"></tock-sentence-analysis>
 
     <table [hidden]="sentenceToUpdate" *ngIf="tableView" [nbTreeGrid]="nodes" nbSort
-           equalColumnsWidth (sort)="sortChange($event)">
+           (sort)="sortChange($event)">
       <tr nbTreeGridHeaderRow *nbTreeGridHeaderRowDef="displayedColumns"></tr>
       <tr nbTreeGridRow [clickToToggle]="false" *nbTreeGridRowDef="let row; columns: displayedColumns"></tr>
 
@@ -124,13 +124,13 @@
       <ng-container nbTreeGridColumnDef="text">
         <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef class="sort-header">
           <button nbButton outline status="primary" size="small" shape="semi-round" class="btn"
-                  (click)="onDownloadSelected();$event.stopPropagation()">Download Selected
+                  (click)="onDownloadSelected();$event.stopPropagation()" nbTooltip="Download Selected">Download
           </button>
           <button nbButton status="danger" size="small" shape="semi-round" class="btn"
-                  (click)="onDelete();$event.stopPropagation()">Delete Selected
+                  (click)="onDelete();$event.stopPropagation()" nbTooltip="Delete Selected">Delete
           </button>
           <button nbButton status="primary" size="small" shape="semi-round" class="btn"
-                  (click)="onValidate();$event.stopPropagation()">Validate Selected
+                  (click)="onValidate();$event.stopPropagation()" nbTooltip="Validate Selected">Validate
           </button>
         </th>
         <td nbTreeGridCell *nbTreeGridCellDef="let row">
@@ -148,7 +148,7 @@
         <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef></th>
         <td nbTreeGridCell *nbTreeGridCellDef="let row">
           <button nbButton class="update-button" status="primary" size="small" shape="semi-round"
-                  (click)="onUpdate(row.data)">
+                  (click)="onUpdate(row.data)" nbTooltip="Open/Edit">
             <nb-icon icon="edit"></nb-icon>
           </button>
         </td>
