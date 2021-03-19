@@ -61,13 +61,16 @@ button:focus {
 
 .nb-column-select {
   overflow: initial;
-  max-width: 48px;
+  width: 60px;
+}
+.nb-column-text {
+  min-width: 200px;
 }
 .nb-column-currentIntent {
   max-width: 256px;
 }
 .nb-column-status {
-  max-width: 156px;
+  width: 180px;
 }
 .nb-column-intentProbability {
   max-width: 72px;
@@ -88,7 +91,7 @@ button:focus {
   max-width: 128px;
 }
 .nb-column-update {
-  max-width: 48px;
+  width: 70px;
 }
 
 .update-button {
@@ -112,5 +115,6 @@ button:focus {
   height:600px;
 }
 .btn {
-  margin: 0 8px;
+  margin: 4px 8px;
 }
+

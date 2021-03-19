@@ -129,8 +129,9 @@
     <button nbButton outline status="primary" size="small" shape="semi-round" class="btn" (click)="onReviewRequest()">
       Ask for Review
     </button>
-    <button *ngIf="displayClose" nbButton outline status="primary" size="small" shape="semi-round" class="btn" (click)="closed.emit(null)">
-      <mat-icon>keyboard_return</mat-icon>
+    <button *ngIf="displayClose" nbButton outline status="primary" size="small" shape="semi-round" class="btn"
+            (click)="closed.emit(null)" nbTooltip="Close">
+      <nb-icon icon="arrow-back-outline"></nb-icon>
     </button>
     <div *ngIf="sentence.qualifier" class="lastUpdate" nbTooltip="Qualifier">{{sentence.qualifier}}</div>
     <div *ngIf="sentence.updateDate" class="lastUpdate"
