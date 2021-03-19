@@ -215,7 +215,7 @@ construire toutes sortes de parcours simples et complexes, interroger des API ti
 
 ## Continuer...
 
-Dans la section suivante vous apprendez à :
+Dans la section suivante vous apprendrez à :
 
 * [Déployer une plateforme Tock](plateforme.md) en quelques minutes avec Docker
 

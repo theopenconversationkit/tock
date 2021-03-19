@@ -129,7 +129,7 @@ Comme vous le constatez, connecter un bot Tock à un (ou plusieurs) canaux exter
 
 ## Continuer...
 
-Dans les sections suivantes vous apprendez à :
+Dans les sections suivantes vous apprendrez à :
 
 * [Configurer le bot pour le canal Messenger](messenger.md) (requiert un compte Facebook)
 

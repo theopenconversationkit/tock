@@ -1352,16 +1352,16 @@ Kotlin.</p>
 </code></pre></div>
 <h3 id="un-bot-est-un-ensemble-de-parcours-stories">Un bot est un ensemble de parcours (stories)<a class="headerlink" href="#un-bot-est-un-ensemble-de-parcours-stories" title="Permanent link">&para;</a></h3>
 <p>Voici par exemple comment le Bot Open Data est défini :</p>
-<div class="highlight"><pre><span></span><code><span class="k">val</span> <span class="py">openBot</span> <span class="p">=</span> <span class="n">bot</span><span class="p">(</span>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span> <span class="nv">openBot</span> <span class="o">=</span> <span class="n">bot</span><span class="p">(</span>
         <span class="s">&quot;bot_open_data&quot;</span><span class="p">,</span>
-        <span class="n">stories</span> <span class="p">=</span>
+        <span class="n">stories</span> <span class="o">=</span>
         <span class="n">listOf</span><span class="p">(</span>
                 <span class="n">greetings</span><span class="p">,</span>
                 <span class="n">departures</span><span class="p">,</span>
                 <span class="n">arrivals</span><span class="p">,</span>
                 <span class="n">search</span>
         <span class="p">),</span>
-        <span class="n">hello</span> <span class="p">=</span> <span class="n">greetings</span>
+        <span class="n">hello</span> <span class="o">=</span> <span class="n">greetings</span>
 <span class="p">)</span>
 </code></pre></div>
 <p>Ce bot comporte un identifiant (obligatoire - "bot_open_data") et une liste de parcours ou <em>stories</em>.</p>
@@ -1373,7 +1373,7 @@ Kotlin.</p>
 <h3 id="une-story-simple">Une Story simple<a class="headerlink" href="#une-story-simple" title="Permanent link">&para;</a></h3>
 <p><em>Comment définit-on une Story?</em></p>
 <p>Voici une première version simplifiée du parcours <code>greetings</code> :</p>
-<div class="highlight"><pre><span></span><code><span class="k">val</span> <span class="py">greetings</span> <span class="p">=</span> <span class="n">story</span><span class="p">(</span><span class="s">&quot;greetings&quot;</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span> <span class="nv">greetings</span> <span class="o">=</span> <span class="n">story</span><span class="p">(</span><span class="s">&quot;greetings&quot;</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">send</span><span class="p">(</span><span class="s">&quot;Bienvenue chez le Bot Open Data Sncf! :)&quot;</span><span class="p">)</span>
     <span class="n">end</span><span class="p">(</span><span class="s">&quot;Il s&#39;agit d&#39;un bot de démonstration du framework Tock : https://github.com/theopenconversationkit/tock&quot;</span><span class="p">)</span>
 <span class="p">}</span>
@@ -1385,7 +1385,7 @@ Kotlin.</p>
 <p>Le bot envoie donc successivement une première phrase de réponse (<code>bus.send()</code>), puis un deuxième en indiquant que c'est 
 la dernière phrase de sa réponse à l'aide d'un <code>bus.end()</code>.</p>
 <p>Voici maintenant la version complète de <code>greetings</code> :</p>
-<div class="highlight"><pre><span></span><code><span class="k">val</span> <span class="py">greetings</span> <span class="p">=</span> <span class="n">story</span><span class="p">(</span><span class="s">&quot;greetings&quot;</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span> <span class="nv">greetings</span> <span class="o">=</span> <span class="n">story</span><span class="p">(</span><span class="s">&quot;greetings&quot;</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">//cleanup state</span>
     <span class="n">resetDialogState</span><span class="p">()</span>
 
@@ -1444,7 +1444,7 @@ on peut appeler une ou plusieurs des fonctions suivantes depuis le <code>main</c
   <a href="../../user/studio/stories-and-answers/#longlet-answers"><em>dump</em> de labels</a>.</li>
 </ul>
 <p>Exemple :</p>
-<div class="highlight"><pre><span></span><code><span class="k">fun</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">Array</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;)</span> <span class="p">{</span>
+<div class="highlight"><pre><span></span><code><span class="kd">fun</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">Array</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">{</span>
 
   <span class="n">registerAndInstallBot</span><span class="p">(</span><span class="n">bot</span><span class="p">)</span>
 
@@ -1463,10 +1463,10 @@ on peut appeler une ou plusieurs des fonctions suivantes depuis le <code>main</c
 <p>Pour le développement de stories complexes, nous avons besoin d'une abstraction supplémentaire.</p>
 <h3 id="intentions-secondaires">Intentions secondaires<a class="headerlink" href="#intentions-secondaires" title="Permanent link">&para;</a></h3>
 <p>Voici le début de la définition de la story <code>search</code> :</p>
-<div class="highlight"><pre><span></span><code><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">storyDef</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span> <span class="nv">search</span> <span class="o">=</span> <span class="n">storyDef</span><span class="o">&lt;</span><span class="n">SearchDef</span><span class="o">&gt;</span><span class="p">(</span>
         <span class="s">&quot;search&quot;</span><span class="p">,</span>
-        <span class="n">otherStarterIntents</span> <span class="p">=</span> <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
-        <span class="n">secondaryIntents</span> <span class="p">=</span> <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">otherStarterIntents</span> <span class="o">=</span> <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
+        <span class="n">secondaryIntents</span> <span class="o">=</span> <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span>
 
 <span class="p">}</span>
 </code></pre></div>
@@ -1480,31 +1480,31 @@ est "déjà" la story search. Plusieurs story différentes peuvent donc partager
 <h3 id="manipuler-les-entites">Manipuler les entités<a class="headerlink" href="#manipuler-les-entites" title="Permanent link">&para;</a></h3>
 <p>Pour récupérer les valeurs des entités, une bonne pratique est de définir des <strong>extensions</strong>. 
 Par exemple voici le code utilisé pour récupérer l'entité <code>destination</code> :</p>
-<div class="highlight"><pre><span></span><code><span class="k">val</span> <span class="py">destinationEntity</span> <span class="p">=</span> <span class="n">openBot</span><span class="p">.</span><span class="n">entity</span><span class="p">(</span><span class="s">&quot;location&quot;</span><span class="p">,</span> <span class="s">&quot;destination&quot;</span><span class="p">)</span> 
+<div class="highlight"><pre><span></span><code><span class="kd">val</span> <span class="nv">destinationEntity</span> <span class="o">=</span> <span class="n">openBot</span><span class="p">.</span><span class="na">entity</span><span class="p">(</span><span class="s">&quot;location&quot;</span><span class="p">,</span> <span class="s">&quot;destination&quot;</span><span class="p">)</span> 
 
-<span class="k">var</span> <span class="py">BotBus</span><span class="p">.</span><span class="n">destination</span><span class="p">:</span> <span class="n">Place</span><span class="p">?</span>
-    <span class="k">get</span><span class="p">()</span> <span class="p">=</span> <span class="n">place</span><span class="p">(</span><span class="n">destinationEntity</span><span class="p">)</span>
-    <span class="k">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="p">=</span> <span class="n">setPlace</span><span class="p">(</span><span class="n">destinationEntity</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+<span class="kd">var</span> <span class="nv">BotBus</span><span class="p">.</span><span class="na">destination</span><span class="p">:</span> <span class="n">Place?</span>
+    <span class="k">get</span><span class="p">()</span> <span class="o">=</span> <span class="n">place</span><span class="p">(</span><span class="n">destinationEntity</span><span class="p">)</span>
+    <span class="k">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">=</span> <span class="n">setPlace</span><span class="p">(</span><span class="n">destinationEntity</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
-<span class="k">private</span> <span class="k">fun</span> <span class="nc">BotBus</span><span class="p">.</span><span class="nf">place</span><span class="p">(</span><span class="n">entity</span><span class="p">:</span> <span class="n">Entity</span><span class="p">):</span> <span class="n">Place</span><span class="p">?</span> <span class="p">=</span> <span class="n">entityValue</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="o">::</span><span class="n">placeValue</span><span class="p">)</span><span class="o">?.</span><span class="n">place</span>
+<span class="kd">private</span> <span class="kd">fun</span> <span class="n">BotBus</span><span class="p">.</span><span class="nf">place</span><span class="p">(</span><span class="n">entity</span><span class="p">:</span> <span class="n">Entity</span><span class="p">):</span> <span class="n">Place? </span><span class="o">=</span> <span class="n">entityValue</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="o">::</span><span class="n">placeValue</span><span class="p">)</span><span class="o">?.</span><span class="na">place</span>
 
-<span class="k">private</span> <span class="k">fun</span> <span class="nc">BotBus</span><span class="p">.</span><span class="nf">setPlace</span><span class="p">(</span><span class="n">entity</span><span class="p">:</span> <span class="n">Entity</span><span class="p">,</span> <span class="n">place</span><span class="p">:</span> <span class="n">Place</span><span class="p">?)</span> <span class="p">=</span> <span class="n">changeEntityValue</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">place</span><span class="o">?.</span><span class="n">let</span> <span class="p">{</span> <span class="n">PlaceValue</span><span class="p">(</span><span class="n">place</span><span class="p">)</span> <span class="p">})</span>
+<span class="kd">private</span> <span class="kd">fun</span> <span class="n">BotBus</span><span class="p">.</span><span class="nf">setPlace</span><span class="p">(</span><span class="n">entity</span><span class="p">:</span> <span class="n">Entity</span><span class="p">,</span> <span class="n">place</span><span class="p">:</span> <span class="n">Place?)</span> <span class="o">=</span> <span class="n">changeEntityValue</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">place</span><span class="o">?.</span><span class="na">let</span> <span class="p">{</span> <span class="n">PlaceValue</span><span class="p">(</span><span class="n">place</span><span class="p">)</span> <span class="p">})</span>
 </code></pre></div>
 <p>Une entité de type <code>location</code> et de role <code>destination</code> est créée. 
 Il s'agit de l'entité correspondante dans le modèle NLP.</p>
 <p>Une variable <code>destination</code> est définie, qui va simplifier la manipulation de cette entité dans le code métier.
 Cette variable contient la valeur actuelle de la destination dans le contexte utilisateur.</p>
 <p>Voici une version complétée de la story <code>search</code> qui utilise <code>destination</code> :</p>
-<div class="highlight"><pre><span></span><code><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">storyDef</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span> <span class="nv">search</span> <span class="o">=</span> <span class="n">storyDef</span><span class="o">&lt;</span><span class="n">SearchDef</span><span class="o">&gt;</span><span class="p">(</span>
         <span class="s">&quot;search&quot;</span><span class="p">,</span>
         <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
         <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span>
 
         <span class="c1">//check mandatory entities</span>
         <span class="k">when</span> <span class="p">{</span>
-            <span class="n">destination</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;Pour quelle destination?&quot;</span><span class="p">)</span>
-            <span class="n">origin</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;Pour quelle origine?&quot;</span><span class="p">)</span>
-            <span class="n">departureDate</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;Quand souhaitez-vous partir?&quot;</span><span class="p">)</span>
+            <span class="n">destination</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;Pour quelle destination?&quot;</span><span class="p">)</span>
+            <span class="n">origin</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;Pour quelle origine?&quot;</span><span class="p">)</span>
+            <span class="n">departureDate</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;Quand souhaitez-vous partir?&quot;</span><span class="p">)</span>
         <span class="p">}</span> 
 <span class="p">}</span>
 </code></pre></div>
@@ -1512,25 +1512,25 @@ Cette variable contient la valeur actuelle de la destination dans le contexte ut
 Idem pour l'origine ou la date de départ.</p>
 <p>Si les 3 valeurs obligatoires sont spécifiées, il passe à la réponse proprement dite développée dans la classe (<code>SearchDef</code>).</p>
 <p>La version complète de cette première partie du code est la suivante :</p>
-<div class="highlight"><pre><span></span><code><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">storyDef</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span> <span class="nv">search</span> <span class="o">=</span> <span class="n">storyDef</span><span class="o">&lt;</span><span class="n">SearchDef</span><span class="o">&gt;</span><span class="p">(</span>
         <span class="s">&quot;search&quot;</span><span class="p">,</span>
         <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
         <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span>
 
         <span class="c1">//handle generic location intent</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">isIntent</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">)</span> <span class="p">&amp;&amp;</span> <span class="n">location</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">destination</span> <span class="p">==</span> <span class="k">null</span> <span class="p">||</span> <span class="n">origin</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">destination</span> <span class="p">=</span> <span class="n">returnsAndRemoveLocation</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">isIntent</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">location</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">destination</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">origin</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">destination</span> <span class="o">=</span> <span class="n">returnsAndRemoveLocation</span><span class="p">()</span>
             <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-                <span class="n">origin</span> <span class="p">=</span> <span class="n">returnsAndRemoveLocation</span><span class="p">()</span>
+                <span class="n">origin</span> <span class="o">=</span> <span class="n">returnsAndRemoveLocation</span><span class="p">()</span>
             <span class="p">}</span>
         <span class="p">}</span>    
 
         <span class="c1">//check mandatory entities</span>
         <span class="k">when</span> <span class="p">{</span>
-            <span class="n">destination</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;Pour quelle destination?&quot;</span><span class="p">)</span>
-            <span class="n">origin</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;Pour quelle origine?&quot;</span><span class="p">)</span>
-            <span class="n">departureDate</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;Quand souhaitez-vous partir?&quot;</span><span class="p">)</span>
+            <span class="n">destination</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;Pour quelle destination?&quot;</span><span class="p">)</span>
+            <span class="n">origin</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;Pour quelle origine?&quot;</span><span class="p">)</span>
+            <span class="n">departureDate</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;Quand souhaitez-vous partir?&quot;</span><span class="p">)</span>
         <span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -1541,23 +1541,23 @@ Sinon, il s'agit de l'origine. </p>
 <h3 id="utiliser-handlerdef">Utiliser <code>HandlerDef</code><a class="headerlink" href="#utiliser-handlerdef" title="Permanent link">&para;</a></h3>
 <p>Dans la définition de la story <code>search</code> ci-dessus, vous avez pu noter le typage générique <code>SearchDef</code>. 
 Voici le code de cette classe :</p>
-<div class="highlight"><pre><span></span><code><span class="n">@GAHandler</span><span class="p">(</span><span class="n">GASearchConnector</span><span class="o">::</span><span class="k">class</span><span class="p">)</span>
-<span class="n">@MessengerHandler</span><span class="p">(</span><span class="n">MessengerSearchConnector</span><span class="o">::</span><span class="k">class</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">SearchDef</span><span class="p">(</span><span class="n">bus</span><span class="p">:</span> <span class="n">BotBus</span><span class="p">)</span> <span class="p">:</span> <span class="n">HandlerDef</span><span class="p">&lt;</span><span class="n">SearchConnector</span><span class="p">&gt;(</span><span class="n">bus</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre><span></span><code><span class="nd">@GAHandler</span><span class="p">(</span><span class="n">GASearchConnector</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
+<span class="nd">@MessengerHandler</span><span class="p">(</span><span class="n">MessengerSearchConnector</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
+<span class="kd">class</span> <span class="nc">SearchDef</span><span class="p">(</span><span class="n">bus</span><span class="p">:</span> <span class="n">BotBus</span><span class="p">)</span> <span class="p">:</span> <span class="n">HandlerDef</span><span class="o">&lt;</span><span class="n">SearchConnector</span><span class="o">&gt;</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span> <span class="p">{</span>
 
-    <span class="k">private</span> <span class="k">val</span> <span class="py">d</span><span class="p">:</span> <span class="n">Place</span> <span class="p">=</span> <span class="n">bus</span><span class="p">.</span><span class="n">destination</span><span class="o">!!</span>
-    <span class="k">private</span> <span class="k">val</span> <span class="py">o</span><span class="p">:</span> <span class="n">Place</span> <span class="p">=</span> <span class="n">bus</span><span class="p">.</span><span class="n">origin</span><span class="o">!!</span>
-    <span class="k">private</span> <span class="k">val</span> <span class="py">date</span><span class="p">:</span> <span class="n">LocalDateTime</span> <span class="p">=</span> <span class="n">bus</span><span class="p">.</span><span class="n">departureDate</span><span class="o">!!</span>
+    <span class="kd">private</span> <span class="kd">val</span> <span class="nv">d</span><span class="p">:</span> <span class="n">Place</span> <span class="o">=</span> <span class="n">bus</span><span class="p">.</span><span class="na">destination</span><span class="o">!!</span>
+    <span class="kd">private</span> <span class="kd">val</span> <span class="nv">o</span><span class="p">:</span> <span class="n">Place</span> <span class="o">=</span> <span class="n">bus</span><span class="p">.</span><span class="na">origin</span><span class="o">!!</span>
+    <span class="kd">private</span> <span class="kd">val</span> <span class="nv">date</span><span class="p">:</span> <span class="n">LocalDateTime</span> <span class="o">=</span> <span class="n">bus</span><span class="p">.</span><span class="na">departureDate</span><span class="o">!!</span>
 
-    <span class="k">override</span> <span class="k">fun</span> <span class="nf">answer</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">override</span> <span class="kd">fun</span> <span class="nf">answer</span><span class="p">()</span> <span class="p">{</span>
         <span class="n">send</span><span class="p">(</span><span class="s">&quot;De {0} à {1}&quot;</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
         <span class="n">send</span><span class="p">(</span><span class="s">&quot;Départ le {0}&quot;</span><span class="p">,</span> <span class="n">date</span> <span class="k">by</span> <span class="n">datetimeFormat</span><span class="p">)</span>
-        <span class="k">val</span> <span class="py">journeys</span> <span class="p">=</span> <span class="n">SncfOpenDataClient</span><span class="p">.</span><span class="n">journey</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">date</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">journeys</span><span class="p">.</span><span class="n">isEmpty</span><span class="p">())</span> <span class="p">{</span>
+        <span class="kd">val</span> <span class="nv">journeys</span> <span class="o">=</span> <span class="n">SncfOpenDataClient</span><span class="p">.</span><span class="na">journey</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">date</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">journeys</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span> <span class="p">{</span>
             <span class="n">end</span><span class="p">(</span><span class="s">&quot;Désolé, aucun itinéraire trouvé :(&quot;</span><span class="p">)</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
             <span class="n">send</span><span class="p">(</span><span class="s">&quot;Voici la première proposition :&quot;</span><span class="p">)</span>
-            <span class="n">connector</span><span class="o">?.</span><span class="n">sendFirstJourney</span><span class="p">(</span><span class="n">journeys</span><span class="p">.</span><span class="n">first</span><span class="p">())</span>
+            <span class="n">connector</span><span class="o">?.</span><span class="na">sendFirstJourney</span><span class="p">(</span><span class="n">journeys</span><span class="p">.</span><span class="na">first</span><span class="p">())</span>
             <span class="n">end</span><span class="p">()</span>
         <span class="p">}</span>
     <span class="p">}</span>
@@ -1573,22 +1573,22 @@ Voici le code de cette classe :</p>
  La méthode <code>connector?.sendFirstJourney(journeys.first())</code> n'enverrait pas la réponse finale, puisque <code>connector</code> serait <code>null</code>.</p>
 <h3 id="utiliser-connectordef">Utiliser <code>ConnectorDef</code><a class="headerlink" href="#utiliser-connectordef" title="Permanent link">&para;</a></h3>
 <p>Voici maintenant une version simplifiée de <code>SearchConnector</code> :</p>
-<div class="highlight"><pre><span></span><code><span class="k">sealed</span> <span class="k">class</span> <span class="nc">SearchConnector</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">SearchDef</span><span class="p">)</span> <span class="p">:</span> <span class="n">ConnectorDef</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span><span class="n">context</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre><span></span><code><span class="kd">sealed</span> <span class="kd">class</span> <span class="nc">SearchConnector</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">SearchDef</span><span class="p">)</span> <span class="p">:</span> <span class="n">ConnectorDef</span><span class="o">&lt;</span><span class="n">SearchDef</span><span class="o">&gt;</span><span class="p">(</span><span class="n">context</span><span class="p">)</span> <span class="p">{</span>
 
-    <span class="k">fun</span> <span class="nc">Section</span><span class="p">.</span><span class="nf">title</span><span class="p">():</span> <span class="n">CharSequence</span> <span class="p">=</span> <span class="n">i18n</span><span class="p">(</span><span class="s">&quot;{0} - {1}&quot;</span><span class="p">,</span> <span class="n">from</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span>
+    <span class="kd">fun</span> <span class="n">Section</span><span class="p">.</span><span class="nf">title</span><span class="p">():</span> <span class="n">CharSequence</span> <span class="o">=</span> <span class="n">i18n</span><span class="p">(</span><span class="s">&quot;{0} - {1}&quot;</span><span class="p">,</span> <span class="n">from</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span>
 
-    <span class="k">fun</span> <span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">journey</span><span class="p">:</span> <span class="n">Journey</span><span class="p">)</span> <span class="p">=</span> <span class="n">withMessage</span><span class="p">(</span><span class="n">sendFirstJourney</span><span class="p">(</span><span class="n">journey</span><span class="p">.</span><span class="n">publicTransportSections</span><span class="p">()))</span>
+    <span class="kd">fun</span> <span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">journey</span><span class="p">:</span> <span class="n">Journey</span><span class="p">)</span> <span class="o">=</span> <span class="n">withMessage</span><span class="p">(</span><span class="n">sendFirstJourney</span><span class="p">(</span><span class="n">journey</span><span class="p">.</span><span class="na">publicTransportSections</span><span class="p">()))</span>
 
-    <span class="k">abstract</span> <span class="k">fun</span> <span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">sections</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Section</span><span class="p">&gt;):</span> <span class="n">ConnectorMessage</span>
+    <span class="kd">abstract</span> <span class="kd">fun</span> <span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">sections</span><span class="p">:</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Section</span><span class="o">&gt;</span><span class="p">):</span> <span class="n">ConnectorMessage</span>
 
 <span class="p">}</span>
 </code></pre></div>
 <p>Et voici son implémentation pour Messenger :</p>
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">MessengerSearchConnector</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">SearchDef</span><span class="p">)</span> <span class="p">:</span> <span class="n">SearchConnector</span><span class="p">(</span><span class="n">context</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nc">MessengerSearchConnector</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">SearchDef</span><span class="p">)</span> <span class="p">:</span> <span class="n">SearchConnector</span><span class="p">(</span><span class="n">context</span><span class="p">)</span> <span class="p">{</span>
 
-    <span class="k">override</span> <span class="k">fun</span> <span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">sections</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Section</span><span class="p">&gt;):</span> <span class="n">ConnectorMessage</span> <span class="p">=</span>
+    <span class="kd">override</span> <span class="kd">fun</span> <span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">sections</span><span class="p">:</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Section</span><span class="o">&gt;</span><span class="p">):</span> <span class="n">ConnectorMessage</span> <span class="o">=</span>
           <span class="n">flexibleListTemplate</span><span class="p">(</span>
-                <span class="n">sections</span><span class="p">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">section</span> <span class="p">-&gt;</span>
+                <span class="n">sections</span><span class="p">.</span><span class="na">map</span> <span class="p">{</span> <span class="n">section</span> <span class="o">-&gt;</span>
                       <span class="n">with</span><span class="p">(</span><span class="n">section</span><span class="p">)</span> <span class="p">{</span>
                           <span class="n">listElement</span><span class="p">(</span>
                                 <span class="n">title</span><span class="p">(),</span>
@@ -1609,12 +1609,12 @@ dans la story courante. Pour cela Tock met à disposition la notion de <code>Sto
 <p>Il existe deux types de <code>StoryStep</code> :</p>
 <h4 id="simplestorystep"><code>SimpleStoryStep</code><a class="headerlink" href="#simplestorystep" title="Permanent link">&para;</a></h4>
 <p>A utiliser dans les cas simples, pour lequels on va gérer le comportement induit directement :</p>
-<div class="highlight"><pre><span></span><code><span class="k">enum</span> <span class="k">class</span> <span class="nc">MyStep</span> <span class="p">:</span> <span class="n">SimpleStoryStep</span> <span class="p">{</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="p">}</span>
+<div class="highlight"><pre><span></span><code><span class="kd">enum</span> <span class="kd">class</span> <span class="nc">MyStep</span> <span class="p">:</span> <span class="n">SimpleStoryStep</span> <span class="p">{</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="p">}</span>
 
-<span class="k">val</span> <span class="py">story</span> <span class="p">=</span> <span class="n">storyWithSteps</span><span class="p">&lt;</span><span class="n">MyStep</span><span class="p">&gt;(</span><span class="s">&quot;intent&quot;</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span><span class="p">(</span><span class="n">step</span> <span class="p">==</span> <span class="n">a</span><span class="p">)</span> <span class="p">{</span>
+<span class="kd">val</span> <span class="nv">story</span> <span class="o">=</span> <span class="n">storyWithSteps</span><span class="o">&lt;</span><span class="n">MyStep</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;intent&quot;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">step</span> <span class="o">==</span> <span class="n">a</span><span class="p">)</span> <span class="p">{</span>
         <span class="c1">// ...</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">step</span> <span class="p">==</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">step</span> <span class="o">==</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
         <span class="c1">// ...</span>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
         <span class="c1">//default case</span>
@@ -1625,9 +1625,9 @@ dans la story courante. Pour cela Tock met à disposition la notion de <code>Sto
 <ul>
 <li>Modifier manuellement l'étape</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="k">val</span> <span class="py">story</span> <span class="p">=</span> <span class="n">storyWithSteps</span><span class="p">&lt;</span><span class="n">MyStep</span><span class="p">&gt;(</span><span class="s">&quot;intent&quot;</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span> <span class="nv">story</span> <span class="o">=</span> <span class="n">storyWithSteps</span><span class="o">&lt;</span><span class="n">MyStep</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;intent&quot;</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">//(...)</span>
-    <span class="n">step</span> <span class="p">=</span> <span class="n">MyStep</span><span class="p">.</span><span class="n">a</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="n">MyStep</span><span class="p">.</span><span class="na">a</span>
     <span class="c1">// l&#39;étape sera persistée tant que nous resterons dans cette story</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -1638,7 +1638,7 @@ dans la story courante. Pour cela Tock met à disposition la notion de <code>Sto
 <h4 id="les-storystep-avec-comportement">Les <code>StoryStep</code> avec comportement<a class="headerlink" href="#les-storystep-avec-comportement" title="Permanent link">&para;</a></h4>
 <p>Dans des cas plus complexes, on souhaite pouvoir définir un comportement pour chaque étape. 
 L'utilisation de <a href="#utiliser-handlerdef"><code>HandlerDef</code></a> est alors un prérequis.</p>
-<div class="highlight"><pre><span></span><code><span class="k">enum</span> <span class="k">class</span> <span class="nc">MySteps</span> <span class="p">:</span> <span class="n">StoryStep</span><span class="p">&lt;</span><span class="n">MyHandlerDef</span><span class="p">&gt;</span> <span class="p">{</span>
+<div class="highlight"><pre><span></span><code><span class="kd">enum</span> <span class="kd">class</span> <span class="nc">MySteps</span> <span class="p">:</span> <span class="n">StoryStep</span><span class="o">&lt;</span><span class="n">MyHandlerDef</span><span class="o">&gt;</span> <span class="p">{</span>
 
     <span class="c1">//pas de comportement spécifique</span>
     <span class="n">display</span><span class="p">,</span>
@@ -1646,16 +1646,16 @@ L'utilisation de <a href="#utiliser-handlerdef"><code>HandlerDef</code></a> est 
     <span class="n">select</span> <span class="p">{</span>
 
         <span class="c1">// la step &quot;select&quot; sera automatiquement sélectionnée si la sous-intention select est détectée</span>
-        <span class="k">override</span> <span class="k">val</span> <span class="py">intent</span><span class="p">:</span> <span class="n">IntentAware</span><span class="p">?</span> <span class="p">=</span> <span class="n">SecondaryIntent</span><span class="p">.</span><span class="n">select</span>
+        <span class="kd">override</span> <span class="kd">val</span> <span class="nv">intent</span><span class="p">:</span> <span class="n">IntentAware? </span><span class="o">=</span> <span class="n">SecondaryIntent</span><span class="p">.</span><span class="na">select</span>
         <span class="c1">//dans ce cas la réponse suivante sera apportée</span>
-        <span class="k">override</span> <span class="k">fun</span> <span class="nf">answer</span><span class="p">():</span> <span class="n">MyHandlerDef</span><span class="p">.()</span> <span class="p">-&gt;</span> <span class="n">Any</span><span class="p">?</span> <span class="p">=</span> <span class="p">{</span>
+        <span class="kd">override</span> <span class="kd">fun</span> <span class="nf">answer</span><span class="p">():</span> <span class="n">MyHandlerDef</span><span class="p">.()</span> <span class="o">-&gt;</span> <span class="kt">Any?</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">end</span><span class="p">(</span><span class="s">&quot;I don&#39;t know yet how to select something&quot;</span><span class="p">)</span>
         <span class="p">}</span>
     <span class="p">},</span>
 
     <span class="n">disruption</span> <span class="p">{</span>
         <span class="c1">//seule la réponse est configurée</span>
-        <span class="k">override</span> <span class="k">fun</span> <span class="nf">answer</span><span class="p">():</span> <span class="n">ScoreboardDef</span><span class="p">.()</span> <span class="p">-&gt;</span> <span class="n">Any</span><span class="p">?</span> <span class="p">=</span> <span class="p">{</span>
+        <span class="kd">override</span> <span class="kd">fun</span> <span class="nf">answer</span><span class="p">():</span> <span class="n">ScoreboardDef</span><span class="p">.()</span> <span class="o">-&gt;</span> <span class="kt">Any?</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">end</span><span class="p">(</span><span class="s">&quot;some perturbation&quot;</span><span class="p">)</span>
         <span class="p">}</span>
     <span class="p">};</span>
@@ -1674,7 +1674,7 @@ L'utilisation de <a href="#utiliser-handlerdef"><code>HandlerDef</code></a> est 
 </code></pre></div>
 <p>Il est possible de définir également une <code>StoryStep</code> et des paramètres dédiés :</p>
 <div class="highlight"><pre><span></span><code><span class="c1">//pour définir des paramètres, la pratique recommandée est d&#39;étendre l&#39;interface ParameterKey</span>
-<span class="k">enum</span> <span class="k">class</span> <span class="nc">ChoiceParameter</span> <span class="p">:</span> <span class="n">ParameterKey</span> <span class="p">{</span>
+<span class="kd">enum</span> <span class="kd">class</span> <span class="nc">ChoiceParameter</span> <span class="p">:</span> <span class="n">ParameterKey</span> <span class="p">{</span>
     <span class="n">nextResultDate</span><span class="p">,</span> <span class="n">nextResultOrigin</span>
 <span class="p">}</span>
 
@@ -1682,21 +1682,21 @@ L'utilisation de <a href="#utiliser-handlerdef"><code>HandlerDef</code></a> est 
             <span class="s">&quot;The bot is very limited! Only itineraries are supported :)&quot;</span><span class="p">,</span>
             <span class="n">postbackButton</span><span class="p">(</span>
                 <span class="s">&quot;Itineraries&quot;</span><span class="p">,</span>
-                <span class="n">intent</span> <span class="p">=</span> <span class="n">search</span><span class="p">,</span> 
+                <span class="n">intent</span> <span class="o">=</span> <span class="n">search</span><span class="p">,</span> 
                 <span class="c1">//si aucune step n&#39;est indiquée, c&#39;est la step courante qui est utilisée</span>
-                <span class="n">step</span> <span class="p">=</span> <span class="n">MyStep</span><span class="p">.</span><span class="n">a</span><span class="p">,</span> 
-                <span class="n">parameters</span> <span class="p">=</span>  
+                <span class="n">step</span> <span class="o">=</span> <span class="n">MyStep</span><span class="p">.</span><span class="na">a</span><span class="p">,</span> 
+                <span class="n">parameters</span> <span class="o">=</span>  
                     <span class="c1">//ce paramètre est stocké sous forme de chaîne de caractère (les crochets sont utilisés)</span>
-                    <span class="n">nextResultDate</span><span class="p">[</span><span class="n">nextDate</span><span class="p">]</span> <span class="p">+</span> 
+                    <span class="n">nextResultDate</span><span class="o">[</span><span class="n">nextDate</span><span class="o">]</span> <span class="o">+</span> 
                     <span class="c1">//ce paramètre est stocké en json (les parenthèses sont utilisées)</span>
                     <span class="n">nextResultOrigin</span><span class="p">(</span><span class="n">origin</span><span class="p">)</span>
             <span class="p">)</span>
 <span class="p">)</span>
 </code></pre></div>
 <p>Pour récupérer les paramètres du bouton sur lequel on a cliqué :</p>
-<div class="highlight"><pre><span></span><code>    <span class="k">val</span> <span class="py">isClick</span> <span class="p">=</span> <span class="n">isChoiceAction</span><span class="p">()</span>
-    <span class="k">val</span> <span class="py">nextDate</span> <span class="p">=</span> <span class="n">choice</span><span class="p">(</span><span class="n">nextResultDate</span><span class="p">)</span>
-    <span class="k">val</span> <span class="py">nextOrigin</span> <span class="p">:</span> <span class="n">Locality</span> <span class="p">=</span> <span class="n">action</span><span class="p">.</span><span class="n">jsonChoice</span><span class="p">(</span><span class="n">nextResultOrigin</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code>    <span class="kd">val</span> <span class="nv">isClick</span> <span class="o">=</span> <span class="n">isChoiceAction</span><span class="p">()</span>
+    <span class="kd">val</span> <span class="nv">nextDate</span> <span class="o">=</span> <span class="n">choice</span><span class="p">(</span><span class="n">nextResultDate</span><span class="p">)</span>
+    <span class="kd">val</span> <span class="nv">nextOrigin</span> <span class="p">:</span> <span class="n">Locality</span> <span class="o">=</span> <span class="n">action</span><span class="p">.</span><span class="na">jsonChoice</span><span class="p">(</span><span class="n">nextResultOrigin</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="tests-unitaires">Tests Unitaires<a class="headerlink" href="#tests-unitaires" title="Permanent link">&para;</a></h3>
 <p>La page <a href="../tester/">Tests Unitaires</a> présente le framework fourni pour réaliser des TUs  avec Tock.</p>
