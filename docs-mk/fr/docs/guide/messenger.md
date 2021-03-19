@@ -2,12 +2,12 @@
 
 Si vous avez suivi le guide [Créer son premier bot avec _Tock Studio_](studio.md), vous avez déclaré un connecteur
  de type Slack.
- 
+
 Dans ce guide, vous allez créer une configuration pour [Facebook Messenger](https://fr-fr.facebook.com/messenger/) 
 et intégrer le bot pour dialoguer avec lui sur ce réseau social.
 
 Si vous le souhaitez, vous pouvez aussi sauter cette étape et passer directement à [la suite](api.md).
- 
+
 ## Ce que vous allez créer
 
 * Une configuration (dans Facebook et dans Tock) pour recevoir et envoyer des messages via Messenger
@@ -26,7 +26,13 @@ Si vous le souhaitez, vous pouvez aussi sauter cette étape et passer directemen
 
 * Créez une page Facebook
 
+![Créer une page partie 1](https://raw.githubusercontent.com/theopenconversationkit/theopenconversationkit.github.io/master/fr/images/doc/connector-messenger/create-page-0.png)
+
+<img src="https://raw.githubusercontent.com/theopenconversationkit/theopenconversationkit.github.io/master/fr/images/doc/connector-messenger/create-page-1.png" alt="Créer une page partie 2" style="zoom:50%;" />
+
 * Donnez-lui un nom (par exemple _My Tock Bot_)
+
+<img src="https://raw.githubusercontent.com/theopenconversationkit/theopenconversationkit.github.io/master/fr/images/doc/connector-messenger/create-page-2.png" alt="Créer une page partie 3" style="zoom: 50%;" />
 
 * Recommandation : ne publiez pas la page pour limiter son accès des utilisateurs Messenger : 
 _Paramètres > Général > Visibilité de la page > **Non publiée**_
@@ -37,26 +43,67 @@ _Paramètres > Général > Visibilité de la page > **Non publiée**_
 
 * _Ajouter une app_
 
+![Créer une application partie 1](https://raw.githubusercontent.com/theopenconversationkit/theopenconversationkit.github.io/master/fr/images/doc/connector-messenger/create-app-0.png)
+
+* _Créer une app_ > *Gérer les intégrations professionnelles*
+
+![Créer une application partie 2](https://raw.githubusercontent.com/theopenconversationkit/theopenconversationkit.github.io/master/fr/images/doc/connector-messenger/create-app-1.png)
+
 * Entrez un nom pour l'_application_
 
-* _Créer un ID d'app_... Notez l'ID de la page, vous en aurez besoin plus tard.
+<img src="https://raw.githubusercontent.com/theopenconversationkit/theopenconversationkit.github.io/master/fr/images/doc/connector-messenger/create-app-2.png" alt="Créer une application partie 3" style="zoom:50%;" />
 
 * Ajoutez un produit : _Messenger_
 
-* Dans les paramètres, générez un jeton (_token_) pour votre page. Notez ce _token_ pour la suite.
+![Ajouter messenger à une application partie 1](https://raw.githubusercontent.com/theopenconversationkit/theopenconversationkit.github.io/master/fr/images/doc/connector-messenger/add-messenger-page-0.png)
 
-## Configurer un connecteur Messenger dans Tock
+<img src="https://raw.githubusercontent.com/theopenconversationkit/theopenconversationkit.github.io/master/fr/images/doc/connector-messenger/add-messenger-page-1.png" alt="Ajouter messenger à une application partie 2" style="zoom: 50%;" />
 
-* Dans _Tock Studio_ allez dans _Settings_ > _Configurations_
+## Créer un connecteur Messenger
 
-* Créez un connecteur de type _Messenger_ et ouvrez la section _Connector Custom Configuration_
+* Dans *Tock Studio* allez dans *Settings* > *Configurations* :
 
-* Configurez l'ID de page et le _token_ précédemment générés côté Facebook
+<img src="https://raw.githubusercontent.com/theopenconversationkit/theopenconversationkit.github.io/master/fr/images/doc/connector-messenger/create-connector-0.png" alt="Créer un connecteur messenger partie 1" style="zoom:50%;" />
 
-* Comme _Webhook token_, saisissez `token` (par exemple)
+* Créez un connecteur de type *Messenger* et ouvrez la section *Connector Custom Configuration*
 
-* Dans le champ _Secret_, entrez la clef secrète que vous trouverez dans le portail Facebook for developers :
-_paramètres > général > afficher la clef secrète_ 
+<img src="https://raw.githubusercontent.com/theopenconversationkit/theopenconversationkit.github.io/master/fr/images/doc/connector-messenger/create-connector-1.png" alt="Créer un connecteur messenger partie 2" style="zoom:50%;" />
+
+### Remplir les champs
+
+<img src="https://raw.githubusercontent.com/theopenconversationkit/theopenconversationkit.github.io/master/fr/images/doc/connector-messenger/connect-tock-0.png" alt="Connecter tock partie 1" style="zoom:50%;" />
+
+### 1️⃣ Id d'application
+
+Allez sur https://developers.facebook.com, sur la page de votre application :
+
+<img src="https://raw.githubusercontent.com/theopenconversationkit/theopenconversationkit.github.io/master/fr/images/doc/connector-messenger/app-id.png" alt="Trouver l'id d'application" style="zoom: 33%;" />
+
+### 2️⃣ Id de page
+
+Allez sur https://facebook.com, sur la page de votre application :
+
+<img src="https://raw.githubusercontent.com/theopenconversationkit/theopenconversationkit.github.io/master/fr/images/doc/connector-messenger/page-id-0.png" alt="ID de page partie 1" style="zoom: 33%;" />
+
+<img src="https://raw.githubusercontent.com/theopenconversationkit/theopenconversationkit.github.io/master/fr/images/doc/connector-messenger/page-id-1.png" alt="ID de page partie 2" style="zoom:50%;" />
+
+### 3️⃣ Token d'appel
+
+Retournez sur https://developers.facebook.com, sur la page de votre application :
+
+<img src="https://raw.githubusercontent.com/theopenconversationkit/theopenconversationkit.github.io/master/fr/images/doc/connector-messenger/generate-token.png" alt="Générer un token" style="zoom: 50%;" />
+
+### 4️⃣ Jeton de webhook
+
+Choisissez un jeton quelconque, Facebook l'utilisera pour appeler le webhook Tock.
+
+### 5️⃣ Secret
+
+Toujours sur https://developers.facebook.com, sur la page de votre application :
+
+<img src="https://raw.githubusercontent.com/theopenconversationkit/theopenconversationkit.github.io/master/fr/images/doc/connector-messenger/app-secret.png" alt="Secret" style="zoom:33%;" />
+
+
 
 * Vérifiez que la configuration du connecteur est bien enregistrée
 
