@@ -26,6 +26,9 @@ import ai.tock.bot.admin.story.StoryDefinitionAnswersContainer
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep.Step
+import ai.tock.bot.connector.ConnectorFeature.CAROUSEL
+import ai.tock.bot.connector.media.MediaCardDescriptor
+import ai.tock.bot.connector.media.MediaCarouselDescriptor
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryHandler
@@ -178,7 +181,8 @@ internal class ConfiguredStoryHandler(
         } else {
             val isMissingMandatoryEntities = isMissingMandatoryEntities(this)
             val steps = story.definition.steps.isNotEmpty()
-            simple.answers.takeUnless { it.isEmpty() }
+            val answers = fillCarousel(simple)
+            answers.takeUnless { it.isEmpty() }
                 ?.let {
                     it.subList(0, it.size - 1)
                         .forEach { a ->
@@ -202,6 +206,54 @@ internal class ConfiguredStoryHandler(
                     }
                 }
         }
+    }
+
+    private fun BotBus.fillCarousel(simple: SimpleAnswerConfiguration): List<SimpleAnswer> {
+        val transformedAnswers = mutableListOf<SimpleAnswer>()
+        logger.debug { "Configured answers: ${simple.answers}" }
+        simple.answers.takeUnless { it.isEmpty() }
+            ?.run {
+                forEach { a ->
+                    if (
+                        underlyingConnector.hasFeature(CAROUSEL)
+                        && a.mediaMessage?.checkValidity() == true
+                        && a.mediaMessage is MediaCardDescriptor
+                        && a.mediaMessage.fillCarousel
+                    ) {
+                        val previousAnswer = transformedAnswers.lastOrNull()
+                        val previousAnswerMedia = previousAnswer?.mediaMessage
+                        if (previousAnswerMedia?.checkValidity() == true) {
+                            when (previousAnswerMedia) {
+                                is MediaCarouselDescriptor -> { // Add card to previous carousel
+                                    transformedAnswers.removeLast()
+                                    transformedAnswers.add(
+                                        previousAnswer.copy(
+                                            mediaMessage = previousAnswerMedia.copy(
+                                                cards = previousAnswerMedia.cards + a.mediaMessage
+                                            )
+                                        )
+                                    )
+                                }
+                                is MediaCardDescriptor -> {
+                                    // Merge current and previous card to a carousel
+                                    transformedAnswers.removeLast()
+                                    transformedAnswers.add(
+                                        previousAnswer.copy(
+                                            mediaMessage = MediaCarouselDescriptor(
+                                                listOf(previousAnswerMedia, a.mediaMessage)
+                                            )
+                                        )
+                                    )
+                                }
+                                else -> transformedAnswers.add(a)
+                            }
+                        } else transformedAnswers.add(a)
+                    } else transformedAnswers.add(a)
+                }
+            }
+
+        logger.debug { "Transformed answers: $transformedAnswers" }
+        return transformedAnswers
     }
 
     private fun BotBus.send(container: StoryDefinitionAnswersContainer, answer: SimpleAnswer, end: Boolean = false) {

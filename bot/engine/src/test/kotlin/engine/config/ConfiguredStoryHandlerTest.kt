@@ -20,9 +20,13 @@ import ai.tock.bot.admin.answer.SimpleAnswer
 import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.connector.Connector
+import ai.tock.bot.connector.ConnectorFeature.CAROUSEL
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.media.MediaCard
 import ai.tock.bot.connector.media.MediaCardDescriptor
+import ai.tock.bot.connector.media.MediaCarousel
+import ai.tock.bot.connector.media.MediaMessage
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotDefinitionTest
 import ai.tock.bot.engine.action.SendSentence
@@ -83,6 +87,9 @@ class ConfiguredStoryHandlerTest {
             every { step } returns mockk()
             every { translate(I18nLabelValue(originalLabel)) } returns RawString("translated label")
             every { translate(RawString("Step 1 not translated")) } returns RawString("Step 1 translated")
+            every { underlyingConnector } returns mockk() {
+                every { underlyingConnector.hasFeature(CAROUSEL) } returns true
+            }
             every {
                 underlyingConnector.addSuggestions(
                     RawString("translated label"),
@@ -164,6 +171,7 @@ class ConfiguredStoryHandlerTest {
                 )
             } returns connectorMessageRetriever
             every { toConnectorMessage(any()) } returns { listOf(mockk()) }
+            every { hasFeature(CAROUSEL) } returns true
         }
 
         val bus: BotBus = mockk {
@@ -208,5 +216,149 @@ class ConfiguredStoryHandlerTest {
         assertTrue(connectorMessage is TestConnectorMessage)
 
         verify(exactly = 1) { connector.addSuggestions(any<ConnectorMessage>(), any()) }
+    }
+
+    @Test
+    fun `GIVEN simple answer configuration with consecutive media cards WHEN sending answer THEN merge consecutive cards to carousels`() {
+
+        // Given card+text+card+card+card+text+text+card+card
+        val label0Card = buildLabel("labelAnswer0")
+        val label1Text = buildLabel("labelAnswer1")
+        val label2Card = buildLabel("labelAnswer2")
+        val label3Card = buildLabel("labelAnswer3")
+        val label4Card = buildLabel("labelAnswer4")
+        val label5Text = buildLabel("labelAnswer5")
+        val label6Text = buildLabel("labelAnswer6")
+        val label7Card = buildLabel("labelAnswer7")
+        val label8Card = buildLabel("labelAnswer8")
+
+        val simpleAnswerConfiguration = SimpleAnswerConfiguration(
+            answers = listOf(
+                SimpleAnswer(
+                    key = I18nLabelValue(label0Card),
+                    delay = -1,
+                    mediaMessage = MediaCardDescriptor(I18nLabelValue(label0Card), null, null)
+                ),
+                SimpleAnswer(
+                    key = I18nLabelValue(label1Text),
+                    delay = -1
+                ),
+                SimpleAnswer(
+                    key = I18nLabelValue(label2Card),
+                    delay = -1,
+                    mediaMessage = MediaCardDescriptor(I18nLabelValue(label2Card), null, null, fillCarousel = true)
+                ),
+                SimpleAnswer(
+                    key = I18nLabelValue(label3Card),
+                    delay = -1,
+                    mediaMessage = MediaCardDescriptor(I18nLabelValue(label3Card), null, null, fillCarousel = true)
+                ),
+                SimpleAnswer(
+                    key = I18nLabelValue(label4Card),
+                    delay = -1,
+                    mediaMessage = MediaCardDescriptor(I18nLabelValue(label4Card), null, null, fillCarousel = true)
+                ),
+                SimpleAnswer(
+                    key = I18nLabelValue(label5Text),
+                    delay = -1
+                ),
+                SimpleAnswer(
+                    key = I18nLabelValue(label6Text),
+                    delay = -1
+                ),
+                SimpleAnswer(
+                    key = I18nLabelValue(label7Card),
+                    delay = -1,
+                    mediaMessage = MediaCardDescriptor(I18nLabelValue(label7Card), null, null, fillCarousel = true)
+                ),
+                SimpleAnswer(
+                    key = I18nLabelValue(label8Card),
+                    delay = -1,
+                    mediaMessage = MediaCardDescriptor(I18nLabelValue(label8Card), null, null, fillCarousel = true)
+                )
+            )
+        )
+
+        val capturedMessages = mutableListOf<MessagesList>()
+        val capturedMediaMessages = mutableListOf<MediaMessage>()
+        val connector = mockk<Connector> {
+            every { toConnectorMessage(capture(capturedMediaMessages)) } returns { listOf(mockk()) }
+            every { hasFeature(CAROUSEL) } returns true
+        }
+
+        val bus: BotBus = mockk {
+            every { botId } returns PlayerId("botId")
+            every { userId } returns PlayerId("userId")
+            every { applicationId } returns "appId"
+            every { currentAnswerIndex } returns 1
+            every { botDefinition } returns BotDefinitionTest()
+            every { step } returns mockk()
+            every { translate(any<I18nLabelValue>()) } answers { RawString(it.invocation.args[0].toString()) }
+            every { translate(any<CharSequence>()) } answers { RawString(it.invocation.args[0].toString()) }
+            every { underlyingConnector } returns connector
+
+            every { end(messages = capture(capturedMessages), initialDelay = any()) } returns mockk()
+            every { send(messages = capture(capturedMessages), initialDelay = any()) } returns mockk()
+            every { story } returns mockk {
+                every { definition } returns mockk {
+                    every { steps } returns emptySet()
+                }
+            }
+        }
+
+        val configuration: StoryDefinitionConfiguration = mockk {
+            every { mandatoryEntities } returns emptyList()
+            every { findCurrentAnswer() } returns simpleAnswerConfiguration
+            every { findEnabledEndWithStoryId(any()) } returns null
+        }
+
+        every { configuration.findNextSteps(bus, configuration) } returns emptyList() // nextStepTranslated
+
+        // When
+        val handler = ConfiguredStoryHandler(BotDefinitionWrapper(BotDefinitionTest()), configuration)
+        handler.handle(bus)
+
+        // Then card+text+carousel(card+card+card)+text+text+carousel(card+card)
+        // 5 answers
+        assertEquals(capturedMessages.size, 6)
+        // 3 simple text answers
+        assertEquals(
+            ((capturedMessages.get(1).messages.first() as ActionWrappedMessage).action as SendSentence).stringText,
+            label1Text.defaultLabel
+        )
+        assertEquals(
+            ((capturedMessages.get(3).messages.first() as ActionWrappedMessage).action as SendSentence).stringText,
+            label5Text.defaultLabel
+        )
+        assertEquals(
+            ((capturedMessages.get(4).messages.first() as ActionWrappedMessage).action as SendSentence).stringText,
+            label6Text.defaultLabel
+        )
+        // 2 carousels
+        assertEquals(capturedMediaMessages.size, 3)
+        val capturedCard0 = capturedMediaMessages.get(0)
+        assertTrue { capturedCard0 is MediaCard }
+        assertEquals((capturedCard0 as MediaCard).title.toString(), label0Card.defaultLabel)
+        val capturedCarousel234 = capturedMediaMessages.get(1)
+        assertTrue { capturedCarousel234 is MediaCarousel }
+        assertEquals((capturedCarousel234 as MediaCarousel).cards.size, 3)
+        assertEquals(capturedCarousel234.cards.get(0).title.toString(), label2Card.defaultLabel)
+        assertEquals(capturedCarousel234.cards.get(1).title.toString(), label3Card.defaultLabel)
+        assertEquals(capturedCarousel234.cards.get(2).title.toString(), label4Card.defaultLabel)
+        val capturedCarousel78 = capturedMediaMessages.get(2)
+        assertTrue { capturedCarousel78 is MediaCarousel }
+        assertEquals((capturedCarousel78 as MediaCarousel).cards.size, 2)
+        assertEquals(capturedCarousel78.cards.get(0).title.toString(), label7Card.defaultLabel)
+        assertEquals(capturedCarousel78.cards.get(1).title.toString(), label8Card.defaultLabel)
+    }
+
+    companion object {
+        fun buildLabel(label: String) =
+            I18nLabel(
+                _id = label.toId(),
+                category = "category",
+                defaultLabel = "Default $label",
+                i18n = LinkedHashSet()
+            )
     }
 }

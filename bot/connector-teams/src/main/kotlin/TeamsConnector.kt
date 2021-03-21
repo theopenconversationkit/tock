@@ -19,6 +19,7 @@ package ai.tock.bot.connector.teams
 import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
+import ai.tock.bot.connector.ConnectorFeature.CAROUSEL
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.media.MediaCard
 import ai.tock.bot.connector.media.MediaCarousel
@@ -67,7 +68,7 @@ internal class TeamsConnector(
     private val path: String,
     val appId: String,
     val appPassword: String
-) : ConnectorBase(teamsConnectorType) {
+) : ConnectorBase(teamsConnectorType, setOf(CAROUSEL)) {
 
     companion object {
         private val logger = KotlinLogging.logger {}

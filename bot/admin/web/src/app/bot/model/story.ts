@@ -697,7 +697,8 @@ export class MediaCard extends Media {
     public actions: MediaAction[],
     public title?: I18nLabel,
     public subTitle?: I18nLabel,
-    public file?: MediaFile
+    public file?: MediaFile,
+    public fillCarousel?: boolean
   ) {
     super(MediaType.card);
   }
@@ -723,7 +724,8 @@ export class MediaCard extends Media {
       this.actions.map(a => a.clone()),
       this.title ? this.title.clone() : null,
       this.subTitle ? this.subTitle.clone() : null,
-      this.file
+      this.file,
+      this.fillCarousel
     );
   }
 

@@ -14,8 +14,16 @@
   ~ limitations under the License.
   -->
 
-<h1 mat-dialog-title>Media Message</h1>
-<span class="subTitle">At least one of Title, Subtitle or File is required.</span>
+<h1 mat-dialog-title>
+  Media Card
+  <nb-toggle [(checked)]="media.fillCarousel"
+             nbTooltip="If selected, if there is more than one card in the answer and if connector supports carousel, cards will be replaced by a carousel">
+    Fill Carousel
+  </nb-toggle>
+</h1>
+<span class="subTitle">
+  At least one of Title, Subtitle or File is required.
+</span>
 <div class="container">
 
   <form #mediaForm="ngForm" class="container">
@@ -76,6 +84,7 @@
             matTooltip="Add Action" (click)="addAction()">
       Add Action
     </button>
+
   </form>
 </div>
 <mat-dialog-actions>

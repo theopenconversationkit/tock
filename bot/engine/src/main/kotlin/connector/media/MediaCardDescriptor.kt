@@ -27,7 +27,8 @@ data class MediaCardDescriptor(
     val title: I18nLabelValue?,
     val subTitle: I18nLabelValue?,
     val file: MediaFileDescriptor?,
-    val actions: List<MediaActionDescriptor> = emptyList()
+    val actions: List<MediaActionDescriptor> = emptyList(),
+    val fillCarousel: Boolean = false
 ) : MediaMessageDescriptor {
 
     override val type: MediaMessageType = card
