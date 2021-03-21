@@ -19,6 +19,7 @@ package ai.tock.bot.connector.messenger
 import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
+import ai.tock.bot.connector.ConnectorFeature.CAROUSEL
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorQueue
 import ai.tock.bot.connector.media.MediaMessage
@@ -98,7 +99,7 @@ class MessengerConnector internal constructor(
     @Volatile
     private var subscriptionCheck: Boolean = webhookSubscriptionCheckEnabled,
     private val personaId: String? = null
-) : ConnectorBase(MessengerConnectorProvider.connectorType) {
+) : ConnectorBase(MessengerConnectorProvider.connectorType, setOf(CAROUSEL)) {
 
     companion object {
         private val logger = KotlinLogging.logger {}

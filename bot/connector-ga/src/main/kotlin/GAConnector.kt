@@ -20,6 +20,7 @@ import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorCallbackBase
 import ai.tock.bot.connector.ConnectorData
+import ai.tock.bot.connector.ConnectorFeature.CAROUSEL
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ga.GAAccountLinking.Companion.getUserId
 import ai.tock.bot.connector.ga.GAAccountLinking.Companion.isUserAuthenticated
@@ -63,7 +64,7 @@ class GAConnector internal constructor(
     val applicationId: String,
     val path: String,
     val allowedProjectIds: Set<String>
-) : ConnectorBase(GAConnectorProvider.connectorType) {
+) : ConnectorBase(GAConnectorProvider.connectorType, setOf(CAROUSEL)) {
 
     companion object {
         private val logger = KotlinLogging.logger {}

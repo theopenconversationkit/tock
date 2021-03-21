@@ -17,16 +17,11 @@
 package ai.tock.bot.connector
 
 /**
- * Base implementation of [Connector]. Connector implementations should usually extend this class.
+ * Dedicated features supported by [Connector].
  */
-abstract class ConnectorBase(
-    override val connectorType: ConnectorType,
-    override val supportedFeatures: Set<ConnectorFeature> = emptySet()
-) : Connector {
-
+enum class ConnectorFeature {
     /**
-     * Returns [connectorType.toString()] method.
+     * Are Carousels supported ?
      */
-    override fun toString(): String = "Connector($connectorType)"
-
+    CAROUSEL
 }

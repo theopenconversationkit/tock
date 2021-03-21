@@ -19,6 +19,7 @@ package ai.tock.bot.connector.web
 import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
+import ai.tock.bot.connector.ConnectorFeature.CAROUSEL
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.media.MediaAction
@@ -79,7 +80,7 @@ private val sseKeepaliveDelay = longProperty("tock_web_sse_keepalive_delay", 10)
 class WebConnector internal constructor(
     val applicationId: String,
     val path: String
-) : ConnectorBase(webConnectorType), OrchestrationConnector {
+) : ConnectorBase(webConnectorType, setOf(CAROUSEL)), OrchestrationConnector {
 
     companion object {
         private val logger = KotlinLogging.logger {}

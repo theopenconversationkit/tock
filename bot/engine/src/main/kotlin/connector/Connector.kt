@@ -41,6 +41,16 @@ interface Connector {
     val connectorType: ConnectorType
 
     /**
+     * Supported features.
+     */
+    val supportedFeatures: Set<ConnectorFeature> get() = emptySet()
+
+    /**
+     * Is this feature supported ?
+     */
+    fun hasFeature(feature: ConnectorFeature): Boolean = supportedFeatures.contains(feature)
+
+    /**
      * Registers the connector for the specified controller.
      */
     fun register(controller: ConnectorController)
@@ -105,7 +115,8 @@ interface Connector {
      * Updates a [ConnectorMessage] with the specified list of suggestions.
      * Default returns [message] unmodified.
      */
-    fun addSuggestions(message: ConnectorMessage, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = { message }
+    fun addSuggestions(message: ConnectorMessage, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? =
+        { message }
 
     /**
      * Maps a [MediaMessage] into a [ConnectorMessage].

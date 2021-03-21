@@ -48,7 +48,7 @@ export class MediaDialogComponent {
     private bot: BotService) {
     this.category = this.data.category ? this.data.category : "build";
     this.create = this.data.media === null;
-    this.media = this.data.media ? this.data.media : new MediaCard([]);
+    this.media = this.data.media ? this.data.media : new MediaCard([], null, null, null, true);
     if (this.media.title) {
       this.media.titleLabel = this.media.title.defaultLocalizedLabelForLocale(this.state.currentLocale).label;
     }
