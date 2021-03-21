@@ -243,6 +243,7 @@ open class AdminVerticle : WebVerticle() {
                             context.path("dumpType")
                         )
                     )
+                else null
             } else {
                 unauthorized()
             }
