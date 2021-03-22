@@ -148,6 +148,7 @@ Systèmes d'Informations et du Numérique (DSIN)_ of [EDF (Electricité de Franc
 > It also forwards the conversation context between the customer and the callbot
 > to the advisor.
 
+The callbot is powered by Tock using the [_Allo-Media connector_](../dev/connectors.md#allo-media).
 The _Speech-To-Text (STT)_ solution is [Allo-Media](https://www.allo-media.net/), and the _Text-To-Speech (TTS)_ 
 is [Voxygen](https://www.voxygen.fr/).
 
@@ -256,6 +257,28 @@ _Eve_ is always listening to the employees, both within the offices and on-the-g
 * **Date of birth:** in production since 2019
 * **Field:** internal & B2B support (FAQ, IT Support, HR, Legal), DevOps automation (monitoring, 
 deployments, production management, etc.)
+* **Channels:** text & voice, internally within the offices and on-the-go via Teams
+
+## _RocBOT_, an Ops assistant
+
+_RocBOT_ is dedicated to Ops teams at SNCF DEA, available at the office and on-the-go through Teams applications.
+
+> The chabot helps collaborators quickly find information about the applications.
+> RocBOT can check, weither alerts were raised by supervision, find on-call duty agenda or people, etc.
+
+_RocBOT_ is available in production since 2020, on Teams desktop and mobile applications through the 
+Tock [_Teams connector_](../dev/connectors.md#teams).
+
+<img alt="RocBOT an Ops assistant"
+src="https://doc.tock.ai/fr/images/doc/rocbot_bonjour.png"
+style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
+<img alt="RocBOT an Ops assistant"
+src="https://doc.tock.ai/fr/images/doc/rocbot_application.png"
+style="width: 300px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
+
+* **Name:** _RocBOT_
+* **Date of birth:** in production since 2020
+* **Field:** internal ops management & support (FAQ, Ops Support, ITSM, etc.)
 * **Channels:** text & voice, internally within the offices and on-the-go via Teams
 
 ## Other Tock bots...

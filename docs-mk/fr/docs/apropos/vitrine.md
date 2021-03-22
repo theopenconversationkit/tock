@@ -152,6 +152,7 @@ Systèmes d'Informations et du Numérique (DSIN)_ d'[EDF Commerce](https://www.e
 > Il permet par ailleurs de transférer le contexte de la conversation qu'il y a eu entre le client et la callbot 
 > auprès du conseiller clientèle.
 
+Le callbot est construit avec Tock et utilise le [_connecteur Allo-Media_](../user/guides/canaux.md#allo-media). 
 La solution de _Speech-To-Text (STT)_ utilisée est [Allo-Media](https://www.allo-media.net/), et la solution
 de _Text-To-Speech (TTS)_ est [Voxygen](https://www.voxygen.fr/).
 
@@ -262,6 +263,29 @@ _Eve_ est à l'écoute des collaborateurs dans l'entreprise et en mobilité sur 
 * **Date de naissance :** en production depuis 2019
 * **Domaine :** assistance en interne & B2B (FAQ, Support Informatique, RH, Juridique), automatisations DevOps (supervision, 
 déploiements, gestion de production, etc.)
+* **Canaux :** texte & voix, en interne dans l'entreprise et en mobilité via Teams
+
+## _RocBOT_, un bot pour l'Exploitation
+
+_RocBOT_ est destiné aux Exploitants des équipes DEA SNCF. Il est à l'écoute en interne et en mobilité via Teams.
+
+> Le chabot aide les collaborateurs à trouver rapidement les informations utiles sur le parc applicatif. 
+> Il peut aussi vérifier si des incidents sont remontés par la supervision, donner l'agenda des astreintes, 
+> les bons contacts, etc.
+
+_RocBOT_ est en production depuis 2020, disponible sur desktop et en mobilité grâce au 
+[_connecteur Teams_](../user/guides/canaux.md#teams) fourni avec Tock.
+
+<img alt="RocBOT un bot pour l'Exploitation"
+src="https://doc.tock.ai/fr/images/doc/rocbot_bonjour.png"
+style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
+<img alt="RocBOT un bot pour l'Exploitation"
+src="https://doc.tock.ai/fr/images/doc/rocbot_application.png"
+style="width: 300px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
+
+* **Nom :** _RocBOT_
+* **Date de naissance :** en production depuis 2020
+* **Domaine :** exploitation et assistance en interne (FAQ, Support exploitabilité, relais ITSM, etc.)
 * **Canaux :** texte & voix, en interne dans l'entreprise et en mobilité via Teams
 
 ## Autres bots Tock...
