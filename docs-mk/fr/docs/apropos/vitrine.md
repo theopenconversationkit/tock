@@ -93,6 +93,36 @@ Aumax pour moi prend en charge et répond à près de 5 000 sollicitations quoti
 * **Domaine :** bancaire, service, assistant personnel 
 * **Canaux :** texte, sur l'application mobile
 
+## _LinTO by Linagora_
+
+La plateforme _[LinTO](https://linto.ai/fr/enterprises)_ est une boîte à outils Open Source permettant le développement
+et l'intégration de processus d’interactions vocales répondant aux besoins des professionnels et de l’industrie.
+
+> _LinTO_ est un assistant intelligent Open Source conçu par LINAGORA :
+> basé exclusivement sur des technologies Open Source, _LinTO_ est prêt pour le cloud mais sans GAFAM
+> (Google-Amazon-Facebook-Apple-Microsoft), et respecte votre vie privée sans partager vos données pour usage commercial.
+>
+> _LinTO_ utilise l'IA pour capter votre voix et vous aider tout au long de la journée, même en réunion, à réduire
+> les tâches stressantes ou chronophages : gestion d'agenda, rappels, prise de notes, emails, météo, trafic, dictionnaire ,
+> actualités, etc.
+>
+> Le projet de recherche est subventionné par le PIA (Programme d'Investissement d'Avenir) de l'état Français dans le
+> cadre des Grands Défis du numérique. Il allie des entreprises technologiques telles que LINAGORA et ZELROS et des
+> laboratoires de recherche comme l'IRIT, le LaaS, le CNRS et le laboratoire de recherche en informatique de l'école polytechnique.
+
+Le service _LinTO NLU (Natural Language Understanding)_ est basé sur Tock et permet l’utilisation de plusieurs
+modèles IA dédiés à des cas d’utilisation spécifiques. Il apprend automatiquement
+selon les usages lors de l’ajout ou suppression de compétences (_Skills_) à la plateforme.
+
+<img alt="LinTO by Linagora"
+src="https://linagora.com/wp-content/uploads/2018/10/CES-2019-LinTO-800x600.jpg"
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
+
+* **Nom :** _[LinTO](https://linto.ai/fr/enterprises)_
+* **Date de naissance :** en production avec Tock depuis 2019
+* **Domaine :** assistant personnel pour les entreprises (agenda, emails, prise de notes, etc.)
+* **Canaux :** vocal (portabilité Raspberry Pi, ARM, Android, Web...)
+
 ## _Chatbot interne Enedis_
 
 Le _Chatbot interne Enedis_ permet aux 39 000 salariés [Enedis](https://www.enedis.fr/) un accès simplifié aux 
@@ -110,6 +140,29 @@ Construit avec Tock, le chatbot est disponible sur un site Web interne à l'entr
 * **Date de naissance :** en production depuis 2020
 * **Domaine :** services logistiques internes
 * **Canaux :** texte, sur un site Web interne
+
+## _Callbot EDF_
+
+Sous la forme d'un _POC (Proof Of Concept)_ pour éprouver un cas d'usage, un callbot a été conçu par la _Direction des
+Systèmes d'Informations et du Numérique (DSIN)_ d'[EDF Commerce](https://www.edf.fr/).
+
+> Il a la particularité d'être conçu pour pouvoir fonctionner avec la solution de téléphonie 
+> ([Genesys](https://www.genesys.com)) afin de pouvoir router les appels clients vers la bonne compétence humarine ou
+> automatisée.  
+> Il permet par ailleurs de transférer le contexte de la conversation qu'il y a eu entre le client et la callbot 
+> auprès du conseiller clientèle.
+
+La solution de _Speech-To-Text (STT)_ utilisée est [Allo-Media](https://www.allo-media.net/), et la solution
+de _Text-To-Speech (TTS)_ est [Voxygen](https://www.voxygen.fr/).
+
+<img alt="EDF"
+src="https://upload.wikimedia.org/wikipedia/commons/1/12/%C3%89lectricit%C3%A9_de_France_logo.svg"
+style="text-align: center; width: 400px;">
+
+* **Nom :** _Callbot EDF_
+* **Date de naissance :** janvier 2021
+* **Domaine :** Relation Client / Conseiller
+* **Canaux :** voix (téléphonie)
 
 ## _L'Assistant SNCF_
 
@@ -130,36 +183,6 @@ style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.
 * **Date de naissance :** en production, fonction vocale Tock depuis 2019
 * **Domaine :** voyage & transport (recherche itinéraires en multi-modal, etc.)
 * **Canaux :** vocal, sur l'application mobile SNCF pour Android et iOS
-
-## _LinTO by Linagora_
-
-La plateforme _[LinTO](https://linto.ai/fr/enterprises)_ est une boîte à outils Open Source permettant le développement 
-et l'intégration de processus d’interactions vocales répondant aux besoins des professionnels et de l’industrie.
-
-> _LinTO_ est un assistant intelligent Open Source conçu par LINAGORA : 
-> basé exclusivement sur des technologies Open Source, _LinTO_ est prêt pour le cloud mais sans GAFAM 
-> (Google-Amazon-Facebook-Apple-Microsoft), et respecte votre vie privée sans partager vos données pour usage commercial.
->
-> _LinTO_ utilise l'IA pour capter votre voix et vous aider tout au long de la journée, même en réunion, à réduire 
-> les tâches stressantes ou chronophages : gestion d'agenda, rappels, prise de notes, emails, météo, trafic, dictionnaire ,
-> actualités, etc.
->
-> Le projet de recherche est subventionné par le PIA (Programme d'Investissement d'Avenir) de l'état Français dans le 
-> cadre des Grands Défis du numérique. Il allie des entreprises technologiques telles que LINAGORA et ZELROS et des 
-> laboratoires de recherche comme l'IRIT, le LaaS, le CNRS et le laboratoire de recherche en informatique de l'école polytechnique.
-
-Le service _LinTO NLU (Natural Language Understanding)_ est basé sur Tock et permet l’utilisation de plusieurs 
-modèles IA dédiés à des cas d’utilisation spécifiques. Il apprend automatiquement 
-selon les usages lors de l’ajout ou suppression de compétences (_Skills_) à la plateforme.
-
-<img alt="LinTO by Linagora" 
-src="https://linagora.com/wp-content/uploads/2018/10/CES-2019-LinTO-800x600.jpg" 
-style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
-
-* **Nom :** _[LinTO](https://linto.ai/fr/enterprises)_
-* **Date de naissance :** en production avec Tock depuis 2019
-* **Domaine :** assistant personnel pour les entreprises (agenda, emails, prise de notes, etc.)
-* **Canaux :** vocal (portabilité Raspberry Pi, ARM, Android, Web...)
 
 ## _Tilien_, le chatbot Transilien
 

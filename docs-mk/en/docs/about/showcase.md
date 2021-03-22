@@ -91,6 +91,35 @@ Aumax pour moi takes care and answers up to 5 000 requests a day.
 * **Field:** banking, services, personal assistant
 * **Channels:** text, on the mobile app
 
+## _LinTO by Linagora_
+
+The _[LinTO](https://linto.ai/enterprises)_ platform is an Open Source toolbox designed to address professional
+and industry needs by enabling the development and integration of voice operated processes.
+
+> _LinTO_ is a smart Open Source assistant designed by LINAGORA: based only on
+> Open Source technologies, LinTO is cloud enabled but GAFAM-free (Google-Amazon-Facebook-Apple-Microsoft),
+> and respects your privacy as it doesn’t share your data for commercial use.
+>
+> LinTO is designed to reduce time-consuming & stressful tasks, using a smart AI program to understand your voice and
+> help you all along the office day even during meetings: agenda management, reminders, notetaking, e-mails,
+> weather forecast, traffic, words definition, newspaper headlines, etc.
+>
+> The research project, which is funded by the French government's PIA (for “Future Investment Program”)
+> as part of the Grands Défis du Numérique, is a collaboration between French companies, LINAGORA and ZELROS, and
+> French research laboratories, IRIT, LaaS and LIX.
+
+The _LinTO NLU (Natural Language Understanding)_ system is based on Tock to support the use of several AI models
+dedicated to specific use cases. It automatically learns according to one's usage when adding or removing skills from the platform.
+
+<img alt="LinTO by Linagora"
+src="https://linagora.com/wp-content/uploads/2018/10/CES-2019-LinTO-800x600.jpg"
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
+
+* **Name:** _[LinTO](https://linto.ai/enterprises)_
+* **Date of birth:** in production, leveraging Tock since 2019
+* **Field:** Smart Business Assistant (agenda, e-mails, notetaking, etc.)
+* **Channels:** voice (portability: Raspberry Pi, ARM, Android, Web...)
+
 ## _Enedis internal Chatbot_
 
 The _[Enedis](https://www.enedis.fr/) internal Chatbot_ gives the 39 000 employees a simplified means to 
@@ -108,6 +137,29 @@ Built with Tock, the chatbot is available on an internal company Website.
 * **Date of birth:** in production since 2020
 * **Field:** internal logistics services
 * **Channels:** text, on an internal Website
+
+## _EDF Callbot_
+
+As a _POC (Proof Of Concept)_ to test a use case, a callbot has been created by the _Direction des
+Systèmes d'Informations et du Numérique (DSIN)_ of [EDF (Electricité de France) Commerce](https://www.edf.fr/).
+
+> The callbot is designed to integrate with the contact center solution ([Genesys](https://www.genesys.com)) 
+> in order to route customer calls toward the right skill, either human or automated.  
+> It also forwards the conversation context between the customer and the callbot
+> to the advisor.
+
+The _Speech-To-Text (STT)_ solution is [Allo-Media](https://www.allo-media.net/), and the _Text-To-Speech (TTS)_ 
+is [Voxygen](https://www.voxygen.fr/).
+
+<img alt="EDF"
+src="https://upload.wikimedia.org/wikipedia/commons/1/12/%C3%89lectricit%C3%A9_de_France_logo.svg"
+style="text-align: center; width: 400px;">
+
+* **Name:** _EDF Callbot_
+* **Date of birth:** January 2021
+* **Field:** Customer Service / Contact Center
+* **Channels:** voice, by phone
+
 
 ## _L'Assistant SNCF_
 
@@ -128,35 +180,6 @@ style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.
 * **Date of birth:** in production, featuring Tock voice function since 2019
 * **Field:** travel & transport (multi-modal route research, etc.)
 * **Channels:** voice, on the SNCF mobile application for Android and iOS
-
-## _LinTO by Linagora_
-
-The _[LinTO](https://linto.ai/enterprises)_ platform is an Open Source toolbox designed to address professional 
-and industry needs by enabling the development and integration of voice operated processes.
-
-> _LinTO_ is a smart Open Source assistant designed by LINAGORA: based only on 
-> Open Source technologies, LinTO is cloud enabled but GAFAM-free (Google-Amazon-Facebook-Apple-Microsoft), 
-> and respects your privacy as it doesn’t share your data for commercial use.
->
-> LinTO is designed to reduce time-consuming & stressful tasks, using a smart AI program to understand your voice and 
-> help you all along the office day even during meetings: agenda management, reminders, notetaking, e-mails, 
-> weather forecast, traffic, words definition, newspaper headlines, etc.
->
-> The research project, which is funded by the French government's PIA (for “Future Investment Program”) 
-> as part of the Grands Défis du Numérique, is a collaboration between French companies, LINAGORA and ZELROS, and 
-> French research laboratories, IRIT, LaaS and LIX.
-
-The _LinTO NLU (Natural Language Understanding)_ system is based on Tock to support the use of several AI models 
-dedicated to specific use cases. It automatically learns according to one's usage when adding or removing skills from the platform.
-
-<img alt="LinTO by Linagora" 
-src="https://linagora.com/wp-content/uploads/2018/10/CES-2019-LinTO-800x600.jpg" 
-style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
-
-* **Name:** _[LinTO](https://linto.ai/enterprises)_
-* **Date of birth:** in production, leveraging Tock since 2019
-* **Field:** Smart Business Assistant (agenda, e-mails, notetaking, etc.)
-* **Channels:** voice (portability: Raspberry Pi, ARM, Android, Web...)
 
 ## _Tilien_, the Transilien chatbot
 
