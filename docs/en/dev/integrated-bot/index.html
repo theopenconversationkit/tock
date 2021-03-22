@@ -9,13 +9,14 @@
         <meta name="description" content="The Open Conversation Kit">
       
       
-        <link rel="canonical" href="https://theopenconversationkit.github.io/tock/en/dev/integrated-bot/">
-      
       
         <meta name="author" content="Tock">
       
+      
+        <link rel="canonical" href="https://theopenconversationkit.github.io/tock/en/dev/integrated-bot/">
+      
       <link rel="shortcut icon" href="../../img/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.2">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.4">
     
     
       
@@ -23,10 +24,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.19190aaf.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.15aa0b43.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.24b84193.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.75751829.min.css">
         
       
     
@@ -34,7 +35,7 @@
     
       
         
-        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
         <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
       
@@ -56,6 +57,7 @@
     <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
       
   
+    
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
@@ -84,18 +86,20 @@
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
     </label>
     <div class="md-header-nav__title" data-md-component="header-title">
-      
-        <div class="md-header-nav__ellipsis">
-          <span class="md-header-nav__topic md-ellipsis">
+      <div class="md-header-nav__ellipsis">
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
             Tock
           </span>
-          <span class="md-header-nav__topic md-ellipsis">
+        </div>
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
             
               Integrated Bot mode
             
           </span>
         </div>
-      
+      </div>
     </div>
     
       <label class="md-header-nav__button md-icon" for="__search">
@@ -106,7 +110,7 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
       <label class="md-search__icon md-icon" for="__search">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
@@ -154,10 +158,14 @@
         <div class="md-main__inner md-grid">
           
             
-              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation" >
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
+
+
+
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
@@ -189,6 +197,7 @@
       
 
 
+
   <li class="md-nav__item">
     <a href="../.." class="md-nav__link">
       Overview
@@ -201,9 +210,12 @@
       
 
 
+
+  
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" >
     
     <label class="md-nav__link" for="nav-2">
       Try Tock Studio
@@ -222,6 +234,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../guide/studio/" class="md-nav__link">
       Create your 1st bot
@@ -234,6 +247,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../build-nlp-model/" class="md-nav__link">
       Build NLP models
@@ -244,6 +258,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -262,10 +277,13 @@
       
       
 
+
   
 
 
+  
   <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
     
       <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
     
@@ -286,6 +304,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../bot-api/" class="md-nav__link">
       Bot API mode
@@ -296,6 +315,7 @@
           
           
           
+
 
   
 
@@ -498,6 +518,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../connectors/" class="md-nav__link">
       Connectors
@@ -508,6 +529,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -522,6 +544,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../the-open-data-bot/" class="md-nav__link">
       Code Samples
@@ -532,6 +555,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -551,9 +575,12 @@
       
 
 
+
+  
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" >
     
     <label class="md-nav__link" for="nav-4">
       About
@@ -572,6 +599,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../about/why/" class="md-nav__link">
       Why Tock
@@ -582,6 +610,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -596,6 +625,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../about/awards/" class="md-nav__link">
       Awards
@@ -606,6 +636,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -620,6 +651,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../about/contact/" class="md-nav__link">
       Contact us
@@ -630,6 +662,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -644,6 +677,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../about/contribute/" class="md-nav__link">
       Contribute
@@ -654,6 +688,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -673,6 +708,7 @@
       
 
 
+
   <li class="md-nav__item">
     <a href="https://theopenconversationkit.github.io/tock/fr/" class="md-nav__link">
       🇬🇧 🇫🇷
@@ -685,6 +721,7 @@
       
 
 
+
   <li class="md-nav__item">
     <a href="https://theopenconversationkit.github.io/tock/en-dark/" class="md-nav__link">
       Dark Mode
@@ -695,6 +732,7 @@
       
       
       
+
 
 
   <li class="md-nav__item">
@@ -711,7 +749,8 @@
               </div>
             
             
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc" >
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
@@ -927,7 +966,6 @@ docker images on your own servers.</p>
     docker-compose up
 </code></pre></div>
 
-
 <p>The admin webapp is now available on port <code>80</code>: <a href="http://localhost">http://localhost</a></p>
 <p>The default login is <em>admin@app.com</em> and the password is <em>password</em>.</p>
 <h3 id="sample-bot-based-on-open-data-apis">Sample bot based on Open Data APIs<a class="headerlink" href="#sample-bot-based-on-open-data-apis" title="Permanent link">&para;</a></h3>
@@ -943,11 +981,9 @@ docker images on your own servers.</p>
         <span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div>
 
-
 <p>With Gradle:</p>
 <div class="codehilite"><pre><span></span><code>      <span class="n">compile</span> <span class="s1">&#39;ai.tock:bot-toolkit:20.9.3&#39;</span>
 </code></pre></div>
-
 
 <h3 id="a-bot-is-a-set-of-stories">A Bot is a Set of Stories<a class="headerlink" href="#a-bot-is-a-set-of-stories" title="Permanent link">&para;</a></h3>
 <p>This is how the open data bot is defined:</p>
@@ -964,7 +1000,6 @@ docker images on your own servers.</p>
 <span class="p">)</span>
 </code></pre></div>
 
-
 <p>This bot has an unique identifier (required - "bot_open_data") and a list of <strong>"Story"</strong>.</p>
 <p>A <em>Story</em> is a functional subset that has a main intention and, optionally,
 one or more so-called "secondary" intentions.</p>
@@ -977,7 +1012,6 @@ Greetings is also set (<em>hello = greetings</em>) as the default story used for
         <span class="n">end</span><span class="p">(</span><span class="s">&quot;This is a Tock framework demonstration bot: https://github.com/theopenconversationkit/tock&quot;</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
-
 
 <p>Note that in the body of the function, <em>this</em> has a <a href="https://doc.tock.ai/tock/dokka/tock/ai.tock.bot.engine/-bot-bus/index.html">BotBus</a> type.
 From which you can interact with the user, and which also allows you to access
@@ -1014,7 +1048,6 @@ the last sentence of his answer using a <em>bus.end()</em>.</p>
 <span class="p">}</span>
 </code></pre></div>
 
-
 <p>Two notions have been added:</p>
 <ul>
 <li>
@@ -1029,7 +1062,6 @@ Here it's a text with buttons for Messenger, and a text with suggestions for Goo
 <p>To start the bot, simply add the following call to your main function:</p>
 <div class="codehilite"><pre><span></span><code><span class="n">registerAndInstallBot</span><span class="p">(</span><span class="n">openBot</span><span class="p">)</span>
 </code></pre></div>
-
 
 <p>where the <em>openBot</em> variable is the bot you originally defined.</p>
 <p>When the bot is started, you also need to specify which connectors are used
@@ -1065,7 +1097,6 @@ the following functions from the bot <code>main</code>:</p>
 <span class="p">}</span>
 </code></pre></div>
 
-
 <h2 id="advanced-options">Advanced options<a class="headerlink" href="#advanced-options" title="Permanent link">&para;</a></h2>
 <p>Of course, the <em>StoryHandler</em> of <em>greetings</em> does not depend on the context: the answer is always the same.</p>
 <h3 id="secondary-intentions">Secondary Intentions<a class="headerlink" href="#secondary-intentions" title="Permanent link">&para;</a></h3>
@@ -1077,7 +1108,6 @@ the following functions from the bot <code>main</code>:</p>
 
 <span class="p">}</span>
 </code></pre></div>
-
 
 <p>The story <strong>search</strong> defines a secondary <em>starter</em> intent (<em>indicate_origin</em>)
 and a simple secondary intent (<em>indicate_location</em>).</p>
@@ -1100,7 +1130,6 @@ For example here is the code used to retrieve the <em>destination</em> entity:</
 <span class="k">private</span> <span class="k">fun</span> <span class="nc">BotBus</span><span class="p">.</span><span class="nf">setPlace</span><span class="p">(</span><span class="n">entity</span><span class="p">:</span> <span class="n">Entity</span><span class="p">,</span> <span class="n">place</span><span class="p">:</span> <span class="n">Place</span><span class="p">?)</span> <span class="p">=</span> <span class="n">changeEntityValue</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">place</span><span class="o">?.</span><span class="n">let</span> <span class="p">{</span> <span class="n">PlaceValue</span><span class="p">(</span><span class="n">place</span><span class="p">)</span> <span class="p">})</span>
 </code></pre></div>
 
-
 <p>An entity of type "location" and role "destination" is created.
 There is a corresponding entity in the NLP model.</p>
 <p>A variable <em>destination</em> is defined, which will simplify the handling of this entity in the conversational code.
@@ -1119,7 +1148,6 @@ This variable contains the current value of the destination in the user context.
         <span class="p">}</span> 
 <span class="p">}</span>
 </code></pre></div>
-
 
 <p>If there is no value in the current context for the destination, the bot asks to specify the destination and stays there.
 Same behaviour for the origin or date of departure.</p>
@@ -1147,7 +1175,6 @@ Same behaviour for the origin or date of departure.</p>
         <span class="p">}</span> 
 <span class="p">}</span>
 </code></pre></div>
-
 
 <p>In the case where the detected intention is <em>indicate_location</em>, we do not know if the locality represents the origin or the destination.</p>
 <p>A simple rule is then used:
@@ -1179,7 +1206,6 @@ Here is the code of this class:</p>
 <span class="p">}</span>
 </code></pre></div>
 
-
 <p><em>SearchDef</em> extends <em>HandlerDef</em> which is an alias of a Tock framework class.</p>
 <p>It is usually here that the code of complex <em>stories</em> is defined.</p>
 <p>The code contains an additional abstraction: <strong>SearchConnector</strong>.</p>
@@ -1203,7 +1229,6 @@ since <em>connector</em> would be <em>null</em>.</p>
 <span class="p">}</span>
 </code></pre></div>
 
-
 <p>And its Messenger implementation:</p>
 <div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">MessengerSearchConnector</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">SearchDef</span><span class="p">)</span> <span class="p">:</span> <span class="n">SearchConnector</span><span class="p">(</span><span class="n">context</span><span class="p">)</span> <span class="p">{</span>
 
@@ -1222,7 +1247,6 @@ since <em>connector</em> would be <em>null</em>.</p>
           <span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
-
 
 <p>The code specific to each connector is thus decoupled correctly.
 The code common to each connector is present in <em>SearchConnector</em> and the behavior specific to
@@ -1245,7 +1269,6 @@ in the current story. For this, Tock provides the concept of <em>StoryStep</em>.
 <span class="p">}</span>
 </code></pre></div>
 
-
 <p>To modify the current step, two methods are available:</p>
 <ul>
 <li>Manually change the step</li>
@@ -1257,15 +1280,12 @@ in the current story. For this, Tock provides the concept of <em>StoryStep</em>.
 <span class="p">}</span>
 </code></pre></div>
 
-
 <ul>
 <li>Use buttons or quick replies</li>
 </ul>
 <p>More details on this topic <a href="../code-a-bot/#postback-buttons-quick-replies">here</a>.</p>
 <h4 id="storysteps-with-complex-behavior">StorySteps with complex behavior<a class="headerlink" href="#storysteps-with-complex-behavior" title="Permanent link">&para;</a></h4>
 <p>In more complex cases, we want to be able to define a behavior for each step.</p>
-The use of<a href="#handlerdef"><code>HandlerDef</code></a> is a prerequisite for StorySteps.</p>
-<p>The exemple below is inspired by <a href="https://github.com/theopenconversationkit/tock-bot-open-data/blob/master/src/main/kotlin/story/Scoreboard.kt"><code>ScoredBoard</code></a> from the repository <a href="https://github.com/theopenconversationkit/tock-bot-open-data/">tock-bot-open-data</a>.</p>
 <div class="codehilite"><pre><span></span><code><span class="k">enum</span> <span class="k">class</span> <span class="nc">MySteps</span> <span class="p">:</span> <span class="n">StoryStep</span><span class="p">&lt;</span><span class="n">MyHandlerDef</span><span class="p">&gt;</span> <span class="p">{</span>
 
     <span class="c1">//no specific behaviour</span>
@@ -1282,13 +1302,12 @@ The use of<a href="#handlerdef"><code>HandlerDef</code></a> is a prerequisite fo
     <span class="p">},</span>
 
     <span class="n">disruption</span> <span class="p">{</span>
-        <span class="k">override</span> <span class="k">fun</span> <span class="nf">answer</span><span class="p">():</span> <span class="n">MyHandlerDef</span><span class="p">.()</span> <span class="p">-&gt;</span> <span class="n">Any</span><span class="p">?</span> <span class="p">=</span> <span class="p">{</span>
+        <span class="k">override</span> <span class="k">fun</span> <span class="nf">answer</span><span class="p">():</span> <span class="n">ScoreboardDef</span><span class="p">.()</span> <span class="p">-&gt;</span> <span class="n">Any</span><span class="p">?</span> <span class="p">=</span> <span class="p">{</span>
             <span class="n">end</span><span class="p">(</span><span class="s">&quot;some perturbation&quot;</span><span class="p">)</span>
         <span class="p">}</span>
     <span class="p">};</span>
 <span class="p">}</span>
 </code></pre></div>
-
 
 <p>More configuration options are available. Check out the description of <a href="https://doc.tock.ai/tock/dokka/tock/ai.tock.bot.definition/-story-step/index.html">StoryStep</a>. </p>
 <h3 id="postback-buttons-quick-replies">Postback buttons &amp; quick replies<a class="headerlink" href="#postback-buttons-quick-replies" title="Permanent link">&para;</a></h3>
@@ -1300,7 +1319,6 @@ The use of<a href="#handlerdef"><code>HandlerDef</code></a> is a prerequisite fo
             <span class="n">postbackButton</span><span class="p">(</span><span class="s">&quot;Itineraries&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">)</span>
 <span class="p">)</span>
 </code></pre></div>
-
 
 <p>It is also possible to define a * StoryStep * and dedicated parameters:</p>
 <div class="codehilite"><pre><span></span><code><span class="c1">//to define parameters, just extend the ParameterKey interface</span>
@@ -1324,7 +1342,6 @@ The use of<a href="#handlerdef"><code>HandlerDef</code></a> is a prerequisite fo
 <span class="p">)</span>
 </code></pre></div>
 
-
 <p>To retrieve the parameters of the button that was clicked:</p>
 <div class="codehilite"><pre><span></span><code>    <span class="k">val</span> <span class="py">isClick</span> <span class="p">=</span> <span class="n">isChoiceAction</span><span class="p">()</span>
     <span class="k">val</span> <span class="py">nextDate</span> <span class="p">=</span> <span class="n">choice</span><span class="p">(</span><span class="n">nextResultDate</span><span class="p">)</span>
@@ -1338,7 +1355,7 @@ The use of<a href="#handlerdef"><code>HandlerDef</code></a> is a prerequisite fo
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 18, 2020</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 18, 2021</span>
     
   </small>
 </div>
@@ -1413,15 +1430,15 @@ The use of<a href="#handlerdef"><code>HandlerDef</code></a> is a prerequisite fo
       
     </div>
     
-      <script src="../../assets/javascripts/vendor.7e0ee788.min.js"></script>
-      <script src="../../assets/javascripts/bundle.c1ccee15.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      <script src="../../assets/javascripts/vendor.93c04032.min.js"></script>
+      <script src="../../assets/javascripts/bundle.83e5331e.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
       
       <script>
         app = initialize({
           base: "../..",
           features: ['tabs', 'instant'],
           search: Object.assign({
-            worker: "../../assets/javascripts/worker/search.4ac00218.min.js"
+            worker: "../../assets/javascripts/worker/search.8c7e0a7e.min.js"
           }, typeof search !== "undefined" && search)
         })
       </script>

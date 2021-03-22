@@ -9,13 +9,14 @@
         <meta name="description" content="The Open Conversation Kit">
       
       
-        <link rel="canonical" href="https://theopenconversationkit.github.io/tock/fr/guide/api/">
-      
       
         <meta name="author" content="Tock">
       
+      
+        <link rel="canonical" href="https://theopenconversationkit.github.io/tock/fr/guide/api/">
+      
       <link rel="shortcut icon" href="../../img/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.2">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.4">
     
     
       
@@ -23,10 +24,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.19190aaf.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.15aa0b43.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.24b84193.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.75751829.min.css">
         
       
     
@@ -34,7 +35,7 @@
     
       
         
-        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
         <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
       
@@ -56,6 +57,7 @@
     <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="" data-md-color-accent="">
       
   
+    
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
@@ -84,18 +86,20 @@
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
     </label>
     <div class="md-header-nav__title" data-md-component="header-title">
-      
-        <div class="md-header-nav__ellipsis">
-          <span class="md-header-nav__topic md-ellipsis">
+      <div class="md-header-nav__ellipsis">
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
             Tock
           </span>
-          <span class="md-header-nav__topic md-ellipsis">
+        </div>
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
             
               Programmer des parcours
             
           </span>
         </div>
-      
+      </div>
     </div>
     
       <label class="md-header-nav__button md-icon" for="__search">
@@ -106,7 +110,7 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Rechercher" placeholder="Rechercher" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active">
+      <input type="text" class="md-search__input" name="query" aria-label="Rechercher" placeholder="Rechercher" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
       <label class="md-search__icon md-icon" for="__search">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
@@ -154,10 +158,14 @@
         <div class="md-main__inner md-grid">
           
             
-              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation" >
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
+
+
+
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
@@ -189,6 +197,7 @@
       
 
 
+
   <li class="md-nav__item">
     <a href="../.." class="md-nav__link">
       Accueil
@@ -199,6 +208,7 @@
       
       
       
+
 
 
   <li class="md-nav__item">
@@ -212,10 +222,13 @@
       
       
 
+
   
 
 
+  
   <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
     
       <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
     
@@ -236,6 +249,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../studio/" class="md-nav__link">
       Créer son premier bot
@@ -246,6 +260,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -260,6 +275,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../messenger/" class="md-nav__link">
       Configurer Messenger
@@ -270,6 +286,7 @@
           
           
           
+
 
   
 
@@ -364,6 +381,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../plateforme/" class="md-nav__link">
       Déployer avec Docker
@@ -381,9 +399,12 @@
       
 
 
+
+  
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" >
     
     <label class="md-nav__link" for="nav-4">
       Utiliser Tock
@@ -402,6 +423,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../user/concepts/" class="md-nav__link">
       Concepts
@@ -414,9 +436,12 @@
           
 
 
+
+  
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4-2" type="checkbox" id="nav-4-2">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4-2" type="checkbox" id="nav-4-2" >
     
     <label class="md-nav__link" for="nav-4-2">
       Tock Studio
@@ -435,6 +460,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../user/studio/" class="md-nav__link">
       Présentation
@@ -445,6 +471,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -459,6 +486,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../user/studio/nlu/" class="md-nav__link">
       Le menu Language
@@ -469,6 +497,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -483,6 +512,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../user/studio/test/" class="md-nav__link">
       Le menu Test
@@ -493,6 +523,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -507,6 +538,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../user/studio/nlu-qa/" class="md-nav__link">
       Le menu Quality
@@ -517,6 +549,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -536,9 +569,12 @@
           
 
 
+
+  
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4-3" type="checkbox" id="nav-4-3">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4-3" type="checkbox" id="nav-4-3" >
     
     <label class="md-nav__link" for="nav-4-3">
       Guides
@@ -557,6 +593,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../user/guides/build-model/" class="md-nav__link">
       Construire un modèle conversationnel
@@ -569,6 +606,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../user/guides/canaux/" class="md-nav__link">
       Bot multicanal
@@ -579,6 +617,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -603,9 +642,12 @@
       
 
 
+
+  
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5" >
     
     <label class="md-nav__link" for="nav-5">
       Développer avec Tock
@@ -624,6 +666,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../dev/modes/" class="md-nav__link">
       Modes disponibles
@@ -634,6 +677,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -648,6 +692,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../dev/bot-integre/" class="md-nav__link">
       Tock Bot intégré
@@ -658,6 +703,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -672,6 +718,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../dev/connecteurs/" class="md-nav__link">
       Connecteurs
@@ -682,6 +729,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -696,6 +744,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../dev/api/" class="md-nav__link">
       Liste des APIs
@@ -706,6 +755,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -725,9 +775,12 @@
       
 
 
+
+  
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6" >
     
     <label class="md-nav__link" for="nav-6">
       Administrer Tock
@@ -746,6 +799,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../admin/architecture/" class="md-nav__link">
       Architecture
@@ -756,6 +810,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -770,6 +825,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../admin/securite/" class="md-nav__link">
       Sécurité
@@ -780,6 +836,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -794,6 +851,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../admin/supervision/" class="md-nav__link">
       Supervision
@@ -804,6 +862,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -823,9 +882,12 @@
       
 
 
+
+  
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-7" type="checkbox" id="nav-7">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-7" type="checkbox" id="nav-7" >
     
     <label class="md-nav__link" for="nav-7">
       A propos
@@ -844,6 +906,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../apropos/pourquoi/" class="md-nav__link">
       Pourquoi Tock
@@ -854,6 +917,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -868,6 +932,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../apropos/recompenses/" class="md-nav__link">
       Prix et récompenses
@@ -878,6 +943,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -892,6 +958,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../apropos/contact/" class="md-nav__link">
       Nous contacter
@@ -902,6 +969,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -916,6 +984,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../../apropos/contribuer/" class="md-nav__link">
       Contribuer
@@ -926,6 +995,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -945,6 +1015,7 @@
       
 
 
+
   <li class="md-nav__item">
     <a href="https://theopenconversationkit.github.io/tock/en-dark/" class="md-nav__link">
       🇫🇷 🇬🇧
@@ -957,6 +1028,7 @@
       
 
 
+
   <li class="md-nav__item">
     <a href="https://theopenconversationkit.github.io/tock/fr/" class="md-nav__link">
       Mode clair
@@ -967,6 +1039,7 @@
       
       
       
+
 
 
   <li class="md-nav__item">
@@ -983,7 +1056,8 @@
               </div>
             
             
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc" >
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
@@ -1194,7 +1268,6 @@ la dépendance <code>tock-bot-api-websocket</code> incluse :</p>
     <span class="nt">&lt;/build&gt;</span>
 <span class="nt">&lt;/project&gt;</span>
 </code></pre></div>
-
 <blockquote>
 <p>Vous pouvez retrouver ce code et d'autres exemples dans le dépôt <a href="https://github.com/theopenconversationkit/tock-bot-samples">tock-bot-samples</a>.</p>
 </blockquote>
@@ -1223,7 +1296,6 @@ la dépendance <code>tock-bot-api-websocket</code> incluse :</p>
     <span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
-
 <blockquote>
 <p>Vous pouvez retrouver ce code (et d'autres exemples) dans le dépôt <a href="https://github.com/theopenconversationkit/tock-bot-samples">tock-bot-samples</a>.</p>
 </blockquote>
@@ -1239,7 +1311,6 @@ de log ressemblant à celle-ci :</p>
 </ul>
 <div class="highlight"><pre><span></span><code>[main] INFO  ai.tock.bot.api.websocket.BotApiWebSocketClient - start web socket client: {...}
 </code></pre></div>
-
 <blockquote>
 <p>Vérifiez éventuellement que d'autres logs provenant de <code>BotApiWebSocketClient</code> n'indiquent pas d'erreur. Si c'est le cas,
 il peut s'agir d'une erreur de configuration de la clef d'API.</p>
@@ -1317,7 +1388,7 @@ modes de déploiement, les types de messages supportés par Tock, etc. vous pouv
 <div class="md-source-date">
   <small>
     
-      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">1 décembre 2020</span>
+      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">18 février 2021</span>
     
   </small>
 </div>
@@ -1392,15 +1463,15 @@ modes de déploiement, les types de messages supportés par Tock, etc. vous pouv
       
     </div>
     
-      <script src="../../assets/javascripts/vendor.7e0ee788.min.js"></script>
-      <script src="../../assets/javascripts/bundle.c1ccee15.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copier dans le presse-papier", "clipboard.copied": "Copi\u00e9 dans le presse-papier", "search.config.lang": "fr", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Rechercher", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      <script src="../../assets/javascripts/vendor.93c04032.min.js"></script>
+      <script src="../../assets/javascripts/bundle.83e5331e.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copier dans le presse-papier", "clipboard.copied": "Copi\u00e9 dans le presse-papier", "search.config.lang": "fr", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Rechercher", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
       
       <script>
         app = initialize({
           base: "../..",
           features: ['tabs', 'instant'],
           search: Object.assign({
-            worker: "../../assets/javascripts/worker/search.4ac00218.min.js"
+            worker: "../../assets/javascripts/worker/search.8c7e0a7e.min.js"
           }, typeof search !== "undefined" && search)
         })
       </script>
