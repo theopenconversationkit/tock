@@ -1,19 +1,21 @@
 # User showcase
 
-Since its creation for [OUI.sncf](https://en.oui.sncf/en/) in 2016 to the French 
+From its creation for [OUI.sncf](https://en.oui.sncf/en/) in 2016 to the French 
 _[AlloCovid](https://www.allocovid.com/)_ service in 2020, Tock has been used by 
-more and more teams (including [SNCF](https://www.sncf.com/) but not only) to 
-build conversational bots dedicated to various use cases :
+more and more teams and organizations to build conversational bots and services for various use cases :
 
-* _business to customer_ and _business to business_ 
-* e-commerce, transactions, payment
-* assistance, care, help desks
-* FAQ and decision trees
+* healthcare, transport, energy, e-commerce examples
+* _business to customer_ as well as _business to business_ 
+* FAQ and _"0 code"_ decision trees
+* assistance, selfcare and live chat compatible
+* text & voice channels: Web & mobile, messaging, smart devices, telephone services
 
 This page presents various assistants and products built and powered by Tock,
 some of them [awarded](awards.md) by the community.
 
-## _AlloCovid_
+## Healthcare
+
+### _AlloCovid_
 
 The _[AlloCovid](https://www.allocovid.com/)_ conversational service informs and guides French population 
 about the Covid-19.
@@ -40,7 +42,9 @@ style="text-align: center;">
 * **Field:** health information and guidance
 * **Channels:** text & voice, by phone, on WhatsApp and Website
 
-## _OUIbot_, the OUI.sncf bot
+## Transport & e-commerce
+
+### _OUIbot_, the OUI.sncf bot
 
 _[OUIbot](https://www.oui.sncf/services/assistant)_ is the conversational assistant from OUI.sncf. Available since 2016 
 on Facebook Messenger, _OUIbot_ was built along with the first versions of Tock.
@@ -67,7 +71,118 @@ style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.
 * **Channels:** text & voice, on the company Website, Messenger, WhatsApp, Business Chat (Messages), Google Assistant, 
 Google Home, Alexa, JCDecaux SmartBrics
 
-## _MaxBot_, bank bot for Aumax pour moi
+### _L'Assistant SNCF_
+
+_[L' Assistant SNCF](https://www.sncf.com/fr/itineraire-reservation/informations-trafic/application-sncf)_ is
+the mobile application for SNCF passengers on Android and iOS, covering both trains and other modes of transport.
+
+> With _L' Assistant_ (the SNCF Assistant), you can plan your itinerary, stay informed in real time, buy your transport tickets
+>directly or book a taxi ride. More features are yet to come.
+
+Accessible via the "microphone" in the mobile application, le SNCF Assistant's conversational bot is built with Tock
+plus the speech-to-text Android and iOS functions.
+
+<img alt="SNCF Assistant mobile app"
+src="https://www.sncf.com/sites/default/files/styles/crop_header_edito/public/2019-06/Assistant_incrustation_2B.jpg?h=fba073f2&itok=KVCTbuOc"
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
+
+* **Name:** _[L' Assistant SNCF](https://www.sncf.com/fr/itineraire-reservation/informations-trafic/application-sncf)_
+* **Date of birth:** in production, featuring Tock voice function since 2019
+* **Field:** travel & transport (multi-modal route research, etc.)
+* **Channels:** voice, on the SNCF mobile application for Android and iOS
+
+### _Tilien_, the Transilien chatbot
+
+_[Tilien](https://www.facebook.com/botsncftransilien/)_ is the Transilien chatbot on Messenger.
+
+> Designed as a personal and friendly travel companion, it informs you about upcoming departures, the service status,
+>current and future works, itineraries and much more (route plans, timetables, etc.) on the entire Ile-De-France
+>rail network: Metro, RER, Transilien, Tram.
+
+Powered by Tock, the chatbot is waiting for you on Facebook Messenger.
+
+<img alt="Tilien the Transilien chatbot"
+src="https://i2.wp.com/www.lechotouristique.com/wp-content/uploads/2019/03/sncf.jpg?fit=960%2C640&ssl=1"
+style="width: 500px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
+
+* **Name:** _[Tilien](https://www.facebook.com/botsncftransilien/)_
+* **Date of birth:** in production, since 2018 with Tock
+* **Field:** transport & assistance (route research, route plans, traffic conditions, etc.)
+* **Channels:** text, on Messenger ([_botsncftransilien_](https://www.facebook.com/botsncftransilien/))
+
+### _Mon Assistant TGV INOUI_
+
+_[Mon Assistant](https://www.facebook.com/TGVINOUI/)_ advises customers and travellers of the TGV INOUI brand before,
+during and after their journey.
+
+> The chatbot can tell you all about the service status, train departure platforms, customer seats, onboard services
+>(bar, electrical outlets, etc.). It also allows you to talk with a SNCF agents while remaining in the same conversation.
+
+Located on the _TGV INOUI_ Facebook page and the [WiFi Portal](https://www.sncf.com/en/passenger-offer/tgv-inoui/stay-connected-during-your-journey)
+aboard the train, the assistant is based on Tock and the [`tock-react-kit`](../dev/connectors.md#react).
+
+<img alt="Mon Assistant TGV INOUI"
+src="https://www.thetrainline.com/cmsmedia/cms/10783/tgv-inoui-interieur.jpg?width=500&height=333.5"
+style="width: 500px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
+
+* **Name:** _[Mon Assistant TGV INOUI](https://www.facebook.com/TGVINOUI/)_
+* **Date of birth:** in production since 2019
+* **Field:** assistance & passenger information (dock information, current travel information, on-board services),
+  relay to an agent
+* **Channels:** text, on Messenger ([_TGV INOUI_](https://www.facebook.com/TGVINOUI/)) and the
+  [WiFi Portal](https://www.sncf.com/en/passenger-offer/tgv-inoui/stay-connected-during-your-journey) aboard the train
+
+### _L' Agent virtuel SNCF_
+
+L' _[Agent virtuel SNCF](https://www.facebook.com/SNCFOFFICIEL/)_ (SNCF Virtual Assistant) presents passenger information
+and any disruptions on all trains (TGV, Intercites, TER, Eurostar, etc.) in a conversational manner.
+
+> Query the bot by train number, passenger file, next departures, etc. to get the latest information and traffic status.
+
+Accessible via the SNCF Facebook page, Twitter and [_sncf.com_](https://www.sncf.com/fr/itineraire-reservation/info-trafic/),
+the _Agent virtuel_ leverages Tock and the [`tock-react-kit`](../dev/connectors.md#react).
+
+![L'Agent virtuel SNCF](https://pbs.twimg.com/media/D_HqJrjXYAEOrhE.jpg:large)
+
+* **Name:** _[Agent virtuel SNCF](https://www.facebook.com/SNCFOFFICIEL/)_
+* **Date of birth:** in production since 2019
+* **Field:** travel & transport (traffic situation, works, next departures), relay to an agent
+* **Channels:** text, on [_sncf.com_](https://www.sncf.com/fr/itineraire-reservation/info-trafic/)
+  ([direct link](https://bot.assistant.sncf/)), Messenger ([_SNCFOFFICIEL_](https://www.facebook.com/SNCFOFFICIEL))
+  and Twitter ([_@sncf_](https://twitter.com/SNCF))
+
+## Energy
+
+### _EDF Callbot_
+
+As a _POC (Proof Of Concept)_ to test a use case, a callbot has been created by the _Direction des
+Systèmes d'Informations et du Numérique (DSIN)_ of [EDF (Electricité de France) Commerce](https://www.edf.fr/).
+
+> The callbot is designed to integrate with the contact center solution ([Genesys](https://www.genesys.com))
+> in order to route customer calls toward the right skill, either human or automated.  
+> It also forwards the conversation context between the customer and the callbot
+> to the advisor.
+
+The callbot is powered by Tock using the [_Allo-Media connector_](../dev/connectors.md#allo-media).
+The _Speech-To-Text (STT)_ solution is [Allo-Media](https://www.allo-media.net/), and the _Text-To-Speech (TTS)_
+is [Voxygen](https://www.voxygen.fr/).
+
+<img alt="EDF"
+src="https://upload.wikimedia.org/wikipedia/commons/1/12/%C3%89lectricit%C3%A9_de_France_logo.svg"
+style="text-align: center; width: 400px;">
+
+* **Name:** _EDF Callbot_
+* **Date of birth:** January 2021
+* **Field:** Customer Service / Contact Center
+* **Channels:** voice, by phone
+
+### _Enedis Chatbots_
+
+See [_Enedis internal Chatbot_](showcase.md#enedis-internal-chatbot) and [_Enedis customer Chatbot_](showcase.md#enedis-chatbots).
+
+## Bank
+
+### _MaxBot_, bank bot for Aumax pour moi
 
 [Aumax pour moi](https://www.aumaxpourmoi.fr/) is an application that allows you to gather your cards in one and only place. Your every day is eased by using only one application and an unique card. To support you every day, Aumax allow you to :
 
@@ -91,7 +206,9 @@ Aumax pour moi takes care and answers up to 5 000 requests a day.
 * **Field:** banking, services, personal assistant
 * **Channels:** text, on the mobile app
 
-## _LinTO by Linagora_
+## Personal Assistants
+
+### _LinTO by Linagora_
 
 The _[LinTO](https://linto.ai/enterprises)_ platform is an Open Source toolbox designed to address professional
 and industry needs by enabling the development and integration of voice operated processes.
@@ -120,7 +237,9 @@ style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.
 * **Field:** Smart Business Assistant (agenda, e-mails, notetaking, etc.)
 * **Channels:** voice (portability: Raspberry Pi, ARM, Android, Web...)
 
-## _Enedis internal Chatbot_
+## Internal Bots
+
+### _Enedis internal Chatbot_
 
 The _[Enedis](https://www.enedis.fr/) internal Chatbot_ gives the 39 000 employees a simplified means to 
 access the company logistics services.
@@ -138,113 +257,10 @@ Built with Tock, the chatbot is available on an internal company Website.
 * **Field:** internal logistics services
 * **Channels:** text, on an internal Website
 
-## _EDF Callbot_
 
-As a _POC (Proof Of Concept)_ to test a use case, a callbot has been created by the _Direction des
-Systèmes d'Informations et du Numérique (DSIN)_ of [EDF (Electricité de France) Commerce](https://www.edf.fr/).
+### _Eve_, a versatile internal assistant (SNCF)
 
-> The callbot is designed to integrate with the contact center solution ([Genesys](https://www.genesys.com)) 
-> in order to route customer calls toward the right skill, either human or automated.  
-> It also forwards the conversation context between the customer and the callbot
-> to the advisor.
-
-The callbot is powered by Tock using the [_Allo-Media connector_](../dev/connectors.md#allo-media).
-The _Speech-To-Text (STT)_ solution is [Allo-Media](https://www.allo-media.net/), and the _Text-To-Speech (TTS)_ 
-is [Voxygen](https://www.voxygen.fr/).
-
-<img alt="EDF"
-src="https://upload.wikimedia.org/wikipedia/commons/1/12/%C3%89lectricit%C3%A9_de_France_logo.svg"
-style="text-align: center; width: 400px;">
-
-* **Name:** _EDF Callbot_
-* **Date of birth:** January 2021
-* **Field:** Customer Service / Contact Center
-* **Channels:** voice, by phone
-
-
-## _L'Assistant SNCF_
-
-_[L' Assistant SNCF](https://www.sncf.com/fr/itineraire-reservation/informations-trafic/application-sncf)_ is 
-the mobile application for SNCF passengers on Android and iOS, covering both trains and other modes of transport.
-
-> With _L' Assistant_ (the SNCF Assistant), you can plan your itinerary, stay informed in real time, buy your transport tickets
->directly or book a taxi ride. More features are yet to come.
-
-Accessible via the "microphone" in the mobile application, le SNCF Assistant's conversational bot is built with Tock
-  plus the speech-to-text Android and iOS functions.
-
-<img alt="SNCF Assistant mobile app" 
-src="https://www.sncf.com/sites/default/files/styles/crop_header_edito/public/2019-06/Assistant_incrustation_2B.jpg?h=fba073f2&itok=KVCTbuOc" 
-style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
-
-* **Name:** _[L' Assistant SNCF](https://www.sncf.com/fr/itineraire-reservation/informations-trafic/application-sncf)_
-* **Date of birth:** in production, featuring Tock voice function since 2019
-* **Field:** travel & transport (multi-modal route research, etc.)
-* **Channels:** voice, on the SNCF mobile application for Android and iOS
-
-## _Tilien_, the Transilien chatbot
-
-_[Tilien](https://www.facebook.com/botsncftransilien/)_ is the Transilien chatbot on Messenger.
-
-> Designed as a personal and friendly travel companion, it informs you about upcoming departures, the service status, 
->current and future works, itineraries and much more (route plans, timetables, etc.) on the entire Ile-De-France 
->rail network: Metro, RER, Transilien, Tram.
-
-Powered by Tock, the chatbot is waiting for you on Facebook Messenger.
-
-<img alt="Tilien the Transilien chatbot" 
-src="https://i2.wp.com/www.lechotouristique.com/wp-content/uploads/2019/03/sncf.jpg?fit=960%2C640&ssl=1" 
-style="width: 500px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
-
-* **Name:** _[Tilien](https://www.facebook.com/botsncftransilien/)_
-* **Date of birth:** in production, since 2018 with Tock
-* **Field:** transport & assistance (route research, route plans, traffic conditions, etc.)
-* **Channels:** text, on Messenger ([_botsncftransilien_](https://www.facebook.com/botsncftransilien/))
-
-## _Mon Assistant TGV INOUI_
-
-_[Mon Assistant](https://www.facebook.com/TGVINOUI/)_ advises customers and travellers of the TGV INOUI brand before, 
-during and after their journey.
-
-> The chatbot can tell you all about the service status, train departure platforms, customer seats, onboard services 
->(bar, electrical outlets, etc.). It also allows you to talk with a SNCF agents while remaining in the same conversation.
-
-Located on the _TGV INOUI_ Facebook page and the [WiFi Portal](https://www.sncf.com/en/passenger-offer/tgv-inoui/stay-connected-during-your-journey) 
-aboard the train, the assistant is based on Tock and the [`tock-react-kit`](../dev/connectors.md#react).
-
-<img alt="Mon Assistant TGV INOUI" 
-src="https://www.thetrainline.com/cmsmedia/cms/10783/tgv-inoui-interieur.jpg?width=500&height=333.5" 
-style="width: 500px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
-
-* **Name:** _[Mon Assistant TGV INOUI](https://www.facebook.com/TGVINOUI/)_
-* **Date of birth:** in production since 2019
-* **Field:** assistance & passenger information (dock information, current travel information, on-board services), 
-relay to an agent
-* **Channels:** text, on Messenger ([_TGV INOUI_](https://www.facebook.com/TGVINOUI/)) and the 
-[WiFi Portal](https://www.sncf.com/en/passenger-offer/tgv-inoui/stay-connected-during-your-journey) aboard the train
-
-## _L' Agent virtuel SNCF_
-
-L' _[Agent virtuel SNCF](https://www.facebook.com/SNCFOFFICIEL/)_ (SNCF Virtual Assistant) presents passenger information 
-and any disruptions on all trains (TGV, Intercites, TER, Eurostar, etc.) in a conversational manner.
-
-> Query the bot by train number, passenger file, next departures, etc. to get the latest information and traffic status.
-
-Accessible via the SNCF Facebook page, Twitter and [_sncf.com_](https://www.sncf.com/fr/itineraire-reservation/info-trafic/), 
-the _Agent virtuel_ leverages Tock and the [`tock-react-kit`](../dev/connectors.md#react).
-
-![L'Agent virtuel SNCF](https://pbs.twimg.com/media/D_HqJrjXYAEOrhE.jpg:large)
-
-* **Name:** _[Agent virtuel SNCF](https://www.facebook.com/SNCFOFFICIEL/)_
-* **Date of birth:** in production since 2019
-* **Field:** travel & transport (traffic situation, works, next departures), relay to an agent
-* **Channels:** text, on [_sncf.com_](https://www.sncf.com/fr/itineraire-reservation/info-trafic/) 
-([direct link](https://bot.assistant.sncf/)), Messenger ([_SNCFOFFICIEL_](https://www.facebook.com/SNCFOFFICIEL))
-and Twitter ([_@sncf_](https://twitter.com/SNCF))
-
-## _Eve_, the e-voyageurs internal assistant
-
-_Eve_ is the internal assistant of [e-voyageurs SNCF](https://www.sncf.com/fr/groupe/newsroom/e-voyageurs-sncf) employees.
+_Eve_ is the internal assistant of [e.Voyageurs SNCF](https://www.sncf.com/fr/groupe/newsroom/e-voyageurs-sncf) employees.
 
 > The chatbot answers common questions, refers to the right interlocutors and collaborative tools of the company, 
 >automates common requests to IT Support, General Services, Legal Department, etc. DevOps teams can also ask it for 
@@ -259,7 +275,7 @@ _Eve_ is always listening to the employees, both within the offices and on-the-g
 deployments, production management, etc.)
 * **Channels:** text & voice, internally within the offices and on-the-go via Teams
 
-## _RocBOT_, an Ops assistant
+### _RocBOT_, an Ops assistant (SNCF)
 
 _RocBOT_ is dedicated to Ops teams at SNCF DEA, available at the office and on-the-go through Teams applications.
 
@@ -281,7 +297,35 @@ style="width: 300px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rg
 * **Field:** internal ops management & support (FAQ, Ops Support, ITSM, etc.)
 * **Channels:** text & voice, internally within the offices and on-the-go via Teams
 
-## Other Tock bots...
+## Other
+
+### _Toki_, the bot to discover Tock
+
+_Toki_ helps everyone willing to discover and use Tock. It answers frequently asked questions and keeps learning,
+in particular from the [Tock community on Gitter](https://gitter.im/tockchat/Lobby).
+
+> _How to create a first bot?  
+> How to install Tock?  
+> Where to find the sources or licence?..._  
+> Do not hesitate to ask _Toki_. When it doesn't know (yet), try again a few days later ;).  
+> Currently _Toki_ speaks only French, but English is coming!
+
+The chatbot has been built with "0 code", leveraging _Tock Studio_. As much a demo bot as a tool for the 
+community, _Toki_ lives on the [public demo platform](https://demo.tock.ai/),
+leverages the Tock-provided [_Web connector_](../user/guides/canaux.md#web-generique) and 
+[_React kit_](../user/guides/canaux.md#react) to integrate with the [Website](https://doc.tock.ai/fr/) (with several 
+lines of HTML/JS/CSS).
+
+<img alt="Toki the bot about Tock"
+src="https://doc.tock.ai/fr/images/doc/tockbot_032021.jpg"
+style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
+
+* **Name:** _Toki_
+* **Date of birth:** in production since 2021
+* **Field:** community support & FAQ
+* **Channels:** text, on the solution [Website](https://doc.tock.ai/fr/)
+
+## What about you?
 
 Various organizations already leverage Tock to build conversational agents, which are not mentionned here 
 (among them, several of the [TOSIT](http://tosit.fr/) companies). 
@@ -291,8 +335,6 @@ about them. We will mention them here when it is possible ;)
 Do not hesitate to look at the [Gitter](https://gitter.im/tockchat/Lobby) 
 community chat to see professionals, students, large and smaller companies
  currently using or experimenting with Tock for their conversational or _NLU_ projects.
-
-## What about you?
 
 As a generic platform, Tock enables numerous use cases and integration of internal as well as external channels.
 Please feel free to [contact us](contact.md) in case of doubts or questions about Tock features or possibilities for a new project 
