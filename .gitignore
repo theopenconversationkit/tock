@@ -26,6 +26,9 @@ environment.dev.ts
 !.vscode/launch.json
 !.vscode/extensions.json
 
+# IDE - VSCode Local History extension
+.history/*
+
 #System Files
 .DS_Store
 Thumbs.db
