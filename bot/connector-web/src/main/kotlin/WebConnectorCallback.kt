@@ -31,7 +31,8 @@ internal class WebConnectorCallback(
     val locale: Locale,
     private val context: RoutingContext,
     private val actions: MutableList<Action> = CopyOnWriteArrayList(),
-    private val webMapper: ObjectMapper
+    private val webMapper: ObjectMapper,
+    private val eventId: String
 ) : ConnectorCallbackBase(applicationId, webConnectorType) {
 
     private val logger = KotlinLogging.logger {}
@@ -41,6 +42,7 @@ internal class WebConnectorCallback(
     }
 
     fun sendResponse() {
+        WebRequestInfosByEvent.invalidate(eventId)
         val messages = actions
             .filterIsInstance<SendSentence>()
             .mapNotNull {

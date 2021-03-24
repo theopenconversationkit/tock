@@ -63,8 +63,8 @@ import io.vertx.core.http.HttpMethod
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.CorsHandler
-import java.time.Duration
 import mu.KotlinLogging
+import java.time.Duration
 
 internal const val WEB_CONNECTOR_ID = "web"
 
@@ -170,13 +170,16 @@ class WebConnector internal constructor(
         try {
             logger.debug { "Web request input : $body" }
             val request: WebConnectorRequest = mapper.readValue(body)
+            val event = request.toEvent(applicationId)
+            WebRequestInfosByEvent.put(event.id.toString(), WebRequestInfos(context.request()))
             val callback = WebConnectorCallback(
                 applicationId = applicationId,
                 locale = request.locale,
                 context = context,
-                webMapper = webMapper
+                webMapper = webMapper,
+                eventId = event.id.toString()
             )
-            controller.handle(request.toEvent(applicationId), ConnectorData(callback))
+            controller.handle(event, ConnectorData(callback))
         } catch (t: Throwable) {
             BotRepository.requestTimer.throwable(t, timerData)
             context.fail(t)
