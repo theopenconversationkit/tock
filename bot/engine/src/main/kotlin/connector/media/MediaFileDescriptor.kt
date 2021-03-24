@@ -28,11 +28,12 @@ data class MediaFileDescriptor(
     val suffix: String,
     val name: String,
     val id: String = Dice.newId(),
-    val type: AttachmentType = UploadedFilesService.attachmentType(suffix)
+    val type: AttachmentType = UploadedFilesService.attachmentType(suffix),
+    val externalUrl: String? = null
 ) {
     /**
      * Creates a [MediaMessage] for the specified [BotBus].
      */
     fun toMessage(bus: BotBus): MediaFile =
-        MediaFile(UploadedFilesService.botFilePath(bus, id, suffix), name, type)
+        MediaFile(externalUrl ?: UploadedFilesService.botFilePath(bus, id, suffix), name, type)
 }

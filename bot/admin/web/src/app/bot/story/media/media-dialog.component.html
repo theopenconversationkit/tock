@@ -27,15 +27,24 @@
     <!-- File -->
     <p *ngIf="media.file">
       File:
-      <a href="{{rest.url}}/file/{{media.file.id}}.{{media.file.suffix}}" target="_blank">{{media.file.name}}</a>
-      <img *ngIf="media.file.isImage()" class="image" src="{{rest.url}}/file/{{media.file.id}}.{{media.file.suffix}}"/>
-      <button (click)="media.file = null" mat-icon-button color="warn">
+      <a href="{{media.file.url(rest.url)}}" target="_blank">{{media.file.name}}</a>
+      <img *ngIf="media.file.isImage()" class="image" src="{{media.file.url(rest.url)}}"/>
+      <button (click)="media.file = null;fileUpload = 'upload';" mat-icon-button color="warn">
         <mat-icon>remove</mat-icon>
       </button>
     </p>
     <p *ngIf="!media.file">
-      <label for="file" matTooltip="Could be an image, a video or a binary file">File: </label>
-      <input id="file" type="file" ng2FileSelect [uploader]="uploader" class="file"/>
+      <nb-radio-group (valueChange)="fileTypeChange($event)">
+        <nb-radio value="upload" [checked]="true" class="inline-radio" nbTooltip="Could be an image, a video or a binary file">File Upload</nb-radio>
+        <nb-radio value="url" class="inline-radio" nbTooltip="Could be an image, a video or a binary file">External URL</nb-radio>
+      </nb-radio-group>
+    <span *ngIf="fileUpload === 'upload'" class="file-block">
+      <input type="file" ng2FileSelect [uploader]="uploader" class="file"/>
+    </span>
+    <span *ngIf="fileUpload === 'url'" class="file-block">
+      <input nbInput type="text" name="url" [fullWidth]="true" fieldSize="small"
+             placeholder="External URL" [(ngModel)]="fileExternalUrl" (blur)="checkFileName()"/>
+    </span>
     </p>
     <!-- subTitle -->
     <mat-form-field>

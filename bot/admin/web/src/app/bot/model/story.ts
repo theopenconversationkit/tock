@@ -767,8 +767,33 @@ export class MediaFile {
     public suffix: string,
     public name: string,
     public id: string,
-    public type: AttachmentType
+    public type: AttachmentType,
+    public externalUrl?: string
   ) {
+  }
+
+  url(baseUrl: string): String {
+    return this.externalUrl ? this.externalUrl : `${baseUrl}/file/${this.id}.${this.suffix}`;
+  }
+
+  static attachmentType(suffix: string): AttachmentType {
+    switch (suffix) {
+      case "png":
+      case "jpg":
+      case  "jpeg":
+      case  "svg":
+      case "gif":
+        return AttachmentType.image;
+      case "ogg":
+      case "mp3":
+      case "oga":
+        return AttachmentType.audio;
+      case "ogv":
+      case "mp4":
+        return AttachmentType.video;
+      default:
+        return AttachmentType.file;
+    }
   }
 
   static fromJSON(json: any): MediaFile {

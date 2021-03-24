@@ -70,3 +70,11 @@
   margin-left: 10px;
   font-size: x-small;
 }
+
+.inline-radio {
+  display: inline!important;
+}
+
+.file-block {
+  display: block;
+}

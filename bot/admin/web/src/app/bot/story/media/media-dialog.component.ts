@@ -15,7 +15,7 @@
  */
 
 import {Component, ElementRef, Inject, ViewChild} from "@angular/core";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {MediaAction, MediaCard, MediaFile} from "../../model/story";
 import {CreateI18nLabelRequest} from "../../model/i18n";
 import {BotService} from "../../bot-service";
@@ -34,6 +34,8 @@ export class MediaDialogComponent {
   media: MediaCard;
   create: boolean;
   category: string;
+  fileUpload: string = "upload";
+  fileExternalUrl: string;
 
   uploader: FileUploader;
 
@@ -58,7 +60,7 @@ export class MediaDialogComponent {
 
     this.media.actions.forEach(a => a.titleLabel = a.title.defaultLocalizedLabelForLocale(this.state.currentLocale).label);
 
-    this.uploader = new FileUploader({removeAfterUpload: true, autoUpload:true});
+    this.uploader = new FileUploader({removeAfterUpload: true, autoUpload: true});
     this.uploader.onCompleteItem =
       (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
         this.media.file = MediaFile.fromJSON(JSON.parse(response));
@@ -77,13 +79,34 @@ export class MediaDialogComponent {
   }
 
   private isFile() {
-    return this.media.file && this.media.file != null;
+    return this.media.file;
+  }
+
+  fileTypeChange(type) {
+    this.fileUpload = type;
+    if (type === 'upload') {
+      this.fileExternalUrl = null;
+      this.media.file = null;
+    }
+  }
+
+  checkFileName() {
+    const url = this.fileExternalUrl?.trim();
+    if (url && url.length !== 0 && url.indexOf('.') !== -1) {
+      const suffix = url.substring(url.lastIndexOf('.') + 1);
+      this.media.file = new MediaFile(suffix, url, url, MediaFile.attachmentType(suffix), url);
+    } else {
+      this.media.file = null;
+    }
+    this.fileExternalUrl = null;
   }
 
   save() {
-
     if (!this.isTitle() && !this.isSubtitle() && !this.isFile()) {
-      this.toastrService.show(`Please add a Title, Subtitle or File.`, "Media Message is not complete", {duration: 3000, status: "warning"});
+      this.toastrService.show(`Please add a Title, Subtitle or File.`, "Media Message is not complete", {
+        duration: 3000,
+        status: "warning"
+      });
 
     } else {
       if (this.isTitle()) {
