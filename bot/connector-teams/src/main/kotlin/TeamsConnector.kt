@@ -44,7 +44,9 @@ import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.monitoring.logError
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
+import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.shared.Executor
+import ai.tock.shared.defaultLocale
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
@@ -54,6 +56,7 @@ import com.microsoft.bot.schema.models.Activity
 import com.microsoft.bot.schema.models.ActivityTypes
 import mu.KotlinLogging
 import java.time.Duration
+import java.util.Locale
 import kotlin.system.measureTimeMillis
 
 /**
@@ -109,22 +112,18 @@ internal class TeamsConnector(
                             activity
                         )
                         executor.executeBlocking {
-                            val e: Event? = SendSentence(
+                            val e = SendSentence(
                                 PlayerId(activity.from().id()),
                                 connectorId,
                                 PlayerId(connectorId, PlayerType.bot),
                                 activity.text()
                             )
-                            if (e != null) {
-                                controller.handle(
-                                    e,
-                                    ConnectorData(
-                                        TeamsConnectorCallback(connectorId, activity)
-                                    )
+                            controller.handle(
+                                e,
+                                ConnectorData(
+                                    TeamsConnectorCallback(connectorId, activity)
                                 )
-                            } else {
-                                logger.warn { "null event for $body" }
-                            }
+                            )
                         }
                     } catch (e: ForbiddenException) {
                         context.fail(403)
@@ -150,6 +149,27 @@ internal class TeamsConnector(
         }
     }
 
+    override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences {
+        return when (callback) {
+            is TeamsConnectorCallback -> UserPreferences().apply { locale = locale(callback.activity.locale()) }
+            else -> UserPreferences()
+        }
+    }
+
+    override fun refreshProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences? {
+        return when (callback) {
+            is TeamsConnectorCallback -> UserPreferences().apply { locale = locale(callback.activity.locale()) }
+            else -> null
+        }
+    }
+
+    private fun locale(code: String?): Locale = try {
+        Locale.forLanguageTag(code)
+    } catch (e: Exception) {
+        logger.error(e)
+        defaultLocale
+    }
+
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
         if (event is SendSentence && callback is TeamsConnectorCallback) {
 
@@ -166,7 +186,10 @@ internal class TeamsConnector(
         teamsMessageWithButtonCard(text, suggestions.map { nlpCardAction(it) })
     }
 
-    override fun addSuggestions(message: ConnectorMessage, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
+    override fun addSuggestions(
+        message: ConnectorMessage,
+        suggestions: List<CharSequence>
+    ): BotBus.() -> ConnectorMessage? = {
         //TODO support complex cards
         message
     }
@@ -196,7 +219,9 @@ internal class TeamsConnector(
             is MediaCarousel -> {
                 listOf(
                     teamsCarousel(
-                        message.cards.mapNotNull { toConnectorMessage(it).invoke(this).firstOrNull() as? TeamsBotMessage }
+                        message.cards.mapNotNull {
+                            toConnectorMessage(it).invoke(this).firstOrNull() as? TeamsBotMessage
+                        }
                     )
                 )
             }
