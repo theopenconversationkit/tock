@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (C) 2017/2020 e-voyageurs technologies
+  ~ Copyright (C) 2017/2021 e-voyageurs technologies
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -19,19 +19,19 @@
     <p *ngIf="error" class="error">
       {{error}}
     </p>
-  
+
     <p>
       <label>Select existing Entity:</label><br>
-  
+
       <mat-chip-list *ngIf="entityTypes">
         <mat-chip *ngFor="let e of entityTypes" matTooltip="Select {{e.qualifiedName(state.user)}}" selected="{{e === entityType}}" (click)="onSelect(e)" [style.background-color]="e === entityType ? '' : e.qualifiedEntityColor(state.user)" color="primary">
           {{e.qualifiedName(state.user)}}
         </mat-chip>
       </mat-chip-list>
     </p>
-  
-      
-  
+
+
+
       <div class="form-group">
         <span>Or create: </span>
         <input cdkFocusInitial nbInput placeholder="Entity Type" [(ngModel)]="type" (keyup)="onTypeKeyUp($event)"/>

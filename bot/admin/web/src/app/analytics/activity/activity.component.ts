@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017/2021 e-voyageurs technologies
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { Component, OnInit } from '@angular/core';
 import * as html2pdf from 'html2pdf.js';
 import { StateService } from 'src/app/core-nlp/state.service';
@@ -188,7 +204,7 @@ export class ActivityComponent implements OnInit {
         this.messagesByTypeData = result;
         this.messagesByTypeLoading = false;
         this.currentFilterNbMessages = this.getTotalNumber(result.usersData)
-        
+
         this.analytics.messagesAnalytics(this.buildPreviousDateSearchQuery(this.getNumberOfDays())).subscribe(
           result => {
             this.beforeCurrentFilterNbMessages = this.getTotalNumber(result.usersData);
@@ -209,7 +225,7 @@ export class ActivityComponent implements OnInit {
         this.activeUsersData = result;
         this.activeUsersLoading = false;
         this.currentFilterNbUsers = this.getTotalNumber(result.usersData)
-        
+
         this.analytics.usersAnalytics(this.buildPreviousDateSearchQuery(this.getNumberOfDays())).subscribe(
           result => {
             this.beforeCurrentFilterNbUsers = this.getTotalNumber(result.usersData);

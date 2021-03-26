@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (C) 2017/2020 e-voyageurs technologies
+  ~ Copyright (C) 2017/2021 e-voyageurs technologies
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
   <nb-card>
     <nb-card-body style="padding: 2rem 5.5rem;">
-  
+
       <nb-stepper #stepper [linear]="true">
-  
+
         <nb-step [stepControl]="languageForm" label="Choose your language" >
           <form #languageForm="ngForm" [formGroup]="firstFormGroup" class="step-container">
             <div class="input-group group-margin-top">
@@ -32,7 +32,7 @@
             </div>
           </form>
         </nb-step>
-  
+
         <nb-step [stepControl]="channelForm" label="Select a first Channel">
           <form #channelForm="ngForm" [formGroup]="secondFormGroup">
             <div class="input-group group-margin-top">
@@ -52,7 +52,7 @@
             </div>
           </form>
         </nb-step>
-  
+
         <nb-step [stepControl]="somethingForm" label="Create your Assistant" >
           <form #somethingForm="ngForm" class="step-container">
             <div class="input-group group-margin-top">

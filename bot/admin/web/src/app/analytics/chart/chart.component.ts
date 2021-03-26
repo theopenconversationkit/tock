@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2020 e-voyageurs technologies
+ * Copyright (C) 2017/2021 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -306,10 +306,10 @@ export class ChartComponent implements OnChanges {
   isAreaChart(area){
     if(area) {
       return {}
-    } 
+    }
     return null
   }
-  
+
 
   buildPieChart(result: UserAnalyticsQueryResult, chartType?: string, width?: string) {
     let series = result.connectorsType;
@@ -440,7 +440,7 @@ export class ChartComponent implements OnChanges {
     }
     if(this.mainChart.type == 'PieChart'){
       this.mainChart.data.forEach(function (data, index) {
-        
+
           csv += (data as unknown as GraphInfo).value;
           if (index + 1 < columnsNumber) {
             csv += ',';
@@ -458,7 +458,7 @@ export class ChartComponent implements OnChanges {
         csv += '\n';
       })
     }
-    
+
     const blob = new Blob([csv], {type: 'text/csv'});
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
