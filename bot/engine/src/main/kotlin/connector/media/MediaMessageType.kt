@@ -33,5 +33,4 @@ enum class MediaMessageType {
      * Type of [MediaCarousel].
      */
     carousel
-
 }

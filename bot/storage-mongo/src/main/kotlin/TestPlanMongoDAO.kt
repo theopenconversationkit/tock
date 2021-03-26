@@ -19,16 +19,15 @@ package ai.tock.bot.mongo
 import ai.tock.bot.admin.test.TestPlan
 import ai.tock.bot.admin.test.TestPlanDAO
 import ai.tock.bot.admin.test.TestPlanExecution
-import ai.tock.bot.admin.test.TestPlanExecutionStatus
 import ai.tock.bot.admin.test.TestPlanExecution_.Companion.Date
 import ai.tock.bot.admin.test.TestPlanExecution_.Companion.TestPlanId
 import ai.tock.bot.admin.test.TestPlan_.Companion.ApplicationId
 import ai.tock.bot.admin.test.TestPlan_.Companion.Name
+import ai.tock.shared.ensureIndex
 import org.litote.kmongo.Id
 import org.litote.kmongo.ascendingSort
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.descendingSort
-import ai.tock.shared.ensureIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection

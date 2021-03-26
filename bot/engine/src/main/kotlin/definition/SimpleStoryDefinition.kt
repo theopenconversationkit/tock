@@ -21,24 +21,27 @@ import ai.tock.translator.UserInterfaceType
 /**
  * Simple implementation of [StoryDefinition].
  */
-open class SimpleStoryDefinition(override val id: String,
-                                 override val storyHandler: StoryHandler,
-                                 override val starterIntents: Set<Intent>,
-                                 /**
-                                  * starter intents + other intents supported by the story.
-                                  */
-                                 override val intents: Set<Intent> = starterIntents,
-                                 override val steps: Set<StoryStep<StoryHandlerDefinition>> = emptySet(),
-                                 override val unsupportedUserInterfaces: Set<UserInterfaceType> = emptySet(),
-                                 override val tags: List<StoryTag> = emptyList())
-    : StoryDefinition {
+open class SimpleStoryDefinition(
+    override val id: String,
+    override val storyHandler: StoryHandler,
+    override val starterIntents: Set<Intent>,
+    /**
+     * starter intents + other intents supported by the story.
+     */
+    override val intents: Set<Intent> = starterIntents,
+    override val steps: Set<StoryStep<StoryHandlerDefinition>> = emptySet(),
+    override val unsupportedUserInterfaces: Set<UserInterfaceType> = emptySet(),
+    override val tags: List<StoryTag> = emptyList()
+) :
+    StoryDefinition {
 
-    constructor(id: String,
-                storyHandler: StoryHandler,
-                steps: Array<out StoryStep<StoryHandlerDefinition>> = emptyArray(),
-                starterIntents: Set<IntentAware>,
-                intents: Set<IntentAware> = starterIntents,
-                unsupportedUserInterfaces: Set<UserInterfaceType> = emptySet()
+    constructor(
+        id: String,
+        storyHandler: StoryHandler,
+        steps: Array<out StoryStep<StoryHandlerDefinition>> = emptyArray(),
+        starterIntents: Set<IntentAware>,
+        intents: Set<IntentAware> = starterIntents,
+        unsupportedUserInterfaces: Set<UserInterfaceType> = emptySet()
     ) :
         this(
             id = id,
@@ -48,5 +51,4 @@ open class SimpleStoryDefinition(override val id: String,
             steps = steps.toSet(),
             unsupportedUserInterfaces = unsupportedUserInterfaces
         )
-
 }

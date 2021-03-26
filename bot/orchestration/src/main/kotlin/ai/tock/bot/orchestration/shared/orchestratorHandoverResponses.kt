@@ -16,7 +16,6 @@
 
 package ai.tock.bot.orchestration.shared
 
-
 // i/o between orchestrator and secondary bot
 
 interface OrchestrationResponse
@@ -32,5 +31,5 @@ open class AvailableOrchestrationResponse(
 ) : OrchestrationResponse
 
 open class NoOrchestrationResponse(
-    val status : NoOrchestrationStatus
+    val status: NoOrchestrationStatus
 ) : OrchestrationResponse

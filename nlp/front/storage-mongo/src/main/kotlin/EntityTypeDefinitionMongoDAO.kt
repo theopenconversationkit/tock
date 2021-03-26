@@ -26,6 +26,7 @@ import ai.tock.nlp.front.shared.config.EntityTypeDefinition
 import ai.tock.nlp.front.shared.config.EntityTypeDefinition_.Companion.Name
 import ai.tock.nlp.front.storage.mongo.MongoFrontConfiguration.asyncDatabase
 import ai.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
+import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.name
 import ai.tock.shared.namespace
 import ai.tock.shared.watch
@@ -33,7 +34,6 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.ReplaceOptions
 import mu.KotlinLogging
 import org.litote.kmongo.and
-import ai.tock.shared.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
@@ -114,7 +114,8 @@ internal object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
                 Namespace eq entityTypeName.namespace(),
                 EntityName eq entityTypeName.name()
             ),
-            pullByFilter(Values, Value eq predefinedValue))
+            pullByFilter(Values, Value eq predefinedValue)
+        )
     }
 
     override fun deletePredefinedValueLabelByName(

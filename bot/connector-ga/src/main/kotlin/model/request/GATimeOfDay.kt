@@ -17,9 +17,8 @@
 package ai.tock.bot.connector.ga.model.request
 
 data class GATimeOfDay(
-        val hours: Int,
-        val minutes: Int,
-        val seconds: Int,
-        val nanos: Int) {
-
-}
+    val hours: Int,
+    val minutes: Int,
+    val seconds: Int,
+    val nanos: Int
+)

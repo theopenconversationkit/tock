@@ -17,7 +17,7 @@ interface PrimaryBotOrchestrationEventHandler {
      * @param bus
      * @param orchestration current orchestration
      */
-    fun onStopOrchestration(bus: BotBus, orchestration: Orchestration) : ComeBackFromSecondary
+    fun onStopOrchestration(bus: BotBus, orchestration: Orchestration): ComeBackFromSecondary
 
     /**
      * Event when a Intent in noOrchestrationIntentList (primary bot configuration) is enabled
@@ -25,7 +25,7 @@ interface PrimaryBotOrchestrationEventHandler {
      * @param bus
      * @param orchestration current orchestration
      */
-    fun onNoOrchestration(bus: BotBus, orchestration: Orchestration) : ComeBackFromSecondary
+    fun onNoOrchestration(bus: BotBus, orchestration: Orchestration): ComeBackFromSecondary
 
     /**
      * Event when takeBackOrchestration() (primary bot configuration) is true
@@ -33,5 +33,5 @@ interface PrimaryBotOrchestrationEventHandler {
      * @param bus
      * @param orchestration current orchestration
      */
-    fun onTakeBackOrchestration(bus: BotBus, orchestration: Orchestration) : ComeBackFromSecondary
+    fun onTakeBackOrchestration(bus: BotBus, orchestration: Orchestration): ComeBackFromSecondary
 }

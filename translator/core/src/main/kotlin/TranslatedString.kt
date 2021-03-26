@@ -49,5 +49,4 @@ open class TranslatedString(private val wrapped: CharSequence) : CharSequence by
         logger.warn { "adding a String to a TranslatedSequence is not recommended - please use message format pattern" }
         return TranslatedString(toString() + other.toString())
     }
-
 }

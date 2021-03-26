@@ -23,8 +23,10 @@ import java.time.ZonedDateTime
 /**
  * Date interval definition.
  */
-data class DateIntervalEntityValue(val date: DateEntityValue,
-                                   val toDate: DateEntityValue) : DateEntityRange {
+data class DateIntervalEntityValue(
+    val date: DateEntityValue,
+    val toDate: DateEntityValue
+) : DateEntityRange {
 
     override fun start(): ZonedDateTime {
         return date.date
@@ -38,6 +40,5 @@ data class DateIntervalEntityValue(val date: DateEntityValue,
         return toDate.grain.calculateEnd(toDate.date, zoneId)
     }
 
-    override fun duration(): Duration
-            = Duration.between(date.grain.truncate(start()), toDate.grain.truncate(end(start().zone)))
+    override fun duration(): Duration = Duration.between(date.grain.truncate(start()), toDate.grain.truncate(end(start().zone)))
 }

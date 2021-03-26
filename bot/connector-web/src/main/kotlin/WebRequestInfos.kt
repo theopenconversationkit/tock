@@ -37,6 +37,6 @@ data class WebRequestInfos(
     internal constructor(request: HttpServerRequest) : this(request.headers(), request.cookieMap())
 
     fun firstHeader(name: String): String? = headers.get(name)
-    fun headers(name: String) : List<String> = headers.getAll(name) ?: emptyList()
+    fun headers(name: String): List<String> = headers.getAll(name) ?: emptyList()
     fun firstCookie(name: String): String? = cookies[name]?.value
 }

@@ -19,7 +19,6 @@ package ai.tock.translator.noop
 import ai.tock.translator.TranslatorEngine
 import java.util.Locale
 
-
 /**
  *
  */

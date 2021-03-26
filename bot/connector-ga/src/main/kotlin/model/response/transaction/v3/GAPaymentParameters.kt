@@ -46,7 +46,7 @@ data class GAPaymentMethodStatus(
     val statusMessage: String?
 )
 
-enum class GAPaymentMethodStatusValue{
+enum class GAPaymentMethodStatusValue {
     STATUS_UNSPECIFIED,
     STATUS_OK,
     STATUS_REQUIRE_FIX,

@@ -61,6 +61,6 @@ interface RequestTimer {
      * Called at the end of the request.
      */
     fun end(data: RequestTimerData) {
-        //do nothing by default
+        // do nothing by default
     }
 }

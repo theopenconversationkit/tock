@@ -43,12 +43,13 @@ data class Sentence(
         private val logger = KotlinLogging.logger {}
 
         private fun toGenericMessage(message: ConnectorMessage): GenericMessage =
-            (try {
-                message.toGenericMessage() ?: GenericMessage(message)
-            } catch (t: Throwable) {
-                logger.error(t)
-                GenericMessage(message)
-            }
+            (
+                try {
+                    message.toGenericMessage() ?: GenericMessage(message)
+                } catch (t: Throwable) {
+                    logger.error(t)
+                    GenericMessage(message)
+                }
                 ).copy(connectorType = message.connectorType, connectorMessage = message)
     }
 
@@ -56,14 +57,17 @@ data class Sentence(
         text: String?,
         messages: MutableList<ConnectorMessage> = mutableListOf(),
         userInterface: UserInterfaceType? = null,
-        nlpStatsProvider: (() -> NlpCallStats?)? = null)
-        : this(text, messages.map { toGenericMessage(it) }.toMutableList(), userInterface, 0, nlpStatsProvider)
+        nlpStatsProvider: (() -> NlpCallStats?)? = null
+    ) :
+        this(text, messages.map { toGenericMessage(it) }.toMutableList(), userInterface, 0, nlpStatsProvider)
 
     override val eventType: EventType = EventType.sentence
 
-    override fun toAction(playerId: PlayerId,
-                          applicationId: String,
-                          recipientId: PlayerId): Action {
+    override fun toAction(
+        playerId: PlayerId,
+        applicationId: String,
+        recipientId: PlayerId
+    ): Action {
         return SendSentence(
             playerId,
             applicationId,
@@ -76,7 +80,8 @@ data class Sentence(
                     logger.error(e)
                     null
                 }
-            }.toMutableList())
+            }.toMutableList()
+        )
     }
 
     override fun obfuscate(): Sentence =

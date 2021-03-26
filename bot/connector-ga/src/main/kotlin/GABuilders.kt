@@ -16,7 +16,6 @@
 
 package ai.tock.bot.connector.ga
 
-import emoji4j.EmojiUtils
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.ga.model.GAIntent
@@ -49,6 +48,7 @@ import ai.tock.bot.engine.I18nTranslator
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.translator.UserInterfaceType.textAndVoiceAssistant
 import ai.tock.translator.UserInterfaceType.textChat
+import emoji4j.EmojiUtils
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
@@ -119,11 +119,10 @@ fun I18nTranslator.gaFinalMessage(richResponse: GARichResponse): GAResponseConne
 fun I18nTranslator.gaFinalMessage(text: CharSequence? = null): GAResponseConnectorMessage =
     gaFinalMessage(
         if (text == null)
-        //empty rich response
+        // empty rich response
             richResponse(emptyList())
         else richResponse(text)
     )
-
 
 /**
  * Google Assistant Message with all available parameters.
@@ -159,7 +158,6 @@ fun I18nTranslator.gaMessage(text: CharSequence, vararg suggestions: CharSequenc
  */
 fun I18nTranslator.gaMessage(text: CharSequence, basicCard: GABasicCard): GAResponseConnectorMessage =
     gaMessage(richResponse(listOf(GAItem(simpleResponse(text)), GAItem(basicCard = basicCard))))
-
 
 /**
  * Google Assistant Message with [GARichResponse].
@@ -255,7 +253,6 @@ fun I18nTranslator.item(structuredResponse: GAStructuredResponse): GAItem = item
  */
 fun I18nTranslator.item(simpleResponse: GASimpleResponse): GAItem = item(simpleResponse, null, null)
 
-
 /**
  * Provides a [GAImage] with all available parameters.
  */
@@ -312,7 +309,7 @@ fun <T : Bus<T>> T.optionInfo(
     vararg parameters: Pair<String, String>
 ): GAOptionInfo {
     val t = translate(title)
-    //add the title to the parameters as we need to double check the title in WebhookActionConverter
+    // add the title to the parameters as we need to double check the title in WebhookActionConverter
     val map = parameters.toMap() + (SendChoice.TITLE_PARAMETER to t.toString())
     return GAOptionInfo(
         SendChoice.encodeChoiceId(
@@ -329,7 +326,6 @@ fun <T : Bus<T>> T.optionInfo(
  * The common [GAIntent.text] [GAExpectedIntent].
  */
 fun expectedTextIntent(): GAExpectedIntent = GAExpectedIntent(GAIntent.text)
-
 
 internal fun String.endWithPunctuation(): Boolean =
     endsWith(".") || endsWith("!") || endsWith("?") || endsWith(",") || endsWith(";") || endsWith(":")

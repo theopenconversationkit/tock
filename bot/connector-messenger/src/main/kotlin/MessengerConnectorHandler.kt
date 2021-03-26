@@ -37,7 +37,8 @@ internal class MessengerConnectorHandler(
     val applicationId: String,
     val controller: ConnectorController,
     val request: CallbackRequest,
-    val requestTimerData: RequestTimerData) {
+    val requestTimerData: RequestTimerData
+) {
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -55,7 +56,7 @@ internal class MessengerConnectorHandler(
                     }
                 }
 
-                //retrieve the controller from the page id
+                // retrieve the controller from the page id
                 val c = pageIdConnectorIdMap[pageId]
                     ?.firstOrNull { connectorIdApplicationIdMap[it] == applicationId }
                     ?.let { connectorIdConnectorControllerMap[it] }
@@ -108,7 +109,8 @@ internal class MessengerConnectorHandler(
         applicationId: String,
         webhook: Webhook,
         notifiedOnly: Boolean,
-        threadOwnerRetriever: () -> String?) {
+        threadOwnerRetriever: () -> String?
+    ) {
         val event = WebhookActionConverter.toEvent(webhook, applicationId)
 
         if (event != null) {

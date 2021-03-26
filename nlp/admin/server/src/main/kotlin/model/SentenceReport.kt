@@ -68,10 +68,10 @@ data class SentenceReport(
             ClassifiedSentenceStatus.inbox,
             ClassificationReport(query, intentId)
         ) {
-        if (text != query.retainedQuery) {
-            key = encrypt(query.retainedQuery)
+            if (text != query.retainedQuery) {
+                key = encrypt(query.retainedQuery)
+            }
         }
-    }
 
     constructor(sentence: ClassifiedSentence) :
         this(
@@ -86,10 +86,10 @@ data class SentenceReport(
             reviewComment = sentence.reviewComment,
             qualifier = sentence.qualifier
         ) {
-        if (text != sentence.text) {
-            key = encrypt(sentence.text)
+            if (text != sentence.text) {
+                key = encrypt(sentence.text)
+            }
         }
-    }
 
     constructor(error: IntentTestError, obfuscatedRanges: List<IntRange>) : this(
         obfuscate(text = error.text, obfuscatedRanges = obfuscatedRanges) ?: "",

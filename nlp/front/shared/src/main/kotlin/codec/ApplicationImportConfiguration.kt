@@ -29,5 +29,4 @@ data class ApplicationImportConfiguration(
      * Then the default model options are removed from the model when importing the dump.
      */
     val defaultModelMayExist: Boolean = false
-) {
-}
+)

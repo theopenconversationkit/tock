@@ -15,13 +15,13 @@
  */
 package ai.tock.bot.connector.twitter.model.incoming
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import ai.tock.bot.connector.twitter.json.EventDeserializer
 import ai.tock.bot.connector.twitter.model.TwitterConnectorMessage
 import ai.tock.bot.connector.twitter.model.User
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 
 /**
  * IncomingEvent object

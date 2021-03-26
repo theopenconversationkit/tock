@@ -73,7 +73,7 @@ internal data class UserTimelineCol(
         newTimeline.temporaryIds,
         namespace = namespace
     ) {
-        //register last action
+        // register last action
         newTimeline.lastUserAction
             ?.let {
                 lastUserActionDate = it.date
@@ -85,7 +85,7 @@ internal data class UserTimelineCol(
                     else -> null
                 }
             }
-        //register application id
+        // register application id
         oldTimeline?.let {
             applicationIds.addAll(it.applicationIds)
         }
@@ -169,7 +169,6 @@ internal data class UserTimelineCol(
                 initialLocale
             )
         }
-
     }
 
     @Data(internal = true)
@@ -180,16 +179,16 @@ internal data class UserTimelineCol(
         val flags: Map<String, TimeBoxedFlagWrapper>
     ) {
         constructor(state: UserState) :
-                this(
-                    state.creationDate,
-                    Instant.now(),
-                    state.flags.mapValues {
-                        TimeBoxedFlagWrapper(
-                            it.value,
-                            MongoBotConfiguration.hasToEncryptFlag(it.key)
-                        )
-                    }
-                )
+            this(
+                state.creationDate,
+                Instant.now(),
+                state.flags.mapValues {
+                    TimeBoxedFlagWrapper(
+                        it.value,
+                        MongoBotConfiguration.hasToEncryptFlag(it.key)
+                    )
+                }
+            )
 
         fun toUserState(): UserState {
             return UserState(
@@ -204,7 +203,6 @@ internal data class UserTimelineCol(
         val value: String,
         val expirationDate: Instant? = Instant.now()
     ) {
-
 
         constructor(flag: TimeBoxedFlag, doEncrypt: Boolean) : this(
             doEncrypt,
@@ -237,12 +235,10 @@ internal data class UserTimelineCol(
             return if (jp.getCurrentToken() == JsonToken.START_OBJECT) {
                 mapper.readValue(jp, reference)
             } else {
-                //consume this stream
+                // consume this stream
                 mapper.readTree<TreeNode>(jp)
                 emptyMap()
             }
         }
     }
-
-
 }

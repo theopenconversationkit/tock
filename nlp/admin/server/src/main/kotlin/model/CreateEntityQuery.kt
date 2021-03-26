@@ -19,5 +19,4 @@ package ai.tock.nlp.admin.model
 /**
  *
  */
-data class CreateEntityQuery(val type:String) {
-}
+data class CreateEntityQuery(val type: String)

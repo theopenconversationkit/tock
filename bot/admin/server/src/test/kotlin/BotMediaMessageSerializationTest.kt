@@ -40,12 +40,13 @@ class BotMediaMessageSerializationTest {
                         "category",
                         LinkedHashSet()
                     ),
-                    "https://demo.tock.ai")
+                    "https://demo.tock.ai"
+                )
             )
         )
         val json = mapper.writeValueAsString(card)
         assertEquals(
-            "{\"actions\":[{\"title\":{\"_id\":\"id\",\"namespace\":\"namespace\",\"category\":\"category\",\"i18n\":[],\"defaultLabel\":null,\"defaultLocale\":\"en\",\"version\":0},\"url\":\"https://demo.tock.ai\",\"type\":\"action\"}],\"type\":\"card\"}",
+            "{\"actions\":[{\"title\":{\"_id\":\"id\",\"namespace\":\"namespace\",\"category\":\"category\",\"i18n\":[],\"defaultLabel\":null,\"defaultLocale\":\"en\",\"version\":0},\"url\":\"https://demo.tock.ai\",\"type\":\"action\"}],\"fillCarousel\":false,\"type\":\"card\"}",
             json
         )
     }

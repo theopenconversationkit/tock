@@ -88,5 +88,4 @@ interface I18nDAO {
      * Gets all label stats for the specified namespace.
      */
     fun getLabelIdsFromStats(namespace: String, timeMarker: Instant): Set<Id<I18nLabel>>
-
 }

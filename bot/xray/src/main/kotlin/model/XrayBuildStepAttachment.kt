@@ -20,8 +20,7 @@ package ai.tock.bot.xray.model
  *
  */
 data class XrayBuildStepAttachment(
-        val data: String,
-        val filename: String,
-        val contentType: String = "plain/text"
-) {
-}
+    val data: String,
+    val filename: String,
+    val contentType: String = "plain/text"
+)

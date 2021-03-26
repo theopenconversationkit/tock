@@ -40,9 +40,11 @@ class MongoTest {
     @BeforeEach
     fun before() {
         tockInternalInjector = KodeinInjector()
-        tockInternalInjector.inject(Kodein.invoke {
-            bind<MongoCredentialsProvider>() with provider { DefaultMongoCredentialsProvider }
-        })
+        tockInternalInjector.inject(
+            Kodein.invoke {
+                bind<MongoCredentialsProvider>() with provider { DefaultMongoCredentialsProvider }
+            }
+        )
     }
 
     @AfterEach

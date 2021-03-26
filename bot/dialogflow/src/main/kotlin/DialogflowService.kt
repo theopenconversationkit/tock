@@ -37,7 +37,6 @@ import com.google.cloud.dialogflow.v2.SessionsSettings
 import com.google.cloud.dialogflow.v2.TextInput
 import mu.KotlinLogging
 
-
 internal object DialogflowService {
 
     private const val DIALOGFLOW_MAX_TEXT_LENGTH = 256
@@ -89,8 +88,8 @@ internal object DialogflowService {
                     QueryInput.newBuilder().setText(this).build().apply {
                         it.detectIntent(session, this).apply {
                             return this.queryResult.also {
-                                logger.debug{"Query Text: '${it.queryText}'"}
-                                logger.debug{"Detected Intent: ${it.intent.displayName} (confidence: ${it.intentDetectionConfidence})"}
+                                logger.debug { "Query Text: '${it.queryText}'" }
+                                logger.debug { "Detected Intent: ${it.intent.displayName} (confidence: ${it.intentDetectionConfidence})" }
                             }
                         }
                     }
@@ -114,10 +113,8 @@ internal object DialogflowService {
     fun getIntents(projectId: String): List<Intent> {
         IntentsClient.create(intentsSettings).use {
             val parent = ProjectAgentName.of(projectId)
-            val request  = ListIntentsRequest.newBuilder().setIntentView(IntentView.INTENT_VIEW_FULL).setParent(parent.toString()).build()
+            val request = ListIntentsRequest.newBuilder().setIntentView(IntentView.INTENT_VIEW_FULL).setParent(parent.toString()).build()
             return it.listIntents(request).iterateAll().asSequence().toList()
         }
     }
-
 }
-

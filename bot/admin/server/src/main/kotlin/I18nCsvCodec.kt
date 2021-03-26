@@ -63,16 +63,18 @@ object I18nCsvCodec {
             .forEach { label ->
                 label.i18n.forEach { localizedLabel ->
                     printer.printRecord(
-                        *(listOf(
-                            localizedLabel.label,
-                            label.namespace,
-                            label.category,
-                            localizedLabel.locale.language,
-                            localizedLabel.interfaceType,
-                            label._id,
-                            localizedLabel.validated,
-                            localizedLabel.connectorId ?: ""
-                        ) + localizedLabel.alternatives).toTypedArray()
+                        *(
+                            listOf(
+                                localizedLabel.label,
+                                label.namespace,
+                                label.category,
+                                localizedLabel.locale.language,
+                                localizedLabel.interfaceType,
+                                label._id,
+                                localizedLabel.validated,
+                                localizedLabel.connectorId ?: ""
+                            ) + localizedLabel.alternatives
+                            ).toTypedArray()
                     )
                 }
             }
@@ -88,28 +90,29 @@ object I18nCsvCodec {
             parsedCsv
                 .records
                 .mapIndexedNotNull { i, it ->
-                        I18nLabel(
-                            if (isNamespaceInCsv)
-                                it.get(CsvColumn.Id.name).replaceFirst(it.get(CsvColumn.Namespace.name), namespace).toId()
-                            else
-                                it.get(CsvColumn.Id.name).toId(),
-                            namespace,
-                            it.get(CsvColumn.Category.name),
-                            LinkedHashSet(
-                                listOf(
-                                    I18nLocalizedLabel(
-                                        Locale(it.get(CsvColumn.Language.name)),
-                                        UserInterfaceType.valueOf(it.get(CsvColumn.Interface.name)),
-                                        it[0], // First header has a strange char before it, simpler with index
-                                        it.get(CsvColumn.Validated.name)?.toBoolean() ?: false,
-                                        it.get(CsvColumn.Connector.name).run { if (isBlank()) null else this },
-                                        if (it.size() < headers.indexOf(CsvColumn.Alternatives.name))
-                                            emptyList()
-                                        else
-                                            (headers.indexOf(CsvColumn.Alternatives.name) until it.size()).mapNotNull { index -> if (it[index].isNullOrBlank()) null else it[index] }
-                                    ))
+                    I18nLabel(
+                        if (isNamespaceInCsv)
+                            it.get(CsvColumn.Id.name).replaceFirst(it.get(CsvColumn.Namespace.name), namespace).toId()
+                        else
+                            it.get(CsvColumn.Id.name).toId(),
+                        namespace,
+                        it.get(CsvColumn.Category.name),
+                        LinkedHashSet(
+                            listOf(
+                                I18nLocalizedLabel(
+                                    Locale(it.get(CsvColumn.Language.name)),
+                                    UserInterfaceType.valueOf(it.get(CsvColumn.Interface.name)),
+                                    it[0], // First header has a strange char before it, simpler with index
+                                    it.get(CsvColumn.Validated.name)?.toBoolean() ?: false,
+                                    it.get(CsvColumn.Connector.name).run { if (isBlank()) null else this },
+                                    if (it.size() < headers.indexOf(CsvColumn.Alternatives.name))
+                                        emptyList()
+                                    else
+                                        (headers.indexOf(CsvColumn.Alternatives.name) until it.size()).mapNotNull { index -> if (it[index].isNullOrBlank()) null else it[index] }
+                                )
                             )
                         )
+                    )
                 }
                 .filter { it.i18n.any { it.validated } }
                 .groupBy { it._id }
@@ -119,15 +122,18 @@ object I18nCsvCodec {
                         .run {
                             val localized = value.flatMap { it.i18n }
                             copy(
-                                i18n = LinkedHashSet(localized +
-                                        (i18nDAO.getLabelById(key)
-                                            ?.i18n
-                                            ?.filter { old ->
-                                                localized.none {
-                                                    old.locale == it.locale && old.interfaceType == it.interfaceType && old.connectorId == it.connectorId
+                                i18n = LinkedHashSet(
+                                    localized +
+                                        (
+                                            i18nDAO.getLabelById(key)
+                                                ?.i18n
+                                                ?.filter { old ->
+                                                    localized.none {
+                                                        old.locale == it.locale && old.interfaceType == it.interfaceType && old.connectorId == it.connectorId
+                                                    }
                                                 }
-                                            }
-                                            ?: emptyList())
+                                                ?: emptyList()
+                                            )
                                 )
                             )
                         }

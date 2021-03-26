@@ -19,7 +19,6 @@ package ai.tock.bot.connector.messenger.model.send
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionNotificationType
 
-
 enum class MessageTag {
 
     CONFIRMED_EVENT_UPDATE,

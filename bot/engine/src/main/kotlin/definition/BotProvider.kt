@@ -39,6 +39,4 @@ interface BotProvider {
     var configurationUpdated: Boolean
         get() = false
         set(_) {}
-
-
 }

@@ -203,7 +203,7 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
 
     override fun createBuiltInStoriesIfNotExist(stories: List<StoryDefinitionConfiguration>) {
         stories.forEach {
-            //unique index throws exception if the story already exists
+            // unique index throws exception if the story already exists
             try {
                 col.insertOne(it)
             } catch (e: Exception) {

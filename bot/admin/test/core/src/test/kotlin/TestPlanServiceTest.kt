@@ -48,12 +48,12 @@ internal class TestPlanServiceTest {
         }
     }
 
-
     @Test
     fun `should be deepEquals for simple text with suggestion message`() {
         expect(null) {
             ClientSentence(
-                null, mutableListOf(
+                null,
+                mutableListOf(
                     ClientGenericMessage(
                         ClientConnectorType.none,
                         texts = mapOf("text" to "Hello"),
@@ -62,7 +62,8 @@ internal class TestPlanServiceTest {
                 )
             ).checkEquality(
                 ClientSentence(
-                    null, mutableListOf(
+                    null,
+                    mutableListOf(
                         ClientGenericMessage(
                             ClientConnectorType.none,
                             texts = mapOf("text" to "Hello"),
@@ -74,12 +75,12 @@ internal class TestPlanServiceTest {
         }
     }
 
-
     @Test
     fun `should not be deepEquals if simple text with suggestion message differs`() {
         expect("Message text differs : \"{text=Hello you}\" / expected \"{text=Hello}\"") {
             ClientSentence(
-                null, mutableListOf(
+                null,
+                mutableListOf(
                     ClientGenericMessage(
                         ClientConnectorType.none,
                         texts = mapOf("text" to "Hello you"),
@@ -88,7 +89,8 @@ internal class TestPlanServiceTest {
                 )
             ).checkEquality(
                 ClientSentence(
-                    null, mutableListOf(
+                    null,
+                    mutableListOf(
                         ClientGenericMessage(
                             ClientConnectorType.none,
                             texts = mapOf("text" to "Hello"),

@@ -22,11 +22,10 @@ import java.time.OffsetDateTime
  *
  */
 data class XrayTestExecutionInfo(
-        val summary: String,
-        val description: String,
-        val startDate: OffsetDateTime,
-        val finishDate: OffsetDateTime,
-        val testPlanKey: String,
-        val testEnvironments: List<String> = listOf("")
-) {
-}
+    val summary: String,
+    val description: String,
+    val startDate: OffsetDateTime,
+    val finishDate: OffsetDateTime,
+    val testPlanKey: String,
+    val testEnvironments: List<String> = listOf("")
+)

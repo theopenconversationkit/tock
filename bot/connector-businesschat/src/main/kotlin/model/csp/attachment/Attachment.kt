@@ -16,31 +16,31 @@
 
 package ai.tock.bot.connector.businesschat.model.csp.attachment
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import ai.tock.bot.connector.businesschat.model.csp.BusinessChatCommonModel
 import ai.tock.bot.connector.businesschat.model.common.MessageType
+import ai.tock.bot.connector.businesschat.model.csp.BusinessChatCommonModel
+import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  * https://developer.apple.com/documentation/businesschatapi/messages_received/receiving_a_text_message_with_attachments
  */
-class Attachment (
-        sourceId: String,
-        destinationId: String,
-        val attachments: Array<AttachmentDictionnary>
+class Attachment(
+    sourceId: String,
+    destinationId: String,
+    val attachments: Array<AttachmentDictionnary>
 ) : BusinessChatCommonModel(sourceId = sourceId, destinationId = destinationId, type = MessageType.text) {
-        val body: String = "\uFFFc"
+    val body: String = "\uFFFc"
 }
 
 /**
  * https://developer.apple.com/documentation/businesschatapi/attachment
  */
 class AttachmentDictionnary(
-        val key: String,
-        val mimeType: String,
-        val name: String,
-        val owner: String,
-        @JsonProperty("signature-base64")
-        val signatureBase64: String,
-        val size: Int,
-        val url: String
+    val key: String,
+    val mimeType: String,
+    val name: String,
+    val owner: String,
+    @JsonProperty("signature-base64")
+    val signatureBase64: String,
+    val size: Int,
+    val url: String
 )

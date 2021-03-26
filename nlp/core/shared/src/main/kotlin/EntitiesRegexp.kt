@@ -19,5 +19,4 @@ package ai.tock.nlp.core
 /**
  *
  */
-data class EntitiesRegexp(val regexp : String) {
-}
+data class EntitiesRegexp(val regexp: String)

@@ -55,18 +55,14 @@ abstract class EntityContext(
     override fun toString(): String {
         return key().toString()
     }
-
 }
-
 
 sealed class EntityCallContext(
     language: Locale,
     engineType: NlpEngineType,
     applicationName: String,
     val referenceDate: ZonedDateTime
-) : EntityContext(language, engineType, applicationName) {
-
-}
+) : EntityContext(language, engineType, applicationName)
 
 class EntityCallContextForIntent(
     val intent: Intent,
@@ -89,7 +85,6 @@ class EntityCallContextForIntent(
     override fun key(): EntityContextKey {
         return EntityContextKey(applicationName, intent.name, language, engineType)
     }
-
 }
 
 class EntityCallContextForEntity(
@@ -101,13 +96,13 @@ class EntityCallContextForEntity(
 ) : EntityCallContext(language, engineType, applicationName, referenceDate) {
 
     constructor(context: CallContext, entity: Entity) :
-            this(
-                entity.entityType,
-                context.language,
-                context.engineType,
-                context.application.name,
-                context.evaluationContext.referenceDateForEntity(entity)
-            )
+        this(
+            entity.entityType,
+            context.language,
+            context.engineType,
+            context.application.name,
+            context.evaluationContext.referenceDateForEntity(entity)
+        )
 
     override fun key(): EntityContextKey {
         return EntityContextKey(applicationName, null, language, engineType, entityType)
@@ -137,7 +132,6 @@ class EntityCallContextForSubEntities(
         )
     }
 }
-
 
 sealed class EntityBuildContext(
     language: Locale,
@@ -180,7 +174,7 @@ class EntityBuildContextForIntent(
 
     override fun select(expressions: List<SampleExpression>): List<SampleExpression> {
         val result = expressions.filter { it.intent == intent }
-        //returns empty list if no expression contains at least one expression
+        // returns empty list if no expression contains at least one expression
         return if (result.any { it.entities.isNotEmpty() }) result else emptyList()
     }
 }
@@ -211,8 +205,8 @@ class EntityBuildContextForSubEntities(
     applicationName: String
 ) : EntityBuildContext(language, engineType, applicationName) {
 
-    constructor(context: BuildContext, entityType: EntityType)
-            : this(entityType, context.language, context.engineType, context.application.name)
+    constructor(context: BuildContext, entityType: EntityType) :
+        this(entityType, context.language, context.engineType, context.application.name)
 
     override fun key(): EntityContextKey {
         return EntityContextKey(applicationName, null, language, engineType, entityType, true)

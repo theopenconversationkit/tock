@@ -16,10 +16,10 @@
 
 package ai.tock.bot.connector.twitter.model
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.twitter.TwitterConnectorProvider
+import com.fasterxml.jackson.annotation.JsonIgnore
 
 abstract class TwitterConnectorMessage : ConnectorMessage {
 

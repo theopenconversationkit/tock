@@ -82,7 +82,7 @@ class TockClientBus(
             } else {
                 botDefinition.stories.find { it.storyId == request.storyId }
                     ?: botDefinition.stories.find { intent != null && it.isStarterIntent(intent.wrappedIntent()) }
-                        ?: botDefinition.unknownStory
+                    ?: botDefinition.unknownStory
             }
         step = story.steps.find { it.name == request.step }
         story.handler.handle(this)
@@ -184,6 +184,7 @@ class TockClientBus(
             namespace,
             category,
             defaultLabel,
-            args)
+            args
+        )
     }
 }

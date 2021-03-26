@@ -16,7 +16,7 @@
 
 package ai.tock.bot.xray.model
 
-data class SearchResult (
-        val total: Int,
-        val issues: List<XrayTestPlan>
+data class SearchResult(
+    val total: Int,
+    val issues: List<XrayTestPlan>
 )

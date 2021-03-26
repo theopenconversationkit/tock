@@ -34,7 +34,8 @@ internal object SendActionConverter {
             (action.message(whatsAppConnectorType) as? WhatsAppBotMessage)
                 ?.let {
                     it.toSendBotMessage(
-                        (it.userId ?: action.recipientId.id).let { id -> UserHashedIdCache.getRealId(id) })
+                        (it.userId ?: action.recipientId.id).let { id -> UserHashedIdCache.getRealId(id) }
+                    )
                 }
                 ?: action.stringText?.let { text ->
                     WhatsAppSendBotTextMessage(

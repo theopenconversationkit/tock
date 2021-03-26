@@ -21,5 +21,4 @@ import ai.tock.nlp.front.shared.parser.ParsedEntityValue
 /**
  *
  */
-data class EntityEvaluationResult(val values: List<ParsedEntityValue>) {
-}
+data class EntityEvaluationResult(val values: List<ParsedEntityValue>)

@@ -42,6 +42,6 @@ fun main(args: Array<String>) {
 }
 
 fun startAdminServer() {
-    //deploy verticle
+    // deploy verticle
     vertx.deployVerticle(KotlinCompilerVerticle())
 }

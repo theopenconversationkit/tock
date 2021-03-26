@@ -19,12 +19,10 @@ package ai.tock.bot.xray
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.engine.nlp.BuiltInKeywordListener
 import ai.tock.shared.TOCK_NAMESPACE
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
-
 
 class XrayKeywordServiceTest {
 

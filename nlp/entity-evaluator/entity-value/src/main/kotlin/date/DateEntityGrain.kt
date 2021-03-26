@@ -32,7 +32,7 @@ import java.time.temporal.TemporalAdjusters
  */
 enum class DateEntityGrain(val time: Boolean) {
 
-    //the order is important (duckling parsing)
+    // the order is important (duckling parsing)
     timezone(false),
     unknown(false),
     second(true),
@@ -81,7 +81,7 @@ enum class DateEntityGrain(val time: Boolean) {
                 minute -> date.truncatedTo(MINUTES)
                 hour -> date.truncatedTo(HOURS)
                 day_of_week, day -> date.truncatedTo(DAYS)
-            //TODO depending of the timezone for the start of day
+                // TODO depending of the timezone for the start of day
                 week -> date.with(TemporalAdjusters.previous(DayOfWeek.MONDAY)).truncatedTo(DAYS)
                 month -> date.with(TemporalAdjusters.firstDayOfMonth()).truncatedTo(DAYS)
                 quarter -> date.with(TemporalAdjusters.firstDayOfMonth()).truncatedTo(DAYS)
@@ -89,7 +89,7 @@ enum class DateEntityGrain(val time: Boolean) {
                 else -> date
             }
         } catch (e: Exception) {
-            //ignore
+            // ignore
             date
         }
     }
@@ -123,5 +123,4 @@ enum class DateEntityGrain(val time: Boolean) {
             else -> s
         }
     }
-
 }

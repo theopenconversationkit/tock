@@ -78,7 +78,6 @@ interface BusinessChatIntegrationService {
                 original
             }
             chain.proceed(request ?: original)
-
         }
         return retrofitBuilderWithTimeoutAndLogger(
             longProperty("tock_business_chat_request_timeout_ms", 30000),

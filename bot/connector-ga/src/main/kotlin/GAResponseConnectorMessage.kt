@@ -16,21 +16,22 @@
 
 package ai.tock.bot.connector.ga
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.ga.model.response.GAExpectedInput
 import ai.tock.bot.connector.ga.model.response.GAFinalResponse
 import ai.tock.bot.engine.message.GenericMessage
+import com.fasterxml.jackson.annotation.JsonIgnore
 
 /**
  *
  */
 data class GAResponseConnectorMessage(
-        val expectUserResponse: Boolean = true,
-        val expectedInputs: List<GAExpectedInput> = emptyList(),
-        val finalResponse: GAFinalResponse? = null,
-        val logoutEvent: Boolean = false) : ConnectorMessage {
+    val expectUserResponse: Boolean = true,
+    val expectedInputs: List<GAExpectedInput> = emptyList(),
+    val finalResponse: GAFinalResponse? = null,
+    val logoutEvent: Boolean = false
+) : ConnectorMessage {
 
     constructor(input: GAExpectedInput) : this(expectedInputs = listOf(input))
 
@@ -39,7 +40,5 @@ data class GAResponseConnectorMessage(
 
     override val connectorType: ConnectorType @JsonIgnore get() = gaConnectorType
 
-    override fun toGenericMessage(): GenericMessage?
-            = expectedInput?.toGenericMessage() ?: finalResponse?.toGenericMessage()
-
+    override fun toGenericMessage(): GenericMessage? = expectedInput?.toGenericMessage() ?: finalResponse?.toGenericMessage()
 }

@@ -45,5 +45,4 @@ interface NlpEngineModelDAO {
      * Listen changes on intent models.
      */
     fun listenIntentModelChanges(listener: (String) -> Unit)
-
 }

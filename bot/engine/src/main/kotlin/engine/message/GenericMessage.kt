@@ -28,7 +28,7 @@ data class GenericMessage(
     val connectorType: ConnectorType = ConnectorType.none,
     val attachments: List<Attachment> = emptyList(),
     val choices: List<Choice> = emptyList(),
-    //a qualified text map (ie "title" to "Ok computer", "subtitle" to "please listen")
+    // a qualified text map (ie "title" to "Ok computer", "subtitle" to "please listen")
     val texts: Map<String, String> = emptyMap(),
     val locations: List<Location> = emptyList(),
     val metadata: Map<String, String> = emptyMap(),
@@ -116,5 +116,4 @@ data class GenericMessage(
         result = 31 * result + subElements.hashCode()
         return result
     }
-
 }

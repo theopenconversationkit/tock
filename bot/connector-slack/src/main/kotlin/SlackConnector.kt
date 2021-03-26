@@ -82,7 +82,6 @@ class SlackConnector(
                     }
                     logger.info { "message received from slack: $body" }
 
-
                     val message: EventApiMessage = mapper.readValue(body)
                     if (message is UrlVerificationEvent) {
                         context
@@ -90,7 +89,7 @@ class SlackConnector(
                             .putHeader("Content-type", "text/plain")
                             .end(message.challenge)
                     } else {
-                        //answer to slack immediately
+                        // answer to slack immediately
                         context.response().end()
                         val event = SlackRequestConverter.toEvent(message, applicationId)
                         if (event != null) {
@@ -116,7 +115,6 @@ class SlackConnector(
                     }
                 }
             }
-
         }
     }
 
@@ -130,18 +128,21 @@ class SlackConnector(
 
                     val message = mapper.readValue<SlackMessageIn>(body, SlackMessageIn::class.java)
                     if (message.user_id != "USLACKBOT") {
-                        vertx.executeBlocking<Void>({
-                            try {
-                                val event = SlackRequestConverter.toEvent(message, applicationId)
-                                if (event != null) {
-                                    controller.handle(event)
-                                } else {
-                                    logger.logError("unable to convert $message to event", requestTimerData)
+                        vertx.executeBlocking<Void>(
+                            {
+                                try {
+                                    val event = SlackRequestConverter.toEvent(message, applicationId)
+                                    if (event != null) {
+                                        controller.handle(event)
+                                    } else {
+                                        logger.logError("unable to convert $message to event", requestTimerData)
+                                    }
+                                } catch (e: Throwable) {
+                                    logger.logError(e, requestTimerData)
                                 }
-                            } catch (e: Throwable) {
-                                logger.logError(e, requestTimerData)
-                            }
-                        }, false, {})
+                            },
+                            false, {}
+                        )
                     }
                 } catch (e: Throwable) {
                     logger.logError(e, requestTimerData)
@@ -154,7 +155,6 @@ class SlackConnector(
                     }
                 }
             }
-
         }
     }
 
@@ -167,7 +167,6 @@ class SlackConnector(
             }
         }
     }
-
 
     private fun sendMessage(message: SlackConnectorMessage, delayInMs: Long) {
         executor.executeBlocking(Duration.ofMillis(delayInMs)) {
@@ -188,8 +187,10 @@ class SlackConnector(
             if (attachment == null) {
                 message.copy(attachments = listOf(slackAttachment(null, suggestions.map { slackButton(it) })))
             } else if (attachment.actions.isEmpty()) {
-                message.copy(attachments =
-                message.attachments.take(message.attachments.size - 1) + slackAttachment(null, suggestions.map { slackButton(it) }))
+                message.copy(
+                    attachments =
+                    message.attachments.take(message.attachments.size - 1) + slackAttachment(null, suggestions.map { slackButton(it) })
+                )
             } else {
                 null
             }
@@ -210,7 +211,8 @@ class SlackConnector(
                 },
                 slackMessage(
                     subTitle ?: title ?: "",
-                    slackAttachment(null, message.actions.filter { it.url == null }.map { slackButton(it.title) }))
+                    slackAttachment(null, message.actions.filter { it.url == null }.map { slackButton(it.title) })
+                )
             )
         } else {
             emptyList()

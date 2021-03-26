@@ -16,8 +16,8 @@
 
 package ai.tock.bot.connector.twitter.model
 
-import com.fasterxml.jackson.annotation.JsonTypeName
 import ai.tock.bot.engine.message.Choice
+import com.fasterxml.jackson.annotation.JsonTypeName
 
 @JsonTypeName("options")
 data class Options(val options: List<AbstractOption>) : QuickReply() {

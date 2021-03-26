@@ -91,5 +91,4 @@ data class UserPreferences(
         userPref.picture?.also { picture = it }
         userPref.gender?.also { gender = it }
     }
-
 }

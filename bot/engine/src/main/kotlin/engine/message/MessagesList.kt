@@ -36,9 +36,11 @@ data class MessagesList(val messages: List<Message>) {
          * @param default the default message used if [messageProvider] returns no message
          * @param messageProvider the message provider.
          */
-        fun toMessageList(default: CharSequence? = null,
-                          bus: BotBus,
-                          messageProvider: BotBus.() -> Any?): MessagesList {
+        fun toMessageList(
+            default: CharSequence? = null,
+            bus: BotBus,
+            messageProvider: BotBus.() -> Any?
+        ): MessagesList {
 
             val result = messageProvider(bus)
             val list = if (result is Collection<*>) result else listOfNotNull(result)
@@ -60,5 +62,4 @@ data class MessagesList(val messages: List<Message>) {
             return MessagesList(messages)
         }
     }
-
 }

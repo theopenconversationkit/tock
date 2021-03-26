@@ -58,7 +58,7 @@ data class AnyValueWrapper(val klass: String, val value: Any?) {
             if (fieldName != null) {
                 val classValue: Class<*>? =
                     try {
-                        //TODO remove replace in 20.3
+                        // TODO remove replace in 20.3
                         Class.forName(jp.text.replace("fr.vsct.tock", "ai.tock"))
                     } catch (e: Exception) {
                         logger.warn("deserialization error for class ${e.message}")
@@ -85,13 +85,9 @@ data class AnyValueWrapper(val klass: String, val value: Any?) {
             }
             return null
         }
-
     }
 
     constructor(klass: KClass<*>, value: Any?) : this(klass.java.name, value)
 
     constructor(value: Any) : this(value::class, value)
-
 }
-
-

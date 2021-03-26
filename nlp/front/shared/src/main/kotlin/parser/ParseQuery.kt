@@ -16,7 +16,6 @@
 
 package ai.tock.nlp.front.shared.parser
 
-
 /**
  * A NLP parse query.
  */

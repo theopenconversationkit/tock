@@ -37,14 +37,14 @@ import retrofit2.http.*
  */
 interface XrayApi {
 
-
     @GET("/rest/raven/1.0/api/testplan/{testPlanKey}/test")
     fun getTestsOfTestPlan(@Path("testPlanKey") testPlanKey: String): Call<List<XrayTest>>
 
     @POST("/rest/raven/1.0/api/testplan/{testPlanKey}/test")
     fun addTestToTestPlans(
         @Path("testPlanKey") testPlanKey: String,
-        @Body update: XrayUpdateTest): Call<ResponseBody>
+        @Body update: XrayUpdateTest
+    ): Call<ResponseBody>
 
     @GET("/rest/raven/1.0/api/test")
     fun getTests(@Query("keys") testKeys: String): Call<List<XrayTest>>
@@ -67,7 +67,8 @@ interface XrayApi {
     @POST("/rest/raven/1.0/api/precondition/{preConditionKey}/test")
     fun addPrecondition(
         @Path("preConditionKey") preConditionKey: String,
-        @Body associate: XrayUpdateTest): Call<ResponseBody>
+        @Body associate: XrayUpdateTest
+    ): Call<ResponseBody>
 
     @POST("/rest/api/2/issue")
     fun createTest(@Body test: JiraTest): Call<JiraIssue>
@@ -86,8 +87,9 @@ interface XrayApi {
     fun addAttachment(
         @Path("id") id: String,
         @Part body: MultipartBody.Part,
-        @Header("X-Atlassian-Token") token: String = "no-check")
-        : Call<List<JiraAttachment>>
+        @Header("X-Atlassian-Token") token: String = "no-check"
+    ):
+        Call<List<JiraAttachment>>
 
     @GET("/rest/api/2/issue/{id}")
     fun getIssue(@Path("id") id: String): Call<ResponseBody>

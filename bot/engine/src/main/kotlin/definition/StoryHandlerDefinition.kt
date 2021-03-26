@@ -44,8 +44,8 @@ interface StoryHandlerDefinition : BotBus {
      */
     fun answerWith(
         default: CharSequence? = null,
-        messageProvider: () -> Any?) {
+        messageProvider: () -> Any?
+    ) {
         end(messages = toMessageList(default, this) { messageProvider() })
     }
-
 }

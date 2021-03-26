@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import org.junit.jupiter.api.Test
 import kotlin.test.assertNotNull
 
-
 /**
  *
  */
@@ -28,7 +27,7 @@ class TestJacksonDependency {
 
         @Test
         fun testClassPresent() {
-            //check this compile
+            // check this compile
             val value = JsonIgnoreProperties.Value.empty()
             assertNotNull(value)
         }

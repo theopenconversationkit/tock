@@ -16,6 +16,7 @@
 
 package ai.tock.shared.jackson
 
+import ai.tock.shared.error
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
@@ -30,7 +31,6 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import ai.tock.shared.error
 import mu.KotlinLogging
 import org.litote.jackson.getJacksonModulesFromServiceLoader
 import org.litote.kmongo.id.jackson.IdJacksonModule
@@ -55,7 +55,7 @@ val mapper: ObjectMapper by lazy {
     logger.info { "init jackson mapper" }
     jacksonObjectMapper()
         .findAndRegisterModules()
-        //force java time module
+        // force java time module
         .registerModule(JavaTimeModule())
         .registerModule(IdJacksonModule())
         .registerModules(jacksonAdditionalModules)

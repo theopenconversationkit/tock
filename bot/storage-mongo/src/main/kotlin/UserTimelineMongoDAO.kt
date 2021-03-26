@@ -58,6 +58,8 @@ import ai.tock.bot.mongo.UserTimelineCol_.Companion.PlayerId
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.TemporaryIds
 import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
+import ai.tock.shared.ensureIndex
+import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.intProperty
@@ -84,8 +86,6 @@ import org.litote.kmongo.contains
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.descending
 import org.litote.kmongo.descendingSort
-import ai.tock.shared.ensureIndex
-import ai.tock.shared.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.find
 import org.litote.kmongo.findOne
@@ -111,7 +111,6 @@ import java.time.Instant.now
 import java.time.ZoneOffset
 import java.util.concurrent.TimeUnit.DAYS
 
-
 /**
  *
  */
@@ -122,7 +121,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     private val dialogFlowStatEnabled = booleanProperty("tock_bot_dialog_flow_stat", true)
     private val dialogMaxValidityInSeconds = longProperty("tock_bot_dialog_max_validity_in_seconds", 60 * 60 * 24)
 
-    //wrapper to workaround the 1024 chars limit for String indexes
+    // wrapper to workaround the 1024 chars limit for String indexes
     private fun textKey(text: String): String =
         if (text.length > 512) text.substring(0, Math.min(512, text.length)) else text
 
@@ -211,7 +210,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     }
 
     private fun timelineId(userId: String, namespace: String): String =
-        if (addNamespaceToTimelineId) "_${namespace}_${userId}" else userId
+        if (addNamespaceToTimelineId) "_${namespace}_$userId" else userId
 
     private fun save(userTimeline: UserTimeline, namespace: String, botDefinition: BotDefinition?) {
         logger.debug { "start to save timeline $userTimeline" }
@@ -324,14 +323,14 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 upsert()
             )
         }
-
     }
 
     private fun saveConnectorMessage(actionId: Id<Action>, dialogId: Id<Dialog>, messages: List<ConnectorMessage>) {
         connectorMessageCol.save(
             ConnectorMessageCol(
                 ConnectorMessageColId(actionId, dialogId),
-                messages.map { AnyValueWrapper(it) })
+                messages.map { AnyValueWrapper(it) }
+            )
         )
     }
 
@@ -402,10 +401,10 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         loadLastValidDialog(namespace, userId, groupId, storyDefinitionProvider)?.apply { timeline.dialogs.add(this) }
 
         if (priorUserId != null) {
-            //link timeline
+            // link timeline
             timeline.temporaryIds.add(priorUserId.id)
 
-            //copy state
+            // copy state
             val priorTimelineId = timelineId(priorUserId.id, namespace)
             userTimelineCol.findOneById(priorTimelineId)
                 ?.apply {
@@ -414,7 +413,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     }
                 }
 
-            //copy dialog
+            // copy dialog
             loadLastValidDialog(namespace, priorUserId, groupId, storyDefinitionProvider)
                 ?.apply {
                     timeline.dialogs.add(

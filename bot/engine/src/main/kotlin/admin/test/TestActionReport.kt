@@ -31,37 +31,40 @@ import java.time.Instant
  *
  */
 data class TestActionReport(
-        val playerId: PlayerId,
-        val date: Instant,
-        val messages: List<Message>,
-        val connectorType: ConnectorType?,
-        val userInterfaceType: UserInterfaceType = textChat,
-        val id: Id<Action>
+    val playerId: PlayerId,
+    val date: Instant,
+    val messages: List<Message>,
+    val connectorType: ConnectorType?,
+    val userInterfaceType: UserInterfaceType = textChat,
+    val id: Id<Action>
 ) {
 
-    constructor(playerId: PlayerId,
-                date: Instant,
-                message: Message,
-                connectorType: ConnectorType?,
-                userInterfaceType: UserInterfaceType,
-                id: Id<Action> = newId()) :
-            this(
-                    playerId,
-                    date,
-                    listOf(message),
-                    connectorType,
-                    userInterfaceType,
-                    id)
+    constructor(
+        playerId: PlayerId,
+        date: Instant,
+        message: Message,
+        connectorType: ConnectorType?,
+        userInterfaceType: UserInterfaceType,
+        id: Id<Action> = newId()
+    ) :
+        this(
+            playerId,
+            date,
+            listOf(message),
+            connectorType,
+            userInterfaceType,
+            id
+        )
 
     constructor(report: ActionReport) :
-            this(
-                    report.playerId,
-                    report.date,
-                    report.message,
-                    report.connectorType,
-                    report.userInterfaceType,
-                    report.id
-            )
+        this(
+            report.playerId,
+            report.date,
+            report.message,
+            report.connectorType,
+            report.userInterfaceType,
+            report.id
+        )
 
     fun findFirstMessage(): Message {
         return messages.first()

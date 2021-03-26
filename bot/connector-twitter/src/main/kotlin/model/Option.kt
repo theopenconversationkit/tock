@@ -49,7 +49,6 @@ data class Option private constructor(val label: String, val description: String
                 metadata.truncateIfLongerThan(MAX_METADATA)
             )
         }
-
     }
 
     override fun toChoice(): Choice {
@@ -57,10 +56,9 @@ data class Option private constructor(val label: String, val description: String
             .let { (intent, params) ->
                 Choice(
                     intent,
-                    params
-                            + mapNotNullValues(SendChoice.TITLE_PARAMETER to label)
+                    params +
+                        mapNotNullValues(SendChoice.TITLE_PARAMETER to label)
                 )
             }
     }
-
 }

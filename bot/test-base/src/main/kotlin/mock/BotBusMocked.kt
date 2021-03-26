@@ -89,7 +89,7 @@ fun provideMockedBusCommon(bus: BotBus = mockk()): BotBus {
         bus
     }
 
-    //withMessage
+    // withMessage
     every { bus.withMessage(any(), any()) }.answers {
         if (bus.targetConnectorType == args[0]) {
             @Suppress("UNCHECKED_CAST")
@@ -98,7 +98,7 @@ fun provideMockedBusCommon(bus: BotBus = mockk()): BotBus {
         bus
     }
 
-    //send
+    // send
     every { bus.send(any<Message>(), any()) } returns bus
     every { bus.send(any<Action>(), any()) } returns bus
     every { bus.send(any<Long>()) } returns bus

@@ -40,6 +40,4 @@ data class GAArgument(
      */
     @get:JsonIgnore
     val healthcheck: Boolean = name == "is_health_check" && boolValue == true
-
 }
-

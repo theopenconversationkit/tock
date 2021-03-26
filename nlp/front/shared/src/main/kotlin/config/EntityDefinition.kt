@@ -40,5 +40,4 @@ data class EntityDefinition(
     constructor(entity: Entity) : this(entity.entityType.name, entity.role)
 
     constructor(entityType: EntityTypeDefinition, role: String) : this(entityType.name, role)
-
 }

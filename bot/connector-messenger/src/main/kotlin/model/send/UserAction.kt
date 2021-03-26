@@ -24,21 +24,20 @@ interface UserAction {
     companion object {
         fun extractQuickReplies(userActions: List<UserAction>): List<QuickReply>? {
             return userActions
-                    .filter { it is QuickReply }
-                    .map { it as QuickReply }
-                    .run {
-                        if (isEmpty()) null
-                        //11 quick replies max cf https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies
-                        else if(size > 11) error("more than 11 quick replies : $this")
-                        else this
-                    }
+                .filter { it is QuickReply }
+                .map { it as QuickReply }
+                .run {
+                    if (isEmpty()) null
+                    // 11 quick replies max cf https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies
+                    else if (size > 11) error("more than 11 quick replies : $this")
+                    else this
+                }
         }
 
         fun extractButtons(userActions: List<UserAction>): List<Button> {
             return userActions
-                    .filter { it is Button }
-                    .map { it as Button }
+                .filter { it is Button }
+                .map { it as Button }
         }
-
     }
 }

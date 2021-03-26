@@ -21,7 +21,7 @@ import ai.tock.nlp.core.CallContext
 /**
  *
  */
-data class TestContext(val callContext: CallContext,
-                       val threshold: Float) {
-
-}
+data class TestContext(
+    val callContext: CallContext,
+    val threshold: Float
+)

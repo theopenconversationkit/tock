@@ -56,7 +56,6 @@ import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import kotlin.LazyThreadSafetyMode.PUBLICATION
 
-
 /**
  *
  */
@@ -94,7 +93,7 @@ class GAConnector internal constructor(
         }
     }
 
-    //internal for tests
+    // internal for tests
     internal fun handleRequest(
         controller: ConnectorController,
         context: RoutingContext,
@@ -142,8 +141,6 @@ class GAConnector internal constructor(
                     }
                     else -> sendRequest()
                 }
-
-
             } catch (t: Throwable) {
                 BotRepository.requestTimer.throwable(t, timerData)
                 callback.sendTechnicalError(t, body, request)
@@ -172,7 +169,6 @@ class GAConnector internal constructor(
         }
     }
 
-
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
         val c = callback as? GAConnectorCallback
         c?.addAction(event, delayInMs)
@@ -184,7 +180,6 @@ class GAConnector internal constructor(
             logger.trace { "unsupported event: $event" }
         }
     }
-
 
     override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences? {
         val c = callback as? GAConnectorCallback
@@ -210,11 +205,11 @@ class GAConnector internal constructor(
             if (m != null && m.suggestions.isEmpty()) {
                 message.copy(
                     expectedInputs = message.expectedInputs.take(message.expectedInputs.size - 1) +
-                            message.expectedInputs.last().copy(
-                                inputPrompt = message.expectedInputs.last().inputPrompt.copy(
-                                    richInitialPrompt = m.copy(suggestions = suggestions.map { suggestion(it) })
-                                )
+                        message.expectedInputs.last().copy(
+                            inputPrompt = message.expectedInputs.last().inputPrompt.copy(
+                                richInitialPrompt = m.copy(suggestions = suggestions.map { suggestion(it) })
                             )
+                        )
                 )
             } else {
                 null

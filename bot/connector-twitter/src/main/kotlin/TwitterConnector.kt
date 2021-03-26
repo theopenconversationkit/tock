@@ -99,12 +99,12 @@ internal class TwitterConnector internal constructor(
                         null
                     }
                 } ?: defaultLocale,
-                userProfile.profileImageUrlHttps)
+                userProfile.profileImageUrlHttps
+            )
         } catch (e: Exception) {
             logger.error(e)
         }
         return UserPreferences()
-
     }
 
     /**
@@ -191,7 +191,6 @@ internal class TwitterConnector internal constructor(
                     }
                 }
             }
-
         }
     }
 
@@ -205,7 +204,6 @@ internal class TwitterConnector internal constructor(
             client.unregisterWebhook(it.id)
         }
     }
-
 
     /**
      * Send an event with this connector for the specified delay.
@@ -237,7 +235,6 @@ internal class TwitterConnector internal constructor(
                                     } else {
                                         client.sendDirectMessage(message)
                                     }
-
                                 }
                             }
                         }
@@ -250,7 +247,6 @@ internal class TwitterConnector internal constructor(
             }
         }
     }
-
 
     override fun notify(
         controller: ConnectorController,
@@ -275,7 +271,6 @@ internal class TwitterConnector internal constructor(
             )
         )
     }
-
 
     private fun sendDirectMessageWithAttachment(
         mediaCategory: MediaCategory,

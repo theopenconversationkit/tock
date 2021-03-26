@@ -91,6 +91,8 @@
         <plugin.dependency>3.1.2</plugin.dependency>
         <plugin.resources>3.2.0</plugin.resources>
         <plugin.deploy>3.0.0-M1</plugin.deploy>
+        <plugin.gitid>2.2.1</plugin.gitid>
+        <plugin.ktlint>1.8.0</plugin.ktlint>
 
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
 
@@ -780,13 +782,27 @@
                 <plugin>
                     <groupId>pl.project13.maven</groupId>
                     <artifactId>git-commit-id-plugin</artifactId>
-                    <version>2.2.1</version>
+                    <version>${plugin.gitid}</version>
                     <configuration>
                         <skipPoms>false</skipPoms>
                         <!-- Do not fail the build -->
                         <failOnNoGitDirectory>false</failOnNoGitDirectory>
                         <failOnUnableToExtractRepoInfo>false</failOnUnableToExtractRepoInfo>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>com.github.gantsign.maven</groupId>
+                    <artifactId>ktlint-maven-plugin</artifactId>
+                    <version>${plugin.ktlint}</version>
+                    <executions>
+                        <execution>
+                            <id>format-and-check</id>
+                            <goals>
+                                <!--goal>format</goal-->
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>

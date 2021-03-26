@@ -21,5 +21,4 @@ import ai.tock.nlp.entity.Value
 /**
  *
  */
-data class TemperatureValue(val value: Number, val unit: TemperatureUnit) : Value {
-}
+data class TemperatureValue(val value: Number, val unit: TemperatureUnit) : Value

@@ -65,5 +65,4 @@ internal class Channels(private val channelDAO: ChannelDAO) {
             }
         channelDAO.save(ChannelEvent(action.applicationId, action.recipientId.id, WebConnectorResponse(messages)))
     }
-
 }

@@ -170,7 +170,8 @@ fun mediaTemplate(
                     MediaElement(
                         mediaType,
                         mediaUrl,
-                        extractButtons(actions).run { if (isEmpty()) null else this })
+                        extractButtons(actions).run { if (isEmpty()) null else this }
+                    )
                 ),
                 sharable
             )

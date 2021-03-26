@@ -23,11 +23,11 @@ import ai.tock.nlp.model.service.storage.mongo.MongoModelConfiguration.database
 import ai.tock.nlp.model.service.storage.mongo.NlpApplicationConfigurationCol_.Companion.ApplicationName
 import ai.tock.nlp.model.service.storage.mongo.NlpApplicationConfigurationCol_.Companion.Date
 import ai.tock.nlp.model.service.storage.mongo.NlpApplicationConfigurationCol_.Companion.EngineType
-import org.litote.kmongo.Data
+import ai.tock.shared.ensureIndex
 import org.litote.jackson.data.JacksonData
+import org.litote.kmongo.Data
 import org.litote.kmongo.descending
 import org.litote.kmongo.descendingSort
-import ai.tock.shared.ensureIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.find
 import org.litote.kmongo.getCollection
@@ -53,7 +53,6 @@ internal object NlpApplicationConfigurationMongoDAO : NlpApplicationConfiguratio
         .apply {
             ensureIndex(descending(ApplicationName, EngineType, Date))
         }
-
 
     override fun saveNewConfiguration(
         applicationName: String,

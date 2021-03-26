@@ -68,7 +68,7 @@ data class ConstrainedValueWrapper<T : Any>(val klass: String, val value: T?) {
             if (fieldName != null) {
                 val classValue: Class<*>? =
                     try {
-                        //TODO remove replace in 20.3
+                        // TODO remove replace in 20.3
                         val replace = jp.text.replace("fr.vsct.tock", "ai.tock")
                         if (constrainedTypes.contains(replace)) {
                             Class.forName(replace)
@@ -100,11 +100,9 @@ data class ConstrainedValueWrapper<T : Any>(val klass: String, val value: T?) {
             }
             return null
         }
-
     }
 
     constructor(klass: KClass<*>, value: T?) : this(klass.java.name, value)
 
     constructor(value: T) : this(value::class, value)
-
 }

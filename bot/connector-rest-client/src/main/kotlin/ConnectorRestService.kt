@@ -31,6 +31,7 @@ interface ConnectorRestService {
 
     @POST("{locale}")
     fun talk(
-            @Path("locale") locale: Locale,
-            @Body request: ClientMessageRequest): Call<ClientMessageResponse>
+        @Path("locale") locale: Locale,
+        @Body request: ClientMessageRequest
+    ): Call<ClientMessageResponse>
 }

@@ -19,5 +19,4 @@ package ai.tock.bot.xray.model
 /**
  *
  */
-data class JiraIssueType(val name:String) {
-}
+data class JiraIssueType(val name: String)

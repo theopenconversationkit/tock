@@ -51,22 +51,24 @@ fun StoryDefinitionBase.selectStepFromData(def: HandlerDef<*>, data: Any?): Stor
 inline fun <reified T : ConnectorDef<*>> mockConnector(
     connector: T = mockk(relaxed = true),
     bus: BotBus = mockk(relaxed = true),
-    test: (BotBus) -> Any?): T {
+    test: (BotBus) -> Any?
+): T {
     try {
         tockInternalInjector = KodeinInjector()
-        injector.inject(Kodein {
-            bind<ConnectorHandlerProvider>() with provider {
-                object : ConnectorHandlerProvider {
-                    override fun provide(storyDef: StoryHandlerDefinition, connectorType: ConnectorType): ConnectorStoryHandlerBase<*>? = connector
+        injector.inject(
+            Kodein {
+                bind<ConnectorHandlerProvider>() with provider {
+                    object : ConnectorHandlerProvider {
+                        override fun provide(storyDef: StoryHandlerDefinition, connectorType: ConnectorType): ConnectorStoryHandlerBase<*>? = connector
 
-                    override fun provide(storyDef: StoryHandlerDefinition, connectorId: String): ConnectorStoryHandlerBase<*>? = connector
+                        override fun provide(storyDef: StoryHandlerDefinition, connectorId: String): ConnectorStoryHandlerBase<*>? = connector
+                    }
                 }
             }
-        })
+        )
         test(bus)
     } finally {
         tockInternalInjector = KodeinInjector()
-
     }
     return connector
 }

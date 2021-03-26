@@ -80,7 +80,7 @@ class RoutingContextHolderTest {
                         "suggestion10",
                         "suggestion11",
                         "suggestion12"
-                        )
+                    )
                 )
             )
             val thirdMessage = gaMessage(
@@ -133,7 +133,7 @@ class RoutingContextHolderTest {
             assertEquals(null, basicCard.image)
             assertEquals(1, basicCard.buttons.size)
             assertEquals(gaButton("button1", "butonUrl1"), basicCard.buttons.first())
-            assertEquals(8,richResponse.suggestions.size)
+            assertEquals(8, richResponse.suggestions.size)
         }
     }
 }

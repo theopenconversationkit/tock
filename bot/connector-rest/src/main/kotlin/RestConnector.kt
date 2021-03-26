@@ -94,7 +94,7 @@ class RestConnector(
 
     private fun transformMessage(message: MessageRequest): Action =
         with(message.message) {
-            //choice nlp support
+            // choice nlp support
             val nlp = (this as? Choice)?.parameters?.get(SendChoice.NLP)
             val m = takeUnless { nlp != null } ?: Sentence(nlp)
             m.toAction(
@@ -115,7 +115,7 @@ class RestConnector(
 
     override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences {
         callback as RestConnectorCallback
-        //register user as test user if applicable
+        // register user as test user if applicable
         return UserPreferences().apply {
             locale = callback.locale
             callback.testContext?.setup(this, callback.connectorType, locale)
@@ -124,7 +124,6 @@ class RestConnector(
 
     private fun getTargetConnector(targetConnectorType: ConnectorType): Connector? =
         BotRepository.getController { it.connectorType == targetConnectorType }?.connector
-
 
     override fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
         when (targetConnectorType) {
@@ -161,7 +160,6 @@ class RestConnector(
             else -> getTargetConnector(targetConnectorType)?.addSuggestions(message, suggestions)?.invoke(this)
         }
     }
-
 
     override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
         when (targetConnectorType) {

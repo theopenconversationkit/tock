@@ -40,7 +40,8 @@ internal fun BotBus.toUserRequest(): UserRequest =
         action.toApiMessage(),
         story.definition.id,
         step?.name,
-        toRequestContext())
+        toRequestContext()
+    )
 
 internal fun EntityValue.toEntity(bus: BotBus): Entity =
     Entity(

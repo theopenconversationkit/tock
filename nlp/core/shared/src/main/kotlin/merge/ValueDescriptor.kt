@@ -20,8 +20,9 @@ package ai.tock.nlp.core.merge
  * Contains all information about a value to help values merge.
  */
 data class ValueDescriptor(
-        val value: Any,
-        val content: String? = null,
-        val initial: Boolean = false,
-        val position: Int? = null,
-        val probability: Double = 1.0)
+    val value: Any,
+    val content: String? = null,
+    val initial: Boolean = false,
+    val position: Int? = null,
+    val probability: Double = 1.0
+)

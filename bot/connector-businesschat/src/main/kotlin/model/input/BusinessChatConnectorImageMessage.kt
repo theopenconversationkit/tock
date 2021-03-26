@@ -21,11 +21,11 @@ import ai.tock.bot.engine.BotBus
 /**
  * An Image Message used on the bot side to be sent on the [BotBus]
  */
-data class BusinessChatConnectorImageMessage (
-        override val sourceId: String,
-        override val destinationId: String,
-        val bytes: ByteArray,
-        val mimeType: String
+data class BusinessChatConnectorImageMessage(
+    override val sourceId: String,
+    override val destinationId: String,
+    val bytes: ByteArray,
+    val mimeType: String
 ) : BusinessChatConnectorMessage() {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -28,7 +28,6 @@ import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import com.google.api.services.chat.v1.model.DeprecatedEvent
 
-
 internal object GoogleChatRequestConverter {
 
     fun toEvent(event: DeprecatedEvent, applicationId: String): Event? {
@@ -56,5 +55,4 @@ internal object GoogleChatRequestConverter {
             else -> null
         }
     }
-
 }

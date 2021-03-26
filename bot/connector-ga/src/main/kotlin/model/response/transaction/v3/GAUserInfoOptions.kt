@@ -20,7 +20,7 @@ data class GAUserInfoOptions(
     val userInfoProperties: Set<UserInfoProperty>?
 )
 
-enum class UserInfoProperty{
+enum class UserInfoProperty {
     USER_INFO_PROPERTY_UNSPECIFIED,
     EMAIL
 }

@@ -21,15 +21,17 @@ import ai.tock.bot.admin.user.UserReportQueryResult
 /**
  *
  */
-data class UserSearchQueryResult(val total: Long,
-                                 val start: Long,
-                                 val end: Long,
-                                 val users: List<UserSearchResult>) {
+data class UserSearchQueryResult(
+    val total: Long,
+    val start: Long,
+    val end: Long,
+    val users: List<UserSearchResult>
+) {
 
     constructor(result: UserReportQueryResult) : this(
-            result.total,
-            result.start,
-            result.end,
-            result.users.map { UserSearchResult(it) }
+        result.total,
+        result.start,
+        result.end,
+        result.users.map { UserSearchResult(it) }
     )
 }

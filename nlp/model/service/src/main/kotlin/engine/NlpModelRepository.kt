@@ -16,9 +16,6 @@
 
 package ai.tock.nlp.model.service.engine
 
-import com.github.salomonbrys.kodein.instance
-import com.google.common.cache.Cache
-import com.google.common.cache.CacheBuilder
 import ai.tock.nlp.core.configuration.NlpApplicationConfiguration
 import ai.tock.nlp.model.EntityBuildContext
 import ai.tock.nlp.model.EntityContext
@@ -33,6 +30,9 @@ import ai.tock.shared.booleanProperty
 import ai.tock.shared.debug
 import ai.tock.shared.error
 import ai.tock.shared.injector
+import com.github.salomonbrys.kodein.instance
+import com.google.common.cache.Cache
+import com.google.common.cache.CacheBuilder
 import mu.KotlinLogging
 import java.io.InputStream
 import java.io.OutputStream
@@ -42,7 +42,6 @@ import java.time.Instant
 import java.time.Instant.now
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit.MINUTES
-
 
 /**
  *
@@ -84,7 +83,6 @@ internal object NlpModelRepository {
                             )
                         )
                     }
-
             }
             modelDAO.listenEntityModelChanges { key ->
                 entityModelsCache
@@ -148,7 +146,7 @@ internal object NlpModelRepository {
 
     fun getConfiguration(context: EntityContext, provider: NlpEngineProvider): NlpApplicationConfiguration =
         getEntityModelHolder(context, provider)?.configuration
-                ?: provider.modelBuilder.defaultNlpApplicationConfiguration()
+            ?: provider.modelBuilder.defaultNlpApplicationConfiguration()
 
     fun getEntityModelHolder(context: EntityContext, provider: NlpEngineProvider): EntityModelHolder? {
         return context
@@ -174,7 +172,6 @@ internal object NlpModelRepository {
             } ?: ConfiguredModel(null, now(), provider.configuration())
     }
 
-
     private fun saveModel(copy: (OutputStream) -> Unit, save: (InputStream) -> Unit, retry: Boolean = true) {
         val pipedOutputStream = PipedOutputStream()
         val pipedInputStream = PipedInputStream(pipedOutputStream)
@@ -196,7 +193,6 @@ internal object NlpModelRepository {
             }
             latch.await(1, MINUTES)
             logger.debug { "latch release" }
-
         }
         pipedInputStream.use {
             try {
@@ -253,5 +249,4 @@ internal object NlpModelRepository {
     fun removeIntentModelsNotIn(keys: List<IntentContextKey>) {
         modelDAO.deleteIntentModelsNotIn(keys)
     }
-
 }

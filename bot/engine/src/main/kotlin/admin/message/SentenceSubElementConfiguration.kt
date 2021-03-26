@@ -27,5 +27,4 @@ data class SentenceSubElementConfiguration(
     val texts: Map<String, I18nLabelValue> = emptyMap(),
     val locations: List<LocationConfiguration> = emptyList(),
     val metadata: Map<String, String> = emptyMap()
-) {
-}
+)

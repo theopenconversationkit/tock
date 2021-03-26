@@ -5,8 +5,6 @@ import ai.tock.shared.Executor
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import java.time.Duration
-import java.util.Collections
-import java.util.LinkedList
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.TimeUnit
 
@@ -64,7 +62,7 @@ class ConnectorQueue(private val executor: Executor) {
             send(action.action)
         } finally {
             synchronized(queue) {
-                //remove the current one
+                // remove the current one
                 queue.poll()
                 queue.peek()
             }?.also { a ->

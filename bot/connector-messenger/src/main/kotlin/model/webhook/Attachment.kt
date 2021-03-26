@@ -16,9 +16,8 @@
 
 package ai.tock.bot.connector.messenger.model.webhook
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import ai.tock.bot.connector.messenger.json.webhook.AttachmentDeserializer
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 
 @JsonDeserialize(using = AttachmentDeserializer::class)
-data class Attachment(val type: AttachmentType, val payload: Payload) {
-}
+data class Attachment(val type: AttachmentType, val payload: Payload)

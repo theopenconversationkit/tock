@@ -93,7 +93,6 @@ internal class WhatsAppClient(
             @Header("Content-Type") contentType: String,
             @Body body: RequestBody
         ): Call<MediaResponse>
-
     }
 
     private val logger = KotlinLogging.logger {}
@@ -218,7 +217,6 @@ internal class WhatsAppClient(
                                 response2.logError()
                             }
                         }
-
                     }
                     is WhatsAppSendBotInteractiveMessage -> {
                         val response = api.sendMessage(message).execute()
@@ -227,7 +225,6 @@ internal class WhatsAppClient(
                         }
                     }
                 }
-
             } catch (e: Exception) {
                 logger.error(e)
             }
@@ -252,6 +249,4 @@ internal class WhatsAppClient(
             false
         }
     }
-
-
 }

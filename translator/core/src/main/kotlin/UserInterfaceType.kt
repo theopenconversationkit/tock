@@ -22,5 +22,4 @@ package ai.tock.translator
 enum class UserInterfaceType {
 
     textChat, voiceAssistant, textAndVoiceAssistant
-
 }

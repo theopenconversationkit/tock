@@ -122,7 +122,7 @@ internal class BotVerticle(
     }
 
     override fun protectedPaths(): Set<String> {
-        //TODO remove deprecated tock_bot_protected_path property
+        // TODO remove deprecated tock_bot_protected_path property
         val path = property("tock_bot_protected_path", "/admin")
         val paths = listProperty("tock_bot_protected_paths", listOf("/admin"))
 
@@ -149,7 +149,7 @@ internal class BotVerticle(
     private fun install() {
         if (handlers.any { !it.value.installed }) {
             logger.info { "Install Bot Services / ${handlers.size} registered" }
-            //sort installers by registration date to keep registration order
+            // sort installers by registration date to keep registration order
             handlers.values.sortedBy { it.registrationDate }.forEach {
                 it.install()
             }
@@ -205,6 +205,5 @@ internal class BotVerticle(
             }
         }
         super.startServer(promise, port)
-
     }
 }

@@ -41,8 +41,7 @@ internal class OptionDeserializer : JacksonDeserializer<AbstractOption>() {
             var other: EmptyJson? = null
         )
 
-        val (label, description, metadata)
-            = jp.read<MediaFields> { fields, name ->
+        val (label, description, metadata) = jp.read<MediaFields> { fields, name ->
             with(fields) {
                 when (name) {
                     "label" -> label = jp.readValue()
@@ -59,5 +58,4 @@ internal class OptionDeserializer : JacksonDeserializer<AbstractOption>() {
             Option.of(label!!, description, metadata!!)
         }
     }
-
 }

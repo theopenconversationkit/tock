@@ -16,7 +16,6 @@
 
 package ai.tock.duckling.client
 
-
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 
@@ -26,11 +25,9 @@ internal class JSONValue(val value: Any?) {
         val NULL_VALUE = JSONValue(null)
     }
 
-    operator fun get(i: Int): JSONValue
-            = if( isNull()) NULL_VALUE else if (value is JsonArray) JSONValue(value.getValue(i)) else throw IllegalArgumentException("supported only for array but is $value")
+    operator fun get(i: Int): JSONValue = if (isNull()) NULL_VALUE else if (value is JsonArray) JSONValue(value.getValue(i)) else throw IllegalArgumentException("supported only for array but is $value")
 
-    operator fun get(name: String): JSONValue
-            = if( isNull()) NULL_VALUE else if (value is JsonObject) JSONValue(value.getValue(name)) else if (value is Map<*, *>) JSONValue(value.get(name)) else throw IllegalArgumentException("supported only for map but is $value")
+    operator fun get(name: String): JSONValue = if (isNull()) NULL_VALUE else if (value is JsonObject) JSONValue(value.getValue(name)) else if (value is Map<*, *>) JSONValue(value.get(name)) else throw IllegalArgumentException("supported only for map but is $value")
 
     fun string(): String = value.toString()
 
@@ -49,5 +46,4 @@ internal class JSONValue(val value: Any?) {
     fun iterable(): Iterable<JSONValue> = (value as JsonArray).list.map { JSONValue(it) }
 
     override fun toString(): String = string()
-
 }

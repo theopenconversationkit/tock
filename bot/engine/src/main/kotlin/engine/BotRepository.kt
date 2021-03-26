@@ -57,14 +57,14 @@ import ai.tock.shared.provide
 import ai.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
+import mu.KotlinLogging
+import org.litote.kmongo.Id
 import java.util.ServiceLoader
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.locks.Lock
-import mu.KotlinLogging
-import org.litote.kmongo.Id
 
 /**
  * Advanced bot configuration.
@@ -75,7 +75,7 @@ object BotRepository {
 
     private val logger = KotlinLogging.logger {}
 
-    //load only specified configuration ids (dev mode)
+    // load only specified configuration ids (dev mode)
     private val restrictedConfigurationIds: List<String> = listProperty("tock_restricted_configuration_id", emptyList())
 
     private val botConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
@@ -103,7 +103,7 @@ object BotRepository {
         ConcurrentHashMap()
 
     private val applicationIdBotApplicationConfigurationMap:
-            ConcurrentHashMap<BotApplicationConfigurationKey, BotApplicationConfiguration> = ConcurrentHashMap()
+        ConcurrentHashMap<BotApplicationConfigurationKey, BotApplicationConfiguration> = ConcurrentHashMap()
 
     @Volatile
     internal var botsInstalled: Boolean = false
@@ -212,8 +212,8 @@ object BotRepository {
         val userState = userTimeline.userState
         val currentState = userState.botDisabled
 
-        if (stateModifier == NotifyBotStateModifier.ACTIVATE_ONLY_FOR_THIS_NOTIFICATION
-            || stateModifier == NotifyBotStateModifier.REACTIVATE
+        if (stateModifier == NotifyBotStateModifier.ACTIVATE_ONLY_FOR_THIS_NOTIFICATION ||
+            stateModifier == NotifyBotStateModifier.REACTIVATE
         ) {
             userState.botDisabled = false
             userTimelineDAO.save(userTimeline, botDefinition)
@@ -327,7 +327,7 @@ object BotRepository {
     ) {
         val bots = botProviders.values.map { it.botDefinition() }
 
-        //check that nlp applications exist
+        // check that nlp applications exist
         if (createApplicationIfNotExists) {
             bots.distinctBy { it.namespace to it.nlpModelName }
                 .forEach { botDefinition ->
@@ -345,24 +345,24 @@ object BotRepository {
                 }
         }
 
-        //persist builtin stories
+        // persist builtin stories
         botProviders.values.forEach {
             registerBuiltInStoryDefinitions(it)
         }
 
-        //load configurations
+        // load configurations
         try {
             checkBotConfigurations(startup = true)
         } catch (e: Exception) {
             logger.error(e)
         }
 
-        //register services
+        // register services
         routerHandlers.forEachIndexed { index, handler ->
             verticle.registerServices("_handler_$index", handler)
         }
 
-        //deploy verticle
+        // deploy verticle
         if (botsInstalled) {
             logger.warn { "bot already installed - try to configure new confs" }
             verticle.configure()
@@ -378,7 +378,7 @@ object BotRepository {
                     if (it.succeeded()) {
                         logger.info { "Bots installed" }
                         botsInstalled = true
-                        //listen future changes
+                        // listen future changes
                         botConfigurationDAO.listenChanges { checkAsyncBotConfigurations() }
                         botConfigurationDAO.listenBotChanges { checkAsyncBotConfigurations(true) }
                     } else {
@@ -389,7 +389,6 @@ object BotRepository {
                 logger.error("Lock is not free")
             }
         }
-
     }
 
     /**
@@ -409,16 +408,16 @@ object BotRepository {
     @Synchronized
     fun checkBotConfigurations(startup: Boolean = false, botConfigurationChanged: Boolean = false) {
         logger.debug { "check configurations" }
-        //the application definition cache
+        // the application definition cache
         val botConfigurationsCache = mutableSetOf<BotConfiguration>()
-        //the existing confs mapped by path
+        // the existing confs mapped by path
         val existingConfsByPath: Map<String?, BotApplicationConfiguration> = connectorControllerMap.keys
             .groupBy { it.path }.mapValues { it.value.first() }
-        //the existing confs mapped by id
+        // the existing confs mapped by id
         val existingConfsById: Map<Id<BotApplicationConfiguration>, BotApplicationConfiguration> =
             connectorControllerMap.keys
                 .groupBy { it._id }.mapValues { it.value.first() }
-        //path -> botAppConf
+        // path -> botAppConf
         val confs: Map<Id<BotApplicationConfiguration>, BotApplicationConfiguration> =
             botConfigurationDAO
                 .getConfigurations()
@@ -427,15 +426,17 @@ object BotRepository {
                 .filter { restrictedConfigurationIds.isEmpty() || restrictedConfigurationIds.contains(it.value.applicationId) }
 
         confs.values.forEach { c ->
-            //gets the provider
+            // gets the provider
             val provider = botProviders[BotProviderId(c.botId, c.namespace, c.name)]
                 ?: botProviders[BotProviderId(c.botId, c.namespace)]
 
-            //is there a configuration change ?
+            // is there a configuration change ?
             if (provider != null &&
-                (provider.configurationUpdated
-                        || botConfigurationChanged
-                        || existingConfsByPath[c.path]?.takeIf { c.equalsWithoutId(it) } == null)
+                (
+                    provider.configurationUpdated ||
+                        botConfigurationChanged ||
+                        existingConfsByPath[c.path]?.takeIf { c.equalsWithoutId(it) } == null
+                    )
             ) {
                 val botDefinition = provider.botDefinition()
                 if (botDefinition.namespace == c.namespace) {
@@ -445,10 +446,10 @@ object BotRepository {
                     try {
                         val connector = findConnectorProvider(c.connectorType)?.connector(ConnectorConfiguration(c))
                         if (connector != null) {
-                            //install new conf
+                            // install new conf
                             createBot(botDefinition, connector, c, botConfigurationsCache)
                             if (oldConfigurationController != null) {
-                                //remove old conf
+                                // remove old conf
                                 removeBot(oldConfigurationController)
                                 if (oldConfiguration != c) {
                                     connectorControllerMap.remove(oldConfiguration)
@@ -466,18 +467,18 @@ object BotRepository {
             }
         }
 
-        //remove deleted confs
+        // remove deleted confs
         existingConfsById.values.forEach { conf ->
             if (!confs.containsKey(conf._id)) {
                 removeBot(conf)
             }
         }
 
-        //updates of all bot providers are now ok
+        // updates of all bot providers are now ok
         botProviders.values.forEach { it.configurationUpdated = false }
 
         if (!startup) {
-            //register new confs
+            // register new confs
             verticle.configure()
         }
         logger.debug { "end check configurations" }
@@ -537,13 +538,13 @@ object BotRepository {
         return botConfigurationDAO.save(conf)
             .apply {
                 val controller = TockConnectorController.register(connector, bot, verticle, conf)
-                //install connector services
+                // install connector services
                 connectorServices.forEach { connectorService ->
                     connectorService.install(controller, conf)
                 }
-                //monitor bot
+                // monitor bot
                 StoryConfigurationMonitor.monitor(bot)
-                //register connector controller map
+                // register connector controller map
                 connectorControllerMap[this] = controller
                 applicationIdBotApplicationConfigurationMap[toKey()] = this
             }
@@ -565,5 +566,4 @@ object BotRepository {
             }
         }
     }
-
 }

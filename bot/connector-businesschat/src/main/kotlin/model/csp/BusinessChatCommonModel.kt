@@ -16,8 +16,8 @@
 
 package ai.tock.bot.connector.businesschat.model.csp
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.connector.businesschat.model.common.MessageType
+import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.UUID
 
 /**

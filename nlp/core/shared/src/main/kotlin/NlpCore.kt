@@ -34,10 +34,12 @@ interface NlpCore {
     /**
      * Parse text with NLP engine.
      */
-    fun parse(context: CallContext,
-              text: String,
-              intentSelector: IntentSelector = defaultIntentSelector)
-            : ParsingResult
+    fun parse(
+        context: CallContext,
+        text: String,
+        intentSelector: IntentSelector = defaultIntentSelector
+    ):
+        ParsingResult
 
     /**
      * Supported nlp engines.
@@ -54,9 +56,10 @@ interface NlpCore {
      * @return the evaluated entities
      */
     fun evaluateEntities(
-            context: CallContext,
-            text: String,
-            entities: List<EntityRecognition>): List<EntityRecognition>
+        context: CallContext,
+        text: String,
+        entities: List<EntityRecognition>
+    ): List<EntityRecognition>
 
     /**
      * Does the given [EntityType] supports values merge?

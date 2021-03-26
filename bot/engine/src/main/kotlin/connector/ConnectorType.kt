@@ -17,7 +17,6 @@
 package ai.tock.bot.connector
 
 import ai.tock.translator.UserInterfaceType
-import java.util.ServiceLoader
 
 /**
  * A connector identifier.

@@ -19,9 +19,9 @@ package ai.tock.duckling.client
 import ai.tock.nlp.core.IntOpenRange
 import ai.tock.nlp.entity.Value
 
-internal data class ValueWithRange(override val start: Int,
-                                   override val end: Int,
-                                   val value: Value,
-                                   val type: String) : IntOpenRange {
-
-}
+internal data class ValueWithRange(
+    override val start: Int,
+    override val end: Int,
+    val value: Value,
+    val type: String
+) : IntOpenRange

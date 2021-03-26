@@ -43,5 +43,4 @@ class ValueTypeIdResolver : TypeIdResolverBase() {
     override fun getMechanism(): JsonTypeInfo.Id {
         return JsonTypeInfo.Id.NAME
     }
-
 }

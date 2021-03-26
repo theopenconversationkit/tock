@@ -56,5 +56,4 @@ object BuiltInKeywordListener : NlpListener {
             keywordServices.asSequence().mapNotNull { it.detectKeywordIntent(sentence) }.firstOrNull()
         }
     }
-
 }

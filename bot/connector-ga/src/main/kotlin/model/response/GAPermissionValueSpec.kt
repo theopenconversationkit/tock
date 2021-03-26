@@ -16,17 +16,16 @@
 
 package ai.tock.bot.connector.ga.model.response
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.connector.ga.model.GAIntent
 import ai.tock.bot.connector.ga.model.request.GAPermission
+import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  *
  */
 data class GAPermissionValueSpec(
-        @get:JsonProperty("opt_context")
-        val optContext: String?,
-        val permissions: Set<GAPermission>,
-        val updatePermissionValueSpec: GAUpdatePermissionValueSpec? = null
-) : GAInputValueData(GAIntent.permission.type!!) {
-}
+    @get:JsonProperty("opt_context")
+    val optContext: String?,
+    val permissions: Set<GAPermission>,
+    val updatePermissionValueSpec: GAUpdatePermissionValueSpec? = null
+) : GAInputValueData(GAIntent.permission.type!!)

@@ -16,16 +16,16 @@
 
 package ai.tock.duckling.service
 
-import clojure.lang.Keyword
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.databind.JsonSerializer
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.module.SimpleModule
 import ai.tock.shared.error
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.blocking
 import ai.tock.shared.vertx.detailedHealthcheck
+import clojure.lang.Keyword
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind.JsonSerializer
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.module.SimpleModule
 import io.vertx.core.Promise
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
@@ -66,7 +66,6 @@ class DucklingVerticle : WebVerticle() {
         }
     }
 
-
     override fun defaultHealthcheck(): (RoutingContext) -> Unit {
         return { context -> if (DucklingBridge.initialized) context.response().end() else context.fail(500) }
     }
@@ -96,6 +95,7 @@ class DucklingVerticle : WebVerticle() {
                 } else {
                     promise.fail(it.cause())
                 }
-            })
+            }
+        )
     }
 }

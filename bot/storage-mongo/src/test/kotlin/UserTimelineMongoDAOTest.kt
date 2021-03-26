@@ -83,6 +83,5 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
             newId,
             UserTimelineMongoDAO.loadWithoutDialogs("namespace", newId).playerId
         )
-
     }
 }

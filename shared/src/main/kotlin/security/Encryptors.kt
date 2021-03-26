@@ -84,7 +84,7 @@ fun decrypt(s: String): String {
  */
 fun initEncryptor() {
     if (encryptionEnabled) {
-        //warmup encryptor
+        // warmup encryptor
         logger.info { "initialize encryptor..." }
         decrypt(encrypt("test"))
         logger.info { "encryptor initialized" }

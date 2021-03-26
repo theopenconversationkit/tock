@@ -27,7 +27,6 @@ import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import org.apache.http.HttpStatus
 
-
 // Bearer Tokens received by bots will always specify this issuer.
 private const val CHAT_ISSUER = "chat@system.gserviceaccount.com"
 
@@ -60,7 +59,6 @@ class GoogleChatAuthorisationHandler(private val botProjectNumber: String) : Han
             .build()
     }
 
-
     override fun handle(routingContext: RoutingContext) {
         val token = routingContext.request().getHeader("Authorization")?.takeIf { it.startsWith(BEARER_PREFIX) }
             ?.substringAfter(BEARER_PREFIX)
@@ -84,5 +82,4 @@ class GoogleChatAuthorisationHandler(private val botProjectNumber: String) : Han
             else -> null
         }
     }
-
 }

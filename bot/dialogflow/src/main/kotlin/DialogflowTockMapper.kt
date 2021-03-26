@@ -16,14 +16,14 @@
 
 package ai.tock.nlp.dialogflow
 
-import com.google.cloud.dialogflow.v2.QueryResult
-import com.google.protobuf.Value
 import ai.tock.nlp.api.client.model.Entity
 import ai.tock.nlp.api.client.model.EntityType
 import ai.tock.nlp.api.client.model.NlpEntityValue
 import ai.tock.nlp.api.client.model.NlpResult
 import ai.tock.nlp.entity.NumberValue
 import ai.tock.nlp.entity.StringValue
+import com.google.cloud.dialogflow.v2.QueryResult
+import com.google.protobuf.Value
 import java.util.Locale
 
 internal class DialogflowTockMapper {
@@ -93,5 +93,4 @@ internal class DialogflowTockMapper {
             staticResponse = queryResult.fulfillmentText.takeIf { it.trim().isNotEmpty() }
         )
     }
-
 }

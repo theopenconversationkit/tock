@@ -16,15 +16,15 @@
 
 package ai.tock.bot.connector.ga.model.response
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.connector.ga.model.request.GARequest
+import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  * Standard GA connector error.
  */
 data class GAStatusDetail(
-        val stackTrace: String,
-        val requestBody: String? = null,
-        val requestParsed: GARequest? = null,
-        @get:JsonProperty("@type") val type: String = "type.googleapis.com"
+    val stackTrace: String,
+    val requestBody: String? = null,
+    val requestParsed: GARequest? = null,
+    @get:JsonProperty("@type") val type: String = "type.googleapis.com"
 )

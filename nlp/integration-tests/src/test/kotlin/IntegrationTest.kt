@@ -66,7 +66,8 @@ class IntegrationTest {
                 Entity(EntityType("$defaultNamespace:locality"), "locality"),
                 null,
                 probability = 0.30666386016073854
-            ), result.firstValue("locality")
+            ),
+            result.firstValue("locality")
         )
         assertEquals(
             ParsedEntityValue(
@@ -76,11 +77,10 @@ class IntegrationTest {
                         0
                     ).withNano(0).withFixedOffsetZone(),
                     DateEntityGrain.day
-                ), true, probability = 0.6447195532270447, mergeSupport = true
-            ), result.firstValue("datetime")
+                ),
+                true, probability = 0.6447195532270447, mergeSupport = true
+            ),
+            result.firstValue("datetime")
         )
-
-
     }
-
 }

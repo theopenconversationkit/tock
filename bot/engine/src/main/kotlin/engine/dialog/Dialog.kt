@@ -109,5 +109,4 @@ data class Dialog(
      * Current number of actions in dialog history.
      */
     val actionsSize: Int get() = stories.sumBy { it.actions.size }
-
 }

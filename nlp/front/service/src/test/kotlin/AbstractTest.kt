@@ -16,10 +16,6 @@
 
 package ai.tock.nlp.front.service
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.provider
 import ai.tock.nlp.core.DictionaryRepository
 import ai.tock.nlp.core.NlpCore
 import ai.tock.nlp.front.service.storage.ApplicationDefinitionDAO
@@ -44,6 +40,10 @@ import ai.tock.shared.defaultLocale
 import ai.tock.shared.injector
 import ai.tock.shared.name
 import ai.tock.shared.tockInternalInjector
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.AfterEach
@@ -69,7 +69,7 @@ abstract class AbstractTest {
         val intentDefinitionDAO: IntentDefinitionDAO = mockk(relaxed = true)
         val classifiedSentenceDAO: ClassifiedSentenceDAO = mockk(relaxed = true)
         val dictionaryRepository: DictionaryRepository = mockk(relaxed = true)
-        val namespaceDAO:UserNamespaceDAO = mockk(relaxed = true)
+        val namespaceDAO: UserNamespaceDAO = mockk(relaxed = true)
 
         val frontTestModule = Kodein.Module {
             bind<ApplicationConfiguration>() with provider { config }
@@ -102,9 +102,11 @@ abstract class AbstractTest {
             every { config.getIntentByNamespaceAndName(namespace, intent2Definition.name) } returns intent2Definition
 
             tockInternalInjector = KodeinInjector()
-            injector.inject(Kodein {
-                import(frontTestModule)
-            })
+            injector.inject(
+                Kodein {
+                    import(frontTestModule)
+                }
+            )
         }
     }
 
@@ -136,7 +138,6 @@ abstract class AbstractTest {
     )
 
     val parseQuery = ParseQuery(listOf("a"), namespace, appName, QueryContext(defaultLocale, Dice.newId()))
-
 
     val intent2Name = "$namespace:intent2"
     val intent2Definition =

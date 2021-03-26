@@ -26,18 +26,18 @@ interface OrchestrationRequest
 
 data class AskEligibilityToOrchestratorRequest(
     val eligibleTargetBots: List<OrchestrationTargetedBot>,
-    val data : OrchestrationData,
+    val data: OrchestrationData,
     val action: SecondaryBotAction?,
-    val metadata : OrchestrationMetaData?
+    val metadata: OrchestrationMetaData?
 ) : OrchestrationRequest
 
 data class AskEligibilityToOrchestratedBotRequest(
-    val data : OrchestrationData,
+    val data: OrchestrationData,
     val action: SecondaryBotAction?,
-    val metadata : OrchestrationMetaData?
+    val metadata: OrchestrationMetaData?
 ) : OrchestrationRequest {
 
-    fun toAction(applicationId : String): Action {
+    fun toAction(applicationId: String): Action {
 
         val handoverMetaData = metadata ?: OrchestrationMetaData(
             playerId = PlayerId(Dice.newId(), PlayerType.user),
@@ -55,7 +55,7 @@ data class AskEligibilityToOrchestratedBotRequest(
 data class ResumeOrchestrationRequest(
     val targetBot: OrchestrationTargetedBot,
     val action: SecondaryBotAction,
-    val metadata : OrchestrationMetaData
+    val metadata: OrchestrationMetaData
 ) : OrchestrationRequest {
     fun toAction(): Event = action.toAction(metadata)
 }

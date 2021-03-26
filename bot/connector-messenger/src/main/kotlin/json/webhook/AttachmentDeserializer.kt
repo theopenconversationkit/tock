@@ -35,13 +35,13 @@ internal class AttachmentDeserializer : JacksonDeserializer<Attachment>() {
         private val logger = KotlinLogging.logger {}
     }
 
-
     override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Attachment? {
-        //facebook can send empty attachments (ie attachments:[{}])
+        // facebook can send empty attachments (ie attachments:[{}])
         data class AttachmentFields(
             var type: AttachmentType? = null,
             var payload: Payload? = null,
-            var other: EmptyJson? = null)
+            var other: EmptyJson? = null
+        )
 
         val (type, payload) = jp.read<AttachmentFields> { fields, name ->
             with(fields) {

@@ -22,8 +22,8 @@ import ai.tock.nlp.core.EntityType
 import ai.tock.nlp.core.EntityValue
 import ai.tock.nlp.core.Intent
 import ai.tock.nlp.core.NlpEngineType
-import ai.tock.nlp.model.EntityCallContextForIntent
 import ai.tock.nlp.core.configuration.NlpApplicationConfiguration.Companion.EMPTY_CONFIGURATION
+import ai.tock.nlp.model.EntityCallContextForIntent
 import ai.tock.nlp.model.service.engine.EntityModelHolder
 import ai.tock.shared.defaultLocale
 import io.mockk.every
@@ -109,7 +109,8 @@ class OpenNlpEntityClassifierTest {
             listOf(
                 EntityRecognition(EntityValue(0, 1, entity), 0.8),
                 EntityRecognition(EntityValue(7, 8, entity), 0.6)
-            ), result
+            ),
+            result
         )
     }
 
@@ -157,8 +158,10 @@ class OpenNlpEntityClassifierTest {
                                 subEntities = emptyList()
                             ),
                             role = "location"
-                        ), value = null, subEntities = emptyList(), evaluated = false
-                    ), probability = 0.5499999999999999
+                        ),
+                        value = null, subEntities = emptyList(), evaluated = false
+                    ),
+                    probability = 0.5499999999999999
                 )
             ),
             result

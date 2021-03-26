@@ -20,7 +20,7 @@ import ai.tock.bot.api.model.BotResponse
 import ai.tock.bot.api.model.configuration.ClientConfiguration
 
 data class ResponseData(
-    val requestId:String,
-    val botResponse:BotResponse? = null,
+    val requestId: String,
+    val botResponse: BotResponse? = null,
     val botConfiguration: ClientConfiguration? = null
 )

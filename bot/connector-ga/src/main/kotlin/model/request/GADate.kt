@@ -16,6 +16,4 @@
 
 package ai.tock.bot.connector.ga.model.request
 
-data class GADate(val year: Int, val month: Int, val day: Int) {
-
-}
+data class GADate(val year: Int, val month: Int, val day: Int)

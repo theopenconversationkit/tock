@@ -17,8 +17,6 @@
 package ai.tock.bot.connector.ga.model.request
 
 data class GADateTime(
-        val date: GADate,
-        val time: GATimeOfDay
-        ) {
-}
-
+    val date: GADate,
+    val time: GATimeOfDay
+)

@@ -17,7 +17,6 @@
 package ai.tock.bot.connector.messenger
 
 import ai.tock.bot.connector.ConnectorException
-import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.messenger.model.Recipient
 import ai.tock.bot.connector.messenger.model.UserProfile
 import ai.tock.bot.connector.messenger.model.attachment.AttachmentRequest
@@ -104,23 +103,27 @@ internal class MessengerClient(val secretKey: String) {
 
         @POST("/v$VERSION/{appId}/subscriptions")
         fun subscriptions(
-            @Path("appId") appId: String, @Query("object") obj: String,
-            @Query("callback_url") callbackUrl: String, @Query("fields") fields: String,
-            @Query("verify_token") verifyToken: String, @Query("access_token") appAccessToken: String
+            @Path("appId") appId: String,
+            @Query("object") obj: String,
+            @Query("callback_url") callbackUrl: String,
+            @Query("fields") fields: String,
+            @Query("verify_token") verifyToken: String,
+            @Query("access_token") appAccessToken: String
         ): Call<SuccessResponse>
 
         @DELETE("/v$VERSION/{pageId}/subscribed_apps")
         fun deleteSubscribedApps(
-            @Path("pageId") pageId: String, @Query("subscribed_fields") subscribedFields: String,
+            @Path("pageId") pageId: String,
+            @Query("subscribed_fields") subscribedFields: String,
             @Query("access_token") accessToken: String
         ): Call<SuccessResponse>
 
         @POST("/v$VERSION/{pageId}/subscribed_apps")
         fun subscribedApps(
-            @Path("pageId") pageId: String, @Query("subscribed_fields") subscribedFields: String,
+            @Path("pageId") pageId: String,
+            @Query("subscribed_fields") subscribedFields: String,
             @Query("access_token") accessToken: String
         ): Call<SuccessResponse>
-
     }
 
     interface StatusApi {
@@ -177,7 +180,7 @@ internal class MessengerClient(val secretKey: String) {
         return try {
             send(actionRequest) { graphApi.sendAction(token, actionRequest).execute() }
         } catch (e: Exception) {
-            //log and ignore
+            // log and ignore
             logger.info(e)
             null
         }
@@ -191,7 +194,7 @@ internal class MessengerClient(val secretKey: String) {
         return try {
             send(request) { graphApi.requestThreadControl(token, request).execute() }
         } catch (e: Exception) {
-            //log and ignore
+            // log and ignore
             logger.error(e)
             null
         }
@@ -201,7 +204,7 @@ internal class MessengerClient(val secretKey: String) {
         return try {
             send(request) { graphApi.takeThreadControl(token, request).execute() }
         } catch (e: Exception) {
-            //log and ignore
+            // log and ignore
             logger.error(e)
             null
         }
@@ -211,7 +214,7 @@ internal class MessengerClient(val secretKey: String) {
         return try {
             send(request) { graphApi.passThreadControl(token, request).execute() }
         } catch (e: Exception) {
-            //log and ignore
+            // log and ignore
             logger.error(e)
             null
         }
@@ -303,7 +306,7 @@ internal class MessengerClient(val secretKey: String) {
                 if (request is MessageRequest && nbTries <= nbRetriesLimit && errorBody != null) {
                     val errorContainer: SendResponseErrorContainer = mapper.readValue(errorBody)
                     if (errorContainer.error != null) {
-                        //cf https://developers.facebook.com/docs/messenger-platform/send-api-reference/errors
+                        // cf https://developers.facebook.com/docs/messenger-platform/send-api-reference/errors
                         with(errorContainer.error) {
                             if (code == 1200 || code == 613 || (code == 200 && errorSubcode == 1545041)) {
                                 logger.info { "Try to send again in $nbRetriesWaitInMs ms $request" }
@@ -333,7 +336,7 @@ internal class MessengerClient(val secretKey: String) {
         return try {
             graphApi.getSubscriptions(appId, appToken).execute().body()
         } catch (e: Exception) {
-            //log and ignore
+            // log and ignore
             logger.error(e)
             null
         }
@@ -352,7 +355,7 @@ internal class MessengerClient(val secretKey: String) {
             }
             graphApi.subscriptions(appId, "page", callbackUrl, fields, verifyToken, appToken).execute().body()
         } catch (e: Exception) {
-            //log and ignore
+            // log and ignore
             logger.error(e)
             null
         }
@@ -362,7 +365,7 @@ internal class MessengerClient(val secretKey: String) {
         return try {
             graphApi.deleteSubscribedApps(pageId, fields, token).execute().body()
         } catch (e: Exception) {
-            //log and ignore
+            // log and ignore
             logger.error(e)
             null
         }
@@ -372,7 +375,7 @@ internal class MessengerClient(val secretKey: String) {
         return try {
             graphApi.subscribedApps(pageId, fields, token).execute().body()
         } catch (e: Exception) {
-            //log and ignore
+            // log and ignore
             logger.error(e)
             null
         }

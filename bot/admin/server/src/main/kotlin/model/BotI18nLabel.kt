@@ -48,12 +48,12 @@ data class BotI18nLabel(
             stats: List<I18nLabelStat>
         ): List<I18nLabelStat> =
             stats.filter { s ->
-                s.hasSameLanguage(label)
-                    && (
-                    (label.interfaceType == s.interfaceType && s.connectorId == label.connectorId) ||
-                        (label.connectorId == null && label.interfaceType == s.interfaceType && labels.none { it != label && it.label.isNotBlank() && s.hasSameLanguage(it) && it.interfaceType == s.interfaceType && it.connectorId == s.connectorId }) ||
-                        (label.connectorId == null && label.interfaceType == textChat && labels.none { it != label && it.label.isNotBlank() && s.hasSameLanguage(it) && it.interfaceType == s.interfaceType })
-                    )
+                s.hasSameLanguage(label) &&
+                    (
+                        (label.interfaceType == s.interfaceType && s.connectorId == label.connectorId) ||
+                            (label.connectorId == null && label.interfaceType == s.interfaceType && labels.none { it != label && it.label.isNotBlank() && s.hasSameLanguage(it) && it.interfaceType == s.interfaceType && it.connectorId == s.connectorId }) ||
+                            (label.connectorId == null && label.interfaceType == textChat && labels.none { it != label && it.label.isNotBlank() && s.hasSameLanguage(it) && it.interfaceType == s.interfaceType })
+                        )
             }
     }
 
@@ -70,5 +70,4 @@ data class BotI18nLabel(
             stats.filter { label.i18n.none { l -> it.hasSameLanguage(l) } },
             label.version
         )
-
 }

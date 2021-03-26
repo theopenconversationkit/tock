@@ -20,11 +20,9 @@ package ai.tock.bot.connector.rest.client.model
  *
  */
 data class ClientMessageRequest(
-        val userId: String,
-        val recipientId: String,
-        val message: ClientMessage,
-        val targetConnectorType: ClientConnectorType,
-        val test: Boolean = false
-) {
-
-}
+    val userId: String,
+    val recipientId: String,
+    val message: ClientMessage,
+    val targetConnectorType: ClientConnectorType,
+    val test: Boolean = false
+)

@@ -72,7 +72,6 @@ internal object SlackConnectorProvider : ConnectorProvider {
         )
 
     override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(SlackMessageOut::class)
-
 }
 
 internal class SlackConnectorProviderService : ConnectorProvider by SlackConnectorProvider

@@ -16,8 +16,6 @@
 
 package ai.tock.bot.connector.alexa
 
-import com.amazon.speech.ui.Card
-import com.amazon.speech.ui.StandardCard
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.action.SendAttachment.AttachmentType
@@ -26,6 +24,8 @@ import ai.tock.bot.engine.message.GenericMessage
 import ai.tock.bot.engine.message.GenericMessage.Companion.TEXT_PARAM
 import ai.tock.bot.engine.message.GenericMessage.Companion.TITLE_PARAM
 import ai.tock.shared.mapNotNullValues
+import com.amazon.speech.ui.Card
+import com.amazon.speech.ui.StandardCard
 
 /**
  * An alexa message.

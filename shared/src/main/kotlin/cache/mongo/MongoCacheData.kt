@@ -17,9 +17,9 @@
 package ai.tock.shared.cache.mongo
 
 import ai.tock.shared.jackson.AnyValueWrapper
+import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
-import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.newId
 import java.time.Instant
 
@@ -50,5 +50,4 @@ internal class MongoCacheData(
     fun toValue(): Any {
         return s ?: b ?: a!!.value!!
     }
-
 }

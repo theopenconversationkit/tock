@@ -19,5 +19,4 @@ package ai.tock.nlp.entity
 /**
  *
  */
-data class NumberValue(val value: Number) : Value {
-}
+data class NumberValue(val value: Number) : Value

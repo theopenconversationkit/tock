@@ -23,7 +23,6 @@ enum class DumpType {
     full, obfuscated;
 
     companion object {
-        fun parseDumpType(s:String) : DumpType
-            = values().firstOrNull { it.name == s } ?: obfuscated
+        fun parseDumpType(s: String): DumpType = values().firstOrNull { it.name == s } ?: obfuscated
     }
 }

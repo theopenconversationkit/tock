@@ -29,7 +29,6 @@ import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
 
-
 internal class ChatBaseClient {
 
     private val BASE_URL = "https://www.chatbase.com/"
@@ -38,7 +37,6 @@ internal class ChatBaseClient {
 
         @POST("/api/message")
         fun message(@Body message: Message): Call<Response>
-
     }
 
     private val logger = KotlinLogging.logger {}
@@ -74,10 +72,9 @@ internal class ChatBaseClient {
                 false
             }
         } catch (e: Exception) {
-            //log and ignore
+            // log and ignore
             logger.error(e)
             false
         }
     }
-
 }

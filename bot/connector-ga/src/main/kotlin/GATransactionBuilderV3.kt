@@ -34,8 +34,7 @@ import ai.tock.bot.engine.I18nTranslator
 /**
  * Build a [GATransactionRequirementsCheckSpecV3] response.
  */
-fun I18nTranslator.gaTransactionRequirementsCheckV3(
-): GAResponseConnectorMessage =
+fun I18nTranslator.gaTransactionRequirementsCheckV3(): GAResponseConnectorMessage =
     gaMessage(
         GAExpectedIntent(
             GAIntent.transactionRequirementsCheckV3,
@@ -60,7 +59,6 @@ private inline fun <reified T> ConnectorMessage.findTransactionObject(intent: GA
                     ?.filterIsInstance<T>()
                     ?.firstOrNull()
             }
-
     }
 
 /**
@@ -89,7 +87,6 @@ fun I18nTranslator.gaTransactionOrderDecision(
  */
 fun ConnectorMessage.findTransactionDecisionValueV3(): GATransactionDecisionValueV3? =
     findTransactionObject(GAIntent.transactionDecisionV3)
-
 
 /**
  * Build an [GAStructuredResponse] from an [GAOrderUpdateV3].

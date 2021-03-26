@@ -16,11 +16,11 @@
 
 package ai.tock.bot.connector.whatsapp.model.webhook
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.whatsapp.model.common.WhatsAppError
 import ai.tock.bot.connector.whatsapp.whatsAppConnectorType
+import com.fasterxml.jackson.annotation.JsonIgnore
 
 /**
  * See https://developers.facebook.com/docs/whatsapp/api/webhooks/inbound#message-obj.

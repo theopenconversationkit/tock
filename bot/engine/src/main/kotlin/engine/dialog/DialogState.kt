@@ -86,7 +86,6 @@ data class DialogState(
         }
     }
 
-
     /**
      * Set a new entity value. Remove previous entity values history.
      *
@@ -187,5 +186,4 @@ data class DialogState(
     fun hasEntityPredefinedValue(role: String, value: String): Boolean {
         return hasEntityPredefinedValue(currentEntityValues(), role, value)
     }
-
 }

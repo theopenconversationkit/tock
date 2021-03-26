@@ -25,7 +25,7 @@ import org.litote.kmongo.Id
  *
  */
 data class BotDialogRequest(
-        val botApplicationConfigurationId: Id<BotApplicationConfiguration>,
-        val message: Message,
-        val userIdModifier:String = "") : ApplicationScopedQuery() {
-}
+    val botApplicationConfigurationId: Id<BotApplicationConfiguration>,
+    val message: Message,
+    val userIdModifier: String = ""
+) : ApplicationScopedQuery()

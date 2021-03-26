@@ -46,8 +46,9 @@ open class SendSentence(
     /**
      * Used by analysed nlp (ie Alexa).
      */
-    val precomputedNlp: NlpResult? = null)
-    : Action(playerId, recipientId, applicationId, id, date, state, metadata) {
+    val precomputedNlp: NlpResult? = null
+) :
+    Action(playerId, recipientId, applicationId, id, date, state, metadata) {
 
     @Transient
     val stringText: String? = text?.toString()

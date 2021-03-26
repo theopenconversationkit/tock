@@ -31,7 +31,8 @@ object WebSocketController {
 
     private class Handler(
         var pushHandler: ((String) -> Unit)? = null,
-        var receiveHandler: ((String) -> Unit)? = null)
+        var receiveHandler: ((String) -> Unit)? = null
+    )
 
     /**
      * Is websocket enabled ?

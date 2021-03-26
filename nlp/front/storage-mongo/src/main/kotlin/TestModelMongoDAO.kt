@@ -16,7 +16,6 @@
 
 package ai.tock.nlp.front.storage.mongo
 
-import com.mongodb.client.MongoCollection
 import ai.tock.nlp.front.service.storage.TestModelDAO
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.test.EntityTestError
@@ -34,13 +33,14 @@ import ai.tock.nlp.front.shared.test.TestBuild_.Companion.ApplicationId
 import ai.tock.nlp.front.shared.test.TestBuild_.Companion.Language
 import ai.tock.nlp.front.shared.test.TestBuild_.Companion.StartDate
 import ai.tock.nlp.front.shared.test.TestErrorQuery
+import ai.tock.shared.ensureIndex
+import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.name
 import ai.tock.shared.namespace
+import com.mongodb.client.MongoCollection
 import org.litote.kmongo.Id
 import org.litote.kmongo.and
 import org.litote.kmongo.descendingSort
-import ai.tock.shared.ensureIndex
-import ai.tock.shared.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
@@ -95,7 +95,8 @@ internal object TestModelMongoDAO : TestModelDAO {
                             nbSentencesTested = it.nbSentencesTestedByIntent[intent] ?: 0,
                             nbErrors = intentErrors + entityErrors,
                             intentErrors = intentErrors,
-                            entityErrors = entityErrors)
+                            entityErrors = entityErrors
+                        )
                     }
                 }
                 .toList()

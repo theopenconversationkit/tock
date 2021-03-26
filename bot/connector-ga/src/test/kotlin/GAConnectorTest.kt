@@ -193,5 +193,4 @@ class GAConnectorTest {
 
         assertTrue(loginEvent.captured.checkLogin)
     }
-
 }

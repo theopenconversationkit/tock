@@ -66,7 +66,6 @@ class RunOrchestrationStoryListener(
         }
     }
 
-
     private fun BotBus.startOrchestration(): Boolean {
         logger.info { "Try to start an orchestration for intent ${intent?.wrappedIntent()?.name ?: "???"}" }
 
@@ -82,7 +81,6 @@ class RunOrchestrationStoryListener(
                 logger.info { "Fail to start an orchestration caused by a ${eligibility?.javaClass?.name ?: "null"} eligibility from the orchestrator" }
                 true
             }
-
         }
     }
 
@@ -165,7 +163,7 @@ class RunOrchestrationStoryListener(
                 return configuration.primaryBotOrchestrationEventHandler.onNoOrchestration(this, orchestration) == ComeBackFromSecondary.EXECUTE_INITIAL_STORY
             }
 
-            if(configuration.takeBackOrchestration?.invoke(this) == true) {
+            if (configuration.takeBackOrchestration?.invoke(this) == true) {
                 logger.info { "End of the orchestration caused by take back" }
                 orchestrationRepository.end(orchestration.playerId)
 
@@ -224,7 +222,6 @@ class RunOrchestrationStoryListener(
 
     private fun IntentAware?.inNoOrchestrationList(): Boolean =
         this?.wrappedIntent() in configuration.noOrchestrationIntentList
-
 }
 
 var BotBus.blockHandoverToSecondaryBot: Boolean

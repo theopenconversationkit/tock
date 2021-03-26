@@ -79,7 +79,6 @@ class BotBusMockTest {
         every { testContext.storyHandlerListeners } returns mutableListOf()
 
         every { testContext.botAnswerInterceptors } returns mutableListOf()
-
     }
 
     @Test

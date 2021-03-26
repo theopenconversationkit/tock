@@ -67,7 +67,7 @@ object ModelTesterService : ModelTester {
 
     private fun testApplicationModel(application: ApplicationDefinition, locale: Locale) {
         val sentences = config.getSentences(application.intents, locale, ClassifiedSentenceStatus.model)
-        //at least 100 validated sentences to test the model
+        // at least 100 validated sentences to test the model
         if (sentences.size > 100) {
             logger.info { "Start testing model for $application and locale $locale" }
             val intentCache = mutableMapOf<Id<IntentDefinition>, Intent>()
@@ -77,8 +77,10 @@ object ModelTesterService : ModelTester {
                         toApplication(application),
                         locale,
                         application.nlpEngineType,
-                        EntityEvaluationContext(mergeEntityTypes = application.mergeEngineTypes)),
-                    0.9F),
+                        EntityEvaluationContext(mergeEntityTypes = application.mergeEngineTypes)
+                    ),
+                    0.9F
+                ),
                 sentences.map { it.toSampleExpression({ config.toIntent(it, intentCache) }, { entityTypeByName(it) }) }
             )
             modelDAO.saveTestBuild(

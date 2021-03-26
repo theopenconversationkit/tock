@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * One of [id] or [userRef] must not be null.
  */
 data class Recipient(
-        val id: String?,
-        @JsonProperty("user_ref")
-        val userRef: String? = null) {
-}
+    val id: String?,
+    @JsonProperty("user_ref")
+    val userRef: String? = null
+)

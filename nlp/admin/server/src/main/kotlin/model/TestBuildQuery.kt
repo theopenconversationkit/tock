@@ -32,5 +32,6 @@ data class TestBuildQuery(
             intentName,
             after?.toInstant(),
             start,
-            size)
+            size
+        )
 }

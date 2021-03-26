@@ -13,5 +13,4 @@ interface ConnectorService {
      * Install service.
      */
     fun install(controller: ConnectorController, configuration: BotApplicationConfiguration)
-
 }

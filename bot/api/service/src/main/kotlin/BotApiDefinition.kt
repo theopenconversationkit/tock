@@ -62,7 +62,6 @@ internal class ApiStep(s: StepConfiguration) : StoryStep<StoryHandlerDefinition>
     override val intent: IntentAware = Intent(s.mainIntent)
     override val otherStarterIntents: Set<IntentAware> = s.otherStarterIntents.map { Intent(it) }.toSet()
     override val secondaryIntents: Set<IntentAware> = s.secondaryIntents.map { Intent(it) }.toSet()
-
 }
 
 internal class BotApiDefinition(

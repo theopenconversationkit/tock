@@ -54,5 +54,4 @@ class BlockOrchestrationStoryHandlerListener(private vararg val restrictions: Or
 
         return super.startAction(botBus, handler)
     }
-
 }

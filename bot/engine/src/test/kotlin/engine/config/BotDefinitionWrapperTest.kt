@@ -326,7 +326,6 @@ internal class BotDefinitionWrapperTest {
             assertSameStory(story2, outputStory)
         }
 
-
         @ParameterizedTest
         @EnumSource(AnswerConfigurationType::class)
         fun `GIVEN cycling redirections WHEN find story THEN return story`(type: AnswerConfigurationType) {

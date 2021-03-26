@@ -23,13 +23,12 @@ import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockkClass
 import io.mockk.slot
 import io.vertx.core.http.HttpServerResponse
-import org.junit.jupiter.api.Test
 import io.vertx.ext.web.RoutingContext
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
-
 
 data class Task(
     var returnValue: Boolean,
@@ -79,10 +78,11 @@ class DetailedHealthcheckTest {
     fun `All tasks should be invoked`() {
         healthcheck(routingContext)
         assertTrue(
-            taskA.invoked
-                && taskB.invoked
-                && taskC.invoked
-                && selfCheck.invoked)
+            taskA.invoked &&
+                taskB.invoked &&
+                taskC.invoked &&
+                selfCheck.invoked
+        )
     }
 
     @Test
@@ -90,10 +90,11 @@ class DetailedHealthcheckTest {
         selfCheck.returnValue = false
         healthcheck(routingContext)
         assertTrue(
-            !taskA.invoked
-                    && !taskB.invoked
-                    && !taskC.invoked
-                    && selfCheck.invoked)
+            !taskA.invoked &&
+                !taskB.invoked &&
+                !taskC.invoked &&
+                selfCheck.invoked
+        )
     }
 
     @Test
@@ -113,7 +114,7 @@ class DetailedHealthcheckTest {
     fun `Response JSON should contains 3 results with ids a, b, c`() {
         val mapper = jacksonObjectMapper()
         healthcheck(routingContext)
-        val data : DetailedHealthcheckResults = mapper.readValue(bodySlot.captured)
+        val data: DetailedHealthcheckResults = mapper.readValue(bodySlot.captured)
         assertEquals(data.results.size, 3)
         assertNotNull(data.results.find { r -> r.id == "a" })
         assertNotNull(data.results.find { r -> r.id == "b" })
@@ -124,7 +125,7 @@ class DetailedHealthcheckTest {
     fun `Response JSON task result status should be OK when the task return true`() {
         val mapper = jacksonObjectMapper()
         healthcheck(routingContext)
-        val data : DetailedHealthcheckResults = mapper.readValue(bodySlot.captured)
+        val data: DetailedHealthcheckResults = mapper.readValue(bodySlot.captured)
         val taskAResult = data.results.find { r -> r.id == "a" }
         assertEquals(taskAResult?.status, "OK")
     }
@@ -133,9 +134,8 @@ class DetailedHealthcheckTest {
     fun `Response JSON task result status should be KO when the task return true`() {
         val mapper = jacksonObjectMapper()
         healthcheck(routingContext)
-        val data : DetailedHealthcheckResults = mapper.readValue(bodySlot.captured)
+        val data: DetailedHealthcheckResults = mapper.readValue(bodySlot.captured)
         val taskAResult = data.results.find { r -> r.id == "b" }
         assertEquals(taskAResult?.status, "KO")
     }
-
 }

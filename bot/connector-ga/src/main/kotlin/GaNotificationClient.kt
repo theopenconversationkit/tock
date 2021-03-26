@@ -16,7 +16,6 @@
 
 package ai.tock.bot.connector.ga
 
-import com.google.auth.oauth2.ServiceAccountCredentials
 import ai.tock.bot.connector.ga.model.notification.GANotification
 import ai.tock.bot.connector.ga.model.notification.GAPushNotification
 import ai.tock.bot.connector.ga.model.notification.GATarget
@@ -29,6 +28,7 @@ import ai.tock.shared.property
 import ai.tock.shared.resourceAsStream
 import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import ai.tock.shared.tokenAuthenticationInterceptor
+import com.google.auth.oauth2.ServiceAccountCredentials
 import mu.KotlinLogging
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -97,5 +97,4 @@ class GaNotificationClient {
             )
         ) as ServiceAccountCredentials
     }
-
 }

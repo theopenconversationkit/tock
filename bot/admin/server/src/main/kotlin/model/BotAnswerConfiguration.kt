@@ -16,26 +16,24 @@
 
 package ai.tock.bot.admin.model
 
+import ai.tock.bot.admin.answer.AnswerConfigurationType
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import ai.tock.bot.admin.answer.AnswerConfigurationType
 
 /**
  *
  */
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "answerType"
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "answerType"
 )
 @JsonSubTypes(
-        JsonSubTypes.Type(value = BotSimpleAnswerConfiguration::class, name = "0"),
-        JsonSubTypes.Type(value = BotSimpleAnswerConfiguration::class, name = "simple"),
-        JsonSubTypes.Type(value = BotScriptAnswerConfiguration::class, name = "2"),
-        JsonSubTypes.Type(value = BotScriptAnswerConfiguration::class, name = "script"),
-        JsonSubTypes.Type(value = BotBuiltinAnswerConfiguration::class, name = "3"),
-        JsonSubTypes.Type(value = BotBuiltinAnswerConfiguration::class, name = "builtin")
+    JsonSubTypes.Type(value = BotSimpleAnswerConfiguration::class, name = "0"),
+    JsonSubTypes.Type(value = BotSimpleAnswerConfiguration::class, name = "simple"),
+    JsonSubTypes.Type(value = BotScriptAnswerConfiguration::class, name = "2"),
+    JsonSubTypes.Type(value = BotScriptAnswerConfiguration::class, name = "script"),
+    JsonSubTypes.Type(value = BotBuiltinAnswerConfiguration::class, name = "3"),
+    JsonSubTypes.Type(value = BotBuiltinAnswerConfiguration::class, name = "builtin")
 )
-abstract class BotAnswerConfiguration(val answerType: AnswerConfigurationType) {
-
-}
+abstract class BotAnswerConfiguration(val answerType: AnswerConfigurationType)

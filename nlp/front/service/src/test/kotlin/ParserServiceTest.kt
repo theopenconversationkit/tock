@@ -105,18 +105,17 @@ class ParserServiceTest : AbstractTest() {
     fun `GIVEN a parse request WHEN the sentence is validated but not in intentsSubset THEN the nlp model is used`() {
         every { context.config.search(any()) } returns SentencesQueryResult(1, listOf(intent2ClassifiedSentence))
         every { context.core.parse(any(), any(), any()) } returns
-                ParsingResult(
-                    defaultIntentName,
-                    emptyList(),
-                    emptyList(),
-                    1.0,
-                    1.0
-                )
+            ParsingResult(
+                defaultIntentName,
+                emptyList(),
+                emptyList(),
+                1.0,
+                1.0
+            )
 
         val query = intentSubsetParseQuery.copy(intentsSubset = setOf(IntentQualifier(defaultIntentName, 0.0)))
         val result = ParserService.parse(query)
 
         assertEquals(defaultIntentName.name(), result.intent)
     }
-
 }

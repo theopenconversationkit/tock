@@ -21,7 +21,7 @@ package ai.tock.bot.engine.user
  */
 interface UserLock {
 
-    fun lock(userId: String) : Boolean
+    fun lock(userId: String): Boolean
 
     fun releaseLock(userId: String)
 }

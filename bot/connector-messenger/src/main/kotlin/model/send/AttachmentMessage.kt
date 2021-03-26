@@ -46,7 +46,8 @@ class AttachmentMessage(val attachment: Attachment, quickReplies: List<QuickRepl
             if (quickReplies?.isNotEmpty() == true) {
                 copy(
                     choices = choices + quickReplies.mapNotNull { it.toChoice() },
-                    locations = locations + quickReplies.mapNotNull { it.toLocation() })
+                    locations = locations + quickReplies.mapNotNull { it.toLocation() }
+                )
             } else {
                 this
             }

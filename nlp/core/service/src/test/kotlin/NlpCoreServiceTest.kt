@@ -19,5 +19,4 @@ package ai.tock.nlp.core.service
 /**
  *
  */
-class NlpCoreServiceTest {
-}
+class NlpCoreServiceTest

@@ -39,8 +39,8 @@ internal data class ParserRequestData(
     private val intentsByName = intents.map { it.qualifiedName to it }.toMap()
 
     private fun isIntentEnabled(intentId: Id<IntentDefinition>?): Boolean {
-        return intentsQualifiers.isEmpty()
-                || intentsQualifiers.any { it.intent == intentsById[intentId]?.qualifiedName }
+        return intentsQualifiers.isEmpty() ||
+            intentsQualifiers.any { it.intent == intentsById[intentId]?.qualifiedName }
     }
 
     fun isStateEnabledForIntentId(intentId: Id<IntentDefinition>?): Boolean {

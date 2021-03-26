@@ -100,7 +100,7 @@ internal class Bot(
 
         parseAction(action, userTimeline, dialog, connector)
 
-        var shouldRespondBeforeDisabling = false;
+        var shouldRespondBeforeDisabling = false
         if (userTimeline.userState.botDisabled && botDefinition.enableBot(userTimeline, dialog, action)) {
             logger.debug { "Enable bot for $action" }
             userTimeline.userState.botDisabled = false
@@ -112,7 +112,7 @@ internal class Bot(
             if (!shouldRespondBeforeDisabling) {
                 userTimeline.userState.botDisabled = true
             }
-        } //if user state has changed, always persist the user. If not, test if the state is persisted
+        } // if user state has changed, always persist the user. If not, test if the state is persisted
         else if (!botDefinition.hasToPersistAction(userTimeline, action)) {
             connectorData.saveTimeline = false
         }
@@ -138,7 +138,7 @@ internal class Bot(
                 currentBus.remove()
             }
         } else {
-            //refresh intent flag
+            // refresh intent flag
             userTimeline.userState.botDisabled = true
             logger.debug { "bot is disabled for the user" }
         }
@@ -159,8 +159,8 @@ internal class Bot(
         val previousStory = dialog.currentStory
 
         val story =
-            if (previousStory == null
-                || (newIntent != null && !previousStory.supportAction(userTimeline, dialog, action, newIntent))
+            if (previousStory == null ||
+                (newIntent != null && !previousStory.supportAction(userTimeline, dialog, action, newIntent))
             ) {
                 val storyDefinition = botDefinition.findStoryDefinition(newIntent?.name, action.applicationId)
                 val newStory = Story(
@@ -178,7 +178,7 @@ internal class Bot(
 
         story.actions.add(action)
 
-        //update action state
+        // update action state
         action.state.intent = dialog.state.currentIntent?.name
         action.state.step = story.step
 
@@ -210,7 +210,7 @@ internal class Bot(
                 else -> logger.warn { "${action::class.simpleName} not yet supported" }
             }
         } finally {
-            //reinitialize lastActionState
+            // reinitialize lastActionState
             dialog.state.nextActionState = null
         }
     }
@@ -223,7 +223,6 @@ internal class Bot(
         }
     }
 
-
     private fun parseLocation(location: SendLocation, dialog: Dialog) {
         botDefinition.userLocationStory?.let { definition ->
             definition.mainIntent().let {
@@ -234,26 +233,26 @@ internal class Bot(
 
     private fun parseChoice(choice: SendChoice, dialog: Dialog) {
         botDefinition.findIntent(choice.intentName, choice.applicationId).let { intent ->
-            //restore state if it's possible (old dialog choice case)
+            // restore state if it's possible (old dialog choice case)
             if (intent != Intent.unknown) {
-                //TODO use story id
+                // TODO use story id
                 val previousIntentName = choice.previousIntent()
                 if (previousIntentName != null) {
                     val previousStory = botDefinition.findStoryDefinition(previousIntentName, choice.applicationId)
                     if (previousStory != botDefinition.unknownStory && previousStory.supportIntent(intent)) {
-                        //the previous intent is a primary intent that support the new intent
+                        // the previous intent is a primary intent that support the new intent
                         val storyDefinition = botDefinition.findStoryDefinition(choice.intentName, choice.applicationId)
                         if (storyDefinition == botDefinition.unknownStory) {
-                            //the new intent is a secondary intent, may be we need to create a intermediate story
+                            // the new intent is a secondary intent, may be we need to create a intermediate story
                             val currentStory = dialog.currentStory
-                            if (currentStory == null
-                                || !currentStory.supportIntent(intent)
-                                || !currentStory.supportIntent(
-                                    botDefinition.findIntent(
-                                        previousIntentName,
-                                        choice.applicationId
+                            if (currentStory == null ||
+                                !currentStory.supportIntent(intent) ||
+                                !currentStory.supportIntent(
+                                        botDefinition.findIntent(
+                                                previousIntentName,
+                                                choice.applicationId
+                                            )
                                     )
-                                )
                             ) {
                                 dialog.stories.add(
                                     Story(

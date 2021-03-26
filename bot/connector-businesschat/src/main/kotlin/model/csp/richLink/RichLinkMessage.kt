@@ -31,11 +31,11 @@ data class RichLinkData(
     val assets: Assets
 )
 
-data class Assets (
+data class Assets(
     val image: Image
 )
 
-data class Image (
+data class Image(
     val data: ByteArray,
     val mimeType: String
 ) {
@@ -57,4 +57,3 @@ data class Image (
         return result
     }
 }
-

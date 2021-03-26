@@ -18,12 +18,12 @@ package ai.tock.bot.orchestration.orchestrator
 
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.orchestration.shared.AskEligibilityToOrchestratedBotRequest
-import ai.tock.bot.orchestration.shared.ResumeOrchestrationRequest
+import ai.tock.bot.orchestration.shared.NoOrchestrationStatus
 import ai.tock.bot.orchestration.shared.OrchestrationMetaData
 import ai.tock.bot.orchestration.shared.OrchestrationTargetedBot
-import ai.tock.bot.orchestration.shared.NoOrchestrationStatus
-import ai.tock.bot.orchestration.shared.SecondaryBotResponse
+import ai.tock.bot.orchestration.shared.ResumeOrchestrationRequest
 import ai.tock.bot.orchestration.shared.SecondaryBotNoResponse
+import ai.tock.bot.orchestration.shared.SecondaryBotResponse
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.MapperFeature
@@ -43,34 +43,32 @@ import java.util.concurrent.TimeUnit
 
 class RestJacksonOrchestratedRuntimeBot(
     target: OrchestrationTargetedBot,
-    urlBot : String,
-    timeoutMs : Long,
+    urlBot: String,
+    timeoutMs: Long,
     serialisationModules: List<Module>
 ) : OrchestratedRuntimeBot(target) {
 
     private val targetBotClient = BotRestClient.create(urlBot, timeoutMs, serialisationModules)
 
-    override fun askOrchestration(request: AskEligibilityToOrchestratedBotRequest) : SecondaryBotResponse {
+    override fun askOrchestration(request: AskEligibilityToOrchestratedBotRequest): SecondaryBotResponse {
         return targetBotClient.askOrchestration(request).execute().body() ?: SecondaryBotNoResponse(
             status = NoOrchestrationStatus.NOT_AVAILABLE,
             metaData = request.metadata ?: OrchestrationMetaData(PlayerId("unknown"), target.botId, PlayerId("orchestrator"))
         )
     }
 
-    override fun resumeOrchestration(request: ResumeOrchestrationRequest) : SecondaryBotResponse {
+    override fun resumeOrchestration(request: ResumeOrchestrationRequest): SecondaryBotResponse {
         return targetBotClient.resumeOrchestration(request).execute().body() ?: SecondaryBotNoResponse(
             status = NoOrchestrationStatus.END,
             metaData = request.metadata
         )
     }
-
 }
 
 interface BotRestClient {
 
     @POST("orchestration/eligibility")
     fun askOrchestration(@Body request: AskEligibilityToOrchestratedBotRequest): Call<SecondaryBotResponse>
-
 
     @POST("orchestration/proxy")
     fun resumeOrchestration(@Body request: ResumeOrchestrationRequest): Call<SecondaryBotResponse>

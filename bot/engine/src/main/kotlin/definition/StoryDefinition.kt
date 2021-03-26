@@ -92,5 +92,4 @@ interface StoryDefinition : IntentAware {
         result.add(step)
         step.children.forEach { allStep(result, it) }
     }
-
 }

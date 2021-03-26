@@ -32,13 +32,13 @@ interface IntentDefinitionDAO {
 
     fun getIntentsByApplicationId(applicationId: Id<ApplicationDefinition>): List<IntentDefinition>
 
-    fun getIntentByNamespaceAndName(namespace:String, name:String): IntentDefinition?
+    fun getIntentByNamespaceAndName(namespace: String, name: String): IntentDefinition?
 
     fun getIntentById(id: Id<IntentDefinition>): IntentDefinition?
 
     fun save(intent: IntentDefinition)
 
-    fun deleteIntentById(id:Id<IntentDefinition>)
+    fun deleteIntentById(id: Id<IntentDefinition>)
 
-    fun getIntentsUsingEntity(entityType:String) : List<IntentDefinition>
+    fun getIntentsUsingEntity(entityType: String): List<IntentDefinition>
 }

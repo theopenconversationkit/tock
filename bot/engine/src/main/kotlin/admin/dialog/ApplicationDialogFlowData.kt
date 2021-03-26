@@ -22,7 +22,7 @@ import ai.tock.bot.admin.story.StoryDefinitionConfigurationFlowNode
  * All data about bot flow.
  */
 data class ApplicationDialogFlowData(
-        val states: List<DialogFlowStateData>,
-        val transitions: List<DialogFlowStateTransitionData>,
-        val configuredFlow: List<StoryDefinitionConfigurationFlowNode>
+    val states: List<DialogFlowStateData>,
+    val transitions: List<DialogFlowStateTransitionData>,
+    val configuredFlow: List<StoryDefinitionConfigurationFlowNode>
 ) 

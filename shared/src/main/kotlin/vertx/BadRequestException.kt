@@ -19,5 +19,4 @@ package ai.tock.shared.vertx
 /**
  * Http 400 exception.
  */
-class BadRequestException(message:String) : RestException(message, 400){
-}
+class BadRequestException(message: String) : RestException(message, 400)

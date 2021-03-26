@@ -36,6 +36,5 @@ class DateEntityValueTest {
         actual = ZonedDateTime.now()
         duration = Duration.ofDays(1)
         assertEquals(duration, DateEntityValue(actual, day).duration())
-
     }
 }

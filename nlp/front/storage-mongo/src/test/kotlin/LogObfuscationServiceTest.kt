@@ -60,7 +60,8 @@ internal class LogObfuscationServiceTest {
                 "namespace",
                 defaultLocale,
                 listOf(
-                    ParsedEntityValue(0, "test@test.com".length, Entity(EntityType("entity"), "role"), EmailValue("test@test.com")
+                    ParsedEntityValue(
+                        0, "test@test.com".length, Entity(EntityType("entity"), "role"), EmailValue("test@test.com")
                     )
                 ),
                 retainedQuery = "test@test.com"

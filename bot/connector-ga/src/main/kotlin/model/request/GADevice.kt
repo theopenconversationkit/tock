@@ -16,7 +16,4 @@
 
 package ai.tock.bot.connector.ga.model.request
 
-data class GADevice(val location: GALocation? = null) {
-
-}
-
+data class GADevice(val location: GALocation? = null)

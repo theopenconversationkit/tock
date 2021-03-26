@@ -33,7 +33,7 @@ internal class ExpectedIntentSelector(data: ParserRequestData) : SelectorBase(da
             while (hasNext()) {
                 (next() to probability())
                     .also { (intent, prob) ->
-                        //intents with modifiers are always supported
+                        // intents with modifiers are always supported
                         val modifier = data.getModifierForIntent(intent)
 
                         if (modifier != null) {
@@ -50,7 +50,7 @@ internal class ExpectedIntentSelector(data: ParserRequestData) : SelectorBase(da
                 null
             } else {
                 val result = qualifiedIntents.entries.sortedByDescending { it.value }.first()
-                //remove selected from other intents
+                // remove selected from other intents
                 otherIntents.remove(result.key.name)
                 result.key to (intentsProbabilities[result.key.name] ?: 0.0)
             }

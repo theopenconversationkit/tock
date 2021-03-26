@@ -27,7 +27,6 @@ import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType.bot
 import mu.KotlinLogging
 
-
 internal object SlackRequestConverter {
 
     private val logger = KotlinLogging.logger {}

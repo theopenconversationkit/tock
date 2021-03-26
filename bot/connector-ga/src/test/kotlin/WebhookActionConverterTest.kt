@@ -16,7 +16,6 @@
 
 package ai.tock.bot.connector.ga
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import ai.tock.bot.connector.ga.GAAccountLinking.Companion.getUserId
 import ai.tock.bot.connector.ga.model.request.GARequest
 import ai.tock.bot.engine.action.SendChoice
@@ -25,6 +24,7 @@ import ai.tock.bot.engine.stt.SttListener
 import ai.tock.bot.engine.stt.SttService
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.resource
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Test
 import java.util.Locale
 import kotlin.test.assertEquals
@@ -94,6 +94,4 @@ class WebhookActionConverterTest {
         val e = WebhookActionConverter.toEvent(googleAssistantConnectedRequest, appId) as SendSentence
         assertEquals(getUserId(googleAssistantConnectedRequest), e.playerId.id)
     }
-
-
 }

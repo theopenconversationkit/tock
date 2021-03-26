@@ -110,7 +110,7 @@ class AlexaConnector internal constructor(
         }
     }
 
-    //internal for tests
+    // internal for tests
     internal fun handleRequest(
         controller: ConnectorController,
         context: RoutingContext

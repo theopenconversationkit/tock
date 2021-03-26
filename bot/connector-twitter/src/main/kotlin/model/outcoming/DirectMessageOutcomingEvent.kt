@@ -15,8 +15,6 @@
  */
 package ai.tock.bot.connector.twitter.model.outcoming
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonTypeName
 import ai.tock.bot.connector.twitter.model.MessageCreate
 import ai.tock.bot.connector.twitter.model.MessageData
 import ai.tock.bot.connector.twitter.model.Option
@@ -26,6 +24,8 @@ import ai.tock.bot.connector.twitter.model.Recipient
 import ai.tock.bot.engine.message.GenericMessage
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonTypeName
 
 /**
  * Direct Message OutcomingEvent
@@ -40,7 +40,6 @@ data class DirectMessageOutcomingEvent(
 
     override fun playerId(playerType: PlayerType): PlayerId =
         PlayerId(messageCreate.senderId, playerType)
-
 
     override fun recipientId(playerType: PlayerType): PlayerId = PlayerId(
         messageCreate.target.recipientId,
@@ -76,11 +75,11 @@ data class DirectMessageOutcomingEvent(
                     messageData = MessageData(
                         text = text,
                         quickReply =
-                            if (!options.isEmpty())
-                                Options(options)
-                            else if (!optionsWithoutDescription.isEmpty())
-                                Options(optionsWithoutDescription)
-                            else null
+                        if (!options.isEmpty())
+                            Options(options)
+                        else if (!optionsWithoutDescription.isEmpty())
+                            Options(optionsWithoutDescription)
+                        else null
                     )
                 )
             )
@@ -100,6 +99,5 @@ data class DirectMessageOutcomingEvent(
             this.optionsWithoutDescription = optionsWithoutDescription.toList()
             return this
         }
-
     }
 }

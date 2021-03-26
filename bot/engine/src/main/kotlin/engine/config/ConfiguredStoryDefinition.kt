@@ -56,22 +56,22 @@ internal class ConfiguredStoryDefinition(
 
     override val starterIntents: Set<Intent> =
         setOf(configuration.mainIntent) +
-                (configuration.storyDefinition(definition, configuration)?.starterIntents ?: emptySet())
+            (configuration.storyDefinition(definition, configuration)?.starterIntents ?: emptySet())
 
     override val storyHandler: StoryHandler = ConfiguredStoryHandler(definition, configuration)
 
     override val steps: Set<StoryStep<*>> =
         (configuration.storyDefinition(definition, configuration)?.steps ?: emptySet()) +
-                configuration.findSteps(botApplicationConfigurationKey).map { it.toStoryStep(configuration) }
+            configuration.findSteps(botApplicationConfigurationKey).map { it.toStoryStep(configuration) }
 
     override val intents: Set<Intent> =
         starterIntents +
-                (configuration.storyDefinition(definition, configuration)?.intents ?: emptySet()) +
-                configuration.mandatoryEntities.map { it.intent.intent(configuration.namespace) } +
-                allSteps()
-                    .filterIsInstance<Step>()
-                    .filter { it.configuration.findCurrentAnswer() != null || it.configuration.targetIntent != null }
-                    .mapNotNull { it.intent?.wrappedIntent() }
+            (configuration.storyDefinition(definition, configuration)?.intents ?: emptySet()) +
+            configuration.mandatoryEntities.map { it.intent.intent(configuration.namespace) } +
+            allSteps()
+                .filterIsInstance<Step>()
+                .filter { it.configuration.findCurrentAnswer() != null || it.configuration.targetIntent != null }
+                .mapNotNull { it.intent?.wrappedIntent() }
 
     override val unsupportedUserInterfaces: Set<UserInterfaceType> =
         configuration.storyDefinition(definition, configuration)?.unsupportedUserInterfaces ?: emptySet()

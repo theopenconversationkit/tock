@@ -75,7 +75,6 @@ internal object TeamsConnectorProvider : ConnectorProvider {
         TeamsCarousel::class,
         TeamsHeroCard::class
     )
-
 }
 
 internal class TeamsConnectorProviderService : ConnectorProvider by TeamsConnectorProvider

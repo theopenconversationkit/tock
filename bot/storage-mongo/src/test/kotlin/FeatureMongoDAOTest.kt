@@ -41,9 +41,9 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.save
 import java.time.ZonedDateTime
+import java.time.ZonedDateTime.now
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
-import java.time.ZonedDateTime.now
 
 internal class FeatureMongoDAOTest {
     enum class Feature : FeatureType {
@@ -300,8 +300,6 @@ internal class FeatureMongoDAOTest {
             }
         }
     }
-
-
 
     private fun `assert that feature is persisted with`(featureID: FeatureID, enabled: Boolean) {
         verify(exactly = 1) { collection.save(Feature(featureID.id, featureID.key, enabled, botId, namespace)) }

@@ -22,5 +22,4 @@ data class GACapability(val name: String) {
         const val AUDIO_OUTPUT = "actions.capability.AUDIO_OUTPUT"
         const val SCREEN_OUTPUT = "actions.capability.SCREEN_OUTPUT"
     }
-
 }

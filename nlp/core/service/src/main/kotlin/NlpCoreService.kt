@@ -145,15 +145,15 @@ internal object NlpCoreService : NlpCore {
         text: String
     ): Pair<List<EntityRecognition>, List<EntityRecognition>> {
         return try {
-            //TODO regexp
-            //evaluate entities from intent entity model & dedicated entity models
+            // TODO regexp
+            // evaluate entities from intent entity model & dedicated entity models
             val intentContext = EntityCallContextForIntent(context, intent)
             val entities = entityClassifier.invoke(intent)
 
             val evaluatedEntities = evaluateEntities(context, text, entities)
 
             if (context.evaluationContext.mergeEntityTypes || context.evaluationContext.classifyEntityTypes) {
-                //small issue here: how do we post-evaluate these detections?
+                // small issue here: how do we post-evaluate these detections?
                 val classifiedEntityTypes = entityCore.classifyEntityTypes(intentContext, text)
                 if (classifiedEntityTypes.isNotEmpty()) {
                     if (context.evaluationContext.mergeEntityTypes) {

@@ -24,20 +24,22 @@ import ai.tock.nlp.front.shared.parser.QueryState
  *
  */
 data class ParseQuery(
-        val query: String,
-        val checkExistingQuery: Boolean = true,
-        val state: String? = null) : ApplicationScopedQuery() {
+    val query: String,
+    val checkExistingQuery: Boolean = true,
+    val state: String? = null
+) : ApplicationScopedQuery() {
 
     fun toQuery(): ParseQuery {
         return ParseQuery(
-                listOf(query),
-                namespace,
-                applicationName,
-                QueryContext(
-                        currentLanguage,
-                        "admin",
-                        checkExistingQuery = checkExistingQuery
-                ),
-                QueryState(listOfNotNull(state).toSet()))
+            listOf(query),
+            namespace,
+            applicationName,
+            QueryContext(
+                currentLanguage,
+                "admin",
+                checkExistingQuery = checkExistingQuery
+            ),
+            QueryState(listOfNotNull(state).toSet())
+        )
     }
 }

@@ -16,11 +16,10 @@
 
 package ai.tock.bot.connector.slack.model
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.engine.action.SendAttachment
 import ai.tock.bot.engine.message.Attachment
 import ai.tock.bot.engine.message.GenericElement
-
+import com.fasterxml.jackson.annotation.JsonProperty
 
 data class SlackMessageAttachment(
     val actions: List<Button>,
@@ -33,7 +32,7 @@ data class SlackMessageAttachment(
     val callbackId: String = "default"
 ) {
 
-    fun hasOnlyActions() : Boolean = actions.isNotEmpty() && fields.isEmpty() && text == null && pretext == null
+    fun hasOnlyActions(): Boolean = actions.isNotEmpty() && fields.isEmpty() && text == null && pretext == null
 
     fun toGenericElement(): GenericElement =
         GenericElement(

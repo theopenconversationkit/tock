@@ -16,9 +16,9 @@
 
 package ai.tock.bot.connector.messenger.model.webhook
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.connector.messenger.model.Recipient
 import ai.tock.bot.connector.messenger.model.Sender
+import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  *
@@ -29,6 +29,4 @@ class AccountLinkingWebhook(
     override val timestamp: Long,
     @JsonProperty("account_linking")
     val accountLinking: AccountLinking
-) : Webhook() {
-
-}
+) : Webhook()

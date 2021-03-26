@@ -45,8 +45,7 @@ internal object WebConnectorProvider : ConnectorProvider {
         )
 
     override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(WebMessage::class)
-
 }
 
-//used in file META-INF/services/ai.tock.bot.connector.ConnectorProvider
+// used in file META-INF/services/ai.tock.bot.connector.ConnectorProvider
 internal class WebConnectorProviderService : ConnectorProvider by WebConnectorProvider

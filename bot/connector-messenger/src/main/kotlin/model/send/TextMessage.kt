@@ -29,7 +29,8 @@ class TextMessage(val text: String, quickReplies: List<QuickReply>? = null) : Me
             GenericMessage(
                 texts = texts,
                 choices = quickReplies.mapNotNull { it.toChoice() },
-                locations = quickReplies.mapNotNull { it.toLocation() })
+                locations = quickReplies.mapNotNull { it.toLocation() }
+            )
         } else {
             GenericMessage(texts = texts)
         }

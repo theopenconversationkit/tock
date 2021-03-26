@@ -16,10 +16,10 @@
 
 package ai.tock.translator.noop
 
+import ai.tock.translator.TranslatorEngine
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import ai.tock.translator.TranslatorEngine
 
 val noOpTranslatorModule = Kodein.Module {
     bind<TranslatorEngine>() with provider { NoOpTranslatorEngine }

@@ -16,9 +16,9 @@
 
 package ai.tock.nlp.front.storage.mongo
 
+import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
 import com.mongodb.client.MongoDatabase
-import ai.tock.shared.injector
 
 /**
  *
@@ -27,5 +27,4 @@ internal object MongoFrontConfiguration {
 
     val database: MongoDatabase by injector.instance(MONGO_DATABASE)
     val asyncDatabase: com.mongodb.reactivestreams.client.MongoDatabase by injector.instance(MONGO_DATABASE)
-
 }

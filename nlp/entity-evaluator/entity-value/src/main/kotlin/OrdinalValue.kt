@@ -19,5 +19,4 @@ package ai.tock.nlp.entity
 /**
  *
  */
-data class OrdinalValue(val value: Number) : Value {
-}
+data class OrdinalValue(val value: Number) : Value

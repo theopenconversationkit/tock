@@ -62,7 +62,6 @@ internal class BlockOrchestrationStoryHandlerListenerTest {
         verify { botBus.end(DEFAULT_ORCHESTRATION_BLOCKED_MESSAGE) }
     }
 
-
     @ParameterizedTest
     @ValueSource(strings = ["my_account", "personalize"])
     internal fun `should stop action if orchestrated and intent is blocked for specific primary`(blockedIntent: String) {

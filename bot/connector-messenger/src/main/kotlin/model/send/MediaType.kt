@@ -29,5 +29,4 @@ enum class MediaType {
             image -> SendAttachment.AttachmentType.image
             video -> SendAttachment.AttachmentType.video
         }
-
 }

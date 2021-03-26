@@ -28,5 +28,4 @@ internal abstract class SelectorBase(val data: ParserRequestData) : IntentSelect
      * The intents with p > 0.1
      */
     val otherIntents: MutableMap<String, Double> = mutableMapOf()
-
 }

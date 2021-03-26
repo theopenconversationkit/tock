@@ -16,9 +16,9 @@
 
 package ai.tock.bot.connector.messenger.model.send
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.engine.message.Attachment
 import ai.tock.bot.engine.message.GenericElement
+import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  * See [https://developers.facebook.com/docs/messenger-platform/reference/template/media].
@@ -35,5 +35,4 @@ data class MediaElement(
             attachments = listOf(Attachment(attachmentId, mediaType.toAttachmentType()))
         )
     }
-
 }

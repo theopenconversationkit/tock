@@ -16,14 +16,14 @@
 
 package ai.tock.bot.connector.businesschat.model.csp.message
 
-import ai.tock.bot.connector.businesschat.model.csp.BusinessChatCommonModel
 import ai.tock.bot.connector.businesschat.model.common.MessageType
+import ai.tock.bot.connector.businesschat.model.csp.BusinessChatCommonModel
 
 /**
  * https://developer.apple.com/documentation/businesschatapi/textmessage
  */
 class Message(
-        sourceId: String,
-        destinationId: String,
-        val body: String?
+    sourceId: String,
+    destinationId: String,
+    val body: String?
 ) : BusinessChatCommonModel(sourceId = sourceId, destinationId = destinationId, type = MessageType.text)

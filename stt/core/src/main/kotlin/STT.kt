@@ -18,7 +18,6 @@ package ai.tock.stt
 import ai.tock.shared.defaultLocale
 import java.util.Locale
 
-
 /**
  * Parse voice audio messages.
  */

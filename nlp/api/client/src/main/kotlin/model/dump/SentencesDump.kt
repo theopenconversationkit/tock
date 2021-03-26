@@ -21,25 +21,30 @@ import java.util.Locale
 /**
  * A classified sentences dump.
  */
-data class SentencesDump(val applicationName: String,
-                         /**
-                          * If restricted to a language.
-                          */
-                         val language: Locale? = null,
-                         val sentences: List<SentenceDump>)
+data class SentencesDump(
+    val applicationName: String,
+    /**
+     * If restricted to a language.
+     */
+    val language: Locale? = null,
+    val sentences: List<SentenceDump>
+)
 
-data class SentenceDump(val text: String,
-                        val intent: String,
-                        val entities: List<SentenceEntityDump> = emptyList(),
-                        /**
-                         * If null and if [SentencesDump.language] is also null, an error will be thrown.
-                         */
-                        val language: Locale? = null,
-                        val status: ClassifiedSentenceStatus = ClassifiedSentenceStatus.model)
+data class SentenceDump(
+    val text: String,
+    val intent: String,
+    val entities: List<SentenceEntityDump> = emptyList(),
+    /**
+     * If null and if [SentencesDump.language] is also null, an error will be thrown.
+     */
+    val language: Locale? = null,
+    val status: ClassifiedSentenceStatus = ClassifiedSentenceStatus.model
+)
 
 data class SentenceEntityDump(
-        val entity: String,
-        val role: String,
-        val subEntities: List<SentenceEntityDump> = emptyList(),
-        val start: Int,
-        val end: Int)
+    val entity: String,
+    val role: String,
+    val subEntities: List<SentenceEntityDump> = emptyList(),
+    val start: Int,
+    val end: Int
+)

@@ -80,5 +80,4 @@ interface ConnectorProvider {
             connectorConfiguration.parameters[ALLOWED_IPS_FIELD]?.split(",")?.toSet(),
             connectorConfiguration.parameters[X_AUTH_TOKEN_FIELD]
         )
-
 }

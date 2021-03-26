@@ -53,17 +53,17 @@ data class ConnectorConfiguration(
         baseUrl: String?,
         ownerConnectorType: ConnectorType? = null,
         parameters: Map<String, String> = emptyMap()
-    )
-            : this(
-        connectorId,
-        path,
-        type,
-        ownerConnectorType,
-        parameters + mapNotNullValues(
-            APPLICATION_NAME to applicationName,
-            BASE_URL to baseUrl
+    ) :
+        this(
+            connectorId,
+            path,
+            type,
+            ownerConnectorType,
+            parameters + mapNotNullValues(
+                APPLICATION_NAME to applicationName,
+                BASE_URL to baseUrl
+            )
         )
-    )
 
     internal constructor(
         base: ConnectorConfiguration?,
@@ -82,7 +82,7 @@ data class ConnectorConfiguration(
     )
 
     internal constructor(botApplicationConfiguration: BotApplicationConfiguration) :
-            this(null, botApplicationConfiguration)
+        this(null, botApplicationConfiguration)
 
     companion object {
         private const val APPLICATION_NAME: String = "_name"

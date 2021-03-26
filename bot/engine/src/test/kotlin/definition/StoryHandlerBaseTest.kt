@@ -16,7 +16,6 @@
 
 package ai.tock.bot.definition
 
-
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotEngineTest
 import ai.tock.bot.engine.StoryHandler2Test
@@ -63,6 +62,4 @@ class StoryHandlerBaseTest : BotEngineTest() {
         }
         assertEquals("test", handler.i18n("test").toString())
     }
-
-
 }

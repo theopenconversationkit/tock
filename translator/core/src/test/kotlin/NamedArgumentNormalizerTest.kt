@@ -36,7 +36,6 @@ internal class NamedArgumentNormalizerTest {
         assertEquals(listOf("smith", 10), result.args)
     }
 
-
     @Test
     fun normalize_shouldHandle_namedArgsWithUnderscore() {
         val result = normalize(
@@ -144,5 +143,4 @@ internal class NamedArgumentNormalizerTest {
         assertEquals("nom: {1}, {0} {:} {other} :age: {2}  {:", result.label)
         assertEquals(listOf("first parameter", "smith", 10), result.args)
     }
-
 }

@@ -25,7 +25,8 @@ data class SentencesReport(
     val sentences: List<SentenceReport>,
     val total: Long,
     val start: Long,
-    val end: Long) {
+    val end: Long
+) {
 
     constructor(start: Long, result: SentencesQueryResult) :
         this(

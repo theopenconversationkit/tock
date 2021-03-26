@@ -153,5 +153,4 @@ internal class WebConnectorResponseTest {
             mapper.readValue<WebConnectorResponseContent>(resourceAsStream("/carousel_with_2_cards_and_1_button.json"))
         Assertions.assertThat(deserializedEvent).isEqualTo(expected)
     }
-
 }

@@ -16,9 +16,9 @@
 
 package ai.tock.bot.connector.messenger.model.webhook
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.connector.messenger.model.Recipient
 import ai.tock.bot.connector.messenger.model.Sender
+import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  *
@@ -30,5 +30,4 @@ data class PostbackWebhook(
     val postback: UserActionPayload,
     @get:JsonProperty("prior_message")
     override val priorMessage: PriorMessage? = null
-) : Webhook() {
-}
+) : Webhook()

@@ -23,7 +23,8 @@ data class I18nText(
     val text: String,
     val args: List<String?> = emptyList(),
     val toBeTranslated: Boolean = true,
-    val key: String? = null) : CharSequence by text, TranslatedSequence {
+    val key: String? = null
+) : CharSequence by text, TranslatedSequence {
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -35,5 +36,4 @@ data class I18nText(
         logger.warn { "adding a String to a TranslatedSequence is not recommended - please use message format pattern" }
         return copy(text = toString() + other.toString())
     }
-
 }

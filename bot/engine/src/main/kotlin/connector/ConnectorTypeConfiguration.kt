@@ -71,5 +71,4 @@ data class ConnectorTypeConfiguration(
                 )
             )
     }
-
 }

@@ -148,19 +148,21 @@ open class BotDefinitionBase(
 
         private fun BotBus.handleDelete() {
             val userTimelineDao: UserTimelineDAO by injector.instance()
-            //run later to avoid the lock effect :)
+            // run later to avoid the lock effect :)
             vertx.setTimer(1000) {
-                vertx.executeBlocking<Unit>({
-                    try {
-                        userTimelineDao.remove(botDefinition.namespace, userId)
-                    } catch (e: Exception) {
-                        logger.error(e)
-                    } finally {
-                        it.complete()
-                    }
-                }, false, {})
+                vertx.executeBlocking<Unit>(
+                    {
+                        try {
+                            userTimelineDao.remove(botDefinition.namespace, userId)
+                        } catch (e: Exception) {
+                            logger.error(e)
+                        } finally {
+                            it.complete()
+                        }
+                    },
+                    false, {}
+                )
             }
-
         }
 
         /**
@@ -196,7 +198,6 @@ open class BotDefinitionBase(
         }
     }
 
-
     /**
      * Constructor intended to be used by an enum.
      */
@@ -210,5 +211,4 @@ open class BotDefinitionBase(
     override fun toString(): String {
         return botId
     }
-
 }

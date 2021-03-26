@@ -55,5 +55,4 @@ data class BotConnectorConfiguration(
             _id ?: newId(),
             targetConfigurationId
         )
-
 }

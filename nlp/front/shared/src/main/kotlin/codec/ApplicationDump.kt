@@ -26,11 +26,11 @@ import java.time.Instant
 /**
  * An application dump.
  */
-data class ApplicationDump(val application: ApplicationDefinition,
-                           val entityTypes: List<EntityTypeDefinition> = emptyList(),
-                           val intents: List<IntentDefinition> = emptyList(),
-                           val sentences: List<ClassifiedSentence> = emptyList(),
-                           val dumpType: DumpType = full,
-                           val timestamp: Instant = Instant.now()) {
-
-}
+data class ApplicationDump(
+    val application: ApplicationDefinition,
+    val entityTypes: List<EntityTypeDefinition> = emptyList(),
+    val intents: List<IntentDefinition> = emptyList(),
+    val sentences: List<ClassifiedSentence> = emptyList(),
+    val dumpType: DumpType = full,
+    val timestamp: Instant = Instant.now()
+)

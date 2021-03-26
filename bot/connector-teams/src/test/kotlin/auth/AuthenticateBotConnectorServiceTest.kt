@@ -16,6 +16,8 @@
 
 package ai.tock.bot.connector.teams.auth
 
+import ai.tock.bot.connector.teams.auth.MockServer.getMicrosoftMockServer
+import ai.tock.bot.connector.teams.auth.MockServer.jwk
 import com.microsoft.bot.schema.models.Activity
 import com.nimbusds.jose.JWSAlgorithm
 import com.nimbusds.jose.JWSHeader
@@ -24,8 +26,6 @@ import com.nimbusds.jose.Payload
 import com.nimbusds.jose.crypto.RSASSASigner
 import com.nimbusds.jose.jwk.KeyUse
 import com.nimbusds.jose.jwk.gen.RSAKeyGenerator
-import ai.tock.bot.connector.teams.auth.MockServer.getMicrosoftMockServer
-import ai.tock.bot.connector.teams.auth.MockServer.jwk
 import io.vertx.core.MultiMap
 import io.vertx.core.http.CaseInsensitiveHeaders
 import net.jcip.annotations.NotThreadSafe
@@ -105,7 +105,7 @@ class AuthenticateBotConnectorServiceTest {
 
         val headers: MultiMap = CaseInsensitiveHeaders().add("Authorization", bearerAuthorization)
 
-        //check that it does not fail
+        // check that it does not fail
         authenticateBotConnectorService.checkRequestValidity(jwkHandler, headers, activity)
     }
 
@@ -282,7 +282,7 @@ class AuthenticateBotConnectorServiceTest {
 
         val headers: MultiMap = CaseInsensitiveHeaders().add("Authorization", bearerAuthorization)
 
-        //check that it does not fail
+        // check that it does not fail
         authenticateBotConnectorService.checkRequestValidity(jwkHandler, headers, activity)
     }
 

@@ -52,8 +52,7 @@ internal class EventDeserializer : JacksonDeserializer<IncomingEvent>() {
             var other: EmptyJson? = null
         )
 
-        val (forUserId, users, apps, directMessages, directMessageIndicateTyping, statuses)
-            = jp.read<EventFields> { fields, name ->
+        val (forUserId, users, apps, directMessages, directMessageIndicateTyping, statuses) = jp.read<EventFields> { fields, name ->
             with(fields) {
                 when (name) {
                     "for_user_id" -> forUserId = jp.readValue()
@@ -74,5 +73,4 @@ internal class EventDeserializer : JacksonDeserializer<IncomingEvent>() {
             else -> null
         }
     }
-
 }

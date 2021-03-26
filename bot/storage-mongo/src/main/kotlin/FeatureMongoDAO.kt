@@ -80,8 +80,8 @@ internal class FeatureMongoDAO(private val cache: FeatureCache, private val col:
         val now = ZonedDateTime.now(internalDefaultZoneId)
         return when {
             feature.startDate != null && feature.endDate == null -> feature.enabled && now.isAfter(feature.startDate)
-            feature.startDate != null && feature.endDate != null -> feature.enabled && now.isAfter(feature.startDate)
-                    && now.isBefore(feature.endDate)
+            feature.startDate != null && feature.endDate != null -> feature.enabled && now.isAfter(feature.startDate) &&
+                now.isBefore(feature.endDate)
             else -> feature.enabled
         }
     }

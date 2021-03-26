@@ -74,10 +74,10 @@ fun Button.toChoice(): Choice =
                     Choice(
                         intent,
                         params +
-                                mapNotNullValues(
-                                    TITLE_PARAMETER to title,
-                                    IMAGE_PARAMETER to imageUrl
-                                )
+                            mapNotNullValues(
+                                TITLE_PARAMETER to title,
+                                IMAGE_PARAMETER to imageUrl
+                            )
                     )
                 }
             } ?: Choice.fromText(text = title, nlpText = title, imageUrl = imageUrl)
@@ -90,10 +90,10 @@ fun Button.toChoice(): Choice =
                             Choice(
                                 intent,
                                 params +
-                                        mapNotNullValues(
-                                            TITLE_PARAMETER to title,
-                                            IMAGE_PARAMETER to imageUrl
-                                        )
+                                    mapNotNullValues(
+                                        TITLE_PARAMETER to title,
+                                        IMAGE_PARAMETER to imageUrl
+                                    )
                             )
                         }
                 } ?: Choice.fromText(title, nlpText, imageUrl)
@@ -110,7 +110,6 @@ fun Button.toChoice(): Choice =
 
         else -> error("unsupported Button type: $this")
     }
-
 
 fun WebMediaFile.toMediaFile(): MediaFile =
     MediaFile(url, name, attachmentType(type))

@@ -39,5 +39,4 @@ data class ScriptAnswerConfigurationDump(
             scriptVersions.map { if (it == current) newCurrent else it.toAnswer(controller) }
         )
     }
-
 }

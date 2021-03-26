@@ -37,7 +37,7 @@ data class ScriptAnswerVersionedConfigurationDump(
             conf.date
         )
 
-    fun toAnswer(controller: StoryDefinitionConfigurationDumpController, compile: Boolean = false)
-        : ScriptAnswerVersionedConfiguration =
-        controller.buildScript(this, compile)
+    fun toAnswer(controller: StoryDefinitionConfigurationDumpController, compile: Boolean = false):
+        ScriptAnswerVersionedConfiguration =
+            controller.buildScript(this, compile)
 }

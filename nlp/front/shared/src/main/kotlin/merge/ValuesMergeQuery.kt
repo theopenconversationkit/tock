@@ -23,8 +23,9 @@ import ai.tock.nlp.front.shared.parser.QueryContext
  *
  */
 data class ValuesMergeQuery(
-        val namespace: String,
-        val applicationName: String,
-        val context: QueryContext,
-        val entity: Entity,
-        val values: List<ValueToMerge>)
+    val namespace: String,
+    val applicationName: String,
+    val context: QueryContext,
+    val entity: Entity,
+    val values: List<ValueToMerge>
+)

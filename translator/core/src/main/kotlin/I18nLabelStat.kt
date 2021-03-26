@@ -34,14 +34,14 @@ data class I18nLabelStat(
     val lastUpdate: Instant = Instant.now()
 ) {
     internal constructor(key: I18nLabelStatKey, count: Int) :
-            this(
-                key.labelId,
-                key.namespace,
-                key.locale,
-                key.interfaceType,
-                key.connectorId,
-                count
-            )
+        this(
+            key.labelId,
+            key.namespace,
+            key.locale,
+            key.interfaceType,
+            key.connectorId,
+            count
+        )
 
     /**
      * Does the locale of this stat has the same language than the specified label?
@@ -57,11 +57,11 @@ internal data class I18nLabelStatKey(
     val connectorId: String?
 ) {
     constructor(value: I18nLabelValue, context: I18nContext) :
-            this(
-                value.key.toId(),
-                value.namespace,
-                context.userLocale,
-                context.userInterfaceType,
-                context.connectorId
-            )
+        this(
+            value.key.toId(),
+            value.namespace,
+            context.userLocale,
+            context.userInterfaceType,
+            context.connectorId
+        )
 }

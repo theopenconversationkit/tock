@@ -16,28 +16,30 @@
 
 package ai.tock.bot.connector.messenger.model.send
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.engine.action.SendChoice.Companion.EXIT_INTENT
 import ai.tock.bot.engine.action.SendChoice.Companion.TITLE_PARAMETER
 import ai.tock.bot.engine.action.SendChoice.Companion.URL_PARAMETER
 import ai.tock.bot.engine.message.Choice
+import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  *
  */
-data class UrlButton(val url: String,
-                     val title: String,
-                     @JsonProperty("webview_height_ratio") val webviewHeightRatio: String? = null,
-                     @JsonProperty("messenger_extensions") val messengerExtensions: String? = null,
-                     @JsonProperty("fallback_url") val fallBackUrl: String? = null
+data class UrlButton(
+    val url: String,
+    val title: String,
+    @JsonProperty("webview_height_ratio") val webviewHeightRatio: String? = null,
+    @JsonProperty("messenger_extensions") val messengerExtensions: String? = null,
+    @JsonProperty("fallback_url") val fallBackUrl: String? = null
 ) : Button(ButtonType.web_url) {
 
     override fun toChoice(): Choice {
         return Choice(
-                EXIT_INTENT,
-                mapOf(
-                        URL_PARAMETER to url,
-                        TITLE_PARAMETER to title
-                ))
+            EXIT_INTENT,
+            mapOf(
+                URL_PARAMETER to url,
+                TITLE_PARAMETER to title
+            )
+        )
     }
 }

@@ -21,12 +21,12 @@ import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 
 data class DialogFlowStateData(
-        val storyDefinitionId: String,
-        val intent: String,
-        val step: String?,
-        val entities: Set<String>,
-        val storyType: AnswerConfigurationType?,
-        val storyName: String = storyDefinitionId,
-        val count:Long = 0,
-        val _id: Id<DialogFlowStateData> = newId()
+    val storyDefinitionId: String,
+    val intent: String,
+    val step: String?,
+    val entities: Set<String>,
+    val storyType: AnswerConfigurationType?,
+    val storyName: String = storyDefinitionId,
+    val count: Long = 0,
+    val _id: Id<DialogFlowStateData> = newId()
 )

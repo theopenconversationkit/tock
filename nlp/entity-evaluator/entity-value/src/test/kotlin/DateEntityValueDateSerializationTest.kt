@@ -33,5 +33,4 @@ class DateEntityValueDateSerializationTest {
         val s = mapper.writeValueAsString(v)
         assertEquals(v, mapper.readValue(s, Value::class.java))
     }
-
 }

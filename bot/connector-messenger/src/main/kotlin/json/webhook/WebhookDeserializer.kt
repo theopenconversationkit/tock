@@ -73,11 +73,13 @@ internal class WebhookDeserializer : JacksonDeserializer<Webhook>() {
             var other: EmptyJson? = null
         )
 
-        val (sender, recipient, timestamp,
+        val (
+            sender, recipient, timestamp,
             message, optin, postback,
             priorMessage, accountLinking,
-            passThreadControl, takeThreadControl, requestThreadControl, appRoles, referral)
-                = jp.read<WebhookFields> { fields, name ->
+            passThreadControl, takeThreadControl, requestThreadControl, appRoles, referral
+        ) =
+        jp.read<WebhookFields> { fields, name ->
             with(fields) {
                 when (name) {
                     Webhook::sender.name -> sender = jp.readValue()
@@ -119,7 +121,6 @@ internal class WebhookDeserializer : JacksonDeserializer<Webhook>() {
                 is MessageEcho -> MessageEchoWebhook(sender, recipient, timestamp, message)
                 else -> MessageWebhook(sender, recipient, timestamp, message, priorMessage)
             }
-
         } else if (optin != null) {
             OptinWebhook(sender, recipient, timestamp, optin)
         } else if (accountLinking != null) {

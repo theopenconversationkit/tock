@@ -56,12 +56,12 @@ internal class ConfiguredStoryHandler(
     override fun handle(bus: BotBus) {
 
         configuration.mandatoryEntities.forEach { entity ->
-            //fallback from "generic" entity if the role is not present
+            // fallback from "generic" entity if the role is not present
             val role = entity.role
             val entityTypeName = entity.entityTypeName
-            if (role != entityTypeName
-                && bus.entityValueDetails(role) == null
-                && bus.hasActionEntity(entityTypeName)
+            if (role != entityTypeName &&
+                bus.entityValueDetails(role) == null &&
+                bus.hasActionEntity(entityTypeName)
             ) {
                 bus.dialog.state.changeValue(
                     role,
@@ -74,9 +74,9 @@ internal class ConfiguredStoryHandler(
             }
 
             if (bus.entityValueDetails(role) == null && entity.hasCurrentAnswer()) {
-                //if the role is generic and there is an other role in the entity list: skip
+                // if the role is generic and there is an other role in the entity list: skip
                 if (role != entityTypeName || bus.entities.none { entity.entityType == it.value.value?.entity?.entityType?.name }) {
-                    //else send entity question
+                    // else send entity question
                     entity.send(bus)
                     switchStoryIfEnding(null, bus)
                     return@handle
@@ -121,7 +121,7 @@ internal class ConfiguredStoryHandler(
             val role = entity.role
             val entityTypeName = entity.entityTypeName
             if (bus.entityValueDetails(role) == null && entity.hasCurrentAnswer()) {
-                //if the role is generic and there is an other role in the entity list: skip
+                // if the role is generic and there is an other role in the entity list: skip
                 if (role != entityTypeName || bus.entities.none { entity.entityType == it.value.value?.entity?.entityType?.name }) {
                     return true
                 }
@@ -193,15 +193,15 @@ internal class ConfiguredStoryHandler(
                         val endingStoryRule = configuration.findEnabledEndWithStoryId(applicationId) != null
                         send(
                             container, this,
-                            isMissingMandatoryEntities
-                                    // No steps and no ending story
-                                    || (!steps && !endingStoryRule)
-                                    // Steps not started
-                                    || (steps && currentStep == null)
-                                    // Steps started with children
-                                    || (currentStep?.hasNoChildren == false)
-                                    // Steps started with no children, no target intent, no ending story
-                                    || (currentStep?.hasNoChildren == true && currentStep?.targetIntent == null && !endingStoryRule)
+                            isMissingMandatoryEntities ||
+                                // No steps and no ending story
+                                (!steps && !endingStoryRule) ||
+                                // Steps not started
+                                (steps && currentStep == null) ||
+                                // Steps started with children
+                                (currentStep?.hasNoChildren == false) ||
+                                // Steps started with no children, no target intent, no ending story
+                                (currentStep?.hasNoChildren == true && currentStep?.targetIntent == null && !endingStoryRule)
                         )
                     }
                 }
@@ -215,10 +215,10 @@ internal class ConfiguredStoryHandler(
             ?.run {
                 forEach { a ->
                     if (
-                        underlyingConnector.hasFeature(CAROUSEL)
-                        && a.mediaMessage?.checkValidity() == true
-                        && a.mediaMessage is MediaCardDescriptor
-                        && a.mediaMessage.fillCarousel
+                        underlyingConnector.hasFeature(CAROUSEL) &&
+                        a.mediaMessage?.checkValidity() == true &&
+                        a.mediaMessage is MediaCardDescriptor &&
+                        a.mediaMessage.fillCarousel
                     ) {
                         val previousAnswer = transformedAnswers.lastOrNull()
                         val previousAnswerMedia = previousAnswer?.mediaMessage
@@ -268,20 +268,21 @@ internal class ConfiguredStoryHandler(
                 ?.let { messages ->
                     if (end && suggestions.isNotEmpty() && messages.isNotEmpty()) {
                         messages.take(messages.size - 1) +
-                                (
-                                        underlyingConnector.addSuggestions(
-                                            messages.last(),
-                                            suggestions
-                                        ).invoke(this)
-                                            ?: messages.last()
-                                        )
+                            (
+                                underlyingConnector.addSuggestions(
+                                    messages.last(),
+                                    suggestions
+                                ).invoke(this)
+                                    ?: messages.last()
+                                )
                     } else {
                         messages
                     }
                 }
-                ?: listOfNotNull(suggestions.takeIf { suggestions.isNotEmpty() && end }
-                    ?.let { underlyingConnector.addSuggestions(label, suggestions).invoke(this) })
-
+                ?: listOfNotNull(
+                    suggestions.takeIf { suggestions.isNotEmpty() && end }
+                        ?.let { underlyingConnector.addSuggestions(label, suggestions).invoke(this) }
+                )
 
         val actions = connectorMessages
             .map {

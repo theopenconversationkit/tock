@@ -22,9 +22,11 @@ import java.util.Locale
 /**
  *
  */
-open class ApplicationScopedQuery(val namespace: String = "",
-                                  val applicationName: String = "",
-                                  val language: Locale? = null) {
+open class ApplicationScopedQuery(
+    val namespace: String = "",
+    val applicationName: String = "",
+    val language: Locale? = null
+) {
 
     val currentLanguage: Locale get() = language ?: defaultLocale
 }

@@ -53,11 +53,11 @@ fun startWithDemo(botDefinition: ClientBotDefinition) {
  */
 fun start(
     botDefinition: ClientBotDefinition,
-    url: String) {
+    url: String
+) {
     val u = URL(url)
     start(botDefinition, u.port.takeUnless { it == -1 } ?: u.defaultPort, u.host, u.protocol == "https")
 }
-
 
 /**
  * Starts a client.
@@ -71,7 +71,8 @@ fun start(
     botDefinition: ClientBotDefinition,
     serverPort: Int = intProperty("tock_websocket_port", 8080),
     serverHost: String = property("tock_websocket_host", "localhost"),
-    ssl: Boolean = booleanProperty("tock_websocket_ssl", false)) {
+    ssl: Boolean = booleanProperty("tock_websocket_ssl", false)
+) {
 
     fun restart(client: HttpClient, delay: Long) {
         logger.info("restart...")
@@ -99,7 +100,7 @@ fun start(
     client.webSocket(options) { context ->
         try {
             val socket = context.result()
-            //send bot configuration
+            // send bot configuration
             val conf = mapper.writeValueAsString(
                 ResponseData(Dice.newId(), botConfiguration = botDefinition.toConfiguration())
             )
@@ -122,9 +123,11 @@ fun start(
                             bus.handle()
                         } else if (data.configuration == true) {
                             logger.debug { "send configuration " }
-                            it.complete(mapper.writeValueAsString(
-                                ResponseData(data.requestId, botConfiguration = botDefinition.toConfiguration())
-                            ))
+                            it.complete(
+                                mapper.writeValueAsString(
+                                    ResponseData(data.requestId, botConfiguration = botDefinition.toConfiguration())
+                                )
+                            )
                         } else {
                             it.fail("invalid request: $json")
                         }
@@ -146,17 +149,15 @@ fun start(
                     }
                 }
                 ?.exceptionHandler {
-                    logger.info("Exception, restarting in 1s");
-                    restart(client, 1);
+                    logger.info("Exception, restarting in 1s")
+                    restart(client, 1)
                 }
                 ?.closeHandler {
-                    logger.info("Closed, restarting in 1s");
-                    restart(client, 1);
+                    logger.info("Closed, restarting in 1s")
+                    restart(client, 1)
                 } ?: restart(client, 10).apply { logger.warn { "websocket server not found or unknown key - retry in 10s" } }
         } catch (e: Exception) {
             logger.error(e)
         }
     }
 }
-
-

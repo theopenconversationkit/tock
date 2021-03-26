@@ -128,7 +128,6 @@ class BuildModelWorker {
                         )
                     }
                 }
-
         }
 
         fun buildModelWithValidatedSentences(): Boolean {
@@ -200,12 +199,11 @@ class BuildModelWorker {
         }
 
         fun cleanupModel() {
-            if(cleanupModelEnabled) {
+            if (cleanupModelEnabled) {
                 logger.debug { "remove orphan models..." }
                 front.deleteOrphans()
                 logger.debug { "end remove orphan models" }
             }
         }
     }
-
 }

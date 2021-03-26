@@ -20,19 +20,20 @@ import ai.tock.nlp.core.Entity
 import ai.tock.nlp.core.EntityType
 import ai.tock.nlp.core.Intent
 
-
 /**
  *
  */
-data class SampleExpression(val text: String,
-                            val intent: Intent,
-                            val entities: List<SampleEntity> = emptyList(),
-                            val context: SampleContext = SampleContext()) {
+data class SampleExpression(
+    val text: String,
+    val intent: Intent,
+    val entities: List<SampleEntity> = emptyList(),
+    val context: SampleContext = SampleContext()
+) {
 
     fun entityValues(def: Entity): List<String> {
         return entities
-                .filter { it.definition == def }
-                .map { text.substring(it.start, it.end) }
+            .filter { it.definition == def }
+            .map { text.substring(it.start, it.end) }
     }
 
     fun containsEntityType(entityType: EntityType): Boolean {

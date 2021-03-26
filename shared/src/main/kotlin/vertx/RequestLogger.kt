@@ -26,5 +26,5 @@ interface RequestLogger {
     /**
      * Log a request.
      */
-    fun log(context: RoutingContext, data:Any?, error: Boolean = false)
+    fun log(context: RoutingContext, data: Any?, error: Boolean = false)
 }

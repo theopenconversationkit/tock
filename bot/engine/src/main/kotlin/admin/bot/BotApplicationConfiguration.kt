@@ -99,20 +99,19 @@ data class BotApplicationConfiguration(
     fun toConnectorConfiguration(): ConnectorConfiguration = ConnectorConfiguration(this)
 
     internal fun equalsWithoutId(conf: BotApplicationConfiguration): Boolean =
-        conf.applicationId == applicationId
-                && conf.botId == botId
-                && conf.namespace == namespace
-                && conf.nlpModel == nlpModel
-                && conf.connectorType == connectorType
-                && conf.ownerConnectorType == ownerConnectorType
-                && conf.name == name
-                && conf.baseUrl == baseUrl
-                && conf.parameters == parameters
-                && conf.path == path
+        conf.applicationId == applicationId &&
+            conf.botId == botId &&
+            conf.namespace == namespace &&
+            conf.nlpModel == nlpModel &&
+            conf.connectorType == connectorType &&
+            conf.ownerConnectorType == ownerConnectorType &&
+            conf.name == name &&
+            conf.baseUrl == baseUrl &&
+            conf.parameters == parameters &&
+            conf.path == path
 
     internal fun toKey(): BotApplicationConfigurationKey =
         BotApplicationConfigurationKey(applicationId = applicationId, botId = botId, namespace = namespace)
-
 }
 
 /**

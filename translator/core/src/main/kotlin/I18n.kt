@@ -32,7 +32,6 @@ infix fun TemporalAccessor?.by(dateFormatPattern: String): DateTemplate = by(Dat
  */
 infix fun TemporalAccessor?.by(formatter: DateTimeFormatter): DateTemplate = DefaultDateTemplate(this, formatter)
 
-
 /**
  * Format a [TemporalAccessor] this the specified [DateTimeFormatterProvider].
  */
@@ -47,7 +46,6 @@ fun TemporalAccessor?.formatWith(formatter: DateTimeFormatter, locale: Locale): 
  * To immediately format this date with the given locale.
  */
 fun TemporalAccessor?.formatWith(formatterProvider: DateTimeFormatterProvider, locale: Locale): CharSequence? = if (this == null) null else (by(formatterProvider) as DefaultDateTemplate).formatTo(locale)
-
 
 /**
  * Transforms this char sequence in a not-to-translate [TranslatedSequence] - ie a "raw" String.
@@ -71,7 +69,7 @@ fun CharSequence.splitToCharSequence(vararg delimiters: String, ignoreCase: Bool
     }
 }
 
-//copied from Strings.kt ->
+// copied from Strings.kt ->
 
 private class DelimitedRangesSequence(private val input: CharSequence, private val startIndex: Int, private val limit: Int, private val getNextMatch: CharSequence.(Int) -> Pair<Int, Int>?) : Sequence<IntRange> {
 
@@ -131,7 +129,6 @@ private fun CharSequence.rangesDelimitedBy(delimiters: Array<out String>, startI
     val delimitersList = delimiters.asList()
 
     return DelimitedRangesSequence(this, startIndex, limit, { start -> findAnyOf(delimitersList, start, ignoreCase = ignoreCase, last = false)?.let { it.first to it.second.length } })
-
 }
 
 private fun CharSequence.findAnyOf(strings: Collection<String>, startIndex: Int, ignoreCase: Boolean, last: Boolean): Pair<Int, String>? {
@@ -161,8 +158,9 @@ private fun CharSequence.findAnyOf(strings: Collection<String>, startIndex: Int,
 }
 
 internal fun CharSequence.regionMatchesImpl(thisOffset: Int, other: CharSequence, otherOffset: Int, length: Int, ignoreCase: Boolean): Boolean {
-    if ((otherOffset < 0) || (thisOffset < 0) || (thisOffset > this.length - length)
-        || (otherOffset > other.length - length)) {
+    if ((otherOffset < 0) || (thisOffset < 0) || (thisOffset > this.length - length) ||
+        (otherOffset > other.length - length)
+    ) {
         return false
     }
 

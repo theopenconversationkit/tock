@@ -140,7 +140,7 @@ class ClassifiedSentenceMongoDAOTest : AbstractTest() {
             EntityDefinition(entityTypeB, "b")
         )
 
-        //check
+        // check
         assertEquals(entityTypeB.name, waitForSentence().classification.entities.first().type)
 
         entityTypeDAO.getEntityTypeByName(entityTypeB.name)!!.apply {

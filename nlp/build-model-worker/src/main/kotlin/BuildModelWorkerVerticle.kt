@@ -54,17 +54,18 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
             if (canAnalyse.get()) {
                 try {
                     canAnalyse.set(false)
-                    if (!BuildModelWorker.buildModelWithValidatedSentences()
-                        && !BuildModelWorker.buildModelWithDeletedSentences()
-                        && !BuildModelWorker.buildModelForTriggeredApplication()
-                        && (ZonedDateTime.now(defaultZoneId)
-                            .run {
-                                hour >= testModelTimeframe[0]
-                                        && hour <= testModelTimeframe[1]
-                                        && minute % 1 == 0
-                            }
-                                && !BuildModelWorker.testModels()
-                                )
+                    if (!BuildModelWorker.buildModelWithValidatedSentences() &&
+                        !BuildModelWorker.buildModelWithDeletedSentences() &&
+                        !BuildModelWorker.buildModelForTriggeredApplication() &&
+                        (
+                            ZonedDateTime.now(defaultZoneId)
+                                .run {
+                                    hour >= testModelTimeframe[0] &&
+                                        hour <= testModelTimeframe[1] &&
+                                        minute % 1 == 0
+                                } &&
+                                !BuildModelWorker.testModels()
+                            )
                     ) {
                         logger.trace { "nothing to do - skip" }
                     }
@@ -82,5 +83,4 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
             }
         }
     }
-
 }

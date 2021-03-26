@@ -49,6 +49,5 @@ class SSOTockAuthProviderTest {
         assertTrue { excluded.any { it.matches("Roboto-Medium.2741a14.woff2") } }
         assertTrue { excluded.any { it.matches("Roboto-Medium.2741a14.woff") } }
         assertTrue { excluded.any { it.matches("Roboto-Medium.2741a14.ttf") } }
-
     }
 }

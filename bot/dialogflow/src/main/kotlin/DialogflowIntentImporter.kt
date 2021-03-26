@@ -93,13 +93,15 @@ object DialogflowIntentImporter {
                             text += part.text
                         }
 
-                        sentences.add(SentenceDump(
-                            text,
-                            intentDefinition.qualifiedName,
-                            emptyList(),
-                            locale,
-                            ClassifiedSentenceStatus.model
-                        ))
+                        sentences.add(
+                            SentenceDump(
+                                text,
+                                intentDefinition.qualifiedName,
+                                emptyList(),
+                                locale,
+                                ClassifiedSentenceStatus.model
+                            )
+                        )
                     }
 
                     // Create a new story with simple answers
@@ -167,6 +169,4 @@ object DialogflowIntentImporter {
         }
         return answerConfigurations
     }
-
 }
-

@@ -38,8 +38,8 @@ internal data class ArchivedEntityValuesCol(
     val lastUpdateDate: Instant = Instant.now()
 ) {
 
-    constructor(values: List<ArchivedEntityValue>, id: Id<EntityStateValue>?)
-            : this(id?.toString()?.toId() ?: newId(), values.map { ArchivedEntityValueWrapper(it) })
+    constructor(values: List<ArchivedEntityValue>, id: Id<EntityStateValue>?) :
+        this(id?.toString()?.toId() ?: newId(), values.map { ArchivedEntityValueWrapper(it) })
 
     @JacksonData(internal = true)
     internal class ArchivedEntityValueWrapper(
@@ -59,4 +59,3 @@ internal data class ArchivedEntityValuesCol(
         }
     }
 }
-

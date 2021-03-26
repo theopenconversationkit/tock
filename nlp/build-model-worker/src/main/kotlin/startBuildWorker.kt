@@ -44,8 +44,11 @@ fun main(vararg args: String) {
         BuildMode.VERTICLE
     else
         BuildMode.valueOf(property("tock_build_worker_mode", "COMMAND_LINE"))
-    startBuildWorker(buildWorkerMode, args.getOrNull(0)?.let { arg -> BuildType.values().find { it.name == arg } }
-        ?: REBUILD_ALL)
+    startBuildWorker(
+        buildWorkerMode,
+        args.getOrNull(0)?.let { arg -> BuildType.values().find { it.name == arg } }
+            ?: REBUILD_ALL
+    )
 }
 
 fun startBuildWorker(buildMode: BuildMode, buildType: BuildType) {
@@ -62,7 +65,7 @@ private fun startVerticle(buildMode: BuildMode) {
     val buildModelWorkerVerticle = BuildModelWorkerVerticle()
     vertx.deployVerticle(buildModelWorkerVerticle, DeploymentOptions().setWorker(true))
     vertx.deployVerticle(CleanupModelWorkerVerticle(), DeploymentOptions().setWorker(true))
-    if(buildMode != DEV) {
+    if (buildMode != DEV) {
         vertx.deployVerticle(HealthCheckVerticle(buildModelWorkerVerticle))
     }
 }
@@ -100,11 +103,15 @@ private fun startOnDemandVerticle() {
         DeploymentOptions().setWorker(true)
     )
 
-    vertx.deployVerticle(OnDemandHealthCheckVerticle(listOf(
-        cleanupOnDemandVerticle,
-        rebuildDiffOnDemandVerticle,
-        testOnDemandVerticle
-    )))
+    vertx.deployVerticle(
+        OnDemandHealthCheckVerticle(
+            listOf(
+                cleanupOnDemandVerticle,
+                rebuildDiffOnDemandVerticle,
+                testOnDemandVerticle
+            )
+        )
+    )
 }
 
 private fun startCommandLine(buildType: BuildType) {

@@ -72,7 +72,6 @@ internal object WhatsAppConnectorProvider : ConnectorProvider {
         )
 
     override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(WhatsAppBotImageMessage::class, WhatsAppBotTextMessage::class)
-
 }
 
 internal class WhatsAppConnectorProviderService : ConnectorProvider by WhatsAppConnectorProvider

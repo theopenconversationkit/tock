@@ -21,5 +21,4 @@ import ai.tock.bot.engine.user.PlayerId
 /**
  * The "start of typing" event.
  */
-class TypingOnEvent(val recipientId: PlayerId, applicationId: String) : Event(applicationId) {
-}
+class TypingOnEvent(val recipientId: PlayerId, applicationId: String) : Event(applicationId)

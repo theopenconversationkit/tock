@@ -29,7 +29,7 @@ class OnDemandHealthCheckVerticle(
 ) : WebVerticle() {
 
     override fun configure() {
-        //do nothing
+        // do nothing
     }
 
     override fun defaultHealthcheck(): (RoutingContext) -> Unit {
@@ -51,5 +51,4 @@ class OnDemandHealthCheckVerticle(
         },
         selfCheck = { workerOnDemandVerticles.none { !it.isLoaded() } }
     )
-
 }

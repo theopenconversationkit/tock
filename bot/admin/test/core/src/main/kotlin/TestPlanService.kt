@@ -93,7 +93,7 @@ object TestPlanService {
     }
 
     fun getTestPlanExecution(testPlan: TestPlan, testExecutionId: Id<TestPlanExecution>): TestPlanExecution? {
-        return testPlanDAO.getTestPlanExecution(testPlan, testExecutionId);
+        return testPlanDAO.getTestPlanExecution(testPlan, testExecutionId)
     }
 
     fun saveTestPlanExecution(testPlanExecution: TestPlanExecution) {
@@ -223,7 +223,8 @@ object TestPlanService {
                     } else {
                         logger.error { "ERROR : " + answer.errorBody()?.string() }
                         return DialogExecutionReport(
-                            dialog.id, true, errorMessage = answer.errorBody()?.toString()
+                            dialog.id, true,
+                            errorMessage = answer.errorBody()?.toString()
                                 ?: "Unknown error"
                         )
                     }
@@ -309,7 +310,6 @@ object TestPlanService {
             .mapNotNull { (subMessage, expectedSubMessage) -> subMessage.partiallyEquals(expectedSubMessage) }
             .firstOrNull()
     }
-
 }
 
 private fun ClientGenericMessage.partiallyEquals(expected: ClientGenericMessage): String? {

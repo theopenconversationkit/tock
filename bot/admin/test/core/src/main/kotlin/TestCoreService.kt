@@ -64,7 +64,6 @@ class TestCoreService : TestService {
             } ?: Companion.notFound()
         }
 
-
         blockingJsonGet("/test/plans", botUser) { context ->
             TestPlanService.getTestPlansByNamespace(context.organization)
         }
@@ -142,8 +141,6 @@ class TestCoreService : TestService {
                 Companion.unauthorized()
             }
         }
-
-
     }
 
     private fun talk(request: BotDialogRequest): BotDialogResponse {
@@ -165,7 +162,6 @@ class TestCoreService : TestService {
                 response.body()?.run {
                     BotDialogResponse(messages, userLocale, userActionId, hasNlpStats)
                 } ?: BotDialogResponse(emptyList())
-
             } else {
                 logger.error { "error with $conf : ${response.errorBody()?.string()}" }
                 BotDialogResponse(listOf(ClientSentence("technical error :( ${response.errorBody()?.string()}]")))
@@ -175,7 +171,6 @@ class TestCoreService : TestService {
             BotDialogResponse(listOf(ClientSentence("technical error :( ${throwable.message}")))
         }
     }
-
 
     private fun getRestClient(conf: BotApplicationConfiguration): ConnectorRestClient {
         val baseUrl = conf.baseUrl?.let { if (it.isBlank()) null else it } ?: defaultRestConnectorBaseUrl
@@ -237,5 +232,4 @@ class TestCoreService : TestService {
     }
 
     override fun priority(): Int = 0
-
 }

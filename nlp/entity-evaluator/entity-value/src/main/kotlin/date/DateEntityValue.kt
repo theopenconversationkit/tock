@@ -33,6 +33,5 @@ data class DateEntityValue(val date: ZonedDateTime, val grain: DateEntityGrain) 
         return grain.calculateEnd(date, zoneId)
     }
 
-    override fun duration(): Duration
-        = Duration.between(grain.truncate(date), grain.truncate(end(date.zone)))
+    override fun duration(): Duration = Duration.between(grain.truncate(date), grain.truncate(end(date.zone)))
 }

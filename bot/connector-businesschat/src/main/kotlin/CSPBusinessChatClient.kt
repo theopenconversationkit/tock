@@ -94,7 +94,7 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
         @GET("preDownload")
         fun preDownloadAttachment(
             @Header("Source-Id") sourceId: String,
-            //@retrofit2.http.Header("Destination-Id") destinationId: String,
+            // @retrofit2.http.Header("Destination-Id") destinationId: String,
             @Header("url") url: String,
             @Header("signature") signature: String,
             @Header("owner") owner: String
@@ -169,12 +169,12 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
         val encryptedAttachment = encryptAttachment(attachment.bytes, key)
         val hexKey = "00" + BaseEncoding.base16().encode(key.encoded)
 
-        //preupload
+        // preupload
         val preUploadAttachment =
             businessChatClientApi.preUploadAttachment(attachment.sourceId, encryptedAttachment.size).execute()
         val preUploadResponse = preUploadAttachment.body() ?: error("PreUpload failed")
 
-        //upload
+        // upload
         val logging = HttpLoggingInterceptor()
         logging.level = HttpLoggingInterceptor.Level.BODY
         val client = OkHttpClient.Builder()
@@ -198,7 +198,7 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
         val rep = execute.body!!.string()
         val fileChecksum = jacksonObjectMapper().readValue<UploadResponse>(rep).singleFile.fileChecksum
 
-        //send attachement
+        // send attachement
         businessChatClientApi.sendAttachment(
             encryptedAttachment.size,
             Attachment(
@@ -289,11 +289,11 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
             isComplexListPickerReply(receivedModel) -> {
 
                 // Payload is encrypted and has to be downloaded
-                //see https://developer.apple.com/documentation/businesschatapi/messages_sent/interactive_messages/receiving_large_interactive_data_payloads
+                // see https://developer.apple.com/documentation/businesschatapi/messages_sent/interactive_messages/receiving_large_interactive_data_payloads
                 val dataRef = receivedModel.interactiveDataRef!!
                 val businessId = receivedModel.destinationId
 
-                //getting the download url
+                // getting the download url
                 val preDownloadResponse = businessChatClientApi.preDownloadAttachment(
                     businessId,
                     dataRef.url,
@@ -301,7 +301,7 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
                     dataRef.owner
                 ).execute().body()
 
-                //download the encrypted payload
+                // download the encrypted payload
                 val logging = HttpLoggingInterceptor()
                 logging.level = HttpLoggingInterceptor.Level.BODY
                 val client = OkHttpClient.Builder().addInterceptor(logging)
@@ -348,7 +348,6 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
                 with(payload.data.replyMessage.title) {
                     return ListPickerChoice(this)
                 }
-
             }
             else -> {
                 logger.error { "interactiveDataRef is null" }
@@ -388,8 +387,5 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
         return cipher.doFinal(attachment)
     }
 
-
     private fun ungzip(content: ByteArray): ByteArray = ByteStreams.toByteArray(GZIPInputStream(content.inputStream()))
-
-
 }

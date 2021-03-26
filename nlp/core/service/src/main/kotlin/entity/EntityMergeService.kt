@@ -16,7 +16,6 @@
 
 package ai.tock.nlp.core.service.entity
 
-import com.github.salomonbrys.kodein.instance
 import ai.tock.nlp.core.CallContext
 import ai.tock.nlp.core.EntityRecognition
 import ai.tock.nlp.core.IntOpenRange
@@ -24,6 +23,7 @@ import ai.tock.nlp.core.Intent
 import ai.tock.nlp.core.service.entity.EntityMergeService.Weighted.WeightedEntity
 import ai.tock.nlp.core.service.entity.EntityMergeService.Weighted.WeightedEntityType
 import ai.tock.shared.injector
+import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 
 /**
@@ -43,7 +43,7 @@ internal object EntityMergeService : EntityMerge {
         class WeightedEntity(val entity: EntityRecognition) : Weighted(calculateWeight(entity), entity) {
             companion object {
                 fun calculateWeight(entity: EntityRecognition): Double {
-                    //if it's 100%, it's 100%
+                    // if it's 100%, it's 100%
                     return if (entity.probability == 1.0) 1.0
                     else entity.probability - if (entity.value.evaluated && entity.value.value == null) 0.5 else 0.0
                 }
@@ -64,77 +64,79 @@ internal object EntityMergeService : EntityMerge {
     private val entityCore: EntityCore by injector.instance()
 
     override fun mergeEntityTypes(
-            callContext: CallContext,
-            text: String,
-            intent: Intent,
-            entities: List<EntityRecognition>,
-            entityTypes: List<EntityTypeRecognition>): List<EntityRecognition> {
+        callContext: CallContext,
+        text: String,
+        intent: Intent,
+        entities: List<EntityRecognition>,
+        entityTypes: List<EntityTypeRecognition>
+    ): List<EntityRecognition> {
         return if (entityTypes.isEmpty()) {
             entities
         } else {
-            //introduce weight and start by the highest value
+            // introduce weight and start by the highest value
             val all = (entities.map { WeightedEntity(it) } + entityTypes.map { WeightedEntityType(it) })
-                    .sortedDescending()
+                .sortedDescending()
 
-            //need to trace those already viewed
+            // need to trace those already viewed
             val viewed = mutableSetOf<Weighted>()
 
             all.map { e -> all.filter { e.overlap(it) }.sortedDescending() }
-                    //groups are sorted by the highest value of the group
-                    .sortedBy { it.first() }
-                    .mapNotNull { group ->
-                        val stillAvailable = group - viewed
-                        viewed.addAll(group)
-                        //if one contains all the others, he has a bonus
-                        if (stillAvailable.size > 1) {
-                            var better = stillAvailable.first()
-                            var min = better.range.start
-                            var max = better.range.end
-                            stillAvailable.forEach {
-                                min = Math.min(min, it.range.start)
-                                max = Math.max(max, it.range.end)
-                                if (min == it.range.start && max == it.range.end) {
-                                    better = it
-                                }
-                            }
-                            if (min == better.range.start && max == better.range.end) {
-                                better.weight += 0.2
+                // groups are sorted by the highest value of the group
+                .sortedBy { it.first() }
+                .mapNotNull { group ->
+                    val stillAvailable = group - viewed
+                    viewed.addAll(group)
+                    // if one contains all the others, he has a bonus
+                    if (stillAvailable.size > 1) {
+                        var better = stillAvailable.first()
+                        var min = better.range.start
+                        var max = better.range.end
+                        stillAvailable.forEach {
+                            min = Math.min(min, it.range.start)
+                            max = Math.max(max, it.range.end)
+                            if (min == it.range.start && max == it.range.end) {
+                                better = it
                             }
                         }
-                        val first = stillAvailable.sortedDescending().firstOrNull()
-                        //need to recheck overlap
-                        if (first != null) {
-                            viewed.addAll(all.filter { first.overlap(it) })
-                        }
-                        when (first) {
-                            null -> null
-                            is WeightedEntity ->
-                                with(first.entity.value) { if (evaluated && value == null) null else first.entity }
-                            is WeightedEntityType -> {
-                                group.firstOrNull { it is WeightedEntity && intent.hasEntity(first.entityType.entityType, it.entity.role) }
-                                        ?.let {
-                                            first.entityType.toResult(callContext, text, (it as WeightedEntity).entity.role)
-                                        }
-                                        ?: createOrphanEntity(callContext, text, first.entityType, intent)
-                            }
+                        if (min == better.range.start && max == better.range.end) {
+                            better.weight += 0.2
                         }
                     }
-                    //sorted by range
-                    .sorted()
+                    val first = stillAvailable.sortedDescending().firstOrNull()
+                    // need to recheck overlap
+                    if (first != null) {
+                        viewed.addAll(all.filter { first.overlap(it) })
+                    }
+                    when (first) {
+                        null -> null
+                        is WeightedEntity ->
+                            with(first.entity.value) { if (evaluated && value == null) null else first.entity }
+                        is WeightedEntityType -> {
+                            group.firstOrNull { it is WeightedEntity && intent.hasEntity(first.entityType.entityType, it.entity.role) }
+                                ?.let {
+                                    first.entityType.toResult(callContext, text, (it as WeightedEntity).entity.role)
+                                }
+                                ?: createOrphanEntity(callContext, text, first.entityType, intent)
+                        }
+                    }
+                }
+                // sorted by range
+                .sorted()
         }
     }
 
     private fun createOrphanEntity(
-            callContext: CallContext,
-            text: String,
-            entityType: EntityTypeRecognition,
-            intent: Intent): EntityRecognition? {
+        callContext: CallContext,
+        text: String,
+        entityType: EntityTypeRecognition,
+        intent: Intent
+    ): EntityRecognition? {
         val intentEntities = intent.entities.filter { it.entityType == entityType.entityType }
         return if (intentEntities.size == 1) {
             logger.debug { "create orphan : $entityType" }
             entityType.toResult(callContext, text, intentEntities.first().role)
         } else {
-            //TODO take the more frequently viewed
+            // TODO take the more frequently viewed
             intentEntities.let {
                 val e = it.first()
                 logger.warn { "create orphan with first role found  : $e" }
@@ -144,25 +146,28 @@ internal object EntityMergeService : EntityMerge {
     }
 
     private fun EntityTypeRecognition.toResult(
-            callContext: CallContext,
-            text: String,
-            role: String): EntityRecognition {
+        callContext: CallContext,
+        text: String,
+        role: String
+    ): EntityRecognition {
         return toEntityRecognition(role)
-                .run {
-                    //need to reevaluate
-                    if (callContext.evaluationContext.referenceDateByEntityMap?.containsKey(value.entity) == true) {
-                        entityCore.evaluateEntities(
-                                callContext,
-                                text,
-                                listOf(
-                                        copy(value = value.copy(
-                                                evaluated = false
-                                        )))
-                        ).first()
-                    } else {
-                        this
-                    }
+            .run {
+                // need to reevaluate
+                if (callContext.evaluationContext.referenceDateByEntityMap?.containsKey(value.entity) == true) {
+                    entityCore.evaluateEntities(
+                        callContext,
+                        text,
+                        listOf(
+                            copy(
+                                value = value.copy(
+                                    evaluated = false
+                                )
+                            )
+                        )
+                    ).first()
+                } else {
+                    this
                 }
+            }
     }
-
 }

@@ -21,6 +21,5 @@ import ai.tock.bot.admin.message.MessageConfiguration
 /**
  *
  */
-data class MessageAnswerConfiguration(val messages: List<MessageConfiguration>)
-    : AnswerConfiguration(AnswerConfigurationType.message) {
-}
+data class MessageAnswerConfiguration(val messages: List<MessageConfiguration>) :
+    AnswerConfiguration(AnswerConfigurationType.message)

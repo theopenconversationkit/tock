@@ -200,5 +200,4 @@ internal class TockBotBus(
             bot.markAsUnknown(action, userTimeline)
         }
     }
-
 }

@@ -19,7 +19,6 @@ package ai.tock.bot.admin.dialog
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.nlp.NlpCallStats
-import ai.tock.nlp.api.client.model.dump.ApplicationDefinition
 import org.litote.kmongo.Id
 
 /**
@@ -31,5 +30,5 @@ interface DialogReportDAO {
 
     fun getDialog(id: Id<Dialog>): DialogReport?
 
-    fun getNlpCallStats(actionId: Id<Action>, namespace: String) : NlpCallStats?
+    fun getNlpCallStats(actionId: Id<Action>, namespace: String): NlpCallStats?
 }

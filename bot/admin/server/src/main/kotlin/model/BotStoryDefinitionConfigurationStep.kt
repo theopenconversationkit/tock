@@ -17,9 +17,9 @@
 package ai.tock.bot.admin.model
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType
-import ai.tock.bot.definition.EntityStepSelection
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep
+import ai.tock.bot.definition.EntityStepSelection
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.translator.I18nKeyProvider
@@ -86,13 +86,15 @@ data class BotStoryDefinitionConfigurationStep(
             e.answers.mapAnswers(story.userSentenceLocale, readOnly),
             e.currentType,
             story.category,
-            (e.userSentenceLabel
-                ?: I18nLabelValue(
-                    I18nKeyProvider.generateKey(story.namespace, story.category, e.userSentence),
-                    story.namespace,
-                    story.category,
-                    e.userSentence
-                ))
+            (
+                e.userSentenceLabel
+                    ?: I18nLabelValue(
+                        I18nKeyProvider.generateKey(story.namespace, story.category, e.userSentence),
+                        story.namespace,
+                        story.category,
+                        e.userSentence
+                    )
+                )
                 .let { Translator.saveIfNotExist(it, readOnly) },
             e.children.map { BotStoryDefinitionConfigurationStep(story, it, readOnly) },
             e.level,

@@ -49,7 +49,7 @@ open class RestOrchestrationCallback(
         sendResponse(SecondaryBotResponse.fromActions(applicationId, actions))
     }
 
-    override fun sendResponse(response : SecondaryBotResponse) {
+    override fun sendResponse(response: SecondaryBotResponse) {
         try {
             sendHttpResponse(OK, response)
         } catch (exception: Exception) {
@@ -60,7 +60,8 @@ open class RestOrchestrationCallback(
 
     override fun sendError() {
         sendHttpResponse(
-            INTERNAL_SERVER_ERROR, SecondaryBotNoResponse(
+            INTERNAL_SERVER_ERROR,
+            SecondaryBotNoResponse(
                 status = ERROR,
                 metaData = OrchestrationMetaData(
                     playerId = PlayerId("unknownWithError"),
@@ -83,4 +84,3 @@ open class RestOrchestrationCallback(
         res.end(orchestrationMapper.writeValueAsString(response))
     }
 }
-

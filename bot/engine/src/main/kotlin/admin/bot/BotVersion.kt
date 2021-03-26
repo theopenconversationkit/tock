@@ -29,26 +29,26 @@ data class BotVersion(val botVersion: ArtifactVersion, val tockVersion: Artifact
          * Get the current bot version.
          */
         fun getCurrentBotVersion(botId: String): BotVersion {
-            //TODO
+            // TODO
             return BotVersion(UNKNOWN, UNKNOWN)
         }
 
         internal fun findBestMatchVersion(versions: List<BotVersion>, targetVersion: BotVersion): BotVersion? {
-            //1 use the tock version
+            // 1 use the tock version
             return versions.groupBy { it.tockVersion.distanceFrom(targetVersion.tockVersion) }
-                    .minByOrNull { it.key }
-                    ?.value
-                    ?.run {
-                        if (size > 1) {
-                            //2 use bot version
-                            groupBy { it.botVersion.distanceFrom(targetVersion.botVersion) }
-                                    .minByOrNull { it.key }
-                                    ?.value
-                                    ?.firstOrNull()
-                        } else {
-                            firstOrNull()
-                        }
+                .minByOrNull { it.key }
+                ?.value
+                ?.run {
+                    if (size > 1) {
+                        // 2 use bot version
+                        groupBy { it.botVersion.distanceFrom(targetVersion.botVersion) }
+                            .minByOrNull { it.key }
+                            ?.value
+                            ?.firstOrNull()
+                    } else {
+                        firstOrNull()
                     }
+                }
         }
     }
 }

@@ -39,7 +39,7 @@ data class TockUser(
     }
 
     override fun setAuthProvider(authProvider: AuthProvider) {
-        //do nothing
+        // do nothing
     }
 
     override fun principal(): JsonObject {

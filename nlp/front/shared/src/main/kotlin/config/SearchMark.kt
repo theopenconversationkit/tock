@@ -22,8 +22,9 @@ import java.time.Instant
  * A basic mark used to display results after the mark.
  */
 data class SearchMark(
-        val text: String,
-        /**
-         * The results start with the elements updated before [date].
-         */
-        val date: Instant)
+    val text: String,
+    /**
+     * The results start with the elements updated before [date].
+     */
+    val date: Instant
+)

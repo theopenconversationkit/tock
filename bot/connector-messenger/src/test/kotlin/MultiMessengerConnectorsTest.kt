@@ -52,12 +52,14 @@ internal class MultiMessengerConnectorsTest {
         @JvmStatic
         fun injectExecutor() {
             tockInternalInjector = KodeinInjector().apply {
-                inject(Kodein {
-                    import(
-                        Module {
-                            bind<Executor>() with singleton { SimpleExecutor(2) }
-                        })
-                }
+                inject(
+                    Kodein {
+                        import(
+                            Module {
+                                bind<Executor>() with singleton { SimpleExecutor(2) }
+                            }
+                        )
+                    }
                 )
             }
         }
@@ -72,7 +74,7 @@ internal class MultiMessengerConnectorsTest {
     // APP A (pathA) Page A, B et C
     // APP B (pathB) Page A et B
 
-    //first app linked to three pages
+    // first app linked to three pages
     val connectorId1 = "connectorId1"
     val path1 = "pathA"
     val appId1 = "appA"
@@ -97,7 +99,7 @@ internal class MultiMessengerConnectorsTest {
     val token3 = "token"
     val verifyToken3 = "verifyToken"
 
-    //second app linked to two pages
+    // second app linked to two pages
     val connectorId4 = "connectorId4"
     val path4 = "pathB"
     val appId4 = "appB"
@@ -190,7 +192,8 @@ internal class MultiMessengerConnectorsTest {
         )
 
     fun standby(page: String) = request(page).run {
-        copy(entry = entry.map { it.copy(messaging = null, standby = it.messaging) }
+        copy(
+            entry = entry.map { it.copy(messaging = null, standby = it.messaging) }
         )
     }
 

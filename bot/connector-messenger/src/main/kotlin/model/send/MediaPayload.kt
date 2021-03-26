@@ -31,5 +31,4 @@ data class MediaPayload(
             subElements = elements.map { it.toGenericElement() }
         )
     }
-
 }

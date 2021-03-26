@@ -18,7 +18,6 @@ package ai.tock.bot.connector.slack.model
 
 import ai.tock.bot.engine.message.GenericMessage
 
-
 data class SlackMessageOut(
     val text: String,
     val channel: String? = null,
@@ -31,5 +30,4 @@ data class SlackMessageOut(
             choices = attachments.filter { it.hasOnlyActions() }.flatMap { it.actions }.map { it.toChoice() },
             subElements = attachments.filter { !it.hasOnlyActions() }.map { it.toGenericElement() }
         )
-
 }

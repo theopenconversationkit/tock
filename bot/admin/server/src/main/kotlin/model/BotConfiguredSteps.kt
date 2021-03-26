@@ -19,7 +19,6 @@ package ai.tock.bot.admin.model
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationByBotStep
 
-
 data class BotConfiguredSteps(
     val botConfiguration: String,
     val steps: List<BotStoryDefinitionConfigurationStep> = emptyList()
@@ -31,5 +30,6 @@ fun List<StoryDefinitionConfigurationByBotStep>.mapSteps(story: StoryDefinitionC
             it.botConfiguration,
             it.steps.map { step ->
                 BotStoryDefinitionConfigurationStep(story, step, readOnly)
-            })
+            }
+        )
     }

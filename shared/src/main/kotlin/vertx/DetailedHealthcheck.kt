@@ -32,7 +32,7 @@ data class DetailedHealthcheckResults(
 fun detailedHealthcheck(
     tasks: List<Pair<String, () -> Boolean>> = listOf(),
     selfCheck: () -> Boolean = { true }
-) : (RoutingContext) -> Unit {
+): (RoutingContext) -> Unit {
     val mapper = jacksonObjectMapper()
     val logger: KLogger = KotlinLogging.logger {}
 

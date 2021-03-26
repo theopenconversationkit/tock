@@ -22,7 +22,6 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlin.test.Test
 
-
 /**
  *
  */
@@ -50,7 +49,6 @@ class RocketChatIntegrationTest {
         )
     )
 
-
     @Test
     fun testRocketChatIntegration() {
         every { connectorController.handle(any(), any()) } answers {
@@ -69,6 +67,5 @@ class RocketChatIntegrationTest {
         connector.register(connectorController)
         connector2.register(connectorController)
         Thread.sleep(100000000L)
-
     }
 }

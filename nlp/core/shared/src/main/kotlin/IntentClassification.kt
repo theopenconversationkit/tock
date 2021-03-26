@@ -25,5 +25,4 @@ interface IntentClassification : Iterator<Intent> {
      * Returns the probability [0..1] of the current intent.
      */
     fun probability(): Double
-
 }

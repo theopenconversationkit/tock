@@ -16,12 +16,6 @@
 
 package ai.tock.nlp.api.client
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import ai.tock.nlp.api.client.model.NlpQuery
 import ai.tock.nlp.api.client.model.NlpResult
 import ai.tock.nlp.api.client.model.dump.ApplicationDefinition
@@ -34,6 +28,12 @@ import ai.tock.nlp.api.client.model.evaluation.EntityEvaluationResult
 import ai.tock.nlp.api.client.model.merge.ValuesMergeQuery
 import ai.tock.nlp.api.client.model.merge.ValuesMergeResult
 import ai.tock.nlp.api.client.model.monitoring.MarkAsUnknownQuery
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import mu.KotlinLogging
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
@@ -61,7 +61,7 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
     init {
         val mapper = jacksonObjectMapper()
         mapper.findAndRegisterModules()
-        //force java time module
+        // force java time module
         mapper.registerModule(JavaTimeModule())
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
@@ -88,10 +88,10 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
 
     private fun <T> Response<T>.parseAndReturns(): T? =
         body()
-                ?: {
-                    logger.error { "nlp error : ${errorBody()?.string()}" }
-                    null
-                }.invoke()
+            ?: {
+                logger.error { "nlp error : ${errorBody()?.string()}" }
+                null
+            }.invoke()
 
     override fun parse(query: NlpQuery): NlpResult? {
         return nlpService.parse(query).execute().parseAndReturns()
@@ -162,5 +162,4 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
             false
         }
     }
-
 }

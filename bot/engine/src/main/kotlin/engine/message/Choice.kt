@@ -53,8 +53,8 @@ data class Choice(
         step: StoryStep<out StoryHandlerDefinition>,
         parameters: Map<String, String> = emptyMap(),
         delay: Long = 0
-    )
-            : this(intentName, parameters + (SendChoice.STEP_PARAMETER to step.name), delay)
+    ) :
+        this(intentName, parameters + (SendChoice.STEP_PARAMETER to step.name), delay)
 
     override val eventType: EventType = EventType.choice
 

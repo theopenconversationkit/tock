@@ -16,9 +16,6 @@
 
 package ai.tock.duckling.client
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.provider
 import ai.tock.duckling.client.DucklingDimensions.TIME_DIMENSION
 import ai.tock.nlp.core.EntityType
 import ai.tock.nlp.core.NlpEngineType
@@ -28,6 +25,9 @@ import ai.tock.nlp.entity.date.DateEntityValue
 import ai.tock.nlp.entity.date.DateIntervalEntityValue
 import ai.tock.nlp.model.EntityCallContextForEntity
 import ai.tock.shared.injector
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
@@ -142,7 +142,6 @@ internal class DatesMergeTest {
             2
         )
 
-
         val changeDayOfWeek = ValueDescriptor(
             DateEntityValue(
                 referenceTime.plusDays(1),
@@ -200,9 +199,11 @@ internal class DatesMergeTest {
                 )
             } answers { listOf(ValueWithRange(0, 0, tomorrowInTheEvening, TIME_DIMENSION)) }
 
-            injector.inject(Kodein {
-                bind<Parser>() with provider { parser }
-            })
+            injector.inject(
+                Kodein {
+                    bind<Parser>() with provider { parser }
+                }
+            )
         }
     }
 
@@ -336,5 +337,4 @@ internal class DatesMergeTest {
     fun `entre 9h et 10h is a french change hour pattern`() {
         assertTrue(DatesMerge.isChangeHourPattern("entre 9h et 10h"))
     }
-
 }

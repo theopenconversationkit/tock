@@ -16,17 +16,17 @@
 
 package ai.tock.nlp.front.storage.mongo
 
-import com.mongodb.client.MongoCollection
 import ai.tock.nlp.front.service.storage.ApplicationDefinitionDAO
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.ApplicationDefinition_.Companion.Name
 import ai.tock.nlp.front.shared.config.ApplicationDefinition_.Companion.Namespace
 import ai.tock.nlp.front.storage.mongo.MongoFrontConfiguration.asyncDatabase
 import ai.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
+import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.watch
+import com.mongodb.client.MongoCollection
 import org.litote.kmongo.Id
 import org.litote.kmongo.deleteOneById
-import ai.tock.shared.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById

@@ -46,5 +46,4 @@ internal class ChatBaseBotAnswerinterceptor(private val apiKey: String, private 
         }
         return action
     }
-
 }

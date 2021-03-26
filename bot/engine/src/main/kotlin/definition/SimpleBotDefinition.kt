@@ -20,54 +20,56 @@ package ai.tock.bot.definition
  * A simple [BotDefinition].
  */
 class SimpleBotDefinition(
-        botId: String,
-        namespace: String,
-        stories: List<StoryDefinition>,
-        nlpModelName: String = botId,
-        unknownStory: StoryDefinition = defaultUnknownStory,
-        helloStory: StoryDefinition? = null,
-        goodbyeStory: StoryDefinition? = null,
-        noInputStory: StoryDefinition? = null,
-        botDisabledStory: StoryDefinition? = null,
-        botEnabledStory: StoryDefinition? = null,
-        userLocationStory: StoryDefinition? = null,
-        handleAttachmentStory: StoryDefinition? = null,
-        eventListener: EventListener = EventListenerBase(),
-        keywordStory: StoryDefinition = defaultKeywordStory,
-        conversation: DialogFlowDefinition? = null
+    botId: String,
+    namespace: String,
+    stories: List<StoryDefinition>,
+    nlpModelName: String = botId,
+    unknownStory: StoryDefinition = defaultUnknownStory,
+    helloStory: StoryDefinition? = null,
+    goodbyeStory: StoryDefinition? = null,
+    noInputStory: StoryDefinition? = null,
+    botDisabledStory: StoryDefinition? = null,
+    botEnabledStory: StoryDefinition? = null,
+    userLocationStory: StoryDefinition? = null,
+    handleAttachmentStory: StoryDefinition? = null,
+    eventListener: EventListener = EventListenerBase(),
+    keywordStory: StoryDefinition = defaultKeywordStory,
+    conversation: DialogFlowDefinition? = null
 ) :
-        BotDefinitionBase(
-                botId,
-                namespace,
-                stories,
-                nlpModelName,
-                unknownStory,
-                helloStory,
-                goodbyeStory,
-                noInputStory,
-                botDisabledStory,
-                botEnabledStory,
-                userLocationStory,
-                handleAttachmentStory,
-                eventListener,
-                keywordStory,
-                conversation
-        ) {
+    BotDefinitionBase(
+        botId,
+        namespace,
+        stories,
+        nlpModelName,
+        unknownStory,
+        helloStory,
+        goodbyeStory,
+        noInputStory,
+        botDisabledStory,
+        botEnabledStory,
+        userLocationStory,
+        handleAttachmentStory,
+        eventListener,
+        keywordStory,
+        conversation
+    ) {
 
-    //set namespace for story handler
+    // set namespace for story handler
     init {
-        (stories
-                + listOfNotNull(
-                unknownStory,
-                helloStory,
-                goodbyeStory,
-                noInputStory,
-                botDisabledStory,
-                botEnabledStory,
-                userLocationStory,
-                handleAttachmentStory,
-                keywordStory
-        )).forEach {
+        (
+            stories +
+                listOfNotNull(
+                    unknownStory,
+                    helloStory,
+                    goodbyeStory,
+                    noInputStory,
+                    botDisabledStory,
+                    botEnabledStory,
+                    userLocationStory,
+                    handleAttachmentStory,
+                    keywordStory
+                )
+            ).forEach {
             (it.storyHandler as? StoryHandlerBase<*>)?.apply {
                 i18nNamespace = namespace
             }

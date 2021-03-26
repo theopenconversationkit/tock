@@ -21,5 +21,4 @@ import ai.tock.bot.engine.user.PlayerId
 /**
  * The "message seen" event.
  */
-class MarkSeenEvent(val recipientId: PlayerId, applicationId: String) : Event(applicationId) {
-}
+class MarkSeenEvent(val recipientId: PlayerId, applicationId: String) : Event(applicationId)

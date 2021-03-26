@@ -23,9 +23,8 @@ import java.util.Locale
 /**
  *
  */
-data class BotSimpleAnswerConfiguration(val answers: List<BotSimpleAnswer>)
-    : BotAnswerConfiguration(AnswerConfigurationType.simple) {
+data class BotSimpleAnswerConfiguration(val answers: List<BotSimpleAnswer>) :
+    BotAnswerConfiguration(AnswerConfigurationType.simple) {
 
     constructor(conf: SimpleAnswerConfiguration, locale: Locale?, readOnly: Boolean = false) : this(conf.answers.map { BotSimpleAnswer(it, locale, readOnly) })
-
 }

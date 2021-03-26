@@ -31,9 +31,11 @@ interface Message {
 
     fun toAction(bus: BotBus): Action = toAction(bus.botId, bus.applicationId, bus.userId)
 
-    fun toAction(playerId: PlayerId,
-                 applicationId: String,
-                 recipientId: PlayerId): Action
+    fun toAction(
+        playerId: PlayerId,
+        applicationId: String,
+        recipientId: PlayerId
+    ): Action
 
     /**
      * Returns a human readable string representation of the message.

@@ -55,8 +55,7 @@ interface Executor {
      * @param delay the delay between each other call
      * @param runnable the task to run
      */
-    fun setPeriodic(delay: Duration, runnable: () -> Unit): Long
-            = setPeriodic(delay, delay, runnable)
+    fun setPeriodic(delay: Duration, runnable: () -> Unit): Long = setPeriodic(delay, delay, runnable)
 
     /**
      * Execute a periodic task.

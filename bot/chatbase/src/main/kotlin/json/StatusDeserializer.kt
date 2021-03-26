@@ -29,5 +29,4 @@ internal class StatusDeserializer : JacksonDeserializer<Status>() {
         val code: Int = node.asInt()
         return Status.findByCode(code)
     }
-
 }

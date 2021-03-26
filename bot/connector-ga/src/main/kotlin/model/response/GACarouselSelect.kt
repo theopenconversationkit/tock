@@ -22,11 +22,8 @@ import ai.tock.bot.engine.message.GenericMessage
  *
  */
 data class GACarouselSelect(
-        val items: List<GACarouselItem>
+    val items: List<GACarouselItem>
 ) {
 
-    fun toGenericMessage(): GenericMessage?
-            = GenericMessage(subElements = items.map { it.toGenericElement() })
-
+    fun toGenericMessage(): GenericMessage = GenericMessage(subElements = items.map { it.toGenericElement() })
 }
-

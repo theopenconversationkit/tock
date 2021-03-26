@@ -25,10 +25,12 @@ import com.fasterxml.jackson.annotation.JsonProperty
 /**
  * List or generic template subElements.
  */
-data class Element(val title: String,
-                   @JsonProperty("image_url") val imageUrl: String? = null,
-                   val subtitle: String? = null,
-                   val buttons: List<Button>? = null) {
+data class Element(
+    val title: String,
+    @JsonProperty("image_url") val imageUrl: String? = null,
+    val subtitle: String? = null,
+    val buttons: List<Button>? = null
+) {
 
     internal constructor(
         title: CharSequence,

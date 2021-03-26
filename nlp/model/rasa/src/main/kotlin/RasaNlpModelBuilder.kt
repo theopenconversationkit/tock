@@ -52,7 +52,7 @@ internal object RasaNlpModelBuilder : NlpEngineModelBuilder {
         }
     }
 
-    //for rasa, intent & entity models are the same so... do nothing
+    // for rasa, intent & entity models are the same so... do nothing
     override fun buildEntityModel(
         context: EntityBuildContext,
         configuration: NlpApplicationConfiguration,

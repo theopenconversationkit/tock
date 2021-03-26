@@ -19,4 +19,4 @@ package ai.tock.bot.xray.model
 /**
  *
  */
-data class JiraKey(val key:String)
+data class JiraKey(val key: String)

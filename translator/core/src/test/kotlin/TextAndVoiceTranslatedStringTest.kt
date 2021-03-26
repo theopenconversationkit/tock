@@ -44,4 +44,3 @@ class TextAndVoiceTranslatedStringTest {
         assertEquals("ok", TextAndVoiceTranslatedString("ok", "voice").toString())
     }
 }
-

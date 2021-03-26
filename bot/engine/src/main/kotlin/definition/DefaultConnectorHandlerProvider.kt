@@ -41,9 +41,11 @@ internal object DefaultConnectorHandlerProvider : ConnectorHandlerProvider {
             getAllAnnotations(kclass)
                 .filter { it.annotationClass.findAnnotation<ConnectorHandler>() != null }
                 .mapNotNullValues { a: Annotation ->
-                    a.annotationClass.findAnnotation<ConnectorHandler>()!!.connectorTypeId to (a.annotationClass.java.getDeclaredMethod(
-                        "value"
-                    ).invoke(a) as? Class<*>?)?.kotlin
+                    a.annotationClass.findAnnotation<ConnectorHandler>()!!.connectorTypeId to (
+                        a.annotationClass.java.getDeclaredMethod(
+                            "value"
+                        ).invoke(a) as? Class<*>?
+                        )?.kotlin
                 }
                 .toMap()
         }

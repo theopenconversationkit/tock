@@ -38,19 +38,20 @@ internal class MessageDeserializer : JacksonDeserializer<Message>() {
     }
 
     override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Message? {
-        data class MessageFields(var mid: String? = null,
-                                 var seq: Long? = null,
-                                 var text: String? = null,
-                                 var attachments: List<Attachment>? = null,
-                                 var isEcho: Boolean = false,
-                                 var appId: Long? = null,
-                                 var metadata: String? = null,
-                                 var quickReply: UserActionPayload? = null,
-                                 var other: EmptyJson? = null
+        data class MessageFields(
+            var mid: String? = null,
+            var seq: Long? = null,
+            var text: String? = null,
+            var attachments: List<Attachment>? = null,
+            var isEcho: Boolean = false,
+            var appId: Long? = null,
+            var metadata: String? = null,
+            var quickReply: UserActionPayload? = null,
+            var other: EmptyJson? = null
         )
 
-        val (mid, seq, text, attachments, isEcho, appId, metadata, quickReply)
-            = jp.read<MessageFields> { fields, name ->
+        val (mid, seq, text, attachments, isEcho, appId, metadata, quickReply) =
+        jp.read<MessageFields> { fields, name ->
             with(fields) {
                 when (name) {
                     Message::mid.name -> mid = jp.valueAsString

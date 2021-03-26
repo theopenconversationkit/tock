@@ -21,11 +21,12 @@ import com.fasterxml.jackson.annotation.JsonProperty
 /**
  *
  */
-data class SendResponseError(val message: String?,
-                             val type: String?,
-                             val code: Int?,
-                             @JsonProperty("error_subcode")
-                             val errorSubcode: Int?,
-                             @JsonProperty("fbtrace_id")
-                             val traceId: String?) {
-}
+data class SendResponseError(
+    val message: String?,
+    val type: String?,
+    val code: Int?,
+    @JsonProperty("error_subcode")
+    val errorSubcode: Int?,
+    @JsonProperty("fbtrace_id")
+    val traceId: String?
+)

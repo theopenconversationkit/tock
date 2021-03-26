@@ -22,8 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
  *
  */
 data class AccountLinking(
-    val status:AccountLinkingStatus,
+    val status: AccountLinkingStatus,
     @JsonProperty("authorization_code")
-    val authorizationCode:String? = null
-) {
-}
+    val authorizationCode: String? = null
+)

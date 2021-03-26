@@ -32,5 +32,4 @@ interface ClassifierContextKey {
     val applicationName: String
 
     val engineType: NlpEngineType
-
 }

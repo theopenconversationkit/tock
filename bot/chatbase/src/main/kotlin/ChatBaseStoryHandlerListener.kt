@@ -42,6 +42,4 @@ internal class ChatBaseStoryHandlerListener(private val apiKey: String, private 
         )
         return true
     }
-
-
 }

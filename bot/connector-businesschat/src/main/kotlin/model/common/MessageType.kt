@@ -22,14 +22,14 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * https://developer.apple.com/documentation/businesschatapi/messages_received/receiving_messages_from_the_business_chat_service
  */
 enum class MessageType {
- text,
- interactive,
- richLink,
- @JsonProperty("pass-thread-control")
- pass_thread_control,
- @JsonProperty("take-thread-control")
- take_thread_control,
- typing_start,
- typing_end,
- close
+    text,
+    interactive,
+    richLink,
+    @JsonProperty("pass-thread-control")
+    pass_thread_control,
+    @JsonProperty("take-thread-control")
+    take_thread_control,
+    typing_start,
+    typing_end,
+    close
 }

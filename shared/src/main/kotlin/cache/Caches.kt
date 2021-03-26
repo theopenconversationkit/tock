@@ -114,7 +114,3 @@ fun <T : Any> removeFromCache(id: Id<T>, type: String) {
  * Returns all cached value for specified type.
  */
 fun <T> getCachedValuesForType(type: String): Map<Id<T>, Any> = cache.getAll(type)
-
-
-
-

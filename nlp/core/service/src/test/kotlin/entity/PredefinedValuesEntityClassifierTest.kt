@@ -38,7 +38,8 @@ class PredefinedValuesEntityClassifierTest {
         Locale.FRENCH,
         NlpEngineType.stanford,
         "pizzayolo",
-        ZonedDateTime.now())
+        ZonedDateTime.now()
+    )
 
     @BeforeEach
     fun fillDictionary() {
@@ -49,12 +50,16 @@ class PredefinedValuesEntityClassifierTest {
                     "pizza",
                     listOf(
                         PredefinedValue(
-                            "pizza", mapOf(
-                            Pair(Locale.FRENCH, listOf("4 fromages", "napolitaine", "calzone")),
-                            Pair(Locale.ITALIAN, listOf("4 formaggi", "napoletana", "calzone"))
+                            "pizza",
+                            mapOf(
+                                Pair(Locale.FRENCH, listOf("4 fromages", "napolitaine", "calzone")),
+                                Pair(Locale.ITALIAN, listOf("4 formaggi", "napoletana", "calzone"))
+                            )
                         )
-                        )
-                    ))))
+                    )
+                )
+            )
+        )
     }
 
     @AfterEach
@@ -72,7 +77,8 @@ class PredefinedValuesEntityClassifierTest {
         Assertions.assertEquals(
             listOf(
                 EntityTypeRecognition(
-                    EntityTypeValue(23, 34, entityType, "pizza", true), 1.0)
+                    EntityTypeValue(23, 34, entityType, "pizza", true), 1.0
+                )
             ),
             entityTypeRecognitions
         )
@@ -88,7 +94,8 @@ class PredefinedValuesEntityClassifierTest {
         Assertions.assertEquals(
             listOf(
                 EntityTypeRecognition(
-                    EntityTypeValue(0, 11, entityType, "pizza", true), 1.0)
+                    EntityTypeValue(0, 11, entityType, "pizza", true), 1.0
+                )
             ),
             entityTypeRecognitions
         )
@@ -104,7 +111,8 @@ class PredefinedValuesEntityClassifierTest {
         Assertions.assertEquals(
             listOf(
                 EntityTypeRecognition(
-                    EntityTypeValue(0, 11, entityType, "pizza", true), 1.0)
+                    EntityTypeValue(0, 11, entityType, "pizza", true), 1.0
+                )
             ),
             entityTypeRecognitions
         )
@@ -120,7 +128,8 @@ class PredefinedValuesEntityClassifierTest {
         Assertions.assertEquals(
             listOf(
                 EntityTypeRecognition(
-                    EntityTypeValue(4, 15, entityType, "pizza", true), 1.0)
+                    EntityTypeValue(4, 15, entityType, "pizza", true), 1.0
+                )
             ),
             entityTypeRecognitions
         )
@@ -135,7 +144,8 @@ class PredefinedValuesEntityClassifierTest {
         Assertions.assertEquals(
             listOf(
                 EntityTypeRecognition(
-                    EntityTypeValue(4, 15, entityType, "pizza", true), 1.0)
+                    EntityTypeValue(4, 15, entityType, "pizza", true), 1.0
+                )
             ),
             entityTypeRecognitions
         )
@@ -156,5 +166,4 @@ class PredefinedValuesEntityClassifierTest {
             entityTypeRecognitions
         )
     }
-
 }

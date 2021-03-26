@@ -16,7 +16,6 @@
 
 package ai.tock.nlp.core.service
 
-import com.github.salomonbrys.kodein.instance
 import ai.tock.nlp.core.Application
 import ai.tock.nlp.core.BuildContext
 import ai.tock.nlp.core.CallContext
@@ -40,6 +39,7 @@ import ai.tock.nlp.model.IntentContext
 import ai.tock.nlp.model.NlpClassifier
 import ai.tock.shared.error
 import ai.tock.shared.injector
+import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import java.time.Duration
 import java.time.Instant
@@ -99,8 +99,8 @@ internal object ModelCoreService : ModelCore {
         nlpContext: EntityBuildContext,
         expressions: List<SampleExpression>
     ) {
-        if (!context.onlyIfNotExists
-            || !nlpClassifier.isEntityModelExist(nlpContext)
+        if (!context.onlyIfNotExists ||
+            !nlpClassifier.isEntityModelExist(nlpContext)
         ) {
             nlpClassifier.buildAndSaveEntityModel(nlpContext, expressions)
         }
@@ -184,14 +184,14 @@ internal object ModelCoreService : ModelCore {
                     e
                 )
             }
-        }
-            || entities.any {
-            expectedEntities.none { e ->
-                it.role == e.definition.role && it.entityType == e.definition.entityType && it.isSameRange(
-                    e
-                )
+        } ||
+            entities.any {
+                expectedEntities.none { e ->
+                    it.role == e.definition.role && it.entityType == e.definition.entityType && it.isSameRange(
+                        e
+                    )
+                }
             }
-        }
     }
 
     override fun getCurrentModelConfiguration(

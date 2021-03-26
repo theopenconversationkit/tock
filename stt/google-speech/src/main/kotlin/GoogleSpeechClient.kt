@@ -31,7 +31,6 @@ import java.io.File
 import java.nio.file.Files
 import java.util.Locale
 
-
 /**
  *
  */
@@ -60,7 +59,6 @@ internal object GoogleSpeechClient : STT {
             sourceFile.delete()
             targetFile.delete()
         }
-
     }
 
     override fun parse(bytes: ByteArray, language: Locale): String? =
@@ -86,5 +84,4 @@ internal object GoogleSpeechClient : STT {
             logger.error(e)
             null
         }
-
 }

@@ -345,8 +345,8 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         if (intent is StoryDefinition) {
             intent
         } else {
-            if (testContext.isInitialized()
-                && testContext.defaultStoryDefinition(botDefinition).supportIntent(intent.wrappedIntent())
+            if (testContext.isInitialized() &&
+                testContext.defaultStoryDefinition(botDefinition).supportIntent(intent.wrappedIntent())
             ) {
                 testContext.defaultStoryDefinition(botDefinition)
             } else {
@@ -412,8 +412,8 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
      */
     fun busMock(): BotBusMock = BotBusMock(testContext.botBusMockContext)
 
-    //for some strange reason beforeEach can be called multiple time.
-    //we need to check that there is only one call (for performance reason)
+    // for some strange reason beforeEach can be called multiple time.
+    // we need to check that there is only one call (for performance reason)
     private var start = false
     private var end = false
 
@@ -434,5 +434,4 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
             logger.debug { "end cleanup Test ${context.displayName}" }
         }
     }
-
 }

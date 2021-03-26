@@ -16,7 +16,6 @@
 
 package ai.tock.nlp.front.service.alexa
 
-import emoji4j.EmojiUtils
 import ai.tock.nlp.front.shared.ApplicationConfiguration
 import ai.tock.nlp.front.shared.codec.alexa.AlexaCodec
 import ai.tock.nlp.front.shared.codec.alexa.AlexaFilter
@@ -36,6 +35,7 @@ import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.shared.injector
 import ai.tock.shared.name
 import ai.tock.shared.provide
+import emoji4j.EmojiUtils
 import org.litote.kmongo.Id
 import java.util.Locale
 
@@ -62,16 +62,19 @@ object AlexaCodecService : AlexaCodec {
                     ),
                     intent.entities
                         .filter { entity ->
-                            filter == null
-                                    || filter.intents.first { intent.name == it.intent }.slots.any { it.name == entity.role }
+                            filter == null ||
+                                filter.intents.first { intent.name == it.intent }.slots.any { it.name == entity.role }
                         }
                         .map {
                             AlexaSlot(
-                                (filter?.findSlot(intent, it)?.targetName
-                                        ?: it.role) + "_slot",
+                                (
+                                    filter?.findSlot(intent, it)?.targetName
+                                        ?: it.role
+                                    ) + "_slot",
                                 filter?.findSlot(intent, it)?.targetType ?: it.entityTypeName.name()
                             )
-                        })
+                        }
+                )
             }
     }
 
@@ -90,7 +93,7 @@ object AlexaCodecService : AlexaCodec {
             .map { (intent, entity) ->
                 AlexaType(
                     filter?.findSlot(intent, entity)?.targetType
-                            ?: entity.entityTypeName.name().replace("-", "_"),
+                        ?: entity.entityTypeName.name().replace("-", "_"),
                     exportAlexaTypeDefinition(intent, entity, sentences, transformer)
                         .distinctBy { type -> type.name.value.toLowerCase().trim() }
                 )
@@ -159,7 +162,7 @@ object AlexaCodecService : AlexaCodec {
                 t
             }
             .map { it.toLowerCase() }
-            .filter { !it.contains("*")}
+            .filter { !it.contains("*") }
             .map { sentence -> sentence.replace("'{", " {") }
             .map { sentence -> EmojiUtils.removeAllEmojis(sentence) }
             .map { sentence -> sentence.replace("☺", " ") }
@@ -220,5 +223,4 @@ object AlexaCodecService : AlexaCodec {
                 )
             }
     }
-
 }

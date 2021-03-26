@@ -21,10 +21,11 @@ import com.fasterxml.jackson.annotation.JsonProperty
 /**
  *
  */
-data class UserProfile(@JsonProperty("first_name") val firstName: String?,
-                       @JsonProperty("last_name") val lastName: String?,
-                       @JsonProperty("profile_pic") val profilePic: String?,
-                       val locale: String?,
-                       val timezone: Int,
-                       val gender: String?) {
-}
+data class UserProfile(
+    @JsonProperty("first_name") val firstName: String?,
+    @JsonProperty("last_name") val lastName: String?,
+    @JsonProperty("profile_pic") val profilePic: String?,
+    val locale: String?,
+    val timezone: Int,
+    val gender: String?
+)

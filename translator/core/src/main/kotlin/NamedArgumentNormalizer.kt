@@ -33,11 +33,12 @@ internal object NamedArgumentNormalizer {
             return NamedArgResult(
                 argNames.foldIndexed(label) { index, p, arg ->
                     p.replace(
-                        "{:${arg}}",
+                        "{:$arg}",
                         "{${index + newArgsOffset}}"
                     )
                 },
-                vanillaArgs + argNames.map { argsMap[it] ?: ":$it" })
+                vanillaArgs + argNames.map { argsMap[it] ?: ":$it" }
+            )
         } catch (e: Exception) {
             logger.error("error with $label and $args", e)
             return NamedArgResult(label, args)

@@ -37,14 +37,14 @@ class MediaFileDescriptorDump(
 ) {
 
     constructor(file: MediaFileDescriptor) :
-            this(
-                file.suffix,
-                file.name,
-                if (file.externalUrl == null) getFileContentFromId(fileId(file.id, file.suffix)) else null,
-                file.id,
-                file.type,
-                file.externalUrl
-            )
+        this(
+            file.suffix,
+            file.name,
+            if (file.externalUrl == null) getFileContentFromId(fileId(file.id, file.suffix)) else null,
+            file.id,
+            file.type,
+            file.externalUrl
+        )
 
     fun toFile(controller: StoryDefinitionConfigurationDumpController): MediaFileDescriptor? =
         if (externalUrl != null) {

@@ -51,7 +51,6 @@ internal class WebConnectorCallback(
                 } else {
                     it.message(webConnectorType) as? WebMessage
                 }
-
             }
         context.response()
             .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")

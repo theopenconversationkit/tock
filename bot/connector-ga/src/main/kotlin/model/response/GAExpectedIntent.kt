@@ -20,11 +20,9 @@ import ai.tock.bot.connector.ga.model.GAIntent
 import ai.tock.bot.engine.message.GenericMessage
 
 data class GAExpectedIntent(
-        val intent: GAIntent,
-        val inputValueData: GAInputValueData? = null
+    val intent: GAIntent,
+    val inputValueData: GAInputValueData? = null
 ) {
 
-    fun toGenericMessage(): GenericMessage?
-            = inputValueData?.toGenericMessage()
-
+    fun toGenericMessage(): GenericMessage? = inputValueData?.toGenericMessage()
 }

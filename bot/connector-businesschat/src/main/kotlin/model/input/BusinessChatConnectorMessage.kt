@@ -16,11 +16,11 @@
 
 package ai.tock.bot.connector.businesschat.model.input
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.businesschat.BusinessChatConnectorProvider
 import ai.tock.bot.engine.BotBus
+import com.fasterxml.jackson.annotation.JsonIgnore
 
 /**
  * Defines a base [ConnectorMessage], to be sent on the [BotBus]

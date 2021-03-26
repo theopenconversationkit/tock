@@ -19,7 +19,7 @@ package ai.tock.bot.connector.rest.client.model
 /**
  *
  */
-data class ClientAttachment(val url: String,
-                            val type: ClientAttachmentType) : ClientMessage(ClientEventType.attachment) {
-
-}
+data class ClientAttachment(
+    val url: String,
+    val type: ClientAttachmentType
+) : ClientMessage(ClientEventType.attachment)

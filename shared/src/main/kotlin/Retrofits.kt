@@ -16,8 +16,8 @@
 
 package ai.tock.shared
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import ai.tock.shared.jackson.mapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.resilience4j.circuitbreaker.CircuitBreaker
 import io.github.resilience4j.retrofit.CircuitBreakerCallAdapter
 import mu.KLogger
@@ -62,7 +62,6 @@ fun tryToFindLocalIp(): String {
         }
 }
 
-
 /**
  * Create a new Retrofit service.
  */
@@ -98,7 +97,7 @@ fun retrofitBuilderWithTimeoutAndLogger(
     }
     .addInterceptor(LoggingInterceptor(logger, level))
     .apply {
-        //support compatible tls
+        // support compatible tls
         connectionSpecs(listOf(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS, ConnectionSpec.CLEARTEXT))
         takeIf { proxy != null }
             ?.proxy(proxy)
@@ -158,16 +157,15 @@ fun Retrofit.Builder.addJacksonConverter(objectMapper: ObjectMapper = mapper): R
     addConverterFactory(JacksonConverterFactory.create(objectMapper))
 }
 
-
 /** This interceptor compresses the HTTP request body. Many webservers can't handle this!  */
 private class GzipRequestInterceptor : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
         val body = originalRequest.body
-        if (body == null
-            || originalRequest.header("Content-Encoding") != null
-            || body.contentLength() < 512
+        if (body == null ||
+            originalRequest.header("Content-Encoding") != null ||
+            body.contentLength() < 512
         ) {
             return chain.proceed(originalRequest)
         }
@@ -198,7 +196,7 @@ private class GzipRequestInterceptor : Interceptor {
     }
 }
 
-//copied from okhttp3.logging.HttpLogginginterceptor
+// copied from okhttp3.logging.HttpLogginginterceptor
 
 /**
  * Http requests/response log level.
@@ -214,7 +212,7 @@ enum class Level {
      * <pre>`--> POST /greeting http/1.1 (3-byte body)
 
      * <-- 200 OK (22ms, 6-byte body)
-    `</pre> *
+     `</pre> *
      */
     BASIC,
     /**
@@ -232,7 +230,7 @@ enum class Level {
      * Content-Type: plain/text
      * Content-Length: 6
      * <-- END HTTP
-    `</pre> *
+     `</pre> *
      */
     HEADERS,
     /**
@@ -254,7 +252,7 @@ enum class Level {
 
      * Hello!
      * <-- END HTTP
-    `</pre> *
+     `</pre> *
      */
     BODY
 }
@@ -329,13 +327,13 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
                 if (isPlaintext(buffer)) {
                     logger.info(buffer.readString(charset))
                     logger.info(
-                        "--> END " + request.method
-                            + " (" + requestBody.contentLength() + "-byte body)"
+                        "--> END " + request.method +
+                            " (" + requestBody.contentLength() + "-byte body)"
                     )
                 } else {
                     logger.info(
-                        "--> END " + request.method + " (binary "
-                            + requestBody.contentLength() + "-byte body omitted)"
+                        "--> END " + request.method + " (binary " +
+                            requestBody.contentLength() + "-byte body omitted)"
                     )
                 }
             }
@@ -356,12 +354,14 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
         val contentLength = responseBody.contentLength()
         val bodySize = if (contentLength != -1L) contentLength.toString() + "-byte" else "unknown-length"
         logger.info(
-            "<-- " + response.code + ' ' + response.message + ' '
-                + response.request.url + " (" + tookMs + "ms" + (if (!logHeaders)
-                ", "
-                    + bodySize + " body"
-            else
-                "") + ')'
+            "<-- " + response.code + ' ' + response.message + ' ' +
+                response.request.url + " (" + tookMs + "ms" + (
+                if (!logHeaders)
+                    ", " +
+                        bodySize + " body"
+                else
+                    ""
+                ) + ')'
         )
 
         if (logHeaders) {
@@ -385,7 +385,7 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
                 var charset = UTF_8
                 val contentType = responseBody.contentType()
                 if (contentType != null) {
-                    charset = contentType.charset(UTF_8);
+                    charset = contentType.charset(UTF_8)
                 }
 
                 if (!isPlaintext(buffer)) {
@@ -427,7 +427,6 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
         } catch (e: EOFException) {
             return false // Truncated UTF-8 sequence.
         }
-
     }
 
     private fun bodyEncoded(headers: Headers): Boolean {
@@ -435,4 +434,3 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
         return contentEncoding != null && !contentEncoding.equals("identity", ignoreCase = true)
     }
 }
-

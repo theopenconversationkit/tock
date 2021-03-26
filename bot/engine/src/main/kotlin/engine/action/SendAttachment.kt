@@ -27,16 +27,18 @@ import java.time.Instant
 /**
  * A simple attachment file sent.
  */
-open class SendAttachment(playerId: PlayerId,
-                          applicationId: String,
-                          recipientId: PlayerId,
-                          val url: String,
-                          val type: AttachmentType,
-                          id: Id<Action> = newId(),
-                          date: Instant = Instant.now(),
-                          state: EventState = EventState(),
-                          metadata: ActionMetadata = ActionMetadata())
-    : Action(playerId, recipientId, applicationId, id, date, state, metadata) {
+open class SendAttachment(
+    playerId: PlayerId,
+    applicationId: String,
+    recipientId: PlayerId,
+    val url: String,
+    val type: AttachmentType,
+    id: Id<Action> = newId(),
+    date: Instant = Instant.now(),
+    state: EventState = EventState(),
+    metadata: ActionMetadata = ActionMetadata()
+) :
+    Action(playerId, recipientId, applicationId, id, date, state, metadata) {
 
     enum class AttachmentType {
         image, audio, video, file

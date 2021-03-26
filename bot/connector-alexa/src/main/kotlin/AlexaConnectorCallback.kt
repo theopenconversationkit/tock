@@ -123,7 +123,7 @@ data class AlexaConnectorCallback internal constructor(
                 if (it.isSSML()) SsmlOutputSpeech().apply { ssml = it }
                 else PlainTextOutputSpeech().apply { text = it }
             }
-                ?: speech
+            ?: speech
         return if (end) {
             if (card != null) {
                 SpeechletResponse.newTellResponse(speech, card)
@@ -250,5 +250,4 @@ data class AlexaConnectorCallback internal constructor(
                 .build()
         )
     }
-
 }

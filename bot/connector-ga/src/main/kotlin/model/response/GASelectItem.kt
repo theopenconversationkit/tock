@@ -20,8 +20,9 @@ import ai.tock.bot.engine.action.SendChoice.Companion.TITLE_PARAMETER
 import ai.tock.bot.engine.message.Choice
 
 data class GASelectItem(
-        val optionInfo: GAOptionInfo,
-        val title: String?) {
+    val optionInfo: GAOptionInfo,
+    val title: String?
+) {
 
     fun toChoice(): Choice {
         return optionInfo.toChoice().run {
@@ -32,6 +33,4 @@ data class GASelectItem(
             }
         }
     }
-
 }
-

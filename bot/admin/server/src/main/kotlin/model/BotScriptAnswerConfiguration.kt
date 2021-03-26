@@ -25,11 +25,13 @@ import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
 data class BotScriptAnswerConfiguration(
     val scriptVersions: List<BotScriptAnswerVersionedConfiguration>,
     val current: BotScriptAnswerVersionedConfiguration = scriptVersions.maxByOrNull { it.date }
-        ?: error("at least one script version is necessary")) :
+        ?: error("at least one script version is necessary")
+) :
     BotAnswerConfiguration(AnswerConfigurationType.script) {
 
-    constructor(conf: ScriptAnswerConfiguration) : this(conf.scriptVersions.map {
-        BotScriptAnswerVersionedConfiguration(it)
-    })
-
+    constructor(conf: ScriptAnswerConfiguration) : this(
+        conf.scriptVersions.map {
+            BotScriptAnswerVersionedConfiguration(it)
+        }
+    )
 }

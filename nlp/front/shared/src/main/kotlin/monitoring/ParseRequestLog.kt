@@ -27,10 +27,10 @@ import java.time.Instant.now
  *
  */
 data class ParseRequestLog(
-        val applicationId: Id<ApplicationDefinition>,
-        val query: ParseQuery,
-        val result: ParseResult?,
-        val durationInMS: Long,
-        val error: Boolean = result == null,
-        val date: Instant = now()) {
-}
+    val applicationId: Id<ApplicationDefinition>,
+    val query: ParseQuery,
+    val result: ParseResult?,
+    val durationInMS: Long,
+    val error: Boolean = result == null,
+    val date: Instant = now()
+)

@@ -84,7 +84,6 @@ internal class TockConnectorController constructor(
             logger.info { "Unregister connector ${controller.connector} for bot ${controller.bot}" }
             controller.connector.unregister(controller)
         }
-
     }
 
     private val executor: Executor by injector.instance()
@@ -172,7 +171,6 @@ internal class TockConnectorController constructor(
                 executor.executeBlocking(Duration.ofMillis(lockedAttemptsWaitInMs)) {
                     handleAction(action, nbAttempts + 1, data)
                 }
-
             } else {
                 logger.debug { "$playerId locked for $maxLockedAttempts times - skip $action" }
                 callback.eventSkipped(action)
@@ -205,7 +203,7 @@ internal class TockConnectorController constructor(
 
     override fun registerServices(serviceIdentifier: String, installer: (Router) -> Unit) {
         verticle.registerServices(serviceIdentifier) { router ->
-            //healthcheck
+            // healthcheck
             router.get("$serviceIdentifier/healthcheck").handler {
                 it.response().end()
             }
@@ -243,5 +241,4 @@ internal class TockConnectorController constructor(
     }
 
     override fun toString(): String = configuration.toString()
-
 }

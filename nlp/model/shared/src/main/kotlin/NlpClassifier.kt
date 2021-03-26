@@ -48,5 +48,4 @@ interface NlpClassifier : ModelBuilder {
         context: EntityCallContext,
         text: String
     ): List<EntityRecognition>
-
 }

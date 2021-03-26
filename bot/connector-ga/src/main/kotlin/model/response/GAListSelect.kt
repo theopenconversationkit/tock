@@ -22,11 +22,9 @@ import ai.tock.bot.engine.message.GenericMessage
  *
  */
 data class GAListSelect(
-        val title:String?,
-        val items:List<GAListItem>
+    val title: String?,
+    val items: List<GAListItem>
 ) {
 
-    fun toGenericMessage(): GenericMessage?
-            = GenericMessage(subElements = items.map { it.toGenericElement() })
+    fun toGenericMessage(): GenericMessage = GenericMessage(subElements = items.map { it.toGenericElement() })
 }
-

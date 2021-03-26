@@ -16,14 +16,14 @@
 
 package ai.tock.bot
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.Kodein.Module
 import ai.tock.bot.engine.botModule
 import ai.tock.bot.mongo.botMongoModule
 import ai.tock.shared.injector
 import ai.tock.shared.sharedModule
 import ai.tock.stt.noop.noOpSTTModule
 import ai.tock.translator.noop.noOpTranslatorModule
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.Kodein.Module
 import mu.KotlinLogging
 
 /**
@@ -51,14 +51,15 @@ object BotIoc {
      */
     fun setup(modules: List<Module>) {
         logger.debug { "Start bot injection" }
-        injector.inject(Kodein {
-            coreModules.forEach { import(it, allowOverride = true) }
+        injector.inject(
+            Kodein {
+                coreModules.forEach { import(it, allowOverride = true) }
 
-            //load additional modules
-            modules.forEach {
-                import(it, allowOverride = true)
+                // load additional modules
+                modules.forEach {
+                    import(it, allowOverride = true)
+                }
             }
-        })
+        )
     }
-
 }

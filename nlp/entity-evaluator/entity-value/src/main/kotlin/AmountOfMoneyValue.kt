@@ -19,5 +19,4 @@ package ai.tock.nlp.entity
 /**
  *
  */
-data class AmountOfMoneyValue(val value: Number, val unit:String) : Value {
-}
+data class AmountOfMoneyValue(val value: Number, val unit: String) : Value

@@ -21,6 +21,7 @@ import ai.tock.bot.mongo.MongoBotConfiguration.database
 import ai.tock.bot.mongo.UserLock_.Companion.Date
 import ai.tock.bot.mongo.UserLock_.Companion.Locked
 import ai.tock.bot.mongo.UserLock_.Companion._id
+import ai.tock.shared.ensureIndex
 import ai.tock.shared.error
 import ai.tock.shared.longProperty
 import com.mongodb.MongoWriteException
@@ -31,7 +32,6 @@ import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.and
 import org.litote.kmongo.deleteOneById
-import ai.tock.shared.ensureIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
@@ -116,7 +116,6 @@ internal object MongoUserLock : UserLock {
             return false
         }
     }
-
 
     override fun releaseLock(userId: String) {
         try {

@@ -16,7 +16,6 @@
 
 package ai.tock.nlp.core
 
-
 /**
  * Nlp Engine type.
  */

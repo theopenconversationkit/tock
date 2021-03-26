@@ -119,8 +119,10 @@ internal data class DialogCol(
 
                     map { a ->
                         if (a is SendSentenceNotYetLoaded) {
-                            a.setLoadedMessages(customMessagesMap[ConnectorMessageColId(a.toActionId(), a.dialogId)]
-                                ?: emptyList())
+                            a.setLoadedMessages(
+                                customMessagesMap[ConnectorMessageColId(a.toActionId(), a.dialogId)]
+                                    ?: emptyList()
+                            )
                         }
                         ActionReport(
                             a.playerId,
@@ -154,7 +156,6 @@ internal data class DialogCol(
         var nextActionState: NextUserActionState?
     ) {
 
-
         constructor(state: DialogState) : this(
             state.currentIntent,
             state.entityValues.mapValues { EntityStateValueWrapper(it.value) },
@@ -172,7 +173,6 @@ internal data class DialogCol(
                 nextActionState
             )
         }
-
     }
 
     data class EntityStateValueWrapper(
@@ -211,7 +211,8 @@ internal data class DialogCol(
             story.definition.id,
             story.starterIntent,
             story.currentStep?.name,
-            story.actions.map { getActionWrapper(it) })
+            story.actions.map { getActionWrapper(it) }
+        )
 
         fun toStory(dialogId: Id<Dialog>, storyDefinitionProvider: (String) -> StoryDefinition): Story {
             return Story(
@@ -221,10 +222,7 @@ internal data class DialogCol(
                 actions.map { it.toAction(dialogId) }.toMutableList()
             )
         }
-
-
     }
-
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
     @JsonSubTypes(
@@ -243,7 +241,6 @@ internal data class DialogCol(
         lateinit var playerId: PlayerId
         lateinit var recipientId: PlayerId
         lateinit var applicationId: String
-
 
         fun assignFrom(action: Action) {
             id = action.toActionId()
@@ -273,8 +270,8 @@ internal data class DialogCol(
                 (sentence as? SendSentenceNotYetLoaded)?.hasCustomMessage ?: sentence.messages.isNotEmpty(),
                 (sentence as? SendSentenceNotYetLoaded)?.hasNlpStats ?: sentence.nlpStats != null
             ) {
-            assignFrom(sentence)
-        }
+                assignFrom(sentence)
+            }
 
         override fun toAction(dialogId: Id<Dialog>): Action {
             return if (customMessage || nlpStats) {
@@ -318,8 +315,8 @@ internal data class DialogCol(
                 choice.intentName,
                 if (choice.state.testEvent) choice.parameters else obfuscate(choice.parameters)
             ) {
-            assignFrom(choice)
-        }
+                assignFrom(choice)
+            }
 
         override fun toAction(dialogId: Id<Dialog>): Action {
             return SendChoice(
@@ -383,8 +380,4 @@ internal data class DialogCol(
             )
         }
     }
-
-
 }
-
-

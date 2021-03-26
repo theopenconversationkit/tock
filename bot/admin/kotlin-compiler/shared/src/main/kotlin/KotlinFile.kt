@@ -38,5 +38,4 @@ package ai.tock.bot.admin.kotlin.compiler
 data class KotlinFile(
     val script: String,
     val fileName: String
-) {
-}
+)

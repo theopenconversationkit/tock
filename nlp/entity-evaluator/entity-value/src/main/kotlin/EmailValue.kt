@@ -19,5 +19,4 @@ package ai.tock.nlp.entity
 /**
  *
  */
-data class EmailValue(val value: String) : Value  {
-}
+data class EmailValue(val value: String) : Value

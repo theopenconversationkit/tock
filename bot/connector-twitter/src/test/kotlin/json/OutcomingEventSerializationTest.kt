@@ -16,7 +16,6 @@
 
 package ai.tock.bot.connector.twitter.ai.tock.bot.connector.twitter.json
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import ai.tock.bot.connector.twitter.model.MessageCreate
 import ai.tock.bot.connector.twitter.model.MessageData
 import ai.tock.bot.connector.twitter.model.Recipient
@@ -24,6 +23,7 @@ import ai.tock.bot.connector.twitter.model.outcoming.DirectMessageOutcomingEvent
 import ai.tock.bot.connector.twitter.model.outcoming.OutcomingEvent
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.resourceAsStream
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Test
 
 internal class OutcomingEventSerializationTest {

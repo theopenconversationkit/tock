@@ -16,7 +16,6 @@
 
 package ai.tock.bot.connector.messenger.json.send
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import ai.tock.bot.connector.messenger.model.Recipient
 import ai.tock.bot.connector.messenger.model.UserProfile
 import ai.tock.bot.connector.messenger.model.send.Attachment
@@ -30,7 +29,6 @@ import ai.tock.bot.connector.messenger.model.send.MediaElement
 import ai.tock.bot.connector.messenger.model.send.MediaPayload
 import ai.tock.bot.connector.messenger.model.send.MediaType
 import ai.tock.bot.connector.messenger.model.send.MessageRequest
-import ai.tock.bot.connector.messenger.model.send.MessageTag
 import ai.tock.bot.connector.messenger.model.send.MessageTag.HUMAN_AGENT
 import ai.tock.bot.connector.messenger.model.send.PostbackButton
 import ai.tock.bot.connector.messenger.model.send.QuickReply
@@ -38,6 +36,7 @@ import ai.tock.bot.connector.messenger.model.send.TextMessage
 import ai.tock.bot.connector.messenger.model.send.TextQuickReply
 import ai.tock.bot.connector.messenger.model.send.UrlPayload
 import ai.tock.shared.jackson.mapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
@@ -67,8 +66,8 @@ class MessageRequestDeserializationTest {
                         )
                     )
                 )
-            )
-            , tag = HUMAN_AGENT
+            ),
+            tag = HUMAN_AGENT
         )
         val s = mapper.writeValueAsString(m)
         assertEquals(m, mapper.readValue(s))
@@ -98,8 +97,8 @@ class MessageRequestDeserializationTest {
 
                     )
                 )
-            )
-            , tag = HUMAN_AGENT
+            ),
+            tag = HUMAN_AGENT
         )
         val s = mapper.writeValueAsString(m)
         assertEquals(m, mapper.readValue(s))
@@ -118,10 +117,10 @@ class MessageRequestDeserializationTest {
     @Test
     fun testTextQuickReplyDeserialization() {
         val input = "{\n" +
-                "        \"content_type\":\"text\",\n" +
-                "        \"title\":\"Green\",\n" +
-                "        \"payload\":\"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_GREEN\"\n" +
-                "      }"
+            "        \"content_type\":\"text\",\n" +
+            "        \"title\":\"Green\",\n" +
+            "        \"payload\":\"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_GREEN\"\n" +
+            "      }"
         val output = mapper.readValue<QuickReply>(input)
         assertEquals(
             TextQuickReply(
@@ -135,8 +134,8 @@ class MessageRequestDeserializationTest {
     @Test
     fun testLocationQuickReplyDeserialization() {
         val input = "{\n" +
-                "        \"content_type\":\"location\"\n" +
-                "      }"
+            "        \"content_type\":\"location\"\n" +
+            "      }"
         val output = mapper.readValue<QuickReply>(input)
         assertEquals(
             LocationQuickReply(),
@@ -147,8 +146,8 @@ class MessageRequestDeserializationTest {
     @Test
     fun testEmailQuickReplyDeserialization() {
         val input = "{\n" +
-                "        \"content_type\":\"user_email\"\n" +
-                "      }"
+            "        \"content_type\":\"user_email\"\n" +
+            "      }"
         val output = mapper.readValue<QuickReply>(input)
         assertEquals(
             EmailQuickReply(),
@@ -159,25 +158,25 @@ class MessageRequestDeserializationTest {
     @Test
     fun testQuickRepliesMessageRequestDeserialization() {
         val input = "{\n" +
-                "  \"recipient\":{\n" +
-                "    \"id\":\"USER_ID\"\n" +
-                "  },\n" +
-                "  \"message\":{\n" +
-                "    \"text\":\"Pick a color:\",\n" +
-                "    \"quick_replies\":[\n" +
-                "      {\n" +
-                "        \"content_type\":\"text\",\n" +
-                "        \"title\":\"Red\",\n" +
-                "        \"payload\":\"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED\"\n" +
-                "      },\n" +
-                "      {\n" +
-                "        \"content_type\":\"text\",\n" +
-                "        \"title\":\"Green\",\n" +
-                "        \"payload\":\"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_GREEN\"\n" +
-                "      }\n" +
-                "    ]\n" +
-                "  }\n" +
-                "}"
+            "  \"recipient\":{\n" +
+            "    \"id\":\"USER_ID\"\n" +
+            "  },\n" +
+            "  \"message\":{\n" +
+            "    \"text\":\"Pick a color:\",\n" +
+            "    \"quick_replies\":[\n" +
+            "      {\n" +
+            "        \"content_type\":\"text\",\n" +
+            "        \"title\":\"Red\",\n" +
+            "        \"payload\":\"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED\"\n" +
+            "      },\n" +
+            "      {\n" +
+            "        \"content_type\":\"text\",\n" +
+            "        \"title\":\"Green\",\n" +
+            "        \"payload\":\"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_GREEN\"\n" +
+            "      }\n" +
+            "    ]\n" +
+            "  }\n" +
+            "}"
         val output = mapper.readValue<MessageRequest>(input)
         assertEquals(
             MessageRequest(
@@ -206,18 +205,18 @@ class MessageRequestDeserializationTest {
     @Test
     fun testEmailQuickRepliesMessageRequestDeserialization() {
         val input = "{\n" +
-                "  \"recipient\":{\n" +
-                "    \"id\":\"USER_ID\"\n" +
-                "  },\n" +
-                "  \"message\":{\n" +
-                "    \"text\":\"Send us your email to get more deals and offers!\",\n" +
-                "    \"quick_replies\":[\n" +
-                "      {\n" +
-                "        \"content_type\":\"user_email\"\n" +
-                "      }\n" +
-                "    ]\n" +
-                "  }\n" +
-                "}"
+            "  \"recipient\":{\n" +
+            "    \"id\":\"USER_ID\"\n" +
+            "  },\n" +
+            "  \"message\":{\n" +
+            "    \"text\":\"Send us your email to get more deals and offers!\",\n" +
+            "    \"quick_replies\":[\n" +
+            "      {\n" +
+            "        \"content_type\":\"user_email\"\n" +
+            "      }\n" +
+            "    ]\n" +
+            "  }\n" +
+            "}"
         val output = mapper.readValue<MessageRequest>(input)
         assertEquals(
             MessageRequest(
@@ -238,8 +237,7 @@ class MessageRequestDeserializationTest {
 
     @Test
     fun `UserProfile deserialization is ok`() {
-        val p =mapper.readValue<UserProfile>("""{"first_name":"Simone","last_name":"En Gare","profile_pic":"https:\/\/platform-lookaside.fbsbx.com\/platform\/profilepic\/?psid=1107678927&width=1024&ext=1549209201&hash=AeQ5_frOwCI51K21","id":"1107678927"}""")
+        val p = mapper.readValue<UserProfile>("""{"first_name":"Simone","last_name":"En Gare","profile_pic":"https:\/\/platform-lookaside.fbsbx.com\/platform\/profilepic\/?psid=1107678927&width=1024&ext=1549209201&hash=AeQ5_frOwCI51K21","id":"1107678927"}""")
         println(p)
     }
-
 }

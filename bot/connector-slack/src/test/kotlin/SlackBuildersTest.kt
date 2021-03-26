@@ -25,7 +25,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-
 class SlackBuildersTest {
 
     val bus: BotBus = mockk(relaxed = true)
@@ -54,5 +53,4 @@ class SlackBuildersTest {
         val multiLineMessage = bus.multiLineMessage(messages)
         assertEquals(expectedMessage, multiLineMessage.text)
     }
-
 }

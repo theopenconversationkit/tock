@@ -35,14 +35,13 @@ data class BotI18nLocalizedLabel(
 ) {
 
     constructor(label: I18nLocalizedLabel, stats: List<I18nLabelStat>) :
-            this(
-                label.locale,
-                label.interfaceType,
-                label.label,
-                label.validated,
-                label.connectorId,
-                label.alternatives,
-                stats
-            )
-
+        this(
+            label.locale,
+            label.interfaceType,
+            label.label,
+            label.validated,
+            label.connectorId,
+            label.alternatives,
+            stats
+        )
 }

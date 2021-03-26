@@ -157,6 +157,4 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
             }
             ?: resultHandler.handle(Future.failedFuture<User>("invalid credentials"))
     }
-
-
 }

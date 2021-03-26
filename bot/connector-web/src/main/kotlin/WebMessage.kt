@@ -51,4 +51,3 @@ data class WebMessage(
                 choices = buttons.map { it.toChoice() }
             )
 }
-

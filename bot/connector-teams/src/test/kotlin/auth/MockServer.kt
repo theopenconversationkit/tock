@@ -20,11 +20,11 @@ import com.nimbusds.jose.jwk.KeyUse
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jose.jwk.gen.RSAKeyGenerator
 import com.nimbusds.jose.shaded.json.JSONObject
-import java.util.UUID
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
+import java.util.UUID
 
 object MockServer {
 
@@ -34,8 +34,9 @@ object MockServer {
         .generate()
 
     private val jwks = "{\"keys\":[${
-        JSONObject(
-            jwk.toPublicJWK().toJSONObject().apply { put("endorsements", arrayListOf("msteams")) }).toJSONString()
+    JSONObject(
+        jwk.toPublicJWK().toJSONObject().apply { put("endorsements", arrayListOf("msteams")) }
+    ).toJSONString()
     }]}"
 
     fun getMicrosoftMockServer(): MockWebServer {
@@ -50,20 +51,20 @@ object MockServer {
                         .addHeader("Content-Type", "application/json")
                         .setBody(
                             "{\"issuer\":\"https://api.botframework.com\"," +
-                                    "\"authorization_endpoint\":\"https://invalid.botframework.com\"," +
-                                    "\"jwks_uri\":\"http://${server.hostName}:${server.port}/\"," +
-                                    "\"id_token_signing_alg_values_supported\":[\"RS256\"]," +
-                                    "\"token_endpoint_auth_methods_supported\":[\"private_key_jwt\"]}"
+                                "\"authorization_endpoint\":\"https://invalid.botframework.com\"," +
+                                "\"jwks_uri\":\"http://${server.hostName}:${server.port}/\"," +
+                                "\"id_token_signing_alg_values_supported\":[\"RS256\"]," +
+                                "\"token_endpoint_auth_methods_supported\":[\"private_key_jwt\"]}"
                         )
                         .setResponseCode(200)
                     request.path == "/.well-known/openid-configuration/" -> MockResponse()
                         .addHeader("Content-Type", "application/json")
                         .setBody(
                             "{\"issuer\":\"https://api.botframework.com\"," +
-                                    "\"authorization_endpoint\":\"https://invalid.botframework.com\"," +
-                                    "\"jwks_uri\":\"http://${server.hostName}:${server.port}/\"," +
-                                    "\"id_token_signing_alg_values_supported\":[\"RS256\"]," +
-                                    "\"token_endpoint_auth_methods_supported\":[\"private_key_jwt\"]}"
+                                "\"authorization_endpoint\":\"https://invalid.botframework.com\"," +
+                                "\"jwks_uri\":\"http://${server.hostName}:${server.port}/\"," +
+                                "\"id_token_signing_alg_values_supported\":[\"RS256\"]," +
+                                "\"token_endpoint_auth_methods_supported\":[\"private_key_jwt\"]}"
                         )
                         .setResponseCode(200)
                     request.path == "/" -> MockResponse()

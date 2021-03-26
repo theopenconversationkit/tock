@@ -44,5 +44,4 @@ interface ParameterKey {
      */
     operator fun invoke(value: Any): Parameters =
         Parameters(key to mapper.writeValueAsString(value))
-
 }

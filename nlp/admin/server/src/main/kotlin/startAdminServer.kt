@@ -16,10 +16,10 @@
 
 package ai.tock.nlp.admin
 
-import com.github.salomonbrys.kodein.Kodein
 import ai.tock.nlp.front.ioc.FrontIoc
 import ai.tock.shared.vertx.vertx
 import ai.tock.translator.noop.noOpTranslatorModule
+import com.github.salomonbrys.kodein.Kodein
 
 fun main() {
     startAdminServer(noOpTranslatorModule)

@@ -16,11 +16,11 @@
 
 package ai.tock.bot.connector.alexa
 
-import com.amazon.speech.ui.Image
-import com.amazon.speech.ui.StandardCard
 import ai.tock.bot.engine.action.SendAttachment
 import ai.tock.bot.engine.message.Attachment
 import ai.tock.bot.engine.message.GenericMessage
+import com.amazon.speech.ui.Image
+import com.amazon.speech.ui.StandardCard
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
@@ -55,7 +55,8 @@ class AlexaMessageTest {
                     "text" to "text"
                 ),
                 metadata = mapOf("end" to "true")
-            ), e
+            ),
+            e
         )
     }
 }

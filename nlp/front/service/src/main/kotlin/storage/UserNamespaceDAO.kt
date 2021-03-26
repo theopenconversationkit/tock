@@ -59,5 +59,4 @@ interface UserNamespaceDAO {
      * Is this namespace exists ?
      */
     fun isExistingNamespace(namespace: String): Boolean
-
 }

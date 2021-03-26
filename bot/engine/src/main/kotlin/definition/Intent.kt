@@ -24,9 +24,9 @@ import ai.tock.shared.TOCK_NAMESPACE
 data class IntentWithoutNamespace(val name: String) {
 
     fun intent(namespace: String): Intent =
-        //TODO for backward compatibility
+        // TODO for backward compatibility
         Intent(name)
-    //Intent(name.withNamespace(namespace))
+    // Intent(name.withNamespace(namespace))
 }
 
 /**

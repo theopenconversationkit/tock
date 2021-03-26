@@ -119,7 +119,8 @@ class WebhookDeserializationTest {
                     emptyList(),
                     UserActionPayload("DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED")
                 )
-            ), output
+            ),
+            output
         )
     }
 
@@ -273,7 +274,8 @@ class WebhookDeserializationTest {
                     emptyList(),
                     UserActionPayload("test@test.com")
                 )
-            ), output
+            ),
+            output
         )
     }
 
@@ -322,7 +324,6 @@ class WebhookDeserializationTest {
         assert(UserActionPayload("test@gmail.fr").hasEmailPayloadFromMessenger())
         assert(UserActionPayload("test8879@gmail.fr").hasEmailPayloadFromMessenger())
         assert(UserActionPayload("8879@gmail.com").hasEmailPayloadFromMessenger())
-
     }
 
     @Test
@@ -361,7 +362,4 @@ class WebhookDeserializationTest {
             webhook
         )
     }
-
 }
-
-

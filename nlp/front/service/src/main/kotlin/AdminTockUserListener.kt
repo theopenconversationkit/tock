@@ -34,13 +34,13 @@ object AdminTockUserListener : TockUserListener {
         logger.info { "register $user" }
         var namespace = user.namespace.toLowerCase()
         val existingNamespaces = namespaceDAO.getNamespaces(user.user)
-        //if current: take it
+        // if current: take it
         var selected = existingNamespaces.find { it.current }
         if (selected == null) {
             val baseNamespace = namespace
             var index = 1
 
-            //if existing: take it
+            // if existing: take it
             do {
                 selected = existingNamespaces.find { it.namespace == namespace }?.copy(current = true)
                 if (selected == null && (joinNamespace || namespaceDAO.getUsers(namespace).isEmpty())) {

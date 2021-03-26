@@ -43,7 +43,7 @@ data class GAStaffFacilitator(
     val image: GAImage?
 )
 
-enum class GAReservationStatus{
+enum class GAReservationStatus {
     CONFIRMED,
     RESERVATION_STATUS_UNSPECIFIED,
     PENDING,
@@ -53,6 +53,6 @@ enum class GAReservationStatus{
     REJECTED
 }
 
-enum class GAReservationType{
+enum class GAReservationType {
     RESERVATION_TYPE_UNSPECIFIED
 }

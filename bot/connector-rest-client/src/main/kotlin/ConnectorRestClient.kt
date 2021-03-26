@@ -16,6 +16,8 @@
 
 package ai.tock.bot.connector.rest.client
 
+import ai.tock.bot.connector.rest.client.model.ClientMessageRequest
+import ai.tock.bot.connector.rest.client.model.ClientMessageResponse
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationFeature
@@ -24,8 +26,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
-import ai.tock.bot.connector.rest.client.model.ClientMessageRequest
-import ai.tock.bot.connector.rest.client.model.ClientMessageResponse
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
@@ -47,12 +47,12 @@ class ConnectorRestClient(
     private val restCache: Cache<String, ConnectorRestService> =
         CacheBuilder.newBuilder().expireAfterAccess(Duration.ofHours(1)).build()
 
-    private fun getService(path:String) : ConnectorRestService {
-        val p = if(path.startsWith("/")) path.substring(1) else path
+    private fun getService(path: String): ConnectorRestService {
+        val p = if (path.startsWith("/")) path.substring(1) else path
         return restCache.get(p) {
             val mapper = jacksonObjectMapper()
             mapper.findAndRegisterModules()
-            //force java time module
+            // force java time module
             mapper.registerModule(JavaTimeModule())
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)

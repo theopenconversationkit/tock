@@ -37,6 +37,7 @@ data class MediaAction(val title: CharSequence, var url: String? = null) : Media
                 mapOf(
                     SendChoice.URL_PARAMETER to url!!,
                     SendChoice.TITLE_PARAMETER to title.toString()
-                ))
+                )
+            )
         }
 }

@@ -39,11 +39,8 @@ import com.intellij.psi.augment.PsiAugmentProvider
 import com.intellij.psi.codeStyle.ChangedRangesInfo
 import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.psi.codeStyle.Indent
-import com.intellij.psi.compiled.ClassFileDecompilers
-import com.intellij.psi.compiled.ClassFileDecompilers.Decompiler
 import com.intellij.psi.impl.compiled.ClsCustomNavigationPolicy
 import com.intellij.psi.meta.MetaDataContributor
-import com.intellij.psi.stubs.BinaryFileStubBuilders
 import com.intellij.util.ThrowableRunnable
 import mu.KotlinLogging
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
@@ -82,24 +79,29 @@ internal object EnvironmentManager {
 
         configuration.put(JVMConfigurationKeys.DISABLE_PARAM_ASSERTIONS, arguments.noParamAssertions)
         configuration.put(JVMConfigurationKeys.DISABLE_CALL_ASSERTIONS, arguments.noCallAssertions)
-        configuration.put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, object : MessageCollector {
+        configuration.put(
+            CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
+            object : MessageCollector {
 
-            private var error: Boolean = false
-            override fun clear() {
-                error = false
-            }
+                private var error: Boolean = false
+                override fun clear() {
+                    error = false
+                }
 
-            override fun hasErrors(): Boolean {
-                return error
-            }
+                override fun hasErrors(): Boolean {
+                    return error
+                }
 
-            override fun report(
-                severity: CompilerMessageSeverity, message: String, location: CompilerMessageSourceLocation?
-            ) {
-                logger.error { "$severity $message $location" }
-                error = true
+                override fun report(
+                    severity: CompilerMessageSeverity,
+                    message: String,
+                    location: CompilerMessageSourceLocation?
+                ) {
+                    logger.error { "$severity $message $location" }
+                    error = true
+                }
             }
-        })
+        )
 
         configuration.put(CommonConfigurationKeys.MODULE_NAME, "tockScript")
 
@@ -134,7 +136,7 @@ internal object EnvironmentManager {
 
     private fun getClasspath(arguments: K2JVMCompilerArguments, libraries: List<Path>): List<File> {
         val classpath = Lists.newArrayList<File>()
-        //classpath.addAll(PathUtil.getJdkClassesRoots(File(CommonSettings.JAVA_HOME)))
+        // classpath.addAll(PathUtil.getJdkClassesRoots(File(CommonSettings.JAVA_HOME)))
         for (library in libraries) {
             classpath.add(library.toFile())
         }
@@ -170,7 +172,6 @@ private class DummyCodeStyleManager : CodeStyleManager() {
     }
 
     override fun reformatText(psiFile: PsiFile, i: Int, i1: Int) {
-
     }
 
     override fun reformatText(psiFile: PsiFile, collection: Collection<TextRange>) {
@@ -180,11 +181,9 @@ private class DummyCodeStyleManager : CodeStyleManager() {
     }
 
     override fun reformatTextWithContext(psiFile: PsiFile, collection: Collection<TextRange>) {
-
     }
 
     override fun adjustLineIndent(psiFile: PsiFile, textRange: TextRange) {
-
     }
 
     override fun adjustLineIndent(psiFile: PsiFile, i: Int): Int {
@@ -220,7 +219,6 @@ private class DummyCodeStyleManager : CodeStyleManager() {
     }
 
     override fun reformatNewlyAddedElement(astNode: ASTNode, astNode1: ASTNode) {
-
     }
 
     override fun isSequentialProcessingAllowed(): Boolean {

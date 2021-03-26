@@ -18,7 +18,7 @@ internal class MongoFeatureCache : FeatureCache {
     private val asyncCol = MongoBotConfiguration.asyncDatabase.getCollection<Feature>()
 
     private val invalidateListener: (ChangeStreamDocument<Feature>) -> Unit = { c ->
-        //cleanup cache
+        // cleanup cache
         (c.documentKey?.get(Feature_._id.name) as? BsonString)?.value?.also { key ->
             invalidate(key)
         }

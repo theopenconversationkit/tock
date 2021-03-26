@@ -108,24 +108,24 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
 
     final override fun handle(bus: BotBus) {
         val storyDefinition = findStoryDefinition(bus)
-        //if not supported user interface, use unknown
+        // if not supported user interface, use unknown
         if (storyDefinition?.unsupportedUserInterfaces?.contains(bus.userInterfaceType) == true) {
             bus.botDefinition.unknownStory.storyHandler.handle(bus)
         } else {
-            //set current i18n provider
+            // set current i18n provider
             bus.i18nProvider = this
 
             val mainData = checkPreconditions().invoke(bus)?.takeUnless { it is Unit }
             if (!isEndCalled(bus)) {
                 val handler: T = newHandlerDefinition(bus, mainData)
 
-                //select steps from bus
+                // select steps from bus
                 selectStepFromStoryHandlerAndData(handler, mainData, storyDefinition)?.also {
                     bus.step = it
                 }
                 val step = bus.step
 
-                //Default implementation redirect to answer if there is no current step
+                // Default implementation redirect to answer if there is no current step
                 // or if the [StoryStep.handle()] method of the current step returns null
                 if (step != null) {
                     @Suppress("UNCHECKED_CAST")
@@ -144,9 +144,9 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
                 if (!isEndCalled(bus)) {
                     handler.handle()
 
-                    if (!bus.connectorData.skipAnswer
-                        && !bus.hasCurrentSwitchStoryProcess
-                        && !isEndCalled(bus)
+                    if (!bus.connectorData.skipAnswer &&
+                        !bus.hasCurrentSwitchStoryProcess &&
+                        !isEndCalled(bus)
                     ) {
                         logger.warn { "Bus.end not called for story ${bus.story.definition.id}, user ${bus.userId.id} and connector ${bus.targetConnectorType}" }
                     }

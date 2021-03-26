@@ -16,7 +16,6 @@
 
 package ai.tock.nlp.front.client
 
-import com.github.salomonbrys.kodein.instance
 import ai.tock.nlp.front.shared.ApplicationCodec
 import ai.tock.nlp.front.shared.ApplicationConfiguration
 import ai.tock.nlp.front.shared.ApplicationMonitor
@@ -25,6 +24,7 @@ import ai.tock.nlp.front.shared.ModelUpdater
 import ai.tock.nlp.front.shared.Parser
 import ai.tock.nlp.front.shared.codec.alexa.AlexaCodec
 import ai.tock.shared.injector
+import com.github.salomonbrys.kodein.instance
 
 private val parser: Parser by injector.instance()
 private val applicationConfiguration: ApplicationConfiguration by injector.instance()
@@ -38,10 +38,10 @@ private val modelTester: ModelTester by injector.instance()
  *
  */
 object FrontClient :
-        Parser by parser,
-        ApplicationConfiguration by applicationConfiguration,
-        ModelUpdater by modelUpdater,
-        ApplicationCodec by applicationCodec,
-        ApplicationMonitor by applicationMonitor,
-        AlexaCodec by alexaCodec,
-        ModelTester by modelTester
+    Parser by parser,
+    ApplicationConfiguration by applicationConfiguration,
+    ModelUpdater by modelUpdater,
+    ApplicationCodec by applicationCodec,
+    ApplicationMonitor by applicationMonitor,
+    AlexaCodec by alexaCodec,
+    ModelTester by modelTester

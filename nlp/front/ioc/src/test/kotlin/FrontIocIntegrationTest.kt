@@ -55,5 +55,4 @@ class FrontIocIntegrationTest {
         )
         mapper.writeValue(File(rootFile, "schema.json"), export)
     }
-
 }

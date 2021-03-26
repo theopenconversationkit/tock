@@ -94,6 +94,9 @@ import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.Translator
 import com.github.salomonbrys.kodein.instance
+import mu.KotlinLogging
+import org.litote.kmongo.Id
+import org.litote.kmongo.toId
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
@@ -105,9 +108,6 @@ import java.util.Locale
 import java.util.stream.LongStream
 import java.util.stream.Stream
 import kotlin.streams.toList
-import mu.KotlinLogging
-import org.litote.kmongo.Id
-import org.litote.kmongo.toId
 
 /**
  *
@@ -134,8 +134,8 @@ object BotAdminService {
     ) : StoryDefinitionConfigurationDumpController {
 
         override fun keepFeature(feature: StoryDefinitionConfigurationFeatureDump): Boolean =
-            feature.botApplicationConfigurationId == null
-                    || getBotConfigurationById(feature.botApplicationConfigurationId!!)?.namespace == targetNamespace
+            feature.botApplicationConfigurationId == null ||
+                getBotConfigurationById(feature.botApplicationConfigurationId!!)?.namespace == targetNamespace
 
         override fun buildScript(
             script: ScriptAnswerVersionedConfigurationDump,
@@ -367,37 +367,37 @@ object BotAdminService {
         applications: Set<BotApplicationConfiguration>,
         searchFunction: (String, String, Set<Id<BotApplicationConfiguration>>, ZonedDateTime?, ZonedDateTime?, String?) -> Pair<List<DialogFlowTransitionStatsData>, List<String>>,
         seriesLabel: (String?) -> String = { "$it" }
-    )
-            : UserAnalyticsQueryResult {
-        val namespace = request.namespace
-        val botId = request.botId
-        val applicationIds = applications.map { it._id }.toSet()
-        val fromDate = atTimeOfDay(request.from, LocalTime.MIDNIGHT)
-        val toDate = atTimeOfDay(request.to, LocalTime.MAX)
-        logger.debug { "Building 'Messages by Configuration' report for ${applications.size} configurations: $applicationIds..." }
+    ):
+        UserAnalyticsQueryResult {
+            val namespace = request.namespace
+            val botId = request.botId
+            val applicationIds = applications.map { it._id }.toSet()
+            val fromDate = atTimeOfDay(request.from, LocalTime.MIDNIGHT)
+            val toDate = atTimeOfDay(request.to, LocalTime.MAX)
+            logger.debug { "Building 'Messages by Configuration' report for ${applications.size} configurations: $applicationIds..." }
 
-        val functionResult =
-            (searchFunction)(namespace, botId, applicationIds, request.from, request.to, request.intent)
-        val series = functionResult.first.groupingBy { it.text }.eachCount().toList().sortedByDescending { it.second }
-            .unzip().first
-        val messagesByDate = functionResult.first.groupBy { groupSelector(fromDate, toDate, it.date) }
+            val functionResult =
+                (searchFunction)(namespace, botId, applicationIds, request.from, request.to, request.intent)
+            val series = functionResult.first.groupingBy { it.text }.eachCount().toList().sortedByDescending { it.second }
+                .unzip().first
+            val messagesByDate = functionResult.first.groupBy { groupSelector(fromDate, toDate, it.date) }
 
-        val (dates, transitionsByDate) = sortMessagesByDate(fromDate, toDate, messagesByDate)
-        val result = arrayListOf<List<Int?>>()
-        transitionsByDate.forEach { transitions ->
-            run {
-                val datesMessages = arrayListOf<Int?>()
-                series.forEach { serie ->
-                    run {
-                        val count = transitions?.count { it.text == serie }
-                        datesMessages.add(count)
+            val (dates, transitionsByDate) = sortMessagesByDate(fromDate, toDate, messagesByDate)
+            val result = arrayListOf<List<Int?>>()
+            transitionsByDate.forEach { transitions ->
+                run {
+                    val datesMessages = arrayListOf<Int?>()
+                    series.forEach { serie ->
+                        run {
+                            val count = transitions?.count { it.text == serie }
+                            datesMessages.add(count)
+                        }
                     }
+                    result.add(datesMessages)
                 }
-                result.add(datesMessages)
             }
+            return UserAnalyticsQueryResult(dates, result, series.map(seriesLabel))
         }
-        return UserAnalyticsQueryResult(dates, result, series.map(seriesLabel))
-    }
 
     private fun <S> reportMessagesBySeries(
         request: DialogFlowRequest,
@@ -458,7 +458,8 @@ object BotAdminService {
 
     fun reportMessagesByType(request: DialogFlowRequest): UserAnalyticsQueryResult {
         val applications = loadApplications(request)
-        return reportMessagesByDateAndSeries(request, applications,
+        return reportMessagesByDateAndSeries(
+            request, applications,
             setOf(false, request.includeTestConfigurations),
             { isTests ->
                 { transition ->
@@ -466,12 +467,15 @@ object BotAdminService {
                         "test-"
                     ) == isTests
                 }
-            }, { if (it) "Tests" else "Messages" })
+            },
+            { if (it) "Tests" else "Messages" }
+        )
     }
 
     fun reportUsersByType(request: DialogFlowRequest): UserAnalyticsQueryResult {
         val applications = loadApplications(request)
-        return reportUsersByDateAndSeries(request, applications,
+        return reportUsersByDateAndSeries(
+            request, applications,
             setOf(false, request.includeTestConfigurations),
             { isTests ->
                 { transition ->
@@ -479,16 +483,20 @@ object BotAdminService {
                         "test-"
                     ) == isTests
                 }
-            }, { if (it) "Tests" else "Users" })
+            },
+            { if (it) "Tests" else "Users" }
+        )
     }
 
     fun reportMessagesByConnectorType(request: DialogFlowRequest): UserAnalyticsQueryResult {
         val applications = loadApplications(request)
-        return reportMessagesByDateAndSeries(request,
+        return reportMessagesByDateAndSeries(
+            request,
             applications,
             applications.map { it.connectorType }.toSet(),
             { connectorType -> { transition -> applications.find { it._id.toString() == transition.applicationId }?.connectorType == connectorType } },
-            { it.id })
+            { it.id }
+        )
     }
 
     fun reportMessagesByConfiguration(request: DialogFlowRequest): UserAnalyticsQueryResult {
@@ -498,22 +506,27 @@ object BotAdminService {
             applications,
             applications,
             { application -> { transition -> application._id.toString() == transition.applicationId } },
-            { it.applicationId })
+            { it.applicationId }
+        )
     }
 
     fun reportMessagesByDayOfWeek(request: DialogFlowRequest): UserAnalyticsQueryResult {
         val applications = loadApplications(request)
-        return reportMessagesBySeries(request,
+        return reportMessagesBySeries(
+            request,
             applications,
             DayOfWeek.values().toSet(),
             { day -> { transition -> transition.date.dayOfWeek == day } },
-            { it.getDisplayName(TextStyle.FULL_STANDALONE, defaultLocale) })
+            { it.getDisplayName(TextStyle.FULL_STANDALONE, defaultLocale) }
+        )
     }
 
     fun reportMessagesByHour(request: DialogFlowRequest): UserAnalyticsQueryResult {
         val applications = loadApplications(request)
-        return reportMessagesBySeries(request, applications, (0..24).toList().toSet(),
-            { hour -> { transition -> transition.date.hour == hour } }, { "${it}h" })
+        return reportMessagesBySeries(
+            request, applications, (0..24).toList().toSet(),
+            { hour -> { transition -> transition.date.hour == hour } }, { "${it}h" }
+        )
     }
 
     fun reportMessagesByIntent(request: DialogFlowRequest): UserAnalyticsQueryResult {
@@ -617,25 +630,27 @@ object BotAdminService {
                 if (query.skipObfuscation) {
                     this
                 } else {
-                    copy(dialogs = dialogs.map { d ->
-                        var obfuscatedDialog = false
-                        val actions = d.actions.map {
-                            val obfuscatedMessage = it.message.obfuscate()
-                            obfuscatedDialog = obfuscatedDialog || it.message != obfuscatedMessage
-                            it.copy(message = obfuscatedMessage)
+                    copy(
+                        dialogs = dialogs.map { d ->
+                            var obfuscatedDialog = false
+                            val actions = d.actions.map {
+                                val obfuscatedMessage = it.message.obfuscate()
+                                obfuscatedDialog = obfuscatedDialog || it.message != obfuscatedMessage
+                                it.copy(message = obfuscatedMessage)
+                            }
+                            d.copy(
+                                actions = actions,
+                                obfuscated = obfuscatedDialog
+                            )
                         }
-                        d.copy(
-                            actions = actions,
-                            obfuscated = obfuscatedDialog
-                        )
-                    })
+                    )
                 }
             }
     }
 
     fun deleteApplicationConfiguration(conf: BotApplicationConfiguration) {
         applicationConfigurationDAO.delete(conf)
-        //delete rest connector if found
+        // delete rest connector if found
         applicationConfigurationDAO.getConfigurationByTargetId(conf._id)
             ?.also { applicationConfigurationDAO.delete(it) }
     }
@@ -816,7 +831,7 @@ object BotAdminService {
             )
         }
 
-        //save all intents of steps
+        // save all intents of steps
         story.steps.forEach { saveUserSentenceOfStep(controller.application, it, controller.user) }
     }
 
@@ -860,7 +875,7 @@ object BotAdminService {
                     request.story.category
                 )
 
-            //create the story
+            // create the story
             saveStory(namespace, request.story, user)
             request.firstSentences.filter { it.isNotBlank() }.forEach {
                 saveSentence(it, request.language, nlpApplication._id, intentDefinition._id, user)
@@ -952,9 +967,9 @@ object BotAdminService {
             },
             currentType
         ).apply {
-            //if entity is null, it means that entity has not been modified
+            // if entity is null, it means that entity has not been modified
             if (entity != null) {
-                //check that the intent & entity exist
+                // check that the intent & entity exist
                 var newIntent = front.getIntentByNamespaceAndName(app.namespace, intent.name)
                 val existingEntity = newIntent?.findEntity(role)
                 val entityTypeName = entity.entityTypeName
@@ -1017,9 +1032,9 @@ object BotAdminService {
         intent: IntentWithoutNamespace?,
         app: ApplicationDefinition
     ) {
-        //if intentDefinition is null, we don't need to update intent
+        // if intentDefinition is null, we don't need to update intent
         if (intentDefinition != null) {
-            //check that the intent exists
+            // check that the intent exists
             val intentName = intent?.name
             var newIntent = intentName?.let { front.getIntentByNamespaceAndName(app.namespace, intentName) }
             if (newIntent == null && intentName != null) {
@@ -1107,7 +1122,7 @@ object BotAdminService {
 
             storyWithSameNsBotAndIntent.let {
                 if (it == null || it.currentType == builtin) {
-                    //intent change
+                    // intent change
                     if (storyWithSameId?._id != null) {
                         createOrGetIntent(
                             namespace,
@@ -1188,7 +1203,7 @@ object BotAdminService {
                 saveSentence(story.userSentence, story.userSentenceLocale, application._id, intent._id, user)
             }
 
-            //save all intents of steps
+            // save all intents of steps
             val storySteps = newStory.steps + newStory.configuredSteps.flatMap { it.steps }
             storySteps.forEach { saveUserSentenceOfStep(application, it, user) }
 
@@ -1204,21 +1219,23 @@ object BotAdminService {
         oldStory: StoryDefinitionConfiguration?
     ): List<StoryDefinitionConfigurationByBotStep> =
         map {
-            StoryDefinitionConfigurationByBotStep(it.botConfiguration, it.steps.map { step ->
-                step.toStepConfiguration(app, botId, oldStory)
-            })
+            StoryDefinitionConfigurationByBotStep(
+                it.botConfiguration,
+                it.steps.map { step ->
+                    step.toStepConfiguration(app, botId, oldStory)
+                }
+            )
         }
 
-
-    private fun BotConfiguredAnswer.toConfiguredAnswer(botId: String, oldStory: StoryDefinitionConfiguration?)
-            : DedicatedAnswerConfiguration {
-        val oldConf = oldStory?.configuredAnswers?.find { it.botConfiguration == botConfiguration }
-        return DedicatedAnswerConfiguration(
-            botConfiguration,
-            currentType,
-            answers.mapNotNull { it.toConfiguration(botId, oldConf?.answers) }
-        )
-    }
+    private fun BotConfiguredAnswer.toConfiguredAnswer(botId: String, oldStory: StoryDefinitionConfiguration?):
+        DedicatedAnswerConfiguration {
+            val oldConf = oldStory?.configuredAnswers?.find { it.botConfiguration == botConfiguration }
+            return DedicatedAnswerConfiguration(
+                botConfiguration,
+                currentType,
+                answers.mapNotNull { it.toConfiguration(botId, oldConf?.answers) }
+            )
+        }
 
     private fun saveSentence(
         text: String,
@@ -1392,7 +1409,7 @@ object BotAdminService {
             applicationConfigurationDAO.delete(it)
         }
 
-        //delete stories
+        // delete stories
         storyDefinitionDAO.getStoryDefinitionsByNamespaceAndBotId(
             app.namespace, app.name
         ).forEach {
@@ -1419,7 +1436,7 @@ object BotAdminService {
         ).forEach {
             applicationConfigurationDAO.save(it.copy(botId = newApp.name))
         }
-        //stories
+        // stories
         storyDefinitionDAO.getStoryDefinitionsByNamespaceAndBotId(
             existingApp.namespace, existingApp.name
         ).forEach {

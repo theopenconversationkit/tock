@@ -86,7 +86,6 @@ internal class TwitterClient(
 
         @POST("/oauth/access_token")
         fun accessToken(): Call<String>
-
     }
 
     /**
@@ -97,7 +96,6 @@ internal class TwitterClient(
 
         @GET("/1.1/users/show.json")
         fun user(@Query("user_id") userId: String): Call<User>
-
     }
 
     /***
@@ -120,8 +118,6 @@ internal class TwitterClient(
 
         @GET("/1.1/account_activity/all/{environment}/webhooks.json")
         fun webhooks(@Path("environment") environment: String): Call<List<Webhook>>
-
-
     }
 
     /**
@@ -141,7 +137,6 @@ internal class TwitterClient(
 
         @DELETE("/1.1/direct_messages/events/destroy.json")
         fun destroy(): Call<Unit>
-
     }
 
     /**
@@ -173,7 +168,6 @@ internal class TwitterClient(
             @Query("command") command: Command = Command.FINALIZE,
             @Query("media_id") mediaId: String
         ): Call<MediaUpload>
-
     }
 
     interface StatusApi {
@@ -185,7 +179,6 @@ internal class TwitterClient(
             @Query("auto_populate_reply_metadata") autoPopulateMetadata: String = "true",
             @Query("enable_dmcommands") enableDM: String = "false"
         ): Call<InputTweet>
-
     }
 
     private val logger = KotlinLogging.logger {}
@@ -318,11 +311,10 @@ internal class TwitterClient(
                 null
             }
         } catch (e: Exception) {
-            //log and ignore
+            // log and ignore
             logger.error(e)
             null
         }
-
     }
 
     /**
@@ -375,11 +367,10 @@ internal class TwitterClient(
                 null
             }
         } catch (e: Exception) {
-            //log and ignore
+            // log and ignore
             logger.error(e)
             null
         }
-
     }
 
     /**
@@ -403,11 +394,10 @@ internal class TwitterClient(
                 null
             }
         } catch (e: Exception) {
-            //log and ignore
+            // log and ignore
             logger.error(e)
             null
         }
-
     }
 
     /**
@@ -428,7 +418,7 @@ internal class TwitterClient(
                 true
             }
         } catch (e: Exception) {
-            //log and ignore
+            // log and ignore
             logger.error(e)
             false
         }
@@ -446,7 +436,7 @@ internal class TwitterClient(
             val response = accountActivityApi.subscriptions("develop").execute()
             response.code() == 204
         } catch (e: Exception) {
-            //log and ignore
+            // log and ignore
             logger.error(e)
             false
         }
@@ -470,11 +460,10 @@ internal class TwitterClient(
                 true
             }
         } catch (e: Exception) {
-            //log and ignore
+            // log and ignore
             logger.error(e)
             false
         }
-
     }
 
     /**
@@ -494,11 +483,10 @@ internal class TwitterClient(
                 defaultUser()
             }
         } catch (e: Exception) {
-            //log and ignore
+            // log and ignore
             logger.error(e)
             defaultUser()
         }
-
     }
 
     /**
@@ -520,7 +508,7 @@ internal class TwitterClient(
             emptyList()
         }
     } catch (e: Exception) {
-        //log and ignore
+        // log and ignore
         logger.error(e)
         emptyList()
     }
@@ -534,7 +522,7 @@ internal class TwitterClient(
             true
         }
     } catch (e: Exception) {
-        //log and ignore
+        // log and ignore
         logger.error(e)
         false
     }
@@ -560,7 +548,7 @@ internal class TwitterClient(
             true
         }
     } catch (e: Exception) {
-        //log and ignore
+        // log and ignore
         logger.error(e)
         false
     }
@@ -574,7 +562,6 @@ internal class TwitterClient(
         val mediaUpload = uploadMediaFinalize(mediaUploadInit.mediaIdString)
 
         return Attachment(type = "media", media = AttachmentMedia(mediaUpload.mediaIdString))
-
     }
 
     private fun uploadMedia(data: ByteArray, mediaId: String) {
@@ -593,7 +580,6 @@ internal class TwitterClient(
             }
             segmentIndex++
         }
-
     }
 
     private fun uploadMediaInit(mediaCategory: MediaCategory, contentType: String, totalBytes: Long): MediaUpload {
@@ -624,9 +610,7 @@ internal class TwitterClient(
         }
 
         return response.isSuccessful
-
     }
-
 
     private fun uploadMediaFinalize(mediaId: String): MediaUpload {
 
@@ -640,7 +624,6 @@ internal class TwitterClient(
             response.logError()
             throw ConnectorException("Media upload finalize failed")
         }
-
     }
 
     fun b64HmacSHA256(payload: String): String {
@@ -656,5 +639,4 @@ internal class TwitterClient(
 
         return String(Base64.getEncoder().encode(bytes))
     }
-
 }

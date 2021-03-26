@@ -29,5 +29,4 @@ class SimpleObfuscatorTest {
         val obf = SimpleObfuscator("\\d{9}".toRegex(), "sososecret")
         assertEquals("aze sososecret 223 sososecret ds", obf.obfuscate("aze 222777777 223 199999999 ds"))
     }
-
 }

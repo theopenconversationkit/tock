@@ -16,10 +16,10 @@
 
 package ai.tock.nlp.core.client
 
-import com.github.salomonbrys.kodein.instance
 import ai.tock.nlp.core.ModelCore
 import ai.tock.nlp.core.NlpCore
 import ai.tock.shared.injector
+import com.github.salomonbrys.kodein.instance
 
 private val nlpCore: NlpCore by injector.instance()
 private val modelCore: ModelCore by injector.instance()
@@ -27,5 +27,4 @@ private val modelCore: ModelCore by injector.instance()
 /**
  *
  */
-object NlpCoreClient : NlpCore by nlpCore, ModelCore by modelCore {
-}
+object NlpCoreClient : NlpCore by nlpCore, ModelCore by modelCore

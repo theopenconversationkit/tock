@@ -53,16 +53,18 @@ object FrontIoc {
 
     fun setup(modules: List<Module>) {
         logger.debug { "Start nlp injection" }
-        injector.inject(Kodein {
-            coreModules.forEach { import(it, allowOverride = true) }
+        injector.inject(
+            Kodein {
+                coreModules.forEach { import(it, allowOverride = true) }
 
-            //load additional modules
-            modules.forEach {
-                if (!coreModules.contains(it)) {
-                    import(it, allowOverride = true)
+                // load additional modules
+                modules.forEach {
+                    if (!coreModules.contains(it)) {
+                        import(it, allowOverride = true)
+                    }
                 }
             }
-        })
+        )
         FrontClient.initializeConfiguration()
     }
 }

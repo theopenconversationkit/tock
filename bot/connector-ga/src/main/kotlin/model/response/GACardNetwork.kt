@@ -27,5 +27,4 @@ enum class GACardNetwork {
     MASTERCARD,
     VISA,
     JCB,
-
 }

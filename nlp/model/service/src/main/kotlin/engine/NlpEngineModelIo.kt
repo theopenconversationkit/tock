@@ -53,5 +53,4 @@ interface NlpEngineModelIo {
      * Sends an entity model to an output stream.
      */
     fun copyEntityModel(model: Any, output: OutputStream)
-
 }

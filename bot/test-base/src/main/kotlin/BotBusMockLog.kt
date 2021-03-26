@@ -96,5 +96,4 @@ data class BotBusMockLog(
 
     private fun hasTitle(title: String): (Choice) -> Boolean =
         { it.parameters[SendChoice.TITLE_PARAMETER] == title }
-
 }

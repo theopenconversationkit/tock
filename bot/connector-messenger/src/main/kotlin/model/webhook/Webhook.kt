@@ -16,7 +16,6 @@
 
 package ai.tock.bot.connector.messenger.model.webhook
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import ai.tock.bot.connector.messenger.json.webhook.WebhookDeserializer
 import ai.tock.bot.connector.messenger.model.MessengerConnectorMessage
 import ai.tock.bot.connector.messenger.model.Recipient
@@ -24,6 +23,7 @@ import ai.tock.bot.connector.messenger.model.Sender
 import ai.tock.bot.engine.message.GenericMessage
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 
 /**
  *

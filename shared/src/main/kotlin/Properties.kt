@@ -63,7 +63,7 @@ fun mapProperty(
     keyValueSeparator: String = "="
 ): Map<String, String> =
     findProperty(name)?.split(entrySeparator)?.map { it.split(keyValueSeparator).let { it[0] to it[1] } }?.toMap()
-            ?: defaultValue
+        ?: defaultValue
 
 /**
  * Return an env or system Map of List property.
@@ -83,7 +83,6 @@ fun mapListProperty(
  */
 fun loadProperties(fileInClasspath: String): Properties =
     Properties().apply { load(resourceAsStream(fileInClasspath)) }
-
 
 /**
  * Return true is the current environment is a dev environment.

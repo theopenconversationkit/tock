@@ -99,10 +99,12 @@ class ApplicationCodecServiceTest : AbstractTest() {
         val report = ApplicationCodecService.import(namespace, dump)
         assertTrue(report.modified)
         verify {
-            context.config.save(match<ApplicationDefinition> {
-                it.supportedLocales.contains(newLocale)
-                    && it.supportedLocales.contains(defaultLocale)
-            })
+            context.config.save(
+                match<ApplicationDefinition> {
+                    it.supportedLocales.contains(newLocale) &&
+                        it.supportedLocales.contains(defaultLocale)
+                }
+            )
         }
     }
 
@@ -116,10 +118,12 @@ class ApplicationCodecServiceTest : AbstractTest() {
             ApplicationCodecService.import(namespace, dump, ApplicationImportConfiguration(defaultModelMayExist = true))
         assertTrue(report.modified)
         verify {
-            context.config.save(match<ApplicationDefinition> {
-                it.supportedLocales.contains(newLocale)
-                    && !it.supportedLocales.contains(defaultLocale)
-            })
+            context.config.save(
+                match<ApplicationDefinition> {
+                    it.supportedLocales.contains(newLocale) &&
+                        !it.supportedLocales.contains(defaultLocale)
+                }
+            )
         }
     }
 
@@ -151,32 +155,37 @@ class ApplicationCodecServiceTest : AbstractTest() {
         assertTrue(report.modified)
         assertEquals(2, report.intentsImported.size)
         verify {
-            context.config.save(match<IntentDefinition> {
-                it.name == defaultIntentDefinition.name
-                    && it._id == defaultIntentDefinition._id
-                    && it.sharedIntents.isEmpty()
-            })
+            context.config.save(
+                match<IntentDefinition> {
+                    it.name == defaultIntentDefinition.name &&
+                        it._id == defaultIntentDefinition._id &&
+                        it.sharedIntents.isEmpty()
+                }
+            )
         }
         var newOtherIntentId: Id<IntentDefinition>? = null
         verify {
-            context.config.save(match<IntentDefinition> {
-                (it.name == otherIntent.name
-                    && it._id != otherIntent._id
-                    && it.sharedIntents.size == 1
-                    && it.sharedIntents.contains(defaultIntentDefinition._id)
-                    )
-                    .apply { if (this) newOtherIntentId = it._id }
-
-            })
+            context.config.save(
+                match<IntentDefinition> {
+                    (
+                        it.name == otherIntent.name &&
+                            it._id != otherIntent._id &&
+                            it.sharedIntents.size == 1 &&
+                            it.sharedIntents.contains(defaultIntentDefinition._id)
+                        )
+                        .apply { if (this) newOtherIntentId = it._id }
+                }
+            )
         }
         verify {
-            context.config.save(match<IntentDefinition> {
-                it.name == andOtherIntent.name
-                    && it._id != andOtherIntent._id
-                    && it.sharedIntents.size == 1
-                    && it.sharedIntents.contains(newOtherIntentId)
-
-            })
+            context.config.save(
+                match<IntentDefinition> {
+                    it.name == andOtherIntent.name &&
+                        it._id != andOtherIntent._id &&
+                        it.sharedIntents.size == 1 &&
+                        it.sharedIntents.contains(newOtherIntentId)
+                }
+            )
         }
     }
 
@@ -230,7 +239,7 @@ class ApplicationCodecServiceTest : AbstractTest() {
             )
         )
         val report = ApplicationCodecService.importSentences(app.namespace, dump)
-        //note that the entity namespace has changed
+        // note that the entity namespace has changed
         assertEquals(setOf("namespace:e1", "namespace:e2", "namespace:e3"), report.entitiesImported)
     }
 }

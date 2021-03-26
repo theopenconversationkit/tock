@@ -19,7 +19,6 @@ package ai.tock.translator.google
 import org.junit.jupiter.api.Test
 import java.util.Locale
 
-
 class GoogleTranslateIntegrationTest {
 
     @Test

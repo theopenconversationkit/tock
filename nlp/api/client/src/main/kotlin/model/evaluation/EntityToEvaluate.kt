@@ -21,8 +21,9 @@ import ai.tock.nlp.api.client.model.Entity
 /**
  *
  */
-data class EntityToEvaluate(val start: Int,
-                            val end: Int,
-                            val entity: Entity,
-                            val subEntities: List<EntityToEvaluate> = emptyList()) {
-}
+data class EntityToEvaluate(
+    val start: Int,
+    val end: Int,
+    val entity: Entity,
+    val subEntities: List<EntityToEvaluate> = emptyList()
+)

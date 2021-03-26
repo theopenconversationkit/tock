@@ -21,7 +21,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 val mapper = jacksonObjectMapper().apply {
     findAndRegisterModules()
-    //force java time module
+    // force java time module
     registerModule(JavaTimeModule())
 }
-

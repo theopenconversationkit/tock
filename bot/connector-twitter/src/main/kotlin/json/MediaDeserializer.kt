@@ -44,8 +44,7 @@ internal class MediaDeserializer : JacksonDeserializer<Media>() {
             var other: EmptyJson? = null
         )
 
-        val (image, video, imageType, width, height, videoType)
-            = jp.read<MediaFields> { fields, name ->
+        val (image, video, imageType, width, height, videoType) = jp.read<MediaFields> { fields, name ->
             with(fields) {
                 when (name) {
                     "image" -> image = jp.readValue()
@@ -68,5 +67,4 @@ internal class MediaDeserializer : JacksonDeserializer<Media>() {
             null
         }
     }
-
 }

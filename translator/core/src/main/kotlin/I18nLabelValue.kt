@@ -95,5 +95,4 @@ class I18nLabelValue constructor(
         result = 31 * result + category.hashCode()
         return result
     }
-
 }

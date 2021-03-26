@@ -66,8 +66,8 @@ internal object DucklingParser : EntityTypeEvaluator, EntityTypeClassifier, Pars
     private fun classify(context: EntityCallContext, text: String): List<EntityTypeRecognition> {
         return when (context) {
             is EntityCallContextForIntent -> classifyForIntent(context, text)
-            is EntityCallContextForEntity -> emptyList() //TODO
-            is EntityCallContextForSubEntities -> emptyList() //TODO
+            is EntityCallContextForEntity -> emptyList() // TODO
+            is EntityCallContextForSubEntities -> emptyList() // TODO
         }
     }
 
@@ -91,8 +91,6 @@ internal object DucklingParser : EntityTypeEvaluator, EntityTypeClassifier, Pars
                         text
                     )
                 }
-
-
         }
     }
 
@@ -256,7 +254,7 @@ internal object DucklingParser : EntityTypeEvaluator, EntityTypeClassifier, Pars
                                 )
                             )
                         } else {
-                            //type interval
+                            // type interval
                             val fromMap = valueMap[":from"]
                             val toMap = valueMap[":to"]
                             var entityValue: ValueWithRange? = null
@@ -303,12 +301,11 @@ internal object DucklingParser : EntityTypeEvaluator, EntityTypeClassifier, Pars
                     }
                 }
             }
-
         } catch (e: Exception) {
             logger.error(e) { e.message }
         }
 
-        //merge
+        // merge
         result.sort()
         if (result.size > 1) {
             var skipNext = false
@@ -316,7 +313,7 @@ internal object DucklingParser : EntityTypeEvaluator, EntityTypeClassifier, Pars
             for (i in result.indices) {
                 if (!skipNext) {
                     if (i < result.size - 1) {
-                        //overlap, try to mergeDate
+                        // overlap, try to mergeDate
                         if (result[i].end > result[i + 1].start) {
                             result2.add(mergeDate(result[i], result[i + 1]))
                             skipNext = true
@@ -337,9 +334,8 @@ internal object DucklingParser : EntityTypeEvaluator, EntityTypeClassifier, Pars
     }
 
     private fun mergeDate(r1: ValueWithRange, r2: ValueWithRange): ValueWithRange {
-        //overlap, try to merge
+        // overlap, try to merge
         if (r1.value is DateEntityValue && r2.value is DateEntityValue) {
-
 
             if (r1.value.grain == r2.value.grain) {
                 return ValueWithRange(
@@ -362,7 +358,7 @@ internal object DucklingParser : EntityTypeEvaluator, EntityTypeClassifier, Pars
                 )
             }
         }
-        //return the first for now
+        // return the first for now
         return r1
     }
 

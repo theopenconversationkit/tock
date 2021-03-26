@@ -48,7 +48,6 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration) {
 
-
             val credentialInputStream =
                 connectorConfiguration.parameters[SERVICE_CREDENTIAL_PATH_PARAMETER]
                     ?.let { resourceAsStream(it) }
@@ -88,7 +87,8 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
 
     override fun configuration(): ConnectorTypeConfiguration =
         ConnectorTypeConfiguration(
-            googleChatConnectorType, listOf(
+            googleChatConnectorType,
+            listOf(
                 ConnectorTypeConfigurationField(
                     "Bot project number (application ID in google hangouts configuration page)",
                     BOT_PROJECT_NUMBER_PARAMETER,
@@ -110,7 +110,6 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
 
     override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> =
         setOf(GoogleChatConnectorTextMessageOut::class)
-
 }
 
 internal class GoogleChatConnectorProviderService : ConnectorProvider by GoogleChatConnectorProvider

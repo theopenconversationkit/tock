@@ -16,30 +16,30 @@
 
 package ai.tock.bot.connector.ga.model.response
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonSubTypes
-import com.fasterxml.jackson.annotation.JsonTypeInfo
 import ai.tock.bot.connector.ga.model.GAInputValueDataType
 import ai.tock.bot.connector.ga.model.response.transaction.v3.GATransactionDecisionValueSpecV3
 import ai.tock.bot.connector.ga.model.response.transaction.v3.GATransactionRequirementsCheckSpecV3
 import ai.tock.bot.engine.message.GenericMessage
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 
 /**
  *
  */
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "@type")
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "@type"
+)
 @JsonSubTypes(
-        JsonSubTypes.Type(value = GAOptionValueSpec::class, name = "type.googleapis.com/google.actions.v2.OptionValueSpec"),
-        JsonSubTypes.Type(value = GAPermissionValueSpec::class, name = "type.googleapis.com/google.actions.v2.PermissionValueSpec"),
-        JsonSubTypes.Type(value = GATransactionRequirementsCheckSpecV3::class, name = "type.googleapis.com/google.actions.transactions.v3.TransactionRequirementsCheckSpec"),
-        JsonSubTypes.Type(value = GATransactionDecisionValueSpecV3::class, name = "type.googleapis.com/google.actions.transactions.v3.TransactionDecisionValueSpec"),
-        JsonSubTypes.Type(value = GANewSurfaceValueSpec::class, name = "type.googleapis.com/google.actions.v2.NewSurfaceValueSpec")
+    JsonSubTypes.Type(value = GAOptionValueSpec::class, name = "type.googleapis.com/google.actions.v2.OptionValueSpec"),
+    JsonSubTypes.Type(value = GAPermissionValueSpec::class, name = "type.googleapis.com/google.actions.v2.PermissionValueSpec"),
+    JsonSubTypes.Type(value = GATransactionRequirementsCheckSpecV3::class, name = "type.googleapis.com/google.actions.transactions.v3.TransactionRequirementsCheckSpec"),
+    JsonSubTypes.Type(value = GATransactionDecisionValueSpecV3::class, name = "type.googleapis.com/google.actions.transactions.v3.TransactionDecisionValueSpec"),
+    JsonSubTypes.Type(value = GANewSurfaceValueSpec::class, name = "type.googleapis.com/google.actions.v2.NewSurfaceValueSpec")
 )
 abstract class GAInputValueData(@get:JsonProperty("@type") val type: GAInputValueDataType) {
 
     open fun toGenericMessage(): GenericMessage? = null
-
 }

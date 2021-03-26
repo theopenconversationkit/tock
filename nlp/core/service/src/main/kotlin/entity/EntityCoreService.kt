@@ -56,8 +56,8 @@ internal object EntityCoreService : EntityCore {
     ): List<EntityTypeRecognition> {
         return when (context) {
             is EntityCallContextForIntent -> classifyEntityTypesForIntent(context, text)
-            is EntityCallContextForEntity -> emptyList() //TODO
-            is EntityCallContextForSubEntities -> emptyList() //TODO
+            is EntityCallContextForEntity -> emptyList() // TODO
+            is EntityCallContextForSubEntities -> emptyList() // TODO
         }
     }
 

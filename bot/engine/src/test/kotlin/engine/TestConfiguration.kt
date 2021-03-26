@@ -34,16 +34,15 @@ val secondaryIntent = Intent("secondary")
 val enableStory = story("enable") {}
 val disableStory = story("disable") {}
 
-
-class BotDefinitionTest
-    : BotDefinitionBase(
-    "test",
-    "namespace",
-    stories = enumValues<TestStoryDefinition>().toList() + otherStory + testWithoutStep + builtInStories + disableBotTaggedStory,
-    unknownStory = TestStoryDefinition.unknown,
-    botEnabledStory = enableStory,
-    botDisabledStory = disableStory
-)
+class BotDefinitionTest :
+    BotDefinitionBase(
+        "test",
+        "namespace",
+        stories = enumValues<TestStoryDefinition>().toList() + otherStory + testWithoutStep + builtInStories + disableBotTaggedStory,
+        unknownStory = TestStoryDefinition.unknown,
+        botEnabledStory = enableStory,
+        botDisabledStory = disableStory
+    )
 
 enum class StepTest : SimpleStoryStep {
     s1,
@@ -100,7 +99,7 @@ val testWithoutStep = story("withoutStep") {
     end("withoutStep")
 }
 
-//stories in order to make BotDefinitionWrapperTest ok
+// stories in order to make BotDefinitionWrapperTest ok
 val builtInStories = listOf(
     story("input_story") { end("input_story") },
     story("target") { end("target") }
@@ -112,5 +111,3 @@ val disableBotTaggedStory = SimpleStoryDefinition(
     starterIntents = setOf(Intent("disable_bot")),
     tags = listOf(StoryTag.DISABLE)
 )
-
-

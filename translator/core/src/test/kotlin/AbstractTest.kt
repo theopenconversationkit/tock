@@ -31,12 +31,12 @@
  */
 package ai.tock.translator
 
+import ai.tock.shared.sharedTestModule
+import ai.tock.shared.tockInternalInjector
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import ai.tock.shared.sharedTestModule
-import ai.tock.shared.tockInternalInjector
 import io.mockk.mockk
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -59,10 +59,12 @@ abstract class AbstractTest {
     @BeforeEach
     fun initContext() {
         tockInternalInjector = KodeinInjector()
-        tockInternalInjector.inject(Kodein {
-            import(sharedTestModule)
-            import(baseModule())
-        })
+        tockInternalInjector.inject(
+            Kodein {
+                import(sharedTestModule)
+                import(baseModule())
+            }
+        )
         Translator.enabled = true
     }
 
@@ -71,6 +73,4 @@ abstract class AbstractTest {
         tockInternalInjector = KodeinInjector()
         Translator.enabled = false
     }
-
-
 }

@@ -16,14 +16,14 @@
 
 package ai.tock.shared
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.provider
 import ai.tock.shared.vertx.TockVertxProvider
 import ai.tock.shared.vertx.VertxProvider
 import ai.tock.shared.vertx.defaultVertxOptions
 import ai.tock.shared.vertx.vertx
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
 import io.vertx.core.VertxOptions
 import io.vertx.core.impl.VertxInternal
 import org.junit.jupiter.api.AfterEach
@@ -40,9 +40,11 @@ class VertxTest {
     @BeforeEach
     fun before() {
         tockInternalInjector = KodeinInjector()
-        tockInternalInjector.inject(Kodein.invoke {
-            bind<VertxProvider>() with provider { TockVertxProvider }
-        })
+        tockInternalInjector.inject(
+            Kodein.invoke {
+                bind<VertxProvider>() with provider { TockVertxProvider }
+            }
+        )
     }
 
     @AfterEach

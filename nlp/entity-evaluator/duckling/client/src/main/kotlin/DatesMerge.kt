@@ -48,11 +48,13 @@ internal object DatesMerge {
     private val frenchAddRegex =
         ".*prochaine?$|.*suivante?$|.*qui suit$|.*(d')? ?apr[eèé]s$|.*plus tard$|.*derni[èe]re?$|.*pass[ée]e?$|.*pr[eé]c[eé]dente?$|.*(d')? ?avant$|.*plus t[oô]t$|lendemain|le lendemain|la veille|ce jour|(le |la )?m[eê]me jour(n[eé]e)?".toRegex()
     private val frenchChangeHourRegex =
-        ("(dans )?(le |la |en |(en )?fin de |(en )?d[ée]but de |(en )?milieu de )?soir[ée]?e?" +
-            "|(dans )?(le |la |en |(en )?fin de |(en )?d[ée]but de |(en )?milieu de )?mat(in[ée]?e?)?" +
-            "|(dans )?(l. ?|(en )?fin d. ?|(en )?d[ée]but d. ?|(en )?milieu d. ?)?apr[eéè](s?[ \\-]?midi|m)" +
-            "|([aà]|vers|apr(e|è)s|[aà] partir de|avant|jusqu'[aà])? ?((([01]?\\d)|(2[0-3]))([:h]|heures?)?([0-5]\\d)?)(du|dans l[ae']? ?|au|en|l[ae'] ?|dès l?[ae']? ?|(en )?d[ée]but (de |d' ?)|(en )?fin (de |d' ?)|(en )?d[ée]but (d' ?|de ))?(mat(in[ée]?e?)|soir[ée]?e?|apr[eéè]s?[ \\-]?midi|journ[ée]e)?" +
-            "|entre ?((([01]?\\d)|(2[0-3]))([:h]|heures?)?([0-5]\\d)?)(du|dans l[ae']? ?|au|en|l[ae'] ?|dès l?[ae']? ?|(en )?d[ée]but (de |d' ?)|(en )?fin (de |d' ?)|(en )?d[ée]but (d' ?|de ))?(mat(in[ée]?e?)|soir[ée]?e?|apr[eéè]s?[ \\-]?midi|journ[ée]e)? et .*").toRegex()
+        (
+            "(dans )?(le |la |en |(en )?fin de |(en )?d[ée]but de |(en )?milieu de )?soir[ée]?e?" +
+                "|(dans )?(le |la |en |(en )?fin de |(en )?d[ée]but de |(en )?milieu de )?mat(in[ée]?e?)?" +
+                "|(dans )?(l. ?|(en )?fin d. ?|(en )?d[ée]but d. ?|(en )?milieu d. ?)?apr[eéè](s?[ \\-]?midi|m)" +
+                "|([aà]|vers|apr(e|è)s|[aà] partir de|avant|jusqu'[aà])? ?((([01]?\\d)|(2[0-3]))([:h]|heures?)?([0-5]\\d)?)(du|dans l[ae']? ?|au|en|l[ae'] ?|dès l?[ae']? ?|(en )?d[ée]but (de |d' ?)|(en )?fin (de |d' ?)|(en )?d[ée]but (d' ?|de ))?(mat(in[ée]?e?)|soir[ée]?e?|apr[eéè]s?[ \\-]?midi|journ[ée]e)?" +
+                "|entre ?((([01]?\\d)|(2[0-3]))([:h]|heures?)?([0-5]\\d)?)(du|dans l[ae']? ?|au|en|l[ae'] ?|dès l?[ae']? ?|(en )?d[ée]but (de |d' ?)|(en )?fin (de |d' ?)|(en )?d[ée]but (d' ?|de ))?(mat(in[ée]?e?)|soir[ée]?e?|apr[eéè]s?[ \\-]?midi|journ[ée]e)? et .*"
+            ).toRegex()
     private val frenchChangeDayInMonth = "le \\d?\\d".toRegex()
     private val frenchChangeDayInWeek = "(le )?(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)".toRegex()
 
@@ -80,7 +82,7 @@ internal object DatesMerge {
 
     fun merge(context: EntityCallContextForEntity, values: List<ValueDescriptor>): ValueDescriptor? {
         return if (context.entityType.name != DucklingDimensions.datetimeEntityType) {
-            logger.warn { "merge not supported for ${context}" }
+            logger.warn { "merge not supported for $context" }
             null
         } else {
             val concatenated = concatEntityValues(context.language, context.referenceDate, values)
@@ -135,8 +137,7 @@ internal object DatesMerge {
                                 monthValue,
                                 newValueContent.substring("le ".length).toInt(),
                                 0,
-                                0
-                                ,
+                                0,
                                 0,
                                 0,
                                 zone
@@ -188,8 +189,7 @@ internal object DatesMerge {
                                     .truncatedTo(DAYS),
                                 day
                             )
-                        else previous
-                        ,
+                        else previous,
                         newValue.content
                     )
 
@@ -219,10 +219,10 @@ internal object DatesMerge {
             null
         } else if (language.language == "fr" && isChangeHourPattern(newValue.content)) {
             MergeGrain(false, day)
-        } else if (oldValue.grain() > newValue.grain()
-            && oldValue.grain().calculateEnd(newValue.start(), defaultZoneId) >= newValue.end()
+        } else if (oldValue.grain() > newValue.grain() &&
+            oldValue.grain().calculateEnd(newValue.start(), defaultZoneId) >= newValue.end()
         ) {
-            //MergeGrain(false, oldValue.grainFromNow())
+            // MergeGrain(false, oldValue.grainFromNow())
             null
         } else {
             null
@@ -230,15 +230,15 @@ internal object DatesMerge {
     }
 
     private fun hasToChangeDayInMonth(language: Locale, newValue: ValueDescriptor): Boolean {
-        return language.language == "fr"
-            && newValue.content != null
-            && frenchChangeDayInMonth.matches(normalize(newValue.content!!))
+        return language.language == "fr" &&
+            newValue.content != null &&
+            frenchChangeDayInMonth.matches(normalize(newValue.content!!))
     }
 
     private fun hasToChangeDayInWeek(language: Locale, newValue: ValueDescriptor): Boolean {
-        return language.language == "fr"
-            && newValue.content != null
-            && frenchChangeDayInWeek.matches(normalize(newValue.content!!))
+        return language.language == "fr" &&
+            newValue.content != null &&
+            frenchChangeDayInWeek.matches(normalize(newValue.content!!))
     }
 
     private fun hasToAdd(language: Locale, newValue: ValueDescriptor): MergeGrain? {
@@ -254,7 +254,6 @@ internal object DatesMerge {
             null
         }
     }
-
 
     private fun parseDate(
         language: Locale,
@@ -284,5 +283,4 @@ internal object DatesMerge {
             .firstOrNull()
             ?.run { ValueDescriptor(value, text) }
     }
-
 }

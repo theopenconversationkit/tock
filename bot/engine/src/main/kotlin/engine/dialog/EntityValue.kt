@@ -44,8 +44,8 @@ internal fun List<EntityValue>.hasEntity(role: String): Boolean {
 internal fun hasEntityPredefinedValue(entities: List<EntityValue>, role: String, value: String): Boolean {
     return entities.filter { it.entity.role == role || hasEntityPredefinedValue(it.subEntities, role, value) }
         .firstOrNull {
-            (it.value as? StringValue)?.value == value
-                    || hasEntityPredefinedValue(it.subEntities, role, value)
+            (it.value as? StringValue)?.value == value ||
+                hasEntityPredefinedValue(it.subEntities, role, value)
         } != null
 }
 
@@ -97,28 +97,28 @@ data class EntityValue(
 
     constructor(nlpResult: NlpResult, value: NlpEntityValue) : this(nlpResult.retainedQuery, value)
 
-    constructor(sentence: String, value: NlpEntityValue)
-            : this(
-        value.start,
-        value.end,
-        value.entity,
-        sentence.substring(value.start, value.end),
-        value.value,
-        value.evaluated,
-        value.subEntities.map { EntityValue(sentence.substring(value.start, value.end), it) },
-        value.probability,
-        value.mergeSupport
-    )
+    constructor(sentence: String, value: NlpEntityValue) :
+        this(
+            value.start,
+            value.end,
+            value.entity,
+            sentence.substring(value.start, value.end),
+            value.value,
+            value.evaluated,
+            value.subEntities.map { EntityValue(sentence.substring(value.start, value.end), it) },
+            value.probability,
+            value.mergeSupport
+        )
 
-    constructor(entity: Entity, value: Value?, content: String? = null)
-            : this(
-        null,
-        null,
-        entity,
-        content,
-        value,
-        true
-    )
+    constructor(entity: Entity, value: Value?, content: String? = null) :
+        this(
+            null,
+            null,
+            entity,
+            content,
+            value,
+            true
+        )
 
     override fun toString(): String {
         return if (evaluated) value?.toString() ?: "null" else content ?: "no content"
@@ -126,5 +126,4 @@ data class EntityValue(
 
     internal fun toClosedRange(): IntRange? =
         if (start != null && end != null && start < end) IntRange(start, end - 1) else null
-
 }

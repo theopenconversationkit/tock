@@ -32,5 +32,4 @@ interface TranslatorEngine {
      * Does the engine support "on the fly" translations?
      */
     val supportAdminTranslation: Boolean get() = false
-
 }

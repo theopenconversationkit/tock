@@ -39,4 +39,3 @@ internal object WorkerOnAwsBatchProvider : WorkerOnDemandProvider {
         workerProperties = workerProperties
     )
 }
-

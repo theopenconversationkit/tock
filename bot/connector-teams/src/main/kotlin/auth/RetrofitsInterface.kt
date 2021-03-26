@@ -22,7 +22,6 @@ import retrofit2.http.GET
 import retrofit2.http.Url
 import java.io.Serializable
 
-
 data class MicrosoftOpenidMetadata(
     val issuer: String,
     val authorizationEndpoint: String,

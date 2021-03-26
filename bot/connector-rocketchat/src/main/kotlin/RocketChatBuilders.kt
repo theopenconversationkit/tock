@@ -18,7 +18,6 @@ package ai.tock.bot.connector.rocketchat
 
 import ai.tock.bot.connector.ConnectorType
 
-
 /**
  *
  */

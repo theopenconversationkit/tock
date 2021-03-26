@@ -19,5 +19,4 @@ package ai.tock.bot.api.client
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 
-internal class ClientBusContext(val connectorMessages: MutableMap<ConnectorType, ConnectorMessage> = mutableMapOf()) {
-}
+internal class ClientBusContext(val connectorMessages: MutableMap<ConnectorType, ConnectorMessage> = mutableMapOf())

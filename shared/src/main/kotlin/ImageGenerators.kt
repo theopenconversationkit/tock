@@ -56,7 +56,6 @@ class ImageGenerator<T : Any>(
 
         return outputStream.toByteArray()
     }
-
 }
 
 /**

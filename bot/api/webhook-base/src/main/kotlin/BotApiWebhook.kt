@@ -36,6 +36,6 @@ import ai.tock.shared.vertx.vertx
  */
 
 fun webhook(botDefinition: ClientBotDefinition) {
-    //deploy verticle
+    // deploy verticle
     vertx.deployVerticle(WebhookVerticle(botDefinition))
 }

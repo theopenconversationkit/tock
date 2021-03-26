@@ -71,7 +71,6 @@ class RestEntityTypeClient(targetUrl: String = property("tock_nlp_entity_type_ur
 
         @GET("healthcheck")
         fun healthcheck(): Call<ResponseBody>
-
     }
 
     private val api: EntityTypeApi
@@ -96,15 +95,15 @@ class RestEntityTypeClient(targetUrl: String = property("tock_nlp_entity_type_ur
         try {
             api.parse(EntityTypeRequest(text, language)).execute().body()
                 ?.entities?.map {
-                EntityTypeRecognition(
-                    EntityTypeValue(
-                        it.entity.start,
-                        it.entity.end,
-                        EntityType(it.entity.type.name)
-                    ),
-                    it.probability
-                )
-            } ?: emptyList()
+                    EntityTypeRecognition(
+                        EntityTypeValue(
+                            it.entity.start,
+                            it.entity.end,
+                            EntityType(it.entity.type.name)
+                        ),
+                        it.probability
+                    )
+                } ?: emptyList()
         } catch (e: Exception) {
             logger.error(e)
             emptyList()
@@ -122,6 +121,4 @@ class RestEntityTypeClient(targetUrl: String = property("tock_nlp_entity_type_ur
 
         private val logger = KotlinLogging.logger {}
     }
-
-
 }

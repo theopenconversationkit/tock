@@ -20,8 +20,9 @@ package ai.tock.bot.connector.rest.client.model
  *
  */
 data class ClientConnectorType(
-        val id: String,
-        val userInterfaceType: ClientUserInterfaceType) {
+    val id: String,
+    val userInterfaceType: ClientUserInterfaceType
+) {
 
     companion object {
         /**

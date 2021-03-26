@@ -101,7 +101,6 @@ import java.time.temporal.ChronoUnit
 import java.util.Locale
 import java.util.concurrent.TimeUnit.DAYS
 
-
 /**
  *
  */
@@ -109,7 +108,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
 
     private val logger = KotlinLogging.logger {}
 
-    //alias
+    // alias
     private val Classification_ = ClassifiedSentenceCol_.Classification
 
     @Data(internal = true)
@@ -135,25 +134,25 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     ) {
 
         constructor(sentence: ClassifiedSentence) :
-                this(
-                    textKey(sentence.text),
-                    sentence.text,
-                    sentence.language,
-                    sentence.applicationId,
-                    sentence.creationDate,
-                    now(),
-                    sentence.status,
-                    sentence.classification,
-                    sentence.lastIntentProbability,
-                    sentence.lastEntityProbability,
-                    sentence.lastUsage,
-                    sentence.usageCount,
-                    sentence.unknownCount,
-                    sentence.forReview,
-                    sentence.reviewComment,
-                    sentence.qualifier,
-                    sentence.otherIntentsProbabilities
-                )
+            this(
+                textKey(sentence.text),
+                sentence.text,
+                sentence.language,
+                sentence.applicationId,
+                sentence.creationDate,
+                now(),
+                sentence.status,
+                sentence.classification,
+                sentence.lastIntentProbability,
+                sentence.lastEntityProbability,
+                sentence.lastUsage,
+                sentence.usageCount,
+                sentence.unknownCount,
+                sentence.forReview,
+                sentence.reviewComment,
+                sentence.qualifier,
+                sentence.otherIntentsProbabilities
+            )
 
         fun toSentence(): ClassifiedSentence =
             ClassifiedSentence(
@@ -219,7 +218,6 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                     logger.debug { "delete ${deleted.deletedCount} old classified sentences for intents $ttlIntents of ids $intentIds" }
                 }
             }
-
         } catch (e: Exception) {
             logger.error(e)
         }
@@ -301,7 +299,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 )
 
             logger.debug { filterBase.json }
-            //read secondary for long term operations
+            // read secondary for long term operations
             val c = if (onlyExactMatch) col else col.withReadPreference(secondaryPreferred())
             val count = c.countDocuments(filterBase)
             logger.debug { "count : $count" }
@@ -356,8 +354,10 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
 
     private fun SentencesQuery.filterApplication() =
         if (wholeNamespace) ApplicationId `in`
-                (getApplicationById(applicationId)?.namespace?.let { n -> getApplicationsByNamespace(n).map { it._id } }
-                    ?: emptyList())
+            (
+                getApplicationById(applicationId)?.namespace?.let { n -> getApplicationsByNamespace(n).map { it._id } }
+                    ?: emptyList()
+                )
         else ApplicationId eq applicationId
 
     private fun SentencesQuery.filterReviewOnly() = if (onlyToReview) ForReview eq true else null
@@ -412,7 +412,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     private fun SentencesQuery.filterMinIntentProbability(): Bson? =
         if (minIntentProbability > 0f) LastIntentProbability gt minIntentProbability.toDouble() else null
 
-    //ugly
+    // ugly
     private fun subEntityTypeQuery(entityType: String): Bson =
         or(
             Classification_.entities.type eq entityType,
@@ -425,7 +425,6 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
             Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.type eq entityType,
             Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.type eq entityType
         )
-
 
     private fun subEntityRoleQueryToInclude(roles: List<String>): Bson =
         or(
@@ -473,7 +472,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         sentences: List<ClassifiedSentence>,
         newIntentId: Id<IntentDefinition>
     ) {
-        //TODO what if new intent does not contains existing entities?
+        // TODO what if new intent does not contains existing entities?
         sentences.forEach {
             if (newIntentId.toString() == Intent.UNKNOWN_INTENT_NAME) {
                 save(it.copy(classification = it.classification.copy(newIntentId, emptyList())))
@@ -489,7 +488,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         oldEntity: EntityDefinition,
         newEntity: EntityDefinition
     ) {
-        //TODO not only first entity level
+        // TODO not only first entity level
 
         val oldEntityType = EntityTypeDefinitionMongoDAO.getEntityTypeByName(oldEntity.entityTypeName)
             ?: error("no entity type found: $oldEntity")
@@ -502,39 +501,38 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 s.classification.entities.filter { e -> e.role == oldEntity.role && e.type == oldEntity.entityTypeName }
             val newEntities =
                 s.classification.entities.filterNot { e -> e.role == oldEntity.role && e.type == oldEntity.entityTypeName } +
-                        selectedEntities.map { e ->
-                            //select already existing roles and change type
-                            val subEntitiesWithExistingRole = e.subEntities
-                                .filter { subEntity -> newEntityType.subEntities.any { it.role == subEntity.role } }
-                                .map { sub ->
-                                    sub.copy(type = newEntityType.subEntities.first { it.role == sub.role }.entityTypeName)
-                                }
+                    selectedEntities.map { e ->
+                        // select already existing roles and change type
+                        val subEntitiesWithExistingRole = e.subEntities
+                            .filter { subEntity -> newEntityType.subEntities.any { it.role == subEntity.role } }
+                            .map { sub ->
+                                sub.copy(type = newEntityType.subEntities.first { it.role == sub.role }.entityTypeName)
+                            }
 
-                            val subEntitiesWithNotExistingRole =
-                                if (newEntityType.name.namespace() == allowedNamespace) {
-                                    //for non existing roles, add the new sub entity to entity
-                                    e.subEntities
-                                        .filterNot { subEntity -> newEntityType.subEntities.any { it.role == subEntity.role } }
-                                        .apply {
-                                            forEach { sub ->
-                                                oldEntityType.subEntities.find { sub.role == it.role }
-                                                    ?.let { newSubEntity ->
-                                                        newSubEntityDefinitions.add(newSubEntity)
-                                                    }
-                                            }
+                        val subEntitiesWithNotExistingRole =
+                            if (newEntityType.name.namespace() == allowedNamespace) {
+                                // for non existing roles, add the new sub entity to entity
+                                e.subEntities
+                                    .filterNot { subEntity -> newEntityType.subEntities.any { it.role == subEntity.role } }
+                                    .apply {
+                                        forEach { sub ->
+                                            oldEntityType.subEntities.find { sub.role == it.role }
+                                                ?.let { newSubEntity ->
+                                                    newSubEntityDefinitions.add(newSubEntity)
+                                                }
                                         }
+                                    }
+                            } else {
+                                emptyList()
+                            }
+                        val newSubEntities = subEntitiesWithExistingRole + subEntitiesWithNotExistingRole
 
-                                } else {
-                                    emptyList()
-                                }
-                            val newSubEntities = subEntitiesWithExistingRole + subEntitiesWithNotExistingRole
-
-                            e.copy(
-                                type = newEntity.entityTypeName,
-                                role = newEntity.role,
-                                subEntities = newSubEntities.sorted()
-                            )
-                        }
+                        e.copy(
+                            type = newEntity.entityTypeName,
+                            role = newEntity.role,
+                            subEntities = newSubEntities.sorted()
+                        )
+                    }
             save(
                 s.copy(
                     classification = s.classification.copy(

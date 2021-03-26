@@ -23,4 +23,5 @@ data class DialogReportQueryResult(
     val total: Long,
     val start: Long = 0,
     val end: Long = 0,
-    val dialogs: List<DialogReport> = emptyList())
+    val dialogs: List<DialogReport> = emptyList()
+)

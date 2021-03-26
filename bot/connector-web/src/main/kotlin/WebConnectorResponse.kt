@@ -50,7 +50,6 @@ data class OldWebMessage(
             )
 }
 
-
 @Deprecated("Use the WebBuilders methods to create buttons")
 data class WebButton(val title: String, val payload: String? = null, val imageUrl: String? = null) {
 

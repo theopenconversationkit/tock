@@ -72,7 +72,8 @@ class DialogFlowMongoDAOTest : AbstractTest() {
         val dialog = mockk<Dialog>()
         every { dialog.id } returns "dialogId".toId()
         val snapshotCol = SnapshotCol(
-            newId(), listOf(
+            newId(),
+            listOf(
                 Snapshot(null, null, null, emptyList(), null),
                 Snapshot("b", "b", null, entityList, null)
             )

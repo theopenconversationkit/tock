@@ -29,7 +29,7 @@ enum class TockUserRole {
     nlpUser,
     /**
      * A bot user is allowed to modify answer & i18n, and to consult dialogs and conversations.
-      */
+     */
     botUser,
     /**
      * An admin is allowed to update applications and builds, and to export/intent sentences dump.
@@ -51,5 +51,4 @@ enum class TockUserRole {
                 null
             }
     }
-
 }

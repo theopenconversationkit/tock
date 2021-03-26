@@ -56,8 +56,8 @@ data class EntityStateValue(
     private var loaded: Boolean = stateValueId == null
     internal var multiRequestedValues: List<EntityValue>? = null
 
-    constructor(action: Action, entityValue: EntityValue)
-        : this(entityValue, mutableListOf(ArchivedEntityValue(entityValue, action)))
+    constructor(action: Action, entityValue: EntityValue) :
+        this(entityValue, mutableListOf(ArchivedEntityValue(entityValue, action)))
 
     constructor(entity: Entity, value: Value) : this(EntityValue(entity, value))
 
@@ -72,7 +72,7 @@ data class EntityStateValue(
     internal fun changeValue(newValue: EntityValue?, action: Action? = null): EntityStateValue {
         updated = now()
         currentValue = newValue
-        //do not change history if previous value is exactly the same
+        // do not change history if previous value is exactly the same
         if (currentHistory.lastOrNull()?.entityValue != newValue) {
             currentHistory.add(ArchivedEntityValue(newValue, action, updated))
         }
@@ -89,10 +89,11 @@ data class EntityStateValue(
                 }
                     ?: emptyList()
             currentHistory.addAll(0, old)
-            //remove duplicate if any
-            if (old.isNotEmpty()
-                && currentHistory.size != old.size
-                && old.last().entityValue?.value == currentHistory[old.size].entityValue?.value) {
+            // remove duplicate if any
+            if (old.isNotEmpty() &&
+                currentHistory.size != old.size &&
+                old.last().entityValue?.value == currentHistory[old.size].entityValue?.value
+            ) {
                 currentHistory.removeAt(old.size - 1)
             }
         }

@@ -16,15 +16,14 @@
 
 package ai.tock.bot.connector.whatsapp
 
+import ai.tock.shared.property
+import ai.tock.shared.provide
+import ai.tock.stt.STT
+import ai.tock.stt.google.googleSTTModule
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import ai.tock.shared.property
-import ai.tock.shared.provide
-import ai.tock.stt.AudioCodec.ogg
-import ai.tock.stt.STT
-import ai.tock.stt.google.googleSTTModule
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
 
@@ -44,9 +43,11 @@ class WhatsAppClientIntegrationTest {
         val injector = KodeinInjector().apply {
             inject(
                 Kodein {
-                    import(Kodein.Module {
-                        bind<STT>() with provider { mockk<STT>() }
-                    })
+                    import(
+                        Kodein.Module {
+                            bind<STT>() with provider { mockk<STT>() }
+                        }
+                    )
                     import(googleSTTModule, true)
                 }
             )

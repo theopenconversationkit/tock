@@ -144,7 +144,7 @@ class MessengerConnector internal constructor(
                 registerCheckWebhook()
             }
 
-            //see https://developers.facebook.com/docs/graph-api/webhooks
+            // see https://developers.facebook.com/docs/graph-api/webhooks
             router.get(path).handler { context ->
                 try {
                     logger.info { "get facebook Message" }
@@ -170,24 +170,26 @@ class MessengerConnector internal constructor(
                         try {
                             logger.debug { "Facebook request input : $body" }
                             val request = mapper.readValue<CallbackRequest>(body)
-                            vertx.executeBlocking<Void>({ response ->
-                                try {
-                                    MessengerConnectorHandler(
-                                        applicationId, controller, request, requestTimerData
-                                    ).handleRequest()
-                                } catch (e: Throwable) {
-                                    logger.logError(e, requestTimerData)
-                                } finally {
-                                    response.complete()
-                                }
-                            }, false, {})
+                            vertx.executeBlocking<Void>(
+                                { response ->
+                                    try {
+                                        MessengerConnectorHandler(
+                                            applicationId, controller, request, requestTimerData
+                                        ).handleRequest()
+                                    } catch (e: Throwable) {
+                                        logger.logError(e, requestTimerData)
+                                    } finally {
+                                        response.complete()
+                                    }
+                                },
+                                false, {}
+                            )
                         } catch (t: Throwable) {
                             logger.logError(t, requestTimerData)
                         }
                     } else {
                         logger.logError("Not signed by facebook!!! : $facebookHeader \n $body", requestTimerData)
                     }
-
                 } catch (e: Throwable) {
                     logger.logError(e, requestTimerData)
                 } finally {
@@ -237,7 +239,7 @@ class MessengerConnector internal constructor(
                     logger.debug { "message sent: $message to ${event.recipientId}" }
                     val token = getToken(event)
 
-                    //need to get the attachment id for the media payload
+                    // need to get the attachment id for the media payload
                     val attachmentMessage = message.message as? AttachmentMessage
                     val payload = attachmentMessage?.attachment?.payload
                     if (payload is MediaPayload) {
@@ -318,13 +320,14 @@ class MessengerConnector internal constructor(
         sendEvent(
             event,
             transformMessageRequest = { request ->
-                //need to use the user_ref here
+                // need to use the user_ref here
                 request.copy(recipient = Recipient(null, request.recipient.id))
             },
             transformActionRequest = { request ->
-                //need to use the user_ref here
+                // need to use the user_ref here
                 request.copy(recipient = Recipient(null, request.recipient.id))
-            }) ?: error("message $event not delivered")
+            }
+        ) ?: error("message $event not delivered")
     }
 
     /**
@@ -428,7 +431,7 @@ class MessengerConnector internal constructor(
                     event = action,
                     transformMessageRequest = { request ->
                         if (action.recipientId.type == temporary) {
-                            //need to use the user_ref here
+                            // need to use the user_ref here
                             request.copy(recipient = Recipient(null, request.recipient.id))
                         } else {
                             request
@@ -436,7 +439,7 @@ class MessengerConnector internal constructor(
                     },
                     transformActionRequest = { request ->
                         if (action.recipientId.type == temporary) {
-                            //need to use the user_ref here
+                            // need to use the user_ref here
                             request.copy(recipient = Recipient(null, request.recipient.id))
                         } else {
                             request
@@ -486,7 +489,8 @@ class MessengerConnector internal constructor(
                 userProfile.locale?.let { getLocale(it) } ?: defaultLocale,
                 userProfile.profilePic,
                 userProfile.gender,
-                initialLocale = userProfile.locale?.let { getLocale(it) } ?: defaultLocale)
+                initialLocale = userProfile.locale?.let { getLocale(it) } ?: defaultLocale
+            )
         } catch (e: Exception) {
             logger.error(e)
         }
@@ -504,7 +508,7 @@ class MessengerConnector internal constructor(
 
     override fun refreshProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences? =
         loadProfile(callback, userId).run {
-            //refresh only picture, locale & timezone
+            // refresh only picture, locale & timezone
             if (picture != null) {
                 UserPreferences(locale = locale, timezone = timezone, picture = picture)
             } else {
@@ -512,12 +516,11 @@ class MessengerConnector internal constructor(
             }
         }
 
-
     private fun getToken(event: Event): String = getToken(event.applicationId)
 
     private fun getToken(connectorId: String): String =
         connectorIdTokenMap[connectorId]
-        //TODO remove this when backward compatibility is no more assured (20.3)
+            // TODO remove this when backward compatibility is no more assured (20.3)
             ?: pageIdConnectorIdMap[connectorId]?.takeUnless { it.isEmpty() }?.let {
                 logger.warn { "use pageId as connectorId for $connectorId" }
                 connectorIdTokenMap[it.first()]
@@ -538,7 +541,6 @@ class MessengerConnector internal constructor(
 
         return String(Hex().encode(bytes))
     }
-
 
     private fun registerCheckWebhook() {
         subscriptionCheck = true
@@ -621,5 +623,4 @@ class MessengerConnector internal constructor(
 
     override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> =
         MediaConverter.toConnectorMessage(message)
-
 }

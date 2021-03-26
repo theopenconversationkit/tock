@@ -16,10 +16,9 @@
 
 package ai.tock.bot.test
 
-import com.github.salomonbrys.kodein.Kodein
 import ai.tock.translator.TranslatorEngine
 import ai.tock.translator.noop.noOpTranslatorModule
-
+import com.github.salomonbrys.kodein.Kodein
 
 /**
  * Module containing [TranslatorEngine].
@@ -35,6 +34,3 @@ val testModules: MutableList<Kodein.Module> = mutableListOf()
  * The current [TestContext] used when test parallelism is not a requirement.
  */
 var currentTestContext: TestContext = TestContext()
-
-
-

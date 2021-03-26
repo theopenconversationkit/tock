@@ -29,7 +29,6 @@ data class SentencesDump(
     val sentences: List<SentenceDump>
 )
 
-
 data class SentenceDump(
     val text: String,
     val intent: String,
@@ -47,13 +46,13 @@ data class SentenceEntityDump(
 ) {
 
     constructor(entity: ClassifiedEntity) :
-            this(
-                entity.type,
-                entity.role,
-                entity.subEntities.map { SentenceEntityDump(it) },
-                entity.start,
-                entity.end
-            )
+        this(
+            entity.type,
+            entity.role,
+            entity.subEntities.map { SentenceEntityDump(it) },
+            entity.start,
+            entity.end
+        )
 
     fun toClassifiedEntity(): ClassifiedEntity {
         return ClassifiedEntity(

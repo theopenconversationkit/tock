@@ -29,5 +29,4 @@ enum class GAResultType {
     ASSISTANT_SURFACE_NOT_SUPPORTED,
 
     REGION_NOT_SUPPORTED
-
 }

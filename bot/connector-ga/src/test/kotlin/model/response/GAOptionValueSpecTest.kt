@@ -16,8 +16,8 @@
 
 package ai.tock.bot.connector.ga.model.response
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import ai.tock.shared.jackson.mapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 

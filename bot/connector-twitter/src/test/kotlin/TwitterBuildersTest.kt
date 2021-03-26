@@ -16,14 +16,14 @@
 
 package ai.tock.bot.connector.twitter
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.KodeinInjector
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.shared.sharedTestModule
 import ai.tock.shared.tockInternalInjector
 import ai.tock.translator.raw
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinInjector
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
@@ -37,9 +37,11 @@ class TwitterBuildersTest {
     @BeforeEach
     fun before() {
         tockInternalInjector = KodeinInjector().apply {
-            inject(Kodein {
-                import(sharedTestModule)
-            })
+            inject(
+                Kodein {
+                    import(sharedTestModule)
+                }
+            )
         }
 
         every { bus.targetConnectorType } returns twitterConnectorType
@@ -82,6 +84,5 @@ class TwitterBuildersTest {
         val givenStringEqual: CharSequence = "String Text"
 
         assertEquals("String Text", givenStringEqual.truncateIfLongerThan(11))
-
     }
 }

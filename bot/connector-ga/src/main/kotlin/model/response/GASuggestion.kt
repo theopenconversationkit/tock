@@ -16,6 +16,4 @@
 
 package ai.tock.bot.connector.ga.model.response
 
-data class GASuggestion(val title: String) {
-
-}
+data class GASuggestion(val title: String)

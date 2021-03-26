@@ -36,5 +36,4 @@ data class Application(
 
     fun getIntent(intentName: String): Intent? =
         intentMap[intentName] ?: (null.also { logger.warn { "Intent $intentName does not exist in app $name" } })
-
 }

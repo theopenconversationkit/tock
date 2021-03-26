@@ -97,10 +97,10 @@ internal class DialogflowNlp : NlpController {
                         }
 
                         val entityEvaluations = customEntityEvaluations +
-                                nlpResult.entities
-                                    .asSequence()
-                                    .filter { e -> customEntityEvaluations.none { it.entity == e.entity } }
-                                    .map { EntityValue(nlpResult, it) }
+                            nlpResult.entities
+                                .asSequence()
+                                .filter { e -> customEntityEvaluations.none { it.entity == e.entity } }
+                                .map { EntityValue(nlpResult, it) }
                         sentence.state.entityValues.addAll(entityEvaluations)
 
                         dialog.apply {
@@ -166,7 +166,6 @@ internal class DialogflowNlp : NlpController {
                             null
                         }
                     }
-
                 }
                 i
             } else {
@@ -229,17 +228,19 @@ internal class DialogflowNlp : NlpController {
                 nlpClient.parse(request)
             } else {
                 nlpClient.parse(
-                    request.copy(intentsSubset = intentsQualifiers!!.asSequence().map {
-                        it.copy(
-                            intent = it.intent.withNamespace(
-                                request.namespace
+                    request.copy(
+                        intentsSubset = intentsQualifiers!!.asSequence().map {
+                            it.copy(
+                                intent = it.intent.withNamespace(
+                                    request.namespace
+                                )
                             )
-                        )
-                    }.toSet())
+                        }.toSet()
+                    )
                 )
             }
             if (result != null && useQualifiers) {
-                //force intents qualifiers if unknown answer
+                // force intents qualifiers if unknown answer
                 if (intentsQualifiers!!.none { it.intent == result.intent }) {
                     return result.copy(
                         intent = intentsQualifiers.maxByOrNull { it.modifier }?.intent
@@ -251,7 +252,6 @@ internal class DialogflowNlp : NlpController {
             }
             return result
         }
-
     }
 
     override fun parseSentence(

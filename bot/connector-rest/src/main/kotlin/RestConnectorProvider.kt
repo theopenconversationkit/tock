@@ -26,7 +26,6 @@ import ai.tock.bot.connector.rest.model.MessageRequest
 import ai.tock.shared.resourceAsString
 import kotlin.reflect.KClass
 
-
 /**
  * The [RestConnector] provider.
  */
@@ -60,7 +59,6 @@ internal object RestConnectorProvider : ConnectorProvider {
     override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(
         MessageRequest::class
     )
-
 }
 
 internal class RestConnectorProviderService : ConnectorProvider by RestConnectorProvider

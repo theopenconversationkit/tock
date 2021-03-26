@@ -15,7 +15,6 @@
  */
 package ai.tock.nlp.rasa
 
-import ai.tock.nlp.core.configuration.NlpModelConfiguration
 import ai.tock.nlp.model.service.engine.NlpEngineModelIo
 import ai.tock.nlp.model.service.storage.NlpModelStream
 import ai.tock.shared.jackson.mapper
@@ -31,10 +30,8 @@ internal object RasaNlpModelIo : NlpEngineModelIo {
     override fun loadIntentModel(input: NlpModelStream): Any =
         mapper.readValue<RasaModelConfiguration>(input.inputStream)
 
-
     override fun loadEntityModel(input: NlpModelStream): Any =
         mapper.readValue<String>(input.inputStream)
-
 
     override fun copyTokenizerModel(model: Any, output: OutputStream) {
         error("copying tokenizer model is not supported")

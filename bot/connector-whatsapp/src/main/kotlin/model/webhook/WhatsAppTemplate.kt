@@ -19,7 +19,7 @@ package ai.tock.bot.connector.whatsapp.model.webhook
 /**
  *
  */
-data class WhatsAppTemplate (
+data class WhatsAppTemplate(
     val namespace: String,
     val language: WhatsAppLanguage,
     val name: String,

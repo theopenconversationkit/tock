@@ -16,16 +16,16 @@
 
 package ai.tock.nlp.front.storage.mongo
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.provider
-import com.mongodb.client.MongoDatabase
 import ai.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import ai.tock.shared.getAsyncDatabase
 import ai.tock.shared.getDatabase
 import ai.tock.shared.sharedTestModule
 import ai.tock.shared.tockInternalInjector
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
+import com.mongodb.client.MongoDatabase
 import org.junit.jupiter.api.BeforeEach
 
 /**
@@ -36,13 +36,13 @@ abstract class AbstractTest {
     @BeforeEach
     fun before() {
         tockInternalInjector = KodeinInjector()
-        tockInternalInjector.inject(Kodein {
-            import(sharedTestModule)
-            bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
-            bind<com.mongodb.reactivestreams.client.MongoDatabase>(MONGO_DATABASE) with provider { getAsyncDatabase(MONGO_DATABASE) }
-            bind<EntityTypeDefinitionDAO>() with provider { EntityTypeDefinitionMongoDAO }
-        }
+        tockInternalInjector.inject(
+            Kodein {
+                import(sharedTestModule)
+                bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
+                bind<com.mongodb.reactivestreams.client.MongoDatabase>(MONGO_DATABASE) with provider { getAsyncDatabase(MONGO_DATABASE) }
+                bind<EntityTypeDefinitionDAO>() with provider { EntityTypeDefinitionMongoDAO }
+            }
         )
     }
-
 }

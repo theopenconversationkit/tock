@@ -16,14 +16,12 @@
 
 package ai.tock.bot.connector.slack
 
-
 import io.mockk.every
 import io.mockk.mockk
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.RoutingContext
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
-
 
 class SlackEncoderTest {
 

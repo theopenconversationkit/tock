@@ -19,7 +19,8 @@ package ai.tock.bot.engine.message
 data class TextWithSuggestions(
     val text: CharSequence,
     val suggestions: List<Suggestion> = emptyList(),
-    val attributes: Map<String, String> = emptyMap()) {
+    val attributes: Map<String, String> = emptyMap()
+) {
 
     constructor(text: CharSequence, vararg suggestions: Suggestion?) : this(text, suggestions.toList().filterNotNull())
 }

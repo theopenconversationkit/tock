@@ -22,6 +22,7 @@ import ai.tock.bot.engine.user.PlayerId
  * A one to one event is an event that has a source (the user id) and a target (the recipient id).
  */
 abstract class OneToOneEvent(
-        val userId: PlayerId,
-        val recipientId: PlayerId,
-        applicationId: String) : Event(applicationId)
+    val userId: PlayerId,
+    val recipientId: PlayerId,
+    applicationId: String
+) : Event(applicationId)

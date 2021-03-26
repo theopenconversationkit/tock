@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package ai.tock.bot.connector
 
 /**

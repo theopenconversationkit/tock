@@ -16,6 +16,15 @@
 
 package ai.tock.nlp.model.service.storage.mongo
 
+import ai.tock.nlp.model.ClassifierContextKey
+import ai.tock.nlp.model.EntityContextKey
+import ai.tock.nlp.model.IntentContext.IntentContextKey
+import ai.tock.nlp.model.service.storage.NlpEngineModelDAO
+import ai.tock.nlp.model.service.storage.NlpModelStream
+import ai.tock.nlp.model.service.storage.mongo.MongoModelConfiguration.asyncDatabase
+import ai.tock.nlp.model.service.storage.mongo.MongoModelConfiguration.database
+import ai.tock.shared.ensureIndex
+import ai.tock.shared.watch
 import com.mongodb.MongoGridFSException
 import com.mongodb.client.gridfs.GridFSBucket
 import com.mongodb.client.gridfs.GridFSBuckets
@@ -26,16 +35,7 @@ import com.mongodb.client.model.Filters.and
 import com.mongodb.client.model.Filters.eq
 import com.mongodb.client.model.Filters.ne
 import com.mongodb.client.model.changestream.FullDocument
-import ai.tock.nlp.model.ClassifierContextKey
-import ai.tock.nlp.model.EntityContextKey
-import ai.tock.nlp.model.IntentContext.IntentContextKey
-import ai.tock.nlp.model.service.storage.NlpEngineModelDAO
-import ai.tock.nlp.model.service.storage.NlpModelStream
-import ai.tock.nlp.model.service.storage.mongo.MongoModelConfiguration.asyncDatabase
-import ai.tock.nlp.model.service.storage.mongo.MongoModelConfiguration.database
-import ai.tock.shared.watch
 import mu.KotlinLogging
-import ai.tock.shared.ensureIndex
 import java.io.InputStream
 import java.time.Instant
 
@@ -46,13 +46,13 @@ internal object NlpEngineModelMongoDAO : NlpEngineModelDAO {
 
     private val logger = KotlinLogging.logger {}
 
-    private val entityBucket: GridFSBucket  by lazy {
+    private val entityBucket: GridFSBucket by lazy {
         GridFSBuckets.create(database, "fs_entity")
             .apply {
                 database.getCollection("fs_entity.files").ensureIndex("{filename:1}")
             }
     }
-    private val intentBucket: GridFSBucket  by lazy {
+    private val intentBucket: GridFSBucket by lazy {
         GridFSBuckets.create(database, "fs_intent")
             .apply {
                 database.getCollection("fs_intent.files").ensureIndex("{filename:1}")
@@ -63,7 +63,7 @@ internal object NlpEngineModelMongoDAO : NlpEngineModelDAO {
 
     private val asyncIntentCol = asyncDatabase.getCollection("fs_intent.files")
 
-    //TODO remove in 3.0
+    // TODO remove in 3.0
     private fun ClassifierContextKey.idWithoutNamespace(): String? =
         id().run {
             val i = indexOf(":")
@@ -78,7 +78,7 @@ internal object NlpEngineModelMongoDAO : NlpEngineModelDAO {
     private fun getGridFSFile(bucket: GridFSBucket, key: ClassifierContextKey): GridFSFile? {
         return try {
             bucket.find(eq("filename", key.id())).limit(1).first()
-                    ?: key.idWithoutNamespace()?.let { bucket.find(eq("filename", it)).limit(1).first() }
+                ?: key.idWithoutNamespace()?.let { bucket.find(eq("filename", it)).limit(1).first() }
         } catch (e: MongoGridFSException) {
             logger.debug(e) { "no model exists for $key" }
             null
@@ -86,8 +86,10 @@ internal object NlpEngineModelMongoDAO : NlpEngineModelDAO {
     }
 
     private fun getDownloadStream(bucket: GridFSBucket, key: ClassifierContextKey): GridFSDownloadStream? {
-        return (getGridFSFile(bucket, key)
-                ?: key.idWithoutNamespace()?.let { getGridFSFile(bucket, key) })
+        return (
+            getGridFSFile(bucket, key)
+                ?: key.idWithoutNamespace()?.let { getGridFSFile(bucket, key) }
+            )
             ?.let {
                 bucket.openDownloadStream(it.id)
             }
@@ -96,7 +98,7 @@ internal object NlpEngineModelMongoDAO : NlpEngineModelDAO {
     private fun saveModel(bucket: GridFSBucket, key: ClassifierContextKey, stream: InputStream) {
         val filename = key.id()
         val newId = bucket.uploadFromStream(filename, stream)
-        //remove old versions
+        // remove old versions
         bucket.find(and(ne("_id", newId), eq("filename", filename))).forEach {
             logger.debug { "Remove file ${it.objectId} for $key" }
             bucket.delete(it.objectId)
@@ -108,7 +110,7 @@ internal object NlpEngineModelMongoDAO : NlpEngineModelDAO {
             .limit(1)
             .first()
             ?.apply {
-                logger.debug { "Remove file ${objectId} for $key" }
+                logger.debug { "Remove file $objectId for $key" }
                 bucket.delete(objectId)
             }
     }

@@ -24,12 +24,11 @@ import java.time.Instant
  *
  */
 data class TestModelReport(
-        val expressionsInModel: List<SampleExpression>,
-        val expressionsTested: List<SampleExpression>,
-        val intentErrors: List<IntentMatchError>,
-        val entityErrors: List<EntityMatchError>,
-        val buildModelDuration: Duration,
-        val testSentencesDuration: Duration,
-        val startDate: Instant
-) {
-}
+    val expressionsInModel: List<SampleExpression>,
+    val expressionsTested: List<SampleExpression>,
+    val intentErrors: List<IntentMatchError>,
+    val entityErrors: List<EntityMatchError>,
+    val buildModelDuration: Duration,
+    val testSentencesDuration: Duration,
+    val startDate: Instant
+)

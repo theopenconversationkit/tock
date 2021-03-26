@@ -19,8 +19,8 @@ package ai.tock.bot.admin.answer
 /**
  * An [AnswerConfiguration] with only [SimpleAnswer] (ie labels) answers.
  */
-data class SimpleAnswerConfiguration(val answers: List<SimpleAnswer>)
-    : AnswerConfiguration(AnswerConfigurationType.simple) {
+data class SimpleAnswerConfiguration(val answers: List<SimpleAnswer>) :
+    AnswerConfiguration(AnswerConfigurationType.simple) {
 
     override fun hasAnswer(): Boolean = answers.isNotEmpty()
 }

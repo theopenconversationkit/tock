@@ -16,7 +16,6 @@
 
 package ai.tock.bot.connector.twitter.model.incoming
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.connector.twitter.model.Tweet
 import ai.tock.bot.connector.twitter.model.User
 import ai.tock.bot.engine.action.ActionMetadata
@@ -27,6 +26,7 @@ import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
+import com.fasterxml.jackson.annotation.JsonProperty
 import mu.KotlinLogging
 
 /**
@@ -35,7 +35,7 @@ import mu.KotlinLogging
 data class TweetIncomingEvent(
     @JsonProperty("for_user_id") override val forUserId: String,
     @JsonProperty("tweet_create_events") val tweets: List<Tweet>
-    ) : IncomingEvent() {
+) : IncomingEvent() {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -60,13 +60,13 @@ data class TweetIncomingEvent(
                 playerId(PlayerType.user),
                 applicationId,
                 PlayerId(forUserId, PlayerType.bot),
-                //extended entities and full_text
+                // extended entities and full_text
                 tweet.extendedTweet?.text ?: tweet.text,
-                metadata =  ActionMetadata(
+                metadata = ActionMetadata(
                     visibility = ActionVisibility.PUBLIC,
-                    replyMessage = if(isReplyMessage) ActionReply.ISREPLY else ActionReply.NOREPLY,
-                    quoteMessage = if(tweet.isQuote) ActionQuote.ISQUOTE else ActionQuote.NOQUOTE
-                    )
+                    replyMessage = if (isReplyMessage) ActionReply.ISREPLY else ActionReply.NOREPLY,
+                    quoteMessage = if (tweet.isQuote) ActionQuote.ISQUOTE else ActionQuote.NOQUOTE
+                )
             )
         } else {
             logger.debug { "ignore event $this with tweet text = [${tweet.text}] from [${tweet.user.id}][${tweet.user.name}]" }

@@ -105,19 +105,19 @@ data class ClassifiedSentence(
         intentId: Id<IntentDefinition>,
         lastIntentProbability: Double,
         lastEntityProbability: Double
-    )
-            : this(
-        result.retainedQuery,
-        language,
-        applicationId,
-        Instant.now(),
-        Instant.now(),
-        ClassifiedSentenceStatus.inbox,
-        Classification(result, intentId),
-        lastIntentProbability,
-        lastEntityProbability,
-        otherIntentsProbabilities = result.otherIntentsProbabilities
-    )
+    ) :
+        this(
+            result.retainedQuery,
+            language,
+            applicationId,
+            Instant.now(),
+            Instant.now(),
+            ClassifiedSentenceStatus.inbox,
+            Classification(result, intentId),
+            lastIntentProbability,
+            lastEntityProbability,
+            otherIntentsProbabilities = result.otherIntentsProbabilities
+        )
 
     /**
      * Check if the sentence has the same content (status, creation & update dates excluded)
@@ -165,5 +165,4 @@ data class ClassifiedSentence(
                 )
             }
     }
-
 }

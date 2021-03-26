@@ -19,7 +19,7 @@ package ai.tock.bot.connector.whatsapp.model.webhook
 /**
  *
  */
-data class WhatsAppDocumentMessage (
+data class WhatsAppDocumentMessage(
     val document: WhatsAppAttachment,
     override val id: String,
     override val from: String,

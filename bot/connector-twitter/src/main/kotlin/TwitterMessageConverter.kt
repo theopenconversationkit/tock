@@ -24,7 +24,6 @@ import ai.tock.bot.connector.twitter.model.outcoming.Tweet
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionVisibility
 import ai.tock.bot.engine.action.SendSentence
-import ai.tock.bot.engine.action.Metadata.VISIBILITY
 import mu.KotlinLogging
 
 internal object TwitterMessageConverter {

@@ -33,13 +33,13 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verifyOrder
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 internal class MessengerConnectorTest {
 
@@ -55,12 +55,14 @@ internal class MessengerConnectorTest {
         @JvmStatic
         fun injectExecutor() {
             tockInternalInjector = KodeinInjector().apply {
-                inject(Kodein {
-                    import(
-                        Kodein.Module {
-                            bind<Executor>() with singleton { SimpleExecutor(2) }
-                        })
-                }
+                inject(
+                    Kodein {
+                        import(
+                            Kodein.Module {
+                                bind<Executor>() with singleton { SimpleExecutor(2) }
+                            }
+                        )
+                    }
                 )
             }
         }
@@ -138,7 +140,7 @@ internal class MessengerConnectorTest {
         var time: Long? = null
 
         every { connector.sendEvent(any()) } answers {
-            //check the second call occurs at least 100s after the first (as we wait 100 for the first call)
+            // check the second call occurs at least 100s after the first (as we wait 100 for the first call)
             if (time != null) {
                 assert(System.currentTimeMillis() - time!! >= 100)
             } else {
@@ -155,7 +157,5 @@ internal class MessengerConnectorTest {
             connector.sendEvent(action1, any(), any(), any(), any())
             connector.sendEvent(action2, any(), any(), any(), any())
         }
-
     }
-
 }

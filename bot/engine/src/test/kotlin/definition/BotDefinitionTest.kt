@@ -52,8 +52,8 @@ class BotDefinitionTest {
                 "namespace",
                 "bottest",
                 "test"
-            )
-            , result
+            ),
+            result
         )
     }
 

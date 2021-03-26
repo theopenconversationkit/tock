@@ -43,5 +43,4 @@ abstract class JacksonDeserializer<T> : JsonDeserializer<T>() {
         logger.warn { "Unsupported field: $name" }
         return EmptyJson
     }
-
 }

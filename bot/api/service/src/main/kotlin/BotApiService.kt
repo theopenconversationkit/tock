@@ -25,5 +25,4 @@ internal interface BotApiService {
 
     @POST("webhook")
     fun send(@Body request: RequestData): Call<ResponseData>
-
 }

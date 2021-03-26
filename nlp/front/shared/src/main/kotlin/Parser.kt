@@ -54,5 +54,4 @@ interface Parser {
      * Checks parser availability.
      */
     fun healthcheck(): Boolean
-
 }

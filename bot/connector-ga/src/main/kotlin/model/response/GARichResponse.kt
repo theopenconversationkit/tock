@@ -16,31 +16,29 @@
 
 package ai.tock.bot.connector.ga.model.response
 
-import ai.tock.bot.engine.message.GenericMessage
 import ai.tock.bot.engine.message.GenericElement
+import ai.tock.bot.engine.message.GenericMessage
 
 data class GARichResponse(
-        val items: List<GAItem>,
-        val suggestions: List<GASuggestion> = emptyList(),
-        val linkOutSuggestion: GALinkOutSuggestion? = null
+    val items: List<GAItem>,
+    val suggestions: List<GASuggestion> = emptyList(),
+    val linkOutSuggestion: GALinkOutSuggestion? = null
 ) {
 
     fun toGenericMessage(): GenericMessage? {
         val e = items
-                .firstOrNull()
-                ?.toGenericMessage()
-                ?: GenericMessage(
+            .firstOrNull()
+            ?.toGenericMessage()
+            ?: GenericMessage(
                 subElements =
                 items.mapNotNull {
                     it.toGenericMessage()?.let { GenericElement(it) }
-                })
+                }
+            )
 
         return e.copy(
-                choices = e.choices + listOfNotNull(linkOutSuggestion?.toChoice()),
-                texts = e.texts + suggestions.mapIndexed { i, s -> "suggestion$i" to s.title }.toMap()
+            choices = e.choices + listOfNotNull(linkOutSuggestion?.toChoice()),
+            texts = e.texts + suggestions.mapIndexed { i, s -> "suggestion$i" to s.title }.toMap()
         )
     }
-
-
 }
-

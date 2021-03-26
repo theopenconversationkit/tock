@@ -19,5 +19,4 @@ package ai.tock.shared.vertx
 /**
  * Base class for rest exceptions.
  */
-open class RestException(message: String, val code: Int = 500) : Exception(message) {
-}
+open class RestException(message: String, val code: Int = 500) : Exception(message)

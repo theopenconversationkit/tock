@@ -16,5 +16,4 @@
 
 package ai.tock.bot.connector.messenger.model
 
-data class Sender (val id: String){
-}
+data class Sender(val id: String)

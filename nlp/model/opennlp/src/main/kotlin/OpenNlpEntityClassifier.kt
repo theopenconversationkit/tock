@@ -63,12 +63,13 @@ internal class OpenNlpEntityClassifier(model: EntityModelHolder) : NlpEntityClas
                 entityProbability += span.prob
                 nbEntitySpans++
                 val nextIndex = index + 1
-                if (nextIndex < spans.size
-                        && spans[nextIndex].type == span.type
-                        && span.end == spans[nextIndex].start) {
+                if (nextIndex < spans.size &&
+                    spans[nextIndex].type == span.type &&
+                    span.end == spans[nextIndex].start
+                ) {
                     null
                 } else {
-                    //reunify text
+                    // reunify text
                     var t = text
                     var start = 0
                     val tokenStart = span.start - (0 until nbEntitySpans - 1).sumBy { spans[index - it - 1].length() }
@@ -90,7 +91,7 @@ internal class OpenNlpEntityClassifier(model: EntityModelHolder) : NlpEntityClas
                         error("Parsing error")
                     }
 
-                    //probability
+                    // probability
                     val entityProba = entityProbability / nbEntitySpans
                     entityProbability = 0.0
                     nbEntitySpans = 0
@@ -103,9 +104,6 @@ internal class OpenNlpEntityClassifier(model: EntityModelHolder) : NlpEntityClas
                     }
                 }
             }.toList()
-
         }
     }
-
-
 }

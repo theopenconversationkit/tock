@@ -16,7 +16,6 @@
 
 package ai.tock.bot.api.service
 
-import ai.tock.bot.admin.bot.BotApplicationConfigurationKey
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.api.model.BotResponse
 import ai.tock.bot.api.model.UserRequest
@@ -78,7 +77,6 @@ private class WSHolder(
 
 private val wsRepository: Cache<String, WSHolder> =
     CacheBuilder.newBuilder().expireAfterWrite(timeoutInSeconds + 1, SECONDS).build()
-
 
 internal class BotApiHandler(
     private val provider: BotApiDefinitionProvider,
@@ -172,15 +170,15 @@ internal class BotApiHandler(
             messages.last().apply {
                 send(this, true)
             }
-            //handle entity changes
+            // handle entity changes
             entities
                 .entries
-                //new collection
+                // new collection
                 .toList()
                 .forEach { (role, entity) ->
                     val result = response.entities.find { it.role == role }
                     val value = entity.value
-                    //remove not present
+                    // remove not present
                     if (result == null) {
                         removeEntityValue(role)
                     } else if (value != null) {
@@ -193,7 +191,7 @@ internal class BotApiHandler(
                         }
                     }
                 }
-            //handle entity add
+            // handle entity add
             response.entities.forEach {
                 if (entityValueDetails(it.role) == null) {
                     val entity = Entity(EntityType(it.type), it.role)
@@ -202,15 +200,14 @@ internal class BotApiHandler(
                 }
             }
 
-            //switch story if new story
+            // switch story if new story
             if (response.storyId != request.storyId) {
                 botDefinition.findStoryDefinitionById(response.storyId, request.context.applicationId)
                     .also {
                         switchStory(it)
                     }
-
             }
-            //set step
+            // set step
             if (response.step != null) {
                 step = story.definition.allSteps().find { it.name == response.step }
             }
@@ -319,7 +316,8 @@ internal class BotApiHandler(
                 MediaFile(
                     it.url,
                     it.url,
-                    it.type?.let { AttachmentType.valueOf(it.name) } ?: UploadedFilesService.attachmentType(it.url))
+                    it.type?.let { AttachmentType.valueOf(it.name) } ?: UploadedFilesService.attachmentType(it.url)
+                )
             },
             card.actions.map {
                 MediaAction(
@@ -328,7 +326,6 @@ internal class BotApiHandler(
                 )
             }
         )
-
 }
 
 private fun BotBus.translateText(i18n: I18nText?): TranslatedSequence? =

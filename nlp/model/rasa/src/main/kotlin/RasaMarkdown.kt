@@ -21,31 +21,31 @@ import ai.tock.nlp.model.IntentContext
 import ai.tock.shared.name
 import mu.KotlinLogging
 
-//TODO sub entities with rasa "group" feature
+// TODO sub entities with rasa "group" feature
 internal object RasaMarkdown {
 
     private val logger = KotlinLogging.logger {}
 
     fun toModelDomainMarkdown(context: IntentContext): String =
         "intents:\n" +
-                context.application.intents.joinToString(separator = "\n") { i ->
-                    "  - ${i.name.escapeRasaName()}:\n      use_entities:" +
-                            if (i.entities.isEmpty()) " []"
-                            else i.entities.distinctBy { it.entityType.name }
-                                .joinToString(separator = "\n", prefix = "\n") { "        - ${it.entityType.name.escapeRasaName()}" }
-                } +
-                "\n\nentities:\n" +
-                context.application.intents.flatMap { it.entities }.distinctBy { it.entityType.name }
-                    .joinToString(separator = "\n", postfix = "\n\n") {
-                        "  - ${it.entityType.name.escapeRasaName()}"
-                    }.also {
-                        logger.debug { it }
-                    }
+            context.application.intents.joinToString(separator = "\n") { i ->
+                "  - ${i.name.escapeRasaName()}:\n      use_entities:" +
+                    if (i.entities.isEmpty()) " []"
+                    else i.entities.distinctBy { it.entityType.name }
+                        .joinToString(separator = "\n", prefix = "\n") { "        - ${it.entityType.name.escapeRasaName()}" }
+            } +
+            "\n\nentities:\n" +
+            context.application.intents.flatMap { it.entities }.distinctBy { it.entityType.name }
+                .joinToString(separator = "\n", postfix = "\n\n") {
+                    "  - ${it.entityType.name.escapeRasaName()}"
+                }.also {
+                    logger.debug { it }
+                }
 
     fun toModelNluMarkdown(expressions: List<SampleExpression>): String =
         expressions.groupBy { it.intent }.map { (intent, sentences) ->
             "## intent:${intent.name.escapeRasaName()}\n" +
-                    sentences.joinToString(separator = "\n") { "- ${it.rasaClassifiedFormat()}" }
+                sentences.joinToString(separator = "\n") { "- ${it.rasaClassifiedFormat()}" }
         }.joinToString(separator = "\n\n", postfix = "\n\n")
             .also {
                 logger.debug { it }

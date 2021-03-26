@@ -16,11 +16,6 @@
 
 package ai.tock.bot.connector.alexa
 
-import com.amazon.speech.json.SpeechletRequestEnvelope
-import com.amazon.speech.slu.Slot
-import com.amazon.speech.speechlet.IntentRequest
-import com.amazon.speech.speechlet.SessionEndedRequest
-import com.amazon.speech.speechlet.SessionStartedRequest
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.dialog.EventState
@@ -33,6 +28,11 @@ import ai.tock.nlp.api.client.model.Entity
 import ai.tock.nlp.api.client.model.EntityType
 import ai.tock.nlp.api.client.model.NlpEntityValue
 import ai.tock.nlp.api.client.model.NlpResult
+import com.amazon.speech.json.SpeechletRequestEnvelope
+import com.amazon.speech.slu.Slot
+import com.amazon.speech.speechlet.IntentRequest
+import com.amazon.speech.speechlet.SessionEndedRequest
+import com.amazon.speech.speechlet.SessionStartedRequest
 import java.util.Locale
 
 /**
@@ -122,7 +122,7 @@ open class AlexaTockMapper(val applicationId: String) {
 
         val slots = getSlots(request)?.values
             ?.filter { it.value != null && alexaEntityToTockEntity(request, intent, it.name, botDefinition) != null }
-                ?: emptyList()
+            ?: emptyList()
         val entityValues =
             slots.map {
                 val value = alexaEntityToTockEntityValue(request, intent, it, botDefinition, index)
@@ -153,5 +153,4 @@ open class AlexaTockMapper(val applicationId: String) {
             precomputedNlp = precomputedNlp
         )
     }
-
 }

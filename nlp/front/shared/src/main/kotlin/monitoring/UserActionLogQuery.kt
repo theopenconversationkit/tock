@@ -19,6 +19,8 @@ package ai.tock.nlp.front.shared.monitoring
 /**
  * To query [UserActionLog].
  */
-data class UserActionLogQuery(val namespace: String,
-                              val start: Long = 0,
-                              val size: Int = 1)
+data class UserActionLogQuery(
+    val namespace: String,
+    val start: Long = 0,
+    val size: Int = 1
+)

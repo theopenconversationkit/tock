@@ -88,15 +88,15 @@ internal object ConfigurationRepository {
     private fun loadEntityTypes(): ConcurrentHashMap<String, EntityType?> {
         logger.debug { "load entity types" }
         val entityTypesDefinitionMap = entityTypeDAO.getEntityTypes().map { it.name to it }.toMap()
-        //init subEntities only when all entities are known
+        // init subEntities only when all entities are known
         val entityTypesMap =
             entityTypesDefinitionMap.mapValues { (_, v) ->
                 EntityType(
-                v.name, dictionary = v.dictionary, obfuscated = v.obfuscated
+                    v.name, dictionary = v.dictionary, obfuscated = v.obfuscated
                 )
             }
 
-        //init subEntities
+        // init subEntities
         return ConcurrentHashMap(
             entityTypesMap
                 .mapValues { (_, v) ->
@@ -167,7 +167,7 @@ internal object ConfigurationRepository {
     }
 
     private fun loadEntityTypesTree(entityType: EntityType, level: Int = 0): EntityType =
-        //sanity check
+        // sanity check
         if (level > 10) {
             entityType
         } else {
@@ -181,7 +181,8 @@ internal object ConfigurationRepository {
                     } else {
                         e
                     }
-                })
+                }
+            )
         }
 
     fun getApplicationByNamespaceAndName(namespace: String, name: String): ApplicationDefinition? {
@@ -226,5 +227,4 @@ internal object ConfigurationRepository {
             logger.error(e)
         }
     }
-
 }

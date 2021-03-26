@@ -16,7 +16,6 @@
 
 package ai.tock.nlp.integration
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import ai.tock.nlp.core.NlpEngineType
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.client.FrontClient.import
@@ -27,6 +26,7 @@ import ai.tock.nlp.front.shared.codec.ApplicationDump
 import ai.tock.shared.defaultNamespace
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.resource
+import com.fasterxml.jackson.module.kotlin.readValue
 import java.util.Locale
 
 /**

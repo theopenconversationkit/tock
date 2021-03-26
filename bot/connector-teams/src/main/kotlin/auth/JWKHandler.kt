@@ -16,8 +16,6 @@
 
 package ai.tock.bot.connector.teams.auth
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import ai.tock.shared.Level
 import ai.tock.shared.addJacksonConverter
 import ai.tock.shared.create
@@ -25,6 +23,8 @@ import ai.tock.shared.devEnvironment
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.longProperty
 import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import mu.KotlinLogging
 import java.util.Timer
 import kotlin.concurrent.fixedRateTimer

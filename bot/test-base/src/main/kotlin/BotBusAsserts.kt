@@ -19,7 +19,17 @@ package ai.tock.bot.test
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.definition.ParameterKey
 import ai.tock.bot.engine.action.SendAttachment
+import ai.tock.bot.engine.action.SendChoice
+import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.message.Attachment
+import ai.tock.bot.engine.message.Choice
+import ai.tock.bot.engine.message.GenericElement
+import ai.tock.bot.engine.message.GenericMessage
+import ch.tutteli.atrium.api.cc.en_GB.any
 import ch.tutteli.atrium.api.cc.en_GB.contains
+import ch.tutteli.atrium.api.cc.en_GB.containsExactly
+import ch.tutteli.atrium.api.cc.en_GB.containsNot
+import ch.tutteli.atrium.api.cc.en_GB.notToBeNull
 import ch.tutteli.atrium.api.cc.en_GB.property
 import ch.tutteli.atrium.api.cc.en_GB.returnValueOf
 import ch.tutteli.atrium.api.cc.en_GB.toBe
@@ -29,16 +39,6 @@ import ch.tutteli.atrium.domain.creating.any.typetransformation.AnyTypeTransform
 import ch.tutteli.atrium.reporting.RawString
 import ch.tutteli.atrium.reporting.translating.Untranslatable
 import ch.tutteli.atrium.verbs.expect
-import ai.tock.bot.engine.action.SendChoice
-import ai.tock.bot.engine.action.SendSentence
-import ai.tock.bot.engine.message.Attachment
-import ai.tock.bot.engine.message.Choice
-import ai.tock.bot.engine.message.GenericElement
-import ai.tock.bot.engine.message.GenericMessage
-import ch.tutteli.atrium.api.cc.en_GB.any
-import ch.tutteli.atrium.api.cc.en_GB.containsExactly
-import ch.tutteli.atrium.api.cc.en_GB.containsNot
-import ch.tutteli.atrium.api.cc.en_GB.notToBeNull
 
 fun Assert<BotBusMockLog>.toBeSimpleTextMessage(expectedText: String) =
     returnValueOf(BotBusMockLog::text).toBe(expectedText)
@@ -62,25 +62,31 @@ fun Assert<GenericMessage>.toHaveGlobalText(expectedText: String, textName: Stri
         returnValueOf(Map<String, String>::get, textName).toBe(expectedText)
     }
 
-fun Assert<GenericMessage>.toHaveGlobalChoices(expectedChoice  : String, vararg otherExpectedChoices: String) =
+fun Assert<GenericMessage>.toHaveGlobalChoices(expectedChoice: String, vararg otherExpectedChoices: String) =
     property(GenericMessage::choices).addAssertionsCreatedBy {
-        expect(subject.map { choice ->
-            choice.parameters[SendChoice.TITLE_PARAMETER]
-        }).contains(expectedChoice, *otherExpectedChoices)
+        expect(
+            subject.map { choice ->
+                choice.parameters[SendChoice.TITLE_PARAMETER]
+            }
+        ).contains(expectedChoice, *otherExpectedChoices)
     }
 
-fun Assert<GenericMessage>.toHaveNotGlobalChoices(unexpectedChoice  : String, vararg otherUnexpectedChoices: String) =
+fun Assert<GenericMessage>.toHaveNotGlobalChoices(unexpectedChoice: String, vararg otherUnexpectedChoices: String) =
     property(GenericMessage::choices).addAssertionsCreatedBy {
-        expect(subject.map { choice ->
-            choice.parameters[SendChoice.TITLE_PARAMETER]
-        }).containsNot(unexpectedChoice, *otherUnexpectedChoices)
+        expect(
+            subject.map { choice ->
+                choice.parameters[SendChoice.TITLE_PARAMETER]
+            }
+        ).containsNot(unexpectedChoice, *otherUnexpectedChoices)
     }
 
-fun Assert<GenericMessage>.toHaveExactlyGlobalChoices(expectedChoice  : String, vararg otherExpectedChoices: String) =
+fun Assert<GenericMessage>.toHaveExactlyGlobalChoices(expectedChoice: String, vararg otherExpectedChoices: String) =
     property(GenericMessage::choices).addAssertionsCreatedBy {
-        expect(subject.map { choice ->
-            choice.parameters[SendChoice.TITLE_PARAMETER]
-        }).containsExactly(expectedChoice, *otherExpectedChoices)
+        expect(
+            subject.map { choice ->
+                choice.parameters[SendChoice.TITLE_PARAMETER]
+            }
+        ).containsExactly(expectedChoice, *otherExpectedChoices)
     }
 
 fun Assert<GenericMessage>.toHaveElement(index: Int, assertionCreator: Assert<GenericElement>.() -> Unit) =
@@ -101,25 +107,31 @@ fun Assert<GenericElement>.toHaveTitle(expectedTitle: String) =
 fun Assert<GenericElement>.toHaveSubtitle(expectedSubtitle: String) =
     toHaveText(expectedSubtitle, "subtitle")
 
-fun Assert<GenericElement>.toHaveChoices(expectedChoice  : String, vararg otherExpectedChoices: String) =
+fun Assert<GenericElement>.toHaveChoices(expectedChoice: String, vararg otherExpectedChoices: String) =
     property(GenericElement::choices).addAssertionsCreatedBy {
-        expect(subject.mapNotNull { choice ->
-            choice.parameters[SendChoice.TITLE_PARAMETER]
-        }).contains(expectedChoice, *otherExpectedChoices)
+        expect(
+            subject.mapNotNull { choice ->
+                choice.parameters[SendChoice.TITLE_PARAMETER]
+            }
+        ).contains(expectedChoice, *otherExpectedChoices)
     }
 
-fun Assert<GenericElement>.toHaveNotChoices(unexpectedChoice  : String, vararg otherUnexpectedChoices: String) =
+fun Assert<GenericElement>.toHaveNotChoices(unexpectedChoice: String, vararg otherUnexpectedChoices: String) =
     property(GenericElement::choices).addAssertionsCreatedBy {
-        expect(subject.mapNotNull { choice ->
-            choice.parameters[SendChoice.TITLE_PARAMETER]
-        }).containsNot(unexpectedChoice, *otherUnexpectedChoices)
+        expect(
+            subject.mapNotNull { choice ->
+                choice.parameters[SendChoice.TITLE_PARAMETER]
+            }
+        ).containsNot(unexpectedChoice, *otherUnexpectedChoices)
     }
 
-fun Assert<GenericElement>.toHaveExactlyChoices(expectedChoice  : String, vararg otherExpectedChoices: String) =
+fun Assert<GenericElement>.toHaveExactlyChoices(expectedChoice: String, vararg otherExpectedChoices: String) =
     property(GenericElement::choices).addAssertionsCreatedBy {
-        expect(subject.mapNotNull { choice ->
-            choice.parameters[SendChoice.TITLE_PARAMETER]
-        }).containsExactly(expectedChoice, *otherExpectedChoices)
+        expect(
+            subject.mapNotNull { choice ->
+                choice.parameters[SendChoice.TITLE_PARAMETER]
+            }
+        ).containsExactly(expectedChoice, *otherExpectedChoices)
     }
 
 fun ConnectorMessage.asGenericMessage(assertionCreator: Assert<GenericMessage>.() -> Unit) {
@@ -133,7 +145,7 @@ fun Assert<GenericElement>.toHaveAttachment(assertionCreator: Assert<Attachment>
         }
     }
 
-fun Assert<Attachment>.toHaveUrl(url:String) = property(Attachment::url).toBe(url)
+fun Assert<Attachment>.toHaveUrl(url: String) = property(Attachment::url).toBe(url)
 
 fun Assert<Attachment>.toBeImage() = property(Attachment::type).toBe(SendAttachment.AttachmentType.image)
 

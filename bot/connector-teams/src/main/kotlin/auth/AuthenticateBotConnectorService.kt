@@ -15,6 +15,7 @@
  */
 package ai.tock.bot.connector.teams.auth
 
+import ai.tock.shared.devEnvironment
 import com.microsoft.bot.schema.models.Activity
 import com.nimbusds.jose.JOSEException
 import com.nimbusds.jose.JWSVerifier
@@ -23,7 +24,6 @@ import com.nimbusds.jose.crypto.RSASSAVerifier
 import com.nimbusds.jose.jwk.ECKey
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.SignedJWT
-import ai.tock.shared.devEnvironment
 import io.vertx.core.MultiMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -31,7 +31,6 @@ import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import java.time.Instant
 import java.util.Date
-
 
 @Suppress("PropertyName")
 internal class AuthenticateBotConnectorService(
@@ -82,7 +81,6 @@ internal class AuthenticateBotConnectorService(
         if (!isFromTheBotConnectorService && !isFromTheBotFwkEmulator) {
             throw ForbiddenException("Unvalid JWT in Authorization Header : $errorStackTrace")
         }
-
     }
 
     /**
@@ -139,8 +137,10 @@ internal class AuthenticateBotConnectorService(
             if (!signedJWT.jwtClaimsSet.audience.contains(appId)) throw ForbiddenException("Audience is not valid")
             checkValidity(signedJWT)
             checkSignature(signedJWT, jwkHandler)
-            if ((signedJWT.jwtClaimsSet.getClaim("serviceurl")
-                    ?: throw ForbiddenException("Token doesn't contains any serviceUrl Claims")) != activity.serviceUrl()
+            if ((
+                signedJWT.jwtClaimsSet.getClaim("serviceurl")
+                    ?: throw ForbiddenException("Token doesn't contains any serviceUrl Claims")
+                ) != activity.serviceUrl()
             ) {
                 throw ForbiddenException("ServiceUrl in token Authorization and in activity doesn't match")
             }

@@ -125,11 +125,11 @@ object ApplicationConfigurationService :
                 )
             )
         }
-        //delete entity if same namespace and if not used by any intent
+        // delete entity if same namespace and if not used by any intent
         return if (
-            deleteEntityType
-            && application.namespace == entityType.namespace()
-            && intentDAO.getIntentsUsingEntity(entityType).isEmpty()
+            deleteEntityType &&
+            application.namespace == entityType.namespace() &&
+            intentDAO.getIntentsUsingEntity(entityType).isEmpty()
         ) {
             entityTypeDAO.deleteEntityTypeByName(entityType)
             true
@@ -145,8 +145,8 @@ object ApplicationConfigurationService :
     ): Boolean {
         sentenceDAO.removeSubEntityFromSentences(application._id, entityType.name, role)
         config.save(entityType.copy(subEntities = entityType.subEntities.filterNot { it.role == role }))
-        //TODO
-        //delete sub entity if same namespace and if not used by any intent
+        // TODO
+        // delete sub entity if same namespace and if not used by any intent
         return true
     }
 
@@ -207,14 +207,14 @@ object ApplicationConfigurationService :
 
         val s = sentences.filter { it.classification.intentId != targetIntentId }
 
-        //1 collect entities
+        // 1 collect entities
         val entities = s
             .flatMap { sentence ->
                 sentence.classification.entities.mapNotNull { it.toEntity(ConfigurationRepository::toEntity) }
             }
             .distinct()
 
-        //2 create entities where there are not present in the new intent (except if it's the unknown intent)
+        // 2 create entities where there are not present in the new intent (except if it's the unknown intent)
         if (targetIntentId.toString() != UNKNOWN_INTENT_NAME) {
             val intent = getIntentById(targetIntentId)!!
             entities.filterNot { intent.hasEntity(it) }.apply {
@@ -224,7 +224,7 @@ object ApplicationConfigurationService :
             }
         }
 
-        //3 switch intents
+        // 3 switch intents
         sentenceDAO.switchSentencesIntent(s, targetIntentId)
 
         return sentences.size
@@ -236,14 +236,14 @@ object ApplicationConfigurationService :
         oldEntity: EntityDefinition,
         newEntity: EntityDefinition
     ): Int {
-        //0 check new entity is known
+        // 0 check new entity is known
         val entity = newEntity.toEntity()
         if (entity == null) {
             logger.warn { "unknown entity $newEntity" }
             return 0
         }
 
-        //1 create entities where there are not present in the intents
+        // 1 create entities where there are not present in the intents
         val intents =
             sentences.map { it.classification.intentId }.distinct().filter { it.toString() != UNKNOWN_INTENT_NAME }
         intents.forEach {
@@ -257,7 +257,7 @@ object ApplicationConfigurationService :
             }
         }
 
-        //switch entity
+        // switch entity
         sentenceDAO.switchSentencesEntity(targetApplication.namespace, sentences, oldEntity, newEntity)
 
         return sentences.size

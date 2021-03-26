@@ -124,5 +124,4 @@ interface Connector {
      * Default returns an empty list.
      */
     fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = { emptyList() }
-
 }

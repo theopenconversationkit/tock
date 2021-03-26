@@ -92,7 +92,8 @@ interface ClientBus : Bus<ClientBus> {
         i18nText: CharSequence,
         suggestions: List<Suggestion>,
         delay: Long = defaultDelay(currentAnswerIndex),
-        vararg i18nArgs: Any?): ClientBus
+        vararg i18nArgs: Any?
+    ): ClientBus
 
     /**
      * Sends a text with suggestions.
@@ -109,7 +110,8 @@ interface ClientBus : Bus<ClientBus> {
         i18nText: CharSequence,
         suggestions: List<Suggestion>,
         delay: Long = defaultDelay(currentAnswerIndex),
-        vararg i18nArgs: Any?): ClientBus
+        vararg i18nArgs: Any?
+    ): ClientBus
 
     /**
      * Sends a text with suggestions as last bot answer.
@@ -165,7 +167,8 @@ interface ClientBus : Bus<ClientBus> {
         subTitle: CharSequence? = null,
         attachment: Attachment? = null,
         actions: List<Action> = emptyList(),
-        delay: Long = defaultDelay(currentAnswerIndex)): Card =
+        delay: Long = defaultDelay(currentAnswerIndex)
+    ): Card =
         Card(
             title?.let { translate(it) },
             subTitle?.let { translate(it) },
@@ -179,7 +182,8 @@ interface ClientBus : Bus<ClientBus> {
      */
     fun newCarousel(
         cards: List<Card>,
-        delay: Long = defaultDelay(currentAnswerIndex)): Carousel =
+        delay: Long = defaultDelay(currentAnswerIndex)
+    ): Carousel =
         Carousel(cards, delay)
 
     /**
@@ -187,7 +191,8 @@ interface ClientBus : Bus<ClientBus> {
      */
     fun newCarousel(
         vararg cards: Card,
-        delay: Long = defaultDelay(currentAnswerIndex)): Carousel =
+        delay: Long = defaultDelay(currentAnswerIndex)
+    ): Carousel =
         Carousel(cards.toList(), delay)
 
     /**
@@ -198,7 +203,8 @@ interface ClientBus : Bus<ClientBus> {
         subTitle: CharSequence? = null,
         attachment: Attachment? = null,
         vararg actions: Action,
-        delay: Long = defaultDelay(currentAnswerIndex)): Card = newCard(title, subTitle, attachment, actions.toList(), delay)
+        delay: Long = defaultDelay(currentAnswerIndex)
+    ): Card = newCard(title, subTitle, attachment, actions.toList(), delay)
 
     /**
      * Creates a new [Action].

@@ -34,7 +34,7 @@ fun richResponse(
     linkOutSuggestion: GALinkOutSuggestion? = null,
     suggestions: List<GASuggestion>
 ): GARichResponse =
-    //not more than 8 suggestions
+    // not more than 8 suggestions
     GARichResponse(items, suggestions.take(8), linkOutSuggestion)
 
 /**
@@ -75,7 +75,6 @@ fun I18nTranslator.richResponse(
     linkOutSuggestion: GALinkOutSuggestion? = null,
     vararg suggestions: CharSequence
 ): GARichResponse = richResponse(item, linkOutSuggestion, suggestions.toList())
-
 
 /**
  * Provides a [GARichResponse] with text item.
@@ -135,7 +134,6 @@ fun I18nTranslator.richResponse(
     basicCard: GABasicCard,
     vararg suggestions: CharSequence
 ): GARichResponse = richResponse(text, basicCard, suggestions.toList())
-
 
 /**
  * Provides a [GARichResponse] with a [GABasicCard].

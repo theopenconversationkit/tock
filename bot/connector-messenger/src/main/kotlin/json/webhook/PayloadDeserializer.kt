@@ -36,12 +36,12 @@ internal class PayloadDeserializer : JacksonDeserializer<Payload>() {
         private val logger = KotlinLogging.logger {}
     }
 
-
     override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Payload? {
         data class PayloadFields(
             var coordinates: FacebookLocation? = null,
             var url: String? = null,
-            var other: EmptyJson? = null)
+            var other: EmptyJson? = null
+        )
 
         val (coordinates, url) = jp.read<PayloadFields> { fields, name ->
             with(fields) {

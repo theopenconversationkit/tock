@@ -28,5 +28,4 @@ data class WhatsAppBotImageMessage(
             recipientType,
             recipientId
         )
-
 }

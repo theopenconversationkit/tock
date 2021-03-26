@@ -60,7 +60,8 @@ class EntityMergeServiceTest {
                         entity = Entity(
                             entityType = EntityType(
                                 name = "test"
-                            ), role = "test"
+                            ),
+                            role = "test"
                         )
                     ),
                     probability = 0.8
@@ -96,7 +97,8 @@ class EntityMergeServiceTest {
                         entity = Entity(
                             entityType = EntityType(
                                 name = "date"
-                            ), role = "dateRole"
+                            ),
+                            role = "dateRole"
                         )
                     ),
                     probability = 0.8
@@ -135,7 +137,8 @@ class EntityMergeServiceTest {
                         entity = Entity(
                             entityType = EntityType(
                                 name = "test"
-                            ), role = "role"
+                            ),
+                            role = "role"
                         )
                     ),
                     probability = 0.98

@@ -63,10 +63,12 @@ internal object OpenNlpModelBuilder : NlpEngineModelBuilder {
         val model = if (expressions.size < MIN_BUILD_SIZE) {
             GISModel(arrayOf(), arrayOf(), arrayOf())
         } else {
-            val events = ObjectStreamUtils.createObjectStream(expressions
-                .map {
-                    Event(it.intent.name, tokenizer.tokenize(tokenizerContext, it.text))
-                })
+            val events = ObjectStreamUtils.createObjectStream(
+                expressions
+                    .map {
+                        Event(it.intent.name, tokenizer.tokenize(tokenizerContext, it.text))
+                    }
+            )
             val dataIndexer = if (expressions.size < 100) OnePassRealValueDataIndexer() else TwoPassDataIndexer()
             val param = TrainingParameters()
             if (expressions.size < 1000) {
@@ -97,7 +99,7 @@ internal object OpenNlpModelBuilder : NlpEngineModelBuilder {
 
             val spanEntityMap = mutableMapOf<Span, SampleEntity>()
 
-            var entityCount = 0;
+            var entityCount = 0
             val trainingEvents = expressions.mapNotNull { expression ->
                 val text = expression.text
                 val tokens = tokenizer.tokenize(tokenizerContext, text)

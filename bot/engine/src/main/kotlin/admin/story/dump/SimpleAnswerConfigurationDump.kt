@@ -23,8 +23,8 @@ import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
 /**
  * An [AnswerConfigurationDump] with only [SimpleAnswerDump] (ie labels) answers.
  */
-data class SimpleAnswerConfigurationDump(val answers: List<SimpleAnswerDump>)
-    : AnswerConfigurationDump(AnswerConfigurationType.simple) {
+data class SimpleAnswerConfigurationDump(val answers: List<SimpleAnswerDump>) :
+    AnswerConfigurationDump(AnswerConfigurationType.simple) {
 
     constructor(conf: SimpleAnswerConfiguration) : this(
         conf.answers.map { SimpleAnswerDump(it) }

@@ -16,12 +16,12 @@
 
 package ai.tock.bot.connector.alexa
 
-import com.amazon.speech.ui.PlainTextOutputSpeech
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.I18nTranslator
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.raw
+import com.amazon.speech.ui.PlainTextOutputSpeech
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test

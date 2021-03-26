@@ -16,15 +16,15 @@
 
 package ai.tock.nlp.model.service.storage.mongo
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.provider
-import com.mongodb.client.MongoDatabase
 import ai.tock.nlp.model.service.storage.NlpApplicationConfigurationDAO
 import ai.tock.nlp.model.service.storage.NlpEngineModelDAO
 import ai.tock.shared.TOCK_MODEL_DATABASE
 import ai.tock.shared.getAsyncDatabase
 import ai.tock.shared.getDatabase
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
+import com.mongodb.client.MongoDatabase
 
 const val MONGO_DATABASE: String = TOCK_MODEL_DATABASE
 

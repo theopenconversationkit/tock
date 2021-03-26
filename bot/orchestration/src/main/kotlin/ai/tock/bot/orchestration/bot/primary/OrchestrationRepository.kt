@@ -27,7 +27,6 @@ import ai.tock.shared.injector
 import ai.tock.shared.provide
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
-import com.mongodb.client.model.Updates
 import org.litote.kmongo.Id
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.eq
@@ -35,14 +34,13 @@ import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.push
 import org.litote.kmongo.setValue
-import org.litote.kmongo.updateOneById
 
 interface OrchestrationRepository {
 
-    fun create(playerId : PlayerId, targetMetadata : OrchestrationMetaData, target : OrchestrationTargetedBot, actions : List<SecondaryBotAction>) : Orchestration
-    fun get(playerId : PlayerId) : Orchestration?
-    fun update(id: Id<Orchestration>, action : SecondaryBotAction)
-    fun end(playerId : PlayerId)
+    fun create(playerId: PlayerId, targetMetadata: OrchestrationMetaData, target: OrchestrationTargetedBot, actions: List<SecondaryBotAction>): Orchestration
+    fun get(playerId: PlayerId): Orchestration?
+    fun update(id: Id<Orchestration>, action: SecondaryBotAction)
+    fun end(playerId: PlayerId)
 }
 
 object MongoOrchestrationRepository : OrchestrationRepository {
@@ -56,7 +54,7 @@ object MongoOrchestrationRepository : OrchestrationRepository {
             }
     }
 
-    override fun create(playerId: PlayerId, targetMetadata: OrchestrationMetaData, target: OrchestrationTargetedBot, actions : List<SecondaryBotAction>): Orchestration {
+    override fun create(playerId: PlayerId, targetMetadata: OrchestrationMetaData, target: OrchestrationTargetedBot, actions: List<SecondaryBotAction>): Orchestration {
         val orchestration = Orchestration(playerId = playerId, targetMetadata = targetMetadata, targetBot = target, history = actions.toMutableList())
         col.insertOne(orchestration)
         return orchestration
@@ -75,7 +73,7 @@ object MongoOrchestrationRepository : OrchestrationRepository {
     override fun end(playerId: PlayerId) {
         col.updateMany(
             Orchestration::playerId eq playerId,
-            setValue( Orchestration::status, CLOSED )
+            setValue(Orchestration::status, CLOSED)
         )
     }
 }

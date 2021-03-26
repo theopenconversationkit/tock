@@ -63,5 +63,4 @@ data class WebConnectorRequest(
                 error("query & payload are both null")
             }
         }
-
 }

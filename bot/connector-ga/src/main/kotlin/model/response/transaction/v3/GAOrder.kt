@@ -27,7 +27,7 @@ data class GAOrder(
     val merchantOrderId: String,
     val buyerInfo: GAUserInfo? = null,
     val image: GAImage? = null,
-    val createTime: String ,
+    val createTime: String,
     val lastUpdateTime: String? = null,
     val transactionMerchant: GAMerchant? = null,
     val contents: GAContents,
@@ -38,5 +38,3 @@ data class GAOrder(
     val purchase: GAPurchaseOrderExtension? = null,
     val ticket: GATicketOrderExtension? = null
 )
-
-

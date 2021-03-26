@@ -24,13 +24,13 @@ import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.Translator
 
-
 data class BotMediaCardDescriptor(
     val title: I18nLabel?,
     val subTitle: I18nLabel?,
     val file: MediaFileDescriptor?,
     val actions: List<BotMediaActionDescriptor> = emptyList(),
-    val fillCarousel: Boolean = false) : BotMediaMessageDescriptor {
+    val fillCarousel: Boolean = false
+) : BotMediaMessageDescriptor {
 
     constructor(desc: MediaCardDescriptor, readOnly: Boolean = false) :
         this(

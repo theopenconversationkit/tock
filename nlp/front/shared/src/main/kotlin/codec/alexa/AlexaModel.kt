@@ -41,8 +41,7 @@ interface AlexaModelTransformer {
     /**
      * Filter samples.
      */
-    fun filterCustomSlotSamples(samples:List<String>) = samples.distinct()
-
+    fun filterCustomSlotSamples(samples: List<String>) = samples.distinct()
 }
 
 data class AlexaIntentFilter(

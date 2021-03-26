@@ -22,7 +22,6 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
 import mu.KotlinLogging
 
-
 internal object SlackMessageConverter {
 
     val logger = KotlinLogging.logger {}
@@ -42,4 +41,3 @@ internal object SlackMessageConverter {
         }
     }
 }
-

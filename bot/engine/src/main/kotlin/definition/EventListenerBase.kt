@@ -48,8 +48,12 @@ open class EventListenerBase : EventListener {
             if (this == null && !force) {
                 false
             } else {
-                sendChoice(event, this?.mainIntent()
-                    ?: controller.botDefinition.defaultStory.mainIntent(), controller, connectorData)
+                sendChoice(
+                    event,
+                    this?.mainIntent()
+                        ?: controller.botDefinition.defaultStory.mainIntent(),
+                    controller, connectorData
+                )
                 true
             }
 

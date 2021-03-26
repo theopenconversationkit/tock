@@ -46,10 +46,12 @@ internal class LogbackConfigurator : ContextAwareBase(), Configurator {
         if (booleanProperty("tock_logback_enabled", true)) {
             val c = context
 
-            loggerContext.addListener(LevelChangePropagator().apply {
-                context = c
-                start()
-            })
+            loggerContext.addListener(
+                LevelChangePropagator().apply {
+                    context = c
+                    start()
+                }
+            )
 
             val appender = if (booleanProperty("tock_logback_file_appender", false)) {
                 RollingFileAppender<ILoggingEvent>().also {

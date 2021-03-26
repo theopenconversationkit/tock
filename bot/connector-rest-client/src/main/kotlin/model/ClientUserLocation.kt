@@ -19,5 +19,4 @@ package ai.tock.bot.connector.rest.client.model
 /**
  *
  */
-data class ClientUserLocation(val lat:Double, val lng:Double) {
-}
+data class ClientUserLocation(val lat: Double, val lng: Double)

@@ -44,7 +44,8 @@ fun I18nTranslator.gaMessageForCarousel(items: List<GACarouselItem>, suggestions
             inputPrompt(richResponse(emptyList(), suggestions)),
             listOf(
                 expectedTextIntent(),
-                expectedIntentForCarousel(items))
+                expectedIntentForCarousel(items)
+            )
         )
     }
 }
@@ -59,17 +60,19 @@ fun I18nTranslator.gaMessageForCarousel(items: List<GACarouselItem>, suggestions
  *  @param oneItemDescription if not null and if there is only one item, use this as description. If null and the image is null, [GACarouselItem.description] is used as description
  *  @param oneItemSuggestions the additional suggestion if there is only one item
  */
-fun I18nTranslator.gaFlexibleMessageForCarousel(items: List<GACarouselItem>,
-                                                suggestions: List<CharSequence> = emptyList(),
-                                                oneItemTitle: CharSequence? = null,
-                                                oneItemSubtitle: CharSequence? = null,
-                                                oneItemDescription: CharSequence? = null,
-                                                oneItemSuggestions: List<CharSequence> = emptyList()
+fun I18nTranslator.gaFlexibleMessageForCarousel(
+    items: List<GACarouselItem>,
+    suggestions: List<CharSequence> = emptyList(),
+    oneItemTitle: CharSequence? = null,
+    oneItemSubtitle: CharSequence? = null,
+    oneItemDescription: CharSequence? = null,
+    oneItemSuggestions: List<CharSequence> = emptyList()
 ): GAResponseConnectorMessage {
     return gaFlexibleMessageForCarousel(
         items,
         suggestions,
-        oneItemSuggestions) { one ->
+        oneItemSuggestions
+    ) { one ->
         basicCard(
             oneItemTitle ?: one.title.raw,
             if (one.image != null) oneItemSubtitle ?: one.description?.raw else oneItemSubtitle,
@@ -87,23 +90,25 @@ fun I18nTranslator.gaFlexibleMessageForCarousel(items: List<GACarouselItem>,
  *  @param oneItemSuggestions the additional suggestion if there is only one item
  *  @param oneItemBasicCardProvider provides the basic card if only one item
  */
-fun I18nTranslator.gaFlexibleMessageForCarousel(items: List<GACarouselItem>,
-                                                suggestions: List<CharSequence> = emptyList(),
-                                                oneItemSuggestions: List<CharSequence> = emptyList(),
-                                                oneItemBasicCardProvider: (GACarouselItem) -> GABasicCard = {
-                                                    basicCard(
-                                                        it.title.raw,
-                                                        if (it.image != null) it.description?.raw else null,
-                                                        if (it.image == null) it.description?.raw else null,
-                                                        it.image
-                                                    )
-                                                }
+fun I18nTranslator.gaFlexibleMessageForCarousel(
+    items: List<GACarouselItem>,
+    suggestions: List<CharSequence> = emptyList(),
+    oneItemSuggestions: List<CharSequence> = emptyList(),
+    oneItemBasicCardProvider: (GACarouselItem) -> GABasicCard = {
+        basicCard(
+            it.title.raw,
+            if (it.image != null) it.description?.raw else null,
+            if (it.image == null) it.description?.raw else null,
+            it.image
+        )
+    }
 ): GAResponseConnectorMessage {
     return if (items.size == 1) {
         gaMessage(
             richResponse(
                 oneItemBasicCardProvider.invoke(items.first()),
-                suggestions + oneItemSuggestions)
+                suggestions + oneItemSuggestions
+            )
         )
     } else {
         gaMessageForCarousel(items, suggestions)
@@ -137,8 +142,9 @@ fun <T : Bus<T>> T.carouselItem(
     title: CharSequence,
     description: CharSequence? = null,
     image: GAImage? = null,
-    vararg parameters: Pair<String, String>)
-    : GACarouselItem = carouselItem(targetIntent, null, title, description, image, *parameters)
+    vararg parameters: Pair<String, String>
+):
+    GACarouselItem = carouselItem(targetIntent, null, title, description, image, *parameters)
 
 /**
  * Provides a [GACarouselItem] with [Parameters] parameters.
@@ -148,8 +154,9 @@ fun <T : Bus<T>> T.carouselItem(
     title: CharSequence,
     description: CharSequence? = null,
     image: GAImage? = null,
-    parameters: Parameters)
-    : GACarouselItem = carouselItem(targetIntent, null, title, description, image, parameters)
+    parameters: Parameters
+):
+    GACarouselItem = carouselItem(targetIntent, null, title, description, image, parameters)
 
 /**
  * Provides a [GACarouselItem] with [StoryStep] and [Parameters] parameters.
@@ -160,8 +167,9 @@ fun <T : Bus<T>> T.carouselItem(
     title: CharSequence,
     description: CharSequence? = null,
     image: GAImage? = null,
-    parameters: Parameters)
-    : GACarouselItem = carouselItem(targetIntent, step, title, description, image, *parameters.toArray())
+    parameters: Parameters
+):
+    GACarouselItem = carouselItem(targetIntent, step, title, description, image, *parameters.toArray())
 
 /**
  * Provides a [GACarouselItem] with [StoryStep] and [String] parameters.
@@ -172,19 +180,19 @@ fun <T : Bus<T>> T.carouselItem(
     title: CharSequence,
     description: CharSequence? = null,
     image: GAImage? = null,
-    vararg parameters: Pair<String, String>)
-    : GACarouselItem {
-    val t = translate(title)
-    return GACarouselItem(
-        optionInfo(
-            t,
-            targetIntent,
-            step,
-            *parameters
-        ),
-        t.toString(),
-        translate(description).toString(),
-        image
-    )
-}
-
+    vararg parameters: Pair<String, String>
+):
+    GACarouselItem {
+        val t = translate(title)
+        return GACarouselItem(
+            optionInfo(
+                t,
+                targetIntent,
+                step,
+                *parameters
+            ),
+            t.toString(),
+            translate(description).toString(),
+            image
+        )
+    }

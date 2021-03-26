@@ -22,10 +22,10 @@ import ai.tock.nlp.core.IntOpenRange
 /**
  *
  */
-data class EntityTypeValue(override val start: Int,
-                           override val end: Int,
-                           val entityType: EntityType,
-                           val value: Any? = null,
-                           val evaluated: Boolean = false) : IntOpenRange {
-
-}
+data class EntityTypeValue(
+    override val start: Int,
+    override val end: Int,
+    val entityType: EntityType,
+    val value: Any? = null,
+    val evaluated: Boolean = false
+) : IntOpenRange

@@ -16,8 +16,8 @@
 
 package ai.tock.bot.connector.messenger.model.handover
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.connector.messenger.model.Recipient
+import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  * See [https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_handovers#pass_thread_control].

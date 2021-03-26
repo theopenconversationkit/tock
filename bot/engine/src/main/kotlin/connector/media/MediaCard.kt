@@ -21,7 +21,6 @@ import ai.tock.bot.engine.message.GenericMessage.Companion.SUBTITLE_PARAM
 import ai.tock.bot.engine.message.GenericMessage.Companion.TITLE_PARAM
 import ai.tock.shared.mapNotNullValues
 
-
 /**
  * A media card. At least one of [title], [subTitle] or [file] is not null.
  */

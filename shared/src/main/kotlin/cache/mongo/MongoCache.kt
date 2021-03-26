@@ -16,20 +16,20 @@
 
 package ai.tock.shared.cache.mongo
 
+import ai.tock.shared.TOCK_CACHE_DATABASE
+import ai.tock.shared.cache.TockCache
+import ai.tock.shared.cache.mongo.MongoCacheData_.Companion.Type
+import ai.tock.shared.ensureIndex
+import ai.tock.shared.ensureUniqueIndex
+import ai.tock.shared.error
+import ai.tock.shared.getDatabase
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.ReplaceOptions
-import ai.tock.shared.cache.TockCache
-import ai.tock.shared.cache.mongo.MongoCacheData_.Companion.Type
-import ai.tock.shared.error
-import ai.tock.shared.getDatabase
-import ai.tock.shared.TOCK_CACHE_DATABASE
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.and
 import org.litote.kmongo.deleteOne
-import ai.tock.shared.ensureIndex
-import ai.tock.shared.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
@@ -51,7 +51,6 @@ internal object MongoCache : TockCache {
         c
     }
 
-
     override fun <T> getAll(type: String): Map<Id<T>, Any> {
         @Suppress("UNCHECKED_CAST")
         return col
@@ -59,7 +58,7 @@ internal object MongoCache : TockCache {
             .asSequence()
             .associateBy { it.id }
             .mapValues { it.value.toValue() }
-                as Map<Id<T>, Any>
+            as Map<Id<T>, Any>
     }
 
     override fun <T> get(id: Id<T>, type: String): T? {

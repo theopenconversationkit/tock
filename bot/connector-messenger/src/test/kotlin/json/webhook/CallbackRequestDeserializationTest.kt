@@ -32,11 +32,9 @@ class CallbackRequestDeserializationTest {
         assertEquals(r, mapper.readValue(s))
     }
 
-
-
     @Test
     fun testDeserialization() {
-        val json ="""
+        val json = """
         {
             "object": "page",
             "entry": [
@@ -70,7 +68,7 @@ class CallbackRequestDeserializationTest {
                 }
             ]
         }
-    """.trimIndent()
+        """.trimIndent()
         println(mapper.readValue<CallbackRequest>(json))
     }
 }

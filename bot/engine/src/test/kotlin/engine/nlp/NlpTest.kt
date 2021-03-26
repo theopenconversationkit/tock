@@ -66,7 +66,7 @@ class NlpTest : BotEngineTest() {
     @Test
     fun `GIVEN intent qualifiers not null in dialog state WHEN parse call returns an intent not in the list THEN the the best modifier intent is returned`() {
         dialog.state.nextActionState =
-                NextUserActionState(listOf(NlpIntentQualifier("test3", 0.2), NlpIntentQualifier("test2", 0.5)))
+            NextUserActionState(listOf(NlpIntentQualifier("test3", 0.2), NlpIntentQualifier("test2", 0.5)))
         every { nlpClient.parse(any()) } returns nlpResult
         val sentence = userAction as SendSentence
         Nlp().parseSentence(sentence, userTimeline, dialog, connectorController, botDefinition)
@@ -86,7 +86,6 @@ class NlpTest : BotEngineTest() {
 
         assertFalse(slot.captured.context.test)
         assertFalse(slot.captured.context.registerQuery)
-
     }
 
     @Test
@@ -101,7 +100,6 @@ class NlpTest : BotEngineTest() {
 
         assertFalse(slot.captured.context.test)
         assertTrue(slot.captured.context.registerQuery)
-
     }
 
     @Test

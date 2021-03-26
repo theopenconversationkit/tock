@@ -47,12 +47,14 @@ class MessengerConnectorSubscribedAppTest {
         @JvmStatic
         fun injectExecutor() {
             tockInternalInjector = KodeinInjector().apply {
-                inject(Kodein {
-                    import(
-                        Kodein.Module {
-                            bind<Executor>() with singleton { SimpleExecutor(2) }
-                        })
-                }
+                inject(
+                    Kodein {
+                        import(
+                            Kodein.Module {
+                                bind<Executor>() with singleton { SimpleExecutor(2) }
+                            }
+                        )
+                    }
                 )
             }
         }
@@ -79,10 +81,12 @@ class MessengerConnectorSubscribedAppTest {
 
     @BeforeEach
     fun setUp() {
-        injector.inject(Kodein {
-            import(sharedModule)
-            bind<UserTimelineDAO>() with singleton { mockk<UserTimelineDAO>() }
-        })
+        injector.inject(
+            Kodein {
+                import(sharedModule)
+                bind<UserTimelineDAO>() with singleton { mockk<UserTimelineDAO>() }
+            }
+        )
         every { messengerClient.deleteSubscribedApps(any(), any(), any()) } returns SuccessResponse(
             true
         )
@@ -174,5 +178,4 @@ class MessengerConnectorSubscribedAppTest {
         verify(exactly = 1) { messengerClient.deleteSubscribedApps(eq(pageId), eq(expectedFields), eq(token)) }
         verify(exactly = 1) { messengerClient.subscribedApps(eq(pageId), eq(expectedFields), eq(token)) }
     }
-
 }

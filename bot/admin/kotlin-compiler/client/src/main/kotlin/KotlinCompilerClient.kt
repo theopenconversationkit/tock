@@ -26,7 +26,6 @@ import ai.tock.shared.property
 import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import mu.KotlinLogging
 
-
 /**
  *
  */
@@ -54,5 +53,4 @@ object KotlinCompilerClient {
         } else {
             service.compile(file).execute().body()
         }
-
 }

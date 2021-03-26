@@ -145,5 +145,4 @@ interface StoryStep<T : StoryHandlerDefinition> {
      * If not null, entity has to be set in the current action to trigger the step.
      */
     val entityStepSelection: EntityStepSelection? get() = null
-
 }

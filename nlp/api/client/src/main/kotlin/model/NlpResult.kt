@@ -18,7 +18,6 @@ package ai.tock.nlp.api.client.model
 
 import java.util.Locale
 
-
 /**
  * The result of the [NlpQuery].
  */

@@ -15,11 +15,11 @@
  */
 package ai.tock.bot.connector.whatsapp.model.webhook
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import ai.tock.bot.connector.whatsapp.model.common.WhatsAppError
 import ai.tock.bot.connector.whatsapp.model.common.WhatsAppTextBody
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.resource
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 

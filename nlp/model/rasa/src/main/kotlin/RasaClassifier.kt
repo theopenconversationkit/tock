@@ -31,7 +31,7 @@ internal class RasaClassifier(private val conf: RasaModelConfiguration) : Intent
     private val threadLocal = ThreadLocal<List<EntityRecognition>>()
 
     override fun classifyIntent(context: IntentContext, text: String, tokens: Array<String>): IntentClassification {
-        //TODO get RasaConfiguration ?
+        // TODO get RasaConfiguration ?
         return RasaClientProvider.getClient(RasaConfiguration()).parse(ParseRequest(text))
             .run {
                 if (entities.isNotEmpty()) {

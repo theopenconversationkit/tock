@@ -27,5 +27,4 @@ import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME)
 @JsonTypeIdResolver(ValueTypeIdResolver::class)
-interface Value {
-}
+interface Value

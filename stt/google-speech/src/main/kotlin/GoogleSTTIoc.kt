@@ -16,10 +16,10 @@
 
 package ai.tock.stt.google
 
+import ai.tock.stt.STT
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import ai.tock.stt.STT
 
 /**
  *

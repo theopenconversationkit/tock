@@ -173,7 +173,7 @@ object ParserService : Parser {
         with(query) {
             val (application, language, referenceDate, intentsQualifiers) = metadata
 
-            //TODO multi query handling
+            // TODO multi query handling
             val q = formatQuery(queries.first())
             if (q.isEmpty()) {
                 logger.warn { "empty query after format - $query" }
@@ -297,7 +297,7 @@ object ParserService : Parser {
                 }
             }
 
-            //check cache for test
+            // check cache for test
             if (validateSentenceTest && context.test && validatedSentence != null) {
                 if (!validatedSentence.hasSameContent(toClassifiedSentence())) {
                     error("[TEST MODE] nlp model does not produce same output than validated sentence for query $q")
@@ -311,10 +311,10 @@ object ParserService : Parser {
     internal fun saveSentence(newSentence: ClassifiedSentence, validatedSentence: ClassifiedSentence?) {
         with(newSentence) {
             if (validatedSentence?.status != validated &&
-                validatedSentence?.status != model
-                && !hasSameContent(validatedSentence)
+                validatedSentence?.status != model &&
+                !hasSameContent(validatedSentence)
             ) {
-                //do not persist analysis if intent probability is < 0.1
+                // do not persist analysis if intent probability is < 0.1
                 val sentence = if ((lastIntentProbability ?: 0.0) > 0.1) this
                 else copy(classification = classification.copy(UNKNOWN_INTENT_NAME.toId(), emptyList()))
 
@@ -347,7 +347,8 @@ object ParserService : Parser {
             val result = core.evaluateEntities(
                 callContext,
                 text,
-                query.entities.map { it.toEntityRecognition() })
+                query.entities.map { it.toEntityRecognition() }
+            )
 
             return EntityEvaluationResult(
                 result.map { ParsedEntityValue(it.value, it.probability, core.supportValuesMerge(it.entityType)) }

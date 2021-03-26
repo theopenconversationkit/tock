@@ -28,10 +28,9 @@ import kotlin.test.assertEquals
 
 class StoryTest {
 
-
     private val storyDefinition: StoryDefinition = mockk()
-    private val userTimeline : UserTimeline = mockk()
-    private val dialog:Dialog = mockk()
+    private val userTimeline: UserTimeline = mockk()
+    private val dialog: Dialog = mockk()
     private val action: Action = mockk()
 
     private val story = Story(
@@ -43,12 +42,12 @@ class StoryTest {
 
     @Test
     fun `multi-entities action triggers the step tree`() {
-        val secondLevelStep : StoryStep<*> = mockk {
+        val secondLevelStep: StoryStep<*> = mockk {
             every { name } returns "second level"
             every { children } returns emptySet()
             every { selectFromAction(any(), any(), any(), newIntent) } returns true
         }
-        val firstLevelStep : StoryStep<*> = mockk {
+        val firstLevelStep: StoryStep<*> = mockk {
             every { children } returns setOf(secondLevelStep)
             every { name } returns "first level"
             every { selectFromAction(any(), any(), any(), newIntent) } returns true

@@ -22,10 +22,9 @@ import ai.tock.bot.connector.ga.model.response.GAUserNotification
  * @see https://developers.google.com/actions/reference/rest/Shared.Types/AppResponse#orderupdate
  */
 data class GAOrderUpdateV3(
-        val type: String? = null,
-        val updateMask: String? = null,
-        val order: GAOrder,
-        val userNotification: GAUserNotification? = null,
-        val reason: String? = null
+    val type: String? = null,
+    val updateMask: String? = null,
+    val order: GAOrder,
+    val userNotification: GAUserNotification? = null,
+    val reason: String? = null
 )
-

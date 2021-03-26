@@ -38,7 +38,6 @@ import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.Bus
 import ai.tock.bot.engine.I18nTranslator
 import ai.tock.bot.engine.action.ActionVisibility
-import ai.tock.bot.engine.action.Metadata.VISIBILITY
 import ai.tock.bot.engine.action.SendChoice
 import mu.KotlinLogging
 
@@ -110,7 +109,6 @@ private fun <T : Bus<T>> T.directMessageBuidler(message: CharSequence): DirectMe
     )
         .withSourceAppId(applicationId)
 
-
 /**
  * Creates a direct message with quick replies
  * @see https://developer.twitter.com/en/docs/direct-messages/quick-replies/overview
@@ -132,7 +130,6 @@ fun <T : Bus<T>> T.directMessageWithOptions(message: CharSequence, vararg option
             .withOptions(*options)
             .build()
     )
-
 
 /**
  * Creates a direct message with an attachment
@@ -460,7 +457,8 @@ fun BotBus.withPublicTwitter(messageProvider: () -> TwitterPublicConnectorMessag
  */
 fun BotBus.endIfPublicTwitter() {
     if (targetConnectorType == twitterConnectorType &&
-        actionVisibility(this) == ActionVisibility.PUBLIC) {
+        actionVisibility(this) == ActionVisibility.PUBLIC
+    ) {
         end()
     }
 }
@@ -475,7 +473,6 @@ fun BotBus.tweet(message: CharSequence): Tweet {
     return Tweet(translate(message).toString())
 }
 
-
 /**
  * Create a tweet with a link for DM to the account listened
  * @see https://developer.twitter.com/en/docs/tweets/post-and-engage/overview
@@ -484,4 +481,3 @@ fun BotBus.tweet(message: CharSequence): Tweet {
 fun BotBus.tweetWithInviteForDM(message: CharSequence, welcomeMessageID: String? = null, defaultMessage: String? = null): Tweet {
     return Tweet(translate(message).toString(), botId.id, welcomeMessageID, defaultMessage)
 }
-

@@ -16,5 +16,4 @@
 
 package ai.tock.bot.engine.dialog
 
-class FlowAnalyticsQueryResult {
-}
+class FlowAnalyticsQueryResult

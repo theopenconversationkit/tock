@@ -16,9 +16,9 @@
 
 package ai.tock.nlp.model.service.storage.mongo
 
+import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
 import com.mongodb.client.MongoDatabase
-import ai.tock.shared.injector
 
 /**
  *

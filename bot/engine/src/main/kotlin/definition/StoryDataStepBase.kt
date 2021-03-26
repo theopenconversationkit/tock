@@ -66,7 +66,7 @@ abstract class StoryDataStepBase<T : StoryHandlerDefinition, TD, D>(
             error("data step has to be not null")
         }
         val reply = reply()(c, it)
-        //in order to manage switch inside the reply
+        // in order to manage switch inside the reply
         if (!isEndCalled(c)) {
             end {
                 reply

@@ -71,4 +71,3 @@ internal class TockDialogflowNlpClient : NlpClient {
 
     override fun importNlpPlainSentencesDump(dump: SentencesDump): Boolean = false
 }
-

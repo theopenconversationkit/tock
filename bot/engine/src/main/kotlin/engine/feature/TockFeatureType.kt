@@ -26,6 +26,5 @@ enum class DefaultFeatureType : FeatureType {
      */
     DISABLE_BOT;
 
-
     override val category: String = TOCK_NAMESPACE
 }

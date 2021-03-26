@@ -40,7 +40,8 @@ internal object DucklingDimensions {
         "duration",
         "email",
         "url",
-        "phone-number")
+        "phone-number"
+    )
 
     private fun String.withDucklingPrefix() = "$DUCKLING:$this"
 

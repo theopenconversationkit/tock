@@ -80,13 +80,13 @@ data class StoryDefinitionConfigurationStep(
         private val storyConfiguration: StoryDefinitionConfiguration
     ) : SimpleStoryStep {
         constructor(s: StoryDefinitionConfigurationStep, conf: StoryDefinitionConfiguration) :
-                this(
-                    s.name.takeUnless { it.isBlank() || !it.startsWith("##") }
-                        ?: "${s.intent?.name}${(s.entity?.value ?: s.entity?.entityRole)?.let { "_$it" }}_${s.level}",
-                    s.intent?.intent(conf.namespace),
-                    s,
-                    conf
-                )
+            this(
+                s.name.takeUnless { it.isBlank() || !it.startsWith("##") }
+                    ?: "${s.intent?.name}${(s.entity?.value ?: s.entity?.entityRole)?.let { "_$it" }}_${s.level}",
+                s.intent?.intent(conf.namespace),
+                s,
+                conf
+            )
 
         override fun equals(other: Any?): Boolean = name == (other as? Step)?.name
 
@@ -103,17 +103,16 @@ data class StoryDefinitionConfigurationStep(
     val hasNoChildren: Boolean get() = children.isEmpty()
 
     constructor(step: StoryStep<*>) :
-            this(
-                step.name,
-                step.intent?.intentWithoutNamespace(),
-                null,
-                emptyList(),
-                builtin
-            )
+        this(
+            step.name,
+            step.intent?.intentWithoutNamespace(),
+            null,
+            emptyList(),
+            builtin
+        )
 
     fun toStoryStep(story: StoryDefinitionConfiguration): StoryStep<StoryHandlerDefinition> = Step(this, story)
 
     override fun findNextSteps(bus: BotBus, story: StoryDefinitionConfiguration): List<CharSequence> =
         children.map { it.userSentenceLabel ?: it.userSentence }
-
 }

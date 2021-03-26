@@ -18,7 +18,6 @@ package ai.tock.bot.connector.ga.model.response
 
 import com.fasterxml.jackson.annotation.JsonValue
 
-
 /**
  * @see https://github.com/googleapis/googleapis/blob/master/google/rpc/code.proto
  */
@@ -181,5 +180,4 @@ enum class GAStatusCode {
     fun toOrdinal(): Int {
         return ordinal
     }
-
 }

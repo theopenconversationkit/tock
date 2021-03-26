@@ -102,7 +102,6 @@ class DialogColDeserializationTest : AbstractTest(false) {
         assertEquals(state, newValue)
     }
 
-
     @Test
     fun serializeAndDeserializeDialog_shouldLeftDataInchanged() {
         val dialog = Dialog(
@@ -153,9 +152,9 @@ class DialogColDeserializationTest : AbstractTest(false) {
         verify(exactly = 1) { testParameterObfuscator.obfuscate(parameters) }
         TockObfuscatorService.deregisterObfuscators()
 
-        //test deserialization
+        // test deserialization
         val json = mapper.writeValueAsString(stateWrapper)
-        val stateWrapper2 : ActionMongoWrapper = mapper.readValue(json)
+        val stateWrapper2: ActionMongoWrapper = mapper.readValue(json)
         assertEquals(stateWrapper.toAction("id".toId()).toString(), stateWrapper2.toAction("id".toId()).toString())
     }
 
@@ -176,5 +175,4 @@ class DialogColDeserializationTest : AbstractTest(false) {
         val col: DialogCol? = mapper.readValue(json)
         assertNotNull(col)
     }
-
 }

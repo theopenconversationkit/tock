@@ -29,6 +29,8 @@ import ai.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.TargetConfig
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.MongoBotConfiguration.database
+import ai.tock.shared.ensureIndex
+import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.error
 import ai.tock.shared.watch
 import mu.KotlinLogging
@@ -37,8 +39,6 @@ import org.litote.kmongo.Id
 import org.litote.kmongo.and
 import org.litote.kmongo.deleteOne
 import org.litote.kmongo.deleteOneById
-import ai.tock.shared.ensureIndex
-import ai.tock.shared.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.find
 import org.litote.kmongo.findOne
@@ -69,7 +69,7 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
         col.ensureIndex(Namespace, BotId)
         botCol.ensureUniqueIndex(Name, BotId, Namespace)
 
-        //TODO remove this in 20.3
+        // TODO remove this in 20.3
         try {
             val apps = col.find().toList()
             apps.filter { it.connectorType.id == "rest" && it.targetConfigurationId == null }
@@ -95,7 +95,7 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
     }
 
     override fun getConfigurationById(id: Id<BotApplicationConfiguration>): BotApplicationConfiguration? {
-        //TODO remove object id hook
+        // TODO remove object id hook
         return col.findOneById(id) ?: col.findOneById(ObjectId(id.toString()))
     }
 
@@ -107,7 +107,7 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
         return col.findOne(Namespace eq namespace, ApplicationId eq applicationId, BotId eq botId)
     }
 
-    //TODO remove this in 20.3
+    // TODO remove this in 20.3
     fun getHackedConfigurationByApplicationIdAndBot(
         namespace: String,
         applicationId: String,
@@ -141,7 +141,7 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
             col.save(conf)
             conf
         } catch (e: Exception) {
-            //TODO remove object id hook
+            // TODO remove object id hook
             logger.error(e)
             val filter = "{applicationId:${conf.applicationId.json}, botId:${conf.botId.json}}"
             col.deleteOne(filter)
@@ -152,7 +152,7 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
 
     override fun delete(conf: BotApplicationConfiguration) {
         col.deleteOneById(conf._id)
-        //TODO remove object id hook
+        // TODO remove object id hook
         col.deleteOneById(ObjectId(conf._id.toString()))
     }
 
@@ -220,7 +220,7 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
                 sequenceOf(
                     it.applicationId,
                     it._id.toString(),
-                    //special messenger connector fix TODO remove this in 19.9
+                    // special messenger connector fix TODO remove this in 19.9
                     it.parameters["pageId"],
                     it.parameters["appId"]
                 ).filterNotNull()

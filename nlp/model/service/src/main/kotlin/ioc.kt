@@ -16,10 +16,10 @@
 
 package ai.tock.nlp.model.service
 
+import ai.tock.nlp.model.NlpClassifier
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import ai.tock.nlp.model.NlpClassifier
 
 /**
  *

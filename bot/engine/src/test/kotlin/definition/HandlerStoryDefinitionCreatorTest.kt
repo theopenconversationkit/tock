@@ -83,5 +83,4 @@ class HandlerStoryDefinitionCreatorTest {
 
     internal class SimpleDefWithDefaultParameter(bus: BotBus, val parameter: String = "parameter") :
         HandlerDef<Connector>(bus)
-
 }

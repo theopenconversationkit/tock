@@ -40,6 +40,5 @@ interface ParseRequestLogDAO {
 
     fun intentStats(query: ParseRequestLogStatQuery): List<ParseRequestLogIntentStat>
 
-    fun export(applicationId: Id<ApplicationDefinition>, language:Locale): List<ParseRequestExportLog>
-
+    fun export(applicationId: Id<ApplicationDefinition>, language: Locale): List<ParseRequestExportLog>
 }

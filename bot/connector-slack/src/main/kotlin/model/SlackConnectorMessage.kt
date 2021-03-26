@@ -16,13 +16,12 @@
 
 package ai.tock.bot.connector.slack.model
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.slack.SlackConnectorProvider
+import com.fasterxml.jackson.annotation.JsonIgnore
 
 abstract class SlackConnectorMessage : ConnectorMessage {
 
     override val connectorType: ConnectorType @JsonIgnore get() = SlackConnectorProvider.connectorType
-
 }

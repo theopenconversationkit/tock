@@ -19,9 +19,9 @@ package ai.tock.bot.mongo
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.shared.jackson.AnyValueWrapper
+import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
-import org.litote.jackson.data.JacksonData
 import java.time.Instant
 import java.time.Instant.now
 
@@ -32,7 +32,7 @@ internal data class ConnectorMessageColId(val actionId: Id<Action>, val dialogId
 /**
  *
  */
-//@Data(internal = true)
+// @Data(internal = true)
 @JacksonData(internal = true)
 internal data class ConnectorMessageCol(
     val _id: ConnectorMessageColId,

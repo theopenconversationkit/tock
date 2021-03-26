@@ -16,7 +16,6 @@
 
 package ai.tock.nlp.front.service.storage
 
-
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.ClassifiedSentence
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus
@@ -55,7 +54,7 @@ interface ClassifiedSentenceDAO {
     fun switchSentencesIntent(sentences: List<ClassifiedSentence>, newIntentId: Id<IntentDefinition>)
 
     fun switchSentencesEntity(
-        allowedNamespace:String,
+        allowedNamespace: String,
         sentences: List<ClassifiedSentence>,
         oldEntity: EntityDefinition,
         newEntity: EntityDefinition
@@ -95,4 +94,3 @@ interface ClassifiedSentenceDAO {
      */
     fun users(applicationId: Id<ApplicationDefinition>): List<String>
 }
-

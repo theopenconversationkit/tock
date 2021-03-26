@@ -28,18 +28,19 @@ import java.time.Instant
 /**
  * A user location transmission.
  */
-class SendLocation(playerId: PlayerId,
-                   applicationId: String,
-                   recipientId: PlayerId,
-                   val location: UserLocation?,
-                   id: Id<Action> = newId(),
-                   date: Instant = Instant.now(),
-                   state: EventState = EventState(),
-                   metadata: ActionMetadata = ActionMetadata())
-    : Action(playerId, recipientId, applicationId, id, date, state, metadata) {
+class SendLocation(
+    playerId: PlayerId,
+    applicationId: String,
+    recipientId: PlayerId,
+    val location: UserLocation?,
+    id: Id<Action> = newId(),
+    date: Instant = Instant.now(),
+    state: EventState = EventState(),
+    metadata: ActionMetadata = ActionMetadata()
+) :
+    Action(playerId, recipientId, applicationId, id, date, state, metadata) {
 
     override fun toMessage(): Message {
         return Location(location)
     }
-
 }

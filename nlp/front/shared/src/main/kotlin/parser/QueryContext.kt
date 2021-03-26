@@ -69,5 +69,4 @@ data class QueryContext(
      * Add this query in built-in stats.
      */
     val increaseQueryCounter: Boolean = !test
-) {
-}
+)

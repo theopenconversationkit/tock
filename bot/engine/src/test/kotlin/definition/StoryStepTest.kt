@@ -27,28 +27,27 @@ import kotlin.test.assertTrue
 
 class StoryStepTest {
 
-    private val userTimeline:UserTimeline = mockk()
+    private val userTimeline: UserTimeline = mockk()
     private val dialog: Dialog = mockk()
-    private val action:Action = mockk()
+    private val action: Action = mockk()
 
-
-    private object Step1:  StoryStep<StoryHandlerDefinition> {
+    private object Step1 : StoryStep<StoryHandlerDefinition> {
         override val name: String = "step1"
         override val intent: IntentAware? = Intent("test")
-        override val entityStepSelection: EntityStepSelection? = EntityStepSelection("a","role","type")
+        override val entityStepSelection: EntityStepSelection? = EntityStepSelection("a", "role", "type")
     }
 
-    private object Step2:  StoryStep<StoryHandlerDefinition> {
+    private object Step2 : StoryStep<StoryHandlerDefinition> {
         override val name: String = "step2"
         override val intent: IntentAware? = Intent("test")
-        override val entityStepSelection: EntityStepSelection? = EntityStepSelection(null,"role","type")
+        override val entityStepSelection: EntityStepSelection? = EntityStepSelection(null, "role", "type")
     }
 
     @Test
     fun `GIVEN step with not null entityStepSelection WHEN the entity value is set by action THEN step is selected`() {
         every { action.hasEntityPredefinedValue("role", "a") } returns true
 
-        val result = Step1.selectFromAction(userTimeline, dialog, action,  Intent("test"))
+        val result = Step1.selectFromAction(userTimeline, dialog, action, Intent("test"))
 
         assertTrue(result)
     }
@@ -57,7 +56,7 @@ class StoryStepTest {
     fun `GIVEN step with not null entityStepSelection WHEN the entity value is not set by action THEN step is not selected`() {
         every { action.hasEntityPredefinedValue("role", "a") } returns false
 
-        val result = Step1.selectFromAction(userTimeline, dialog, action,  Intent("test"))
+        val result = Step1.selectFromAction(userTimeline, dialog, action, Intent("test"))
 
         assertFalse(result)
     }
@@ -66,7 +65,7 @@ class StoryStepTest {
     fun `GIVEN step with not null role WHEN the entity role is set by action THEN step is selected`() {
         every { action.hasEntity("role") } returns true
 
-        val result = Step2.selectFromAction(userTimeline, dialog, action,  Intent("test"))
+        val result = Step2.selectFromAction(userTimeline, dialog, action, Intent("test"))
 
         assertTrue(result)
     }
@@ -75,7 +74,7 @@ class StoryStepTest {
     fun `GIVEN step with not null role WHEN the entity role is not set by action THEN step is not selected`() {
         every { action.hasEntity("role") } returns false
 
-        val result = Step2.selectFromAction(userTimeline, dialog, action,  Intent("test"))
+        val result = Step2.selectFromAction(userTimeline, dialog, action, Intent("test"))
 
         assertFalse(result)
     }

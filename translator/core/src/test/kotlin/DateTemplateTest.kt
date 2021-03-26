@@ -60,5 +60,4 @@ class DateTemplateTest {
             formatter.toString()
         )
     }
-
 }

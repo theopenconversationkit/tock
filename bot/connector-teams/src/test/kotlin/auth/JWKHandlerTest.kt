@@ -18,14 +18,11 @@ package ai.tock.bot.connector.teams.auth
 
 import ai.tock.bot.connector.teams.auth.MockServer.getMicrosoftMockServer
 import okhttp3.mockwebserver.MockWebServer
-import org.junit.Before
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JWKHandlerTest {
@@ -57,7 +54,7 @@ class JWKHandlerTest {
     @Test
     fun testJWKCacheSystem() {
 
-        //check that it does not fail
+        // check that it does not fail
         val firstRecordedRequest = server.takeRequest()
         assertEquals("GET /.well-known/openidconfiguration/ HTTP/1.1", firstRecordedRequest.requestLine)
         val secondRecordedResponse = server.takeRequest()

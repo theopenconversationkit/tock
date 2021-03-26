@@ -22,8 +22,9 @@ import ai.tock.bot.connector.messenger.model.Sender
 /**
  *
  */
-data class MessageEchoWebhook(override val sender: Sender,
-                         override val recipient: Recipient,
-                         override val timestamp: Long,
-                         val message: MessageEcho) : Webhook() {
-}
+data class MessageEchoWebhook(
+    override val sender: Sender,
+    override val recipient: Recipient,
+    override val timestamp: Long,
+    val message: MessageEcho
+) : Webhook()

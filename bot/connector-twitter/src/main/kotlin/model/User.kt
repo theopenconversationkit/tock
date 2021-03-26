@@ -37,4 +37,4 @@ data class User(
     @JsonProperty("statuses_count") val statusesCount: Int,
     @JsonProperty("profile_image_url_https") val profileImageUrlHttps: String? = null,
     @JsonProperty("utc_offset") val utcOffset: String? = null
-    )
+)

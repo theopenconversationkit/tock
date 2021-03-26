@@ -22,11 +22,10 @@ import java.time.LocalDate
  *
  */
 data class ParseRequestLogStat(
-        val day: LocalDate,
-        val error: Int,
-        val count: Int,
-        val averageDuration: Double,
-        val averageIntentProbability: Double,
-        val averageEntitiesProbability: Double
-) {
-}
+    val day: LocalDate,
+    val error: Int,
+    val count: Int,
+    val averageDuration: Double,
+    val averageIntentProbability: Double,
+    val averageEntitiesProbability: Double
+)

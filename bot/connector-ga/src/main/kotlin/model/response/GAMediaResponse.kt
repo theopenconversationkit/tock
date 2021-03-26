@@ -22,4 +22,3 @@ data class GAMediaResponse(
     val mediaType: GAMediaType = MEDIA_TYPE_UNSPECIFIED,
     val mediaObjects: List<GAMediaObject> = emptyList()
 )
-

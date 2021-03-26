@@ -86,7 +86,7 @@ object Translator {
                 val labels = i18nDAO.getLabels(defaultNamespace)
 
                 cache.putAll(labels.associateBy { it._id.toString() })
-                //clean up cache
+                // clean up cache
                 i18nDAO.listenI18n {
                     logger.debug { "remove i18n $it from cache" }
                     cache.remove(it.toString())
@@ -155,7 +155,7 @@ object Translator {
      */
     fun create(value: I18nLabelValue, defaultLocale: Locale, alternatives: List<String> = emptyList()): I18nLabel {
         synchronized(value.key.intern()) {
-            var count = 1;
+            var count = 1
             var v = value
             while (getLabel(v) != null) {
                 v = I18nLabelValue(
@@ -406,13 +406,15 @@ object Translator {
                     }
                 }
             }
-            val newMessage = MessageFormat(splitPattern.map {
-                if (choicePrefixList.contains(it)) {
-                    it
-                } else {
-                    translator.translate(it.replace("''", "'"), source, target)
-                }
-            }.joinToString(""))
+            val newMessage = MessageFormat(
+                splitPattern.map {
+                    if (choicePrefixList.contains(it)) {
+                        it
+                    } else {
+                        translator.translate(it.replace("''", "'"), source, target)
+                    }
+                }.joinToString("")
+            )
             newMessage.formats = m.formats
             return newMessage.toPattern()
         }

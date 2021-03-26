@@ -22,7 +22,7 @@ import ai.tock.bot.engine.BotBus
  * A Text Message used on the bot side to be sent on the [BotBus]
  */
 data class BusinessChatConnectorTextMessage(
-        override val sourceId: String,
-        override val destinationId: String,
-        val body: String?
+    override val sourceId: String,
+    override val destinationId: String,
+    val body: String?
 ) : BusinessChatConnectorMessage()

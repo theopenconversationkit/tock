@@ -137,6 +137,4 @@ class RasaMarkdownTest {
             RasaMarkdown.toModelNluMarkdown(samples)
         )
     }
-
-
 }

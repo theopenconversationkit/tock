@@ -53,6 +53,5 @@ class XrayKeywordService : KeywordService {
                 return null
             }
         }
-
     }
 }

@@ -31,5 +31,4 @@ internal class DefaultBusinessChatIntegrationService : BusinessChatIntegrationSe
     override fun passControl(sourceId: String, recipient: String) = Unit
 
     override fun takeControl(sourceId: String, recipient: String) = Unit
-
 }

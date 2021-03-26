@@ -16,13 +16,13 @@
 
 package ai.tock.bot.connector.alexa
 
-import com.amazon.speech.ui.Image
-import com.amazon.speech.ui.StandardCard
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.Bus
 import ai.tock.bot.engine.I18nTranslator
 import ai.tock.translator.UserInterfaceType
+import com.amazon.speech.ui.Image
+import com.amazon.speech.ui.StandardCard
 
 internal const val ALEXA_CONNECTOR_TYPE_ID = "alexa"
 
@@ -78,7 +78,6 @@ fun alexaEndConversation(): AlexaMessage = AlexaMessage(true)
 fun I18nTranslator.alexaReprompt(reprompt: CharSequence): AlexaMessage =
     AlexaMessage(false, reprompt = translate(reprompt).toString())
 
-
 /**
  * Add the specified card.
  */
@@ -99,4 +98,3 @@ fun I18nTranslator.alexaStandardCard(
             }
         }
     )
-

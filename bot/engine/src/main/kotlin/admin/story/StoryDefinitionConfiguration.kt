@@ -141,11 +141,13 @@ data class StoryDefinitionConfiguration(
         findSteps(BotApplicationConfigurationKey(bus)).map { it.userSentenceLabel ?: it.userSentence }
 
     internal fun findSteps(key: BotApplicationConfigurationKey?): List<StoryDefinitionConfigurationStep> =
-        (key?.let {
-            val configurationName =
-                BotRepository.getConfigurationByApplicationId(key)?.name
-            configuredSteps.firstOrNull { it.botConfiguration == configurationName }?.steps
-        } ?: steps)
+        (
+            key?.let {
+                val configurationName =
+                    BotRepository.getConfigurationByApplicationId(key)?.name
+                configuredSteps.firstOrNull { it.botConfiguration == configurationName }?.steps
+            } ?: steps
+            )
 
     private fun findFeatures(applicationId: String?): List<StoryDefinitionConfigurationFeature> =
         when {
@@ -174,7 +176,7 @@ data class StoryDefinitionConfiguration(
     internal fun findEnabledStorySwitchId(applicationId: String?): String? {
         val features = findEnabledFeatures(applicationId)
 
-        //search first for dedicated features
+        // search first for dedicated features
         val dedicatedFeature = applicationId.getApp()?.let { app ->
             features.find { feature ->
                 feature.switchToStoryId != null && feature.supportDedicatedConfiguration(app)
@@ -187,7 +189,7 @@ data class StoryDefinitionConfiguration(
     internal fun findEnabledEndWithStoryId(applicationId: String?): String? {
         val features = findEnabledFeatures(applicationId)
 
-        //search first for dedicated features
+        // search first for dedicated features
         val dedicatedFeature = applicationId.getApp()?.let { app ->
             features.find { feature ->
                 feature.endWithStoryId != null && feature.supportDedicatedConfiguration(app)
@@ -212,5 +214,4 @@ data class StoryDefinitionConfiguration(
 
     @Transient
     internal val mainIntent: Intent = intent.intent(namespace)
-
 }

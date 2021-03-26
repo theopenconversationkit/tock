@@ -22,7 +22,7 @@ import ai.tock.nlp.core.sample.SampleExpression
  *
  */
 data class IntentMatchError(
-        val expression: SampleExpression,
-        val intent: String,
-        val intentProbability:Double) {
-}
+    val expression: SampleExpression,
+    val intent: String,
+    val intentProbability: Double
+)

@@ -20,10 +20,9 @@ package ai.tock.bot.connector.rest.client.model
  *
  */
 data class ClientGenericElement(
-        val attachments: List<ClientAttachment> = emptyList(),
-        val choices: List<ClientChoice> = emptyList(),
-        val texts: Map<String, String> = emptyMap(),
-        val locations: List<ClientLocation> = emptyList(),
-        val metadata: Map<String, String> = emptyMap()
-) {
-}
+    val attachments: List<ClientAttachment> = emptyList(),
+    val choices: List<ClientChoice> = emptyList(),
+    val texts: Map<String, String> = emptyMap(),
+    val locations: List<ClientLocation> = emptyList(),
+    val metadata: Map<String, String> = emptyMap()
+)

@@ -84,7 +84,6 @@ internal object RocketChatConnectorProvider : ConnectorProvider {
             ),
             resourceAsString("/rocketchat.svg")
         )
-
 }
 
 internal class RocketChatConnectorProviderService : ConnectorProvider by RocketChatConnectorProvider

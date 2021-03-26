@@ -22,5 +22,5 @@ package ai.tock.bot.admin.user
 interface UserReportDAO {
 
     fun search(query: UserReportQuery): UserReportQueryResult
-    fun search(query: AnalyticsQuery):List<UserAnalytics>
+    fun search(query: AnalyticsQuery): List<UserAnalytics>
 }

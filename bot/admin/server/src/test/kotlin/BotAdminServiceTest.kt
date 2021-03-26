@@ -65,7 +65,6 @@ class BotAdminServiceTest {
 
     companion object {
 
-
         fun BotStoryDefinitionConfiguration.toStoryDefinitionConfiguration(): StoryDefinitionConfiguration {
             return StoryDefinitionConfiguration(
                 storyId = storyId,
@@ -131,9 +130,11 @@ class BotAdminServiceTest {
                 bind<ApplicationMonitor>() with provider { mockk<ApplicationMonitor>(relaxed = true) }
                 bind<ModelTester>() with provider { mockk<ModelTester>(relaxed = true) }
             }
-            tockInternalInjector.inject(Kodein {
-                import(module)
-            })
+            tockInternalInjector.inject(
+                Kodein {
+                    import(module)
+                }
+            )
         }
     }
 

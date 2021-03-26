@@ -16,8 +16,8 @@
 
 package ai.tock.bot.connector.slack.model
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import ai.tock.shared.jackson.mapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

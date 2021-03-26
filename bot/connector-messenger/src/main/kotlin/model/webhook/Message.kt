@@ -16,15 +16,17 @@
 
 package ai.tock.bot.connector.messenger.model.webhook
 
+import ai.tock.bot.connector.messenger.json.webhook.MessageDeserializer
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import ai.tock.bot.connector.messenger.json.webhook.MessageDeserializer
 
 @JsonDeserialize(using = MessageDeserializer::class)
-open class Message(open val mid: String,
-                   open var text: String? = null,
-                   open val attachments: List<Attachment> = emptyList(),
-                   @get:JsonProperty("quick_reply") open val quickReply: UserActionPayload? = null) {
+open class Message(
+    open val mid: String,
+    open var text: String? = null,
+    open val attachments: List<Attachment> = emptyList(),
+    @get:JsonProperty("quick_reply") open val quickReply: UserActionPayload? = null
+) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -44,7 +44,7 @@ internal object ChannelMongoDAO : ChannelDAO {
         listCollectionNames().contains(collectionName)
 
     init {
-        if(!database.collectionExists(collectionName)) {
+        if (!database.collectionExists(collectionName)) {
             try {
                 database
                     .createCollection(
@@ -73,5 +73,4 @@ internal object ChannelMongoDAO : ChannelDAO {
     override fun save(channelEvent: ChannelEvent) {
         webChannelResponseCol.save(channelEvent)
     }
-
 }

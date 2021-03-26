@@ -25,10 +25,10 @@ import java.util.ServiceLoader
  */
 @Volatile
 var defaultTestConnectorType: ConnectorType = ServiceLoader.load(ConnectorProvider::class.java).toList().run {
-    //legacy
+    // legacy
     firstOrNull { it.connectorType.id == "messenger" }?.connectorType
-    //takes the first
-            ?: filter { it.connectorType != ConnectorType.rest }.sortedBy { it.connectorType.id }.firstOrNull()?.connectorType
-            //default to rest
-            ?: ConnectorType.rest
+        // takes the first
+        ?: filter { it.connectorType != ConnectorType.rest }.sortedBy { it.connectorType.id }.firstOrNull()?.connectorType
+        // default to rest
+        ?: ConnectorType.rest
 }

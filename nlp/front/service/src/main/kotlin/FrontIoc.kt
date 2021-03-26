@@ -16,9 +16,6 @@
 
 package ai.tock.nlp.front.service
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.provider
 import ai.tock.nlp.front.service.alexa.AlexaCodecService
 import ai.tock.nlp.front.shared.ApplicationCodec
 import ai.tock.nlp.front.shared.ApplicationConfiguration
@@ -28,6 +25,9 @@ import ai.tock.nlp.front.shared.ModelUpdater
 import ai.tock.nlp.front.shared.Parser
 import ai.tock.nlp.front.shared.codec.alexa.AlexaCodec
 import ai.tock.shared.security.TockUserListener
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
 
 /**
  *

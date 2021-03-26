@@ -16,13 +16,9 @@
 
 package ai.tock.bot.mongo
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.provider
-import com.mongodb.client.MongoDatabase
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
-import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.dialog.DialogReportDAO
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.test.TestPlanDAO
 import ai.tock.bot.admin.user.UserReportDAO
 import ai.tock.bot.engine.dialog.DialogFlowDAO
@@ -34,8 +30,12 @@ import ai.tock.shared.TOCK_BOT_DATABASE
 import ai.tock.shared.getAsyncDatabase
 import ai.tock.shared.getDatabase
 import ai.tock.translator.I18nDAO
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.provider
 import com.github.salomonbrys.kodein.singleton
+import com.mongodb.client.MongoDatabase
 import org.litote.kmongo.getCollection
 
 const val MONGO_DATABASE: String = TOCK_BOT_DATABASE

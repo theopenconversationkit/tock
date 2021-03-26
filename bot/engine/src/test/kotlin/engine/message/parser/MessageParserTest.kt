@@ -16,18 +16,16 @@
 
 package ai.tock.bot.engine.message.parser
 
-import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.engine.action.SendAttachment.AttachmentType.file
 import ai.tock.bot.engine.action.SendAttachment.AttachmentType.image
 import ai.tock.bot.engine.message.Attachment
 import ai.tock.bot.engine.message.Choice
+import ai.tock.bot.engine.message.GenericElement
+import ai.tock.bot.engine.message.GenericMessage
 import ai.tock.bot.engine.message.Location
 import ai.tock.bot.engine.message.Sentence
-import ai.tock.bot.engine.message.GenericMessage
-import ai.tock.bot.engine.message.GenericElement
 import ai.tock.bot.engine.user.UserLocation
 import org.junit.jupiter.api.Test
-import java.awt.font.TextMeasurer
 import kotlin.test.assertEquals
 
 /**
@@ -140,7 +138,6 @@ class MessageParserTest {
 
         assertEquals(listOf(s, c), MessageParser.parse("${s.toPrettyString()} |_| ${c.toPrettyString()}"))
     }
-
 
     @Test
     fun parse_shouldWork_forSentenceWithEmptyContent() {

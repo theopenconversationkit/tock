@@ -48,4 +48,3 @@ val frontMongoModule = Kodein.Module {
     bind<UserActionLogDAO>() with provider { UserActionLogMongoDAO }
     bind<UserNamespaceDAO>() with provider { UserNamespaceMongoDAO }
 }
-

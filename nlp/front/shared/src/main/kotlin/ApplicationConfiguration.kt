@@ -134,7 +134,6 @@ interface ApplicationConfiguration {
      */
     fun updateEntityDefinition(namespace: String, applicationName: String, entity: EntityDefinition)
 
-
     fun getIntentsByApplicationId(applicationId: Id<ApplicationDefinition>): List<IntentDefinition>
 
     fun getIntentById(id: Id<IntentDefinition>): IntentDefinition?
@@ -191,7 +190,8 @@ interface ApplicationConfiguration {
      * Returns the current model configuration.
      */
     fun getCurrentModelConfiguration(
-        applicationName: String, nlpEngineType: NlpEngineType
+        applicationName: String,
+        nlpEngineType: NlpEngineType
     ): NlpApplicationConfiguration
 
     /**
@@ -242,5 +242,4 @@ interface ApplicationConfiguration {
      * Is this namespace exists ?
      */
     fun isExistingNamespace(namespace: String): Boolean
-
 }

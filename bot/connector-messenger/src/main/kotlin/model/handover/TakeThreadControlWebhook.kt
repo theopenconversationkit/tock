@@ -16,18 +16,19 @@
 
 package ai.tock.bot.connector.messenger.model.handover
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.connector.messenger.model.Recipient
 import ai.tock.bot.connector.messenger.model.Sender
 import ai.tock.bot.connector.messenger.model.webhook.Webhook
+import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  * See [https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_handovers#take_thread_control].
  */
-data class TakeThreadControlWebhook(override val sender: Sender,
-                                    override val recipient: Recipient,
-                                    override val timestamp: Long,
-                                    @JsonProperty("take_thread_control") val takeThreadControl: TakeThreadControl
+data class TakeThreadControlWebhook(
+    override val sender: Sender,
+    override val recipient: Recipient,
+    override val timestamp: Long,
+    @JsonProperty("take_thread_control") val takeThreadControl: TakeThreadControl
 ) : Webhook()
 
 data class TakeThreadControl(

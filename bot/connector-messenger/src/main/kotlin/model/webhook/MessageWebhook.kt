@@ -16,11 +16,11 @@
 
 package ai.tock.bot.connector.messenger.model.webhook
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.connector.messenger.model.Recipient
 import ai.tock.bot.connector.messenger.model.Sender
 import ai.tock.shared.Dice
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
 
 data class MessageWebhook(
     override val sender: Sender,

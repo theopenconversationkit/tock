@@ -35,10 +35,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 )
 interface SecondaryBotAction {
     val metadata: ActionMetadata
-    fun toAction(metaData: OrchestrationMetaData) : Action
+    fun toAction(metaData: OrchestrationMetaData): Action
 
     companion object {
-        fun from(action: Action, botId: String) : SecondaryBotAction? = when (action) {
+        fun from(action: Action, botId: String): SecondaryBotAction? = when (action) {
             is SendSentence -> SecondaryBotSendSentence(messages = action.messages.filterIsInstance<SerializableConnectorMessage>(), text = action.text?.toString(), metadata = action.metadata.copy(orchestratedBy = botId))
             is SendChoice -> SecondaryBotSendChoice(intentName = action.intentName, parameters = action.parameters, metadata = action.metadata.copy(orchestratedBy = botId))
             else -> null
@@ -67,7 +67,7 @@ data class SecondaryBotSendChoice(
     val intentName: String,
     val parameters: Map<String, String> = emptyMap(),
     override val metadata: ActionMetadata
-) : SecondaryBotAction{
+) : SecondaryBotAction {
     override fun toAction(
         metaData: OrchestrationMetaData
     ): Action = SendChoice(

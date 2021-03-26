@@ -16,19 +16,18 @@
 
 package ai.tock.nlp.api.client
 
+import ai.tock.nlp.api.client.model.NlpQuery
+import ai.tock.nlp.api.client.model.NlpQueryContext
+import ai.tock.nlp.api.client.model.dump.ApplicationDump
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import ai.tock.nlp.api.client.model.NlpQuery
-import ai.tock.nlp.api.client.model.NlpQueryContext
-import ai.tock.nlp.api.client.model.dump.ApplicationDump
 import org.junit.jupiter.api.Test
 import java.util.Locale
 import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-
 
 /**
  *

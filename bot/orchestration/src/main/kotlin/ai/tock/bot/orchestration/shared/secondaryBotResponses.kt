@@ -24,7 +24,6 @@ import ai.tock.bot.engine.user.PlayerType
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
-
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.PROPERTY,
@@ -36,10 +35,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(value = SecondaryBotNoResponse::class, name = "noResponse")
 )
 interface SecondaryBotResponse {
-    val metaData : OrchestrationMetaData
-    val indice : Double
+    val metaData: OrchestrationMetaData
+    val indice: Double
 
-    fun toOrchestratorResponse(bot: OrchestrationTargetedBot) : OrchestrationResponse
+    fun toOrchestratorResponse(bot: OrchestrationTargetedBot): OrchestrationResponse
 
     companion object {
         fun fromActions(applicationId: String, actions: List<Action>): SecondaryBotResponse {
@@ -62,7 +61,7 @@ interface SecondaryBotResponse {
 
 open class SecondaryBotEligibilityResponse(
     override val indice: Double,
-    override val metaData : OrchestrationMetaData
+    override val metaData: OrchestrationMetaData
 ) : SecondaryBotResponse {
     override fun toOrchestratorResponse(bot: OrchestrationTargetedBot) = EligibilityOrchestrationResponse(
         targetBot = bot,
@@ -73,7 +72,7 @@ open class SecondaryBotEligibilityResponse(
 open class SecondaryBotAvailableResponse(
     val actions: List<SecondaryBotAction>,
     override val indice: Double = 1.0,
-    override val metaData : OrchestrationMetaData
+    override val metaData: OrchestrationMetaData
 ) : SecondaryBotResponse {
     override fun toOrchestratorResponse(bot: OrchestrationTargetedBot) = AvailableOrchestrationResponse(
         targetBot = bot,
@@ -82,10 +81,9 @@ open class SecondaryBotAvailableResponse(
 }
 
 open class SecondaryBotNoResponse(
-    val status : NoOrchestrationStatus,
+    val status: NoOrchestrationStatus,
     override val indice: Double = 0.0,
-    override val metaData : OrchestrationMetaData
+    override val metaData: OrchestrationMetaData
 ) : SecondaryBotResponse {
     override fun toOrchestratorResponse(bot: OrchestrationTargetedBot) = NoOrchestrationResponse(status)
 }
-

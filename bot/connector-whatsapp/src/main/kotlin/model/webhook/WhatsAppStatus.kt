@@ -16,8 +16,8 @@
 
 package ai.tock.bot.connector.whatsapp.model.webhook
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.connector.whatsapp.model.common.WhatsAppError
+import com.fasterxml.jackson.annotation.JsonProperty
 
 data class WhatsAppStatus(
     val id: String,

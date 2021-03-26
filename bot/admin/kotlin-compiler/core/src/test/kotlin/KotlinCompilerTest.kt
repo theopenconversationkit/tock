@@ -50,7 +50,6 @@ class KotlinCompilerTest {
                 super.findClass(name)
             }
         }
-
     }
 
     @Test
@@ -78,7 +77,7 @@ class KotlinCompilerTest {
                 )
             )
         } catch (e: Throwable) {
-            //java 8
+            // java 8
             listOf(
                 CompileError(
                     TextInterval(
@@ -101,10 +100,9 @@ class KotlinCompilerTest {
             )
         }
 
-
         val erroneousSourceCode = mapOf(
             "ClassToBeCompiled.kt"
-                    to
+                to
                     """
                 fun main() {
                     println("Hello)
@@ -123,7 +121,7 @@ class KotlinCompilerTest {
     fun `simple compilation and execution succeed`() {
         val sourceCode = mapOf(
             "ClassToBeCompiled.kt"
-                    to
+                to
                     """
                 import ai.tock.bot.admin.kotlin.compiler.KotlinCompilerTest  
                 fun main() {
@@ -143,15 +141,15 @@ class KotlinCompilerTest {
     @Test
     fun `simple compilation with external classes and java 9 succeed`() {
         try {
-            //does not fail with java >= 9
+            // does not fail with java >= 9
             Runtime::class.java.getMethod("version").invoke(null)
         } catch (e: Exception) {
-            //java 8 return
+            // java 8 return
             return
         }
         val sourceCode = mapOf(
             "ClassToBeCompiled.kt"
-                    to
+                to
                     """
                 fun main() {
                     ai.tock.shared.Dice.newInt(2)
@@ -159,6 +157,5 @@ class KotlinCompilerTest {
         )
         assertEquals(emptyList(), KotlinCompiler.getErrors(sourceCode)["ClassToBeCompiled.kt"])
         KotlinCompiler.compileCorrectFiles(sourceCode, "ClassToBeCompiled.kt", true)
-
     }
 }

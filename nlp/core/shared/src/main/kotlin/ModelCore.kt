@@ -62,7 +62,6 @@ interface ModelCore {
      */
     fun deleteOrphans(applicationsAndIntents: Map<Application, Set<Intent>>, entityTypes: List<EntityType>)
 
-
     /**
      * Test a model and returns a report.
      */
@@ -75,7 +74,8 @@ interface ModelCore {
      * Returns the current model configuration.
      */
     fun getCurrentModelConfiguration(
-        applicationName: String, nlpEngineType: NlpEngineType
+        applicationName: String,
+        nlpEngineType: NlpEngineType
     ): NlpApplicationConfiguration
 
     /**
@@ -86,5 +86,4 @@ interface ModelCore {
         engineType: NlpEngineType,
         configuration: NlpApplicationConfiguration
     )
-
 }

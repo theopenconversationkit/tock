@@ -52,12 +52,12 @@ data class NextUserActionState(
         referenceTimezone: ZoneId? = null,
         states: Set<String>? = null
     ) :
-            this(
-                intentsQualifiers.map { NlpIntentQualifier(it.key.wrappedIntent().name, it.value) },
-                referenceDate,
-                referenceTimezone,
-                states
-            )
+        this(
+            intentsQualifiers.map { NlpIntentQualifier(it.key.wrappedIntent().name, it.value) },
+            referenceDate,
+            referenceTimezone,
+            states
+        )
 
     /**
      * Build NextUserActionState from [IntentAware]/modifier list (in order to build [NlpIntentQualifier]).

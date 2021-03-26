@@ -25,9 +25,9 @@ internal object IntentSelectorService {
 
     fun isValidClassifiedSentence(data: ParserRequestData): Boolean {
         with(data) {
-            return classifiedSentence != null
-                    && query.context.checkExistingQuery
-                    && data.isStateEnabledForIntentId(classifiedSentence.classification.intentId)
+            return classifiedSentence != null &&
+                query.context.checkExistingQuery &&
+                data.isStateEnabledForIntentId(classifiedSentence.classification.intentId)
         }
     }
 

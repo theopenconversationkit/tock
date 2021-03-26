@@ -16,7 +16,6 @@
 
 package ai.tock.bot.connector.ga.model.response
 
-import ai.tock.bot.connector.ga.model.GAIntent
 import ai.tock.bot.connector.ga.model.request.GAArgumentValue
 import ai.tock.bot.connector.ga.model.request.GAArgumentValueType
 

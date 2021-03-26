@@ -57,9 +57,7 @@ abstract class ChatCardElement(val i18nTranslator: I18nTranslator) : I18nTransla
     }
 
     fun hasChatButtons(): Boolean = children.any { it is ChatButtons }
-
 }
-
 
 fun I18nTranslator.card(init: ChatCard.() -> Unit): GoogleChatConnectorCardMessageOut {
     val card = ChatCard(this)
@@ -74,19 +72,23 @@ class ChatCard(i18nTranslator: I18nTranslator) : ChatCardElement(i18nTranslator)
         imageUrl: String? = null,
         imageStyle: ChatImageStyle = IMAGE
     ) =
-        initElement(ChatHeader(
-            translate(title),
-            subtitle?.let { translate(it) },
-            imageUrl,
-            imageStyle,
-            i18nTranslator
-        ), {})
+        initElement(
+            ChatHeader(
+                translate(title),
+                subtitle?.let { translate(it) },
+                imageUrl,
+                imageStyle,
+                i18nTranslator
+            ),
+            {}
+        )
 
     fun section(header: CharSequence? = null, init: ChatSection.() -> Unit) = initElement(
         ChatSection(
             header?.let { translate(it) },
             i18nTranslator
-        ), init
+        ),
+        init
     )
 }
 
@@ -114,27 +116,32 @@ class ChatSection(val header: CharSequence?, i18nTranslator: I18nTranslator) : C
         contentMultiline: Boolean = false,
         iconUrl: String? = null,
         icon: ChatIcon? = null
-    ) = initElement(ChatKeyValue(
-        topLabel?.let { translate(it) },
-        translate(content),
-        bottomLabel?.let { translate(it) },
-        action?.let {
-            val button = ChatButton.ChatTextButton("", i18nTranslator)
-            button.action()
-            button.buttonAction
-        },
-        contentMultiline,
-        iconUrl,
-        icon,
-        i18nTranslator
-    ), { })
+    ) = initElement(
+        ChatKeyValue(
+            topLabel?.let { translate(it) },
+            translate(content),
+            bottomLabel?.let { translate(it) },
+            action?.let {
+                val button = ChatButton.ChatTextButton("", i18nTranslator)
+                button.action()
+                button.buttonAction
+            },
+            contentMultiline,
+            iconUrl,
+            icon,
+            i18nTranslator
+        ),
+        { }
+    )
 
     fun image(imageUrl: String, init: ChatButton.ChatIconExternalButton.() -> Unit = {}) =
         initElement(
             ChatImage(
                 initElement(ChatButton.ChatIconExternalButton(imageUrl, i18nTranslator), init),
                 i18nTranslator
-            ), {})
+            ),
+            {}
+        )
 
     fun buttons(init: ChatButtons.() -> Unit) = initElement(ChatButtons(i18nTranslator), init)
 }
@@ -162,7 +169,8 @@ open class ChatButtons(i18nTranslator: I18nTranslator) : ChatWidget(i18nTranslat
         ChatButton.ChatTextButton(
             translate(text),
             i18nTranslator
-        ), init
+        ),
+        init
     )
 
     fun nlpTextButton(text: CharSequence) =
@@ -233,14 +241,12 @@ sealed class ChatButton(i18nTranslator: I18nTranslator) : ChatCardElement(i18nTr
         val icon: ChatIcon,
         i18nTranslator: I18nTranslator
     ) : ChatButton(i18nTranslator)
-
 }
 
 sealed class ChatButtonAction {
     class ChatLink(val link: String) : ChatButtonAction()
     class ChatAction(val action: String, val parameters: Map<String, String>) : ChatButtonAction()
 }
-
 
 fun ChatCard.toCardMessage(): Message = Message().setCards(
     mutableListOf(

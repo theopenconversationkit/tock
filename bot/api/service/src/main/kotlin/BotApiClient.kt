@@ -47,5 +47,4 @@ internal class BotApiClient(baseUrl: String) {
             logger.error(e)
             null
         }
-
 }

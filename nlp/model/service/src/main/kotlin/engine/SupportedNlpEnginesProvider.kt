@@ -18,7 +18,6 @@ package ai.tock.nlp.model.service.engine
 
 import ai.tock.shared.Loader
 
-
 /**
  * Provides all supported nlp engines.
  */

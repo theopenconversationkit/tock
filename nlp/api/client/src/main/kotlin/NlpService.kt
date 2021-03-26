@@ -82,5 +82,4 @@ internal interface NlpService {
 
     @GET("healthcheck")
     fun healthcheck(): Call<ResponseBody>
-
 }

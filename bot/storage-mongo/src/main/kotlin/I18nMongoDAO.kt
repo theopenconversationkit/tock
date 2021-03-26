@@ -76,7 +76,6 @@ import org.litote.kmongo.toId
 import org.litote.kmongo.upsert
 import org.litote.kmongo.withDocumentClass
 import java.time.Instant
-import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 
 /**
@@ -247,7 +246,8 @@ internal object I18nMongoDAO : I18nDAO {
 
     override fun getLabelIdsFromStats(namespace: String, timeMarker: Instant): Set<Id<I18nLabel>> {
         return statCol
-            .projection(I18nLabelStat::labelId,
+            .projection(
+                I18nLabelStat::labelId,
                 and(
                     I18nLabelStat_.Namespace eq namespace,
                     I18nLabelStat_.LastUpdate gte timeMarker

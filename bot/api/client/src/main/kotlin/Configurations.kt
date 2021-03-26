@@ -17,8 +17,8 @@
 package ai.tock.bot.api.client
 
 import ai.tock.bot.api.model.configuration.ClientConfiguration
-import ai.tock.bot.api.model.configuration.StoryConfiguration
 import ai.tock.bot.api.model.configuration.StepConfiguration
+import ai.tock.bot.api.model.configuration.StoryConfiguration
 
 fun ClientBotDefinition.toConfiguration(): ClientConfiguration =
     ClientConfiguration(

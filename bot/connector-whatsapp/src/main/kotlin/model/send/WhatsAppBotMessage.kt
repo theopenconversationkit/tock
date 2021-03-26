@@ -46,9 +46,8 @@ abstract class WhatsAppBotMessage(val type: WhatsAppBotMessageType, @JsonIgnore 
     @get:JsonProperty("recipient_type")
     abstract val recipientType: WhatsAppBotRecipientType
 
-    internal abstract fun toSendBotMessage(recipientId:String) : WhatsAppSendBotMessage
+    internal abstract fun toSendBotMessage(recipientId: String): WhatsAppSendBotMessage
 
     @get:JsonIgnore
     val to: String get() = userId?.let { UserHashedIdCache.getRealId(it) } ?: "unknown"
-
 }

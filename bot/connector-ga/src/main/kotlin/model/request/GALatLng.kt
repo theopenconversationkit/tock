@@ -16,6 +16,4 @@
 
 package ai.tock.bot.connector.ga.model.request
 
-data class GALatLng(val latitude: Double, val longitude: Double) {
-
-}
+data class GALatLng(val latitude: Double, val longitude: Double)

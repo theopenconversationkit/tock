@@ -42,6 +42,4 @@ class LogoutButton : Button(ButtonType.account_unlink) {
     override fun hashCode(): Int {
         return javaClass.hashCode()
     }
-
-
 }

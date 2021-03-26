@@ -16,8 +16,6 @@
 
 package ai.tock.nlp.api
 
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.module.kotlin.readValue
 import ai.tock.nlp.core.Entity
 import ai.tock.nlp.core.EntityType
 import ai.tock.nlp.entity.date.DateEntityGrain
@@ -26,13 +24,14 @@ import ai.tock.nlp.front.shared.parser.ParseResult
 import ai.tock.nlp.front.shared.parser.ParsedEntityValue
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.jackson.mapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import kotlin.test.assertEquals
-
 
 /**
  *

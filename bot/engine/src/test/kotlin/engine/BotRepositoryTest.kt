@@ -160,7 +160,6 @@ class BotRepositoryTest : BotEngineTest() {
         verify(exactly = 0) { connector.register(any()) }
     }
 
-
     @Test
     fun `uninstall a configuration from an update calls controller#unregisterServices`() {
         val connectorType = ConnectorType("test")
@@ -205,7 +204,7 @@ class BotRepositoryTest : BotEngineTest() {
 
         val appSlot: CapturingSlot<BotApplicationConfiguration> = slot()
         every { botConfDAO.save(capture(appSlot)) } answers { appSlot.captured }
-        //first time conf1, second time conf2
+        // first time conf1, second time conf2
         var listenChangesCalled = false
         every { botConfDAO.getConfigurations() } answers {
             if (listenChangesCalled) {
@@ -214,18 +213,18 @@ class BotRepositoryTest : BotEngineTest() {
                 botConfs1
             }
         }
-        //listen changes
+        // listen changes
         every { botConfDAO.listenChanges(captureLambda()) } answers {
-            //first configure the verticle
+            // first configure the verticle
             verticleSlot.captured.configure()
-            //then check path is healthcheck + files + /1
+            // then check path is healthcheck + files + /1
             assertEquals(3, verticleSlot.captured.router.routes.size)
             assertEquals("/1", verticleSlot.captured.router.routes[1].path)
-            //then call the update
+            // then call the update
             listenChangesCalled = true
             lambda<() -> Unit>().invoke()
         }
-        //listen connector
+        // listen connector
         val controllerSlot: CapturingSlot<ConnectorController> = slot()
 
         val installer1: (Router) -> Unit = mockk()
@@ -243,10 +242,9 @@ class BotRepositoryTest : BotEngineTest() {
             )
         }
 
-
         BotRepository.installBots(emptyList())
 
-        //check verticle contains installer2 route (and so unregister has been called on installer1)
+        // check verticle contains installer2 route (and so unregister has been called on installer1)
         assertEquals(3, verticleSlot.captured.router.routes.size)
         assertEquals("/2", verticleSlot.captured.router.routes[2].path)
     }
@@ -304,6 +302,4 @@ class BotRepositoryTest : BotEngineTest() {
             verify { connector.notify(any(), recipientId, intent, null, any(), null, any()) }
         }
     }
-
-
 }

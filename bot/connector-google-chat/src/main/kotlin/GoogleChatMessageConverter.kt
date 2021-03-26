@@ -19,7 +19,6 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
 import mu.KotlinLogging
 
-
 internal object GoogleChatMessageConverter {
 
     val logger = KotlinLogging.logger {}
@@ -39,4 +38,3 @@ internal object GoogleChatMessageConverter {
         }
     }
 }
-

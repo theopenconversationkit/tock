@@ -28,7 +28,8 @@ fun unknownStory(
     /**
      * The handler for the story.
      */
-    handler: (ClientBus).() -> Unit) = ClientStoryDefinition(Intent.unknown, handler = newStoryHandler(handler))
+    handler: (ClientBus).() -> Unit
+) = ClientStoryDefinition(Intent.unknown, handler = newStoryHandler(handler))
 
 /**
  * Creates a new bot.

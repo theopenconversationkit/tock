@@ -16,9 +16,9 @@
 
 package ai.tock.nlp.api
 
-import com.github.salomonbrys.kodein.Kodein.Module
 import ai.tock.nlp.front.ioc.FrontIoc
 import ai.tock.shared.vertx.vertx
+import com.github.salomonbrys.kodein.Kodein.Module
 
 fun main(args: Array<String>) {
     startNlpService()

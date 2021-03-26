@@ -79,5 +79,4 @@ interface NlpEngineModelBuilder {
             defaultIntentClassifierConfiguration,
             defaultEntityClassifierConfiguration
         )
-
 }

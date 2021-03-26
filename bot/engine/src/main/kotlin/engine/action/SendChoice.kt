@@ -26,12 +26,12 @@ import ai.tock.bot.engine.message.Choice
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.mapNotNullValues
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 import java.net.URLDecoder.decode
 import java.net.URLEncoder.encode
 import java.nio.charset.StandardCharsets.UTF_8
 import java.time.Instant
-import org.litote.kmongo.Id
-import org.litote.kmongo.newId
 
 /**
  * A user choice (click on a button or direct action).
@@ -60,17 +60,17 @@ class SendChoice(
         state: EventState = EventState(),
         metadata: ActionMetadata = ActionMetadata()
     ) :
-            this(
-                playerId,
-                applicationId,
-                recipientId,
-                intentName,
-                parameters + mapNotNullValues(STEP_PARAMETER to step?.name),
-                id,
-                date,
-                state,
-                metadata
-            )
+        this(
+            playerId,
+            applicationId,
+            recipientId,
+            intentName,
+            parameters + mapNotNullValues(STEP_PARAMETER to step?.name),
+            id,
+            date,
+            state,
+            metadata
+        )
 
     companion object {
 
@@ -238,12 +238,12 @@ class SendChoice(
             return StringBuilder().apply {
                 append(intent.wrappedIntent().name)
                 val params = parameters +
-                        listOfNotNull(
-                            if (currentStep != null) STEP_PARAMETER to currentStep else null,
-                            if (currentIntent != null && currentIntent != intent)
-                                PREVIOUS_INTENT_PARAMETER to currentIntent.name else null,
-                            if (sourceAppId != null) SOURCE_APP_ID to sourceAppId else null
-                        )
+                    listOfNotNull(
+                        if (currentStep != null) STEP_PARAMETER to currentStep else null,
+                        if (currentIntent != null && currentIntent != intent)
+                            PREVIOUS_INTENT_PARAMETER to currentIntent.name else null,
+                        if (sourceAppId != null) SOURCE_APP_ID to sourceAppId else null
+                    )
 
                 if (params.isNotEmpty()) {
                     params.map { e ->
@@ -295,9 +295,11 @@ class SendChoice(
                             applicationId = applicationId,
                             recipientId = recipientId,
                             intentName = intentName,
-                            parameters = parameters + (if (referralParameter == null) emptyMap() else mapOf(
-                                REFERRAL_PARAMETER to referralParameter
-                            ))
+                            parameters = parameters + (
+                                if (referralParameter == null) emptyMap() else mapOf(
+                                    REFERRAL_PARAMETER to referralParameter
+                                )
+                                )
                         )
                     }
                 }
@@ -332,6 +334,4 @@ class SendChoice(
     override fun toString(): String {
         return "SendChoice(intentName='$intentName', parameters=$parameters)"
     }
-
-
 }

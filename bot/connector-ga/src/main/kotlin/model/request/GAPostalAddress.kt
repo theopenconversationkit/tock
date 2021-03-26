@@ -17,16 +17,15 @@
 package ai.tock.bot.connector.ga.model.request
 
 data class GAPostalAddress(
-        val revision: Double,
-        val regionCode: String,
-        val languageCode: String?,
-        val postalCode: String?,
-        val sortingCode: String?,
-        val administrativeArea: String?,
-        val locality: String?,
-        val sublocality: String?,
-        val addressLines: List<String>,
-        val recipients: List<String>?,
-        val organization: String?) {
-
-}
+    val revision: Double,
+    val regionCode: String,
+    val languageCode: String?,
+    val postalCode: String?,
+    val sortingCode: String?,
+    val administrativeArea: String?,
+    val locality: String?,
+    val sublocality: String?,
+    val addressLines: List<String>,
+    val recipients: List<String>?,
+    val organization: String?
+)

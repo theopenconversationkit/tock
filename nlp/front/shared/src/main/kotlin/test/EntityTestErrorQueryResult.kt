@@ -20,6 +20,6 @@ package ai.tock.nlp.front.shared.test
  *
  */
 data class EntityTestErrorQueryResult(
-        val total: Int,
-        val data: List<EntityTestError>
+    val total: Int,
+    val data: List<EntityTestError>
 )

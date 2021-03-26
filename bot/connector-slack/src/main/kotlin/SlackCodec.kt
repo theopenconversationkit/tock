@@ -16,14 +16,12 @@
 
 package ai.tock.bot.connector.slack
 
-
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import java.net.URLDecoder
 
 private val logger = KotlinLogging.logger {}
-
 
 internal fun RoutingContext.convertUrlEncodedStringToJson(): String {
     return parseJson(bodyAsString)

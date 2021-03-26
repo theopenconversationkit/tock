@@ -30,30 +30,29 @@ import java.util.Locale
  *
  */
 data class TestPlanUpdate(
-        val dialogs: List<TestDialogReport>,
-        val name: String,
-        val applicationId: String,
-        val namespace: String,
-        val nlpModel: String,
-        val botApplicationConfigurationId: Id<BotApplicationConfiguration>,
-        val locale: Locale = defaultLocale,
-        val startAction: Message? = null,
-        val targetConnectorType: ConnectorType = ConnectorType.none,
-        val _id: Id<TestPlan>? = null
+    val dialogs: List<TestDialogReport>,
+    val name: String,
+    val applicationId: String,
+    val namespace: String,
+    val nlpModel: String,
+    val botApplicationConfigurationId: Id<BotApplicationConfiguration>,
+    val locale: Locale = defaultLocale,
+    val startAction: Message? = null,
+    val targetConnectorType: ConnectorType = ConnectorType.none,
+    val _id: Id<TestPlan>? = null
 ) {
 
     fun toTestPlan(): TestPlan =
-            TestPlan(
-                    dialogs,
-                    name,
-                    applicationId,
-                    namespace,
-                    nlpModel,
-                    botApplicationConfigurationId,
-                    locale,
-                    startAction,
-                    targetConnectorType,
-                    _id ?: newId()
-            )
-
+        TestPlan(
+            dialogs,
+            name,
+            applicationId,
+            namespace,
+            nlpModel,
+            botApplicationConfigurationId,
+            locale,
+            startAction,
+            targetConnectorType,
+            _id ?: newId()
+        )
 }

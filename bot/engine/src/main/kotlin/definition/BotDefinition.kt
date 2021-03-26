@@ -60,8 +60,9 @@ interface BotDefinition : I18nKeyProvider {
          */
         internal fun findIntent(stories: List<StoryDefinition>, intent: String): Intent {
             val targetIntent = Intent(intent)
-            return if (stories.any { it.supportIntent(targetIntent) }
-                || stories.any { it.allSteps().any { s -> s.supportIntent(targetIntent) } }) {
+            return if (stories.any { it.supportIntent(targetIntent) } ||
+                stories.any { it.allSteps().any { s -> s.supportIntent(targetIntent) } }
+            ) {
                 targetIntent
             } else {
                 if (intent == keyword.name) {
@@ -228,9 +229,9 @@ interface BotDefinition : I18nKeyProvider {
      * Does this action trigger bot deactivation ?
      */
     fun disableBot(timeline: UserTimeline, dialog: Dialog, action: Action): Boolean =
-        action.state.notification
-                || dialog.state.currentIntent?.let { botDisabledStory?.isStarterIntent(it) } ?: false
-                || hasDisableTagIntent(dialog)
+        action.state.notification ||
+            dialog.state.currentIntent?.let { botDisabledStory?.isStarterIntent(it) } ?: false ||
+            hasDisableTagIntent(dialog)
 
     /**
      * Returns true if the dialog current intent is a disabling intent.
@@ -253,15 +254,15 @@ interface BotDefinition : I18nKeyProvider {
      * Does this action trigger bot activation ?
      */
     fun enableBot(timeline: UserTimeline, dialog: Dialog, action: Action): Boolean =
-        dialog.state.currentIntent?.let { botEnabledStory?.isStarterIntent(it) } ?: false
-                || dialog.state.currentIntent?.let { botEnabledStories.any { story -> story.isStarterIntent(it) } } ?: false
-                // send choice can reactivate disabled bot (is the intent is not a disabled intent)
-                ||
-                (sendChoiceActivateBot
-                        && action is SendChoice
-                        && !action.state.notification
-                        && !(dialog.state.currentIntent?.let { botDisabledStory?.isStarterIntent(it) } ?: false)
-                        )
+        dialog.state.currentIntent?.let { botEnabledStory?.isStarterIntent(it) } ?: false ||
+            dialog.state.currentIntent?.let { botEnabledStories.any { story -> story.isStarterIntent(it) } } ?: false ||
+            // send choice can reactivate disabled bot (is the intent is not a disabled intent)
+            (
+                sendChoiceActivateBot &&
+                    action is SendChoice &&
+                    !action.state.notification &&
+                    !(dialog.state.currentIntent?.let { botDisabledStory?.isStarterIntent(it) } ?: false)
+                )
 
     /**
      *  Listener invoked when bot is enabled.

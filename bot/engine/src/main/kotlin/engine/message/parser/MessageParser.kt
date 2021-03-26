@@ -16,6 +16,20 @@
 
 package ai.tock.bot.engine.message.parser
 
+import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.engine.action.SendAttachment.AttachmentType.image
+import ai.tock.bot.engine.event.EventType.attachment
+import ai.tock.bot.engine.event.EventType.choice
+import ai.tock.bot.engine.event.EventType.location
+import ai.tock.bot.engine.event.EventType.sentence
+import ai.tock.bot.engine.message.Attachment
+import ai.tock.bot.engine.message.Choice
+import ai.tock.bot.engine.message.GenericElement
+import ai.tock.bot.engine.message.GenericMessage
+import ai.tock.bot.engine.message.Location
+import ai.tock.bot.engine.message.Message
+import ai.tock.bot.engine.message.Sentence
+import ai.tock.bot.engine.user.UserLocation
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES
@@ -26,20 +40,6 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import ai.tock.bot.connector.ConnectorType
-import ai.tock.bot.engine.action.SendAttachment.AttachmentType.image
-import ai.tock.bot.engine.event.EventType.attachment
-import ai.tock.bot.engine.event.EventType.choice
-import ai.tock.bot.engine.event.EventType.location
-import ai.tock.bot.engine.event.EventType.sentence
-import ai.tock.bot.engine.message.Attachment
-import ai.tock.bot.engine.message.Choice
-import ai.tock.bot.engine.message.Location
-import ai.tock.bot.engine.message.Message
-import ai.tock.bot.engine.message.Sentence
-import ai.tock.bot.engine.message.GenericMessage
-import ai.tock.bot.engine.message.GenericElement
-import ai.tock.bot.engine.user.UserLocation
 
 /**
  * (Very) simple DSL parser for [Message]s.
@@ -52,11 +52,11 @@ object MessageParser {
     private val subElementsSeparator = "$$"
     private val subElementsArraySeparator = "&&"
 
-    //duplicate mapper to avoid ALLOW_UNQUOTED_FIELD_NAMES default
+    // duplicate mapper to avoid ALLOW_UNQUOTED_FIELD_NAMES default
     private val mapper: ObjectMapper =
         jacksonObjectMapper()
             .findAndRegisterModules()
-            //force java time module
+            // force java time module
             .registerModule(JavaTimeModule())
             .configure(ALLOW_UNQUOTED_FIELD_NAMES, true)
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -131,7 +131,7 @@ object MessageParser {
                     .let {
                         Sentence(
                             null,
-                            //only one element supported
+                            // only one element supported
                             mutableListOf(parseSentenceElement(it))
                         )
                     }

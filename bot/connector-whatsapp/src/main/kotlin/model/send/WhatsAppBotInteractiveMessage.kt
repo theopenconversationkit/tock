@@ -30,5 +30,4 @@ data class WhatsAppBotInteractiveMessage(
             recipientType = recipientType,
             template = template
         )
-
 }

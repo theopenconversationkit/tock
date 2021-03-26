@@ -20,11 +20,11 @@ import ai.tock.bot.definition.DialogFlowStateTransitionType
 import org.litote.kmongo.Id
 
 data class DialogFlowStateTransitionData(
-        val previousStateId: Id<DialogFlowStateData>?,
-        val nextStateId: Id<DialogFlowStateData>,
-        val intent: String?,
-        val step: String?,
-        val newEntities: Set<String>,
-        val type: DialogFlowStateTransitionType,
-        val count:Long = 0
+    val previousStateId: Id<DialogFlowStateData>?,
+    val nextStateId: Id<DialogFlowStateData>,
+    val intent: String?,
+    val step: String?,
+    val newEntities: Set<String>,
+    val type: DialogFlowStateTransitionType,
+    val count: Long = 0
 )

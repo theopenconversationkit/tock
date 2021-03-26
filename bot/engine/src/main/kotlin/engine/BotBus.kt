@@ -107,7 +107,7 @@ interface BotBus : Bus<BotBus> {
      */
     val connectorData: ConnectorData
 
-    //shortcuts
+    // shortcuts
 
     /**
      * User preferences of the current user.
@@ -464,7 +464,7 @@ interface BotBus : Bus<BotBus> {
      */
     fun markAsUnknown()
 
-    //i18n provider implementation
+    // i18n provider implementation
     override fun i18n(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue =
         i18nProvider.i18n(defaultLabel, args)
 
@@ -483,13 +483,12 @@ interface BotBus : Bus<BotBus> {
                 )
         }
 
-    //I18nTranslator implementation
+    // I18nTranslator implementation
     override val contextId: String? get() = dialog.id.toString()
 
     override fun defaultDelay(answerIndex: Int): Long = botDefinition.defaultDelay(answerIndex)
 
     override val test: Boolean get() = userPreferences.test
-
 
     // override default beahviour
     override fun end(
@@ -515,8 +514,7 @@ interface BotBus : Bus<BotBus> {
         return this
     }
 
-
-    //this is mainly to allow mockk to work -->
+    // this is mainly to allow mockk to work -->
 
     override fun withMessage(message: ConnectorMessage): BotBus = super.withMessage(message)
 

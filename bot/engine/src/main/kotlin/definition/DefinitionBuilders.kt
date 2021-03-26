@@ -26,7 +26,6 @@ import ai.tock.bot.engine.action.ActionNotificationType
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.translator.UserInterfaceType
 
-
 /**
  * Creates a new bot.
  */
@@ -401,7 +400,6 @@ inline fun <reified T : StoryHandlerDefinition, reified S> storyDefWithSteps(
         unsupportedUserInterface
     )
 
-
 /**
  * Creates a new story from a [StoryHandler].
  */
@@ -539,7 +537,6 @@ inline fun <reified T> storyWithSteps(
         handler
     )
 
-
 /**
  * Sends a notification to a connector.
  * A [Bus] is created and the corresponding story is called.
@@ -579,4 +576,3 @@ fun notify(
     botId = botId,
     errorListener = errorListener
 )
-

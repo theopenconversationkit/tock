@@ -64,14 +64,14 @@ val sharedTestModule = Kodein.Module {
             }
         }
     } catch (e: Throwable) {
-        //vertx not in classpath : ignore
+        // vertx not in classpath : ignore
         logger.trace("vertx is not present in classpath")
     }
 
     try {
         bind<MongoClient>() with singleton {
             try {
-                //init kmongo configuration for persistence tests
+                // init kmongo configuration for persistence tests
                 TockKMongoConfiguration.configure()
                 KFlapdoodle.mongoClient
             } catch (t: Throwable) {
@@ -85,7 +85,7 @@ val sharedTestModule = Kodein.Module {
     try {
         bind<com.mongodb.reactivestreams.client.MongoClient>() with singleton {
             try {
-                //init kmongo configuration for persistence tests
+                // init kmongo configuration for persistence tests
                 TockKMongoConfiguration.configure()
                 KFlapdoodleReactiveStreams.mongoClient
             } catch (t: Throwable) {
@@ -150,7 +150,6 @@ class SimpleExecutor(private val nbThreads: Int) : Executor {
         executor.scheduleWithFixedDelay(runnable, initialDelay.toMillis(), delay.toMillis(), MILLISECONDS)
         return 0L
     }
-
 }
 
 private object TestExecutor : Executor {

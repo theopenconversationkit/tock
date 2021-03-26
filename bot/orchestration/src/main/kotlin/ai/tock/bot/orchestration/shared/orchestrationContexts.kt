@@ -19,8 +19,6 @@ package ai.tock.bot.orchestration.shared
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.user.PlayerId
-import ai.tock.bot.engine.user.PlayerType
-import ai.tock.shared.Dice
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 

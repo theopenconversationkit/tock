@@ -48,9 +48,9 @@ data class UserActionLog(
     /**
      * Is there a technical error?
      */
-    val error:Boolean = false,
+    val error: Boolean = false,
     /**
      * Date of the action.
      */
-    val date: Instant = now()) {
-}
+    val date: Instant = now()
+)

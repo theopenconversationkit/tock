@@ -53,6 +53,10 @@ import io.vertx.ext.web.handler.CorsHandler
 import io.vertx.ext.web.handler.ErrorHandler
 import io.vertx.ext.web.handler.SessionHandler
 import io.vertx.ext.web.sstore.LocalSessionStore
+import mu.KLogger
+import mu.KotlinLogging
+import org.litote.kmongo.Id
+import org.litote.kmongo.toId
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
@@ -60,10 +64,6 @@ import java.nio.file.Paths
 import java.util.EnumSet
 import java.util.Locale
 import kotlin.LazyThreadSafetyMode.PUBLICATION
-import mu.KLogger
-import mu.KotlinLogging
-import org.litote.kmongo.Id
-import org.litote.kmongo.toId
 
 /**
  * Base class for web Tock [io.vertx.core.Verticle]s. Provides utility methods.
@@ -82,7 +82,7 @@ abstract class WebVerticle : AbstractVerticle() {
          */
         val defaultRequestLogger: RequestLogger = object : RequestLogger {
             override fun log(context: RoutingContext, data: Any?, error: Boolean) {
-                //do nothing
+                // do nothing
             }
         }
 
@@ -166,7 +166,6 @@ abstract class WebVerticle : AbstractVerticle() {
      */
     open fun livenesscheck(): (RoutingContext) -> Unit = healthcheck()
 
-
     /**
      * Provide enhanced information: HTTP response has JSON body with health status of resources
      */
@@ -204,7 +203,8 @@ abstract class WebVerticle : AbstractVerticle() {
                 if (it.succeeded()) {
                     startServer(promise)
                 }
-            })
+            }
+        )
     }
 
     override fun stop(stopFuture: Future<Void>?) {
@@ -518,7 +518,7 @@ abstract class WebVerticle : AbstractVerticle() {
         }
     }
 
-    //non blocking methods
+    // non blocking methods
 
     protected inline fun <reified I : Any, O> withBodyJson(
         method: HttpMethod,
@@ -545,7 +545,7 @@ abstract class WebVerticle : AbstractVerticle() {
         withBodyJson(POST, path, role, handler)
     }
 
-    //extension & utility methods
+    // extension & utility methods
 
     protected open fun addDevCorsHandler() {
         if (useDefaultCorsHandler) {
@@ -610,14 +610,15 @@ abstract class WebVerticle : AbstractVerticle() {
      * Execute blocking code using [Vertx.executeBlocking].
      */
     protected fun RoutingContext.executeBlocking(handler: (RoutingContext) -> Unit) {
-        sharedVertx.executeBlocking<Unit>({
-            try {
-                handler.invoke(this)
-                it.tryComplete()
-            } catch (t: Throwable) {
-                it.tryFail(t)
-            }
-        },
+        sharedVertx.executeBlocking<Unit>(
+            {
+                try {
+                    handler.invoke(this)
+                    it.tryComplete()
+                } catch (t: Throwable) {
+                    it.tryFail(t)
+                }
+            },
             false,
             {
                 if (it.failed()) {

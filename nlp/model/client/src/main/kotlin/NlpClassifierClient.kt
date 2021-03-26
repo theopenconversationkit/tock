@@ -16,15 +16,13 @@
 
 package ai.tock.nlp.model.client
 
-import com.github.salomonbrys.kodein.instance
 import ai.tock.nlp.model.NlpClassifier
 import ai.tock.shared.injector
+import com.github.salomonbrys.kodein.instance
 
 private val nlpClassifier: NlpClassifier by injector.instance()
 
 /**
  *
  */
-object NlpClassifierClient : NlpClassifier by nlpClassifier {
-
-}
+object NlpClassifierClient : NlpClassifier by nlpClassifier

@@ -35,8 +35,9 @@ import java.util.Locale
  * A JUnit4 Rule to initialize the context for each call.
  */
 open class TockJUnit4Rule<out T : TestContext>(
-        val botDefinition: BotDefinition,
-        @Suppress("UNCHECKED_CAST") val lifecycle: TestLifecycle<T> = TestLifecycle(TestContext() as T)) : TestRule {
+    val botDefinition: BotDefinition,
+    @Suppress("UNCHECKED_CAST") val lifecycle: TestLifecycle<T> = TestLifecycle(TestContext() as T)
+) : TestRule {
 
     /**
      * The [TestContext].
@@ -47,35 +48,37 @@ open class TockJUnit4Rule<out T : TestContext>(
      * Provides a mock initialized with the specified [StoryDefinition] and starts the story.
      */
     fun startNewBusMock(
-            story: StoryDefinition = testContext.defaultStoryDefinition(botDefinition),
-            connectorType: ConnectorType = testContext.defaultConnectorType(),
-            locale: Locale = testContext.defaultLocale(),
-            userId: PlayerId = testContext.defaultPlayerId())
-            : BotBusMock = newBusMock(story, connectorType, locale, userId).run()
+        story: StoryDefinition = testContext.defaultStoryDefinition(botDefinition),
+        connectorType: ConnectorType = testContext.defaultConnectorType(),
+        locale: Locale = testContext.defaultLocale(),
+        userId: PlayerId = testContext.defaultPlayerId()
+    ):
+        BotBusMock = newBusMock(story, connectorType, locale, userId).run()
 
     /**
      * Provides a mock initialized with the specified [StoryDefinition].
      */
     fun newBusMock(
-            story: StoryDefinition = testContext.defaultStoryDefinition(botDefinition),
-            connectorType: ConnectorType = testContext.defaultConnectorType(),
-            locale: Locale = testContext.defaultLocale(),
-            userId: PlayerId = testContext.defaultPlayerId())
-            : BotBusMock = BotBusMock(newBusMockContext(story, connectorType, locale, userId))
+        story: StoryDefinition = testContext.defaultStoryDefinition(botDefinition),
+        connectorType: ConnectorType = testContext.defaultConnectorType(),
+        locale: Locale = testContext.defaultLocale(),
+        userId: PlayerId = testContext.defaultPlayerId()
+    ):
+        BotBusMock = BotBusMock(newBusMockContext(story, connectorType, locale, userId))
 
     /**
      * Provides a mock context initialized with the specified [StoryDefinition].
      */
     fun newBusMockContext(
-            story: StoryDefinition = testContext.defaultStoryDefinition(botDefinition),
-            connectorType: ConnectorType = testContext.defaultConnectorType(),
-            locale: Locale = testContext.defaultLocale(),
-            userId: PlayerId = testContext.defaultPlayerId()
+        story: StoryDefinition = testContext.defaultStoryDefinition(botDefinition),
+        connectorType: ConnectorType = testContext.defaultConnectorType(),
+        locale: Locale = testContext.defaultLocale(),
+        userId: PlayerId = testContext.defaultPlayerId()
     ): BotBusMockContext = botDefinition.newBusMockContext(testContext, story, connectorType, locale, userId)
-            .apply {
-                testContext.botBusMockContext = this
-                lifecycle.configureTestIoc()
-            }
+        .apply {
+            testContext.botBusMockContext = this
+            lifecycle.configureTestIoc()
+        }
 
     /**
      * Provides a mock context initialized with the current [testContext] and runs the bus.
@@ -100,5 +103,4 @@ open class TockJUnit4Rule<out T : TestContext>(
             }
         }
     }
-
 }

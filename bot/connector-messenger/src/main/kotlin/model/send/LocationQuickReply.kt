@@ -20,8 +20,7 @@ import ai.tock.bot.engine.message.Location
 
 class LocationQuickReply : QuickReply(QuickReplyContentType.location) {
 
-    override fun toLocation(): Location?
-            = Location(null)
+    override fun toLocation(): Location = Location(null)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

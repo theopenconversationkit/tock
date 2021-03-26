@@ -16,7 +16,6 @@
 
 package ai.tock.nlp.front.service
 
-import com.github.salomonbrys.kodein.instance
 import ai.tock.nlp.core.BuildContext
 import ai.tock.nlp.core.Intent
 import ai.tock.nlp.core.ModelCore
@@ -37,6 +36,7 @@ import ai.tock.nlp.front.shared.config.SentencesQuery
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.provide
+import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import java.time.Duration
@@ -143,7 +143,8 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
                     language,
                     engineType,
                     onlyIfNotExists
-                ), i, samples
+                ),
+                i, samples
             )
             samples.size
         }
@@ -218,6 +219,4 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
             config.getEntityTypes().mapNotNull { ConfigurationRepository.toEntityType(it) }
         )
     }
-
-
 }

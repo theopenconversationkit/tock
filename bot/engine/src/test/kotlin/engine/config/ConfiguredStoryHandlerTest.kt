@@ -108,7 +108,6 @@ class ConfiguredStoryHandlerTest {
             every { mandatoryEntities } returns emptyList()
             every { findCurrentAnswer() } returns simpleAnswerConfiguration
             every { findEnabledEndWithStoryId(any()) } returns null
-
         }
 
         val nextStepTranslated = listOf(RawString("Step 1 not translated"))

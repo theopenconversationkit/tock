@@ -16,7 +16,6 @@
 
 package ai.tock.bot.connector.rocketchat
 
-import chat.rocket.common.model.RoomType
 import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
@@ -27,6 +26,7 @@ import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.shared.error
+import chat.rocket.common.model.RoomType
 import mu.KotlinLogging
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.CopyOnWriteArraySet
@@ -61,11 +61,11 @@ internal class RocketChatConnector(
                     logger.warn { "no message for $room - skip" }
                 } else if (message.sender!!.username == client.login) {
                     logger.debug { "do not reply to bot messages $room because client login is the same than sender: ${client.login}" }
-                } //sometimes the same message comes twice
+                } // sometimes the same message comes twice
                 else if (lastMessages.contains(message.id)) {
                     logger.debug { "message $message already seen - skip" }
                 } else {
-                    //register last messages
+                    // register last messages
                     lastMessages.poll()
                     lastMessages.offer(message.id)
 

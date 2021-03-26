@@ -89,7 +89,7 @@ internal object KotlinCompiler {
         logger.debug { "load paths from $classLoader" }
         val cp = System.getProperty("java.class.path")
         logger.debug { "classpath: $cp" }
-        //java 8
+        // java 8
         paths.addAll(
             (classLoader as? URLClassLoader)
                 ?.urLs
@@ -97,25 +97,23 @@ internal object KotlinCompiler {
                     logger.debug { "load url $it" }
                     Paths.get(it.toURI())
                 }
-                ?:
-                //java 9
-                (classPath + cp.split(File.pathSeparator))
-                    .flatMap {
-                        Paths.get(it).let {
-                            if (Files.isDirectory(it)) {
-                                Files.list(it).filter {
-                                    it.toString().endsWith(".jar")
-                                }.collect(Collectors.toList()) + listOf(it)
-                            } else {
-                                listOf(it)
-                            }
+                // java 9
+                ?: (classPath + cp.split(File.pathSeparator))
+                .flatMap {
+                    Paths.get(it).let {
+                        if (Files.isDirectory(it)) {
+                            Files.list(it).filter {
+                                it.toString().endsWith(".jar")
+                            }.collect(Collectors.toList()) + listOf(it)
+                        } else {
+                            listOf(it)
                         }
                     }
-                    .distinct()
-                    .apply { logger.info { "class path used : $this" } }
+                }
+                .distinct()
+                .apply { logger.info { "class path used : $this" } }
         )
     }
-
 
     fun getErrors(files: Map<String, String>): Map<String, List<CompileError>> {
         val psiFiles = createPsiFiles(files)
@@ -191,7 +189,6 @@ internal object KotlinCompiler {
         return PackagePartClassUtils.getPackagePartFqName(file.packageFqName, file.name).asString()
     }
 
-
     private fun createPsiFiles(files: Map<String, String>): List<KtFile> =
         files.entries.mapNotNull {
             createFile(EnvironmentManager.environment!!.project, it.key, it.value)
@@ -224,7 +221,7 @@ internal object KotlinCompiler {
         val trace = CliBindingTrace()
 
         val configuration = environment.configuration
-        //configuration.put(JVMConfigurationKeys.ADD_BUILT_INS_FROM_COMPILER_TO_DEPENDENCIES, true)
+        // configuration.put(JVMConfigurationKeys.ADD_BUILT_INS_FROM_COMPILER_TO_DEPENDENCIES, true)
 
         val container = TopDownAnalyzerFacadeForJVM.createContainer(
             environment.project,
@@ -243,7 +240,6 @@ internal object KotlinCompiler {
             val result = extension.analysisCompleted(project, moduleDescriptor, trace, files)
             if (result != null) break
         }
-
 
         return Pair(
             AnalysisResult.success(trace.bindingContext, moduleDescriptor),
@@ -265,7 +261,6 @@ internal object KotlinCompiler {
             } catch (e: Throwable) {
                 throw e
             }
-
         }
 
         fun getErrorsFromDiagnostics(
@@ -274,7 +269,7 @@ internal object KotlinCompiler {
         ) {
             try {
                 for (diagnostic in diagnostics) {
-                    //fix for errors in js library files
+                    // fix for errors in js library files
                     val virtualFile = diagnostic.psiFile.virtualFile
                     if (virtualFile == null) {
                         continue
@@ -310,27 +305,29 @@ internal object KotlinCompiler {
                 }
 
                 for (key in errors.keys) {
-                    Collections.sort<CompileError>(errors[key], Comparator { o1, o2 ->
-                        if (o1.interval.start.line > o2.interval.start.line) {
-                            return@Comparator 1
-                        } else if (o1.interval.start.line < o2.interval.start.line) {
-                            return@Comparator -1
-                        } else if (o1.interval.start.line == o2.interval.start.line) {
-                            if (o1.interval.start.ch > o2.interval.start.ch) {
+                    Collections.sort<CompileError>(
+                        errors[key],
+                        Comparator { o1, o2 ->
+                            if (o1.interval.start.line > o2.interval.start.line) {
                                 return@Comparator 1
-                            } else if (o1.interval.start.ch < o2.interval.start.ch) {
+                            } else if (o1.interval.start.line < o2.interval.start.line) {
                                 return@Comparator -1
-                            } else if (o1.interval.start.ch == o2.interval.start.ch) {
-                                return@Comparator 0
+                            } else if (o1.interval.start.line == o2.interval.start.line) {
+                                if (o1.interval.start.ch > o2.interval.start.ch) {
+                                    return@Comparator 1
+                                } else if (o1.interval.start.ch < o2.interval.start.ch) {
+                                    return@Comparator -1
+                                } else if (o1.interval.start.ch == o2.interval.start.ch) {
+                                    return@Comparator 0
+                                }
                             }
+                            -1
                         }
-                        -1
-                    })
+                    )
                 }
             } catch (e: Throwable) {
                 throw e
             }
-
         }
 
         private fun getErrorsByVisitor(psiFile: PsiFile): MutableList<CompileError> {
@@ -343,7 +340,6 @@ internal object KotlinCompiler {
                 override fun visitErrorElement(element: PsiErrorElement) {
                     errorElements.add(element)
                 }
-
             }
 
             val errors = ArrayList<CompileError>()
@@ -392,6 +388,4 @@ internal object KotlinCompiler {
             return TextInterval(startPosition, endPosition)
         }
     }
-
-
 }

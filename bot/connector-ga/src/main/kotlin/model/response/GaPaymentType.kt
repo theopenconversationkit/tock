@@ -19,7 +19,7 @@ package ai.tock.bot.connector.ga.model.response
 /**
  * @see https://developers.google.com/actions/reference/rest/Shared.Types/PaymentType
  */
-enum class GaPaymentType{
+enum class GaPaymentType {
 
     PAYMENT_TYPE_UNSPECIFIED,
     PAYMENT_CARD,
@@ -27,5 +27,4 @@ enum class GaPaymentType{
     LOYALTY_PROGRAM,
     ON_FULFILLMENT,
     GIFT_CARD
-
 }

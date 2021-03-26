@@ -24,4 +24,3 @@ interface WebConnectorResponseContract {
 }
 
 data class WebConnectorResponseContent(override val responses: List<WebMessageContent>) : WebConnectorResponseContract
-

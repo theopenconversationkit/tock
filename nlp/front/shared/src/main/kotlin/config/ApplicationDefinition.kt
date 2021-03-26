@@ -81,5 +81,4 @@ data class ApplicationDefinition(
      */
     @Transient
     val qualifiedName: String = name.withNamespace(namespace)
-
 }

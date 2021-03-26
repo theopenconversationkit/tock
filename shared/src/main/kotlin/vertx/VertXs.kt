@@ -68,7 +68,7 @@ private val internalVertx: Vertx by lazy {
     injector.provideOrDefault<VertxProvider> { TockVertxProvider }.vertx()
 }
 
-//used to avoid name collisions
+// used to avoid name collisions
 internal val sharedVertx: Vertx get() = vertx
 
 /**
@@ -81,31 +81,33 @@ val vertx: Vertx get() = internalVertx
  */
 fun <T> Vertx.blocking(blockingHandler: (Promise<T>) -> Unit, resultHandler: (AsyncResult<T>) -> Unit) {
     this.executeBlocking(
-            { future: Promise<T> ->
-                try {
-                    blockingHandler.invoke(future)
-                } catch (throwable: Throwable) {
-                    logger.error(throwable) { throwable.message }
-                    future.fail(throwable)
-                } finally {
-                    future.tryFail("call not completed")
-                }
-            },
-            false,
-            {
-                try {
-                    resultHandler.invoke(it)
-                } catch (e: Throwable) {
-                    logger.error(e) { e.message }
-                }
-            })
+        { future: Promise<T> ->
+            try {
+                blockingHandler.invoke(future)
+            } catch (throwable: Throwable) {
+                logger.error(throwable) { throwable.message }
+                future.fail(throwable)
+            } finally {
+                future.tryFail("call not completed")
+            }
+        },
+        false,
+        {
+            try {
+                resultHandler.invoke(it)
+            } catch (e: Throwable) {
+                logger.error(e) { e.message }
+            }
+        }
+    )
 }
 
 /**
  * Execute a blocking handler on route (with ordered false).
  */
 fun Route.blocking(handler: (RoutingContext) -> Unit): Route =
-        blockingHandler({
+    blockingHandler(
+        {
             try {
                 handler(it)
             } catch (t: Throwable) {
@@ -116,7 +118,9 @@ fun Route.blocking(handler: (RoutingContext) -> Unit): Route =
                     logger.debug(e)
                 }
             }
-        }, false)
+        },
+        false
+    )
 
 internal fun vertxExecutor(): Executor {
     return object : Executor {
@@ -136,31 +140,37 @@ internal fun vertxExecutor(): Executor {
 
         override fun executeBlocking(runnable: () -> Unit) {
             val loggingContext = MDCContext().contextMap
-            vertx.blocking<Unit>({
-                invokeWithLoggingContext(loggingContext) {
-                    catchableRunnable(runnable).invoke()
-                    it.tryComplete()
-                }
-            }, {})
+            vertx.blocking<Unit>(
+                {
+                    invokeWithLoggingContext(loggingContext) {
+                        catchableRunnable(runnable).invoke()
+                        it.tryComplete()
+                    }
+                },
+                {}
+            )
         }
 
         override fun <T> executeBlocking(blocking: Callable<T>, result: (T?) -> Unit) {
             val loggingContext = MDCContext().contextMap
-            vertx.blocking<T>({
-                invokeWithLoggingContext(loggingContext) {
-                    try {
-                        blocking.call()
-                    } finally {
-                        it.tryFail("call not completed")
+            vertx.blocking<T>(
+                {
+                    invokeWithLoggingContext(loggingContext) {
+                        try {
+                            blocking.call()
+                        } finally {
+                            it.tryFail("call not completed")
+                        }
+                    }
+                },
+                {
+                    if (it.succeeded()) {
+                        result.invoke(it.result())
+                    } else {
+                        result.invoke(null)
                     }
                 }
-            }, {
-                if (it.succeeded()) {
-                    result.invoke(it.result())
-                } else {
-                    result.invoke(null)
-                }
-            })
+            )
         }
 
         override fun setPeriodic(initialDelay: Duration, delay: Duration, runnable: () -> Unit): Long {
@@ -197,6 +207,3 @@ internal fun vertxExecutor(): Executor {
         }
     }
 }
-
-
-

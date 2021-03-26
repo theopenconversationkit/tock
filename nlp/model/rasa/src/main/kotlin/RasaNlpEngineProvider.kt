@@ -55,7 +55,7 @@ internal class RasaNlpEngineProvider : NlpEngineProvider {
         getRasaClassifier()
 
     override fun getTokenizer(model: TokenizerModelHolder): Tokenizer = object : Tokenizer {
-        //do not tokenize anything at this stage - rasa internals
+        // do not tokenize anything at this stage - rasa internals
         override fun tokenize(context: TokenizerContext, text: String): Array<String> = arrayOf(text)
     }
 }

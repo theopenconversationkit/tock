@@ -23,7 +23,6 @@ import ai.tock.bot.engine.action.ActionPriority
 import ai.tock.bot.engine.action.ActionQuote
 import ai.tock.bot.engine.action.ActionReply
 import ai.tock.bot.engine.action.ActionVisibility
-import ai.tock.bot.engine.action.Metadata
 
 /**
  *

@@ -28,13 +28,13 @@ data class SentenceElementConfiguration(
     val connectorType: ConnectorType = ConnectorType.none,
     val attachments: List<AttachmentConfiguration> = emptyList(),
     val choices: List<ChoiceConfiguration> = emptyList(),
-        //a qualified text map (ie "title" to "Ok computer", "subtitle" to "please listen")
+    // a qualified text map (ie "title" to "Ok computer", "subtitle" to "please listen")
     val texts: Map<String, I18nLabelValue> = emptyMap(),
     val locations: List<LocationConfiguration> = emptyList(),
     val metadata: Map<String, String> = emptyMap(),
     val subElements: List<SentenceSubElementConfiguration> = emptyList(),
-    @Transient private val connectorMessage: ConnectorMessage? = null) {
+    @Transient private val connectorMessage: ConnectorMessage? = null
+) {
 
     internal fun findConnectorMessage() = connectorMessage
-
 }

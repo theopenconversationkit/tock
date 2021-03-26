@@ -84,7 +84,6 @@ internal data class GAConnectorCallback(
             )
         }
 
-
     private fun GARichResponse.merge(other: GARichResponse): GARichResponse =
         copy(
             items = mergeItems(items + other.items),
@@ -93,10 +92,14 @@ internal data class GAConnectorCallback(
         )
 
     private fun GASimpleResponse.isMergeable(other: GASimpleResponse): Boolean {
-        return (textToSpeech != null && other.textToSpeech != null
-                || (textToSpeech == null && other.textToSpeech == null))
-                && (ssml != null && other.ssml != null
-                || (ssml == null && other.ssml == null))
+        return (
+            textToSpeech != null && other.textToSpeech != null ||
+                (textToSpeech == null && other.textToSpeech == null)
+            ) &&
+            (
+                ssml != null && other.ssml != null ||
+                    (ssml == null && other.ssml == null)
+                )
     }
 
     private fun GASimpleResponse.merge(other: GASimpleResponse): GASimpleResponse =
@@ -106,8 +109,8 @@ internal data class GAConnectorCallback(
             displayText = if (displayText == null) other.displayText else displayText + if (other.displayText == null) "" else " ${other.displayText}"
         )
 
-    //the first has to be a simple response
-    //cf https://developers.google.com/actions/reference/rest/Shared.Types/AppResponse#RichResponse
+    // the first has to be a simple response
+    // cf https://developers.google.com/actions/reference/rest/Shared.Types/AppResponse#RichResponse
     private fun mergeItems(items: List<GAItem>): List<GAItem> =
         if (items.size < 2) {
             items
@@ -172,7 +175,7 @@ internal data class GAConnectorCallback(
                     val newSSML = ssml
                         ?.replace("<speak>", "", true)
                         ?.replace("</speak>", "", true)
-                        ?.run { if (isBlank()) null else "<speak>${this}</speak>" }
+                        ?.run { if (isBlank()) null else "<speak>$this</speak>" }
                     copy(
                         textToSpeech = if (newSSML.isNullOrBlank()) textToSpeech else null,
                         ssml = newSSML,
@@ -208,20 +211,21 @@ internal data class GAConnectorCallback(
             val firstExpectedInputWithCard =
                 connectorMessages.firstOrNull { it.expectedInput?.inputPrompt?.richInitialPrompt?.items?.any { item -> item.basicCard != null } == true }?.expectedInput
             val message: GAExpectedInput? =
-                    connectorMessages
-                        .mapNotNull { it.expectedInput }
-                        .filter { it.inputPrompt.richInitialPrompt.items.all { item -> item.basicCard == null } || it == firstExpectedInputWithCard }
-                        .run {
-                            if (isEmpty())
-                                null
-                            else reduce { a, b ->
-                                a.copy(
-                                    inputPrompt = a.inputPrompt.copy(
-                                        richInitialPrompt = a.inputPrompt.richInitialPrompt.merge(b.inputPrompt.richInitialPrompt)
-                                    ),
-                                    possibleIntents = a.possibleIntents + b.possibleIntents.filter { ib -> a.possibleIntents.none { ia -> ia.intent == ib.intent } })
-                            }
+                connectorMessages
+                    .mapNotNull { it.expectedInput }
+                    .filter { it.inputPrompt.richInitialPrompt.items.all { item -> item.basicCard == null } || it == firstExpectedInputWithCard }
+                    .run {
+                        if (isEmpty())
+                            null
+                        else reduce { a, b ->
+                            a.copy(
+                                inputPrompt = a.inputPrompt.copy(
+                                    richInitialPrompt = a.inputPrompt.richInitialPrompt.merge(b.inputPrompt.richInitialPrompt)
+                                ),
+                                possibleIntents = a.possibleIntents + b.possibleIntents.filter { ib -> a.possibleIntents.none { ia -> ia.intent == ib.intent } }
+                            )
                         }
+                    }
 
             expectedInput = if (message == null) {
                 if (simpleResponse == null) {
@@ -257,10 +261,10 @@ internal data class GAConnectorCallback(
 
         context.response().putHeader("Google-Actions-API-Version", "2")
 
-        if(expectedInput != null){
+        if (expectedInput != null) {
             expectedInput = rebuildGASuitableResponse(expectedInput)
         }
-        if(finalResponse != null){
+        if (finalResponse != null) {
             finalResponse = rebuildGASuitableResponse(finalResponse)
         }
 
@@ -269,12 +273,12 @@ internal data class GAConnectorCallback(
             finalResponse == null,
             if (expectedInput == null) null else listOf(expectedInput),
             finalResponse,
-            null, //GAResponseMetadata(GAStatus(0, "OK")),
+            null, // GAResponseMetadata(GAStatus(0, "OK")),
             request.isInSandbox
         )
     }
 
-    private fun rebuildGASuitableResponse(expectedInput: GAExpectedInput) : GAExpectedInput{
+    private fun rebuildGASuitableResponse(expectedInput: GAExpectedInput): GAExpectedInput {
         return GAExpectedInput(
             GAInputPrompt(
                 rebuildGASuitableRichResponse(
@@ -286,56 +290,55 @@ internal data class GAConnectorCallback(
             expectedInput.possibleIntents,
             expectedInput.speechBiasingHints
         )
-
     }
 
-    private fun rebuildGASuitableResponse(finalResponse: GAFinalResponse) : GAFinalResponse{
+    private fun rebuildGASuitableResponse(finalResponse: GAFinalResponse): GAFinalResponse {
         return GAFinalResponse(
             rebuildGASuitableRichResponse(finalResponse.richResponse, true)
         )
     }
 
-    private fun rebuildGASuitableRichResponse(richResponse: GARichResponse, withFinalResponseCheck: Boolean) : GARichResponse{
+    private fun rebuildGASuitableRichResponse(richResponse: GARichResponse, withFinalResponseCheck: Boolean): GARichResponse {
         val simpleResponses = (richResponse.items.filter { item -> item.simpleResponse != null })
         val basicCardResponses = (richResponse.items.filter { item -> item.basicCard != null })
         val structuredResponses = (richResponse.items.filter { item -> item.structuredResponse != null })
         val mediaResponses = (richResponse.items.filter { item -> item.mediaResponse != null })
 
-        val suggestions =  mutableListOf<GASuggestion>()
-        val items =  mutableListOf<GAItem>()
-        if(richResponse.items.first().simpleResponse==null){
-            logger.warn { "GA Condition failed : first item in rich response must be a simple response"}
+        val suggestions = mutableListOf<GASuggestion>()
+        val items = mutableListOf<GAItem>()
+        if (richResponse.items.first().simpleResponse == null) {
+            logger.warn { "GA Condition failed : first item in rich response must be a simple response" }
         }
-        if(simpleResponses.size>2){
-            logger.warn { "GA Condition failed : ga message must have at most two simples responses"}
+        if (simpleResponses.size> 2) {
+            logger.warn { "GA Condition failed : ga message must have at most two simples responses" }
             items.addAll(richResponse.items.filter { item -> item.simpleResponse != null }.take(2))
-        }else{
+        } else {
             items.addAll(simpleResponses)
         }
-        if(basicCardResponses.size>1){
-            logger.warn { "GA Condition failed : ga message must have at one basic card"}
+        if (basicCardResponses.size> 1) {
+            logger.warn { "GA Condition failed : ga message must have at one basic card" }
             items.add(richResponse.items.first { item -> item.basicCard != null })
-        }else{
+        } else {
             items.addAll(basicCardResponses)
         }
-        if(structuredResponses.size>1){
-            logger.warn { "GA Condition failed : ga message must have at one structuredResponse"}
+        if (structuredResponses.size> 1) {
+            logger.warn { "GA Condition failed : ga message must have at one structuredResponse" }
             items.add(richResponse.items.first { item -> item.structuredResponse != null })
-        }else{
+        } else {
             items.addAll(structuredResponses)
         }
-        if(mediaResponses.size>1){
-            logger.warn { "GA Condition failed : ga message must have at one mediaResponse"}
+        if (mediaResponses.size> 1) {
+            logger.warn { "GA Condition failed : ga message must have at one mediaResponse" }
             items.add(richResponse.items.first { item -> item.mediaResponse != null })
-        }else{
+        } else {
             items.addAll(mediaResponses)
         }
-        if(withFinalResponseCheck && richResponse.suggestions.isNotEmpty()){
-            logger.warn { "GA Condition failed : ga final response cant have suggestion chips"}
-        } else if(richResponse.suggestions.size>8){
-            logger.warn { "GA Condition failed : ga message must have at most 8 suggestion chips"}
+        if (withFinalResponseCheck && richResponse.suggestions.isNotEmpty()) {
+            logger.warn { "GA Condition failed : ga final response cant have suggestion chips" }
+        } else if (richResponse.suggestions.size> 8) {
+            logger.warn { "GA Condition failed : ga message must have at most 8 suggestion chips" }
             suggestions.addAll(richResponse.suggestions.take(8))
-        }else{
+        } else {
             suggestions.addAll(richResponse.suggestions)
         }
         return richResponse.copy(
@@ -383,7 +386,6 @@ internal data class GAConnectorCallback(
             .mapNotNull {
                 (it.message(gaConnectorType) as GAResponseConnectorMessage?)
             }.firstOrNull { it.logoutEvent } != null
-
     }
 
     override fun eventSkipped(event: Event) {
@@ -419,17 +421,19 @@ internal data class GAConnectorCallback(
                                 listOf(
                                     GAItem(
                                         GASimpleResponse(
-                                            (controller.errorMessage(
-                                                PlayerId(
-                                                    controller.botDefinition.botId,
-                                                    PlayerType.bot
-                                                ),
-                                                applicationId,
-                                                PlayerId(
-                                                    request?.conversation?.conversationId ?: "unknown",
-                                                    PlayerType.user
-                                                )
-                                            ) as? SendSentence)?.stringText ?: "Technical error"
+                                            (
+                                                controller.errorMessage(
+                                                    PlayerId(
+                                                        controller.botDefinition.botId,
+                                                        PlayerType.bot
+                                                    ),
+                                                    applicationId,
+                                                    PlayerId(
+                                                        request?.conversation?.conversationId ?: "unknown",
+                                                        PlayerType.user
+                                                    )
+                                                ) as? SendSentence
+                                                )?.stringText ?: "Technical error"
                                         )
                                     )
                                 )

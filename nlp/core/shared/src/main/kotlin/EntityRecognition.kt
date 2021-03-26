@@ -16,7 +16,6 @@
 
 package ai.tock.nlp.core
 
-
 /**
  *
  */
@@ -29,5 +28,4 @@ data class EntityRecognition(val value: EntityValue, val probability: Double) : 
     val role: String = value.entity.role
 
     fun hasSubEntities(): Boolean = entityType.hasSubEntities()
-
 }

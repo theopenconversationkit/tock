@@ -16,8 +16,8 @@
 
 package ai.tock.bot.connector.ga.model.request
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import ai.tock.bot.connector.ga.model.GAIntent
+import com.fasterxml.jackson.annotation.JsonIgnore
 
 data class GAInput(
     val rawInputs: List<GARawInput>,
@@ -39,4 +39,3 @@ data class GAInput(
     @get:JsonIgnore
     val healthcheck: Boolean = arguments?.any { it.healthcheck } == true
 }
-

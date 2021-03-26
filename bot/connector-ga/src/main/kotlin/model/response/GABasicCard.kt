@@ -23,22 +23,23 @@ import ai.tock.shared.mapNotNullValues
  *
  */
 data class GABasicCard(
-        val title: String? = null,
-        val subtitle: String? = null,
-        val formattedText: String? = null,
-        val image: GAImage? = null,
-        val buttons: List<GAButton> = emptyList()) {
+    val title: String? = null,
+    val subtitle: String? = null,
+    val formattedText: String? = null,
+    val image: GAImage? = null,
+    val buttons: List<GAButton> = emptyList()
+) {
 
     fun toGenericMessage(): GenericMessage {
         return GenericMessage(
-                texts = mapNotNullValues(
-                        GABasicCard::title.name to title,
-                        GABasicCard::subtitle.name to subtitle,
-                        GABasicCard::formattedText.name to formattedText
-                ),
-                choices = buttons.map { it.toChoice() },
-                attachments = listOfNotNull(image?.toAttachment()),
-                metadata = image?.toMetadata() ?: emptyMap()
+            texts = mapNotNullValues(
+                GABasicCard::title.name to title,
+                GABasicCard::subtitle.name to subtitle,
+                GABasicCard::formattedText.name to formattedText
+            ),
+            choices = buttons.map { it.toChoice() },
+            attachments = listOfNotNull(image?.toAttachment()),
+            metadata = image?.toMetadata() ?: emptyMap()
         )
     }
 }

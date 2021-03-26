@@ -25,4 +25,4 @@ class LogoutEvent(
     userId: PlayerId,
     recipientId: PlayerId,
     applicationId: String
-) :OneToOneEvent(userId, recipientId, applicationId)
+) : OneToOneEvent(userId, recipientId, applicationId)

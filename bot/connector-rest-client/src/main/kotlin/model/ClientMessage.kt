@@ -23,17 +23,17 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
  *
  */
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "eventType"
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "eventType"
 )
 @JsonSubTypes(
-        JsonSubTypes.Type(value = ClientAttachment::class, name = "attachment"),
-        JsonSubTypes.Type(value = ClientChoice::class, name = "choice"),
-        JsonSubTypes.Type(value = ClientLocation::class, name = "location"),
-        JsonSubTypes.Type(value = ClientSentence::class, name = "sentence")
+    JsonSubTypes.Type(value = ClientAttachment::class, name = "attachment"),
+    JsonSubTypes.Type(value = ClientChoice::class, name = "choice"),
+    JsonSubTypes.Type(value = ClientLocation::class, name = "location"),
+    JsonSubTypes.Type(value = ClientSentence::class, name = "sentence")
 )
-abstract class ClientMessage(val eventType: ClientEventType,
-                             var delay: Long = 0L) {
-
-}
+abstract class ClientMessage(
+    val eventType: ClientEventType,
+    var delay: Long = 0L
+)

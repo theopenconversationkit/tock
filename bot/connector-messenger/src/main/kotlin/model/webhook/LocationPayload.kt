@@ -19,5 +19,4 @@ package ai.tock.bot.connector.messenger.model.webhook
 /**
  *
  */
-data class LocationPayload(val coordinates: FacebookLocation) : Payload() {
-}
+data class LocationPayload(val coordinates: FacebookLocation) : Payload()

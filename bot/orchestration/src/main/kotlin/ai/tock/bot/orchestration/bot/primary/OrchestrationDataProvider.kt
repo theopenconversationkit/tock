@@ -21,7 +21,7 @@ import ai.tock.bot.orchestration.shared.OrchestrationData
 import ai.tock.bot.orchestration.shared.OrchestrationSentence
 
 interface OrchestrationDataProvider {
-    fun provideOrchestrationData(bus: BotBus) : OrchestrationData?
+    fun provideOrchestrationData(bus: BotBus): OrchestrationData?
 }
 
 open class DefaultOrchestrationDataProvider : OrchestrationDataProvider {

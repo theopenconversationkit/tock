@@ -38,12 +38,15 @@ internal class EntityTypeDefinitionMongoDAOTest : AbstractTest() {
         dictionary = true
     )
 
-    private val dictionary = DictionaryData("test", "desc", listOf(
-        PredefinedValue(
-            "A",
-            mapOf(ENGLISH to listOf("B", "C"))
+    private val dictionary = DictionaryData(
+        "test", "desc",
+        listOf(
+            PredefinedValue(
+                "A",
+                mapOf(ENGLISH to listOf("B", "C"))
+            )
         )
-    ))
+    )
 
     private val entityTypeDAO: EntityTypeDefinitionDAO get() = injector.provide()
 
@@ -72,5 +75,4 @@ internal class EntityTypeDefinitionMongoDAOTest : AbstractTest() {
             entityTypeDAO.getDictionaryDataByEntityName(entityType.name)?.values?.first()?.labels?.get(ENGLISH)
         )
     }
-
 }

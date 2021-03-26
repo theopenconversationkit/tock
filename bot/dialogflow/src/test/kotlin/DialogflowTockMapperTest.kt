@@ -16,12 +16,12 @@
 
 package ai.tock.nlp.dialogflow
 
+import ai.tock.nlp.entity.NumberValue
+import ai.tock.nlp.entity.StringValue
 import com.google.cloud.dialogflow.v2.QueryResult
 import com.google.protobuf.ListValue
 import com.google.protobuf.Struct
 import com.google.protobuf.Value
-import ai.tock.nlp.entity.NumberValue
-import ai.tock.nlp.entity.StringValue
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
@@ -44,7 +44,6 @@ class DialogflowTockMapperTest {
         queryResultBuilder.parametersBuilder.putFields("boolean_entity", Value.newBuilder().setBoolValue(true).build())
         queryResultBuilder.parametersBuilder.putFields("struct_entity", Value.newBuilder().setStructValue(Struct.newBuilder()).build())
         queryResultBuilder.parametersBuilder.putFields("list_entity", Value.newBuilder().setListValue(ListValue.newBuilder()).build())
-
 
         val nlpResult = DialogflowTockMapper().toNlpResult(queryResultBuilder.build(), namespace)
         assertEquals(intentName, nlpResult.intent)

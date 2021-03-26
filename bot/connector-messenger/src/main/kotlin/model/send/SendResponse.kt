@@ -18,7 +18,8 @@ package ai.tock.bot.connector.messenger.model.send
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class SendResponse(@JsonProperty("recipient_id") val recipientId: String?,
-                        @JsonProperty("message_id") val messageId: String?,
-                        @JsonProperty("attachment_id") val attachmentId: String?) {
-}
+data class SendResponse(
+    @JsonProperty("recipient_id") val recipientId: String?,
+    @JsonProperty("message_id") val messageId: String?,
+    @JsonProperty("attachment_id") val attachmentId: String?
+)

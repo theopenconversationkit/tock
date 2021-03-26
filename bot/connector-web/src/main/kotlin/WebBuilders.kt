@@ -45,7 +45,6 @@ fun <T : Bus<T>> T.withWeb(messageProvider: () -> WebConnectorMessage): T {
     return withMessage(webConnectorType, messageProvider)
 }
 
-
 /**
  * Creates a text with buttons.
  */
@@ -251,6 +250,5 @@ fun <T : Bus<T>> T.webCarousel(carousel: MediaCarousel): OldWebMessage = OldWebM
  */
 fun <T : Bus<T>> T.webWidget(widget: WebWidget, buttons: List<Button> = emptyList()): WebMessage =
     WebMessage(widget = widget, buttons = buttons)
-
 
 fun <T : Bus<T>> T.webDeepLink(ref: String): WebMessage = WebMessage(deepLink = WebDeepLink(ref))

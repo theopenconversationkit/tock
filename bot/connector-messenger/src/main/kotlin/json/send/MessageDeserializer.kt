@@ -43,7 +43,8 @@ internal class MessageDeserializer : JacksonDeserializer<Message>() {
             var text: String? = null,
             var attachment: Attachment? = null,
             var quickReplies: List<QuickReply>? = null,
-            var other: EmptyJson? = null)
+            var other: EmptyJson? = null
+        )
 
         val (text, attachment, quickReplies) = jp.read<MessageFields> { fields, name ->
             with(fields) {
@@ -65,5 +66,4 @@ internal class MessageDeserializer : JacksonDeserializer<Message>() {
             null
         }
     }
-
 }

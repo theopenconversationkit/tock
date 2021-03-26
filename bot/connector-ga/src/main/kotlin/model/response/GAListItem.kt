@@ -22,23 +22,22 @@ import ai.tock.bot.engine.message.GenericElement
 import ai.tock.shared.mapNotNullValues
 
 data class GAListItem(
-        val optionInfo: GAOptionInfo,
-        val title: String,
-        val description: String? = null,
-        val image: GAImage? = null
+    val optionInfo: GAOptionInfo,
+    val title: String,
+    val description: String? = null,
+    val image: GAImage? = null
 ) {
 
     fun toGenericElement(): GenericElement {
         return GenericElement(
-                choices = listOf(optionInfo.toChoice()),
-                texts = mapNotNullValues(
-                        GAListItem::title.name to title,
-                        GAListItem::description.name to description
-                ),
-                attachments = image?.url
-                        ?.let { listOf(Attachment(it, AttachmentType.image)) }
-                        ?: emptyList()
+            choices = listOf(optionInfo.toChoice()),
+            texts = mapNotNullValues(
+                GAListItem::title.name to title,
+                GAListItem::description.name to description
+            ),
+            attachments = image?.url
+                ?.let { listOf(Attachment(it, AttachmentType.image)) }
+                ?: emptyList()
         )
     }
-
 }

@@ -21,5 +21,4 @@ import ai.tock.nlp.api.client.model.NlpEntityValue
 /**
  *
  */
-data class EntityEvaluationResult(val values: List<NlpEntityValue>) {
-}
+data class EntityEvaluationResult(val values: List<NlpEntityValue>)

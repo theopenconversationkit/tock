@@ -39,7 +39,6 @@ class I18nTranslatorTest {
 
         override fun i18n(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue =
             I18nLabelValue(defaultLabel.toString(), "namespace", "category", defaultLabel, args)
-
     }
 
     @Test

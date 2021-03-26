@@ -19,5 +19,4 @@ package ai.tock.bot.definition
 /**
  * [StoryStep] without custom [StoryHandlerDefinition].
  */
-interface SimpleStoryStep : StoryStep<StoryHandlerDefinition> {
-}
+interface SimpleStoryStep : StoryStep<StoryHandlerDefinition>

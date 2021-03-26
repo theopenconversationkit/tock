@@ -16,24 +16,25 @@
 
 package ai.tock.bot.connector.messenger.model.send
 
+import ai.tock.bot.engine.message.Choice
+import ai.tock.bot.engine.message.Location
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import ai.tock.bot.engine.message.Choice
-import ai.tock.bot.engine.message.Location
 
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "content_type"
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "content_type"
 )
 @JsonSubTypes(
-        JsonSubTypes.Type(value = TextQuickReply::class, name = "text"),
-        JsonSubTypes.Type(value = LocationQuickReply::class, name = "location"),
-        JsonSubTypes.Type(value = EmailQuickReply::class, name = "user_email")
+    JsonSubTypes.Type(value = TextQuickReply::class, name = "text"),
+    JsonSubTypes.Type(value = LocationQuickReply::class, name = "location"),
+    JsonSubTypes.Type(value = EmailQuickReply::class, name = "user_email")
 )
 abstract class QuickReply(
-        @get:JsonProperty("content_type") val contentType: QuickReplyContentType) : UserAction {
+    @get:JsonProperty("content_type") val contentType: QuickReplyContentType
+) : UserAction {
 
     open fun toChoice(): Choice? = null
 

@@ -53,8 +53,8 @@ internal object DucklingBridge {
     fun initDuckling() {
         val require = Clojure.`var`("clojure.core", "require")
         require.invoke(Clojure.read("duckling.core"))
-        val l = `core$load_BANG_`();
-        l.invoke();
+        val l = `core$load_BANG_`()
+        l.invoke()
 
         referenceTime = keyword("reference-time")
         start = keyword("start")
@@ -65,22 +65,24 @@ internal object DucklingBridge {
         initialized = true
     }
 
-    fun parse(language: String,
-              textToParse: String,
-              dimensions: List<String>,
-              referenceDate: ZonedDateTime,
-              referenceTimezone: ZoneId): Any {
+    fun parse(
+        language: String,
+        textToParse: String,
+        dimensions: List<String>,
+        referenceDate: ZonedDateTime,
+        referenceTimezone: ZoneId
+    ): Any {
         val dateMap = HashMap<Keyword?, Any?>()
-        //set timezone for wit
+        // set timezone for wit
         val timezone = try {
             if (referenceTimezone.id == "Z") DateTimeZone.UTC else DateTimeZone.forID(referenceTimezone.id)
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             logger.warn { "unrecognized timezone $referenceTimezone - use UTC" }
             DateTimeZone.UTC
         }
         dateMap.put(
-                start,
-                DateTime(referenceDate.toInstant().toEpochMilli(), timezone)
+            start,
+            DateTime(referenceDate.toInstant().toEpochMilli(), timezone)
         )
         dateMap.put(grain, second)
         val dateClosureMap = PersistentArrayMap.create(dateMap)

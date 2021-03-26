@@ -19,5 +19,4 @@ package ai.tock.bot.connector.messenger.model.webhook
 /**
  *
  */
-data class PriorMessage(val source: String, val identifier: String) {
-}
+data class PriorMessage(val source: String, val identifier: String)

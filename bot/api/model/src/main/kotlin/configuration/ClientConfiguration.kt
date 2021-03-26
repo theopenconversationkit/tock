@@ -16,4 +16,4 @@
 
 package ai.tock.bot.api.model.configuration
 
-data class ClientConfiguration(val stories:List<StoryConfiguration>)
+data class ClientConfiguration(val stories: List<StoryConfiguration>)

@@ -23,6 +23,7 @@ import ai.tock.bot.engine.user.PlayerId
  * - connector support is not required!
  */
 class NoInputEvent(
-        userId: PlayerId,
-        recipientId: PlayerId,
-        applicationId: String) : OneToOneEvent(userId, recipientId, applicationId)
+    userId: PlayerId,
+    recipientId: PlayerId,
+    applicationId: String
+) : OneToOneEvent(userId, recipientId, applicationId)

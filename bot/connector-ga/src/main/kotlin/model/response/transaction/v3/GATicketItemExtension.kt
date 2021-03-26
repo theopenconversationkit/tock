@@ -36,6 +36,6 @@ data class TicketEvent(
 
 )
 
-enum class TicketEventType{
+enum class TicketEventType {
     EVENT_TYPE_UNKNOWN,
 }

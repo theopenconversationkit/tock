@@ -42,12 +42,13 @@ internal object TockTestClient : TestClientService {
 
     init {
         tock = retrofitBuilderWithTimeoutAndLogger(
-                tockTimeoutInSeconds,
-                interceptors = listOf(basicAuthInterceptor(tockLogin, tockPassword)))
-                .addJacksonConverter()
-                .baseUrl(tockUrl)
-                .build()
-                .create()
+            tockTimeoutInSeconds,
+            interceptors = listOf(basicAuthInterceptor(tockLogin, tockPassword))
+        )
+            .addJacksonConverter()
+            .baseUrl(tockUrl)
+            .build()
+            .create()
     }
 
     override fun saveAndExecuteTestPlan(testPlan: TestPlan, executionId: Id<TestPlanExecution>): TestPlanExecution {

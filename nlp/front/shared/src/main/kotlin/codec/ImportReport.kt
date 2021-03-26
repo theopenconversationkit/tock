@@ -35,11 +35,11 @@ data class ImportReport(
 ) {
 
     val modified: Boolean
-        get() = applicationsImported.isNotEmpty()
-                || entitiesImported.isNotEmpty()
-                || intentsImported.isNotEmpty()
-                || sentencesImported != 0L
-                || localeAdded
+        get() = applicationsImported.isNotEmpty() ||
+            entitiesImported.isNotEmpty() ||
+            intentsImported.isNotEmpty() ||
+            sentencesImported != 0L ||
+            localeAdded
 
     fun add(app: ApplicationDefinition) = applicationsImported.add(app.qualifiedName)
 

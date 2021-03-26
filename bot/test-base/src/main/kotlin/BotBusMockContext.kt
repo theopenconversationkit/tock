@@ -66,18 +66,18 @@ data class BotBusMockContext(
         userPreferences: UserPreferences = UserPreferences(),
         connectorType: ConnectorType = defaultTestConnectorType,
         testContext: TestContext = currentTestContext
-    )
-            : this(
-        UserTimeline(userId, userPreferences),
-        Dialog(setOf(userId, botId)),
-        Story(storyDefinition, storyDefinition.mainIntent()),
-        action,
-        botDefinition,
-        storyDefinition.storyHandler as I18nKeyProvider,
-        userInterfaceType,
-        connectorType,
-        testContext
-    )
+    ) :
+        this(
+            UserTimeline(userId, userPreferences),
+            Dialog(setOf(userId, botId)),
+            Story(storyDefinition, storyDefinition.mainIntent()),
+            action,
+            botDefinition,
+            storyDefinition.storyHandler as I18nKeyProvider,
+            userInterfaceType,
+            connectorType,
+            testContext
+        )
 
     constructor(
         botDefinition: BotDefinition,
@@ -90,19 +90,19 @@ data class BotBusMockContext(
         userPreferences: UserPreferences = UserPreferences(),
         connectorType: ConnectorType = defaultTestConnectorType,
         testContext: TestContext = currentTestContext
-    )
-            : this(
-        applicationId,
-        userId,
-        botId,
-        botDefinition,
-        storyDefinition,
-        action,
-        userInterfaceType,
-        userPreferences,
-        connectorType,
-        testContext
-    )
+    ) :
+        this(
+            applicationId,
+            userId,
+            botId,
+            botDefinition,
+            storyDefinition,
+            action,
+            userInterfaceType,
+            userPreferences,
+            connectorType,
+            testContext
+        )
 
     val applicationId get() = firstAction.applicationId
     val botId get() = firstAction.recipientId
@@ -162,7 +162,6 @@ data class BotBusMockContext(
     ): SendSentence =
         sentence(text, null as IntentAware?, entityValues.toList())
 
-
     /**
      * Create a new sentence for this context.
      */
@@ -202,7 +201,6 @@ data class BotBusMockContext(
         entityValues: List<EntityValue> = emptyList()
     ): SendSentence =
         sentence(message, null as IntentAware?, entityValues.toList())
-
 
     /**
      * Create a new sentence for this context.

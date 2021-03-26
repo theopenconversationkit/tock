@@ -28,4 +28,4 @@ data class GATransactionDecisionValueV3(
     val transactionDecision: GATransactionDecision,
     val order: GAOrder?,
     val deliveryAddress: GALocation?
-): GAArgumentValue(GAArgumentValueType.transactionRequirementsCheckResultV3)
+) : GAArgumentValue(GAArgumentValueType.transactionRequirementsCheckResultV3)

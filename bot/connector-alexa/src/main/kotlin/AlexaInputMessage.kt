@@ -16,12 +16,12 @@
 
 package ai.tock.bot.connector.alexa
 
-import com.amazon.speech.speechlet.IntentRequest
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.message.GenericMessage
 import ai.tock.shared.error
 import ai.tock.shared.jackson.mapper
+import com.amazon.speech.speechlet.IntentRequest
 import mu.KotlinLogging
 
 /**

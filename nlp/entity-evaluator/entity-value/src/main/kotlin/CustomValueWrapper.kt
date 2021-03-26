@@ -16,13 +16,13 @@
 
 package ai.tock.nlp.entity
 
+import ai.tock.nlp.entity.CustomValueWrapper.CustomValueDeserializer
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import ai.tock.nlp.entity.CustomValueWrapper.CustomValueDeserializer
 import java.util.logging.Logger
 import kotlin.reflect.KClass
 
@@ -39,13 +39,13 @@ data class CustomValueWrapper(val klass: String, val value: Any?) : Value {
             var fieldName = jp.fieldNameWithValueReady()
             if (fieldName != null) {
                 val classValue: Class<*>? =
-                        try {
-                            Class.forName(jp.text)
-                        } catch (e: Exception) {
-                            val className = CustomValueWrapper::class.qualifiedName
-                            Logger.getLogger(className).throwing(className, className, e)
-                            null
-                        }
+                    try {
+                        Class.forName(jp.text)
+                    } catch (e: Exception) {
+                        val className = CustomValueWrapper::class.qualifiedName
+                        Logger.getLogger(className).throwing(className, className, e)
+                        null
+                    }
                 fieldName = jp.fieldNameWithValueReady()
                 if (fieldName != null) {
                     if (classValue == null) {
@@ -84,11 +84,9 @@ data class CustomValueWrapper(val klass: String, val value: Any?) : Value {
                 checkEndToken()
             }
         }
-
     }
 
     constructor(klass: KClass<*>, value: Any?) : this(klass.java.name, value)
 
     constructor(value: Any) : this(value::class, value)
-
 }

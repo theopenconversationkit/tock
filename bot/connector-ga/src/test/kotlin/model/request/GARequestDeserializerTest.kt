@@ -16,9 +16,9 @@
 
 package ai.tock.bot.connector.ga.model.request
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.resource
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -85,10 +85,11 @@ class GARequestDeserializerTest {
                 inputs = listOf(
                     GAInput(
                         rawInputs = listOf(GARawInput(createTime = null, inputType = GAInputType.VOICE, query = "yes")),
-                        intent = "actions.intent.PERMISSION", arguments =
+                        intent = "actions.intent.PERMISSION",
+                        arguments =
                         listOf(
                             GAArgument
-                                (
+                            (
                                 name = "PERMISSION",
                                 rawText = null,
                                 boolValue = null,
@@ -114,8 +115,7 @@ class GARequestDeserializerTest {
         assertEquals(
             GARequest(
                 user = GAUser(profile = null, accessToken = null, permissions = null, locale = "en-US"),
-                device = GADevice(
-                ),
+                device = GADevice(),
                 surface = GASurface(
                     capabilities = listOf(
                         GACapability(name = "actions.capability.SCREEN_OUTPUT"),
@@ -131,10 +131,11 @@ class GARequestDeserializerTest {
                 inputs = listOf(
                     GAInput(
                         rawInputs = listOf(),
-                        intent = "new_surface_intent", arguments =
+                        intent = "new_surface_intent",
+                        arguments =
                         listOf(
                             GAArgument
-                                (
+                            (
                                 name = "NEW_SURFACE",
                                 rawText = null,
                                 boolValue = null,
@@ -159,6 +160,4 @@ class GARequestDeserializerTest {
             request
         )
     }
-
-
 }

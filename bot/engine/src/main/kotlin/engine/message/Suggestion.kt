@@ -25,7 +25,8 @@ data class Suggestion(
     val intent: IntentAware? = null,
     val parameters: Parameters = Parameters(),
     val step: StoryStep<*>? = null,
-    val attributes: Map<String, String> = emptyMap()) {
+    val attributes: Map<String, String> = emptyMap()
+) {
 
     constructor(title: CharSequence, intent: IntentAware, step: StoryStep<*>? = null, parameters: Parameters = Parameters()) :
         this(title, intent, parameters, step)

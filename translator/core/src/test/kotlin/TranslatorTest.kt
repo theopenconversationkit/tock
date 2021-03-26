@@ -65,20 +65,20 @@ class TranslatorTest : AbstractTest() {
         val target = "bbb"
         val id = "a"
         every { i18nDAO.getLabelById(id.toId()) } returns
-                I18nLabel(
-                    id.toId(),
-                    defaultNamespace,
-                    category,
-                    LinkedHashSet(
-                        listOf(
-                            I18nLocalizedLabel(
-                                defaultLocale,
-                                textChat,
-                                target
-                            )
+            I18nLabel(
+                id.toId(),
+                defaultNamespace,
+                category,
+                LinkedHashSet(
+                    listOf(
+                        I18nLocalizedLabel(
+                            defaultLocale,
+                            textChat,
+                            target
                         )
                     )
                 )
+            )
 
         val key = I18nLabelValue(
             id,
@@ -115,21 +115,20 @@ class TranslatorTest : AbstractTest() {
         val target = "bbb"
         val id = "not_yet_cached_id"
         every { i18nDAO.getLabelById(id.toId()) } returns
-                I18nLabel(
-                    id.toId(),
-                    defaultNamespace,
-                    category,
-                    LinkedHashSet(
-                        listOf(
-                            I18nLocalizedLabel(
-                                defaultLocale,
-                                textChat,
-                                target
-                            )
+            I18nLabel(
+                id.toId(),
+                defaultNamespace,
+                category,
+                LinkedHashSet(
+                    listOf(
+                        I18nLocalizedLabel(
+                            defaultLocale,
+                            textChat,
+                            target
                         )
                     )
                 )
-
+            )
 
         val key = I18nLabelValue(
             id,
@@ -138,16 +137,17 @@ class TranslatorTest : AbstractTest() {
             toTranslate
         )
 
-
         assertEquals(
-            target, Translator.translate(
+            target,
+            Translator.translate(
                 key,
                 I18nContext(defaultLocale, textChat)
             ).toString()
         )
 
         assertEquals(
-            target, Translator.translate(
+            target,
+            Translator.translate(
                 key,
                 I18nContext(defaultLocale, textChat)
             ).toString()
@@ -172,7 +172,8 @@ class TranslatorTest : AbstractTest() {
         every { i18nDAO.getLabelById(id.toId()) }.returns(null)
 
         assertEquals(
-            toTranslate, Translator.translate(
+            toTranslate,
+            Translator.translate(
                 key,
                 I18nContext(defaultLocale, textChat)
             ).toString()
@@ -207,16 +208,16 @@ class TranslatorTest : AbstractTest() {
         assertNotEquals(locale, defaultLocale)
 
         val localizedLabel = I18nLocalizedLabel(
-                locale,
-                defaultUserInterface,
-                "a",
-                listOf("b")
+            locale,
+            defaultUserInterface,
+            "a",
+            listOf("b")
         )
         val label = I18nLabel(
-                "".toId(),
-                defaultNamespace,
-                "",
-                LinkedHashSet(listOf(localizedLabel))
+            "".toId(),
+            defaultNamespace,
+            "",
+            LinkedHashSet(listOf(localizedLabel))
         )
 
         every { i18nDAO.getLabelById(any()) }.returns(null)
@@ -238,16 +239,16 @@ class TranslatorTest : AbstractTest() {
         assertNotEquals(locale, defaultLocale)
 
         val localizedLabel = I18nLocalizedLabel(
-                locale,
-                defaultUserInterface,
-                "a",
-                listOf("b")
+            locale,
+            defaultUserInterface,
+            "a",
+            listOf("b")
         )
         val label = I18nLabel(
-                "".toId(),
-                defaultNamespace,
-                "",
-                LinkedHashSet(listOf(localizedLabel))
+            "".toId(),
+            defaultNamespace,
+            "",
+            LinkedHashSet(listOf(localizedLabel))
         )
 
         every { i18nDAO.getLabelById(any()) }.returns(null)

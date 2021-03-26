@@ -28,5 +28,4 @@ abstract class ConnectorBase(
      * Returns [connectorType.toString()] method.
      */
     override fun toString(): String = "Connector($connectorType)"
-
 }

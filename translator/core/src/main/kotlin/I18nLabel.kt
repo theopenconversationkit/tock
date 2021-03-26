@@ -59,6 +59,4 @@ data class I18nLabel(
         i18n.firstOrNull { it.label.isNotBlank() && it.locale == defaultLocale && it.interfaceType == userInterfaceType && it.connectorId == connectorId }
             ?.takeIf { forbiddenLocale != defaultLocale }
             ?: i18n.firstOrNull { it.label.isNotBlank() && it.locale != forbiddenLocale && it.interfaceType == userInterfaceType && it.connectorId == connectorId }
-
-
 }

@@ -65,6 +65,4 @@ class EntityStateValueTest {
         assertEquals(state.previousValues[1].date, updateDate)
         assertEquals(value1, state.penultimateValue?.entityValue?.value)
     }
-
-
 }

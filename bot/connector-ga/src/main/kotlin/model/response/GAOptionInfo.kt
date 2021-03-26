@@ -20,9 +20,9 @@ import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.message.Choice
 
 data class GAOptionInfo(
-        val key: String,
-        val synonyms: List<String>) {
+    val key: String,
+    val synonyms: List<String>
+) {
 
     fun toChoice(): Choice = SendChoice.decodeChoiceId(key).run { Choice(first, second) }
-
 }

@@ -19,5 +19,4 @@ package ai.tock.shared.security
 /**
  * Thrown when trying to encrypt with no encryption pass set.
  */
-class NoEncryptionPassException : IllegalStateException("no 'tock_encrypt_pass' set") {
-}
+class NoEncryptionPassException : IllegalStateException("no 'tock_encrypt_pass' set")

@@ -74,12 +74,12 @@ data class Story(
         action: Action,
         intent: Intent?
     ): StoryStep<*>? {
-        //first level
+        // first level
         findStepInTree(steps, userTimeline, dialog, action, intent)?.also {
             return it
         }
 
-        //then iterate on children
+        // then iterate on children
         steps.forEach { s ->
             findStep(s.children, userTimeline, dialog, action, intent)?.also {
                 return it
@@ -95,10 +95,10 @@ data class Story(
         action: Action,
         intent: Intent?
     ): StoryStep<*>? {
-        //first level
+        // first level
         steps.forEach { s ->
             if (s.selectFromAction(userTimeline, dialog, action, intent)) {
-                //check children
+                // check children
                 findStepInTree(s.children, userTimeline, dialog, action, intent)?.also {
                     return it
                 }
@@ -116,7 +116,7 @@ data class Story(
             ?: current.children.asSequence().mapNotNull { findParentStep(it, child) }.firstOrNull()
 
     private fun StoryHandler.sendStartEvent(bus: BotBus): Boolean {
-        //stops immediately if any startAction returns false
+        // stops immediately if any startAction returns false
         return BotRepository.storyHandlerListeners.all {
             try {
                 it.startAction(bus, this)
@@ -161,11 +161,10 @@ data class Story(
      * Does this story supports the action ?
      */
     fun supportAction(userTimeline: UserTimeline, dialog: Dialog, action: Action, intent: Intent): Boolean =
-        supportIntent(intent)
-                || currentStep?.selectFromAction(userTimeline, dialog, action, intent) == true
-                || (currentStep?.children ?: definition.steps)
-            .any { it.selectFromAction(userTimeline, dialog, action, intent) }
-
+        supportIntent(intent) ||
+            currentStep?.selectFromAction(userTimeline, dialog, action, intent) == true ||
+            (currentStep?.children ?: definition.steps)
+                .any { it.selectFromAction(userTimeline, dialog, action, intent) }
 
     /**
      * Does this story supports the intent ?
@@ -177,7 +176,7 @@ data class Story(
      * Set the current step form the specified action and new intent.
      */
     fun computeCurrentStep(userTimeline: UserTimeline, dialog: Dialog, action: Action, newIntent: Intent?) {
-        //set current step if necessary
+        // set current step if necessary
         var forced = false
         if (action is SendChoice && !dialog.state.hasCurrentSwitchStoryProcess) {
             action.step()?.apply {
@@ -186,11 +185,11 @@ data class Story(
             }
         }
 
-        //revalidate step
+        // revalidate step
         val s = currentStep
         this.step = s?.name
 
-        //check the children of the step
+        // check the children of the step
         if (!forced) {
             s?.children?.let { findStepInTree(it, userTimeline, dialog, action, newIntent) }?.apply {
                 forced = true
@@ -198,17 +197,17 @@ data class Story(
             }
         }
 
-        //reset the step if applicable
-        if (!forced && newIntent != null
-            && (
-                    (s?.intent != null && !s.supportIntent(newIntent)) ||
-                            s?.selectFromActionAndEntityStepSelection(action, newIntent) == false
-                    )
+        // reset the step if applicable
+        if (!forced && newIntent != null &&
+            (
+                (s?.intent != null && !s.supportIntent(newIntent)) ||
+                    s?.selectFromActionAndEntityStepSelection(action, newIntent) == false
+                )
         ) {
             this.step = null
         }
 
-        //check the step from the intent
+        // check the step from the intent
         if (!forced && this.step == null) {
 
             if (s != null) {
@@ -227,5 +226,4 @@ data class Story(
             }
         }
     }
-
 }

@@ -21,9 +21,10 @@ import ai.tock.nlp.front.shared.parser.QueryContext
 /**
  *
  */
-data class EntityEvaluationQuery(val namespace: String,
-                                 val applicationName: String,
-                                 val context: QueryContext,
-                                 val entities: List<EntityToEvaluate>,
-                                 val text:String) {
-}
+data class EntityEvaluationQuery(
+    val namespace: String,
+    val applicationName: String,
+    val context: QueryContext,
+    val entities: List<EntityToEvaluate>,
+    val text: String
+)

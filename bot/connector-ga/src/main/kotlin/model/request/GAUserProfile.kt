@@ -17,9 +17,7 @@
 package ai.tock.bot.connector.ga.model.request
 
 data class GAUserProfile(
-        val displayName: String?,
-        val givenName: String?,
-        val familyName: String?
-) {
-
-}
+    val displayName: String?,
+    val givenName: String?,
+    val familyName: String?
+)

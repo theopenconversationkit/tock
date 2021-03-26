@@ -107,6 +107,4 @@ data class UserState(
     fun setUnlimitedFlag(flag: String, value: String) {
         flags[flag] = TimeBoxedFlag(value, null)
     }
-
-
 }

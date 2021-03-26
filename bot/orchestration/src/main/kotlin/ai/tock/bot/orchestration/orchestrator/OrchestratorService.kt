@@ -16,8 +16,8 @@
 
 package ai.tock.bot.orchestration.orchestrator
 
-import ai.tock.bot.orchestration.shared.AskEligibilityToOrchestratorRequest
 import ai.tock.bot.orchestration.shared.AskEligibilityToOrchestratedBotRequest
+import ai.tock.bot.orchestration.shared.AskEligibilityToOrchestratorRequest
 import ai.tock.bot.orchestration.shared.NoOrchestrationResponse
 import ai.tock.bot.orchestration.shared.NoOrchestrationStatus.ERROR
 import ai.tock.bot.orchestration.shared.NoOrchestrationStatus.NOT_AVAILABLE
@@ -70,5 +70,4 @@ open class OrchestratorService(
         action = action,
         metadata = metadata
     )
-
 }

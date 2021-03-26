@@ -16,8 +16,8 @@
 
 package ai.tock.bot.test
 
-import com.github.salomonbrys.kodein.KodeinInjector
 import ai.tock.shared.tockInternalInjector
+import com.github.salomonbrys.kodein.KodeinInjector
 import io.mockk.every
 
 /**
@@ -31,7 +31,7 @@ open class TestLifecycle<out T : TestContext>(val testContext: T) {
 
     open fun start() {
         resetInjectors()
-        //force injection loading
+        // force injection loading
         testContext.testInjector
     }
 

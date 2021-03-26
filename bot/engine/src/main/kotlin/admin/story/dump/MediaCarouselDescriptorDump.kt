@@ -29,6 +29,5 @@ data class MediaCarouselDescriptorDump(val cards: List<MediaCardDescriptorDump>)
 
     constructor(media: MediaCarouselDescriptor) : this(media.cards.map { MediaCardDescriptorDump(it) })
 
-    override fun toMedia(controller: StoryDefinitionConfigurationDumpController): MediaCarouselDescriptor
-        = MediaCarouselDescriptor(cards.map { it.toMedia(controller) })
+    override fun toMedia(controller: StoryDefinitionConfigurationDumpController): MediaCarouselDescriptor = MediaCarouselDescriptor(cards.map { it.toMedia(controller) })
 }

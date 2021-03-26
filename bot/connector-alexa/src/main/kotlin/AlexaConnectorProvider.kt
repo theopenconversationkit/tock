@@ -82,18 +82,17 @@ internal object AlexaConnectorProvider : ConnectorProvider {
                     "Request timestamp (in ms)",
                     "_project_timestamp",
                     false
-                ), ConnectorTypeConfigurationField(
-                "Alexa mapper class",
-                "_mapper",
-                false
-            )
+                ),
+                ConnectorTypeConfigurationField(
+                    "Alexa mapper class",
+                    "_mapper",
+                    false
+                )
             ),
             resourceAsString("/alexa.svg")
         )
 
-
     override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(AlexaMessage::class)
-
 }
 
 internal class AlexaConnectorProviderService : ConnectorProvider by AlexaConnectorProvider

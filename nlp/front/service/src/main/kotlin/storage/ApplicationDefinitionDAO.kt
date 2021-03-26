@@ -38,5 +38,4 @@ interface ApplicationDefinitionDAO {
     fun getApplicationById(id: Id<ApplicationDefinition>): ApplicationDefinition?
 
     fun getApplications(): List<ApplicationDefinition>
-
 }

@@ -161,7 +161,6 @@ private object BotEngineJacksonConfiguration {
                 registerSubtypes(NamedType(MediaActionDescriptorDump::class.java, MediaMessageType.action.name))
                 registerSubtypes(NamedType(MediaCarouselDescriptorDump::class.java, MediaMessageType.carousel.name))
 
-
                 setSerializerModifier(object : BeanSerializerModifier() {
                     override fun changeProperties(
                         config: SerializationConfig,
@@ -198,12 +197,9 @@ private object BotEngineJacksonConfiguration {
                         }
                     }
                 })
-
-
             }
             return module
         }
-
 }
 
 @JsonTypeInfo(

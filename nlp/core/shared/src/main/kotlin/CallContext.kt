@@ -22,9 +22,9 @@ import java.util.Locale
 /**
  *
  */
-data class CallContext(val application: Application,
-                       val language: Locale,
-                       val engineType: NlpEngineType = opennlp,
-                       val evaluationContext: EntityEvaluationContext = EntityEvaluationContext()) {
-
-}
+data class CallContext(
+    val application: Application,
+    val language: Locale,
+    val engineType: NlpEngineType = opennlp,
+    val evaluationContext: EntityEvaluationContext = EntityEvaluationContext()
+)

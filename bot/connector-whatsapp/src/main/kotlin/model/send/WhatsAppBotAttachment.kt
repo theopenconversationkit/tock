@@ -34,5 +34,4 @@ data class WhatsAppBotAttachment(
         this.byteImages = byteImages
         this.contentType = contentType
     }
-
 }

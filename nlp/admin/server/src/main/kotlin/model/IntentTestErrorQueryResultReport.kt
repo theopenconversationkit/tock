@@ -20,5 +20,6 @@ package ai.tock.nlp.admin.model
  *
  */
 data class IntentTestErrorQueryResultReport(
-        val total: Int,
-        val data: List<IntentTestErrorWithSentenceReport>)
+    val total: Int,
+    val data: List<IntentTestErrorWithSentenceReport>
+)

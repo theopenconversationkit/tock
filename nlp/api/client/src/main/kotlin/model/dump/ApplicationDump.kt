@@ -17,7 +17,6 @@
 package ai.tock.nlp.api.client.model.dump
 
 import ai.tock.nlp.api.client.model.NlpEngineType
-import ai.tock.nlp.api.client.model.PredefinedValue
 import java.time.Instant
 import java.util.Locale
 

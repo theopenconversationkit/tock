@@ -21,9 +21,10 @@ import ai.tock.nlp.api.client.model.NlpQueryContext
 /**
  *
  */
-data class EntityEvaluationQuery(val namespace: String,
-                                 val applicationName: String,
-                                 val context: NlpQueryContext,
-                                 val entities: List<EntityToEvaluate>,
-                                 val text: String) {
-}
+data class EntityEvaluationQuery(
+    val namespace: String,
+    val applicationName: String,
+    val context: NlpQueryContext,
+    val entities: List<EntityToEvaluate>,
+    val text: String
+)

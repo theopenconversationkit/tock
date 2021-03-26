@@ -41,5 +41,4 @@ enum class GAArgumentBuiltInName {
     NEW_SURFACE,
     /** Media status argument. */
     MEDIA_STATUS
-
 }

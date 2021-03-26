@@ -20,9 +20,9 @@ package ai.tock.bot.xray.model
  *
  */
 data class XrayTestStep(
-        val id: Long,
-        val index: Int,
-        val data: XrayTestStepData,
-        val result: XrayTestStepData,
-        val attachments: List<XrayAttachment>) {
-}
+    val id: Long,
+    val index: Int,
+    val data: XrayTestStepData,
+    val result: XrayTestStepData,
+    val attachments: List<XrayAttachment>
+)

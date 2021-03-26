@@ -17,7 +17,6 @@
 package ai.tock.shared.security.auth
 
 import ai.tock.shared.Executor
-import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.property
 import ai.tock.shared.provide
@@ -45,7 +44,7 @@ internal class GithubOAuthProvider(
         property("tock_github_oauth_client_id", "CLIENT_ID"),
         property("tock_github_oauth_secret_key", "SECRET_KEY")
     ).rbacHandler { _, _, handler ->
-        //TODO better
+        // TODO better
         handler.handle(Future.succeededFuture(true))
     }
 ) : SSOTockAuthProvider(vertx), OAuth2Auth by oauth2 {
@@ -92,6 +91,4 @@ internal class GithubOAuthProvider(
         super.excludedPaths(verticle) + callbackPath(verticle).toRegex()
 
     private fun callbackPath(verticle: WebVerticle): String = "${verticle.basePath}/callback"
-
 }
-

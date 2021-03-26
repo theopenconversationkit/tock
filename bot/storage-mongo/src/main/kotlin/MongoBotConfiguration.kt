@@ -16,10 +16,10 @@
 
 package ai.tock.bot.mongo
 
-import com.github.salomonbrys.kodein.instance
-import com.mongodb.client.MongoDatabase
 import ai.tock.shared.injector
 import ai.tock.shared.listProperty
+import com.github.salomonbrys.kodein.instance
+import com.mongodb.client.MongoDatabase
 
 /**
  *

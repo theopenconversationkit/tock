@@ -20,7 +20,7 @@ package ai.tock.bot.xray
  * A Xray test plan execution result.
  */
 data class XrayPlanExecutionResult(
-        val success: Int,
-        val total: Int,
-        val errorMessage: String? = null
+    val success: Int,
+    val total: Int,
+    val errorMessage: String? = null
 )

@@ -93,62 +93,62 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
     private val logger = KotlinLogging.logger {}
 
     internal val flowStateCol =
-            MongoBotConfiguration.database.getCollection<DialogFlowStateCol>("flow_state")
-                    .apply {
-                        ensureIndex(Namespace, BotId, StoryDefinitionId, Intent, Step, Entities, StoryType, StoryName)
-                    }
+        MongoBotConfiguration.database.getCollection<DialogFlowStateCol>("flow_state")
+            .apply {
+                ensureIndex(Namespace, BotId, StoryDefinitionId, Intent, Step, Entities, StoryType, StoryName)
+            }
 
     internal val flowTransitionCol =
-            MongoBotConfiguration.database.getCollection<DialogFlowStateTransitionCol>("flow_transition")
-                    .apply {
-                        ensureIndex(Namespace, BotId, PreviousStateId, NextStateId, Intent, Step, NewEntities, Type)
-                    }
+        MongoBotConfiguration.database.getCollection<DialogFlowStateTransitionCol>("flow_transition")
+            .apply {
+                ensureIndex(Namespace, BotId, PreviousStateId, NextStateId, Intent, Step, NewEntities, Type)
+            }
 
     internal val flowTransitionStatsCol =
-            MongoBotConfiguration.database.getCollection<DialogFlowStateTransitionStatCol>("flow_transition_stats")
-                    .apply {
-                        try {
-                            ensureIndex(TransitionId)
-                            ensureIndex(TransitionId, Date)
-                            ensureIndex(DialogId)
-                            ensureIndex(
-                                    Date,
-                                    indexOptions = IndexOptions()
-                                            .expireAfter(longProperty("tock_bot_flow_stats_index_ttl_days", 365), TimeUnit.DAYS)
-                            )
-                        } catch (e: Exception) {
-                            logger.error(e)
-                        }
-                    }
+        MongoBotConfiguration.database.getCollection<DialogFlowStateTransitionStatCol>("flow_transition_stats")
+            .apply {
+                try {
+                    ensureIndex(TransitionId)
+                    ensureIndex(TransitionId, Date)
+                    ensureIndex(DialogId)
+                    ensureIndex(
+                        Date,
+                        indexOptions = IndexOptions()
+                            .expireAfter(longProperty("tock_bot_flow_stats_index_ttl_days", 365), TimeUnit.DAYS)
+                    )
+                } catch (e: Exception) {
+                    logger.error(e)
+                }
+            }
 
     override fun saveFlow(bot: BotDefinition, flow: DialogFlowDefinition) {
         TODO("not implemented")
     }
 
     override fun loadApplicationData(
-            namespace: String,
-            botId: String,
-            applicationIds: Set<Id<BotApplicationConfiguration>>,
-            from: ZonedDateTime?,
-            to: ZonedDateTime?,
-            intent: String?
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?,
+        intent: String?
     ): ApplicationDialogFlowData {
         logger.debug { "Fetching application flow for ns $namespace, bot $botId, apps $applicationIds from $from to $to..." }
         val states = findStates(namespace, botId)
         val transitions = findTransitions(namespace, botId)
         val stats =
-                findStats(transitions.map { it._id }, applicationIds, from, to).associateBy { it.first }.mapValues { it.value.second }
+            findStats(transitions.map { it._id }, applicationIds, from, to).associateBy { it.first }.mapValues { it.value.second }
 
         @Suppress("UNCHECKED_CAST")
         val transitionsWithStats = transitions.map {
             DialogFlowStateTransitionData(
-                    it.previousStateId as? Id<DialogFlowStateData>?,
-                    it.nextStateId as Id<DialogFlowStateData>,
-                    it.intent,
-                    it.step,
-                    it.newEntities,
-                    it.type,
-                    stats[it._id] ?: 0
+                it.previousStateId as? Id<DialogFlowStateData>?,
+                it.nextStateId as Id<DialogFlowStateData>,
+                it.intent,
+                it.step,
+                it.newEntities,
+                it.type,
+                stats[it._id] ?: 0
             )
         }.filter { it.count != 0L }
 
@@ -157,14 +157,14 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         @Suppress("UNCHECKED_CAST")
         val statesWithStats = states.map { s ->
             DialogFlowStateData(
-                    s.storyDefinitionId,
-                    s.intent,
-                    s.step,
-                    s.entities,
-                    s.storyType,
-                    s.storyName,
-                    transitionCountByNext[s._id as Id<DialogFlowStateData>] ?: 0L,
-                    s._id as Id<DialogFlowStateData>
+                s.storyDefinitionId,
+                s.intent,
+                s.step,
+                s.entities,
+                s.storyType,
+                s.storyName,
+                transitionCountByNext[s._id as Id<DialogFlowStateData>] ?: 0L,
+                s._id as Id<DialogFlowStateData>
             )
         }.filter {
             it.count != 0L
@@ -173,62 +173,68 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         return ApplicationDialogFlowData(statesWithStats, transitionsWithStats, emptyList()/*TODO*/)
     }
 
-    override fun search(namespace: String,
-            botId: String,
-            applicationIds: Set<Id<BotApplicationConfiguration>>,
-            from: ZonedDateTime?,
-            to: ZonedDateTime?,
-            intent: String?
+    override fun search(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?,
+        intent: String?
     ): List<DialogFlowTransitionStatsData> {
         val filter =
-                and(
-                    listOfNotNull(
-                        if (applicationIds.isEmpty()) null else ApplicationId `in` applicationIds,
-                        if (from == null) null else Date gt from.toInstant(),
-                        if (to == null) null else Date lt to.toInstant()
-                    )
+            and(
+                listOfNotNull(
+                    if (applicationIds.isEmpty()) null else ApplicationId `in` applicationIds,
+                    if (from == null) null else Date gt from.toInstant(),
+                    if (to == null) null else Date lt to.toInstant()
                 )
+            )
         logger.debug { "Flow Message filter: $filter" }
         val zoneId = ZoneId.of("Europe/Paris")
         return flowTransitionStatsCol.find(filter).ascendingSort(Date).toList()
-                .map {
-                    DialogFlowTransitionStatsData(
-                            applicationId = it.applicationId.toString(),
-                            transitionId = it.transitionId.toString(),
-                            dialogId = it.dialogId.toString(),
-                            text = it.text,
-                            date = LocalDateTime.ofInstant(it.date, zoneId)
-                    )
-                }
+            .map {
+                DialogFlowTransitionStatsData(
+                    applicationId = it.applicationId.toString(),
+                    transitionId = it.transitionId.toString(),
+                    dialogId = it.dialogId.toString(),
+                    text = it.text,
+                    date = LocalDateTime.ofInstant(it.date, zoneId)
+                )
+            }
     }
 
-    override fun searchByDateWithIntent(namespace: String,
-                                 botId: String,
-                                 applicationIds: Set<Id<BotApplicationConfiguration>>,
-                                 from: ZonedDateTime?,
-                                 to: ZonedDateTime?,
-                                 intent: String?
+    override fun searchByDateWithIntent(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?,
+        intent: String?
     ): Pair<List<DialogFlowTransitionStatsData>, List<String>> {
         val transitions = findTransitions(namespace, botId).groupBy { it._id.toString() }.mapValues { it.value.firstOrNull() }
         val messages = search(namespace, botId, applicationIds, from, to, intent)
-        val transitionToIntent = messages.groupBy { it.transitionId }.keys.associateBy({it}, {transitions[it]?.intent})
-        return Pair(messages.map {
-            DialogFlowTransitionStatsData(
+        val transitionToIntent = messages.groupBy { it.transitionId }.keys.associateBy({ it }, { transitions[it]?.intent })
+        return Pair(
+            messages.map {
+                DialogFlowTransitionStatsData(
                     applicationId = it.applicationId,
                     transitionId = it.transitionId,
                     dialogId = it.dialogId,
                     text = transitionToIntent[it.transitionId],
                     date = it.date
-            )
-        }, emptyList())
+                )
+            },
+            emptyList()
+        )
     }
 
-    override fun searchByDateWithActionType(namespace: String,
-                                        botId: String,
-                                        applicationIds: Set<Id<BotApplicationConfiguration>>,
-                                        from: ZonedDateTime?,
-                                        to: ZonedDateTime?,
-                                        intent: String?
+    override fun searchByDateWithActionType(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?,
+        intent: String?
     ): Pair<List<DialogFlowTransitionStatsData>, List<String>> {
         val transitions = findTransitions(namespace, botId)
         val filteredTransitions = transitions
@@ -237,102 +243,109 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         val filteredTransitionsByIntent = filteredTransitions.filter { it.value?.intent == intent || intent.isNullOrEmpty() }
 
         val messages = search(namespace, botId, applicationIds, from, to, null)
-        val transitionToType = messages.groupBy { it.transitionId }.keys.associateBy({it}, {filteredTransitionsByIntent[it]})
-        val intents = messages.groupBy { it.transitionId }.keys.associateBy({it}, {filteredTransitions[it]}).values.mapNotNull { it?.intent }.distinct().sorted()
-        return Pair(messages.filter { transitionToType[it.transitionId]?.type != null }.map {
-            DialogFlowTransitionStatsData(
+        val transitionToType = messages.groupBy { it.transitionId }.keys.associateBy({ it }, { filteredTransitionsByIntent[it] })
+        val intents = messages.groupBy { it.transitionId }.keys.associateBy({ it }, { filteredTransitions[it] }).values.mapNotNull { it?.intent }.distinct().sorted()
+        return Pair(
+            messages.filter { transitionToType[it.transitionId]?.type != null }.map {
+                DialogFlowTransitionStatsData(
                     applicationId = it.applicationId,
                     transitionId = it.transitionId,
                     dialogId = it.dialogId,
                     text = transitionToType[it.transitionId]?.type.toString(),
                     date = it.date
-            )
-        }, intents)
+                )
+            },
+            intents
+        )
     }
 
-    override fun searchByDateWithStory(namespace: String,
-                                       botId: String,
-                                       applicationIds: Set<Id<BotApplicationConfiguration>>,
-                                       from: ZonedDateTime?,
-                                       to: ZonedDateTime?,
-                                       intent: String?
+    override fun searchByDateWithStory(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?,
+        intent: String?
     ): Pair<List<DialogFlowTransitionStatsData>, List<String>> {
         val states = findStates(namespace, botId).groupBy { it._id.toString() }.mapValues { it.value.firstOrNull() }
         val transitions = findTransitions(namespace, botId).groupBy { it._id.toString() }.mapValues { it.value.firstOrNull() }
         val messages = search(namespace, botId, applicationIds, from, to, intent)
-        val transitionToState = messages.groupBy { it.transitionId }.keys.associateBy({it}, {transitions[it]?.nextStateId.toString()})
+        val transitionToState = messages.groupBy { it.transitionId }.keys.associateBy({ it }, { transitions[it]?.nextStateId.toString() })
         val transitionToStory = transitionToState.mapValues { states[it.value]?.storyDefinitionId }
-        return Pair(messages.map {
-            DialogFlowTransitionStatsData(
+        return Pair(
+            messages.map {
+                DialogFlowTransitionStatsData(
                     applicationId = it.applicationId,
                     transitionId = it.transitionId,
                     dialogId = it.dialogId,
                     text = transitionToStory[it.transitionId],
                     date = it.date
-            )
-        }, emptyList())
+                )
+            },
+            emptyList()
+        )
     }
 
     private fun findStates(namespace: String, botId: String): List<DialogFlowStateCol> =
-            flowStateCol.find(Namespace eq namespace, BotId eq botId).toList()
+        flowStateCol.find(Namespace eq namespace, BotId eq botId).toList()
 
     private fun findTransitions(namespace: String, botId: String): List<DialogFlowStateTransitionCol> =
-            flowTransitionCol.find(Namespace eq namespace, BotId eq botId).toList()
+        flowTransitionCol.find(Namespace eq namespace, BotId eq botId).toList()
 
     private fun findStats(
-            transitionIds: List<Id<DialogFlowStateTransitionCol>>,
-            botAppConfIds: Set<Id<BotApplicationConfiguration>>,
-            from: ZonedDateTime?,
-            to: ZonedDateTime?
+        transitionIds: List<Id<DialogFlowStateTransitionCol>>,
+        botAppConfIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
     ): List<Pair<Id<DialogFlowStateTransitionCol>, Long>> =
-            flowTransitionStatsCol.aggregate<Pair<String, Long>>(
-                    match(
-                            and(
-                                    listOfNotNull(
-                                            TransitionId `in` transitionIds,
-                                            if (botAppConfIds.isEmpty()) null else ApplicationId `in` botAppConfIds,
-                                            if (from == null) null else Date gt from.toInstant(),
-                                            if (to == null) null else Date lt to.toInstant()
-                                    )
-                            )
-                    ),
-                    group(
-                            TransitionId,
-                            Pair<*, Long>::second sum 1
-                    ),
-                    project(
-                            Pair<Id<DialogFlowStateTransitionCol>, Long>::first from _id,
-                            Pair<*, Long>::second from Pair<*, Long>::second
+        flowTransitionStatsCol.aggregate<Pair<String, Long>>(
+            match(
+                and(
+                    listOfNotNull(
+                        TransitionId `in` transitionIds,
+                        if (botAppConfIds.isEmpty()) null else ApplicationId `in` botAppConfIds,
+                        if (from == null) null else Date gt from.toInstant(),
+                        if (to == null) null else Date lt to.toInstant()
                     )
+                )
+            ),
+            group(
+                TransitionId,
+                Pair<*, Long>::second sum 1
+            ),
+            project(
+                Pair<Id<DialogFlowStateTransitionCol>, Long>::first from _id,
+                Pair<*, Long>::second from Pair<*, Long>::second
+            )
 
-            ).map { it.first.toId<DialogFlowStateTransitionCol>() to it.second }.toList()
+        ).map { it.first.toId<DialogFlowStateTransitionCol>() to it.second }.toList()
 
     private fun findState(botDefinition: BotDefinition, snapshot: Snapshot?): DialogFlowStateCol? {
         val storyDefinitionId = snapshot?.storyDefinitionId
         val intentName = snapshot?.intentName
         return if (storyDefinitionId != null && intentName != null) {
             DialogFlowStateCol(
-                    botDefinition.namespace,
-                    botDefinition.botId,
-                    storyDefinitionId,
-                    intentName,
-                    snapshot.step,
-                    snapshot.entityValues.map { it.entity.role }.toSortedSet(),
-                    storyType = snapshot.storyType,
-                    storyName = snapshot.storyName ?: storyDefinitionId
+                botDefinition.namespace,
+                botDefinition.botId,
+                storyDefinitionId,
+                intentName,
+                snapshot.step,
+                snapshot.entityValues.map { it.entity.role }.toSortedSet(),
+                storyType = snapshot.storyType,
+                storyName = snapshot.storyName ?: storyDefinitionId
             ).run {
                 flowStateCol.findOne(
-                        Namespace eq namespace,
-                        BotId eq botId,
-                        StoryDefinitionId eq storyDefinitionId,
-                        Intent eq intentName,
-                        Step eq step,
-                        if (entities.size < 2) Entities eq entities else and(
-                                Entities size entities.size,
-                                Entities all entities
-                        ),
-                        StoryType eq storyType,
-                        StoryName eq storyName
+                    Namespace eq namespace,
+                    BotId eq botId,
+                    StoryDefinitionId eq storyDefinitionId,
+                    Intent eq intentName,
+                    Step eq step,
+                    if (entities.size < 2) Entities eq entities else and(
+                        Entities size entities.size,
+                        Entities all entities
+                    ),
+                    StoryType eq storyType,
+                    StoryName eq storyName
                 ) ?: (this.apply { flowStateCol.insertOne(this) })
             }
         } else {
@@ -341,61 +354,60 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
     }
 
     private fun findTransition(
-            botDefinition: BotDefinition,
-            previousState: DialogFlowStateCol?,
-            state: DialogFlowStateCol,
-            lastUserAction: Action?
+        botDefinition: BotDefinition,
+        previousState: DialogFlowStateCol?,
+        state: DialogFlowStateCol,
+        lastUserAction: Action?
     ): DialogFlowStateTransitionCol =
-            findTransition(
-                    botDefinition,
-                    previousState?._id,
-                    state._id,
-                    lastUserAction?.state?.intent,
-                    lastUserAction?.state?.step,
-                    lastUserAction?.state?.entityValues?.map { it.entity.role }?.toSortedSet() ?: emptySet(),
-                    when (lastUserAction) {
-                        is SendChoice -> choice
-                        is SendLocation -> location
-                        is SendAttachment -> attachment
-                        else -> nlp
-                    }
-            )
+        findTransition(
+            botDefinition,
+            previousState?._id,
+            state._id,
+            lastUserAction?.state?.intent,
+            lastUserAction?.state?.step,
+            lastUserAction?.state?.entityValues?.map { it.entity.role }?.toSortedSet() ?: emptySet(),
+            when (lastUserAction) {
+                is SendChoice -> choice
+                is SendLocation -> location
+                is SendAttachment -> attachment
+                else -> nlp
+            }
+        )
 
     private fun findTransition(
-            botDefinition: BotDefinition,
-            previousStateId: Id<DialogFlowStateCol>?,
-            nextStateId: Id<DialogFlowStateCol>,
-            intent: String?,
-            step: String?,
-            newEntities: Set<String>,
-            type: DialogFlowStateTransitionType
+        botDefinition: BotDefinition,
+        previousStateId: Id<DialogFlowStateCol>?,
+        nextStateId: Id<DialogFlowStateCol>,
+        intent: String?,
+        step: String?,
+        newEntities: Set<String>,
+        type: DialogFlowStateTransitionType
     ): DialogFlowStateTransitionCol =
-            flowTransitionCol.findOne(
-                    Namespace eq botDefinition.namespace,
-                    BotId eq botDefinition.botId,
-                    PreviousStateId eq previousStateId,
-                    NextStateId eq nextStateId,
-                    Intent eq intent,
-                    Step eq step,
-                    if (newEntities.size < 2) NewEntities eq newEntities else and(
-                            NewEntities size newEntities.size,
-                            NewEntities all newEntities
-                    ),
-                    Type eq type
-            ) ?: (
-                    DialogFlowStateTransitionCol(
-                            botDefinition.namespace,
-                            botDefinition.botId,
-                            previousStateId,
-                            nextStateId,
-                            intent,
-                            step,
-                            newEntities,
-                            type
-                    )
-                            .also { flowTransitionCol.insertOne(it) }
-                    )
-
+        flowTransitionCol.findOne(
+            Namespace eq botDefinition.namespace,
+            BotId eq botDefinition.botId,
+            PreviousStateId eq previousStateId,
+            NextStateId eq nextStateId,
+            Intent eq intent,
+            Step eq step,
+            if (newEntities.size < 2) NewEntities eq newEntities else and(
+                NewEntities size newEntities.size,
+                NewEntities all newEntities
+            ),
+            Type eq type
+        ) ?: (
+            DialogFlowStateTransitionCol(
+                botDefinition.namespace,
+                botDefinition.botId,
+                previousStateId,
+                nextStateId,
+                intent,
+                step,
+                newEntities,
+                type
+            )
+                .also { flowTransitionCol.insertOne(it) }
+            )
 
     fun addFlowStat(botDefinition: BotDefinition, lastUserAction: Action, dialog: Dialog, snapshot: SnapshotCol) {
 
@@ -404,16 +416,16 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         if (state != null) {
             val transition = findTransition(botDefinition, previousState, state, lastUserAction)
             val botAppConf = getHackedConfigurationByApplicationIdAndBot(
-                    botDefinition.namespace, lastUserAction.applicationId, botDefinition.botId
+                botDefinition.namespace, lastUserAction.applicationId, botDefinition.botId
             )
             if (botAppConf != null) {
                 flowTransitionStatsCol.insertOne(
-                        DialogFlowStateTransitionStatCol(
-                                botAppConf._id,
-                                transition._id,
-                                dialog.id,
-                                obfuscate((lastUserAction as? SendSentence)?.stringText)
-                        )
+                    DialogFlowStateTransitionStatCol(
+                        botAppConf._id,
+                        transition._id,
+                        dialog.id,
+                        obfuscate((lastUserAction as? SendSentence)?.stringText)
+                    )
                 )
             } else {
                 logger.warn { "unknown applicationId : ${lastUserAction.applicationId} for $botDefinition" }

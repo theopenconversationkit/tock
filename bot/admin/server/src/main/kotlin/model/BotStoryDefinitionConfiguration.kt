@@ -88,5 +88,4 @@ data class BotStoryDefinitionConfiguration(
         story.configuredSteps.mapSteps(story, readOnly),
         story._id
     )
-
 }

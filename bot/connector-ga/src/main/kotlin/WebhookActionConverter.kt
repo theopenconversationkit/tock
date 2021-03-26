@@ -78,8 +78,8 @@ internal object WebhookActionConverter {
                     input.arguments.first { it.builtInArg == GAArgumentBuiltInName.OPTION }.textValue
                         ?: error("no text value")
                 )
-                //Google assistant makes an somewhat erroneous nlp selection sometimes
-                //to avoid that, double check the label
+                // Google assistant makes an somewhat erroneous nlp selection sometimes
+                // to avoid that, double check the label
                 if (input.rawInputs.firstOrNull()?.query?.let { query -> params.second[SendChoice.TITLE_PARAMETER] == query } != false) {
                     return SendChoice(
                         playerId,
@@ -101,7 +101,6 @@ internal object WebhookActionConverter {
                     }?.toMap().orEmpty(),
                     state = eventState
                 )
-
             }
 
             fun Event.setEventState(): Event {
@@ -157,5 +156,4 @@ internal object WebhookActionConverter {
         }
         error("unsupported message: $message")
     }
-
 }

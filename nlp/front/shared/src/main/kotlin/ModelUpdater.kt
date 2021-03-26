@@ -35,30 +35,32 @@ interface ModelUpdater {
      * Update intents model.
      */
     fun updateIntentsModelForApplication(
-            validatedSentences: List<ClassifiedSentence>,
-            application: ApplicationDefinition,
-            language: Locale,
-            engineType: NlpEngineType,
-            onlyIfNotExists: Boolean = false)
+        validatedSentences: List<ClassifiedSentence>,
+        application: ApplicationDefinition,
+        language: Locale,
+        engineType: NlpEngineType,
+        onlyIfNotExists: Boolean = false
+    )
 
     /**
      * Update all entities model of intent.
      */
     fun updateEntityModelForIntent(
-            validatedSentences: List<ClassifiedSentence>,
-            application: ApplicationDefinition,
-            intentId: Id<IntentDefinition>,
-            language: Locale,
-            engineType: NlpEngineType,
-            onlyIfNotExists: Boolean = false)
+        validatedSentences: List<ClassifiedSentence>,
+        application: ApplicationDefinition,
+        intentId: Id<IntentDefinition>,
+        language: Locale,
+        engineType: NlpEngineType,
+        onlyIfNotExists: Boolean = false
+    )
 
     fun updateEntityModelForEntityType(
-            validatedSentences: List<ClassifiedSentence>,
-            application: ApplicationDefinition,
-            entityTypeDefinition: EntityTypeDefinition,
-            language: Locale,
-            engineType: NlpEngineType,
-            onlyIfNotExists: Boolean = false
+        validatedSentences: List<ClassifiedSentence>,
+        application: ApplicationDefinition,
+        entityTypeDefinition: EntityTypeDefinition,
+        language: Locale,
+        engineType: NlpEngineType,
+        onlyIfNotExists: Boolean = false
     )
 
     /**

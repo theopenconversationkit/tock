@@ -44,34 +44,36 @@ class XrayKeywordHandler {
 
             val labelPlanMap = emptyMap<String, String>()
             val xray =
-                    try {
-                        val dialog = dialogReportDAO.getDialog(bus.dialog.id)!!.cleanSurrogates()
-                        val linkedJira = params.getOrNull(1)?.trim()
-                        val connectorName = ""
-                        val testTitle = { labels: List<String> ->
-                            val l = labels.filter { labelPlanMap.containsKey(it) }
-                            val labelLink = if (l.isEmpty()) "" else "[${l.first()}]"
-                            val linkedJiraNumber = if (linkedJira.isNullOrBlank()) "" else linkedJira.replace("$jiraKeyProject-", "") + " - "
-                            "$linkedJiraNumber [AUTO]$connectorName$labelLink " +
-                                    (params.getOrNull(0)?.run {
-                                        if (isBlank()) {
-                                            null
-                                        } else {
-                                            trim()
-                                        }
-                                    } ?: "Test")
-                        }
-                        XrayService().generateXrayTest(
-                                dialog,
-                                testTitle,
-                                linkedJira,
-                                listOfNotNull(""),
-                                labelPlanMap
-                        )
-                    } catch (e: Exception) {
-                        logger.error(e)
-                        null
+                try {
+                    val dialog = dialogReportDAO.getDialog(bus.dialog.id)!!.cleanSurrogates()
+                    val linkedJira = params.getOrNull(1)?.trim()
+                    val connectorName = ""
+                    val testTitle = { labels: List<String> ->
+                        val l = labels.filter { labelPlanMap.containsKey(it) }
+                        val labelLink = if (l.isEmpty()) "" else "[${l.first()}]"
+                        val linkedJiraNumber = if (linkedJira.isNullOrBlank()) "" else linkedJira.replace("$jiraKeyProject-", "") + " - "
+                        "$linkedJiraNumber [AUTO]$connectorName$labelLink " +
+                            (
+                                params.getOrNull(0)?.run {
+                                    if (isBlank()) {
+                                        null
+                                    } else {
+                                        trim()
+                                    }
+                                } ?: "Test"
+                                )
                     }
+                    XrayService().generateXrayTest(
+                        dialog,
+                        testTitle,
+                        linkedJira,
+                        listOfNotNull(""),
+                        labelPlanMap
+                    )
+                } catch (e: Exception) {
+                    logger.error(e)
+                    null
+                }
             BotDefinitionBase.endTestContextKeywordHandler(bus, false)
             bus.nextUserActionState = null
             if (xray != null) {
@@ -92,13 +94,13 @@ class XrayKeywordHandler {
             bus.endRawText("Error: project key (${params.split("-")[0].trim()}) does not match expected one ($jiraKeyProject)")
         } else {
             val xray =
-                    try {
-                        val dialog = dialogReportDAO.getDialog(bus.dialog.id)!!.cleanSurrogates()
-                        XrayService().updateXrayTest(dialog, testKey)
-                    } catch (e: Exception) {
-                        logger.error(e)
-                        null
-                    }
+                try {
+                    val dialog = dialogReportDAO.getDialog(bus.dialog.id)!!.cleanSurrogates()
+                    XrayService().updateXrayTest(dialog, testKey)
+                } catch (e: Exception) {
+                    logger.error(e)
+                    null
+                }
             BotDefinitionBase.endTestContextKeywordHandler(bus, false)
             bus.nextUserActionState = null
             if (xray != null) {

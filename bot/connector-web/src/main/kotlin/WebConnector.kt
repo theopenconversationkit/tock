@@ -86,7 +86,7 @@ class WebConnector internal constructor(
         private val logger = KotlinLogging.logger {}
         private val webMapper = mapper.copy().registerModules(
             SimpleModule().apply {
-                //fallback for serializing CharSequence
+                // fallback for serializing CharSequence
                 addSerializer(CharSequence::class.java, ToStringSerializer())
             }
         )
@@ -205,7 +205,6 @@ class WebConnector internal constructor(
             )
 
             controller.handle(request.toAction(), ConnectorData(callback))
-
         } catch (t: Throwable) {
             RestOrchestrationCallback(webConnectorType, applicationId, context = context).sendError()
             BotRepository.requestTimer.throwable(t, timerData)
@@ -231,14 +230,14 @@ class WebConnector internal constructor(
 
             val support = controller.support(request.toAction(applicationId), ConnectorData(callback))
             val sendEligibility = SecondaryBotEligibilityResponse(
-                support, OrchestrationMetaData(
+                support,
+                OrchestrationMetaData(
                     playerId = PlayerId(applicationId, bot),
                     applicationId = applicationId,
                     recipientId = request.metadata?.playerId ?: PlayerId(Dice.newId(), user)
                 )
             )
             callback.sendResponse(sendEligibility)
-
         } catch (t: Throwable) {
             RestOrchestrationCallback(webConnectorType, applicationId, context = context).sendError()
             BotRepository.requestTimer.throwable(t, timerData)
@@ -256,7 +255,6 @@ class WebConnector internal constructor(
         } else {
             logger.trace { "unsupported event: $event" }
         }
-
     }
 
     private fun handleWebConnectorCallback(callback: WebConnectorCallback, event: Action) {
@@ -311,17 +309,22 @@ class WebConnector internal constructor(
                             subTitle = message.subTitle,
                             file = message.file?.toWebMediaFile(),
                             buttons = message.actions.map { button -> button.toButton() }
-                        ))
+                        )
+                    )
                 }
                 is MediaCarousel -> {
-                    WebMessage(carousel = WebCarousel(message.cards.map { mediaCard ->
-                        WebCard(
-                            title = mediaCard.title,
-                            subTitle = mediaCard.subTitle,
-                            file = mediaCard.file?.toWebMediaFile(),
-                            buttons = mediaCard.actions.map { button -> button.toButton() }
+                    WebMessage(
+                        carousel = WebCarousel(
+                            message.cards.map { mediaCard ->
+                                WebCard(
+                                    title = mediaCard.title,
+                                    subTitle = mediaCard.subTitle,
+                                    file = mediaCard.file?.toWebMediaFile(),
+                                    buttons = mediaCard.actions.map { button -> button.toButton() }
+                                )
+                            }
                         )
-                    }))
+                    )
                 }
                 else -> null
             }

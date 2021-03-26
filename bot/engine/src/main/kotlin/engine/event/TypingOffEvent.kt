@@ -21,5 +21,4 @@ import ai.tock.bot.engine.user.PlayerId
 /**
  * The "end of typing" event.
  */
-class TypingOffEvent(val recipientId: PlayerId, applicationId: String) : Event(applicationId) {
-}
+class TypingOffEvent(val recipientId: PlayerId, applicationId: String) : Event(applicationId)

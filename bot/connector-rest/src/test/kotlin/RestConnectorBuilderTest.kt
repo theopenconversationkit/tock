@@ -26,12 +26,16 @@ internal class RestConnectorBuilderTest {
     fun `connector path should include no space char`() {
 
         val aNameIncludingSpaces = "un nom avec espace"
-        val connectorConfiguration = addRestConnector(BotApplicationConfiguration(applicationId = aNameIncludingSpaces,
+        val connectorConfiguration = addRestConnector(
+            BotApplicationConfiguration(
+                applicationId = aNameIncludingSpaces,
                 botId = aNameIncludingSpaces,
                 name = aNameIncludingSpaces,
                 namespace = "aNamespace",
                 connectorType = RestConnectorProvider.connectorType,
-                nlpModel = "aModel"))
+                nlpModel = "aModel"
+            )
+        )
 
         assertFalse { connectorConfiguration.path.contains(' ') }
     }

@@ -18,6 +18,4 @@ package ai.tock.bot.connector.messenger.model.send
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-abstract class ModelPayload(@get:JsonProperty("template_type") val templateType: PayloadType) : Payload() {
-
-}
+abstract class ModelPayload(@get:JsonProperty("template_type") val templateType: PayloadType) : Payload()

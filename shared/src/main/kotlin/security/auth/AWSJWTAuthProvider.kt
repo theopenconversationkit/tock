@@ -48,7 +48,7 @@ internal class AWSJWTAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx), JW
         private val customRolesMapping = mapProperty("tock_jwt_custom_roles_mapping", emptyMap())
     }
 
-    //cached values
+    // cached values
     @Volatile
     private var publicKey: String? = null
 
@@ -130,10 +130,12 @@ internal class AWSJWTAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx), JW
                         ""
                     )
                     JWTAuth.create(
-                        vertx, JWTAuthOptions(
+                        vertx,
+                        JWTAuthOptions(
                             JsonObject()
                                 .put(
-                                    "pubSecKeys", JsonArray()
+                                    "pubSecKeys",
+                                    JsonArray()
                                         .add(
                                             JsonObject()
                                                 .put("algorithm", jwtAlgorithm)
@@ -151,7 +153,7 @@ internal class AWSJWTAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx), JW
     }
 
     override fun generateToken(claims: JsonObject, options: io.vertx.ext.auth.JWTOptions): String {
-        //do nothing
+        // do nothing
         return ""
     }
 }

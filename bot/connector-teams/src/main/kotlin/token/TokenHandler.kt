@@ -16,14 +16,14 @@
 
 package ai.tock.bot.connector.teams.token
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import ai.tock.shared.Level
 import ai.tock.shared.addJacksonConverter
 import ai.tock.shared.create
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.longProperty
 import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import mu.KotlinLogging
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -73,9 +73,9 @@ class TokenHandler(private val appId: String, private val password: String) {
         logger.debug { "IS TOKEN EXPIRED" }
         if (Instant.now().isAfter(
                 tokenExpiration?.minus(
-                    10,
-                    ChronoUnit.SECONDS
-                )
+                        10,
+                        ChronoUnit.SECONDS
+                    )
             )
         ) {
             return true
@@ -105,5 +105,4 @@ class TokenHandler(private val appId: String, private val password: String) {
             logger.error("Trying to stop an uninitialized tokentimertask !")
         }
     }
-
 }

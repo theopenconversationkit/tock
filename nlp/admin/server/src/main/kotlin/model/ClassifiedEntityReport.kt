@@ -23,31 +23,34 @@ import ai.tock.nlp.front.shared.parser.ParsedEntityValue
 /**
  *
  */
-data class ClassifiedEntityReport(val type: String,
-                                  val role: String,
-                                  val start: Int,
-                                  val end: Int,
-                                  val value: Value?,
-                                  val probability: Double?,
-                                  val subEntities: List<ClassifiedEntityReport>) {
+data class ClassifiedEntityReport(
+    val type: String,
+    val role: String,
+    val start: Int,
+    val end: Int,
+    val value: Value?,
+    val probability: Double?,
+    val subEntities: List<ClassifiedEntityReport>
+) {
 
     constructor(value: ParsedEntityValue) : this(
-            value.entity.entityType.name,
-            value.entity.role,
-            value.start,
-            value.end,
-            value.value,
-            value.probability,
-            value.subEntities.map { ClassifiedEntityReport(it) })
+        value.entity.entityType.name,
+        value.entity.role,
+        value.start,
+        value.end,
+        value.value,
+        value.probability,
+        value.subEntities.map { ClassifiedEntityReport(it) }
+    )
 
     constructor(entity: ClassifiedEntity) : this(
-            entity.type,
-            entity.role,
-            entity.start,
-            entity.end,
-            null,
-            null,
-            entity.subEntities.map { ClassifiedEntityReport(it) }
+        entity.type,
+        entity.role,
+        entity.start,
+        entity.end,
+        null,
+        null,
+        entity.subEntities.map { ClassifiedEntityReport(it) }
     )
 
     fun toClassifiedEntity(): ClassifiedEntity {

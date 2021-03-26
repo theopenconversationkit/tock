@@ -16,11 +16,10 @@
 
 package ai.tock.bot.connector.twitter.model
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonTypeName
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.message.Choice
-import ai.tock.bot.engine.message.GenericMessage
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonTypeName
 
 @JsonTypeName("web_url")
 data class WebUrl(

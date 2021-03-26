@@ -16,7 +16,6 @@
 
 package ai.tock.bot.jackson
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import ai.tock.bot.engine.action.SendAttachment
 import ai.tock.bot.engine.message.Attachment
 import ai.tock.bot.engine.message.Choice
@@ -25,6 +24,7 @@ import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.message.Sentence
 import ai.tock.bot.engine.user.UserLocation
 import ai.tock.shared.jackson.mapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 

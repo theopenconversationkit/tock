@@ -17,9 +17,9 @@
 package ai.tock.bot.definition
 
 data class DialogFlowStateTransition(
-        val previousState: DialogFlowState?,
-        val nextState: DialogFlowState,
-        val intent: IntentAware?,
-        val step: StoryStep<*>?,
-        val type: DialogFlowStateTransitionType = DialogFlowStateTransitionType.nlp
+    val previousState: DialogFlowState?,
+    val nextState: DialogFlowState,
+    val intent: IntentAware?,
+    val step: StoryStep<*>?,
+    val type: DialogFlowStateTransitionType = DialogFlowStateTransitionType.nlp
 )

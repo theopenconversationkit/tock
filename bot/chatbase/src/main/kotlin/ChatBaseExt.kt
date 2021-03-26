@@ -29,5 +29,5 @@ fun BotRepository.enableChatbase(apiKey: String, version: String) {
 internal val BotBus.platform: String
     get() {
         val platform = Platform.values().find { it.name.toLowerCase() == targetConnectorType.id.toLowerCase() } ?: Platform.CUSTOM
-        return "${platform.label}-${applicationId}"
+        return "${platform.label}-$applicationId"
     }

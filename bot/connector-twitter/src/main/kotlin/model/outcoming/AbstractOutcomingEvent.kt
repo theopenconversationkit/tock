@@ -15,11 +15,11 @@
  */
 package ai.tock.bot.connector.twitter.model.outcoming
 
-import com.fasterxml.jackson.annotation.JsonSubTypes
-import com.fasterxml.jackson.annotation.JsonTypeInfo
 import ai.tock.bot.engine.message.GenericMessage
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 
 /**
  * OutcomingEvent object
@@ -27,7 +27,8 @@ import ai.tock.bot.engine.user.PlayerType
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.PROPERTY,
-    property = "type")
+    property = "type"
+)
 @JsonSubTypes(
     JsonSubTypes.Type(value = DirectMessageOutcomingEvent::class, name = "message_create")
 )

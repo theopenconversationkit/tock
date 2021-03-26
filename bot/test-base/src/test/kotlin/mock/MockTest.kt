@@ -29,13 +29,11 @@ class MockTest {
         fun call() {
             c.callConnector()
         }
-
     }
 
     class MyConnectorDef(def: MyHandlerDef) : ConnectorDef<MyHandlerDef>(def) {
 
         fun callConnector() {
-
         }
     }
 

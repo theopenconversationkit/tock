@@ -16,11 +16,11 @@
 
 package ai.tock.bot.connector.messenger.model
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.messenger.MessengerConnectorProvider
 import ai.tock.bot.connector.messenger.model.send.Element
+import com.fasterxml.jackson.annotation.JsonIgnore
 
 /**
  *

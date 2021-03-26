@@ -16,11 +16,11 @@
 
 package ai.tock.nlp.front.service
 
-import com.github.salomonbrys.kodein.instance
 import ai.tock.nlp.front.service.storage.ParseRequestLogDAO
 import ai.tock.nlp.front.service.storage.UserActionLogDAO
 import ai.tock.nlp.front.shared.ApplicationMonitor
 import ai.tock.shared.injector
+import com.github.salomonbrys.kodein.instance
 
 val logDAO: ParseRequestLogDAO by injector.instance()
 val userLogDAO: UserActionLogDAO by injector.instance()

@@ -17,10 +17,7 @@
 package ai.tock.bot.connector.ga.model.request
 
 data class GARawInput(
-        val createTime: String?,
-        val inputType: GAInputType?,
-        val query: String?
-) {
-
-}
-
+    val createTime: String?,
+    val inputType: GAInputType?,
+    val query: String?
+)

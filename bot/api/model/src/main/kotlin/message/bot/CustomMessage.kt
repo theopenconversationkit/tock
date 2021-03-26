@@ -21,4 +21,5 @@ import ai.tock.shared.jackson.ConstrainedValueWrapper
 
 data class CustomMessage(
     val message: ConstrainedValueWrapper<out ConnectorMessage>,
-    override val delay: Long = 0) : BotMessage
+    override val delay: Long = 0
+) : BotMessage

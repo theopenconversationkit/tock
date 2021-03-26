@@ -19,7 +19,6 @@ package ai.tock.bot.connector.slack.model.old
 import ai.tock.bot.connector.slack.model.SlackConnectorMessage
 import ai.tock.bot.engine.message.GenericMessage
 
-
 data class SlackMessageIn(
     val token: String,
     val team_id: String,

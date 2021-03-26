@@ -16,8 +16,6 @@
 
 package ai.tock.nlp.front.storage.mongo
 
-import com.mongodb.ReadPreference.primary
-import com.mongodb.client.MongoCollection
 import ai.tock.nlp.core.Entity
 import ai.tock.nlp.core.EntityType
 import ai.tock.nlp.entity.NumberValue
@@ -30,6 +28,8 @@ import ai.tock.nlp.front.storage.mongo.ParseRequestLogMongoDAO.ParseRequestLogIn
 import ai.tock.nlp.front.storage.mongo.ParseRequestLogMongoDAO.ParseRequestLogStatCol
 import ai.tock.shared.Dice
 import ai.tock.shared.defaultLocale
+import com.mongodb.ReadPreference.primary
+import com.mongodb.client.MongoCollection
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.findOne
@@ -68,11 +68,14 @@ internal class ParseRequestLogMongoDAOTest : AbstractTest() {
 
     private val log = ParseRequestLog(
         "a".toId(),
-        ParseQuery(listOf("1"), "namespace", "appName",
+        ParseQuery(
+            listOf("1"), "namespace", "appName",
             QueryContext(
                 defaultLocale,
                 Dice.newId(),
-                referenceDate = ZonedDateTime.now(UTC).truncatedTo(ChronoUnit.MILLIS))),
+                referenceDate = ZonedDateTime.now(UTC).truncatedTo(ChronoUnit.MILLIS)
+            )
+        ),
         parseResult,
         2,
         date = Instant.now().truncatedTo(ChronoUnit.MILLIS)

@@ -23,6 +23,7 @@ data class UserRequest(
     val intent: String?,
     val entities: List<Entity>,
     val message: UserMessage,
-    val storyId:String,
-    val step:String?,
-    val context: RequestContext)
+    val storyId: String,
+    val step: String?,
+    val context: RequestContext
+)

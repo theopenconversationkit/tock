@@ -42,11 +42,13 @@ import java.time.ZonedDateTime
  */
 internal object DucklingClient {
 
-    data class ParseRequest(val language: String,
-                            val dimensions: List<String>,
-                            val referenceDate: ZonedDateTime,
-                            val referenceTimezone: ZoneId,
-                            val textToParse: String)
+    data class ParseRequest(
+        val language: String,
+        val dimensions: List<String>,
+        val referenceDate: ZonedDateTime,
+        val referenceTimezone: ZoneId,
+        val textToParse: String
+    )
 
     interface DucklingService {
 
@@ -65,7 +67,8 @@ internal object DucklingClient {
         val retrofit = retrofitBuilderWithTimeoutAndLogger(
             longProperty("tock_duckling_request_timeout_ms", 4000),
             logger,
-            circuitBreaker = true)
+            circuitBreaker = true
+        )
             .baseUrl("${property("nlp_duckling_url", "http://localhost:8889")}/")
             .addConverterFactory(RawJsonBodyConverterFactory)
             .build()
@@ -100,8 +103,9 @@ internal object DucklingClient {
         dimensions: List<String>,
         referenceDate: ZonedDateTime,
         referenceTimezone: ZoneId,
-        textToParse: String): JSONValue? {
-        //duckling does not support well ’ char
+        textToParse: String
+    ): JSONValue? {
+        // duckling does not support well ’ char
         val text = textToParse.replace("’", "'")
         return service.parse(ParseRequest(language, dimensions, referenceDate, referenceTimezone, text)).execute().body()
     }

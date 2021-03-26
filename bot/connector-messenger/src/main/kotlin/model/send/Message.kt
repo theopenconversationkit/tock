@@ -16,10 +16,10 @@
 
 package ai.tock.bot.connector.messenger.model.send
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import ai.tock.bot.connector.messenger.json.send.MessageDeserializer
 import ai.tock.bot.connector.messenger.model.MessengerConnectorMessage
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 
 /**
  *
@@ -32,4 +32,3 @@ abstract class Message(
 
     abstract fun copy(quickReplies: List<QuickReply>? = null): Message
 }
-

@@ -16,10 +16,6 @@
 
 package ai.tock.bot.engine
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.provider
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
@@ -54,6 +50,10 @@ import ai.tock.shared.sharedTestModule
 import ai.tock.shared.tockInternalInjector
 import ai.tock.translator.I18nDAO
 import ai.tock.translator.TranslatorEngine
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.AfterEach
@@ -72,7 +72,7 @@ abstract class BotEngineTest {
     val dialog = Dialog(setOf(userId, botId))
     val botApplicationConfiguration: BotApplicationConfiguration = mockk(relaxed = true)
     val connectorConfiguration: ConnectorConfiguration = mockk(relaxed = true)
-    val story by lazy {  Story(botDefinition.stories.first(), test.mainIntent()) }
+    val story by lazy { Story(botDefinition.stories.first(), test.mainIntent()) }
     val connectorCallback: ConnectorCallback = mockk(relaxed = true)
     val connectorData = ConnectorData(connectorCallback)
 
@@ -134,9 +134,11 @@ abstract class BotEngineTest {
     @BeforeEach
     fun before() {
         tockInternalInjector = KodeinInjector()
-        injector.inject(Kodein {
-            import(baseModule())
-        })
+        injector.inject(
+            Kodein {
+                import(baseModule())
+            }
+        )
 
         every { connector.loadProfile(any(), any()) } returns null
         every { connector.connectorType } returns ConnectorType("1")
@@ -178,5 +180,4 @@ abstract class BotEngineTest {
             userTimeline.dialogs.add(dialog)
         }
     }
-
 }

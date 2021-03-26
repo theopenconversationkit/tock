@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-
-
 package ai.tock.bot.engine.action
 
 import ai.tock.bot.definition.ParameterKey

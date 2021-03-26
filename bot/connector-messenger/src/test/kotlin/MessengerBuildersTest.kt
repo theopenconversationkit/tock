@@ -50,9 +50,11 @@ class MessengerBuildersTest {
     @BeforeEach
     fun before() {
         tockInternalInjector = KodeinInjector().apply {
-            inject(Kodein {
-                import(sharedTestModule)
-            })
+            inject(
+                Kodein {
+                    import(sharedTestModule)
+                }
+            )
         }
 
         every { bus.targetConnectorType } returns messengerConnectorType
@@ -101,7 +103,8 @@ class MessengerBuildersTest {
                     type = image,
                     payload = UrlPayload("http://test", null, true)
                 )
-            ), bus.image("http://test")
+            ),
+            bus.image("http://test")
         )
     }
 
@@ -113,7 +116,8 @@ class MessengerBuildersTest {
                     type = video,
                     payload = UrlPayload("http://test", null, true)
                 )
-            ), bus.video("http://test")
+            ),
+            bus.video("http://test")
         )
     }
 
@@ -125,7 +129,8 @@ class MessengerBuildersTest {
                     type = audio,
                     payload = UrlPayload("http://test", null, true)
                 )
-            ), bus.audio("http://test")
+            ),
+            bus.audio("http://test")
         )
     }
 

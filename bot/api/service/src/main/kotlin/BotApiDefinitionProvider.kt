@@ -70,8 +70,12 @@ internal class BotApiDefinitionProvider(private val configuration: BotConfigurat
                 this.stories.filter { it.mainIntent() != Intent.unknown }.map { it.mainIntent().name.withoutNamespace() }.forEach {
                     if (intents?.firstOrNull { intent -> intent.name.withoutNamespace() == it } == null) {
                         logger.debug { "Intent $it not found, creating it..." }
-                        FrontClient.save(IntentDefinition(it, namespace, setOf(applicationId),
-                                emptySet(), description = "Intent created automatically for built-in story.", category = "builtin"))
+                        FrontClient.save(
+                            IntentDefinition(
+                                it, namespace, setOf(applicationId),
+                                emptySet(), description = "Intent created automatically for built-in story.", category = "builtin"
+                            )
+                        )
                     }
                 }
             }

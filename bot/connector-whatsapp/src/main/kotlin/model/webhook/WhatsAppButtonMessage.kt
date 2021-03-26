@@ -23,6 +23,4 @@ class WhatsAppButtonMessage(
     override val context: WhatsAppContext? = null,
     override val groupId: String? = null,
     val button: WhatsAppButton
-) : WhatsAppMessage(WhatsAppMessageType.button) {
-
-}
+) : WhatsAppMessage(WhatsAppMessageType.button)

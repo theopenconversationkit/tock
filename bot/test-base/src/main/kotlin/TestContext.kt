@@ -129,11 +129,11 @@ open class TestContext {
      * The test [Kodein] injected.
      */
     val testKodein: Kodein
-            by lazy {
-                Kodein {
-                    importModule().invoke(this)
-                }
-            }
+        by lazy {
+        Kodein {
+            importModule().invoke(this)
+        }
+    }
 
     /**
      * The story handler listeners to apply.
@@ -167,7 +167,8 @@ open class TestContext {
                 bind<UserLock>() with provider { mockedUserLock }
                 bind<FeatureDAO>() with provider { mockedFeatureDAO }
                 bind<DialogFlowDAO>() with provider { mockedDialogFlowDAO }
-            })
+            }
+        )
         testModules.forEach { import(it, true) }
     }
 
@@ -215,5 +216,4 @@ open class TestContext {
     open fun defaultPlayerId(): PlayerId =
         if (isInitialized()) botBusMockContext.firstAction.playerId
         else PlayerId("user")
-
 }

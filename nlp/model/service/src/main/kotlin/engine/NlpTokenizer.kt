@@ -22,5 +22,4 @@ import ai.tock.shared.ThreadSafe
  *
  */
 @ThreadSafe
-abstract class NlpTokenizer(val model: TokenizerModelHolder) : Tokenizer {
-}
+abstract class NlpTokenizer(val model: TokenizerModelHolder) : Tokenizer

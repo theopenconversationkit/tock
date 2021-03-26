@@ -118,7 +118,6 @@ fun I18nTranslator.slackAttachment(
 ): SlackMessageAttachment =
     SlackMessageAttachment(buttons, fields.toList(), fallback, color, translateAndReturnBlankAsNull(text)?.toString(), pretext)
 
-
 fun I18nTranslator.attachmentField(title: String, value: String, short: Boolean = true): AttachmentField =
     AttachmentField(translate(title).toString(), value, short)
 

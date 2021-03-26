@@ -17,8 +17,8 @@
 package ai.tock.nlp.model.service.engine
 
 import ai.tock.nlp.core.Application
-import ai.tock.nlp.model.ModelHolder
 import ai.tock.nlp.core.configuration.NlpApplicationConfiguration
+import ai.tock.nlp.model.ModelHolder
 import java.time.Instant
 import java.time.Instant.now
 

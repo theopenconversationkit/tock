@@ -116,7 +116,10 @@ fun I18nTranslator.expectedIntentForList(items: List<GAListItem>, title: CharSeq
                         items.subList(0, 30)
                     } else {
                         items
-                    })))
+                    }
+                )
+            )
+        )
     }
 }
 

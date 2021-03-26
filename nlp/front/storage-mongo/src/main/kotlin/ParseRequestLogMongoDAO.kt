@@ -46,6 +46,8 @@ import ai.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion.Dura
 import ai.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion.EntitiesProbability
 import ai.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion.IntentProbability
 import ai.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion._id
+import ai.tock.shared.ensureIndex
+import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.error
 import ai.tock.shared.longProperty
 import ai.tock.shared.name
@@ -68,8 +70,6 @@ import org.litote.kmongo.cond
 import org.litote.kmongo.dayOfYear
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.document
-import ai.tock.shared.ensureIndex
-import ai.tock.shared.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.excludeId
 import org.litote.kmongo.fields
@@ -265,7 +265,7 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
             val nextIntent = log.result?.otherIntentsProbabilities?.asSequence()?.firstOrNull()
             var intent2 = nextIntent?.key?.name()
             if (intent1 != null && intent2 != null && intent2 != intent1) {
-                //order by string intent
+                // order by string intent
                 if (intent1 > intent2) {
                     val tmp = intent1
                     intent1 = intent2
@@ -406,5 +406,4 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                 )
             }.toList()
     }
-
 }

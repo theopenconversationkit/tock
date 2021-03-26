@@ -24,13 +24,13 @@ data class GATransactionDecisionValueSpecV3(
     val orderOptions: GAOrderOptionsV3?,
     val paymentParameters: GAPaymentParameters?,
     val presentationOptions: GAPresentationOptions?
-): GAInputValueData(GAIntent.transactionDecisionV3.type!!)
+) : GAInputValueData(GAIntent.transactionDecisionV3.type!!)
 
 data class GAPresentationOptions(
     val actionDisplayName: GAActionDisplayName
 )
 
-enum class GAActionDisplayName{
+enum class GAActionDisplayName {
     PLACE_ORDER,
     PAY,
     BUY,

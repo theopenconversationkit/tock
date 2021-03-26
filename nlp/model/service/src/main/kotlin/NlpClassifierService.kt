@@ -16,7 +16,6 @@
 
 package ai.tock.nlp.model.service
 
-import com.github.salomonbrys.kodein.instance
 import ai.tock.nlp.core.Application
 import ai.tock.nlp.core.EntityRecognition
 import ai.tock.nlp.core.EntityType
@@ -45,6 +44,7 @@ import ai.tock.nlp.model.service.engine.NlpModelRepository.saveEntityModel
 import ai.tock.nlp.model.service.engine.NlpModelRepository.saveIntentModel
 import ai.tock.nlp.model.service.storage.NlpApplicationConfigurationDAO
 import ai.tock.shared.injector
+import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 
 /**
@@ -102,7 +102,7 @@ object NlpClassifierService : NlpClassifier {
     ): List<EntityRecognition> {
         return NlpEngineRepository.getEntityClassifier(context, modelHolder as EntityModelHolder)
             ?.let { classifyEntities(it, context, text, tokenizeForEntityClassifier(context, text)) }
-                ?: emptyList()
+            ?: emptyList()
     }
 
     private fun classifyEntities(
@@ -127,7 +127,7 @@ object NlpClassifierService : NlpClassifier {
     }
 
     override fun buildAndSaveTokenizerModel(context: TokenizerContext, expressions: List<SampleExpression>) {
-        //do nothing at this time
+        // do nothing at this time
     }
 
     override fun buildIntentModel(context: IntentContext, expressions: List<SampleExpression>): ModelHolder {
@@ -169,7 +169,7 @@ object NlpClassifierService : NlpClassifier {
     }
 
     override fun deleteOrphans(applicationsAndIntents: Map<Application, Set<Intent>>, entityTypes: List<EntityType>) {
-        //remove intents
+        // remove intents
         NlpModelRepository.removeIntentModelsNotIn(
             applicationsAndIntents.keys
                 .flatMap { key ->
@@ -183,7 +183,7 @@ object NlpClassifierService : NlpClassifier {
                 }
         )
 
-        //remove entities
+        // remove entities
         NlpModelRepository.removeEntityModelsNotIn(
             applicationsAndIntents.entries
                 .flatMap { e ->
@@ -225,8 +225,7 @@ object NlpClassifierService : NlpClassifier {
         nlpEngineType: NlpEngineType
     ): NlpApplicationConfiguration {
         return nlpApplicationConfigurationDAO.loadLastConfiguration(applicationName, nlpEngineType)
-                ?: NlpEngineRepository.getProvider(nlpEngineType).modelBuilder.defaultNlpApplicationConfiguration()
-
+            ?: NlpEngineRepository.getProvider(nlpEngineType).modelBuilder.defaultNlpApplicationConfiguration()
     }
 
     override fun updateModelConfiguration(

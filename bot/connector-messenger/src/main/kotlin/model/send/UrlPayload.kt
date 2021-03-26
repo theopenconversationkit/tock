@@ -16,11 +16,11 @@
 
 package ai.tock.bot.connector.messenger.model.send
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.connector.messenger.AttachmentCacheService
 import ai.tock.bot.connector.messenger.MessengerConfiguration.reuseAttachmentByDefault
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.SendAttachment
+import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  *

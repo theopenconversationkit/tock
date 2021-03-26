@@ -21,7 +21,6 @@ import java.util.regex.Pattern
 private val PATTERN =
     Pattern.compile("[a-zA-Z0-9\\.\\_\\-]{1,256}\\@[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}(\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25})+")
 
-
 data class UserActionPayload(val payload: String?, val referral: Referral? = null) {
     fun hasEmailPayloadFromMessenger(): Boolean {
         val e = payload?.trim()

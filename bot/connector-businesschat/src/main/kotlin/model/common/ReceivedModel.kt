@@ -16,8 +16,8 @@
 
 package ai.tock.bot.connector.businesschat.model.common
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.connector.businesschat.model.csp.BusinessChatCommonModel
+import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  * Common model for different types of message in Business Chat
@@ -38,7 +38,7 @@ class ReceivedModel(
     val handoverData: HandoverData?
 ) : BusinessChatCommonModel(sourceId = sourceId, destinationId = destinationId, type = MessageType.text)
 
-data class HandoverData (
+data class HandoverData(
     @JsonProperty("new_owner_app_id")
     val newOwnerAppId: String?,
     @JsonProperty("recipient_id")
@@ -67,4 +67,3 @@ class RichLinkData(
     val url: String,
     val title: String
 )
-

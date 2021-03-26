@@ -108,10 +108,10 @@ internal class Nlp : NlpController {
                         }
 
                         val entityEvaluations = customEntityEvaluations +
-                                nlpResult.entities
-                                    .asSequence()
-                                    .filter { e -> customEntityEvaluations.none { it.entity == e.entity } }
-                                    .map { EntityValue(nlpResult, it) }
+                            nlpResult.entities
+                                .asSequence()
+                                .filter { e -> customEntityEvaluations.none { it.entity == e.entity } }
+                                .map { EntityValue(nlpResult, it) }
                         sentence.state.entityValues.addAll(entityEvaluations)
 
                         dialog.apply {
@@ -180,10 +180,11 @@ internal class Nlp : NlpController {
                     )
                     if (result != null) {
                         nlpResult.copy(
-                            entities = result.values
-                                    + nlpResult.entities.filter { e ->
-                                result.values.none { it.start == e.start }
-                            })
+                            entities = result.values +
+                                nlpResult.entities.filter { e ->
+                                    result.values.none { it.start == e.start }
+                                }
+                        )
                     } else {
                         nlpResult
                     }
@@ -193,7 +194,6 @@ internal class Nlp : NlpController {
                 nlpResult
             }
         }
-
 
         private fun findKeyword(sentence: String?): Intent? {
             return if (sentence != null) {
@@ -207,7 +207,6 @@ internal class Nlp : NlpController {
                             null
                         }
                     }
-
                 }
                 i
             } else {
@@ -281,8 +280,8 @@ internal class Nlp : NlpController {
                     EntityStateValue(action, result)
                 }
             } else {
-                if (eligibleToMergeValues.isEmpty()
-                    || (eligibleToMergeValues.size == 1 && oldValue.value?.value == null)
+                if (eligibleToMergeValues.isEmpty() ||
+                    (eligibleToMergeValues.size == 1 && oldValue.value?.value == null)
                 ) {
                     oldValue.changeValue(defaultNewValue, action)
                         .apply {
@@ -338,7 +337,7 @@ internal class Nlp : NlpController {
                 .asSequence()
                 .groupBy { it.entity.role }
                 .map { NlpEntityMergeContext(it.key, entityValues[it.key], it.value) }
-            //sort entities
+            // sort entities
             BotRepository.forEachNlpListener { merge = it.sortEntitiesToMerge(merge) }
 
             return merge.mapNotNull { mergeContext ->
@@ -358,17 +357,19 @@ internal class Nlp : NlpController {
                 nlpClient.parse(request)
             } else {
                 nlpClient.parse(
-                    request.copy(intentsSubset = intentsQualifiers!!.asSequence().map {
-                        it.copy(
-                            intent = it.intent.withNamespace(
-                                request.namespace
+                    request.copy(
+                        intentsSubset = intentsQualifiers!!.asSequence().map {
+                            it.copy(
+                                intent = it.intent.withNamespace(
+                                    request.namespace
+                                )
                             )
-                        )
-                    }.toSet())
+                        }.toSet()
+                    )
                 )
             }
             if (result != null && useQualifiers) {
-                //force intents qualifiers if unknown answer
+                // force intents qualifiers if unknown answer
                 if (intentsQualifiers!!.none { it.intent == result.intent }) {
                     return result.copy(
                         intent = intentsQualifiers.maxByOrNull { it.modifier }?.intent
@@ -380,7 +381,6 @@ internal class Nlp : NlpController {
             }
             return result
         }
-
     }
 
     override fun parseSentence(

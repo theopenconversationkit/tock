@@ -74,19 +74,19 @@ data class ApplicationWithIntents(
 ) {
 
     constructor(application: ApplicationDefinition, intents: List<IntentDefinition>) :
-            this(
-                application.name,
-                application.label,
-                application.namespace,
-                intents.sortedWith(compareBy({ it.label }, { it.name })),
-                application.supportedLocales,
-                application.nlpEngineType,
-                application.mergeEngineTypes,
-                application.useEntityModels,
-                application.supportSubEntities,
-                application.unknownIntentThreshold,
-                application._id
-            )
+        this(
+            application.name,
+            application.label,
+            application.namespace,
+            intents.sortedWith(compareBy({ it.label }, { it.name })),
+            application.supportedLocales,
+            application.nlpEngineType,
+            application.mergeEngineTypes,
+            application.useEntityModels,
+            application.supportSubEntities,
+            application.unknownIntentThreshold,
+            application._id
+        )
 
     fun toApplication(): ApplicationDefinition {
         return ApplicationDefinition(
@@ -104,5 +104,4 @@ data class ApplicationWithIntents(
             _id ?: newId()
         )
     }
-
 }

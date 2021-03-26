@@ -16,16 +16,16 @@
 
 package ai.tock.bot.admin
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.provider
 import ai.tock.shared.tockInternalInjector
 import ai.tock.translator.I18nDAO
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLocalizedLabel
 import ai.tock.translator.UserInterfaceType.textChat
 import ai.tock.translator.UserInterfaceType.voiceAssistant
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -36,7 +36,6 @@ import org.junit.jupiter.api.Test
 import org.litote.kmongo.toId
 import java.util.Locale.FRENCH
 import kotlin.test.assertEquals
-
 
 /**
  *
@@ -51,9 +50,11 @@ class I18nCsvCodecTest {
             val module = Kodein.Module {
                 bind<I18nDAO>() with provider { i18nDAO }
             }
-            tockInternalInjector.inject(Kodein {
-                import(module)
-            })
+            tockInternalInjector.inject(
+                Kodein {
+                    import(module)
+                }
+            )
         }
 
         val namespace = "mynamespace"
@@ -119,7 +120,6 @@ Départs suivants;mynamespace;departuresarrivals;fr;textChat;id2;true;"""
         assertEquals(2, slot.captured.i18n.size)
         assertEquals("ok", slot.captured.i18n.first { it.interfaceType == textChat }.label)
         assertEquals("Départs suivants", slot.captured.i18n.first { it.interfaceType == voiceAssistant }.label)
-
     }
 
     @Test

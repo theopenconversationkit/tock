@@ -45,7 +45,8 @@ internal object GAConnectorProvider : ConnectorProvider {
                     ?.split(PROJECT_ID_SEPARATOR)
                     ?.filter { it.isNotBlank() }
                     ?.toSet()
-                    ?: emptySet())
+                    ?: emptySet()
+            )
         }
     }
 

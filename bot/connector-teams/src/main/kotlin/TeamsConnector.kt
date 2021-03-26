@@ -191,7 +191,7 @@ internal class TeamsConnector(
         message: ConnectorMessage,
         suggestions: List<CharSequence>
     ): BotBus.() -> ConnectorMessage? = {
-        //TODO support complex cards
+        // TODO support complex cards
         message
     }
 

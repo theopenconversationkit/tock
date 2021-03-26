@@ -17,15 +17,12 @@
 package ai.tock.bot.connector.ga.model.request
 
 data class GALocation(
-        val coordinates: GALatLng?,
-        val formattedAddress: String?,
-        val zipCode: String?,
-        val city: String?,
-        val postalAddress: GAPostalAddress?,
-        val name: String?,
-        val phoneNumber: String?,
-        val notes: String?
-) {
-
-}
-
+    val coordinates: GALatLng?,
+    val formattedAddress: String?,
+    val zipCode: String?,
+    val city: String?,
+    val postalAddress: GAPostalAddress?,
+    val name: String?,
+    val phoneNumber: String?,
+    val notes: String?
+)

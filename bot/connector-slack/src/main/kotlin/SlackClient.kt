@@ -31,7 +31,6 @@ object SlackClient {
 
     private val logger = KotlinLogging.logger { }
 
-
     interface SlackApi {
         @POST("/services/{outToken1}/{outToken2}/{outToken3}")
         fun sendMessage(@Path("outToken1") outToken1: String, @Path("outToken2") outToken2: String, @Path("outToken3") outToken3: String, @Body message: RequestBody): Call<Void>
@@ -50,5 +49,4 @@ object SlackClient {
         val response = slackApi.sendMessage(outToken1, outToken2, outToken3, body).execute()
         logger.debug { response }
     }
-
 }

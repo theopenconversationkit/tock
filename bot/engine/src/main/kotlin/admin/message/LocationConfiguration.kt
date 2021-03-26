@@ -27,22 +27,25 @@ import java.util.Locale
 /**
  * User location data.
  */
-data class LocationConfiguration(val location: UserLocation?,
-                                 override val delay: Long = 0) : MessageConfiguration {
+data class LocationConfiguration(
+    val location: UserLocation?,
+    override val delay: Long = 0
+) : MessageConfiguration {
 
     override val eventType: EventType = EventType.location
 
-    override fun toAction(playerId: PlayerId,
-                          applicationId: String,
-                          recipientId: PlayerId,
-                          locale: Locale,
-                          userInterfaceType: UserInterfaceType): Action {
+    override fun toAction(
+        playerId: PlayerId,
+        applicationId: String,
+        recipientId: PlayerId,
+        locale: Locale,
+        userInterfaceType: UserInterfaceType
+    ): Action {
         return SendLocation(
-                playerId,
-                applicationId,
-                recipientId,
-                location
+            playerId,
+            applicationId,
+            recipientId,
+            location
         )
     }
-
 }

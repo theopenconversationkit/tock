@@ -67,7 +67,7 @@ class ConfigurationRepositoryTest : AbstractTest() {
             assertTrue(ConfigurationRepository.entityTypeExists("present"))
             assertFalse(ConfigurationRepository.entityTypeExists("notPresent"))
 
-            //should return null
+            // should return null
             assertNull(ConfigurationRepository.entityTypeByName("notPresent"))
         }
     }

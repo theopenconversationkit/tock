@@ -58,11 +58,12 @@ interface ModelBuilder {
      * Returns the current model configuration.
      */
     fun getCurrentModelConfiguration(
-        applicationName: String, nlpEngineType: NlpEngineType
+        applicationName: String,
+        nlpEngineType: NlpEngineType
     ): NlpApplicationConfiguration
 
     /**
      * Updates the model configuration for the given application name.
      */
-    fun updateModelConfiguration(applicationName: String, engineType:NlpEngineType, configuration: NlpApplicationConfiguration)
+    fun updateModelConfiguration(applicationName: String, engineType: NlpEngineType, configuration: NlpApplicationConfiguration)
 }

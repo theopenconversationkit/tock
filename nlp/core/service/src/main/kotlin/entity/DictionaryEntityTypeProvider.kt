@@ -26,5 +26,4 @@ internal class DictionaryEntityTypeProvider : EntityTypeProvider {
 
     override fun supportEvaluation(namespace: String, entityTypeName: String): Boolean =
         DictionaryRepositoryService.isSupportedEntityType(namespace, entityTypeName)
-
 }

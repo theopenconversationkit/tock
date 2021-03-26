@@ -85,7 +85,6 @@ internal class RasaClient(conf: RasaConfiguration) {
 
         @GET("")
         fun healthcheck(): Call<ResponseBody>
-
     }
 
     private val api: RasaApi
@@ -130,6 +129,4 @@ internal class RasaClient(conf: RasaConfiguration) {
 
         private val logger = KotlinLogging.logger {}
     }
-
-
 }

@@ -16,14 +16,14 @@
 
 package ai.tock.bot.connector.messenger.model.handover
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.connector.messenger.model.Recipient
+import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  * See [https://developers.facebook.com/docs/messenger-platform/reference/handover-protocol].
  */
 data class ThreadControlRequest(
-    val metadata : String,
-    val recipient:Recipient?,
+    val metadata: String,
+    val recipient: Recipient?,
     @JsonProperty("target_app_id") val targetAppId: String
 )

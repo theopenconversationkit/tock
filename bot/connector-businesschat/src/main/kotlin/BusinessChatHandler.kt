@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.businesschat;
+package ai.tock.bot.connector.businesschat
 
 import ai.tock.bot.connector.ConnectorHandler
 import ai.tock.bot.definition.ConnectorStoryHandler
-import kotlin.annotation.AnnotationTarget;
-import kotlin.annotation.MustBeDocumented;
-import kotlin.annotation.Target;
+import kotlin.annotation.AnnotationTarget
+import kotlin.annotation.MustBeDocumented
+import kotlin.annotation.Target
 import kotlin.reflect.KClass
-
 
 /**
  * To specify [ConnectorStoryHandler] for BusinessChat connector.

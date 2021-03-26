@@ -54,4 +54,3 @@ data class ListPickerItem(
         return result
     }
 }
-

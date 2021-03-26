@@ -16,11 +16,10 @@
 
 package ai.tock.translator.google
 
+import ai.tock.translator.TranslatorEngine
 import com.google.cloud.translate.Translate.TranslateOption
 import com.google.cloud.translate.TranslateOptions
-import ai.tock.translator.TranslatorEngine
 import java.util.Locale
-
 
 internal object GoogleTranslatorEngine : TranslatorEngine {
 

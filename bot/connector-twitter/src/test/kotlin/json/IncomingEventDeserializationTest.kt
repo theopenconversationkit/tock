@@ -16,7 +16,6 @@
 
 package ai.tock.bot.connector.twitter.ai.tock.bot.connector.twitter.json
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import ai.tock.bot.connector.twitter.model.Application
 import ai.tock.bot.connector.twitter.model.DirectMessage
 import ai.tock.bot.connector.twitter.model.DirectMessageIndicateTyping
@@ -39,6 +38,7 @@ import ai.tock.bot.connector.twitter.model.incoming.IncomingEvent
 import ai.tock.bot.connector.twitter.model.incoming.TweetIncomingEvent
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.resourceAsStream
+import com.fasterxml.jackson.module.kotlin.readValue
 import mu.KotlinLogging
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

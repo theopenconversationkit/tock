@@ -16,7 +16,6 @@
 
 package ai.tock.nlp.api.client.model
 
-
 /**
  * A NLP engine unique identifier.
  */

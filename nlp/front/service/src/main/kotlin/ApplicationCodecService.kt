@@ -116,10 +116,11 @@ internal object ApplicationCodecService : ApplicationCodec {
         }
 
         if (subEntities.isNotEmpty()) {
-            val newEntities = (entityTypeDef.subEntities +
-                subEntities.map {
-                    it.withNewName(namespace, true, report).let { e -> EntityDefinition(e.type, e.role) }
-                }
+            val newEntities = (
+                entityTypeDef.subEntities +
+                    subEntities.map {
+                        it.withNewName(namespace, true, report).let { e -> EntityDefinition(e.type, e.role) }
+                    }
                 )
                 .distinctBy { it.role }
             if (newEntities.size != entityTypeDef.subEntities.size) {
@@ -131,7 +132,8 @@ internal object ApplicationCodecService : ApplicationCodec {
     private fun ClassifiedEntity.withNewName(
         namespace: String,
         createEntityTypeIfNotExist: Boolean = false,
-        report: ImportReport? = null): ClassifiedEntity {
+        report: ImportReport? = null
+    ): ClassifiedEntity {
         if (createEntityTypeIfNotExist) {
             createEntityTypeIfNotExist(namespace, report)
         }
@@ -145,7 +147,8 @@ internal object ApplicationCodecService : ApplicationCodec {
         entities: List<ClassifiedEntity>,
         namespace: String,
         createEntityTypeIfNotExist: Boolean = false,
-        report: ImportReport? = null): List<ClassifiedEntity> =
+        report: ImportReport? = null
+    ): List<ClassifiedEntity> =
         entities.map { it.withNewName(namespace, createEntityTypeIfNotExist, report) }
 
     override fun import(
@@ -164,15 +167,17 @@ internal object ApplicationCodecService : ApplicationCodec {
                     logger.debug { "Import entity type $newEntity" }
                 }
             }
-            //register sub entities
+            // register sub entities
             dump.entityTypes.forEach { e ->
                 if (e.subEntities.isNotEmpty()) {
                     config.getEntityTypeByName(e.newName(namespace))?.run {
-                        config.save(copy(
-                            subEntities = (
-                                subEntities + e.subEntities.map { EntityDefinition(it.newName(namespace), it.role) }
-                                ).distinctBy { it.role }
-                        ))
+                        config.save(
+                            copy(
+                                subEntities = (
+                                    subEntities + e.subEntities.map { EntityDefinition(it.newName(namespace), it.role) }
+                                    ).distinctBy { it.role }
+                            )
+                        )
                     }
                 }
             }
@@ -193,13 +198,13 @@ internal object ApplicationCodecService : ApplicationCodec {
                         logger.debug { "Import application $appToSave" }
                         config.save(appToSave)
                     } else {
-                        //a fresh empty model has been initialized before with the default locale
-                        //then remove the default locale
+                        // a fresh empty model has been initialized before with the default locale
+                        // then remove the default locale
                         if (
-                            configuration.defaultModelMayExist
-                            && app.supportedLocales.size == 1
-                            && app.supportedLocales.contains(defaultLocale)
-                            && app.intents.isEmpty()
+                            configuration.defaultModelMayExist &&
+                            app.supportedLocales.size == 1 &&
+                            app.supportedLocales.contains(defaultLocale) &&
+                            app.intents.isEmpty()
                         ) {
                             app.copy(supportedLocales = emptySet())
                         } else {
@@ -218,7 +223,8 @@ internal object ApplicationCodecService : ApplicationCodec {
                         namespace = namespace,
                         entities = changeEntityNames(i.entities, namespace),
                         applications = setOf(appId),
-                        description = i.description?.replace("<br>", "\n")?.replace("</br>", "\n"))
+                        description = i.description?.replace("<br>", "\n")?.replace("</br>", "\n")
+                    )
                     intentsToCreate.add(intent)
                 } else {
                     config.save(intent.copy(namespace = namespace, applications = intent.applications + appId))
@@ -226,7 +232,7 @@ internal object ApplicationCodecService : ApplicationCodec {
                 i._id to intent._id
             }.toMap().toMutableMap()
 
-            //save new intents
+            // save new intents
             intentsToCreate.forEach { intent ->
                 val newIntent =
                     intent.copy(sharedIntents = intent.sharedIntents.asSequence().mapNotNull { intentsIdsMap[it] }.toSet())
@@ -235,7 +241,7 @@ internal object ApplicationCodecService : ApplicationCodec {
                 logger.debug { "Import intent $newIntent" }
             }
 
-            //update application intent list & locales
+            // update application intent list & locales
             config.save(
                 app.copy(
                     intents = app.intents + intentsIdsMap.values.toSet(),
@@ -245,17 +251,17 @@ internal object ApplicationCodecService : ApplicationCodec {
             )
             report.localeAdded = !app.supportedLocales.containsAll(dump.application.supportedLocales)
 
-            //add unknown intent to intent map
+            // add unknown intent to intent map
             intentsIdsMap[UNKNOWN_INTENT_NAME.toId()] = UNKNOWN_INTENT_NAME.toId()
 
             dump.sentences.forEach { s ->
                 if (config.search(
                         SentencesQuery(
-                            appId,
-                            s.language,
-                            search = s.text,
-                            onlyExactMatch = true
-                        )
+                                appId,
+                                s.language,
+                                search = s.text,
+                                onlyExactMatch = true
+                            )
                     ).total == 0L
                 ) {
                     logger.debug { "Import sentence ${s.text}" }
@@ -263,21 +269,21 @@ internal object ApplicationCodecService : ApplicationCodec {
                         applicationId = appId,
                         classification = s.classification.copy(
                             intentId = intentsIdsMap[s.classification.intentId]!!,
-                            //ensure that entities are correctly sorted
+                            // ensure that entities are correctly sorted
                             entities = changeEntityNames(s.classification.entities, namespace).sortedBy { it.start }
 
-                        ))
+                        )
+                    )
                     report.add(sentence)
                     config.save(sentence)
                 }
             }
             logger.info { "Dump imported! Result : $report" }
 
-            //trigger build
+            // trigger build
             if (report.modified) {
                 triggerBuild(ModelBuildTrigger(appId, true))
             }
-
         } catch (t: Throwable) {
             logger.error(t)
             report.success = false
@@ -326,7 +332,7 @@ internal object ApplicationCodecService : ApplicationCodec {
                     val intent: IntentDefinition? = if (s.intent == UNKNOWN_INTENT_NAME) {
                         null
                     } else {
-                        //force intent namespace
+                        // force intent namespace
                         val sentenceIntent = s.intent.changeNamespace(namespace)
                         val newIntent: IntentDefinition = intentsByNameMap[sentenceIntent]
                             .let { newIntent ->
@@ -380,23 +386,24 @@ internal object ApplicationCodecService : ApplicationCodec {
                             appId,
                             Instant.now(),
                             Instant.now(),
-                            //need to switch model status to validated in order to trigger model rebuild
+                            // need to switch model status to validated in order to trigger model rebuild
                             s.status.takeUnless { it == model } ?: validated,
                             Classification(
                                 intent?._id ?: UNKNOWN_INTENT_NAME.toId(),
                                 changeEntityNames(s.entities.map { it.toClassifiedEntity() }, namespace, true, report)
                             ),
                             1.0,
-                            1.0)
+                            1.0
+                        )
                     )
                     report.sentencesImported++
                 }
             }
 
-            //update application with intents
+            // update application with intents
             config.save(app.copy(intents = app.intents + intentsByNameMap.values.map { it._id }))
 
-            //trigger build
+            // trigger build
             if (report.modified) {
                 triggerBuild(ModelBuildTrigger(appId, true))
             }

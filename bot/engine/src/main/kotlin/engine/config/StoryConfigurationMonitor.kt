@@ -59,5 +59,4 @@ internal object StoryConfigurationMonitor {
             storyDAO.getStoryDefinitionsByNamespaceAndBotId(bot.botDefinition.namespace, bot.botDefinition.botId)
         )
     }
-
 }

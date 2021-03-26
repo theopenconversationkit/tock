@@ -18,8 +18,8 @@ package ai.tock.nlp.model.service.storage.mongo
 
 import ai.tock.nlp.core.configuration.NlpApplicationConfiguration
 import ai.tock.nlp.core.configuration.NlpModelConfiguration
-import org.litote.kmongo.DataRegistry
 import org.litote.jackson.data.JacksonDataRegistry
+import org.litote.kmongo.DataRegistry
 
 @DataRegistry(
     []

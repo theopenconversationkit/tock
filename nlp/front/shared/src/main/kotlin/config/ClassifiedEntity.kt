@@ -53,7 +53,8 @@ data class ClassifiedEntity(
         value.entity.role,
         value.start,
         value.end,
-        value.subEntities.map { ClassifiedEntity(it) })
+        value.subEntities.map { ClassifiedEntity(it) }
+    )
 
     constructor(value: EntityValue) : this(
         value.entity.entityType.name,
@@ -85,5 +86,4 @@ data class ClassifiedEntity(
      * Does this entity contains the specified entity type ?
      */
     fun containsEntityOrSubEntity(entityType: String): Boolean = type == entityType || subEntities.any { it.containsEntityOrSubEntity(entityType) }
-
 }

@@ -19,11 +19,13 @@ package ai.tock.bot.engine.message
 /**
  * A sub element of [GenericMessage].
  */
-data class GenericElement(val attachments: List<Attachment> = emptyList(),
-                          val choices: List<Choice> = emptyList(),
-                          val texts: Map<String, String> = emptyMap(),
-                          val locations: List<Location> = emptyList(),
-                          val metadata: Map<String, String> = emptyMap()) {
+data class GenericElement(
+    val attachments: List<Attachment> = emptyList(),
+    val choices: List<Choice> = emptyList(),
+    val texts: Map<String, String> = emptyMap(),
+    val locations: List<Location> = emptyList(),
+    val metadata: Map<String, String> = emptyMap()
+) {
 
     /**
      * Transforms a [GenericMessage] into a [GenericElement].

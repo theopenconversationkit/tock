@@ -274,8 +274,8 @@ open class BotBusMock(
             dialog.state.changeValue(it)
         }
 
-        if (context.dialog.state.currentIntent != null
-            && !context.story.supportIntent(context.dialog.state.currentIntent!!)
+        if (context.dialog.state.currentIntent != null &&
+            !context.story.supportIntent(context.dialog.state.currentIntent!!)
         ) {
             val storyDefinition =
                 context.botDefinition.findStoryDefinition(context.dialog.state.currentIntent!!, a.applicationId)
@@ -289,7 +289,7 @@ open class BotBusMock(
 
         if (a != context.firstAction) {
             context.story.actions.add(a)
-            //update action state
+            // update action state
             a.state.intent = context.dialog.state.currentIntent?.name
             a.state.step = context.story.currentStep?.name
         }
@@ -297,7 +297,6 @@ open class BotBusMock(
             context.userInterfaceType = a.state.userInterface!!
         }
     }
-
 
     open fun sendAction(action: Action, delay: Long) {
         logsRepository.add(BotBusMockLog(action, delay))
@@ -429,7 +428,7 @@ open class BotBusMock(
         ).raw
 
     override fun markAsUnknown() {
-        //do nothing
+        // do nothing
     }
 
     /**

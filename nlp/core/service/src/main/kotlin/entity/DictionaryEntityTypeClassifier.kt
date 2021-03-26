@@ -25,7 +25,6 @@ import java.text.Normalizer
 import java.util.Locale
 import kotlin.text.RegexOption.IGNORE_CASE
 
-
 internal object DictionaryEntityTypeClassifier : EntityTypeClassifier {
 
     override fun classifyEntities(
@@ -34,8 +33,8 @@ internal object DictionaryEntityTypeClassifier : EntityTypeClassifier {
     ): List<EntityTypeRecognition> {
         return when (context) {
             is EntityCallContextForIntent -> classifyForIntent(context, stripAccents(text))
-            is EntityCallContextForEntity -> emptyList() //TODO
-            is EntityCallContextForSubEntities -> emptyList() //TODO
+            is EntityCallContextForEntity -> emptyList() // TODO
+            is EntityCallContextForSubEntities -> emptyList() // TODO
         }
     }
 
@@ -75,7 +74,8 @@ internal object DictionaryEntityTypeClassifier : EntityTypeClassifier {
                                                     g.range.first,
                                                     g.range.last + 1,
                                                     e,
-                                                    predefinedValueOfSynonym!!.value, true),
+                                                    predefinedValueOfSynonym!!.value, true
+                                                ),
                                                 1.0
                                             )
                                         }
@@ -112,5 +112,4 @@ internal object DictionaryEntityTypeClassifier : EntityTypeClassifier {
         string = string.replace("[\\p{InCombiningDiacriticalMarks}]".toRegex(), "")
         return string
     }
-
 }

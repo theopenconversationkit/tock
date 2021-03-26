@@ -38,7 +38,8 @@ class PredefinedValuesEntityEvaluatorTest {
         Locale.FRENCH,
         NlpEngineType.stanford,
         "test",
-        ZonedDateTime.now())
+        ZonedDateTime.now()
+    )
 
     @BeforeEach
     fun fillDictionary() {
@@ -48,16 +49,35 @@ class PredefinedValuesEntityEvaluatorTest {
                     "namespace",
                     "frequency",
                     listOf(
-                        PredefinedValue("Annuel", mapOf(
-                            Pair(Locale.FRENCH, listOf("Année", "annee")))),
-                        PredefinedValue("Mensuel", mapOf(
-                            Pair(Locale.FRENCH, listOf("Mois")))),
-                        PredefinedValue("Semaine", mapOf(
-                            Pair(Locale.FRENCH, listOf("Hebdomadaire")),
-                            Pair(Locale.ENGLISH, listOf("Week")))),
-                        PredefinedValue("Jour", mapOf(
-                            Pair(Locale.FRENCH, listOf("Journalier", "Quotidien"))))
-                    ))))
+                        PredefinedValue(
+                            "Annuel",
+                            mapOf(
+                                Pair(Locale.FRENCH, listOf("Année", "annee"))
+                            )
+                        ),
+                        PredefinedValue(
+                            "Mensuel",
+                            mapOf(
+                                Pair(Locale.FRENCH, listOf("Mois"))
+                            )
+                        ),
+                        PredefinedValue(
+                            "Semaine",
+                            mapOf(
+                                Pair(Locale.FRENCH, listOf("Hebdomadaire")),
+                                Pair(Locale.ENGLISH, listOf("Week"))
+                            )
+                        ),
+                        PredefinedValue(
+                            "Jour",
+                            mapOf(
+                                Pair(Locale.FRENCH, listOf("Journalier", "Quotidien"))
+                            )
+                        )
+                    )
+                )
+            )
+        )
     }
 
     @AfterEach
@@ -73,7 +93,6 @@ class PredefinedValuesEntityEvaluatorTest {
         assertTrue(evaluationResult.evaluated)
         assertEquals(1.0, evaluationResult.probability)
         assertEquals("Jour", (evaluationResult.value as StringValue).value)
-
     }
 
     @Test
@@ -94,7 +113,5 @@ class PredefinedValuesEntityEvaluatorTest {
         assertTrue(evaluationResult.evaluated)
         assertEquals(0.8181818127632141, evaluationResult.probability)
         assertEquals("Jour", (evaluationResult.value as StringValue).value)
-
     }
-
 }

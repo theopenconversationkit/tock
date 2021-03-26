@@ -93,38 +93,44 @@ internal object TockKMongoConfiguration {
             addDeserializer(Period::class, JSR310StringParsableDeserializer.PERIOD)
             addSerializer(Period::class, ToStringSerializer(Period::class.java))
             if (isDocumentDB()) {
-                addSerializer(Duration::class, object : StdScalarSerializer<Duration>(Duration::class.java) {
-                    override fun serialize(
-                        duration: Duration?,
-                        generator: JsonGenerator?,
-                        provider: SerializerProvider?
-                    ) {
-                        generator?.writeString(duration?.toString())
+                addSerializer(
+                    Duration::class,
+                    object : StdScalarSerializer<Duration>(Duration::class.java) {
+                        override fun serialize(
+                            duration: Duration?,
+                            generator: JsonGenerator?,
+                            provider: SerializerProvider?
+                        ) {
+                            generator?.writeString(duration?.toString())
+                        }
                     }
-                })
+                )
             } else {
                 addSerializer(Duration::class, DurationSerializer.INSTANCE)
             }
-            addDeserializer(Duration::class, object : StdScalarDeserializer<Duration>(Duration::class.java) {
+            addDeserializer(
+                Duration::class,
+                object : StdScalarDeserializer<Duration>(Duration::class.java) {
 
-                override fun deserialize(parser: JsonParser, context: DeserializationContext): Duration? {
-                    return if (parser.currentTokenId() == JsonTokenId.ID_EMBEDDED_OBJECT) {
-                        val e = parser.embeddedObject
-                        when (e) {
-                            is Decimal128 -> {
-                                val b = e.bigDecimalValue()
-                                val seconds = b.toLong()
-                                val nanoseconds = DecimalUtils.extractNanosecondDecimal(b, seconds)
-                                Duration.ofSeconds(seconds, nanoseconds.toLong())
+                    override fun deserialize(parser: JsonParser, context: DeserializationContext): Duration? {
+                        return if (parser.currentTokenId() == JsonTokenId.ID_EMBEDDED_OBJECT) {
+                            val e = parser.embeddedObject
+                            when (e) {
+                                is Decimal128 -> {
+                                    val b = e.bigDecimalValue()
+                                    val seconds = b.toLong()
+                                    val nanoseconds = DecimalUtils.extractNanosecondDecimal(b, seconds)
+                                    Duration.ofSeconds(seconds, nanoseconds.toLong())
+                                }
+                                is Duration -> e
+                                else -> error("unsupported duration $e")
                             }
-                            is Duration -> e
-                            else -> error("unsupported duration $e")
+                        } else {
+                            DurationDeserializer.INSTANCE.deserialize(parser, context)
                         }
-                    } else {
-                        DurationDeserializer.INSTANCE.deserialize(parser, context)
                     }
                 }
-            })
+            )
         }
 
         registerBsonModule(tockModule)
@@ -314,7 +320,6 @@ fun <T> FindIterable<T>.safeCollation(collation: Collation): FindIterable<T> =
     } else {
         collation(collation)
     }
-
 
 private const val DocumentDBIndexLimitSize = 32
 

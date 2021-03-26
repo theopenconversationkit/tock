@@ -27,7 +27,7 @@ class StoryDataStepBaseTest {
 
     @Test
     fun `GIVEN StoryDataStepBase with no setup specified THEN execute does not fail`() {
-        val bus : BotBus = mockk(relaxed = true) {
+        val bus: BotBus = mockk(relaxed = true) {
             every { targetConnectorType } returns none
         }
         val result = Step3.execute(Def2(bus, StoryData()), StoryData())

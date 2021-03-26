@@ -19,9 +19,9 @@ package ai.tock.bot.engine.event
 import ai.tock.bot.engine.dialog.EventState
 import ai.tock.bot.engine.dialog.hasEntityPredefinedValue
 import ai.tock.bot.engine.dialog.hasSubEntity
-import java.time.Instant
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
+import java.time.Instant
 
 /**
  * The base class for all events or actions.
@@ -57,5 +57,4 @@ abstract class Event(
     fun hasEntityPredefinedValue(role: String, value: String): Boolean {
         return hasEntityPredefinedValue(state.entityValues, role, value)
     }
-
 }

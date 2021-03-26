@@ -32,7 +32,7 @@ class HealthCheckVerticle(
 ) : WebVerticle() {
 
     override fun configure() {
-        //do nothing
+        // do nothing
     }
 
     override fun defaultHealthcheck(): (RoutingContext) -> Unit =
@@ -40,7 +40,7 @@ class HealthCheckVerticle(
             context.response().end(
                 mapper.writeValueAsString(
                     listOf(
-                    "current build" to !buildVerticle.canAnalyse.get()
+                        "current build" to !buildVerticle.canAnalyse.get()
                     )
                 )
             )
@@ -53,5 +53,4 @@ class HealthCheckVerticle(
         ),
         selfCheck = { buildVerticle.canAnalyse.get() }
     )
-
 }

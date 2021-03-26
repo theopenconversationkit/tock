@@ -16,12 +16,12 @@
 
 package ai.tock.bot.connector.messenger.model.send
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import ai.tock.bot.connector.messenger.json.send.ButtonDeserializer
 import ai.tock.bot.engine.message.Choice
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 
 @JsonDeserialize(using = ButtonDeserializer::class)
 abstract class Button(val type: ButtonType) : UserAction {
 
-    abstract fun toChoice() : Choice
+    abstract fun toChoice(): Choice
 }

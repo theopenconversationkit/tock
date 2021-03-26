@@ -29,5 +29,4 @@ interface BotAnswerInterceptor {
      * Returns the replacement action.
      */
     fun handle(action: Action, bus: BotBus): Action = action
-
 }

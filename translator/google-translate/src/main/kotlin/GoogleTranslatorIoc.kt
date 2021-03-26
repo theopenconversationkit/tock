@@ -16,10 +16,10 @@
 
 package ai.tock.translator.google
 
+import ai.tock.translator.TranslatorEngine
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import ai.tock.translator.TranslatorEngine
 
 val googleTranslatorModule = Kodein.Module {
     bind<TranslatorEngine>(overrides = true) with provider { GoogleTranslatorEngine }

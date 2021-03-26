@@ -16,8 +16,6 @@
 
 package ai.tock.bot.connector.teams.messages
 
-import com.microsoft.bot.schema.models.CardAction
-import com.microsoft.bot.schema.models.CardImage
 import ai.tock.bot.engine.action.SendAttachment
 import ai.tock.bot.engine.message.Attachment
 import ai.tock.bot.engine.message.Choice
@@ -25,6 +23,8 @@ import ai.tock.bot.engine.message.GenericElement
 import ai.tock.bot.engine.message.GenericMessage
 import ai.tock.bot.engine.message.GenericMessage.Companion.TITLE_PARAM
 import ai.tock.shared.mapNotNullValues
+import com.microsoft.bot.schema.models.CardAction
+import com.microsoft.bot.schema.models.CardImage
 
 class TeamsCarousel(val listMessage: List<TeamsBotMessage>) : TeamsBotMessage(null) {
     override fun toGenericMessage(): GenericMessage? {
@@ -68,24 +68,27 @@ class TeamsHeroCard(
         if (null == other) return false
         if (other !is TeamsHeroCard) return false
         if (title != other.title ||
-                subtitle != other.subtitle ||
-                attachmentContent != other.attachmentContent) return false
+            subtitle != other.subtitle ||
+            attachmentContent != other.attachmentContent
+        ) return false
         if ((images?.size ?: -1) != (other.images?.size ?: -1)) return false
-        images?.forEach {self ->
+        images?.forEach { self ->
             if (other.images == null) return false
-            if (!other.images.any { ((it.tap() != null && self.tap() != null && it.tap()?.equalsTo(self.tap()) == true) || (it.tap() == null && self.tap() == null))
-                            && it.alt() == self.alt()
-                            && it.url() == self.url()}) return false
+            if (!other.images.any {
+                ((it.tap() != null && self.tap() != null && it.tap()?.equalsTo(self.tap()) == true) || (it.tap() == null && self.tap() == null)) &&
+                    it.alt() == self.alt() &&
+                    it.url() == self.url()
+            }
+            ) return false
         }
         if ((buttons?.size ?: -1) != (other.buttons?.size ?: -1)) return false
-        buttons?.forEach {self ->
+        buttons?.forEach { self ->
             if (other.buttons == null) return false
-            if (!other.buttons.any{ it.equalsTo(self)}) return false
+            if (!other.buttons.any { it.equalsTo(self) }) return false
         }
         if ((tap != null && other.tap != null) && !tap.equalsTo(other.tap)) return false
         return true
     }
-
 
     override fun toString(): String {
         val images = images?.map { it.url() } ?: ""
@@ -108,7 +111,8 @@ class TeamsHeroCard(
                 "attachmentContent" to attachmentContent
             ),
             choices = buttons?.map {
-                Choice(intentName = it.text()?.toString() ?: it.title(),
+                Choice(
+                    intentName = it.text()?.toString() ?: it.title(),
                     parameters = mapNotNullValues(
                         "title" to it.title()?.toString(),
                         "value" to it.value()?.toString(),
@@ -126,19 +130,20 @@ class TeamsHeroCard(
             } ?: emptyList()
         )
     }
-
 }
 
 class TeamsCardAction(
     val actionTitle: String,
-    val buttons: List<CardAction>) : TeamsBotMessage(null) {
+    val buttons: List<CardAction>
+) : TeamsBotMessage(null) {
 
     override fun toGenericMessage(): GenericMessage? {
         return GenericMessage(
             connectorType = connectorType,
             texts = mapNotNullValues(TITLE_PARAM to actionTitle),
             choices = buttons.map {
-                Choice(intentName = it.text()?.toString() ?: it.title(),
+                Choice(
+                    intentName = it.text()?.toString() ?: it.title(),
                     parameters = mapNotNullValues(
                         "title" to it.title()?.toString(),
                         "value" to it.value()?.toString(),
@@ -157,8 +162,8 @@ class TeamsCardAction(
         if (!super.equals(other)) return false
 
         if (actionTitle != other.actionTitle) return false
-        buttons.forEach {self ->
-            if (!other.buttons.any{ it.equalsTo(self)}) return false
+        buttons.forEach { self ->
+            if (!other.buttons.any { it.equalsTo(self) }) return false
         }
 
         return true
@@ -177,12 +182,11 @@ class TeamsCardAction(
     }
 }
 
-
 fun CardAction.equalsTo(other: CardAction?): Boolean {
-    return image() == other?.image()
-            && text() == other?.text()
-            && title() == other?.title()
-            && displayText() == other?.displayText()
-            && type()?.name == other?.type()?.name
-            && value() == other?.value()
+    return image() == other?.image() &&
+        text() == other?.text() &&
+        title() == other?.title() &&
+        displayText() == other?.displayText() &&
+        type()?.name == other?.type()?.name &&
+        value() == other?.value()
 }

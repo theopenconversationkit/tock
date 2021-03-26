@@ -42,24 +42,26 @@ data class SentenceConfiguration(
 
     override val eventType: EventType = EventType.sentence
 
-    override fun toAction(playerId: PlayerId,
-                          applicationId: String,
-                          recipientId: PlayerId,
-                          locale: Locale,
-                          userInterfaceType: UserInterfaceType): Action {
+    override fun toAction(
+        playerId: PlayerId,
+        applicationId: String,
+        recipientId: PlayerId,
+        locale: Locale,
+        userInterfaceType: UserInterfaceType
+    ): Action {
         return SendSentence(
-                playerId,
-                applicationId,
-                recipientId,
-                text,
-                messages.mapNotNull {
-                    try {
-                        it.findConnectorMessage()
-                    } catch (e: Exception) {
-                        logger.error(e)
-                        null
-                    }
-                }.toMutableList())
+            playerId,
+            applicationId,
+            recipientId,
+            text,
+            messages.mapNotNull {
+                try {
+                    it.findConnectorMessage()
+                } catch (e: Exception) {
+                    logger.error(e)
+                    null
+                }
+            }.toMutableList()
+        )
     }
-
 }

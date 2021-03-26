@@ -115,7 +115,7 @@ object AdminService {
             val translatedSentence = it.copy(
                 text = translation,
                 language = query.targetLanguage,
-                //for now entities are not kept during translation
+                // for now entities are not kept during translation
                 classification = it.classification.copy(entities = emptyList()),
                 status = if (it.status == model) validated else it.status,
                 usageCount = 0,
@@ -123,7 +123,7 @@ object AdminService {
                 creationDate = now(),
                 updateDate = now()
             )
-            //TODO not not override existing sentences
+            // TODO not not override existing sentences
             front.save(translatedSentence, it.qualifier ?: UNKNOWN_USER_LOGIN)
         }
         return TranslateReport(sentences.size)
@@ -159,22 +159,24 @@ object AdminService {
     fun createOrUpdateIntent(namespace: String, intent: IntentDefinition): IntentDefinition? {
         return if (namespace == intent.namespace) {
             val intentId = front.getIntentIdByQualifiedName(intent.qualifiedName)
-            (if (intentId == null) {
-                intent
-            } else {
-                front.getIntentById(intentId)!!.run {
-                    copy(
-                        label = intent.label,
-                        description = intent.description,
-                        category = intent.category,
-                        applications = applications + intent.applications,
-                        entities = intent.entities + entities.filter { e -> intent.entities.none { it.role == e.role } },
-                        entitiesRegexp = entitiesRegexp + intent.entitiesRegexp,
-                        mandatoryStates = intent.mandatoryStates + mandatoryStates,
-                        sharedIntents = intent.sharedIntents + sharedIntents
-                    )
+            (
+                if (intentId == null) {
+                    intent
+                } else {
+                    front.getIntentById(intentId)!!.run {
+                        copy(
+                            label = intent.label,
+                            description = intent.description,
+                            category = intent.category,
+                            applications = applications + intent.applications,
+                            entities = intent.entities + entities.filter { e -> intent.entities.none { it.role == e.role } },
+                            entitiesRegexp = entitiesRegexp + intent.entitiesRegexp,
+                            mandatoryStates = intent.mandatoryStates + mandatoryStates,
+                            sharedIntents = intent.sharedIntents + sharedIntents
+                        )
+                    }
                 }
-            }).apply {
+                ).apply {
                 front.save(this)
                 applications.forEach { appId ->
                     front.getApplicationById(appId)?.also {
@@ -269,7 +271,7 @@ object AdminService {
                 )
             }
             .sortedBy { it.date }
-        //only one point each 1 minutes
+        // only one point each 1 minutes
         return stats.filterIndexed { i, s ->
             i == 0 || Duration.between(stats[i - 1].date, s.date) >= Duration.ofMinutes(1)
         }

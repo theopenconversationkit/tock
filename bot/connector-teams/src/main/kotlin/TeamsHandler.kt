@@ -20,7 +20,6 @@ import ai.tock.bot.connector.ConnectorHandler
 import ai.tock.bot.definition.ConnectorStoryHandler
 import kotlin.reflect.KClass
 
-
 /**
  * To specify [ConnectorStoryHandler] for Teams connector.
  * [KClass] passed as [value] of this annotation must have a primary constructor

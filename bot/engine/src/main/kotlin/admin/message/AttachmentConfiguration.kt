@@ -28,23 +28,26 @@ import java.util.Locale
  * A simple attachment file.
  */
 data class AttachmentConfiguration(
-        val url: String,
-        val type: AttachmentType,
-        override val delay: Long = 0) : MessageConfiguration {
+    val url: String,
+    val type: AttachmentType,
+    override val delay: Long = 0
+) : MessageConfiguration {
 
     override val eventType: EventType = EventType.attachment
 
-    override fun toAction(playerId: PlayerId,
-                          applicationId: String,
-                          recipientId: PlayerId,
-                          locale: Locale,
-                          userInterfaceType: UserInterfaceType): Action {
+    override fun toAction(
+        playerId: PlayerId,
+        applicationId: String,
+        recipientId: PlayerId,
+        locale: Locale,
+        userInterfaceType: UserInterfaceType
+    ): Action {
         return SendAttachment(
-                playerId,
-                applicationId,
-                recipientId,
-                url,
-                type
+            playerId,
+            applicationId,
+            recipientId,
+            url,
+            type
         )
     }
 }

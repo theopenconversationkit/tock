@@ -43,12 +43,13 @@ data class StoryDefinitionConfigurationFeature(
         botApplicationConfigurationId,
         enabled,
         switchToStoryId.takeUnless { endingRedirection },
-        switchToStoryId.takeIf { endingRedirection })
+        switchToStoryId.takeIf { endingRedirection }
+    )
 
     internal fun supportConfiguration(conf: BotApplicationConfiguration?): Boolean =
         botApplicationConfigurationId == null || (conf != null && supportDedicatedConfiguration(conf))
 
     internal fun supportDedicatedConfiguration(conf: BotApplicationConfiguration): Boolean =
-        botApplicationConfigurationId == conf._id
-            || botApplicationConfigurationId == conf.targetConfigurationId
+        botApplicationConfigurationId == conf._id ||
+            botApplicationConfigurationId == conf.targetConfigurationId
 }

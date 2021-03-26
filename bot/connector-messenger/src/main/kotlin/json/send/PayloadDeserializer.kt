@@ -60,9 +60,11 @@ internal class PayloadDeserializer : JacksonDeserializer<Payload>() {
             var other: EmptyJson? = null
         )
 
-        val (templateType, url, attachmentId, isReusable,
-            text, buttons, elements, topElementStyle, sharable)
-            = jp.read<PayloadFields> { fields, name ->
+        val (
+            templateType, url, attachmentId, isReusable,
+            text, buttons, elements, topElementStyle, sharable
+        ) =
+        jp.read<PayloadFields> { fields, name ->
             with(fields) {
                 when (name) {
                     "template_type" -> templateType = jp.readValue()

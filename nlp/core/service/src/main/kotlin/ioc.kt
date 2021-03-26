@@ -16,9 +16,6 @@
 
 package ai.tock.nlp.core.service
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.provider
 import ai.tock.nlp.core.DictionaryRepository
 import ai.tock.nlp.core.ModelCore
 import ai.tock.nlp.core.NlpCore
@@ -27,13 +24,16 @@ import ai.tock.nlp.core.service.entity.EntityCore
 import ai.tock.nlp.core.service.entity.EntityCoreService
 import ai.tock.nlp.core.service.entity.EntityMerge
 import ai.tock.nlp.core.service.entity.EntityMergeService
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
 
 val coreModule = Kodein.Module {
     bind<NlpCore>() with provider { NlpCoreService }
     bind<ModelCore>() with provider { ModelCoreService }
-    bind<DictionaryRepository>() with provider { DictionaryRepositoryService}
+    bind<DictionaryRepository>() with provider { DictionaryRepositoryService }
 
-    //internal bindings
+    // internal bindings
     bind<EntityCore>() with provider { EntityCoreService }
     bind<EntityMerge>() with provider { EntityMergeService }
 }

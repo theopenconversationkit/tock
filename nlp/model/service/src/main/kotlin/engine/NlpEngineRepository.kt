@@ -97,5 +97,4 @@ internal object NlpEngineRepository {
     fun <T : ClassifierContextKey> getModelIo(context: ClassifierContext<T>): NlpEngineModelIo {
         return getProvider(context.engineType).modelIo
     }
-
 }

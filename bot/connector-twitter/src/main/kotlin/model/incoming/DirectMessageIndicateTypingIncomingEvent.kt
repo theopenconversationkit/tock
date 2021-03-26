@@ -15,10 +15,10 @@
  */
 package ai.tock.bot.connector.twitter.model.incoming
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.connector.twitter.model.DirectMessageIndicateTyping
 import ai.tock.bot.connector.twitter.model.User
 import ai.tock.bot.engine.event.Event
+import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  * Direct Message Indicate Typing IncomingEvent

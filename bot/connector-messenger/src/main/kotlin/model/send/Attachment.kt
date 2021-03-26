@@ -16,5 +16,4 @@
 
 package ai.tock.bot.connector.messenger.model.send
 
-data class Attachment (val type: AttachmentType, val payload: Payload){
-}
+data class Attachment(val type: AttachmentType, val payload: Payload)

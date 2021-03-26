@@ -25,7 +25,7 @@ import kotlin.test.Test
 
 class WebVerticleTest {
 
-    //check that WebVerticleImpl does not need to implement healthcheck methods to compile
+    // check that WebVerticleImpl does not need to implement healthcheck methods to compile
     class WebVerticleImpl : WebVerticle() {
         override fun configure() {}
     }

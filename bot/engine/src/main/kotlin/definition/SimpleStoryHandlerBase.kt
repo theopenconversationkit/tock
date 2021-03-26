@@ -21,8 +21,8 @@ import ai.tock.bot.engine.BotBus
 /**
  * For simple stories that do not use custom [StoryHandlerDefinition].
  */
-abstract class SimpleStoryHandlerBase(mainIntentName: String? = null)
-    : StoryHandlerBase<StoryHandlerDefinition>(mainIntentName) {
+abstract class SimpleStoryHandlerBase(mainIntentName: String? = null) :
+    StoryHandlerBase<StoryHandlerDefinition>(mainIntentName) {
 
     /**
      * The method to implement.
@@ -30,5 +30,4 @@ abstract class SimpleStoryHandlerBase(mainIntentName: String? = null)
     abstract fun action(bus: BotBus)
 
     override fun newHandlerDefinition(bus: BotBus, data: Any?): StoryHandlerDefinition = SimpleStoryHandlerDefinition(bus, this)
-
 }

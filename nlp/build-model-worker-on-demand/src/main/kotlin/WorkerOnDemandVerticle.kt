@@ -45,7 +45,6 @@ class WorkerOnDemandVerticle(
 
     private var workerOnDemand: WorkerOnDemand? = null
 
-
     override fun start() {
         logger.info("Starting WorkerOnDemandVerticle for $buildType ...")
 
@@ -70,7 +69,6 @@ class WorkerOnDemandVerticle(
             // Schedule the first execution
             vertx.setTimer(TimeUnit.SECONDS.toMillis(1), handler)
         } ?: throw UnknownWorkerOnDemandTypeException("Unabled to load WorkerOnDemand with type '$workerOnDemandType'")
-
     }
 
     fun name(): String = "worker-on-demand-$buildType"
@@ -87,10 +85,10 @@ class WorkerOnDemandVerticle(
                     .replace(PREFIX, "tock")
                     .replace("tock_JAVA_ARGS", "JAVA_ARGS") to it.value.toString()
             } + mapOf(
-                BUILD_WORKER_MODE_ENV to DEFAULT_WORKER_MODE,
-                BUILD_WORKER_VERTICLE_ENABLED_ENV to "false"
-            ) + mapOf(
-                BUILD_TYPE_ARG to buildType
-            )
+            BUILD_WORKER_MODE_ENV to DEFAULT_WORKER_MODE,
+            BUILD_WORKER_VERTICLE_ENABLED_ENV to "false"
+        ) + mapOf(
+            BUILD_TYPE_ARG to buildType
+        )
     }
 }

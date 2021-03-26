@@ -22,23 +22,22 @@ import mu.KotlinLogging
 import java.util.Locale
 
 data class GAUser(
-        val profile: GAUserProfile? = null,
-        val accessToken: String? = null,
-        val permissions: Set<GAPermission>? = null,
-        val userVerificationStatus : GAUserVerificationStatus = GAUserVerificationStatus.VERIFIED,
-        val locale: String = defaultLocale.toLanguageTag()) {
+    val profile: GAUserProfile? = null,
+    val accessToken: String? = null,
+    val permissions: Set<GAPermission>? = null,
+    val userVerificationStatus: GAUserVerificationStatus = GAUserVerificationStatus.VERIFIED,
+    val locale: String = defaultLocale.toLanguageTag()
+) {
 
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
     fun findLocale(): Locale =
-            try {
-                Locale.forLanguageTag(locale)
-            } catch (e: Exception) {
-                logger.error(e)
-                defaultLocale
-            }
-
+        try {
+            Locale.forLanguageTag(locale)
+        } catch (e: Exception) {
+            logger.error(e)
+            defaultLocale
+        }
 }
-

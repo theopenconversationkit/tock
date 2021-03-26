@@ -21,6 +21,8 @@ import ai.tock.bot.engine.user.PlayerId
 /**
  * Switch to private mode event.
  */
-class ContinuePublicConversationInPrivateEvent(userId: PlayerId,
-                                               recipientId: PlayerId,
-                                               applicationId: String) : OneToOneEvent(userId, recipientId, applicationId)
+class ContinuePublicConversationInPrivateEvent(
+    userId: PlayerId,
+    recipientId: PlayerId,
+    applicationId: String
+) : OneToOneEvent(userId, recipientId, applicationId)

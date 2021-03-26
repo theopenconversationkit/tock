@@ -53,6 +53,4 @@ interface NlpEngineProvider {
      * Returns the tokenizer from this [TokenizerModelHolder].
      */
     fun getTokenizer(model: TokenizerModelHolder): Tokenizer
-
-
 }

@@ -24,4 +24,3 @@ val story2 = newStory("story2") {
 }
 
 val test = newBot("key", story1, story2)
-

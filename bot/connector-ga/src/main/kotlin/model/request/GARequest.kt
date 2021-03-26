@@ -16,9 +16,9 @@
 
 package ai.tock.bot.connector.ga.model.request
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import ai.tock.bot.engine.dialog.EventState
 import ai.tock.translator.UserInterfaceType
+import com.fasterxml.jackson.annotation.JsonIgnore
 
 /**
  *
@@ -54,4 +54,3 @@ data class GARequest(
     @get:JsonIgnore
     val healthcheck: Boolean = inputs.any { it.healthcheck }
 }
-

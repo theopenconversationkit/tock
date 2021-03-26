@@ -74,18 +74,17 @@ internal class WorkerOnAwsBatch(
             jobs
                 .first { it.jobId == jobId }
                 .apply {
-                    logger.info {"Job $jobName with id $jobId is $status"}
+                    logger.info { "Job $jobName with id $jobId is $status" }
                 }
                 .toWorkerOnDemandSummary()
         }
 
-
     private fun runningJob(): JobSummary? =
-        jobSummaryByStatus(JobStatus.RUNNING) ?:
-        jobSummaryByStatus(JobStatus.PENDING) ?:
-        jobSummaryByStatus(JobStatus.RUNNABLE) ?:
-        jobSummaryByStatus(JobStatus.SUBMITTED) ?:
-        jobSummaryByStatus(JobStatus.STARTING)
+        jobSummaryByStatus(JobStatus.RUNNING)
+            ?: jobSummaryByStatus(JobStatus.PENDING)
+            ?: jobSummaryByStatus(JobStatus.RUNNABLE)
+            ?: jobSummaryByStatus(JobStatus.SUBMITTED)
+            ?: jobSummaryByStatus(JobStatus.STARTING)
 
     private fun jobSummaryByStatus(jobStatus: JobStatus): JobSummary? {
         return batchClient
@@ -98,7 +97,6 @@ internal class WorkerOnAwsBatch(
                 this.jobSummaryList.firstOrNull { it.jobName == workerOnAwsBatchProperties.jobName }
             }
     }
-
 
     override fun start(callback: (status: WorkerOnDemandStatus) -> Unit) {
         logger.info("WorkerOnAwsBatch starting for ${workerProperties["TOCK_BUILD_TYPE"]} build type")
@@ -129,7 +127,6 @@ internal class WorkerOnAwsBatch(
                 }
             }
         }
-
     }
 
     override fun summary(): WorkerOnDemandSummary = workerOnDemandSummary
@@ -158,5 +155,4 @@ internal class WorkerOnAwsBatch(
 
     private fun JobDetail.toWorkerOnDemandSummary() =
         workerOnDemandSummary(jobName, jobId, createdAt, status)
-
 }

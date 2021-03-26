@@ -16,8 +16,8 @@
 
 package ai.tock.bot.connector.messenger.model.send
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.shared.jackson.mapper
+import com.fasterxml.jackson.annotation.JsonProperty
 
 data class CustomEventRequest(
     @JsonProperty("custom_events") val customEvents: List<CustomEvent>,

@@ -26,12 +26,11 @@ import java.time.Instant.now
  *
  */
 data class UserReport(
-        val playerId: PlayerId,
-        val applicationIds: MutableSet<String>,
-        val userPreferences: UserPreferences = UserPreferences(),
-        val userState: UserState = UserState(),
-        val lastUpdateDate: Instant = now(),
-        val lastActionText: String? = null,
-        val lastUserActionDate: Instant
-) {
-}
+    val playerId: PlayerId,
+    val applicationIds: MutableSet<String>,
+    val userPreferences: UserPreferences = UserPreferences(),
+    val userState: UserState = UserState(),
+    val lastUpdateDate: Instant = now(),
+    val lastActionText: String? = null,
+    val lastUserActionDate: Instant
+)

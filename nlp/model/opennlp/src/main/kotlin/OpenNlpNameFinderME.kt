@@ -22,5 +22,4 @@ import opennlp.tools.namefind.TokenNameFinderModel
 /**
  *
  */
-internal class OpenNlpNameFinderME(val tokenNameFinderModel: TokenNameFinderModel) : NameFinderME(tokenNameFinderModel) {
-}
+internal class OpenNlpNameFinderME(val tokenNameFinderModel: TokenNameFinderModel) : NameFinderME(tokenNameFinderModel)

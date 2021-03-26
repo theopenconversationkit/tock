@@ -55,7 +55,7 @@ class BotVerticleTest : BotEngineTest() {
     @Test
     fun `GIVEN default BOT configuration WHEN configure BOT Verticle THEN nlp api is not exposed`() {
         val verticle = BotVerticle(false, false)
-        //NLP Api not exposed
+        // NLP Api not exposed
         verticle.configure()
 
         var service1Installed = false
@@ -64,7 +64,7 @@ class BotVerticleTest : BotEngineTest() {
             router.post("/_nlp").handler { }
         }
         verticle.configure()
-        //NLP Api exposed !
+        // NLP Api exposed !
         assert(service1Installed)
     }
 
@@ -73,7 +73,7 @@ class BotVerticleTest : BotEngineTest() {
 
         val verticle = BotVerticle(true, false)
         verticle.init(mockedVertx, mockk())
-        //NLP Api exposed
+        // NLP Api exposed
         verticle.configure()
 
         var service1Installed = false
@@ -82,7 +82,7 @@ class BotVerticleTest : BotEngineTest() {
             router.post("/_nlp").handler { }
         }
         verticle.configure()
-        //Can't exposed same identifier !
+        // Can't exposed same identifier !
         assertFalse(service1Installed)
     }
 }

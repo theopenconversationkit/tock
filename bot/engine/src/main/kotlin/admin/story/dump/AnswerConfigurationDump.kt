@@ -37,5 +37,5 @@ abstract class AnswerConfigurationDump(val answerType: AnswerConfigurationType) 
             }
     }
 
-    abstract fun toAnswer(currentType:AnswerConfigurationType, controller: StoryDefinitionConfigurationDumpController) : AnswerConfiguration
+    abstract fun toAnswer(currentType: AnswerConfigurationType, controller: StoryDefinitionConfigurationDumpController): AnswerConfiguration
 }

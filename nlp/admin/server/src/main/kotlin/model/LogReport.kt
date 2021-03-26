@@ -27,29 +27,32 @@ import java.time.Instant
 /**
  *
  */
-data class LogReport(val sentence: SentenceReport?,
-                     val intent: String,
-                     val dialogId: String,
-                     val request: ParseQuery,
-                     val response: ParseResult?,
-                     val durationInMS: Long,
-                     val error: Boolean,
-                     val date: Instant) {
+data class LogReport(
+    val sentence: SentenceReport?,
+    val intent: String,
+    val dialogId: String,
+    val request: ParseQuery,
+    val response: ParseResult?,
+    val durationInMS: Long,
+    val error: Boolean,
+    val date: Instant
+) {
 
     constructor(log: ParseRequestLog, applicationId: Id<ApplicationDefinition>, intentIdFinder: (String) -> Id<IntentDefinition>?) :
-            this(
-                    if (log.result == null) null
-                    else SentenceReport(
-                            log.result!!,
-                            log.query.context.language,
-                            applicationId,
-                            intentIdFinder.invoke(log.result!!.intent)),
-                    log.result?.intent ?: "",
-                    log.query.context.dialogId,
-                    log.query,
-                    log.result,
-                    log.durationInMS,
-                    log.error,
-                    log.date
-            )
+        this(
+            if (log.result == null) null
+            else SentenceReport(
+                log.result!!,
+                log.query.context.language,
+                applicationId,
+                intentIdFinder.invoke(log.result!!.intent)
+            ),
+            log.result?.intent ?: "",
+            log.query.context.dialogId,
+            log.query,
+            log.result,
+            log.durationInMS,
+            log.error,
+            log.date
+        )
 }

@@ -97,5 +97,4 @@ interface NlpListener {
      * ```
      */
     fun error(query: NlpQuery, dialog: Dialog, throwable: Throwable?) = Unit
-
 }

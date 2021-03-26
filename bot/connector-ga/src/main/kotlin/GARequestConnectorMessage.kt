@@ -16,10 +16,10 @@
 
 package ai.tock.bot.connector.ga
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.ga.model.request.GARequest
+import com.fasterxml.jackson.annotation.JsonIgnore
 
 /**
  *
@@ -27,5 +27,4 @@ import ai.tock.bot.connector.ga.model.request.GARequest
 data class GARequestConnectorMessage(val request: GARequest) : ConnectorMessage {
 
     override val connectorType: ConnectorType @JsonIgnore get() = gaConnectorType
-
 }

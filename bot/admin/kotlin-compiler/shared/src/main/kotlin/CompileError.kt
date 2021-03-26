@@ -19,10 +19,11 @@ package ai.tock.bot.admin.kotlin.compiler
  *
  */
 data class CompileError(
-        val interval: TextInterval,
-        val message: String,
-        val severity: Severity,
-        val className: String? = null) {
+    val interval: TextInterval,
+    val message: String,
+    val severity: Severity,
+    val className: String? = null
+) {
     override fun toString(): String = "$interval: $message"
 }
 

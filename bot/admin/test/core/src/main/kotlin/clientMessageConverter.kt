@@ -21,21 +21,21 @@ import ai.tock.bot.connector.rest.client.model.ClientAttachment
 import ai.tock.bot.connector.rest.client.model.ClientAttachmentType
 import ai.tock.bot.connector.rest.client.model.ClientChoice
 import ai.tock.bot.connector.rest.client.model.ClientConnectorType
+import ai.tock.bot.connector.rest.client.model.ClientGenericElement
+import ai.tock.bot.connector.rest.client.model.ClientGenericMessage
 import ai.tock.bot.connector.rest.client.model.ClientLocation
 import ai.tock.bot.connector.rest.client.model.ClientMessage
 import ai.tock.bot.connector.rest.client.model.ClientSentence
-import ai.tock.bot.connector.rest.client.model.ClientGenericMessage
-import ai.tock.bot.connector.rest.client.model.ClientGenericElement
 import ai.tock.bot.connector.rest.client.model.ClientUserInterfaceType
 import ai.tock.bot.connector.rest.client.model.ClientUserLocation
 import ai.tock.bot.engine.action.SendAttachment
 import ai.tock.bot.engine.message.Attachment
 import ai.tock.bot.engine.message.Choice
+import ai.tock.bot.engine.message.GenericElement
+import ai.tock.bot.engine.message.GenericMessage
 import ai.tock.bot.engine.message.Location
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.message.Sentence
-import ai.tock.bot.engine.message.GenericMessage
-import ai.tock.bot.engine.message.GenericElement
 import ai.tock.bot.engine.user.UserLocation
 import ai.tock.translator.UserInterfaceType
 
@@ -93,44 +93,44 @@ fun ClientMessage.toMessage(): Message {
 
 fun GenericMessage.toClientSentenceElement(): ClientGenericMessage {
     return ClientGenericMessage(
-            connectorType.toClientConnectorType(),
-            attachments.map { it.toClientMessage() as ClientAttachment },
-            choices.map { it.toClientMessage() as ClientChoice },
-            texts,
-            locations.map { it.toClientLocation() },
-            metadata,
-            subElements.map { it.toClientSentenceSubElement() }
+        connectorType.toClientConnectorType(),
+        attachments.map { it.toClientMessage() as ClientAttachment },
+        choices.map { it.toClientMessage() as ClientChoice },
+        texts,
+        locations.map { it.toClientLocation() },
+        metadata,
+        subElements.map { it.toClientSentenceSubElement() }
     )
 }
 
 fun ClientGenericMessage.toSentenceElement(): GenericMessage {
     return GenericMessage(
-            connectorType.toConnectorType(),
-            attachments.map { it.toMessage() as Attachment },
-            choices.map { it.toMessage() as Choice },
-            texts,
-            locations.map { it.toLocation() },
-            metadata,
-            subElements.map { it.toSentenceSubElement() }
+        connectorType.toConnectorType(),
+        attachments.map { it.toMessage() as Attachment },
+        choices.map { it.toMessage() as Choice },
+        texts,
+        locations.map { it.toLocation() },
+        metadata,
+        subElements.map { it.toSentenceSubElement() }
     )
 }
 
 fun GenericElement.toClientSentenceSubElement(): ClientGenericElement {
     return ClientGenericElement(
-            attachments.map { it.toClientMessage() as ClientAttachment },
-            choices.map { it.toClientMessage() as ClientChoice },
-            texts,
-            locations.map { it.toClientLocation() },
-            metadata
+        attachments.map { it.toClientMessage() as ClientAttachment },
+        choices.map { it.toClientMessage() as ClientChoice },
+        texts,
+        locations.map { it.toClientLocation() },
+        metadata
     )
 }
 
 fun ClientGenericElement.toSentenceSubElement(): GenericElement {
     return GenericElement(
-            attachments.map { it.toMessage() as Attachment },
-            choices.map { it.toMessage() as Choice },
-            texts,
-            locations.map { it.toLocation() },
-            metadata
+        attachments.map { it.toMessage() as Attachment },
+        choices.map { it.toMessage() as Choice },
+        texts,
+        locations.map { it.toLocation() },
+        metadata
     )
 }

@@ -16,10 +16,9 @@
 
 package ai.tock.bot.connector.twitter.model
 
+import ai.tock.bot.engine.message.Choice
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import ai.tock.bot.engine.message.Choice
-import ai.tock.bot.engine.message.GenericMessage
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,

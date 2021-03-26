@@ -23,8 +23,8 @@ import java.util.Locale
 fun NlpApplicationConfiguration.toRasaConfiguration(): RasaConfiguration =
     RasaConfiguration()
 
-internal fun String.escapeRasaName() : String = replace(":","___")
-internal fun String.unescapeRasaName() : String = replace("___",":")
+internal fun String.escapeRasaName(): String = replace(":", "___")
+internal fun String.unescapeRasaName(): String = replace("___", ":")
 /**
  * The rasa configuration.
  */
@@ -34,8 +34,9 @@ class RasaConfiguration(
     val configuration: String = "language: en\npipeline: supervised_embeddings\npolicies:\n  - name: MemoizationPolicy\n  - name: KerasPolicy"
 ) {
     fun getMarkdownConfiguration(locale: Locale): String =
-        when(locale.language) {
-            Locale.ENGLISH.language -> """
+        when (locale.language) {
+            Locale.ENGLISH.language ->
+                """
 pipeline:
   - name: ConveRTTokenizer
   - name: ConveRTFeaturizer

@@ -24,7 +24,6 @@ import ai.tock.nlp.core.quality.TestContext
 import ai.tock.nlp.model.IntentContext.IntentContextKey
 import java.util.Locale
 
-
 data class IntentContext(
     val application: Application,
     override val language: Locale,

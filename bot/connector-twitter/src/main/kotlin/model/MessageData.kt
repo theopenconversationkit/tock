@@ -16,8 +16,8 @@
 
 package ai.tock.bot.connector.twitter.model
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.engine.message.GenericMessage
+import com.fasterxml.jackson.annotation.JsonProperty
 
 data class MessageData(
     val text: String,
@@ -30,8 +30,7 @@ data class MessageData(
     fun toGenericMessage(): GenericMessage {
         return GenericMessage(
             texts = mapOf("text" to text),
-            choices = (quickReply?.toChoices() ?: emptyList())  + (ctas?.map { it.toChoice() } ?: emptyList())
+            choices = (quickReply?.toChoices() ?: emptyList()) + (ctas?.map { it.toChoice() } ?: emptyList())
         )
     }
-
 }

@@ -16,7 +16,6 @@
 
 package ai.tock.nlp.front.storage.mongo
 
-import com.mongodb.client.MongoCollection
 import ai.tock.nlp.front.service.storage.ModelBuildTriggerDAO
 import ai.tock.nlp.front.shared.build.ModelBuild
 import ai.tock.nlp.front.shared.build.ModelBuildQueryResult
@@ -25,11 +24,12 @@ import ai.tock.nlp.front.shared.build.ModelBuildTrigger_.Companion.ApplicationId
 import ai.tock.nlp.front.shared.build.ModelBuildTrigger_.Companion.OnlyIfModelNotExists
 import ai.tock.nlp.front.shared.build.ModelBuild_
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
+import ai.tock.shared.ensureIndex
+import com.mongodb.client.MongoCollection
 import org.litote.kmongo.Id
 import org.litote.kmongo.and
 import org.litote.kmongo.deleteMany
 import org.litote.kmongo.descendingSort
-import ai.tock.shared.ensureIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.save

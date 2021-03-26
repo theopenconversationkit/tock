@@ -104,7 +104,8 @@ interface UserTimelineDAO {
     fun getDialogsUpdatedFrom(
         namespace: String,
         from: Instant,
-        storyDefinitionProvider: (String) -> StoryDefinition): List<Dialog>
+        storyDefinitionProvider: (String) -> StoryDefinition
+    ): List<Dialog>
 
     /**
      * Gets the snapshots of a dialog.

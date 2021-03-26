@@ -47,7 +47,6 @@ class GoogleChatConnector(
     private val authorisationHandler: GoogleChatAuthorisationHandler
 ) : ConnectorBase(GoogleChatConnectorProvider.connectorType) {
 
-
     private val logger = KotlinLogging.logger {}
     private val executor: Executor by injector.instance()
 
@@ -60,7 +59,7 @@ class GoogleChatConnector(
                         val body = context.bodyAsString
                         logger.info { "message received from Google chat: $body" }
 
-                        //answer immediately
+                        // answer immediately
                         context.response().end()
 
                         val messageEvent = JacksonFactory().fromString(body, DeprecatedEvent::class.java)
@@ -77,12 +76,10 @@ class GoogleChatConnector(
                         } else {
                             logger.debug { "skip message: $messageEvent" }
                         }
-
                     } catch (e: Throwable) {
                         logger.error { e }
                     }
                 }
-
         }
     }
 
@@ -101,7 +98,6 @@ class GoogleChatConnector(
             }
         }
     }
-
 
     override fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
         card {
@@ -146,19 +142,25 @@ class GoogleChatConnector(
 
     override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
         when (message) {
-            is MediaAction -> listOf(card {
-                section {
-                    buttons {
-                        buttonFromMediaAction(message)
+            is MediaAction -> listOf(
+                card {
+                    section {
+                        buttons {
+                            buttonFromMediaAction(message)
+                        }
                     }
                 }
-            })
-            is MediaCard -> listOf(card {
-                sectionFromMediaCard(message)
-            })
-            is MediaCarousel -> listOf(card {
-                message.cards.forEach { sectionFromMediaCard(it) }
-            })
+            )
+            is MediaCard -> listOf(
+                card {
+                    sectionFromMediaCard(message)
+                }
+            )
+            is MediaCarousel -> listOf(
+                card {
+                    message.cards.forEach { sectionFromMediaCard(it) }
+                }
+            )
             else -> emptyList()
         }
     }

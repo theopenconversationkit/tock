@@ -46,5 +46,4 @@ interface TestModelDAO {
     fun addTestEntityError(entityError: EntityTestError)
 
     fun deleteTestEntityError(applicationId: Id<ApplicationDefinition>, language: Locale, text: String)
-
 }

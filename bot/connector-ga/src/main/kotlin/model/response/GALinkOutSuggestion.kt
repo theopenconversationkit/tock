@@ -20,17 +20,17 @@ import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.message.Choice
 
 data class GALinkOutSuggestion(
-        val destinationName: String,
-        val url: String
+    val destinationName: String,
+    val url: String
 ) {
 
     fun toChoice(): Choice {
         return Choice(
-                SendChoice.EXIT_INTENT,
-                mapOf(
-                        SendChoice.URL_PARAMETER to url,
-                        SendChoice.TITLE_PARAMETER to destinationName
-                ))
+            SendChoice.EXIT_INTENT,
+            mapOf(
+                SendChoice.URL_PARAMETER to url,
+                SendChoice.TITLE_PARAMETER to destinationName
+            )
+        )
     }
-
 }

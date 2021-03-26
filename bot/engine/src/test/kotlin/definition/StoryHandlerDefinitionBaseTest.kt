@@ -36,29 +36,29 @@ internal class StoryHandlerDefinitionBaseTest {
 
     @Test
     fun `GIVEN simple connector WHEN creation THEN connector is set`() {
-        //GIVEN
+        // GIVEN
         every { bus getProperty "targetConnectorType" } returns ConnectorType(
             "connectorType1"
         )
 
-        //WHEN
+        // WHEN
         val def: SimpleDefWithConnector = defaultHandlerStoryDefinitionCreator<SimpleDefWithConnector>().create(bus)
 
-        //THEN
+        // THEN
         assertTrue(def.connector is FirstConnectorDef)
     }
 
     @Test
     fun `GIVEN connector with parameter WHEN creation THEN connector is set with default parameter`() {
-        //GIVEN
+        // GIVEN
         every { bus getProperty "targetConnectorType" } returns ConnectorType(
             "connectorType2"
         )
 
-        //WHEN
+        // WHEN
         val def: SimpleDefWithConnector = defaultHandlerStoryDefinitionCreator<SimpleDefWithConnector>().create(bus)
 
-        //THEN
+        // THEN
         assertTrue(def.connector is SecondConnectorWithParameterDef)
         assertEquals("parameter", (def.connector as SecondConnectorWithParameterDef).parameter)
     }
@@ -84,5 +84,4 @@ internal class StoryHandlerDefinitionBaseTest {
     @Target(AnnotationTarget.CLASS)
     @MustBeDocumented
     annotation class SecondConnectorHandler(val value: KClass<out ConnectorStoryHandler<*>>)
-
 }

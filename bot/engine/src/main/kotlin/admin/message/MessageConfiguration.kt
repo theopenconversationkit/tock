@@ -31,17 +31,19 @@ interface MessageConfiguration {
     val eventType: EventType
     val delay: Long
 
-    fun toAction(bus: BotBus): Action
-            = toAction(
-            bus.userId,
-            bus.applicationId,
-            bus.botId,
-            bus.userLocale,
-            bus.userInterfaceType)
+    fun toAction(bus: BotBus): Action = toAction(
+        bus.userId,
+        bus.applicationId,
+        bus.botId,
+        bus.userLocale,
+        bus.userInterfaceType
+    )
 
-    fun toAction(playerId: PlayerId,
-                 applicationId: String,
-                 recipientId: PlayerId,
-                 locale: Locale,
-                 userInterfaceType: UserInterfaceType): Action
+    fun toAction(
+        playerId: PlayerId,
+        applicationId: String,
+        recipientId: PlayerId,
+        locale: Locale,
+        userInterfaceType: UserInterfaceType
+    ): Action
 }

@@ -19,5 +19,4 @@ package ai.tock.shared.vertx
 /**
  * Http 401 exception.
  */
-class UnauthorizedException() : RestException("Not authorized", 401) {
-}
+class UnauthorizedException() : RestException("Not authorized", 401)

@@ -27,7 +27,7 @@ internal class DefaultIntentSelector(data: ParserRequestData) : SelectorBase(dat
 
     override fun selectIntent(classification: IntentClassification): Pair<Intent, Double>? {
         with(classification) {
-            //select first
+            // select first
             var result: Pair<Intent, Double>? = null
             while (hasNext() && result == null) {
                 next().apply {
@@ -37,15 +37,15 @@ internal class DefaultIntentSelector(data: ParserRequestData) : SelectorBase(dat
                 }
             }
 
-            //and take all other intents where probability is greater than 0.1
+            // and take all other intents where probability is greater than 0.1
             while (hasNext()) {
                 next().run {
                     if (data.isStateSupportedByIntent(this)) {
                         (this to probability())
-                                .takeIf { (_, prob) -> prob > 0.1 }
-                                ?.also { (intent, prob) -> otherIntents.put(intent.name, prob) }
+                            .takeIf { (_, prob) -> prob > 0.1 }
+                            ?.also { (intent, prob) -> otherIntents.put(intent.name, prob) }
                     } else {
-                        //continue
+                        // continue
                     }
                 } ?: break
             }

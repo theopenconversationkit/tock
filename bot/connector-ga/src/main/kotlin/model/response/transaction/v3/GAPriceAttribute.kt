@@ -19,7 +19,7 @@ package ai.tock.bot.connector.ga.model.response.transaction.v3
 /**
  * @see https://developers.google.com/actions/transactions/reference/physical/rest/v3/Order#PriceAttribute
  */
-data class GAPriceAttribute (
+data class GAPriceAttribute(
     val type: GAMoneyType,
     val name: String,
     val state: GAPriceState,
@@ -27,7 +27,7 @@ data class GAPriceAttribute (
     val amount: GAMoneyV3?
 )
 
-enum class GAMoneyType{
+enum class GAMoneyType {
     TYPE_UNSPECIFIED,
     REGULAR,
     DISCOUNT,
@@ -39,7 +39,7 @@ enum class GAMoneyType{
     TOTAL
 }
 
-enum class GAPriceState{
+enum class GAPriceState {
     STATE_UNSPECIFIED,
     ESTIMATE,
     ACTUAL

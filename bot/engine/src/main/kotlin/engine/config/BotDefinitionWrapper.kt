@@ -38,14 +38,14 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
 
     private val logger = KotlinLogging.logger {}
 
-    //stories with configuration (including built-in)
+    // stories with configuration (including built-in)
     @Volatile
     private var configuredStories: Map<String, List<ConfiguredStoryDefinition>> = emptyMap()
 
     @Volatile
     private var allStoriesById: Map<String, StoryDefinition> = botDefinition.stories.associateBy { it.id }
 
-    //all stories
+    // all stories
     @Volatile
     private var allStories: List<StoryDefinition> = botDefinition.stories
 
@@ -67,7 +67,7 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
     override val botEnabledStories: List<StoryDefinition>
         get() = findStoryDefinitionByTag(StoryTag.ENABLE)
 
-    //only built-in
+    // only built-in
     private val builtInStoriesMap: Map<String, StoryDefinition> = botDefinition.stories.associateBy { it.id }
 
     fun updateStories(configuredStories: List<StoryDefinitionConfiguration>) {
@@ -75,15 +75,14 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
             configuredStories.map { ConfiguredStoryDefinition(this, it) }.groupBy { it.storyId }
 
         allStories = (
-                this.configuredStories
-                        +
-                        //in order to handle built-in not yet configured...
-                        botDefinition
-                            .stories
-                            .asSequence()
-                            .filterNot { this.configuredStories.containsKey(it.id) }
-                            .groupBy { it.id }
-                )
+            this.configuredStories +
+                // in order to handle built-in not yet configured...
+                botDefinition
+                    .stories
+                    .asSequence()
+                    .filterNot { this.configuredStories.containsKey(it.id) }
+                    .groupBy { it.id }
+            )
             .values.flatten()
 
         this.allStoriesById = allStories.associateBy { it.id }
@@ -173,21 +172,23 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
         }
 
     override fun findStoryDefinitionById(storyId: String, applicationId: String): StoryDefinition =
-        //first search into built-in then in configured, fallback to search by intent
+        // first search into built-in then in configured, fallback to search by intent
         builtInStoriesMap[storyId] ?: allStoriesById[storyId]?.checkApplicationId(applicationId) ?: findStoryDefinition(
             storyId,
             applicationId
         )
 
     override fun findStoryByStoryHandler(storyHandler: StoryHandler, applicationId: String): StoryDefinition? =
-        (botDefinition.stories.find { it.storyHandler == storyHandler }
-            ?: stories.find { it.storyHandler == storyHandler })
+        (
+            botDefinition.stories.find { it.storyHandler == storyHandler }
+                ?: stories.find { it.storyHandler == storyHandler }
+            )
             ?.checkApplicationId(applicationId)
 
     private fun StoryDefinition.checkApplicationId(applicationId: String): StoryDefinition =
-        if (this is ConfiguredStoryDefinition
-            && configuration.configuredSteps.isNotEmpty()
-            && answerType != builtin
+        if (this is ConfiguredStoryDefinition &&
+            configuration.configuredSteps.isNotEmpty() &&
+            answerType != builtin
         ) {
             ConfiguredStoryDefinition(
                 this@BotDefinitionWrapper,
@@ -201,5 +202,4 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
     override fun toString(): String {
         return "Wrapper($botDefinition)"
     }
-
 }

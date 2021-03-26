@@ -39,5 +39,4 @@ internal class BotBusMockedTest {
             assertEquals("Tock - The (Best) Open Conversation Kit", botBus.translate("Tock - The (Best) Open Conversation Kit".raw).toString())
         }
     }
-
 }

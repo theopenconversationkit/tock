@@ -82,6 +82,4 @@ class UserTimeline(
     override fun toString(): String {
         return "UserTimeline(playerId=$playerId)"
     }
-
-
 }

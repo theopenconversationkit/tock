@@ -16,11 +16,11 @@
 
 package ai.tock.bot.connector.twitter.model
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonProperty
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.shared.Dice
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
 
 data class DirectMessage(
     val id: String,
@@ -53,6 +53,6 @@ data class DirectMessage(
 
         return messageData.entities?.urls?.fold(messageData.text) { acc, url ->
             acc.replace(url.url, "")
-        }?: messageData.text
+        } ?: messageData.text
     }
 }

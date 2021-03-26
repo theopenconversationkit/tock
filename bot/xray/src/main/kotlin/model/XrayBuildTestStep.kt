@@ -20,9 +20,8 @@ package ai.tock.bot.xray.model
  *
  */
 data class XrayBuildTestStep(
-        val step: String,
-        val data: String,
-        val result: String,
-        val attachments: List<XrayBuildStepAttachment>
-) {
-}
+    val step: String,
+    val data: String,
+    val result: String,
+    val attachments: List<XrayBuildStepAttachment>
+)

@@ -103,5 +103,3 @@ enum class Step2 : StoryDataStep<Def2, StoryData, StoryData2> {
 }
 
 object Step3 : StoryDataStepBase<Def2, StoryData, EmptyData>(reply = { "ok" })
-
-
