@@ -48,7 +48,7 @@ interface Connector {
     /**
      * Is this feature supported ?
      */
-    fun hasFeature(feature: ConnectorFeature): Boolean = supportedFeatures.contains(feature)
+    fun hasFeature(feature: ConnectorFeature, targetConnectorType: ConnectorType): Boolean = supportedFeatures.contains(feature)
 
     /**
      * Registers the connector for the specified controller.

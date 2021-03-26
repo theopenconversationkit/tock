@@ -215,7 +215,7 @@ internal class ConfiguredStoryHandler(
             ?.run {
                 forEach { a ->
                     if (
-                        underlyingConnector.hasFeature(CAROUSEL) &&
+                        underlyingConnector.hasFeature(CAROUSEL, targetConnectorType) &&
                         a.mediaMessage?.checkValidity() == true &&
                         a.mediaMessage is MediaCardDescriptor &&
                         a.mediaMessage.fillCarousel

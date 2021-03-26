@@ -20,6 +20,7 @@ import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
+import ai.tock.bot.connector.ConnectorFeature
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.ConnectorType.Companion.rest
@@ -60,6 +61,9 @@ class RestConnector(
         private val logger = KotlinLogging.logger {}
         private val disabled = booleanProperty("tock_rest_connector_disabled", false)
     }
+
+    override fun hasFeature(feature: ConnectorFeature, targetConnectorType: ConnectorType): Boolean =
+        getTargetConnector(targetConnectorType)?.hasFeature(feature, targetConnectorType) ?: false
 
     override fun register(controller: ConnectorController) {
         if (!disabled) {
@@ -145,7 +149,10 @@ class RestConnector(
         }
     }
 
-    override fun addSuggestions(message: ConnectorMessage, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
+    override fun addSuggestions(
+        message: ConnectorMessage,
+        suggestions: List<CharSequence>
+    ): BotBus.() -> ConnectorMessage? = {
         when (targetConnectorType) {
             rest -> {
                 val response = message as? MessageResponse

@@ -79,6 +79,7 @@ class ConfiguredStoryHandlerTest {
         }
 
         val bus: BotBus = mockk {
+            every { targetConnectorType } returns ConnectorType("a")
             every { botId } returns PlayerId("botId")
             every { userId } returns PlayerId("userId")
             every { applicationId } returns "appId"
@@ -88,7 +89,7 @@ class ConfiguredStoryHandlerTest {
             every { translate(I18nLabelValue(originalLabel)) } returns RawString("translated label")
             every { translate(RawString("Step 1 not translated")) } returns RawString("Step 1 translated")
             every { underlyingConnector } returns mockk() {
-                every { underlyingConnector.hasFeature(CAROUSEL) } returns true
+                every { underlyingConnector.hasFeature(CAROUSEL, any()) } returns true
             }
             every {
                 underlyingConnector.addSuggestions(
@@ -170,10 +171,11 @@ class ConfiguredStoryHandlerTest {
                 )
             } returns connectorMessageRetriever
             every { toConnectorMessage(any()) } returns { listOf(mockk()) }
-            every { hasFeature(CAROUSEL) } returns true
+            every { hasFeature(CAROUSEL, any()) } returns true
         }
 
         val bus: BotBus = mockk {
+            every { targetConnectorType } returns ConnectorType("a")
             every { botId } returns PlayerId("botId")
             every { userId } returns PlayerId("userId")
             every { applicationId } returns "appId"
@@ -282,10 +284,11 @@ class ConfiguredStoryHandlerTest {
         val capturedMediaMessages = mutableListOf<MediaMessage>()
         val connector = mockk<Connector> {
             every { toConnectorMessage(capture(capturedMediaMessages)) } returns { listOf(mockk()) }
-            every { hasFeature(CAROUSEL) } returns true
+            every { hasFeature(CAROUSEL, any()) } returns true
         }
 
         val bus: BotBus = mockk {
+            every { targetConnectorType } returns ConnectorType("a")
             every { botId } returns PlayerId("botId")
             every { userId } returns PlayerId("userId")
             every { applicationId } returns "appId"
