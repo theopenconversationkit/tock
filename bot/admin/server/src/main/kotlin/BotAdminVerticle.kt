@@ -689,14 +689,17 @@ open class BotAdminVerticle : AdminVerticle() {
             simpleLogger("JSON Import Response Labels")
         ) { context, labels: List<I18nLabel> ->
             measureTimeMillis(context) {
-                labels.filter { it.i18n.any { it.validated } }.map {
-                    it.copy(
-                        _id = it._id.toString().replaceFirst(it.namespace, context.organization).toId(),
-                        namespace = context.organization
-                    )
-                }.also {
-                    i18n.save(labels)
-                }.size
+                labels
+                    .filter { it.i18n.any { i18n -> i18n.validated } }
+                    .map {
+                        it.copy(
+                            _id = it._id.toString().replaceFirst(it.namespace, context.organization).toId(),
+                            namespace = context.organization
+                        )
+                    }.apply {
+                        i18n.save(this)
+                    }
+                    .size
             }
         }
 

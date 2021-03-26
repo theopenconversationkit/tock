@@ -33,5 +33,6 @@ data class MediaActionDescriptorDump(val title: I18nLabelValue, var url: String?
         media.url
     )
 
-    override fun toMedia(controller: StoryDefinitionConfigurationDumpController): MediaActionDescriptor = MediaActionDescriptor(title, url)
+    override fun toMedia(controller: StoryDefinitionConfigurationDumpController): MediaActionDescriptor =
+        MediaActionDescriptor(title.withNamespace(controller.targetNamespace), url)
 }

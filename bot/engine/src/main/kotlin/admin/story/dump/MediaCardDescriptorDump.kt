@@ -41,5 +41,10 @@ data class MediaCardDescriptorDump(
     )
 
     override fun toMedia(controller: StoryDefinitionConfigurationDumpController): MediaCardDescriptor =
-        MediaCardDescriptor(title, subTitle, file?.toFile(controller), actions.map { it.toMedia(controller) })
+        MediaCardDescriptor(
+            title?.withNamespace(controller.targetNamespace),
+            subTitle?.withNamespace(controller.targetNamespace),
+            file?.toFile(controller),
+            actions.map { it.toMedia(controller) }
+        )
 }

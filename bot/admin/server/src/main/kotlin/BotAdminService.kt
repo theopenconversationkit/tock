@@ -1211,7 +1211,7 @@ object BotAdminService {
 
 
     private fun BotConfiguredAnswer.toConfiguredAnswer(botId: String, oldStory: StoryDefinitionConfiguration?)
-            : DedicatedAnswerConfiguration? {
+            : DedicatedAnswerConfiguration {
         val oldConf = oldStory?.configuredAnswers?.find { it.botConfiguration == botConfiguration }
         return DedicatedAnswerConfiguration(
             botConfiguration,
