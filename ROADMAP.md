@@ -6,7 +6,10 @@
     - Conversational framework: support for other languages than Kotlin (multi-platform Kotlin)         
     
 ## Latest releases
-
+- 21.3.0 March 2021
+  - Tock studio improvements (cards/carousel/stories)
+  - Web & teams connector improvements
+  
 - 20.9.3 February 2020
   - Bug fixes release
 

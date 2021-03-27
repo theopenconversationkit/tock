@@ -1,6 +1,10 @@
 $dokka.format:html
 $dokka.linkExtension:html
 $dokka.location:ai.tock.bot.connector.teams.messages$equalsTo(com.microsoft.bot.schema.models.CardAction, com.microsoft.bot.schema.models.CardAction)ai.tock.bot.connector.teams.messages/com.microsoft.bot.schema.models.-card-action/equals-to.html
+$dokka.location:ai.tock.bot.connector.web$toChoice(ai.tock.bot.connector.web.send.Button)ai.tock.bot.connector.web/ai.tock.bot.connector.web.send.-button/to-choice.html
+$dokka.location:ai.tock.bot.connector.web$toGenericMessage(ai.tock.bot.connector.web.send.WebCard)ai.tock.bot.connector.web/ai.tock.bot.connector.web.send.-web-card/to-generic-message.html
+$dokka.location:ai.tock.bot.connector.web$toGenericMessage(ai.tock.bot.connector.web.send.WebCarousel)ai.tock.bot.connector.web/ai.tock.bot.connector.web.send.-web-carousel/to-generic-message.html
+$dokka.location:ai.tock.bot.connector.web$toGenericMessage(ai.tock.bot.connector.web.send.WebWidget)ai.tock.bot.connector.web/ai.tock.bot.connector.web.send.-web-widget/to-generic-message.html
 $dokka.location:ai.tock.bot.engine.dialog$setTo(ai.tock.nlp.api.client.model.Entity, ai.tock.nlp.entity.Value)ai.tock.bot.engine.dialog/ai.tock.nlp.api.client.model.-entity/set-to.html
 $dokka.location:ai.tock.bot.engine.dialog$setTo(ai.tock.nlp.api.client.model.Entity, kotlin.String)ai.tock.bot.engine.dialog/ai.tock.nlp.api.client.model.-entity/set-to.html
 $dokka.location:ai.tock.bot.engine.monitoring$logError(mu.KLogger, kotlin.String, ai.tock.bot.engine.monitoring.RequestTimerData)ai.tock.bot.engine.monitoring/mu.-k-logger/log-error.html
@@ -42,6 +46,7 @@ $dokka.location:ai.tock.shared$namespace(kotlin.String)ai.tock.shared/kotlin.-s
 $dokka.location:ai.tock.shared$namespaceAndName(kotlin.String)ai.tock.shared/kotlin.-string/namespace-and-name.html
 $dokka.location:ai.tock.shared$provide(com.github.salomonbrys.kodein.KodeinInjector, kotlin.Any)ai.tock.shared/com.github.salomonbrys.kodein.-kodein-injector/provide.html
 $dokka.location:ai.tock.shared$provideOrDefault(com.github.salomonbrys.kodein.KodeinInjector, kotlin.Any, kotlin.Function0((ai.tock.shared.provideOrDefault.T)))ai.tock.shared/com.github.salomonbrys.kodein.-kodein-injector/provide-or-default.html
+$dokka.location:ai.tock.shared$safeCollation(com.mongodb.client.FindIterable((ai.tock.shared.safeCollation.T)), com.mongodb.client.model.Collation)ai.tock.shared/com.mongodb.client.-find-iterable/safe-collation.html
 $dokka.location:ai.tock.shared$sumByLong(kotlin.collections.Iterable((ai.tock.shared.sumByLong.T)), kotlin.Function1((ai.tock.shared.sumByLong.T, kotlin.Long)))ai.tock.shared/kotlin.collections.-iterable/sum-by-long.html
 $dokka.location:ai.tock.shared$toList(kotlin.collections.Iterator((ai.tock.shared.toList.T)))ai.tock.shared/kotlin.collections.-iterator/to-list.html
 $dokka.location:ai.tock.shared$toSafeList(kotlin.collections.Iterator((ai.tock.shared.toSafeList.T)))ai.tock.shared/kotlin.collections.-iterator/to-safe-list.html
@@ -106,7 +111,6 @@ ai.tock.bot.connector.twitter.model
 ai.tock.bot.connector.twitter.model.incoming
 ai.tock.bot.connector.twitter.model.outcoming
 ai.tock.bot.connector.web
-ai.tock.bot.connector.web.send
 ai.tock.bot.connector.whatsapp
 ai.tock.bot.connector.whatsapp.model.common
 ai.tock.bot.connector.whatsapp.model.send
