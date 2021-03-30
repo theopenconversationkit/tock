@@ -1,37 +1,71 @@
-## Welcome to GitHub Pages
+# Bienvenue sur Tock : une plateforme conversationnelle ouverte
 
-You can use the [editor on GitHub](https://github.com/Fabilin/tock/edit/doc/jekyll/docs/index.md) to maintain and preview the content for your website in Markdown files.
+<img alt="Logo Tock" src="{{ extra.tock.logo }}" style="width: 150px;">
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
 
-### Markdown
+**Tock** (*The Open Conversation Kit*) est une plateforme complète pour construire des agents conversationnels - souvent appelés _bots_. 
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Le site [Tock.ai](https://doc.tock.ai/) est un bon point d'entrée pour découvrir la solution, ses applications et sa communauté grandissante.
 
-```markdown
-Syntax highlighted code block
+Contrairement à la plupart des solutions conversationnelles, Tock ne dépend pas d'API tierces, bien qu'il soit possible d'en intégrer.
+L'utilisateur choisit les composants qu'il embarque et peut ainsi conserver la maîtrise de ses modèles et données conversationnelles.
 
-# Header 1
-## Header 2
-### Header 3
+> Tock est utilisé en production depuis plusieurs années par [OUI.sncf](https://www.oui.sncf/services/assistant) pour
+> proposer des assistants sur des canaux propres (Web, mobile), réseaux sociaux et enceintes connectées.
 
-- Bulleted
-- List
+> L'ensemble du code source est disponible sur 
+> [GitHub](https://github.com/theopenconversationkit/tock) 
+> sous une [licence Apache 2](https://github.com/theopenconversationkit/tock/blob/master/LICENSE). 
 
-1. Numbered
-2. List
+|   |   |
+|---|---|
+| ![AlloCovid](https://doc.tock.ai/fr/images/allocovid.png) | Pour en savoir plus sur le service [_AlloCovid_](https://www.allocovid.com/) (conçu avec Tock) rendez-vous sur [www.allocovid.com](https://www.allocovid.com/) ou sur [cette page](apropos/vitrine.md#allocovid) pour les aspects techniques et davantage de liens notamment vers les sources. |
 
-**Bold** and _Italic_ and `Code` text
+## Fonctionnalités
 
-[Link](url) and ![Image](src)
-```
+* Assistants autonomes ou intégrés à des sites Web, applications mobiles, réseaux sociaux, enceintes connectées etc. 
+sans dépendre d'un canal particulier
+* Plateforme _NLU_ complète _<sup>([Natural Language Understanding](https://en.wikipedia.org/wiki/Natural-language_understanding) 
+ou [TAL](https://fr.wikipedia.org/wiki/Traitement_automatique_du_langage_naturel) en français)</sup>_
+    * Utilisant des briques open-source comme [OpenNLP](https://opennlp.apache.org/), [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/),
+[Duckling](https://github.com/facebook/duckling), [Rasa](https://rasa.com/) 
+(demain [Spacy](https://spacy.io/), [CamemBERT](https://camembert-model.fr/), ...)
+    * Déployable seule si besoin pour des usages comme l'[_Internet des objets_](https://fr.wikipedia.org/wiki/Internet_des_objets)
+* Interfaces _Tock Studio_ :
+    * Gestion des modèles, entraînement du bot et performances
+    * Construction de parcours conversationnels et arbres de décision sans code
+    * Support de l'internationalisation (_i18n_) pour les bots multilingues
+    * Suivi des conversations et tendances / parcours utilisateurs (_Analytics_)
+* Frameworks pour développer des parcours complexes et intégrer des services tiers : <br/> _DSLs_ en 
+[Kotlin](https://kotlinlang.org/), [Javascript/Nodejs](https://nodejs.org/), [Python](https://www.python.org/) 
+et _API_ tous langages (voir [_Bot API_](dev/bot-api.md))
+* Nombreux connecteurs texte et voix : [Messenger](https://www.messenger.com/), [WhatsApp](https://www.whatsapp.com/), 
+[Google Assistant](https://assistant.google.com/), [Alexa](https://alexa.amazon.com/), [Twitter](https://twitter.com/), 
+[Apple Business Chat](https://www.apple.com/fr/ios/business-chat/), [Teams](https://products.office.com/fr-fr/microsoft-teams/), 
+[Slack](https://slack.com/)... (voir [canaux](user/guides/canaux.md))
+* Installation _cloud_ ou _on-premise_, avec ou sans [Docker](https://www.docker.com/), 
+même _"embarqué"_ sans Internet 
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+![Interface d'admin NLU - qualification de phrase](img/tock-nlp-admin.png "Exemple de qualification de phrase")
 
-### Jekyll Themes
+## Technologies
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/Fabilin/tock/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+L'ensemble de la plateforme peut fonctionner _conteneurisée_ (implémentation [Docker](https://www.docker.com/) fournie). 
 
-### Support or Contact
+La plateforme applicative par défaut est la [JVM](https://fr.wikipedia.org/wiki/Machine_virtuelle_Java). 
+Le langage de référence est [Kotlin](https://kotlinlang.org/) mais d'autres langages de programmation peuvent être utilisés via les API mises à disposition.
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+Côté serveur, Tock utilise [Vert.x](http://vertx.io/) et [MongoDB](https://www.mongodb.com ) <sup>(alt. [DocumentDB](https://aws.amazon.com/fr/documentdb/))</sup>. 
+Différentes briques _NLU_ peuvent être utilisées, mais Tock n'a pas de dépendance forte envers l'une d'elles.
+
+Les interfaces graphiques _Tock Studio_ sont écrites avec [Angular](https://angular.io/) en [Typescript](https://www.typescriptlang.org/).
+
+Des intégrations [React](https://reactjs.org) et [Flutter](https://flutter.dev/) sont fournies pour les interfaces Web et Mobile.
+
+## Démarrer...
+
+* [Table des matières](toc.md)
+* [Guides](guide/studio.md) et [plateforme de démonstration](https://demo.tock.ai/)
+* Manuels [utilisateur](user/concepts.md), [développeur](dev/modes.md), [administrateur](admin/architecture.md)
+* [Ressources (supports, video)](apropos/ressources.md) et [exemples de code](dev/exemples-code.md)
+
