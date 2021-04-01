@@ -168,7 +168,7 @@ Systèmes d'Informations et du Numérique (DSIN)_ d'[EDF Commerce](https://www.e
 > Il a la particularité d'être conçu pour pouvoir fonctionner avec la solution de téléphonie
 > ([Genesys](https://www.genesys.com)) afin de pouvoir router les appels clients vers la bonne compétence humarine ou
 > automatisée.  
-> Il permet par ailleurs de transférer le contexte de la conversation qu'il y a eu entre le client et la callbot
+> Il permet par ailleurs de transférer le contexte de la conversation qu'il y a eu entre le client et le callbot
 > auprès du conseiller clientèle.
 
 Le callbot est construit avec Tock et utilise le [_connecteur Allo-Media_](../user/guides/canaux.md#allo-media).
