@@ -43,7 +43,7 @@
           <!-- This navigation is completely for non mobile -->
          {% for section in site.data.toc %}
          <li class="md-nav__item md-nav__item--nested not-mobile-nav">
-             <a class="md-nav__link pancakes-parent" {% if section.children %}href="#pancakes-{{ section.title | slugify }}"{% else %}href="{% if section.external_url %}{{ section.external_url }}{% else %}{{ site.baseurl }}/{{ section.url }}{% endif %}"{% endif %}
+             <a class="md-nav__link pancakes-parent {%if section.children%}md-nav__link_parent{%endif%}" {% if section.children %}href="#pancakes-{{ section.title | slugify }}"{% else %}href="{% if section.external_url %}{{ section.external_url }}{% else %}{{ site.baseurl }}/{{ section.url }}{% endif %}"{% endif %}
                 id="pancakes-{{ section.title | slugify }}" 
                 title="{{ section.title }}">{{ section.title }}</a>
                 {% if section.children %}<nav class="md-nav">

@@ -926,10 +926,11 @@ html .md-footer-meta.md-typeset a:focus, html .md-footer-meta.md-typeset a:hover
     cursor: pointer;
     overflow: hidden;
 }
-.md-nav__item--nested>.md-nav__link:after {
+
+.md-nav__item--nested>.md-nav__link_parent:after {
     content: "\E313"}
 
-.open-parent:after {
+.md-nav__link_parent.open-parent:after {
     content: "\E316" !important}
 
 html .md-nav__link[for=__toc], html .md-nav__link[for=__toc]+.md-nav__link:after, html .md-nav__link[for=__toc]~.md-nav {
