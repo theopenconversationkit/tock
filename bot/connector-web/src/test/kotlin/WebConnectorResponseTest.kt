@@ -106,6 +106,38 @@ internal class WebConnectorResponseTest {
     }
 
     @Test
+    fun `text with secondary buttons`() {
+        val expected = WebConnectorResponseContent(
+            responses = listOf(
+                WebMessageContent(
+                    text = "Text with Buttons",
+                    buttons = listOf(
+                        PostbackButton(
+                            title = "title",
+                            payload = "payload",
+                            style = "secondary"
+                        ),
+                        QuickReply(
+                            title = "title",
+                            payload = "payload",
+                            imageUrl = null,
+                            style = "secondary"
+                        ),
+                        UrlButton(
+                            title = "title",
+                            url = "http://www.sncf.com",
+                            style = "secondary"
+                        )
+                    )
+                )
+            )
+        )
+        val deserializedEvent =
+            mapper.readValue<WebConnectorResponseContent>(resourceAsStream("/text_with_buttons_secondary.json"))
+        Assertions.assertThat(deserializedEvent).isEqualTo(expected)
+    }
+
+    @Test
     fun `web card with buttons`() {
         val expected = WebConnectorResponseContent(
             responses = listOf(

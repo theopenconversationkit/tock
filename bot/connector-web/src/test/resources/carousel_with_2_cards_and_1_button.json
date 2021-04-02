@@ -17,6 +17,7 @@
                 "title": "choice item 1",
                 "payload": "payload",
                 "type": "postback",
+                "style": "primary",
                 "clazz": "postback_button"
               }
             ]
@@ -34,6 +35,7 @@
                 "title": "choice item 2",
                 "payload": "payload",
                 "type": "postback",
+                "style": "primary",
                 "clazz": "postback_button"
               }
             ]
@@ -45,6 +47,7 @@
           "title": "refresh",
           "payload": "payload",
           "type": "postback",
+          "style": "primary",
           "clazz": "postback_button"
         }
       ],

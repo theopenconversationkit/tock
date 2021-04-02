@@ -20,6 +20,7 @@ import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.media.MediaCard
 import ai.tock.bot.connector.media.MediaCarousel
 import ai.tock.bot.connector.web.send.Button
+import ai.tock.bot.connector.web.send.ButtonStyle
 import ai.tock.bot.connector.web.send.PostbackButton
 import ai.tock.bot.connector.web.send.QuickReply
 import ai.tock.bot.connector.web.send.UrlButton
@@ -103,9 +104,10 @@ fun <T : Bus<T>> T.webUrlButton(
     title: CharSequence,
     url: String,
     imageUrl: String? = null,
-    target: HrefTargetType = HrefTargetType._blank
+    target: HrefTargetType,
+    style: ButtonStyle
 ): Button =
-    webUrlButton(title, url, imageUrl, target.name)
+    webUrlButton(title, url, imageUrl, target.name, style.name)
 
 /**
  * Creates a url button
@@ -114,13 +116,39 @@ fun <T : Bus<T>> T.webUrlButton(
     title: CharSequence,
     url: String,
     imageUrl: String? = null,
-    target: String? = null
+    target: String? = HrefTargetType._blank.name,
+    style: ButtonStyle
+): Button =
+    webUrlButton(title, url, imageUrl, target, style.name)
+
+/**
+ * Creates a url button
+ */
+fun <T : Bus<T>> T.webUrlButton(
+    title: CharSequence,
+    url: String,
+    imageUrl: String? = null,
+    target: HrefTargetType,
+    style: String? = ButtonStyle.primary.name
+): Button =
+    webUrlButton(title, url, imageUrl, target.name, style)
+
+/**
+ * Creates a url button
+ */
+fun <T : Bus<T>> T.webUrlButton(
+    title: CharSequence,
+    url: String,
+    imageUrl: String? = null,
+    target: String? = HrefTargetType._blank.name,
+    style: String? = ButtonStyle.primary.name
 ): Button =
     UrlButton(
         translate(title).toString(),
         url,
         imageUrl,
-        target
+        target,
+        style
     )
 
 /**
@@ -131,12 +159,27 @@ fun <T : Bus<T>> T.webPostbackButton(
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>? = null,
     parameters: Parameters = Parameters(),
-    imageUrl: String? = null
+    imageUrl: String? = null,
+    style: ButtonStyle
+): Button =
+    webPostbackButton(title, targetIntent, step, parameters, imageUrl, style.name)
+
+/**
+ * Creates a postback button
+ */
+fun <T : Bus<T>> T.webPostbackButton(
+    title: CharSequence,
+    targetIntent: IntentAware,
+    step: StoryStep<out StoryHandlerDefinition>? = null,
+    parameters: Parameters = Parameters(),
+    imageUrl: String? = null,
+    style: String? = ButtonStyle.primary.name
 ): Button =
     PostbackButton(
         translate(title).toString(),
         targetIntent.let { i -> SendChoice.encodeChoiceId(this, i, step, parameters.toMap()) },
-        imageUrl
+        imageUrl,
+        style
     )
 
 /**
@@ -164,12 +207,28 @@ fun <T : Bus<T>> T.webIntentQuickReply(
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>? = null,
     parameters: Parameters = Parameters(),
-    imageUrl: String? = null
+    imageUrl: String? = null,
+    style: ButtonStyle
+): Button =
+    webIntentQuickReply(title, targetIntent, step, parameters, imageUrl, style.name)
+
+/**
+ * Creates a quickreply button with target intent
+ */
+fun <T : Bus<T>> T.webIntentQuickReply(
+    title: CharSequence,
+    targetIntent: IntentAware,
+    step: StoryStep<out StoryHandlerDefinition>? = null,
+    parameters: Parameters = Parameters(),
+    imageUrl: String? = null,
+    style: String? = ButtonStyle.primary.name
 ): Button =
     QuickReply(
         translate(title).toString(),
         SendChoice.encodeChoiceId(this, targetIntent, step, parameters.toMap()),
-        imageUrl
+        imageUrl,
+        null,
+        style
     )
 
 /**
@@ -178,13 +237,26 @@ fun <T : Bus<T>> T.webIntentQuickReply(
 fun <T : Bus<T>> T.webNlpQuickReply(
     title: CharSequence,
     nlpText: String? = null,
-    imageUrl: String? = null
+    imageUrl: String? = null,
+    style: ButtonStyle
+): Button =
+    webNlpQuickReply(title, nlpText, imageUrl, style.name)
+
+/**
+ * Creates a quickreply button with target intent
+ */
+fun <T : Bus<T>> T.webNlpQuickReply(
+    title: CharSequence,
+    nlpText: String? = null,
+    imageUrl: String? = null,
+    style: String? = ButtonStyle.primary.name
 ): Button =
     QuickReply(
         translate(title).toString(),
         null,
         imageUrl,
-        nlpText
+        nlpText,
+        style
     )
 
 /**

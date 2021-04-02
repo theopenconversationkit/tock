@@ -8,6 +8,7 @@
           "url": "http://www.sncf.com",
           "target": "_self",
           "type": "web_url",
+          "style": "primary",
           "clazz": "url_button"
         }
       ],
