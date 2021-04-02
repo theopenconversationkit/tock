@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  {% include head.html %}
+
+  <body dir="ltr" data-md-color-primary="{{ site.themeColor }}" data-md-color-accent="{{ site.accentColor }}">
+    {% include navigation.html %}
+
+    <div class="md-container">         
+        <main class="md-main">
+            <div class="md-main__inner md-grid" data-md-component="container">
+            {% include sidebar.html %}
+                <div id="md-container-pancakes">
+                {{ content }}
+                </div>
+            </div>
+        </main>
+    </div>
+    {% include footer.html %}
+    {% include headers.html %}
+    {% include tags.html %}
+    {% include scrolltop.html %}
+    {% include google-analytics.html %}
+  </body>
+</html>

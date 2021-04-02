@@ -1,0 +1,16 @@
+<style>
+iframe {
+  width: 100% !important;
+}
+</style>
+
+# Discussion Forum
+
+What questions are being asked on <a href="{{ site.discourse_site }}" target="_blank">{{ site.discourse_site }}</a>? The questions 
+below are from the <a href="{{ site.discourse_site }}/c/{{ site.discourse_category }}" target="_blank">{{ site.discourse_category }}</a> category.
+
+<hr>
+
+<script src="{{ site.discourse_site }}/javascripts/embed-topics.js"></script>
+
+<d-topics-list discourse-url="{{ site.discourse_site }}" category="{{ site.discourse_category }}" per-page="{{ site.discourse_per_page }}" {% if site.discourse_tags %}tags="{{ site.discouse_tags }}"{% endif %}></d-topics-list>
