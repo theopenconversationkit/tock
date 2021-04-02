@@ -7,14 +7,14 @@
           "title": "title",
           "payload": "payload",
           "type": "postback",
-          "style": "primary",
+          "style": "secondary",
           "clazz": "postback_button"
         },
         {
           "title": "title",
           "payload": "payload",
           "type": "quick_reply",
-          "style": "primary",
+          "style": "secondary",
           "clazz": "quick_reply"
         },
         {
@@ -22,7 +22,7 @@
           "url": "http://www.sncf.com",
           "type": "web_url",
           "target": "_blank",
-          "style": "primary",
+          "style": "secondary",
           "clazz": "url_button"
         }
       ],

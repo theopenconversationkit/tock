@@ -14,6 +14,7 @@
             "title": "title",
             "payload": "payload",
             "type": "postback",
+            "style": "primary",
             "clazz": "postback_button"
           },
           {
@@ -21,6 +22,7 @@
             "url": "http://www.sncf.com",
             "type": "web_url",
             "target": "_blank",
+            "style": "primary",
             "clazz": "url_button"
           }
         ]

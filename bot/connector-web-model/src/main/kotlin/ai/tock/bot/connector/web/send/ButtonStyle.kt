@@ -16,13 +16,6 @@
 
 package ai.tock.bot.connector.web.send
 
-import com.fasterxml.jackson.annotation.JsonTypeName
-
-@JsonTypeName("quick_reply")
-data class QuickReply(
-    val title: String,
-    val payload: String?,
-    val imageUrl: String?,
-    val nlpText: String? = null,
-    val style: String? = ButtonStyle.primary.name
-) : Button(ButtonType.quick_reply)
+enum class ButtonStyle {
+    primary, secondary
+}

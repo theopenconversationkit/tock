@@ -22,5 +22,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 data class PostbackButton(
     val title: String,
     val payload: String?,
-    val imageUrl: String? = null
+    val imageUrl: String? = null,
+    val style: String? = ButtonStyle.primary.name
 ) : Button(ButtonType.postback)

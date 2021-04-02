@@ -24,5 +24,6 @@ data class UrlButton(
     val title: String,
     val url: String,
     val imageUrl: String? = null,
-    val target: String? = HrefTargetType._blank.name
+    val target: String? = HrefTargetType._blank.name,
+    val style: String? = ButtonStyle.primary.name
 ) : Button(ButtonType.web_url)
