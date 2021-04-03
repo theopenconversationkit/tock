@@ -8,13 +8,189 @@ et des bots Tock.
 
 ## Lignes de vie (healthchecks)
 
-L'url `/healthcheck` renvoie une code `HTTP 200` si tout est correct.
+Les API des différents composants Tock comportent différentes sondes ou lignes de vie (_healthchecks_) permettant 
+de vérifier si tout fonctionne correctement.
+Ces lignes de vie peuvent être utilisées par les systèmes de supervision automatisés.
 
-Pour certaines images, le ligne de vie peut ne pas être présente à la racine. En particulier :
- 
-- Pour `tock/admin`, la ligne de vie est localisée par défaut dans `/rest/admin/healthcheck` 
-- Pour `tock/nlp_api` , la ligne de vie est `/rest/nlp/healthcheck` 
- 
+### Sondes & chemins
+
+Chaque `WebVerticle` expose 3 sondes renvoyant le code `HTTP 200` si tout fonctionne.
+
+| Chemin par défaut   | Description                                                             | Propriété pour modifier le chemin |
+|---------------------|-------------------------------------------------------------------------|-----------------------------------|
+| `/healthcheck`      | Le composant fonctionne correctement. _(Mode détaillé : voir plus bas)_ | `tock_vertx_healthcheck_path`     |
+| `/health/readiness` | Le composant est prêt à traiter des requêtes.                           | `tock_vertx_readinesscheck_path`  |
+| `/health/liveness`  | Le composant est démarré.                                               | `tock_vertx_livenesscheck_path`   |
+
+Pour certains composants et images, le ligne de vie ne pouvant pas être exposée directement à la racine, le chemin est
+modifié. En particulier :
+
+- Pour `tock/admin`, la ligne de vie est localisée par défaut dans `/rest/admin/healthcheck`
+- Pour `tock/nlp_api`, la ligne de vie est `/rest/nlp/healthcheck`
+
+Chaque chemin par défaut peut être modifiée avec une propriété dédiée (voir tableau ci-dessus).
+
+### Mode détaillé
+
+La ligne de vie principale `/healthcheck` peut effectuer une inspection plus détaillée (ie. généralement vérifier 
+la connexion aux autres composants) si l'on active la propriété `tock_detailed_healthcheck_enabled` à `true`.
+Dans ce cas, la réponse de la ligne de vie précise les différents composants vérifiés.
+
+Exemple de résultat renvoyé par le Bot Admin démarré avec la propriété `tock_detailed_healthcheck_enabled=true` :
+
+```json
+{
+  "results": [
+    {
+      "id": "duckling_service",
+      "status": "OK"
+    },
+    {
+      "id": "tock_front_database",
+      "status": "OK"
+    },
+    {
+      "id": "tock_model_database",
+      "status": "OK"
+    },
+    {
+      "id": "tock_bot_database",
+      "status": "OK"
+    }
+  ]
+}
+```
+
+
+Voir ci-dessous pour une synthèse en fonction des composants.
+
+### Détails par composants
+
+Le tableau ci-dessous détaille le chemin et les vérifications effectuées par la ligne de vie principale composant 
+par composant, en mode normal et en mode détaillé :
+
+| Composant / image             | Chemin par défaut         | Vérification par défaut                              | Vérification détaillée (`tock_detailed_healthcheck_enabled=true`)                                                         |
+|-------------------------------|---------------------------|------------------------------------------------------|---------------------------------------------------------------------------------|
+| NLP                           | `/rest/nlp/healthcheck`   | Duckling / entity providers OK.                      | Bases de données `front` et `model` OK.                                         |
+| Duckling / RestEntityProvider | `/healthcheck`            | Duckling bridge initialisé.                          | _Idem_                                                                          |
+| Build Worker                  | `/healthcheck`            | Worker prêt à analyser le modèle.                    | Bases de données `front` et `model` OK.                                         |
+| Bot / Bot Api                 | `/healthcheck`            | Bot installé, connecté à la base de données, NLP OK. | _Idem_                                                                          |
+| WebHook (Bot Api)             | `/healthcheck`            | OK                                                   | _Idem_                                                                          |
+| Kotlin Compiler               | `/healthcheck`            | OK                                                   | _Idem_                                                                          |
+| NLP / Bot Admin               | `/rest/admin/healthcheck` | OK                                                   | Duckling / entity providers OK, bases de données `front` `model` et `bot` OK.   |
+
+Ci-dessous des exemples de réponses de différents composants en mode détaillé :
+
+=== "NLP"
+
+    ```json
+    {
+      "results": [
+        {
+          "id": "duckling_service",
+          "status": "OK"
+        },
+        {
+          "id": "tock_front_database",
+          "status": "OK"
+        },
+        {
+          "id": "tock_model_database",
+          "status": "OK"
+        }
+      ]
+    }
+    ```
+
+=== "Duckling"
+
+    ```json
+    {
+      "results": [
+        {
+          "id": "duckling_bridge",
+          "status": "OK"
+        }
+      ]
+    }
+    ```
+
+=== "Build Worker"
+
+    ```json
+        {
+          "results": [
+        {
+          "id": "tock_front_database",
+          "status": "OK"
+        },
+        {
+          "id": "tock_model_database",
+          "status": "OK"
+        }
+      ]
+    }
+    ```
+
+=== "Bot Api"
+
+    ```json
+    {
+      "results": [
+        {
+          "id": "nlp_client",
+          "status": "OK"
+        }
+      ]
+    }
+    ```
+
+=== "Kotlin Compiler"
+
+    ```json
+    {
+      "results": []
+    }
+    ```
+
+=== "Bot Admin"
+
+    ```json
+    {
+      "results": [
+        {
+          "id": "duckling_service",
+          "status": "OK"
+        },
+        {
+          "id": "tock_front_database",
+          "status": "OK"
+        },
+        {
+          "id": "tock_model_database",
+          "status": "OK"
+        },
+        {
+          "id": "tock_bot_database",
+          "status": "OK"
+        }
+      ]
+    }
+    ```
+
+### Supervision des lignes de vie
+
+Les différentes sondes et lignes de vie peuvent être utilisées pour configurer les systèmes de supervision et autres 
+orchestrateurs de conteneurs par exemple, pour mesurer la disponibilité des services, déclencher des alertes ou 
+remédier aux problèmes dynamiquement.
+
+Selon les outils et technologies utilisées, la configuration des lignes de vie peut se faire de différentes manières :
+
+- Au niveau des répartiteurs de charge (_load balancers_) _Cloud_ ou _on-premise_
+- Dans les descripteurs Docker / `Dockerfile` : voir instruction `HEALTHCHECK`
+- Dans les descripteurs Kubernetes : voir section `livenessProbe`
+- Etc.
+
 ## Journalisation (logs)
 
 ### Logs applicatifs

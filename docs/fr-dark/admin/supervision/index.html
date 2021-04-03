@@ -808,6 +808,40 @@
     Lignes de vie (healthchecks)
   </a>
   
+    <nav class="md-nav" aria-label="Lignes de vie (healthchecks)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sondes-chemins" class="md-nav__link">
+    Sondes &amp; chemins
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mode-detaille" class="md-nav__link">
+    Mode détaillé
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#details-par-composants" class="md-nav__link">
+    Détails par composants
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supervision-des-lignes-de-vie" class="md-nav__link">
+    Supervision des lignes de vie
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1090,6 +1124,40 @@
     Lignes de vie (healthchecks)
   </a>
   
+    <nav class="md-nav" aria-label="Lignes de vie (healthchecks)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sondes-chemins" class="md-nav__link">
+    Sondes &amp; chemins
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mode-detaille" class="md-nav__link">
+    Mode détaillé
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#details-par-composants" class="md-nav__link">
+    Détails par composants
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supervision-des-lignes-de-vie" class="md-nav__link">
+    Supervision des lignes de vie
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1167,11 +1235,225 @@ et des bots Tock.</p>
 technologies de monitoring classiques. N'hésitez pas à partager les vôtres.</p>
 </blockquote>
 <h2 id="lignes-de-vie-healthchecks">Lignes de vie (healthchecks)<a class="headerlink" href="#lignes-de-vie-healthchecks" title="Permanent link">&para;</a></h2>
-<p>L'url <code>/healthcheck</code> renvoie une code <code>HTTP 200</code> si tout est correct.</p>
-<p>Pour certaines images, le ligne de vie peut ne pas être présente à la racine. En particulier :</p>
+<p>Les API des différents composants Tock comportent différentes sondes ou lignes de vie (<em>healthchecks</em>) permettant 
+de vérifier si tout fonctionne correctement.
+Ces lignes de vie peuvent être utilisées par les systèmes de supervision automatisés.</p>
+<h3 id="sondes-chemins">Sondes &amp; chemins<a class="headerlink" href="#sondes-chemins" title="Permanent link">&para;</a></h3>
+<p>Chaque <code>WebVerticle</code> expose 3 sondes renvoyant le code <code>HTTP 200</code> si tout fonctionne.</p>
+<table>
+<thead>
+<tr>
+<th>Chemin par défaut</th>
+<th>Description</th>
+<th>Propriété pour modifier le chemin</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/healthcheck</code></td>
+<td>Le composant fonctionne correctement. <em>(Mode détaillé : voir plus bas)</em></td>
+<td><code>tock_vertx_healthcheck_path</code></td>
+</tr>
+<tr>
+<td><code>/health/readiness</code></td>
+<td>Le composant est prêt à traiter des requêtes.</td>
+<td><code>tock_vertx_readinesscheck_path</code></td>
+</tr>
+<tr>
+<td><code>/health/liveness</code></td>
+<td>Le composant est démarré.</td>
+<td><code>tock_vertx_livenesscheck_path</code></td>
+</tr>
+</tbody>
+</table>
+<p>Pour certains composants et images, le ligne de vie ne pouvant pas être exposée directement à la racine, le chemin est
+modifié. En particulier :</p>
 <ul>
-<li>Pour <code>tock/admin</code>, la ligne de vie est localisée par défaut dans <code>/rest/admin/healthcheck</code> </li>
-<li>Pour <code>tock/nlp_api</code> , la ligne de vie est <code>/rest/nlp/healthcheck</code> </li>
+<li>Pour <code>tock/admin</code>, la ligne de vie est localisée par défaut dans <code>/rest/admin/healthcheck</code></li>
+<li>Pour <code>tock/nlp_api</code>, la ligne de vie est <code>/rest/nlp/healthcheck</code></li>
+</ul>
+<p>Chaque chemin par défaut peut être modifiée avec une propriété dédiée (voir tableau ci-dessus).</p>
+<h3 id="mode-detaille">Mode détaillé<a class="headerlink" href="#mode-detaille" title="Permanent link">&para;</a></h3>
+<p>La ligne de vie principale <code>/healthcheck</code> peut effectuer une inspection plus détaillée (ie. généralement vérifier 
+la connexion aux autres composants) si l'on active la propriété <code>tock_detailed_healthcheck_enabled</code> à <code>true</code>.
+Dans ce cas, la réponse de la ligne de vie précise les différents composants vérifiés.</p>
+<p>Exemple de résultat renvoyé par le Bot Admin démarré avec la propriété <code>tock_detailed_healthcheck_enabled=true</code> :</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+  <span class="nt">&quot;results&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;duckling_service&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;tock_front_database&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;tock_model_database&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;tock_bot_database&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Voir ci-dessous pour une synthèse en fonction des composants.</p>
+<h3 id="details-par-composants">Détails par composants<a class="headerlink" href="#details-par-composants" title="Permanent link">&para;</a></h3>
+<p>Le tableau ci-dessous détaille le chemin et les vérifications effectuées par la ligne de vie principale composant 
+par composant, en mode normal et en mode détaillé :</p>
+<table>
+<thead>
+<tr>
+<th>Composant / image</th>
+<th>Chemin par défaut</th>
+<th>Vérification par défaut</th>
+<th>Vérification détaillée (<code>tock_detailed_healthcheck_enabled=true</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NLP</td>
+<td><code>/rest/nlp/healthcheck</code></td>
+<td>Duckling / entity providers OK.</td>
+<td>Bases de données <code>front</code> et <code>model</code> OK.</td>
+</tr>
+<tr>
+<td>Duckling / RestEntityProvider</td>
+<td><code>/healthcheck</code></td>
+<td>Duckling bridge initialisé.</td>
+<td><em>Idem</em></td>
+</tr>
+<tr>
+<td>Build Worker</td>
+<td><code>/healthcheck</code></td>
+<td>Worker prêt à analyser le modèle.</td>
+<td>Bases de données <code>front</code> et <code>model</code> OK.</td>
+</tr>
+<tr>
+<td>Bot / Bot Api</td>
+<td><code>/healthcheck</code></td>
+<td>Bot installé, connecté à la base de données, NLP OK.</td>
+<td><em>Idem</em></td>
+</tr>
+<tr>
+<td>WebHook (Bot Api)</td>
+<td><code>/healthcheck</code></td>
+<td>OK</td>
+<td><em>Idem</em></td>
+</tr>
+<tr>
+<td>Kotlin Compiler</td>
+<td><code>/healthcheck</code></td>
+<td>OK</td>
+<td><em>Idem</em></td>
+</tr>
+<tr>
+<td>NLP / Bot Admin</td>
+<td><code>/rest/admin/healthcheck</code></td>
+<td>OK</td>
+<td>Duckling / entity providers OK, bases de données <code>front</code> <code>model</code> et <code>bot</code> OK.</td>
+</tr>
+</tbody>
+</table>
+<p>Ci-dessous des exemples de réponses de différents composants en mode détaillé :</p>
+<div class="tabbed-set" data-tabs="1:6"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><label for="__tabbed_1_1">NLP</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+  <span class="nt">&quot;results&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;duckling_service&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;tock_front_database&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;tock_model_database&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+<input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><label for="__tabbed_1_2">Duckling</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+  <span class="nt">&quot;results&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;duckling_bridge&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+<input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><label for="__tabbed_1_3">Build Worker</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code>    <span class="p">{</span>
+      <span class="nt">&quot;results&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;tock_front_database&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;tock_model_database&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+<input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><label for="__tabbed_1_4">Bot Api</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+  <span class="nt">&quot;results&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;nlp_client&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+<input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><label for="__tabbed_1_5">Kotlin Compiler</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+  <span class="nt">&quot;results&quot;</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+<input id="__tabbed_1_6" name="__tabbed_1" type="radio" /><label for="__tabbed_1_6">Bot Admin</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+  <span class="nt">&quot;results&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;duckling_service&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;tock_front_database&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;tock_model_database&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;tock_bot_database&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+</div>
+<h3 id="supervision-des-lignes-de-vie">Supervision des lignes de vie<a class="headerlink" href="#supervision-des-lignes-de-vie" title="Permanent link">&para;</a></h3>
+<p>Les différentes sondes et lignes de vie peuvent être utilisées pour configurer les systèmes de supervision et autres 
+orchestrateurs de conteneurs par exemple, pour mesurer la disponibilité des services, déclencher des alertes ou 
+remédier aux problèmes dynamiquement.</p>
+<p>Selon les outils et technologies utilisées, la configuration des lignes de vie peut se faire de différentes manières :</p>
+<ul>
+<li>Au niveau des répartiteurs de charge (<em>load balancers</em>) <em>Cloud</em> ou <em>on-premise</em></li>
+<li>Dans les descripteurs Docker / <code>Dockerfile</code> : voir instruction <code>HEALTHCHECK</code></li>
+<li>Dans les descripteurs Kubernetes : voir section <code>livenessProbe</code></li>
+<li>Etc.</li>
 </ul>
 <h2 id="journalisation-logs">Journalisation (logs)<a class="headerlink" href="#journalisation-logs" title="Permanent link">&para;</a></h2>
 <h3 id="logs-applicatifs">Logs applicatifs<a class="headerlink" href="#logs-applicatifs" title="Permanent link">&para;</a></h3>
@@ -1237,7 +1519,7 @@ Elles peuvent être définies indépendamment sur chaque composant produisant de
 <p>Selon le mode de déploiement utilisé, ces variables d'environnement peuvent être ajoutées soit 
 directement en ligne de commande, soit dans un descripteur type <code>docker-compose.yml</code>, <code>dockerrun.aws.json</code> ou autre.</p>
 <p>Voici un exemple configurant les logs de Tock Studio (<code>admin_web</code>) dans Docker :</p>
-<div class="tabbed-set" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><label for="__tabbed_1_1">docker-compose.yml</label><div class="tabbed-content">
+<div class="tabbed-set" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><label for="__tabbed_2_1">docker-compose.yml</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span> <span class="s">&#39;3&#39;</span>
 <span class="nt">services</span><span class="p">:</span>
   <span class="nt">admin_web</span><span class="p">:</span>
@@ -1247,7 +1529,7 @@ directement en ligne de commande, soit dans un descripteur type <code>docker-com
 </span><span class="hll">    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">tock_logback_file_appender=true</span>
 </span></code></pre></div>
 </div>
-<input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><label for="__tabbed_1_2">dockerrun.aws.json</label><div class="tabbed-content">
+<input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><label for="__tabbed_2_2">dockerrun.aws.json</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
   <span class="nt">&quot;AWSEBDockerrunVersion&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
   <span class="nt">&quot;containerDefinitions&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -1268,7 +1550,7 @@ directement en ligne de commande, soit dans un descripteur type <code>docker-com
 <p>Il est possible de configurer finement les logs Tock en configurant directement <a href="http://logback.qos.ch/">Logback</a>.
 Pour cela, différentes possibilités existent, notamment des fichiers de configuration en format XML ou Groovy. 
 Ci-dessous un exemple de configuration :</p>
-<div class="tabbed-set" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><label for="__tabbed_2_1">logback.xml</label><div class="tabbed-content">
+<div class="tabbed-set" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><label for="__tabbed_3_1">logback.xml</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
 <span class="nt">&lt;configuration</span> <span class="na">debug=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>
 
@@ -1291,7 +1573,7 @@ Ci-dessous un exemple de configuration :</p>
 <span class="nt">&lt;/configuration&gt;</span>
 </code></pre></div>
 </div>
-<input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><label for="__tabbed_2_2">logback.groovy</label><div class="tabbed-content">
+<input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><label for="__tabbed_3_2">logback.groovy</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">ch.qos.logback.classic.encoder.PatternLayoutEncoder</span>
 <span class="kn">import</span> <span class="nn">ch.qos.logback.core.ConsoleAppender</span>
 
@@ -1334,7 +1616,7 @@ la propriété <code>-Dlogback.configurationFile</code> au démarrage du composa
 <li>Quelques variables d'environnement définies pour pouvoir rapidement ajuste les principaux niveaux de log 
 directement dans Docker-Compose (sans avoir à modifier le fichier XML ni l'image Docker)'</li>
 </ul>
-<div class="tabbed-set" data-tabs="3:3"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><label for="__tabbed_3_1">logback.xml</label><div class="tabbed-content">
+<div class="tabbed-set" data-tabs="4:3"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><label for="__tabbed_4_1">logback.xml</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
 <span class="nt">&lt;configuration</span> <span class="na">debug=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>
 
@@ -1361,7 +1643,7 @@ directement dans Docker-Compose (sans avoir à modifier le fichier XML ni l'imag
 <span class="nt">&lt;/configuration&gt;</span>
 </code></pre></div>
 </div>
-<input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><label for="__tabbed_3_2">pom.xml</label><div class="tabbed-content">
+<input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><label for="__tabbed_4_2">pom.xml</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
 <span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="nt">&gt;</span>
     <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
@@ -1395,7 +1677,7 @@ directement dans Docker-Compose (sans avoir à modifier le fichier XML ni l'imag
                                 ...
 </code></pre></div>
 </div>
-<input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><label for="__tabbed_3_3">docker-compose.yml</label><div class="tabbed-content">
+<input id="__tabbed_4_3" name="__tabbed_4" type="radio" /><label for="__tabbed_4_3">docker-compose.yml</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span> <span class="s">&#39;3&#39;</span>
 <span class="nt">services</span><span class="p">:</span>
   <span class="nt">admin_web</span><span class="p">:</span>
@@ -1416,7 +1698,7 @@ sur la branche <a href="https://github.com/theopenconversationkit/tock-docker/tr
 descripteurs en YAML. Voir le dépot <a href="https://github.com/theopenconversationkit/tock-docker"><code>tock-docker</code></a> pour un 
 exemple d'implémentation de Tock dans Docker Compose.</p>
 <p>Chaque composant applicatif peut avoir sa propre configuration :</p>
-<div class="tabbed-set" data-tabs="4:1"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><label for="__tabbed_4_1">docker-compose.yml</label><div class="tabbed-content">
+<div class="tabbed-set" data-tabs="5:1"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><label for="__tabbed_5_1">docker-compose.yml</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="nt">logging</span><span class="p">:</span>
   <span class="nt">driver</span><span class="p">:</span> <span class="s">&quot;json-file&quot;</span>
   <span class="nt">options</span><span class="p">:</span>
@@ -1438,7 +1720,7 @@ exemple d'implémentation de Tock dans Docker Compose.</p>
 <div class="md-source-date">
   <small>
     
-      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">10 novembre 2020</span>
+      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">3 avril 2021</span>
     
   </small>
 </div>
