@@ -1448,11 +1448,30 @@ par composant, en mode normal et en mode détaillé :</p>
 <p>Les différentes sondes et lignes de vie peuvent être utilisées pour configurer les systèmes de supervision et autres 
 orchestrateurs de conteneurs par exemple, pour mesurer la disponibilité des services, déclencher des alertes ou 
 remédier aux problèmes dynamiquement.</p>
-<p>Selon les outils et technologies utilisées, la configuration des lignes de vie peut se faire de différentes manières :</p>
+<p>Selon les outils et technologies utilisées, la configuration des lignes de vie peut se faire de différentes manières.
+Voici quelques exemples à titre indicatif :</p>
 <ul>
-<li>Au niveau des répartiteurs de charge (<em>load balancers</em>) <em>Cloud</em> ou <em>on-premise</em></li>
-<li>Dans les descripteurs Docker / <code>Dockerfile</code> : voir instruction <code>HEALTHCHECK</code></li>
-<li>Dans les descripteurs Kubernetes : voir section <code>livenessProbe</code></li>
+<li>Au niveau des répartiteurs de charge (<em>load balancers</em>) <em>Cloud</em> ou <em>on-premise</em>, par exemple :<ul>
+<li>dans la <a href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-add-elb-healthcheck.html">section <em>Health checks</em> au niveau <em>ELB</em> dans AWS</a></li>
+<li>avec la <a href="https://docs.nginx.com/nginx/admin-guide/load-balancer/http-health-check/">directive <code>health_check</code> dans NGINX</a></li>
+<li>avec l'<a href="https://www.haproxy.com/documentation/aloha/latest/traffic-management/lb-layer7/health-checks/#check-an-http-service"><code>option httpchk</code> dans HAProxy</a></li>
+</ul>
+</li>
+<li>Dans <em>Docker</em> (descripteurs <code>Dockerfile</code>) :<ul>
+<li>avec l'<a href="https://docs.docker.com/engine/reference/builder/#healthcheck">instruction <code>HEALTHCHECK</code></a> pour vérifier le
+  statut du composant</li>
+<li>avec <a href="https://docs.docker.com/engine/reference/builder/#understand-how-cmd-and-entrypoint-interact"><code>ENTRYPOINT</code> ou <code>CMD</code></a> 
+  pour attendre que le composant soit prêt au démarrage</li>
+</ul>
+</li>
+<li>Dans <em>Docker Compose</em> (descripteurs <code>docker-compose.yml</code>) :<ul>
+<li>avec <a href="https://docs.docker.com/compose/compose-file/compose-file-v3/#healthcheck"><code>healthcheck</code></a></li>
+</ul>
+</li>
+<li>Dans <em>Kubernetes</em> :<ul>
+<li>avec <a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/"><code>livenessProbe</code> et <code>readinessProbe</code></a></li>
+</ul>
+</li>
 <li>Etc.</li>
 </ul>
 <h2 id="journalisation-logs">Journalisation (logs)<a class="headerlink" href="#journalisation-logs" title="Permanent link">&para;</a></h2>
@@ -1720,7 +1739,7 @@ exemple d'implémentation de Tock dans Docker Compose.</p>
 <div class="md-source-date">
   <small>
     
-      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">3 avril 2021</span>
+      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">4 avril 2021</span>
     
   </small>
 </div>

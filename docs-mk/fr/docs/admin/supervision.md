@@ -184,11 +184,22 @@ Les différentes sondes et lignes de vie peuvent être utilisées pour configure
 orchestrateurs de conteneurs par exemple, pour mesurer la disponibilité des services, déclencher des alertes ou 
 remédier aux problèmes dynamiquement.
 
-Selon les outils et technologies utilisées, la configuration des lignes de vie peut se faire de différentes manières :
+Selon les outils et technologies utilisées, la configuration des lignes de vie peut se faire de différentes manières.
+Voici quelques exemples à titre indicatif :
 
-- Au niveau des répartiteurs de charge (_load balancers_) _Cloud_ ou _on-premise_
-- Dans les descripteurs Docker / `Dockerfile` : voir instruction `HEALTHCHECK`
-- Dans les descripteurs Kubernetes : voir section `livenessProbe`
+- Au niveau des répartiteurs de charge (_load balancers_) _Cloud_ ou _on-premise_, par exemple :
+    - dans la [section _Health checks_ au niveau _ELB_ dans AWS](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-add-elb-healthcheck.html)
+    - avec la [directive `health_check` dans NGINX](https://docs.nginx.com/nginx/admin-guide/load-balancer/http-health-check/)
+    - avec l'[`option httpchk` dans HAProxy](https://www.haproxy.com/documentation/aloha/latest/traffic-management/lb-layer7/health-checks/#check-an-http-service)
+- Dans _Docker_ (descripteurs `Dockerfile`) :
+    - avec l'[instruction `HEALTHCHECK`](https://docs.docker.com/engine/reference/builder/#healthcheck) pour vérifier le
+      statut du composant
+    - avec [`ENTRYPOINT` ou `CMD`](https://docs.docker.com/engine/reference/builder/#understand-how-cmd-and-entrypoint-interact) 
+      pour attendre que le composant soit prêt au démarrage
+- Dans _Docker Compose_ (descripteurs `docker-compose.yml`) :
+    - avec [`healthcheck`](https://docs.docker.com/compose/compose-file/compose-file-v3/#healthcheck)
+- Dans _Kubernetes_ :
+    - avec [`livenessProbe` et `readinessProbe`](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
 - Etc.
 
 ## Journalisation (logs)
