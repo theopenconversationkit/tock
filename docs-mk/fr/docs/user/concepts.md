@@ -118,19 +118,31 @@ Voir [_Tock Studio > Stories & Answers_](studio/stories-and-answers.md).
 
 ## Termes & correspondances
 
-Le tableau ci-dessous propose des correspondances entre les termes utilisés dans Tock et d'autres 
+Les tableaux ci-dessous proposent des correspondances entre les termes utilisés dans Tock et d'autres 
 solutions conversationnelles :
 
-| Tock             | DialogFlow           | Alexa               | RASA                | DYDU _(Do You Dream Up)_ |
-|------------------|----------------------|---------------------|---------------------|--------------------------|
-| Intent           | Intent               | Intent              | Intent              | Reword                   |
-| Entity           | Entity               | Entity / Slot Value | Entity              | Group                    |
-| Sentence         | Query                | Utterance / Slot    | User input          | Sentence                 |
-| Story            | Context              |                     | Story               | Knowledge                |
-| Builtin Story    | Fulfillment          | Request Handler     |                     |                          |
-| Connector        | Integration          |                     |                     | Channel                  |
-| Configuration    |                      |                     |                     | Space                    |
-| Application      | Project / Agent      | Skill               | Domain              | Bot                      |
+| Tock             | DialogFlow           | Alexa               | Watson                |
+|------------------|----------------------|---------------------|-----------------------|
+| Intent           | Intent               | Intent              | Intent                |
+| Entity           | Entity               | Entity / Slot Value | Entity                |
+| Sentence         | Query                | Utterance / Slot    | Message               |
+| Story            | Context              |                     | Dialog / Node         |
+| Builtin Story    | Fulfillment          | Request Handler     | Webhook               |
+| Connector        | Integration          |                     | Integration / Channel |
+| Configuration    |                      |                     |                       |
+| Application      | Project / Agent      | Skill               | Skill / Assistant     |
+
+
+| Tock             | RASA                | DYDU _(Do You Dream Up)_ | Clevy               |
+|------------------|---------------------|--------------------------|---------------------|
+| Intent           | Intent              | Reword                   | Question            |
+| Entity           | Entity              | Group                    |                     |
+| Sentence         | User input          | Sentence                 | Reformulation       |
+| Story            | Story               | Knowledge                | Knowledge           |
+| Builtin Story    |                     |                          |                     |
+| Connector        |                     | Channel                  | Channel integration |
+| Configuration    |                     | Space                    |                     |
+| Application      | Domain              | Bot                      |                     |
 
 > La documentation des [connecteurs Tock](guides/canaux.md) donne également la correspondance avec d'autres termes propres à 
 > tel ou tel canal.
