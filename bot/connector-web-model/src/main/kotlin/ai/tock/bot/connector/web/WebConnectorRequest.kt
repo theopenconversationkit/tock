@@ -24,6 +24,7 @@ interface WebConnectorRequestContract {
     val userId: String
     val locale: Locale
     val ref: String?
+    val connectorId: String?
 }
 
 data class WebConnectorRequestContent(
@@ -31,5 +32,6 @@ data class WebConnectorRequestContent(
     override val payload: String? = null,
     override val userId: String,
     override val locale: Locale,
-    override val ref: String? = null
+    override val ref: String? = null,
+    override val connectorId: String? = null
 ) : WebConnectorRequestContract
