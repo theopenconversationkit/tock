@@ -31,7 +31,8 @@ data class WebConnectorRequest(
     override val payload: String? = null,
     override val userId: String,
     override val locale: Locale = defaultLocale,
-    override val ref: String? = null
+    override val ref: String? = null,
+    override val connectorId: String? = null
 ) : WebConnectorRequestContract {
 
     fun toEvent(applicationId: String): Event =

@@ -77,6 +77,8 @@ val webConnectorType = ConnectorType(WEB_CONNECTOR_ID)
 private val sseEnabled = booleanProperty("tock_web_sse", false)
 private val sseKeepaliveDelay = longProperty("tock_web_sse_keepalive_delay", 10)
 
+private val webConnectorBridgeEnabled = booleanProperty("tock_web_connector_bridge_enabled", false)
+
 class WebConnector internal constructor(
     val applicationId: String,
     val path: String
@@ -171,6 +173,16 @@ class WebConnector internal constructor(
         try {
             logger.debug { "Web request input : $body" }
             val request: WebConnectorRequest = mapper.readValue(body)
+
+            val applicationId =
+                if (request.connectorId?.isNotBlank() == true)
+                    if (webConnectorBridgeEnabled)
+                        request.connectorId.also { logger.debug { "Web bridge: $applicationId -> $it" } }
+                    else
+                        applicationId.also { logger.warn { "Web bridge disabled." } }
+                else
+                    applicationId
+
             val event = request.toEvent(applicationId)
             WebRequestInfosByEvent.put(event.id.toString(), WebRequestInfos(context.request()))
             val callback = WebConnectorCallback(

@@ -24,6 +24,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>tock-bot-connector-web-model</artifactId>
+    <name>Tock Bot Web Connector Model</name>
     <dependencies>
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
