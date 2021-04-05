@@ -33,10 +33,40 @@ Chaque chemin par défaut peut être modifiée avec une propriété dédiée (vo
 ### Mode détaillé
 
 La ligne de vie principale `/healthcheck` peut effectuer une inspection plus détaillée (ie. généralement vérifier 
-la connexion aux autres composants) si l'on active la propriété `tock_detailed_healthcheck_enabled` à `true`.
-Dans ce cas, la réponse de la ligne de vie précise les différents composants vérifiés.
+la connexion à d'autres composants) si l'on active la propriété `tock_detailed_healthcheck_enabled`.
+La réponse de la ligne de vie précise alors les composants vérifiés.
 
-Exemple de résultat renvoyé par le Bot Admin démarré avec la propriété `tock_detailed_healthcheck_enabled=true` :
+Voici un exemple d'activation dans l'image Docker `bot_admin` :
+
+=== "docker-compose.yml"
+
+    ```yaml hl_lines="6"
+    version: '3'
+    services:
+      admin_web:
+        image: tock/bot_admin:$TAG
+        environment:
+        - tock_detailed_healthcheck_enabled=true
+    ```
+
+=== "dockerrun.aws.json"
+
+    ```json hl_lines="8"
+    {
+      "AWSEBDockerrunVersion": 2,
+      "containerDefinitions": [
+        {
+          "name": "admin_web",
+          "image": "tock/bot_admin:${TAG}",
+          "environment": [
+            { "name": "tock_detailed_healthcheck_enabled", "value": "true" }
+          ]
+        }
+      ]
+    }
+    ```
+
+Exemple de réponse de la ligne de vie en mode détailé :
 
 ```json
 {
@@ -62,7 +92,7 @@ Exemple de résultat renvoyé par le Bot Admin démarré avec la propriété `to
 ```
 
 
-Voir ci-dessous pour une synthèse en fonction des composants.
+> Voir ci-dessous pour une synthèse des lignes de vie composant par composant.
 
 ### Détails par composants
 

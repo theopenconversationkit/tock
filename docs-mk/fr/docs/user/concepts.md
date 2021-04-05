@@ -9,29 +9,51 @@ Un tableau propose également des équivalences et termes similaires dans d'autr
 
 ### _Application_
 
-Une _application_ correspond à un corpus de phrases dont Tock va tirer un ensemble de modèles statistiques
-lui permettant d'analyser les phrases utilisateurs.
+En mode pur NLP (reconnaissance du langage), une _application_ correspond à un corpus de phrases qualifiées dont Tock va 
+tirer un ensemble de modèles statistiques (lui permettant d'analyser et d'interprêter les phrases utilisateurs).
 
-Dans son mode conversationnel, elle correspond aussi à différent paramètres 
-qui permettent de définir les réponses et le comportement du ou des bots
-de cette application.
+En mode conversationnel, l'_application_ inclue également différents paramètres définissant les réponses et le 
+comportement du _bot_. Autrement dit, **une _application_ correspond généralement à un _bot_**.
+
+Voir [_Tock Studio > Settings > Applications_](studio/configuration.md#longlet-applications).
+
+### _Configuration_
+
+Dans une application Tock en mode NLP, une _configuration_ regroupe un ou plusieurs _connecteurs_ pour différents 
+canaux (voir ci-dessous).
+
+En mode conversationnel, **une _configuration_ correspond à un ensemble de réponses et comportements du _bot_** 
+sur ces canaux. Par exemple, pour un même scénario (_story_) de l'application il est possible de paramétrer des réponses 
+différentes (_answers_, _story rules_, etc.) selon plusieurs _configurations_.
+
+Voir [_Tock Studio > Settings > Configurations_](studio/configuration.md#longlet-configurations).
 
 ### _Connecteur_
 
-Un _connecteur_ permet à Tock de _connecter_ un bot à un canal comme Messenger, Slack, etc.
+Un _connecteur_ permet à Tock de "connecter" un bot à un canal externe comme Messenger, Alexa, un site Web, etc.
+Sa configuration détaillée dépend du canal concerné.
 
-Il se configure dans l'onglet _Bot Configurations_. 
-Tock permet de mutualiser très facilement le code d'un bot pour qu'il puisse répondre à 
-plusieurs connecteurs. 
+Tock permet de mutualiser très facilement le code d'un _bot_ pour qu'il réponde sur plusieurs canaux grâce à ses 
+connecteurs. Il est toutefois possible d'ajuster finement réponses et comportements en fonction du connecteur, si besoin. 
+
+Voir [_Tock Studio > Settings > Configurations_](studio/configuration.md##gerer-les-connecteurs) et
+la page [_Bot Multicanal_](guides/canaux.md) pour en savoir plus sur les connecteurs disponibles.
 
 ### _Namespace_
 
-Le _namespace_ permet d'identifier le groupe organisationnel d'un objet. 
-Il apparaît en général comme un préfixe suivit de ":" dans une chaîne de caractères.
-Par exemple l'entité de type "duckling:datetime" est l'entité de type "datetime" qui vient
-du module "duckling" : ici "duckling" est le namespace.
+Le _namespace_ permet d'identifier le groupe organisationnel d'un objet.
 
-Si vous utilisez la plateforme de démonstration, votre namespace est votre login Github.
+Le _namespace_ apparaît en général comme un préfixe suivi de `:` dans une chaîne de caractères.
+Par exemple, une entité typée `duckling:datetime` est de type `datetime` dans le _namespace_ `duckling` (elle vient
+du module Duckling).
+
+> Si vous utilisez la [plateforme de démonstration](https://demo.tock.ai/), votre namespace est votre identifiant GitHub.
+
+Si la plupart des objets et paramètres dépendent d'une _application_ appartenant elle-même à un _namespace_,
+certains objets comme les réponses (_answers_) sont directement rattachés au _namespace_ :
+ils sont donc partagés entre les applications de ce _namespace_.
+
+Voir [_Tock Studio > Settings > Namespaces_](studio/configuration.md#longlet-namespaces).
 
 ### _Intentions_
 
@@ -50,6 +72,8 @@ pour une nouvelle phrase, de déterminer quelle est l'intention la plus probable
 Pour reprendre l'exemple ci-dessus, avec un modèle constitué des trois phrases d'exemple, 
 il est probable qu'une nouvelle phrase du type "Quel temps fera t'il demain ?" sera reconnue
 automatiquement par Tock comme correspondant à l'intention "météo".
+
+Voir [_Tock Studio > Language Understanding_](studio/nlu.md).
 
 ### _Entités_
 
@@ -73,6 +97,8 @@ On distingue deux étapes dans la prise en compte d'une entité :
 Tock par défaut identifie l'entité, mais ne la valorise pas, sauf pour certains types.
 Par défaut, les entités de namespace "duckling" seront automatiquement valorisées.
 
+Voir [_Tock Studio > Language Understanding_](studio/nlu.md).
+
 ### _Scénario_ (ou _Story_)
 
 Un scénario ou _story_ est un regroupement fonctionnel qui permet de répondre aux questions
@@ -88,22 +114,26 @@ de la question initiale.
 
 La _Story_ est l'unité principale du framework conversationnel de Tock.
 
+Voir [_Tock Studio > Stories & Answers_](studio/stories-and-answers.md).
+
 ## Termes & correspondances
 
-Le tableau ci-dessous propose des correspondances entre les termes utilisés dans Tock et ceux d'autres 
+Le tableau ci-dessous propose des correspondances entre les termes utilisés dans Tock et d'autres 
 solutions conversationnelles :
 
-| Tock             | DialogFlow           | Alexa             |
-|------------------|----------------------|-------------------|
-| Intent           | Intent               | Intent            |
-| Entity           | Entity               |   |   |
-| Sentence         | Query                | Utterance / Slot  |
-| Story            |   |   |   |
-| Connector        | Integration          |   |   |
-| Application      | Project / Agent      | Skill             | 
+| Tock             | DialogFlow           | Alexa               | RASA                | DYDU _(Do You Dream Up)_ |
+|------------------|----------------------|---------------------|---------------------|--------------------------|
+| Intent           | Intent               | Intent              | Intent              | Reword                   |
+| Entity           | Entity               | Entity / Slot Value | Entity              | Group                    |
+| Sentence         | Query                | Utterance / Slot    | User input          | Sentence                 |
+| Story            | Context              |                     | Story               | Knowledge                |
+| Builtin Story    | Fulfillment          | Request Handler     |                     |                          |
+| Connector        | Integration          |                     |                     | Channel                  |
+| Configuration    |                      |                     |                     | Space                    |
+| Application      | Project / Agent      | Skill               | Domain              | Bot                      |
 
 > La documentation des [connecteurs Tock](guides/canaux.md) donne également la correspondance avec d'autres termes propres à 
->tel ou tel canal.
+> tel ou tel canal.
 
 ## Continuer...
 

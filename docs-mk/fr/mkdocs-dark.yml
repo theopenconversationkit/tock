@@ -80,7 +80,7 @@ markdown_extensions:
   - pymdownx.superfences
   - toc:
       permalink: true
-copyright: 'Copyright &copy; 2017/2020 Tock'
+copyright: 'Copyright &copy; 2017/2021 Tock'
 extra:
   search:
     language: 'fr'

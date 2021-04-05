@@ -391,6 +391,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    Configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#connecteur" class="md-nav__link">
     Connecteur
   </a>
@@ -1109,6 +1116,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    Configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#connecteur" class="md-nav__link">
     Connecteur
   </a>
@@ -1181,22 +1195,37 @@ dans Tock et sa documentation.</p>
 <p>Un tableau propose également des équivalences et termes similaires dans d'autres solutions conversationnelles.</p>
 <h2 id="notions-de-base">Notions de base<a class="headerlink" href="#notions-de-base" title="Permanent link">&para;</a></h2>
 <h3 id="application"><em>Application</em><a class="headerlink" href="#application" title="Permanent link">&para;</a></h3>
-<p>Une <em>application</em> correspond à un corpus de phrases dont Tock va tirer un ensemble de modèles statistiques
-lui permettant d'analyser les phrases utilisateurs.</p>
-<p>Dans son mode conversationnel, elle correspond aussi à différent paramètres 
-qui permettent de définir les réponses et le comportement du ou des bots
-de cette application.</p>
+<p>En mode pur NLP (reconnaissance du langage), une <em>application</em> correspond à un corpus de phrases qualifiées dont Tock va 
+tirer un ensemble de modèles statistiques (lui permettant d'analyser et d'interprêter les phrases utilisateurs).</p>
+<p>En mode conversationnel, l'<em>application</em> inclue également différents paramètres définissant les réponses et le 
+comportement du <em>bot</em>. Autrement dit, <strong>une <em>application</em> correspond généralement à un <em>bot</em></strong>.</p>
+<p>Voir <a href="../studio/configuration/#longlet-applications"><em>Tock Studio &gt; Settings &gt; Applications</em></a>.</p>
+<h3 id="configuration"><em>Configuration</em><a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h3>
+<p>Dans une application Tock en mode NLP, une <em>configuration</em> regroupe un ou plusieurs <em>connecteurs</em> pour différents 
+canaux (voir ci-dessous).</p>
+<p>En mode conversationnel, <strong>une <em>configuration</em> correspond à un ensemble de réponses et comportements du <em>bot</em></strong> 
+sur ces canaux. Par exemple, pour un même scénario (<em>story</em>) de l'application il est possible de paramétrer des réponses 
+différentes (<em>answers</em>, <em>story rules</em>, etc.) selon plusieurs <em>configurations</em>.</p>
+<p>Voir <a href="../studio/configuration/#longlet-configurations"><em>Tock Studio &gt; Settings &gt; Configurations</em></a>.</p>
 <h3 id="connecteur"><em>Connecteur</em><a class="headerlink" href="#connecteur" title="Permanent link">&para;</a></h3>
-<p>Un <em>connecteur</em> permet à Tock de <em>connecter</em> un bot à un canal comme Messenger, Slack, etc.</p>
-<p>Il se configure dans l'onglet <em>Bot Configurations</em>. 
-Tock permet de mutualiser très facilement le code d'un bot pour qu'il puisse répondre à 
-plusieurs connecteurs. </p>
+<p>Un <em>connecteur</em> permet à Tock de "connecter" un bot à un canal externe comme Messenger, Alexa, un site Web, etc.
+Sa configuration détaillée dépend du canal concerné.</p>
+<p>Tock permet de mutualiser très facilement le code d'un <em>bot</em> pour qu'il réponde sur plusieurs canaux grâce à ses 
+connecteurs. Il est toutefois possible d'ajuster finement réponses et comportements en fonction du connecteur, si besoin. </p>
+<p>Voir <a href="../studio/configuration/##gerer-les-connecteurs"><em>Tock Studio &gt; Settings &gt; Configurations</em></a> et
+la page <a href="../guides/canaux/"><em>Bot Multicanal</em></a> pour en savoir plus sur les connecteurs disponibles.</p>
 <h3 id="namespace"><em>Namespace</em><a class="headerlink" href="#namespace" title="Permanent link">&para;</a></h3>
-<p>Le <em>namespace</em> permet d'identifier le groupe organisationnel d'un objet. 
-Il apparaît en général comme un préfixe suivit de ":" dans une chaîne de caractères.
-Par exemple l'entité de type "duckling:datetime" est l'entité de type "datetime" qui vient
-du module "duckling" : ici "duckling" est le namespace.</p>
-<p>Si vous utilisez la plateforme de démonstration, votre namespace est votre login Github.</p>
+<p>Le <em>namespace</em> permet d'identifier le groupe organisationnel d'un objet.</p>
+<p>Le <em>namespace</em> apparaît en général comme un préfixe suivi de <code>:</code> dans une chaîne de caractères.
+Par exemple, une entité typée <code>duckling:datetime</code> est de type <code>datetime</code> dans le <em>namespace</em> <code>duckling</code> (elle vient
+du module Duckling).</p>
+<blockquote>
+<p>Si vous utilisez la <a href="https://demo.tock.ai/">plateforme de démonstration</a>, votre namespace est votre identifiant GitHub.</p>
+</blockquote>
+<p>Si la plupart des objets et paramètres dépendent d'une <em>application</em> appartenant elle-même à un <em>namespace</em>,
+certains objets comme les réponses (<em>answers</em>) sont directement rattachés au <em>namespace</em> :
+ils sont donc partagés entre les applications de ce <em>namespace</em>.</p>
+<p>Voir <a href="../studio/configuration/#longlet-namespaces"><em>Tock Studio &gt; Settings &gt; Namespaces</em></a>.</p>
 <h3 id="intentions"><em>Intentions</em><a class="headerlink" href="#intentions" title="Permanent link">&para;</a></h3>
 <p>Pour pouvoir définir des actions suite à une demande utilisateur, 
 il est nécessaire au préalable de classifier ou catégoriser cette demande. </p>
@@ -1209,6 +1238,7 @@ pour une nouvelle phrase, de déterminer quelle est l'intention la plus probable
 <p>Pour reprendre l'exemple ci-dessus, avec un modèle constitué des trois phrases d'exemple, 
 il est probable qu'une nouvelle phrase du type "Quel temps fera t'il demain ?" sera reconnue
 automatiquement par Tock comme correspondant à l'intention "météo".</p>
+<p>Voir <a href="../studio/nlu/"><em>Tock Studio &gt; Language Understanding</em></a>.</p>
 <h3 id="entites"><em>Entités</em><a class="headerlink" href="#entites" title="Permanent link">&para;</a></h3>
 <p>Une fois l'intention déterminée, il est souvent utile d'identifier le sens de certains mots de la phrase.</p>
 <p>Dans la phrase "Il fait beau demain ?", le mot "demain" a une signification qu'il faudra utiliser
@@ -1225,6 +1255,7 @@ Dans les cas où le rôle n'apporte pas d'information supplémentaire, il est so
 </ul>
 <p>Tock par défaut identifie l'entité, mais ne la valorise pas, sauf pour certains types.
 Par défaut, les entités de namespace "duckling" seront automatiquement valorisées.</p>
+<p>Voir <a href="../studio/nlu/"><em>Tock Studio &gt; Language Understanding</em></a>.</p>
 <h3 id="scenario-ou-story"><em>Scénario</em> (ou <em>Story</em>)<a class="headerlink" href="#scenario-ou-story" title="Permanent link">&para;</a></h3>
 <p>Un scénario ou <em>story</em> est un regroupement fonctionnel qui permet de répondre aux questions
  sur un sujet bien délimité.</p>
@@ -1235,8 +1266,9 @@ il peut être utile de poser la question de l'endroit où il se trouve.
 Cette question sera prise en compte dans la story "météo" puisqu'elle n'est qu'une extension
 de la question initiale.</p>
 <p>La <em>Story</em> est l'unité principale du framework conversationnel de Tock.</p>
+<p>Voir <a href="../studio/stories-and-answers/"><em>Tock Studio &gt; Stories &amp; Answers</em></a>.</p>
 <h2 id="termes-correspondances">Termes &amp; correspondances<a class="headerlink" href="#termes-correspondances" title="Permanent link">&para;</a></h2>
-<p>Le tableau ci-dessous propose des correspondances entre les termes utilisés dans Tock et ceux d'autres 
+<p>Le tableau ci-dessous propose des correspondances entre les termes utilisés dans Tock et d'autres 
 solutions conversationnelles :</p>
 <table>
 <thead>
@@ -1244,6 +1276,8 @@ solutions conversationnelles :</p>
 <th>Tock</th>
 <th>DialogFlow</th>
 <th>Alexa</th>
+<th>RASA</th>
+<th>DYDU <em>(Do You Dream Up)</em></th>
 </tr>
 </thead>
 <tbody>
@@ -1251,19 +1285,34 @@ solutions conversationnelles :</p>
 <td>Intent</td>
 <td>Intent</td>
 <td>Intent</td>
+<td>Intent</td>
+<td>Reword</td>
 </tr>
 <tr>
 <td>Entity</td>
 <td>Entity</td>
-<td></td>
+<td>Entity / Slot Value</td>
+<td>Entity</td>
+<td>Group</td>
 </tr>
 <tr>
 <td>Sentence</td>
 <td>Query</td>
 <td>Utterance / Slot</td>
+<td>User input</td>
+<td>Sentence</td>
 </tr>
 <tr>
 <td>Story</td>
+<td>Context</td>
+<td></td>
+<td>Story</td>
+<td>Knowledge</td>
+</tr>
+<tr>
+<td>Builtin Story</td>
+<td>Fulfillment</td>
+<td>Request Handler</td>
 <td></td>
 <td></td>
 </tr>
@@ -1271,11 +1320,22 @@ solutions conversationnelles :</p>
 <td>Connector</td>
 <td>Integration</td>
 <td></td>
+<td></td>
+<td>Channel</td>
+</tr>
+<tr>
+<td>Configuration</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Space</td>
 </tr>
 <tr>
 <td>Application</td>
 <td>Project / Agent</td>
 <td>Skill</td>
+<td>Domain</td>
+<td>Bot</td>
 </tr>
 </tbody>
 </table>
@@ -1293,7 +1353,7 @@ tel ou tel canal.</p>
 <div class="md-source-date">
   <small>
     
-      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">17 juillet 2020</span>
+      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">5 avril 2021</span>
     
   </small>
 </div>
@@ -1353,7 +1413,7 @@ tel ou tel canal.</p>
       <div class="md-footer-copyright">
         
           <div class="md-footer-copyright__highlight">
-            Copyright &copy; 2017/2020 Tock
+            Copyright &copy; 2017/2021 Tock
           </div>
         
         Made with

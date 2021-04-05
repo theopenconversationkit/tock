@@ -1275,9 +1275,35 @@ modifié. En particulier :</p>
 <p>Chaque chemin par défaut peut être modifiée avec une propriété dédiée (voir tableau ci-dessus).</p>
 <h3 id="mode-detaille">Mode détaillé<a class="headerlink" href="#mode-detaille" title="Permanent link">&para;</a></h3>
 <p>La ligne de vie principale <code>/healthcheck</code> peut effectuer une inspection plus détaillée (ie. généralement vérifier 
-la connexion aux autres composants) si l'on active la propriété <code>tock_detailed_healthcheck_enabled</code> à <code>true</code>.
-Dans ce cas, la réponse de la ligne de vie précise les différents composants vérifiés.</p>
-<p>Exemple de résultat renvoyé par le Bot Admin démarré avec la propriété <code>tock_detailed_healthcheck_enabled=true</code> :</p>
+la connexion à d'autres composants) si l'on active la propriété <code>tock_detailed_healthcheck_enabled</code>.
+La réponse de la ligne de vie précise alors les composants vérifiés.</p>
+<p>Voici un exemple d'activation dans l'image Docker <code>bot_admin</code> :</p>
+<div class="tabbed-set" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><label for="__tabbed_1_1">docker-compose.yml</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span> <span class="s">&#39;3&#39;</span>
+<span class="nt">services</span><span class="p">:</span>
+  <span class="nt">admin_web</span><span class="p">:</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">tock/bot_admin:$TAG</span>
+    <span class="nt">environment</span><span class="p">:</span>
+<span class="hll">    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">tock_detailed_healthcheck_enabled=true</span>
+</span></code></pre></div>
+</div>
+<input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><label for="__tabbed_1_2">dockerrun.aws.json</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+  <span class="nt">&quot;AWSEBDockerrunVersion&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="nt">&quot;containerDefinitions&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;admin_web&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;image&quot;</span><span class="p">:</span> <span class="s2">&quot;tock/bot_admin:${TAG}&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;environment&quot;</span><span class="p">:</span> <span class="p">[</span>
+<span class="hll">        <span class="p">{</span> <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;tock_detailed_healthcheck_enabled&quot;</span><span class="p">,</span> <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span> <span class="p">}</span>
+</span>      <span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+</div>
+<p>Exemple de réponse de la ligne de vie en mode détailé :</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
   <span class="nt">&quot;results&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="p">{</span>
@@ -1299,7 +1325,9 @@ Dans ce cas, la réponse de la ligne de vie précise les différents composants 
   <span class="p">]</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>Voir ci-dessous pour une synthèse en fonction des composants.</p>
+<blockquote>
+<p>Voir ci-dessous pour une synthèse des lignes de vie composant par composant.</p>
+</blockquote>
 <h3 id="details-par-composants">Détails par composants<a class="headerlink" href="#details-par-composants" title="Permanent link">&para;</a></h3>
 <p>Le tableau ci-dessous détaille le chemin et les vérifications effectuées par la ligne de vie principale composant 
 par composant, en mode normal et en mode détaillé :</p>
@@ -1358,7 +1386,7 @@ par composant, en mode normal et en mode détaillé :</p>
 </tbody>
 </table>
 <p>Ci-dessous des exemples de réponses de différents composants en mode détaillé :</p>
-<div class="tabbed-set" data-tabs="1:6"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><label for="__tabbed_1_1">NLP</label><div class="tabbed-content">
+<div class="tabbed-set" data-tabs="2:6"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><label for="__tabbed_2_1">NLP</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
   <span class="nt">&quot;results&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="p">{</span>
@@ -1377,7 +1405,7 @@ par composant, en mode normal et en mode détaillé :</p>
 <span class="p">}</span>
 </code></pre></div>
 </div>
-<input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><label for="__tabbed_1_2">Duckling</label><div class="tabbed-content">
+<input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><label for="__tabbed_2_2">Duckling</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
   <span class="nt">&quot;results&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="p">{</span>
@@ -1388,7 +1416,7 @@ par composant, en mode normal et en mode détaillé :</p>
 <span class="p">}</span>
 </code></pre></div>
 </div>
-<input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><label for="__tabbed_1_3">Build Worker</label><div class="tabbed-content">
+<input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><label for="__tabbed_2_3">Build Worker</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code>    <span class="p">{</span>
       <span class="nt">&quot;results&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="p">{</span>
@@ -1403,7 +1431,7 @@ par composant, en mode normal et en mode détaillé :</p>
 <span class="p">}</span>
 </code></pre></div>
 </div>
-<input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><label for="__tabbed_1_4">Bot Api</label><div class="tabbed-content">
+<input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><label for="__tabbed_2_4">Bot Api</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
   <span class="nt">&quot;results&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="p">{</span>
@@ -1414,13 +1442,13 @@ par composant, en mode normal et en mode détaillé :</p>
 <span class="p">}</span>
 </code></pre></div>
 </div>
-<input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><label for="__tabbed_1_5">Kotlin Compiler</label><div class="tabbed-content">
+<input id="__tabbed_2_5" name="__tabbed_2" type="radio" /><label for="__tabbed_2_5">Kotlin Compiler</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
   <span class="nt">&quot;results&quot;</span><span class="p">:</span> <span class="p">[]</span>
 <span class="p">}</span>
 </code></pre></div>
 </div>
-<input id="__tabbed_1_6" name="__tabbed_1" type="radio" /><label for="__tabbed_1_6">Bot Admin</label><div class="tabbed-content">
+<input id="__tabbed_2_6" name="__tabbed_2" type="radio" /><label for="__tabbed_2_6">Bot Admin</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
   <span class="nt">&quot;results&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="p">{</span>
@@ -1538,7 +1566,7 @@ Elles peuvent être définies indépendamment sur chaque composant produisant de
 <p>Selon le mode de déploiement utilisé, ces variables d'environnement peuvent être ajoutées soit 
 directement en ligne de commande, soit dans un descripteur type <code>docker-compose.yml</code>, <code>dockerrun.aws.json</code> ou autre.</p>
 <p>Voici un exemple configurant les logs de Tock Studio (<code>admin_web</code>) dans Docker :</p>
-<div class="tabbed-set" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><label for="__tabbed_2_1">docker-compose.yml</label><div class="tabbed-content">
+<div class="tabbed-set" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><label for="__tabbed_3_1">docker-compose.yml</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span> <span class="s">&#39;3&#39;</span>
 <span class="nt">services</span><span class="p">:</span>
   <span class="nt">admin_web</span><span class="p">:</span>
@@ -1548,7 +1576,7 @@ directement en ligne de commande, soit dans un descripteur type <code>docker-com
 </span><span class="hll">    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">tock_logback_file_appender=true</span>
 </span></code></pre></div>
 </div>
-<input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><label for="__tabbed_2_2">dockerrun.aws.json</label><div class="tabbed-content">
+<input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><label for="__tabbed_3_2">dockerrun.aws.json</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
   <span class="nt">&quot;AWSEBDockerrunVersion&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
   <span class="nt">&quot;containerDefinitions&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -1569,7 +1597,7 @@ directement en ligne de commande, soit dans un descripteur type <code>docker-com
 <p>Il est possible de configurer finement les logs Tock en configurant directement <a href="http://logback.qos.ch/">Logback</a>.
 Pour cela, différentes possibilités existent, notamment des fichiers de configuration en format XML ou Groovy. 
 Ci-dessous un exemple de configuration :</p>
-<div class="tabbed-set" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><label for="__tabbed_3_1">logback.xml</label><div class="tabbed-content">
+<div class="tabbed-set" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><label for="__tabbed_4_1">logback.xml</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
 <span class="nt">&lt;configuration</span> <span class="na">debug=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>
 
@@ -1592,7 +1620,7 @@ Ci-dessous un exemple de configuration :</p>
 <span class="nt">&lt;/configuration&gt;</span>
 </code></pre></div>
 </div>
-<input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><label for="__tabbed_3_2">logback.groovy</label><div class="tabbed-content">
+<input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><label for="__tabbed_4_2">logback.groovy</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">ch.qos.logback.classic.encoder.PatternLayoutEncoder</span>
 <span class="kn">import</span> <span class="nn">ch.qos.logback.core.ConsoleAppender</span>
 
@@ -1635,7 +1663,7 @@ la propriété <code>-Dlogback.configurationFile</code> au démarrage du composa
 <li>Quelques variables d'environnement définies pour pouvoir rapidement ajuste les principaux niveaux de log 
 directement dans Docker-Compose (sans avoir à modifier le fichier XML ni l'image Docker)'</li>
 </ul>
-<div class="tabbed-set" data-tabs="4:3"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><label for="__tabbed_4_1">logback.xml</label><div class="tabbed-content">
+<div class="tabbed-set" data-tabs="5:3"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><label for="__tabbed_5_1">logback.xml</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
 <span class="nt">&lt;configuration</span> <span class="na">debug=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>
 
@@ -1662,7 +1690,7 @@ directement dans Docker-Compose (sans avoir à modifier le fichier XML ni l'imag
 <span class="nt">&lt;/configuration&gt;</span>
 </code></pre></div>
 </div>
-<input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><label for="__tabbed_4_2">pom.xml</label><div class="tabbed-content">
+<input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><label for="__tabbed_5_2">pom.xml</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
 <span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="nt">&gt;</span>
     <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
@@ -1696,7 +1724,7 @@ directement dans Docker-Compose (sans avoir à modifier le fichier XML ni l'imag
                                 ...
 </code></pre></div>
 </div>
-<input id="__tabbed_4_3" name="__tabbed_4" type="radio" /><label for="__tabbed_4_3">docker-compose.yml</label><div class="tabbed-content">
+<input id="__tabbed_5_3" name="__tabbed_5" type="radio" /><label for="__tabbed_5_3">docker-compose.yml</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span> <span class="s">&#39;3&#39;</span>
 <span class="nt">services</span><span class="p">:</span>
   <span class="nt">admin_web</span><span class="p">:</span>
@@ -1717,7 +1745,7 @@ sur la branche <a href="https://github.com/theopenconversationkit/tock-docker/tr
 descripteurs en YAML. Voir le dépot <a href="https://github.com/theopenconversationkit/tock-docker"><code>tock-docker</code></a> pour un 
 exemple d'implémentation de Tock dans Docker Compose.</p>
 <p>Chaque composant applicatif peut avoir sa propre configuration :</p>
-<div class="tabbed-set" data-tabs="5:1"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><label for="__tabbed_5_1">docker-compose.yml</label><div class="tabbed-content">
+<div class="tabbed-set" data-tabs="6:1"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><label for="__tabbed_6_1">docker-compose.yml</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="nt">logging</span><span class="p">:</span>
   <span class="nt">driver</span><span class="p">:</span> <span class="s">&quot;json-file&quot;</span>
   <span class="nt">options</span><span class="p">:</span>
@@ -1739,7 +1767,7 @@ exemple d'implémentation de Tock dans Docker Compose.</p>
 <div class="md-source-date">
   <small>
     
-      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">4 avril 2021</span>
+      Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">5 avril 2021</span>
     
   </small>
 </div>
@@ -1799,7 +1827,7 @@ exemple d'implémentation de Tock dans Docker Compose.</p>
       <div class="md-footer-copyright">
         
           <div class="md-footer-copyright__highlight">
-            Copyright &copy; 2017/2020 Tock
+            Copyright &copy; 2017/2021 Tock
           </div>
         
         Made with
