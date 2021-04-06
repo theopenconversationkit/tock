@@ -198,7 +198,7 @@ internal object ConfigurationRepository {
         return intentsById[id] ?: config.getIntentById(id)
     }
 
-    fun initRepository() {
+    fun initRepository(): Boolean =
         try {
             refreshEntityTypes()
             core.getBuiltInEntityTypes().forEach {
@@ -223,8 +223,9 @@ internal object ConfigurationRepository {
             entityTypeDAO.listenDictionaryDataChanges {
                 injector.provide<DictionaryRepository>().updateData(entityTypeDAO.getAllDictionaryData())
             }
+            entityTypes.isNotEmpty()
         } catch (e: Exception) {
             logger.error(e)
+            false
         }
-    }
 }

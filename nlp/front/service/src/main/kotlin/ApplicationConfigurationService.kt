@@ -278,9 +278,7 @@ object ApplicationConfigurationService :
         }
     }
 
-    override fun initializeConfiguration() {
-        ConfigurationRepository.initRepository()
-    }
+    override fun initializeConfiguration() : Boolean = ConfigurationRepository.initRepository()
 
     override fun getCurrentModelConfiguration(
         applicationName: String,

@@ -28,6 +28,7 @@ import ai.tock.shared.sharedModule
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.Kodein.Module
 import mu.KotlinLogging
+import kotlin.system.exitProcess
 
 /**
  *
@@ -65,6 +66,9 @@ object FrontIoc {
                 }
             }
         )
-        FrontClient.initializeConfiguration()
+        if(!FrontClient.initializeConfiguration()) {
+            logger.error("configuration not initialized - exit application")
+            exitProcess(1)
+        }
     }
 }

@@ -183,8 +183,9 @@ interface ApplicationConfiguration {
 
     /**
      * Load the configuration cache.
+     * @return true if configuration is correctly initialized
      */
-    fun initializeConfiguration()
+    fun initializeConfiguration() : Boolean
 
     /**
      * Returns the current model configuration.
