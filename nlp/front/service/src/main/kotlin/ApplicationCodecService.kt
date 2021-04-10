@@ -68,13 +68,15 @@ internal object ApplicationCodecService : ApplicationCodec {
     val config: ApplicationConfiguration get() = injector.provide()
     private val core: NlpCore get() = injector.provide()
 
-    private val builtInNamespaces: Set<String> by lazy(PUBLICATION) { core.getBuiltInEntityTypes().map { it.namespace() }.toSet() }
+    private val builtInNamespaces: Set<String> by lazy(PUBLICATION) {
+        core.getBuiltInEntityTypes().map { it.namespace() }.toSet()
+    }
 
     override fun export(applicationId: Id<ApplicationDefinition>, dumpType: DumpType): ApplicationDump {
         val app = config.getApplicationById(applicationId)!!
         val entities = config.getEntityTypesByNamespaceAndSharedEntityTypes(app.namespace)
         val intents = config.getIntentsByApplicationId(applicationId)
-        val sentences = config.getSentences(intents.map { it._id }.toSet())
+        val sentences = config.getSentences(intents.map { it._id }.toSet()).sortedBy { it.updateDate }
         return ApplicationDump(app, entities, intents, sentences)
     }
 
@@ -174,7 +176,12 @@ internal object ApplicationCodecService : ApplicationCodec {
                         config.save(
                             copy(
                                 subEntities = (
-                                    subEntities + e.subEntities.map { EntityDefinition(it.newName(namespace), it.role) }
+                                    subEntities + e.subEntities.map {
+                                        EntityDefinition(
+                                            it.newName(namespace),
+                                            it.role
+                                        )
+                                    }
                                     ).distinctBy { it.role }
                             )
                         )
@@ -235,7 +242,10 @@ internal object ApplicationCodecService : ApplicationCodec {
             // save new intents
             intentsToCreate.forEach { intent ->
                 val newIntent =
-                    intent.copy(sharedIntents = intent.sharedIntents.asSequence().mapNotNull { intentsIdsMap[it] }.toSet())
+                    intent.copy(
+                        sharedIntents = intent.sharedIntents.asSequence().mapNotNull { intentsIdsMap[it] }
+                            .toSet()
+                    )
                 config.save(newIntent)
                 report.add(newIntent)
                 logger.debug { "Import intent $newIntent" }
@@ -443,11 +453,13 @@ internal object ApplicationCodecService : ApplicationCodec {
             .groupBy { it._id }
             .mapValues { it.value.first() }
 
-        val sentences = queries.flatMap {
-            config
-                .search(it.copy(start = 0, size = Integer.MAX_VALUE, searchMark = null))
-                .sentences
-        }
+        val sentences = queries
+            .flatMap {
+                config
+                    .search(it.copy(start = 0, size = Integer.MAX_VALUE, searchMark = null))
+                    .sentences
+            }
+            .sortedBy { it.updateDate }
 
         return SentencesDump(
             app.qualifiedName,
