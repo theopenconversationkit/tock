@@ -230,21 +230,21 @@ export class ChartComponent implements OnChanges {
         rows.push([date].concat(that.getDataFromSelection(data[index])))
       }
     });
-    let serieCount = new Array(this.getColumnsLength(series)).fill(0);
-    const finalData = [];
-    for (let index = 0; index < data[0].length; index++) {
-      finalData.push([]);
+    let seriesCounters = new Array(this.getColumnsLength(series)).fill(0);
+    let seriesNumber = that.getDataFromSelection(series).length;
+    const seriesValues = new Array(seriesNumber);
+    for (let index = 0; index < seriesNumber; index++) {
+      seriesValues[index] = new Array(data.length).fill(0);
     }
-    data.forEach(function (d, index) {
-      for (let i = 0; i < d.length; i++) {
-        finalData[i].push(d[i]);
-      }
-      //finalData[index].push(d[index]);
-      that.getDataFromSelection(series).forEach(function (value, index) {
-        serieCount[index] += that.getDataFromSelection(d)[index];
+    that.getDataFromSelection(series).forEach(function (serie, serieIndex) {
+      let serieDataIndex = series.indexOf(serie);
+      data.forEach(function (d, index) {
+        let serieDateValue = d[serieDataIndex];
+        seriesValues[serieIndex][index] = serieDateValue;
+        seriesCounters[serieIndex] += serieDateValue;
       })
     })
-    let seriesLabels = this.getDataFromSelection(series).map((c, i) => c + "(" + serieCount[i] + ")")
+    let seriesLabels = this.getDataFromSelection(series).map((c, i) => c + "(" + seriesCounters[i] + ")")
     let colors = series.map(serie => this.getColor(serie, series))
     this.chartOptions = {
       tooltip: {
@@ -277,7 +277,7 @@ export class ChartComponent implements OnChanges {
       yAxis: {
           type: 'value'
       },
-      series: this.getSeriesData(finalData, seriesLabels, this.chartPreferences.lineConfig.curvedLines,
+      series: this.getSeriesData(seriesValues, seriesLabels, this.chartPreferences.lineConfig.curvedLines,
         this.chartPreferences.lineConfig.stacked)
   };
 
