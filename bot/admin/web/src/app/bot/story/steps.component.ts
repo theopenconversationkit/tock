@@ -18,14 +18,13 @@ import {Component, Input, OnChanges, OnInit, SimpleChanges} from "@angular/core"
 import {AnswerConfigurationType, IntentName, SimpleAnswerConfiguration, StoryStep} from "../model/story";
 import {StateService} from "../../core-nlp/state.service";
 import {FlatTreeControl} from "@angular/cdk/tree";
-import { MatTreeFlatDataSource, MatTreeFlattener } from "@angular/material/tree";
+import {MatTreeFlatDataSource, MatTreeFlattener} from "@angular/material/tree";
 import {SelectEntityDialogComponent} from "./select-entity-dialog.component";
 import {DialogService} from "../../core-nlp/dialog.service";
 import {MatDialog} from "@angular/material/dialog";
 import {NlpService} from "../../nlp-tabs/nlp.service";
-import {CreateI18nLabelRequest, I18nLabel, I18nLocalizedLabel} from "../model/i18n";
+import {CreateI18nLabelRequest} from "../model/i18n";
 import {BotService} from "../bot-service";
-import {defaultUserInterfaceType} from "../../core/model/configuration";
 
 @Component({
   selector: 'tock-steps',
@@ -105,7 +104,7 @@ export class StepsComponent implements OnInit, OnChanges {
 
     // Find step parent
     let parent = this.findParent(this.steps, step);
-    if(parent) {
+    if (parent) {
       // add the duplicate step in it
       parent.children.push(newStep);
       this.treeControl.expand(parent);
@@ -136,7 +135,7 @@ export class StepsComponent implements OnInit, OnChanges {
     this.saveI18nLabel(newStep);
 
     let stepChildren = step.children;
-    if(stepChildren) {
+    if (stepChildren) {
       newStep.children = stepChildren.map(child => this.copyFromStep(child))
     }
 
@@ -160,8 +159,13 @@ export class StepsComponent implements OnInit, OnChanges {
     return parents.length === 0 ? null : parents[0];
   }
 
+  private findParentFromRootSteps(step: StoryStep): StoryStep {
+    return this.findParent(this.steps, step);
+  }
+
+
   deleteStep(step: StoryStep) {
-    const parent = this.findParent(this.steps, step);
+    const parent = this.findParentFromRootSteps(step);
     if (parent) {
       parent.children.splice(parent.children.indexOf(step), 1);
     } else {
@@ -233,16 +237,24 @@ export class StepsComponent implements OnInit, OnChanges {
   }
 
   upward(step: StoryStep) {
-    const index = this.steps.indexOf(step);
-    this.steps[index] = this.steps[index - 1];
-    this.steps[index - 1] = step;
+    const parent = this.findParentFromRootSteps(step);
+    const steps = parent ? parent.children : this.steps;
+    const index = steps.indexOf(step);
+    if (index !== -1) {
+      steps[index] = steps[index - 1];
+      steps[index - 1] = step;
+    }
     this.validate();
   }
 
   downward(step: StoryStep) {
-    const index = this.steps.indexOf(step);
-    this.steps[index] = this.steps[index + 1];
-    this.steps[index + 1] = step;
+    const parent = this.findParentFromRootSteps(step);
+    const steps = parent ? parent.children : this.steps;
+    const index = steps.indexOf(step);
+    if (index !== -1) {
+      steps[index] = steps[index + 1];
+      steps[index + 1] = step;
+    }
     this.validate();
   }
 
