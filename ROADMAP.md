@@ -1,4 +1,4 @@
-- 21.3.0 March 2021
+- 21.9.0 September 2021
     - Rasa production version
     - Web bot orchestration support
     - AB test engine workflow
@@ -6,6 +6,9 @@
     - Conversational framework: support for other languages than Kotlin (multi-platform Kotlin)         
     
 ## Latest releases
+- 21.3.1 April 2021
+  - Bug fixes release
+
 - 21.3.0 March 2021
   - Tock studio improvements (cards/carousel/stories)
   - Web & teams connector improvements
