@@ -15,8 +15,8 @@
       
         <link rel="canonical" href="https://theopenconversationkit.github.io/tock/en/dev/integrated-bot/">
       
-      <link rel="shortcut icon" href="../../img/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.4">
+      <link rel="icon" href="../../img/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.2">
     
     
       
@@ -24,10 +24,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.15aa0b43.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6f955dcd.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.75751829.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ef6f36e2.min.css">
         
       
     
@@ -37,7 +37,7 @@
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
-        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
       
     
     
@@ -55,8 +55,9 @@
     
     
     <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="" data-md-color-accent="">
-      
   
+    
+    <script>function __prefix(e){return new URL("../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
@@ -73,26 +74,24 @@
       
     </div>
     
-      
-
-<header class="md-header" data-md-component="header">
-  <nav class="md-header-nav md-grid" aria-label="Header">
-    <a href="https://theopenconversationkit.github.io/tock/en" title="Tock" class="md-header-nav__button md-logo" aria-label="Tock">
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Tock" class="md-header__button md-logo" aria-label="Tock" data-md-component="logo">
       
   <img src="../../assets/images/logo-white.png" alt="logo">
 
     </a>
-    <label class="md-header-nav__button md-icon" for="__drawer">
+    <label class="md-header__button md-icon" for="__drawer">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
     </label>
-    <div class="md-header-nav__title" data-md-component="header-title">
-      <div class="md-header-nav__ellipsis">
-        <div class="md-header-nav__topic">
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
           <span class="md-ellipsis">
             Tock
           </span>
         </div>
-        <div class="md-header-nav__topic">
+        <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
               Integrated Bot mode
@@ -102,8 +101,10 @@
       </div>
     </div>
     
-      <label class="md-header-nav__button md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
       </label>
       
 <div class="md-search" data-md-component="search" role="dialog">
@@ -112,11 +113,11 @@
     <form class="md-search__form" name="search">
       <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
       <label class="md-search__icon md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
       </label>
-      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
       </button>
     </form>
     <div class="md-search__output">
@@ -133,12 +134,12 @@
 </div>
     
     
-      <div class="md-header-nav__source">
+      <div class="md-header__source">
         
-<a href="https://github.com/theopenconversationkit/tock" title="Go to repository" class="md-source">
+<a href="https://github.com/theopenconversationkit/tock" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
   </div>
   <div class="md-source__repository">
     tock
@@ -159,17 +160,15 @@
           
             
               
-              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation" >
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
 
 
-
-
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="https://theopenconversationkit.github.io/tock/en" title="Tock" class="md-nav__button md-logo" aria-label="Tock">
+    <a href="../.." title="Tock" class="md-nav__button md-logo" aria-label="Tock" data-md-component="logo">
       
   <img src="../../assets/images/logo-white.png" alt="logo">
 
@@ -179,10 +178,10 @@
   
     <div class="md-nav__source">
       
-<a href="https://github.com/theopenconversationkit/tock" title="Go to repository" class="md-source">
+<a href="https://github.com/theopenconversationkit/tock" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
   </div>
   <div class="md-source__repository">
     tock
@@ -196,161 +195,159 @@
       
       
 
-
-
-  <li class="md-nav__item">
-    <a href="../.." class="md-nav__link">
-      Overview
-    </a>
-  </li>
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
 
     
       
       
       
-
-
 
   
-  <li class="md-nav__item md-nav__item--nested">
+  
+  
     
-    
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" >
-    
-    <label class="md-nav__link" for="nav-2">
-      Try Tock Studio
-      <span class="md-nav__icon md-icon"></span>
-    </label>
-    <nav class="md-nav" aria-label="Try Tock Studio" data-md-level="1">
-      <label class="md-nav__title" for="nav-2">
-        <span class="md-nav__icon md-icon"></span>
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      <label class="md-nav__link" for="__nav_2">
         Try Tock Studio
-      </label>
-      <ul class="md-nav__list" data-md-scrollfix>
-        
-        
-          
-          
-          
-
-
-
-  <li class="md-nav__item">
-    <a href="../../guide/studio/" class="md-nav__link">
-      Create your 1st bot
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-
-  <li class="md-nav__item">
-    <a href="../../guide/messenger/" class="md-nav__link">
-      Set up Messenger
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-
-  <li class="md-nav__item">
-    <a href="../../build-nlp-model/" class="md-nav__link">
-      Build NLP models
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-
-  <li class="md-nav__item">
-    <a href="../../evaluate-the-model/" class="md-nav__link">
-      Monitor NLP models
-    </a>
-  </li>
-
-        
-      </ul>
-    </nav>
-  </li>
-
-    
-      
-      
-      
-
-
-  
-
-
-  
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
-    
-    
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
-    
-    <label class="md-nav__link" for="nav-3">
-      Develop Stories
-      <span class="md-nav__icon md-icon"></span>
-    </label>
-    <nav class="md-nav" aria-label="Develop Stories" data-md-level="1">
-      <label class="md-nav__title" for="nav-3">
         <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Try Tock Studio" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Try Tock Studio
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/studio/" class="md-nav__link">
+        Create your 1st bot
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/messenger/" class="md-nav__link">
+        Set up Messenger
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build-nlp-model/" class="md-nav__link">
+        Build NLP models
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../evaluate-the-model/" class="md-nav__link">
+        Monitor NLP models
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      <label class="md-nav__link" for="__nav_3">
         Develop Stories
-      </label>
-      <ul class="md-nav__list" data-md-scrollfix>
-        
-        
-          
-          
-          
-
-
-
-  <li class="md-nav__item">
-    <a href="../bot-api/" class="md-nav__link">
-      Bot API mode
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  
-
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Integrated Bot mode
         <span class="md-nav__icon md-icon"></span>
       </label>
+      <nav class="md-nav" aria-label="Develop Stories" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Develop Stories
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bot-api/" class="md-nav__link">
+        Bot API mode
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
     
-    <a href="./" class="md-nav__link md-nav__link--active">
-      Integrated Bot mode
-    </a>
-    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
       
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Integrated Bot mode
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Integrated Bot mode
+      </a>
+      
+        
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
   
   
     
@@ -360,7 +357,7 @@
       <span class="md-nav__icon md-icon"></span>
       Table of contents
     </label>
-    <ul class="md-nav__list" data-md-scrollfix>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
   <a href="#sample-project" class="md-nav__link">
@@ -522,237 +519,234 @@
     </ul>
   
 </nav>
-    
-  </li>
+      
+    </li>
+  
 
-        
           
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../connectors/" class="md-nav__link">
+        Connectors
+      </a>
+    </li>
+  
+
           
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../kdoc/" class="md-nav__link">
+        KDoc
+      </a>
+    </li>
+  
+
           
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../the-open-data-bot/" class="md-nav__link">
+        Code Samples
+      </a>
+    </li>
+  
 
-
-
-  <li class="md-nav__item">
-    <a href="../connectors/" class="md-nav__link">
-      Connectors
-    </a>
-  </li>
-
-        
           
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/" class="md-nav__link">
+        API documentation
+      </a>
+    </li>
+  
+
           
-          
-
-
-
-  <li class="md-nav__item">
-    <a href="../../kdoc/" class="md-nav__link">
-      KDoc
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-
-  <li class="md-nav__item">
-    <a href="../../the-open-data-bot/" class="md-nav__link">
-      Code Samples
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-
-  <li class="md-nav__item">
-    <a href="../../api/" class="md-nav__link">
-      API documentation
-    </a>
-  </li>
-
-        
-      </ul>
-    </nav>
-  </li>
+        </ul>
+      </nav>
+    </li>
+  
 
     
       
       
       
-
-
 
   
-  <li class="md-nav__item md-nav__item--nested">
+  
+  
     
-    
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" >
-    
-    <label class="md-nav__link" for="nav-4">
-      About
-      <span class="md-nav__icon md-icon"></span>
-    </label>
-    <nav class="md-nav" aria-label="About" data-md-level="1">
-      <label class="md-nav__title" for="nav-4">
-        <span class="md-nav__icon md-icon"></span>
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      <label class="md-nav__link" for="__nav_4">
         About
+        <span class="md-nav__icon md-icon"></span>
       </label>
-      <ul class="md-nav__list" data-md-scrollfix>
-        
-        
+      <nav class="md-nav" aria-label="About" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          About
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
           
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/why/" class="md-nav__link">
+        Why Tock
+      </a>
+    </li>
+  
+
           
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/showcase/" class="md-nav__link">
+        Showcase
+      </a>
+    </li>
+  
+
           
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/awards/" class="md-nav__link">
+        Awards
+      </a>
+    </li>
+  
 
-
-
-  <li class="md-nav__item">
-    <a href="../../about/why/" class="md-nav__link">
-      Why Tock
-    </a>
-  </li>
-
-        
           
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/resources/" class="md-nav__link">
+        Resources
+      </a>
+    </li>
+  
+
           
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/contact/" class="md-nav__link">
+        Contact us
+      </a>
+    </li>
+  
+
           
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/community/" class="md-nav__link">
+        Community
+      </a>
+    </li>
+  
 
-
-
-  <li class="md-nav__item">
-    <a href="../../about/showcase/" class="md-nav__link">
-      Showcase
-    </a>
-  </li>
-
-        
           
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/contribute/" class="md-nav__link">
+        Contribute
+      </a>
+    </li>
+  
+
           
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/jobs/" class="md-nav__link">
+        Jobs
+      </a>
+    </li>
+  
+
           
-
-
-
-  <li class="md-nav__item">
-    <a href="../../about/awards/" class="md-nav__link">
-      Awards
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-
-  <li class="md-nav__item">
-    <a href="../../about/resources/" class="md-nav__link">
-      Resources
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-
-  <li class="md-nav__item">
-    <a href="../../about/contact/" class="md-nav__link">
-      Contact us
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-
-  <li class="md-nav__item">
-    <a href="../../about/community/" class="md-nav__link">
-      Community
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-
-  <li class="md-nav__item">
-    <a href="../../about/contribute/" class="md-nav__link">
-      Contribute
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-
-  <li class="md-nav__item">
-    <a href="../../about/jobs/" class="md-nav__link">
-      Jobs
-    </a>
-  </li>
-
-        
-      </ul>
-    </nav>
-  </li>
+        </ul>
+      </nav>
+    </li>
+  
 
     
       
       
       
 
-
-
-  <li class="md-nav__item">
-    <a href="https://theopenconversationkit.github.io/tock/fr-dark/" class="md-nav__link">
-      🇬🇧 🇫🇷
-    </a>
-  </li>
-
-    
-      
-      
-      
-
-
-
-  <li class="md-nav__item">
-    <a href="https://theopenconversationkit.github.io/tock/en/" class="md-nav__link">
-      Light Mode
-    </a>
-  </li>
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://theopenconversationkit.github.io/tock/fr-dark/" class="md-nav__link">
+        🇬🇧 🇫🇷
+      </a>
+    </li>
+  
 
     
       
       
       
 
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://theopenconversationkit.github.io/tock/en/" class="md-nav__link">
+        Light Mode
+      </a>
+    </li>
+  
 
+    
+      
+      
+      
 
-  <li class="md-nav__item">
-    <a href="https://doc.tock.ai" class="md-nav__link">
-      Tock.ai 🔗
-    </a>
-  </li>
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://doc.tock.ai" class="md-nav__link">
+        Tock.ai 🔗
+      </a>
+    </li>
+  
 
     
   </ul>
@@ -763,11 +757,12 @@
             
             
               
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc" >
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
   
   
     
@@ -777,7 +772,7 @@
       <span class="md-nav__icon md-icon"></span>
       Table of contents
     </label>
-    <ul class="md-nav__list" data-md-scrollfix>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
   <a href="#sample-project" class="md-nav__link">
@@ -944,7 +939,7 @@
               </div>
             
           
-          <div class="md-content">
+          <div class="md-content" data-md-component="content">
             <article class="md-content__inner md-typeset">
               
                 
@@ -990,26 +985,26 @@ docker images on your own servers.</p>
 <div class="codehilite"><pre><span></span><code>        <span class="nt">&lt;dependency&gt;</span>
             <span class="nt">&lt;groupId&gt;</span>ai.tock<span class="nt">&lt;/groupId&gt;</span>
             <span class="nt">&lt;artifactId&gt;</span>bot-toolkit<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>21.3.0<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;version&gt;</span>21.3.1<span class="nt">&lt;/version&gt;</span>
         <span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div>
 
 <p>With Gradle:</p>
-<div class="codehilite"><pre><span></span><code>      <span class="n">compile</span> <span class="s1">&#39;ai.tock:bot-toolkit:21.3.0&#39;</span>
+<div class="codehilite"><pre><span></span><code>      <span class="n">compile</span> <span class="s1">&#39;ai.tock:bot-toolkit:21.3.1&#39;</span>
 </code></pre></div>
 
 <h3 id="a-bot-is-a-set-of-stories">A Bot is a Set of Stories<a class="headerlink" href="#a-bot-is-a-set-of-stories" title="Permanent link">&para;</a></h3>
 <p>This is how the open data bot is defined:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">val</span> <span class="py">openBot</span> <span class="p">=</span> <span class="n">bot</span><span class="p">(</span>
+<div class="codehilite"><pre><span></span><code><span class="kd">val</span> <span class="nv">openBot</span> <span class="o">=</span> <span class="n">bot</span><span class="p">(</span>
         <span class="s">&quot;bot_open_data&quot;</span><span class="p">,</span>
-        <span class="n">stories</span> <span class="p">=</span>
+        <span class="n">stories</span> <span class="o">=</span>
         <span class="n">listOf</span><span class="p">(</span>
                 <span class="n">greetings</span><span class="p">,</span>
                 <span class="n">departures</span><span class="p">,</span>
                 <span class="n">arrivals</span><span class="p">,</span>
                 <span class="n">search</span>
         <span class="p">),</span>
-        <span class="n">hello</span> <span class="p">=</span> <span class="n">greetings</span>
+        <span class="n">hello</span> <span class="o">=</span> <span class="n">greetings</span>
 <span class="p">)</span>
 </code></pre></div>
 
@@ -1020,7 +1015,7 @@ one or more so-called "secondary" intentions.</p>
 Greetings is also set (<em>hello = greetings</em>) as the default story used for a new dialog.</p>
 <h3 id="a-simple-story">A Simple Story<a class="headerlink" href="#a-simple-story" title="Permanent link">&para;</a></h3>
 <p>How do you define a story? Here is a first simplified version of the story <em>greetings</em>:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">val</span> <span class="py">greetings</span> <span class="p">=</span> <span class="n">story</span><span class="p">(</span><span class="s">&quot;greetings&quot;</span><span class="p">)</span> <span class="p">{</span> 
+<div class="codehilite"><pre><span></span><code><span class="kd">val</span> <span class="nv">greetings</span> <span class="o">=</span> <span class="n">story</span><span class="p">(</span><span class="s">&quot;greetings&quot;</span><span class="p">)</span> <span class="p">{</span> 
         <span class="n">send</span><span class="p">(</span><span class="s">&quot;Welcome to the Tock Open Data Bot! :)&quot;</span><span class="p">)</span>
         <span class="n">end</span><span class="p">(</span><span class="s">&quot;This is a Tock framework demonstration bot: https://github.com/theopenconversationkit/tock&quot;</span><span class="p">)</span>
 <span class="p">}</span>
@@ -1034,7 +1029,7 @@ the function above will be called by the Tock framework.</p>
 <p>The bot sends successively a first response sentence (<em>bus.send()</em>), then a second one indicating that it is
 the last sentence of his answer using a <em>bus.end()</em>.</p>
 <p>Here is the full version of <em>greetings</em>:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">val</span> <span class="py">greetings</span> <span class="p">=</span> <span class="n">story</span><span class="p">(</span><span class="s">&quot;greetings&quot;</span><span class="p">)</span> <span class="p">{</span> 
+<div class="codehilite"><pre><span></span><code><span class="kd">val</span> <span class="nv">greetings</span> <span class="o">=</span> <span class="n">story</span><span class="p">(</span><span class="s">&quot;greetings&quot;</span><span class="p">)</span> <span class="p">{</span> 
     <span class="c1">//cleanup state</span>
     <span class="n">resetDialogState</span><span class="p">()</span>
 
@@ -1095,7 +1090,7 @@ the following functions from the bot <code>main</code>:</p>
   <em>labels dump</em> (<em>Tock Studio &gt; Stories &amp; Answers &gt; Answers</em>).</li>
 </ul>
 <p>Example:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">fun</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">Array</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;)</span> <span class="p">{</span>
+<div class="codehilite"><pre><span></span><code><span class="kd">fun</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">Array</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">{</span>
 
   <span class="n">registerAndInstallBot</span><span class="p">(</span><span class="n">bot</span><span class="p">)</span>
 
@@ -1114,10 +1109,10 @@ the following functions from the bot <code>main</code>:</p>
 <p>Of course, the <em>StoryHandler</em> of <em>greetings</em> does not depend on the context: the answer is always the same.</p>
 <h3 id="secondary-intentions">Secondary Intentions<a class="headerlink" href="#secondary-intentions" title="Permanent link">&para;</a></h3>
 <p>Here is the beginning of the definition of the <em>search</em> story :</p>
-<div class="codehilite"><pre><span></span><code><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">storyDef</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
+<div class="codehilite"><pre><span></span><code><span class="kd">val</span> <span class="nv">search</span> <span class="o">=</span> <span class="n">storyDef</span><span class="o">&lt;</span><span class="n">SearchDef</span><span class="o">&gt;</span><span class="p">(</span>
         <span class="s">&quot;search&quot;</span><span class="p">,</span>
-        <span class="n">otherStarterIntents</span> <span class="p">=</span> <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
-        <span class="n">secondaryIntents</span> <span class="p">=</span> <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">otherStarterIntents</span> <span class="o">=</span> <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
+        <span class="n">secondaryIntents</span> <span class="o">=</span> <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span>
 
 <span class="p">}</span>
 </code></pre></div>
@@ -1132,15 +1127,15 @@ is <em>already</em> the <strong>search</strong> story. Different stories can the
 <h3 id="handle-entities">Handle Entities<a class="headerlink" href="#handle-entities" title="Permanent link">&para;</a></h3>
 <p>To retrieve entity values, it is good practice to define Kotlin <strong>extensions</strong>.
 For example here is the code used to retrieve the <em>destination</em> entity:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">val</span> <span class="py">destinationEntity</span> <span class="p">=</span> <span class="n">openBot</span><span class="p">.</span><span class="n">entity</span><span class="p">(</span><span class="s">&quot;location&quot;</span><span class="p">,</span> <span class="s">&quot;destination&quot;</span><span class="p">)</span> 
+<div class="codehilite"><pre><span></span><code><span class="kd">val</span> <span class="nv">destinationEntity</span> <span class="o">=</span> <span class="n">openBot</span><span class="p">.</span><span class="na">entity</span><span class="p">(</span><span class="s">&quot;location&quot;</span><span class="p">,</span> <span class="s">&quot;destination&quot;</span><span class="p">)</span> 
 
-<span class="k">var</span> <span class="py">BotBus</span><span class="p">.</span><span class="n">destination</span><span class="p">:</span> <span class="n">Place</span><span class="p">?</span>
-    <span class="k">get</span><span class="p">()</span> <span class="p">=</span> <span class="n">place</span><span class="p">(</span><span class="n">destinationEntity</span><span class="p">)</span>
-    <span class="k">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="p">=</span> <span class="n">setPlace</span><span class="p">(</span><span class="n">destinationEntity</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+<span class="kd">var</span> <span class="nv">BotBus</span><span class="p">.</span><span class="na">destination</span><span class="p">:</span> <span class="n">Place?</span>
+    <span class="k">get</span><span class="p">()</span> <span class="o">=</span> <span class="n">place</span><span class="p">(</span><span class="n">destinationEntity</span><span class="p">)</span>
+    <span class="k">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">=</span> <span class="n">setPlace</span><span class="p">(</span><span class="n">destinationEntity</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
-<span class="k">private</span> <span class="k">fun</span> <span class="nc">BotBus</span><span class="p">.</span><span class="nf">place</span><span class="p">(</span><span class="n">entity</span><span class="p">:</span> <span class="n">Entity</span><span class="p">):</span> <span class="n">Place</span><span class="p">?</span> <span class="p">=</span> <span class="n">entityValue</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="o">::</span><span class="n">placeValue</span><span class="p">)</span><span class="o">?.</span><span class="n">place</span>
+<span class="kd">private</span> <span class="kd">fun</span> <span class="n">BotBus</span><span class="p">.</span><span class="nf">place</span><span class="p">(</span><span class="n">entity</span><span class="p">:</span> <span class="n">Entity</span><span class="p">):</span> <span class="n">Place? </span><span class="o">=</span> <span class="n">entityValue</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="o">::</span><span class="n">placeValue</span><span class="p">)</span><span class="o">?.</span><span class="na">place</span>
 
-<span class="k">private</span> <span class="k">fun</span> <span class="nc">BotBus</span><span class="p">.</span><span class="nf">setPlace</span><span class="p">(</span><span class="n">entity</span><span class="p">:</span> <span class="n">Entity</span><span class="p">,</span> <span class="n">place</span><span class="p">:</span> <span class="n">Place</span><span class="p">?)</span> <span class="p">=</span> <span class="n">changeEntityValue</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">place</span><span class="o">?.</span><span class="n">let</span> <span class="p">{</span> <span class="n">PlaceValue</span><span class="p">(</span><span class="n">place</span><span class="p">)</span> <span class="p">})</span>
+<span class="kd">private</span> <span class="kd">fun</span> <span class="n">BotBus</span><span class="p">.</span><span class="nf">setPlace</span><span class="p">(</span><span class="n">entity</span><span class="p">:</span> <span class="n">Entity</span><span class="p">,</span> <span class="n">place</span><span class="p">:</span> <span class="n">Place?)</span> <span class="o">=</span> <span class="n">changeEntityValue</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">place</span><span class="o">?.</span><span class="na">let</span> <span class="p">{</span> <span class="n">PlaceValue</span><span class="p">(</span><span class="n">place</span><span class="p">)</span> <span class="p">})</span>
 </code></pre></div>
 
 <p>An entity of type "location" and role "destination" is created.
@@ -1148,16 +1143,16 @@ There is a corresponding entity in the NLP model.</p>
 <p>A variable <em>destination</em> is defined, which will simplify the handling of this entity in the conversational code.
 This variable contains the current value of the destination in the user context.</p>
 <p>Here's a full version of the <em>search</em> story that uses <em>destination</em>:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">storyDef</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
+<div class="codehilite"><pre><span></span><code><span class="kd">val</span> <span class="nv">search</span> <span class="o">=</span> <span class="n">storyDef</span><span class="o">&lt;</span><span class="n">SearchDef</span><span class="o">&gt;</span><span class="p">(</span>
         <span class="s">&quot;search&quot;</span><span class="p">,</span>
         <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
         <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span>
 
         <span class="c1">//check mandatory entities</span>
         <span class="k">when</span> <span class="p">{</span>
-            <span class="n">destination</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;For which destination?&quot;</span><span class="p">)</span>
-            <span class="n">origin</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;For which origin?&quot;</span><span class="p">)</span>
-            <span class="n">departureDate</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;When?&quot;</span><span class="p">)</span>
+            <span class="n">destination</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;For which destination?&quot;</span><span class="p">)</span>
+            <span class="n">origin</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;For which origin?&quot;</span><span class="p">)</span>
+            <span class="n">departureDate</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;When?&quot;</span><span class="p">)</span>
         <span class="p">}</span> 
 <span class="p">}</span>
 </code></pre></div>
@@ -1166,25 +1161,25 @@ This variable contains the current value of the destination in the user context.
 Same behaviour for the origin or date of departure.</p>
 <p>If the 3 required values are specified, then the real answer developed in the <em>SearchDef</em> class is used.</p>
 <p>Here is the full version of this first part of the code:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">storyDef</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
+<div class="codehilite"><pre><span></span><code><span class="kd">val</span> <span class="nv">search</span> <span class="o">=</span> <span class="n">storyDef</span><span class="o">&lt;</span><span class="n">SearchDef</span><span class="o">&gt;</span><span class="p">(</span>
         <span class="s">&quot;search&quot;</span><span class="p">,</span>
         <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
         <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span>
 
         <span class="c1">//handle generic location intent</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">isIntent</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">)</span> <span class="p">&amp;&amp;</span> <span class="n">location</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">destination</span> <span class="p">==</span> <span class="k">null</span> <span class="p">||</span> <span class="n">origin</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">destination</span> <span class="p">=</span> <span class="n">returnsAndRemoveLocation</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">isIntent</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">location</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">destination</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">origin</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">destination</span> <span class="o">=</span> <span class="n">returnsAndRemoveLocation</span><span class="p">()</span>
             <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-                <span class="n">origin</span> <span class="p">=</span> <span class="n">returnsAndRemoveLocation</span><span class="p">()</span>
+                <span class="n">origin</span> <span class="o">=</span> <span class="n">returnsAndRemoveLocation</span><span class="p">()</span>
             <span class="p">}</span>
         <span class="p">}</span>    
 
         <span class="c1">//check mandatory entities</span>
         <span class="k">when</span> <span class="p">{</span>
-            <span class="n">destination</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;For which destination?&quot;</span><span class="p">)</span>
-            <span class="n">origin</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;For which origin?&quot;</span><span class="p">)</span>
-            <span class="n">departureDate</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;When?&quot;</span><span class="p">)</span>
+            <span class="n">destination</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;For which destination?&quot;</span><span class="p">)</span>
+            <span class="n">origin</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;For which origin?&quot;</span><span class="p">)</span>
+            <span class="n">departureDate</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;When?&quot;</span><span class="p">)</span>
         <span class="p">}</span> 
 <span class="p">}</span>
 </code></pre></div>
@@ -1196,23 +1191,23 @@ Otherwise, it is the origin.</p>
 <h3 id="handlerdef">HandlerDef<a class="headerlink" href="#handlerdef" title="Permanent link">&para;</a></h3>
 <p>In the <em>search</em> story above, you may have noted the generic <em>SearchDef</em> typing.
 Here is the code of this class:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">@GAHandler</span><span class="p">(</span><span class="n">GASearchConnector</span><span class="o">::</span><span class="k">class</span><span class="p">)</span>
-<span class="n">@MessengerHandler</span><span class="p">(</span><span class="n">MessengerSearchConnector</span><span class="o">::</span><span class="k">class</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">SearchDef</span><span class="p">(</span><span class="n">bus</span><span class="p">:</span> <span class="n">BotBus</span><span class="p">)</span> <span class="p">:</span> <span class="n">HandlerDef</span><span class="p">&lt;</span><span class="n">SearchConnector</span><span class="p">&gt;(</span><span class="n">bus</span><span class="p">)</span> <span class="p">{</span>
+<div class="codehilite"><pre><span></span><code><span class="nd">@GAHandler</span><span class="p">(</span><span class="n">GASearchConnector</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
+<span class="nd">@MessengerHandler</span><span class="p">(</span><span class="n">MessengerSearchConnector</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
+<span class="kd">class</span> <span class="nc">SearchDef</span><span class="p">(</span><span class="n">bus</span><span class="p">:</span> <span class="n">BotBus</span><span class="p">)</span> <span class="p">:</span> <span class="n">HandlerDef</span><span class="o">&lt;</span><span class="n">SearchConnector</span><span class="o">&gt;</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span> <span class="p">{</span>
 
-    <span class="k">private</span> <span class="k">val</span> <span class="py">d</span><span class="p">:</span> <span class="n">Place</span> <span class="p">=</span> <span class="n">bus</span><span class="p">.</span><span class="n">destination</span><span class="o">!!</span>
-    <span class="k">private</span> <span class="k">val</span> <span class="py">o</span><span class="p">:</span> <span class="n">Place</span> <span class="p">=</span> <span class="n">bus</span><span class="p">.</span><span class="n">origin</span><span class="o">!!</span>
-    <span class="k">private</span> <span class="k">val</span> <span class="py">date</span><span class="p">:</span> <span class="n">LocalDateTime</span> <span class="p">=</span> <span class="n">bus</span><span class="p">.</span><span class="n">departureDate</span><span class="o">!!</span>
+    <span class="kd">private</span> <span class="kd">val</span> <span class="nv">d</span><span class="p">:</span> <span class="n">Place</span> <span class="o">=</span> <span class="n">bus</span><span class="p">.</span><span class="na">destination</span><span class="o">!!</span>
+    <span class="kd">private</span> <span class="kd">val</span> <span class="nv">o</span><span class="p">:</span> <span class="n">Place</span> <span class="o">=</span> <span class="n">bus</span><span class="p">.</span><span class="na">origin</span><span class="o">!!</span>
+    <span class="kd">private</span> <span class="kd">val</span> <span class="nv">date</span><span class="p">:</span> <span class="n">LocalDateTime</span> <span class="o">=</span> <span class="n">bus</span><span class="p">.</span><span class="na">departureDate</span><span class="o">!!</span>
 
-    <span class="k">override</span> <span class="k">fun</span> <span class="nf">answer</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">override</span> <span class="kd">fun</span> <span class="nf">answer</span><span class="p">()</span> <span class="p">{</span>
         <span class="n">send</span><span class="p">(</span><span class="s">&quot;From {0} to {1}&quot;</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
         <span class="n">send</span><span class="p">(</span><span class="s">&quot;Departure on {0}&quot;</span><span class="p">,</span> <span class="n">date</span> <span class="k">by</span> <span class="n">datetimeFormat</span><span class="p">)</span>
-        <span class="k">val</span> <span class="py">journeys</span> <span class="p">=</span> <span class="n">SncfOpenDataClient</span><span class="p">.</span><span class="n">journey</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">date</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">journeys</span><span class="p">.</span><span class="n">isEmpty</span><span class="p">())</span> <span class="p">{</span>
+        <span class="kd">val</span> <span class="nv">journeys</span> <span class="o">=</span> <span class="n">SncfOpenDataClient</span><span class="p">.</span><span class="na">journey</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">date</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">journeys</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span> <span class="p">{</span>
             <span class="n">end</span><span class="p">(</span><span class="s">&quot;Sorry, no routes found :(&quot;</span><span class="p">)</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
             <span class="n">send</span><span class="p">(</span><span class="s">&quot;Here is the first proposal:&quot;</span><span class="p">)</span>
-            <span class="n">connector</span><span class="o">?.</span><span class="n">sendFirstJourney</span><span class="p">(</span><span class="n">journeys</span><span class="p">.</span><span class="n">first</span><span class="p">())</span>
+            <span class="n">connector</span><span class="o">?.</span><span class="na">sendFirstJourney</span><span class="p">(</span><span class="n">journeys</span><span class="p">.</span><span class="na">first</span><span class="p">())</span>
             <span class="n">end</span><span class="p">()</span>
         <span class="p">}</span>
     <span class="p">}</span>
@@ -1231,23 +1226,23 @@ indicate the corresponding implementations for the different supported connector
 since <em>connector</em> would be <em>null</em>.</p>
 <h3 id="connectordef">ConnectorDef<a class="headerlink" href="#connectordef" title="Permanent link">&para;</a></h3>
 <p>Here is a simplified version of <em>SearchConnector</em> :</p>
-<div class="codehilite"><pre><span></span><code><span class="k">sealed</span> <span class="k">class</span> <span class="nc">SearchConnector</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">SearchDef</span><span class="p">)</span> <span class="p">:</span> <span class="n">ConnectorDef</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span><span class="n">context</span><span class="p">)</span> <span class="p">{</span>
+<div class="codehilite"><pre><span></span><code><span class="kd">sealed</span> <span class="kd">class</span> <span class="nc">SearchConnector</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">SearchDef</span><span class="p">)</span> <span class="p">:</span> <span class="n">ConnectorDef</span><span class="o">&lt;</span><span class="n">SearchDef</span><span class="o">&gt;</span><span class="p">(</span><span class="n">context</span><span class="p">)</span> <span class="p">{</span>
 
-    <span class="k">fun</span> <span class="nc">Section</span><span class="p">.</span><span class="nf">title</span><span class="p">():</span> <span class="n">CharSequence</span> <span class="p">=</span> <span class="n">i18n</span><span class="p">(</span><span class="s">&quot;{0} - {1}&quot;</span><span class="p">,</span> <span class="n">from</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span>
+    <span class="kd">fun</span> <span class="n">Section</span><span class="p">.</span><span class="nf">title</span><span class="p">():</span> <span class="n">CharSequence</span> <span class="o">=</span> <span class="n">i18n</span><span class="p">(</span><span class="s">&quot;{0} - {1}&quot;</span><span class="p">,</span> <span class="n">from</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span>
 
-    <span class="k">fun</span> <span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">journey</span><span class="p">:</span> <span class="n">Journey</span><span class="p">)</span> <span class="p">=</span> <span class="n">withMessage</span><span class="p">(</span><span class="n">sendFirstJourney</span><span class="p">(</span><span class="n">journey</span><span class="p">.</span><span class="n">publicTransportSections</span><span class="p">()))</span>
+    <span class="kd">fun</span> <span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">journey</span><span class="p">:</span> <span class="n">Journey</span><span class="p">)</span> <span class="o">=</span> <span class="n">withMessage</span><span class="p">(</span><span class="n">sendFirstJourney</span><span class="p">(</span><span class="n">journey</span><span class="p">.</span><span class="na">publicTransportSections</span><span class="p">()))</span>
 
-    <span class="k">abstract</span> <span class="k">fun</span> <span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">sections</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Section</span><span class="p">&gt;):</span> <span class="n">ConnectorMessage</span>
+    <span class="kd">abstract</span> <span class="kd">fun</span> <span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">sections</span><span class="p">:</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Section</span><span class="o">&gt;</span><span class="p">):</span> <span class="n">ConnectorMessage</span>
 
 <span class="p">}</span>
 </code></pre></div>
 
 <p>And its Messenger implementation:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">MessengerSearchConnector</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">SearchDef</span><span class="p">)</span> <span class="p">:</span> <span class="n">SearchConnector</span><span class="p">(</span><span class="n">context</span><span class="p">)</span> <span class="p">{</span>
+<div class="codehilite"><pre><span></span><code><span class="kd">class</span> <span class="nc">MessengerSearchConnector</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">SearchDef</span><span class="p">)</span> <span class="p">:</span> <span class="n">SearchConnector</span><span class="p">(</span><span class="n">context</span><span class="p">)</span> <span class="p">{</span>
 
-    <span class="k">override</span> <span class="k">fun</span> <span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">sections</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Section</span><span class="p">&gt;):</span> <span class="n">ConnectorMessage</span> <span class="p">=</span>
+    <span class="kd">override</span> <span class="kd">fun</span> <span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">sections</span><span class="p">:</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Section</span><span class="o">&gt;</span><span class="p">):</span> <span class="n">ConnectorMessage</span> <span class="o">=</span>
           <span class="n">flexibleListTemplate</span><span class="p">(</span>
-                <span class="n">sections</span><span class="p">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">section</span> <span class="p">-&gt;</span>
+                <span class="n">sections</span><span class="p">.</span><span class="na">map</span> <span class="p">{</span> <span class="n">section</span> <span class="o">-&gt;</span>
                       <span class="n">with</span><span class="p">(</span><span class="n">section</span><span class="p">)</span> <span class="p">{</span>
                           <span class="n">listElement</span><span class="p">(</span>
                                 <span class="n">title</span><span class="p">(),</span>
@@ -1269,12 +1264,12 @@ each connector is specified in the dedicated classes.</p>
 in the current story. For this, Tock provides the concept of <em>StoryStep</em>.</p>
 <p>There are two types of StoryStep.</p>
 <h4 id="simplestorystep">SimpleStoryStep<a class="headerlink" href="#simplestorystep" title="Permanent link">&para;</a></h4>
-<div class="codehilite"><pre><span></span><code><span class="k">enum</span> <span class="k">class</span> <span class="nc">MyStep</span> <span class="p">:</span> <span class="n">SimpleStoryStep</span> <span class="p">{</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="p">}</span>
+<div class="codehilite"><pre><span></span><code><span class="kd">enum</span> <span class="kd">class</span> <span class="nc">MyStep</span> <span class="p">:</span> <span class="n">SimpleStoryStep</span> <span class="p">{</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="p">}</span>
 
-<span class="k">val</span> <span class="py">story</span> <span class="p">=</span> <span class="n">storyWithSteps</span><span class="p">&lt;</span><span class="n">MyStep</span><span class="p">&gt;(</span><span class="s">&quot;intent&quot;</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span><span class="p">(</span><span class="n">step</span> <span class="p">==</span> <span class="n">a</span><span class="p">)</span> <span class="p">{</span>
+<span class="kd">val</span> <span class="nv">story</span> <span class="o">=</span> <span class="n">storyWithSteps</span><span class="o">&lt;</span><span class="n">MyStep</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;intent&quot;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">step</span> <span class="o">==</span> <span class="n">a</span><span class="p">)</span> <span class="p">{</span>
         <span class="c1">// ...</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">step</span> <span class="p">==</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">step</span> <span class="o">==</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
         <span class="c1">// ...</span>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
         <span class="c1">//default case</span>
@@ -1286,9 +1281,9 @@ in the current story. For this, Tock provides the concept of <em>StoryStep</em>.
 <ul>
 <li>Manually change the step</li>
 </ul>
-<div class="codehilite"><pre><span></span><code><span class="k">val</span> <span class="py">story</span> <span class="p">=</span> <span class="n">storyWithSteps</span><span class="p">&lt;</span><span class="n">MyStep</span><span class="p">&gt;(</span><span class="s">&quot;intent&quot;</span><span class="p">)</span> <span class="p">{</span>
+<div class="codehilite"><pre><span></span><code><span class="kd">val</span> <span class="nv">story</span> <span class="o">=</span> <span class="n">storyWithSteps</span><span class="o">&lt;</span><span class="n">MyStep</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;intent&quot;</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">//(...)</span>
-    <span class="n">step</span> <span class="p">=</span> <span class="n">MyStep</span><span class="p">.</span><span class="n">a</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="n">MyStep</span><span class="p">.</span><span class="na">a</span>
     <span class="c1">// the step will be persisted as long as we stay in this story</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -1299,7 +1294,7 @@ in the current story. For this, Tock provides the concept of <em>StoryStep</em>.
 <p>More details on this topic <a href="../code-a-bot/#postback-buttons-quick-replies">here</a>.</p>
 <h4 id="storysteps-with-complex-behavior">StorySteps with complex behavior<a class="headerlink" href="#storysteps-with-complex-behavior" title="Permanent link">&para;</a></h4>
 <p>In more complex cases, we want to be able to define a behavior for each step.</p>
-<div class="codehilite"><pre><span></span><code><span class="k">enum</span> <span class="k">class</span> <span class="nc">MySteps</span> <span class="p">:</span> <span class="n">StoryStep</span><span class="p">&lt;</span><span class="n">MyHandlerDef</span><span class="p">&gt;</span> <span class="p">{</span>
+<div class="codehilite"><pre><span></span><code><span class="kd">enum</span> <span class="kd">class</span> <span class="nc">MySteps</span> <span class="p">:</span> <span class="n">StoryStep</span><span class="o">&lt;</span><span class="n">MyHandlerDef</span><span class="o">&gt;</span> <span class="p">{</span>
 
     <span class="c1">//no specific behaviour</span>
     <span class="n">display</span><span class="p">,</span>
@@ -1307,15 +1302,15 @@ in the current story. For this, Tock provides the concept of <em>StoryStep</em>.
     <span class="n">select</span> <span class="p">{</span>
 
         <span class="c1">// &quot;select&quot; step will be automatically selected if the select sub-intention is detected</span>
-        <span class="k">override</span> <span class="k">val</span> <span class="py">intent</span><span class="p">:</span> <span class="n">IntentAware</span><span class="p">?</span> <span class="p">=</span> <span class="n">SecondaryIntent</span><span class="p">.</span><span class="n">select</span>
+        <span class="kd">override</span> <span class="kd">val</span> <span class="nv">intent</span><span class="p">:</span> <span class="n">IntentAware? </span><span class="o">=</span> <span class="n">SecondaryIntent</span><span class="p">.</span><span class="na">select</span>
 
-        <span class="k">override</span> <span class="k">fun</span> <span class="nf">answer</span><span class="p">():</span> <span class="n">MyHandlerDef</span><span class="p">.()</span> <span class="p">-&gt;</span> <span class="n">Any</span><span class="p">?</span> <span class="p">=</span> <span class="p">{</span>
+        <span class="kd">override</span> <span class="kd">fun</span> <span class="nf">answer</span><span class="p">():</span> <span class="n">MyHandlerDef</span><span class="p">.()</span> <span class="o">-&gt;</span> <span class="kt">Any?</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">end</span><span class="p">(</span><span class="s">&quot;I don&#39;t know yet how to select something&quot;</span><span class="p">)</span>
         <span class="p">}</span>
     <span class="p">},</span>
 
     <span class="n">disruption</span> <span class="p">{</span>
-        <span class="k">override</span> <span class="k">fun</span> <span class="nf">answer</span><span class="p">():</span> <span class="n">ScoreboardDef</span><span class="p">.()</span> <span class="p">-&gt;</span> <span class="n">Any</span><span class="p">?</span> <span class="p">=</span> <span class="p">{</span>
+        <span class="kd">override</span> <span class="kd">fun</span> <span class="nf">answer</span><span class="p">():</span> <span class="n">ScoreboardDef</span><span class="p">.()</span> <span class="o">-&gt;</span> <span class="kt">Any?</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">end</span><span class="p">(</span><span class="s">&quot;some perturbation&quot;</span><span class="p">)</span>
         <span class="p">}</span>
     <span class="p">};</span>
@@ -1335,7 +1330,7 @@ in the current story. For this, Tock provides the concept of <em>StoryStep</em>.
 
 <p>It is also possible to define a * StoryStep * and dedicated parameters:</p>
 <div class="codehilite"><pre><span></span><code><span class="c1">//to define parameters, just extend the ParameterKey interface</span>
-<span class="k">enum</span> <span class="k">class</span> <span class="nc">ChoiceParameter</span> <span class="p">:</span> <span class="n">ParameterKey</span> <span class="p">{</span>
+<span class="kd">enum</span> <span class="kd">class</span> <span class="nc">ChoiceParameter</span> <span class="p">:</span> <span class="n">ParameterKey</span> <span class="p">{</span>
     <span class="n">nextResultDate</span><span class="p">,</span> <span class="n">nextResultOrigin</span>
 <span class="p">}</span>
 
@@ -1343,12 +1338,12 @@ in the current story. For this, Tock provides the concept of <em>StoryStep</em>.
             <span class="s">&quot;The bot is very limited! Only itineraries are supported :)&quot;</span><span class="p">,</span>
             <span class="n">postbackButton</span><span class="p">(</span>
                 <span class="s">&quot;Itineraries&quot;</span><span class="p">,</span>
-                <span class="n">intent</span> <span class="p">=</span> <span class="n">search</span><span class="p">,</span> 
+                <span class="n">intent</span> <span class="o">=</span> <span class="n">search</span><span class="p">,</span> 
                 <span class="c1">//if no step is specified, the current step is used</span>
-                <span class="n">step</span> <span class="p">=</span> <span class="n">MyStep</span><span class="p">.</span><span class="n">a</span><span class="p">,</span> 
-                <span class="n">parameters</span> <span class="p">=</span>  
+                <span class="n">step</span> <span class="o">=</span> <span class="n">MyStep</span><span class="p">.</span><span class="na">a</span><span class="p">,</span> 
+                <span class="n">parameters</span> <span class="o">=</span>  
                     <span class="c1">//this parameter is stored as a string (hooks are used)</span>
-                    <span class="n">nextResultDate</span><span class="p">[</span><span class="n">nextDate</span><span class="p">]</span> <span class="p">+</span> 
+                    <span class="n">nextResultDate</span><span class="o">[</span><span class="n">nextDate</span><span class="o">]</span> <span class="o">+</span> 
                     <span class="c1">//this parameter is stored in json (parentheses are used)</span>
                     <span class="n">nextResultOrigin</span><span class="p">(</span><span class="n">origin</span><span class="p">)</span>
             <span class="p">)</span>
@@ -1356,9 +1351,9 @@ in the current story. For this, Tock provides the concept of <em>StoryStep</em>.
 </code></pre></div>
 
 <p>To retrieve the parameters of the button that was clicked:</p>
-<div class="codehilite"><pre><span></span><code>    <span class="k">val</span> <span class="py">isClick</span> <span class="p">=</span> <span class="n">isChoiceAction</span><span class="p">()</span>
-    <span class="k">val</span> <span class="py">nextDate</span> <span class="p">=</span> <span class="n">choice</span><span class="p">(</span><span class="n">nextResultDate</span><span class="p">)</span>
-    <span class="k">val</span> <span class="py">nextOrigin</span> <span class="p">:</span> <span class="n">Locality</span> <span class="p">=</span> <span class="n">action</span><span class="p">.</span><span class="n">jsonChoice</span><span class="p">(</span><span class="n">nextResultOrigin</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code>    <span class="kd">val</span> <span class="nv">isClick</span> <span class="o">=</span> <span class="n">isChoiceAction</span><span class="p">()</span>
+    <span class="kd">val</span> <span class="nv">nextDate</span> <span class="o">=</span> <span class="n">choice</span><span class="p">(</span><span class="n">nextResultDate</span><span class="p">)</span>
+    <span class="kd">val</span> <span class="nv">nextOrigin</span> <span class="p">:</span> <span class="n">Locality</span> <span class="o">=</span> <span class="n">action</span><span class="p">.</span><span class="na">jsonChoice</span><span class="p">(</span><span class="n">nextResultOrigin</span><span class="p">)</span>
 </code></pre></div>
                 
                   
@@ -1368,7 +1363,7 @@ in the current story. For this, Tock provides the concept of <em>StoryStep</em>.
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 27, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 18, 2021</span>
     
   </small>
 </div>
@@ -1383,45 +1378,44 @@ in the current story. For this, Tock provides the concept of <em>StoryStep</em>.
             </article>
           </div>
         </div>
+        
       </main>
       
         
 <footer class="md-footer">
   
-    <div class="md-footer-nav">
-      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
-        
-          <a href="../bot-api/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
-            <div class="md-footer-nav__button md-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        <a href="../bot-api/" class="md-footer__link md-footer__link--prev" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Bot API mode
             </div>
-            <div class="md-footer-nav__title">
-              <div class="md-ellipsis">
-                <span class="md-footer-nav__direction">
-                  Previous
-                </span>
-                Bot API mode
-              </div>
+          </div>
+        </a>
+      
+      
+        <a href="../connectors/" class="md-footer__link md-footer__link--next" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Connectors
             </div>
-          </a>
-        
-        
-          <a href="../connectors/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
-            <div class="md-footer-nav__title">
-              <div class="md-ellipsis">
-                <span class="md-footer-nav__direction">
-                  Next
-                </span>
-                Connectors
-              </div>
-            </div>
-            <div class="md-footer-nav__button md-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
-            </div>
-          </a>
-        
-      </nav>
-    </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -1435,6 +1429,7 @@ in the current story. For this, Tock provides the concept of <em>StoryStep</em>.
         <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
           Material for MkDocs
         </a>
+        
       </div>
       
     </div>
@@ -1442,19 +1437,13 @@ in the current story. For this, Tock provides the concept of <em>StoryStep</em>.
 </footer>
       
     </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["tabs", "instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../assets/javascripts/workers/search.fe42c31b.min.js", "version": null}</script>
     
-      <script src="../../assets/javascripts/vendor.93c04032.min.js"></script>
-      <script src="../../assets/javascripts/bundle.83e5331e.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
-      
-      <script>
-        app = initialize({
-          base: "../..",
-          features: ['tabs', 'instant'],
-          search: Object.assign({
-            worker: "../../assets/javascripts/worker/search.8c7e0a7e.min.js"
-          }, typeof search !== "undefined" && search)
-        })
-      </script>
+    
+      <script src="../../assets/javascripts/bundle.4ea5477f.min.js"></script>
       
     
   </body>

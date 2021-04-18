@@ -17,18 +17,30 @@
 
 cd dokka
 mvn clean dokka:dokka
-cd ../docs-mk/en
+cd ..
+rm -rf docs/dokka
+cp -Rf dokka/target/* docs
+
+cd docs-mk/en
 rm -rf site
 mkdocs build
+rm -rf ../../docs/en/*
+cp -Rf site/* ../../docs/en
+rm -rf site
+mkdocs build -f mkdocs-dark.yml
+rm -rf ../../docs/en-dark/*
+cp -Rf site/* ../../docs/en-dark
+rm -rf site
+
 cd ../fr
 rm -rf site
 mkdocs build
+rm -rf ../../docs/fr/*
+cp -Rf site/* ../../docs/fr
+rm -rf site
+mkdocs build -f mkdocs-dark.yml
+rm -rf ../../docs/fr-dark/*
+cp -Rf site/* ../../docs/fr-dark
+rm -rf site
 
 cd ../..
-
-rm -rf docs/dokka
-cp -Rf dokka/target/* docs
-rm -rf docs/en/*
-cp -Rf docs-mk/en/site/* docs/en
-rm -rf docs/fr/*
-cp -Rf docs-mk/fr/site/* docs/fr
