@@ -31,6 +31,7 @@ export class ChartDialogComponent {
   @Input() userPreferences: UserAnalyticsPreferences;
   @Input() type: string;
   @Input() isMultiChart: boolean;
+  @Input() seriesSelectionList: number[] = [];
 
   constructor(public dialogRef: NbDialogRef<ChartDialogComponent>) {
   }

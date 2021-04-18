@@ -58,11 +58,13 @@ export class ChartComponent implements OnChanges {
   @Input()
   isMultiChart = true;
 
+  @Input()
+  seriesSelectionList: number[] = [];
+
   mainChart: ChartData;
   altChart: ChartData;
   isFlipped = false;
 
-  seriesSelectionList: number[] = [];
   intentsList : string[] = []
 
   chartOptions: any;
@@ -81,7 +83,8 @@ export class ChartComponent implements OnChanges {
         title: this.title,
         type: this.type,
         userPreferences: this.chartPreferences,
-        isMultiChart: this.isMultiChart
+        isMultiChart: this.isMultiChart,
+        seriesSelectionList: this.seriesSelectionList
       }
     });
   }
