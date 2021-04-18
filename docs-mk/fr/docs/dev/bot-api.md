@@ -14,7 +14,7 @@ Des clients sont aussi disponibles pour [Javascript/Node](bot-api.md#developper-
 Il est possible de développer des parcours Tock dans n'importe quel langage via la [_Bot API_](bot-api.md#developper-via-lapi).
 
 [<img alt="Logo Kotlin" title="Kotlin"
-      src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin-logo.svg/1024px-Kotlin-logo.svg.png" 
+      src="https://upload.wikimedia.org/wikipedia/commons/7/74/Kotlin_Icon.png" 
       style="width: 50px;">](bot-api.md#developper-en-kotlin)
 [<img alt="Logo Nodejs" title="Nodejs"
       src="https://www.boostit.net/wp-content/uploads/2016/08/node-js-icon.png" 
@@ -38,7 +38,7 @@ Plutôt que déployer se propre plateforme Tock, il est possible de tester les m
 ## Développer en Kotlin
 
 <img alt="Logo Kotlin" title="Kotlin"
-src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin-logo.svg/1024px-Kotlin-logo.svg.png" 
+src="https://upload.wikimedia.org/wikipedia/commons/7/74/Kotlin_Icon.png" 
 style="width: 100px;">
 
 ### Activer le mode WebSocket

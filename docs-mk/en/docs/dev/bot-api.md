@@ -6,7 +6,7 @@
 Any programming language can be used, leveraging the Tock [Bot API](../api.md#tock-bot-definition-api). 
 
 [<img alt="Kotlin logo" title="Kotlin"
-      src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin-logo.svg/1024px-Kotlin-logo.svg.png" 
+      src="https://upload.wikimedia.org/wikipedia/commons/7/74/Kotlin_Icon.png" 
       style="width: 50px;">](bot-api.md#develop-with-kotlin)
 [<img alt="Nodejs logo" title="Nodejs"
       src="https://www.boostit.net/wp-content/uploads/2016/08/node-js-icon.png" 
@@ -26,7 +26,7 @@ Rather than deploying its own Tock platform, it is possible to test the _WebSock
 ## Develop with Kotlin
 
 <img alt="Kotlin logo" title="Kotlin"
-src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin-logo.svg/1024px-Kotlin-logo.svg.png" 
+src="https://upload.wikimedia.org/wikipedia/commons/7/74/Kotlin_Icon.png" 
 style="width: 100px;">
 
 ### Enable WebSocket mode
