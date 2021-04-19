@@ -18,40 +18,43 @@ package ai.tock.shared
 
 import java.util.Properties
 
-private fun findProperty(name: String): String? {
+/**
+ * Return an env or system String property or null if not found
+ */
+fun propertyOrNull(name: String): String? {
     return System.getProperty(name) ?: System.getenv(name)
 }
 
 /**
  * Is this env or system property exists?
  */
-fun propertyExists(name: String): Boolean = findProperty(name) != null
+fun propertyExists(name: String): Boolean = propertyOrNull(name) != null
 
 /**
  * Return an env or system String property.
  */
-fun property(name: String, defaultValue: String): String = findProperty(name) ?: defaultValue
+fun property(name: String, defaultValue: String): String = propertyOrNull(name) ?: defaultValue
 
 /**
  * Return an env or system Int property.
  */
-fun intProperty(name: String, defaultValue: Int): Int = findProperty(name)?.toInt() ?: defaultValue
+fun intProperty(name: String, defaultValue: Int): Int = propertyOrNull(name)?.toInt() ?: defaultValue
 
 /**
  * Return an env or system Long property.
  */
-fun longProperty(name: String, defaultValue: Long): Long = findProperty(name)?.toLong() ?: defaultValue
+fun longProperty(name: String, defaultValue: Long): Long = propertyOrNull(name)?.toLong() ?: defaultValue
 
 /**
  * Return an env or system Boolean property.
  */
-fun booleanProperty(name: String, defaultValue: Boolean): Boolean = findProperty(name)?.toBoolean() ?: defaultValue
+fun booleanProperty(name: String, defaultValue: Boolean): Boolean = propertyOrNull(name)?.toBoolean() ?: defaultValue
 
 /**
  * Return an env or system List property.
  */
 fun listProperty(name: String, defaultValue: List<String>, separator: String = ","): List<String> =
-    findProperty(name)?.split(separator) ?: defaultValue
+    propertyOrNull(name)?.split(separator) ?: defaultValue
 
 /**
  * Return an env or system Map property.
@@ -62,7 +65,7 @@ fun mapProperty(
     entrySeparator: String = "|",
     keyValueSeparator: String = "="
 ): Map<String, String> =
-    findProperty(name)?.split(entrySeparator)?.map { it.split(keyValueSeparator).let { it[0] to it[1] } }?.toMap()
+    propertyOrNull(name)?.split(entrySeparator)?.map { it.split(keyValueSeparator).let { it[0] to it[1] } }?.toMap()
         ?: defaultValue
 
 /**
@@ -74,7 +77,7 @@ fun mapListProperty(
     entrySeparator: String = "|",
     keyValueSeparator: String = "=",
     listSeparator: String = ","
-): Map<String, List<String>> = findProperty(name)?.split(entrySeparator)?.map {
+): Map<String, List<String>> = propertyOrNull(name)?.split(entrySeparator)?.map {
     it.split(keyValueSeparator).let { it[0] to it[1].split(listSeparator) }
 }?.toMap() ?: defaultValue
 
