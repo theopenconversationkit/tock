@@ -22,7 +22,7 @@ description: > # this means to ignore newlines until "baseurl:"
   line in _config.yml. It will appear in your document head meta (for
   Google search results) and in your feed.xml site description.
 
-baseurl: "" # the subpath of your site, e.g. /blog
+baseurl: "/tock" # the subpath of your site, e.g. /blog
 
 # This is mostly for testing
 url: "https://fabilin.github.io" # the base hostname & protocol for your site
@@ -62,7 +62,6 @@ themeColor: blue # purple, green, blue, orange, purple, grey
 fixedNav: 'true' # true or false
 
 permalink: /:year/:title/
-markdown: kramdown
 exclude: [_site, CHANGELOG.md, LICENSE, README.md, vendor]
 
 # Collections
