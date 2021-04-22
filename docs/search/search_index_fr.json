@@ -32,7 +32,7 @@ layout: null
         {% assign added = true %}
       {% endunless %}
     {% endfor %}
-    {% for doc in site.docs-fr %}
+    {% for doc in site.fr %}
       {% unless doc.excluded_in_search %}
         {% if added %}, {% endif %}
         {% assign added = false %}

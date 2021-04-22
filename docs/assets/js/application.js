@@ -224,7 +224,7 @@
             Array.prototype.forEach.call(n, function(e) {
                     new f.default.Event.MatchMedia("(min-width: 1220px)", new f.default.Event.Listener(e.previousElementSibling, "click", new f.default.Nav.Collapse(e)))
                 }), new f.default.Event.MatchMedia("(max-width: 1219px)", new f.default.Event.Listener("[data-md-component=navigation] [data-md-toggle]", "change", new f.default.Nav.Scrolling("[data-md-component=navigation] nav"))), document.querySelector("[data-md-component=search]") && (new f.default.Event.MatchMedia("(max-width: 959px)", new f.default.Event.Listener("[data-md-toggle=search]", "change", new f.default.Search.Lock("[data-md-toggle=search]"))), new f.default.Event.Listener("[data-md-component=query]", ["focus", "keyup", "change"], new f.default.Search.Result("[data-md-component=result]", function() {
-                    return fetch(`{{ site.baseurl }}/search/${$$tock_search_index}`, {
+                    return fetch(`/tock/search/${$$tock_search_index}`, {
                         credentials: "same-origin"
                     }).then(function(e) {
                         return e.json()
