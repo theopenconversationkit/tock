@@ -36,7 +36,7 @@ github_repo: "tock"
 # google-analytics: UA-XXXXXXXXXX
 # Image and (square) dimension for logo (don't start with /)
 # If commented, will use material hat theme
-logo: "assets/images/logo.svg"
+logo: "assets/images/logo-white.svg"
 logo_width: 34
 logo_pixels: 34
 color: "#4051B5" # primary color for header, buttons
@@ -57,8 +57,8 @@ discourse_per_page: 10
 discourse_category: "stanford-research-computing"
 discourse_tags: null # comma separated string, leave null to not filter
 
-accentColor: blue # purple, green, etc.
-themeColor: blue # purple, green, blue, orange, purple, grey
+accentColor: dark-blue # purple, green, etc.
+themeColor: dark-blue # purple, green, blue, orange, purple, grey
 fixedNav: 'true' # true or false
 
 permalink: /:year/:title/
