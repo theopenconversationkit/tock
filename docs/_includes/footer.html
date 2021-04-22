@@ -22,8 +22,13 @@
       <div class="md-footer-copyright">
         
           <div class="md-footer-copyright__highlight">
-            Copyright &copy; {{ site.time | date: '%Y' }} - {{ site.author }}
-          </div>        
+            Copyright &copy; 2017/{{ site.time | date: '%Y' }} - {{ site.author }}
+          </div>
+
+          Made with
+          <a href="https://vsoch.github.io/mkdocs-jekyll/" target="_blank" rel="noopener">
+              Material Jekyll Theme
+          </a>
       </div>
       
         
@@ -41,6 +46,9 @@
   </div>
 
 </footer>
+<script>
+    $$tock_search_index = "search_index_{{ page.language }}.json"
+</script>
 <script src="{{ site.baseurl }}/assets/js/application.js"></script>
 {% assign slashes = page.url | split: "/" %}
 <script>app.initialize({version:"0.17.4", url:{base:'{{ site.baseurl }}'}})</script>

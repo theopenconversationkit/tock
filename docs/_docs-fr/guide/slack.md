@@ -147,4 +147,4 @@ Pour en savoir plus sur le connecteur Slack fourni avec Tock, rendez-vous dans l
 où vous retrouverez les sources et le _README_ du connecteur.
 
 Pour en savoir plus sur _Tock Studio_, les fonctionnalités et les modes de déploiement de Tock, vous pouvez aussi 
-parcourir le [manuel utilisateur](../../pages/toc.md), plus complet.
+parcourir le [manuel utilisateur](../toc.md), plus complet.

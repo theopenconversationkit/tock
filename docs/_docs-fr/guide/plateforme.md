@@ -12,7 +12,7 @@ Dans ce guide, vous allez apprendre à déployer une plateforme complète Tock e
  aux exemples d'implémentations [Docker](https://www.docker.com/) / [Docker Compose](https://docs.docker.com/compose/) fournies.
 
 Notez qu'il est tout à fait possible de déployer Tock sans utiliser Docker. Une section spécifique du 
-[manuel utilisateur](../../pages/toc.md) vous en apprendra plus sur l'architecture, les possibilités et les 
+[manuel utilisateur](../toc.md) vous en apprendra plus sur l'architecture, les possibilités et les 
 recommandations pour le déploiement et l'utilisation de Tock en production.
 
 ## Ce que vous allez créer
@@ -41,7 +41,7 @@ du [JDK](https://jdk.java.net/) et de [Maven](https://maven.apache.org/)
 
 > Sans _IDE_ ou sans Maven, pas de problème. Il est tout à fait possible de compiler et exécuter le programme avec d'autres outils.
 >
-> D'autres modes que Kotlin et _WebSocket_ sont présentés dans le [manuel utilisateur Tock](../../pages/toc.md).
+> D'autres modes que Kotlin et _WebSocket_ sont présentés dans le [manuel utilisateur Tock](../toc.md).
 
 ## Déployer une plateforme Tock - sans les sources
 
@@ -210,6 +210,6 @@ développements, pour les contributeurs Tock ou encore si vous devez travailler 
 Vous venez de terminer les guides de démarrage rapide Tock.
 
 A partir de là, vous pouvez vous lancer directement sur une plateforme Tock, ou parcourir le 
-[manuel utilisateur](../../pages/toc.md) pour en savoir plus sur _Tock Studio_, _Bot API_ et _Bot Flow_ par exemple.
+[manuel utilisateur](../toc.md) pour en savoir plus sur _Tock Studio_, _Bot API_ et _Bot Flow_ par exemple.
 
 D'autres pages présentent aussi des études de cas clients, des exemples de code, comment contacter la communauté Tock, etc.

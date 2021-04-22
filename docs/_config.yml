@@ -16,7 +16,7 @@
 
 title: Tock Documentation
 email: your-email@domain.com
-author: Dinosaur Avocado
+author: Tock
 description: > # this means to ignore newlines until "baseurl:"
   Write an awesome description for your new site here. You can edit this
   line in _config.yml. It will appear in your document head meta (for
@@ -66,17 +66,29 @@ exclude: [_site, CHANGELOG.md, LICENSE, README.md, vendor]
 
 # Collections
 collections:
-  docs:
+  docs-en:
+    output: true
+    permalink: /:collection/:path
+  docs-fr:
     output: true
     permalink: /:collection/:path
 
 # Defaults
 defaults:
-  - scope:
-      path: "_docs"
-      type: "docs"
+  -
+    scope:
+      path: ""
+      type: "docs-en"
     values:
       layout: page
+      language: "en"
+  -
+    scope:
+      path: ""
+      type: "docs-fr"
+    values:
+      layout: page
+      language: "fr"
   -
     scope:
       path: ""

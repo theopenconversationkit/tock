@@ -31,7 +31,7 @@ Dans ce guide, vous utiliserez le langage [Kotlin](https://kotlinlang.org/) et l
   _WebSocket_ pour ajouter une intention à un bot initié dans _Tock Studio_.
 
 Si vous le souhaitez, vous pouvez sauter cette étape et [déployer un plateforme avec Docker](plateforme.md) 
-ou passer directement au [manuel utilisateur](../../pages/toc.md) pour en savoir plus sur les possibilités de _Tock Studio_.
+ou passer directement au [manuel utilisateur](../toc.md) pour en savoir plus sur les possibilités de _Tock Studio_.
  
 ## Ce que vous allez créer
 
@@ -53,7 +53,7 @@ et de [Maven](https://maven.apache.org/)
 >exercice avec d'autres outils.
 >
 > Il est également possible d'utiliser d'autres manières de développer que le mode _WebSocket_ et d'autres 
->langages que Kotlin. Vous en apprendrez plus dans le [manuel utilisateur Tock](../../pages/toc.md).
+>langages que Kotlin. Vous en apprendrez plus dans le [manuel utilisateur Tock](../toc.md).
 
 ## Créer un programme Kotlin avec la dépendance Tock
 
@@ -225,4 +225,4 @@ Dans la section suivante vous apprendrez à :
 
 Pour en savoir plus sur l'utilisation de _Tock Bot API_ en mode _WebSocket_, mais aussi les autres 
 modes de déploiement, les types de messages supportés par Tock, etc. vous pouvez consulter le
- [manuel utilisateur](../../pages/toc.md).
+ [manuel utilisateur](../toc.md).

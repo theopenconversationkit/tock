@@ -1,12 +1,11 @@
 ---
 layout: page
 title: Table des matières
-permalink: /toc
 ---
 
 # Documentation Tock
 
-- [Accueil](index.md)
+- [Accueil](../pages/index.md)
 
 - [Table des matières]()
 

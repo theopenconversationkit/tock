@@ -164,5 +164,5 @@ Pour en savoir plus sur le connecteur Messenger fourni avec Tock, rendez-vous da
 où vous retrouverez les sources et le _README_ du connecteur.
 
 Pour en savoir plus sur _Tock Studio_, les fonctionnalités et les modes de déploiement de Tock, vous pouvez aussi 
-parcourir le [manuel utilisateur](../../pages/toc.md), plus complet.
+parcourir le [manuel utilisateur](../toc.md), plus complet.
 
