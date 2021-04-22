@@ -67,3 +67,5 @@ _Tock Studio_ graphical user interfaces are built with [Angular](https://angular
 * [Contents](toc.md)
 * Read [Tutorial](guide/studio.md) and start using the [demo/sandbox platform](https://demo.tock.ai/)
 * User manual for [developers](dev/modes.md)
+
+*[NLU]: Natural Language Understanding

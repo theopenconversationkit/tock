@@ -74,3 +74,4 @@ Des intégrations [React](https://reactjs.org) et [Flutter](https://flutter.dev/
 * Manuels [utilisateur](user/concepts.md), [développeur](dev/modes.md), [administrateur](admin/architecture.md)
 * [Ressources (supports, video)](apropos/ressources.md) et [exemples de code](dev/exemples-code.md)
 
+*[NLU]: Natural Language Understanding
