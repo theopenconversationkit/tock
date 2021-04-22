@@ -5,7 +5,7 @@ title: Bienvenue !
 
 # Bienvenue sur Tock : une plateforme conversationnelle ouverte
 
-<img alt="Logo Tock" src="{{ site.logo }}" style="width: 150px;">
+<img alt="Logo Tock" src="{{ site.tock_logo }}" style="width: 150px;">
 
 
 **Tock** (*The Open Conversation Kit*) est une plateforme complète pour construire des agents conversationnels - souvent appelés _bots_.

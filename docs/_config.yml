@@ -39,6 +39,8 @@ github_repo: "tock"
 logo: "assets/images/logo-white.svg"
 logo_width: 34
 logo_pixels: 34
+tock_logo: "assets/images/logo.svg"
+
 color: "#4051B5" # primary color for header, buttons
 
 # Build settings
