@@ -66,10 +66,10 @@ exclude: [_site, CHANGELOG.md, LICENSE, README.md, vendor]
 
 # Collections
 collections:
-  docs-en:
+  en:
     output: true
     permalink: /:collection/:path
-  docs-fr:
+  fr:
     output: true
     permalink: /:collection/:path
 
@@ -78,14 +78,14 @@ defaults:
   -
     scope:
       path: ""
-      type: "docs-en"
+      type: "en"
     values:
       layout: page
       language: "en"
   -
     scope:
       path: ""
-      type: "docs-fr"
+      type: "fr"
     values:
       layout: page
       language: "fr"

@@ -927,7 +927,7 @@ html .md-footer-meta.md-typeset a:focus, html .md-footer-meta.md-typeset a:hover
     overflow: hidden;
 }
 
-.md-nav__item--nested>.md-nav__link_parent:after {
+.md-nav__item--nested .md-nav__link_parent:after {
     content: "\E313"}
 
 .md-nav__link_parent.open-parent:after {

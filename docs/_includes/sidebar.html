@@ -24,11 +24,12 @@
 
         <ul class="md-nav__list" data-md-scrollfix="">
           <li class="md-nav__item md-nav__item--active">
-            <input class="md-toggle md-nav__toggle" data-md-toggle="toc" id="__toc" type="checkbox">
-                <label class="md-nav__link md-nav__link--active" for="__toc">{{toc.home.title}}</label>
-                  <a class="md-nav__link md-nav__link--active" href="{{ site.baseurl }}/{{ toc.home.url }}" title="{{toc.home.title}}">{{toc.home.title}}</a>
+              <input class="md-toggle md-nav__toggle" data-md-toggle="toc" id="__toc" type="checkbox">
+              <label class="md-nav__link md-nav__link--active" for="__toc">{{toc.home.title}}</label>
+              <a class="md-nav__link md-nav__link--active" href="{{ site.baseurl }}/{{ toc.home.url }}"
+                 title="{{toc.home.title}}">{{toc.home.title}}</a>
 
-            <nav class="md-nav md-nav--secondary">
+              <nav class="md-nav md-nav--secondary">
               <label class="md-nav__title" for="__toc">Table of contents</label>
               <ul class="md-nav__list" data-md-scrollfix="">
                 {% for section in toc.content %}
@@ -36,6 +37,15 @@
                   <a class="md-nav__link" href="{% if section.external_url %}{{ section.external_url }}{% else %}{{ site.baseurl }}/{{ section.url }}{% endif %}"
                      id="pancakes-{{ section.title | slugify }}" 
                      title="{{ section.title }}">{{ section.title }}</a>
+                    <ul class="md-nav__list" data-md-scrollfix="">
+                        {% for child in section.children %}
+                        <li class="md-nav__item">
+                            <a class="md-nav__link" href="{% if child.external_url %}{{ child.external_url }}{% else %}{{ site.baseurl }}/{{ child.url }}{% endif %}"
+                               id="pancakes-{{ child.title | slugify }}"
+                               title="{{ child.title }}">{{ child.title }}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
                 </li>
                 {% endfor %}
               </ul>
@@ -56,9 +66,18 @@
                 {% if section.children %}<nav class="md-nav">
                     <ul class="md-nav__list">
                         {% for child in section.children %}<li class="md-nav__item">
-                        <a href="{% if child.external_url %}{{ child.external_url }}{% else %}{{ site.baseurl }}/{{ child.url }}{% endif %}" 
-                           title="{{ child.title }}" style="display:none"
-                           class="md-nav__link pancakes-child">{{ child.title }}</a>
+                            <a class="md-nav__link pancakes-child {%if child.children%}md-nav__link_parent{%endif%}" {% if child.children %}href="#pancakes-{{ child.title | slugify }}"{% else %}href="{% if child.external_url %}{{ child.external_url }}{% else %}{{ site.baseurl }}/{{ child.url }}{% endif %}"{% endif %}
+                               id="pancakes-{{ child.title | slugify }}" style="display:none"
+                               title="{{ section.title }}">{{ child.title }}</a>
+                            {% if child.children %}<nav class="md-nav">
+                                <ul class="md-nav__list">
+                                  {% for grandchild in child.children %}<li class="md-nav__item">
+                                  <a href="{% if grandchild.external_url %}{{ grandchild.external_url }}{% else %}{{ site.baseurl }}/{{ grandchild.url }}{% endif %}"
+                                     title="{{ grandchild.title }}" style="display:none"
+                                     class="md-nav__link pancakes-child">{{ grandchild.title }}</a>
+                                </li>{% endfor %}
+                                </ul>
+                            </nav>{% endif %}
                         </li>{% endfor %}
                     </ul>
               </nav>{% endif %}
