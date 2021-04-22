@@ -263,7 +263,7 @@ Il a également vocation à mieux appréhender les besoins des salariés via l�
 
 Construit avec Tock, le chatbot est disponible sur un site Web interne à l'entreprise.
 
-![Chatbot interne Enedis](../../assets/img/enedis_bot1.png "Chatbot interne Enedis")
+![Chatbot interne Enedis](../img/enedis_bot1.png "Chatbot interne Enedis")
 
 * **Nom :** _Chatbot interne Enedis_
 * **Date de naissance :** en production depuis 2020

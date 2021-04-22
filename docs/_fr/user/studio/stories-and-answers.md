@@ -19,7 +19,7 @@ de parcours ou [Construire un bot multilingue](../../dev/i18n.md) pour l'utilisa
 >
 > L'onglet _Test_ > _Test the bot_ permet ensuite de rapidement vérifier le comportement du bot sur ce parcours.
 
-![Test_de_la_réponse dédiée](../../../assets/img/build-2.png "Test de la réponse dédiée")
+![Test_de_la_réponse dédiée](../../img/build-2.png "Test de la réponse dédiée")
 
 ### Créer des réponses complexes
 
@@ -86,7 +86,7 @@ roulement afin de ne pas toujours répondre la même chose.
 
 > Cela permet de rendre le bot plus agréable en variant ses réponses.
 
-![Internationalisation](../../../assets/img/i18n.png "Internationalisation")
+![Internationalisation](../../img/i18n.png "Internationalisation")
 
 Voir aussi [Construire un bot multilingue](../../dev/i18n.md) pour l'utilisation de l'onglet _Responses_ mais aussi  
 les aspects développement sur ce thème. 

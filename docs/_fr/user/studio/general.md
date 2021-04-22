@@ -25,7 +25,7 @@ sont définis dans fichier source `bot/admin/web/src/environments/environment.ts
 
 ## Le bandeau applicatif
 
-![bandeau Tock](../../../assets/img/inbox.png "Exemple d'interface Tock")
+![bandeau Tock](../../img/inbox.png "Exemple d'interface Tock")
 
 En haut à gauche de l'interface se trouvent :
 

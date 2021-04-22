@@ -5,7 +5,7 @@ title: Bienvenue !
 
 # Bienvenue sur Tock : une plateforme conversationnelle ouverte
 
-<img alt="Logo Tock" src="{{ site.tock_logo }}" style="width: 150px;">
+<img alt="Logo Tock" src="{{site.baseurl}}/{{ site.tock_logo }}" style="width: 150px;">
 
 
 **Tock** (*The Open Conversation Kit*) est une plateforme complète pour construire des agents conversationnels - souvent appelés _bots_.
@@ -30,7 +30,7 @@ L'utilisateur choisit les composants qu'il embarque et peut ainsi conserver la m
 
 * Assistants autonomes ou intégrés à des sites Web, applications mobiles, réseaux sociaux, enceintes connectées etc.
   sans dépendre d'un canal particulier
-* Plateforme _NLU_ complète _<sup>([Natural Language Understanding](https://en.wikipedia.org/wiki/Natural-language_understanding)
+* Plateforme _[NLU][NLU]_ complète _<sup>([Natural Language Understanding](https://en.wikipedia.org/wiki/Natural-language_understanding)
   ou [TAL](https://fr.wikipedia.org/wiki/Traitement_automatique_du_langage_naturel) en français)</sup>_
     * Utilisant des briques open-source comme [OpenNLP](https://opennlp.apache.org/), [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/),
       [Duckling](https://github.com/facebook/duckling), [Rasa](https://rasa.com/)
@@ -74,4 +74,5 @@ Des intégrations [React](https://reactjs.org) et [Flutter](https://flutter.dev/
 * Manuels [utilisateur](user/concepts.md), [développeur](dev/modes.md), [administrateur](admin/architecture.md)
 * [Ressources (supports, video)](apropos/ressources.md) et [exemples de code](dev/exemples-code.md)
 
+[NLU]: https://en.wikipedia.org/wiki/Natural-language_understanding "Natural Language Understanding"
 *[NLU]: Natural Language Understanding

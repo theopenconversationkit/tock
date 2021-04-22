@@ -15,7 +15,7 @@ Deux composants majeurs sont disponibles :
 * le framework conversationnel intégré aux services _NLU_ et à différents connecteurs comme 
  Messenger, Google Assistant ou Slack (voir [manuel développeur](../dev/modes.md) et [connecteurs](../user/guides/canaux.md)).
 
-![schéma Tock](../../assets/img/tock.png "Les différentes composantes de Tock")
+![schéma Tock](../img/tock.png "Les différentes composantes de Tock")
  
 La plateforme NLU est indépendante de la partie conversationnelle. Il est possible d'utiliser le NLU sans devoir 
 maîtriser la complexité induite par la gestion des conversations. Dans certain cas d'usage importants, comme l'[Internet des objets](https://fr.wikipedia.org/wiki/Internet_des_objets), 
@@ -71,17 +71,17 @@ Un dernier composant, le bot lui-même, doit être ajouté et rendu accessible a
 
 - Le mode _plateforme NLU_ seul (sans partie conversationnelle) :
 
-![Schéma NLU](../../assets/img/nlp_api.png "Schéma NLU")
+![Schéma NLU](../img/nlp_api.png "Schéma NLU")
 
 - Le mode _Tock Bot API_ (recommandé pour la plupart des cas), permettant de développer en [Kotlin](https://kotlinlang.org/) 
 ou un autre langage à travers l'API conversationnelle de Tock :
 
-![BOT API](../../assets/img/bot_api.png "BOT API")
+![BOT API](../img/bot_api.png "BOT API")
 
 - Le mode _Tock Bot intégré_ (historique) permettant de développer en [Kotlin](https://kotlinlang.org/) uniquement 
 en utilisant toutes les possibilités de Tock mais en accédant à la base MongoDB directement depuis le bot :
 
-![Bot TOCK](../../assets/img/bot_open_data.png "Bot Tock")
+![Bot TOCK](../img/bot_open_data.png "Bot Tock")
 
 ## Voir aussi...
 

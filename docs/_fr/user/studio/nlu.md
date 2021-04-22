@@ -33,9 +33,9 @@ listes de sélection sous la phrase
 * Pour supprimer une entité, utilisez le bouton à côté du score de l'entité
 * Pour ajouter une entité, sélectionnez avec la souris un bloc de mots dansla phrase puis précisez son rôle/type.
 
-![schéma Tock](../../../assets/img/try-it-2.png "Sélection d'une entité")
+![schéma Tock](../../img/try-it-2.png "Sélection d'une entité")
 
-![schéma Tock](../../../assets/img/try-it-3.png "Ajout d'une entité - étape 1")
+![schéma Tock](../../img/try-it-3.png "Ajout d'une entité - étape 1")
 
 > Remarque : si vous avez activé cette option au niveau de l'application/bot, il est possible de déclarer des 
 >_sous-entités_. Vous en apprendrez plus dans [Construire les modèles conversationnels](../guides/build-model.md).
@@ -68,7 +68,7 @@ Les boutons et commandes sous chaque phrase sont identiques à ceux de l'onglet 
 Cet écran permet de faire des recherches dans l'ensemble des phrases : _Inbox_ mais aussi phrases qualifiées 
 enregistrées dans le modèle.
 
-![schéma Tock](../../../assets/img/search.png "Recherche d'une phrase")
+![schéma Tock](../../img/search.png "Recherche d'une phrase")
 
 ## L'onglet _Unknown_
 
