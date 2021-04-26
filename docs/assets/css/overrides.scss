@@ -1,0 +1,96 @@
+---
+---
+/*
+ * Copyright (C) 2017/2021 e-voyageurs technologies
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+.md-clipboard:before, .md-icon, .md-nav__button, .md-nav__link:after, .md-nav__title:before, .md-search-result__article--document:before, .md-source-file:before, .md-typeset .admonition > .admonition-title:before, .md-typeset .admonition > summary:before, .md-typeset .critic.comment:before, .md-typeset .footnote-backref, .md-typeset .task-list-control .task-list-indicator:before, .md-typeset details > .admonition-title:before, .md-typeset details > summary:before, .md-typeset summary:after {
+  font-family: Material Icons;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: 400;
+  line-height: 1;
+  text-transform: none;
+  white-space: nowrap;
+  speak: none;
+  word-wrap: normal;
+  direction: ltr;
+}
+
+.md-clipboard:before {
+  transition: color .25s, opacity .25s;
+  color: rgba(0, 0, 0, .07);
+  content: "\E14D";
+}
+
+.md-clipboard:after {
+  display: none;
+}
+
+.codehilite:hover .md-clipboard:before, .md-typeset .highlight:hover .md-clipboard:before, pre:hover .md-clipboard:before {
+  color: rgba(0, 0, 0, .54);
+}
+
+.md-clipboard:focus:before, .md-clipboard:hover:before {
+  color: #536dfe;
+}
+
+.md-clipboard__message {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 3.4rem;
+  padding: .6rem 1rem;
+  -webkit-transform: translateX(.8rem);
+  transform: translateX(.8rem);
+  transition: opacity .175s, -webkit-transform .25s cubic-bezier(.9, .1, .9, 0);
+  transition: transform .25s cubic-bezier(.9, .1, .9, 0), opacity .175s;
+  transition: transform .25s cubic-bezier(.9, .1, .9, 0), opacity .175s, -webkit-transform .25s cubic-bezier(.9, .1, .9, 0);
+  border-radius: .2rem;
+  background-color: rgba(0, 0, 0, .54);
+  color: #fff;
+  font-size: 1.28rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.md-clipboard__message--active {
+  -webkit-transform: translateX(0);
+  transform: translateX(0);
+  transition: opacity .175s 75ms, -webkit-transform .25s cubic-bezier(.4, 0, .2, 1);
+  transition: transform .25s cubic-bezier(.4, 0, .2, 1), opacity .175s 75ms;
+  transition: transform .25s cubic-bezier(.4, 0, .2, 1), opacity .175s 75ms, -webkit-transform .25s cubic-bezier(.4, 0, .2, 1);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.md-clipboard__message:before {
+  content: attr(aria-label);
+}
+
+.md-clipboard__message:after {
+  display: block;
+  position: absolute;
+  top: 50%;
+  right: -.4rem;
+  width: 0;
+  margin-top: -.4rem;
+  border-width: .4rem 0 .4rem .4rem;
+  border-style: solid;
+  border-color: transparent rgba(0, 0, 0, .54);
+  content: ""
+}

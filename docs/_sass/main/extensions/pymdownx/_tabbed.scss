@@ -1,7 +1,3 @@
----
-layout: null
-excluded_in_search: true
----
 ////
 /// Copyright (c) 2016-2021 Martin Donath <martin.donath@squidfunk.com>
 ///
@@ -27,11 +23,6 @@ excluded_in_search: true
 // ----------------------------------------------------------------------------
 // Rules
 // ----------------------------------------------------------------------------
-$browser-context: 16; // Default
-
-@function px2em($pixels, $context: $browser-context) {
-  @return #{$pixels/$context}em;
-}
 
 // Scoped in typesetted content to match specificity of regular content
 .md-typeset {
@@ -41,7 +32,7 @@ $browser-context: 16; // Default
     display: none;
     order: 99;
     width: 100%;
-    box-shadow: 0 px2em(-1px) var(--md-default-fg-color--lightest);
+    box-shadow: 0 px2rem(-1px) var(--md-default-fg-color--lightest);
 
     // [print]: Show all tabs (even hidden ones) when printing
     @media print {
@@ -75,7 +66,7 @@ $browser-context: 16; // Default
     display: flex;
     flex-wrap: wrap;
     margin: 1em 0;
-    border-radius: px2em(2px);
+    border-radius: px2rem(2px);
 
     // Tab radio button - the Tabbed extension will generate radio buttons with
     // labels, so tabs can be triggered without the necessity for JavaScript.
@@ -101,6 +92,7 @@ $browser-context: 16; // Default
       // Tab label on focus
       &:focus + label {
         outline-style: auto;
+        outline-color: var(--md-accent-fg-color);
       }
 
       // Hide outline for pointer devices
@@ -117,8 +109,8 @@ $browser-context: 16; // Default
       padding: px2em(12px, 12.8px) 1.25em px2em(10px, 12.8px);
       color: var(--md-default-fg-color--light);
       font-weight: 700;
-      font-size: px2em(12.8px);
-      border-bottom: px2em(2px) solid transparent;
+      font-size: px2rem(12.8px);
+      border-bottom: px2rem(2px) solid transparent;
       cursor: pointer;
       transition: color 250ms;
 
