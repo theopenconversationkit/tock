@@ -63,7 +63,7 @@ directement en ligne de commande, soit dans un descripteur type `docker-compose.
 
 Voici un exemple configurant les logs de Tock Studio (`admin_web`) dans Docker :
 
-- {: highlight="6"} docker-compose.yml
+- {: data-hl-lines="6 7"} docker-compose.yml
 ```yaml
   version: '3'
   services:
@@ -74,7 +74,7 @@ Voici un exemple configurant les logs de Tock Studio (`admin_web`) dans Docker :
       - tock_logback_file_appender=true
 ```
 
-- {: highlight="8"} dockerrun.aws.json
+- {: data-hl-lines="8"} dockerrun.aws.json
 ```json
   {
     "AWSEBDockerrunVersion": 2,
@@ -98,7 +98,7 @@ Il est possible de configurer finement les logs Tock en configurant directement 
 Pour cela, différentes possibilités existent, notamment des fichiers de configuration en format XML ou Groovy. 
 Ci-dessous un exemple de configuration :
 
-- {: highlight="8"} logback.xml
+- logback.xml
 ```xml
     <?xml version="1.0" encoding="UTF-8"?>
     <configuration debug="false">
@@ -121,7 +121,7 @@ Ci-dessous un exemple de configuration :
     
     </configuration>
 ```
-- {: highlight="8"} logback.groovy
+- logback.groovy
 ```groovy
     import ch.qos.logback.classic.encoder.PatternLayoutEncoder
     import ch.qos.logback.core.ConsoleAppender
@@ -165,9 +165,9 @@ Ci-dessous un exemple complet dans Docker Compose avec :
 - Quelques variables d'environnement définies pour pouvoir rapidement ajuste les principaux niveaux de log 
 directement dans Docker-Compose (sans avoir à modifier le fichier XML ni l'image Docker)'
 
-=== "logback.xml"
-
-    ```xml
+^
+- logback.xml
+```xml
     <?xml version="1.0" encoding="UTF-8"?>
     <configuration debug="false">
 
@@ -192,11 +192,9 @@ directement dans Docker-Compose (sans avoir à modifier le fichier XML ni l'imag
         </root>
     
     </configuration>
-    ```
-
-=== "pom.xml"
-
-    ```xml hl_lines="21 22 23 24 29"
+```
+- {: data-hl-lines="21 22 23 24 29"} pom.xml
+```xml
     <?xml version="1.0" encoding="UTF-8"?>
     <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
         <modelVersion>4.0.0</modelVersion>
@@ -228,11 +226,9 @@ directement dans Docker-Compose (sans avoir à modifier le fichier XML ni l'imag
                                         <shell>java $JAVA_ARGS -Dlogback.configurationFile='file:///maven/logback.xml' -Dfile.encoding=UTF-8 -Dtock_nlp_model_refresh_rate=10 -cp '/maven/*' ai.tock.bot.admin.StartBotAdminServerKt</shell>
                                     </cmd>
                                     ...
-    ``` 
-
-=== "docker-compose.yml"
-
-    ```yaml hl_lines="6 7 8"
+```
+- {: data-hl-lines="6 7 8"} docker-compose.yml
+```yaml
     version: '3'
     services:
       admin_web:
@@ -241,7 +237,8 @@ directement dans Docker-Compose (sans avoir à modifier le fichier XML ni l'imag
         - tock_default_log_level=WARN # Default, see logback.xml
         - tock_service_log_level=INFO # Default, see logback.xml
         - tock_database_log_level=WARN # Default, see logback.xml
-    ```
+```
+{: .tabbed-code}
 
 > Le code complet de cet exemple appliqué à tous les modules Tock est disponible dans le dépôt `tock-docker` 
 > sur la branche [`logbackxml`](https://github.com/theopenconversationkit/tock-docker/tree/logbackxml).
