@@ -63,35 +63,34 @@ directement en ligne de commande, soit dans un descripteur type `docker-compose.
 
 Voici un exemple configurant les logs de Tock Studio (`admin_web`) dans Docker :
 
-=== "docker-compose.yml"
+- {: highlight="6"} docker-compose.yml
+```yaml
+  version: '3'
+  services:
+    admin_web:
+      image: tock/bot_admin:$TAG
+      environment:
+      - tock_default_log_level=WARN
+      - tock_logback_file_appender=true
+```
 
-    ```yaml hl_lines="6 7"
-    version: '3'
-    services:
-      admin_web:
-        image: tock/bot_admin:$TAG
-        environment:
-        - tock_default_log_level=WARN
-        - tock_logback_file_appender=true
-    ```
-
-=== "dockerrun.aws.json"
-
-    ```json hl_lines="8 9"
-    {
-      "AWSEBDockerrunVersion": 2,
-      "containerDefinitions": [
-        {
-          "name": "admin_web",
-          "image": "tock/bot_admin:${TAG}",
-          "environment": [
-            { "name": "tock_default_log_level", "value": "WARN" },
-            { "name": "tock_logback_file_appender", "value": "true" }
-          ]
-        }
-      ]
-    }
-    ```
+- {: highlight="8"} dockerrun.aws.json
+```json
+  {
+    "AWSEBDockerrunVersion": 2,
+    "containerDefinitions": [
+      {
+        "name": "admin_web",
+        "image": "tock/bot_admin:${TAG}",
+        "environment": [
+          { "name": "tock_default_log_level", "value": "WARN" },
+          { "name": "tock_logback_file_appender", "value": "true" }
+        ]
+      }
+    ]
+  }
+```
+{: .tabbed-code}
 
 #### Fichiers Logback
 
@@ -99,9 +98,8 @@ Il est possible de configurer finement les logs Tock en configurant directement 
 Pour cela, différentes possibilités existent, notamment des fichiers de configuration en format XML ou Groovy. 
 Ci-dessous un exemple de configuration :
 
-=== "logback.xml"
-
-    ```xml
+- {: highlight="8"} logback.xml
+```xml
     <?xml version="1.0" encoding="UTF-8"?>
     <configuration debug="false">
     
@@ -122,11 +120,9 @@ Ci-dessous un exemple de configuration :
         </root>
     
     </configuration>
-    ```
-
-=== "logback.groovy"
-
-    ```groovy
+```
+- {: highlight="8"} logback.groovy
+```groovy
     import ch.qos.logback.classic.encoder.PatternLayoutEncoder
     import ch.qos.logback.core.ConsoleAppender
     
@@ -142,7 +138,8 @@ Ci-dessous un exemple de configuration :
     logger("ai.tock", DEBUG)
     logger("org.mongodb", WARN)
     root(INFO, ["console"])
-    ```
+```
+{: .tabbed-code}
 
 Dans cet exemple :
 
