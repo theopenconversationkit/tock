@@ -47,6 +47,6 @@ content:
   - title: '🇬🇧 🇫🇷'
     url: 'fr'
   - title: 'Toggle Dark Mode'
-    external-url: '?scheme=dark'
+    external_url: '?scheme=dark'
   - title: 'Tock.ai 🔗'
-    external-url: 'https://doc.tock.ai'
+    external_url: 'https://doc.tock.ai'

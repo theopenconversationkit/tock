@@ -4,7 +4,7 @@ title: Tock
 ---
 # Welcome to Tock - open conversational platform
 
-<img alt="Tock Logo" src="{{site.base_url}}/{{ site.tock_logo }}" style="width: 150px;">
+<img alt="Tock Logo" src="{{site.baseurl}}/{{ site.tock_logo }}" style="width: 150px;">
 
 **Tock** (*The Open Conversation Kit*) is a complete and open platform to build conversational agents - also known as _bots_. 
 
