@@ -1,46 +1,69 @@
-<footer class="c-footer md-footer-nav">
-  <div class="u-container c-footer__container">
-    <nav class="md-footer-nav__inner md-grid">
-         {% if page.next.url %}<a href="{{ site.baseurl }}{{ page.next.url }}" title="{{ page.next.title }}" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
-            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
-              <span class="md-flex__ellipsis">
-                <span class="md-footer-nav__direction">
-                  Next
-                </span>
-                {{ page.next.title }}
-              </span>
+<footer class="md-footer">
+    {% if page.previous.url or page.next.url %}
+    <nav class="md-footer__inner md-grid">
+        {% if page.previous.url %}
+        <a href="{{ site.baseurl }}{{ page.previous.url }}" title="{{ page.previous.title }}"
+           class="md-footer__link md-footer__link--prev" rel="prev">
+            <div class="md-footer__button md-icon">
+                <i class="md-icon md-icon--arrow-backward md-footer-nav__button"></i>
             </div>
-            <div class="md-flex__cell md-flex__cell--shrink">
-              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            <div class="md-footer__title">
+                <div class="md-ellipsis">
+                    <span class="md-footer__direction">
+                      Previous
+                    </span>
+                    {{ page.previous.title }}
+                </div>
             </div>
-          </a>{% endif %}
-      </nav>
-    </div>
+        </a>
+        {% endif %}
+        {% if page.next.url %}
+        <a href="{{ site.baseurl }}{{ page.next.url }}" title="{{ page.next.title }}"
+           class="md-footer__link md-footer__link--next" rel="next">
+            <div class="md-footer__button md-icon">
+                <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+            <div class="md-footer__title">
+                <div class="md-ellipsis">
+                    <span class="md-footer__direction">
+                        Next
+                    </span>
+                    {{ page.next.title }}
+                </div>
+            </div>
+        </a>
+        {% endif %}
+    </nav>
+    {% endif %}
 
    <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
       <div class="md-footer-copyright">
 
           <div class="md-footer-copyright__highlight">
-            Copyright &copy; 2017/{{ site.time | date: '%Y' }} - {{ site.author }}
+            Copyright &copy; 2017/{{ site.time | date: '%Y' }} {{ site.author }}
           </div>
 
           Made with
+          <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+              Material for MkDocs
+          </a>
+          and
           <a href="https://vsoch.github.io/mkdocs-jekyll/" target="_blank" rel="noopener">
               Material Jekyll Theme
           </a>
       </div>
 
 
-  <div class="md-footer-social">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-      <a href="https://github.com/{{ site.github_user }}" target="_blank" class="md-footer-social__link fa fa-github"></a>
-      {% if site.twitter %}<a href="https://twitter.com/{{ site.twitter }}" target="_blank" class="md-footer-social__link fa fa-twitter"></a>{% endif %}
-      {% if site.linkedin %}<a href="https://linkedin.com/in/{{ site.linkedin }}" target="_blank" class="md-footer-social__link fa fa-linkedin"></a>{% endif %}
-      {% if site.dockerhub %}<a href="http://hub.docker.com/r/{{ site.dockerhub }}" class="md-footer-social__link fa" target="_blank">
-        <img src="{{ site.baseurl }}/assets/img/docker-clear.png" style="margin-left:10px" width="20px">
-      </a>{% endif %}
-  </div>
+      <div class="md-footer-social">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+          <a href="https://github.com/{{ site.github_user }}" target="_blank" class="md-footer-social__link fa fa-github"></a>
+          {% if site.twitter %}<a href="https://twitter.com/{{ site.twitter }}" target="_blank" class="md-footer-social__link fa fa-twitter"></a>{% endif %}
+          {% if site.linkedin %}<a href="https://linkedin.com/in/{{ site.linkedin }}" target="_blank" class="md-footer-social__link fa fa-linkedin"></a>{% endif %}
+          {% if site.dockerhub %}<a href="http://hub.docker.com/r/{{ site.dockerhub }}" class="md-footer-social__link fa" target="_blank">
+            <img src="{{ site.baseurl }}/assets/img/docker-clear.png" style="margin-left:10px" width="20px">
+          </a>{% endif %}
+      </div>
 
     </div>
   </div>

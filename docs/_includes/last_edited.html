@@ -6,7 +6,7 @@
      */
     function setModifiedDate() {
         if (document.getElementById('last-modified')) {
-            fetch("https://api.github.com/repos/Fabilin/{{ site.github.repository_name }}/commits?path={{ page.path }}")
+            fetch("https://api.github.com/repos/Fabilin/{{ site.github.repository_name }}/commits?sha=doc/jekyll&path={{ page.path }}")
                 .then((response) => {
                     return response.json();
                 })
