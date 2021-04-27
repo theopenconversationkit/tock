@@ -16,11 +16,11 @@
           </a>{% endif %}
       </nav>
     </div>
-  
+
    <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
       <div class="md-footer-copyright">
-        
+
           <div class="md-footer-copyright__highlight">
             Copyright &copy; 2017/{{ site.time | date: '%Y' }} - {{ site.author }}
           </div>
@@ -30,8 +30,8 @@
               Material Jekyll Theme
           </a>
       </div>
-      
-        
+
+
   <div class="md-footer-social">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
       <a href="https://github.com/{{ site.github_user }}" target="_blank" class="md-footer-social__link fa fa-github"></a>
@@ -47,9 +47,10 @@
 
 </footer>
 <script>
-    $$tock_search_index = "search_index_{{ page.language }}.json"
+    $$tock_search_index = "{{ site.baseurl }}/search/search_index_{{ page.language }}.json"
 </script>
 <script src="{{ site.baseurl }}/assets/js/application.js"></script>
 <script src="{{ site.baseurl }}/assets/js/superfences.js"></script>
+{% include scheme-toggle.html %}
 {% assign slashes = page.url | split: "/" %}
 <script>app.initialize({version:"0.17.4", url:{base:'{{ site.baseurl }}'}})</script>
