@@ -1,5 +1,5 @@
 <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
-  <div class="md-sidebar__scrollwrap">
+  <div class="md-sidebar__scrollwrap" style="height: 500px"><!--TODO dynamic height-->
     <div class="md-sidebar__inner">
       <nav class="md-nav md-nav--primary" data-md-level="0">
         <label class="md-nav__title md-nav__title--site" for="__drawer"><span class="md-nav__button md-logo">{% if site.logo %}<img height="48" src="{{ site.baseurl }}/{{ site.logo }}" width="48">{% else %}<i class="md-icon"></i>{% endif %}</span> {{ site.title }}</label>
@@ -15,75 +15,13 @@
         </div>
 
         {% if page.language == "fr" %}
-          {% assign toc = site.data.toc_fr %}
+          {% include sidebar-navs.html toc=site.data.toc_fr %}
         {% elsif page.language == "en" %}
-          {% assign toc = site.data.toc_en %}
+          {% include sidebar-navs.html toc=site.data.toc_en %}
         {% else %}
           {% comment %} add table of contents for new languages here {% endcomment %}
         {% endif %}
 
-        <ul class="md-nav__list" data-md-scrollfix="">
-          <li class="md-nav__item md-nav__item--active">
-              <input class="md-toggle md-nav__toggle" data-md-toggle="toc" id="__toc" type="checkbox">
-              <label class="md-nav__link md-nav__link--active" for="__toc">{{toc.home.title}}</label>
-              <a class="md-nav__link md-nav__link--active" href="{{ site.baseurl }}/{{ toc.home.url }}"
-                 title="{{toc.home.title}}">{{toc.home.title}}</a>
-
-              <nav class="md-nav md-nav--secondary">
-              <label class="md-nav__title" for="__toc">Table of contents</label>
-              <ul class="md-nav__list" data-md-scrollfix="">
-                {% for section in toc.content %}
-                <li class="md-nav__item">
-                  <a class="md-nav__link" href="{% if section.external_url %}{{ section.external_url }}{% else %}{{ site.baseurl }}/{{ section.url }}{% endif %}"
-                     id="pancakes-{{ section.title | slugify }}"
-                     title="{{ section.title }}">{{ section.title }}</a>
-                    <ul class="md-nav__list" data-md-scrollfix="">
-                        {% for child in section.children %}
-                        <li class="md-nav__item">
-                            <a class="md-nav__link" href="{% if child.external_url %}{{ child.external_url }}{% else %}{{ site.baseurl }}/{{ child.url }}{% endif %}"
-                               id="pancakes-{{ child.title | slugify }}"
-                               title="{{ child.title }}">{{ child.title }}</a>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </li>
-                {% endfor %}
-              </ul>
-            </nav>
-          </li>
-
-          <!-- This navigation is completely for mobile -->
-          {% for section in toc.content %}<li class="md-nav__item mobile-nav" style="display:none">
-            <a class="md-nav__link" href="{% if section.external_url %}{{ section.external_url }}{% else %}{{ site.baseurl }}/{{ section.url }}{% endif %}" title="{{ section.title }}">{{ section.title }}</a>
-          </li>{% endfor %}
-
-          <!-- This navigation is completely for non mobile -->
-         {% for section in toc.content %}
-         <li class="md-nav__item md-nav__item--nested not-mobile-nav">
-             <a class="md-nav__link pancakes-parent {%if section.children%}md-nav__link_parent{%endif%}" {% if section.children %}href="#pancakes-{{ section.title | slugify }}"{% else %}href="{% if section.external_url %}{{ section.external_url }}{% else %}{{ site.baseurl }}/{{ section.url }}{% endif %}"{% endif %}
-                id="pancakes-{{ section.title | slugify }}"
-                title="{{ section.title }}">{{ section.title }}</a>
-                {% if section.children %}<nav class="md-nav">
-                    <ul class="md-nav__list">
-                        {% for child in section.children %}<li class="md-nav__item">
-                            <a class="md-nav__link pancakes-child {%if child.children%}md-nav__link_parent{%endif%}" {% if child.children %}href="#pancakes-{{ child.title | slugify }}"{% else %}href="{% if child.external_url %}{{ child.external_url }}{% else %}{{ site.baseurl }}/{{ child.url }}{% endif %}"{% endif %}
-                               id="pancakes-{{ child.title | slugify }}" style="display:none"
-                               title="{{ section.title }}">{{ child.title }}</a>
-                            {% if child.children %}<nav class="md-nav">
-                                <ul class="md-nav__list">
-                                  {% for grandchild in child.children %}<li class="md-nav__item">
-                                  <a href="{% if grandchild.external_url %}{{ grandchild.external_url }}{% else %}{{ site.baseurl }}/{{ grandchild.url }}{% endif %}"
-                                     title="{{ grandchild.title }}" style="display:none"
-                                     class="md-nav__link pancakes-child">{{ grandchild.title }}</a>
-                                </li>{% endfor %}
-                                </ul>
-                            </nav>{% endif %}
-                        </li>{% endfor %}
-                    </ul>
-              </nav>{% endif %}
-         </li>{% endfor %}
-
-        </ul>
       </nav>
     </div>
   </div>

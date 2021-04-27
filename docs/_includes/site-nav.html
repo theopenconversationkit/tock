@@ -1,0 +1,39 @@
+{% for nav_item in include.content %}
+
+{% capture path %}{{include.base_path}}_{% increment path_counter %}{% endcapture %}
+{% capture class %}md-nav__item{% if nav_item.active %} md-nav__item--active %}{%endif%}{%if nav_item.children and level == 1%} md-nav__item--section{%endif%}{%endcapture%}
+
+{% if nav_item.children %}
+<li class="{{ class }} md-nav__item--nested">
+    {% if nav_item.active %}
+        {% assign checked = "checked" %}
+    {% endif %}
+    {% if checked %}
+    <input class="md-nav__toggle md-toggle" data-md-toggle="{{ path }}" type="checkbox" id="{{ path }}" {{ checked }}>
+    {% else %}
+    <input class="md-nav__toggle md-toggle" data-md-toggle="{{ path }}" data-md-state="indeterminate" type="checkbox" id="{{ path }}">
+    {% endif %}
+    <label class="md-nav__link" for="{{ path }}">
+        {{ nav_item.title }}
+        <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="{{ nav_item.title }}" data-md-level="{{ include.level }}">
+        <label class="md-nav__title" for="{{ path }}">
+            <span class="md-nav__icon md-icon"></span>
+            {{ nav_item.title }}
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+            {% assign lvl = include.level | plus: 1 %}
+            {% include site-nav.html content=nav_item.children base_path=path level=lvl %}
+        </ul>
+    </nav>
+</li>
+{% else %}
+<li class="{{ class }}">
+    <a href="{% if nav_item.external_url %}{{ nav_item.external_url }}{% else %}{{ site.baseurl }}/{{ nav_item.url }}{% endif %}"
+       class="md-nav__link">
+        {{ nav_item.title }}
+    </a>
+</li>
+{% endif %}
+{% endfor %}

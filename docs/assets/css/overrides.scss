@@ -17,7 +17,7 @@
  */
 
 
-.md-clipboard:before, .md-icon, .md-nav__button, .md-nav__link:after, .md-nav__title:before, .md-search-result__article--document:before, .md-source-file:before, .md-typeset .admonition > .admonition-title:before, .md-typeset .admonition > summary:before, .md-typeset .critic.comment:before, .md-typeset .footnote-backref, .md-typeset .task-list-control .task-list-indicator:before, .md-typeset details > .admonition-title:before, .md-typeset details > summary:before, .md-typeset summary:after {
+.md-clipboard:before, .md-icon, .md-nav__button, .md-nav__icon:after, .md-nav__title:before, .md-search-result__article--document:before, .md-source-file:before, .md-typeset .admonition > .admonition-title:before, .md-typeset .admonition > summary:before, .md-typeset .critic.comment:before, .md-typeset .footnote-backref, .md-typeset .task-list-control .task-list-indicator:before, .md-typeset details > .admonition-title:before, .md-typeset details > summary:before, .md-typeset summary:after {
   font-family: Material Icons;
   font-style: normal;
   font-variant: normal;
@@ -28,7 +28,13 @@
   speak: none;
   word-wrap: normal;
   direction: ltr;
+  background-color: inherit;
 }
+
+.md-nav__item--nested .md-nav__icon:after {
+  content: "\E315"
+}
+
 
 .md-clipboard:before {
   transition: color .25s, opacity .25s;
