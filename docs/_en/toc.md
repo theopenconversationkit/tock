@@ -5,7 +5,7 @@ title: Table of Contents
 
 # Tock documentation
 
-* [Overview](..)
+* [Overview](index)
 
 * [Table of contents]()
 

@@ -1,0 +1,35 @@
+<!-- Main navigation -->
+<nav
+        class="md-nav md-nav--primary"
+        data-md-level="0">
+    <!-- Site title -->
+    <label class="md-nav__title" for="__drawer">
+        <a
+                href="{{ site.baseurl }}/{{page.language}}"
+                title="{{ site.title }}"
+                class="md-nav__button md-logo"
+                aria-label="{{ site.title }}"
+                data-md-component="logo"
+        >
+            {% include logo.html %}
+        </a>
+        {{ site.title }}
+    </label>
+
+    <!-- Repository information -->
+    <div class="md-nav__source">
+        {% include source.html %}
+    </div>
+
+    {% assign toc = site.data.tocs[page.language] %}
+
+    {% if toc %}
+    <ul class="md-nav__list" data-md-scrollfix="">
+        {% include toc-data.html toc=toc %}
+        {% include nav-items.html content=toc.content level=1 path="__nav" %}
+    </ul>
+    {% else %}
+    <strong style="color:orangered">Missing Table of Contents for language {{page.language}}</strong>
+    {% endif %}
+
+</nav>

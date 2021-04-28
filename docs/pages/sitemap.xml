@@ -2,24 +2,20 @@
 layout: null
 permalink: /sitemap.xml
 ---
-
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-     <loc>/</loc>
-     <lastmod>{{ "now" | date: "%Y-%m-%d" }}</lastmod>
-     <changefreq>daily</changefreq>
+        <loc>/</loc>
+        <lastmod>{{ "now" | date: "%Y-%m-%d" }}</lastmod>
+        <changefreq>daily</changefreq>
     </url>
-{% for section in site.data.toc_fr %}<url>
-     <loc>{{ site.baseurl }}{{ section.url }}/</loc>
-     <lastmod>{{ "now" | date: "%Y-%m-%d" }}</lastmod>
-     <changefreq>daily</changefreq>
+    {% for toc in site.data.tocs %}
+    {% for section in toc %}
+    <url>
+        <loc>{{ site.baseurl }}{{ section.url }}/</loc>
+        <lastmod>{{ "now" | date: "%Y-%m-%d" }}</lastmod>
+        <changefreq>daily</changefreq>
     </url>
-{% endfor %}
-{% for section in site.data.toc_en %}<url>
-     <loc>{{ site.baseurl }}{{ section.url }}/</loc>
-     <lastmod>{{ "now" | date: "%Y-%m-%d" }}</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-{% endfor %}
+    {% endfor %}
+    {% endfor %}
 </urlset>

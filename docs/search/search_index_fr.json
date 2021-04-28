@@ -1,9 +1,11 @@
 ---
 layout: null
+permalink: /fr/search/search_index.json
 ---
 {
   "config": {
     "lang":["fr"],
+    "min_search_length": 3,
     "prebuild_index": false,
     "separator": "[\\s\\-]+"
   },

@@ -22,6 +22,8 @@ description: > # this means to ignore newlines until "baseurl:"
   line in _config.yml. It will appear in your document head meta (for
   Google search results) and in your feed.xml site description.
 
+copyright: "Copyright &copy; 2017/$year $author"
+
 baseurl: "/tock" # the subpath of your site, e.g. /blog
 
 # This is mostly for testing
@@ -31,6 +33,13 @@ url: "https://fabilin.github.io" # the base hostname & protocol for your site
 repo: "https://github.com/fabilin/tock"
 github_user: "fabilin"
 github_repo: "tock"
+
+social:
+  github: "theopenconversationkit"
+#  twitter:
+#  linkedin:
+#  dockerhub:
+
 
 # Optional
 # google-analytics: UA-XXXXXXXXXX
@@ -54,7 +63,7 @@ tag_color: danger # danger, success, warning, primary, info, secondary
 # Add a page at /forum to list a set of discourse topics. The site needs
 # to enable "embed topics" setting
 # https://meta.discourse.org/t/embedding-a-list-of-discourse-topics-in-another-site/125911
-discourse_site: "https://ask.cyberinfrastructure.org" 
+discourse_site: "https://ask.cyberinfrastructure.org"
 discourse_per_page: 10
 discourse_category: "stanford-research-computing"
 discourse_tags: null # comma separated string, leave null to not filter
@@ -97,6 +106,7 @@ defaults:
       type: "pages"
     values:
       layout: "page"
+      language: "en"
   -
     scope:
       path: "posts"

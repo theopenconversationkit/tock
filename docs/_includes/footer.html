@@ -1,6 +1,9 @@
 <footer class="md-footer">
+
+    <!-- Link to previous and/or next page -->
     {% if page.previous.url or page.next.url %}
     <nav class="md-footer__inner md-grid">
+        <!-- Link to previous page -->
         {% if page.previous.url %}
         <a href="{{ site.baseurl }}{{ page.previous.url }}" title="{{ page.previous.title }}"
            class="md-footer__link md-footer__link--prev" rel="prev">
@@ -17,6 +20,8 @@
             </div>
         </a>
         {% endif %}
+
+        <!-- Link to next page -->
         {% if page.next.url %}
         <a href="{{ site.baseurl }}{{ page.next.url }}" title="{{ page.next.title }}"
            class="md-footer__link md-footer__link--next" rel="next">
@@ -36,44 +41,31 @@
     </nav>
     {% endif %}
 
-   <div class="md-footer-meta md-typeset">
-    <div class="md-footer-meta__inner md-grid">
-      <div class="md-footer-copyright">
+    <!-- Further information -->
+    <div class="md-footer-meta md-typeset">
+        <div class="md-footer-meta__inner md-grid">
 
-          <div class="md-footer-copyright__highlight">
-            Copyright &copy; 2017/{{ site.time | date: '%Y' }} {{ site.author }}
-          </div>
+            <!-- Copyright and theme information -->
+            <div class="md-footer-copyright">
+                {% if site.copyright %}
+                <div class="md-footer-copyright__highlight">
+                    {% assign year = site.time | date: "%Y" %}
+                    {{ site.copyright | replace: "$year", year | replace: "$author", site.author }}
+                </div>
+                {% endif %}
 
-          Made with
-          <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-              Material for MkDocs
-          </a>
-          and
-          <a href="https://vsoch.github.io/mkdocs-jekyll/" target="_blank" rel="noopener">
-              Material Jekyll Theme
-          </a>
-      </div>
+                Made with
+                <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+                    Material for MkDocs
+                </a>
+                and
+                <a href="https://vsoch.github.io/mkdocs-jekyll/" target="_blank" rel="noopener">
+                    Material Jekyll Theme
+                </a>
+            </div>
 
-
-      <div class="md-footer-social">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-          <a href="https://github.com/{{ site.github_user }}" target="_blank" class="md-footer-social__link fa fa-github"></a>
-          {% if site.twitter %}<a href="https://twitter.com/{{ site.twitter }}" target="_blank" class="md-footer-social__link fa fa-twitter"></a>{% endif %}
-          {% if site.linkedin %}<a href="https://linkedin.com/in/{{ site.linkedin }}" target="_blank" class="md-footer-social__link fa fa-linkedin"></a>{% endif %}
-          {% if site.dockerhub %}<a href="http://hub.docker.com/r/{{ site.dockerhub }}" class="md-footer-social__link fa" target="_blank">
-            <img src="{{ site.baseurl }}/assets/img/docker-clear.png" style="margin-left:10px" width="20px">
-          </a>{% endif %}
-      </div>
-
+            <!-- Social links -->
+            {% include social.html %}
+        </div>
     </div>
-  </div>
-
 </footer>
-<script>
-    $$tock_search_index = "{{ site.baseurl }}/search/search_index_{{ page.language }}.json"
-</script>
-<script src="{{ site.baseurl }}/assets/js/application.js"></script>
-<script src="{{ site.baseurl }}/assets/js/superfences.js"></script>
-{% include scheme-toggle.html %}
-{% assign slashes = page.url | split: "/" %}
-<script>app.initialize({version:"0.17.4", url:{base:'{{ site.baseurl }}'}})</script>

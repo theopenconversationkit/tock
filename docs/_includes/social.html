@@ -1,23 +1,11 @@
-<div class="c-social">
-  <ul class="c-social__list">
-    <li>
-      <h3 class="c-social__title">Google+</h3>
-      <p class="c-social__description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ullam, consequatur!</p>
-    </li>
-
-    <li>
-      <h3 class="c-social__title">Google+</h3>
-      <p class="c-social__description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et, quo.</p>
-    </li>
-
-    <li>
-      <h3 class="c-social__title">Google+</h3>
-      <p class="c-social__description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officia, voluptatem.</p>
-    </li>
-
-    <li>
-      <h3 class="c-social__title">Google+</h3>
-      <p class="c-social__description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. At, rerum.</p>
-    </li>
-  </ul>
+{% if site.social %}
+<div class="md-footer-social">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <a href="https://github.com/{{ site.social.github }}" target="_blank" class="md-footer-social__link fa fa-github"></a>
+  {% if site.social.twitter %}<a href="https://twitter.com/{{ site.twitter }}" target="_blank" class="md-footer-social__link fa fa-twitter"></a>{% endif %}
+  {% if site.social.linkedin %}<a href="https://linkedin.com/in/{{ site.linkedin }}" target="_blank" class="md-footer-social__link fa fa-linkedin"></a>{% endif %}
+  {% if site.social.dockerhub %}<a href="http://hub.docker.com/r/{{ site.dockerhub }}" class="md-footer-social__link fa" target="_blank">
+  <img src="{{ site.baseurl }}/assets/img/docker-clear.png" style="margin-left:10px" width="20px">
+</a>{% endif %}
 </div>
+{% endif%}

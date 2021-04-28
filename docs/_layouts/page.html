@@ -1,13 +1,11 @@
 ---
 layout: default
 ---
-<div class="md-content"> 
+<div class="md-content">
     <article class="md-content__inner md-typeset">
     {{ content }}
-        <hr/>
-        <span id='last-modified'></span>
-    {% include last_edited.html %}
-    {% include toc.html %}
-    {% include editable.html %}
+    {% include source-date.html %}
+    {% include scripts/toc.html %}
+    {% include scripts/editable.html %}
     </article>
-</div>      
+</div>

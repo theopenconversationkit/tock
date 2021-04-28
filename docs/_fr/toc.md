@@ -5,7 +5,7 @@ title: Table des matières
 
 # Documentation Tock
 
-- [Accueil](..)
+- [Accueil](index)
 
 - [Table des matières](toc)
 

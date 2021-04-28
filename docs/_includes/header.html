@@ -1,0 +1,58 @@
+<input class=md-toggle data-md-toggle=drawer type=checkbox id=__drawer autocomplete=off>
+{% if page.disable_search %}{% else %}
+<input class=md-toggle data-md-toggle=search type=checkbox id=__search autocomplete=off>
+{% endif %}
+<label class=md-overlay data-md-component=overlay for=__drawer></label> <a href="#{{ page.title | slugify }}" tabindex=1 class=md-skip> Skip to content </a>
+<header class=md-header data-md-component=header>
+    <nav
+            class="md-header__inner md-grid"
+            aria-label="{{ page.title }}"
+    >
+    <a
+            href="{{ site.url }}"
+            title="{{ site.title }}"
+            class="md-header__button md-logo"
+            aria-label="{{ site.title }}"
+            data-md-component="logo"
+    >
+        {% include logo.html %}
+    </a>
+
+    <!-- Button to open drawer -->
+    <label class="md-header__button md-icon" for="__drawer"></label>
+
+    <!-- Header title -->
+    <div class="md-header__title" data-md-component="header-title">
+        <div class="md-header__ellipsis">
+            <div class="md-header__topic">
+              <span class="md-ellipsis">
+              {{ site.title }}
+              </span>
+            </div>
+            <div class="md-header__topic" data-md-component="header-topic">
+                <span class="md-ellipsis">
+                {{ page.title }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Button to open search modal -->
+    {% if page.disable_search %}{% else %}
+        <label class="md-icon md-icon--search md-header-nav__button" for=__search></label>
+        <!-- Search interface -->
+        {% include search.html %}
+    {% endif %}
+
+    <!-- Repository information -->
+    <div class="md-header__source">
+      <a class="md-source" data-md-component="source" data-md-source="github" href="{{ site.repo }}" title="Go to repository">
+      <div class="md-source__icon" style="padding-top:5px">
+        <i class="fa fa-github fa-3x"></i>
+      </div>
+      <div class="md-source__repository">
+        {{ site.github_user }}/{{ site.github_repo }}
+      </div></a>
+    </div>
+  </nav>
+</header>
