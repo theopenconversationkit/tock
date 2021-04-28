@@ -1,7 +1,6 @@
-home:
-  title: 'Overview'
-  url: 'en'
 content:
+  - title: 'Overview'
+    url: 'en'
   - title: 'Try Tock Studio'
     children:
       - title: 'Create your 1st bot'

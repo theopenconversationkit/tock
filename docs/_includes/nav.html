@@ -25,7 +25,6 @@
 
     {% if toc %}
     <ul class="md-nav__list" data-md-scrollfix="">
-        {% include toc-data.html toc=toc %}
         {% include nav-items.html content=toc.content level=1 path="__nav" %}
     </ul>
     {% else %}

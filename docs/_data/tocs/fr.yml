@@ -1,7 +1,6 @@
-home:
-  title: 'Accueil'
-  url: 'fr'
 content:
+  - title: 'Accueil'
+    url: 'fr'
   - title: 'Table des matières'
     url: 'fr/toc'
   - title: 'Découvrir Tock'

@@ -18,18 +18,16 @@
 <script>
     $$tock_search_index = "{{ site.baseurl }}/search/search_index_{{ page.language }}.json"
 </script>
-{% capture lang_data %}{{page.language}}.json{% endcapture %}
-{{lang_data}}
 <script id="__config" type="application/json">
     {
         "base": "{{site.baseurl}}/{{page.language}}",
         "features": [],
         "translations": {{site.data.languages[page.language] | replace: "=>", ":"}},
-        "search": "{{site.baseurl}}/assets/js/workers/search.js",
+        "search": "{{site.baseurl}}/assets/mkdocs-material/javascripts/workers/search.js",
         "version": "{{site.version}}"
       }
 </script>
-<script src="{{ site.baseurl }}/assets/js/application.js"></script>
+<script src="{{ site.baseurl }}/assets/mkdocs-material/javascripts/bundle.min.js"></script>
 <script src="{{ site.baseurl }}/assets/js/superfences.js"></script>
 {% include scripts/scheme-toggle.html %}
 {% assign slashes = page.url | split: "/" %}

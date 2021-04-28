@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright (C) 2017/2021 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
 <script
   src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
@@ -9,18 +25,18 @@ $(document).ready(function() {
     const toc = $('#nav-toc');
 
     // Select each header
-    sections = $('#md-container-pancakes h1');
+    sections = $('.md-content__inner h2');
         $.each(sections, function(idx, v) {
             section = $(v);
             const div_id = $(section).attr('id');
             const div_text = section.text().split('¶')[0];
             const parent = $("#" + div_id);
-            const content = '<li id="link_' + div_id + '" class="md-nav__item"><a class="md-nav__link" href="#' + div_id + '" title="' + div_text + '">' + div_text + '</a></li>';
+            const content = `<li id="link_${div_id}" class="md-nav__item"><a class="md-nav__link" href="#${div_id}" title="${div_text}">${div_text}</a></li>`;
             $(toc).append(content);
 
             // Add section code to subnavigation
             const children = $('<nav class="md-nav"><ul class="md-nav__list"></nav></ul>');
-            const contenders = $("#" + div_id).nextUntil("h1");
+            const contenders = $("#" + div_id).nextUntil("h2");
             $.each(contenders, function(idx, contender){
                if($(contender).is('h2')) {
                    const contender_id = $(contender).attr('id');

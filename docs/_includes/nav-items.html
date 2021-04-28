@@ -8,10 +8,23 @@
     {% if nav_item.active %}
         {% assign checked = "checked" %}
     {% endif %}
-    {% if checked %}
-    <input class="md-nav__toggle md-toggle" data-md-toggle="{{ path }}" type="checkbox" id="{{ path }}" {{ checked }}>
+    {% if 1 == 1 or checked %}  {%comment%}"navigation.expand" in features = false{%endcomment%}
+    <input
+            class="md-nav__toggle md-toggle"
+            data-md-toggle="{{ path }}"
+            type="checkbox"
+            id="{{ path }}"
+            {{ checked }}
+    >
     {% else %}
-    <input class="md-nav__toggle md-toggle" data-md-toggle="{{ path }}" data-md-state="indeterminate" type="checkbox" id="{{ path }}">
+    <input
+            class="md-nav__toggle md-toggle"
+            data-md-toggle="{{ path }}"
+            data-md-state="indeterminate"
+            type="checkbox"
+            id="{{ path }}"
+            checked
+    >
     {% endif %}
     <label class="md-nav__link" for="{{ path }}">
         {{ nav_item.title }}
