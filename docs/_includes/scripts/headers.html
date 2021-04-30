@@ -6,18 +6,7 @@ $.each(headers, function(i, header){
     var color = colors[i];
     $(header).each(function () {
         var href=$(this).attr("id");
-        $(this).append('<a class="headerlink" style="color:' + color + '" href="#' + href + '" title="Permanent link">¶</a>')
+        $(this).append(`<a class="headerlink" href="#${href}" title="Permanent link">¶</a>`);
     });
-})
-
-// Ensure that sidebar on left has arrows
-$(".pancakes-parent").on('click', function(){ 
-    console.log($(this).next());
-    $(this).next().find('.pancakes-child').toggle();
-    if ($(this).hasClass('open-parent')){
-        $(this).removeClass('open-parent');
-    } else {
-        $(this).addClass('open-parent');
-    }
-})
+});
 </script>

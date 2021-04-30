@@ -30,24 +30,28 @@ baseurl: "/tock" # the subpath of your site, e.g. /blog
 url: "https://fabilin.github.io" # the base hostname & protocol for your site
 
 # Social (First three Required)
-repo: "https://github.com/fabilin/tock"
+repo_url: "https://github.com/fabilin/tock"
 github_user: "fabilin"
 github_repo: "tock"
 
-social:
-  github: "theopenconversationkit"
-#  twitter:
-#  linkedin:
-#  dockerhub:
+extra:
+  social:
+    - name: github
+      link: "https://github.com/theopenconversationkit"
 
 
 # Optional
 # google-analytics: UA-XXXXXXXXXX
 # Image and (square) dimension for logo (don't start with /)
 # If commented, will use material hat theme
-logo: "assets/images/logo-white.svg"
-logo_width: 34
-logo_pixels: 34
+logo:
+  path: "assets/images/logo-white.svg"
+  width: 34
+  pixels: 34
+
+features:
+  - "navigation.top"
+
 tock_logo: "assets/images/logo.svg"
 
 color: "#4051B5" # primary color for header, buttons
@@ -73,7 +77,7 @@ themeColor: dark-blue # purple, green, blue, orange, purple, grey
 fixedNav: 'true' # true or false
 
 permalink: /:year/:title/
-exclude: [_site, CHANGELOG.md, LICENSE, README.md, vendor]
+exclude: [_site, CHANGELOG.md, LICENSE, README.md, vendor, Gemfile, Gemfile.lock]
 
 # Collections
 collections:

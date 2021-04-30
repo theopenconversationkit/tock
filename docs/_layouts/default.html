@@ -92,13 +92,24 @@
             <!-- Actual Content -->
             {{ content }}
         </div>
+
+        <!-- Back-to-top button -->
+        {% if site.features contains "navigation.top" %}
+        <a
+                href="#"
+                class="md-top md-icon"
+                data-md-component="top"
+                data-md-state="hidden"
+        >
+            {% include .icons/material/arrow-up.svg %}
+        </a>
+        {% endif %}
     </main>
 </div>
 {% include footer.html %}
 {% include scripts/initialization.html %}
 {% include scripts/headers.html %}
 {% include scripts/tags.html %}
-{% include scripts/scrolltop.html %}
 {% include scripts/google-analytics.html %}
 </body>
 </html>
