@@ -10,7 +10,7 @@ title: Bot API
 Any programming language can be used, leveraging the Tock [Bot API](../api.md#tock-bot-definition-api). 
 
 [<img alt="Kotlin logo" title="Kotlin"
-      src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin-logo.svg/1024px-Kotlin-logo.svg.png" 
+      src="https://upload.wikimedia.org/wikipedia/commons/7/74/Kotlin_Icon.png" 
       style="width: 50px;">](bot-api.md#develop-with-kotlin)
 [<img alt="Nodejs logo" title="Nodejs"
       src="https://www.boostit.net/wp-content/uploads/2016/08/node-js-icon.png" 
@@ -30,7 +30,7 @@ Rather than deploying its own Tock platform, it is possible to test the _WebSock
 ## Develop with Kotlin
 
 <img alt="Kotlin logo" title="Kotlin"
-src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin-logo.svg/1024px-Kotlin-logo.svg.png" 
+src="https://upload.wikimedia.org/wikipedia/commons/7/74/Kotlin_Icon.png" 
 style="width: 100px;">
 
 ### Enable WebSocket mode
@@ -45,14 +45,14 @@ Using [Maven](https://maven.apache.org/) :
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-bot-api-websocket</artifactId>
-            <version>21.3.0</version>
+            <version>21.3.1</version>
         </dependency>
 ```
 
 Or [Gradle](https://gradle.org/) :
 
 ```groovy
-      compile 'ai.tock:tock-bot-api-websocket:21.3.0'
+      compile 'ai.tock:tock-bot-api-websocket:21.3.1'
 ```
 
 ### Enable WebHook mode
@@ -66,14 +66,14 @@ Using [Maven](https://maven.apache.org/) :
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-bot-api-webhook</artifactId>
-            <version>21.3.0</version>
+            <version>21.3.1</version>
         </dependency>
 ```
 
 Or [Gradle](https://gradle.org/) :
 
 ```groovy
-      compile 'ai.tock:tock-bot-api-webhook:21.3.0'
+      compile 'ai.tock:tock-bot-api-webhook:21.3.1'
 ```
 
 In this case, unlike the _WebSocket_ mode, the bot application must be reachable by the

@@ -10,7 +10,7 @@ en [Kotlin](https://kotlinlang.org/), [Javascript](https://nodejs.org/), [Python
 ou d'autres langages.
 
 <img alt="Logo Kotlin" title="Kotlin"
-      src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin-logo.svg/1024px-Kotlin-logo.svg.png" 
+      src="https://upload.wikimedia.org/wikipedia/commons/7/74/Kotlin_Icon.png" 
       style="width: 50px;">
 <img alt="Logo Nodejs" title="Nodejs"
       src="https://www.boostit.net/wp-content/uploads/2016/08/node-js-icon.png" 

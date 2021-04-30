@@ -172,7 +172,7 @@ Systèmes d'Informations et du Numérique (DSIN)_ d'[EDF Commerce](https://www.e
 > Il a la particularité d'être conçu pour pouvoir fonctionner avec la solution de téléphonie
 > ([Genesys](https://www.genesys.com)) afin de pouvoir router les appels clients vers la bonne compétence humarine ou
 > automatisée.  
-> Il permet par ailleurs de transférer le contexte de la conversation qu'il y a eu entre le client et la callbot
+> Il permet par ailleurs de transférer le contexte de la conversation qu'il y a eu entre le client et le callbot
 > auprès du conseiller clientèle.
 
 Le callbot est construit avec Tock et utilise le [_connecteur Allo-Media_](../user/guides/canaux.md#allo-media).
@@ -205,7 +205,7 @@ Voir [_Chatbot interne Enedis_](vitrine.md#chatbot-interne-enedis) et [_Chatbot 
 * et bien plus encore !
 
 <img title="MaxBot, support bancaire chez Aumax pour moi"
-alt="Application mobile Aumax pour moi" src="/img/maxbot.jpg"
+alt="Application mobile Aumax pour moi" src="../../img/maxbot.jpg"
 style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
 
 Au sein de cette application, le bot Aumax pour moi, basé sur Tock, vous assiste sur toutes les questions d'ordre pratique, sur le fonctionnement de l'application, de vos comptes et de la carte max.

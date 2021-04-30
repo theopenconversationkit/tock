@@ -18,7 +18,7 @@ Des clients sont aussi disponibles pour [Javascript/Node](bot-api.md#developper-
 Il est possible de développer des parcours Tock dans n'importe quel langage via la [_Bot API_](bot-api.md#developper-via-lapi).
 
 [<img alt="Logo Kotlin" title="Kotlin"
-      src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin-logo.svg/1024px-Kotlin-logo.svg.png" 
+      src="https://upload.wikimedia.org/wikipedia/commons/7/74/Kotlin_Icon.png" 
       style="width: 50px;">](bot-api.md#developper-en-kotlin)
 [<img alt="Logo Nodejs" title="Nodejs"
       src="https://www.boostit.net/wp-content/uploads/2016/08/node-js-icon.png" 
@@ -42,7 +42,7 @@ Plutôt que déployer se propre plateforme Tock, il est possible de tester les m
 ## Développer en Kotlin
 
 <img alt="Logo Kotlin" title="Kotlin"
-src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin-logo.svg/1024px-Kotlin-logo.svg.png" 
+src="https://upload.wikimedia.org/wikipedia/commons/7/74/Kotlin_Icon.png" 
 style="width: 100px;">
 
 ### Activer le mode WebSocket
@@ -57,14 +57,14 @@ Par exemple dans un projet [Maven](https://maven.apache.org/) :
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-bot-api-websocket</artifactId>
-            <version>21.3.0</version>
+            <version>21.3.1</version>
         </dependency>
 ```
 
 Ou dans un projet [Gradle](https://gradle.org/) :
 
 ```groovy
-      compile 'ai.tock:tock-bot-api-websocket:21.3.0'
+      compile 'ai.tock:tock-bot-api-websocket:21.3.1'
 ```
 
 ### Activer le mode WebHook
@@ -77,14 +77,14 @@ Par exemple dans un projet [Maven](https://maven.apache.org/) :
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-bot-api-webhook</artifactId>
-            <version>21.3.0</version>
+            <version>21.3.1</version>
         </dependency>
 ```
 
 Ou dans un projet [Gradle](https://gradle.org/) :
 
 ```groovy
-      compile 'ai.tock:tock-bot-api-webhook:21.3.0'
+      compile 'ai.tock:tock-bot-api-webhook:21.3.1'
 ```
 
 Dans ce cas, contrairement au mode _WebSocket_, il faut que l'application/bot démarrée soit joignable par la 
