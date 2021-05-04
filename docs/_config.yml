@@ -8,6 +8,12 @@
 # For technical reasons, this file is *NOT* reloaded automatically when you use
 # 'jekyll serve'. If you change this file, please restart the server process.
 
+plugins:
+  - jekyll-optional-front-matter
+
+optional_front_matter:
+  remove_originals: true
+
 # Site settings
 # These are used to personalize your new site. If you look in the HTML files,
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.

@@ -1,7 +1,3 @@
----
-title: Supervision
----
-
 # Supervision
 
 Ce chapitre présente quelques aspects supervision et _monitoring_ du fonctionnement de la plateforme 
