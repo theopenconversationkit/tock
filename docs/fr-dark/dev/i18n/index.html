@@ -16,7 +16,7 @@
         <link rel="canonical" href="https://theopenconversationkit.github.io/tock/fr/dev/i18n/">
       
       <link rel="icon" href="../../img/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.2">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.4">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.6f955dcd.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.bde7dde4.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ef6f36e2.min.css">
@@ -1140,12 +1140,12 @@ en java. Cela inclut le support de <a href="https://docs.oracle.com/javase/10/do
 <p>Le module d'internationalisation de Tock est efficace, mais certaines pratiques, pourtant intuitives en Kotlin,
  sont à bannir sous peine de mauvaises surprises.</p>
 <p>Par exemple, ce code fonctionne parfaitement bien avec le module i18n désactivé.</p>
-<div class="highlight"><pre><span></span><code>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;There are </span><span class="si">$</span><span class="n">nb</span><span class="s"> files&quot;</span><span class="p">)</span> <span class="c1">//DANGER!! </span>
+<div class="highlight"><pre><span></span><code>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;There are $nb files&quot;</span><span class="p">)</span> <span class="c1">//DANGER!! </span>
 </code></pre></div>
 <p>mais pose problème si il est activé. En effet, un nouveau libellé sera créé pour chaque valeur différente de la variable <em>nb</em> !</p>
 <p>Si il est nécessaire d'envoyer des réponses "à ne pas traduire", utilisez 
 les méthodes <em>BotBus.sendRaw</em>, <em>BotBus.endRaw</em> ou <em>String.raw</em></p>
-<div class="highlight"><pre><span></span><code>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;There are </span><span class="si">$</span><span class="n">nb</span><span class="s"> files&quot;</span><span class="p">.</span><span class="na">raw</span><span class="p">)</span> <span class="c1">//CORRECT </span>
+<div class="highlight"><pre><span></span><code>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;There are $nb files&quot;</span><span class="p">.</span><span class="n">raw</span><span class="p">)</span> <span class="c1">//CORRECT </span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;There are {0} files&quot;</span><span class="p">,</span> <span class="n">nb</span><span class="p">)</span> <span class="c1">//FORMAT A SUIVRE </span>
 </code></pre></div>
@@ -1161,15 +1161,15 @@ Si vous souhaitez cependant éviter tout risque, vous pouvez utiliser la méthod
 Il est nécessaire d'étendre <a href="https://github.com/theopenconversationkit/tock-bot-open-data/blob/master/src/test/kotlin/ai.tock/bot/open/data/rule/OpenDataJUnitExtension.kt">l'extension de test</a>
 pour ensuite indiquer la <a href="https://github.com/theopenconversationkit/tock-bot-open-data/blob/master/src/test/kotlin/ai.tock/bot/open/data/rule/TranslatorEngineMock.kt">correspondance des libellés</a> à tester.</p>
 <p>Il ne reste plus qu'à indiquer la locale souhaitée : </p>
-<div class="highlight"><pre><span></span><code>    <span class="nd">@Test</span>
-    <span class="kd">fun</span> <span class="nf">`search story asks for departure date WHEN there is a destination and an origin but no departure date in context`</span><span class="p">()</span> <span class="p">{</span>
-        <span class="n">ext</span><span class="p">.</span><span class="na">newRequest</span><span class="p">(</span><span class="s">&quot;Recherche&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">locale</span> <span class="o">=</span> <span class="n">Locale</span><span class="p">.</span><span class="na">FRENCH</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">destination</span> <span class="o">=</span> <span class="n">lille</span>
-            <span class="n">origin</span> <span class="o">=</span> <span class="n">paris</span>
+<div class="highlight"><pre><span></span><code>    <span class="n">@Test</span>
+    <span class="k">fun</span> <span class="nf">`search story asks for departure date WHEN there is a destination and an origin but no departure date in context`</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">ext</span><span class="p">.</span><span class="n">newRequest</span><span class="p">(</span><span class="s">&quot;Recherche&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">locale</span> <span class="p">=</span> <span class="n">Locale</span><span class="p">.</span><span class="n">FRENCH</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">destination</span> <span class="p">=</span> <span class="n">lille</span>
+            <span class="n">origin</span> <span class="p">=</span> <span class="n">paris</span>
 
             <span class="n">run</span><span class="p">()</span>
 
-            <span class="n">firstAnswer</span><span class="p">.</span><span class="na">assertText</span><span class="p">(</span><span class="s">&quot;Quand souhaitez-vous partir?&quot;</span><span class="p">)</span>
+            <span class="n">firstAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Quand souhaitez-vous partir?&quot;</span><span class="p">)</span>
         <span class="p">}</span>
     <span class="p">}</span>
 </code></pre></div>
@@ -1182,6 +1182,7 @@ pour ensuite indiquer la <a href="https://github.com/theopenconversationkit/tock
   <small>
     
       Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">17 juillet 2020</span>
+      
     
   </small>
 </div>
@@ -1258,10 +1259,10 @@ pour ensuite indiquer la <a href="https://github.com/theopenconversationkit/tock
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": ["tabs", "instant"], "translations": {"clipboard.copy": "Copier dans le presse-papier", "clipboard.copied": "Copi\u00e9 dans le presse-papier", "search.config.lang": "fr", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Rechercher", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../assets/javascripts/workers/search.fe42c31b.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["tabs", "instant"], "translations": {"clipboard.copy": "Copier dans le presse-papier", "clipboard.copied": "Copi\u00e9 dans le presse-papier", "search.config.lang": "fr", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Rechercher", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../assets/javascripts/workers/search.4fa0e4ee.min.js", "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.4ea5477f.min.js"></script>
+      <script src="../../assets/javascripts/bundle.1d3bfcf1.min.js"></script>
       
     
   </body>

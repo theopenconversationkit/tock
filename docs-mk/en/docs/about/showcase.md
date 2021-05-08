@@ -178,7 +178,29 @@ style="text-align: center; width: 400px;">
 
 ### _Enedis Chatbots_
 
-See [_Enedis internal Chatbot_](showcase.md#enedis-internal-chatbot) and [_Enedis customer Chatbot_](showcase.md#enedis-chatbots).
+Several [Enedis](https://www.enedis.fr/) chatbots are built with Tock.
+
+The _Enedis Client Chatbot_ gives the 35 millions clients an easy way to get answers about energy, 
+without the need to contact a customer advisor.
+
+> The conversational agent provides level-1 client support by answering simple and non-personalized questions 
+> on different subjects such as online account, Linky (the communicating meter), electric connection, 
+> troubleshooting, etc.  
+> Also, clients have the possibility to be redirected to a Live Chat and talk with an advisor 
+> in case of misunderstanding from the chatbot.
+
+Co-developped with Enedis experts on TOCK solution, this chatbot is available 
+on the company Website [Enedis.fr](https://www.enedis.fr/).
+
+![Enedis Client Chatbot](../img/enedis_bot2.png "Enedis Client Chatbot")
+
+* **Name:** _Enedis Client Chatbot_
+* **Date of birth:** in production from february 2021
+* **Field:** all subjects about energy distribution
+* **Channels:** text, on the company Website [Enedis.fr](https://www.enedis.fr/)
+
+> Also in production since 2020, the [_Enedis internal Chatbot_](showcase.md#enedis-internal-chatbot) 
+> for internal logistics services is also built with Tock.
 
 ## Bank
 
@@ -201,7 +223,7 @@ Through the app, the Aumax pour moi's bot, based on Tock, assists you through ev
 The bot is available on the [Aumax pour moi](https://www.aumaxpourmoi.fr/)'s app.
 Aumax pour moi takes care and answers up to 5 000 requests a day.
 
-* **Nom :** _Aumax pour moi_
+* **Name:** _Aumax pour moi_
 * **Date of birth:** in production since 2019
 * **Field:** banking, services, personal assistant
 * **Channels:** text, on the mobile app

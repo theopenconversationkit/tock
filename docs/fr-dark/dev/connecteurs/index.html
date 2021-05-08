@@ -16,7 +16,7 @@
         <link rel="canonical" href="https://theopenconversationkit.github.io/tock/fr/dev/connecteurs/">
       
       <link rel="icon" href="../../img/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.2">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.4">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.6f955dcd.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.bde7dde4.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ef6f36e2.min.css">
@@ -1084,77 +1084,77 @@ s'ouvre aux bots conversationnels et que le connecteur Tock n'existe pas encore.
 <p>Pour définir son propre connecteur, quatres étapes sont nécessaires :</p>
 <p>1) Implémenter l'interface <a href="https://doc.tock.ai/tock/dokka/tock/ai.tock.bot.connector/-connector/index.html"><code>Connector</code></a> </p>
 <p>Voici un exemple d'implémentation :</p>
-<div class="highlight"><pre><span></span><code><span class="kd">val</span> <span class="nv">testConnectorType</span> <span class="o">=</span> <span class="n">ConnectorType</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="k">val</span> <span class="py">testConnectorType</span> <span class="p">=</span> <span class="n">ConnectorType</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">)</span>
 
-<span class="kd">class</span> <span class="nc">TestConnector</span><span class="p">(</span><span class="kd">val</span> <span class="nv">applicationId</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="kd">val</span> <span class="nv">path</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="p">:</span> <span class="n">Connector</span> <span class="p">{</span>
+<span class="k">class</span> <span class="nc">TestConnector</span><span class="p">(</span><span class="k">val</span> <span class="py">applicationId</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span> <span class="k">val</span> <span class="py">path</span><span class="p">:</span> <span class="n">String</span><span class="p">)</span> <span class="p">:</span> <span class="n">Connector</span> <span class="p">{</span>
 
-    <span class="kd">override</span> <span class="kd">val</span> <span class="nv">connectorType</span><span class="p">:</span> <span class="n">ConnectorType</span> <span class="o">=</span> <span class="n">testConnectorType</span>
+    <span class="k">override</span> <span class="k">val</span> <span class="py">connectorType</span><span class="p">:</span> <span class="n">ConnectorType</span> <span class="p">=</span> <span class="n">testConnectorType</span>
 
-    <span class="kd">override</span> <span class="kd">fun</span> <span class="nf">register</span><span class="p">(</span><span class="n">controller</span><span class="p">:</span> <span class="n">ConnectorController</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">controller</span><span class="p">.</span><span class="na">registerServices</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="p">{</span> <span class="n">router</span> <span class="o">-&gt;</span>
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">register</span><span class="p">(</span><span class="n">controller</span><span class="p">:</span> <span class="n">ConnectorController</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">controller</span><span class="p">.</span><span class="n">registerServices</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="p">{</span> <span class="n">router</span> <span class="p">-&gt;</span>
             <span class="c1">//main API</span>
-            <span class="n">router</span><span class="p">.</span><span class="na">post</span><span class="p">(</span><span class="s">&quot;</span><span class="si">$</span><span class="n">path</span><span class="s">/message&quot;</span><span class="p">).</span><span class="na">blockingHandler</span> <span class="p">{</span> <span class="n">context</span> <span class="o">-&gt;</span>
+            <span class="n">router</span><span class="p">.</span><span class="n">post</span><span class="p">(</span><span class="s">&quot;$path/message&quot;</span><span class="p">).</span><span class="n">blockingHandler</span> <span class="p">{</span> <span class="n">context</span> <span class="p">-&gt;</span>
                 <span class="c1">//ConnectorRequest est mon objet métier passé par l&#39;appli front</span>
-                <span class="kd">val</span> <span class="nv">message</span><span class="p">:</span> <span class="n">ConnectorRequest</span> <span class="o">=</span> <span class="n">mapper</span><span class="p">.</span><span class="na">readValue</span><span class="p">(</span><span class="n">context</span><span class="p">.</span><span class="na">bodyAsString</span><span class="p">)</span>
+                <span class="k">val</span> <span class="py">message</span><span class="p">:</span> <span class="n">ConnectorRequest</span> <span class="p">=</span> <span class="n">mapper</span><span class="p">.</span><span class="n">readValue</span><span class="p">(</span><span class="n">context</span><span class="p">.</span><span class="n">bodyAsString</span><span class="p">)</span>
 
                 <span class="c1">//transformation de l&#39;objet métier en Event tock</span>
-                <span class="kd">val</span> <span class="nv">event</span> <span class="o">=</span> <span class="n">readUserMessage</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                <span class="k">val</span> <span class="py">event</span> <span class="p">=</span> <span class="n">readUserMessage</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
                 <span class="c1">// on passe l&#39;évènement au framework</span>
-                <span class="kd">val</span> <span class="nv">callback</span> <span class="o">=</span> <span class="n">TestConnectorCallback</span><span class="p">(</span><span class="n">applicationId</span><span class="p">,</span> <span class="n">message</span><span class="p">.</span><span class="na">userId</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">controller</span><span class="p">)</span>
-                <span class="n">controller</span><span class="p">.</span><span class="na">handle</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">ConnectorData</span><span class="p">(</span><span class="n">callback</span><span class="p">))</span>
+                <span class="k">val</span> <span class="py">callback</span> <span class="p">=</span> <span class="n">TestConnectorCallback</span><span class="p">(</span><span class="n">applicationId</span><span class="p">,</span> <span class="n">message</span><span class="p">.</span><span class="n">userId</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">controller</span><span class="p">)</span>
+                <span class="n">controller</span><span class="p">.</span><span class="n">handle</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">ConnectorData</span><span class="p">(</span><span class="n">callback</span><span class="p">))</span>
             <span class="p">}</span>
 
         <span class="p">}</span>
 
     <span class="p">}</span>
 
-    <span class="kd">override</span> <span class="kd">fun</span> <span class="nf">send</span><span class="p">(</span><span class="n">event</span><span class="p">:</span> <span class="n">Event</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">ConnectorCallback</span><span class="p">,</span> <span class="n">delayInMs</span><span class="p">:</span> <span class="kt">Long</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">send</span><span class="p">(</span><span class="n">event</span><span class="p">:</span> <span class="n">Event</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">ConnectorCallback</span><span class="p">,</span> <span class="n">delayInMs</span><span class="p">:</span> <span class="n">Long</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">callback</span> <span class="k">as</span> <span class="n">TestConnectorCallback</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">event</span> <span class="k">is</span> <span class="n">Action</span><span class="p">)</span> <span class="p">{</span>
             <span class="c1">//on enregistre l&#39;action</span>
-            <span class="n">callback</span><span class="p">.</span><span class="na">actions</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+            <span class="n">callback</span><span class="p">.</span><span class="n">actions</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
             <span class="c1">//si c&#39;est la dernière action à envoyer, on envoie la réponse</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">metadata</span><span class="p">.</span><span class="na">lastAnswer</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">callback</span><span class="p">.</span><span class="na">sendAnswer</span><span class="p">()</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">metadata</span><span class="p">.</span><span class="n">lastAnswer</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">callback</span><span class="p">.</span><span class="n">sendAnswer</span><span class="p">()</span>
             <span class="p">}</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="n">logger</span><span class="p">.</span><span class="na">trace</span> <span class="p">{</span> <span class="s">&quot;unsupported event: </span><span class="si">$</span><span class="n">event</span><span class="s">&quot;</span> <span class="p">}</span>
+            <span class="n">logger</span><span class="p">.</span><span class="n">trace</span> <span class="p">{</span> <span class="s">&quot;unsupported event: $event&quot;</span> <span class="p">}</span>
         <span class="p">}</span>
     <span class="p">}</span>    
 <span class="p">}</span>
 
 <span class="c1">// pour récupérer toutes les actions avant envoi</span>
-<span class="kd">class</span> <span class="nc">TestConnectorCallback</span><span class="p">(</span>
-        <span class="kd">override</span> <span class="kd">val</span> <span class="nv">applicationId</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span>
-        <span class="kd">val</span> <span class="nv">userId</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span>
-        <span class="kd">val</span> <span class="nv">context</span><span class="p">:</span> <span class="n">RoutingContext</span><span class="p">,</span>
-        <span class="kd">val</span> <span class="nv">controller</span><span class="p">:</span> <span class="n">ConnectorController</span><span class="p">,</span>
-        <span class="kd">val</span> <span class="nv">actions</span><span class="p">:</span> <span class="n">MutableList</span><span class="o">&lt;</span><span class="n">Action</span><span class="o">&gt;</span> <span class="o">=</span> <span class="n">CopyOnWriteArrayList</span><span class="p">()):</span> <span class="n">ConnectorCallbackBase</span><span class="p">(</span><span class="n">applicationId</span><span class="p">,</span> <span class="n">testConnectorType</span><span class="p">)</span> <span class="p">{</span>
+<span class="k">class</span> <span class="nc">TestConnectorCallback</span><span class="p">(</span>
+        <span class="k">override</span> <span class="k">val</span> <span class="py">applicationId</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span>
+        <span class="k">val</span> <span class="py">userId</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span>
+        <span class="k">val</span> <span class="py">context</span><span class="p">:</span> <span class="n">RoutingContext</span><span class="p">,</span>
+        <span class="k">val</span> <span class="py">controller</span><span class="p">:</span> <span class="n">ConnectorController</span><span class="p">,</span>
+        <span class="k">val</span> <span class="py">actions</span><span class="p">:</span> <span class="n">MutableList</span><span class="p">&lt;</span><span class="n">Action</span><span class="p">&gt;</span> <span class="p">=</span> <span class="n">CopyOnWriteArrayList</span><span class="p">()):</span> <span class="n">ConnectorCallbackBase</span><span class="p">(</span><span class="n">applicationId</span><span class="p">,</span> <span class="n">testConnectorType</span><span class="p">)</span> <span class="p">{</span>
 
-    <span class="kd">internal</span> <span class="kd">fun</span> <span class="nf">sendAnswer</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">internal</span> <span class="k">fun</span> <span class="nf">sendAnswer</span><span class="p">()</span> <span class="p">{</span>
             <span class="c1">//on transforme la liste des réponses Tock en réponse métier</span>
-            <span class="kd">val</span> <span class="nv">response</span> <span class="o">=</span> <span class="n">mapper</span><span class="p">.</span><span class="na">writeValueAsString</span><span class="p">(</span><span class="n">actions</span><span class="p">.</span><span class="na">map</span><span class="p">{...})</span>
+            <span class="k">val</span> <span class="py">response</span> <span class="p">=</span> <span class="n">mapper</span><span class="p">.</span><span class="n">writeValueAsString</span><span class="p">(</span><span class="n">actions</span><span class="p">.</span><span class="n">map</span><span class="p">{...})</span>
             <span class="c1">//puis on envoie la réponse</span>
-            <span class="n">context</span><span class="p">.</span><span class="na">response</span><span class="p">().</span><span class="na">end</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+            <span class="n">context</span><span class="p">.</span><span class="n">response</span><span class="p">().</span><span class="n">end</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
     <span class="p">}</span>
 
 <span class="p">}</span>         
 </code></pre></div>
 <p>2) Implémenter l'interface <a href="https://doc.tock.ai/tock/dokka/tock/ai.tock.bot.connector/-connector-provider/index.html"><code>ConnectorProvider</code></a></p>
 <p>Voici un exemple d'implémentation :</p>
-<div class="highlight"><pre><span></span><code><span class="kd">object</span> <span class="nc">TestConnectorProvider</span> <span class="p">:</span> <span class="n">ConnectorProvider</span> <span class="p">{</span>
+<div class="highlight"><pre><span></span><code><span class="k">object</span> <span class="nc">TestConnectorProvider</span> <span class="p">:</span> <span class="n">ConnectorProvider</span> <span class="p">{</span>
 
-    <span class="kd">override</span> <span class="kd">val</span> <span class="nv">connectorType</span><span class="p">:</span> <span class="n">ConnectorType</span> <span class="o">=</span> <span class="n">testConnectorType</span>
+    <span class="k">override</span> <span class="k">val</span> <span class="py">connectorType</span><span class="p">:</span> <span class="n">ConnectorType</span> <span class="p">=</span> <span class="n">testConnectorType</span>
 
-    <span class="kd">override</span> <span class="kd">fun</span> <span class="nf">connector</span><span class="p">(</span><span class="n">connectorConfiguration</span><span class="p">:</span> <span class="n">ConnectorConfiguration</span><span class="p">):</span> <span class="n">Connector</span> <span class="p">{</span>
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">connector</span><span class="p">(</span><span class="n">connectorConfiguration</span><span class="p">:</span> <span class="n">ConnectorConfiguration</span><span class="p">):</span> <span class="n">Connector</span> <span class="p">{</span>
         <span class="k">return</span> <span class="n">TestConnector</span><span class="p">(</span>
-                <span class="n">connectorConfiguration</span><span class="p">.</span><span class="na">connectorId</span><span class="p">,</span>
-                <span class="n">connectorConfiguration</span><span class="p">.</span><span class="na">path</span>
+                <span class="n">connectorConfiguration</span><span class="p">.</span><span class="n">connectorId</span><span class="p">,</span>
+                <span class="n">connectorConfiguration</span><span class="p">.</span><span class="n">path</span>
         <span class="p">)</span>
     <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="kd">class</span> <span class="nc">TestConnectorProviderService</span><span class="p">:</span> <span class="n">ConnectorProvider</span> <span class="k">by</span> <span class="n">TestConnectorProvider</span>
+<span class="k">class</span> <span class="nc">TestConnectorProviderService</span><span class="p">:</span> <span class="n">ConnectorProvider</span> <span class="k">by</span> <span class="n">TestConnectorProvider</span>
 </code></pre></div>
 <p>3) Rendre disponible ce connecteur via un <em>Service Loader</em> :</p>
 <p>Pour cela, placez un fichier <code>META-INF/services/ai.tock.bot.connector.ConnectorProvider</code> dans le classpath, 
@@ -1171,6 +1171,7 @@ contenant le nom de la classe :</p>
   <small>
     
       Dernière mise à jour: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">25 septembre 2020</span>
+      
     
   </small>
 </div>
@@ -1247,10 +1248,10 @@ contenant le nom de la classe :</p>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": ["tabs", "instant"], "translations": {"clipboard.copy": "Copier dans le presse-papier", "clipboard.copied": "Copi\u00e9 dans le presse-papier", "search.config.lang": "fr", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Rechercher", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../assets/javascripts/workers/search.fe42c31b.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["tabs", "instant"], "translations": {"clipboard.copy": "Copier dans le presse-papier", "clipboard.copied": "Copi\u00e9 dans le presse-papier", "search.config.lang": "fr", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Rechercher", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../assets/javascripts/workers/search.4fa0e4ee.min.js", "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.4ea5477f.min.js"></script>
+      <script src="../../assets/javascripts/bundle.1d3bfcf1.min.js"></script>
       
     
   </body>
