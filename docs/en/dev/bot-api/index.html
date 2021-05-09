@@ -816,12 +816,12 @@ style="width: 100px;"></p>
 <div class="codehilite"><pre><span></span><code>        <span class="nt">&lt;dependency&gt;</span>
             <span class="nt">&lt;groupId&gt;</span>ai.tock<span class="nt">&lt;/groupId&gt;</span>
             <span class="nt">&lt;artifactId&gt;</span>tock-bot-api-websocket<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>21.3.1<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;version&gt;</span>21.3.2<span class="nt">&lt;/version&gt;</span>
         <span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div>
 
 <p>Or <a href="https://gradle.org/">Gradle</a> :</p>
-<div class="codehilite"><pre><span></span><code>      <span class="n">compile</span> <span class="s1">&#39;ai.tock:tock-bot-api-websocket:21.3.1&#39;</span>
+<div class="codehilite"><pre><span></span><code>      <span class="n">compile</span> <span class="s1">&#39;ai.tock:tock-bot-api-websocket:21.3.2&#39;</span>
 </code></pre></div>
 
 <h3 id="enable-webhook-mode">Enable WebHook mode<a class="headerlink" href="#enable-webhook-mode" title="Permanent link">&para;</a></h3>
@@ -831,12 +831,12 @@ Add the <code>tock-bot-api-webhook</code> dependency to your <a href="https://ko
 <div class="codehilite"><pre><span></span><code>        <span class="nt">&lt;dependency&gt;</span>
             <span class="nt">&lt;groupId&gt;</span>ai.tock<span class="nt">&lt;/groupId&gt;</span>
             <span class="nt">&lt;artifactId&gt;</span>tock-bot-api-webhook<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>21.3.1<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;version&gt;</span>21.3.2<span class="nt">&lt;/version&gt;</span>
         <span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div>
 
 <p>Or <a href="https://gradle.org/">Gradle</a> :</p>
-<div class="codehilite"><pre><span></span><code>      <span class="n">compile</span> <span class="s1">&#39;ai.tock:tock-bot-api-webhook:21.3.1&#39;</span>
+<div class="codehilite"><pre><span></span><code>      <span class="n">compile</span> <span class="s1">&#39;ai.tock:tock-bot-api-webhook:21.3.2&#39;</span>
 </code></pre></div>
 
 <p>In this case, unlike the <em>WebSocket</em> mode, the bot application must be reachable by the
@@ -861,7 +861,7 @@ You can enter / paste this key into the Kotlin code (see below).</p>
 <li>Specific channel formats like Messenger format, Slack format, etc.</li>
 </ul>
 <p>Here is a simple bot with a few stories:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">fun</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<div class="codehilite"><pre><span></span><code><span class="kd">fun</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="n">startWithDemo</span><span class="p">(</span>
         <span class="n">newBot</span><span class="p">(</span>
             <span class="s">&quot;PUT-YOUR-TOCK-APP-API-KEY-HERE&quot;</span><span class="p">,</span> <span class="c1">// Get your app API key from Bot Configurations in Tock Studio</span>

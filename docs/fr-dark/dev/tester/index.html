@@ -1060,33 +1060,33 @@
 <div class="highlight"><pre><span></span><code>        <span class="nt">&lt;dependency&gt;</span>
             <span class="nt">&lt;groupId&gt;</span>ai.tock<span class="nt">&lt;/groupId&gt;</span>
             <span class="nt">&lt;artifactId&gt;</span>bot-test<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>21.3.1<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;version&gt;</span>21.3.2<span class="nt">&lt;/version&gt;</span>
             <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
         <span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div>
 <p>ou Gradle :</p>
-<div class="highlight"><pre><span></span><code>      <span class="n">testCompile</span> <span class="s1">&#39;ai.tock:bot-test:21.3.1&#39;</span>
+<div class="highlight"><pre><span></span><code>      <span class="n">testCompile</span> <span class="s1">&#39;ai.tock:bot-test:21.3.2&#39;</span>
 </code></pre></div>
 <p>L'ensemble de ce framework est documenté au format KDoc <a href="https://doc.tock.ai/tock/dokka/tock/ai.tock.bot.test">ici</a>.</p>
 <h2 id="ecrire-un-test-simple">Ecrire un test simple<a class="headerlink" href="#ecrire-un-test-simple" title="Permanent link">&para;</a></h2>
 <p>L'ensemble des exemples suivants utilisent <a href="https://junit.org/junit5/">JUnit5</a>. 
 Une extension dédiée à Tock et JUnit5 est <a href="https://doc.tock.ai/tock/dokka/tock/ai.tock.bot.test.junit/-tock-j-unit5-extension/index.html">disponible</a>.</p>
-<div class="highlight"><pre><span></span><code>    <span class="n">@RegisterExtension</span>
-    <span class="n">@JvmField</span>
-    <span class="k">val</span> <span class="py">ext</span> <span class="p">=</span> <span class="n">TockJUnit5Extension</span><span class="p">(</span><span class="n">bot</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code>    <span class="nd">@RegisterExtension</span>
+    <span class="nd">@JvmField</span>
+    <span class="kd">val</span> <span class="nv">ext</span> <span class="o">=</span> <span class="n">TockJUnit5Extension</span><span class="p">(</span><span class="n">bot</span><span class="p">)</span>
 </code></pre></div>
 <p>Afin de tester la story <strong>greetings</strong> du bot Open Data, il suffit d'utiliser la méthode <em>ext.send()</em>
  qui permet d'obtenir un mock du bus conversationnel. Le test unitaire s'écrit alors ainsi :   </p>
-<div class="highlight"><pre><span></span><code>    <span class="n">@Test</span>
-    <span class="k">fun</span> <span class="nf">`greetings story displays welcome message WHEN locale is fr`</span><span class="p">()</span> <span class="p">{</span>
-        <span class="n">ext</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="n">locale</span> <span class="p">=</span> <span class="n">Locale</span><span class="p">.</span><span class="n">FRENCH</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">firstAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Bienvenue chez le Bot Open Data Sncf! :)&quot;</span><span class="p">)</span>
-            <span class="n">secondAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Il s&#39;agit d&#39;un bot de démonstration du framework Tock : https://github.com/theopenconversationkit/tock&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code>    <span class="nd">@Test</span>
+    <span class="kd">fun</span> <span class="nf">`greetings story displays welcome message WHEN locale is fr`</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">ext</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="n">locale</span> <span class="o">=</span> <span class="n">Locale</span><span class="p">.</span><span class="na">FRENCH</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">firstAnswer</span><span class="p">.</span><span class="na">assertText</span><span class="p">(</span><span class="s">&quot;Bienvenue chez le Bot Open Data Sncf! :)&quot;</span><span class="p">)</span>
+            <span class="n">secondAnswer</span><span class="p">.</span><span class="na">assertText</span><span class="p">(</span><span class="s">&quot;Il s&#39;agit d&#39;un bot de démonstration du framework Tock : https://github.com/theopenconversationkit/tock&quot;</span><span class="p">)</span>
         <span class="p">}</span>
     <span class="p">}</span>
 </code></pre></div>
 <p>Comme le connector par défaut est celui de Messenger, il est possible de tester de la même manière le message spécifique à Messenger : </p>
-<div class="highlight"><pre><span></span><code>    <span class="n">lastAnswer</span><span class="p">.</span><span class="n">assertMessage</span><span class="p">(</span>
+<div class="highlight"><pre><span></span><code>    <span class="n">lastAnswer</span><span class="p">.</span><span class="na">assertMessage</span><span class="p">(</span>
                 <span class="n">buttonsTemplate</span><span class="p">(</span>
                     <span class="s">&quot;Il est volontairement très limité, mais demandez lui un itinéraire ou les départs à partir d&#39;une gare et constatez le résultat! :)&quot;</span><span class="p">,</span>
                     <span class="n">postbackButton</span><span class="p">(</span><span class="s">&quot;Itinéraires&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">),</span>
@@ -1097,10 +1097,10 @@ Une extension dédiée à Tock et JUnit5 est <a href="https://doc.tock.ai/tock/d
 </code></pre></div>
 <p>Pour tester le message spécifique à Google Assistant (ou tout autre connecteur),
  il est nécessaire de spécifier le connecteur que l'on souhaite tester :</p>
-<div class="highlight"><pre><span></span><code>    <span class="n">ext</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="n">connectorType</span> <span class="p">=</span> <span class="n">gaConnectorType</span><span class="p">,</span> <span class="n">locale</span> <span class="p">=</span> <span class="n">Locale</span><span class="p">.</span><span class="n">FRENCH</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">firstAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Bienvenue chez le Bot Open Data Sncf! :)&quot;</span><span class="p">)</span>
-            <span class="n">secondAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Il s&#39;agit d&#39;un bot de démonstration du framework Tock : https://github.com/theopenconversationkit/tock&quot;</span><span class="p">)</span>
-            <span class="n">lastAnswer</span><span class="p">.</span><span class="n">assertMessage</span><span class="p">(</span>
+<div class="highlight"><pre><span></span><code>    <span class="n">ext</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="n">connectorType</span> <span class="o">=</span> <span class="n">gaConnectorType</span><span class="p">,</span> <span class="n">locale</span> <span class="o">=</span> <span class="n">Locale</span><span class="p">.</span><span class="na">FRENCH</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">firstAnswer</span><span class="p">.</span><span class="na">assertText</span><span class="p">(</span><span class="s">&quot;Bienvenue chez le Bot Open Data Sncf! :)&quot;</span><span class="p">)</span>
+            <span class="n">secondAnswer</span><span class="p">.</span><span class="na">assertText</span><span class="p">(</span><span class="s">&quot;Il s&#39;agit d&#39;un bot de démonstration du framework Tock : https://github.com/theopenconversationkit/tock&quot;</span><span class="p">)</span>
+            <span class="n">lastAnswer</span><span class="p">.</span><span class="na">assertMessage</span><span class="p">(</span>
                 <span class="n">gaMessage</span><span class="p">(</span>
                     <span class="s">&quot;Il est volontairement très limité, mais demandez lui un itinéraire ou les départs à partir d&#39;une gare et constatez le résultat! :)&quot;</span><span class="p">,</span>
                     <span class="s">&quot;Itinéraires&quot;</span><span class="p">,</span>
@@ -1113,32 +1113,32 @@ Une extension dédiée à Tock et JUnit5 est <a href="https://doc.tock.ai/tock/d
 <h2 id="tester-une-story-specifique">Tester une Story spécifique<a class="headerlink" href="#tester-une-story-specifique" title="Permanent link">&para;</a></h2>
 <p>Dans les exemples précédents, il n'était pas nécessaire d'indiquer la story à tester (<em>greetings</em> étant la story par défaut).
 Supposons que nous souhaitons la story <strong>search</strong>, nous devons préciser la story à tester de la manière suivante  : </p>
-<div class="highlight"><pre><span></span><code>    <span class="n">@Test</span>
-    <span class="k">fun</span> <span class="nf">`search story asks for destination WHEN there is no destination in context`</span><span class="p">()</span> <span class="p">{</span>
-        <span class="n">ext</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="n">intent</span> <span class="p">=</span> <span class="n">search</span><span class="p">,</span> <span class="n">locale</span> <span class="p">=</span> <span class="n">Locale</span><span class="p">.</span><span class="n">FRENCH</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">firstAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Pour quelle destination?&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code>    <span class="nd">@Test</span>
+    <span class="kd">fun</span> <span class="nf">`search story asks for destination WHEN there is no destination in context`</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">ext</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="n">intent</span> <span class="o">=</span> <span class="n">search</span><span class="p">,</span> <span class="n">locale</span> <span class="o">=</span> <span class="n">Locale</span><span class="p">.</span><span class="na">FRENCH</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">firstAnswer</span><span class="p">.</span><span class="na">assertText</span><span class="p">(</span><span class="s">&quot;Pour quelle destination?&quot;</span><span class="p">)</span>
         <span class="p">}</span>
     <span class="p">}</span>
 </code></pre></div>
 <h2 id="tester-un-dialogue">Tester un dialogue<a class="headerlink" href="#tester-un-dialogue" title="Permanent link">&para;</a></h2>
 <p>Il est possible de simuler un dialogue complet. Par exemple, on simule ici que l'utilisateur indique la destination, puis l'origine :</p>
-<div class="highlight"><pre><span></span><code>    <span class="n">@Test</span>
-    <span class="k">fun</span> <span class="nf">`search story asks for origin WHEN there is a destination but no origin in context`</span><span class="p">()</span> <span class="p">{</span>
-        <span class="n">ext</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="s">&quot;Je voudrais rechercher un itinéraire&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">locale</span> <span class="p">=</span> <span class="n">Locale</span><span class="p">.</span><span class="n">FRENCH</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">firstAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Pour quelle destination?&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code>    <span class="nd">@Test</span>
+    <span class="kd">fun</span> <span class="nf">`search story asks for origin WHEN there is a destination but no origin in context`</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">ext</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="s">&quot;Je voudrais rechercher un itinéraire&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">locale</span> <span class="o">=</span> <span class="n">Locale</span><span class="p">.</span><span class="na">FRENCH</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">firstAnswer</span><span class="p">.</span><span class="na">assertText</span><span class="p">(</span><span class="s">&quot;Pour quelle destination?&quot;</span><span class="p">)</span>
         <span class="p">}</span>
-        <span class="n">ext</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="s">&quot;Lille&quot;</span><span class="p">,</span> <span class="n">indicate_location</span><span class="p">,</span> <span class="n">locationEntity</span> <span class="n">setTo</span> <span class="n">lille</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">firstBusAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Pour quelle origine?&quot;</span><span class="p">)</span>
+        <span class="n">ext</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="s">&quot;Lille&quot;</span><span class="p">,</span> <span class="n">indicate_location</span><span class="p">,</span> <span class="n">locationEntity</span> <span class="n">setTo</span> <span class="n">lille</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">firstBusAnswer</span><span class="p">.</span><span class="na">assertText</span><span class="p">(</span><span class="s">&quot;Pour quelle origine?&quot;</span><span class="p">)</span>
         <span class="p">}</span>
-        <span class="n">ext</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="s">&quot;Paris&quot;</span><span class="p">,</span> <span class="n">indicate_location</span><span class="p">,</span> <span class="n">locationEntity</span> <span class="n">setTo</span> <span class="n">paris</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">firstBusAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Quand souhaitez-vous partir?&quot;</span><span class="p">)</span>
+        <span class="n">ext</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="s">&quot;Paris&quot;</span><span class="p">,</span> <span class="n">indicate_location</span><span class="p">,</span> <span class="n">locationEntity</span> <span class="n">setTo</span> <span class="n">paris</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">firstBusAnswer</span><span class="p">.</span><span class="na">assertText</span><span class="p">(</span><span class="s">&quot;Quand souhaitez-vous partir?&quot;</span><span class="p">)</span>
         <span class="p">}</span>
     <span class="p">}</span>
 </code></pre></div>
 <p>Le texte en premier paramètre de la méthode <em>send</em> est simplement indicatif, pour aider à la compréhension des tests.
 Les paramètres suivants permettent de définir comment le NLP va analyser la phrase.
 Par exemple : </p>
-<div class="highlight"><pre><span></span><code>    <span class="k">private</span> <span class="k">val</span> <span class="py">lille</span> <span class="p">=</span> <span class="n">PlaceValue</span><span class="p">(</span>
+<div class="highlight"><pre><span></span><code>    <span class="kd">private</span> <span class="kd">val</span> <span class="nv">lille</span> <span class="o">=</span> <span class="n">PlaceValue</span><span class="p">(</span>
         <span class="n">SncfPlace</span><span class="p">(</span>
             <span class="s">&quot;stop_area&quot;</span><span class="p">,</span>
             <span class="m">90</span><span class="p">,</span>
@@ -1149,21 +1149,21 @@ Par exemple : </p>
         <span class="p">)</span>
     <span class="p">)</span>
 
-    <span class="n">ext</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="s">&quot;Lille&quot;</span><span class="p">,</span> <span class="n">indicate_location</span><span class="p">,</span> <span class="n">locationEntity</span> <span class="n">setTo</span> <span class="n">lille</span><span class="p">)</span>
+    <span class="n">ext</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="s">&quot;Lille&quot;</span><span class="p">,</span> <span class="n">indicate_location</span><span class="p">,</span> <span class="n">locationEntity</span> <span class="n">setTo</span> <span class="n">lille</span><span class="p">)</span>
 </code></pre></div>
 <p>permet d'indiquer que la phrase "Lille" est catégorisée comme une intention <em>indicate_location</em> et avec une valeur 
 pour l'entité <em>location</em> qui va être la localisation <em>lille</em></p>
 <p>Enfin il est possible de modifier toutes les valeurs du bus mocké à l'initialisation. Dans l'exemple suivant, on simule l'intention secondaire <em>indicate_location</em>
 afin d'indiquer l'origine : </p>
-<div class="highlight"><pre><span></span><code>    <span class="n">@Test</span>
-    <span class="k">fun</span> <span class="nf">`search story asks for departure date WHEN there is a destination and an origin but no departure date in context`</span><span class="p">()</span> <span class="p">{</span>
-        <span class="n">ext</span><span class="p">.</span><span class="n">newRequest</span><span class="p">(</span><span class="s">&quot;Recherche&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">locale</span> <span class="p">=</span> <span class="n">Locale</span><span class="p">.</span><span class="n">FRENCH</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">destination</span> <span class="p">=</span> <span class="n">lille</span>
-            <span class="n">origin</span> <span class="p">=</span> <span class="n">paris</span>
+<div class="highlight"><pre><span></span><code>    <span class="nd">@Test</span>
+    <span class="kd">fun</span> <span class="nf">`search story asks for departure date WHEN there is a destination and an origin but no departure date in context`</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">ext</span><span class="p">.</span><span class="na">newRequest</span><span class="p">(</span><span class="s">&quot;Recherche&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">locale</span> <span class="o">=</span> <span class="n">Locale</span><span class="p">.</span><span class="na">FRENCH</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">destination</span> <span class="o">=</span> <span class="n">lille</span>
+            <span class="n">origin</span> <span class="o">=</span> <span class="n">paris</span>
 
             <span class="n">run</span><span class="p">()</span>
 
-            <span class="n">firstAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Quand souhaitez-vous partir?&quot;</span><span class="p">)</span>
+            <span class="n">firstAnswer</span><span class="p">.</span><span class="na">assertText</span><span class="p">(</span><span class="s">&quot;Quand souhaitez-vous partir?&quot;</span><span class="p">)</span>
         <span class="p">}</span>
     <span class="p">}</span>
 </code></pre></div>

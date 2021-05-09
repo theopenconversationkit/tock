@@ -782,6 +782,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#implementation-0auth2-generique" class="md-nav__link">
+    Implémentation 0Auth2 générique
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#implementation-0authgithub" class="md-nav__link">
     Implémentation 0Auth/GitHub
   </a>
@@ -1150,6 +1157,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#implementation-0auth2-generique" class="md-nav__link">
+    Implémentation 0Auth2 générique
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#implementation-0authgithub" class="md-nav__link">
     Implémentation 0Auth/GitHub
   </a>
@@ -1267,7 +1281,10 @@ Il utilise les librairies <a href="https://vertx.io/docs/vertx-auth-common/java/
 Le code est disponible dans la classe <a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/PropertyBasedAuthProvider.kt"><code>PropertyBasedAuthProvider</code></a></p>
 </li>
 <li>
-<p>Un modèle <a href="https://oauth.net/2/"><em>OAuth2</em></a> dont un exemple est donné par <a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/GithubOAuthProvider.kt"><code>GithubOAuthProvider</code></a></p>
+<p>Un modèle <a href="https://oauth.net/2/"><em>OAuth2</em></a> générique.</p>
+</li>
+<li>
+<p>Un modèle <a href="https://oauth.net/2/"><em>OAuth2</em></a> spécifique pour Github dont un exemple est donné par <a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/GithubOAuthProvider.kt"><code>GithubOAuthProvider</code></a></p>
 </li>
 <li>
 <p>Un modèle basé sur des jetons <a href="https://jwt.io/"><em>JWT</em></a>, dont une implémentation pour AWS est disponible dans <a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/AWSJWTAuthProvider.kt"><code>AWSJWTAuthProvider</code></a>    </p>
@@ -1367,6 +1384,66 @@ permettre de corréler ces valeurs (index par index, pour chaque utilisateur).</
 <p>Pour en savoir plus sur le fonctionnement précis de cette implémentation, voir la classe 
 <a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/PropertyBasedAuthProvider.kt"><code>PropertyBasedAuthProvider</code></a>.</p>
 </blockquote>
+<h3 id="implementation-0auth2-generique">Implémentation 0Auth2 générique<a class="headerlink" href="#implementation-0auth2-generique" title="Permanent link">&para;</a></h3>
+<p>Cette implémentation générique est à utiliser dès que vous souhaitez papramétrer une configuration OAuth2.</p>
+<p>Voici les propriétés et leurs valeurs par défaut :</p>
+<table>
+<thead>
+<tr>
+<th>Variable d'environnement</th>
+<th>Exemple de valeur</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tock_oauth2_enabled</code></td>
+<td><code>true</code></td>
+<td>Activation de l'authentification 0Auth2</td>
+</tr>
+<tr>
+<td><code>tock_oauth2_client_id</code></td>
+<td><code>CLIENT_ID</code></td>
+<td>Identifiant pour interroger l'API GitHub</td>
+</tr>
+<tr>
+<td><code>tock_oauth2_secret_key</code></td>
+<td><code>SECRET_KEY</code></td>
+<td>Mot de passe pour interroger l'API GitHub</td>
+</tr>
+<tr>
+<td><code>tock_oauth2_site_url</code></td>
+<td><code>https://provider</code></td>
+<td>Url du provider oauth2</td>
+</tr>
+<tr>
+<td><code>tock_oauth2_access_token_path</code></td>
+<td><code>/oauth2/token</code></td>
+<td>Chemin relatif pour récupérer l'access token</td>
+</tr>
+<tr>
+<td><code>tock_oauth2_authorize_path</code></td>
+<td><code>/oauth2/authorize</code></td>
+<td>Timeout vérification de l'identité (API GitHub)</td>
+</tr>
+<tr>
+<td><code>tock_oauth2_userinfo_path</code></td>
+<td><code>/oauth2/userInfo</code></td>
+<td>Timeout vérification de l'identité (API GitHub)</td>
+</tr>
+<tr>
+<td><code>tock_oauth2_proxy_host</code></td>
+<td>``</td>
+<td>host du proxy (ne pas indiquer si pas de proxy)</td>
+</tr>
+<tr>
+<td><code>tock_oauth2_proxy_port</code></td>
+<td>``</td>
+<td>port optionnel du proxy</td>
+</tr>
+</tbody>
+</table>
+<p>Il est nécessaire d'indiquer en callback url <code>https://[host admin]/rest/callback</code>.</p>
 <h3 id="implementation-0authgithub">Implémentation 0Auth/GitHub<a class="headerlink" href="#implementation-0authgithub" title="Permanent link">&para;</a></h3>
 <p>Cette implémentation assez simpliste est utilisée à titre d'exemple, ainsi que pour la plateforme publique de démo
  <a href="https://demo.tock.ai">https://demo.tock.ai</a>.</p>

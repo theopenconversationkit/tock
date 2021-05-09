@@ -1107,7 +1107,7 @@ langue mais aussi du canal utilisés.</p>
 est désactivée par défaut. Pour l'activer, il est alors nécessaire de configurer la plateforme à son démarrage :</p>
 <ul>
 <li>Soit via le code de démarrage du bot (développeur) :
-<div class="highlight"><pre><span></span><code>    <span class="n">Translator</span><span class="p">.</span><span class="n">enabled</span> <span class="p">=</span> <span class="k">true</span>
+<div class="highlight"><pre><span></span><code>    <span class="n">Translator</span><span class="p">.</span><span class="na">enabled</span> <span class="o">=</span> <span class="kc">true</span>
 </code></pre></div></li>
 <li>Soit avec une <em>propriété Système</em> (administrateur) en passant <code>-Dtock_i18n_enabled=true</code> au démarrage de la JVM</li>
 </ul>
@@ -1124,7 +1124,7 @@ notamment pour dialoguer avec un bot dans l'interface <em>Test the bot</em>. Voi
 </blockquote>
 <p>S'il n'y a pas d'indication de locale, c'est la locale par défaut de Tock qui est utilisée.</p>
 <p>Un développeur peut modifier la locale de l'utilisateur dans le code du bot lui-même : </p>
-<div class="highlight"><pre><span></span><code>    <span class="n">userPreferences</span><span class="p">.</span><span class="n">locale</span> <span class="p">=</span> <span class="n">Locale</span><span class="p">.</span><span class="n">FRENCH</span>
+<div class="highlight"><pre><span></span><code>    <span class="n">userPreferences</span><span class="p">.</span><span class="na">locale</span> <span class="o">=</span> <span class="n">Locale</span><span class="p">.</span><span class="na">FRENCH</span>
 </code></pre></div>
 <p>Enfin, la locale par défaut peut être modifiée par un administrateur de la plateforme, en passant la <em>propriété Système</em> 
 <code>-Dtock_default_locale=fr</code> au démarrage de la JVM.</p>

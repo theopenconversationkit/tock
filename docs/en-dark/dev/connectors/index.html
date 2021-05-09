@@ -1423,58 +1423,58 @@ style="width: 100px;"></p>
 <p>To develop your own, follow these steps:</p>
 <p>1) Implement the interface <a href="https://doc.tock.ai/tock/dokka/tock/ai.tock.bot.connector/-connector/index.html">Connector</a> </p>
 <p>Here is an example of implementation:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">val</span> <span class="py">testConnectorType</span> <span class="p">=</span> <span class="n">ConnectorType</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="kd">val</span> <span class="nv">testConnectorType</span> <span class="o">=</span> <span class="n">ConnectorType</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">)</span>
 
-<span class="k">class</span> <span class="nc">TestConnector</span><span class="p">(</span><span class="k">val</span> <span class="py">applicationId</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span> <span class="k">val</span> <span class="py">path</span><span class="p">:</span> <span class="n">String</span><span class="p">)</span> <span class="p">:</span> <span class="n">Connector</span> <span class="p">{</span>
+<span class="kd">class</span> <span class="nc">TestConnector</span><span class="p">(</span><span class="kd">val</span> <span class="nv">applicationId</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="kd">val</span> <span class="nv">path</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="p">:</span> <span class="n">Connector</span> <span class="p">{</span>
 
-    <span class="k">override</span> <span class="k">val</span> <span class="py">connectorType</span><span class="p">:</span> <span class="n">ConnectorType</span> <span class="p">=</span> <span class="n">testConnectorType</span>
+    <span class="kd">override</span> <span class="kd">val</span> <span class="nv">connectorType</span><span class="p">:</span> <span class="n">ConnectorType</span> <span class="o">=</span> <span class="n">testConnectorType</span>
 
-    <span class="k">override</span> <span class="k">fun</span> <span class="nf">register</span><span class="p">(</span><span class="n">controller</span><span class="p">:</span> <span class="n">ConnectorController</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">controller</span><span class="p">.</span><span class="n">registerServices</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="p">{</span> <span class="n">router</span> <span class="p">-&gt;</span>
+    <span class="kd">override</span> <span class="kd">fun</span> <span class="nf">register</span><span class="p">(</span><span class="n">controller</span><span class="p">:</span> <span class="n">ConnectorController</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">controller</span><span class="p">.</span><span class="na">registerServices</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="p">{</span> <span class="n">router</span> <span class="o">-&gt;</span>
             <span class="c1">//main API</span>
-            <span class="n">router</span><span class="p">.</span><span class="n">post</span><span class="p">(</span><span class="s">&quot;$path/message&quot;</span><span class="p">).</span><span class="n">blockingHandler</span> <span class="p">{</span> <span class="n">context</span> <span class="p">-&gt;</span>
+            <span class="n">router</span><span class="p">.</span><span class="na">post</span><span class="p">(</span><span class="s">&quot;</span><span class="si">$</span><span class="n">path</span><span class="s">/message&quot;</span><span class="p">).</span><span class="na">blockingHandler</span> <span class="p">{</span> <span class="n">context</span> <span class="o">-&gt;</span>
                 <span class="c1">//ConnectorRequest is my business object passed by the front app</span>
-                <span class="k">val</span> <span class="py">message</span><span class="p">:</span> <span class="n">ConnectorRequest</span> <span class="p">=</span> <span class="n">mapper</span><span class="p">.</span><span class="n">readValue</span><span class="p">(</span><span class="n">context</span><span class="p">.</span><span class="n">bodyAsString</span><span class="p">)</span>
+                <span class="kd">val</span> <span class="nv">message</span><span class="p">:</span> <span class="n">ConnectorRequest</span> <span class="o">=</span> <span class="n">mapper</span><span class="p">.</span><span class="na">readValue</span><span class="p">(</span><span class="n">context</span><span class="p">.</span><span class="na">bodyAsString</span><span class="p">)</span>
 
                 <span class="c1">//business object mapped to Tock event</span>
-                <span class="k">val</span> <span class="py">event</span> <span class="p">=</span> <span class="n">readUserMessage</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                <span class="kd">val</span> <span class="nv">event</span> <span class="o">=</span> <span class="n">readUserMessage</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
                 <span class="c1">//we pass the Tock event to the framework</span>
-                <span class="k">val</span> <span class="py">callback</span> <span class="p">=</span> <span class="n">TestConnectorCallback</span><span class="p">(</span><span class="n">applicationId</span><span class="p">,</span> <span class="n">message</span><span class="p">.</span><span class="n">userId</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">controller</span><span class="p">)</span>
-                <span class="n">controller</span><span class="p">.</span><span class="n">handle</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">ConnectorData</span><span class="p">(</span><span class="n">callback</span><span class="p">))</span>
+                <span class="kd">val</span> <span class="nv">callback</span> <span class="o">=</span> <span class="n">TestConnectorCallback</span><span class="p">(</span><span class="n">applicationId</span><span class="p">,</span> <span class="n">message</span><span class="p">.</span><span class="na">userId</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">controller</span><span class="p">)</span>
+                <span class="n">controller</span><span class="p">.</span><span class="na">handle</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">ConnectorData</span><span class="p">(</span><span class="n">callback</span><span class="p">))</span>
             <span class="p">}</span>
 
         <span class="p">}</span>
 
     <span class="p">}</span>
 
-    <span class="k">override</span> <span class="k">fun</span> <span class="nf">send</span><span class="p">(</span><span class="n">event</span><span class="p">:</span> <span class="n">Event</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">ConnectorCallback</span><span class="p">,</span> <span class="n">delayInMs</span><span class="p">:</span> <span class="n">Long</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">override</span> <span class="kd">fun</span> <span class="nf">send</span><span class="p">(</span><span class="n">event</span><span class="p">:</span> <span class="n">Event</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">ConnectorCallback</span><span class="p">,</span> <span class="n">delayInMs</span><span class="p">:</span> <span class="kt">Long</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">callback</span> <span class="k">as</span> <span class="n">TestConnectorCallback</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">event</span> <span class="k">is</span> <span class="n">Action</span><span class="p">)</span> <span class="p">{</span>
             <span class="c1">//we record the action</span>
-            <span class="n">callback</span><span class="p">.</span><span class="n">actions</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+            <span class="n">callback</span><span class="p">.</span><span class="na">actions</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
             <span class="c1">//if it&#39;s the last action to send, send the answer</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">metadata</span><span class="p">.</span><span class="n">lastAnswer</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">callback</span><span class="p">.</span><span class="n">sendAnswer</span><span class="p">()</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">metadata</span><span class="p">.</span><span class="na">lastAnswer</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">callback</span><span class="p">.</span><span class="na">sendAnswer</span><span class="p">()</span>
             <span class="p">}</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="n">logger</span><span class="p">.</span><span class="n">trace</span> <span class="p">{</span> <span class="s">&quot;unsupported event: $event&quot;</span> <span class="p">}</span>
+            <span class="n">logger</span><span class="p">.</span><span class="na">trace</span> <span class="p">{</span> <span class="s">&quot;unsupported event: </span><span class="si">$</span><span class="n">event</span><span class="s">&quot;</span> <span class="p">}</span>
         <span class="p">}</span>
     <span class="p">}</span>    
 <span class="p">}</span>
 
 <span class="c1">// to retrieve all actions before sending</span>
-<span class="k">class</span> <span class="nc">TestConnectorCallback</span><span class="p">(</span>
-        <span class="k">override</span> <span class="k">val</span> <span class="py">applicationId</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span>
-        <span class="k">val</span> <span class="py">userId</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span>
-        <span class="k">val</span> <span class="py">context</span><span class="p">:</span> <span class="n">RoutingContext</span><span class="p">,</span>
-        <span class="k">val</span> <span class="py">controller</span><span class="p">:</span> <span class="n">ConnectorController</span><span class="p">,</span>
-        <span class="k">val</span> <span class="py">actions</span><span class="p">:</span> <span class="n">MutableList</span><span class="p">&lt;</span><span class="n">Action</span><span class="p">&gt;</span> <span class="p">=</span> <span class="n">CopyOnWriteArrayList</span><span class="p">()):</span> <span class="n">ConnectorCallbackBase</span><span class="p">(</span><span class="n">applicationId</span><span class="p">,</span> <span class="n">testConnectorType</span><span class="p">)</span> <span class="p">{</span>
+<span class="kd">class</span> <span class="nc">TestConnectorCallback</span><span class="p">(</span>
+        <span class="kd">override</span> <span class="kd">val</span> <span class="nv">applicationId</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span>
+        <span class="kd">val</span> <span class="nv">userId</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span>
+        <span class="kd">val</span> <span class="nv">context</span><span class="p">:</span> <span class="n">RoutingContext</span><span class="p">,</span>
+        <span class="kd">val</span> <span class="nv">controller</span><span class="p">:</span> <span class="n">ConnectorController</span><span class="p">,</span>
+        <span class="kd">val</span> <span class="nv">actions</span><span class="p">:</span> <span class="n">MutableList</span><span class="o">&lt;</span><span class="n">Action</span><span class="o">&gt;</span> <span class="o">=</span> <span class="n">CopyOnWriteArrayList</span><span class="p">()):</span> <span class="n">ConnectorCallbackBase</span><span class="p">(</span><span class="n">applicationId</span><span class="p">,</span> <span class="n">testConnectorType</span><span class="p">)</span> <span class="p">{</span>
 
-    <span class="k">internal</span> <span class="k">fun</span> <span class="nf">sendAnswer</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">internal</span> <span class="kd">fun</span> <span class="nf">sendAnswer</span><span class="p">()</span> <span class="p">{</span>
             <span class="c1">//we transform the list of Tock responses into a business response</span>
-            <span class="k">val</span> <span class="py">response</span> <span class="p">=</span> <span class="n">mapper</span><span class="p">.</span><span class="n">writeValueAsString</span><span class="p">(</span><span class="n">actions</span><span class="p">.</span><span class="n">map</span><span class="p">{...})</span>
+            <span class="kd">val</span> <span class="nv">response</span> <span class="o">=</span> <span class="n">mapper</span><span class="p">.</span><span class="na">writeValueAsString</span><span class="p">(</span><span class="n">actions</span><span class="p">.</span><span class="na">map</span><span class="p">{...})</span>
             <span class="c1">//then we send the answer</span>
-            <span class="n">context</span><span class="p">.</span><span class="n">response</span><span class="p">().</span><span class="n">end</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+            <span class="n">context</span><span class="p">.</span><span class="na">response</span><span class="p">().</span><span class="na">end</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
     <span class="p">}</span>
 
 <span class="p">}</span>         
@@ -1482,25 +1482,25 @@ style="width: 100px;"></p>
 
 <p>2) Implement the interface <a href="https://doc.tock.ai/tock/dokka/tock/ai.tock.bot.connector/-connector-provider/index.html">ConnectorProvider</a></p>
 <p>Here is an example of implementation:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">object</span> <span class="nc">TestConnectorProvider</span> <span class="p">:</span> <span class="n">ConnectorProvider</span> <span class="p">{</span>
+<div class="codehilite"><pre><span></span><code><span class="kd">object</span> <span class="nc">TestConnectorProvider</span> <span class="p">:</span> <span class="n">ConnectorProvider</span> <span class="p">{</span>
 
-    <span class="k">override</span> <span class="k">val</span> <span class="py">connectorType</span><span class="p">:</span> <span class="n">ConnectorType</span> <span class="p">=</span> <span class="n">testConnectorType</span>
+    <span class="kd">override</span> <span class="kd">val</span> <span class="nv">connectorType</span><span class="p">:</span> <span class="n">ConnectorType</span> <span class="o">=</span> <span class="n">testConnectorType</span>
 
-    <span class="k">override</span> <span class="k">fun</span> <span class="nf">connector</span><span class="p">(</span><span class="n">connectorConfiguration</span><span class="p">:</span> <span class="n">ConnectorConfiguration</span><span class="p">):</span> <span class="n">Connector</span> <span class="p">{</span>
+    <span class="kd">override</span> <span class="kd">fun</span> <span class="nf">connector</span><span class="p">(</span><span class="n">connectorConfiguration</span><span class="p">:</span> <span class="n">ConnectorConfiguration</span><span class="p">):</span> <span class="n">Connector</span> <span class="p">{</span>
         <span class="k">return</span> <span class="n">TestConnector</span><span class="p">(</span>
-                <span class="n">connectorConfiguration</span><span class="p">.</span><span class="n">connectorId</span><span class="p">,</span>
-                <span class="n">connectorConfiguration</span><span class="p">.</span><span class="n">path</span>
+                <span class="n">connectorConfiguration</span><span class="p">.</span><span class="na">connectorId</span><span class="p">,</span>
+                <span class="n">connectorConfiguration</span><span class="p">.</span><span class="na">path</span>
         <span class="p">)</span>
     <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="k">class</span> <span class="nc">TestConnectorProviderService</span><span class="p">:</span> <span class="n">ConnectorProvider</span> <span class="k">by</span> <span class="n">TestConnectorProvider</span>
+<span class="kd">class</span> <span class="nc">TestConnectorProviderService</span><span class="p">:</span> <span class="n">ConnectorProvider</span> <span class="k">by</span> <span class="n">TestConnectorProvider</span>
 </code></pre></div>
 
 <p>3) Make this connector available via a Service Loader</p>
 <p>By placing a file META-INF/services/ai.tock.bot.connector.ConnectorProvider
 in the classpath, containing the class name :</p>
-<div class="codehilite"><pre><span></span><code><span class="n">mypackage</span><span class="p">.</span><span class="n">TestConnectorProviderService</span>
+<div class="codehilite"><pre><span></span><code><span class="n">mypackage</span><span class="p">.</span><span class="na">TestConnectorProviderService</span>
 </code></pre></div>
 
 <p>4) Add all classes and files created in the admin classpath and bot classpath</p>
