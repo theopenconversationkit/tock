@@ -83,7 +83,7 @@ Dans cet exemple, Alice a le rôle `botUser`, alors que Bob a tous les rôles.
 
 ### Implémentation 0Auth2 générique
 
-Cette implémentation générique est à utiliser dès que vous souhaitez papramétrer une configuration OAuth2.
+Cette implémentation générique est à utiliser dès que vous souhaitez paramétrer une configuration OAuth2.
 
 Voici les propriétés et leurs valeurs par défaut :
 
@@ -96,8 +96,8 @@ Voici les propriétés et leurs valeurs par défaut :
 | `tock_oauth2_access_token_path`      | `/oauth2/token`    | Chemin relatif pour récupérer l'access token     |
 | `tock_oauth2_authorize_path`         | `/oauth2/authorize`| Timeout vérification de l'identité (API GitHub)  |
 | `tock_oauth2_userinfo_path`          | `/oauth2/userInfo` | Timeout vérification de l'identité (API GitHub)  |
-| `tock_oauth2_proxy_host`             | ``                 | host du proxy (ne pas indiquer si pas de proxy)  |
-| `tock_oauth2_proxy_port`             | ``                 | port optionnel du proxy                          |
+| `tock_oauth2_proxy_host`             |                    | host du proxy (ne pas indiquer si pas de proxy)  |
+| `tock_oauth2_proxy_port`             |                    | port optionnel du proxy                          |
 
 Il est nécessaire d'indiquer en callback url `https://[host admin]/rest/callback`.
 
