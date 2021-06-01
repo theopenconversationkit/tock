@@ -16,7 +16,9 @@ Voici les systèmes disponibles par défaut (tous implémentations de `TockAuthP
 - Un modèle par "propriétés", utilisé par défaut.
 Le code est disponible dans la classe [`PropertyBasedAuthProvider`](https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/PropertyBasedAuthProvider.kt)
 
-- Un modèle [_OAuth2_](https://oauth.net/2/) dont un exemple est donné par [`GithubOAuthProvider`](https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/GithubOAuthProvider.kt)
+- Un modèle [_OAuth2_](https://oauth.net/2/) générique.
+
+- Un modèle [_OAuth2_](https://oauth.net/2/) spécifique pour Github dont un exemple est donné par [`GithubOAuthProvider`](https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/GithubOAuthProvider.kt)
 
 - Un modèle basé sur des jetons [_JWT_](https://jwt.io/), dont une implémentation pour AWS est disponible dans [`AWSJWTAuthProvider`](https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/AWSJWTAuthProvider.kt)    
 
@@ -82,6 +84,26 @@ Dans cet exemple, Alice a le rôle `botUser`, alors que Bob a tous les rôles.
 
 > Pour en savoir plus sur le fonctionnement précis de cette implémentation, voir la classe 
 > [`PropertyBasedAuthProvider`](https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/PropertyBasedAuthProvider.kt).
+
+### Implémentation 0Auth2 générique
+
+Cette implémentation générique est à utiliser dès que vous souhaitez paramétrer une configuration OAuth2.
+
+Voici les propriétés et leurs valeurs par défaut :
+
+| Variable d'environnement             | Exemple de valeur  | Description                                      |
+|--------------------------------------|--------------------|--------------------------------------------------|
+| `tock_oauth2_enabled`                | `true`             | Activation de l'authentification 0Auth2          |
+| `tock_oauth2_client_id`              | `CLIENT_ID`        | Identifiant pour interroger l'API GitHub         |
+| `tock_oauth2_secret_key`             | `SECRET_KEY`       | Mot de passe pour interroger l'API GitHub        |
+| `tock_oauth2_site_url`               | `https://provider` | Url du provider oauth2                           |
+| `tock_oauth2_access_token_path`      | `/oauth2/token`    | Chemin relatif pour récupérer l'access token     |
+| `tock_oauth2_authorize_path`         | `/oauth2/authorize`| Timeout vérification de l'identité (API GitHub)  |
+| `tock_oauth2_userinfo_path`          | `/oauth2/userInfo` | Timeout vérification de l'identité (API GitHub)  |
+| `tock_oauth2_proxy_host`             |                    | host du proxy (ne pas indiquer si pas de proxy)  |
+| `tock_oauth2_proxy_port`             |                    | port optionnel du proxy                          |
+
+Il est nécessaire d'indiquer en callback url `https://[host admin]/rest/callback`.
 
 ### Implémentation 0Auth/GitHub
 

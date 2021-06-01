@@ -20,7 +20,7 @@
 
     <groupId>ai.tock</groupId>
     <artifactId>tock-root</artifactId>
-    <version>21.3.2-SNAPSHOT</version>
+    <version>21.3.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Tock</name>
     <description>Tock, The Open Conversation Kit</description>
@@ -31,8 +31,8 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
-        <kotlin>1.4.32</kotlin>
-        <couroutine>1.4.3</couroutine>
+        <kotlin>1.5.0</kotlin>
+        <couroutine>1.5.0-RC</couroutine>
 
         <slf4j>1.7.30</slf4j>
         <logback>1.2.3</logback>
@@ -40,13 +40,13 @@
         <kotlin-logging>2.0.6</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>4.2.6</kmongo>
+        <kmongo>4.2.7</kmongo>
         <jackson>2.12.3</jackson>
         <jackson-databind>2.12.3</jackson-databind>
         <jackson-module>2.12.3</jackson-module>
-        <jackson-module-loader>0.1.0</jackson-module-loader>
-        <jackson-data>0.1.0</jackson-data>
-        <jackson-generator>0.3.1</jackson-generator>
+        <jackson-module-loader>0.4.0</jackson-module-loader>
+        <jackson-data>0.4.0</jackson-data>
+        <jackson-generator>0.4.0</jackson-generator>
         <klaxon>5.5</klaxon>
         <vertx>3.9.7</vertx>
         <retrofit>2.9.0</retrofit>
@@ -66,14 +66,14 @@
         <httpclient>4.5.13</httpclient>
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
-        <google>20.1.0</google>
-        <aws-sdk>1.11.1000</aws-sdk>
+        <google>20.2.0</google>
+        <aws-sdk>1.11.1015</aws-sdk>
 
         <junit-jupiter>5.7.1</junit-jupiter>
 
         <mockk>1.11.0</mockk>
         <assertj>3.12.2</assertj>
-        <byte-buddy>1.10.22</byte-buddy>
+        <byte-buddy>1.11.0</byte-buddy>
         <atrium>0.15.0</atrium>
 
         <plugin.surefire>3.0.0-M5</plugin.surefire>
@@ -91,8 +91,8 @@
         <plugin.dependency>3.1.2</plugin.dependency>
         <plugin.resources>3.2.0</plugin.resources>
         <plugin.deploy>3.0.0-M1</plugin.deploy>
-        <plugin.gitid>2.2.1</plugin.gitid>
-        <plugin.ktlint>1.8.0</plugin.ktlint>
+        <plugin.gitid>4.0.4</plugin.gitid>
+        <plugin.ktlint>1.9.0</plugin.ktlint>
 
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
 

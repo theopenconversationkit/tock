@@ -17,6 +17,7 @@
 package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType
+import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationSummary
@@ -39,6 +40,7 @@ import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.error
 import ai.tock.shared.safeCollation
 import ai.tock.shared.trace
+import ai.tock.shared.warn
 import ai.tock.shared.watch
 import com.mongodb.client.model.Collation
 import mu.KotlinLogging
@@ -92,7 +94,15 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
 
             historyCol.ensureIndex(Date)
         } catch (e: Exception) {
-            logger.error(e)
+            logger.warn(e)
+            //there is a misleading data state when creating index
+            logger.warn("try to remove builtin stories and set the index")
+            try {
+                col.deleteMany(CurrentType eq builtin)
+                col.ensureUniqueIndex(Namespace, BotId, Intent.name_)
+            } catch (e: Exception) {
+                logger.error(e)
+            }
         }
     }
 

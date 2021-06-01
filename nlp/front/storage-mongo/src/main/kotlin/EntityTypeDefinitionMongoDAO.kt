@@ -27,6 +27,7 @@ import ai.tock.nlp.front.shared.config.EntityTypeDefinition_.Companion.Name
 import ai.tock.nlp.front.storage.mongo.MongoFrontConfiguration.asyncDatabase
 import ai.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
 import ai.tock.shared.ensureUniqueIndex
+import ai.tock.shared.isDocumentDB
 import ai.tock.shared.name
 import ai.tock.shared.namespace
 import ai.tock.shared.watch
@@ -41,6 +42,7 @@ import org.litote.kmongo.pull
 import org.litote.kmongo.pullByFilter
 import org.litote.kmongo.reactivestreams.getCollection
 import org.litote.kmongo.replaceOneWithFilter
+import org.litote.kmongo.updateOne
 import java.util.Locale
 
 /**
@@ -124,13 +126,36 @@ internal object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
         locale: Locale,
         label: String
     ) {
-        dictionaryCol.updateOne(
-            and(
+        //see https://github.com/theopenconversationkit/tock/issues/1257
+        if (isDocumentDB()) {
+            dictionaryCol.findOne(
                 Namespace eq entityTypeName.namespace(),
                 EntityName eq entityTypeName.name(),
-                Values.value eq predefinedValue
-            ),
-            pull(Values.posOp.labels.keyProjection(locale), label)
-        )
+            )?.apply {
+                dictionaryCol.updateOne(
+                    and(
+                        Namespace eq entityTypeName.namespace(),
+                        EntityName eq entityTypeName.name()
+                    ),
+                    copy(values = values.map { v ->
+                        val newList = v.labels[locale]?.filter { it != label }
+                        if (newList != null) {
+                            v.copy(labels = v.labels + (locale to newList))
+                        } else {
+                            v
+                        }
+                    })
+                )
+            }
+        } else {
+            dictionaryCol.updateOne(
+                and(
+                    Namespace eq entityTypeName.namespace(),
+                    EntityName eq entityTypeName.name(),
+                    Values.value eq predefinedValue
+                ),
+                pull(Values.posOp.labels.keyProjection(locale), label)
+            )
+        }
     }
 }

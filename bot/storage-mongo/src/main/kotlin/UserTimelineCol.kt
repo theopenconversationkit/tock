@@ -128,18 +128,18 @@ internal data class UserTimelineCol(
     @Data(internal = true)
     @JacksonData(internal = true)
     data class UserPreferencesWrapper(
-        var firstName: String? = null,
-        var lastName: String? = null,
-        var email: String? = null,
-        var timezone: ZoneId = defaultZoneId,
-        var locale: Locale = defaultLocale,
-        var picture: String? = null,
-        var gender: String? = null,
-        var initialLocale: Locale = locale,
+        val firstName: String? = null,
+        val lastName: String? = null,
+        val email: String? = null,
+        val timezone: ZoneId = defaultZoneId,
+        val locale: Locale = defaultLocale,
+        val picture: String? = null,
+        val gender: String? = null,
+        val initialLocale: Locale = locale,
         /**
          * Is it a test user?
          */
-        var test: Boolean = false,
+        val test: Boolean = false,
         val encrypted: Boolean = false
     ) {
 

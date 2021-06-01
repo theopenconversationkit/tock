@@ -190,7 +190,29 @@ style="text-align: center; width: 400px;">
 
 ### _Chatbots Enedis_
 
-Voir [_Chatbot interne Enedis_](vitrine.md#chatbot-interne-enedis) et [_Chatbot client Enedis_](vitrine.md#chatbots-enedis).
+Plusieurs chatbots [Enedis](https://www.enedis.fr/) sont conçus avec la solution Tock.
+
+Le _Chatbot clients Enedis_ permet aux 35 millions de clients Enedis de poser des 
+questions liées à l'énergie, sans nécessité de prendre contact avec un conseiller.
+
+> Cet agent conversationnel permet un premier niveau de prise en charge des sollicitations clients, 
+> adressant des questions simples et non personnalisées sur différentes thématiques (espace client, compteur Linky, 
+> demandes de raccordement, dépannage, etc.).  
+> Il propose également un transfert vers un Live Chat où le client pourra 
+> échanger avec un conseiller en cas d’impossibilité du chatbot à répondre à la demande.
+
+Co-construit avec des experts métiers Enedis sur la solution Tock, ce chatbot est disponible 
+sur le site [Enedis.fr](https://www.enedis.fr/).
+
+![Chatbot clients Enedis](../img/enedis_bot2.png "Chatbot clients Enedis")
+
+* **Nom :** _Chatbot clients Enedis_
+* **Date de naissance :** en production depuis février 2021
+* **Domaine :** tous les métiers de l'énergie
+* **Canaux :** texte, sur le site [Enedis.fr](https://www.enedis.fr/)
+
+> Voir aussi le [_Chatbot interne Enedis_](vitrine.md#chatbot-interne-enedis), également conçu avec Tock 
+> pour un usage interne à l'entreprise depuis 2020.
 
 ## Banque
 
