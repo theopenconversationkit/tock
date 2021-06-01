@@ -69,7 +69,7 @@ Voici un exemple d'activation dans l'image Docker `bot_admin` :
 ```
 {: .tabbed-code}
 
-Exemple de réponse de la ligne de vie en mode détailé :
+Exemple de réponse de la ligne de vie en mode détaillé :
 
 ```json
   {
