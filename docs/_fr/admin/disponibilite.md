@@ -1,3 +1,7 @@
+---
+title: Haute disponibilité
+---
+
 # Haute disponibilité
 
 Cette page est destinée à fournir des conseils et des retours d'exéprience sur les configurations 
