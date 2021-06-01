@@ -201,35 +201,34 @@ directement en ligne de commande, soit dans un descripteur type `docker-compose.
 Il est possible de supprimer automatiquement les phrases non validées (_Inbox_) pour certaines intentions uniquement, 
 grâce à `tock_nlp_classified_sentences_index_ttl_intent_names` :
 
-=== "docker-compose.yml"
+- {: data-hl-lines="6 7"} docker-compose.yml
+```yaml
+version: '3'
+services:
+  admin_web:
+    image: tock/bot_admin:$TAG
+    environment:
+    - tock_nlp_classified_sentences_index_ttl_days=10
+    - tock_nlp_classified_sentences_index_ttl_intent_names=greetings,unknown
+```
 
-    ```yaml hl_lines="6 7"
-    version: '3'
-    services:
-      admin_web:
-        image: tock/bot_admin:$TAG
-        environment:
-        - tock_nlp_classified_sentences_index_ttl_days=10
-        - tock_nlp_classified_sentences_index_ttl_intent_names=greetings,unknown
-    ```
-
-=== "dockerrun.aws.json"
-
-    ```json hl_lines="8 9"
+- {: data-hl-lines="8 9"} dockerrun.aws.json
+```json
+{
+  "AWSEBDockerrunVersion": 2,
+  "containerDefinitions": [
     {
-      "AWSEBDockerrunVersion": 2,
-      "containerDefinitions": [
-        {
-          "name": "admin_web",
-          "image": "tock/bot_admin:${TAG}",
-          "environment": [
-            { "name": "tock_nlp_classified_sentences_index_ttl_days", "value": "10" },
-            { "name": "tock_nlp_classified_sentences_index_ttl_intent_names", "value": "greetings,unknown" }
-          ]
-        }
+      "name": "admin_web",
+      "image": "tock/bot_admin:${TAG}",
+      "environment": [
+        { "name": "tock_nlp_classified_sentences_index_ttl_days", "value": "10" },
+        { "name": "tock_nlp_classified_sentences_index_ttl_intent_names", "value": "greetings,unknown" }
       ]
     }
-    ```
+  ]
+}
+```
+{: .tabbed-code}
 
 Dans cet exemple, seules les phrases détectées comme intentions `greetings` ou `unknown` (mais non validées) seront 
 supprimées au bout de `10` jours ; les autres phrases ne seront pas supprimées.

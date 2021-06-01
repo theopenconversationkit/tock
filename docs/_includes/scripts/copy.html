@@ -13,16 +13,17 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+{% if page.content contains "code" %}
 {% assign lang = site.data.languages[page.language] %}
 <script>
     // get all <code> elements
-    var allCodeBlocksElements = $("code");
+    const allCodeBlocksElements = $("code");
 
     allCodeBlocksElements.each(function (i) {
         // add different id for each code block
 
         // target
-        var currentId = `__code_${i + 1}`;
+        const currentId = `__code_${i + 1}`;
         $(this).attr('id', currentId);
 
         //trigger
@@ -31,3 +32,4 @@
         // Note: the ClipboardJS initialization code is done in initialization.html
     });
 </script>
+{% endif %}

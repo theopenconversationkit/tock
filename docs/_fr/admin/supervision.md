@@ -42,57 +42,56 @@ La réponse de la ligne de vie précise alors les composants vérifiés.
 
 Voici un exemple d'activation dans l'image Docker `bot_admin` :
 
-=== "docker-compose.yml"
-
-    ```yaml hl_lines="6"
+- {: data-hl-lines="6"} docker-compose.yml
+```yaml
     version: '3'
     services:
       admin_web:
         image: tock/bot_admin:$TAG
         environment:
         - tock_detailed_healthcheck_enabled=true
-    ```
+```
 
-=== "dockerrun.aws.json"
-
-    ```json hl_lines="8"
-    {
-      "AWSEBDockerrunVersion": 2,
-      "containerDefinitions": [
-        {
-          "name": "admin_web",
-          "image": "tock/bot_admin:${TAG}",
-          "environment": [
-            { "name": "tock_detailed_healthcheck_enabled", "value": "true" }
-          ]
-        }
-      ]
-    }
-    ```
+- {: data-hl-lines="8"} dockerrun.aws.json
+```json
+  {
+    "AWSEBDockerrunVersion": 2,
+    "containerDefinitions": [
+      {
+        "name": "admin_web",
+        "image": "tock/bot_admin:${TAG}",
+        "environment": [
+          { "name": "tock_detailed_healthcheck_enabled", "value": "true" }
+        ]
+      }
+    ]
+  }
+```
+{: .tabbed-code}
 
 Exemple de réponse de la ligne de vie en mode détailé :
 
 ```json
-{
-  "results": [
-    {
-      "id": "duckling_service",
-      "status": "OK"
-    },
-    {
-      "id": "tock_front_database",
-      "status": "OK"
-    },
-    {
-      "id": "tock_model_database",
-      "status": "OK"
-    },
-    {
-      "id": "tock_bot_database",
-      "status": "OK"
-    }
-  ]
-}
+  {
+    "results": [
+      {
+        "id": "duckling_service",
+        "status": "OK"
+      },
+      {
+        "id": "tock_front_database",
+        "status": "OK"
+      },
+      {
+        "id": "tock_model_database",
+        "status": "OK"
+      },
+      {
+        "id": "tock_bot_database",
+        "status": "OK"
+      }
+    ]
+  }
 ```
 
 
@@ -115,102 +114,97 @@ par composant, en mode normal et en mode détaillé :
 
 Ci-dessous des exemples de réponses de différents composants en mode détaillé :
 
-=== "NLP"
+- NLP
+```json
+  {
+    "results": [
+      {
+        "id": "duckling_service",
+        "status": "OK"
+      },
+      {
+        "id": "tock_front_database",
+        "status": "OK"
+      },
+      {
+        "id": "tock_model_database",
+        "status": "OK"
+      }
+    ]
+  }
+```
 
-    ```json
-    {
-      "results": [
-        {
-          "id": "duckling_service",
-          "status": "OK"
-        },
-        {
-          "id": "tock_front_database",
-          "status": "OK"
-        },
-        {
-          "id": "tock_model_database",
-          "status": "OK"
-        }
-      ]
-    }
-    ```
+- Duckling
+```json
+  {
+    "results": [
+      {
+        "id": "duckling_bridge",
+        "status": "OK"
+      }
+    ]
+  }
+```
 
-=== "Duckling"
+- Build Worker
+```json
+  {
+    "results": [
+      {
+        "id": "tock_front_database",
+        "status": "OK"
+      },
+      {
+        "id": "tock_model_database",
+        "status": "OK"
+      }
+    ]
+  }
+```
 
-    ```json
-    {
-      "results": [
-        {
-          "id": "duckling_bridge",
-          "status": "OK"
-        }
-      ]
-    }
-    ```
+- Bot Api
+```json
+  {
+    "results": [
+      {
+        "id": "nlp_client",
+        "status": "OK"
+      }
+    ]
+  }
+```
 
-=== "Build Worker"
+- Kotlin Compiler
+```json
+  {
+    "results": []
+  }
+```
 
-    ```json
-        {
-          "results": [
-        {
-          "id": "tock_front_database",
-          "status": "OK"
-        },
-        {
-          "id": "tock_model_database",
-          "status": "OK"
-        }
-      ]
-    }
-    ```
-
-=== "Bot Api"
-
-    ```json
-    {
-      "results": [
-        {
-          "id": "nlp_client",
-          "status": "OK"
-        }
-      ]
-    }
-    ```
-
-=== "Kotlin Compiler"
-
-    ```json
-    {
-      "results": []
-    }
-    ```
-
-=== "Bot Admin"
-
-    ```json
-    {
-      "results": [
-        {
-          "id": "duckling_service",
-          "status": "OK"
-        },
-        {
-          "id": "tock_front_database",
-          "status": "OK"
-        },
-        {
-          "id": "tock_model_database",
-          "status": "OK"
-        },
-        {
-          "id": "tock_bot_database",
-          "status": "OK"
-        }
-      ]
-    }
-    ```
+- Bot Admin
+```json
+  {
+    "results": [
+      {
+        "id": "duckling_service",
+        "status": "OK"
+      },
+      {
+        "id": "tock_front_database",
+        "status": "OK"
+      },
+      {
+        "id": "tock_model_database",
+        "status": "OK"
+      },
+      {
+        "id": "tock_bot_database",
+        "status": "OK"
+      }
+    ]
+  }
+```
+{: .tabbed-code}
 
 ### Supervision des lignes de vie
 
@@ -468,15 +462,15 @@ exemple d'implémentation de Tock dans Docker Compose.
 
 Chaque composant applicatif peut avoir sa propre configuration :
 
-=== "docker-compose.yml"
-
-    ```yaml
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "5"
-    ```
+- docker-compose.yml
+```yaml
+logging:
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "5"
+```
+{: .tabbed-code}
 
 L'exemple ci-dessus configure une rotation automatique des fichiers de logs, de manière à avoir maximum 
 `5` fichiers de logs de maximum `10 Mo` chacun (le plus ancien étant supprimé pour en créer un nouveau si besoin).
