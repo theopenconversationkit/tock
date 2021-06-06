@@ -157,8 +157,13 @@ internal object I18nMongoDAO : I18nDAO {
         return col.findOneById(id)
     }
 
-    override fun save(i18n: I18nLabel) {
-        col.save(sortLocalizedLabels(i18n))
+    override fun save(label: I18nLabel) {
+        val sortedLabel = sortLocalizedLabels(label)
+        //update default label
+        val defaultLabel = sortedLabel.run {
+            copy(defaultLabel = i18n.firstOrNull { it.locale == defaultLocale }?.label ?: defaultLabel)
+        }
+        col.save(defaultLabel)
     }
 
     override fun save(i18n: List<I18nLabel>) {

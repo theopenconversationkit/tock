@@ -42,7 +42,7 @@ interface I18nDAO {
     /**
      * Saves label.
      */
-    fun save(i18n: I18nLabel)
+    fun save(label: I18nLabel)
 
     /**
      * Saves all specified labels.
