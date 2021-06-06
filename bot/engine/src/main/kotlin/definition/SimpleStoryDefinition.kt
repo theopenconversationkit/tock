@@ -31,7 +31,7 @@ open class SimpleStoryDefinition(
     override val intents: Set<Intent> = starterIntents,
     override val steps: Set<StoryStep<StoryHandlerDefinition>> = emptySet(),
     override val unsupportedUserInterfaces: Set<UserInterfaceType> = emptySet(),
-    override val tags: List<StoryTag> = emptyList()
+    override val tags: Set<StoryTag> = emptySet()
 ) :
     StoryDefinition {
 

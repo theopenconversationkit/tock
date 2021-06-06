@@ -17,6 +17,8 @@ import kotlin.String
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableList
+import kotlin.collections.MutableSet
+import kotlin.collections.Set
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.findParameterByName
@@ -67,7 +69,7 @@ internal class StoryDefinitionConfiguration_Deserializer :
             var _features_set : Boolean = false
             var __id_: Id<StoryDefinitionConfiguration>? = null
             var __id_set : Boolean = false
-            var _tags_: MutableList<StoryTag>? = null
+            var _tags_: MutableSet<StoryTag>? = null
             var _tags_set : Boolean = false
             var _configuredAnswers_: MutableList<DedicatedAnswerConfiguration>? = null
             var _configuredAnswers_set : Boolean = false
@@ -296,8 +298,8 @@ internal class StoryDefinitionConfiguration_Deserializer :
         private val __id__reference: TypeReference<Id<StoryDefinitionConfiguration>> = object :
                 TypeReference<Id<StoryDefinitionConfiguration>>() {}
 
-        private val _tags__reference: TypeReference<List<StoryTag>> = object :
-                TypeReference<List<StoryTag>>() {}
+        private val _tags__reference: TypeReference<Set<StoryTag>> = object :
+                TypeReference<Set<StoryTag>>() {}
 
         private val _configuredAnswers__reference: TypeReference<List<DedicatedAnswerConfiguration>>
                 = object : TypeReference<List<DedicatedAnswerConfiguration>>() {}

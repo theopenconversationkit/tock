@@ -36,6 +36,8 @@ export class StoryRuntimeSettingsComponent implements OnInit {
   displayedColumns: string[] = ['storyTag', 'storyName'];
   disableStories: StoryDefinitionConfiguration[];
   enableStories: StoryDefinitionConfiguration[];
+  checkOnlySubEntitiesForStorySelection: StoryDefinitionConfiguration[];
+  taggedStoriesCount: number = 0;
 
   constructor(
     private state: StateService,
@@ -48,6 +50,8 @@ export class StoryRuntimeSettingsComponent implements OnInit {
         stories => {
           this.disableStories = stories.filter(story => story.tags.some(tag => tag === 'DISABLE'));
           this.enableStories = stories.filter(story => story.tags.some(tag => tag === 'ENABLE'));
+          this.checkOnlySubEntitiesForStorySelection = stories.filter(story => story.tags.some(tag => tag === 'CHECK_ONLY_SUB_STEPS'));
+          this.taggedStoriesCount = this.disableStories.length + this.enableStories.length + this.checkOnlySubEntitiesForStorySelection.length;
         }
       );
     }

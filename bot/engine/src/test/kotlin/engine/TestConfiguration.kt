@@ -68,7 +68,7 @@ enum class TestStoryDefinition(
     override val secondaryIntents: Set<IntentAware> = emptySet(),
     override val stepsArray: Array<StepTest> = enumValues(),
     override val unsupportedUserInterface: UserInterfaceType? = null,
-    override val tags: List<StoryTag> = emptyList()
+    override val tags: Set<StoryTag> = emptySet()
 ) : StoryDefinitionExtended {
 
     test(StoryHandlerTest, secondaryIntents = setOf(secondaryIntent)),
@@ -109,5 +109,5 @@ val disableBotTaggedStory = SimpleStoryDefinition(
     id = "tagged_story",
     storyHandler = StoryHandlerTest,
     starterIntents = setOf(Intent("disable_bot")),
-    tags = listOf(StoryTag.DISABLE)
+    tags = setOf(StoryTag.DISABLE)
 )

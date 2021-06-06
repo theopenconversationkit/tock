@@ -109,7 +109,7 @@ internal class StoryDefinitionConfiguration_Serializer :
         val _tags_ = value.tags
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
-                kotlin.collections.List::class.java,
+                kotlin.collections.Set::class.java,
                 serializers.config.typeFactory.constructType(ai.tock.bot.definition.StoryTag::class.java)
                 ),
                 true,

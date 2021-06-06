@@ -35,8 +35,9 @@ export class StoryTagComponent implements OnInit {
   selectedTagChange: EventEmitter<String> = new EventEmitter<String>();
 
   tags: Tag[] = [
-    {value: 'ENABLE', label: 'Bot activation'},
-    {value: 'DISABLE', label: 'Bot deactivation'}
+    {value: 'ENABLE', label: 'Trigger Bot activation'},
+    {value: 'DISABLE', label: 'Trigger Bot deactivation'},
+    {value: 'CHECK_ONLY_SUB_STEPS', label: 'Only sub steps entities are checked to decide if the user stays in the same story'}
   ];
 
   ngOnInit(): void {

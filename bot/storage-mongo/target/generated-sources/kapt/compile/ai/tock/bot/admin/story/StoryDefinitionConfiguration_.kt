@@ -13,6 +13,7 @@ import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.collections.List
 import kotlin.collections.Map
+import kotlin.collections.Set
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
 import org.litote.kmongo.property.KCollectionPropertyPath
@@ -57,7 +58,7 @@ private val __Features: KProperty1<StoryDefinitionConfiguration,
     get() = StoryDefinitionConfiguration::features
 private val ___id: KProperty1<StoryDefinitionConfiguration, Id<StoryDefinitionConfiguration>?>
     get() = StoryDefinitionConfiguration::_id
-private val __Tags: KProperty1<StoryDefinitionConfiguration, List<StoryTag>?>
+private val __Tags: KProperty1<StoryDefinitionConfiguration, Set<StoryTag>?>
     get() = StoryDefinitionConfiguration::tags
 private val __ConfiguredAnswers: KProperty1<StoryDefinitionConfiguration,
         List<DedicatedAnswerConfiguration>?>
