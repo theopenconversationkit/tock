@@ -1,11 +1,8 @@
-<script>
-    $$tock_search_index = "{{ site.baseurl }}/search/search_index_{{ page.language }}.json"
-</script>
 <script id="__config" type="application/json">
     {
         "base": "{{site.baseurl}}/{{page.language}}",
         "features": [],
-        "translations": {{site.data.languages[page.language] | replace: "=>", ":"}},
+        "translations": {{site.data.languages[page.language] | jsonify}},
         "search": "{{site.baseurl}}/assets/mkdocs-material/javascripts/workers/search.min.js",
         "version": "{{site.version}}"
       }
