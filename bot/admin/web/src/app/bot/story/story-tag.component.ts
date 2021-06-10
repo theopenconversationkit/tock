@@ -37,7 +37,8 @@ export class StoryTagComponent implements OnInit {
   tags: Tag[] = [
     {value: 'ENABLE', label: 'Trigger Bot activation'},
     {value: 'DISABLE', label: 'Trigger Bot deactivation'},
-    {value: 'CHECK_ONLY_SUB_STEPS', label: 'Only sub steps entities are checked to decide if the user stays in the same story'}
+    {value: 'CHECK_ONLY_SUB_STEPS', label: 'Only sub actions entities are checked for action selection'},
+    {value: 'CHECK_ONLY_SUB_STEPS_WITH_STORY_INTENT', label: 'Only intents supported by the story are checked for entity action selection'}
   ];
 
   ngOnInit(): void {
