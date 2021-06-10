@@ -36,8 +36,6 @@ export class MandatoryEntitiesDialogComponent implements OnInit {
   intentCategories: IntentsCategory[] = [];
   currentIntentCategories: IntentsCategory[] = [];
 
-  originalEntities: MandatoryEntity[];
-
   currentEditedIntent: string;
   defaultCategory: string;
 
@@ -55,7 +53,7 @@ export class MandatoryEntitiesDialogComponent implements OnInit {
       return newA;
     }) : [];
     this.state.entities.subscribe(allEntities => {
-      this.entities.forEach(e => e.entity = allEntities.find(a => a.role === e.role));
+      this.entities.forEach(e => e.entity = allEntities.find(a => a.role === e.role) ?? allEntities.find(a => a.entityTypeName === e.entityType));
     });
     this.defaultCategory = this.data.category;
     this.newEntity.category = this.data.category;
@@ -169,8 +167,12 @@ export class MandatoryEntitiesDialogComponent implements OnInit {
     if (invalidMessage) {
       this.toastrService.show(`Error: ${invalidMessage}`, 'ERROR', {duration: 5000});
     } else {
-      this.entities.push(this.newEntity);
-      this.setNewEntity();
+      if(this.newEntity.entityType.length === 0) {
+        this.toastrService.show(`Error: Please select an entity`, 'ERROR', {duration: 5000});
+      } else {
+        this.entities.push(this.newEntity);
+        this.setNewEntity();
+      }
     }
   }
 
@@ -179,6 +181,9 @@ export class MandatoryEntitiesDialogComponent implements OnInit {
   }
 
   save() {
+    if(this.newEntity.currentAnswer().invalidMessage() === null && this.newEntity.entityType.length !== 0) {
+      this.entities.push(this.newEntity);
+    }
     this.dialogRef.close({
       entities: this.entities
     });

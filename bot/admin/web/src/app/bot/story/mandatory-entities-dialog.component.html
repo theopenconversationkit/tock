@@ -42,8 +42,7 @@
                [matAutocomplete]="intentAuto"
                (keyup)="onIntentChange(e, $event.target.value)"
                (focus)="onIntentChange(e, $event.target.value)"
-               (blur)="validateIntent(e)"
-               required>
+               (blur)="validateIntent(e)">
       </mat-form-field>
 
       <button class="entity-button" mat-icon-button color="warn"
@@ -77,8 +76,7 @@
                [matAutocomplete]="intentAuto"
                (keyup)="onIntentChange(newEntity, $event.target.value)"
                (focus)="onIntentChange(newEntity, $event.target.value)"
-               (blur)="validateIntent(newEntity)"
-               required>
+               (blur)="validateIntent(newEntity)">
       </mat-form-field>
 
       <button mat-icon-button color="primary" matTooltip="Add Mandatory Entity" class="entity-button"
