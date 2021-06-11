@@ -32,12 +32,12 @@
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
         <kotlin>1.5.0</kotlin>
-        <couroutine>1.5.0-RC</couroutine>
+        <couroutine>1.5.0</couroutine>
 
         <slf4j>1.7.30</slf4j>
         <logback>1.2.3</logback>
 
-        <kotlin-logging>2.0.6</kotlin-logging>
+        <kotlin-logging>2.0.8</kotlin-logging>
 
         <kodein>4.1.0</kodein>
         <kmongo>4.2.7</kmongo>
@@ -48,7 +48,7 @@
         <jackson-data>0.4.0</jackson-data>
         <jackson-generator>0.4.0</jackson-generator>
         <klaxon>5.5</klaxon>
-        <vertx>3.9.7</vertx>
+        <vertx>3.9.8</vertx>
         <retrofit>2.9.0</retrofit>
         <okhttp>4.9.1</okhttp>
         <okhttp-signpost>1.1.0</okhttp-signpost>
@@ -56,7 +56,7 @@
         <circuitbreaker>1.7.0</circuitbreaker>
         <guava>30.1.1-jre</guava>
         <google-auth>1.31.5</google-auth>
-        <google-http-client>1.39.2</google-http-client>
+        <google-http-client>1.39.2-sp.1</google-http-client>
         <jasypt>1.9.3</jasypt>
         <commons-csv>1.8</commons-csv>
         <emoji>5.0</emoji>
@@ -66,14 +66,14 @@
         <httpclient>4.5.13</httpclient>
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
-        <google>20.2.0</google>
-        <aws-sdk>1.11.1015</aws-sdk>
+        <google>20.6.0</google>
+        <aws-sdk>1.12.4</aws-sdk>
 
-        <junit-jupiter>5.7.1</junit-jupiter>
+        <junit-jupiter>5.8.0-M1</junit-jupiter>
 
         <mockk>1.11.0</mockk>
         <assertj>3.12.2</assertj>
-        <byte-buddy>1.11.0</byte-buddy>
+        <byte-buddy>1.11.2</byte-buddy>
         <atrium>0.15.0</atrium>
 
         <plugin.surefire>3.0.0-M5</plugin.surefire>
