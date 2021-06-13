@@ -19,6 +19,7 @@ package ai.tock.bot.connector.teams.token
 import ai.tock.shared.Level
 import ai.tock.shared.addJacksonConverter
 import ai.tock.shared.create
+import ai.tock.shared.error
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.longProperty
 import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
@@ -40,6 +41,7 @@ class TokenHandler(private val appId: String, private val password: String) {
 
     @Volatile
     var token: String? = null
+
     @Volatile
     private var tokenExpiration: Instant? = null
 
@@ -50,6 +52,7 @@ class TokenHandler(private val appId: String, private val password: String) {
     }
 
     val teamsMapper: ObjectMapper = mapper.copy().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+
     @Volatile
     private lateinit var tokenTimerTask: Timer
 
@@ -73,9 +76,9 @@ class TokenHandler(private val appId: String, private val password: String) {
         logger.debug { "IS TOKEN EXPIRED" }
         if (Instant.now().isAfter(
                 tokenExpiration?.minus(
-                        10,
-                        ChronoUnit.SECONDS
-                    )
+                    10,
+                    ChronoUnit.SECONDS
+                )
             )
         ) {
             return true
@@ -92,8 +95,17 @@ class TokenHandler(private val appId: String, private val password: String) {
     }
 
     fun launchTokenCollector(connectorId: String, msInterval: Long = 60 * 60 * 1000L) {
-        tokenTimerTask = fixedRateTimer(name = "microsoft-api-token-handling-$connectorId", initialDelay = 0L, period = msInterval) {
+        try {
             checkToken()
+            tokenTimerTask = fixedRateTimer(
+                name = "microsoft-api-token-handling-$connectorId",
+                initialDelay = 0L,
+                period = msInterval
+            ) {
+                checkToken()
+            }
+        } catch (e: Exception) {
+            logger.error(e)
         }
     }
 
