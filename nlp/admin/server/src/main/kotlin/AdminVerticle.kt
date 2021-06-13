@@ -304,9 +304,12 @@ open class AdminVerticle : WebVerticle() {
                 if (appWithSameName != null && appWithSameName._id != application._id) {
                     badRequest("Application with same name already exists")
                 }
+                if (existingApp?.name != application.name) {
+                    badRequest("Application name cannot be changed")
+                }
                 val newApp = saveApplication(
                     existingApp,
-                    application.toApplication().copy(name = application.name.toLowerCase())
+                    application.toApplication().copy(name = application.name.lowercase())
                 )
                 // trigger a full rebuild if nlp engine change
                 if (appWithSameName?.nlpEngineType != newApp.nlpEngineType) {
@@ -595,13 +598,13 @@ open class AdminVerticle : WebVerticle() {
                 val applicationDefinition = front.getApplicationById(s.applicationId)
                 if (applicationDefinition?.namespace == context.organization &&
                     front.search(
-                            SentencesQuery(
-                                    applicationId = applicationDefinition._id,
-                                    language = s.language,
-                                    search = decrypt,
-                                    onlyExactMatch = true
-                                )
-                        ).total != 0L
+                        SentencesQuery(
+                            applicationId = applicationDefinition._id,
+                            language = s.language,
+                            search = decrypt,
+                            onlyExactMatch = true
+                        )
+                    ).total != 0L
                 ) {
                     s.copy(text = decrypt, key = null)
                 } else {
@@ -683,7 +686,11 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/intent", nlpUser, simpleLogger("Create or Update Intent")) { context, intent: IntentDefinition ->
+        blockingJsonPost(
+            "/intent",
+            nlpUser,
+            simpleLogger("Create or Update Intent")
+        ) { context, intent: IntentDefinition ->
             AdminService.createOrUpdateIntent(context.organization, intent) ?: unauthorized()
         }
 
@@ -721,7 +728,11 @@ open class AdminVerticle : WebVerticle() {
             } ?: unauthorized()
         }
 
-        blockingJsonPost("/dictionary", nlpUser, simpleLogger("Update Dictionary")) { context, dictionary: DictionaryData ->
+        blockingJsonPost(
+            "/dictionary",
+            nlpUser,
+            simpleLogger("Update Dictionary")
+        ) { context, dictionary: DictionaryData ->
             if (context.organization == dictionary.namespace) {
                 front.save(dictionary)
                 front.getEntityTypeByName(dictionary.qualifiedName)?.let {
@@ -749,7 +760,7 @@ open class AdminVerticle : WebVerticle() {
             nlpUser,
             simpleLogger("Create Entity")
         ) { context, query ->
-            val entityName = "${context.organization}:${query.type.toLowerCase().name()}"
+            val entityName = "${context.organization}:${query.type.lowercase().name()}"
             if (front.getEntityTypeByName(entityName) == null) {
                 val entityType = EntityTypeDefinition(entityName, "")
                 front.save(entityType)
@@ -759,7 +770,11 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/entity-type", nlpUser, simpleLogger("Update Entity")) { context, entityType: EntityTypeDefinition ->
+        blockingJsonPost(
+            "/entity-type",
+            nlpUser,
+            simpleLogger("Update Entity")
+        ) { context, entityType: EntityTypeDefinition ->
             if (context.organization == entityType.name.namespace()) {
                 val update = front.getEntityTypeByName(entityType.name)
                     ?.run {
@@ -863,7 +878,11 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/dictionary/predefined-values", nlpUser, simpleLogger("Update Predefined Value")) { context, query: PredefinedValueQuery ->
+        blockingJsonPost(
+            "/dictionary/predefined-values",
+            nlpUser,
+            simpleLogger("Update Predefined Value")
+        ) { context, query: PredefinedValueQuery ->
 
             front.getDictionaryDataByEntityName(query.entityTypeName)
                 ?.takeIf { it.namespace == context.organization }
@@ -871,14 +890,14 @@ open class AdminVerticle : WebVerticle() {
                     val value = query.oldPredefinedValue ?: query.predefinedValue
                     copy(
                         values = values.filter { it.value != value } +
-                            (
-                                values.find { it.value == value }
-                                    ?.copy(value = query.predefinedValue)
-                                    ?: PredefinedValue(
-                                        query.predefinedValue,
-                                        mapOf(query.locale to listOf(query.predefinedValue))
-                                    )
-                                )
+                                (
+                                        values.find { it.value == value }
+                                            ?.copy(value = query.predefinedValue)
+                                            ?: PredefinedValue(
+                                                query.predefinedValue,
+                                                mapOf(query.locale to listOf(query.predefinedValue))
+                                            )
+                                        )
                     )
                 }
                 ?.also {
@@ -900,33 +919,37 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/dictionary/predefined-value/labels", nlpUser, simpleLogger("Update Predefined Labels")) { context, query: PredefinedLabelQuery ->
+        blockingJsonPost(
+            "/dictionary/predefined-value/labels",
+            nlpUser,
+            simpleLogger("Update Predefined Labels")
+        ) { context, query: PredefinedLabelQuery ->
 
             front.getDictionaryDataByEntityName(query.entityTypeName)
                 ?.takeIf { it.namespace == context.organization }
                 ?.run {
                     copy(
                         values = values.filter { it.value != query.predefinedValue } +
-                            (
-                                values.find { it.value == query.predefinedValue }
-                                    ?.run {
-                                        copy(
-                                            labels = labels.filter { it.key != query.locale } +
-                                                mapOf(
-                                                    query.locale to (
-                                                        (
-                                                            labels[query.locale]?.filter { it != query.label }
-                                                                ?: emptyList()
-                                                            ) + listOf(query.label)
-                                                        ).sorted()
+                                (
+                                        values.find { it.value == query.predefinedValue }
+                                            ?.run {
+                                                copy(
+                                                    labels = labels.filter { it.key != query.locale } +
+                                                            mapOf(
+                                                                query.locale to (
+                                                                        (
+                                                                                labels[query.locale]?.filter { it != query.label }
+                                                                                    ?: emptyList()
+                                                                                ) + listOf(query.label)
+                                                                        ).sorted()
+                                                            )
                                                 )
+                                            }
+                                            ?: PredefinedValue(
+                                                query.predefinedValue,
+                                                mapOf(query.locale to listOf(query.label))
+                                            )
                                         )
-                                    }
-                                    ?: PredefinedValue(
-                                        query.predefinedValue,
-                                        mapOf(query.locale to listOf(query.label))
-                                    )
-                                )
                     )
                 }
                 ?.also {
@@ -1149,10 +1172,10 @@ open class AdminVerticle : WebVerticle() {
 
     override fun detailedHealthcheck(): (RoutingContext) -> Unit = detailedHealthcheck(
         listOf(
-            Pair("duckling_service", { FrontClient.healthcheck() }),
-            Pair("tock_front_database", { pingMongoDatabase(TOCK_FRONT_DATABASE) }),
-            Pair("tock_model_database", { pingMongoDatabase(TOCK_MODEL_DATABASE) }),
-            Pair("tock_bot_database", { pingMongoDatabase(TOCK_BOT_DATABASE) })
+            Pair("duckling_service") { FrontClient.healthcheck() },
+            Pair("tock_front_database") { pingMongoDatabase(TOCK_FRONT_DATABASE) },
+            Pair("tock_model_database") { pingMongoDatabase(TOCK_MODEL_DATABASE) },
+            Pair("tock_bot_database") { pingMongoDatabase(TOCK_BOT_DATABASE) }
         )
     )
 }
