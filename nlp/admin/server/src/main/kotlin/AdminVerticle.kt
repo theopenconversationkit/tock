@@ -304,7 +304,7 @@ open class AdminVerticle : WebVerticle() {
                 if (appWithSameName != null && appWithSameName._id != application._id) {
                     badRequest("Application with same name already exists")
                 }
-                if (existingApp?.name != application.name) {
+                if (existingApp != null && existingApp.name != application.name) {
                     badRequest("Application name cannot be changed")
                 }
                 val newApp = saveApplication(
