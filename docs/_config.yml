@@ -28,16 +28,16 @@ description: > # this means to ignore newlines until "baseurl:"
   line in _config.yml. It will appear in your document head meta (for
   Google search results) and in your feed.xml site description.
 
-copyright: "Copyright &copy; 2017/$year $author"
-
 baseurl: "/tock" # the subpath of your site, e.g. /blog
 
+copyright: "Copyright &copy; 2017/$year $author"
+
 # This is mostly for testing
-url: "https://fabilin.github.io" # the base hostname & protocol for your site
+url: "https://doc.toc.ai" # the base hostname & protocol for your site
 
 # Social (First three Required)
-repo_url: "https://github.com/fabilin/tock"
-github_user: "fabilin"
+repo_url: "https://github.com/theopenconversationkit/tock"
+github_user: "theopenconversationkit"
 github_repo: "tock"
 
 extra:
