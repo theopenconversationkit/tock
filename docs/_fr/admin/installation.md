@@ -47,7 +47,7 @@ Pour en savoir plus sur les paramètres de lancement des différents composants 
 des commandes présentes dans les descripteurs de `tock-docker` ou encore des configurations fournies pour IntelliJ  
 (voir ci-dessous).
 
-### Ligne de commande
+### Ligne de commande
 
 Une technique consiste à rassembler les différentes dépendances et archives JAR dans un dossier puis démarrer le 
 composant ou l'application avec une commande Java classique.
@@ -60,7 +60,7 @@ avec la commande suivante :
 java $JAVA_ARGS -Dfile.encoding=UTF-8 -cp '/maven/*' ai.tock.nlp.api.StartNlpServiceKt
 ```
 
-### JAR exécutable
+### JAR exécutable
 
 Ce n'est pas la technique que nous recommandons, mais il est possible d'exécuter un JAR unique contenant toutes les 
 dépendances (parfois appelé _"fat JAR"_). Voici comment procéder pour créer un tel JAR, en reprenant l'exemple du 
@@ -208,8 +208,8 @@ services:
   admin_web:
     image: tock/bot_admin:$TAG
     environment:
-    - tock_nlp_classified_sentences_index_ttl_days=10
-    - tock_nlp_classified_sentences_index_ttl_intent_names=greetings,unknown
+      - tock_nlp_classified_sentences_index_ttl_days=10
+      - tock_nlp_classified_sentences_index_ttl_intent_names=greetings,unknown
 ```
 
 - {: data-hl-lines="8 9"} dockerrun.aws.json
