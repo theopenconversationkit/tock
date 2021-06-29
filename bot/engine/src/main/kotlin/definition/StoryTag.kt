@@ -18,5 +18,7 @@ package ai.tock.bot.definition
 
 enum class StoryTag {
     ENABLE,
-    DISABLE
+    DISABLE,
+    CHECK_ONLY_SUB_STEPS,
+    CHECK_ONLY_SUB_STEPS_WITH_STORY_INTENT
 }

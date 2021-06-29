@@ -40,7 +40,7 @@ internal class ConfiguredStoryDefinition(
 
     override val id: String = configuration._id.toString()
 
-    override val tags: List<StoryTag> = configuration.tags
+    override val tags: Set<StoryTag> = configuration.tags
 
     val storyId: String = configuration.storyId
 

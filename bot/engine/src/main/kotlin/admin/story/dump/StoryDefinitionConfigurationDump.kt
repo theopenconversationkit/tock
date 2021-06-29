@@ -96,7 +96,7 @@ data class StoryDefinitionConfigurationDump(
     /**
      * The story definition tags that specify different story types or roles.
      */
-    val tags: List<StoryTag> = emptyList(),
+    val tags: Set<StoryTag> = emptySet(),
     /**
      * Answers by bot application configuration
      */

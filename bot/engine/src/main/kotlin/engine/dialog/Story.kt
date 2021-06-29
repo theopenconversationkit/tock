@@ -20,6 +20,8 @@ import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryHandler
 import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.definition.StoryTag.CHECK_ONLY_SUB_STEPS
+import ai.tock.bot.definition.StoryTag.CHECK_ONLY_SUB_STEPS_WITH_STORY_INTENT
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.action.Action
@@ -160,11 +162,28 @@ data class Story(
     /**
      * Does this story supports the action ?
      */
-    fun supportAction(userTimeline: UserTimeline, dialog: Dialog, action: Action, intent: Intent): Boolean =
-        supportIntent(intent) ||
+    fun supportAction(userTimeline: UserTimeline, dialog: Dialog, action: Action, intent: Intent): Boolean {
+        if (supportIntent(intent)) {
+            return true
+        }
+        val checkSteps = if (definition.hasTag(CHECK_ONLY_SUB_STEPS_WITH_STORY_INTENT)) {
+            currentStep?.supportIntent(intent) == true ||
+                    (currentStep?.children ?: definition.steps)
+                        .any { it.supportIntent(intent) }
+        } else {
+            true
+        }
+
+        return if (checkSteps) {
             currentStep?.selectFromAction(userTimeline, dialog, action, intent) == true ||
-            (currentStep?.children ?: definition.steps)
-                .any { it.selectFromAction(userTimeline, dialog, action, intent) }
+                    (currentStep?.children
+                        ?: if (definition.hasTag(CHECK_ONLY_SUB_STEPS)) emptyList() else definition.steps)
+                        .any { it.selectFromAction(userTimeline, dialog, action, intent) }
+        } else {
+            false
+        }
+    }
+
 
     /**
      * Does this story supports the intent ?
@@ -200,9 +219,9 @@ data class Story(
         // reset the step if applicable
         if (!forced && newIntent != null &&
             (
-                (s?.intent != null && !s.supportIntent(newIntent)) ||
-                    s?.selectFromActionAndEntityStepSelection(action, newIntent) == false
-                )
+                    (s?.intent != null && !s.supportIntent(newIntent)) ||
+                            s?.selectFromActionAndEntityStepSelection(action, newIntent) == false
+                    )
         ) {
             this.step = null
         }

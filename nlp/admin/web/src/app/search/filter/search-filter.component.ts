@@ -144,13 +144,13 @@ export class SearchFilterComponent implements OnInit, AfterViewInit {
   onBlur() {
     if(!this.skipBlur) {
       // Reset initial value when loosing focus
-      setTimeout(() => this.resetInitialValue(), 100);
+      setTimeout(() => this.resetInitialValue(), 500);
     }
     this.skipBlur = false;
   }
 
   private resetInitialValue() {
-    if (this.selectedValue && !(this.selectedValue ! instanceof FilterOption)) {
+    if (this.selectedValue && !(this.selectedValue instanceof FilterOption)) {
       if (this.selectedValue.trim().length !== 0) {
         const selectedGroup = this.find(this.selectedValue);
         if (selectedGroup.length !== 0) {
@@ -163,7 +163,7 @@ export class SearchFilterComponent implements OnInit, AfterViewInit {
         this.selectedValue = this.cachedValue;
         setTimeout(() => {
             this.autoBlurElement.nativeElement.disabled = false;
-            this.cachedValue = this.selectedValue
+            this.cachedValue = this.selectedValue;
           },
           0);
       }

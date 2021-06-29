@@ -119,7 +119,7 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
             and(
                 Namespace eq namespace,
                 BotId eq botId,
-                or(Tags contains (StoryTag.ENABLE), Tags contains (StoryTag.DISABLE))
+                or(StoryTag.values().map { Tags contains it })
             )
         ).toList()
     }

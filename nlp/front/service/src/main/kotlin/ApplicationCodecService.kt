@@ -400,7 +400,7 @@ internal object ApplicationCodecService : ApplicationCodec {
                             s.status.takeUnless { it == model } ?: validated,
                             Classification(
                                 intent?._id ?: UNKNOWN_INTENT_NAME.toId(),
-                                changeEntityNames(s.entities.map { it.toClassifiedEntity() }, namespace, true, report)
+                                changeEntityNames(s.entities.map { it.toClassifiedEntity() }.sortedBy { it.start }, namespace, true, report)
                             ),
                             1.0,
                             1.0

@@ -48,7 +48,12 @@ interface StoryDefinition : IntentAware {
     /**
      * The story definition tags that specify different story types or roles.
      */
-    val tags: List<StoryTag> get() = emptyList()
+    val tags: Set<StoryTag> get() = emptySet()
+
+    /**
+     * Does this story is tagged with specified [tag]?
+     */
+    fun hasTag(tag: StoryTag): Boolean = tags.contains(tag)
 
     /**
      * The story handler of the story.
@@ -85,6 +90,9 @@ interface StoryDefinition : IntentAware {
      */
     override fun wrappedIntent(): Intent = mainIntent()
 
+    /**
+     * Returns all steps of the story.
+     */
     fun allSteps(): Set<StoryStep<*>> =
         mutableSetOf<StoryStep<*>>().apply { steps.forEach { allStep(this, it) } }
 

@@ -180,7 +180,7 @@ class BotDefinitionTest {
             id = "tagged_story",
             storyHandler = StoryHandlerTest,
             starterIntents = setOf(intent),
-            tags = listOf(StoryTag.DISABLE)
+            tags = setOf(StoryTag.DISABLE)
         )
 
         val botDef = BotDefinitionBase(
@@ -223,7 +223,7 @@ class BotDefinitionTest {
             id = "not_tagged_story",
             storyHandler = StoryHandlerTest,
             starterIntents = setOf(intent),
-            tags = emptyList()
+            tags = emptySet()
         )
 
         val botDef = BotDefinitionBase(

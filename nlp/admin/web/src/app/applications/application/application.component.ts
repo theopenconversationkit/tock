@@ -77,7 +77,7 @@ export class ApplicationComponent implements OnInit {
   }
 
   private formatName(label: string) {
-    if (label) {
+    if (label && this.newApplication) {
       this.application.name = label.replace(/[^A-Za-z0-9_-]*/g, '').toLowerCase().trim();
     }
   }
