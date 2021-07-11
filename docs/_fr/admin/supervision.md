@@ -479,4 +479,4 @@ Pour en savoir plus, voir la [documentation Docker Compose](https://docs.docker.
 
 ### Chiffrement et anonymisation
 
-Voir la page [sécurité](securite.md) concernant les possibilités de chiffrement et anonymisation des logs.
+Voir la page [sécurité](securite) concernant les possibilités de chiffrement et anonymisation des logs.

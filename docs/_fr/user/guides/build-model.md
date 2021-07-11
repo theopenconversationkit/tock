@@ -160,4 +160,4 @@ Dans l'exemple ci-dessus, deux labels sont définis pour la valeur de semaine :
 
 Pour en savoir plus sur la gestion des entités, notamment dans des intentions créées programmatiquement, 
 out tout simplement pour continuer de parcourir le manuel utilisateur Tock, 
-vous pouvez vous rendre dans le chapitre [Développement](../../dev/modes.md).
+vous pouvez vous rendre dans le chapitre [Développement](../../dev/modes).

@@ -10,7 +10,7 @@ This page details the source structure and coding conventions for the platform.
 
 ## TL;DR
 
-See [`CONTRIBUTING.md`](https://github.com/theopenconversationkit/tock/blob/master/CONTRIBUTING.md).
+See [`CONTRIBUTING.md`](https://github.com/theopenconversationkit/tock/blob/master/CONTRIBUTING).
 
 ## Main technologies
 
@@ -42,7 +42,7 @@ and [Docker Compose](https://docs.docker.com/compose/) images/descriptors, for p
 of various configurations.
 
 * [`tock-bot-samples`](): code samples, in particular the _WebHook_ and _WebSocket_ modes examples from 
-[Tock programming guides](../dev/bot-api.md).
+[Tock programming guides](../dev/bot-api).
  
 * [`tock-bot-open-data`](https://github.com/theopenconversationkit/tock-bot-open-data): a bot example, based on 
 the [SNCF _Open Data_ API](https://www.digital.sncf.com/startup/api), also implementing basic internationalization (_i18n_)
@@ -81,7 +81,7 @@ at the root of the repository.
 
 ### Run Tock in IDE
 
-> To run Tock using Docker Compose outside the IDE, rather see [Deploy Tock with Docker](../getting-started.md).
+> To run Tock using Docker Compose outside the IDE, rather see [Deploy Tock with Docker](../getting-started).
 
 Tock components (NLU, Studio, bot...) can run in an IDE, such as  
 [IntelliJ](https://www.jetbrains.com/idea/), [Eclipse](https://www.eclipse.org/) or [Visual Studio Code](https://code.visualstudio.com/) for instance.
@@ -102,8 +102,8 @@ The _OpenDataBot_ example also has a run configuration available:
 
 To start the _Tock Studio_ interfaces, please refer to the commands described in the following pages:
 
-- [Full _Tock Studio_ server commands](https://github.com/theopenconversationkit/tock/blob/master/bot/admin/web/README.md)
-- [Standalone NLU server commands](https://github.com/theopenconversationkit/tock/blob/master/nlp/admin/web/README.md)
+- [Full _Tock Studio_ server commands](https://github.com/theopenconversationkit/tock/blob/master/bot/admin/web/README)
+- [Standalone NLU server commands](https://github.com/theopenconversationkit/tock/blob/master/nlp/admin/web/README)
 
 ## Code
 
@@ -144,5 +144,5 @@ Every new feature or fix should embed its unit test(s).
 
 ## Contact us
 
-To contribute to the project or to known more about the implementation, feel free to [contact us](contact.md). 
+To contribute to the project or to known more about the implementation, feel free to [contact us](contact). 
 Ideas and feedback is more than welcome.

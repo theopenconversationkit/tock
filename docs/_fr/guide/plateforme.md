@@ -12,7 +12,7 @@ Dans ce guide, vous allez apprendre à déployer une plateforme complète Tock e
  aux exemples d'implémentations [Docker](https://www.docker.com/) / [Docker Compose](https://docs.docker.com/compose/) fournies.
 
 Notez qu'il est tout à fait possible de déployer Tock sans utiliser Docker. Une section spécifique du 
-[manuel utilisateur](../toc.md) vous en apprendra plus sur l'architecture, les possibilités et les 
+[manuel utilisateur](../toc) vous en apprendra plus sur l'architecture, les possibilités et les 
 recommandations pour le déploiement et l'utilisation de Tock en production.
 
 ## Ce que vous allez créer
@@ -41,7 +41,7 @@ du [JDK](https://jdk.java.net/) et de [Maven](https://maven.apache.org/)
 
 > Sans _IDE_ ou sans Maven, pas de problème. Il est tout à fait possible de compiler et exécuter le programme avec d'autres outils.
 >
-> D'autres modes que Kotlin et _WebSocket_ sont présentés dans le [manuel utilisateur Tock](../toc.md).
+> D'autres modes que Kotlin et _WebSocket_ sont présentés dans le [manuel utilisateur Tock](../toc).
 
 ## Déployer une plateforme Tock - sans les sources
 
@@ -104,7 +104,7 @@ Une fois la plateforme prête, les interfaces _Tock Studio_ sont sur le port `80
 
 ## Créer une application, un connecteur et une intention
 
-Comme dans le guide [premier bot](studio.md) utilisant la plateforme de démonstration, vous allez créer une 
+Comme dans le guide [premier bot](studio) utilisant la plateforme de démonstration, vous allez créer une 
 _application_ Tock et un connecteur pour commencer à utiliser la plateforme locale. N'hésitez pas à retourner voir les 
 précédents guides pour plus de commentaires.
 
@@ -141,11 +141,11 @@ Au premier accès à la plateforme locale :
 
 ## Connecter un parcours en Kotlin (optionnel)
 
-Comme dans le guide [programmer des parcours](api.md) utilisant la plateforme de démonstration, vous allez créer une 
+Comme dans le guide [programmer des parcours](api) utilisant la plateforme de démonstration, vous allez créer une 
 _application_ Kotlin se connectant en _WebSocket_ à la plateforme Tock locale. N'hésitez pas à retourner voir les 
 précédents guides pour plus de détails.
 
-* Créez un projet Kotlin par exemple avec Maven comme indiqué dans le guide [programmer des parcours](api.md)
+* Créez un projet Kotlin par exemple avec Maven comme indiqué dans le guide [programmer des parcours](api)
 
 > Le _classpath_ doit inclure `tock-bot-api-websocket` pour utiliser le mode _WebSocket_.
 
@@ -203,13 +203,13 @@ développements, pour les contributeurs Tock ou encore si vous devez travailler 
 
 > Attention, l'implémentation Docker fournie ne suffit pas à garantir résilience et montée en charge de la plateforme 
 >quelles que soient les conditions en production. Pour cela, quelques recommandations sont proposées dans la section 
->[haute disponibilité](../admin/disponibilite.md) du manuel Tock.
+>[haute disponibilité](../admin/disponibilite) du manuel Tock.
 
 ## Continuer...
 
 Vous venez de terminer les guides de démarrage rapide Tock.
 
 A partir de là, vous pouvez vous lancer directement sur une plateforme Tock, ou parcourir le 
-[manuel utilisateur](../toc.md) pour en savoir plus sur _Tock Studio_, _Bot API_ et _Bot Flow_ par exemple.
+[manuel utilisateur](../toc) pour en savoir plus sur _Tock Studio_, _Bot API_ et _Bot Flow_ par exemple.
 
 D'autres pages présentent aussi des études de cas clients, des exemples de code, comment contacter la communauté Tock, etc.

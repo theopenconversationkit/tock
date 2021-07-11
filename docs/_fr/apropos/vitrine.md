@@ -16,7 +16,7 @@ d'équipes et d'organisations pour créer des bots conversationnels dédiés à 
 * canaux : texte & voix (Web & mobile, messageries, enceintes connectées, téléphonie)
 
 Cette page présente différents assistants et produits connus construits avec Tock, 
-dont certains ont été [récompensés](recompenses.md) par la communauté.
+dont certains ont été [récompensés](recompenses) par la communauté.
 
 ## Santé
 
@@ -373,6 +373,6 @@ PME et ESN, expérimentent ou utilisent Tock pour leurs projets d'assistants ou 
 
 La plateforme est suffisamment générique pour permettre de nombreux usages et l'intégration de canaux 
 internes ou externes. Si vous avez un doute sur les possibilités de Tock ou la faisabilité d'un nouveau projet, vous pouvez 
-[nous contacter](contact.md) pour en parler.
+[nous contacter](contact) pour en parler.
 
 _Quant à vos propres réalisations, n'hésitez pas à les partager ! 🙂_

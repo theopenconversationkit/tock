@@ -116,7 +116,7 @@ availability of new messaging channels.
 >Business Chat APIs opened in 2019, etc. 
 
 To find, which bot leverages which connector in production, please refer to the 
-[Tock user showcase](../about/showcase.md) page.
+[Tock user showcase](../about/showcase) page.
 
 ### Messenger
 

@@ -7,7 +7,7 @@ title: Exemples
 ## Les exemples dans _Bot Samples_
 
 Le dépôt [tock-bot-samples](https://github.com/theopenconversationkit/tock-bot-samples) contient des exemples de code, notamment ceux utilisés dans 
-[la documentation Tock](../guide/api.md) pour programmer des parcours en modes _WebHook_ ou _WebSocket_.
+[la documentation Tock](../guide/api) pour programmer des parcours en modes _WebHook_ ou _WebSocket_.
 
 ## Le bot _Open Data_
 
@@ -31,6 +31,6 @@ permettant par exemple de faire du debug pas-à-pas), suivez ces instructions :
 
 * Demandez votre propre [clef SNCF Open Data](https://data.sncf.com/) (gratuite) et configurez la variable d'environnement (voir [OpenDataConfiguration](https://github.com/theopenconversationkit/tock-bot-open-data/blob/master/src/main/kotlin/ai.tock/bot/open/data/OpenDataConfiguration.kt#L29))
 
-* Configurez un connecteur : Messenger, Google Assistant ou autre (voir [canaux et connecteurs](../user/guides/canaux.md))
+* Configurez un connecteur : Messenger, Google Assistant ou autre (voir [canaux et connecteurs](../user/guides/canaux))
 
 * Démarrez le lanceur `OpenDataBot` dans votre IDE, IntelliJ ou autre. Le bot est opérationnel, parlez-lui ! :)

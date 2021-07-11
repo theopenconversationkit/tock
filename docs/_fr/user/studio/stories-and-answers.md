@@ -7,14 +7,14 @@ title: Stories and Answers
 Le menu permet de construire des parcours et des réponses aux phrases de l'utilisateur.
  
 Dans cette page, le détail de chaque onglet est présenté. Voir aussi 
-[Créer son premier bot avec Tock Studio](../../guide/studio.md) pour un exemple de création 
-de parcours ou [Construire un bot multilingue](../../dev/i18n.md) pour l'utilisation de l'onglet _Answers_.
+[Créer son premier bot avec Tock Studio](../../guide/studio) pour un exemple de création 
+de parcours ou [Construire un bot multilingue](../../dev/i18n) pour l'utilisation de l'onglet _Answers_.
 
 ## L'onglet _New Story_
 
 ### Créer une réponse simple
 
-> Le guide [Créer son premier bot avec Tock Studio](../../guide/studio.md) présente 
+> Le guide [Créer son premier bot avec Tock Studio](../../guide/studio) présente 
  un exemple de création de parcours avec une réponse simple via _New Story_.
 >
 > L'onglet _Test_ > _Test the bot_ permet ensuite de rapidement vérifier le comportement du bot sur ce parcours.
@@ -48,7 +48,7 @@ Il est possible de présenter une arborescence d'actions pour construire un arbr
 Cet écran permet de parcourir et gérer les parcours ou _stories_ créées.
 
 Il peut s'agir des parcours configurés via _Tock Studio_ (ie. avec l'onglet _New Story_) mais aussi les parcours 
-déclarés programmatiquement via [_Bot API_](../../dev/bot-api.md). Pour voir ces derniers, décochez l'option 
+déclarés programmatiquement via [_Bot API_](../../dev/bot-api). Pour voir ces derniers, décochez l'option 
 _Only Configured Stories_.
 
 ## L'onglet _Rules_
@@ -88,11 +88,11 @@ roulement afin de ne pas toujours répondre la même chose.
 
 ![Internationalisation](../../img/i18n.png "Internationalisation")
 
-Voir aussi [Construire un bot multilingue](../../dev/i18n.md) pour l'utilisation de l'onglet _Responses_ mais aussi  
+Voir aussi [Construire un bot multilingue](../../dev/i18n) pour l'utilisation de l'onglet _Responses_ mais aussi  
 les aspects développement sur ce thème. 
 
 ## Continuer...
 
-Rendez-vous dans [Menu _Test_](test.md) pour la suite du manuel utilisateur. 
+Rendez-vous dans [Menu _Test_](test) pour la suite du manuel utilisateur. 
 
-> Vous pouvez aussi passer directement au chapitre suivant : [Développement](../../dev/modes.md). 
+> Vous pouvez aussi passer directement au chapitre suivant : [Développement](../../dev/modes). 

@@ -115,7 +115,7 @@ des canaux grand public.
  > Exemples : arrivée de Google Home en France en 2017, Alexa en 2018, ouverture des API WhatsApp puis Business Chat en 2019, etc. 
 
 Pour en savoir plus sur les bots référencés utilisant tel ou tel connecteur en production, 
-n'hésitez pas à consulter la page [vitrine Tock](../../apropos/vitrine.md).
+n'hésitez pas à consulter la page [vitrine Tock](../../apropos/vitrine).
 
 ### Messenger
 
@@ -127,7 +127,7 @@ style="width: 100px;">
 * **Type** : texte _(+ voix via l'upload de messages vocaux)_
 * **Status** : connecteur Tock utilisé en production depuis 2016
 
-Le guide [Connecter son bot à Messenger](../../guide/messenger.md) explique comment intégrer un bot 
+Le guide [Connecter son bot à Messenger](../../guide/messenger) explique comment intégrer un bot 
 Tock avec une page Facebook / [Messenger](https://www.messenger.com/).
 
 Pour en savoir plus sur ce connecteur, vous pouvez aussi vous rendre dans le dossier 
@@ -144,7 +144,7 @@ style="width: 100px;">
 * **Type** : texte
 * **Status** : connecteur Tock utilisé hors production
 
-Le guide [Connecter son bot à Slack](../../guide/slack.md) explique comment intégrer un bot 
+Le guide [Connecter son bot à Slack](../../guide/slack) explique comment intégrer un bot 
 Tock avec une _chaîne_ [Slack](https://slack.com/).
 
 Pour en savoir plus sur ce connecteur, vous pouvez aussi vous rendre dans le dossier 
@@ -491,5 +491,5 @@ Il est possible de créer son propre connecteur Tock, par exemple pour interface
 l'organisation (souvent un site Web ou une application mobile spécifiques), ou bien quand un canal grand public 
 s'ouvre aux bots conversationnels et que le connecteur Tock n'existe pas encore.
 
-La section [_Bot Framework_](../../dev/bot-integre.md) du manuel développeur Tock donne des indications pour 
+La section [_Bot Framework_](../../dev/bot-integre) du manuel développeur Tock donne des indications pour 
 implémenter son propre connecteur.

@@ -169,7 +169,7 @@ where the *openBot* variable is the bot you originally defined.
 When the bot is started, you also need to specify which connectors are used
 in the web administration interface: Configuration -> Bot Configurations -> Create a new configuration  
 
-See [Connectors](connectors.md) page for the list of available connectors.
+See [Connectors](connectors) page for the list of available connectors.
 
 ### Import configuration (dumps)
 

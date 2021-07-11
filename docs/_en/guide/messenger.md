@@ -4,7 +4,7 @@ title: Messenger Connector
 
 # Configure a bot for Messenger
 
-If you followed the guide [Create your first bot with _Tock Studio_](studio.md), you created a connector with type Slack.
+If you followed the guide [Create your first bot with _Tock Studio_](studio), you created a connector with type Slack.
 
 In this guide, you will create a configuration for [Facebook Messenger](https://facebook.com/messenger/) 
 and set up the bot to chat with it on this application.
@@ -19,7 +19,7 @@ and set up the bot to chat with it on this application.
 
 * About 20 minutes
 
-* A working Tock bot (e.g. following the [first Tock bot](studio.md) guide)
+* A working Tock bot (e.g. following the [first Tock bot](studio) guide)
 
 * A [Facebook Developer](https://developers.facebook.com/) account
 
@@ -154,5 +154,5 @@ To learn more about the Messenger connector bundled with Tock, you can take a lo
 where you will find sources and the connector's _README_.
 
 To learn more about _Tock Studio_ and about Tock's features and deployment modes, you can also 
-browse the more complete [user guide](../toc.md).
+browse the more complete [user guide](../toc).
 

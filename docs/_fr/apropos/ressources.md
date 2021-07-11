@@ -5,7 +5,7 @@ title: Ressources
 # Ressources Tock
 
 Les différents supports et présentations ci-dessous donnent un aperçu de la solution Tock, 
-en complément des [guides](../guide/studio.md)
+en complément des [guides](../guide/studio)
  pour tester soi-même la plateforme.
 
 ## Conférences / Video
@@ -93,7 +93,7 @@ style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rg
 </a>
 
 
-> N'hésitez pas à [partager](contact.md) d'autres supports et liens autour de Tock.
+> N'hésitez pas à [partager](contact) d'autres supports et liens autour de Tock.
 
 ## Kit presse
 

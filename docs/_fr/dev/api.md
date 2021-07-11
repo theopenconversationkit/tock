@@ -46,4 +46,4 @@ Cette API est utilisée par les clients Kotlin, Javascript/Nodejs et Python disp
 
 > L'API est toutefois encore en développement (béta) et sa documentation arrivera bientôt.
 
-Pour développer en mode _Bot API_, voir [cette page](bot-api.md).
+Pour développer en mode _Bot API_, voir [cette page](bot-api).

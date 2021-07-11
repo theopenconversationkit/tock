@@ -43,11 +43,11 @@ ou [TAL](https://fr.wikipedia.org/wiki/Traitement_automatique_du_langage_naturel
     * Suivi des conversations et tendances / parcours utilisateurs (_Analytics_)
 * Frameworks pour développer des parcours complexes et intégrer des services tiers : <br/> _DSLs_ en 
 [Kotlin](https://kotlinlang.org/), [Javascript/Nodejs](https://nodejs.org/), [Python](https://www.python.org/) 
-et _API_ tous langages (voir [_Bot API_](dev/bot-api.md))
+et _API_ tous langages (voir [_Bot API_](dev/bot-api))
 * Nombreux connecteurs texte et voix : [Messenger](https://www.messenger.com/), [WhatsApp](https://www.whatsapp.com/), 
 [Google Assistant](https://assistant.google.com/), [Alexa](https://alexa.amazon.com/), [Twitter](https://twitter.com/), 
 [Apple Business Chat](https://www.apple.com/fr/ios/business-chat/), [Teams](https://products.office.com/fr-fr/microsoft-teams/), 
-[Slack](https://slack.com/)... (voir [canaux](user/guides/canaux.md))
+[Slack](https://slack.com/)... (voir [canaux](user/guides/canaux))
 * Installation _cloud_ ou _on-premise_, avec ou sans [Docker](https://www.docker.com/), 
 même _"embarqué"_ sans Internet 
 
@@ -69,10 +69,10 @@ Des intégrations [React](https://reactjs.org) et [Flutter](https://flutter.dev/
 
 ## Démarrer...
 
-* [Table des matières](toc.md)
-* [Guides](guide/studio.md) et [plateforme de démonstration](https://demo.tock.ai/)
-* Manuels [utilisateur](user/concepts.md), [développeur](dev/modes.md), [administrateur](admin/architecture.md)
-* [Ressources (supports, video)](apropos/ressources.md) et [exemples de code](dev/exemples-code.md)
+* [Table des matières](toc)
+* [Guides](guide/studio) et [plateforme de démonstration](https://demo.tock.ai/)
+* Manuels [utilisateur](user/concepts), [développeur](dev/modes), [administrateur](admin/architecture)
+* [Ressources (supports, video)](apropos/ressources) et [exemples de code](dev/exemples-code)
 
 [NLU]: https://en.wikipedia.org/wiki/Natural-language_understanding "Natural Language Understanding"
 *[NLU]: Natural Language Understanding

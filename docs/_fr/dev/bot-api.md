@@ -31,7 +31,7 @@ Il est possible de développer des parcours Tock dans n'importe quel langage via
       style="width: 50px;">](bot-api.md#developper-via-lapi)
 
 
-> Une autre section présente le mode [_Bot Framework_](bot-integre.md) disponible pour Kotlin uniquement, 
+> Une autre section présente le mode [_Bot Framework_](bot-integre) disponible pour Kotlin uniquement, 
 > plus intégré mais aussi plus couplé à la plateforme Tock.
 
 ## Se connecter sur la plateforme de démonstration
@@ -183,8 +183,8 @@ Pour utiliser le mode _Bot API_ de Tock, un module spécifique doit être déplo
 * D'exposer la _Bot API_ aux clients potentiels quelque soit leur langage de programmation
 * D'accepter des connexions en _WebSocket_ et/ou de se connecter au webhook configuré
 
-Le guide [Déployer Tock avec Docker](../guide/plateforme.md) ou encore le chapitre 
-[Installation](../admin/installation.md) montrent comment déployer ce module si nécessaire.
+Le guide [Déployer Tock avec Docker](../guide/plateforme) ou encore le chapitre 
+[Installation](../admin/installation) montrent comment déployer ce module si nécessaire.
 
 La seule modification nécessaire par rapport au code d'exemple pour la platforme de démonstration est de remplacer
 la méthode `startWithDemo` par `start` en précisant si besoin l'adresse de du serveur `bot-api`.

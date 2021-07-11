@@ -6,7 +6,7 @@ title: Récompenses
 
 Depuis sa création pour [OUI.sncf](https://www.oui.sncf/) en 2016 jusqu'au
 service _[AlloCovid](https://www.allocovid.com/)_ en 2020, la solution technique et 
-les [bots créés avec Tock](vitrine.md) ont été récompensés par plusieurs prix.
+les [bots créés avec Tock](vitrine) ont été récompensés par plusieurs prix.
 
 _Un grand merci aux organisateurs de ces événements, aux entreprises qui soutiennent
 Tock (notamment SNCF et TOSIT) ainsi qu'à la communauté 🙂_

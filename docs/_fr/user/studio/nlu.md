@@ -5,10 +5,10 @@ title: NLU
 # Le menu _Language Understanding_
 
 Le menu _Language Understanding_ (ou _NLU_) permet de créer, modifier, enrichir les modèles conversationnels :
- déclarer des _intentions_ et des _entités_, _qualifier_ des phrases, etc. (voir [Concepts](../concepts.md)
+ déclarer des _intentions_ et des _entités_, _qualifier_ des phrases, etc. (voir [Concepts](../concepts)
  pour en savoir plus).
  
-Dans cette page, le détail de chaque onglet est présenté. Voir aussi [Construire les modèles conversationnels](../guides/build-model.md)
+Dans cette page, le détail de chaque onglet est présenté. Voir aussi [Construire les modèles conversationnels](../guides/build-model)
 pour une présentation plus guidée par l'usage.
 
 ## L'onglet _New Sentence_
@@ -38,7 +38,7 @@ listes de sélection sous la phrase
 ![schéma Tock](../../img/try-it-3.png "Ajout d'une entité - étape 1")
 
 > Remarque : si vous avez activé cette option au niveau de l'application/bot, il est possible de déclarer des 
->_sous-entités_. Vous en apprendrez plus dans [Construire les modèles conversationnels](../guides/build-model.md).
+>_sous-entités_. Vous en apprendrez plus dans [Construire les modèles conversationnels](../guides/build-model).
 
 Les boutons et commandes suivantes sont disponibles pour la phrase dans sa globalité :
 
@@ -94,6 +94,6 @@ phrases reçues et réponses du bot pour un utilisateur).
 
 ## Continuer...
 
-Rendez-vous dans [Menu _Stories & Answers_](stories-and-answers.md) pour la suite du manuel utilisateur. 
+Rendez-vous dans [Menu _Stories & Answers_](stories-and-answers) pour la suite du manuel utilisateur. 
 
-> Vous pouvez aussi passer directement au chapitre suivant : [Développement](../../dev/modes.md). 
+> Vous pouvez aussi passer directement au chapitre suivant : [Développement](../../dev/modes). 

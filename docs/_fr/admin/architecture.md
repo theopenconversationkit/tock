@@ -11,9 +11,9 @@ flux, configuration de proxies, etc.
 
 Deux composants majeurs sont disponibles :
 
-* le moteur _NLU_ : _Natural Language Understanding_ (voir [_Tock Studio_](../user/studio.md))
+* le moteur _NLU_ : _Natural Language Understanding_ (voir [_Tock Studio_](../user/studio))
 * le framework conversationnel intégré aux services _NLU_ et à différents connecteurs comme 
- Messenger, Google Assistant ou Slack (voir [manuel développeur](../dev/modes.md) et [connecteurs](../user/guides/canaux.md)).
+ Messenger, Google Assistant ou Slack (voir [manuel développeur](../dev/modes) et [connecteurs](../user/guides/canaux)).
 
 ![schéma Tock](../img/tock.png "Les différentes composantes de Tock")
  
@@ -56,9 +56,9 @@ avec Tock) :
 construits dans _Tock Studio_
 
 * Partie conversationnelle :
-    * [`tock/bot_api`](https://hub.docker.com/r/tock/bot_api) : API pour développer des bots (mode [_Tock Bot API_](../dev/bot-api.md))
+    * [`tock/bot_api`](https://hub.docker.com/r/tock/bot_api) : API pour développer des bots (mode [_Tock Bot API_](../dev/bot-api))
     * [`tock/kotlin_compiler`](https://hub.docker.com/r/tock/kotlin_compiler) (facultatif) : compilateur de scripts 
-pour les saisir directement dans l'interface [_Build_](../user/studio/stories-and-answers.md) de _Tock Studio_
+pour les saisir directement dans l'interface [_Build_](../user/studio/stories-and-answers) de _Tock Studio_
 
 Un dernier composant, le bot lui-même, doit être ajouté et rendu accessible aux partenaires et canaux externes auxquels 
  on souhaite s'intégrer.
@@ -85,8 +85,8 @@ en utilisant toutes les possibilités de Tock mais en accédant à la base Mongo
 
 ## Voir aussi...
 
-* [Installation](installation.md)
-* [Sécurité](securite.md)
-* [Supervision](supervision.md)
-* [Cloud](cloud.md)
-* [Haute disponibilité](disponibilite.md)
+* [Installation](installation)
+* [Sécurité](securite)
+* [Supervision](supervision)
+* [Cloud](cloud)
+* [Haute disponibilité](disponibilite)

@@ -15,7 +15,7 @@ The _Tock Bot API_ mode allows the development using any programming language of
 
 This mode is only available on the [Tock's demo platform](https://demo.tock.ai/). 
 
-If you want to know more, read further [_here_](bot-api.md).
+If you want to know more, read further [_here_](bot-api).
 
 ## The _Integrated Bot_ Mode
 
@@ -34,4 +34,4 @@ In consequence, you will need to :
 
 ![Bot TOCK](../img/bot_open_data.png "Bot Tock")
 
-If you want to know more, read further [_here_](integrated-bot.md).
+If you want to know more, read further [_here_](integrated-bot).

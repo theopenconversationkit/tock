@@ -39,11 +39,11 @@ Users choose which components to embed and decide to keep (or share) ownership o
     * Dialog monitoring and user flow analytics
 * Frameworks provided to develop complex stories and integrate with 3<sup>rd</sup>-party services:  
 [Kotlin](https://kotlinlang.org/), [Javascript/Nodejs](https://nodejs.org/), [Python](https://www.python.org/) _DSLs_ 
-and any-language _REST API_ (see [_Bot API_](dev/bot-api.md))
+and any-language _REST API_ (see [_Bot API_](dev/bot-api))
 * Numerous text/voice integrations available with [Messenger](https://www.messenger.com/), [WhatsApp](https://www.whatsapp.com/), 
 [Google Assistant](https://assistant.google.com/), [Alexa](https://alexa.amazon.com/), [Twitter](https://twitter.com/), 
 [Apple Business Chat](https://www.apple.com/fr/ios/business-chat/), [Teams](https://products.office.com/fr-fr/microsoft-teams/), 
-[Slack](https://slack.com/)... (see [connectors](dev/connectors.md))
+[Slack](https://slack.com/)... (see [connectors](dev/connectors))
 * _Cloud_ or _on-premise_ setups, with or without [Docker](https://www.docker.com/), 
 _"embedded"_ bots without Internet 
 
@@ -64,8 +64,8 @@ _Tock Studio_ graphical user interfaces are built with [Angular](https://angular
 [React](https://reactjs.org) and [Flutter](https://flutter.dev/) toolkits are provided for Web and Mobile integrations.
 
 ## Getting started...
-* [Contents](toc.md)
-* Read [Tutorial](guide/studio.md) and start using the [demo/sandbox platform](https://demo.tock.ai/)
-* User manual for [developers](dev/modes.md)
+* [Contents](toc)
+* Read [Tutorial](guide/studio) and start using the [demo/sandbox platform](https://demo.tock.ai/)
+* User manual for [developers](dev/modes)
 
 *[NLU]: Natural Language Understanding

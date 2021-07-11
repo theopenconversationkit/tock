@@ -35,7 +35,7 @@ ou d'autres langages avec les clients fournis pour [Javascript/Nodejs](https://n
 Ce mode est le seul disponible sur la [plateforme de démonstration Tock](https://demo.tock.ai/). 
 C'est aussi le seul mode permettant de développer dans n'importe quel langage de programmation, via l'API.
 
-Pour en savoir plus, voir la page [_Bot API_](bot-api.md).
+Pour en savoir plus, voir la page [_Bot API_](bot-api).
 
 ## Le mode _Bot intégré_
 
@@ -54,4 +54,4 @@ de la plateforme Tock utilisée
 
 ![Bot TOCK](../img/bot_open_data.png "Bot Tock")
 
-Pour en savoir plus, voir la page [_Bot intégré_](bot-integre.md).
+Pour en savoir plus, voir la page [_Bot intégré_](bot-integre).

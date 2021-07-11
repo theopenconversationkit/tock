@@ -5,7 +5,7 @@ title: Awards
 # Community
 
 Tock has been designed to remain an open platform shared with the community.  
-To know more, see [why Tock](why.md).
+To know more, see [why Tock](why).
 
 The Tock community is open to contribution: every feedback, _issue_, _feature request_ and obviously 
  _pull request_ is more than welcome!
@@ -54,7 +54,7 @@ under the [Apache 2 license](https://github.com/theopenconversationkit/tock/blob
 * [Issues](https://github.com/theopenconversationkit/tock/issues)
 * [Contributors](https://github.com/theopenconversationkit/tock/graphs/contributors)
 
-To know more about repository structure, coding conventions, etc. refer to the [contribute to Tock](contribute.md) section.
+To know more about repository structure, coding conventions, etc. refer to the [contribute to Tock](contribute) section.
 For other types of contribution, don't hesitate to use GitHub [_issues_](https://github.com/theopenconversationkit/tock/issues) 
 and [join the community](https://gitter.im/tockchat/Lobby) directly on Gitter.
 
@@ -91,4 +91,4 @@ public Live Demo platform.
 
 ## Help
 
-Feel free to [contact us](contact.md).
+Feel free to [contact us](contact).

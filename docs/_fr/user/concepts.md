@@ -41,7 +41,7 @@ Tock permet de mutualiser très facilement le code d'un _bot_ pour qu'il répond
 connecteurs. Il est toutefois possible d'ajuster finement réponses et comportements en fonction du connecteur, si besoin. 
 
 Voir [_Tock Studio > Settings > Configurations_](studio/configuration.md##gerer-les-connecteurs) et
-la page [_Bot Multicanal_](guides/canaux.md) pour en savoir plus sur les connecteurs disponibles.
+la page [_Bot Multicanal_](guides/canaux) pour en savoir plus sur les connecteurs disponibles.
 
 ### _Namespace_
 
@@ -77,7 +77,7 @@ Pour reprendre l'exemple ci-dessus, avec un modèle constitué des trois phrases
 il est probable qu'une nouvelle phrase du type "Quel temps fera t'il demain ?" sera reconnue
 automatiquement par Tock comme correspondant à l'intention "météo".
 
-Voir [_Tock Studio > Language Understanding_](studio/nlu.md).
+Voir [_Tock Studio > Language Understanding_](studio/nlu).
 
 ### _Entités_
 
@@ -101,7 +101,7 @@ On distingue deux étapes dans la prise en compte d'une entité :
 Tock par défaut identifie l'entité, mais ne la valorise pas, sauf pour certains types.
 Par défaut, les entités de namespace "duckling" seront automatiquement valorisées.
 
-Voir [_Tock Studio > Language Understanding_](studio/nlu.md).
+Voir [_Tock Studio > Language Understanding_](studio/nlu).
 
 ### _Scénario_ (ou _Story_)
 
@@ -118,7 +118,7 @@ de la question initiale.
 
 La _Story_ est l'unité principale du framework conversationnel de Tock.
 
-Voir [_Tock Studio > Stories & Answers_](studio/stories-and-answers.md).
+Voir [_Tock Studio > Stories & Answers_](studio/stories-and-answers).
 
 ## Termes & correspondances
 
@@ -148,9 +148,9 @@ solutions conversationnelles :
 | Configuration    |                     | Space                    |                     |
 | Application      | Domain              | Bot                      |                     |
 
-> La documentation des [connecteurs Tock](guides/canaux.md) donne également la correspondance avec d'autres termes propres à 
+> La documentation des [connecteurs Tock](guides/canaux) donne également la correspondance avec d'autres termes propres à 
 > tel ou tel canal.
 
 ## Continuer...
 
-Vous pouvez maintenant entamer le chapitre suivant : [Interfaces _Tock Studio_](studio.md). 
+Vous pouvez maintenant entamer le chapitre suivant : [Interfaces _Tock Studio_](studio). 
