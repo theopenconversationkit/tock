@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Bienvenue !
+permalink: /fr/
 ---
 
 # Bienvenue sur Tock : une plateforme conversationnelle ouverte

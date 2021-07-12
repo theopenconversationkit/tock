@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Tock
+permalink: /en/
 ---
 # Welcome to Tock - open conversational platform
 
