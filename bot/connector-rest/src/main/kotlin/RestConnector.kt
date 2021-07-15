@@ -60,6 +60,7 @@ class RestConnector(
     companion object {
         private val logger = KotlinLogging.logger {}
         private val disabled = booleanProperty("tock_rest_connector_disabled", false)
+        internal val checkNlpStats = booleanProperty("tock_rest_connector_check_nlp_stats", false)
     }
 
     override fun hasFeature(feature: ConnectorFeature, targetConnectorType: ConnectorType): Boolean =

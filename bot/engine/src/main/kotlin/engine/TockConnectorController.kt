@@ -160,8 +160,8 @@ internal class TockConnectorController constructor(
                         userTimelineDAO.save(userTimeline, bot.botDefinition)
                     }
                 } catch (t: Throwable) {
-                    callback.exceptionThrown(action, t)
                     send(data, action, errorMessage(action.recipientId, action.applicationId, action.playerId))
+                    callback.exceptionThrown(action, t)
                 } finally {
                     userLock.releaseLock(id)
                     callback.userLockReleased(action)
