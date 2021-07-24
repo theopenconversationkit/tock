@@ -34,7 +34,9 @@ data class SentenceDump(
     val intent: String,
     val entities: List<SentenceEntityDump> = emptyList(),
     val language: Locale? = null,
-    val status: ClassifiedSentenceStatus = ClassifiedSentenceStatus.model
+    val status: ClassifiedSentenceStatus = ClassifiedSentenceStatus.model,
+    val forReview: Boolean = false,
+    val reviewComment: String? = null,
 )
 
 data class SentenceEntityDump(

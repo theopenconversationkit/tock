@@ -403,7 +403,9 @@ internal object ApplicationCodecService : ApplicationCodec {
                                 changeEntityNames(s.entities.map { it.toClassifiedEntity() }.sortedBy { it.start }, namespace, true, report)
                             ),
                             1.0,
-                            1.0
+                            1.0,
+                            forReview = s.forReview,
+                            reviewComment = s.reviewComment,
                         )
                     )
                     report.sentencesImported++
@@ -477,7 +479,9 @@ internal object ApplicationCodecService : ApplicationCodec {
                             sentenceIntent?.qualifiedName ?: Intent.UNKNOWN_INTENT_NAME,
                             s.classification.entities.map { SentenceEntityDump(it) },
                             s.language,
-                            s.status
+                            s.status,
+                            s.forReview,
+                            s.reviewComment
                         )
                     }
                 }
