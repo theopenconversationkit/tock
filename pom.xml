@@ -31,19 +31,19 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
-        <kotlin>1.5.10</kotlin>
-        <couroutine>1.5.0</couroutine>
+        <kotlin>1.5.21</kotlin>
+        <couroutine>1.5.1</couroutine>
 
         <slf4j>1.7.30</slf4j>
         <logback>1.2.3</logback>
 
-        <kotlin-logging>2.0.8</kotlin-logging>
+        <kotlin-logging>2.0.10</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>4.2.7</kmongo>
-        <jackson>2.12.3</jackson>
-        <jackson-databind>2.12.3</jackson-databind>
-        <jackson-module>2.12.3</jackson-module>
+        <kmongo>4.2.8</kmongo>
+        <jackson>2.12.4</jackson>
+        <jackson-databind>2.12.4</jackson-databind>
+        <jackson-module>2.12.4</jackson-module>
         <jackson-module-loader>0.4.0</jackson-module-loader>
         <jackson-data>0.4.0</jackson-data>
         <jackson-generator>0.4.0</jackson-generator>
@@ -53,7 +53,7 @@
         <okhttp>4.9.1</okhttp>
         <okhttp-signpost>1.1.0</okhttp-signpost>
         <signpost-core>1.2.1.2</signpost-core>
-        <circuitbreaker>1.7.0</circuitbreaker>
+        <circuitbreaker>1.7.1</circuitbreaker>
         <guava>30.1.1-jre</guava>
         <google-auth>1.31.5</google-auth>
         <google-http-client>1.39.2-sp.1</google-http-client>
@@ -66,32 +66,32 @@
         <httpclient>4.5.13</httpclient>
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
-        <google>20.6.0</google>
-        <aws-sdk>1.12.4</aws-sdk>
+        <google>20.8.0</google>
+        <aws-sdk>1.12.31</aws-sdk>
 
         <junit-jupiter>5.8.0-M1</junit-jupiter>
 
-        <mockk>1.11.0</mockk>
+        <mockk>1.12.0</mockk>
         <assertj>3.12.2</assertj>
-        <byte-buddy>1.11.2</byte-buddy>
+        <byte-buddy>1.11.8</byte-buddy>
         <atrium>0.15.0</atrium>
 
         <plugin.surefire>3.0.0-M5</plugin.surefire>
         <plugin.source>3.2.1</plugin.source>
         <plugin.release>3.0.0-M1</plugin.release>
-        <plugin.gpg>1.6</plugin.gpg>
+        <plugin.gpg>3.0.1</plugin.gpg>
         <plugin.nexus-staging>1.6.8</plugin.nexus-staging>
-        <plugin.dokka>1.4.10.2</plugin.dokka>
+        <plugin.dokka>1.5.0</plugin.dokka>
         <plugin.assembly>3.3.0</plugin.assembly>
-        <plugin.frontend>1.11.3</plugin.frontend>
+        <plugin.frontend>1.12.0</plugin.frontend>
         <plugin.clean>3.1.0</plugin.clean>
         <plugin.jar>3.2.0</plugin.jar>
         <plugin.ant>3.0.0</plugin.ant>
         <plugin.shade>3.2.4</plugin.shade>
-        <plugin.dependency>3.1.2</plugin.dependency>
+        <plugin.dependency>3.2.0</plugin.dependency>
         <plugin.resources>3.2.0</plugin.resources>
         <plugin.deploy>3.0.0-M1</plugin.deploy>
-        <plugin.gitid>4.0.4</plugin.gitid>
+        <plugin.gitid>4.9.9</plugin.gitid>
         <plugin.ktlint>1.9.0</plugin.ktlint>
 
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
