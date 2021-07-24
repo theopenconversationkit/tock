@@ -146,11 +146,18 @@ internal object TockKMongoConfiguration {
     }
 }
 
-private val mongoUrl = ConnectionString(
-    property(
+private val defaultMongoUrl = property(
         "tock_mongo_url",
         "mongodb://localhost:27017,localhost:27018,localhost:27019/?replicaSet=tock&retryWrites=true"
-    )
+)
+
+private val mongoUrl = ConnectionString(defaultMongoUrl)
+
+private val asyncMongoUrl = ConnectionString(
+        property(
+                "tock_async_mongo_url",
+                defaultMongoUrl
+        )
 )
 
 private val credentialsProvider = injector.provide<MongoCredentialsProvider>()
@@ -181,14 +188,14 @@ internal val asyncMongoClient: com.mongodb.reactivestreams.client.MongoClient by
     TockKMongoConfiguration.configure(true)
     org.litote.kmongo.reactivestreams.KMongo.createClient(
         MongoClientSettings.builder()
-            .applyConnectionString(mongoUrl)
+            .applyConnectionString(asyncMongoUrl)
             .apply {
-                if (mongoUrl.credential == null) {
+                if (asyncMongoUrl.credential == null) {
                     credentialsProvider.getCredentials()?.let {
                         this.credential(it)
                     }
                 }
-                if (mongoUrl.sslEnabled == true) {
+                if (asyncMongoUrl.sslEnabled == true) {
                     streamFactoryFactory(NettyStreamFactoryFactory.builder().build())
                 }
             }
