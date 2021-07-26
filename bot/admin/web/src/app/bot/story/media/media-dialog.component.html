@@ -13,7 +13,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
+<mat-dialog-content>
 <h1 mat-dialog-title>
   Media Card
   <nb-toggle [(checked)]="media.fillCarousel"
@@ -25,12 +25,11 @@
   At least one of Title, Subtitle or File is required.
 </span>
 <div class="container">
-
   <form #mediaForm="ngForm" class="container">
     <!-- title -->
     <mat-form-field>
       <input matInput name="titleLabel" placeholder="Title" [(ngModel)]="media.titleLabel"
-             matTooltip="Card Title" #titleElement>
+             matTooltip="Card Title" #titleElement class="title">
     </mat-form-field>
     <!-- File -->
     <p *ngIf="media.file">
@@ -95,3 +94,4 @@
   </button>
 
 </mat-dialog-actions>
+</mat-dialog-content>
