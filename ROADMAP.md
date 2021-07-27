@@ -6,6 +6,9 @@
     - Conversational framework: support for other languages than Kotlin (multi-platform Kotlin)         
     
 ## Latest releases
+- 21.3.4 July 2021
+  - Bug fixes release
+  
 - 21.3.3 June 2021
   - Bug fixes release
 
