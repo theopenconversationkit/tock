@@ -30,7 +30,7 @@ function travis-api {
   -H "Travis-API-Version: 3" \
   -H "Authorization: token $TRAVIS_ACCESS_TOKEN" \
   -d "$body" \
-  "https://api.travis-ci.org/repo/$1%2F$2/requests"
+  "https://api.travis-ci.com/repo/$1%2F$2/requests"
 }
 
 if [ "$TRAVIS_BRANCH" = 'master' ] && [ "$TRAVIS_PULL_REQUEST" = 'false' ] && [ "$TRAVIS_TAG" = '' ]; then
