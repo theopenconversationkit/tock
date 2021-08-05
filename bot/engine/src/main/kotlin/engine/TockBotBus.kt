@@ -125,6 +125,7 @@ internal class TockBotBus(
         }
         context.clear()
         a.state.testEvent = userPreferences.test
+        a.state.intent = action.state.intent
 
         _currentAnswerIndex++
 

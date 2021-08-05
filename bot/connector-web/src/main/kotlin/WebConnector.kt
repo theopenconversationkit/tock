@@ -190,7 +190,7 @@ class WebConnector internal constructor(
                 locale = request.locale,
                 context = context,
                 webMapper = webMapper,
-                eventId = event.id.toString()
+                eventId = event.id.toString(),
             )
             controller.handle(event, ConnectorData(callback))
         } catch (t: Throwable) {

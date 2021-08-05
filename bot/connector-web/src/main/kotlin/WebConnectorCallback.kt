@@ -32,7 +32,7 @@ internal class WebConnectorCallback(
     private val context: RoutingContext,
     private val actions: MutableList<Action> = CopyOnWriteArrayList(),
     private val webMapper: ObjectMapper,
-    private val eventId: String
+    private val eventId: String,
 ) : ConnectorCallbackBase(applicationId, webConnectorType) {
 
     private val logger = KotlinLogging.logger {}
@@ -43,8 +43,8 @@ internal class WebConnectorCallback(
 
     fun sendResponse() {
         WebRequestInfosByEvent.invalidate(eventId)
-        val messages = actions
-            .filterIsInstance<SendSentence>()
+        val sentences = actions.filterIsInstance<SendSentence>()
+        val messages = sentences
             .mapNotNull {
                 if (it.stringText != null) {
                     WebMessage(it.stringText!!)
@@ -54,6 +54,13 @@ internal class WebConnectorCallback(
             }
         context.response()
             .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-            .end(webMapper.writeValueAsString(WebConnectorResponse(messages)))
+            .end(
+                webMapper.writeValueAsString(
+                    WebConnectorResponse(
+                        responses = messages,
+                        metadata = WebConnectorResponseMetadata(sentences.firstOrNull()?.state?.intent)
+                    )
+                )
+            )
     }
 }
