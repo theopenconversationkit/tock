@@ -118,6 +118,9 @@ internal class Bot(
         }
 
         if (!userTimeline.userState.botDisabled) {
+            dialog.state.currentIntent?.let { intent ->
+                connector.sendIntent(intent, action.applicationId, connectorData)
+            }
             connector.startTypingInAnswerTo(action, connectorData)
             val story = getStory(userTimeline, dialog, action)
             val bus = TockBotBus(connector, userTimeline, dialog, action, connectorData, botDefinition)

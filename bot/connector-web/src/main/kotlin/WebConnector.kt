@@ -37,6 +37,7 @@ import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.event.Event
+import ai.tock.bot.engine.metadata.MetadataEvent
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType.bot
 import ai.tock.bot.engine.user.PlayerType.user
@@ -259,13 +260,17 @@ class WebConnector internal constructor(
     }
 
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
-        if (event is Action) {
-            when (callback) {
-                is WebConnectorCallback -> handleWebConnectorCallback(callback, event)
-                is OrchestrationCallback -> handleOrchestrationCallback(callback, event)
+        when (event) {
+            is Action -> {
+                when (callback) {
+                    is WebConnectorCallback -> handleWebConnectorCallback(callback, event)
+                    is OrchestrationCallback -> handleOrchestrationCallback(callback, event)
+                }
             }
-        } else {
-            logger.trace { "unsupported event: $event" }
+            is MetadataEvent -> (callback as? WebConnectorCallback)?.addMetadata(event)
+            else -> {
+                logger.trace { "unsupported event: $event" }
+            }
         }
     }
 

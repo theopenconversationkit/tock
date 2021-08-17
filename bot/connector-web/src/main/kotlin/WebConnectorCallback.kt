@@ -19,6 +19,7 @@ package ai.tock.bot.connector.web
 import ai.tock.bot.connector.ConnectorCallbackBase
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.metadata.MetadataEvent
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.vertx.core.http.HttpHeaders
 import io.vertx.ext.web.RoutingContext
@@ -31,6 +32,7 @@ internal class WebConnectorCallback(
     val locale: Locale,
     private val context: RoutingContext,
     private val actions: MutableList<Action> = CopyOnWriteArrayList(),
+    private val metadata: MutableMap<String, String> = mutableMapOf(),
     private val webMapper: ObjectMapper,
     private val eventId: String
 ) : ConnectorCallbackBase(applicationId, webConnectorType) {
@@ -39,6 +41,10 @@ internal class WebConnectorCallback(
 
     fun addAction(action: Action) {
         actions.add(action)
+    }
+
+    fun addMetadata(metadata: MetadataEvent) {
+        this.metadata[metadata.type.name] = metadata.value
     }
 
     fun sendResponse() {
@@ -54,6 +60,6 @@ internal class WebConnectorCallback(
             }
         context.response()
             .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-            .end(webMapper.writeValueAsString(WebConnectorResponse(messages)))
+            .end(webMapper.writeValueAsString(WebConnectorResponse(messages, metadata)))
     }
 }
