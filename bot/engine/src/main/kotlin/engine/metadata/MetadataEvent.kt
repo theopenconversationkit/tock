@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.web
+package ai.tock.bot.engine.metadata
 
-import ai.tock.bot.connector.web.send.WebMessageContent
-import ai.tock.bot.connector.web.send.WebMessageContract
+import ai.tock.bot.definition.Intent
+import ai.tock.bot.engine.event.Event
 
-interface WebConnectorResponseContract {
-    val responses: List<WebMessageContract>
-    val metadata: Map<String,String>
+class MetadataEvent(val type: MetadataEventType, val value: String, applicationId: String) : Event(applicationId){
+    companion object {
+        fun intent(intent: Intent, applicationId: String)  = MetadataEvent(MetadataEventType.Intent, intent.name, applicationId)
+    }
 }
 
-data class WebConnectorResponseContent(
-    override val responses: List<WebMessageContent>,
-    override val metadata: Map<String,String> = emptyMap()
-) : WebConnectorResponseContract
+enum class MetadataEventType {
+    Intent
+}

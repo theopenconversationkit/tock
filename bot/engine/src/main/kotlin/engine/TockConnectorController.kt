@@ -21,12 +21,14 @@ import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorConfiguration
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.definition.BotDefinition
+import ai.tock.bot.definition.Intent
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendAttachment
 import ai.tock.bot.engine.action.SendAttachment.AttachmentType.audio
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.event.TypingOnEvent
+import ai.tock.bot.engine.metadata.MetadataEvent
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserLock
 import ai.tock.bot.engine.user.UserPreferences
@@ -238,6 +240,10 @@ internal class TockConnectorController constructor(
 
     fun startTypingInAnswerTo(action: Action, data: ConnectorData) {
         connector.send(TypingOnEvent(action.playerId, action.applicationId), data.callback)
+    }
+
+    fun sendIntent(intent: Intent, applicationId: String, data: ConnectorData){
+        connector.send(MetadataEvent.intent(intent, applicationId), data.callback)
     }
 
     override fun toString(): String = configuration.toString()
