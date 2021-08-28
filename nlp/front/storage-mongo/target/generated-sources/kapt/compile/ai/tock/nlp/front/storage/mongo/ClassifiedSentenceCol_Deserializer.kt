@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017/2021 e-voyageurs technologies
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package ai.tock.nlp.front.storage.mongo
 
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
@@ -36,6 +52,8 @@ internal class ClassifiedSentenceCol_Deserializer :
         with(p) {
             var _text_: String? = null
             var _text_set : Boolean = false
+            var _lowerCaseText_: String? = null
+            var _lowerCaseText_set : Boolean = false
             var _fullText_: String? = null
             var _fullText_set : Boolean = false
             var _language_: Locale? = null
@@ -82,6 +100,11 @@ internal class ClassifiedSentenceCol_Deserializer :
                             _text_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _text_set = true
+                            }
+                    "lowerCaseText" -> {
+                            _lowerCaseText_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _lowerCaseText_set = true
                             }
                     "fullText" -> {
                             _fullText_ = if(_token_ == JsonToken.VALUE_NULL) null
@@ -171,15 +194,15 @@ internal class ClassifiedSentenceCol_Deserializer :
                     } 
                 _token_ = currentToken
                         } 
-            return if(_text_set && _fullText_set && _language_set && _applicationId_set &&
-                    _creationDate_set && _updateDate_set && _status_set && _classification_set &&
-                    _lastIntentProbability_set && _lastEntityProbability_set && _lastUsage_set &&
-                    _usageCount_set && _unknownCount_set && _forReview_set && _reviewComment_set &&
-                    _classifier_set && _otherIntentsProbabilities_set)
-                    ClassifiedSentenceMongoDAO.ClassifiedSentenceCol(text = _text_!!, fullText =
-                            _fullText_!!, language = _language_!!, applicationId =
-                            _applicationId_!!, creationDate = _creationDate_!!, updateDate =
-                            _updateDate_!!, status = _status_!!, classification =
+            return if(_text_set && _lowerCaseText_set && _fullText_set && _language_set &&
+                    _applicationId_set && _creationDate_set && _updateDate_set && _status_set &&
+                    _classification_set && _lastIntentProbability_set && _lastEntityProbability_set
+                    && _lastUsage_set && _usageCount_set && _unknownCount_set && _forReview_set &&
+                    _reviewComment_set && _classifier_set && _otherIntentsProbabilities_set)
+                    ClassifiedSentenceMongoDAO.ClassifiedSentenceCol(text = _text_!!, lowerCaseText
+                            = _lowerCaseText_!!, fullText = _fullText_!!, language = _language_!!,
+                            applicationId = _applicationId_!!, creationDate = _creationDate_!!,
+                            updateDate = _updateDate_!!, status = _status_!!, classification =
                             _classification_!!, lastIntentProbability = _lastIntentProbability_,
                             lastEntityProbability = _lastEntityProbability_, lastUsage =
                             _lastUsage_, usageCount = _usageCount_, unknownCount = _unknownCount_,
@@ -189,6 +212,8 @@ internal class ClassifiedSentenceCol_Deserializer :
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_text_set)
                     map[parameters.getValue("text")] = _text_
+                    if(_lowerCaseText_set)
+                    map[parameters.getValue("lowerCaseText")] = _lowerCaseText_
                     if(_fullText_set)
                     map[parameters.getValue("fullText")] = _fullText_
                     if(_language_set)
@@ -234,6 +259,7 @@ internal class ClassifiedSentenceCol_Deserializer :
 
         private val parameters: Map<String, KParameter> by lazy(LazyThreadSafetyMode.PUBLICATION) {
                 kotlin.collections.mapOf("text" to primaryConstructor.findParameterByName("text")!!,
+                "lowerCaseText" to primaryConstructor.findParameterByName("lowerCaseText")!!,
                 "fullText" to primaryConstructor.findParameterByName("fullText")!!, "language" to
                 primaryConstructor.findParameterByName("language")!!, "applicationId" to
                 primaryConstructor.findParameterByName("applicationId")!!, "creationDate" to

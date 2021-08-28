@@ -307,12 +307,13 @@ open class AdminVerticle : WebVerticle() {
                 if (existingApp != null && existingApp.name != application.name) {
                     badRequest("Application name cannot be changed")
                 }
-                val newApp = saveApplication(
+                    val newApp = saveApplication(
                     existingApp,
                     application.toApplication().copy(name = application.name.lowercase())
                 )
                 // trigger a full rebuild if nlp engine change
-                if (appWithSameName?.nlpEngineType != newApp.nlpEngineType) {
+                if (appWithSameName?.nlpEngineType != newApp.nlpEngineType
+                    || appWithSameName.caseInsensitive != newApp.caseInsensitive) {
                     front.triggerBuild(ModelBuildTrigger(newApp._id, true))
                 }
                 ApplicationWithIntents(newApp, front.getIntentsByApplicationId(newApp._id))

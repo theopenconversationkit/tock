@@ -31,6 +31,8 @@ import java.util.Locale
  */
 interface ClassifiedSentenceDAO {
 
+    fun updateCaseInsensitiveSentences(applicationId: Id<ApplicationDefinition>)
+
     fun getSentences(
         intents: Set<Id<IntentDefinition>>?,
         language: Locale?,

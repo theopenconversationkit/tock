@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017/2021 e-voyageurs technologies
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package ai.tock.nlp.front.shared.config
 
 import ai.tock.nlp.core.NlpEngineType
@@ -40,6 +56,8 @@ private val __SupportSubEntities: KProperty1<ApplicationDefinition, Boolean?>
     get() = ApplicationDefinition::supportSubEntities
 private val __UnknownIntentThreshold: KProperty1<ApplicationDefinition, Double?>
     get() = ApplicationDefinition::unknownIntentThreshold
+private val __CaseInsensitive: KProperty1<ApplicationDefinition, Boolean?>
+    get() = ApplicationDefinition::caseInsensitive
 private val ___id: KProperty1<ApplicationDefinition, Id<ApplicationDefinition>?>
     get() = ApplicationDefinition::_id
 class ApplicationDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -77,6 +95,9 @@ class ApplicationDefinition_<T>(previous: KPropertyPath<T, *>?, property: KPrope
     val unknownIntentThreshold: KPropertyPath<T, Double?>
         get() = KPropertyPath(this,__UnknownIntentThreshold)
 
+    val caseInsensitive: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__CaseInsensitive)
+
     val _id: KPropertyPath<T, Id<ApplicationDefinition>?>
         get() = KPropertyPath(this,___id)
 
@@ -104,6 +125,8 @@ class ApplicationDefinition_<T>(previous: KPropertyPath<T, *>?, property: KPrope
             get() = __SupportSubEntities
         val UnknownIntentThreshold: KProperty1<ApplicationDefinition, Double?>
             get() = __UnknownIntentThreshold
+        val CaseInsensitive: KProperty1<ApplicationDefinition, Boolean?>
+            get() = __CaseInsensitive
         val _id: KProperty1<ApplicationDefinition, Id<ApplicationDefinition>?>
             get() = ___id}
 }
@@ -143,6 +166,9 @@ class ApplicationDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KPr
 
     val unknownIntentThreshold: KPropertyPath<T, Double?>
         get() = KPropertyPath(this,__UnknownIntentThreshold)
+
+    val caseInsensitive: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__CaseInsensitive)
 
     val _id: KPropertyPath<T, Id<ApplicationDefinition>?>
         get() = KPropertyPath(this,___id)
@@ -186,6 +212,9 @@ class ApplicationDefinition_Map<T, K>(previous: KPropertyPath<T, *>?, property: 
 
     val unknownIntentThreshold: KPropertyPath<T, Double?>
         get() = KPropertyPath(this,__UnknownIntentThreshold)
+
+    val caseInsensitive: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__CaseInsensitive)
 
     val _id: KPropertyPath<T, Id<ApplicationDefinition>?>
         get() = KPropertyPath(this,___id)

@@ -62,7 +62,7 @@ internal object NlpCoreService : NlpCore {
         text: String,
         intentSelector: IntentSelector
     ): ParsingResult {
-        val t = checkMaxLengthAllowed(text)
+        val t = context.prepareText(checkMaxLengthAllowed(text))
         return parse(
             context,
             t,
@@ -83,16 +83,17 @@ internal object NlpCoreService : NlpCore {
         intentModelHolder: ModelHolder,
         entityModelHolders: Map<Intent, ModelHolder?>
     ): ParsingResult {
+        val t = context.prepareText(text)
         return parse(
             context.callContext,
-            text,
-            { nlpClassifier.classifyIntent(IntentContext(context), intentModelHolder, text) },
+            t,
+            { nlpClassifier.classifyIntent(IntentContext(context), intentModelHolder, t) },
             { intent ->
                 entityModelHolders[intent]?.let { entityModel ->
                     nlpClassifier.classifyEntities(
                         EntityCallContextForIntent(context, intent),
                         entityModel,
-                        text
+                        t
                     )
                 } ?: emptyList()
             },
@@ -109,7 +110,7 @@ internal object NlpCoreService : NlpCore {
     ): ParsingResult {
         try {
             val intents = intentClassifier.invoke()
-            val (intent, probability) = intentSelector.selectIntent(intents) ?: null to null
+            val (intent, probability) = intentSelector.selectIntent(intents) ?: (null to null)
 
             if (intent == null || probability == null) {
                 return unknownResult
@@ -158,14 +159,20 @@ internal object NlpCoreService : NlpCore {
                 if (classifiedEntityTypes.isNotEmpty()) {
                     if (context.evaluationContext.mergeEntityTypes) {
                         val result =
-                            entityMerge.mergeEntityTypes(context, text, intent, evaluatedEntities, classifiedEntityTypes)
+                            entityMerge.mergeEntityTypes(
+                                context,
+                                text,
+                                intent,
+                                evaluatedEntities,
+                                classifiedEntityTypes
+                            )
                         result to
-                            (evaluatedEntities + classifiedEntityTypes.map { it.toEntityRecognition(it.entityType.name) })
-                                .subtract(result).toList()
+                                (evaluatedEntities + classifiedEntityTypes.map { it.toEntityRecognition(it.entityType.name) })
+                                    .subtract(result).toList()
                     } else {
                         evaluatedEntities to
-                            classifiedEntityTypes.map { it.toEntityRecognition(it.entityType.name) }
-                                .subtract(evaluatedEntities).toList()
+                                classifiedEntityTypes.map { it.toEntityRecognition(it.entityType.name) }
+                                    .subtract(evaluatedEntities).toList()
                     }
                 } else {
                     evaluatedEntities to emptyList()
@@ -204,4 +211,9 @@ internal object NlpCoreService : NlpCore {
     override fun healthcheck(): Boolean {
         return entityCore.healthcheck()
     }
+
+    private fun CallContext.prepareText(text: String): String =
+        if (application.caseInsensitive) text.lowercase(language) else text
+
+    private fun TestContext.prepareText(text: String): String = callContext.prepareText(text)
 }

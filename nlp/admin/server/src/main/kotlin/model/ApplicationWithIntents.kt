@@ -68,6 +68,10 @@ data class ApplicationWithIntents(
      */
     val unknownIntentThreshold: Double = 0.0,
     /**
+     * Case insensitive model - sentences are persisted with lower case.
+     */
+    val caseInsensitive: Boolean = false,
+    /**
      * The id of the app.
      */
     val _id: Id<ApplicationDefinition>?
@@ -85,6 +89,7 @@ data class ApplicationWithIntents(
             application.useEntityModels,
             application.supportSubEntities,
             application.unknownIntentThreshold,
+            application.caseInsensitive,
             application._id
         )
 
@@ -101,6 +106,7 @@ data class ApplicationWithIntents(
             useEntityModels,
             supportSubEntities,
             unknownIntentThreshold,
+            caseInsensitive,
             _id ?: newId()
         )
     }

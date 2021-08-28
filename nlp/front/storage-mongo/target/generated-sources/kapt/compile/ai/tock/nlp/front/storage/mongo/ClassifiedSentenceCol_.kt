@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017/2021 e-voyageurs technologies
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package ai.tock.nlp.front.storage.mongo
 
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
@@ -22,6 +38,8 @@ import org.litote.kmongo.property.KPropertyPath
 
 private val __Text: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
     get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::text
+private val __LowerCaseText: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
+    get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lowerCaseText
 private val __FullText: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
     get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::fullText
 private val __Language: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, Locale?>
@@ -65,6 +83,9 @@ internal class ClassifiedSentenceCol_<T>(previous: KPropertyPath<T, *>?, propert
         ClassifiedSentenceMongoDAO.ClassifiedSentenceCol?>(previous,property) {
     val text: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Text)
+
+    val lowerCaseText: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__LowerCaseText)
 
     val fullText: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__FullText)
@@ -119,6 +140,8 @@ internal class ClassifiedSentenceCol_<T>(previous: KPropertyPath<T, *>?, propert
     companion object {
         val Text: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
             get() = __Text
+        val LowerCaseText: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
+            get() = __LowerCaseText
         val FullText: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
             get() = __FullText
         val Language: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, Locale?>
@@ -165,6 +188,9 @@ internal class ClassifiedSentenceCol_Col<T>(previous: KPropertyPath<T, *>?, prop
         ClassifiedSentenceCol_<T>>(previous,property) {
     val text: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Text)
+
+    val lowerCaseText: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__LowerCaseText)
 
     val fullText: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__FullText)
@@ -226,6 +252,9 @@ internal class ClassifiedSentenceCol_Map<T, K>(previous: KPropertyPath<T, *>?, p
         ClassifiedSentenceCol_<T>>(previous,property) {
     val text: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Text)
+
+    val lowerCaseText: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__LowerCaseText)
 
     val fullText: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__FullText)

@@ -60,6 +60,13 @@ object ApplicationConfigurationService :
     UserNamespaceDAO by userNamespaceDAO,
     ApplicationConfiguration {
 
+    override fun save(application: ApplicationDefinition): ApplicationDefinition {
+        if(application.caseInsensitive) {
+            sentenceDAO.updateCaseInsensitiveSentences(application._id)
+        }
+        return applicationDAO.save(application)
+    }
+
     override fun save(sentence: ClassifiedSentence, user: UserLogin?) {
         sentenceDAO.save(sentence.copy(qualifier = user))
     }

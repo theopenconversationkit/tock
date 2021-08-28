@@ -155,7 +155,12 @@ internal object ConfigurationRepository {
                 it.entitiesRegexp.mapValues { r -> LinkedHashSet(r.value.map { v -> EntitiesRegexp(v.regexp) }) }
             )
         }
-        return Application(applicationDefinition.qualifiedName, intents, applicationDefinition.supportedLocales)
+        return Application(
+            applicationDefinition.qualifiedName,
+            intents,
+            applicationDefinition.supportedLocales,
+            applicationDefinition.caseInsensitive
+        )
     }
 
     private fun toEntityWithEntityTypesTree(e: EntityDefinition): Entity? {

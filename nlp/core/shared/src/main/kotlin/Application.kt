@@ -25,7 +25,8 @@ import java.util.Locale
 data class Application(
     val name: String,
     val intents: List<Intent>,
-    val supportedLocales: Set<Locale>
+    val supportedLocales: Set<Locale>,
+    val caseInsensitive: Boolean = false,
 ) {
 
     companion object {

@@ -40,6 +40,7 @@ import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Language
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.LastEntityProbability
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.LastIntentProbability
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.LastUsage
+import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.LowerCaseText
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Status
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Text
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UnknownCount
@@ -77,6 +78,7 @@ import org.litote.kmongo.combine
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.distinct
 import org.litote.kmongo.eq
+import org.litote.kmongo.exists
 import org.litote.kmongo.find
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.gt
@@ -91,9 +93,11 @@ import org.litote.kmongo.orderBy
 import org.litote.kmongo.pullByFilter
 import org.litote.kmongo.regex
 import org.litote.kmongo.replaceOneWithFilter
+import org.litote.kmongo.save
 import org.litote.kmongo.setTo
 import org.litote.kmongo.setValue
 import org.litote.kmongo.updateMany
+import org.litote.kmongo.updateOneById
 import java.time.Duration
 import java.time.Instant
 import java.time.Instant.now
@@ -115,6 +119,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     @JacksonData(internal = true)
     data class ClassifiedSentenceCol(
         val text: String,
+        val lowerCaseText: String = text.lowercase(),
         val fullText: String = text,
         val language: Locale,
         val applicationId: Id<ApplicationDefinition>,
@@ -134,25 +139,26 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     ) {
 
         constructor(sentence: ClassifiedSentence) :
-            this(
-                textKey(sentence.text),
-                sentence.text,
-                sentence.language,
-                sentence.applicationId,
-                sentence.creationDate,
-                now(),
-                sentence.status,
-                sentence.classification,
-                sentence.lastIntentProbability,
-                sentence.lastEntityProbability,
-                sentence.lastUsage,
-                sentence.usageCount,
-                sentence.unknownCount,
-                sentence.forReview,
-                sentence.reviewComment,
-                sentence.qualifier,
-                sentence.otherIntentsProbabilities
-            )
+                this(
+                    textKey(sentence.text),
+                    sentence.text.lowercase(sentence.language),
+                    sentence.text,
+                    sentence.language,
+                    sentence.applicationId,
+                    sentence.creationDate,
+                    now(),
+                    sentence.status,
+                    sentence.classification,
+                    sentence.lastIntentProbability,
+                    sentence.lastEntityProbability,
+                    sentence.lastUsage,
+                    sentence.usageCount,
+                    sentence.unknownCount,
+                    sentence.forReview,
+                    sentence.reviewComment,
+                    sentence.qualifier,
+                    sentence.otherIntentsProbabilities
+                )
 
         fun toSentence(): ClassifiedSentence =
             ClassifiedSentence(
@@ -179,6 +185,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         val c = database.getCollection<ClassifiedSentenceCol>("classified_sentence")
         try {
             c.ensureUniqueIndex(Text, Language, ApplicationId)
+            c.ensureIndex(LowerCaseText, Language, ApplicationId)
             c.ensureIndex(Language, ApplicationId, Status)
             c.ensureIndex(Status)
             c.ensureIndex(orderBy(mapOf(ApplicationId to true, Language to true, UpdateDate to false)))
@@ -224,6 +231,14 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         c
     }
 
+    override fun updateCaseInsensitiveSentences(applicationId: Id<ApplicationDefinition>) {
+        logger.debug { "start updating case insensitive sentences" }
+        col.find(LowerCaseText exists false, ApplicationId eq applicationId).forEach {
+            save(it.copy(lowerCaseText = it.text.lowercase(it.language)))
+        }
+        logger.debug { "end updating case insensitive sentences" }
+    }
+
     override fun getSentences(
         intents: Set<Id<IntentDefinition>>?,
         language: Locale?,
@@ -258,13 +273,17 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     }
 
     override fun save(sentence: ClassifiedSentence) {
+        save(ClassifiedSentenceCol(sentence))
+    }
+
+    private fun save(s: ClassifiedSentenceCol) {
         col.replaceOneWithFilter(
             and(
-                Text eq textKey(sentence.text),
-                Language eq sentence.language,
-                ApplicationId eq sentence.applicationId
+                Text eq textKey(s.text),
+                Language eq s.language,
+                ApplicationId eq s.applicationId
             ),
-            ClassifiedSentenceCol(sentence),
+            s,
             ReplaceOptions().upsert(true)
         )
     }
@@ -354,10 +373,10 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
 
     private fun SentencesQuery.filterApplication() =
         if (wholeNamespace) ApplicationId `in`
-            (
-                getApplicationById(applicationId)?.namespace?.let { n -> getApplicationsByNamespace(n).map { it._id } }
-                    ?: emptyList()
-                )
+                (
+                        getApplicationById(applicationId)?.namespace?.let { n -> getApplicationsByNamespace(n).map { it._id } }
+                            ?: emptyList()
+                        )
         else ApplicationId eq applicationId
 
     private fun SentencesQuery.filterReviewOnly() = if (onlyToReview) ForReview eq true else null
@@ -400,7 +419,9 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
 
     private fun SentencesQuery.filterText(): Bson? = when {
         search.isNullOrBlank() -> null
-        onlyExactMatch -> Text eq search
+        onlyExactMatch -> if (caseInsensitiveExactMatch) LowerCaseText eq search?.lowercase(
+            language ?: defaultLocale
+        ) else Text eq search
         else -> FullText.regex(search!!.trim(), "i")
     }
 
@@ -501,38 +522,38 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 s.classification.entities.filter { e -> e.role == oldEntity.role && e.type == oldEntity.entityTypeName }
             val newEntities =
                 s.classification.entities.filterNot { e -> e.role == oldEntity.role && e.type == oldEntity.entityTypeName } +
-                    selectedEntities.map { e ->
-                        // select already existing roles and change type
-                        val subEntitiesWithExistingRole = e.subEntities
-                            .filter { subEntity -> newEntityType.subEntities.any { it.role == subEntity.role } }
-                            .map { sub ->
-                                sub.copy(type = newEntityType.subEntities.first { it.role == sub.role }.entityTypeName)
-                            }
+                        selectedEntities.map { e ->
+                            // select already existing roles and change type
+                            val subEntitiesWithExistingRole = e.subEntities
+                                .filter { subEntity -> newEntityType.subEntities.any { it.role == subEntity.role } }
+                                .map { sub ->
+                                    sub.copy(type = newEntityType.subEntities.first { it.role == sub.role }.entityTypeName)
+                                }
 
-                        val subEntitiesWithNotExistingRole =
-                            if (newEntityType.name.namespace() == allowedNamespace) {
-                                // for non existing roles, add the new sub entity to entity
-                                e.subEntities
-                                    .filterNot { subEntity -> newEntityType.subEntities.any { it.role == subEntity.role } }
-                                    .apply {
-                                        forEach { sub ->
-                                            oldEntityType.subEntities.find { sub.role == it.role }
-                                                ?.let { newSubEntity ->
-                                                    newSubEntityDefinitions.add(newSubEntity)
-                                                }
+                            val subEntitiesWithNotExistingRole =
+                                if (newEntityType.name.namespace() == allowedNamespace) {
+                                    // for non existing roles, add the new sub entity to entity
+                                    e.subEntities
+                                        .filterNot { subEntity -> newEntityType.subEntities.any { it.role == subEntity.role } }
+                                        .apply {
+                                            forEach { sub ->
+                                                oldEntityType.subEntities.find { sub.role == it.role }
+                                                    ?.let { newSubEntity ->
+                                                        newSubEntityDefinitions.add(newSubEntity)
+                                                    }
+                                            }
                                         }
-                                    }
-                            } else {
-                                emptyList()
-                            }
-                        val newSubEntities = subEntitiesWithExistingRole + subEntitiesWithNotExistingRole
+                                } else {
+                                    emptyList()
+                                }
+                            val newSubEntities = subEntitiesWithExistingRole + subEntitiesWithNotExistingRole
 
-                        e.copy(
-                            type = newEntity.entityTypeName,
-                            role = newEntity.role,
-                            subEntities = newSubEntities.sorted()
-                        )
-                    }
+                            e.copy(
+                                type = newEntity.entityTypeName,
+                                role = newEntity.role,
+                                subEntities = newSubEntities.sorted()
+                            )
+                        }
             save(
                 s.copy(
                     classification = s.classification.copy(

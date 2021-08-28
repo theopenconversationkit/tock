@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017/2021 e-voyageurs technologies
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package ai.tock.nlp.front.shared.config
 
 import ai.tock.nlp.core.NlpEngineType
@@ -50,6 +66,8 @@ internal class ApplicationDefinition_Deserializer : JsonDeserializer<Application
             var _supportSubEntities_set : Boolean = false
             var _unknownIntentThreshold_: Double? = null
             var _unknownIntentThreshold_set : Boolean = false
+            var _caseInsensitive_: Boolean? = null
+            var _caseInsensitive_set : Boolean = false
             var __id_: Id<ApplicationDefinition>? = null
             var __id_set : Boolean = false
             var _token_ : JsonToken? = currentToken
@@ -117,6 +135,11 @@ internal class ApplicationDefinition_Deserializer : JsonDeserializer<Application
                              else p.doubleValue;
                             _unknownIntentThreshold_set = true
                             }
+                    "caseInsensitive" -> {
+                            _caseInsensitive_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.booleanValue;
+                            _caseInsensitive_set = true
+                            }
                     "_id" -> {
                             __id_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(__id__reference);
@@ -133,14 +156,15 @@ internal class ApplicationDefinition_Deserializer : JsonDeserializer<Application
             return if(_name_set && _label_set && _namespace_set && _intents_set &&
                     _supportedLocales_set && _intentStatesMap_set && _nlpEngineType_set &&
                     _mergeEngineTypes_set && _useEntityModels_set && _supportSubEntities_set &&
-                    _unknownIntentThreshold_set && __id_set)
+                    _unknownIntentThreshold_set && _caseInsensitive_set && __id_set)
                     ApplicationDefinition(name = _name_!!, label = _label_!!, namespace =
                             _namespace_!!, intents = _intents_!!, supportedLocales =
                             _supportedLocales_!!, intentStatesMap = _intentStatesMap_!!,
                             nlpEngineType = _nlpEngineType_!!, mergeEngineTypes =
                             _mergeEngineTypes_!!, useEntityModels = _useEntityModels_!!,
                             supportSubEntities = _supportSubEntities_!!, unknownIntentThreshold =
-                            _unknownIntentThreshold_!!, _id = __id_!!)
+                            _unknownIntentThreshold_!!, caseInsensitive = _caseInsensitive_!!, _id =
+                            __id_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_name_set)
@@ -165,6 +189,8 @@ internal class ApplicationDefinition_Deserializer : JsonDeserializer<Application
                     map[parameters.getValue("supportSubEntities")] = _supportSubEntities_
                     if(_unknownIntentThreshold_set)
                     map[parameters.getValue("unknownIntentThreshold")] = _unknownIntentThreshold_
+                    if(_caseInsensitive_set)
+                    map[parameters.getValue("caseInsensitive")] = _caseInsensitive_
                     if(__id_set)
                     map[parameters.getValue("_id")] = __id_ 
                     primaryConstructor.callBy(map) 
@@ -189,8 +215,9 @@ internal class ApplicationDefinition_Deserializer : JsonDeserializer<Application
                 primaryConstructor.findParameterByName("useEntityModels")!!, "supportSubEntities" to
                 primaryConstructor.findParameterByName("supportSubEntities")!!,
                 "unknownIntentThreshold" to
-                primaryConstructor.findParameterByName("unknownIntentThreshold")!!, "_id" to
-                primaryConstructor.findParameterByName("_id")!!) }
+                primaryConstructor.findParameterByName("unknownIntentThreshold")!!,
+                "caseInsensitive" to primaryConstructor.findParameterByName("caseInsensitive")!!,
+                "_id" to primaryConstructor.findParameterByName("_id")!!) }
 
         private val _intents__reference: TypeReference<Set<Id<IntentDefinition>>> = object :
                 TypeReference<Set<Id<IntentDefinition>>>() {}

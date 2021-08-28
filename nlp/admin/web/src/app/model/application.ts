@@ -29,6 +29,7 @@ export class Application {
               public useEntityModels: boolean,
               public supportSubEntities: boolean,
               public unknownIntentThreshold: number,
+              public caseInsensitive: boolean,
               public _id?: string) {
   }
 
@@ -44,6 +45,7 @@ export class Application {
       this.useEntityModels,
       this.supportSubEntities,
       this.unknownIntentThreshold,
+      this.caseInsensitive,
       this._id)
   }
 

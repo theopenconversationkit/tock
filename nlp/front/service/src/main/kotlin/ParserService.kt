@@ -197,7 +197,8 @@ object ParserService : Parser {
                         language,
                         search = q,
                         status = setOf(validated, model),
-                        onlyExactMatch = true
+                        onlyExactMatch = true,
+                        caseInsensitiveExactMatch = application.caseInsensitive
                     )
                 )
                 .sentences

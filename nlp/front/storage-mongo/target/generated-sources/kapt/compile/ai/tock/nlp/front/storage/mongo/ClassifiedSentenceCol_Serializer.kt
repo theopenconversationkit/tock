@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017/2021 e-voyageurs technologies
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package ai.tock.nlp.front.storage.mongo
 
 import com.fasterxml.jackson.core.JsonGenerator
@@ -22,6 +38,9 @@ internal class ClassifiedSentenceCol_Serializer :
         gen.writeFieldName("text")
         val _text_ = value.text
         gen.writeString(_text_)
+        gen.writeFieldName("lowerCaseText")
+        val _lowerCaseText_ = value.lowerCaseText
+        gen.writeString(_lowerCaseText_)
         gen.writeFieldName("fullText")
         val _fullText_ = value.fullText
         gen.writeString(_fullText_)

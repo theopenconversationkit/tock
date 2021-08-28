@@ -31,6 +31,7 @@ import ai.tock.nlp.core.quality.TestContext
 import ai.tock.nlp.core.quality.TestModelReport
 import ai.tock.nlp.core.sample.SampleEntity
 import ai.tock.nlp.core.sample.SampleExpression
+import ai.tock.nlp.core.service.ModelCoreService.formatExpressions
 import ai.tock.nlp.model.EntityBuildContext
 import ai.tock.nlp.model.EntityBuildContextForIntent
 import ai.tock.nlp.model.EntityBuildContextForSubEntities
@@ -72,7 +73,7 @@ internal object ModelCoreService : ModelCore {
     override fun updateIntentModel(context: BuildContext, expressions: List<SampleExpression>) {
         val nlpContext = IntentContext(context)
         if (!context.onlyIfNotExists || !nlpClassifier.isIntentModelExist(nlpContext)) {
-            nlpClassifier.buildAndSaveIntentModel(nlpContext, expressions)
+            nlpClassifier.buildAndSaveIntentModel(nlpContext, context.formatExpressions(expressions))
         }
     }
 
@@ -102,7 +103,7 @@ internal object ModelCoreService : ModelCore {
         if (!context.onlyIfNotExists ||
             !nlpClassifier.isEntityModelExist(nlpContext)
         ) {
-            nlpClassifier.buildAndSaveEntityModel(nlpContext, expressions)
+            nlpClassifier.buildAndSaveEntityModel(nlpContext, context.formatExpressions(expressions))
         }
     }
 
@@ -123,16 +124,15 @@ internal object ModelCoreService : ModelCore {
         val startDate = Instant.now()
 
         val intentContext = IntentContext(context)
-        val intentModel = nlpClassifier.buildIntentModel(intentContext, modelExpressions)
+        val intentModel = nlpClassifier.buildIntentModel(intentContext, context.formatExpressions(modelExpressions))
         val entityModels = modelExpressions
-            .asSequence()
             .groupBy { it.intent }
             .mapNotNull { (intent, expressions)
                 ->
                 try {
                     intent to nlpClassifier.buildEntityModel(
                         EntityBuildContextForIntent(context, intent),
-                        expressions
+                        context.formatExpressions(expressions)
                     )
                 } catch (e: Exception) {
                     logger.error { "entity model build fail for $intent " }
@@ -185,13 +185,13 @@ internal object ModelCoreService : ModelCore {
                 )
             }
         } ||
-            entities.any {
-                expectedEntities.none { e ->
-                    it.role == e.definition.role && it.entityType == e.definition.entityType && it.isSameRange(
-                        e
-                    )
+                entities.any {
+                    expectedEntities.none { e ->
+                        it.role == e.definition.role && it.entityType == e.definition.entityType && it.isSameRange(
+                            e
+                        )
+                    }
                 }
-            }
     }
 
     override fun getCurrentModelConfiguration(
@@ -205,4 +205,12 @@ internal object ModelCoreService : ModelCore {
         engineType: NlpEngineType,
         configuration: NlpApplicationConfiguration
     ) = nlpClassifier.updateModelConfiguration(applicationName, engineType, configuration)
+
+    private fun BuildContext.formatExpressions(expressions: List<SampleExpression>): List<SampleExpression> =
+        if (application.caseInsensitive) expressions.map { e -> e.copy(text = e.text.lowercase(language)) }
+        else expressions
+
+    private fun TestContext.formatExpressions(expressions: List<SampleExpression>): List<SampleExpression> =
+        if (callContext.application.caseInsensitive) expressions.map { e -> e.copy(text = e.text.lowercase(callContext.language)) }
+        else expressions
 }
