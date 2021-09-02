@@ -55,6 +55,10 @@ import com.google.common.cache.CacheBuilder
 import mu.KotlinLogging
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit.SECONDS
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
+import com.github.salomonbrys.kodein.instance
+import ai.tock.shared.injector
+import ai.tock.bot.definition.StoryDefinition
 
 private val timeoutInSeconds: Long = longProperty("tock_api_timout_in_s", 10)
 
@@ -83,10 +87,15 @@ internal class BotApiHandler(
     configuration: BotConfiguration
 ) {
 
+    companion object {
+        private const val VIEWED_STORIES_BUS_KEY = "_viewed_stories_tock_switch"
+    }
+
     private val logger = KotlinLogging.logger {}
 
     private val apiKey: String = configuration.apiKey
     private val webhookUrl: String? = configuration.webhookUrl
+    private val storyDAO: StoryDefinitionConfigurationDAO by injector.instance()
 
     private val client = webhookUrl?.takeUnless { it.isBlank() }?.let {
         try {
@@ -159,6 +168,12 @@ internal class BotApiHandler(
 
     private fun BotBus.handleResponse(request: UserRequest, response: BotResponse?) {
         if (response != null) {
+
+            //Check if there is a configuration for Ending story
+            val storySettings = storyDAO.getStoryDefinitionsByNamespaceAndBotId(botDefinition.namespace, botDefinition.botId).filter { it.storyId == story.definition.id }
+            val storySetting = storySettings.firstOrNull()
+            val endingStoryId = storySetting?.findEnabledEndWithStoryId(applicationId)
+
             val messages = response.messages
             if (messages.isNullOrEmpty()) {
                 error("no response for $request")
@@ -167,8 +182,9 @@ internal class BotApiHandler(
                 .forEach { a ->
                     send(a)
                 }
+            // Send the last message with end === true if there is no story ending (endingStoryId === null)
             messages.last().apply {
-                send(this, true)
+                send(this,endingStoryId == null)
             }
             // handle entity changes
             entities
@@ -211,8 +227,24 @@ internal class BotApiHandler(
             if (response.step != null) {
                 step = story.definition.allSteps().find { it.name == response.step }
             }
+
+            //Handle current story and switch to ending story
+            if(endingStoryId != null){
+                val targetStory = botDefinition.findStoryDefinitionById(endingStoryId, applicationId)
+                switchEndingStory(targetStory)
+            }
         }
     }
+
+    private fun BotBus.switchEndingStory(target: StoryDefinition) {
+        step = step?.takeUnless { story.definition == target }
+        setBusContextValue(VIEWED_STORIES_BUS_KEY, viewedStories + target)
+        handleAndSwitchStory(target)
+    }
+
+    private val BotBus.viewedStories: Set<StoryDefinition>
+        get() =
+            getBusContextValue<Set<StoryDefinition>>(VIEWED_STORIES_BUS_KEY) ?: emptySet()
 
     private fun BotBus.send(message: BotMessage, end: Boolean = false) {
         val actions =

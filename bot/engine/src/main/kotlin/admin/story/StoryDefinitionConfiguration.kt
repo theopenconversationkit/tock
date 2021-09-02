@@ -186,7 +186,7 @@ data class StoryDefinitionConfiguration(
         return dedicatedFeature?.switchToStoryId ?: features.find { it.switchToStoryId != null }?.switchToStoryId
     }
 
-    internal fun findEnabledEndWithStoryId(applicationId: String?): String? {
+     fun findEnabledEndWithStoryId(applicationId: String?): String? {
         val features = findEnabledFeatures(applicationId)
 
         // search first for dedicated features
