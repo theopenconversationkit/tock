@@ -17,6 +17,7 @@
 package ai.tock.bot.api.service
 
 import ai.tock.bot.admin.bot.BotConfiguration
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.api.model.BotResponse
 import ai.tock.bot.api.model.UserRequest
 import ai.tock.bot.api.model.configuration.ClientConfiguration
@@ -26,14 +27,12 @@ import ai.tock.bot.api.model.message.bot.Carousel
 import ai.tock.bot.api.model.message.bot.CustomMessage
 import ai.tock.bot.api.model.message.bot.I18nText
 import ai.tock.bot.api.model.message.bot.Sentence
-import ai.tock.bot.api.model.websocket.RequestData
-import ai.tock.bot.api.model.websocket.ResponseData
 import ai.tock.bot.connector.media.MediaAction
 import ai.tock.bot.connector.media.MediaCard
 import ai.tock.bot.connector.media.MediaCarousel
 import ai.tock.bot.connector.media.MediaFile
+import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.BotBus
-import ai.tock.bot.engine.WebSocketController
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendAttachment.AttachmentType
 import ai.tock.bot.engine.action.SendSentence
@@ -42,125 +41,45 @@ import ai.tock.bot.engine.message.ActionWrappedMessage
 import ai.tock.bot.engine.message.MessagesList
 import ai.tock.nlp.api.client.model.Entity
 import ai.tock.nlp.api.client.model.EntityType
-import ai.tock.shared.error
-import ai.tock.shared.jackson.mapper
-import ai.tock.shared.longProperty
+import ai.tock.shared.injector
 import ai.tock.translator.I18nContext
 import ai.tock.translator.TranslatedSequence
 import ai.tock.translator.Translator
 import ai.tock.translator.raw
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.google.common.cache.Cache
-import com.google.common.cache.CacheBuilder
-import mu.KotlinLogging
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit.SECONDS
-
-private val timeoutInSeconds: Long = longProperty("tock_api_timout_in_s", 10)
-
-private class WSHolder(
-    @Volatile
-    private var response: ResponseData? = null,
-    private val latch: CountDownLatch = CountDownLatch(1)
-) {
-
-    fun receive(response: ResponseData) {
-        this.response = response
-        latch.countDown()
-    }
-
-    fun wait(): ResponseData? {
-        latch.await(timeoutInSeconds, SECONDS)
-        return response
-    }
-}
-
-private val wsRepository: Cache<String, WSHolder> =
-    CacheBuilder.newBuilder().expireAfterWrite(timeoutInSeconds + 1, SECONDS).build()
+import com.github.salomonbrys.kodein.instance
 
 internal class BotApiHandler(
-    private val provider: BotApiDefinitionProvider,
-    configuration: BotConfiguration
+    provider: BotApiDefinitionProvider,
+    configuration: BotConfiguration,
+    private val clientController: BotApiClientController = BotApiClientController(provider, configuration),
 ) {
 
-    private val logger = KotlinLogging.logger {}
-
-    private val apiKey: String = configuration.apiKey
-    private val webhookUrl: String? = configuration.webhookUrl
-
-    private val client = webhookUrl?.takeUnless { it.isBlank() }?.let {
-        try {
-            BotApiClient(it)
-        } catch (e: Exception) {
-            logger.error(e)
-            null
-        }
+    companion object {
+        private const val VIEWED_STORIES_BUS_KEY = "_viewed_stories_tock_switch"
     }
 
-    init {
-        if (WebSocketController.websocketEnabled) {
-            logger.debug { "register $apiKey" }
-            WebSocketController.registerAuthorizedKey(apiKey)
-            WebSocketController.setReceiveHandler(apiKey) { content: String ->
-                try {
-                    val response: ResponseData? = mapper.readValue(content)
-                    if (response != null) {
-                        val conf = response.botConfiguration
-                        if (conf == null) {
-                            val holder = wsRepository.getIfPresent(response.requestId)
-                            if (holder == null) {
-                                logger.warn { "unknown request ${response.requestId}" }
-                            }
-                            holder?.receive(response)
-                        } else {
-                            provider.updateIfConfigurationChange(conf)
-                        }
-                    } else {
-                        logger.warn { "null response: $content" }
-                    }
-                } catch (e: Exception) {
-                    logger.error(e)
-                }
-            }
-        }
-    }
+    private val storyDAO: StoryDefinitionConfigurationDAO by injector.instance()
 
-    fun configuration(): ClientConfiguration? =
-        client?.send(RequestData(configuration = true))?.botConfiguration
-            ?: sendWithWebSocket(RequestData(configuration = true))?.botConfiguration
+    fun configuration(): ClientConfiguration? = clientController.configuration()
 
     fun send(bus: BotBus) {
         val request = bus.toUserRequest()
-        if (client != null) {
-            val response = client.send(RequestData(request))
-            bus.handleResponse(request, response?.botResponse)
-        } else {
-            val response = sendWithWebSocket(RequestData(request))
-            if (response != null) {
-                bus.handleResponse(request, response.botResponse)
-            } else {
-                error("no webhook set and no response from websocket")
-            }
-        }
-    }
-
-    private fun sendWithWebSocket(request: RequestData): ResponseData? {
-        val pushHandler = WebSocketController.getPushHandler(apiKey)
-        return if (pushHandler != null) {
-            val holder = WSHolder()
-            wsRepository.put(request.requestId, holder)
-            logger.debug { "send request ${request.requestId}" }
-            pushHandler.invoke(mapper.writeValueAsString(request))
-            holder.wait()
-        } else {
-            null
-        }
+        val response = clientController.send(request)
+        bus.handleResponse(request, response?.botResponse)
     }
 
     private fun BotBus.handleResponse(request: UserRequest, response: BotResponse?) {
         if (response != null) {
+            //Check if there is a configuration for Ending story
+            val storySetting = storyDAO.getStoryDefinitionsByNamespaceBotIdStoryId(
+                botDefinition.namespace,
+                botDefinition.botId,
+                story.definition.id
+            )
+            val endingStoryId = storySetting?.findEnabledEndWithStoryId(applicationId)
+
             val messages = response.messages
-            if (messages.isNullOrEmpty()) {
+            if (messages.isEmpty()) {
                 error("no response for $request")
             }
             messages.subList(0, messages.size - 1)
@@ -168,7 +87,7 @@ internal class BotApiHandler(
                     send(a)
                 }
             messages.last().apply {
-                send(this, true)
+                send(this, endingStoryId == null)
             }
             // handle entity changes
             entities
@@ -211,8 +130,24 @@ internal class BotApiHandler(
             if (response.step != null) {
                 step = story.definition.allSteps().find { it.name == response.step }
             }
+
+            //Handle current story and switch to ending story
+            if (endingStoryId != null) {
+                val targetStory = botDefinition.findStoryDefinitionById(endingStoryId, applicationId)
+                switchEndingStory(targetStory)
+            }
         }
     }
+
+    private fun BotBus.switchEndingStory(target: StoryDefinition) {
+        step = step?.takeUnless { story.definition == target }
+        setBusContextValue(VIEWED_STORIES_BUS_KEY, viewedStories + target)
+        handleAndSwitchStory(target)
+    }
+
+    private val BotBus.viewedStories: Set<StoryDefinition>
+        get() =
+            getBusContextValue<Set<StoryDefinition>>(VIEWED_STORIES_BUS_KEY) ?: emptySet()
 
     private fun BotBus.send(message: BotMessage, end: Boolean = false) {
         val actions =
