@@ -28,7 +28,7 @@ import ai.tock.bot.engine.action.SendAttachment.AttachmentType.audio
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.event.TypingOnEvent
-import ai.tock.bot.engine.metadata.MetadataEvent
+import ai.tock.bot.engine.event.MetadataEvent
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserLock
 import ai.tock.bot.engine.user.UserPreferences

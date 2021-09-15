@@ -37,7 +37,7 @@ import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.event.Event
-import ai.tock.bot.engine.metadata.MetadataEvent
+import ai.tock.bot.engine.event.MetadataEvent
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType.bot
 import ai.tock.bot.engine.user.PlayerType.user
