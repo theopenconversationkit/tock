@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.engine.metadata
+package ai.tock.bot.engine.event
 
 import ai.tock.bot.definition.Intent
-import ai.tock.bot.engine.event.Event
 
-class MetadataEvent(val type: MetadataEventType, val value: String, applicationId: String) : Event(applicationId){
+class MetadataEvent(val type: String, val value: String, applicationId: String) : Event(applicationId) {
     companion object {
-        fun intent(intent: Intent, applicationId: String)  = MetadataEvent(MetadataEventType.Intent, intent.name, applicationId)
+        fun intent(intent: Intent, applicationId: String) = MetadataEvent(INTENT_METADATA, intent.name, applicationId)
+        const val INTENT_METADATA = "INTENT"
     }
-}
-
-enum class MetadataEventType {
-    Intent
 }

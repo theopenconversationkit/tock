@@ -19,7 +19,7 @@ package ai.tock.bot.connector.web
 import ai.tock.bot.connector.ConnectorCallbackBase
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
-import ai.tock.bot.engine.metadata.MetadataEvent
+import ai.tock.bot.engine.event.MetadataEvent
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.vertx.core.http.HttpHeaders
 import io.vertx.ext.web.RoutingContext
@@ -44,7 +44,7 @@ internal class WebConnectorCallback(
     }
 
     fun addMetadata(metadata: MetadataEvent) {
-        this.metadata[metadata.type.name] = metadata.value
+        this.metadata[metadata.type] = metadata.value
     }
 
     fun sendResponse() {

@@ -38,6 +38,7 @@ import ai.tock.bot.engine.dialog.EntityStateValue
 import ai.tock.bot.engine.dialog.EntityValue
 import ai.tock.bot.engine.dialog.NextUserActionState
 import ai.tock.bot.engine.dialog.Story
+import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.feature.FeatureDAO
 import ai.tock.bot.engine.feature.FeatureType
 import ai.tock.bot.engine.message.Message
@@ -482,6 +483,11 @@ interface BotBus : Bus<BotBus> {
                     args.toList()
                 )
         }
+
+    fun send(event: Event, delayInMs: Long = 0): BotBus {
+        underlyingConnector.send(event, connectorData.callback, delayInMs)
+        return this
+    }
 
     // I18nTranslator implementation
     override val contextId: String? get() = dialog.id.toString()
