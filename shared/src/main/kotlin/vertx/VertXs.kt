@@ -201,7 +201,7 @@ internal fun vertxExecutor(): Executor {
                 if (context == null) {
                     r.invoke()
                 } else {
-                    withLoggingContext(context, r)
+                    withLoggingContext(context, body = r)
                 }
             }
         }

@@ -30,7 +30,7 @@
 
     <properties>
         <microsoft.bot>4.0.0-a1</microsoft.bot>
-        <nimbus-jose-jwt>9.11.1</nimbus-jose-jwt>
+        <nimbus-jose-jwt>9.14</nimbus-jose-jwt>
     </properties>
 
     <dependencies>
