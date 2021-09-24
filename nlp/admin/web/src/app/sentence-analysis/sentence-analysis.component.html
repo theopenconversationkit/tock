@@ -35,6 +35,8 @@
       <tock-search-filter [groups]="intentGroups()"
                           (filterChange)="changeIntentFilter($event)"
                           [selectedValue]="selectedValueLabel"
+                          [activeFirst]="true"
+                          [cleanupIfSelected]="true"
                           name="Intent">
                         </tock-search-filter>
       <button nbButton ghost (click)="newIntent()" nbTooltip="Create New Intent" size="small">

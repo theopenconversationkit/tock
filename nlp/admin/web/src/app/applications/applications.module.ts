@@ -65,6 +65,10 @@ const routes: Routes = [
         }
       },
       {
+        path: 'create',
+        component: ApplicationComponent
+      },
+      {
         path: 'nlu',
         children: [
           {

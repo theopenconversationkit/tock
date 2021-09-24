@@ -16,7 +16,7 @@
 
 <nb-card>
   <nb-card-body>
-  <table *ngIf="dataSource.length !== 0" class="table table-sm table-fixed">
+  <table *ngIf="dataSource && dataSource.length !== 0" class="table table-sm table-fixed">
     <thead>
     <tr>
       <th><p>Date</p></th>
@@ -45,7 +45,7 @@
       </tr>
     </tbody>
   </table>
-  <div *ngIf="dataSource.length !== 0" class="d-flex justify-content-center">
+  <div *ngIf="dataSource && dataSource.length !== 0" class="d-flex justify-content-center">
     <nb-select [(ngModel)]="pageSize" (ngModelChange)="search()" nbTooltip="Items per page:">
       <nb-option [value]="10">10</nb-option >
       <nb-option [value]="20">20</nb-option >

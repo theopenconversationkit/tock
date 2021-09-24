@@ -22,10 +22,13 @@
     [placeholder]="name"
     [nbAutocomplete]="auto"
     (blur)="onBlur()"
+    (click)="onClick()"
+    (dblclick)="onDoubleClick()"
   />
 </nb-form-field>
 
-<nb-autocomplete #auto [handleDisplayFn]="displayOption" (selectedChange)="onSelectedChange($event)" size="small">
+<nb-autocomplete #auto [handleDisplayFn]="displayOption" (selectedChange)="onSelectedChange($event)" size="small"
+                 [activeFirst]="activeFirst">
   <nb-option *ngIf="noFilter" [value]="noFilter">{{noFilter.label}}</nb-option>
   <nb-option-group *ngFor="let group of filteredGroups$ | async; trackBy: trackByFn" [title]="group.name">
     <nb-option *ngFor="let option of group.children" [value]="option">

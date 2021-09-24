@@ -53,6 +53,10 @@ export class SearchFilterComponent implements OnInit, AfterViewInit {
   noFilter: FilterOption;
   @Input()
   unknownFilter: FilterOption;
+  @Input()
+  activeFirst: boolean = false;
+  @Input()
+  cleanupIfSelected: boolean = false;
 
   @Output()
   filterChange: EventEmitter<string> = new EventEmitter<string>();
@@ -61,7 +65,7 @@ export class SearchFilterComponent implements OnInit, AfterViewInit {
   selectedValue: any;
   filteredGroups$: Observable<Group[]>;
   private cachedValue: string;
-  private skipBlur:boolean;
+  private skipBlur: boolean;
 
   @ViewChild('autoBlur') autoBlurElement: ElementRef;
 
@@ -142,16 +146,36 @@ export class SearchFilterComponent implements OnInit, AfterViewInit {
   }
 
   onBlur() {
-    if(!this.skipBlur) {
+    if (!this.skipBlur) {
       // Reset initial value when loosing focus
       setTimeout(() => this.resetInitialValue(), 500);
     }
     this.skipBlur = false;
   }
 
+  onClick() {
+    if (this.cleanupIfSelected) {
+      setTimeout(_ => {
+        this.cachedValue = this.selectedValue;
+        this.selectedValue = '';
+      });
+    }
+  }
+
+  onDoubleClick() {
+    this.cachedValue = this.selectedValue;
+    this.selectedValue = '';
+    setTimeout(_ => {
+      const e = this.autoBlurElement.nativeElement;
+      e.click();
+      e.focus();
+    });
+  }
+
   private resetInitialValue() {
-    if (this.selectedValue && !(this.selectedValue instanceof FilterOption)) {
-      if (this.selectedValue.trim().length !== 0) {
+    const selected = this.selectedValue ? this.selectedValue : '';
+    if (!(selected instanceof FilterOption)) {
+      if (selected.trim().length !== 0) {
         const selectedGroup = this.find(this.selectedValue);
         if (selectedGroup.length !== 0) {
           this.onSelectedChange(selectedGroup[0].children[0]);

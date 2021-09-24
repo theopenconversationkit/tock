@@ -72,6 +72,10 @@ const routes: Routes = [
         }
       },
       {
+        path: 'create',
+        component: ApplicationComponent
+      },
+      {
         path: 'nlp',
         children: [
           {

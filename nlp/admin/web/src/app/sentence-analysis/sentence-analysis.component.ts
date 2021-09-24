@@ -144,9 +144,6 @@ export class SentenceAnalysisComponent implements OnInit {
       const e = this.elementRef.nativeElement.querySelector('input');
       e.click();
       e.focus();
-      if (e.value.length !== 0) {
-        e.setSelectionRange(0, e.value.length);
-      }
     }, 200);
   }
 
@@ -208,7 +205,7 @@ export class SentenceAnalysisComponent implements OnInit {
   private update(status: SentenceStatus) {
     this.sentence.status = status;
     this.nlp.updateSentence(this.sentence)
-      .subscribe((s) => {
+      .subscribe((_) => {
         this.closed.emit(this.sentence);
       });
     // delete old language
@@ -217,7 +214,7 @@ export class SentenceAnalysisComponent implements OnInit {
       s.language = this.state.currentLocale;
       s.status = SentenceStatus.deleted;
       this.nlp.updateSentence(s)
-        .subscribe((s) => {
+        .subscribe((_) => {
           this.dialog.notify(`Language change to ${this.state.localeName(this.sentence.language)}`, 'Language change');
         });
     }
@@ -264,6 +261,7 @@ export class SentenceAnalysisComponent implements OnInit {
           category)
       )
       .subscribe(intent => {
+          this.selectedValueLabel = intent.intentLabel();
           this.state.addIntent(intent);
           this.sentence.classification.intentId = intent._id;
           this.onIntentChange();
