@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/theopenconversationkit/tock.png)](https://travis-ci.com/theopenconversationkit/tock)
+[![Build Status](https://app.travis-ci.com/theopenconversationkit/tock.png)](https://app.travis-ci.com/github/theopenconversationkit/tock)
 [![Maven Central](https://img.shields.io/maven-central/v/ai.tock/tock-root.svg)](https://search.maven.org/search?q=tock)
 [![Release Date](https://img.shields.io/github/release-date/theopenconversationkit/tock)](https://github.com/theopenconversationkit/tock/releases)
 
