@@ -64,6 +64,9 @@ object ApplicationConfigurationService :
         if(application.caseInsensitive) {
             sentenceDAO.updateCaseInsensitiveSentences(application._id)
         }
+        if(application.ignoreTrailingPunctuation) {
+            sentenceDAO.updateIgnoreTrailingPunctuationSentences(application._id)
+        }
         return applicationDAO.save(application)
     }
 

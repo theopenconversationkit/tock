@@ -159,7 +159,8 @@ internal object ConfigurationRepository {
             applicationDefinition.qualifiedName,
             intents,
             applicationDefinition.supportedLocales,
-            applicationDefinition.caseInsensitive
+            applicationDefinition.caseInsensitive,
+            applicationDefinition.ignoreTrailingPunctuation
         )
     }
 

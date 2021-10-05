@@ -25,6 +25,9 @@ internal class ClassifiedSentenceCol_Serializer :
         gen.writeFieldName("lowerCaseText")
         val _lowerCaseText_ = value.lowerCaseText
         gen.writeString(_lowerCaseText_)
+        gen.writeFieldName("withoutTrailingPunctuationText")
+        val _withoutTrailingPunctuationText_ = value.withoutTrailingPunctuationText
+        gen.writeString(_withoutTrailingPunctuationText_)
         gen.writeFieldName("fullText")
         val _fullText_ = value.fullText
         gen.writeString(_fullText_)

@@ -27,6 +27,7 @@ data class Application(
     val intents: List<Intent>,
     val supportedLocales: Set<Locale>,
     val caseInsensitive: Boolean = false,
+    val ignoreTrailingPunctuation: Boolean = false,
 ) {
 
     companion object {

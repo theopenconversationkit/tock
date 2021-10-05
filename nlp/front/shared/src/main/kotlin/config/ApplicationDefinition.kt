@@ -75,6 +75,10 @@ data class ApplicationDefinition(
      */
     val caseInsensitive: Boolean = false,
     /**
+     * No trailing punctuation model - sentences are persisted without trailing punctuation.
+     */
+    val ignoreTrailingPunctuation: Boolean = false,
+    /**
      * The id of the app.
      */
     val _id: Id<ApplicationDefinition> = newId()

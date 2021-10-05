@@ -31,7 +31,6 @@ import ai.tock.nlp.core.quality.TestContext
 import ai.tock.nlp.core.quality.TestModelReport
 import ai.tock.nlp.core.sample.SampleEntity
 import ai.tock.nlp.core.sample.SampleExpression
-import ai.tock.nlp.core.service.ModelCoreService.formatExpressions
 import ai.tock.nlp.model.EntityBuildContext
 import ai.tock.nlp.model.EntityBuildContextForIntent
 import ai.tock.nlp.model.EntityBuildContextForSubEntities
@@ -40,10 +39,12 @@ import ai.tock.nlp.model.IntentContext
 import ai.tock.nlp.model.NlpClassifier
 import ai.tock.shared.error
 import ai.tock.shared.injector
+import ai.tock.shared.removeTrailingPunctuation
 import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import java.time.Duration
 import java.time.Instant
+import java.util.Locale
 
 /**
  *
@@ -207,10 +208,23 @@ internal object ModelCoreService : ModelCore {
     ) = nlpClassifier.updateModelConfiguration(applicationName, engineType, configuration)
 
     private fun BuildContext.formatExpressions(expressions: List<SampleExpression>): List<SampleExpression> =
-        if (application.caseInsensitive) expressions.map { e -> e.copy(text = e.text.lowercase(language)) }
+        if (expressionNeedsFormatting(application))
+            expressions.map { e -> e.copy(text = e.text.formatTockText(application, language)) }
         else expressions
 
     private fun TestContext.formatExpressions(expressions: List<SampleExpression>): List<SampleExpression> =
-        if (callContext.application.caseInsensitive) expressions.map { e -> e.copy(text = e.text.lowercase(callContext.language)) }
+        if (expressionNeedsFormatting(callContext.application))
+            expressions.map { e -> e.copy(text = e.text.formatTockText(callContext.application, callContext.language)) }
         else expressions
+
+    private fun expressionNeedsFormatting(application: Application) =
+        application.caseInsensitive || application.ignoreTrailingPunctuation
+
+    fun String.formatTockText(application: Application, locale: Locale): String {
+        var result = this
+        if (application.caseInsensitive) result = this.lowercase(locale)
+        if (application.ignoreTrailingPunctuation) result = result.removeTrailingPunctuation()
+        return result
+    }
+
 }

@@ -73,3 +73,7 @@ fun concat(s1: String?, s2: String?): String {
     val s = s1?.trim() ?: ""
     return s + (if (s.isEmpty() || s.endWithPunctuation()) " " else ". ") + (s2?.trim() ?: "")
 }
+
+private val trailingRegexp = "[.,:;?!]+$".toRegex()
+
+fun String.removeTrailingPunctuation() = this.replace(trailingRegexp, "").trim()

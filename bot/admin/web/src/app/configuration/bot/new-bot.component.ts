@@ -65,7 +65,10 @@ export class NewBotComponent implements OnInit {
   validate() {
     const locale = this.firstFormGroup.value.firstCtrl;
     const channel = this.channel.value;
-    const newApp = new Application("new_assistant", "new_assistant", this.state.user.organization, [], [locale], StateService.DEFAULT_ENGINE, true, true, false, 0.0, false);
+    const newApp = new Application("new_assistant", "new_assistant", this.state.user.organization,
+      [], [locale], StateService.DEFAULT_ENGINE,
+      true, true, false,
+      0.0, false, false);
     this.applicationService.saveApplication(newApp)
       .subscribe(app => {
         this.applicationService.refreshCurrentApplication(app);

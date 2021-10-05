@@ -29,6 +29,7 @@ import ai.tock.nlp.core.NlpEngineType
 import ai.tock.nlp.core.ParsingResult
 import ai.tock.nlp.core.merge.ValueDescriptor
 import ai.tock.nlp.core.quality.TestContext
+import ai.tock.nlp.core.service.ModelCoreService.formatTockText
 import ai.tock.nlp.core.service.entity.EntityCore
 import ai.tock.nlp.core.service.entity.EntityCoreService
 import ai.tock.nlp.core.service.entity.EntityMerge
@@ -213,7 +214,9 @@ internal object NlpCoreService : NlpCore {
     }
 
     private fun CallContext.prepareText(text: String): String =
-        if (application.caseInsensitive) text.lowercase(language) else text
+        if (application.caseInsensitive || application.ignoreTrailingPunctuation)
+            text.formatTockText(application, language)
+        else text
 
     private fun TestContext.prepareText(text: String): String = callContext.prepareText(text)
 }
