@@ -30,6 +30,7 @@ export class Application {
               public supportSubEntities: boolean,
               public unknownIntentThreshold: number,
               public caseInsensitive: boolean,
+              public ignoreTrailingPunctuation: boolean,
               public _id?: string) {
   }
 
@@ -46,6 +47,7 @@ export class Application {
       this.supportSubEntities,
       this.unknownIntentThreshold,
       this.caseInsensitive,
+      this.ignoreTrailingPunctuation,
       this._id)
   }
 

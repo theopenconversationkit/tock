@@ -198,7 +198,8 @@ object ParserService : Parser {
                         search = q,
                         status = setOf(validated, model),
                         onlyExactMatch = true,
-                        caseInsensitiveExactMatch = application.caseInsensitive
+                        caseInsensitiveExactMatch = application.caseInsensitive,
+                        ignoreTrailingPunctuationExactMatch = application.ignoreTrailingPunctuation,
                     )
                 )
                 .sentences

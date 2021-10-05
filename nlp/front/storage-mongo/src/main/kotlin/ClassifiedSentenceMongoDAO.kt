@@ -46,6 +46,7 @@ import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Text
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UnknownCount
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UpdateDate
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UsageCount
+import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.WithoutTrailingPunctuationText
 import ai.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
 import ai.tock.nlp.front.storage.mongo.ParseRequestLogMongoDAO.ParseRequestLogStatCol
 import ai.tock.shared.Executor
@@ -58,6 +59,7 @@ import ai.tock.shared.listProperty
 import ai.tock.shared.longProperty
 import ai.tock.shared.namespace
 import ai.tock.shared.provide
+import ai.tock.shared.removeTrailingPunctuation
 import ai.tock.shared.safeCollation
 import ai.tock.shared.security.UserLogin
 import com.mongodb.ReadPreference.secondaryPreferred
@@ -93,11 +95,9 @@ import org.litote.kmongo.orderBy
 import org.litote.kmongo.pullByFilter
 import org.litote.kmongo.regex
 import org.litote.kmongo.replaceOneWithFilter
-import org.litote.kmongo.save
 import org.litote.kmongo.setTo
 import org.litote.kmongo.setValue
 import org.litote.kmongo.updateMany
-import org.litote.kmongo.updateOneById
 import java.time.Duration
 import java.time.Instant
 import java.time.Instant.now
@@ -120,6 +120,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     data class ClassifiedSentenceCol(
         val text: String,
         val lowerCaseText: String = text.lowercase(),
+        val withoutTrailingPunctuationText: String = text.removeTrailingPunctuation(),
         val fullText: String = text,
         val language: Locale,
         val applicationId: Id<ApplicationDefinition>,
@@ -142,6 +143,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 this(
                     textKey(sentence.text),
                     sentence.text.lowercase(sentence.language),
+                    sentence.text.removeTrailingPunctuation(),
                     sentence.text,
                     sentence.language,
                     sentence.applicationId,
@@ -186,6 +188,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         try {
             c.ensureUniqueIndex(Text, Language, ApplicationId)
             c.ensureIndex(LowerCaseText, Language, ApplicationId)
+            c.ensureIndex(WithoutTrailingPunctuationText, Language, ApplicationId)
             c.ensureIndex(Language, ApplicationId, Status)
             c.ensureIndex(Status)
             c.ensureIndex(orderBy(mapOf(ApplicationId to true, Language to true, UpdateDate to false)))
@@ -237,6 +240,14 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
             save(it.copy(lowerCaseText = it.text.lowercase(it.language)))
         }
         logger.debug { "end updating case insensitive sentences" }
+    }
+
+    override fun updateIgnoreTrailingPunctuationSentences(applicationId: Id<ApplicationDefinition>) {
+        logger.debug { "start updating sentences with ignoring trailing punctuation" }
+        col.find(WithoutTrailingPunctuationText exists false, ApplicationId eq applicationId).forEach {
+            save(it.copy(withoutTrailingPunctuationText = it.text.removeTrailingPunctuation()))
+        }
+        logger.debug { "end updating sentences with ignoring trailing punctuation" }
     }
 
     override fun getSentences(

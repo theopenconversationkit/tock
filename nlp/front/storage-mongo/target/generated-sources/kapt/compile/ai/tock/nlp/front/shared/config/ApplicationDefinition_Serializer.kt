@@ -81,6 +81,9 @@ internal class ApplicationDefinition_Serializer :
         gen.writeFieldName("caseInsensitive")
         val _caseInsensitive_ = value.caseInsensitive
         gen.writeBoolean(_caseInsensitive_)
+        gen.writeFieldName("ignoreTrailingPunctuation")
+        val _ignoreTrailingPunctuation_ = value.ignoreTrailingPunctuation
+        gen.writeBoolean(_ignoreTrailingPunctuation_)
         gen.writeFieldName("_id")
         val __id_ = value._id
         serializers.defaultSerializeValue(__id_, gen)

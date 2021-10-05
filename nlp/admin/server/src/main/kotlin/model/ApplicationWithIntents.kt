@@ -72,6 +72,10 @@ data class ApplicationWithIntents(
      */
     val caseInsensitive: Boolean = false,
     /**
+     * No trailing punctuation model - sentences are persisted without trailing punctuation.
+     */
+    val ignoreTrailingPunctuation: Boolean = false,
+    /**
      * The id of the app.
      */
     val _id: Id<ApplicationDefinition>?
@@ -90,6 +94,7 @@ data class ApplicationWithIntents(
             application.supportSubEntities,
             application.unknownIntentThreshold,
             application.caseInsensitive,
+            application.ignoreTrailingPunctuation,
             application._id
         )
 
@@ -107,6 +112,7 @@ data class ApplicationWithIntents(
             supportSubEntities,
             unknownIntentThreshold,
             caseInsensitive,
+            ignoreTrailingPunctuation,
             _id ?: newId()
         )
     }

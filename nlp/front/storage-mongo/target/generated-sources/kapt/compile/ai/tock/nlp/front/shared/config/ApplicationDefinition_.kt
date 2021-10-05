@@ -42,6 +42,8 @@ private val __UnknownIntentThreshold: KProperty1<ApplicationDefinition, Double?>
     get() = ApplicationDefinition::unknownIntentThreshold
 private val __CaseInsensitive: KProperty1<ApplicationDefinition, Boolean?>
     get() = ApplicationDefinition::caseInsensitive
+private val __IgnoreTrailingPunctuation: KProperty1<ApplicationDefinition, Boolean?>
+    get() = ApplicationDefinition::ignoreTrailingPunctuation
 private val ___id: KProperty1<ApplicationDefinition, Id<ApplicationDefinition>?>
     get() = ApplicationDefinition::_id
 class ApplicationDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -82,6 +84,9 @@ class ApplicationDefinition_<T>(previous: KPropertyPath<T, *>?, property: KPrope
     val caseInsensitive: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__CaseInsensitive)
 
+    val ignoreTrailingPunctuation: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__IgnoreTrailingPunctuation)
+
     val _id: KPropertyPath<T, Id<ApplicationDefinition>?>
         get() = KPropertyPath(this,___id)
 
@@ -111,6 +116,8 @@ class ApplicationDefinition_<T>(previous: KPropertyPath<T, *>?, property: KPrope
             get() = __UnknownIntentThreshold
         val CaseInsensitive: KProperty1<ApplicationDefinition, Boolean?>
             get() = __CaseInsensitive
+        val IgnoreTrailingPunctuation: KProperty1<ApplicationDefinition, Boolean?>
+            get() = __IgnoreTrailingPunctuation
         val _id: KProperty1<ApplicationDefinition, Id<ApplicationDefinition>?>
             get() = ___id}
 }
@@ -153,6 +160,9 @@ class ApplicationDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KPr
 
     val caseInsensitive: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__CaseInsensitive)
+
+    val ignoreTrailingPunctuation: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__IgnoreTrailingPunctuation)
 
     val _id: KPropertyPath<T, Id<ApplicationDefinition>?>
         get() = KPropertyPath(this,___id)
@@ -199,6 +209,9 @@ class ApplicationDefinition_Map<T, K>(previous: KPropertyPath<T, *>?, property: 
 
     val caseInsensitive: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__CaseInsensitive)
+
+    val ignoreTrailingPunctuation: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__IgnoreTrailingPunctuation)
 
     val _id: KPropertyPath<T, Id<ApplicationDefinition>?>
         get() = KPropertyPath(this,___id)

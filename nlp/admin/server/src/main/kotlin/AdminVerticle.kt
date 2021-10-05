@@ -313,7 +313,8 @@ open class AdminVerticle : WebVerticle() {
                 )
                 // trigger a full rebuild if nlp engine change
                 if (appWithSameName?.nlpEngineType != newApp.nlpEngineType
-                    || appWithSameName.caseInsensitive != newApp.caseInsensitive) {
+                    || appWithSameName.caseInsensitive != newApp.caseInsensitive
+                    || appWithSameName.ignoreTrailingPunctuation != newApp.ignoreTrailingPunctuation) {
                     front.triggerBuild(ModelBuildTrigger(newApp._id, true))
                 }
                 ApplicationWithIntents(newApp, front.getIntentsByApplicationId(newApp._id))
