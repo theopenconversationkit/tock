@@ -14,7 +14,7 @@ en restant en maîtrise du code (embarquant des bibliothèques opensource issues
 en évitant les effets _"boîte noire"_ (notamment pour débugger les modèles conversationnels) pour une réactivité accrue.
 
 > Depuis, l'équipe derrière [OUIbot](https://www.oui.sncf/services/assistant) ainsi que d'autres équipes dédiées à différents 
-assistants conversationnels SNCF (cf la [vitrine](vitrine)) utilisent quotidiennement Tock en 
+assistants conversationnels SNCF (cf la [vitrine](../vitrine)) utilisent quotidiennement Tock en 
 production, tout en enrichissant régulièrement la plateforme de nouvelles fonctionnalités et connecteurs.
 
 Nous pensons qu'il y a un **besoin de plateformes conversationnelles et IA ouvertes**, permettant des **scénarios 
@@ -29,7 +29,7 @@ mutualiser l'effort des créateurs d'assistants.
 
 > Depuis 2019, Tock est préconisé en interne par le groupe SNCF. 
 > L'outil est également utilisé en production par d'autres entreprises 
-> (voir [vitrine](vitrine)). 
+> (voir [vitrine](../vitrine)). 
 
 > A terme, nous pensons que la solution Tock a vocation à rejoindre une 
 > association comme le [_TOSIT (The Open Source I Trust)_](http://tosit.fr/), 

@@ -18,93 +18,93 @@ As a consequence, more integrations are possible on the "frontend" by leveraging
 
 This page actually lists:
 
-- The [_connectors_](connectors.md#connectors-provided-with-tock) provided with Tock:  
+- The [_connectors_](../connectors#connectors-provided-with-tock) provided with Tock:  
 [<img alt="Messenger Logo" title="Facebook Messenger"
       src="https://cdn.iconscout.com/icon/free/png-256/facebook-messenger-2-569346.png" 
-      style="width: 50px;">](connectors.md#messenger)
+      style="width: 50px;">](../connectors#messenger)
 [<img alt="Slack Logo" title="Slack"
  src="https://www.macupdate.com/images/icons256/50617.png" 
- style="width: 50px;">](connectors.md#slack)
+ style="width: 50px;">](../connectors#slack)
 [<img alt="Google Assistant Logo" title="Google Assistant"
  src="https://res-5.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_120,w_120,f_auto,b_white,q_auto:eco/g0oshbe7blfnsrylchxd" 
- style="width: 50px;">](connectors.md#google-assistant-home)
+ style="width: 50px;">](../connectors#google-assistant-home)
 [<img alt="Google Home Logo" title="Google Home"
  src="https://phoneky.co.uk/thumbs/android/thumbs/ico/3/chromecast-android.jpg" 
- style="width: 50px;">](connectors.md#google-assistant-home)
+ style="width: 50px;">](../connectors#google-assistant-home)
 [<img alt="Alexa Logo" title="Amazon Alexa / Amazon Echo"
  src="https://cognyapps.com/wp-content/uploads/2018/09/amazon-alexa-logo-e1538253665426.png" 
- style="width: 50px;">](connectors.md#alexa-echo)
+ style="width: 50px;">](../connectors#alexa-echo)
 [<img alt="RocketChat Logo" title="Rocket.Chat"
  src="https://dl2.macupdate.com/images/icons256/58493.png?d=1565347347" 
- style="width: 50px;">](connectors.md#rocketchat)
+ style="width: 50px;">](../connectors#rocketchat)
 [<img alt="WhatsApp Logo" title="Facebook WhatsApp"
  src="https://appradarcentral.com/wp-content/uploads/2017/07/WhatsApp-Messenger.png" 
- style="width: 50px;">](connectors.md#whatsapp)
+ style="width: 50px;">](../connectors#whatsapp)
 [<img alt="Teams Logo" title="Microsoft Teams"
  src="https://cdn.worldvectorlogo.com/logos/microsoft-teams.svg" 
- style="width: 50px;">](connectors.md#teams)
+ style="width: 50px;">](../connectors#teams)
 [<img alt="Business Chat Logo" title="Apple Business Chat"
  src="http://cdn.osxdaily.com/wp-content/uploads/2014/11/Messages-icon-300x300.png" 
- style="width: 50px;">](connectors.md#business-chat)
+ style="width: 50px;">](../connectors#business-chat)
 [<img alt="Twitter Logo" title="Twitter"
  src="https://d2v9ipibika81v.cloudfront.net/uploads/sites/112/2016/06/twitter-logo.jpg" 
- style="width: 50px;">](connectors.md#twitter)
+ style="width: 50px;">](../connectors#twitter)
 [<img alt="Allo-Media Logo" title="Allo-Media"
   src="https://s3-eu-central-1.amazonaws.com/glassdollar/logos/GD_5bcf9307048f6.png" 
-  style="width: 50px;">](connectors.md#allo-media)
+  style="width: 50px;">](../connectors#allo-media)
 [<img alt="Google Chat Logo" title="Google Chat"
  src="https://cdn.zapier.com/storage/photos/bfbce5bee25b1b50d8a910c30588c61e.png" 
- style="width: 50px;">](connectors.md#google-chat)  
+ style="width: 50px;">](../connectors#google-chat)  
 [<img alt="Web Logo" title="Web (generic)"
  src="https://static.vecteezy.com/system/resources/previews/000/425/842/non_2x/vector-web-search-icon.jpg" 
- style="width: 50px;">](connectors.md#web-generic)
+ style="width: 50px;">](../connectors#web-generic)
 [<img alt="Test Logo" title="Test (generic)"
  src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcR_8-ubeyOzkkKclCUX3V-LSJVik_u8wtbJs6FBGWp9P19kzAQH&usqp=CAU" 
- style="width: 50px;">](connectors.md#test-generic)
+ style="width: 50px;">](../connectors#test-generic)
 
-- Available [toolkits leveraging the _Web connector_](connectors.md#integrations-through-the-web-connector) to integrate 
+- Available [toolkits leveraging the _Web connector_](../connectors#integrations-through-the-web-connector) to integrate 
 with more channels:  
 [<img alt="React logo" title="React"
       src="https://blog.octo.com/wp-content/uploads/2015/12/react-logo-1000-transparent.png" 
-      style="width: 50px;">](connectors.md#react)
+      style="width: 50px;">](../connectors#react)
 [<img alt="Flutter logo" title="Google Flutter"
  src="https://plugins.jetbrains.com/files/9212/97400/icon/pluginIcon.png" 
- style="width: 60px;">](connectors.md#flutter-beta)
+ style="width: 60px;">](../connectors#flutter-beta)
 [<img alt="SharePoint logo" title="Microsoft SharePoint"
  src="https://expertime.com/wp-content/uploads/2019/12/Logo_SharePoint-expertime.png" 
- style="width: 50px;">](connectors.md#sharepoint-beta)
+ style="width: 50px;">](../connectors#sharepoint-beta)
 
-- [Voice technologies](connectors.md#voice-technologies) possible to integrate with Tock:  
+- [Voice technologies](../connectors#voice-technologies) possible to integrate with Tock:  
 [<img alt="Android Logo" title="Google Android"
  src="https://www.wortis.fr/wp-content/uploads/2019/05/icon-wortis-android.png" 
- style="width: 50px;">](connectors.md#google-android)
+ style="width: 50px;">](../connectors#google-android)
 [<img alt="Google Assistant Logo" title="Google Assistant"
  src="https://res-5.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_120,w_120,f_auto,b_white,q_auto:eco/g0oshbe7blfnsrylchxd" 
- style="width: 50px;">](connectors.md#google-android)
+ style="width: 50px;">](../connectors#google-android)
 [<img alt="Google Home Logo" title="Google Home"
  src="https://phoneky.co.uk/thumbs/android/thumbs/ico/3/chromecast-android.jpg" 
- style="width: 50px;">](connectors.md#google-android)
+ style="width: 50px;">](../connectors#google-android)
 [<img alt="Teams Logo" title="Microsoft Teams"
  src="https://cdn.worldvectorlogo.com/logos/microsoft-teams.svg" 
- style="width: 50px;">](connectors.md#google-android)
+ style="width: 50px;">](../connectors#google-android)
 [<img alt="iOS Logo" title="Apple iOS"
  src="https://www.freeiconspng.com/uploads/app-ios-png-4.png" 
- style="width: 50px;">](connectors.md#apple-ios)
+ style="width: 50px;">](../connectors#apple-ios)
 [<img alt="BusinessChat Logo" title="Apple Business Chat"
  src="http://cdn.osxdaily.com/wp-content/uploads/2014/11/Messages-icon-300x300.png" 
- style="width: 50px;">](connectors.md#apple-ios)
+ style="width: 50px;">](../connectors#apple-ios)
 [<img alt="Alexa Logo" title="Amazon Alexa"
  src="https://cognyapps.com/wp-content/uploads/2018/09/amazon-alexa-logo-e1538253665426.png" 
- style="width: 50px;">](connectors.md#amazon-alexa)
+ style="width: 50px;">](../connectors#amazon-alexa)
 [<img alt="Allo-Media Logo" title="Allo-Media"
  src="https://s3-eu-central-1.amazonaws.com/glassdollar/logos/GD_5bcf9307048f6.png" 
- style="width: 50px;">](connectors.md#allo-media-voxygen)
+ style="width: 50px;">](../connectors#allo-media-voxygen)
 [<img alt="Voxygen Logo" title="Voxygen" 
  src="https://res-1.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_256,w_256,f_auto,q_auto:eco/v1502521579/dyuj1cgjsnzhpo6ojwq0.png" 
- style="width: 50px;">](connectors.md#allo-media-voxygen)
+ style="width: 50px;">](../connectors#allo-media-voxygen)
 [<img alt="Nuance Logo" title="Nuance"
  src="https://www.dicteedragon.fr/img/m/2.jpg" 
- style="width: 50px;">](connectors.md#nuance)
+ style="width: 50px;">](../connectors#nuance)
 
 ## Connectors provided with Tock
 
@@ -280,9 +280,9 @@ portals, dedicated sites, apps, REST clients, etc.
 The connector exposes a REST API to the bot, making it easy to integrate with any Website, mobile application or programming language.
 
 Several toolkits and components consuming the Web connector API are already available to integrate Tock bots with 
- more types of sites and applications, such as Websites with [React](connectors.md#react), 
-mobile-native applications with [Flutter](connectors.md#flutter-beta) and 
-intranet sites on [SharePoint](connectors.md#sharepoint-beta).
+ more types of sites and applications, such as Websites with [React](../connectors#react), 
+mobile-native applications with [Flutter](../connectors#flutter-beta) and 
+intranet sites on [SharePoint](../connectors#sharepoint-beta).
 
 * **Channel** : Web (generic for any Web site or application)
 * **Type** : text
@@ -313,7 +313,7 @@ src="https://blog.octo.com/wp-content/uploads/2015/12/react-logo-1000-transparen
 style="width: 100px;">
 
 This React component integrates and renders a Tock bot inside a Web application or site.  
-The Webapp communicates with the bot through a [Web connector](connectors.md#web-generic).
+The Webapp communicates with the bot through a [Web connector](../connectors#web-generic).
 
 * **Integration**: [React](https://fr.reactjs.org/) (JavaScript / JSX)
 * **Type**: Web applications
@@ -329,7 +329,7 @@ src="https://plugins.jetbrains.com/files/9212/97400/icon/pluginIcon.png"
 style="width: 100px;">
 
 This Flutter component integrates and renders a Tock bot inside a mobile or Web application.  
-The application communicates with the bot through a [Web connector](connectors.md#web-generic).
+The application communicates with the bot through a [Web connector](../connectors#web-generic).
 
 * **Integration**: [Flutter](https://flutter.dev/) (Dart)
 * **Type**: mobile-native or Web applications
@@ -345,8 +345,8 @@ src="https://expertime.com/wp-content/uploads/2019/12/Logo_SharePoint-expertime.
 style="width: 100px;">
 
 This _WebPart_ component integrates and renders a Tock bot inside a SharePoint page/site.  
-The component embeds the [tock-react-kit](connectors.md#react) to communicate with the bot through a 
-[Web connector](connectors.md#web-generic) and render the bot inside the SharePoint page.
+The component embeds the [tock-react-kit](../connectors#react) to communicate with the bot through a 
+[Web connector](../connectors#web-generic) and render the bot inside the SharePoint page.
 
 * **Integration**: [Microsoft SharePoint](https://www.microsoft.com/en-us/microsoft-365/sharepoint/collaboration)
 * **Type**: Web & intranet sites
@@ -371,9 +371,9 @@ More voice technologies have been integrated with Tock over time, even when no r
 ### Google / Android
 
 Google _Speech-To-Text_ and _Text-To-Speech_ features are used by the 
-[Google Assistant / Home connector](connectors.md#google-assistant-home), the microphone feature from the 
+[Google Assistant / Home connector](../connectors#google-assistant-home), the microphone feature from the 
 [Microsoft Teams app for Android](https://play.google.com/store/apps/details?id=com.microsoft.teams)
-compatible with the [Teams connector](connectors.md#teams), as well as the Android platform 
+compatible with the [Teams connector](../connectors#teams), as well as the Android platform 
 for mobile-native development.
 
 <img alt="Android Logo" title="Google Android"
@@ -391,13 +391,13 @@ style="width: 50px;">
 
 * **Technologie** : Google / Android STT & TTS
 * **Status** : used with Tock in production 
-(through [Google Assistant / Home](connectors.md#google-assistant-home) and 
-[Microsoft Teams](connectors.md#teams) connectors, as well as native Android for _on-app_ mobile bots)
+(through [Google Assistant / Home](../connectors#google-assistant-home) and 
+[Microsoft Teams](../connectors#teams) connectors, as well as native Android for _on-app_ mobile bots)
 
 ### Apple / iOS
 
 Apple _Speech-To-Text_ and _Text-To-Speech_ features are used by the 
-[Business Chat connector](connectors.md#business-chat), as well as the iOS platform 
+[Business Chat connector](../connectors#business-chat), as well as the iOS platform 
 for mobile-native development.
 
 <img alt="iOS Logo" title="Apple iOS"
@@ -408,7 +408,7 @@ src="http://cdn.osxdaily.com/wp-content/uploads/2014/11/Messages-icon-300x300.pn
 style="width: 50px;">
 
 * **Technologie** : Apple / iOS STT & TTS
-* **Status** : used with Tock in production (though [Business Chat connector](connectors.md#business-chat) 
+* **Status** : used with Tock in production (though [Business Chat connector](../connectors#business-chat) 
 and native iOS for _on-app_ mobile bots)
  
 ### Amazon / Alexa
@@ -422,7 +422,7 @@ style="width: 100px;">
  
 ### Allo-Media & Voxygen
 
-To build the French [AlloCovid](https://www.allocovid.com/) bot, an [Allo-Media connector](connectors.md#allo-media)
+To build the French [AlloCovid](https://www.allocovid.com/) bot, an [Allo-Media connector](../connectors#allo-media)
 has been developped, to integrate the Tock bot with [Allo-Media](https://www.allo-media.net/) services: 
 _Speech-To-Text_ (from phone speech) and _Text-To-Speech_ (leveraging [Voxygen](https://www.voxygen.fr/) synthesis voices).
 
@@ -433,7 +433,7 @@ src="https://res-1.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_25
 style="width: 100px;">
 
 * **Technologie** : Allo-Media & Voxygen
-* **Status** : used with Tock in production (though [Allo-Media connector](connectors.md#allo-media))
+* **Status** : used with Tock in production (though [Allo-Media connector](../connectors#allo-media))
  
 ### Nuance
 

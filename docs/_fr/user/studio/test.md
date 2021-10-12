@@ -48,6 +48,6 @@ complète arrivera prochainement.
 
 ## Continuer...
 
-Rendez-vous dans [Menu _Analytics_](analytics) pour la suite du manuel utilisateur. 
+Rendez-vous dans [Menu _Analytics_](../analytics) pour la suite du manuel utilisateur. 
 
-> Vous pouvez aussi passer directement au chapitre suivant : [Développement](../../dev/modes). 
+> Vous pouvez aussi passer directement au chapitre suivant : [Développement](../../../dev/modes). 

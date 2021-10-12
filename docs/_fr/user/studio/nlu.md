@@ -94,6 +94,6 @@ phrases reçues et réponses du bot pour un utilisateur).
 
 ## Continuer...
 
-Rendez-vous dans [Menu _Stories & Answers_](stories-and-answers) pour la suite du manuel utilisateur. 
+Rendez-vous dans [Menu _Stories & Answers_](../stories-and-answers) pour la suite du manuel utilisateur. 
 
-> Vous pouvez aussi passer directement au chapitre suivant : [Développement](../../dev/modes). 
+> Vous pouvez aussi passer directement au chapitre suivant : [Développement](../../../dev/modes). 

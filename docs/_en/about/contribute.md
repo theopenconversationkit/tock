@@ -41,7 +41,7 @@ under [GPL license](https://fr.wikipedia.org/wiki/Licence_publique_g%C3%A9n%C3%A
 and [Docker Compose](https://docs.docker.com/compose/) images/descriptors, for platform hands-on and fast deployment
 of various configurations.
 
-* [`tock-bot-samples`](): code samples, in particular the _WebHook_ and _WebSocket_ modes examples from 
+* [`tock-bot-samples`](https://github.com/theopenconversationkit/tock-bot-samples): code samples, in particular the _WebHook_ and _WebSocket_ modes examples from 
 [Tock programming guides](../dev/bot-api).
  
 * [`tock-bot-open-data`](https://github.com/theopenconversationkit/tock-bot-open-data): a bot example, based on 
@@ -144,5 +144,5 @@ Every new feature or fix should embed its unit test(s).
 
 ## Contact us
 
-To contribute to the project or to known more about the implementation, feel free to [contact us](contact). 
+To contribute to the project or to known more about the implementation, feel free to [contact us](../contact). 
 Ideas and feedback is more than welcome.

@@ -164,12 +164,12 @@ Une fois exportés les fichiers _dumps_ de Tock Studio dans le _classpath_ du bo
 on peut appeler une ou plusieurs des fonctions suivantes depuis le `main` :
 
 * `importApplicationDump` : importe une application à partir d'un 
-  [_dump_ d'application](../user/studio/configuration.md#modifier-importer-et-exporter-une-application).
+  [_dump_ d'application](../user/studio/configuration#modifier-importer-et-exporter-une-application).
   Remarque : l'import est ignoré si l'application cible existe déjà.
 * `importNlpDump` : importe un modèle NLP (intentions, phrases, entités) à partir d'un
-  [_dump_ NLP](../user/studio/configuration.md#modifier-importer-et-exporter-une-application).
+  [_dump_ NLP](../user/studio/configuration#modifier-importer-et-exporter-une-application).
 * `importI18nDump` : importe des labels (aka _i18n_) à partir d'un
-  [_dump_ de labels](../user/studio/stories-and-answers.md#longlet-answers).
+  [_dump_ de labels](../user/studio/stories-and-answers#longlet-answers).
 
 Exemple :
 

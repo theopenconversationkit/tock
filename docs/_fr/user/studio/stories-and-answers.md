@@ -93,6 +93,6 @@ les aspects développement sur ce thème.
 
 ## Continuer...
 
-Rendez-vous dans [Menu _Test_](test) pour la suite du manuel utilisateur. 
+Rendez-vous dans [Menu _Test_](../test) pour la suite du manuel utilisateur. 
 
-> Vous pouvez aussi passer directement au chapitre suivant : [Développement](../../dev/modes). 
+> Vous pouvez aussi passer directement au chapitre suivant : [Développement](../../../dev/modes). 

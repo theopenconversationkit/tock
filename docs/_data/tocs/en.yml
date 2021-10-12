@@ -1,6 +1,8 @@
 content:
   - title: 'Overview'
     url: 'en'
+  - title: 'Table of contents'
+    url: 'en/toc'
   - title: 'Try Tock Studio'
     children:
       - title: 'Create your 1st bot'

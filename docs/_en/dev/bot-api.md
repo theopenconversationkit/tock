@@ -11,16 +11,16 @@ Any programming language can be used, leveraging the Tock [Bot API](../api.md#to
 
 [<img alt="Kotlin logo" title="Kotlin"
       src="https://upload.wikimedia.org/wikipedia/commons/7/74/Kotlin_Icon.png" 
-      style="width: 50px;">](bot-api.md#develop-with-kotlin)
+      style="width: 50px;">](../bot-api#develop-with-kotlin)
 [<img alt="Nodejs logo" title="Nodejs"
       src="https://www.boostit.net/wp-content/uploads/2016/08/node-js-icon.png" 
-      style="width: 50px;">](bot-api.md#develop-with-javascript)
+      style="width: 50px;">](../bot-api#develop-with-javascript)
 [<img alt="Python logo" title="Python"
       src="https://www.libraries.rutgers.edu/sites/default/files/styles/resize_to_300px_width/public/events/2020/01/python_3_2.png" 
-      style="width: 50px;">](bot-api.md#develop-with-python)
+      style="width: 50px;">](../bot-api#develop-with-python)
 [<img alt="API logo" title="Bot API"
       src="https://zappysys.com/blog/wp-content/uploads/2018/06/REST-API-icon.jpg" 
-      style="width: 50px;">](bot-api.md#develop-through-the-api)
+      style="width: 50px;">](../bot-api#develop-through-the-api)
 
 ## Connect to the demo platform
 
@@ -166,7 +166,7 @@ src="https://zappysys.com/blog/wp-content/uploads/2018/06/REST-API-icon.jpg"
 style="width: 100px;">
 
 It is possible to develop in the language of your choice by using directly the underlying REST  
-[API](../api.md#tock-bot-definition-api).
+[API](../../api#tock-bot-definition-api).
 
 ## Install Bot API server-side
 

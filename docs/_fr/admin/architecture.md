@@ -85,8 +85,8 @@ en utilisant toutes les possibilités de Tock mais en accédant à la base Mongo
 
 ## Voir aussi...
 
-* [Installation](installation)
-* [Sécurité](securite)
-* [Supervision](supervision)
-* [Cloud](cloud)
-* [Haute disponibilité](disponibilite)
+* [Installation](../installation)
+* [Sécurité](../securite)
+* [Supervision](../supervision)
+* [Cloud](../cloud)
+* [Haute disponibilité](../disponibilite)

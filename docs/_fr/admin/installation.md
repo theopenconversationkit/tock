@@ -4,7 +4,7 @@ title: Installation
 
 # Installation Tock
 
-La page [architecture](architecture) présente l'architecture fonctionnelle et technique Tock, le rôle des différents 
+La page [architecture](../architecture) présente l'architecture fonctionnelle et technique Tock, le rôle des différents 
 composants ainsi que les différents modes de déploiement.
 
 Ce chapitre présente les différentes options d'installation de Tock. En particulier, il s'agit d'évoquer le cas d'une 
@@ -239,12 +239,12 @@ il est donc important de ne pas valider des phrases comportant des données pers
 
 > La conservation des données, le chiffrement et l'anonymisation sont essentiels à la protection 
 > des données, en particulier si elles sont personnelles. 
-> Pour en savoir plus, voir la section [_Sécurité > Données_](securite.md#donnees).
+> Pour en savoir plus, voir la section [_Sécurité > Données_](../securite#donnees).
 
 ## Composants applicatifs
 
 Selon les composants applicatifs de Tock, obligatoires ou facultatifs, certains doivent être _mono-instance_ et d'autres 
-peuvent être déployés en _plusieurs instances_ (voir la section [haute disponibilité](disponibilite) pour en savoir plus).
+peuvent être déployés en _plusieurs instances_ (voir la section [haute disponibilité](../disponibilite) pour en savoir plus).
 
 Pour plus de commodité, les composants ci-dessous sont nommé comme les images [Docker](https://www.docker.com/) fournies 
 avec Tock, bien que l'utilisation de Docker ne soit pas obligatoire pour installer Tock.
@@ -354,7 +354,7 @@ Pour `tock/nlp_admin`, il faut utiliser la propriété `adminverticle_base_href`
 
 Pour une utilisation de Tock en production, nous vous recommandons de parcourir également les pages suivantes :
 
-* [Sécurité](securite)
-* [Supervision](supervision)
-* [Cloud](cloud)
-* [Haute disponibilité](disponibilite)
+* [Sécurité](../securite)
+* [Supervision](../supervision)
+* [Cloud](../cloud)
+* [Haute disponibilité](../disponibilite)

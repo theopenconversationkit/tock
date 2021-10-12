@@ -19,92 +19,92 @@ En conséquence, il permet encore davantage d'intégrations côté "frontend", u
 
 Cette page liste en fait :
 
-- Les [_connecteurs_](canaux.md#connecteurs-fournis-avec-tock) fournis avec la distribution Tock :  
+- Les [_connecteurs_](../canaux#connecteurs-fournis-avec-tock) fournis avec la distribution Tock :  
 [<img alt="Logo Messenger" title="Facebook Messenger"
       src="https://cdn.iconscout.com/icon/free/png-256/facebook-messenger-2-569346.png" 
-      style="width: 50px;">](canaux.md#messenger)
+      style="width: 50px;">](../canaux#messenger)
 [<img alt="Logo Slack" title="Slack"
  src="https://www.macupdate.com/images/icons256/50617.png" 
- style="width: 50px;">](canaux.md#slack)
+ style="width: 50px;">](../canaux#slack)
 [<img alt="Logo Google Assistant" title="Google Assistant"
  src="https://res-5.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_120,w_120,f_auto,b_white,q_auto:eco/g0oshbe7blfnsrylchxd" 
- style="width: 50px;">](canaux.md#google-assistant-home)
+ style="width: 50px;">](../canaux#google-assistant-home)
 [<img alt="Logo Google Home" title="Google Home"
  src="https://phoneky.co.uk/thumbs/android/thumbs/ico/3/chromecast-android.jpg" 
- style="width: 50px;">](canaux.md#google-assistant-home)
+ style="width: 50px;">](../canaux#google-assistant-home)
 [<img alt="Logo Alexa" title="Amazon Alexa / Amazon Echo"
  src="https://cognyapps.com/wp-content/uploads/2018/09/amazon-alexa-logo-e1538253665426.png" 
- style="width: 50px;">](canaux.md#alexa-echo)
+ style="width: 50px;">](../canaux#alexa-echo)
 [<img alt="Logo RocketChat" title="Rocket.Chat"
  src="https://dl2.macupdate.com/images/icons256/58493.png?d=1565347347" 
- style="width: 50px;">](canaux.md#rocketchat)
+ style="width: 50px;">](../canaux#rocketchat)
 [<img alt="Logo WhatsApp" title="Facebook WhatsApp"
  src="https://appradarcentral.com/wp-content/uploads/2017/07/WhatsApp-Messenger.png" 
- style="width: 50px;">](canaux.md#whatsapp)
+ style="width: 50px;">](../canaux#whatsapp)
 [<img alt="Logo Teams" title="Microsoft Teams"
  src="https://cdn.worldvectorlogo.com/logos/microsoft-teams.svg" 
- style="width: 50px;">](canaux.md#teams)
+ style="width: 50px;">](../canaux#teams)
 [<img alt="Logo Business Chat" title="Apple Business Chat"
  src="http://cdn.osxdaily.com/wp-content/uploads/2014/11/Messages-icon-300x300.png" 
- style="width: 50px;">](canaux.md#business-chat)
+ style="width: 50px;">](../canaux#business-chat)
 [<img alt="Logo Twitter" title="Twitter"
  src="https://d2v9ipibika81v.cloudfront.net/uploads/sites/112/2016/06/twitter-logo.jpg" 
- style="width: 50px;">](canaux.md#twitter)
+ style="width: 50px;">](../canaux#twitter)
 [<img alt="Logo Allo-Media" title="Allo-Media"
   src="https://s3-eu-central-1.amazonaws.com/glassdollar/logos/GD_5bcf9307048f6.png" 
-  style="width: 50px;">](canaux.md#allo-media)
+  style="width: 50px;">](../canaux#allo-media)
 [<img alt="Logo Google Chat" title="Google Chat"
    src="https://cdn.zapier.com/storage/photos/bfbce5bee25b1b50d8a910c30588c61e.png" 
-   style="width: 50px;">](canaux.md#google-chat)  
+   style="width: 50px;">](../canaux#google-chat)  
 [<img alt="Logo Web" title="Web (générique)"
  src="https://static.vecteezy.com/system/resources/previews/000/425/842/non_2x/vector-web-search-icon.jpg" 
- style="width: 50px;">](canaux.md#web-generique)
+ style="width: 50px;">](../canaux#web-generique)
 [<img alt="Logo Test" title="Test (générique)"
  src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcR_8-ubeyOzkkKclCUX3V-LSJVik_u8wtbJs6FBGWp9P19kzAQH&usqp=CAU" 
- style="width: 50px;">](canaux.md#test-generique)
+ style="width: 50px;">](../canaux#test-generique)
 
-- Les [kits utilisant le _connecteur Web_](canaux.md#integrations-via-le-connecteur-web) pour intégrer d'autres canaux :  
+- Les [kits utilisant le _connecteur Web_](../canaux#integrations-via-le-connecteur-web) pour intégrer d'autres canaux :  
 [<img alt="Logo React" title="React"
       src="https://blog.octo.com/wp-content/uploads/2015/12/react-logo-1000-transparent.png" 
-      style="width: 50px;">](canaux.md#react)
+      style="width: 50px;">](../canaux#react)
 [<img alt="Logo Flutter" title="Google Flutter"
  src="https://plugins.jetbrains.com/files/9212/97400/icon/pluginIcon.png" 
- style="width: 60px;">](canaux.md#flutter-beta)
+ style="width: 60px;">](../canaux#flutter-beta)
 [<img alt="Logo SharePoint" title="Microsoft SharePoint"
  src="https://expertime.com/wp-content/uploads/2019/12/Logo_SharePoint-expertime.png" 
- style="width: 50px;">](canaux.md#sharepoint-beta)
+ style="width: 50px;">](../canaux#sharepoint-beta)
 
-- Les [intégrations possibles pour le traitement de la voix](canaux.md#technologies-vocales) :  
+- Les [intégrations possibles pour le traitement de la voix](../canaux#technologies-vocales) :  
 [<img alt="Logo Android" title="Google Android"
  src="https://www.wortis.fr/wp-content/uploads/2019/05/icon-wortis-android.png" 
- style="width: 50px;">](canaux.md#google-android)
+ style="width: 50px;">](../canaux#google-android)
 [<img alt="Logo Google Assistant" title="Google Assistant"
  src="https://res-5.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_120,w_120,f_auto,b_white,q_auto:eco/g0oshbe7blfnsrylchxd" 
- style="width: 50px;">](canaux.md#google-android)
+ style="width: 50px;">](../canaux#google-android)
 [<img alt="Logo Google Home" title="Google Home"
  src="https://phoneky.co.uk/thumbs/android/thumbs/ico/3/chromecast-android.jpg" 
- style="width: 50px;">](canaux.md#google-android)
+ style="width: 50px;">](../canaux#google-android)
 [<img alt="Logo Teams" title="Microsoft Teams"
  src="https://cdn.worldvectorlogo.com/logos/microsoft-teams.svg" 
- style="width: 50px;">](canaux.md#google-android)
+ style="width: 50px;">](../canaux#google-android)
 [<img alt="Logo iOS" title="Apple iOS"
  src="https://www.freeiconspng.com/uploads/app-ios-png-4.png" 
- style="width: 50px;">](canaux.md#apple-ios)
+ style="width: 50px;">](../canaux#apple-ios)
 [<img alt="Logo BusinessChat" title="Apple Business Chat"
  src="http://cdn.osxdaily.com/wp-content/uploads/2014/11/Messages-icon-300x300.png" 
- style="width: 50px;">](canaux.md#apple-ios)
+ style="width: 50px;">](../canaux#apple-ios)
 [<img alt="Logo Alexa" title="Amazon Alexa"
  src="https://cognyapps.com/wp-content/uploads/2018/09/amazon-alexa-logo-e1538253665426.png" 
- style="width: 50px;">](canaux.md#amazon-alexa)
+ style="width: 50px;">](../canaux#amazon-alexa)
 [<img alt="Logo Allo-Media" title="Allo-Media"
  src="https://s3-eu-central-1.amazonaws.com/glassdollar/logos/GD_5bcf9307048f6.png" 
- style="width: 50px;">](canaux.md#allo-media-voxygen)
+ style="width: 50px;">](../canaux#allo-media-voxygen)
 [<img alt="Logo Voxygen" title="Voxygen" 
  src="https://res-1.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_256,w_256,f_auto,q_auto:eco/v1502521579/dyuj1cgjsnzhpo6ojwq0.png" 
- style="width: 50px;">](canaux.md#allo-media-voxygen)
+ style="width: 50px;">](../canaux#allo-media-voxygen)
 [<img alt="Logo Nuance" title="Nuance"
  src="https://www.dicteedragon.fr/img/m/2.jpg" 
- style="width: 50px;">](canaux.md#nuance)
+ style="width: 50px;">](../canaux#nuance)
 
 ## Connecteurs fournis avec Tock
 
@@ -287,9 +287,9 @@ portail, application Web ou mobile, client REST, etc.
 Le connecteur expose une API REST vers le bot, facilement intégrable depuis n'importe quelle application Web ou mobile, ou langage de programmation.
 
 Plusieurs kits et composants basés sur le connecteur Web sont déjà disponibles pour intégrer des bots Tock à 
-différents sites et applications, comme des sites Web avec [React](canaux.md#react), 
-des applications mobiles natives avec [Flutter](canaux.md#flutter-beta) ou encore des 
-intranets [SharePoint](canaux.md#sharepoint-beta).
+différents sites et applications, comme des sites Web avec [React](../canaux#react), 
+des applications mobiles natives avec [Flutter](../canaux#flutter-beta) ou encore des 
+intranets [SharePoint](../canaux#sharepoint-beta).
 
 * **Canal** : Web (générique pour tous sites & applications Web)
 * **Type** : texte
@@ -322,7 +322,7 @@ src="https://blog.octo.com/wp-content/uploads/2015/12/react-logo-1000-transparen
 style="width: 100px;">
 
 Ce composant React intègre un bot Tock et en assure le rendu graphique dans une application Web.  
-L'application Web communique avec le bot via un [connecteur Web](canaux.md#web-generique).
+L'application Web communique avec le bot via un [connecteur Web](../canaux#web-generique).
 
 * **Intégration** : [React](https://fr.reactjs.org/) (JavaScript / JSX)
 * **Type** : applications Web
@@ -338,7 +338,7 @@ src="https://plugins.jetbrains.com/files/9212/97400/icon/pluginIcon.png"
 style="width: 100px;">
 
 Ce composant Flutter intègre un bot Tock et en assure le rendu graphique dans une application mobile ou Web.  
-L'application communique avec le bot via un [connecteur Web](canaux.md#web-generique).
+L'application communique avec le bot via un [connecteur Web](../canaux#web-generique).
 
 * **Intégration** : [Flutter](https://flutter.dev/) (Dart)
 * **Type** : applications mobiles natives et Web
@@ -354,8 +354,8 @@ src="https://expertime.com/wp-content/uploads/2019/12/Logo_SharePoint-expertime.
 style="width: 100px;">
 
 Ce composant _WebPart_ permet d'intégrer un bot Tock dans un site SharePoint.  
-Il embarque le [tock-react-kit](canaux.md#react) pour communiquer avec le bot 
-via un [connecteur Web](canaux.md#web-generique) et gérer le rendu graphique du bot dans la page SharePoint.
+Il embarque le [tock-react-kit](../canaux#react) pour communiquer avec le bot 
+via un [connecteur Web](../canaux#web-generique) et gérer le rendu graphique du bot dans la page SharePoint.
 
 * **Intégration** : [Microsoft SharePoint](https://www.microsoft.com/fr-fr/microsoft-365/sharepoint/collaboration)
 * **Type** : sites Web & intranets
@@ -382,9 +382,9 @@ Elles sont mentionnées à titre indicatif, même quand il n'est pas fourni de _
 ### Google / Android
 
 Les fonctions _Speech-To-Text_ et _Text-To-Speech_ de Google sont utilisées à travers le 
-[connecteur Google Assistant / Home](canaux.md#google-assistant-home), également par les fonctions 
+[connecteur Google Assistant / Home](../canaux#google-assistant-home), également par les fonctions 
 vocales de l'[application Microsoft Teams pour Android](https://play.google.com/store/apps/details?id=com.microsoft.teams)
-compatible avec le [connecteur Teams](canaux.md#teams), ainsi qu'au sein de la plateforme Android 
+compatible avec le [connecteur Teams](../canaux#teams), ainsi qu'au sein de la plateforme Android 
 notamment pour des développements mobiles natifs.
 
 <img alt="Logo Android" title="Google Android"
@@ -402,14 +402,14 @@ style="width: 50px;">
 
 * **Technologie** : STT & TTS Google / Android
 * **Status** : utilisé avec Tock en production 
-(via connecteurs [Google Assistant / Home](canaux.md#google-assistant-home), 
-[Microsoft Teams](canaux.md#teams) 
+(via connecteurs [Google Assistant / Home](../canaux#google-assistant-home), 
+[Microsoft Teams](../canaux#teams) 
 et en natif Android pour les bots intégrés _on-app_)
  
 ### Apple / iOS
 
 Les fonctions _Speech-To-Text_ et _Text-To-Speech_ d'Apple sont utilisées à travers le 
-[connecteur Business Chat](canaux.md#business-chat), ainsi qu'au sein d'iOS
+[connecteur Business Chat](../canaux#business-chat), ainsi qu'au sein d'iOS
 pour des développements mobiles natifs.
 
 <img alt="Logo iOS" title="Apple iOS"
@@ -426,7 +426,7 @@ et en natif iOS pour les bots intégrés _on-app_)
 ### Amazon / Alexa
 
 Les fonctions _Speech-To-Text_ et _Text-To-Speech_ d'Alexa (Amazon) sont utilisées à travers le 
-[connecteur Alexa / Echo](canaux.md#alexa-echo).
+[connecteur Alexa / Echo](../canaux#alexa-echo).
 
 <img alt="Logo Alexa" title="Amazon Alexa"
 src="https://cognyapps.com/wp-content/uploads/2018/09/amazon-alexa-logo-e1538253665426.png" 
@@ -441,7 +441,7 @@ La société [Allo-Media](https://www.allo-media.net/) propose une plateforme IA
 
 [Voxygen](https://www.voxygen.fr/) propose des services de synthèse vocale.
 
-A l'occasion du développement du bot [AlloCovid](https://www.allocovid.com/), un [connecteur Allo-Media](canaux.md#allo-media)
+A l'occasion du développement du bot [AlloCovid](https://www.allocovid.com/), un [connecteur Allo-Media](../canaux#allo-media)
 a été développé pour intégrer le bot (Tock) aux services Allo-Media : 
 _Speech-To-Text_ et _Text-To-Speech_ avec Voxygen.
 

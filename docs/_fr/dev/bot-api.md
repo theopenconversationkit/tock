@@ -13,22 +13,22 @@ base de données serait un problème.
 > Seul le mode _Bot API_ est disponible sur la [plateforme de démonstration](https://demo.tock.ai/)
 > publique Tock.
 
-Cette page présente le développement de bots Tock en mode _Bot API_ en [Kotlin](bot-api.md#developper-en-kotlin). 
-Des clients sont aussi disponibles pour [Javascript/Node](bot-api.md#developper-en-javascript) et [Python](bot-api.md#developper-en-python).
-Il est possible de développer des parcours Tock dans n'importe quel langage via la [_Bot API_](bot-api.md#developper-via-lapi).
+Cette page présente le développement de bots Tock en mode _Bot API_ en [Kotlin](bot-api#developper-en-kotlin). 
+Des clients sont aussi disponibles pour [Javascript/Node](bot-api#developper-en-javascript) et [Python](bot-api#developper-en-python).
+Il est possible de développer des parcours Tock dans n'importe quel langage via la [_Bot API_](bot-api#developper-via-lapi).
 
 [<img alt="Logo Kotlin" title="Kotlin"
       src="https://upload.wikimedia.org/wikipedia/commons/7/74/Kotlin_Icon.png" 
-      style="width: 50px;">](bot-api.md#developper-en-kotlin)
+      style="width: 50px;">](bot-api#developper-en-kotlin)
 [<img alt="Logo Nodejs" title="Nodejs"
       src="https://www.boostit.net/wp-content/uploads/2016/08/node-js-icon.png" 
-      style="width: 50px;">](bot-api.md#developper-en-javascript)
+      style="width: 50px;">](bot-api#developper-en-javascript)
 [<img alt="Logo Python" title="Python"
       src="https://www.libraries.rutgers.edu/sites/default/files/styles/resize_to_300px_width/public/events/2020/01/python_3_2.png" 
-      style="width: 50px;">](bot-api.md#developper-en-python)
+      style="width: 50px;">](bot-api#developper-en-python)
 [<img alt="API" title="Bot API"
       src="https://zappysys.com/blog/wp-content/uploads/2018/06/REST-API-icon.jpg" 
-      style="width: 50px;">](bot-api.md#developper-via-lapi)
+      style="width: 50px;">](bot-api#developper-via-lapi)
 
 
 > Une autre section présente le mode [_Bot Framework_](bot-integre) disponible pour Kotlin uniquement, 
@@ -173,7 +173,7 @@ src="https://zappysys.com/blog/wp-content/uploads/2018/06/REST-API-icon.jpg"
 style="width: 100px;">
 
 Il est possible de développer des parcours Tock dans n'importe quel langage, en s'interfaçant directement avec 
-l'[API](api.md#tock-bot-definition-api).
+l'[API](api#tock-bot-definition-api).
 
 ## Installer Bot API côté serveur
 

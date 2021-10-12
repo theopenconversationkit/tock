@@ -456,7 +456,7 @@ directement dans Docker-Compose (sans avoir à modifier le fichier XML ni l'imag
 
 #### Docker Compose
 
-Pour les utilisateurs de [Docker Compose](), un mécanisme permet de configurer les logs directement dans les 
+Pour les utilisateurs de [Docker Compose](https://docs.docker.com/compose/), un mécanisme permet de configurer les logs directement dans les 
 descripteurs en YAML. Voir le dépot [`tock-docker`](https://github.com/theopenconversationkit/tock-docker) pour un 
 exemple d'implémentation de Tock dans Docker Compose.
 
@@ -479,4 +479,4 @@ Pour en savoir plus, voir la [documentation Docker Compose](https://docs.docker.
 
 ### Chiffrement et anonymisation
 
-Voir la page [sécurité](securite) concernant les possibilités de chiffrement et anonymisation des logs.
+Voir la page [sécurité](../securite) concernant les possibilités de chiffrement et anonymisation des logs.

@@ -41,7 +41,7 @@ sous licence [GPL](https://fr.wikipedia.org/wiki/Licence_publique_g%C3%A9n%C3%A9
 * [`tock-docker`](https://github.com/theopenconversationkit/tock-docker) : des images [Docker](https://www.docker.com/) 
 et [Docker Compose](https://docs.docker.com/compose/), pour faciliter la prise en main et le déploiement de la plateforme dans différentes configurations.
 
-* [`tock-bot-samples`]() : des exemples de code notamment pour programmer des parcours en mode _WebHook_ ou _WebSocket_ 
+* [`tock-bot-samples`](https://github.com/theopenconversationkit/tock-bot-samples) : des exemples de code notamment pour programmer des parcours en mode _WebHook_ ou _WebSocket_ 
 comme dans les [guides Tock](../guide/api).
  
 * [`tock-bot-open-data`](https://github.com/theopenconversationkit/tock-bot-open-data) : un exemple de bot basé 
@@ -160,4 +160,4 @@ Chaque nouvelle évolution ou correctif devrait embarquer ses tests unitaires.
 
 _Un problème ? Une question sur l'implémentation ? Une idée à partager ?_
 
-Pour contribuer au projet ou simplement en savoir plus, n'hésitez pas à [nous contacter](contact).
+Pour contribuer au projet ou simplement en savoir plus, n'hésitez pas à [nous contacter](../contact).

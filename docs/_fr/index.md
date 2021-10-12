@@ -25,7 +25,7 @@ L'utilisateur choisit les composants qu'il embarque et peut ainsi conserver la m
 
 |   |   |
 |---|---|
-| ![AlloCovid](https://doc.tock.ai/fr/images/allocovid.png) | Pour en savoir plus sur le service [_AlloCovid_](https://www.allocovid.com/) (conçu avec Tock) rendez-vous sur [www.allocovid.com](https://www.allocovid.com/) ou sur [cette page](apropos/vitrine.md#allocovid) pour les aspects techniques et davantage de liens notamment vers les sources. |
+| ![AlloCovid](https://doc.tock.ai/fr/images/allocovid.png) | Pour en savoir plus sur le service [_AlloCovid_](https://www.allocovid.com/) (conçu avec Tock) rendez-vous sur [www.allocovid.com](https://www.allocovid.com/) ou sur [cette page](apropos/vitrine#allocovid) pour les aspects techniques et davantage de liens notamment vers les sources. |
 
 ## Fonctionnalités
 

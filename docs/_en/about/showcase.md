@@ -15,7 +15,7 @@ more and more teams and organizations to build conversational bots and services 
 * text & voice channels: Web & mobile, messaging, smart devices, telephone services
 
 This page presents various assistants and products built and powered by Tock,
-some of them [awarded](awards) by the community.
+some of them [awarded](../awards) by the community.
 
 ## Healthcare
 
@@ -203,7 +203,7 @@ on the company Website [Enedis.fr](https://www.enedis.fr/).
 * **Field:** all subjects about energy distribution
 * **Channels:** text, on the company Website [Enedis.fr](https://www.enedis.fr/)
 
-> Also in production since 2020, the [_Enedis internal Chatbot_](showcase.md#enedis-internal-chatbot) 
+> Also in production since 2020, the [_Enedis internal Chatbot_](../showcase#enedis-internal-chatbot) 
 > for internal logistics services is also built with Tock.
 
 ## Bank
@@ -363,7 +363,7 @@ community chat to see professionals, students, large and smaller companies
  currently using or experimenting with Tock for their conversational or _NLU_ projects.
 
 As a generic platform, Tock enables numerous use cases and integration of internal as well as external channels.
-Please feel free to [contact us](contact) in case of doubts or questions about Tock features or possibilities for a new project 
+Please feel free to [contact us](../contact) in case of doubts or questions about Tock features or possibilities for a new project 
 of your own.
 
 _And don't hesitate to share your achievements with the community! 🙂_

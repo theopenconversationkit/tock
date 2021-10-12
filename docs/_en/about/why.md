@@ -14,7 +14,7 @@ control (relying on opensource libraries and academic solutions) and preventing 
 debugging conversational models) for more reactive agility.
 
 > Since then, the team behind [OUIbot](https://www.oui.sncf/services/assistant) as well as other teams, dedicated to
->various conversational assistants at SNCF (see the [showcase](showcase)) use Tock every day in production 
+>various conversational assistants at SNCF (see the [showcase](../showcase)) use Tock every day in production 
 and add new features and connectors to the platform on a regular basis.
 
 We are convinced there is a **need for open AI and conversational platforms**, enabling **various technical and 
@@ -26,7 +26,7 @@ requirement for their own projects.
 The complete Tock solution is shared with the community in order to federate and mutualize efforts from assistant builders. 
 
 > Starting 2019, Tock is a recommended solution at Group SNCF. 
-> Several other companies leverage Tock in production (see [showcase](showcase)).
+> Several other companies leverage Tock in production (see [showcase](../showcase)).
 
 > Eventually, we believe that Tock should join an Open Source organization,
 > such as the [_TOSIT (The Open Source I Trust)_](http://tosit.fr/) association 

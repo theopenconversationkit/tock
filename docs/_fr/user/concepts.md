@@ -19,7 +19,7 @@ tirer un ensemble de modèles statistiques (lui permettant d'analyser et d'inter
 En mode conversationnel, l'_application_ inclue également différents paramètres définissant les réponses et le 
 comportement du _bot_. Autrement dit, **une _application_ correspond généralement à un _bot_**.
 
-Voir [_Tock Studio > Settings > Applications_](studio/configuration.md#longlet-applications).
+Voir [_Tock Studio > Settings > Applications_](studio/configuration#longlet-applications).
 
 ### _Configuration_
 
@@ -30,7 +30,7 @@ En mode conversationnel, **une _configuration_ correspond à un ensemble de rép
 sur ces canaux. Par exemple, pour un même scénario (_story_) de l'application il est possible de paramétrer des réponses 
 différentes (_answers_, _story rules_, etc.) selon plusieurs _configurations_.
 
-Voir [_Tock Studio > Settings > Configurations_](studio/configuration.md#longlet-configurations).
+Voir [_Tock Studio > Settings > Configurations_](studio/configuration#longlet-configurations).
 
 ### _Connecteur_
 
@@ -40,7 +40,7 @@ Sa configuration détaillée dépend du canal concerné.
 Tock permet de mutualiser très facilement le code d'un _bot_ pour qu'il réponde sur plusieurs canaux grâce à ses 
 connecteurs. Il est toutefois possible d'ajuster finement réponses et comportements en fonction du connecteur, si besoin. 
 
-Voir [_Tock Studio > Settings > Configurations_](studio/configuration.md##gerer-les-connecteurs) et
+Voir [_Tock Studio > Settings > Configurations_](studio/configuration##gerer-les-connecteurs) et
 la page [_Bot Multicanal_](guides/canaux) pour en savoir plus sur les connecteurs disponibles.
 
 ### _Namespace_
@@ -57,7 +57,7 @@ Si la plupart des objets et paramètres dépendent d'une _application_ appartena
 certains objets comme les réponses (_answers_) sont directement rattachés au _namespace_ :
 ils sont donc partagés entre les applications de ce _namespace_.
 
-Voir [_Tock Studio > Settings > Namespaces_](studio/configuration.md#longlet-namespaces).
+Voir [_Tock Studio > Settings > Namespaces_](studio/configuration#longlet-namespaces).
 
 ### _Intentions_
 

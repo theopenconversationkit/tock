@@ -61,10 +61,10 @@ Il est même possible de développer ses propres connecteurs pour ouvrir le bot 
 > Pour ce tutoriel, vous allez configurer un connecteur pour [Slack](https://slack.com/). 
 Dans un premier temps, vous testerez le bot en restant dans l'interface _Tock Studio_, et n'aurez pas besoin d'utiliser Slack.
 >
->Dans la section suivante [Configurer Slack](slack),
+>Dans la section suivante [Configurer Slack](../slack),
 vous pourrez compléter la configuration côté Slack et côté Tock afin que le bot soit fonctionnel sur cette plateforme collaborative.
 >
-> De même, la section [Configurer Messenger](messenger) vous montrera comment activer le même bot sur la messagerie du réseau social Facebook.
+> De même, la section [Configurer Messenger](../messenger) vous montrera comment activer le même bot sur la messagerie du réseau social Facebook.
 
 Créez un premier connecteur pour votre application :
 
@@ -80,7 +80,7 @@ Créez un premier connecteur pour votre application :
 
 > Notez qu'une _API Key_ a été automatiquement générée pour votre application à la création du premier connecteur. 
 >Celle-ci vous servira à vous connecter à l'API du bot si vous essayez le mode _WebHook_ ou _WebSocket_ dans le guide 
->_[Programmer des parcours](api)_.
+>_[Programmer des parcours](../api)_.
 
 > Si vous cliquez sur _Display test configurations_, vous pouvez voir qu'une seconde configuration est créée. 
 >Ce connecteur spécial sera utilisé pour tester le bot directement depuis l'interface _Tock Studio_. 
@@ -202,14 +202,14 @@ pour créer des parcours conversationnels simples sans écrire ni déployer de c
 
 Dans les sections suivantes vous apprendrez à :
 
-* [Configurer le bot pour le canal Slack](slack) (requiert un compte Slack)
+* [Configurer le bot pour le canal Slack](../slack) (requiert un compte Slack)
 
-* [Configurer le bot pour le canal Messenger](messenger) (requiert un compte Facebook)
+* [Configurer le bot pour le canal Messenger](../messenger) (requiert un compte Facebook)
 
-* [Créer des parcours programmés en Kotlin](api), ouvrant la voie à des comportements complexes et 
+* [Créer des parcours programmés en Kotlin](../api), ouvrant la voie à des comportements complexes et 
 l'intégration d'API tierces si besoin
 
-* [Déployer une plateforme Tock](plateforme) en quelques minutes avec Docker
+* [Déployer une plateforme Tock](../plateforme) en quelques minutes avec Docker
 
 Pour en savoir plus sur _Tock Studio_, les fonctionnalités et les modes de déploiement de Tock, vous pouvez aussi 
-parcourir le [manuel utilisateur](../toc), plus complet.
+parcourir le [manuel utilisateur](../../toc), plus complet.

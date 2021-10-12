@@ -22,7 +22,7 @@ Users choose which components to embed and decide to keep (or share) ownership o
 
 |   |   |
 |---|---|
-| ![AlloCovid](https://doc.tock.ai/fr/images/allocovid.png) | To find out more about [_AlloCovid_](https://www.allocovid.com/) (built with Tock) please visit [www.allocovid.com](https://www.allocovid.com/). Available by phone, on the Web and WhatsApp, the bot informs and guides French population about the Covid-19, thanks to experts, partners and volunteers. [This page](about/showcase.md#allocovid) gives technical details and links to the sources. |
+| ![AlloCovid](https://doc.tock.ai/fr/images/allocovid.png) | To find out more about [_AlloCovid_](https://www.allocovid.com/) (built with Tock) please visit [www.allocovid.com](https://www.allocovid.com/). Available by phone, on the Web and WhatsApp, the bot informs and guides French population about the Covid-19, thanks to experts, partners and volunteers. [This page](about/showcase#allocovid) gives technical details and links to the sources. |
 
 ## Features
 

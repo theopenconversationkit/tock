@@ -211,7 +211,7 @@ reconnues par le modèle NLP.
 Cette anonymisation par types d'entités se configure dans la vue _Language Understanding > Entities_. Seuls les 
 utilisateurs ayant un rôle `admin` ou `technicalAdmin` dans _Tock Studio_ peuvent activer/désactiver cette fonctionnalité.
 
-> Pour en savoir plus, voir [_Rôles_](securite.md#roles).
+> Pour en savoir plus, voir [_Rôles_](../securite#roles).
 
 Dans les vues où les phrases sont affichées anonymisées (_Inbox_, _Search_ par exemple), un `admin` ou 
 `technicalAdmin` peut décider d'afficher quand même (pour lui-même uniquement) une phrase non anonymisée grâce à l'action 
@@ -230,5 +230,5 @@ En fonction de leur nature et leur utilisation dans le fonctionnement de Tock (N
 ces données ont des durées de rétention spécifiques, et configurables. **Chaque utilisateur de Tock décide et configure 
 combien de temps les données stockées sont conservées, en fonction de ses besoins.**
 
-La section [_Installation > Conservation des données_](installation.md#conservation-des-donnees) décrit les différents 
+La section [_Installation > Conservation des données_](../installation#conservation-des-donnees) décrit les différents 
 types de données conservées et comment modifier leur durée de rétention.

@@ -4,13 +4,13 @@ title: Messenger
 
 # Configurer son bot pour Messenger
 
-Si vous avez suivi le guide [Créer son premier bot avec _Tock Studio_](studio), vous avez déclaré un connecteur
+Si vous avez suivi le guide [Créer son premier bot avec _Tock Studio_](../studio), vous avez déclaré un connecteur
  de type Slack.
 
 Dans ce guide, vous allez créer une configuration pour [Facebook Messenger](https://fr-fr.facebook.com/messenger/) 
 et intégrer le bot pour dialoguer avec lui sur ce réseau social.
 
-Si vous le souhaitez, vous pouvez aussi sauter cette étape et passer directement à [la suite](api).
+Si vous le souhaitez, vous pouvez aussi sauter cette étape et passer directement à [la suite](../api).
 
 ## Ce que vous allez créer
 
@@ -22,7 +22,7 @@ Si vous le souhaitez, vous pouvez aussi sauter cette étape et passer directemen
 
 * Environ 20 minutes
 
-* Un bot Tock fonctionnel (par exemple suite au guide [premier bot Tock](studio))
+* Un bot Tock fonctionnel (par exemple suite au guide [premier bot Tock](../studio))
 
 * Un compte [Facebook Developer](https://developers.facebook.com/)
 
@@ -154,15 +154,15 @@ spécifiques, etc.
 
 Dans les sections suivantes vous apprendrez à :
 
-* [Créer des parcours programmés en Kotlin](api), ouvrant la voie à des comportements complexes et 
+* [Créer des parcours programmés en Kotlin](../api), ouvrant la voie à des comportements complexes et 
 l'intégration d'API tierces si besoin
 
-* [Déployer une plateforme Tock](plateforme) en quelques minutes avec Docker
+* [Déployer une plateforme Tock](../plateforme) en quelques minutes avec Docker
 
 Pour en savoir plus sur le connecteur Messenger fourni avec Tock, rendez-vous dans le dossier 
 [connector-messenger](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-messenger) sur GitHub, 
 où vous retrouverez les sources et le _README_ du connecteur.
 
 Pour en savoir plus sur _Tock Studio_, les fonctionnalités et les modes de déploiement de Tock, vous pouvez aussi 
-parcourir le [manuel utilisateur](../toc), plus complet.
+parcourir le [manuel utilisateur](../../toc), plus complet.
 

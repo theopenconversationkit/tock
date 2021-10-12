@@ -12,7 +12,7 @@ In _Model Quality_ various views give insights about the relevance of the model:
     * average execution time
 2. **Intent Distance**: the distance between intents    
 3. **Model Builds**: history and details about model builds    
-4. **Test Trends**: evolution of the relevance of [model tests](#partial-model-tests) 
+4. **Test Trends**: evolution of the relevance of [model tests](../evaluate-the-model#partial-model-tests) 
 5. **Test Intent Errors**: the list of intent errors found with model tests
 6. **Test Entity Errors**: the list of entity errors found with model tests
 
@@ -32,7 +32,7 @@ Model tests are useful only with large models.
 
 Click on the *Intent Errors* tab:
 
-![schéma Tock](img/intent-errors.png "Intent Errors Detection")
+![schéma Tock](../img/intent-errors.png "Intent Errors Detection")
 
 Since the picture above is built from a very simple model, no real error has been detected.
  We can nevertheless note that in some cases the model is systematically wrong with a high probability.  
@@ -41,4 +41,4 @@ Since the picture above is built from a very simple model, no real error has bee
 
 These errors can be viewed via the *Entity Errors* tab.
 
-![schéma Tock](img/entity-errors.png "Entity Errors Detection")
+![schéma Tock](../img/entity-errors.png "Entity Errors Detection")

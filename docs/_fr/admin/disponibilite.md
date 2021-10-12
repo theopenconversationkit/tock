@@ -23,7 +23,7 @@ voire de meilleures performances.
 
 ## Performance
 
-Comme indiqué dans la section [installation](installation), le premier paramètre à surveiller est 
+Comme indiqué dans la section [installation](../installation), le premier paramètre à surveiller est 
 la mémoire disponible.
 
 A forte charge - nous avons expérimenté plus de 80 req/s sur nos propres bots - 

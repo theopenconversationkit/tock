@@ -34,4 +34,4 @@ This API is used by provided Kotlin, Javascript/Nodejs and Python clients availa
 
 > The API is under development, it will soon be documented.
 
-To know more about the _Bot API_ development frameworks, see [this page](dev/bot-api).
+To know more about the _Bot API_ development frameworks, see [this page](../dev/bot-api).

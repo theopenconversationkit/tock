@@ -91,7 +91,7 @@ style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rg
 </a>
 
 
-> Don't hesitate to [share with us](contact) more slides, documents and links about Tock.
+> Don't hesitate to [share with us](../contact) more slides, documents and links about Tock.
 
 ## Press kit
 

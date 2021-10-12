@@ -5,7 +5,7 @@ title: Communauté
 # Communauté Tock
 
 Tock est bâti sur un modèle communautaire pour créer une plateforme ouverte.  
-Pour en savoir plus, voir [pourquoi Tock](pourquoi).
+Pour en savoir plus, voir [pourquoi Tock](../pourquoi).
 
 La communauté Tock est ouverte à la contribution et tous les retours comme les _feature requests_ et 
 _pull requests_ sont les bienvenus !
@@ -56,7 +56,7 @@ sous [licence Apache 2](https://github.com/theopenconversationkit/tock/blob/mast
 * [Contributeurs](https://github.com/theopenconversationkit/tock/graphs/contributors)
 
 Pour en savoir plus sur l'organisation des dépôts, les conventions de code, etc. voir le  
-[guide de contribution](contribuer) Tock. Pour tout autre forme de contribution, n'hésitez pas à utiliser les [_issues_](https://github.com/theopenconversationkit/tock/issues) 
+[guide de contribution](../contribuer) Tock. Pour tout autre forme de contribution, n'hésitez pas à utiliser les [_issues_](https://github.com/theopenconversationkit/tock/issues) 
 GitHub et à [contacter directement la communauté](https://gitter.im/tockchat/Lobby) avec Gitter.
 
 <a href="https://github.com/theopenconversationkit/tock/"
@@ -96,4 +96,4 @@ plateforme de démo en ligne.
 ## Aide
 
 Que ce soit pour de l'aide, des questions, des suggestions :  
-n'hésitez pas à [nous contacter](contact).
+n'hésitez pas à [nous contacter](../contact).

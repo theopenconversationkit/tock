@@ -4,13 +4,13 @@ title: Slack
 
 # Configurer son bot pour Slack
 
-Si vous avez suivi le guide [Créer son premier bot avec _Tock Studio_](studio), vous avez déclaré un connecteur
+Si vous avez suivi le guide [Créer son premier bot avec _Tock Studio_](../studio), vous avez déclaré un connecteur
  de type Slack mais celui-ci n'est pas encore configuré pour que le bot parle réellement sur [Slack](https://slack.com/).
 
 Avec un peu de configuration côté Slack et côté Tock, un bot peut recevoir des messages et répondre sur ce canal.
 
-Si vous le souhaitez, vous pouvez aussi sauter cette étape et [configurer un canal Messenger](messenger) 
-ou passer directement à [la suite](api).
+Si vous le souhaitez, vous pouvez aussi sauter cette étape et [configurer un canal Messenger](../messenger) 
+ou passer directement à [la suite](../api).
  
 ## Ce que vous allez créer
 
@@ -22,7 +22,7 @@ ou passer directement à [la suite](api).
 
 * Environ 15 minutes
 
-* Un bot Tock fonctionnel (par exemple suite au guide [premier bot Tock](studio))
+* Un bot Tock fonctionnel (par exemple suite au guide [premier bot Tock](../studio))
 
 * Un compte Slack et un _espace de travail_ / une _chaîne_ où intégrer le bot
 
@@ -135,16 +135,16 @@ Comme vous le constatez, connecter un bot Tock à un (ou plusieurs) canaux exter
 
 Dans les sections suivantes vous apprendrez à :
 
-* [Configurer le bot pour le canal Messenger](messenger) (requiert un compte Facebook)
+* [Configurer le bot pour le canal Messenger](../messenger) (requiert un compte Facebook)
 
-* [Créer des parcours programmés en Kotlin](api), ouvrant la voie à des comportements complexes et 
+* [Créer des parcours programmés en Kotlin](../api), ouvrant la voie à des comportements complexes et 
 l'intégration d'API tierces si besoin
 
-* [Déployer une plateforme Tock](plateforme) en quelques minutes avec Docker
+* [Déployer une plateforme Tock](../plateforme) en quelques minutes avec Docker
 
 Pour en savoir plus sur le connecteur Slack fourni avec Tock, rendez-vous dans le dossier 
 [connector-slack](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-slack) sur GitHub, 
 où vous retrouverez les sources et le _README_ du connecteur.
 
 Pour en savoir plus sur _Tock Studio_, les fonctionnalités et les modes de déploiement de Tock, vous pouvez aussi 
-parcourir le [manuel utilisateur](../toc), plus complet.
+parcourir le [manuel utilisateur](../../toc), plus complet.
