@@ -14,7 +14,7 @@ La documentation de cette API est disponible dans [/api/web-connector](../../../
 
 ## _Tock NLU API_
 
-L'API _NLU_ de Tock (reconnaissance du langage naturel) permet d'interroger programmatiquement le 
+L'API _NLU / NLP_ de Tock (reconnaissance du langage naturel) permet d'interroger programmatiquement le 
 modèle conversationnel et d'analyser une phrase.
 
 La documentation de l'API Tock NLU est disponible dans [/api](../../../api/).

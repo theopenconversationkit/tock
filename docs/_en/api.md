@@ -10,9 +10,9 @@ The Tock _Web Connector_ allows to interact with a bot using a REST API.
 
 API documentation is available at [/api/web-connector](../../../api/web-connector). 
 
-## _Tock Web Connector API_
+## _Tock NLU API_
 
-To test a model via the Tock _NLU_ API, see [/api](../../api/).
+To test a model via the Tock _NLU / NLP_ API, see [/api](../../api/).
 
 It is also possible to run the provided [Docker images](https://github.com/theopenconversationkit/tock-docker)
 and open [http://localhost/doc/index.html](http://localhost/doc/index.html)   
