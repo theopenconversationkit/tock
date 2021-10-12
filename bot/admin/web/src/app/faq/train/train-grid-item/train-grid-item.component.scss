@@ -1,0 +1,19 @@
+@import url(../../common/_base_faq.scss);
+
+/* Fix card overflow */
+nb-card,nb-card-body {
+    overflow-x: hidden;
+}
+
+
+.tock-btn-addfaq {
+    transition: color .5s ease;
+    font-size: 1.5rem !important; /* Fix icon size problem */
+    cursor: pointer;
+    color: #888;
+    user-select: none;
+
+    &:hover {
+        color: #555;
+    }
+}

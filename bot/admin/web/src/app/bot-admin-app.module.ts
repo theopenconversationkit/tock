@@ -34,6 +34,7 @@ import {
   NbWindowModule,
   NbThemeModule
 } from '@nebular/theme';
+import { CustomNbIconLibraries } from "./shared/icons/custom-nb-icon-libraries";
 import { APP_BASE_HREF, PlatformLocation } from '@angular/common';
 import { BotService } from './bot/bot-service';
 
@@ -64,7 +65,11 @@ const routes: Routes = [
     path: 'analytics',
     loadChildren: () => import('./analytics/analytics.module').then((m) => m.BotAnalyticsModule)
   },
-  { path: '**', redirectTo: '/nlp/inbox' }
+  {
+    path: 'faq',
+    loadChildren: () => import('./faq/faq.module').then(m => m.FaqModule)
+  },
+  {path: '**', redirectTo: '/nlp/inbox' }
 ];
 
 @NgModule({
@@ -96,6 +101,8 @@ export class BotAdminAppRoutingModule {}
     NgbModule
   ],
   providers: [
+    CustomNbIconLibraries,
+    { provide: NbIconLibraries, useExisting: CustomNbIconLibraries },
     {
       provide: APP_BASE_HREF,
       useFactory: (s: PlatformLocation) => s.getBaseHrefFromDOM(),
@@ -105,4 +112,17 @@ export class BotAdminAppRoutingModule {}
   ],
   bootstrap: [BotAdminAppComponent]
 })
-export class BotAdminAppModule {}
+export class BotAdminAppModule {
+
+  constructor(private iconLibraries: NbIconLibraries) {
+    this.registerMaterialIcons();
+  }
+
+  private registerMaterialIcons() {
+    this.iconLibraries.registerFontPack("material-icons", {
+      packClass: "material-icons",
+      ligature: true
+    });
+
+  }
+}

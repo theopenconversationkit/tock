@@ -35,10 +35,12 @@ import {
   NbSelectModule,
   NbTooltipModule,
   NbPopoverModule,
-  NbButtonModule
+  NbButtonModule,
+  NbIconLibraries
 } from '@nebular/theme';
 import { InfoButtonComponent } from './info-button/info-button.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
+import {CustomNbIconLibraries} from './icons/custom-nb-icon-libraries'
 
 @NgModule({
   imports: [
@@ -76,4 +78,6 @@ import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-
   providers: [BotSharedService],
   entryComponents: []
 })
-export class BotSharedModule {}
+export class BotSharedModule {
+
+}
