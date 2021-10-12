@@ -8,7 +8,7 @@ title: API
 
 The Tock _Web Connector_ allows to interact with a bot using a REST API.
 
-API documentation is available at [/api/web-connector](../../../api/web-connector). 
+API documentation is available at [/api/web-connector](../../api/web-connector). 
 
 ## _Tock NLU API_
 
