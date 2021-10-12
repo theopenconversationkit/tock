@@ -1,0 +1,36 @@
+<nb-card class="overflow-hidden mb-2">
+    <nb-card-body class="d-flex align-items-center p-2 flex-wrap">
+        <div class="col-1 d-flex justify-content-start">
+            <nb-checkbox ngClass="['mr-2', 'd-flex']"></nb-checkbox>
+            <div class="tock-divider ml-3"></div>
+        </div>
+        <div class="col-5 d-flex justify-content-between ">
+            Question quel est le meilleur moyen pour supprimer ma carte?
+        </div>
+        <div class="col-3 d-flex justify-content-between align-items-center">
+            <div class="tock-divider mr-2"></div>
+            FAQ
+            <nb-select ngClass="['ml-2']" [size]="'small'" placeholder="Résilier carte">
+                <nb-option value="1">
+                    Résilier carte
+                </nb-option>
+                <nb-option value="2">
+                    Supprimer carte
+                </nb-option>
+            </nb-select>
+
+            <nb-icon  ngClass="tock-btn-addfaq" nbPrefix pack="material-icons" icon="add_circle_outline"></nb-icon>
+
+            <div class="tock-divider ml-2"></div>
+        </div>
+        <div class="col-3 d-flex justify-content-end">
+            <button nbButton status="primary" outline size="small" ngClass="mr-2">Validate</button>
+            <button nbButton outline size="small" ngClass="mr-2">Details</button>
+
+            <button ghost status="secondary" size="small" nbButton>
+                <nb-icon nbPrefix pack="material-icons" icon="trash-2-outline"></nb-icon>
+            </button>
+
+        </div>
+    </nb-card-body>
+</nb-card>
