@@ -32,7 +32,8 @@ import {
   NbSidebarModule,
   NbToastrModule,
   NbWindowModule,
-  NbThemeModule
+  NbThemeModule,
+  NbIconLibraries
 } from '@nebular/theme';
 import { CustomNbIconLibraries } from "./shared/icons/custom-nb-icon-libraries";
 import {APP_BASE_HREF, PlatformLocation} from "@angular/common";

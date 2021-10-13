@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'tock-train-grid-item',
@@ -6,6 +6,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./train-grid-item.component.scss']
 })
 export class TrainGridItemComponent implements OnInit {
+
+  @Input()
+  public sentence: string;
 
   constructor() { }
 
