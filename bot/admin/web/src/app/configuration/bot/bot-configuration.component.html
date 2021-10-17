@@ -17,10 +17,10 @@
 <nb-card *ngIf="configuration" [ngClass]="{'conf': configuration._id, 'newConf': !configuration._id}">
   <nb-card-body>
 
-    <span class="nb-form-field inline">
+    <div class="nb-form-field inline">
       <label>Configuration name</label>
       <input nbInput type="text" status="primary" placeholder="Configuration name" [(ngModel)]="configuration.name">
-    </span>
+    </div>
 
     <span class="nb-form-field inline" *ngIf="configuration._id">
       <label>Connector type</label>

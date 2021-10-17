@@ -35,6 +35,7 @@ import {
   NbThemeModule
 } from '@nebular/theme';
 import {APP_BASE_HREF, PlatformLocation} from "@angular/common";
+import { BotService } from "./bot/bot-service";
 
 const routes: Routes = [
   {path: '', redirectTo: '/nlp/inbox', pathMatch: 'full'},
@@ -99,7 +100,8 @@ export class BotAdminAppRoutingModule {
       provide: APP_BASE_HREF,
       useFactory: (s: PlatformLocation) => s.getBaseHrefFromDOM(),
       deps: [PlatformLocation]
-    }
+    },
+    BotService
   ],
   bootstrap: [BotAdminAppComponent]
 })

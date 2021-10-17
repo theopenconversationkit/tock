@@ -14,26 +14,27 @@
  * limitations under the License.
  */
 
-import {Component, ElementRef, Inject, ViewChild} from "@angular/core";
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {Component, ElementRef, Input, OnInit, ViewChild} from "@angular/core";
 import {MediaAction, MediaCard, MediaFile} from "../../model/story";
 import {CreateI18nLabelRequest} from "../../model/i18n";
 import {BotService} from "../../bot-service";
 import {StateService} from "../../../core-nlp/state.service";
 import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
-import {RestService} from "../../../core-nlp/rest/rest.service";
-import {NbToastrService} from '@nebular/theme';
+import {NbDialogRef, NbToastrService} from '@nebular/theme';
+import {RestService} from "src/app/core-nlp/rest/rest.service";
 
 @Component({
   selector: 'tock-media-dialog',
   templateUrl: './media-dialog.component.html',
   styleUrls: ['./media-dialog.component.css']
 })
-export class MediaDialogComponent {
+export class MediaDialogComponent implements OnInit{
 
+  @Input()
   media: MediaCard;
-  create: boolean;
+  @Input()
   category: string;
+  create: boolean;
   fileUpload: string = "upload";
   fileExternalUrl: string;
 
@@ -42,15 +43,18 @@ export class MediaDialogComponent {
   @ViewChild('titleElement') titleElement: ElementRef;
 
   constructor(
-    public dialogRef: MatDialogRef<MediaDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
+    public dialogRef: NbDialogRef<MediaDialogComponent>,
     public rest: RestService,
     private state: StateService,
     private toastrService: NbToastrService,
-    private bot: BotService) {
-    this.category = this.data.category ? this.data.category : "build";
-    this.create = this.data.media === null;
-    this.media = this.data.media ? this.data.media : new MediaCard([], null, null, null, true);
+    private bot: BotService,
+    ) {
+
+  }
+  ngOnInit(): void {
+    this.category = this.category ? this.category : "build";
+    this.create = this.media === null;
+    this.media = this.media ? this.media : new MediaCard([], null, null, null, true);
     if (this.media.title) {
       this.media.titleLabel = this.media.title.defaultLocalizedLabelForLocale(this.state.currentLocale).label;
     }
@@ -177,6 +181,10 @@ export class MediaDialogComponent {
     this.dialogRef.close({removeMedia: true});
   }
 
+  cancel() {
+    this.dialogRef.close();
+  }
+
   removeAction(action: MediaAction) {
     this.media.actions.splice(this.media.actions.indexOf(action), 1);
   }
@@ -184,5 +192,31 @@ export class MediaDialogComponent {
   addAction() {
     const mediaAction = new MediaAction(null, null);
     this.media.actions.push(mediaAction);
+  }
+
+  downward(action: MediaAction) {
+    const actions = this.media.actions;
+    const i = actions.indexOf(action);
+    actions[i] = actions[i + 1];
+    actions[i + 1] = action;
+    this.media.actions = actions.slice();
+  }
+
+  canDownward(action: MediaAction): boolean {
+    const actions = this.media.actions;
+    return actions.length > 1 && actions[actions.length - 1] !== action;
+  }
+
+  upward(action: MediaAction) {
+    const actions = this.media.actions;
+    const i = actions.indexOf(action);
+    actions[i] = actions[i - 1];
+    actions[i - 1] = action;
+    this.media.actions = actions.slice();
+  }
+
+  canUpward(action: MediaAction): boolean {
+    const actions = this.media.actions;
+    return actions.length > 1 && actions[0] !== action;
   }
 }

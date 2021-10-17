@@ -21,7 +21,8 @@
 .container {
   display: flex;
   flex-direction: column;
-  width: 600px;
+  width: 45em;
+  max-height: 30em;
 }
 
 .container > * {
@@ -77,4 +78,36 @@
 
 .file-block {
   display: block;
+}
+
+.center {
+  text-align: center;
+}
+
+.right {
+  float: right;
+}
+
+.left-margin-5 {
+  margin-left: 5px;
+}
+
+.inline {
+  display: inline-block;
+}
+
+.nb-form-field {
+  position: relative;
+  padding-right: 10px;
+}
+
+.nb-form-field > label {
+  display: block;
+  font-size: x-small;
+  pointer-events: none;
+  font-weight: bold;
+}
+
+.width-50 {
+  width: 50%;
 }
