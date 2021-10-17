@@ -17,7 +17,6 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from "@angular/core";
 import {AnswerContainer, Media, SimpleAnswer, SimpleAnswerConfiguration} from "../model/story";
 import {BotService} from "../bot-service";
-import { MatDialog } from "@angular/material/dialog";
 import {StateService} from "../../core-nlp/state.service";
 import {CreateI18nLabelRequest} from "../model/i18n";
 import {MediaDialogComponent} from "./media/media-dialog.component";
@@ -50,8 +49,7 @@ export class SimpleAnswerComponent implements OnInit {
 
   constructor(private state: StateService,
               private bot: BotService,
-              private dialog: DialogService,
-              private matDialog: MatDialog) {
+              private dialog: DialogService) {
   }
 
   ngOnInit(): void {
@@ -146,18 +144,18 @@ export class SimpleAnswerComponent implements OnInit {
 
   displayMediaMessage(answer?: SimpleAnswer) {
     const media = answer ? answer.mediaMessage : this.newMedia;
-    let dialogRef = this.dialog.open(
-      this.matDialog,
+    let dialogRef = this.dialog.openDialog(
       MediaDialogComponent,
       {
-        data:
+        context:
           {
+            // @ts-ignore
             media: media,
             category: this.container.category
           }
       }
     );
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.onClose.subscribe(result => {
       const removeMedia = result.removeMedia;
       const media = result.media;
       if (removeMedia || media) {
