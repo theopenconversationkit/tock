@@ -41,9 +41,9 @@
 
         <kodein>4.1.0</kodein>
         <kmongo>4.3.0</kmongo>
-        <jackson>2.12.5</jackson>
-        <jackson-databind>2.12.5</jackson-databind>
-        <jackson-module>2.12.5</jackson-module>
+        <jackson>2.13.0</jackson>
+        <jackson-databind>2.13.0</jackson-databind>
+        <jackson-module>2.13.0</jackson-module>
         <jackson-module-loader>0.4.0</jackson-module-loader>
         <jackson-data>0.4.0</jackson-data>
         <jackson-generator>0.4.0</jackson-generator>
@@ -54,9 +54,9 @@
         <okhttp-signpost>1.1.0</okhttp-signpost>
         <signpost-core>1.2.1.2</signpost-core>
         <circuitbreaker>1.7.1</circuitbreaker>
-        <guava>30.1.1-jre</guava>
+        <guava>31.0.1-jre</guava>
         <google-auth>1.32.1</google-auth>
-        <google-http-client>1.40.0</google-http-client>
+        <google-http-client>1.40.1</google-http-client>
         <jasypt>1.9.3</jasypt>
         <commons-csv>1.9.0</commons-csv>
         <emoji>5.0</emoji>
@@ -66,14 +66,14 @@
         <httpclient>4.5.13</httpclient>
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
-        <google>23.0.0</google>
-        <aws-sdk>1.12.70</aws-sdk>
+        <google>23.1.0</google>
+        <aws-sdk>1.12.92</aws-sdk>
 
-        <junit-jupiter>5.8.0</junit-jupiter>
+        <junit-jupiter>5.8.1</junit-jupiter>
 
         <mockk>1.12.0</mockk>
         <assertj>3.12.2</assertj>
-        <byte-buddy>1.11.16</byte-buddy>
+        <byte-buddy>1.11.21</byte-buddy>
         <atrium>0.15.0</atrium>
 
         <plugin.surefire>3.0.0-M5</plugin.surefire>
