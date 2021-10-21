@@ -43,11 +43,11 @@ import ai.tock.nlp.model.EntityCallContext
 import ai.tock.nlp.model.EntityCallContextForEntity
 import ai.tock.nlp.model.EntityCallContextForIntent
 import ai.tock.nlp.model.EntityCallContextForSubEntities
-import mu.KotlinLogging
 import java.time.Duration
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import mu.KotlinLogging
 
 /**
  *
@@ -198,7 +198,8 @@ internal object DucklingParser : EntityTypeEvaluator, EntityTypeClassifier, Pars
             if (it[":dim"].string() == "duration") {
                 val n = it[":value"][":normalized"]
                 val v = n[":value"].number().toLong()
-                val u = if (n[":unit"].string() == "second") ChronoUnit.SECONDS else error("unknown unit: ${n[":unit"]}")
+                val u =
+                    if (n[":unit"].string() == "second") ChronoUnit.SECONDS else error("unknown unit: ${n[":unit"]}")
 
                 start = Math.min(start, it[":start"].int())
                 end = Math.max(end, it[":end"].int())
@@ -206,10 +207,13 @@ internal object DucklingParser : EntityTypeEvaluator, EntityTypeClassifier, Pars
             } else {
                 null
             }
-        }.reduce { a, b -> a + b }
-            .let {
+        }
+            .takeUnless { it.isEmpty() }
+            ?.reduce { a, b -> a + b }
+            ?.let {
                 listOf(ValueWithRange(start, end, DurationValue(it), "duration"))
             }
+            ?: emptyList()
     }
 
     private fun parseSimple(
