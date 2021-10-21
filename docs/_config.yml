@@ -30,8 +30,7 @@ baseurl: "/tock" # the subpath of your site, e.g. /blog
 
 copyright: "Copyright &copy; 2017/$year $author"
 
-# This is mostly for testing
-url: "https://doc.toc.ai" # the base hostname & protocol for your site
+url: "https://doc.tock.ai" # the base hostname & protocol for your site
 
 # Social (First three Required)
 repo_url: "https://github.com/theopenconversationkit/tock"

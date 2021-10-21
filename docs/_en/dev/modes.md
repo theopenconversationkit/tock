@@ -11,7 +11,7 @@ you can program your conversation flow using one of the following modes:
 
 The _Tock Bot API_ mode allows the development using any programming language of your choosing by integrating Tock's conversational REST API :
 
-![BOT API](../img/bot_api.png "BOT API")
+![BOT API](../../img/bot_api.png "BOT API")
 
 This mode is only available on the [Tock's demo platform](https://demo.tock.ai/). 
 
@@ -32,6 +32,6 @@ In consequence, you will need to :
 - Share access to your MongoDB instance
 - Develop your bot by using [Kotlin](https://kotlinlang.org/)
 
-![Bot TOCK](../img/bot_open_data.png "Bot Tock")
+![Bot TOCK](../../img/bot_open_data.png "Bot Tock")
 
 If you want to know more, read further [_here_](../integrated-bot).

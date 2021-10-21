@@ -17,7 +17,7 @@ et sur les entités (_Entity average probability_)
 
 * **Performance** : le temps de réponse du modèle (_Average call duration_)
 
-![Interface d'admin NLP - QA](../../img/tock-nlp-admin-qa.png "Exemple de monitoring de pertinence")
+![Interface d'admin NLP - QA](../../../img/tock-nlp-admin-qa.png "Exemple de monitoring de pertinence")
 
 ## L'onglet _Intent Distance_
 
@@ -53,7 +53,7 @@ Cet onglet donne l'évolution de la pertinence des tests partiels de modèle.
 Cet écran présente les résultats des _tests partiels_ de détection d'intentions (voir ci-dessus), avec le détails des 
 phrases/expressions reconnues différemment du modèle réel.
 
-![schéma Tock](../../img/intent-errors.png "Erreur d'intentions détectées")
+![schéma Tock](../../../img/intent-errors.png "Erreur d'intentions détectées")
 
 Dans cet exemple, aucune "vraie" erreur n'a été détectée. On peut toutefois constater que dans certains cas le modèle 
 se trompe systématiquement, avec une probabilité élevée.
@@ -68,7 +68,7 @@ _Validate Intent_) ou de corriger l'erreur détectée (_Change The Intent_).
 
 A l'instar de _Intent Test Errors_ pour les entités, cet écran présente les résultats des _tests partiels_ de détection des entités.
 
-![schéma Tock](../../img/entity-errors.png "Erreur d'entités détectées")
+![schéma Tock](../../../img/entity-errors.png "Erreur d'entités détectées")
 
 > Il est intéressant d'analyser périodiquement ces écarts, certaines différences s'expliquant bien, étant même 
 >parfois "assumées" (faux négatifs), d'autres pouvant réveler un problème dans le modèle.

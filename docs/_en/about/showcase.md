@@ -196,7 +196,7 @@ without the need to contact a customer advisor.
 Co-developped with Enedis experts on TOCK solution, this chatbot is available 
 on the company Website [Enedis.fr](https://www.enedis.fr/).
 
-![Enedis Client Chatbot](../img/enedis_bot2.png "Enedis Client Chatbot")
+![Enedis Client Chatbot](../../img/enedis_bot2.png "Enedis Client Chatbot")
 
 * **Name:** _Enedis Client Chatbot_
 * **Date of birth:** in production from february 2021
@@ -255,7 +255,7 @@ The _LinTO NLU (Natural Language Understanding)_ system is based on Tock to supp
 dedicated to specific use cases. It automatically learns according to one's usage when adding or removing skills from the platform.
 
 <img alt="LinTO by Linagora"
-src="https://linagora.com/wp-content/uploads/2018/10/CES-2019-LinTO-800x600.jpg"
+src="https://linto.ai/assets/img/schema-linto-deploy.png"
 style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
 
 * **Name:** _[LinTO](https://linto.ai/enterprises)_
@@ -276,7 +276,7 @@ It also aims at better understanding employee needs through the analysis of most
 
 Built with Tock, the chatbot is available on an internal company Website.
 
-![Enedis internal Chatbot](../img/enedis_bot1.png "Enedis internal Chatbot")
+![Enedis internal Chatbot](../../img/enedis_bot1.png "Enedis internal Chatbot")
 
 * **Name:** _Chatbot interne Enedis_
 * **Date of birth:** in production since 2020

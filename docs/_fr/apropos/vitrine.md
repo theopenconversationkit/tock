@@ -204,7 +204,7 @@ questions liées à l'énergie, sans nécessité de prendre contact avec un cons
 Co-construit avec des experts métiers Enedis sur la solution Tock, ce chatbot est disponible 
 sur le site [Enedis.fr](https://www.enedis.fr/).
 
-![Chatbot clients Enedis](../img/enedis_bot2.png "Chatbot clients Enedis")
+![Chatbot clients Enedis](../../img/enedis_bot2.png "Chatbot clients Enedis")
 
 * **Nom :** _Chatbot clients Enedis_
 * **Date de naissance :** en production depuis février 2021
@@ -264,7 +264,7 @@ modèles IA dédiés à des cas d’utilisation spécifiques. Il apprend automat
 selon les usages lors de l’ajout ou suppression de compétences (_Skills_) à la plateforme.
 
 <img alt="LinTO by Linagora"
-src="https://linagora.com/wp-content/uploads/2018/10/CES-2019-LinTO-800x600.jpg"
+src="https://linto.ai/assets/img/schema-linto-deploy.png"
 style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
 
 * **Nom :** _[LinTO](https://linto.ai/fr/enterprises)_
@@ -285,7 +285,7 @@ Il a également vocation à mieux appréhender les besoins des salariés via l�
 
 Construit avec Tock, le chatbot est disponible sur un site Web interne à l'entreprise.
 
-![Chatbot interne Enedis](../img/enedis_bot1.png "Chatbot interne Enedis")
+![Chatbot interne Enedis](../../img/enedis_bot1.png "Chatbot interne Enedis")
 
 * **Nom :** _Chatbot interne Enedis_
 * **Date de naissance :** en production depuis 2020

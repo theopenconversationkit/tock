@@ -30,12 +30,12 @@ Pour parler à un bot dans l'interface, une fois dans _Test_ > _Test the bot_ :
 * Sélectionnez un connecteur à émuler
 * Commencez à saisir des phrases...
 
-![Test_de_la_réponse dédiée](../../img/build-2.png "Test de la réponse dédiée")
+![Test_de_la_réponse dédiée](../../../img/build-2.png "Test de la réponse dédiée")
 
 Voici un autre exemple avec une conversation comprenant des composants riches du connecteur Messenger, avec leur rendu 
  dans l'interface générique _Tock Studio_ :
 
-![Test du bot](../../img/test.png "Test du bot")
+![Test du bot](../../../img/test.png "Test du bot")
 
 Pour chaque échange de messages avec le bot, la langue détectée est indiquée. En cliquant sur 
  _View Nlp Stats_ vous pouvez voir le détail de la réponse du modèle : intention, entités, scores, etc.

@@ -71,7 +71,7 @@ Cet onglet vous permet de voir les derniers utilisateurs connectés au bot :
 
 En cliquant sur _Display dialog_, vous pouvez voir la conversation de cet utilisateur. 
 
-![Monitoring des conversations](../../img/monitoring.png "Monitoring des conversations")
+![Monitoring des conversations](../../../img/monitoring.png "Monitoring des conversations")
 
 ## L'onglet _Search_
 
