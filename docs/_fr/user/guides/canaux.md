@@ -58,7 +58,7 @@ Cette page liste en fait :
    style="width: 50px;">](../canaux#google-chat)  
 [<img alt="Logo Web" title="Web (générique)"
  src="https://static.vecteezy.com/system/resources/previews/000/425/842/non_2x/vector-web-search-icon.jpg" 
- style="width: 50px;">](../canaux#web-generique)
+ style="width: 50px;">](../canaux#web-générique)
 [<img alt="Logo Test" title="Test (générique)"
  src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcR_8-ubeyOzkkKclCUX3V-LSJVik_u8wtbJs6FBGWp9P19kzAQH&usqp=CAU" 
  style="width: 50px;">](../canaux#test-generique)
@@ -322,7 +322,7 @@ src="https://blog.octo.com/wp-content/uploads/2015/12/react-logo-1000-transparen
 style="width: 100px;">
 
 Ce composant React intègre un bot Tock et en assure le rendu graphique dans une application Web.  
-L'application Web communique avec le bot via un [connecteur Web](../canaux#web-generique).
+L'application Web communique avec le bot via un [connecteur Web](../canaux#web-générique).
 
 * **Intégration** : [React](https://fr.reactjs.org/) (JavaScript / JSX)
 * **Type** : applications Web
@@ -338,7 +338,7 @@ src="https://plugins.jetbrains.com/files/9212/97400/icon/pluginIcon.png"
 style="width: 100px;">
 
 Ce composant Flutter intègre un bot Tock et en assure le rendu graphique dans une application mobile ou Web.  
-L'application communique avec le bot via un [connecteur Web](../canaux#web-generique).
+L'application communique avec le bot via un [connecteur Web](../canaux#web-générique).
 
 * **Intégration** : [Flutter](https://flutter.dev/) (Dart)
 * **Type** : applications mobiles natives et Web
@@ -355,7 +355,7 @@ style="width: 100px;">
 
 Ce composant _WebPart_ permet d'intégrer un bot Tock dans un site SharePoint.  
 Il embarque le [tock-react-kit](../canaux#react) pour communiquer avec le bot 
-via un [connecteur Web](../canaux#web-generique) et gérer le rendu graphique du bot dans la page SharePoint.
+via un [connecteur Web](../canaux#web-générique) et gérer le rendu graphique du bot dans la page SharePoint.
 
 * **Intégration** : [Microsoft SharePoint](https://www.microsoft.com/fr-fr/microsoft-365/sharepoint/collaboration)
 * **Type** : sites Web & intranets

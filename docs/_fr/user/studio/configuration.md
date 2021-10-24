@@ -24,12 +24,12 @@ Pour ajouter une application, cliquez sur _Create New Application_ :
 
 * Saisissez un nom / identifiant pour l'application
 
-* Choisissez si le modèle pourra inclure des _entités_ voire des _sous-entités_ (cf [Concepts](../concepts) pour en savoir plus)
+* Choisissez si le modèle pourra inclure des _entités_ voire des _sous-entités_ (cf [Concepts](../../concepts) pour en savoir plus)
 
-* Sélectionnez une ou plusieurs langues (voir [Construire un bot multilingue](../guides/i18n) pour en savoir plus)
+* Sélectionnez une ou plusieurs langues (voir [Construire un bot multilingue](../../guides/i18n) pour en savoir plus)
 
 * Sélectionnez un moteur NLU ([Apache OpenNLP](https://opennlp.apache.org/) ou [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/), 
-voir [Installation](../../admin/installation) pour en savoir plus)
+voir [Installation](../../../admin/installation) pour en savoir plus)
 
 ### Modifier, importer et exporter une application
 
@@ -72,7 +72,7 @@ en Kotlin ou dans un autre langage de programmation comme Javascript/Nodejs ou P
 
 * Une adresse / URL peut être configurée pour utiliser le mode _WebHook_ de _Bot API_
 
-Pour en savoir plus sur ces paramètres et le développement de parcours, voir [Bot API](../../dev/bot-api).
+Pour en savoir plus sur ces paramètres et le développement de parcours, voir [Bot API](../../../dev/bot-api).
 
 ### Gérer les connecteurs
 
@@ -91,7 +91,7 @@ Tous les connecteurs possèdent la configuration suivante :
 
 Chaque connecteur possède également une configuration supplémentaire spécifique à ce type de connecteur. Ces paramètres 
 sont dans _Connector Custom Configuration_. Ces paramètres spécifiques sont documentés avec chaque type de connecteur/canal, 
-voir [Les connecteurs](../guides/canaux).
+voir [Les connecteurs](../../guides/canaux).
 
 
 ### Connecteurs de test
@@ -123,6 +123,6 @@ par les utilisateurs via Tock Studio: création d'applications, modifications de
 
 ## Continuer...
 
-Rendez-vous dans [_Guides utilisateur_](../guides) pour la suite du manuel utilisateur.
+Rendez-vous dans [_Guides utilisateur_](../../guides) pour la suite du manuel utilisateur.
 
 > Vous pouvez aussi passer directement au chapitre suivant : [Développement](../../../dev/modes). 

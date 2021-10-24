@@ -22,7 +22,7 @@ Tock est composé par défaut de plusieurs conteneurs/images Docker et d'une bas
 
 Pour en savoir plus sur l'installation de Tock avec Docker, voir les instructions du dépôt [`tock-docker`](https://github.com/theopenconversationkit/tock-docker).
 
-> Le guide [déployer Tock avec Docker](../guide/plateforme) dans la section _Découvrir Tock_ donne un exemple de déploiement 
+> Le guide [déployer Tock avec Docker](../../guide/plateforme) dans la section _Découvrir Tock_ donne un exemple de déploiement 
 d'une plateforme complète en quelques minutes avec une empreinte minimale en utilisant Docker et Docker Compose. 
 Cependant, cette méthode n'est pas envisageable pour un déploiement pérenne comme une plateforme de production.
 
@@ -275,10 +275,10 @@ Les [propriétés système Java](https://docs.oracle.com/javase/8/docs/technotes
 
 ### Packaging du bot
 
-Un exemple de bot en mode [_Tock Bot intégré_](../dev/bot-integre) est disponible dans 
+Un exemple de bot en mode [_Tock Bot intégré_](../../dev/bot-integre) est disponible dans 
 [`docker-compose-bot-open-data.yml`](https://github.com/theopenconversationkit/tock-docker/blob/master/docker-compose-bot-open-data.yml).
 
-Des exemples et indications pour packager des bots en mode [_Tock Bot API_](../dev/bot-api) (_WebHooks_, _WebSockets_) seront bientôt disponibles.
+Des exemples et indications pour packager des bots en mode [_Tock Bot API_](../../dev/bot-api) (_WebHooks_, _WebSockets_) seront bientôt disponibles.
 
 ## Configurations minimales
 

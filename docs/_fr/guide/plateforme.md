@@ -203,7 +203,7 @@ développements, pour les contributeurs Tock ou encore si vous devez travailler 
 
 > Attention, l'implémentation Docker fournie ne suffit pas à garantir résilience et montée en charge de la plateforme 
 >quelles que soient les conditions en production. Pour cela, quelques recommandations sont proposées dans la section 
->[haute disponibilité](../admin/disponibilite) du manuel Tock.
+>[haute disponibilité](../../admin/disponibilite) du manuel Tock.
 
 ## Continuer...
 

@@ -9,7 +9,7 @@ _haute disponibilité_ (ou _HA - High Availability_) de bots et plateformes Tock
 
 > A venir : plus de détails sur les manières d'obtenir une haute disponibilité sur les différents 
 >composants Tock, et des retours sur notre utilisation en production depuis plusieurs années 
->(cf [vitrine / utilisateurs](../apropos/vitrine)). 
+>(cf [vitrine / utilisateurs](../../apropos/vitrine)). 
 
 ## Redondance et résilience
 

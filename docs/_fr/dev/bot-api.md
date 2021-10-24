@@ -183,8 +183,8 @@ Pour utiliser le mode _Bot API_ de Tock, un module spécifique doit être déplo
 * D'exposer la _Bot API_ aux clients potentiels quelque soit leur langage de programmation
 * D'accepter des connexions en _WebSocket_ et/ou de se connecter au webhook configuré
 
-Le guide [Déployer Tock avec Docker](../guide/plateforme) ou encore le chapitre 
-[Installation](../admin/installation) montrent comment déployer ce module si nécessaire.
+Le guide [Déployer Tock avec Docker](../../guide/plateforme) ou encore le chapitre 
+[Installation](../../admin/installation) montrent comment déployer ce module si nécessaire.
 
 La seule modification nécessaire par rapport au code d'exemple pour la platforme de démonstration est de remplacer
 la méthode `startWithDemo` par `start` en précisant si besoin l'adresse de du serveur `bot-api`.
