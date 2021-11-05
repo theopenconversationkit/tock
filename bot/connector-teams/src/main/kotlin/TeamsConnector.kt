@@ -51,14 +51,15 @@ import ai.tock.shared.defaultLocale
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
+import ai.tock.shared.warn
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import com.microsoft.bot.schema.models.Activity
 import com.microsoft.bot.schema.models.ActivityTypes
-import mu.KotlinLogging
 import java.time.Duration
 import java.util.Locale
 import kotlin.system.measureTimeMillis
+import mu.KotlinLogging
 
 /**
  *
@@ -102,23 +103,27 @@ internal class TeamsConnector(
                     val requestTimerData = BotRepository.requestTimer.start("teams_webhook")
                     try {
                         val body = context.bodyAsString
+                        logger.debug { body }
                         val activity: Activity = mapper.readValue(body)
                         if (activity.type() != ActivityTypes.MESSAGE) {
-                            logger.debug(activity.toString())
                             throw NoMessageException("The activity received is not a message")
                         }
+                        logger.debug { "check authentication..." }
                         authenticateBotConnectorService.checkRequestValidity(
                             jwkHandler,
                             context.request().headers(),
                             activity
                         )
+                        logger.debug { "authentication checked" }
                         executor.executeBlocking {
+                            logger.debug { "sentence created..." }
                             val e = SendSentence(
                                 PlayerId(activity.from().id()),
                                 connectorId,
                                 PlayerId(connectorId, PlayerType.bot),
                                 activity.text()
                             )
+                            logger.debug { "send to controller..." }
                             controller.handle(
                                 e,
                                 ConnectorData(
@@ -131,8 +136,10 @@ internal class TeamsConnector(
                         responseSent = true
                         logger.logError(e.message ?: "error", requestTimerData)
                     } catch (e: NoMessageException) {
-                        logger.warn(e.toString())
-                    } catch (e: Exception) {
+                        logger.warn(e)
+                    } catch (e: Throwable) {
+                        context.fail(500)
+                        responseSent = true
                         logger.logError(e, requestTimerData)
                     } finally {
                         BotRepository.requestTimer.end(requestTimerData)
@@ -145,7 +152,7 @@ internal class TeamsConnector(
                         }
                     }
                 }
-                logger.trace("Time elapsed : $timeElapsed ms")
+                logger.trace { "Time elapsed : $timeElapsed ms" }
             }
         }
     }
