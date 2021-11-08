@@ -16,9 +16,11 @@
 
 package ai.tock.bot.engine.nlp
 
+import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.DialogState
 import ai.tock.bot.engine.dialog.EntityValue
@@ -39,6 +41,33 @@ interface NlpListener {
      * @return null if no keyword is detected. If not null the nlp call is not started and the returned intent is used.
      */
     fun handleKeyword(sentence: String): Intent? = null
+
+    /**
+     * Precomputes NLP result - if this method returns null, the [NlpResult] is used and no NLP call is sent.
+     *
+     * Default returns null.
+     */
+    fun precompute(
+        sentence: SendSentence,
+        userTimeline: UserTimeline,
+        dialog: Dialog,
+        botDefinition: BotDefinition
+    ): NlpResult? = null
+
+    /**
+     * This method is automatically called by the bot before a NLP request is sent in order to update the NLP query parameters.
+     * Overrides it if you need more control on NLP request.
+     *
+     *
+     * Default returns [nlpQuery] without change.
+     */
+    fun updateQuery(
+        sentence: SendSentence,
+        userTimeline: UserTimeline,
+        dialog: Dialog,
+        botDefinition: BotDefinition,
+        nlpQuery: NlpQuery
+    ): NlpQuery = nlpQuery
 
     /**
      * This method is automatically called by the bot after a NLP request in order to select an intent.
