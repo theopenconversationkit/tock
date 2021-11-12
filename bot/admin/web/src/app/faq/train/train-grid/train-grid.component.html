@@ -1,7 +1,10 @@
-<nb-checkbox ngClass="['ml-2','mb-2','mt-4','mr-2','d-flex']">Unknown sentences:</nb-checkbox>
+<div class="float-left text-muted">
+  Sentences:
+</div>
 
 <div class="paginator" [nbSpinner]="loading" nbSpinnerStatus="primary" *ngIf="total !== 0">
-    <mat-paginator #paginator class="background"
+    <mat-paginator #paginator
+                   [ngClass]="'background'"
                    [length]="total"
                    [pageIndex]="pageIndex"
                    [pageSize]="pageSize"
@@ -9,9 +12,11 @@
     </mat-paginator>
 </div>
 
-<div infinite-scroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="300"
-    (scrolled)="onScroll()">
-    <div *ngFor="let d of data">
-        <tock-train-grid-item [sentence]="d" ngClass="['ml-3','mb-2','mt-2','mr-2']"></tock-train-grid-item>
-    </div>
-</div>
+<ng-container *ngIf="currentIntents$ | async as intents">
+  <div infinite-scroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="300"
+      (scrolled)="onScroll()">
+        <div *ngFor="let d of data">
+          <tock-train-grid-item [intents]="intents" [sentence]="d" ngClass="['ml-3','mb-2','mt-2','mr-2']"></tock-train-grid-item>
+        </div>
+  </div>
+</ng-container>

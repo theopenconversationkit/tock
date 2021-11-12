@@ -51,6 +51,7 @@ import {TrainComponent} from './train/train.component';
 import { TrainGridComponent } from './train/train-grid/train-grid.component';
 import { TrainHeaderComponent } from './train/train-header/train-header.component';
 import { TrainGridItemComponent } from './train/train-grid-item/train-grid-item.component';
+import { TrainGridItemBtnComponent } from './train/train-grid-item-btn/train-grid-item-btn.component';
 
 const routes: Routes = [
   {
@@ -66,7 +67,7 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
-  declarations: []
+  declarations: [TrainGridItemBtnComponent]
 })
 export class FaqRoutingModule {
 }
