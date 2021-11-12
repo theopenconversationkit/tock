@@ -5,15 +5,38 @@ nb-card,nb-card-body {
     overflow-x: hidden;
 }
 
+.tock-sentence-action {
+
+  /* beaause horizontal space is to huge by default */
+  padding: 0.6875rem 0.425rem !important; /* Todo: find better solution than !important */
+  font-size: 0.8rem !important;
+
+  &.tock--success>nb-icon {
+    color: #00d68f;
+  }
+
+  &.tock--danger>nb-icon {
+    color: red;
+  }
+}
+
+.tock-select-faq > nb-select {
+  width: 230px;
+}
 
 .tock-btn-addfaq {
-    transition: color .5s ease;
-    font-size: 1.5rem !important; /* Fix icon size problem */
-    cursor: pointer;
-    color: #888;
-    user-select: none;
+    height: 32px;
+    width: 32px;
+    display: flex;
+    justify-content: center;
+    background: transparent;
+    border: 0;
+}
 
-    &:hover {
-        color: #555;
-    }
+.tock--subtle-hover {
+  transition: background .5s ease;
+
+  &:hover {
+    background: #eee;
+  }
 }

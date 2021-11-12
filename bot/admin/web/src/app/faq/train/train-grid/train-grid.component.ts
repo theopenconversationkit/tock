@@ -9,6 +9,7 @@ import { StateService } from "../../../core-nlp/state.service";
 import { UserRole } from "../../../model/auth";
 import { Entry, PaginatedQuery, SearchMark } from "../../../model/commons";
 import {
+  Intent,
   PaginatedResult,
   SearchQuery,
   Sentence,
@@ -26,15 +27,15 @@ import { ScrollComponent } from "../../../scroll/scroll.component";
 })
 export class TrainGridComponent extends ScrollComponent<Sentence> implements AfterViewInit {
 
-  UserRole = UserRole;
-
   @Input() filter: FaqSentenceFilter;
-
-  pageIndex: number = 0;
-
-  displayedColumns = [];
   @ViewChild(MatPaginator) paginator: MatPaginator;
+
+  UserRole = UserRole;
+  pageIndex: number = 0;
+  displayedColumns = [];
   dataSource: SentencesDataSource | null;
+
+  public readonly currentIntents$: Observable<Intent[]>;
 
   private sort: Sort[] = [];
 
@@ -42,6 +43,8 @@ export class TrainGridComponent extends ScrollComponent<Sentence> implements Aft
     private nlp: NlpService,
     private dialog: DialogService) {
     super(state);
+
+    this.currentIntents$ = state.currentIntents;
   }
 
   protected searchMark(t: Sentence): SearchMark {

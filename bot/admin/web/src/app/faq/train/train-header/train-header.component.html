@@ -1,6 +1,6 @@
 <nb-card ngClass="px-2 py-1">
     <nb-card-body class="d-flex align-items-center p-2 flex-wrap">
-        <div class="col-3 d-flex justify-content-between">
+        <div class="col-3 d-none justify-content-between d-none">
             <nb-checkbox ngClass="mr-2 d-flex">Select all</nb-checkbox>
             <nb-form-field ngClass="d-flex">
                 <div class="nb-form-field-addon nb-form-field-prefix-small nb-form-field-addon-basic">
@@ -20,7 +20,7 @@
             </nb-form-field>
             <div class="tock-divider"></div>
         </div>
-        <div class="col-4 d-flex justify-content-between">
+        <div class="col-4 d-none justify-content-between">
 
             <nb-select [size]="'small'" placeholder="Tags">
                 <nb-option value="1">
@@ -54,16 +54,16 @@
         <div class="col-4 d-flex justify-content-between">
             <div class="tock-divider ml-4"></div>
             <nb-form-field ngClass="d-flex">
-                <div class="nb-form-field-addon nb-form-field-prefix-small nb-form-field-addon-basic">
+                <div class="nb-form-field-addon nb-form-field-prefix-medium nb-form-field-addon-basic">
                     <nb-icon nbPrefix pack="material-icons" icon="search"></nb-icon>
                 </div>
-                <div class="nb-form-control-container nb-form-field-control-with-prefix">
-                    <input type="text" fullWidth fieldSize="small" nbInput />
+                <div class="nb-form-control-container nb-form-field-control-with-prefix tock-bar-search">
+                    <input type="text"  fullWidth fieldSize="medium" nbInput />
                 </div>
             </nb-form-field>
             <div class="tock-divider ml-2"></div>
 
-            <button ghost status="primary" size="small" nbButton>
+            <button class="d-none" ghost status="primary" size="small" nbButton>
                 <nb-icon nbPrefix pack="material-icons" icon="sort"></nb-icon> More recent
             </button>
 
