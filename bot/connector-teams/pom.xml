@@ -29,8 +29,9 @@
     <description>Bot Connector for Teams</description>
 
     <properties>
-        <microsoft.bot>4.0.0-a1</microsoft.bot>
+        <microsoft.bot>4.14.0</microsoft.bot>
         <nimbus-jose-jwt>9.14</nimbus-jose-jwt>
+        <gson>2.8.9</gson>
     </properties>
 
     <dependencies>
@@ -48,15 +49,16 @@
             <version>${nimbus-jose-jwt}</version>
         </dependency>
         <dependency>
-            <groupId>com.microsoft.bot.schema</groupId>
-            <artifactId>botbuilder-schema</artifactId>
+            <groupId>com.microsoft.bot</groupId>
+            <artifactId>bot-integration-core</artifactId>
             <version>${microsoft.bot}</version>
         </dependency>
         <dependency>
-            <groupId>com.microsoft.bot.connector</groupId>
-            <artifactId>bot-connector</artifactId>
-            <version>${microsoft.bot}</version>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson}</version>
         </dependency>
+
 
         <!-- force jackson dependencies -->
         <dependency>

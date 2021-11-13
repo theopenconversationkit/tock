@@ -18,7 +18,7 @@ package ai.tock.bot.connector.teams.auth
 
 import ai.tock.bot.connector.teams.auth.MockServer.getMicrosoftMockServer
 import ai.tock.bot.connector.teams.auth.MockServer.jwk
-import com.microsoft.bot.schema.models.Activity
+import com.microsoft.bot.schema.Activity
 import com.nimbusds.jose.JWSAlgorithm
 import com.nimbusds.jose.JWSHeader
 import com.nimbusds.jose.JWSObject
@@ -47,7 +47,10 @@ import kotlin.test.assertFailsWith
 @TestInstance(Lifecycle.PER_CLASS)
 class AuthenticateBotConnectorServiceTest {
 
-    private val activity = Activity().withChannelId("msteams").withServiceUrl("https://serviceurl")
+    private val activity = Activity.createMessageActivity().apply {
+        channelId = "msteams"
+        serviceUrl = "https://serviceurl"
+    }
     private var authenticateBotConnectorService: AuthenticateBotConnectorService =
         AuthenticateBotConnectorService("fakeAppId")
 
@@ -55,23 +58,23 @@ class AuthenticateBotConnectorServiceTest {
     private val expirationDate = Instant.now().plus(60, ChronoUnit.SECONDS)
     private val validJsonPayload: JSONObject = JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(
         "{\"iss\":\"https://api.botframework.com\"," +
-            "\"iat\":${notBefore.epochSecond}," +
-            "\"nbf\":${notBefore.epochSecond}" +
-            ",\"exp\":${expirationDate.epochSecond}," +
-            "\"aud\":\"fakeAppId\"," +
-            "\"sub\":\"test\"," +
-            "\"serviceurl\": \"https://serviceurl\"}"
+                "\"iat\":${notBefore.epochSecond}," +
+                "\"nbf\":${notBefore.epochSecond}" +
+                ",\"exp\":${expirationDate.epochSecond}," +
+                "\"aud\":\"fakeAppId\"," +
+                "\"sub\":\"test\"," +
+                "\"serviceurl\": \"https://serviceurl\"}"
     ) as JSONObject
 
     private val validJsonPayloadFromBotFwkEmulator: JSONObject = JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(
         "{\"iss\":\"https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0\"," +
-            "\"iat\":${notBefore.epochSecond}," +
-            "\"nbf\":${notBefore.epochSecond}" +
-            ",\"exp\":${expirationDate.epochSecond}," +
-            "\"aud\":\"fakeAppId\"," +
-            "\"azp\":\"fakeAppId\"," +
-            "\"sub\":\"test\"," +
-            "\"serviceurl\": \"https://serviceurl\"}"
+                "\"iat\":${notBefore.epochSecond}," +
+                "\"nbf\":${notBefore.epochSecond}" +
+                ",\"exp\":${expirationDate.epochSecond}," +
+                "\"aud\":\"fakeAppId\"," +
+                "\"azp\":\"fakeAppId\"," +
+                "\"sub\":\"test\"," +
+                "\"serviceurl\": \"https://serviceurl\"}"
     ) as JSONObject
 
     private lateinit var server: MockWebServer
@@ -132,11 +135,11 @@ class AuthenticateBotConnectorServiceTest {
     fun unauthorizedDueToMissingIssuerClaim() {
         val jsonPayloadWithoutIssuer: JSONObject = JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(
             "{\"iat\":${notBefore.epochSecond}," +
-                "\"nbf\":${notBefore.epochSecond}" +
-                ",\"exp\":${expirationDate.epochSecond}," +
-                "\"aud\":\"fakeAppId\"," +
-                "\"sub\":\"test\"," +
-                "\"serviceurl\": \"https://serviceurl\"}"
+                    "\"nbf\":${notBefore.epochSecond}" +
+                    ",\"exp\":${expirationDate.epochSecond}," +
+                    "\"aud\":\"fakeAppId\"," +
+                    "\"sub\":\"test\"," +
+                    "\"serviceurl\": \"https://serviceurl\"}"
         ) as JSONObject
         val jwsObject = JWSObject(
             JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.keyID).build(),
@@ -157,12 +160,12 @@ class AuthenticateBotConnectorServiceTest {
     fun unauthorizedDueToWrongAudienceClaim() {
         val jsonPayloadWithWrongAppId: JSONObject = JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(
             "{\"iss\":\"https://api.botframework.com\"," +
-                "\"iat\":${notBefore.epochSecond}," +
-                "\"nbf\":${notBefore.epochSecond}" +
-                ",\"exp\":${expirationDate.epochSecond}," +
-                "\"aud\":\"wrongAppId\"," +
-                "\"sub\":\"test\"," +
-                "\"serviceurl\": \"https://serviceurl\"}"
+                    "\"iat\":${notBefore.epochSecond}," +
+                    "\"nbf\":${notBefore.epochSecond}" +
+                    ",\"exp\":${expirationDate.epochSecond}," +
+                    "\"aud\":\"wrongAppId\"," +
+                    "\"sub\":\"test\"," +
+                    "\"serviceurl\": \"https://serviceurl\"}"
         ) as JSONObject
         val jwsObject = JWSObject(
             JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.keyID).build(),
@@ -183,12 +186,12 @@ class AuthenticateBotConnectorServiceTest {
     fun unauthorizedDueToExpiredToken() {
         val jsonPayloadWithWrongAppId: JSONObject = JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(
             "{\"iss\":\"https://api.botframework.com\"," +
-                "\"iat\":${notBefore.epochSecond}," +
-                "\"nbf\":${notBefore.epochSecond}" +
-                ",\"exp\":${notBefore.epochSecond}," +
-                "\"aud\":\"fakeAppId\"," +
-                "\"sub\":\"test\"," +
-                "\"serviceurl\": \"https://serviceurl\"}"
+                    "\"iat\":${notBefore.epochSecond}," +
+                    "\"nbf\":${notBefore.epochSecond}" +
+                    ",\"exp\":${notBefore.epochSecond}," +
+                    "\"aud\":\"fakeAppId\"," +
+                    "\"sub\":\"test\"," +
+                    "\"serviceurl\": \"https://serviceurl\"}"
         ) as JSONObject
         val jwsObject = JWSObject(
             JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.keyID).build(),
@@ -209,12 +212,12 @@ class AuthenticateBotConnectorServiceTest {
     fun unauthorizedDueToNotValidYetToken() {
         val jsonPayloadWithWrongAppId: JSONObject = JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(
             "{\"iss\":\"https://api.botframework.com\"," +
-                "\"iat\":${notBefore.epochSecond}," +
-                "\"nbf\":${expirationDate.epochSecond}" +
-                ",\"exp\":${expirationDate.epochSecond}," +
-                "\"aud\":\"fakeAppId\"," +
-                "\"sub\":\"test\"," +
-                "\"serviceurl\": \"https://serviceurl\"}"
+                    "\"iat\":${notBefore.epochSecond}," +
+                    "\"nbf\":${expirationDate.epochSecond}" +
+                    ",\"exp\":${expirationDate.epochSecond}," +
+                    "\"aud\":\"fakeAppId\"," +
+                    "\"sub\":\"test\"," +
+                    "\"serviceurl\": \"https://serviceurl\"}"
         ) as JSONObject
         val jwsObject = JWSObject(
             JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.keyID).build(),
@@ -254,7 +257,10 @@ class AuthenticateBotConnectorServiceTest {
 
     @Test
     fun unauthorizedDueToDifferentServiceUrl() {
-        val otherActivity = Activity().withChannelId("msteams").withServiceUrl("https://wrongServiceurl")
+        val otherActivity = Activity.createMessageActivity().apply {
+            channelId = "msteams"
+            serviceUrl = "https://wrongServiceurl"
+        }
         val jwsObject = JWSObject(
             JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.keyID).build(),
             Payload(validJsonPayload)

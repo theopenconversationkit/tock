@@ -19,10 +19,10 @@ package ai.tock.bot.connector.teams.messages
 import ai.tock.bot.connector.teams.teamsConnectorType
 import ai.tock.bot.engine.Bus
 import ai.tock.bot.engine.I18nTranslator
-import com.microsoft.bot.schema.models.ActionTypes.MESSAGE_BACK
-import com.microsoft.bot.schema.models.ActionTypes.OPEN_URL
-import com.microsoft.bot.schema.models.CardAction
-import com.microsoft.bot.schema.models.CardImage
+import com.microsoft.bot.schema.ActionTypes.MESSAGE_BACK
+import com.microsoft.bot.schema.ActionTypes.OPEN_URL
+import com.microsoft.bot.schema.CardAction
+import com.microsoft.bot.schema.CardImage
 
 fun <T : Bus<T>> T.withTeams(messageProvider: () -> TeamsBotMessage): T {
     return withMessage(teamsConnectorType, messageProvider)
@@ -57,13 +57,16 @@ fun I18nTranslator.teamsCarousel(
     carouselContent: List<TeamsBotMessage>
 ): TeamsCarousel = TeamsCarousel(carouselContent)
 
-fun cardImage(url: String): CardImage = CardImage().withUrl(url)
+fun cardImage(url: String): CardImage = CardImage().apply { this.url = url }
 
 fun <T : Bus<T>> T.nlpCardAction(
     title: CharSequence
 ): CardAction =
     translate(title).toString().let { t ->
-        CardAction().withTitle(t).withType(MESSAGE_BACK).withDisplayText(t).withText(t)
+        CardAction(MESSAGE_BACK, t).apply {
+            displayText = t
+            text = t
+        }
     }
 
 fun <T : Bus<T>> T.urlCardAction(
@@ -71,5 +74,8 @@ fun <T : Bus<T>> T.urlCardAction(
     url: String
 ): CardAction =
     translate(title).toString().let { t ->
-        CardAction().withTitle(t).withType(OPEN_URL).withText(t).withValue(url)
+        CardAction(OPEN_URL, t).apply {
+            value = url
+            text = t
+        }
     }
