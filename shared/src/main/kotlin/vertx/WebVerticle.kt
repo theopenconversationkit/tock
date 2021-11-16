@@ -16,15 +16,12 @@
 
 package ai.tock.shared.vertx
 
-import ai.tock.shared.booleanProperty
-import ai.tock.shared.devEnvironment
-import ai.tock.shared.error
-import ai.tock.shared.intProperty
+import ai.tock.shared.*
 import ai.tock.shared.jackson.mapper
-import ai.tock.shared.longProperty
-import ai.tock.shared.property
 import ai.tock.shared.security.TockUser
 import ai.tock.shared.security.TockUserRole
+import ai.tock.shared.security.auth.*
+import ai.tock.shared.security.auth.spi.CASAuthProviderFactory
 import ai.tock.shared.security.auth.AWSJWTAuthProvider
 import ai.tock.shared.security.auth.GithubOAuthProvider
 import ai.tock.shared.security.auth.OAuth2Provider
@@ -33,16 +30,9 @@ import ai.tock.shared.security.auth.TockAuthProvider
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.vertx.core.AbstractVerticle
-import io.vertx.core.AsyncResult
-import io.vertx.core.Future
-import io.vertx.core.Handler
-import io.vertx.core.Promise
+import io.vertx.core.*
 import io.vertx.core.http.HttpMethod
-import io.vertx.core.http.HttpMethod.DELETE
-import io.vertx.core.http.HttpMethod.GET
-import io.vertx.core.http.HttpMethod.POST
-import io.vertx.core.http.HttpMethod.PUT
+import io.vertx.core.http.HttpMethod.*
 import io.vertx.core.http.HttpServer
 import io.vertx.core.http.HttpServerOptions
 import io.vertx.core.http.HttpServerResponse
@@ -62,8 +52,7 @@ import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.util.EnumSet
-import java.util.Locale
+import java.util.*
 import kotlin.LazyThreadSafetyMode.PUBLICATION
 
 /**
@@ -172,6 +161,21 @@ abstract class WebVerticle : AbstractVerticle() {
      */
     open fun detailedHealthcheck(): (RoutingContext) -> Unit = defaultHealthcheck()
 
+    private fun loadCasAuthProvider(vertx: Vertx): CASAuthProvider? {
+        var result: CASAuthProvider? = null
+        val loader = ServiceLoader.load(CASAuthProviderFactory::class.java)
+
+        val it = loader.iterator()
+        if (it.hasNext()) {
+            val casAuthProviderFactory = it.next()
+            result = casAuthProviderFactory.getCasAuthProvider(vertx)
+        } else {
+            logger.warn { "No Custom CAS Auth provider found: Defaulting to property based auth" }
+        }
+
+        return result
+    }
+
     override fun start(promise: Promise<Void>) {
         vertx.executeBlocking<Unit>(
             {
@@ -236,6 +240,8 @@ abstract class WebVerticle : AbstractVerticle() {
             booleanProperty("tock_aws_jwt_enabled", false) -> AWSJWTAuthProvider(sharedVertx)
             booleanProperty("tock_github_oauth_enabled", false) -> GithubOAuthProvider(sharedVertx)
             booleanProperty("tock_oauth2_enabled", false) -> OAuth2Provider(sharedVertx)
+            booleanProperty("tock_cas_auth_enabled", false) ->
+                loadCasAuthProvider(sharedVertx) ?: PropertyBasedAuthProvider
             else -> PropertyBasedAuthProvider
         }
 
