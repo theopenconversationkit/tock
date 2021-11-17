@@ -9,7 +9,7 @@ import {IntentDialogComponent} from "../../sentence-analysis/intent-dialog/inten
 import {ConfirmDialogComponent} from "../../shared-nlp/confirm-dialog/confirm-dialog.component";
 
 /**
- * TODO: Makes it a common service
+ * TODO: Makes it a common service and migrates it to NLP
  */
 
 const UNQUALIFIED_UNKNOWN_NAME = Intent.unknown.split(":")[1];

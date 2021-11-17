@@ -41,8 +41,8 @@
             </div>
             <div class="tock-divider"></div>
         </div>
-        <div class="col-1 d-flex justify-content-between">
-            <nb-select [size]="'small'" placeholder="Category">
+        <div class="d-none col-1 justify-content-between">
+            <nb-select [ngClass]="'d-none'" [size]="'small'" placeholder="Category">
                 <nb-option value="1">
                     Category 1
                 </nb-option>
@@ -58,7 +58,10 @@
                     <nb-icon nbPrefix pack="material-icons" icon="search"></nb-icon>
                 </div>
                 <div class="nb-form-control-container nb-form-field-control-with-prefix tock-bar-search">
-                    <input type="text"  fullWidth fieldSize="medium" nbInput />
+                    <input type="text"
+                           [(ngModel)]="filter.search"
+                           (keyup.enter)="search()"
+                           fullWidth fieldSize="medium" nbInput />
                 </div>
             </nb-form-field>
             <div class="tock-divider ml-2"></div>

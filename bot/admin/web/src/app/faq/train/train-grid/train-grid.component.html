@@ -16,7 +16,13 @@
   <div infinite-scroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="300"
       (scrolled)="onScroll()">
         <div *ngFor="let d of data">
-          <tock-train-grid-item [intents]="intents" [sentence]="d" ngClass="['ml-3','mb-2','mt-2','mr-2']"></tock-train-grid-item>
+          <tock-train-grid-item
+            (onRemove)="refreshOnEmpty()"
+            (onUnknown)="refreshOnEmpty()"
+            (onValidate)="refreshOnEmpty()"
+            [intents]="intents"
+            [sentence]="d">
+          </tock-train-grid-item>
         </div>
   </div>
 </ng-container>

@@ -53,6 +53,7 @@ import { TrainHeaderComponent } from './train/train-header/train-header.componen
 import { TrainGridItemComponent } from './train/train-grid-item/train-grid-item.component';
 import { TrainGridItemBtnComponent } from './train/train-grid-item-btn/train-grid-item-btn.component';
 import {IntentsService} from "./common/intents.service";
+import {SentencesService} from "./common/sentences.service";
 
 const routes: Routes = [
   {
@@ -109,7 +110,8 @@ export class FaqRoutingModule {
   ],
   exports: [],
   providers: [
-    IntentsService
+    IntentsService,
+    SentencesService
   ],
   entryComponents: []
 })
