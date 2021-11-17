@@ -1,4 +1,4 @@
-<nb-card class="overflow-hidden mb-2">
+<nb-card class="overflow-hidden mb-2" [ngClass]="cardCssClass">
   <nb-card-body class="d-flex align-items-center p-2 flex-wrap">
     <div class="col-1 d-flex justify-content-start">
       <nb-checkbox ngClass="['mr-2', 'd-flex']"></nb-checkbox>
@@ -27,18 +27,21 @@
     </div>
     <div class="col-4 d-flex justify-content-end">
       <button class="tock-sentence-action tock--subtle-hover tock--success text-muted ml-2"
+              (click)="validate()"
               nbButton size="medium" ghost status="secondary">
         <nb-icon icon="checkmark-circle-2"></nb-icon>
         Validate
       </button>
 
       <button class="tock-sentence-action tock--danger tock--subtle-hover text-muted ml-2"
+              (click)="unknown()"
               nbButton size="medium" ghost status="secondary">
         <nb-icon icon="close-circle-outline"></nb-icon>
         Unknown
       </button>
 
       <button class="tock-sentence-action tock--subtle-hover text-muted ml-2"
+              (click)="remove()"
               nbButton size="medium" ghost status="secondary">
         <nb-icon icon="trash-2-outline"></nb-icon>
         Delete

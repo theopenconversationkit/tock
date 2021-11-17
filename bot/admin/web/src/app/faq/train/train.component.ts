@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { SentenceStatus } from 'src/app/model/nlp';
 import { FilterOption } from 'src/app/search/filter/search-filter.component';
-import { FaqSentenceFilter } from './train-grid/train-grid.component';
+import {FaqSentenceFilter, TrainGridComponent} from './train-grid/train-grid.component';
 
 @Component({
   selector: 'tock-train',
@@ -14,6 +14,8 @@ export class TrainComponent implements OnInit {
   UNKNOWN_INTENT_FILTER = new FilterOption('tock:unknown', 'Unknown');
 
   public filter: FaqSentenceFilter;
+
+  @ViewChild(TrainGridComponent) grid;
 
   constructor() { }
 
@@ -28,6 +30,13 @@ export class TrainComponent implements OnInit {
         return {... this};
       }
     };
+  }
+
+  search(filter: Partial<FaqSentenceFilter>): void {
+
+    this.filter.search = filter.search;
+
+    this.grid.refresh();
   }
 
 }

@@ -1,5 +1,17 @@
 @import url(../../common/_base_faq.scss);
 
+nb-card {
+  transition: opacity .5s ease;
+
+  &.tock--hidden {
+    display: none;
+  }
+
+  &.tock--closed {
+  opacity: .8;
+  }
+}
+
 /* Fix card overflow */
 nb-card,nb-card-body {
     overflow-x: hidden;

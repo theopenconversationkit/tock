@@ -35,6 +35,8 @@ export class TrainGridComponent extends ScrollComponent<Sentence> implements Aft
   displayedColumns = [];
   dataSource: SentencesDataSource | null;
 
+  numHidden = 0;
+
   public readonly currentIntents$: Observable<Intent[]>;
 
   private sort: Sort[] = [];
@@ -72,6 +74,14 @@ export class TrainGridComponent extends ScrollComponent<Sentence> implements Aft
       }
       this.load();
     })
+  }
+
+  refreshOnEmpty() {
+    console.log("this.numHidden ", this.numHidden )
+    if (this.data.length - (++this.numHidden) === 0) {
+      this.numHidden = 0;
+      this.refresh();
+    }
   }
 
   resetCursor() {
