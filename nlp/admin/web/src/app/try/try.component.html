@@ -19,6 +19,8 @@
     <div class=" form-group">
       <input nbInput fieldSize="large" status="primary" placeholder="Write some text" class="try-input" #tryIt (keyup.enter)="onTry(tryIt.value)">
       <button nbButton outline status="primary" (click)="onTry(tryIt.value)" style="margin-left: 10px;">GO</button>
+
+      <input type='file' (change)="createUploadListener($event)" />
     </div>
 
     &nbsp;
