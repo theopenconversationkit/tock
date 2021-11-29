@@ -16,6 +16,8 @@
 
 package ai.tock.shared
 
+import java.util.Locale
+
 /**
  * This is the maximum text size allowed.
  */
@@ -77,3 +79,10 @@ fun concat(s1: String?, s2: String?): String {
 private val trailingRegexp = "[.,:;?!]+$".toRegex()
 
 fun String.removeTrailingPunctuation() = this.replace(trailingRegexp, "").trim()
+
+fun String.formatTockText(modelOptions: ModelOptions, locale: Locale): String {
+    var result = this
+    if (modelOptions.caseInsensitive) result = this.lowercase(locale)
+    if (modelOptions.ignoreTrailingPunctuation) result = result.removeTrailingPunctuation()
+    return result
+}

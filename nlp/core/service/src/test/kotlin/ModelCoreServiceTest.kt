@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import ai.tock.nlp.core.Application
-import ai.tock.nlp.core.service.ModelCoreService.formatTockText
+import ai.tock.shared.ModelOptions
+import ai.tock.shared.formatTockText
 import org.junit.jupiter.api.Test
 import java.util.Locale
 import kotlin.test.assertEquals
@@ -25,32 +25,32 @@ internal class ModelCoreServiceTest {
 
     @Test
     fun `formatTockText Should Keep the text unchanged IF caseInsensitive is false and ignoreTrailingPunctuation is false`() {
-        val application = Application("bot", emptyList(), emptySet(), caseInsensitive = false, ignoreTrailingPunctuation = false)
+        val modelOptions = ModelOptions(caseInsensitive = false, ignoreTrailingPunctuation = false)
         val input = "This is a sentence"
-        assertEquals(input, input.formatTockText(application, locale))
+        assertEquals(input, input.formatTockText(modelOptions, locale))
     }
 
     @Test
     fun `formatTockText Should only lowercase the text IF caseInsensitive is true and ignoreTrailingPunctuation is false`() {
-        val application = Application("bot", emptyList(), emptySet(), caseInsensitive = true, ignoreTrailingPunctuation = false)
+        val modelOptions = ModelOptions( caseInsensitive = true, ignoreTrailingPunctuation = false)
         val input = "THIS is a sentence"
         val output = "this is a sentence"
-        assertEquals(output, input.formatTockText(application, locale))
+        assertEquals(output, input.formatTockText(modelOptions, locale))
     }
 
     @Test
     fun `formatTockText Should only remove trailing punctuation IF caseInsensitive is false and ignoreTrailingPunctuation is true`() {
-        val application = Application("bot", emptyList(), emptySet(), caseInsensitive = false, ignoreTrailingPunctuation = true)
+        val modelOptions = ModelOptions( caseInsensitive = false, ignoreTrailingPunctuation = true)
         val input = "This is a sentence??"
         val output = "This is a sentence"
-        assertEquals(output, input.formatTockText(application, locale))
+        assertEquals(output, input.formatTockText(modelOptions, locale))
     }
 
     @Test
     fun `formatTockText Should lowercase and remove the trailing punctuation IF caseInsensitive is true and ignoreTrailingPunctuation is true`() {
-        val application = Application("bot", emptyList(), emptySet(), caseInsensitive = true, ignoreTrailingPunctuation = true)
+        val modelOptions = ModelOptions( caseInsensitive = true, ignoreTrailingPunctuation = true)
         val input = "THIS IS A sentence??"
         val output = "this is a sentence"
-        assertEquals(output, input.formatTockText(application, locale))
+        assertEquals(output, input.formatTockText(modelOptions, locale))
     }
 }

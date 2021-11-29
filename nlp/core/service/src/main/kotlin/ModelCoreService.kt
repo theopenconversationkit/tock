@@ -37,14 +37,14 @@ import ai.tock.nlp.model.EntityBuildContextForSubEntities
 import ai.tock.nlp.model.EntityCallContextForIntent
 import ai.tock.nlp.model.IntentContext
 import ai.tock.nlp.model.NlpClassifier
+import ai.tock.shared.ModelOptions
 import ai.tock.shared.error
+import ai.tock.shared.formatTockText
 import ai.tock.shared.injector
-import ai.tock.shared.removeTrailingPunctuation
 import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import java.time.Duration
 import java.time.Instant
-import java.util.Locale
 
 /**
  *
@@ -207,24 +207,19 @@ internal object ModelCoreService : ModelCore {
         configuration: NlpApplicationConfiguration
     ) = nlpClassifier.updateModelConfiguration(applicationName, engineType, configuration)
 
-    private fun BuildContext.formatExpressions(expressions: List<SampleExpression>): List<SampleExpression> =
-        if (expressionNeedsFormatting(application))
-            expressions.map { e -> e.copy(text = e.text.formatTockText(application, language)) }
+    private fun BuildContext.formatExpressions(expressions: List<SampleExpression>): List<SampleExpression> {
+        val modelOptions = ModelOptions(application.caseInsensitive, application.ignoreTrailingPunctuation)
+        return if (modelOptions.sentencesNeedFormatting())
+            expressions.map { e -> e.copy(text = e.text.formatTockText(modelOptions, language)) }
         else expressions
+    }
 
-    private fun TestContext.formatExpressions(expressions: List<SampleExpression>): List<SampleExpression> =
-        if (expressionNeedsFormatting(callContext.application))
-            expressions.map { e -> e.copy(text = e.text.formatTockText(callContext.application, callContext.language)) }
-        else expressions
 
-    private fun expressionNeedsFormatting(application: Application) =
-        application.caseInsensitive || application.ignoreTrailingPunctuation
-
-    fun String.formatTockText(application: Application, locale: Locale): String {
-        var result = this
-        if (application.caseInsensitive) result = this.lowercase(locale)
-        if (application.ignoreTrailingPunctuation) result = result.removeTrailingPunctuation()
-        return result
+    private fun TestContext.formatExpressions(expressions: List<SampleExpression>): List<SampleExpression> {
+        val modelOptions = ModelOptions(callContext.application.caseInsensitive, callContext.application.ignoreTrailingPunctuation)
+        return if (modelOptions.sentencesNeedFormatting()) {
+            expressions.map { e -> e.copy(text = e.text.formatTockText(modelOptions, callContext.language)) }
+        } else expressions
     }
 
 }

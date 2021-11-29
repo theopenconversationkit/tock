@@ -34,6 +34,7 @@ import ai.tock.nlp.front.shared.config.ClassifiedSentence
 import ai.tock.nlp.front.shared.config.EntityDefinition
 import ai.tock.nlp.front.shared.config.EntityTypeDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition
+import ai.tock.shared.ModelOptions
 import ai.tock.shared.injector
 import ai.tock.shared.namespace
 import ai.tock.shared.namespaceAndName
@@ -61,11 +62,9 @@ object ApplicationConfigurationService :
     ApplicationConfiguration {
 
     override fun save(application: ApplicationDefinition): ApplicationDefinition {
-        if(application.caseInsensitive) {
-            sentenceDAO.updateCaseInsensitiveSentences(application._id)
-        }
-        if(application.ignoreTrailingPunctuation) {
-            sentenceDAO.updateIgnoreTrailingPunctuationSentences(application._id)
+        val modelOptions = ModelOptions(application.caseInsensitive, application.ignoreTrailingPunctuation)
+        if (modelOptions.sentencesNeedFormatting()) {
+            sentenceDAO.updateFormattedSentences(application._id, modelOptions)
         }
         return applicationDAO.save(application)
     }
@@ -288,7 +287,7 @@ object ApplicationConfigurationService :
         }
     }
 
-    override fun initializeConfiguration() : Boolean = ConfigurationRepository.initRepository()
+    override fun initializeConfiguration(): Boolean = ConfigurationRepository.initRepository()
 
     override fun getCurrentModelConfiguration(
         applicationName: String,
