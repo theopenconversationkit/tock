@@ -22,11 +22,9 @@ import org.litote.kmongo.property.KPropertyPath
 
 private val __Text: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
     get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::text
-private val __LowerCaseText: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
-    get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lowerCaseText
-private val __WithoutTrailingPunctuationText:
-        KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
-    get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::withoutTrailingPunctuationText
+private val __FormattedSentence: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol,
+        String?>
+    get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::formattedSentence
 private val __FullText: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
     get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::fullText
 private val __Language: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, Locale?>
@@ -71,11 +69,8 @@ internal class ClassifiedSentenceCol_<T>(previous: KPropertyPath<T, *>?, propert
     val text: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Text)
 
-    val lowerCaseText: KPropertyPath<T, String?>
-        get() = KPropertyPath(this,__LowerCaseText)
-
-    val withoutTrailingPunctuationText: KPropertyPath<T, String?>
-        get() = KPropertyPath(this,__WithoutTrailingPunctuationText)
+    val formattedSentence: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__FormattedSentence)
 
     val fullText: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__FullText)
@@ -130,11 +125,8 @@ internal class ClassifiedSentenceCol_<T>(previous: KPropertyPath<T, *>?, propert
     companion object {
         val Text: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
             get() = __Text
-        val LowerCaseText: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
-            get() = __LowerCaseText
-        val WithoutTrailingPunctuationText:
-                KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
-            get() = __WithoutTrailingPunctuationText
+        val FormattedSentence: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
+            get() = __FormattedSentence
         val FullText: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
             get() = __FullText
         val Language: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, Locale?>
@@ -182,11 +174,8 @@ internal class ClassifiedSentenceCol_Col<T>(previous: KPropertyPath<T, *>?, prop
     val text: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Text)
 
-    val lowerCaseText: KPropertyPath<T, String?>
-        get() = KPropertyPath(this,__LowerCaseText)
-
-    val withoutTrailingPunctuationText: KPropertyPath<T, String?>
-        get() = KPropertyPath(this,__WithoutTrailingPunctuationText)
+    val formattedSentence: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__FormattedSentence)
 
     val fullText: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__FullText)
@@ -249,11 +238,8 @@ internal class ClassifiedSentenceCol_Map<T, K>(previous: KPropertyPath<T, *>?, p
     val text: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Text)
 
-    val lowerCaseText: KPropertyPath<T, String?>
-        get() = KPropertyPath(this,__LowerCaseText)
-
-    val withoutTrailingPunctuationText: KPropertyPath<T, String?>
-        get() = KPropertyPath(this,__WithoutTrailingPunctuationText)
+    val formattedSentence: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__FormattedSentence)
 
     val fullText: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__FullText)
