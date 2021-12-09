@@ -1,25 +1,5 @@
 <nb-card ngClass="px-2 py-1">
     <nb-card-body class="d-flex align-items-center p-2 flex-wrap">
-        <div class="col-3 d-none justify-content-between d-none">
-            <nb-checkbox ngClass="mr-2 d-flex">Select all</nb-checkbox>
-            <nb-form-field ngClass="d-flex">
-                <div class="nb-form-field-addon nb-form-field-prefix-small nb-form-field-addon-basic">
-                    <nb-icon nbPrefix pack="material-icons" icon="build"></nb-icon>
-                </div>
-                <div class="nb-form-control-container nb-form-field-control-with-prefix">
-                    <nb-select [size]="'small'" placeholder="Action" status="primary">
-                        <nb-option value="1">
-                            <nb-icon ngClass="mr-2" icon="checkmark-outline"></nb-icon> Validate
-                        </nb-option>
-                        <nb-option value="2">
-                            <nb-icon ngClass="mr-2" icon="trash-2-outline"></nb-icon> Delete
-                        </nb-option>
-                    </nb-select>
-                </div>
-
-            </nb-form-field>
-            <div class="tock-divider"></div>
-        </div>
         <div class="col-4 d-none justify-content-between">
 
             <nb-select [size]="'small'" placeholder="Tags">
@@ -41,18 +21,8 @@
             </div>
             <div class="tock-divider"></div>
         </div>
-        <div class="d-none col-1 justify-content-between">
-            <nb-select [ngClass]="'d-none'" [size]="'small'" placeholder="Category">
-                <nb-option value="1">
-                    Category 1
-                </nb-option>
-                <nb-option value="2">
-                    Category 2
-                </nb-option>
-            </nb-select>
-        </div>
-        <div class="col-4 d-flex justify-content-between">
-            <div class="tock-divider ml-4"></div>
+
+        <div class="col-4 d-flex justify-content-between p-0">
             <nb-form-field ngClass="d-flex">
                 <div class="nb-form-field-addon nb-form-field-prefix-medium nb-form-field-addon-basic">
                     <nb-icon nbPrefix pack="material-icons" icon="search"></nb-icon>
@@ -61,13 +31,25 @@
                     <input type="text"
                            [(ngModel)]="filter.search"
                            (keyup.enter)="search()"
+                           [ngModelChangeDebounceTime]="1000"
+                           (ngModelChangeDebounced)="searchChange($event)"
                            fullWidth fieldSize="medium" nbInput />
                 </div>
             </nb-form-field>
             <div class="tock-divider ml-2"></div>
 
-            <button class="d-none" ghost status="primary" size="small" nbButton>
-                <nb-icon nbPrefix pack="material-icons" icon="sort"></nb-icon> More recent
+            <button class="d-flex float-right" (click)="toggleSort()" ghost status="primary" size="small" nbButton>
+                <nb-icon nbPrefix pack="material-icons" icon="sort"></nb-icon>
+                Recent
+              <ng-container *ngIf="isAscending; else isDescending">
+                <nb-icon [ngClass]="'ml-1'" nbPrefix icon="arrow-down-outline"></nb-icon>
+              </ng-container>
+
+              <ng-template #isDescending>
+                <nb-icon [ngClass]="'ml-1'" nbPrefix icon="arrow-up-outline"></nb-icon>
+              </ng-template>
+
+
             </button>
 
         </div>

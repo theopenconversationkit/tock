@@ -1,5 +1,5 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import {FaqSentenceFilter} from "../train-grid/train-grid.component";
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import {DEFAULT_FAQ_SENTENCE_SORT, FaqSentenceFilter} from "../train-grid/train-grid.component";
 import {SentenceStatus} from "../../../model/nlp";
 
 @Component({
@@ -9,7 +9,8 @@ import {SentenceStatus} from "../../../model/nlp";
 })
 export class TrainHeaderComponent implements OnInit {
 
-  public filter: FaqSentenceFilter;
+  @Input()
+  filter: FaqSentenceFilter;
 
   @Output()
   onSearch = new EventEmitter<Partial<FaqSentenceFilter>>();
@@ -17,20 +18,24 @@ export class TrainHeaderComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    this.filter =   {
-      maxIntentProbability: 100,
-      minIntentProbability: 0,
-      onlyToReview: false,
-      search: null,
-      status: [SentenceStatus.inbox],
-      clone: function () {
-        return {... this};
-      }
-    };
+  }
+
+  toggleSort(): void {
+    const sortEntry = this.filter.sort[0];
+    sortEntry.second = !sortEntry.second;
+
+    this.onSearch.emit(this.filter);
+  }
+
+  get isAscending(): boolean {
+    return !this.filter.sort[0].second;
   }
 
   search() {
     this.onSearch.emit(this.filter);
   }
 
+  searchChange(value): void {
+    this.search();
+  }
 }

@@ -1,0 +1,28 @@
+.tock-train-viewport.tock--full_width, .tock-train-viewport.tock--full_width--small {
+
+  >tock-train-grid {
+    flex: 0 0 100%;
+  }
+
+  >tock-train-sidebar {
+    flex: 0 0 0%;
+  }
+}
+
+
+.tock-train-viewport.tock--docked-panel {
+
+  >tock-train-grid {
+    flex: 1 1 auto;
+  }
+
+  >tock-train-sidebar {
+    flex: 0 0 400px;
+  }
+}
+
+tock-train-header.tock--docked {
+  display: block;
+  width: calc(100% - 440px);
+}
+

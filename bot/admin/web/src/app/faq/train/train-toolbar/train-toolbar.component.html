@@ -1,0 +1,29 @@
+<div class="mr-2 text-muted h6">
+  <nb-checkbox [disabled]="disabled" [checked]="allChecked" (checkedChange)="onSelectAll($event)"
+               [ngClass]="['mr-2', 'float-left', 'tock--no-user-select']"></nb-checkbox>
+  Sentences:
+</div>
+
+
+<nb-form-field [ngClass]="'d-flex'">
+  <div class="nb-form-field-addon nb-form-field-prefix-small nb-form-field-addon-basic">
+    <nb-icon nbPrefix pack="material-icons" icon="bolt"></nb-icon>
+  </div>
+  <div class="nb-form-control-container nb-form-field-control-with-prefix">
+    <nb-select [disabled]="disabled" [size]="'small'" placeholder="Action par lot" status="primary">
+      <nb-option [value]="null" (click)="validateAll()" tock-click-capture [ngClass]="'tock--success'">
+        <nb-icon [ngClass]="['float-right','mr-2']" icon="checkmark-circle-2"></nb-icon>
+        Validate
+      </nb-option>
+      <nb-option [value]="null" (click)="unknownAll()" tock-click-capture [ngClass]="'tock--danger'">
+        <nb-icon [ngClass]="['float-right','mr-2']" icon="checkmark-outline"></nb-icon>
+        Unknown
+      </nb-option>
+      <nb-option [value]="null" (click)="deleteAll()" tock-click-capture value="delete">
+        <nb-icon [ngClass]="['float-right','mr-2']" icon="trash-2-outline"></nb-icon>
+        Delete
+      </nb-option>
+    </nb-select>
+  </div>
+
+</nb-form-field>

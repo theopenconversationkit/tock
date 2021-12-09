@@ -1,6 +1,10 @@
-<div class="float-left text-muted">
-  Sentences:
-</div>
+<tock-train-toolbar
+  [disabled]="data.length === 0"
+  [ngClass]="['float-left', 'd-flex', toolbarStyleClass(), 'align-items-baseline', 'justify-content-between']"
+  [allChecked]="isAllSelected()"
+  (onToggleSelectAll)="onToggleSelectAll($event)"
+  (onBatchAction)="onBatchAction($event)">
+</tock-train-toolbar>
 
 <div class="paginator" [nbSpinner]="loading" nbSpinnerStatus="primary" *ngIf="total !== 0">
     <mat-paginator #paginator
@@ -13,6 +17,29 @@
 </div>
 
 <ng-container *ngIf="currentIntents$ | async as intents">
+  <br *ngIf="data.length === 0" />
+  <br *ngIf="data.length === 0" />
+  <br *ngIf="data.length === 0" />
+
+  <nb-card [ngClass]="['mx-auto', 'w-50']" *ngIf="total === 0">
+    <nb-card-body>
+      <img src="{{baseHref}}assets/images/best_bot_gray.png"
+           class="float-left d-block w-10 tock-robot"
+           nbTooltip="Test action"/>
+
+      <div style="text-align: left;">
+        <h6 class="tock-text-muted title">No Sentence found
+        <button mat-button (click)="refresh()" class="button float-right">
+          <mat-icon>refresh</mat-icon>
+        </button>
+        </h6>
+        <p>
+          To add Sentences, start from <em>Test the Bot</em> in Tock Studio,
+          or talk to the bot on any connected channel.</p>
+      </div>
+    </nb-card-body>
+  </nb-card>
+
   <div infinite-scroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="300"
       (scrolled)="onScroll()">
         <div *ngFor="let d of data">
@@ -20,9 +47,16 @@
             (onRemove)="refreshOnEmpty()"
             (onUnknown)="refreshOnEmpty()"
             (onValidate)="refreshOnEmpty()"
+            (onDetails)="details($event)"
+            [viewMode]="viewMode"
+            [selectionMode]="selectionMode"
+            [selection]="selection"
             [intents]="intents"
             [sentence]="d">
           </tock-train-grid-item>
         </div>
   </div>
 </ng-container>
+
+
+
