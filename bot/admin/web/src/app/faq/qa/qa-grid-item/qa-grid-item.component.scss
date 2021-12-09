@@ -1,0 +1,34 @@
+@import url(../../common/_base_faq.scss);
+
+nb-toggle {
+  margin-bottom: -.5rem;
+}
+
+.tock-col-a {
+  flex: 0 0 35%;
+}
+
+.tock-col-b {
+  flex: 0 0 25%;
+}
+
+.tock-col-c {
+  flex: 1;
+}
+
+nb-card,nb-card-body {
+  overflow-x: hidden;
+}
+
+.tock--hideable {
+  transition: opacity .5s ease;
+  opacity: 1;
+
+  &.tock--hidden {
+    display: none;
+  }
+
+  &.tock--closed {
+    opacity: .8;
+  }
+}

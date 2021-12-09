@@ -1,19 +1,33 @@
 <nb-card class="overflow-hidden mb-2" [ngClass]="cardCssClass">
-  <nb-card-body class="d-flex align-items-center p-2 flex-wrap">
-    <div class="col-1 d-flex justify-content-start">
-      <nb-checkbox ngClass="['mr-2', 'd-flex']"></nb-checkbox>
+  <nb-card-body
+    [ngClass]="{
+     'tock--docked-panel': isDocked(),
+     'tock--full_width': viewMode === 'FULL_WIDTH',
+     'tock--full_width--small': viewMode === 'RESPONSIVE_FULL_WIDTH'
+     }"
+    class="d-flex tock-grid-item-card-body align-items-center justify-content-between p-2 flex-wrap">
+    <div class="tock-col-a d-flex justify-content-start">
+      <nb-checkbox [ngClass]="['ml-2', 'd-flex']"
+                   (checkedChange)="toggle()"
+                   [checked]="isSelected()"
+      ></nb-checkbox>
       <div class="tock-divider ml-3">&nbsp;</div>
     </div>
-    <div class="col-3 d-flex justify-content-between ">
+    <div class="tock-col-b d-flex justify-content-between ">
+      <div class="text-muted tock-date-zone">
+        {{sentence.creationDate | amDateFormat: 'MM/DD HH:mm' }}
+      </div>
       {{sentence.text}}
     </div>
-    <div class="col-4 d-flex justify-content-between align-items-center">
-      <div class="tock-divider mx-4">&nbsp;</div>
-      FAQ
-      <div class="tock-select-faq input-group mx-4">
-        <nb-select [size]="'small'" placeholder="{{sentence.getIntentLabel(state)}}">
-          <nb-option *ngFor="let intent of intents" value="{{intent.qualifiedName()}}">
-            {{intent.intentLabel()}}
+    <div class="tock-col-c d-flex justify-content-between align-items-center">
+      <div class="tock-divider">&nbsp;</div>
+      <span class="d-inline-block ml-5">FAQ</span>
+      <div class="tock-select-faq input-group ml-2">
+        <nb-select [size]="'small'" [(ngModel)]="selectedIntentId" (selectedChange)="changeIntent($event)" placeholder="{{getRichIntentLabel()}}">
+          <nb-option *ngFor="let intent of intents" value="{{intent._id}}">
+            <span class="tock-option-label" title="{{intent.intentLabel()}}">
+              {{intent.intentLabel()}}
+            </span>
           </nb-option>
         </nb-select>
         <div class="input-group-append ml-1">
@@ -25,32 +39,37 @@
 
       <div class="tock-divider ml-2">&nbsp;</div>
     </div>
-    <div class="col-4 d-flex justify-content-end">
-      <button class="tock-sentence-action tock--subtle-hover tock--success text-muted ml-2"
+    <div class="tock-col-d d-flex justify-content-end">
+      <button class="tock-action tock--subtle-hover tock--success text-muted ml-2"
               (click)="validate()"
+              title="Validate"
               nbButton size="medium" ghost status="secondary">
         <nb-icon icon="checkmark-circle-2"></nb-icon>
-        Validate
+        <ng-container *ngIf="viewMode === 'FULL_WIDTH'">Validate</ng-container>
       </button>
 
-      <button class="tock-sentence-action tock--danger tock--subtle-hover text-muted ml-2"
+      <button class="tock-action tock--danger tock--subtle-hover text-muted ml-2"
               (click)="unknown()"
+              title="Unknown"
               nbButton size="medium" ghost status="secondary">
         <nb-icon icon="close-circle-outline"></nb-icon>
-        Unknown
+        <ng-container *ngIf="viewMode === 'FULL_WIDTH'">Unknown</ng-container>
       </button>
 
-      <button class="tock-sentence-action tock--subtle-hover text-muted ml-2"
+      <button class="tock-action tock--subtle-hover text-muted ml-2"
               (click)="remove()"
+              title="Delete"
               nbButton size="medium" ghost status="secondary">
         <nb-icon icon="trash-2-outline"></nb-icon>
-        Delete
+        <ng-container *ngIf="viewMode === 'FULL_WIDTH'">Delete</ng-container>
       </button>
 
-      <button class="tock-sentence-action tock--subtle-hover text-muted ml-2"
+      <button class="tock-action tock--subtle-hover text-muted ml-2"
+              (click)="details()"
+              title="Details"
               nbButton size="medium" ghost status="secondary">
         <nb-icon icon="message-circle-outline"></nb-icon>
-        Details
+        <ng-container *ngIf="viewMode === 'FULL_WIDTH'">Details</ng-container>
       </button>
 
     </div>

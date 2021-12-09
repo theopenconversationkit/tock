@@ -1,8 +1,41 @@
 
 /** Common SCSS for FAQ module **/
 
+/* TODO: wrap things under a mixin or something like that, because we import all of this every times */
+
+.background {
+  background: inherit;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+}
+
 .tock-divider {
     min-height: 100%;
     background: #eee;
     width: 2px;
 }
+
+.tock-text-muted {
+  color: #788189 !important;
+}
+
+.tock--success>nb-icon {
+  color: #00d68f;
+}
+
+.tock--danger>nb-icon {
+  color: red;
+}
+
+.tock-col-half {
+  flex: 0 0 4%;
+}
+
+.tock-action {
+
+  /* because horizontal space is to huge by default */
+  padding: 0.6875rem 0.425rem !important; /* Todo: find better solution than !important */
+  font-size: 0.8rem !important;
+}
+

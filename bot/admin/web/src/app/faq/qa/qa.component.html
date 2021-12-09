@@ -1,0 +1,6 @@
+<h5 class="h5 mb-4">Questions & Answers {{applicationName}}</h5>
+<tock-qa-header [filter]="filter" (onSearch)="search($event)">
+</tock-qa-header>
+<div class="tock-train-viewport d-flex justify-content-between w-100">
+  <tock-qa-grid (onDetails)="details($event)" [filter]="filter"></tock-qa-grid>
+</div>

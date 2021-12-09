@@ -1,0 +1,40 @@
+<div class="paginator w-100 d-flex justify-content-end" [nbSpinner]="loading" nbSpinnerStatus="primary" *ngIf="total !== 0">
+  <mat-paginator #paginator
+                 [ngClass]="['background', 'float-right']"
+                 [length]="total"
+                 [pageIndex]="pageIndex"
+                 [pageSize]="pageSize"
+                 [pageSizeOptions]="[10, 25, 50, 100]">
+  </mat-paginator>
+</div>
+
+<ng-container>
+  <br *ngIf="data.length === 0" />
+  <br *ngIf="data.length === 0" />
+  <br *ngIf="data.length === 0" />
+
+  <nb-card [ngClass]="['mx-auto', 'w-50']" *ngIf="total === 0">
+    <nb-card-body>
+      <img src="{{baseHref}}assets/images/best_bot_gray.png"
+           class="float-left d-block w-10 tock-robot"
+           nbTooltip="Test action"/>
+
+      <div style="text-align: left;">
+        <h6 class="tock-text-muted title">No FAQ found
+          <button mat-button (click)="refresh()" class="button float-right">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </h6>
+        <p>
+          You may creates a new one using above button "New FAQ".</p>
+      </div>
+    </nb-card-body>
+  </nb-card>
+
+  <div infinite-scroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="300" (scrolled)="onScroll()">
+    <div *ngFor="let d of data">
+      <tock-qa-grid-item [ngClass]="'w-100'" [qa]="d"></tock-qa-grid-item>
+    </div>
+  </div>
+</ng-container>
+

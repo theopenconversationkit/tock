@@ -3,3 +3,13 @@
 .tock-bar-search {
   width: 400px;
 }
+
+nb-icon, {
+  user-select: none;
+  pointer-events: none;
+}
+
+nb-card-body {
+  user-select: none;
+}
+

@@ -1,34 +1,49 @@
-
-import { DataSource } from "@angular/cdk/collections";
-import { AfterViewInit, Component, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
-import { MatPaginator } from "@angular/material/paginator";
-import { Sort } from "@angular/material/sort";
-import { BehaviorSubject, Observable } from "rxjs";
-import { DialogService } from "../../../core-nlp/dialog.service";
-import { StateService } from "../../../core-nlp/state.service";
-import { UserRole } from "../../../model/auth";
-import { Entry, PaginatedQuery, SearchMark } from "../../../model/commons";
+import {BehaviorSubject, Observable, ReplaySubject} from "rxjs";
+import {DataSource, SelectionModel} from "@angular/cdk/collections";
 import {
-  Intent,
-  PaginatedResult,
-  SearchQuery,
-  Sentence,
-  SentenceStatus
-} from "../../../model/nlp";
-import { NlpService } from "../../../nlp-tabs/nlp.service";
-import { ScrollComponent } from "../../../scroll/scroll.component";
-
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  Output,
+  ViewChild,
+  ViewEncapsulation
+} from "@angular/core";
+import {MatPaginator} from "@angular/material/paginator";
+import {Sort} from "@angular/material/sort";
+import {DialogService} from "../../../core-nlp/dialog.service";
+import {StateService} from "../../../core-nlp/state.service";
+import {UserRole} from "../../../model/auth";
+import {Entry, PaginatedQuery, SearchMark} from "../../../model/commons";
+import {Intent, PaginatedResult, SearchQuery, Sentence, SentenceStatus} from "../../../model/nlp";
+import {NlpService} from "../../../nlp-tabs/nlp.service";
+import {ScrollComponent} from "../../../scroll/scroll.component";
+import {BatchActionName} from "../train-toolbar/train-toolbar.component";
+import {SelectionMode} from "../../common/model/selection-mode";
+import {SentencesService} from "../../common/sentences.service";
+import {ViewMode} from "../../common/model/view-mode";
 
 @Component({
   selector: 'tock-train-grid',
   templateUrl: './train-grid.component.html',
-  styleUrls: ['./train-grid.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  styleUrls: ['./train-grid.component.scss']
 })
-export class TrainGridComponent extends ScrollComponent<Sentence> implements AfterViewInit {
+export class TrainGridComponent extends ScrollComponent<Sentence> implements AfterViewInit, OnDestroy {
 
-  @Input() filter: FaqSentenceFilter;
+  @Input()
+  filter: FaqSentenceFilter;
+
+  @Input()
+  viewMode: ViewMode;
+
+  @Output()
+  onDetails = new EventEmitter<Sentence>();
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
+
+  selection: SelectionModel<Sentence> = new SelectionModel<Sentence>(true, []);
+  selectionMode: SelectionMode = 'SELECT_NEVER';
 
   UserRole = UserRole;
   pageIndex: number = 0;
@@ -37,13 +52,15 @@ export class TrainGridComponent extends ScrollComponent<Sentence> implements Aft
 
   numHidden = 0;
 
+  private readonly destroy$: ReplaySubject<boolean> = new ReplaySubject(1);
   public readonly currentIntents$: Observable<Intent[]>;
 
   private sort: Sort[] = [];
 
   constructor(state: StateService,
-    private nlp: NlpService,
-    private dialog: DialogService) {
+              private nlp: NlpService,
+              private dialog: DialogService,
+              private readonly sentencesService: SentencesService) {
     super(state);
 
     this.currentIntents$ = state.currentIntents;
@@ -76,8 +93,89 @@ export class TrainGridComponent extends ScrollComponent<Sentence> implements Aft
     })
   }
 
+  ngOnDestroy() {
+    this.destroy$.next(true);
+    this.destroy$.complete();
+  }
+
+  toolbarStyleClass(): string {
+    return this.viewMode === 'FULL_WIDTH' ? 'w-25' : 'w-50';
+  }
+
+  async onBatchAction(actionName: BatchActionName): Promise<void> {
+    let actionLabel: string;
+
+    if (!this?.selection?.selected?.length) {
+      this.dialog.notify('',
+        "Aucune sélection",
+        {duration: 2000, status: "info"});
+      return;
+    }
+
+    for (let sentence of this.selection.selected) {
+
+      switch (actionName) {
+        case "delete":
+          actionLabel = 'delete';
+          sentence.status = SentenceStatus.deleted;
+          break;
+
+        case "unknown":
+          actionLabel = 'set unknown';
+          sentence.classification.intentId = Intent.unknown;
+          sentence.classification.entities = [];
+          sentence.status = SentenceStatus.validated;
+          break;
+
+        case "validate":
+          actionLabel = 'validate';
+          const intentId = sentence.classification.intentId;
+          if (intentId === Intent.unknown) {
+            sentence.classification.intentId = Intent.unknown;
+            sentence.classification.entities = [];
+          }
+          sentence.status = SentenceStatus.validated;
+          break;
+
+        default:
+          throw new Error(`unhandled action: ${actionName}`);
+      }
+    }
+
+    await this.sentencesService.saveBulk(this.selection.selected, this.destroy$)
+      .toPromise();
+
+    this.dialog.notify(actionLabel,
+      `${actionLabel} ${this.selection.selected.length} sentences`,
+      {duration: 2000, status: "basic"});
+
+    this.refresh();
+  }
+
+  details(sentence: Sentence): void {
+    this.onDetails.emit(sentence);
+  }
+
+  refresh() {
+    this.selection.clear();
+    super.refresh();
+  }
+
+  onToggleSelectAll(value: boolean): void {
+    if (!value) {
+      this.selectionMode = 'SELECT_NEVER';
+      this.selection.clear();
+    } else {
+      this.selectionMode = 'SELECT_ALWAYS';
+      this.data.forEach(data => this.selection.select(data));
+    }
+  }
+
+  isAllSelected(): boolean {
+    return this.selectionMode === 'SELECT_ALWAYS';
+  }
+
   refreshOnEmpty() {
-    console.log("this.numHidden ", this.numHidden )
     if (this.data.length - (++this.numHidden) === 0) {
       this.numHidden = 0;
       this.refresh();
@@ -91,13 +189,13 @@ export class TrainGridComponent extends ScrollComponent<Sentence> implements Aft
 
   toSearchQuery(query: PaginatedQuery): SearchQuery {
 
-    return new SearchQuery(
+    const result = new SearchQuery(
       query.namespace,
       query.applicationName,
       query.language,
       query.start,
       query.size,
-      query.searchMark,
+      null, /* NOTE: There is a weird behavior when set */
       this.filter.search,
       this.filter.intentId,
       this.filter.status,
@@ -106,7 +204,7 @@ export class TrainGridComponent extends ScrollComponent<Sentence> implements Aft
       [],
       null,
       null,
-      this.sort.map(s => new Entry<string, boolean>(s.active, s.direction === 'asc')),
+      this.filter.sort,
       this.filter.onlyToReview,
       null,
       null,
@@ -114,6 +212,7 @@ export class TrainGridComponent extends ScrollComponent<Sentence> implements Aft
       this.filter.maxIntentProbability / 100,
       this.filter.minIntentProbability / 100
     );
+    return result;
   }
 
   search(query: PaginatedQuery): Observable<PaginatedResult<Sentence>> {
@@ -122,18 +221,6 @@ export class TrainGridComponent extends ScrollComponent<Sentence> implements Aft
 
   dataEquals(d1: Sentence, d2: Sentence): boolean {
     return d1.text === d2.text
-  }
-
-  sortChange(s: Sort) {
-    this.sort.splice(0, 0, s);
-    for (let i = this.sort.length - 1; i >= 0; --i) {
-      if (this.sort[i].direction === '' || (i > 0 && this.sort[i].active === s.active)) {
-        this.sort.splice(i, 1)
-      }
-    }
-    this.data = [];
-    this.resetCursor();
-    this.load();
   }
 
   protected loadResults(result: PaginatedResult<Sentence>, init: boolean): boolean {
@@ -148,8 +235,12 @@ export class TrainGridComponent extends ScrollComponent<Sentence> implements Aft
   }
 }
 
+export const DEFAULT_FAQ_SENTENCE_SORT: Entry<string, boolean> = new Entry("creationDate", false);
+
 export class FaqSentenceFilter {
-  constructor(public search?: string,
+  constructor(
+    public search?: string,
+    public sort?: Entry<string, boolean>[],
     public intentId?: string,
     public status?: SentenceStatus[],
     public onlyToReview: boolean = false,
@@ -159,7 +250,7 @@ export class FaqSentenceFilter {
 
   clone(): FaqSentenceFilter {
     return new FaqSentenceFilter(
-      this.search, this.intentId, this.status, this.onlyToReview,
+      this.search, this.sort, this.intentId, this.status, this.onlyToReview,
       this.maxIntentProbability, this.minIntentProbability
     );
   }

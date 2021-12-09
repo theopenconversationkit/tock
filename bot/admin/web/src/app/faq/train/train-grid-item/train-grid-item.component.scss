@@ -1,14 +1,29 @@
 @import url(../../common/_base_faq.scss);
 
-nb-card {
-  transition: opacity .5s ease;
+.tock-col-a {
+  flex: 0 0 4%;
+}
 
-  &.tock--hidden {
-    display: none;
+.tock-col-b {
+  flex: 0 0 28%;
+}
+
+.tock-col-c {
+  flex: 0 0 33%;
+}
+
+.tock-col-d {
+  flex: 1;
+}
+
+.tock-grid-item-card-body.tock--docked-panel,.tock-grid-item-card-body.tock--full_width--small {
+  .tock-col-b {
+    flex: 0 0 32%;
+    padding: 0 0 0 .5rem;
   }
 
-  &.tock--closed {
-  opacity: .8;
+  .tock-col-c {
+    flex: 0 0 44%;
   }
 }
 
@@ -17,23 +32,8 @@ nb-card,nb-card-body {
     overflow-x: hidden;
 }
 
-.tock-sentence-action {
-
-  /* beaause horizontal space is to huge by default */
-  padding: 0.6875rem 0.425rem !important; /* Todo: find better solution than !important */
-  font-size: 0.8rem !important;
-
-  &.tock--success>nb-icon {
-    color: #00d68f;
-  }
-
-  &.tock--danger>nb-icon {
-    color: red;
-  }
-}
-
 .tock-select-faq > nb-select {
-  width: 230px;
+  width: 280px;
 }
 
 .tock-btn-addfaq {
@@ -50,5 +50,33 @@ nb-card,nb-card-body {
 
   &:hover {
     background: #eee;
+  }
+}
+
+.tock-date-zone {
+  position: absolute;
+  top: -15px;
+  left: 240px;
+  font-size: 0.8em;
+}
+
+.tock-option-label {
+  display: inline-block;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+nb-card {
+  transition: opacity .5s ease;
+  opacity: 1;
+
+  &.tock--hidden {
+    display: none;
+  }
+
+  &.tock--closed {
+    opacity: .8;
   }
 }

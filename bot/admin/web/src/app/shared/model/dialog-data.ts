@@ -213,7 +213,7 @@ export class UserLocation {
 export class Sentence extends BotMessage {
   constructor(public delay: number,
               public messages: SentenceElement[],
-              public text?: String,
+              public text?: string,
               public userInterface?: UserInterfaceType) {
     super(EventType.sentence, delay)
   }
