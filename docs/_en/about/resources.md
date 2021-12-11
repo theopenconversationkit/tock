@@ -17,7 +17,7 @@ in addition to the main documentation and demo instance.
 <a href="https://www.youtube.com/watch?v=UsKkpYL7Hto"
 target="tock_osxp">
 <img alt="Tock @ OSXP 2021"
-src="https://i.ytimg.com/an_webp/UsKkpYL7Hto/mqdefault_6s.webp?du=3000&sqp=CLKKlI0G&rs=AOn4CLAl3yk1VqGFio7O2Na_EZH1gSvRkg"
+src="https://doc.tock.ai/en/images/tock_osxp_2021.png"
 style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
 </a>
 
