@@ -98,6 +98,16 @@ export class BotAdminAppComponent implements OnInit, OnDestroy {
         link: '/faq/train'
         ,
         hidden: this.state.hasRole(UserRole.botUser)
+      },
+      {
+        title: 'Questions & Answers',
+        icon: {
+          icon: 'question_answer',
+          pack: 'material-icons'
+        },
+        link: '/faq/qa'
+        ,
+        hidden: this.state.hasRole(UserRole.botUser)
       }
     ];
   }

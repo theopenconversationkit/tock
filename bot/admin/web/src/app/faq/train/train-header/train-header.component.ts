@@ -38,4 +38,8 @@ export class TrainHeaderComponent implements OnInit {
   searchChange(value): void {
     this.search();
   }
+
+  clearSearch() {
+    this.filter.search = null;
+  }
 }

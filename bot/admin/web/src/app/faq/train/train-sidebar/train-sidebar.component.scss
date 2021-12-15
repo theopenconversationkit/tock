@@ -51,7 +51,8 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
 .tock-conversation-viewport {
   padding: 50px 20px 50px 20px;
   background: #fff;
-  background-image: url("/assets/images/email-pattern.png");
+  background: url("/assets/images/email-pattern.png");
+  background: linear-gradient(to bottom, #3d2f2f00 75%, rgba(4, 48, 103, 0.08)), url(/assets/images/email-pattern.png);
   border: 1px solid #ccc;
   box-shadow: 0 0 35px 2px #eeeeee;
   position: relative;
@@ -144,11 +145,12 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
   padding: 12px 24px 12px 24px;
   text-align: left;
   color: #000;
-  max-width: 60%;
+  max-width: 70%;
   font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.2s ease-in;
   transform: scale(1);
+  white-space: pre-line; /* Handle new lines nicely */
 
   &:hover {
     transform: scale($chat-bubble-scale-factor);

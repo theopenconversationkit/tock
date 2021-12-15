@@ -25,7 +25,7 @@
         <div class="col-4 d-flex justify-content-between p-0">
             <nb-form-field ngClass="d-flex">
                 <div class="nb-form-field-addon nb-form-field-prefix-medium nb-form-field-addon-basic">
-                    <nb-icon nbPrefix pack="material-icons" icon="search"></nb-icon>
+                    <nb-icon [ngClass]="'tock--no-select'" nbPrefix pack="material-icons" icon="search"></nb-icon>
                 </div>
                 <div class="nb-form-control-container nb-form-field-control-with-prefix tock-bar-search">
                     <input type="text"
@@ -34,6 +34,11 @@
                            [ngModelChangeDebounceTime]="1000"
                            (ngModelChangeDebounced)="searchChange($event)"
                            fullWidth fieldSize="medium" nbInput />
+                </div>
+                <div *ngIf="!!filter.search"
+                     (click)="clearSearch()"
+                     class="tock-input-clear nb-form-field-addon nb-form-field-suffix-medium nb-form-field-addon-basic">
+                  <nb-icon nbPrefix pack="material-icons" icon="clear"></nb-icon>
                 </div>
             </nb-form-field>
             <div class="tock-divider ml-2"></div>
