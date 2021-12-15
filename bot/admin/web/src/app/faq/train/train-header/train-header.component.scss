@@ -4,7 +4,12 @@
   width: 400px;
 }
 
-nb-icon, {
+
+.tock-input-clear {
+  cursor: pointer;
+}
+
+.tock--no-select {
   user-select: none;
   pointer-events: none;
 }

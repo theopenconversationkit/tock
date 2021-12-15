@@ -109,6 +109,6 @@ export class TrainComponent implements OnInit, OnDestroy {
     this.filter.search = sentence.trim();
     this.filter = { ...this.filter, clone: this.filter.clone }; // trigger detection change
 
-    this.grid.refresh();
+    //this.grid.refresh();
   }
 }
