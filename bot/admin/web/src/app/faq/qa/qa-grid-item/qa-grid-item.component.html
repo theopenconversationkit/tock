@@ -1,16 +1,23 @@
-<h5 class="tock--hideable" [ngClass]="hideableCssClass">{{qa.title}}</h5>
+<h5 class="tock--hideable" [ngClass]="hideableCssClass">{{item.title}}</h5>
 <nb-card class="overflow-hidden mb-2 tock--hideable" [ngClass]="hideableCssClass">
-  <nb-card-body class="d-flex align-items-center justify-content-between p-2 flex-wrap">
+  <nb-card-body
+    class="d-flex align-items-center justify-content-between p-2 flex-wrap"
+    [ngClass]="{
+     'tock--docked-panel': isDocked(),
+     'tock--full_width': viewMode === 'FULL_WIDTH',
+     'tock--full_width--small': viewMode === 'RESPONSIVE_FULL_WIDTH'
+     }"
+  >
     <div class="tock-col-a d-flex justify-content-between">
-      {{qa.label}}
+      {{getFirstUtterance()}}
       <div class="tock-divider ml-3">&nbsp;</div>
     </div>
     <div class="tock-col-b d-flex justify-content-between ">
-      {{qa.description}}
+      {{item.answer}}
       <div class="tock-divider ml-3">&nbsp;</div>
     </div>
     <div class="tock-col-d d-flex justify-content-end">
-      <nb-toggle [ngClass]="'mr-3'" status="basic" [(ngModel)]="qa.enabled">
+      <nb-toggle status="basic" [(ngModel)]="item.enabled">
 
       </nb-toggle>
 
@@ -19,15 +26,15 @@
               title="Edit"
               nbButton size="medium" ghost status="secondary">
         <nb-icon icon="edit-outline"></nb-icon>
-        Edit
+        <ng-container *ngIf="viewMode === 'FULL_WIDTH'">Edit</ng-container>
       </button>
 
       <button class="tock-action tock--subtle-hover text-muted"
               (click)="download()"
-              title="Validate"
+              title="Download"
               nbButton size="medium" ghost status="secondary">
         <nb-icon icon="download-outline"></nb-icon>
-        Download
+        <ng-container *ngIf="viewMode === 'FULL_WIDTH'">Download</ng-container>
       </button>
 
       <button class="tock-action tock--subtle-hover text-muted"
@@ -35,7 +42,7 @@
               title="Delete"
               nbButton size="medium" ghost status="secondary">
         <nb-icon icon="trash-2-outline"></nb-icon>
-        Delete
+        <ng-container *ngIf="viewMode === 'FULL_WIDTH'">Delete</ng-container>
       </button>
 
     </div>

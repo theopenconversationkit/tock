@@ -4,7 +4,7 @@
     <nb-card-body [ngClass]="['d-flex', 'justify-content-between', 'align-items-center']">
       <nb-select
         [disabled]="dialogReports.length === 0"
-        [size]="'small'" placeholder="#1 Conversation" status="default">
+        [size]="'small'" placeholder="#{{selectedIndex + 1}} Conversation" status="default">
         <nb-option *ngFor="let dialog of dialogReports; let index = index"
                    [value]="null"
                    (click)="selectDialog(dialog, index)" tock-click-capture>

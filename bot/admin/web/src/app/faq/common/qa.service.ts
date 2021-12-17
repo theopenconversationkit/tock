@@ -1,19 +1,21 @@
 import {Injectable} from '@angular/core';
-import {Qa, QaStatus} from '../common/model/qa';
-import {MOCK_QA_TITLES, MOCK_QA_DEFAULT_LABEL, MOCK_QA_DEFAULT_DESCRIPTION} from '../common/mock/qa.mock';
+import {MOCK_QA_TITLES, MOCK_QA_DEFAULT_LABEL, MOCK_QA_DEFAULT_DESCRIPTION, MOCK_FREQUENT_QUESTIONS} from '../common/mock/qa.mock';
 
 import {empty, Observable, of } from 'rxjs';
 import {PaginatedResult, SearchQuery, Sentence, SentenceStatus} from 'src/app/model/nlp';
+import { FrequentQuestion, QaStatus } from './model/frequent-question';
 
 @Injectable()
 export class QaService {
 
   // generate fake data for pagination
-  mockData: Qa[] = Array<number>(19999).fill(0).map((_, index) => {
+  mockData: FrequentQuestion[] = Array<number>(19999).fill(0).map((_, index) => {
+    const template = MOCK_FREQUENT_QUESTIONS[index % MOCK_FREQUENT_QUESTIONS.length];
+
     return {
-      label: `${MOCK_QA_DEFAULT_LABEL} ${index+1}`,
-      description: `${MOCK_QA_DEFAULT_DESCRIPTION} ${index+1}`,
-      title: MOCK_QA_TITLES[index % MOCK_QA_TITLES.length], // pick random (rotating) title
+      utterances: [`${template.utterances[0]} ${index+1}`],
+      answer: `${template.answer} ${index+1}`,
+      title: template.title, // pick random (rotating) title
       enabled: (index < 5),
       status: QaStatus.model
     };
@@ -23,27 +25,27 @@ export class QaService {
   }
 
   // fake real backend call
-  public save(qa: Qa, cancel$: Observable<any> = empty()): Observable<Qa> {
+  public save(fq: FrequentQuestion, cancel$: Observable<any> = empty()): Observable<FrequentQuestion> {
     let dirty = false;
 
     this.mockData = this.mockData.map(item => {
-      if (item.label === qa.label) { // arbitrary chosen unicity key, there must be a better one
+      if (item.title === fq.title) { // arbitrary chosen unicity key, there must be a better one
         dirty = true;
-        return qa;
+        return fq;
       } else {
         return item;
       }
     });
 
     if (!dirty) { // when no match
-      this.mockData.push(qa);
+      this.mockData.push(fq);
     }
 
-    return of(qa);
+    return of(fq);
   }
 
   // fake real backend call
-  searchQas(query: SearchQuery): Observable<PaginatedResult<Qa>> {
+  searchQas(query: SearchQuery): Observable<PaginatedResult<FrequentQuestion>> {
 
     // guard against empty case
     if (query.start < 0 || query.size <= 0) {
@@ -57,31 +59,31 @@ export class QaService {
 
     // simulate backend text search
     const data = this.mockData
-      .filter(qa => {
-        const predicates: Array<(Qa) => boolean> = [];
+      .filter(fq => {
+        const predicates: Array<(FrequentQuestion) => boolean> = [];
 
         predicates.push(
-          (qa) => qa.status !== QaStatus.deleted
+          (fq) => fq.status !== QaStatus.deleted
         );
 
         const lowerSearch = (query.search || '').toLowerCase().trim();
         if (lowerSearch) {
           predicates.push(
-            (qa) => qa.label.toLowerCase().includes(lowerSearch) ||
-              qa.description.toLowerCase().includes(lowerSearch) ||
-              qa.title.toLowerCase().includes(lowerSearch)
+            (fq) => fq.label.toLowerCase().includes(lowerSearch) ||
+              fq.description.toLowerCase().includes(lowerSearch) ||
+              fq.title.toLowerCase().includes(lowerSearch)
           );
         }
 
         if (query.onlyToReview) {
           predicates.push(
-            (qa) => (true === qa.enabled)
+            (fq) => (true === fq.enabled)
           );
         }
 
         // Return true when all criterias pass
         return predicates.reduce((accepted, predicate) => {
-          return accepted && predicate(qa);
+          return accepted && predicate(fq);
         }, true);
       });
 

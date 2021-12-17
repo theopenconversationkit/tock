@@ -7,6 +7,7 @@ import { AnalyticsService } from 'src/app/analytics/analytics.service';
 import { DialogReportQuery } from 'src/app/analytics/dialogs/dialogs';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { DialogReport, Sentence } from 'src/app/shared/model/dialog-data';
+import moment from 'moment';
 
 type RETAIN_MODE = 'ONLY_BOT' | 'ONLY_USER' | 'BOTH';
 
@@ -35,6 +36,7 @@ export class TrainSidebarComponent implements OnInit, OnDestroy, OnChanges {
   onSentenceSelect = new EventEmitter<string>();
 
   public dialogReports: DialogReport[] = [];
+  public selectedIndex = 0;
 
 
   public retainMode: RETAIN_MODE = 'BOTH';
@@ -112,6 +114,7 @@ export class TrainSidebarComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   selectDialog(dialogReport: DialogReport, index: number): void {
+    this.selectedIndex = index;
     this.dialogChanged$.next(dialogReport);
   }
 

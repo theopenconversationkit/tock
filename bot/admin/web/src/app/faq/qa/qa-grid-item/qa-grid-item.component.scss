@@ -2,6 +2,7 @@
 
 nb-toggle {
   margin-bottom: -.5rem;
+  margin-right: 1rem;
 }
 
 .tock-col-a {
@@ -30,5 +31,23 @@ nb-card,nb-card-body {
 
   &.tock--closed {
     opacity: .8;
+  }
+}
+
+nb-card-body {
+
+  &.tock--docked-panel,&.tock--full_width--small {
+    .tock-col-a {
+      flex: 0 0 40%;
+    }
+
+    .tock-col-b {
+      flex: 0 0 30%;
+    }
+
+    nb-toggle {
+      transform: scale(0.8);
+      margin-right: .1rem;
+    }
   }
 }

@@ -6,10 +6,10 @@ export enum QaStatus {
   model, deleted
 }
 
-export type Qa = {
+export type FrequentQuestion = {
   title: string,
-  label: string,
-  description: string,
+  utterances: string[],
+  answer: string,
   enabled: boolean,
   status: QaStatus
 };

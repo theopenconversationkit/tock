@@ -5,20 +5,19 @@ import {DEFAULT_FAQ_SENTENCE_SORT, FaqSentenceFilter, TrainGridComponent} from '
 import {StateService} from "../../core-nlp/state.service";
 import {Sentence} from "../../model/nlp";
 import {ViewMode, toggleSmallScreenMode, toggleWideScreenMode, isDocked, dock, undock} from "../common/model/view-mode";
-import { fromEvent, ReplaySubject } from 'rxjs';
+import { fromEvent, Observable, ReplaySubject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
+import {WithSidePanel} from '../common/mixin/with-side-panel';
 
 @Component({
   selector: 'tock-train',
   templateUrl: './train.component.html',
   styleUrls: ['./train.component.scss']
 })
-export class TrainComponent implements OnInit, OnDestroy {
+export class TrainComponent extends WithSidePanel() implements OnInit, OnDestroy {
 
   NO_INTENT_FILTER = new FilterOption('-1', 'All');
   UNKNOWN_INTENT_FILTER = new FilterOption('tock:unknown', 'Unknown');
-
-  viewMode: ViewMode = 'FULL_WIDTH';
 
   selectedSentence?: Sentence;
   applicationName: string;
@@ -31,6 +30,7 @@ export class TrainComponent implements OnInit, OnDestroy {
   constructor(
     private readonly state: StateService
   ) {
+    super();
   }
 
   ngOnInit(): void {
@@ -48,8 +48,7 @@ export class TrainComponent implements OnInit, OnDestroy {
 
     this.applicationName = this.state.currentApplication.name;
 
-    this.adjustViewMode(); // check actual screen width
-    this.observeWindowWidth();
+    this.initSidePanel(this.destroy$);
   }
 
   ngOnDestroy() {
@@ -57,25 +56,10 @@ export class TrainComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  private observeWindowWidth(): void {
-    const screenSizeChanged$ = fromEvent(window, 'resize')
-      .pipe(takeUntil(this.destroy$), debounceTime(1000))
-      .subscribe(this.adjustViewMode.bind(this));
-  }
-
-  private adjustViewMode(): void {
-    console.log("window width", window.innerWidth);
-
-    if (window.innerWidth < 1620) {
-      this.viewMode = toggleSmallScreenMode(this.viewMode);
-    } else {
-      this.viewMode = toggleWideScreenMode(this.viewMode);
-    }
-  }
-
   details(sentence: Sentence): void {
-    if (this.viewMode === 'FULL_WIDTH') {
-      this.dock(sentence);
+    if (!this.isDocked()) {
+      this.selectedSentence = sentence;
+      this.dock();
     } else if (this.selectedSentence?.text === sentence.text) {
       this.undock();
     } else {
@@ -89,20 +73,6 @@ export class TrainComponent implements OnInit, OnDestroy {
     this.filter.sort = filter.sort;
 
     this.grid.refresh();
-  }
-
-  dock(sentence: Sentence): void {
-    this.selectedSentence = sentence;
-    this.viewMode = dock(this.viewMode);
-  }
-
-  undock(): void {
-    this.selectedSentence = null;
-    this.viewMode = undock(this.viewMode);
-  }
-
-  isDocked(): boolean {
-    return isDocked(this.viewMode);
   }
 
   sentenceSelect(sentence: string): void {

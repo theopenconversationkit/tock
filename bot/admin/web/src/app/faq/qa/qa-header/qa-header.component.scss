@@ -10,3 +10,9 @@
 .tock-search-bar {
   width: calc(100% - 40px);
 }
+
+.tock-burger-icon {
+  cursor: pointer;
+  transform: scale(1.2);
+  user-select: none;
+}
