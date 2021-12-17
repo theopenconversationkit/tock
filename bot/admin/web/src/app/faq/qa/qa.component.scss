@@ -1,0 +1,28 @@
+.tock-qa-viewport.tock--full_width, .tock-qa-viewport.tock--full_width--small {
+
+  >tock-qa-grid {
+    flex: 0 0 100%;
+  }
+
+  >.tock-qa-sidebar {
+    flex: 0 0 0%;
+  }
+}
+
+
+.tock-qa-viewport.tock--docked-panel {
+
+  >tock-qa-grid {
+    flex: 1 1 auto;
+  }
+
+  >.tock-qa-sidebar {
+    flex: 0 0 400px;
+  }
+}
+
+tock-qa-header.tock--docked {
+  display: block;
+  width: calc(100% - 440px);
+}
+

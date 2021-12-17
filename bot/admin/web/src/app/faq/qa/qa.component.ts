@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
 import { StateService } from 'src/app/core-nlp/state.service';
-import { Qa } from '../common/model/qa';
+import { WithSidePanel } from '../common/mixin/with-side-panel';
+import { FrequentQuestion } from '../common/model/frequent-question';
 import { FaqQaFilter, QaGridComponent } from './qa-grid/qa-grid.component';
 
 @Component({
@@ -9,7 +10,7 @@ import { FaqQaFilter, QaGridComponent } from './qa-grid/qa-grid.component';
   templateUrl: './qa.component.html',
   styleUrls: ['./qa.component.scss']
 })
-export class QaComponent implements OnInit, OnDestroy {
+export class QaComponent extends WithSidePanel()  implements OnInit, OnDestroy {
 
   applicationName: string;
 
@@ -20,7 +21,9 @@ export class QaComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly state: StateService
-  ) { }
+  ) {
+    super();
+  }
 
   ngOnInit(): void {
     this.filter = {
@@ -47,8 +50,16 @@ export class QaComponent implements OnInit, OnDestroy {
     this.grid.refresh();
   }
 
-  details(qa: Qa) {
-    console.log("qa", qa);
+  openImportSidepanel() {
+    this.dock("import");
+  }
+
+  openNewSidepanel() {
+    this.dock("new");
+  }
+
+  details(fq: FrequentQuestion) {
+    console.log("qa", fq);
   }
 
 }

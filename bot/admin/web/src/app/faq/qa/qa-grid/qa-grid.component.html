@@ -33,7 +33,7 @@
 
   <div infinite-scroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="300" (scrolled)="onScroll()">
     <div *ngFor="let d of data">
-      <tock-qa-grid-item [ngClass]="'w-100'" [qa]="d"></tock-qa-grid-item>
+      <tock-qa-grid-item [ngClass]="'w-100'" [item]="d" [viewMode]="viewMode"></tock-qa-grid-item>
     </div>
   </div>
 </ng-container>

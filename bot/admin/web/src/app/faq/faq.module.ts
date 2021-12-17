@@ -65,6 +65,9 @@ import { QaHeaderComponent } from './qa/qa-header/qa-header.component';
 import { QaGridComponent } from './qa/qa-grid/qa-grid.component';
 import { QaGridItemComponent } from './qa/qa-grid-item/qa-grid-item.component';
 import { QaService } from "./common/qa.service";
+import { InviewSidebarComponent } from './common/components/inview-sidebar/inview-sidebar.component';
+import { QaSidebarImportContentComponent } from './qa/sidebars/qa-sidebar-import-content/qa-sidebar-import-content.component';
+import { QaSidebarNewContentComponent } from './qa/sidebars/qa-sidebar-new-content/qa-sidebar-new-content.component';
 
 const routes: Routes = [
   {
@@ -138,7 +141,11 @@ export class FaqRoutingModule {
     QaComponent,
     QaHeaderComponent,
     QaGridComponent,
-    QaGridItemComponent
+    QaGridItemComponent,
+    InviewSidebarComponent,
+    QaSidebarImportContentComponent,
+    QaSidebarNewContentComponent
+
   ],
   exports: [],
   providers: [

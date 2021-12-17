@@ -2,7 +2,8 @@ import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angula
 import {Observable, of, ReplaySubject } from 'rxjs';
 import { delay, take, tap } from 'rxjs/operators';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
-import { Qa, QaStatus } from '../../common/model/qa';
+import { FrequentQuestion, QaStatus } from '../../common/model/frequent-question';
+import {isDocked, ViewMode } from '../../common/model/view-mode';
 import { QaService } from '../../common/qa.service';
 import { truncate } from '../../common/util/string-utils';
 
@@ -15,7 +16,10 @@ import { truncate } from '../../common/util/string-utils';
 export class QaGridItemComponent implements OnInit, OnDestroy {
 
   @Input()
-  qa: Qa;
+  item: FrequentQuestion;
+
+  @Input()
+  viewMode: ViewMode;
 
   @Output()
   onRemove = new EventEmitter<boolean>();
@@ -52,15 +56,23 @@ export class QaGridItemComponent implements OnInit, OnDestroy {
 
   }
 
-  async remove(): Promise<any> {
-    this.qa.status = QaStatus.deleted;
+  isDocked(): boolean {
+    return isDocked(this.viewMode);
+  }
 
-    await this.qaService.save(this.qa, this.destroy$)
+  getFirstUtterance(): string {
+    return this.item.utterances[0] || '';
+  }
+
+  async remove(): Promise<any> {
+    this.item.status = QaStatus.deleted;
+
+    await this.qaService.save(this.item, this.destroy$)
       .pipe(take(1))
       .toPromise();
 
     this.dialog.notify(`Deleted`,
-      truncate(this.qa.title), {duration: 2000, status: "basic"});
+      truncate(this.item.title), {duration: 2000, status: "basic"});
 
 
     this.hide().subscribe(_ => {
@@ -77,5 +89,4 @@ export class QaGridItemComponent implements OnInit, OnDestroy {
         tap(_ =>  this.hideableCssClass = 'tock--hidden' )
       );
   }
-
 }
