@@ -22,9 +22,9 @@ internal class ClassifiedSentenceCol_Serializer :
         gen.writeFieldName("text")
         val _text_ = value.text
         gen.writeString(_text_)
-        gen.writeFieldName("formattedSentence")
-        val _formattedSentence_ = value.formattedSentence
-        gen.writeString(_formattedSentence_)
+        gen.writeFieldName("normalizedText")
+        val _normalizedText_ = value.normalizedText
+        gen.writeString(_normalizedText_)
         gen.writeFieldName("fullText")
         val _fullText_ = value.fullText
         gen.writeString(_fullText_)

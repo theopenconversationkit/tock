@@ -36,8 +36,8 @@ internal class ClassifiedSentenceCol_Deserializer :
         with(p) {
             var _text_: String? = null
             var _text_set : Boolean = false
-            var _formattedSentence_: String? = null
-            var _formattedSentence_set : Boolean = false
+            var _normalizedText_: String? = null
+            var _normalizedText_set : Boolean = false
             var _fullText_: String? = null
             var _fullText_set : Boolean = false
             var _language_: Locale? = null
@@ -85,10 +85,10 @@ internal class ClassifiedSentenceCol_Deserializer :
                              else p.text;
                             _text_set = true
                             }
-                    "formattedSentence" -> {
-                            _formattedSentence_ = if(_token_ == JsonToken.VALUE_NULL) null
+                    "normalizedText" -> {
+                            _normalizedText_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
-                            _formattedSentence_set = true
+                            _normalizedText_set = true
                             }
                     "fullText" -> {
                             _fullText_ = if(_token_ == JsonToken.VALUE_NULL) null
@@ -178,27 +178,26 @@ internal class ClassifiedSentenceCol_Deserializer :
                     } 
                 _token_ = currentToken
                         } 
-            return if(_text_set && _formattedSentence_set && _fullText_set && _language_set &&
+            return if(_text_set && _normalizedText_set && _fullText_set && _language_set &&
                     _applicationId_set && _creationDate_set && _updateDate_set && _status_set &&
                     _classification_set && _lastIntentProbability_set && _lastEntityProbability_set
                     && _lastUsage_set && _usageCount_set && _unknownCount_set && _forReview_set &&
                     _reviewComment_set && _classifier_set && _otherIntentsProbabilities_set)
-                    ClassifiedSentenceMongoDAO.ClassifiedSentenceCol(text = _text_!!,
-                            formattedSentence = _formattedSentence_!!, fullText = _fullText_!!,
-                            language = _language_!!, applicationId = _applicationId_!!, creationDate
-                            = _creationDate_!!, updateDate = _updateDate_!!, status = _status_!!,
-                            classification = _classification_!!, lastIntentProbability =
-                            _lastIntentProbability_, lastEntityProbability =
-                            _lastEntityProbability_, lastUsage = _lastUsage_, usageCount =
-                            _usageCount_, unknownCount = _unknownCount_, forReview = _forReview_!!,
-                            reviewComment = _reviewComment_, classifier = _classifier_,
-                            otherIntentsProbabilities = _otherIntentsProbabilities_!!)
+                    ClassifiedSentenceMongoDAO.ClassifiedSentenceCol(text = _text_!!, normalizedText
+                            = _normalizedText_!!, fullText = _fullText_!!, language = _language_!!,
+                            applicationId = _applicationId_!!, creationDate = _creationDate_!!,
+                            updateDate = _updateDate_!!, status = _status_!!, classification =
+                            _classification_!!, lastIntentProbability = _lastIntentProbability_,
+                            lastEntityProbability = _lastEntityProbability_, lastUsage =
+                            _lastUsage_, usageCount = _usageCount_, unknownCount = _unknownCount_,
+                            forReview = _forReview_!!, reviewComment = _reviewComment_, classifier =
+                            _classifier_, otherIntentsProbabilities = _otherIntentsProbabilities_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_text_set)
                     map[parameters.getValue("text")] = _text_
-                    if(_formattedSentence_set)
-                    map[parameters.getValue("formattedSentence")] = _formattedSentence_
+                    if(_normalizedText_set)
+                    map[parameters.getValue("normalizedText")] = _normalizedText_
                     if(_fullText_set)
                     map[parameters.getValue("fullText")] = _fullText_
                     if(_language_set)
@@ -244,9 +243,8 @@ internal class ClassifiedSentenceCol_Deserializer :
 
         private val parameters: Map<String, KParameter> by lazy(LazyThreadSafetyMode.PUBLICATION) {
                 kotlin.collections.mapOf("text" to primaryConstructor.findParameterByName("text")!!,
-                "formattedSentence" to
-                primaryConstructor.findParameterByName("formattedSentence")!!, "fullText" to
-                primaryConstructor.findParameterByName("fullText")!!, "language" to
+                "normalizedText" to primaryConstructor.findParameterByName("normalizedText")!!,
+                "fullText" to primaryConstructor.findParameterByName("fullText")!!, "language" to
                 primaryConstructor.findParameterByName("language")!!, "applicationId" to
                 primaryConstructor.findParameterByName("applicationId")!!, "creationDate" to
                 primaryConstructor.findParameterByName("creationDate")!!, "updateDate" to

@@ -28,10 +28,10 @@ import ai.tock.shared.defaultLocale
 import ai.tock.shared.name
 import io.mockk.every
 import io.mockk.verify
-import org.junit.jupiter.api.Test
-import org.litote.kmongo.toId
 import java.util.Locale
 import kotlin.test.assertEquals
+import org.junit.jupiter.api.Test
+import org.litote.kmongo.toId
 
 /**
  *
@@ -76,19 +76,19 @@ class ParserServiceTest : AbstractTest() {
 
     @Test
     fun saveSentence_shouldSaveTheSentence_ifTheAlreadyExistingSentenceHasInboxStatusAndNotSameContent() {
-        ParserService.saveSentence(defaultClassifiedSentence, validatedSentence)
+        ParserService.saveSentence(app, defaultClassifiedSentence, validatedSentence)
         verify { context.config.save(any<ClassifiedSentence>()) }
     }
 
     @Test
     fun saveSentence_shouldNotSaveTheSentence_ifTheAlreadyExistingSentenceHasValidatedStatus() {
-        ParserService.saveSentence(defaultClassifiedSentence, validatedSentence.copy(status = validated))
+        ParserService.saveSentence(app, defaultClassifiedSentence, validatedSentence.copy(status = validated))
         verify(exactly = 0) { context.config.save(any<ClassifiedSentence>()) }
     }
 
     @Test
     fun saveSentence_shouldNotSaveTheSentence_ifTheAlreadyExistingSentenceHasModelStatus() {
-        ParserService.saveSentence(defaultClassifiedSentence, validatedSentence.copy(status = model))
+        ParserService.saveSentence(app, defaultClassifiedSentence, validatedSentence.copy(status = model))
         verify(exactly = 0) { context.config.save(any<ClassifiedSentence>()) }
     }
 
@@ -105,13 +105,13 @@ class ParserServiceTest : AbstractTest() {
     fun `GIVEN a parse request WHEN the sentence is validated but not in intentsSubset THEN the nlp model is used`() {
         every { context.config.search(any()) } returns SentencesQueryResult(1, listOf(intent2ClassifiedSentence))
         every { context.core.parse(any(), any(), any()) } returns
-            ParsingResult(
-                defaultIntentName,
-                emptyList(),
-                emptyList(),
-                1.0,
-                1.0
-            )
+                ParsingResult(
+                    defaultIntentName,
+                    emptyList(),
+                    emptyList(),
+                    1.0,
+                    1.0
+                )
 
         val query = intentSubsetParseQuery.copy(intentsSubset = setOf(IntentQualifier(defaultIntentName, 0.0)))
         val result = ParserService.parse(query)

@@ -14,43 +14,18 @@
  * limitations under the License.
  */
 
-import ai.tock.shared.ModelOptions
-import ai.tock.shared.formatTockText
-import org.junit.jupiter.api.Test
+import ai.tock.shared.normalize
 import java.util.Locale
 import kotlin.test.assertEquals
+import org.junit.jupiter.api.Test
 
 internal class ModelCoreServiceTest {
     val locale: Locale = Locale.FRENCH
 
     @Test
-    fun `formatTockText Should Keep the text unchanged IF caseInsensitive is false and ignoreTrailingPunctuation is false`() {
-        val modelOptions = ModelOptions(caseInsensitive = false, ignoreTrailingPunctuation = false)
-        val input = "This is a sentence"
-        assertEquals(input, input.formatTockText(modelOptions, locale))
-    }
-
-    @Test
-    fun `formatTockText Should only lowercase the text IF caseInsensitive is true and ignoreTrailingPunctuation is false`() {
-        val modelOptions = ModelOptions( caseInsensitive = true, ignoreTrailingPunctuation = false)
-        val input = "THIS is a sentence"
-        val output = "this is a sentence"
-        assertEquals(output, input.formatTockText(modelOptions, locale))
-    }
-
-    @Test
-    fun `formatTockText Should only remove trailing punctuation IF caseInsensitive is false and ignoreTrailingPunctuation is true`() {
-        val modelOptions = ModelOptions( caseInsensitive = false, ignoreTrailingPunctuation = true)
-        val input = "This is a sentence??"
-        val output = "This is a sentence"
-        assertEquals(output, input.formatTockText(modelOptions, locale))
-    }
-
-    @Test
-    fun `formatTockText Should lowercase and remove the trailing punctuation IF caseInsensitive is true and ignoreTrailingPunctuation is true`() {
-        val modelOptions = ModelOptions( caseInsensitive = true, ignoreTrailingPunctuation = true)
-        val input = "THIS IS A sentence??"
-        val output = "this is a sentence"
-        assertEquals(output, input.formatTockText(modelOptions, locale))
+    fun `formatTockText Should lowercase and remove the trailing punctuation AND remove Accent`() {
+        val input = "THIS IS A sentence é??"
+        val output = "this is a sentence e"
+        assertEquals(output, input.normalize(locale))
     }
 }

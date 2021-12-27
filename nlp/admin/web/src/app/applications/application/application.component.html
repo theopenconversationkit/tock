@@ -64,13 +64,9 @@
           </mat-form-field>
         </p>
         <p>
-          <nb-checkbox class="separator" [(ngModel)]="application.caseInsensitive"
-                       nbTooltip="If selected, this option uses case insensitive models">
-            Case insensitive models
-          </nb-checkbox>
-          <nb-checkbox class="separator" [(ngModel)]="application.ignoreTrailingPunctuation"
-                       nbTooltip="If selected, this option uses models with no trailing punctuation which are .,:;?! ">
-            Ignore trailing punctuation
+          <nb-checkbox class="separator" [(ngModel)]="application.normalizeText"
+                       nbTooltip="If selected, this option uses normalized text models - for intent only models">
+            Normalized text models
           </nb-checkbox>
           <nb-checkbox class="separator" [(ngModel)]="application.mergeEngineTypes"
                        nbTooltip="If selected, this option uses built-in entity models (like dates) in conjunction with standard NER">

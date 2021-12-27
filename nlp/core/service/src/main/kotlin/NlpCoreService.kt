@@ -38,10 +38,9 @@ import ai.tock.nlp.model.IntentContext
 import ai.tock.nlp.model.ModelHolder
 import ai.tock.nlp.model.ModelNotInitializedException
 import ai.tock.nlp.model.NlpClassifier
-import ai.tock.shared.ModelOptions
 import ai.tock.shared.checkMaxLengthAllowed
 import ai.tock.shared.error
-import ai.tock.shared.formatTockText
+import ai.tock.shared.normalize
 import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
@@ -215,9 +214,8 @@ internal object NlpCoreService : NlpCore {
     }
 
     private fun CallContext.prepareText(text: String): String {
-        val modelOptions = ModelOptions(application.caseInsensitive, application.ignoreTrailingPunctuation)
-        return if (modelOptions.sentencesNeedFormatting())
-            text.formatTockText(modelOptions, language)
+        return if (application.normalizeText)
+            text.normalize(language)
         else text
     }
 

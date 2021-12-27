@@ -35,12 +35,12 @@ import ai.tock.nlp.front.storage.mongo.ApplicationDefinitionMongoDAO.getApplicat
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.ApplicationId
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Classifier
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.ForReview
-import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.FormattedSentence
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.FullText
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Language
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.LastEntityProbability
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.LastIntentProbability
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.LastUsage
+import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.NormalizedText
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Status
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Text
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UnknownCount
@@ -49,12 +49,11 @@ import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UsageCou
 import ai.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
 import ai.tock.nlp.front.storage.mongo.ParseRequestLogMongoDAO.ParseRequestLogStatCol
 import ai.tock.shared.Executor
-import ai.tock.shared.ModelOptions
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.ensureIndex
 import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.error
-import ai.tock.shared.formatTockText
+import ai.tock.shared.normalize
 import ai.tock.shared.injector
 import ai.tock.shared.listProperty
 import ai.tock.shared.longProperty
@@ -80,7 +79,6 @@ import org.litote.kmongo.combine
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.distinct
 import org.litote.kmongo.eq
-import org.litote.kmongo.exists
 import org.litote.kmongo.find
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.gt
@@ -119,7 +117,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     @JacksonData(internal = true)
     data class ClassifiedSentenceCol(
         val text: String,
-        val formattedSentence: String = text,
+        val normalizedText: String = text,
         val fullText: String = text,
         val language: Locale,
         val applicationId: Id<ApplicationDefinition>,
@@ -141,7 +139,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         constructor(sentence: ClassifiedSentence) :
                 this(
                     textKey(sentence.text),
-                    sentence.text,
+                    sentence.text.normalize(sentence.language),
                     sentence.text,
                     sentence.language,
                     sentence.applicationId,
@@ -185,7 +183,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         val c = database.getCollection<ClassifiedSentenceCol>("classified_sentence")
         try {
             c.ensureUniqueIndex(Text, Language, ApplicationId)
-            c.ensureIndex(FormattedSentence, Language, ApplicationId)
+            c.ensureIndex(NormalizedText, Language, ApplicationId)
             c.ensureIndex(Language, ApplicationId, Status)
             c.ensureIndex(Status)
             c.ensureIndex(orderBy(mapOf(ApplicationId to true, Language to true, UpdateDate to false)))
@@ -231,10 +229,10 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         c
     }
 
-    override fun updateFormattedSentences(applicationId: Id<ApplicationDefinition>, modelOptions: ModelOptions) {
+    override fun updateFormattedSentences(applicationId: Id<ApplicationDefinition>) {
         logger.debug { "start updating formatted sentences" }
-        col.find(FormattedSentence exists false, ApplicationId eq applicationId).forEach {
-            save(it.copy(formattedSentence = it.text.formatTockText(modelOptions, it.language)))
+        col.find(ApplicationId eq applicationId).forEach {
+            save(it.copy(normalizedText = it.text.normalize(it.language)))
         }
         logger.debug { "end updating formatted sentences" }
     }
@@ -425,9 +423,8 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
 
     private fun SentencesQuery.filterOnlyExactMatchText() =
         when {
-            ignoreTrailingPunctuationExactMatch || caseInsensitiveExactMatch -> {
-                val modelOptions = ModelOptions(caseInsensitiveExactMatch, ignoreTrailingPunctuationExactMatch )
-                FormattedSentence eq search?.formatTockText(modelOptions, language ?: defaultLocale)
+            normalizeText -> {
+                NormalizedText eq search?.normalize(language ?: defaultLocale)
             }
             else -> Text eq search
         }

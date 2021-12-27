@@ -37,14 +37,13 @@ import ai.tock.nlp.model.EntityBuildContextForSubEntities
 import ai.tock.nlp.model.EntityCallContextForIntent
 import ai.tock.nlp.model.IntentContext
 import ai.tock.nlp.model.NlpClassifier
-import ai.tock.shared.ModelOptions
 import ai.tock.shared.error
-import ai.tock.shared.formatTockText
 import ai.tock.shared.injector
+import ai.tock.shared.normalize
 import com.github.salomonbrys.kodein.instance
-import mu.KotlinLogging
 import java.time.Duration
 import java.time.Instant
+import mu.KotlinLogging
 
 /**
  *
@@ -208,17 +207,15 @@ internal object ModelCoreService : ModelCore {
     ) = nlpClassifier.updateModelConfiguration(applicationName, engineType, configuration)
 
     private fun BuildContext.formatExpressions(expressions: List<SampleExpression>): List<SampleExpression> {
-        val modelOptions = ModelOptions(application.caseInsensitive, application.ignoreTrailingPunctuation)
-        return if (modelOptions.sentencesNeedFormatting())
-            expressions.map { e -> e.copy(text = e.text.formatTockText(modelOptions, language)) }
+        return if (application.normalizeText)
+            expressions.map { e -> e.copy(text = e.text.normalize(language)) }
         else expressions
     }
 
 
     private fun TestContext.formatExpressions(expressions: List<SampleExpression>): List<SampleExpression> {
-        val modelOptions = ModelOptions(callContext.application.caseInsensitive, callContext.application.ignoreTrailingPunctuation)
-        return if (modelOptions.sentencesNeedFormatting()) {
-            expressions.map { e -> e.copy(text = e.text.formatTockText(modelOptions, callContext.language)) }
+        return if (callContext.application.normalizeText) {
+            expressions.map { e -> e.copy(text = e.text.normalize(callContext.language)) }
         } else expressions
     }
 

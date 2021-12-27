@@ -16,6 +16,7 @@
 
 package ai.tock.shared
 
+import java.text.Normalizer
 import java.util.Locale
 
 /**
@@ -77,12 +78,12 @@ fun concat(s1: String?, s2: String?): String {
 }
 
 private val trailingRegexp = "[.,:;?!]+$".toRegex()
+private val accentsRegexp = "[\\p{InCombiningDiacriticalMarks}]".toRegex()
 
-fun String.removeTrailingPunctuation() = this.replace(trailingRegexp, "").trim()
+private fun String.removeTrailingPunctuation() = this.replace(trailingRegexp, "").trim()
 
-fun String.formatTockText(modelOptions: ModelOptions, locale: Locale): String {
-    var result = this
-    if (modelOptions.caseInsensitive) result = this.lowercase(locale)
-    if (modelOptions.ignoreTrailingPunctuation) result = result.removeTrailingPunctuation()
-    return result
-}
+private fun String.stripAccents(): String =
+    Normalizer.normalize(this, Normalizer.Form.NFD).replace(accentsRegexp, "")
+
+fun String.normalize(locale: Locale): String =
+    this.lowercase(locale).removeTrailingPunctuation().stripAccents()

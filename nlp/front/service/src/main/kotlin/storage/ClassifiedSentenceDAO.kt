@@ -23,7 +23,6 @@ import ai.tock.nlp.front.shared.config.EntityDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.config.SentencesQuery
 import ai.tock.nlp.front.shared.config.SentencesQueryResult
-import ai.tock.shared.ModelOptions
 import org.litote.kmongo.Id
 import java.util.Locale
 
@@ -32,7 +31,7 @@ import java.util.Locale
  */
 interface ClassifiedSentenceDAO {
 
-    fun updateFormattedSentences(applicationId: Id<ApplicationDefinition>, modelOptions: ModelOptions)
+    fun updateFormattedSentences(applicationId: Id<ApplicationDefinition>)
 
     fun getSentences(
         intents: Set<Id<IntentDefinition>>?,
