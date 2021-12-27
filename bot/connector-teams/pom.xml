@@ -29,8 +29,8 @@
     <description>Bot Connector for Teams</description>
 
     <properties>
-        <microsoft.bot>4.14.0</microsoft.bot>
-        <nimbus-jose-jwt>9.14</nimbus-jose-jwt>
+        <microsoft.bot>4.14.1</microsoft.bot>
+        <nimbus-jose-jwt>9.15.2</nimbus-jose-jwt>
         <gson>2.8.9</gson>
     </properties>
 
