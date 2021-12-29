@@ -50,7 +50,7 @@ data class ApplicationWithIntents(
     /**
      * The current nlp engine used to build the model.
      */
-    val nlpEngineType: NlpEngineType,
+    val nlpEngineType: NlpEngineType = NlpEngineType(),
     /**
      * Is intent entity model and "standalone" entity models are used to find the better values ?
      */
