@@ -31,7 +31,7 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
-        <kotlin>1.5.31</kotlin>
+        <kotlin>1.6.10</kotlin>
         <couroutine>1.6.0</couroutine>
 
         <slf4j>1.7.30</slf4j>
