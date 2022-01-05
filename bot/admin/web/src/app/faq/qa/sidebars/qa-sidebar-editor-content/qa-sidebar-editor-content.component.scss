@@ -1,0 +1,50 @@
+nb-tag-list {
+  max-width: 20rem;
+}
+
+.tock--hidden {
+  display: none;
+}
+
+.tock--active {
+  height: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: stretch;
+}
+
+.tock--subtle-hover {
+  transition: background .5s ease;
+
+  &:hover {
+    background: #eee;
+  }
+}
+
+/* Wrap utterances bloc to handle overflow-y */
+
+.tock-utterances-wrapper {
+  max-height: calc(100vh - 500px);
+  overflow-y: auto;
+}
+
+/* Where utterances are displayed */
+
+.tock-utterances-table {
+  colgroup {
+    > col:first-child {
+      width : 81%;
+    }
+
+    > col:last-child {
+      width : 19%;
+    }
+  }
+
+  tr {
+    > td:last-child {
+      padding: 0;
+      vertical-align: middle;
+    }
+  }
+}

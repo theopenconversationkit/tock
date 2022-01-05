@@ -1,0 +1,36 @@
+<nb-card>
+  <nb-card-header status="info">{{title}}</nb-card-header>
+  <nb-card-body>
+    <div class="w-100 m-auto py-2 tock--notice">
+      Sample question a user might type or say, which matches accepted response
+    </div>
+    <div class="w-100 my-4">
+      <label class="block m-2">Question:</label>
+      <input type="text"
+             placeholder="How many sides does a heptadecagon have?"
+             [(ngModel)]="value"
+             [ngModelChangeDebounceTime]="1000"
+             (ngModelChangeDebounced)="ensureUniq($event)"
+             fullWidth fieldSize="medium" nbInput />
+    </div>
+
+    <div class="tock-alert tock--warning mx-5 p-2 mb-4" *ngIf="!!existingQuestion">
+      <span class="tock-alert-content">
+        A similar question would be replaced:
+        <br />
+        <strong> {{existingQuestion}} </strong>
+      </span>
+    </div>
+  </nb-card-body>
+
+
+
+  <nb-card-footer>
+    <button size="small" class="float-left" nbButton status="default" (click)="cancel()" nbTooltip="Close" >
+      Close
+    </button>
+    <button [disabled]="!canSave()" size="small" class="float-right" nbButton status="primary" (click)="save()" nbTooltip="Ok" >
+      Ok
+    </button>
+  </nb-card-footer>
+</nb-card>

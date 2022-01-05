@@ -8,16 +8,9 @@ import { DialogReportQuery } from 'src/app/analytics/dialogs/dialogs';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { DialogReport, Sentence } from 'src/app/shared/model/dialog-data';
 import moment from 'moment';
+import { noAccents } from '../../common/util/string-utils';
 
 type RETAIN_MODE = 'ONLY_BOT' | 'ONLY_USER' | 'BOTH';
-
-function noAccents(value?: string): string {
-  if (!value) {
-    return value;
-  }
-  // see https://stackoverflow.com/questions/5700636/using-javascript-to-perform-text-matches-with-without-accented-characters
-  return value.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-}
 
 @Component({
   selector: 'tock-train-sidebar',

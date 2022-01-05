@@ -34,6 +34,9 @@ export class QaGridComponent extends ScrollComponent<FrequentQuestion> implement
   @Output()
   onDetails = new EventEmitter<FrequentQuestion>();
 
+  @Output()
+  onEdit= new EventEmitter<FrequentQuestion>();
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
 
@@ -77,6 +80,10 @@ export class QaGridComponent extends ScrollComponent<FrequentQuestion> implement
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
+  }
+
+  edit(fq: FrequentQuestion): void {
+    this.onEdit.emit(fq);
   }
 
   toSearchQuery(query: PaginatedQuery): SearchQuery {

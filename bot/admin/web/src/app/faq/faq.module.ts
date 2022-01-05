@@ -46,7 +46,8 @@ import {
   NbSidebarModule,
   NbSpinnerModule,
   NbTooltipModule,
-  NbUserModule
+  NbUserModule,
+  NbTagModule
 } from "@nebular/theme";
 import {TrainComponent} from './train/train.component';
 import {TrainHeaderComponent} from './train/train-header/train-header.component';
@@ -67,7 +68,10 @@ import { QaGridItemComponent } from './qa/qa-grid-item/qa-grid-item.component';
 import { QaService } from "./common/qa.service";
 import { InviewSidebarComponent } from './common/components/inview-sidebar/inview-sidebar.component';
 import { QaSidebarImportContentComponent } from './qa/sidebars/qa-sidebar-import-content/qa-sidebar-import-content.component';
-import { QaSidebarNewContentComponent } from './qa/sidebars/qa-sidebar-new-content/qa-sidebar-new-content.component';
+import { QaSidebarEditorContentComponent } from './qa/sidebars/qa-sidebar-editor-content/qa-sidebar-editor-content.component';
+import { ReactiveFormsModule } from "@angular/forms";
+import { QaSidebarEditorService } from './qa/sidebars/qa-sidebar-editor.service';
+import { EditUtteranceComponent } from './common/components/edit-utterance/edit-utterance.component';
 
 const routes: Routes = [
   {
@@ -127,7 +131,9 @@ export class FaqRoutingModule {
     NbDialogModule.forRoot(),
     NbRadioModule,
     NbSidebarModule.forRoot(),
-    BotAnalyticsModule
+    BotAnalyticsModule,
+    ReactiveFormsModule,
+    NbTagModule
   ],
   declarations: [
     TrainComponent,
@@ -144,16 +150,19 @@ export class FaqRoutingModule {
     QaGridItemComponent,
     InviewSidebarComponent,
     QaSidebarImportContentComponent,
-    QaSidebarNewContentComponent
-
+    QaSidebarEditorContentComponent,
+    EditUtteranceComponent
   ],
   exports: [],
   providers: [
     IntentsService,
     SentencesService,
-    QaService
+    QaService,
+    QaSidebarEditorService
   ],
-  entryComponents: []
+  entryComponents: [
+    EditUtteranceComponent
+  ]
 })
 export class FaqModule {
 }

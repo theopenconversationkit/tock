@@ -20,3 +20,28 @@ export function truncate(input?: string, len = 40): string {
   }
   return input;
 }
+
+export function noAccents(value?: string): string {
+  if (!value) {
+    return value;
+  }
+  // see https://stackoverflow.com/questions/5700636/using-javascript-to-perform-text-matches-with-without-accented-characters
+  return value.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+}
+
+export function verySimilar(a?: string, b?: string): boolean {
+  const left = (noAccents(a) || '').trim();
+  const right = (noAccents(b) || '').trim();
+
+  return left === right;
+}
+
+export function somewhatSimilar(a?: string, b?: string): boolean {
+  function simplify(value?: string): string | undefined {
+    return value
+      ?.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"") // no ponctuation
+      ?.replace(/\s\s+/g, " "); // merge consecutive spaces
+  }
+
+  return verySimilar(simplify(a), simplify(b));
+}

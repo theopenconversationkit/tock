@@ -13,10 +13,18 @@
   </nb-card>
 
   <nb-card [ngClass]="['mt-0', 'ml-0', 'mr-0', 'w-100', 'tock-sidebar-body']">
-    <nb-card-body [ngClass]="['d-flex', 'flex-column', 'justify-content-start', 'align-items-center']">
-      <ng-content select="[tock-content]"></ng-content>
+    <nb-card-header *ngIf="isContentHeader">
+      <ng-content select="[tock-contentheader]"></ng-content>
+    </nb-card-header>
 
+    <nb-card-body [ngClass]="['d-flex', 'flex-column', 'justify-content-start', 'align-items-stretch']">
+      <ng-content select="[tock-content]"></ng-content>
     </nb-card-body>
+
+    <nb-card-footer>
+      <ng-content select="[tock-footer]"></ng-content>
+    </nb-card-footer>
   </nb-card>
+
 
 </div>

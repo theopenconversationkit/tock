@@ -1,0 +1,23 @@
+:host {
+  display: block;
+  min-width: 500px;
+}
+
+.tock--notice {
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: left;
+  background-color: rgba(0,0,0,.05);
+  padding:  8px 16px;
+  border-radius: 4px;
+
+  border-right: 48px solid #fff;
+  border-left: 4px solid #fff;
+  font-style: oblique;
+}
+
+.tock-alert.tock--warning {
+  color: #856404;
+  background-color: #fff3cd;
+  border-color: #ffeeba;
+}

@@ -1,18 +1,22 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ReplaySubject } from 'rxjs';
-import { StateService } from 'src/app/core-nlp/state.service';
-import { WithSidePanel } from '../common/mixin/with-side-panel';
-import { FrequentQuestion } from '../common/model/frequent-question';
-import { FaqQaFilter, QaGridComponent } from './qa-grid/qa-grid.component';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ReplaySubject} from 'rxjs';
+import {StateService} from 'src/app/core-nlp/state.service';
+import {WithSidePanel} from '../common/mixin/with-side-panel';
+import {blankFrequentQuestion, FrequentQuestion, QaStatus} from '../common/model/frequent-question';
+import {FaqQaFilter, QaGridComponent} from './qa-grid/qa-grid.component';
+import {EditorTabName, QaSidebarEditorService} from './sidebars/qa-sidebar-editor.service';
 
 @Component({
   selector: 'tock-qa',
   templateUrl: './qa.component.html',
   styleUrls: ['./qa.component.scss']
 })
-export class QaComponent extends WithSidePanel()  implements OnInit, OnDestroy {
+export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
+
+  activeQaTab: EditorTabName = 'Info';
 
   applicationName: string;
+  currentItem?: FrequentQuestion;
 
   public filter: FaqQaFilter;
   @ViewChild(QaGridComponent) grid;
@@ -20,7 +24,8 @@ export class QaComponent extends WithSidePanel()  implements OnInit, OnDestroy {
   private readonly destroy$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(
-    private readonly state: StateService
+    private readonly state: StateService,
+    private readonly sidebarEditorService: QaSidebarEditorService,
   ) {
     super();
   }
@@ -54,12 +59,23 @@ export class QaComponent extends WithSidePanel()  implements OnInit, OnDestroy {
     this.dock("import");
   }
 
+  edit(fq: FrequentQuestion): void {
+    this.currentItem = fq;
+    this.dock("edit");
+  }
+
   openNewSidepanel() {
-    this.dock("new");
+    this.currentItem = blankFrequentQuestion();
+    this.dock("edit");
   }
 
   details(fq: FrequentQuestion) {
     console.log("qa", fq);
+  }
+
+  activateEditorTab(tabName: EditorTabName): void {
+    this.activeQaTab = tabName;
+    this.sidebarEditorService.switchTab(tabName);
   }
 
 }
