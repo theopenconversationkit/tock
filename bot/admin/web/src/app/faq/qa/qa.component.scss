@@ -26,3 +26,20 @@ tock-qa-header.tock--docked {
   width: calc(100% - 440px);
 }
 
+.tock-tab {
+  background-color: rgba(51, 102, 255, 0.16);
+  border-color: #3366ff;
+  color: #3366ff;
+  padding: 10px 27px;
+  margin: 0;
+  border-right: 1px solid #fff;
+  border-bottom: 1px solid #3366ff;
+  cursor: pointer;
+  user-select: none;
+
+  &.tock--active {
+    background-color: #3366ff;
+    border-color: #3366ff;
+    color: #ffffff;
+  }
+}

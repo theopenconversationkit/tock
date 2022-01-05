@@ -13,7 +13,7 @@ export class QaService {
     const template = MOCK_FREQUENT_QUESTIONS[index % MOCK_FREQUENT_QUESTIONS.length];
 
     return {
-      utterances: [`${template.utterances[0]} ${index+1}`],
+      utterances: [{value: `${template.utterances[0].value} ${index+1}`, primary: true}],
       answer: `${template.answer} ${index+1}`,
       title: template.title, // pick random (rotating) title
       enabled: (index < 5),
@@ -69,9 +69,9 @@ export class QaService {
         const lowerSearch = (query.search || '').toLowerCase().trim();
         if (lowerSearch) {
           predicates.push(
-            (fq) => fq.label.toLowerCase().includes(lowerSearch) ||
-              fq.description.toLowerCase().includes(lowerSearch) ||
-              fq.title.toLowerCase().includes(lowerSearch)
+            (fq) => (fq.label || '').toLowerCase().includes(lowerSearch) ||
+              (fq.description || '').toLowerCase().includes(lowerSearch) ||
+              (fq.title || '').toLowerCase().includes(lowerSearch)
           );
         }
 

@@ -1,4 +1,4 @@
-import {EventEmitter, Output } from '@angular/core';
+import {EventEmitter, Input, Output } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
 
@@ -8,6 +8,9 @@ import { ReplaySubject } from 'rxjs';
   styleUrls: ['./inview-sidebar.component.scss']
 })
 export class InviewSidebarComponent implements OnInit {
+
+  @Input()
+  isContentHeader: boolean;
 
   @Output()
   onClose = new EventEmitter<void>();

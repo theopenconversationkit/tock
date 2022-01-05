@@ -13,23 +13,51 @@
      'tock--full_width--small': viewMode === 'RESPONSIVE_FULL_WIDTH'
      }"
 >
-  <tock-qa-grid (onDetails)="details($event)" [viewMode]="viewMode" [filter]="filter"></tock-qa-grid>
+  <tock-qa-grid (onDetails)="details($event)" (onEdit)="edit($event)"  [viewMode]="viewMode" [filter]="filter"></tock-qa-grid>
 
-  <tock-inview-sidebar [ngClass]="'tock-qa-sidebar'" *ngIf="isPanelDocked('import')" (onClose)="undock()">
+  <tock-inview-sidebar [isContentHeader]="false" [ngClass]="'tock-qa-sidebar'" *ngIf="isPanelDocked('import')" (onClose)="undock()">
     <div tock-header>
       <h5>Import FAQ</h5>
     </div>
-
     <tock-qa-sidebar-import-content tock-content></tock-qa-sidebar-import-content>
 
+    <ng-container tock-footer>
+      <button class="float-right mx-2"  nbButton status="primary" size="small">
+        Ok
+      </button>
+    </ng-container>
   </tock-inview-sidebar>
 
-  <tock-inview-sidebar [ngClass]="'tock-qa-sidebar'" *ngIf="isPanelDocked('new')" (onClose)="undock()">
+  <tock-inview-sidebar [isContentHeader]="true" [ngClass]="'tock-qa-sidebar'" *ngIf="isPanelDocked('edit')" (onClose)="undock()">
     <div tock-header>
-      <h5>New FAQ</h5>
+      <h5>Create a new FAQ</h5>
     </div>
+    <tock-qa-sidebar-editor-content [fq]="currentItem" tock-content></tock-qa-sidebar-editor-content>
 
-    <tock-qa-sidebar-new-content tock-content></tock-qa-sidebar-new-content>
+    <ng-container tock-footer>
+      <button class="float-right mx-2"  nbButton status="primary" size="small">
+        Create
+      </button>
+      <button class="float-right mx-2" nbButton outline status="primary" size="small" >
+        Cancel
+      </button>
+    </ng-container>
+
+    <ng-container tock-contentheader>
+      <span (click)="activateEditorTab('Info')" class="tock-tab"
+            [ngClass]="{'tock--active': activeQaTab === 'Info'}" >
+        Info
+      </span>
+      <span (click)="activateEditorTab('Question')" class="tock-tab"
+            [ngClass]="{'tock--active': activeQaTab === 'Question'}">
+        Question
+      </span>
+      <span (click)="activateEditorTab('Answer')" class="tock-tab"
+            [ngClass]="{'tock--active': activeQaTab === 'Answer'}">
+        Answer
+      </span>
+    </ng-container>
+
 
   </tock-inview-sidebar>
 

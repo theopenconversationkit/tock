@@ -21,7 +21,7 @@ export const MOCK_FREQUENT_QUESTIONS: FrequentQuestion[] = [
     answer: 'Une fois la carte max reçue et activée, vous avez accès à votre RIB max via le menu ou via « finances » puis « mon compte max ».\n' +
       'Il s\'agit d\'un RIB français.',
     utterances: [
-      'Où puis-je consulter mon RIB ?'
+      {value: 'Où puis-je consulter mon RIB ?'}
     ]
   },
   {
@@ -30,7 +30,7 @@ export const MOCK_FREQUENT_QUESTIONS: FrequentQuestion[] = [
     enabled: true,
     answer: 'L\'adresse mentionnée sur le RIB correspond à celle du siège social de Nouvelle Vague.',
     utterances: [
-      'L\'adresse de mon rib n\'est pas la bonne'
+      {value: 'L\'adresse de mon rib n\'est pas la bonne'}
     ]
   },
   {
@@ -45,7 +45,7 @@ export const MOCK_FREQUENT_QUESTIONS: FrequentQuestion[] = [
       '\n' +
       'https://www.aumaxpourmoi.fr/faq/"',
     utterances: [
-      'Où est ce que je peux faire un virement entrant?'
+      {value: 'Où est ce que je peux faire un virement entrant?'}
     ]
   },
   {
@@ -56,7 +56,7 @@ export const MOCK_FREQUENT_QUESTIONS: FrequentQuestion[] = [
       '\n' +
       '"',
     utterances: [
-      'Combien de temps un virement met-il pour être crédité sur ma carte ?'
+      {value: 'Combien de temps un virement met-il pour être crédité sur ma carte ?'}
     ]
   },
   {
@@ -67,7 +67,7 @@ export const MOCK_FREQUENT_QUESTIONS: FrequentQuestion[] = [
       'Dès réception de votre première carte max, vous pourrez directement l\'activer sur l\'appli dans ""carte max"" ou bien sur le tchat s\'il s\'agissait d\'une opposition. \n' +
       '"',
     utterances: [
-      'Quel est le délai de récéption de la carte une fois le contrat signé ?'
+      {value: 'Quel est le délai de récéption de la carte une fois le contrat signé ?'}
     ]
   }
 ];

@@ -2,14 +2,34 @@
  * Placeholder Type until we really have QA in tock
  */
 
+import { verySimilar } from "../util/string-utils";
+
 export enum QaStatus {
-  model, deleted
+  draft, model, deleted
 }
+
+export type Utterance = {
+  value: string;
+};
+
+export const utteranceEquals = (a: Utterance, b: Utterance) => a.value === b.value;
+
+export const utteranceEquivalent = (a: Utterance, b: Utterance) => verySimilar(a.value, b.value);
 
 export type FrequentQuestion = {
   title: string,
-  utterances: string[],
+  utterances: Utterance[],
   answer: string,
   enabled: boolean,
   status: QaStatus
 };
+
+export function blankFrequentQuestion(): FrequentQuestion {
+  return {
+    title: '',
+    utterances: [],
+    answer: '',
+    enabled: true,
+    status: QaStatus.draft
+  };
+}

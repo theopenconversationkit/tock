@@ -25,7 +25,7 @@ export class QaGridItemComponent implements OnInit, OnDestroy {
   onRemove = new EventEmitter<boolean>();
 
   @Output()
-  onEdit= new EventEmitter<boolean>();
+  onEdit= new EventEmitter<FrequentQuestion>();
 
   @Output()
   onDownload = new EventEmitter<boolean>();
@@ -53,7 +53,7 @@ export class QaGridItemComponent implements OnInit, OnDestroy {
   }
 
   edit(): void {
-
+    this.onEdit.emit(this.item);
   }
 
   isDocked(): boolean {
@@ -61,7 +61,9 @@ export class QaGridItemComponent implements OnInit, OnDestroy {
   }
 
   getFirstUtterance(): string {
-    return this.item.utterances[0] || '';
+    const found = this.item.utterances[0];
+
+    return found?.value || '';
   }
 
   async remove(): Promise<any> {
