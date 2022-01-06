@@ -32,11 +32,15 @@
     <div tock-header>
       <h5>Create a new FAQ</h5>
     </div>
-    <tock-qa-sidebar-editor-content [fq]="currentItem" tock-content></tock-qa-sidebar-editor-content>
+    <tock-qa-sidebar-editor-content
+      (validityChanged)="onEditorValidityChanged($event)"
+      [fq]="currentItem" tock-content>
+
+    </tock-qa-sidebar-editor-content>
 
     <ng-container tock-footer>
-      <button class="float-right mx-2"  nbButton status="primary" size="small">
-        Create
+      <button [disabled]="!editorFormValid" class="float-right mx-2"  nbButton status="primary" size="small">
+        Create {{editorFormValid}}
       </button>
       <button class="float-right mx-2" nbButton outline status="primary" size="small" >
         Cancel

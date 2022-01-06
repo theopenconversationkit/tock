@@ -1,26 +1,37 @@
 <form [formGroup]="newFaqForm" class="h-100 d-flex justify-content-start flex-column flex-nowrap align-items-stretch">
   <div [ngClass]="(tabName === 'Info') ? 'tock--active' : 'tock--hidden'">
     <div class="tock-field mb-3">
-      <label class="d-block mb-1"> Name</label>
+      <label class="d-block mb-1"> Name <span class="text-muted">(*)</span></label>
       <input nbInput fieldSize="small" class="d-block w-100" formControlName="name"
-             placeholder="FAQ New name for the example" type="text"/>
+             placeholder="Heptadecagon question" type="text"/>
     </div>
-    <div class="tock-field mb-3">
+    <div class="tock-field d-flex h-25 flex-column mb-3 ">
       <label class="d-block mb-1"> Description</label>
-      <input nbInput fieldSize="small" class="d-block w-100" formControlName="description"
-             placeholder="Description of the FAQ that will make easier to" type="text"/>
+
+      <textarea nbInput
+                class="d-block w-100 col"
+                fieldSize="small"
+                formControlName="description"
+                placeholder="Knowing more about what a heptadecagon specifically is"></textarea>
     </div>
 
     <div class="tock-field mb-3">
       <label class="d-block mb-1"> Tags</label>
       <nb-tag-list (tagRemove)="onTagRemove($event)">
         <nb-tag *ngFor="let tag of tags" [text]="tag" removable></nb-tag>
-        <input type="text" nbTagInput (tagAdd)="onTagAdd($event)" fullWidth>
+        <input type="text" placeholder="Polygon" nbTagInput (tagAdd)="onTagAdd($event)" (keydown.enter)="handleKeyEnter($event)"
+               fullWidth>
       </nb-tag-list>
     </div>
   </div>
   <div [ngClass]="(tabName === 'Answer') ? 'tock--active' : 'tock--hidden'">
-    Answer content
+    <div class="tock-field d-flex h-75 flex-column mb-3 ">
+      <textarea nbInput
+                class="d-block w-100 col m-auto"
+                fieldSize="small"
+                formControlName="answer"
+                placeholder="A heptadecagon or septadecagon or 17-gon is a shape with 17 sides and 17 corners."></textarea>
+    </div>
   </div>
   <div [ngClass]="(tabName === 'Question') ? 'tock--active' : 'tock--hidden'">
 

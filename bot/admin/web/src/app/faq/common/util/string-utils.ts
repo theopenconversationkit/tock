@@ -30,8 +30,8 @@ export function noAccents(value?: string): string {
 }
 
 export function verySimilar(a?: string, b?: string): boolean {
-  const left = (noAccents(a) || '').trim();
-  const right = (noAccents(b) || '').trim();
+  const left = (noAccents(a) || '').trim().toLowerCase();
+  const right = (noAccents(b) || '').trim().toLowerCase();
 
   return left === right;
 }
@@ -39,7 +39,7 @@ export function verySimilar(a?: string, b?: string): boolean {
 export function somewhatSimilar(a?: string, b?: string): boolean {
   function simplify(value?: string): string | undefined {
     return value
-      ?.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"") // no ponctuation
+      ?.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g,"") // no ponctuation
       ?.replace(/\s\s+/g, " "); // merge consecutive spaces
   }
 
