@@ -55,6 +55,7 @@ import {IntentsService} from "./common/intents.service";
 import {SentencesService} from "./common/sentences.service";
 import {ClickCaptureDirective} from './common/directives/click-capture.directive';
 import {NgModelChangeDebouncedDirective} from './common/directives/ng-model-change-debounced.directive';
+import {DelayDirective} from './common/directives/delay.directive';
 
 import {TrainToolbarComponent} from './train/train-toolbar/train-toolbar.component';
 import {TrainSidebarComponent} from './train/train-sidebar/train-sidebar.component';
@@ -142,6 +143,7 @@ export class FaqRoutingModule {
     TrainGridItemComponent,
     ClickCaptureDirective,
     NgModelChangeDebouncedDirective,
+    DelayDirective,
     TrainToolbarComponent,
     TrainSidebarComponent,
     QaComponent,
