@@ -22,7 +22,8 @@ export const MOCK_FREQUENT_QUESTIONS: FrequentQuestion[] = [
       'Il s\'agit d\'un RIB français.',
     utterances: [
       {value: 'Où puis-je consulter mon RIB ?'}
-    ]
+    ],
+    tags: ['RIB', 'Max']
   },
   {
     title: 'Adresse RIB différente',
@@ -31,7 +32,8 @@ export const MOCK_FREQUENT_QUESTIONS: FrequentQuestion[] = [
     answer: 'L\'adresse mentionnée sur le RIB correspond à celle du siège social de Nouvelle Vague.',
     utterances: [
       {value: 'L\'adresse de mon rib n\'est pas la bonne'}
-    ]
+    ],
+    tags: ['RIB']
   },
   {
     title: 'Process virement MAX',
@@ -46,7 +48,8 @@ export const MOCK_FREQUENT_QUESTIONS: FrequentQuestion[] = [
       'https://www.aumaxpourmoi.fr/faq/"',
     utterances: [
       {value: 'Où est ce que je peux faire un virement entrant?'}
-    ]
+    ],
+    tags: ['RIB', 'Sepa', 'Max']
   },
   {
     title: 'Délai virement compte Max',
@@ -57,7 +60,8 @@ export const MOCK_FREQUENT_QUESTIONS: FrequentQuestion[] = [
       '"',
     utterances: [
       {value: 'Combien de temps un virement met-il pour être crédité sur ma carte ?'}
-    ]
+    ],
+    tags: ['Virement']
   },
   {
     title: 'Delais reception carte',
@@ -68,6 +72,7 @@ export const MOCK_FREQUENT_QUESTIONS: FrequentQuestion[] = [
       '"',
     utterances: [
       {value: 'Quel est le délai de récéption de la carte une fois le contrat signé ?'}
-    ]
+    ],
+    tags: ['Max']
   }
 ];

@@ -2,30 +2,55 @@
   <div [ngClass]="(tabName === 'Info') ? 'tock--active' : 'tock--hidden'">
     <div class="tock-field mb-3">
       <label class="d-block mb-1"> Name <span class="text-muted">(*)</span></label>
-      <input nbInput fieldSize="small" class="d-block w-100" formControlName="name"
+      <input nbInput status="{{getControlStatus('name')}}"
+             fieldSize="small" class="d-block w-100" formControlName="name"
              placeholder="Heptadecagon question" type="text"/>
+
+      <nb-alert accent="warning" *ngIf="isControlAlert('name')">
+        {{
+          newFaqForm.controls['name'].errors.required ?
+            "Name required" :
+          newFaqForm.controls['name'].errors.minlength ?
+            "Name must be at least 6 characters" :
+          newFaqForm.controls['name'].errors.maxlength ?
+             "Name must be less than 10 characters"
+            :
+            "Invalid name"
+        }}
+      </nb-alert>
     </div>
     <div class="tock-field d-flex h-25 flex-column mb-3 ">
       <label class="d-block mb-1"> Description</label>
 
       <textarea nbInput
+                status="{{getControlStatus('description')}}"
                 class="d-block w-100 col"
                 fieldSize="small"
                 formControlName="description"
                 placeholder="Knowing more about what a heptadecagon specifically is"></textarea>
+
+      <nb-alert accent="warning" *ngIf="isControlAlert('description')">
+        {{
+            newFaqForm.controls['description'].errors.maxlength ?
+              "Description must be less than 10 characters"
+              :
+              "Invalid description"
+        }}
+      </nb-alert>
     </div>
 
     <div class="tock-field mb-3">
       <label class="d-block mb-1"> Tags</label>
-      <nb-tag-list (tagRemove)="onTagRemove($event)">
+      <nb-tag-list tock-delay (tagRemove)="onTagRemove($event)">
         <nb-tag *ngFor="let tag of tags" [text]="tag" removable></nb-tag>
-        <input type="text" placeholder="Polygon" nbTagInput (tagAdd)="onTagAdd($event)" (keydown.enter)="handleKeyEnter($event)"
+        <input status="{{getTagControlStatus()}}" type="text" placeholder="{{tags.size ? '' : 'Polygon' }}" nbTagInput (tagAdd)="onTagAdd($event)" (keydown.enter)="handleKeyEnter($event)"
                fullWidth>
       </nb-tag-list>
+      <mat-hint [ngClass]="'mt-1 w-100 d-block px-2'"><small>Hint: Type text then press 'Enter' to add a new Tag</small></mat-hint>
     </div>
   </div>
   <div [ngClass]="(tabName === 'Answer') ? 'tock--active' : 'tock--hidden'">
-    <div class="tock-field d-flex h-75 flex-column mb-3 ">
+    <div class="tock-field d-flex h-100 flex-column mb-3 ">
       <textarea nbInput
                 class="d-block w-100 col m-auto"
                 fieldSize="small"
@@ -57,6 +82,9 @@
     </div>
 
     <div class="tock-utterances-wrapper">
+      <nb-alert [ngClass]="'mt-2'" accent="warning" *ngIf="!(editedUtterances$ | async)?.length">
+        Please add at least one question..
+      </nb-alert>
       <table class="table table-sm table-bordered table-fixed tock-utterances-table">
         <colgroup>
           <col>

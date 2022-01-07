@@ -17,7 +17,8 @@ export class QaService {
       answer: `${template.answer} ${index+1}`,
       title: template.title, // pick random (rotating) title
       enabled: (index < 5),
-      status: QaStatus.model
+      status: QaStatus.model,
+      tags: []
     };
   });
 

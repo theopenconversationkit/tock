@@ -54,6 +54,8 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
   /* Form Data */
 
   tags: Set<string> = new Set();
+  tagsTouched = false;
+
   editedUtterances$: ReplaySubject<Utterance[]> = new ReplaySubject(1);
   tabName: EditorTabName = 'Info';
 
@@ -88,6 +90,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
     this.sidebarEditorService.whenSwitchTab(this.destroy$)
       .subscribe(value => {
         this.tabName = value;
+        this.tagsTouched = false;
       });
 
     this.observeUtteranceSearch();
@@ -95,7 +98,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
   }
 
   ngAfterViewInit() {
-    //this.validityChanged.emit(this.newFaqForm.valid); // initial event value
+    this.validityChanged.emit(this.newFaqForm.valid); // initial event value
   }
 
   ngOnDestroy(): void {
@@ -135,21 +138,53 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
     );
   }
 
+  getControlStatus(controlName: string): 'success' | 'basic' | 'warning' {
+    const control = this.newFaqForm.controls[controlName];
+
+    if (control.dirty || control.touched) {
+      if (control.invalid) {
+        return 'warning';
+      } else {
+        return 'success';
+      }
+    } else {
+      return 'basic';
+    }
+  }
+
+  getTagControlStatus(): 'success' | 'basic' {
+    if (this.tags.size) {
+      return 'success';
+    } else {
+      return 'basic';
+    }
+  }
+
+  isControlAlert(controlName: string): boolean {
+    const control = this.newFaqForm.controls[controlName];
+
+    return control.invalid && (control.dirty || control.touched);
+  }
+
   updateForm(fq?: FrequentQuestion): void {
     if (this.fq) {
       const utterances = JSON.parse(JSON.stringify(fq.utterances)); // deep clone
       this.editedUtterances$.next(utterances);
 
       this.newFaqForm.setValue({
-        name: '' + fq.title,
-        description: ''
+        name: '' + (fq.title || ''),
+        description: '' + (fq.description || ''),
+        answer: '' + (fq.answer || '')
       });
+      this.tags = new Set<string>(fq.tags.slice());
     } else {
       this.editedUtterances$.next([]);
       this.newFaqForm.setValue({
         name: '',
-        description: ''
+        description: '',
+        answer: ''
       });
+      this.tags = new Set<string>();
     }
   }
 

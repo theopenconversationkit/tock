@@ -20,7 +20,9 @@ export const utteranceSomewhatSimilar = (a: Utterance, b: Utterance) => somewhat
 
 export type FrequentQuestion = {
   title: string,
+  description?: string,
   utterances: Utterance[],
+  tags: string[],
   answer: string,
   enabled: boolean,
   status: QaStatus
@@ -30,6 +32,7 @@ export function blankFrequentQuestion(): FrequentQuestion {
   return {
     title: '',
     utterances: [],
+    tags: [],
     answer: '',
     enabled: true,
     status: QaStatus.draft
