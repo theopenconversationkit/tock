@@ -18,6 +18,7 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
   applicationName: string;
   currentItem?: FrequentQuestion;
 
+  editorPanelName?: string;
   editorFormValid = false;
 
   public filter: FaqQaFilter;
@@ -62,6 +63,7 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
   }
 
   edit(fq: FrequentQuestion): void {
+    this.editorPanelName = 'Edit QA';
     this.currentItem = fq;
     this.dock("edit");
   }
@@ -71,6 +73,7 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
   }
 
   openNewSidepanel() {
+    this.editorPanelName = 'New QA';
     this.currentItem = blankFrequentQuestion();
     this.dock("edit");
   }
