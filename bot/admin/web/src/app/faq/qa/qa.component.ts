@@ -4,9 +4,12 @@ import {StateService} from 'src/app/core-nlp/state.service';
 import {WithSidePanel} from '../common/mixin/with-side-panel';
 import {blankFrequentQuestion, FrequentQuestion, QaStatus} from '../common/model/frequent-question';
 import {FaqQaFilter, QaGridComponent} from './qa-grid/qa-grid.component';
-import {EditorTabName, QaSidebarEditorService} from './sidebars/qa-sidebar-editor.service';
+import {QaSidebarEditorService} from './sidebars/qa-sidebar-editor.service';
 import { truncate } from '../common/util/string-utils';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
+
+// Specific action payload
+export type EditorTabName = 'Info' | 'Answer' | 'Question';
 
 @Component({
   selector: 'tock-qa',
@@ -69,7 +72,6 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
     this.editorPanelName = 'Edit QA';
     this.currentItem = fq;
 
-    this.sidebarEditorService.switchTab(this.activeQaTab); // update panel content according to selected tab
     this.dock("edit");
   }
 
@@ -83,8 +85,8 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
   openNewSidepanel() {
     this.editorPanelName = 'New QA';
     this.currentItem = blankFrequentQuestion();
+    this.activeQaTab = 'Info';
 
-    this.sidebarEditorService.switchTab(this.activeQaTab); // update panel content according to selected tab
     this.dock("edit");
   }
 
@@ -94,7 +96,6 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
 
   activateEditorTab(tabName: EditorTabName): void {
     this.activeQaTab = tabName;
-    this.sidebarEditorService.switchTab(tabName);
   }
 
   async save(): Promise<any> {
