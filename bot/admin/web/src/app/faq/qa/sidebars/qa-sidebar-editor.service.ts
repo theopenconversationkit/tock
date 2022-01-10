@@ -1,30 +1,59 @@
 import {Injectable} from '@angular/core';
 
 import {empty, Observable, ReplaySubject, Subject} from 'rxjs';
-import {map, take, takeUntil, tap, filter} from 'rxjs/operators';
+import { concatMap } from 'rxjs/operators';
+import {map, take, takeUntil, tap, filter, mergeMap} from 'rxjs/operators';
 import {FrequentQuestion} from '../../common/model/frequent-question';
+
 
 /**
  * Q&A Editor Dialog related service and types
+ *
+ * Why: Decoupling event emitter from actual action handler
  */
 
 
 // Which action it is
-type ActionName = 'save' | 'cancel-save' | 'switch-tab' | 'save-done';
+type ActionName = 'save' | 'switch-tab';
+
+// Which action result it is
+type OutcomeName = 'cancel-save' | 'save-done';
+
 
 // Specific action payload
 export type EditorTabName = 'Info' | 'Answer' | 'Question';
 
-// Action = name + payload
-export type QaEditorAction = {
-  name:  ActionName,
+// event
+export type QaEditorEvent = {
+  transactionId: number,
+  name:  ActionName | OutcomeName,
   payload?: FrequentQuestion | EditorTabName /* Proper sub typing retreival is partially enforced by this service */
 };
 
-const hasName = (name: ActionName) => (action: QaEditorAction) => action.name === name;
+// produce outcome for a specific event
+export type ActionResult = {outcome: OutcomeName, payload?: FrequentQuestion};
 
-const toFrequentQuestion = (action: QaEditorAction) => <FrequentQuestion> action.payload;
-const toEditorTabName = (action: QaEditorAction) => <EditorTabName> action.payload;
+export type ActionHandler = (QaEditorEvent) => Observable<ActionResult>;
+
+const newAction = (() => {
+  let idGenerator = 1;
+
+  return (name: ActionName, payload?: FrequentQuestion | EditorTabName) => {
+    return {
+      name,
+      transactionId: ++idGenerator,
+      payload
+    };
+  };
+})();
+
+
+const isInitiatedBy = (action: QaEditorEvent) => (evt: QaEditorEvent) => evt.transactionId === action.transactionId;
+
+const hasName = (name: ActionName | OutcomeName) => (evt: QaEditorEvent) => evt.name === name;
+
+const toFrequentQuestion = (evt: QaEditorEvent) => <FrequentQuestion> evt.payload;
+const toEditorTabName = (evt: QaEditorEvent) => <EditorTabName> evt.payload;
 
 /**
  * Controlling interactions between parts of the 0&A Editor Side Bar
@@ -32,80 +61,99 @@ const toEditorTabName = (action: QaEditorAction) => <EditorTabName> action.paylo
 @Injectable()
 export class QaSidebarEditorService {
 
-  private action$: Subject<QaEditorAction> = new Subject<QaEditorAction>();
+  private action$: Subject<QaEditorEvent> = new Subject<QaEditorEvent>();
+
+  private outcome$: Subject<QaEditorEvent> = new Subject<QaEditorEvent>();
 
   constructor() {
   }
 
   /**
-   * Listen to any event
-   */
-  when(name: ActionName, cancel$: Observable<any> = empty()): Observable<QaEditorAction> {
-    return this.action$.pipe(
-      filter(hasName(name)),
-      takeUntil(cancel$),
-    );
-  }
-
-  /**
-   * Listen to 'switch-tab' event
+   * Listen to every 'switch-tab' events
    */
   whenSwitchTab(cancel$: Observable<any> = empty()): Observable<EditorTabName> {
-    return this.when('switch-tab', cancel$)
+    return this.action$
       .pipe(
+        filter(hasName('switch-tab')),
         takeUntil(cancel$),
         map(toEditorTabName)
       );
   }
 
   /**
-   * Trigger 'cancel-save' event
-   */
-  cancelSave(): void {
-    this.action$.next({
-      name: 'cancel-save'
-    });
-  }
-
-  /**
    * Trigger 'switch-tab' event
    */
   switchTab(tabName: EditorTabName): void {
-    console.log("switchTab", tabName);
-    this.action$.next({
-      name: 'switch-tab',
-      payload: tabName
-    });
+    const actionEvt = newAction('switch-tab', tabName);
+
+    this.action$.next(actionEvt);
+  }
+
+  private takeActionOutcome(action: QaEditorEvent, cancel$: Observable<any> = empty()): Observable<QaEditorEvent> {
+    return this.outcome$.pipe(
+      takeUntil(cancel$),
+      filter(isInitiatedBy(action)),
+      take(1)
+    );
   }
 
   /**
-   * Trigger 'save' event
+   * Trigger 'save' event then await its outcome
    */
-  save(cancel$: Observable<any> = empty()): Promise<FrequentQuestion> {
+  public save(cancel$: Observable<any> = empty()): Promise<FrequentQuestion> {
+    const actionEvt = newAction('save');
 
-    // listen if someone saved the thing
-    const result = this.action$.pipe(
-      filter(hasName('save-done')),
-      take(1), takeUntil(cancel$),
-      map(toFrequentQuestion)
-    ).toPromise();
-
-    // ask to save that thing
-    this.action$.next({
-      name: 'save'
+    const result =  new Promise<FrequentQuestion>((resolve, reject) => {
+      this.takeActionOutcome(actionEvt, cancel$).subscribe(evt => {
+        console.log('took action', evt);
+        if (evt.name === 'save-done') {
+          resolve(<FrequentQuestion> evt.payload);
+        } else {
+          reject(evt.name);
+        }
+      })
     });
+    this.action$.next(actionEvt);
 
-    // get the ear which is listening
     return result;
   }
 
   /**
-   * Trigger 'save-done' event
+   * Perform action and publish its result in a "outcome" channel
+   *
+   * Note: Do not register multiple handlers for a common action as it is unexpected behavior yet
+   * @param name
+   * @param cancel$
+   * @param handler
    */
-  saveDone(fq: FrequentQuestion): void {
-    this.action$.next({
-      name: 'save-done',
-      payload: fq
+  public registerActionHandler(name: ActionName, cancel$: Observable<any> = empty(), handler: ActionHandler) {
+    return this.action$.pipe(
+      takeUntil(cancel$),
+      filter(hasName(name)),
+      concatMap(action => {
+        return handler(action).pipe(map(
+          res => {
+            const outcome: QaEditorEvent = {
+              transactionId: action.transactionId,
+              name: res.outcome,
+              payload: res.payload
+            };
+            console.log('registerActionHandler:outcome', outcome);
+            return outcome;
+          }
+        ));
+      })
+    ).subscribe(this.outcome$.next.bind(this.outcome$));
+  }
+
+  /**
+   * Trigger outcome when useful
+   */
+  public notifyOutcome(action: QaEditorEvent, name: OutcomeName, payload?: FrequentQuestion | EditorTabName): void {
+    this.outcome$.next({
+      transactionId: action.transactionId,
+      name,
+      payload
     });
   }
 

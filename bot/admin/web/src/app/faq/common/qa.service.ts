@@ -12,7 +12,10 @@ export class QaService {
   mockData: FrequentQuestion[] = Array<number>(19999).fill(0).map((_, index) => {
     const template = MOCK_FREQUENT_QUESTIONS[index % MOCK_FREQUENT_QUESTIONS.length];
 
+    const seed = (new Date().getTime()); // timestamp as random seed
+
     return {
+      id: ''+(index + 1) + '_' + seed,
       utterances: [{value: `${template.utterances[0].value} ${index+1}`, primary: true}],
       answer: `${template.answer} ${index+1}`,
       title: template.title, // pick random (rotating) title
@@ -27,10 +30,12 @@ export class QaService {
 
   // fake real backend call
   public save(fq: FrequentQuestion, cancel$: Observable<any> = empty()): Observable<FrequentQuestion> {
+
+    console.log("service:save");
     let dirty = false;
 
     this.mockData = this.mockData.map(item => {
-      if (item.title === fq.title) { // arbitrary chosen unicity key, there must be a better one
+      if (fq.id && item.id === fq.id) { // arbitrary chosen unicity key, there must be a better one
         dirty = true;
         return fq;
       } else {
@@ -39,6 +44,7 @@ export class QaService {
     });
 
     if (!dirty) { // when no match
+      fq.id = String(Math.trunc(Math.random() * 1000000));
       this.mockData.push(fq);
     }
 

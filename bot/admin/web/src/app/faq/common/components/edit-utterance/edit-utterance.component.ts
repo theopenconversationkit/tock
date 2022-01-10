@@ -21,7 +21,7 @@ export class EditUtteranceComponent implements OnInit {
   public value: string;
 
   @Input()
-  public lookup: (string) => (Utterance | null);
+  public lookup?: (string) => (Utterance | null);
 
   public existingQuestion?: string;
 
@@ -56,7 +56,7 @@ export class EditUtteranceComponent implements OnInit {
   }
 
   ensureUniq(evt): void {
-    const res = this.lookup(this.value)?.value; // look for similar question
+    const res = this.lookup ? this.lookup(this.value)?.value : undefined; // look for similar question
     if (res) {
       this.existingQuestion = res;
     } else {

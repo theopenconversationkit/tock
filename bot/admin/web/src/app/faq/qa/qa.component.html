@@ -57,7 +57,9 @@
       <button class="float-left mx-2" nbButton outline status="primary" size="small" (onClose)="undock()" >
         Cancel
       </button>
-      <button [disabled]="!editorFormValid" class="float-right mx-2"  nbButton status="primary" size="small">
+      <button [disabled]="!editorFormValid" class="float-right mx-2"
+              (click)="save()"
+              nbButton status="primary" size="small">
         Save
       </button>
     </ng-container>

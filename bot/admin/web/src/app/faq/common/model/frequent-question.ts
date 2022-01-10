@@ -19,6 +19,7 @@ export const utteranceEquivalent = (a: Utterance, b: Utterance) => verySimilar(a
 export const utteranceSomewhatSimilar = (a: Utterance, b: Utterance) => somewhatSimilar(a.value, b.value);
 
 export type FrequentQuestion = {
+  id?: string,
   title: string,
   description?: string,
   utterances: Utterance[],
@@ -30,6 +31,7 @@ export type FrequentQuestion = {
 
 export function blankFrequentQuestion(): FrequentQuestion {
   return {
+    id: undefined,
     title: '',
     utterances: [],
     tags: [],
