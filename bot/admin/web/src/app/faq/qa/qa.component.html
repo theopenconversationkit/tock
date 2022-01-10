@@ -50,11 +50,12 @@
 
     <tock-qa-sidebar-editor-content tock-content
       (validityChanged)="onEditorValidityChanged($event)"
+      [tabName]="activeQaTab"
       [fq]="currentItem">
     </tock-qa-sidebar-editor-content>
 
     <ng-container tock-footer>
-      <button class="float-left mx-2" nbButton outline status="primary" size="small" (onClose)="undock()" >
+      <button class="float-left mx-2" nbButton outline status="primary" size="small" (click)="undock()" >
         Cancel
       </button>
       <button [disabled]="!editorFormValid" class="float-right mx-2"

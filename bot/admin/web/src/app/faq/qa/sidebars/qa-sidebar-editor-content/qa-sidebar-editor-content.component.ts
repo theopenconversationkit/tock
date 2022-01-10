@@ -9,12 +9,13 @@ import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { EditUtteranceResult, notCancelled, ValidUtteranceResult } from 'src/app/faq/common/components/edit-utterance/edit-utterance-result';
 import { EditUtteranceComponent } from 'src/app/faq/common/components/edit-utterance/edit-utterance.component';
 import {FrequentQuestion, Utterance, utteranceEquals, utteranceEquivalent, utteranceSomewhatSimilar} from 'src/app/faq/common/model/frequent-question';
-import {ActionResult, EditorTabName, QaSidebarEditorService} from '../qa-sidebar-editor.service';
+import {ActionResult, QaSidebarEditorService} from '../qa-sidebar-editor.service';
 import {getPosition, hasItem} from '../../../common/util/array-utils';
 import {somewhatSimilar, verySimilar } from 'src/app/faq/common/util/string-utils';
 import { concatMap } from 'rxjs/operators';
 import { SentencesService } from 'src/app/faq/common/sentences.service';
 import { QaService } from 'src/app/faq/common/qa.service';
+import { EditorTabName } from '../../qa.component';
 
 // Simple builder for text 'utterance predicate'
 function textMatch(text: string): (Utterance) => boolean {
@@ -49,6 +50,9 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
   private readonly destroy$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   @Input()
+  tabName: EditorTabName;
+
+  @Input()
   fq?: FrequentQuestion;
 
   @Output()
@@ -57,10 +61,8 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
   /* Form Data */
 
   tags: Set<string> = new Set();
-  tagsTouched = false;
 
   editedUtterances$: ReplaySubject<Utterance[]> = new ReplaySubject(1);
-  tabName: EditorTabName = 'Info';
 
   readonly newFaqForm = new FormGroup({
     name: new FormControl('', [
@@ -91,13 +93,6 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
   }
 
   ngOnInit(): void {
-    this.sidebarEditorService.whenSwitchTab(this.destroy$)
-      .subscribe(value => {
-        console.log("whenSwitchTab", value);
-        this.tabName = value;
-        this.tagsTouched = false;
-      });
-
     this.observeUtteranceSearch();
     this.observeValidity();
     this.registerSaveAction();
@@ -150,8 +145,6 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
 
     // listen to event 'save'
     this.sidebarEditorService.registerActionHandler('save', this.destroy$, evt => {
-
-      console.log("registerSaveAction:save");
 
       // replay last known utterances array
       return this.editedUtterances$.pipe(take(1), concatMap( utterances => {

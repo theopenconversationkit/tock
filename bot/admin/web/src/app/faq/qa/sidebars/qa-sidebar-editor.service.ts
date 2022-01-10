@@ -5,29 +5,24 @@ import { concatMap } from 'rxjs/operators';
 import {map, take, takeUntil, tap, filter, mergeMap} from 'rxjs/operators';
 import {FrequentQuestion} from '../../common/model/frequent-question';
 
-
 /**
  * Q&A Editor Dialog related service and types
  *
  * Why: Decoupling event emitter from actual action handler
- */
-
+ **/
 
 // Which action it is
-type ActionName = 'save' | 'switch-tab';
+type ActionName = 'save' | 'some-example-action';
 
 // Which action result it is
 type OutcomeName = 'cancel-save' | 'save-done';
 
 
-// Specific action payload
-export type EditorTabName = 'Info' | 'Answer' | 'Question';
-
 // event
 export type QaEditorEvent = {
   transactionId: number,
   name:  ActionName | OutcomeName,
-  payload?: FrequentQuestion | EditorTabName /* Proper sub typing retreival is partially enforced by this service */
+  payload?: FrequentQuestion /* Proper sub typing retreival is partially enforced by this service */
 };
 
 // produce outcome for a specific event
@@ -38,7 +33,7 @@ export type ActionHandler = (QaEditorEvent) => Observable<ActionResult>;
 const newAction = (() => {
   let idGenerator = 1;
 
-  return (name: ActionName, payload?: FrequentQuestion | EditorTabName) => {
+  return (name: ActionName, payload?: FrequentQuestion) => {
     return {
       name,
       transactionId: ++idGenerator,
@@ -53,7 +48,6 @@ const isInitiatedBy = (action: QaEditorEvent) => (evt: QaEditorEvent) => evt.tra
 const hasName = (name: ActionName | OutcomeName) => (evt: QaEditorEvent) => evt.name === name;
 
 const toFrequentQuestion = (evt: QaEditorEvent) => <FrequentQuestion> evt.payload;
-const toEditorTabName = (evt: QaEditorEvent) => <EditorTabName> evt.payload;
 
 /**
  * Controlling interactions between parts of the 0&A Editor Side Bar
@@ -68,27 +62,6 @@ export class QaSidebarEditorService {
   constructor() {
   }
 
-  /**
-   * Listen to every 'switch-tab' events
-   */
-  whenSwitchTab(cancel$: Observable<any> = empty()): Observable<EditorTabName> {
-    return this.action$
-      .pipe(
-        filter(hasName('switch-tab')),
-        takeUntil(cancel$),
-        map(toEditorTabName)
-      );
-  }
-
-  /**
-   * Trigger 'switch-tab' event
-   */
-  switchTab(tabName: EditorTabName): void {
-    const actionEvt = newAction('switch-tab', tabName);
-
-    this.action$.next(actionEvt);
-  }
-
   private takeActionOutcome(action: QaEditorEvent, cancel$: Observable<any> = empty()): Observable<QaEditorEvent> {
     return this.outcome$.pipe(
       takeUntil(cancel$),
@@ -98,14 +71,15 @@ export class QaSidebarEditorService {
   }
 
   /**
-   * Trigger 'save' event then await its outcome
+   * Called by button to trigger a save and wait for its response
+   *
+   * Note: Trigger 'save' event then await its outcome
    */
   public save(cancel$: Observable<any> = empty()): Promise<FrequentQuestion> {
     const actionEvt = newAction('save');
 
     const result =  new Promise<FrequentQuestion>((resolve, reject) => {
       this.takeActionOutcome(actionEvt, cancel$).subscribe(evt => {
-        console.log('took action', evt);
         if (evt.name === 'save-done') {
           resolve(<FrequentQuestion> evt.payload);
         } else {
@@ -138,23 +112,10 @@ export class QaSidebarEditorService {
               name: res.outcome,
               payload: res.payload
             };
-            console.log('registerActionHandler:outcome', outcome);
             return outcome;
           }
         ));
       })
     ).subscribe(this.outcome$.next.bind(this.outcome$));
   }
-
-  /**
-   * Trigger outcome when useful
-   */
-  public notifyOutcome(action: QaEditorEvent, name: OutcomeName, payload?: FrequentQuestion | EditorTabName): void {
-    this.outcome$.next({
-      transactionId: action.transactionId,
-      name,
-      payload
-    });
-  }
-
 }
