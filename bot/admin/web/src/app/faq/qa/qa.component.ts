@@ -5,6 +5,8 @@ import {WithSidePanel} from '../common/mixin/with-side-panel';
 import {blankFrequentQuestion, FrequentQuestion, QaStatus} from '../common/model/frequent-question';
 import {FaqQaFilter, QaGridComponent} from './qa-grid/qa-grid.component';
 import {EditorTabName, QaSidebarEditorService} from './sidebars/qa-sidebar-editor.service';
+import { truncate } from '../common/util/string-utils';
+import { DialogService } from 'src/app/core-nlp/dialog.service';
 
 @Component({
   selector: 'tock-qa',
@@ -29,6 +31,7 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
   constructor(
     private readonly state: StateService,
     private readonly sidebarEditorService: QaSidebarEditorService,
+    private readonly dialog: DialogService,
   ) {
     super();
   }
@@ -65,16 +68,23 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
   edit(fq: FrequentQuestion): void {
     this.editorPanelName = 'Edit QA';
     this.currentItem = fq;
+
+    this.sidebarEditorService.switchTab(this.activeQaTab); // update panel content according to selected tab
     this.dock("edit");
   }
 
   onEditorValidityChanged(value: boolean): void {
-    this.editorFormValid = value;
+    window.setTimeout(() => { // ExpressionChangedAfterItHasBeenCheckedError workaround
+      this.editorFormValid = value;
+    }, 0);
+
   }
 
   openNewSidepanel() {
     this.editorPanelName = 'New QA';
     this.currentItem = blankFrequentQuestion();
+
+    this.sidebarEditorService.switchTab(this.activeQaTab); // update panel content according to selected tab
     this.dock("edit");
   }
 
@@ -85,6 +95,15 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
   activateEditorTab(tabName: EditorTabName): void {
     this.activeQaTab = tabName;
     this.sidebarEditorService.switchTab(tabName);
+  }
+
+  async save(): Promise<any> {
+    const fq = await this.sidebarEditorService.save(this.destroy$);
+
+    this.dialog.notify(`Saved`,
+      truncate(fq.title || ''), {duration: 2000, status: "basic"});
+
+    this.grid.refresh();
   }
 
 }

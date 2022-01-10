@@ -9,9 +9,12 @@ import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { EditUtteranceResult, notCancelled, ValidUtteranceResult } from 'src/app/faq/common/components/edit-utterance/edit-utterance-result';
 import { EditUtteranceComponent } from 'src/app/faq/common/components/edit-utterance/edit-utterance.component';
 import {FrequentQuestion, Utterance, utteranceEquals, utteranceEquivalent, utteranceSomewhatSimilar} from 'src/app/faq/common/model/frequent-question';
-import {EditorTabName, QaSidebarEditorService} from '../qa-sidebar-editor.service';
+import {ActionResult, EditorTabName, QaSidebarEditorService} from '../qa-sidebar-editor.service';
 import {getPosition, hasItem} from '../../../common/util/array-utils';
 import {somewhatSimilar, verySimilar } from 'src/app/faq/common/util/string-utils';
+import { concatMap } from 'rxjs/operators';
+import { SentencesService } from 'src/app/faq/common/sentences.service';
+import { QaService } from 'src/app/faq/common/qa.service';
 
 // Simple builder for text 'utterance predicate'
 function textMatch(text: string): (Utterance) => boolean {
@@ -82,6 +85,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
 
   constructor(
     private readonly sidebarEditorService: QaSidebarEditorService,
+    private readonly qaService: QaService,
     private readonly dialog: DialogService,
   ) {
   }
@@ -89,12 +93,14 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
   ngOnInit(): void {
     this.sidebarEditorService.whenSwitchTab(this.destroy$)
       .subscribe(value => {
+        console.log("whenSwitchTab", value);
         this.tabName = value;
         this.tagsTouched = false;
       });
 
     this.observeUtteranceSearch();
     this.observeValidity();
+    this.registerSaveAction();
   }
 
   ngAfterViewInit() {
@@ -102,6 +108,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
   }
 
   ngOnDestroy(): void {
+    console.log("destroy");
     this.destroy$.next(true);
     this.destroy$.complete();
   }
@@ -112,6 +119,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
 
   observeUtteranceSearch(): void {
     this.displayedUtterances$ = combineLatest(this.editedUtterances$, this.searchSubject$).pipe( // unsubscribe handled by angular template mechanism
+      takeUntil(this.destroy$),
       debounceTime(200),
       map(([utterances, search]) => {
         const res = utterances.filter(textMatch(search));
@@ -136,6 +144,41 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
       .subscribe(
       validity => this.validityChanged.next(validity)
     );
+  }
+
+  registerSaveAction(): void {
+
+    // listen to event 'save'
+    this.sidebarEditorService.registerActionHandler('save', this.destroy$, evt => {
+
+      console.log("registerSaveAction:save");
+
+      // replay last known utterances array
+      return this.editedUtterances$.pipe(take(1), concatMap( utterances => {
+
+        // validate and construct entity from form data
+        const fq: FrequentQuestion = {
+          id: this.fq.id,
+          tags: Array.from(this.tags),
+          description: '' + (this.newFaqForm.controls['description'].value || ''),
+          answer: '' + (this.newFaqForm.controls['answer'].value || ''),
+          title: '' + (this.newFaqForm.controls['name'].value || ''),
+          status: this.fq.status,
+          utterances,
+          enabled: true === this.fq.enabled
+        };
+
+        return this.qaService.save(fq, this.destroy$).pipe(
+          map(fq => {
+            const res: ActionResult = {
+              outcome: 'save-done',
+              payload: fq
+            };
+            return res;
+          })
+        );
+      }));
+    });
   }
 
   getControlStatus(controlName: string): 'success' | 'basic' | 'warning' {
