@@ -16,6 +16,8 @@ import {PaginatedResult, SearchQuery, Sentence} from 'src/app/model/nlp';
 import { of } from 'rxjs';
 import { QaService } from '../../common/qa.service';
 import { ViewMode } from '../../common/model/view-mode';
+import { QaSidebarEditorService } from '../sidebars/qa-sidebar-editor.service';
+import { takeUntil } from 'rxjs/operators';
 
 
 @Component({
@@ -37,13 +39,15 @@ export class QaGridComponent extends ScrollComponent<FrequentQuestion> implement
   @Output()
   onEdit= new EventEmitter<FrequentQuestion>();
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-
+  @ViewChild(MatPaginator)
+  paginator: MatPaginator;
 
   UserRole = UserRole;
   pageIndex: number = 0;
   displayedColumns = [];
   dataSource: QaDataSource | null;
+
+  selectedItem?: FrequentQuestion;
 
   numHidden = 0;
 
@@ -52,9 +56,10 @@ export class QaGridComponent extends ScrollComponent<FrequentQuestion> implement
 
   private sort: Sort[] = [];
 
-  constructor(state: StateService,
-              private qaService: QaService,
-              private dialog: DialogService) {
+  constructor(public readonly state: StateService,
+              private readonly sidebarEditorService: QaSidebarEditorService,
+              private readonly qaService: QaService,
+              private readonly dialog: DialogService) {
     super(state);
   }
 
@@ -65,7 +70,9 @@ export class QaGridComponent extends ScrollComponent<FrequentQuestion> implement
   }
 
   ngAfterViewInit(): void {
-    this.paginator.page.subscribe(e => {
+    this.paginator.page
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(e => {
       this.add = false;
       if (this.pageSize === e.pageSize) {
         this.cursor = Math.floor(e.pageIndex * e.pageSize);
@@ -74,7 +81,9 @@ export class QaGridComponent extends ScrollComponent<FrequentQuestion> implement
         this.pageSize = e.pageSize;
       }
       this.load();
-    })
+    });
+
+    this.observeEditModeExit(); // unselect item when user undock or dock another panel
   }
 
   ngOnDestroy(): void {
@@ -82,7 +91,18 @@ export class QaGridComponent extends ScrollComponent<FrequentQuestion> implement
     this.destroy$.complete();
   }
 
+  observeEditModeExit(): void {
+    this.sidebarEditorService.registerActionHandler('exit-edit-mode', this.destroy$, evt => {
+      this.selectedItem = undefined; // force item de-selection
+
+      return of({
+        outcome: 'adhoc-action-done'
+      });
+    })
+  }
+
   edit(fq: FrequentQuestion): void {
+    this.selectedItem = fq;
     this.onEdit.emit(fq);
   }
 

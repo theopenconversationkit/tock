@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ReplaySubject} from 'rxjs';
 import {StateService} from 'src/app/core-nlp/state.service';
-import {WithSidePanel} from '../common/mixin/with-side-panel';
+import {DEFAULT_PANEL_NAME, WithSidePanel} from '../common/mixin/with-side-panel';
 import {blankFrequentQuestion, FrequentQuestion, QaStatus} from '../common/model/frequent-question';
 import {FaqQaFilter, QaGridComponent} from './qa-grid/qa-grid.component';
 import {QaSidebarEditorService} from './sidebars/qa-sidebar-editor.service';
@@ -69,10 +69,22 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
   }
 
   edit(fq: FrequentQuestion): void {
-    this.editorPanelName = 'Edit QA';
+    this.editorPanelName = 'Edit FAQ';
     this.currentItem = fq;
 
     this.dock("edit");
+  }
+
+  dock(name = DEFAULT_PANEL_NAME): void {
+    if (name !== 'edit') {
+      this.sidebarEditorService.leaveEditMode(); // tell other components we are done with editing now
+    }
+    super.dock(name); // toogle the docked/undocked state
+  }
+
+  undock(): void {
+    this.sidebarEditorService.leaveEditMode(); // tell other components we are done with editing now
+    super.undock(); // toogle the docked/undocked state
   }
 
   onEditorValidityChanged(value: boolean): void {
@@ -83,7 +95,7 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
   }
 
   openNewSidepanel() {
-    this.editorPanelName = 'New QA';
+    this.editorPanelName = 'New FAQ';
     this.currentItem = blankFrequentQuestion();
     this.activeQaTab = 'Info';
 

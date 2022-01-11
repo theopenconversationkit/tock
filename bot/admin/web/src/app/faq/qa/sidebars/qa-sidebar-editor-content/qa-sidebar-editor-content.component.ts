@@ -109,7 +109,9 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
   }
 
   ngOnChanges(changes: { [key: string]: SimpleChange }): any {
-    this.updateForm(changes?.fq?.currentValue);
+    if ('fq' in changes) {
+      this.updateForm(changes?.fq?.currentValue);
+    }
   }
 
   observeUtteranceSearch(): void {
@@ -203,8 +205,9 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
   }
 
   updateForm(fq?: FrequentQuestion): void {
-    if (this.fq) {
+    if (fq) {
       const utterances = JSON.parse(JSON.stringify(fq.utterances)); // deep clone
+
       this.editedUtterances$.next(utterances);
 
       this.newFaqForm.setValue({
@@ -214,6 +217,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
       });
       this.tags = new Set<string>(fq.tags.slice());
     } else {
+
       this.editedUtterances$.next([]);
       this.newFaqForm.setValue({
         name: '',

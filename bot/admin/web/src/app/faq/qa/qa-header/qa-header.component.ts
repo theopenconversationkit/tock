@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { NbMenuItem } from '@nebular/theme';
 import {isDocked, ViewMode } from '../../common/model/view-mode';
 import { FaqQaFilter } from '../qa-grid/qa-grid.component';
 
@@ -23,6 +24,18 @@ export class QaHeaderComponent implements OnInit {
 
   @Output()
   onNew = new EventEmitter<void>();
+
+  readonly menuItems: NbMenuItem[] = [
+    {
+      title: 'Export FAQ'
+    },
+    {
+      title: 'Import FAQ'
+    },
+    {
+      title: 'New FAQ'
+    }
+  ];
 
   onlyActives = false;
 

@@ -35,7 +35,16 @@
 
     <div class="col-4 d-flex justify-content-end p-0">
       <ng-container *ngIf="isDocked()">
-        <nb-icon [ngClass]="'tock-burger-icon'" nbPrefix pack="material-icons" icon="view_headline"></nb-icon>
+
+        <nb-icon [ngClass]="'tock-burger-icon'"
+                 [nbPopover]="menu"
+                 nbPopoverPlacement="bottom"
+                 nbPrefix
+                 pack="material-icons"
+                 icon="view_headline">
+
+        </nb-icon>
+
       </ng-container>
       <ng-container *ngIf="!isDocked()">
         <button class="mr-2" nbButton status="default">Export FAQ</button>
@@ -46,3 +55,18 @@
 
   </nb-card-body>
 </nb-card>
+
+<ng-template #menu>
+  <nb-card [style]="{'margin-bottom': 0}">
+
+
+      <button class="d-block" fullWidth nbButton ghost size="small" (click)="newFrequentQuestion()" status="primary">New FAQ</button>
+
+      <button class="d-block" fullWidth nbButton ghost size="small" >Export FAQ</button>
+
+      <button class="d-block" fullWidth nbButton ghost size="small" (click)="importFaq()">Import FAQ</button>
+
+
+
+  </nb-card>
+</ng-template>

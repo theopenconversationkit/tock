@@ -47,7 +47,8 @@ import {
   NbSpinnerModule,
   NbTooltipModule,
   NbUserModule,
-  NbTagModule
+  NbTagModule,
+  NbPopoverModule
 } from "@nebular/theme";
 import {TrainComponent} from './train/train.component';
 import {TrainHeaderComponent} from './train/train-header/train-header.component';
@@ -114,6 +115,7 @@ export class FaqRoutingModule {
     MatDatepickerModule,
     MatNativeDateModule,
     NbRouteTabsetModule,
+    NbPopoverModule,
     NbCheckboxModule,
     NbCardModule,
     NbTooltipModule,
