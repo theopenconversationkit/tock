@@ -3,7 +3,7 @@ import {fromEvent, Observable} from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { OnInit } from '@angular/core';
 
-const DEFAULT_PANEL_NAME = 'default';
+export const DEFAULT_PANEL_NAME = 'default';
 
 // Typescript Mixin glue code
 type Constructor<T = {}> = new(...args: any[]) => T;

@@ -12,10 +12,10 @@ import {FrequentQuestion} from '../../common/model/frequent-question';
  **/
 
 // Which action it is
-type ActionName = 'save' | 'some-example-action';
+type ActionName = 'save' | 'exit-edit-mode';
 
 // Which action result it is
-type OutcomeName = 'cancel-save' | 'save-done';
+type OutcomeName = 'cancel-save' | 'save-done' | 'adhoc-action-done';
 
 
 // event
@@ -90,6 +90,11 @@ export class QaSidebarEditorService {
     this.action$.next(actionEvt);
 
     return result;
+  }
+
+  public leaveEditMode(): void {
+    const actionEvt = newAction('exit-edit-mode');
+    this.action$.next(actionEvt);
   }
 
   /**
