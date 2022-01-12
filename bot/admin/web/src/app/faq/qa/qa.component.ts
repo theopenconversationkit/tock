@@ -7,6 +7,7 @@ import {FaqQaFilter, QaGridComponent} from './qa-grid/qa-grid.component';
 import {QaSidebarEditorService} from './sidebars/qa-sidebar-editor.service';
 import { truncate } from '../common/util/string-utils';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
+import { QaService } from '../common/qa.service';
 
 // Specific action payload
 export type EditorTabName = 'Info' | 'Answer' | 'Question';
@@ -35,14 +36,20 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
     private readonly state: StateService,
     private readonly sidebarEditorService: QaSidebarEditorService,
     private readonly dialog: DialogService,
+    private readonly  qaService: QaService
   ) {
     super();
   }
 
   ngOnInit(): void {
+
+    // until server really store things
+    this.qaService.setupMockData(this.state.currentApplication.name, this.state.currentLocale);
+
     this.filter = {
       sort: [],
       search: null,
+      tags: [],
       clone: function () {
         return {...this};
       }
@@ -95,8 +102,11 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
   }
 
   openNewSidepanel() {
+    const currentLocale = this.state.currentLocale;
+    const applicationName = this.state.currentApplication.name;
+
     this.editorPanelName = 'New FAQ';
-    this.currentItem = blankFrequentQuestion();
+    this.currentItem = blankFrequentQuestion({applicationName, language: currentLocale});
     this.activeQaTab = 'Info';
 
     this.dock("edit");

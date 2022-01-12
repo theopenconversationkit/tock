@@ -1,7 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NbMenuItem } from '@nebular/theme';
+import { ReplaySubject } from 'rxjs';
+import { take, takeUntil } from 'rxjs/operators';
 import {isDocked, ViewMode } from '../../common/model/view-mode';
+import { QaService } from '../../common/qa.service';
 import { FaqQaFilter } from '../qa-grid/qa-grid.component';
+import { QaSidebarEditorService } from '../sidebars/qa-sidebar-editor.service';
 
 @Component({
   selector: 'tock-qa-header',
@@ -39,9 +43,41 @@ export class QaHeaderComponent implements OnInit {
 
   onlyActives = false;
 
-  constructor() { }
+  availableTags: string[] = [];
+
+  private readonly destroy$: ReplaySubject<boolean> = new ReplaySubject(1);
+
+  constructor(
+    private readonly qaService: QaService,
+    private readonly qaSidebarEditorService: QaSidebarEditorService
+  ) { }
 
   ngOnInit(): void {
+    this.fetchAvailableTags();
+
+    // when user saved a frequent answer, try also to refresh tags
+    // Note: There exist more robust implementation, we use this because it is very simple
+    this.qaSidebarEditorService.registerOutcomeListener('save-done', 1000, this.destroy$, () => {
+      this.fetchAvailableTags();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
+  }
+
+  fetchAvailableTags(): void {
+    this.qaService.getAvailableTags()
+      .pipe(take(1), takeUntil(this.destroy$))
+      .subscribe(tags => {
+        console.log("found tags", tags);
+        this.availableTags = tags;
+      });
+  }
+
+  selectedTagsChanged(evt): void {
+    this.search();
   }
 
   search() {
