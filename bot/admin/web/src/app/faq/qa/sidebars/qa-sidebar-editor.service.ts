@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 
 import {empty, Observable, ReplaySubject, Subject} from 'rxjs';
-import { concatMap } from 'rxjs/operators';
+import { concatMap, debounceTime, delay } from 'rxjs/operators';
 import {map, take, takeUntil, tap, filter, mergeMap} from 'rxjs/operators';
 import {FrequentQuestion} from '../../common/model/frequent-question';
 
@@ -22,13 +22,14 @@ type OutcomeName = 'cancel-save' | 'save-done' | 'adhoc-action-done';
 export type QaEditorEvent = {
   transactionId: number,
   name:  ActionName | OutcomeName,
-  payload?: FrequentQuestion /* Proper sub typing retreival is partially enforced by this service */
+  payload?: FrequentQuestion
 };
 
 // produce outcome for a specific event
 export type ActionResult = {outcome: OutcomeName, payload?: FrequentQuestion};
-
 export type ActionHandler = (QaEditorEvent) => Observable<ActionResult>;
+
+export type EventListener= (QaEditorEvent) => void;
 
 const newAction = (() => {
   let idGenerator = 1;
@@ -105,7 +106,7 @@ export class QaSidebarEditorService {
    * @param cancel$
    * @param handler
    */
-  public registerActionHandler(name: ActionName, cancel$: Observable<any> = empty(), handler: ActionHandler) {
+  public registerActionHandler(name: ActionName, cancel$: Observable<any>, handler: ActionHandler) {
     return this.action$.pipe(
       takeUntil(cancel$),
       filter(hasName(name)),
@@ -122,5 +123,26 @@ export class QaSidebarEditorService {
         ));
       })
     ).subscribe(this.outcome$.next.bind(this.outcome$));
+  }
+
+  /**
+   * Listen if a specific outcome happened
+   * @param outcome Action outcome
+   * @param delayMillis Wait some milliseconds before playing side effect (example: wait database updates)
+   * @param cancel$ Cancellation trigger
+   * @param listener Listen function
+   */
+  public registerOutcomeListener(outcome: OutcomeName,
+                                 delayMillis: number,
+                                 cancel$: Observable<any>,
+                                 listener: EventListener): void
+  {
+    this.outcome$.pipe(
+      takeUntil(cancel$),
+      filter(hasName(outcome)),
+      delay(delayMillis),
+      debounceTime(delayMillis),
+    ).subscribe(listener.bind(this));
+
   }
 }

@@ -3,40 +3,60 @@ import {MOCK_QA_TITLES, MOCK_QA_DEFAULT_LABEL, MOCK_QA_DEFAULT_DESCRIPTION, MOCK
 
 import {empty, Observable, of } from 'rxjs';
 import {PaginatedResult, SearchQuery, Sentence, SentenceStatus} from 'src/app/model/nlp';
-import { FrequentQuestion, QaStatus } from './model/frequent-question';
+import { FrequentQuestion, QaStatus, Utterance } from './model/frequent-question';
+import { QaSearchQuery } from './model/qa-search-query';
 
 @Injectable()
 export class QaService {
 
   // generate fake data for pagination
-  mockData: FrequentQuestion[] = Array<number>(19999).fill(0).map((_, index) => {
-    const template = MOCK_FREQUENT_QUESTIONS[index % MOCK_FREQUENT_QUESTIONS.length];
-
-    const seed = (new Date().getTime()); // timestamp as random seed
-
-    return {
-      id: ''+(index + 1) + '_' + seed,
-      utterances: [{value: `${template.utterances[0].value} ${index+1}`, primary: true}],
-      answer: `${template.answer} ${index+1}`,
-      title: template.title, // pick random (rotating) title
-      enabled: (index < 5),
-      status: QaStatus.model,
-      tags: []
-    };
-  });
+  mockData: FrequentQuestion[] = [];
 
   constructor() {
+  }
+
+  // add random data at initialization until real backend is there instead
+  public setupMockData(applicationName: string, language: string): void {
+
+    // when there is already data for given bot / language
+    if (this.mockData.some((fq: FrequentQuestion) => fq.applicationName === applicationName && fq.language == language )) {
+      // no need to add mock data
+      return;
+    }
+
+    const seed = (new Date().getTime()); // timestamp as random seed
+    const now = new Date();
+
+    const someData: FrequentQuestion[] = Array<number>(1).fill(0).map((_, index) => {
+      const template = MOCK_FREQUENT_QUESTIONS[index % MOCK_FREQUENT_QUESTIONS.length];
+
+      return {
+        id: ''+(index + 1) + '_' + seed,
+        utterances: [`${template.utterances[0]} ${index+1}`],
+        answer: `${template.answer} ${index+1}`,
+        title: template.title, // pick random (rotating) title
+        enabled: (index < 5),
+        status: QaStatus.model,
+        tags: (template.tags  || []).slice(),
+        applicationName,
+        language,
+        creationDate: now,
+        updateDate: now
+      };
+    });
+
+    someData.forEach(fq => this.mockData.push(fq));
   }
 
   // fake real backend call
   public save(fq: FrequentQuestion, cancel$: Observable<any> = empty()): Observable<FrequentQuestion> {
 
-    console.log("service:save");
     let dirty = false;
 
     this.mockData = this.mockData.map(item => {
       if (fq.id && item.id === fq.id) { // arbitrary chosen unicity key, there must be a better one
         dirty = true;
+        fq.updateDate = new Date();
         return fq;
       } else {
         return item;
@@ -52,7 +72,10 @@ export class QaService {
   }
 
   // fake real backend call
-  searchQas(query: SearchQuery): Observable<PaginatedResult<FrequentQuestion>> {
+  searchQas(query: QaSearchQuery): Observable<PaginatedResult<FrequentQuestion>> {
+
+    console.log("searchQas:query", query);
+    console.log("searchQas:data", this.mockData);
 
     // guard against empty case
     if (query.start < 0 || query.size <= 0) {
@@ -64,25 +87,38 @@ export class QaService {
       });
     }
 
-    // simulate backend text search
+    // simulate backend query (filtering on status, application name etc..)
     const data = this.mockData
       .filter(fq => {
         const predicates: Array<(FrequentQuestion) => boolean> = [];
 
         predicates.push(
-          (fq) => fq.status !== QaStatus.deleted
+          (fq: FrequentQuestion) => fq.status !== QaStatus.deleted
+        );
+
+        predicates.push(
+          (fq: FrequentQuestion) => fq.applicationName === query.applicationName
         );
 
         const lowerSearch = (query.search || '').toLowerCase().trim();
         if (lowerSearch) {
           predicates.push(
-            (fq) => (fq.label || '').toLowerCase().includes(lowerSearch) ||
+            (fq: FrequentQuestion) => (fq.answer || '').toLowerCase().includes(lowerSearch) ||
               (fq.description || '').toLowerCase().includes(lowerSearch) ||
+              fq.utterances.some((u: Utterance) => u.toLowerCase().includes(lowerSearch)) ||
               (fq.title || '').toLowerCase().includes(lowerSearch)
           );
         }
 
-        if (query.onlyToReview) {
+        if(query.tags.length > 0) {
+          predicates.push(
+            (fq: FrequentQuestion) => fq.tags.some(
+              tag => query.tags.some(queryTag => queryTag.toLowerCase() === tag.toLowerCase())
+            )
+          );
+        }
+
+        if (query.enabled) {
           predicates.push(
             (fq) => (true === fq.enabled)
           );
@@ -104,6 +140,15 @@ export class QaService {
       rows: chunk,
       total: data.length
     });
+  }
+
+  getAvailableTags(): Observable<string[]> {
+    const tagSet = new Set<string>();
+
+    // simulate backend aggregation query
+    this.mockData.forEach(fq => fq.tags.forEach(tagSet.add.bind(tagSet)));
+
+    return of(Array.from(tagSet));
   }
 
 

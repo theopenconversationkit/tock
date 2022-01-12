@@ -5,21 +5,23 @@
 import {somewhatSimilar, verySimilar } from "../util/string-utils";
 
 export enum QaStatus {
-  draft, model, deleted
+  draft,  inbox, validated, model, deleted
 }
 
-export type Utterance = {
-  value: string;
-};
+export type Utterance = string;
 
-export const utteranceEquals = (a: Utterance, b: Utterance) => a.value === b.value;
+export const utteranceEquals = (a: Utterance, b: Utterance) => a === b;
 
-export const utteranceEquivalent = (a: Utterance, b: Utterance) => verySimilar(a.value, b.value);
+export const utteranceEquivalent = (a: Utterance, b: Utterance) => verySimilar(a, b);
 
-export const utteranceSomewhatSimilar = (a: Utterance, b: Utterance) => somewhatSimilar(a.value, b.value);
+export const utteranceSomewhatSimilar = (a: Utterance, b: Utterance) => somewhatSimilar(a, b);
 
 export type FrequentQuestion = {
   id?: string,
+  language: string,
+  applicationName: string,
+  creationDate?: Date,
+  updateDate?: Date,
   title: string,
   description?: string,
   utterances: Utterance[],
@@ -29,14 +31,16 @@ export type FrequentQuestion = {
   status: QaStatus
 };
 
-export function blankFrequentQuestion(): FrequentQuestion {
+export function blankFrequentQuestion(config: {language: string, applicationName: string}): FrequentQuestion {
   return {
     id: undefined,
     title: '',
+    description: '',
     utterances: [],
     tags: [],
     answer: '',
     enabled: true,
-    status: QaStatus.draft
+    status: QaStatus.inbox,
+    ...config
   };
 }

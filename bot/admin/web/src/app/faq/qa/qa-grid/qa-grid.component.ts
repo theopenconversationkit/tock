@@ -18,6 +18,7 @@ import { QaService } from '../../common/qa.service';
 import { ViewMode } from '../../common/model/view-mode';
 import { QaSidebarEditorService } from '../sidebars/qa-sidebar-editor.service';
 import { takeUntil } from 'rxjs/operators';
+import { QaSearchQuery } from '../../common/model/qa-search-query';
 
 
 @Component({
@@ -106,25 +107,19 @@ export class QaGridComponent extends ScrollComponent<FrequentQuestion> implement
     this.onEdit.emit(fq);
   }
 
-  toSearchQuery(query: PaginatedQuery): SearchQuery {
+  toSearchQuery(query: PaginatedQuery): QaSearchQuery {
 
-    const result = new SearchQuery(
+    const result = new QaSearchQuery(
       query.namespace,
       query.applicationName,
       query.language,
       query.start,
       query.size,
+      this.filter.tags || [],
       null, /* NOTE: There is a weird behavior when set */
       this.filter.search,
-      null,
-      null,
-      null,
-      [],
-      [],
-      null,
-      null,
       this.filter.sort,
-      this.filter.onlyActives /* NOTE: Use this as a placeholder for a future backend field */
+      this.filter.onlyActives
     );
     return result;
   }
@@ -153,7 +148,9 @@ export class FaqQaFilter {
   constructor(
     public onlyActives?: boolean,
     public search?: string,
-    public sort?: Entry<string, boolean>[]) {
+    public sort?: Entry<string, boolean>[],
+    public tags?: string[],
+  ) {
   }
 
   clone(): FaqQaFilter {

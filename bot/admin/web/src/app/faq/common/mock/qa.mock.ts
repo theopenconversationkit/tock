@@ -13,7 +13,7 @@ export const MOCK_QA_TITLES: string[] = [
 export const MOCK_QA_DEFAULT_LABEL = 'Question quel est le meilleur moyen pour supprimer';
 export const MOCK_QA_DEFAULT_DESCRIPTION = 'A paragraph of text with an unassigned link';
 
-export const MOCK_FREQUENT_QUESTIONS: FrequentQuestion[] = [
+export const MOCK_FREQUENT_QUESTIONS: Partial<FrequentQuestion>[] = [
   {
     title: 'Comment accéder au CMB?',
     status: QaStatus.model,
@@ -21,7 +21,7 @@ export const MOCK_FREQUENT_QUESTIONS: FrequentQuestion[] = [
     answer: 'Une fois la carte max reçue et activée, vous avez accès à votre RIB max via le menu ou via « finances » puis « mon compte max ».\n' +
       'Il s\'agit d\'un RIB français.',
     utterances: [
-      {value: 'Où puis-je consulter mon RIB ?'}
+      'Où puis-je consulter mon RIB ?'
     ],
     tags: ['RIB', 'Max']
   },
@@ -31,7 +31,7 @@ export const MOCK_FREQUENT_QUESTIONS: FrequentQuestion[] = [
     enabled: true,
     answer: 'L\'adresse mentionnée sur le RIB correspond à celle du siège social de Nouvelle Vague.',
     utterances: [
-      {value: 'L\'adresse de mon rib n\'est pas la bonne'}
+      'L\'adresse de mon rib n\'est pas la bonne'
     ],
     tags: ['RIB']
   },
@@ -47,7 +47,7 @@ export const MOCK_FREQUENT_QUESTIONS: FrequentQuestion[] = [
       '\n' +
       'https://www.aumaxpourmoi.fr/faq/"',
     utterances: [
-      {value: 'Où est ce que je peux faire un virement entrant?'}
+      'Où est ce que je peux faire un virement entrant?'
     ],
     tags: ['RIB', 'Sepa', 'Max']
   },
@@ -59,7 +59,7 @@ export const MOCK_FREQUENT_QUESTIONS: FrequentQuestion[] = [
       '\n' +
       '"',
     utterances: [
-      {value: 'Combien de temps un virement met-il pour être crédité sur ma carte ?'}
+      'Combien de temps un virement met-il pour être crédité sur ma carte ?'
     ],
     tags: ['Virement']
   },
@@ -71,7 +71,7 @@ export const MOCK_FREQUENT_QUESTIONS: FrequentQuestion[] = [
       'Dès réception de votre première carte max, vous pourrez directement l\'activer sur l\'appli dans ""carte max"" ou bien sur le tchat s\'il s\'agissait d\'une opposition. \n' +
       '"',
     utterances: [
-      {value: 'Quel est le délai de récéption de la carte une fois le contrat signé ?'}
+      'Quel est le délai de récéption de la carte une fois le contrat signé ?'
     ],
     tags: ['Max']
   }

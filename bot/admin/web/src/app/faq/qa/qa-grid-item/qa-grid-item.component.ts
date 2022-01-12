@@ -61,9 +61,7 @@ export class QaGridItemComponent implements OnInit, OnDestroy {
   }
 
   getFirstUtterance(): string {
-    const found = this.item.utterances[0];
-
-    return found?.value || '';
+    return this.item.utterances[0] || '';
   }
 
   async remove(): Promise<any> {

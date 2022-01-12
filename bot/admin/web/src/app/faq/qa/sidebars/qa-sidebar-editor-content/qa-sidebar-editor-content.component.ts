@@ -24,8 +24,8 @@ function textMatch(text: string): (Utterance) => boolean {
   }
   const lowerText = text.trim().toLowerCase();
 
-  return u => {
-    const lowerUtteranceText = (u.value || '').toLowerCase();
+  return (u: Utterance) => {
+    const lowerUtteranceText = (u || '').toLowerCase();
     return lowerUtteranceText.includes(lowerText);
   };
 }
@@ -121,7 +121,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
       map(([utterances, search]) => {
         const res = utterances.filter(textMatch(search));
 
-        res.sort((a, b) => (a?.value || '').localeCompare(b?.value || ''))
+        res.sort((a, b) => (a || '').localeCompare(b || ''))
         return res;
       })
     );
@@ -154,6 +154,8 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
         // validate and construct entity from form data
         const fq: FrequentQuestion = {
           id: this.fq.id,
+          applicationName: this.fq.applicationName,
+          language: this.fq.language,
           tags: Array.from(this.tags),
           description: '' + (this.newFaqForm.controls['description'].value || ''),
           answer: '' + (this.newFaqForm.controls['answer'].value || ''),
@@ -252,7 +254,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
     // get array
     this.editedUtterances$.pipe(take(1)).subscribe(arr => {
         // find existing item location
-        const index = getPosition(arr, u, utteranceSomewhatSimilar);
+        const index = getPosition(arr, u, utteranceEquals);
 
         // Remove utterance
         const updatedArr = arr.slice();
@@ -286,7 +288,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
   }
 
   private replaceUtterance(oldVersion: Utterance, newVersion: Utterance): void {
-    if (oldVersion.value === newVersion.value) {
+    if (oldVersion === newVersion) {
       return;
     }
 
@@ -320,7 +322,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
 
   edit(utterance: Utterance): void {
 
-    const origValue = utterance.value || '';
+    const origValue = utterance || '';
 
     // ask user to modify its utterance
     const dialogRef = this.dialog.openDialog(
@@ -339,9 +341,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
       .pipe(take(1), takeUntil(this.destroy$), filter(notCancelled))
       .subscribe((result: ValidUtteranceResult) => {
 
-        const newVersion: Utterance = {
-          value: '' + (result.value || '')
-        };
+        const newVersion: Utterance = '' + (result.value || '');
 
         this.replaceUtterance(utterance, newVersion);
     });
@@ -353,7 +353,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
 
   utteranceLookupFor(utterances: Utterance[]): (string) => (Utterance | null) {
     return search => {
-      return utterances.filter(u => somewhatSimilar(u.value, search))[0] || null;
+      return utterances.filter(u => somewhatSimilar(u, search))[0] || null;
     };
   }
 
@@ -376,9 +376,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
       .pipe(take(1), takeUntil(this.destroy$), filter(notCancelled))
       .subscribe((result: ValidUtteranceResult) => {
 
-        this.appendToUtterances( {
-          value: ''+ (result.value || '')
-        });
+        this.appendToUtterances( ''+ (result?.value || ''));
     });
   }
 }
