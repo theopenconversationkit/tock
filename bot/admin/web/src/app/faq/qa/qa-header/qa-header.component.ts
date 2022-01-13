@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NbMenuItem } from '@nebular/theme';
 import { ReplaySubject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
+import { StateService } from 'src/app/core-nlp/state.service';
 import {isDocked, ViewMode } from '../../common/model/view-mode';
 import { QaService } from '../../common/qa.service';
 import { FaqQaFilter } from '../qa-grid/qa-grid.component';
@@ -48,6 +49,7 @@ export class QaHeaderComponent implements OnInit {
   private readonly destroy$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(
+    private readonly state: StateService,
     private readonly qaService: QaService,
     private readonly qaSidebarEditorService: QaSidebarEditorService
   ) { }
@@ -68,10 +70,12 @@ export class QaHeaderComponent implements OnInit {
   }
 
   fetchAvailableTags(): void {
-    this.qaService.getAvailableTags()
+    const applicationId = this.state.currentApplication._id;
+    const language = this.state.currentLocale;
+
+    this.qaService.getAvailableTags(applicationId, language)
       .pipe(take(1), takeUntil(this.destroy$))
       .subscribe(tags => {
-        console.log("found tags", tags);
         this.availableTags = tags;
       });
   }

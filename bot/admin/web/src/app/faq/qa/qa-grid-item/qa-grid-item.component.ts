@@ -2,7 +2,8 @@ import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angula
 import {Observable, of, ReplaySubject } from 'rxjs';
 import { delay, take, tap } from 'rxjs/operators';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
-import { FrequentQuestion, QaStatus } from '../../common/model/frequent-question';
+import { SentenceStatus } from 'src/app/model/nlp';
+import { FrequentQuestion } from '../../common/model/frequent-question';
 import {isDocked, ViewMode } from '../../common/model/view-mode';
 import { QaService } from '../../common/qa.service';
 import { truncate } from '../../common/util/string-utils';
@@ -65,7 +66,7 @@ export class QaGridItemComponent implements OnInit, OnDestroy {
   }
 
   async remove(): Promise<any> {
-    this.item.status = QaStatus.deleted;
+    this.item.status = SentenceStatus.deleted;
 
     await this.qaService.save(this.item, this.destroy$)
       .pipe(take(1))

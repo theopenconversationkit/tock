@@ -1,4 +1,5 @@
-import {FrequentQuestion, QaStatus} from "../model/frequent-question";
+import { SentenceStatus } from "src/app/model/nlp";
+import {FrequentQuestion} from "../model/frequent-question";
 
 /**
  * Some title that could be picked for mock
@@ -16,7 +17,7 @@ export const MOCK_QA_DEFAULT_DESCRIPTION = 'A paragraph of text with an unassign
 export const MOCK_FREQUENT_QUESTIONS: Partial<FrequentQuestion>[] = [
   {
     title: 'Comment accéder au CMB?',
-    status: QaStatus.model,
+    status: SentenceStatus.model,
     enabled: true,
     answer: 'Une fois la carte max reçue et activée, vous avez accès à votre RIB max via le menu ou via « finances » puis « mon compte max ».\n' +
       'Il s\'agit d\'un RIB français.',
@@ -27,7 +28,7 @@ export const MOCK_FREQUENT_QUESTIONS: Partial<FrequentQuestion>[] = [
   },
   {
     title: 'Adresse RIB différente',
-    status: QaStatus.model,
+    status: SentenceStatus.model,
     enabled: true,
     answer: 'L\'adresse mentionnée sur le RIB correspond à celle du siège social de Nouvelle Vague.',
     utterances: [
@@ -37,7 +38,7 @@ export const MOCK_FREQUENT_QUESTIONS: Partial<FrequentQuestion>[] = [
   },
   {
     title: 'Process virement MAX',
-    status: QaStatus.model,
+    status: SentenceStatus.model,
     enabled: true,
     answer: '"Vous pouvez effectuer et recevoir gratuitement des virements SEPA (Single Euro Payments Area). Le compte max autorise uniquement les virements en euros et exclut les virements internationaux.\n' +
       '\n' +
@@ -53,7 +54,7 @@ export const MOCK_FREQUENT_QUESTIONS: Partial<FrequentQuestion>[] = [
   },
   {
     title: 'Délai virement compte Max',
-    status: QaStatus.model,
+    status: SentenceStatus.model,
     enabled: true,
     answer: '"Nous sommes compatibles avec les virements instantanés en France, à condition que l\'autre banque le soit aussi. Sinon, le délai d\'un virement interbancaire est de 72 heures ouvrées maximum (hors week-end et jours fériés). \n' +
       '\n' +
@@ -65,7 +66,7 @@ export const MOCK_FREQUENT_QUESTIONS: Partial<FrequentQuestion>[] = [
   },
   {
     title: 'Delais reception carte',
-    status: QaStatus.model,
+    status: SentenceStatus.model,
     enabled: true,
     answer: '"Après commande de votre carte, le délai de réception en courrier simple est de 4 jours en moyenne. Pour une carte premium ou métal, le délai peut être rallongé de quelques jours.\n' +
       'Dès réception de votre première carte max, vous pourrez directement l\'activer sur l\'appli dans ""carte max"" ou bien sur le tchat s\'il s\'agissait d\'une opposition. \n' +

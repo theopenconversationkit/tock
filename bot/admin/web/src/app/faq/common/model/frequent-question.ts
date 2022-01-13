@@ -2,24 +2,19 @@
  * Placeholder Type until we really have QA in tock
  */
 
+import { SentenceStatus } from "src/app/model/nlp";
 import {somewhatSimilar, verySimilar } from "../util/string-utils";
-
-export enum QaStatus {
-  draft,  inbox, validated, model, deleted
-}
 
 export type Utterance = string;
 
 export const utteranceEquals = (a: Utterance, b: Utterance) => a === b;
-
 export const utteranceEquivalent = (a: Utterance, b: Utterance) => verySimilar(a, b);
-
 export const utteranceSomewhatSimilar = (a: Utterance, b: Utterance) => somewhatSimilar(a, b);
 
 export type FrequentQuestion = {
   id?: string,
   language: string,
-  applicationName: string,
+  applicationId: string,
   creationDate?: Date,
   updateDate?: Date,
   title: string,
@@ -28,10 +23,10 @@ export type FrequentQuestion = {
   tags: string[],
   answer: string,
   enabled: boolean,
-  status: QaStatus
+  status: SentenceStatus
 };
 
-export function blankFrequentQuestion(config: {language: string, applicationName: string}): FrequentQuestion {
+export function blankFrequentQuestion(config: {language: string, applicationId: string}): FrequentQuestion {
   return {
     id: undefined,
     title: '',
@@ -40,7 +35,7 @@ export function blankFrequentQuestion(config: {language: string, applicationName
     tags: [],
     answer: '',
     enabled: true,
-    status: QaStatus.inbox,
+    status: SentenceStatus.inbox,
     ...config
   };
 }
