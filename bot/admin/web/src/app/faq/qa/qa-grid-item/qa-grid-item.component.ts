@@ -8,6 +8,7 @@ import {isDocked, ViewMode } from '../../common/model/view-mode';
 import { QaService } from '../../common/qa.service';
 import { truncate } from '../../common/util/string-utils';
 import { statusAsColor, statusAsText } from '../../common/util/sentence-util';
+import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'tock-qa-grid-item',
@@ -88,6 +89,37 @@ export class QaGridItemComponent implements OnInit, OnDestroy {
 
   getStatusText(): string {
     return statusAsText(this.item.status);
+  }
+
+  async toggleEnabled(evt): Promise<any> {
+    const newValue = !this.item.enabled;
+
+    const result = await this.dialog.openDialog(ConfirmDialogComponent, {
+      context: {
+        title: `Toggle ${newValue? 'On' : 'Off'}`,
+        subtitle: newValue ?
+          `Activate '${this.item.title}' ?`
+          : `Disable '${this.item.title}' ?`,
+        action: 'Yes'
+      }
+    }).onClose.pipe(take(1)).toPromise();
+
+    console.log('result', result);
+    if (result.toLowerCase() !== 'yes') {
+      return;
+    }
+
+    let done$: Observable<unknown>;
+    if (newValue) {
+      done$ = this.qaService.activate(this.item, this.destroy$);
+    } else {
+      done$ = this.qaService.disable(this.item, this.destroy$);
+    }
+
+    await done$.pipe(take(1)).toPromise();
+
+    // this way user will be aware of a failure if any
+    this.item.enabled = newValue;
   }
 
   private hide(): Observable<boolean> {

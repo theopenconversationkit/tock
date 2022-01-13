@@ -1,4 +1,4 @@
-<h5 class="tock--hideable mb-1" [ngClass]="hideableCssClass">{{item.title}}</h5>
+<h6 class="tock--hideable mb-1" [ngClass]="hideableCssClass">{{item.title}}</h6>
 <div class="d-flex w-100 justify-content-between">
   <div class="pb-2 d-flex align-items-center">
     <span class="badge" [style.background]="getStatusColor()">
@@ -33,7 +33,7 @@
       <div class="tock-divider ml-3">&nbsp;</div>
     </div>
     <div class="tock-col-d d-flex justify-content-end">
-      <nb-toggle status="basic" [(ngModel)]="item.enabled">
+      <nb-toggle status="basic" [ngModel]="item.enabled" (mousedown)="toggleEnabled($event)">
 
       </nb-toggle>
 

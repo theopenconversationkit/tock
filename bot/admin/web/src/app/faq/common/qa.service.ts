@@ -18,7 +18,7 @@ export class QaService {
   }
 
   // add random data at initialization until real backend is there instead
-  public setupMockData({applicationId, applicationName, language}:
+  setupMockData({applicationId, applicationName, language}:
                          {applicationId: string, applicationName: string, language: string}): void {
 
     this.appIdByAppName.set(applicationName, applicationId);
@@ -54,12 +54,12 @@ export class QaService {
   }
 
   // fake real backend call
-  public save(fq: FrequentQuestion, cancel$: Observable<any> = empty()): Observable<FrequentQuestion> {
+  save(fq: FrequentQuestion, cancel$: Observable<any> = empty()): Observable<FrequentQuestion> {
 
     let dirty = false;
 
     this.mockData = this.mockData.map(item => {
-      if (fq.id && item.id === fq.id) { // arbitrary chosen unicity key, there must be a better one
+      if (fq.id && item.id === fq.id) {
         dirty = true;
         fq.updateDate = new Date();
         return fq;
@@ -153,10 +153,39 @@ export class QaService {
     // simulate backend aggregation query
     this.mockData
       .filter(fq => fq.applicationId === applicationId && fq.language === language)
-      .forEach(tagSet.add.bind(tagSet));
+      .forEach(fq => fq.tags.forEach(tagSet.add.bind(tagSet)));
 
     return of(Array.from(tagSet));
   }
 
+  activate(fq: FrequentQuestion, cancel$: Observable<any> = empty()): Observable<FrequentQuestion> {
+    return this.updateEnabled(fq,true, cancel$);
+  }
+
+  disable(fq: FrequentQuestion, cancel$: Observable<any> = empty()): Observable<FrequentQuestion> {
+    return this.updateEnabled(fq,false, cancel$);
+  }
+
+  private updateEnabled(fq: FrequentQuestion, enabled: boolean, cancel$: Observable<any>)
+    : Observable<FrequentQuestion> {
+
+    let dirty = false;
+
+    this.mockData = this.mockData.map(item => {
+      if (fq.id && item.id === fq.id) {
+        dirty = true;
+        fq.enabled = (enabled === true);
+        return fq;
+      } else {
+        return item;
+      }
+    });
+
+    if (dirty) {
+      return of(this.mockData.filter(item => fq.id && item.id === fq.id)[0]);
+    } else {
+      return empty();
+    }
+  }
 
 }
