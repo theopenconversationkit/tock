@@ -103,7 +103,6 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
   }
 
   ngOnDestroy(): void {
-    console.log("destroy");
     this.destroy$.next(true);
     this.destroy$.complete();
   }
@@ -154,7 +153,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
         // validate and construct entity from form data
         const fq: FrequentQuestion = {
           id: this.fq.id,
-          applicationName: this.fq.applicationName,
+          applicationId: this.fq.applicationId,
           language: this.fq.language,
           tags: Array.from(this.tags),
           description: '' + (this.newFaqForm.controls['description'].value || ''),

@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ReplaySubject} from 'rxjs';
 import {StateService} from 'src/app/core-nlp/state.service';
 import {DEFAULT_PANEL_NAME, WithSidePanel} from '../common/mixin/with-side-panel';
-import {blankFrequentQuestion, FrequentQuestion, QaStatus} from '../common/model/frequent-question';
+import {blankFrequentQuestion, FrequentQuestion} from '../common/model/frequent-question';
 import {FaqQaFilter, QaGridComponent} from './qa-grid/qa-grid.component';
 import {QaSidebarEditorService} from './sidebars/qa-sidebar-editor.service';
 import { truncate } from '../common/util/string-utils';
@@ -36,7 +36,7 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
     private readonly state: StateService,
     private readonly sidebarEditorService: QaSidebarEditorService,
     private readonly dialog: DialogService,
-    private readonly  qaService: QaService
+    private readonly qaService: QaService
   ) {
     super();
   }
@@ -44,7 +44,11 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
   ngOnInit(): void {
 
     // until server really store things
-    this.qaService.setupMockData(this.state.currentApplication.name, this.state.currentLocale);
+    this.qaService.setupMockData({
+      applicationName: this.state.currentApplication.name,
+      applicationId: this.state.currentApplication._id,
+      language: this.state.currentLocale
+    });
 
     this.filter = {
       sort: [],
@@ -103,17 +107,17 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
 
   openNewSidepanel() {
     const currentLocale = this.state.currentLocale;
-    const applicationName = this.state.currentApplication.name;
+    const applicationId = this.state.currentApplication._id;
 
     this.editorPanelName = 'New FAQ';
-    this.currentItem = blankFrequentQuestion({applicationName, language: currentLocale});
+    this.currentItem = blankFrequentQuestion({applicationId, language: currentLocale});
     this.activeQaTab = 'Info';
 
     this.dock("edit");
   }
 
   details(fq: FrequentQuestion) {
-    console.log("qa", fq);
+
   }
 
   activateEditorTab(tabName: EditorTabName): void {
@@ -122,6 +126,7 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
 
   async save(): Promise<any> {
     const fq = await this.sidebarEditorService.save(this.destroy$);
+    this.currentItem = fq;
 
     this.dialog.notify(`Saved`,
       truncate(fq.title || ''), {duration: 2000, status: "basic"});

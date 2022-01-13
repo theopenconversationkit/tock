@@ -3,11 +3,13 @@ import {MOCK_QA_TITLES, MOCK_QA_DEFAULT_LABEL, MOCK_QA_DEFAULT_DESCRIPTION, MOCK
 
 import {empty, Observable, of } from 'rxjs';
 import {PaginatedResult, SearchQuery, Sentence, SentenceStatus} from 'src/app/model/nlp';
-import { FrequentQuestion, QaStatus, Utterance } from './model/frequent-question';
+import { FrequentQuestion, Utterance } from './model/frequent-question';
 import { QaSearchQuery } from './model/qa-search-query';
 
 @Injectable()
 export class QaService {
+
+  appIdByAppName = new Map<string, string>(); // for mock purpose only
 
   // generate fake data for pagination
   mockData: FrequentQuestion[] = [];
@@ -16,10 +18,13 @@ export class QaService {
   }
 
   // add random data at initialization until real backend is there instead
-  public setupMockData(applicationName: string, language: string): void {
+  public setupMockData({applicationId, applicationName, language}:
+                         {applicationId: string, applicationName: string, language: string}): void {
+
+    this.appIdByAppName.set(applicationName, applicationId);
 
     // when there is already data for given bot / language
-    if (this.mockData.some((fq: FrequentQuestion) => fq.applicationName === applicationName && fq.language == language )) {
+    if (this.mockData.some((fq: FrequentQuestion) => fq.applicationId === applicationId && fq.language == language)) {
       // no need to add mock data
       return;
     }
@@ -36,9 +41,9 @@ export class QaService {
         answer: `${template.answer} ${index+1}`,
         title: template.title, // pick random (rotating) title
         enabled: (index < 5),
-        status: QaStatus.model,
+        status: SentenceStatus.model,
         tags: (template.tags  || []).slice(),
-        applicationName,
+        applicationId,
         language,
         creationDate: now,
         updateDate: now
@@ -74,8 +79,8 @@ export class QaService {
   // fake real backend call
   searchQas(query: QaSearchQuery): Observable<PaginatedResult<FrequentQuestion>> {
 
-    console.log("searchQas:query", query);
-    console.log("searchQas:data", this.mockData);
+    // Because for historical reason, PaginatedResilt hold a application name instead of application id
+    const queryApplicationId = this.appIdByAppName.get(query.applicationName);
 
     // guard against empty case
     if (query.start < 0 || query.size <= 0) {
@@ -93,11 +98,11 @@ export class QaService {
         const predicates: Array<(FrequentQuestion) => boolean> = [];
 
         predicates.push(
-          (fq: FrequentQuestion) => fq.status !== QaStatus.deleted
+          (fq: FrequentQuestion) => fq.status !== SentenceStatus.deleted
         );
 
         predicates.push(
-          (fq: FrequentQuestion) => fq.applicationName === query.applicationName
+          (fq: FrequentQuestion) => fq.applicationId === queryApplicationId
         );
 
         const lowerSearch = (query.search || '').toLowerCase().trim();
@@ -142,11 +147,13 @@ export class QaService {
     });
   }
 
-  getAvailableTags(): Observable<string[]> {
+  getAvailableTags(applicationId: string, language: string): Observable<string[]> {
     const tagSet = new Set<string>();
 
     // simulate backend aggregation query
-    this.mockData.forEach(fq => fq.tags.forEach(tagSet.add.bind(tagSet)));
+    this.mockData
+      .filter(fq => fq.applicationId === applicationId && fq.language === language)
+      .forEach(tagSet.add.bind(tagSet));
 
     return of(Array.from(tagSet));
   }
