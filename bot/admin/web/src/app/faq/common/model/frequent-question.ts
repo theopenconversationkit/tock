@@ -11,6 +11,8 @@ export const utteranceEquals = (a: Utterance, b: Utterance) => a === b;
 export const utteranceEquivalent = (a: Utterance, b: Utterance) => verySimilar(a, b);
 export const utteranceSomewhatSimilar = (a: Utterance, b: Utterance) => somewhatSimilar(a, b);
 
+
+
 export type FrequentQuestion = {
   id?: string,
   language: string,

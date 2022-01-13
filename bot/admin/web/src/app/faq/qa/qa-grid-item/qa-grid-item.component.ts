@@ -7,6 +7,7 @@ import { FrequentQuestion } from '../../common/model/frequent-question';
 import {isDocked, ViewMode } from '../../common/model/view-mode';
 import { QaService } from '../../common/qa.service';
 import { truncate } from '../../common/util/string-utils';
+import { statusAsColor, statusAsText } from '../../common/util/sentence-util';
 
 @Component({
   selector: 'tock-qa-grid-item',
@@ -79,6 +80,14 @@ export class QaGridItemComponent implements OnInit, OnDestroy {
     this.hide().subscribe(_ => {
       this.onRemove.emit(true);
     });
+  }
+
+  getStatusColor(): string {
+    return statusAsColor(this.item.status);
+  }
+
+  getStatusText(): string {
+    return statusAsText(this.item.status);
   }
 
   private hide(): Observable<boolean> {

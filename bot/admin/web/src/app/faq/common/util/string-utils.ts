@@ -45,3 +45,6 @@ export function somewhatSimilar(a?: string, b?: string): boolean {
 
   return verySimilar(simplify(a), simplify(b));
 }
+
+// Note: A library may be used to measure and threshold sentence similarity such as
+// https://www.npmjs.com/package/string-similarity
