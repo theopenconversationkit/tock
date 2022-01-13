@@ -1,4 +1,20 @@
-<h5 class="tock--hideable" [ngClass]="hideableCssClass">{{item.title}}</h5>
+<h5 class="tock--hideable mb-1" [ngClass]="hideableCssClass">{{item.title}}</h5>
+<div class="d-flex w-100 justify-content-between">
+  <div class="pb-2 d-flex align-items-center">
+    <span class="badge" [style.background]="getStatusColor()">
+      {{getStatusText()}}
+    </span>
+    <div class="tock-additional-info d-inline-block ml-1">
+      {{item.utterances.length}} Question{{item.utterances.length === 1 ? '' : 's'}}
+    </div>
+  </div>
+
+  <div class="tock-tags-box pb-2">
+    <nb-tag-list>
+      <nb-tag [ngClass]="'mb-0'" size="small" appearance="outline" *ngFor="let tag of item.tags" [text]="tag" [removable]="false"></nb-tag>
+    </nb-tag-list>
+  </div>
+</div>
 <nb-card class="overflow-hidden mb-2 tock--hideable" [ngClass]="hideableCssClass">
   <nb-card-body
     class="d-flex align-items-center justify-content-between p-2 flex-wrap"

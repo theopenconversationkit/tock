@@ -1,5 +1,12 @@
 @import url(../../common/_base_faq.scss);
 
+.status {
+  margin-right: 0.5em;
+  border-radius: 25px;
+  padding: 8px;
+  margin-left: 10px;
+}
+
 nb-toggle {
   margin-bottom: -.5rem;
   margin-right: 1rem;
@@ -57,4 +64,8 @@ nb-card-body {
       margin-right: .1rem;
     }
   }
+}
+
+.tock-additional-info {
+  font-size: 75%;
 }

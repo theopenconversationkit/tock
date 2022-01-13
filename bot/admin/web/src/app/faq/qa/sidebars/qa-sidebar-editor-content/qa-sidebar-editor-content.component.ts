@@ -16,6 +16,7 @@ import { concatMap } from 'rxjs/operators';
 import { SentencesService } from 'src/app/faq/common/sentences.service';
 import { QaService } from 'src/app/faq/common/qa.service';
 import { EditorTabName } from '../../qa.component';
+import { startWith } from 'rxjs/operators';
 
 // Simple builder for text 'utterance predicate'
 function textMatch(text: string): (Utterance) => boolean {
@@ -127,15 +128,18 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
   }
 
   observeValidity(): void {
-    this.newFaqForm.valueChanges
+    const valueChanges$ =  this.newFaqForm.valueChanges
       .pipe(
+        startWith(null), // so combineLatest just has to wait for first editedUtterances$ event
         takeUntil(this.destroy$),
-        debounceTime(200),
-        map(_ => {
-          console.log("check form valid",  this.newFaqForm.valid,  this.newFaqForm);
-          return this.newFaqForm.valid;
-        }),
-        distinct()
+        debounceTime(200)
+      );
+
+    combineLatest(this.editedUtterances$, valueChanges$)
+      .pipe(
+        map(([utterances, _]) => {
+          return this.newFaqForm.valid && !!utterances?.length;
+        })
       )
       .subscribe(
       validity => this.validityChanged.next(validity)
