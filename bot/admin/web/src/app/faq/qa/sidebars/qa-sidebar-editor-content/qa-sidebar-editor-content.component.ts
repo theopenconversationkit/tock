@@ -9,7 +9,7 @@ import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { EditUtteranceResult, notCancelled, ValidUtteranceResult } from 'src/app/faq/common/components/edit-utterance/edit-utterance-result';
 import { EditUtteranceComponent } from 'src/app/faq/common/components/edit-utterance/edit-utterance.component';
 import {FrequentQuestion, Utterance, utteranceEquals, utteranceEquivalent, utteranceSomewhatSimilar} from 'src/app/faq/common/model/frequent-question';
-import {ActionResult, QaSidebarEditorService} from '../qa-sidebar-editor.service';
+import {ActionResult, QaEditorEvent, QaSidebarEditorService} from '../qa-sidebar-editor.service';
 import {getPosition, hasItem} from '../../../common/util/array-utils';
 import {somewhatSimilar, verySimilar } from 'src/app/faq/common/util/string-utils';
 import { concatMap } from 'rxjs/operators';
@@ -77,7 +77,10 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
     answer: new FormControl('', [
       Validators.required,
       Validators.maxLength(800)
-    ])
+    ]),
+    active: new FormControl(true, [
+      Validators.required
+    ]),
   });
 
   /* Search */
@@ -147,38 +150,38 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
   }
 
   registerSaveAction(): void {
-
     // listen to event 'save'
-    this.sidebarEditorService.registerActionHandler('save', this.destroy$, evt => {
+    this.sidebarEditorService.registerActionHandler('save', this.destroy$, this.save.bind(this));
+  }
 
-      // replay last known utterances array
-      return this.editedUtterances$.pipe(take(1), concatMap( utterances => {
+  save(evt: QaEditorEvent): Observable<ActionResult> {
+    // replay last known utterances array
+    return this.editedUtterances$.pipe(take(1), concatMap( utterances => {
 
-        // validate and construct entity from form data
-        const fq: FrequentQuestion = {
-          id: this.fq.id,
-          applicationId: this.fq.applicationId,
-          language: this.fq.language,
-          tags: Array.from(this.tags),
-          description: '' + (this.newFaqForm.controls['description'].value || ''),
-          answer: '' + (this.newFaqForm.controls['answer'].value || ''),
-          title: '' + (this.newFaqForm.controls['name'].value || ''),
-          status: this.fq.status,
-          utterances,
-          enabled: true === this.fq.enabled
-        };
+      // validate and construct entity from form data
+      const fq: FrequentQuestion = {
+        id: this.fq.id,
+        applicationId: this.fq.applicationId,
+        language: this.fq.language,
+        tags: Array.from(this.tags),
+        description: '' + (this.newFaqForm.controls['description'].value || ''),
+        answer: '' + (this.newFaqForm.controls['answer'].value || ''),
+        title: '' + (this.newFaqForm.controls['name'].value || ''),
+        status: this.fq.status,
+        utterances,
+        enabled: (true === this.newFaqForm.controls['active'].value)
+      };
 
-        return this.qaService.save(fq, this.destroy$).pipe(
-          map(fq => {
-            const res: ActionResult = {
-              outcome: 'save-done',
-              payload: fq
-            };
-            return res;
-          })
-        );
-      }));
-    });
+      return this.qaService.save(fq, this.destroy$).pipe(
+        map(fq => {
+          const res: ActionResult = {
+            outcome: 'save-done',
+            payload: fq
+          };
+          return res;
+        })
+      );
+    }));
   }
 
   getControlStatus(controlName: string): 'success' | 'basic' | 'warning' {
@@ -218,7 +221,8 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
       this.newFaqForm.setValue({
         name: '' + (fq.title || ''),
         description: '' + (fq.description || ''),
-        answer: '' + (fq.answer || '')
+        answer: '' + (fq.answer || ''),
+        active: fq.enabled === true
       });
       this.tags = new Set<string>(fq.tags.slice());
     } else {
@@ -227,7 +231,8 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
       this.newFaqForm.setValue({
         name: '',
         description: '',
-        answer: ''
+        answer: '',
+        active: false
       });
       this.tags = new Set<string>();
     }
