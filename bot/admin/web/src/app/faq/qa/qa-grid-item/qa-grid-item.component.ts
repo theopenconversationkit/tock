@@ -1,3 +1,4 @@
+import {saveAs} from "file-saver";
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {Observable, of, ReplaySubject } from 'rxjs';
 import { delay, take, tap } from 'rxjs/operators';
@@ -9,6 +10,8 @@ import { QaService } from '../../common/qa.service';
 import { truncate } from '../../common/util/string-utils';
 import { statusAsColor, statusAsText } from '../../common/util/sentence-util';
 import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
+import { NbToastrService } from "@nebular/theme/components/toastr/toastr.service";
+import { StateService } from "src/app/core-nlp/state.service";
 
 @Component({
   selector: 'tock-qa-grid-item',
@@ -38,7 +41,8 @@ export class QaGridItemComponent implements OnInit, OnDestroy {
   private readonly destroy$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(
-    private qaService: QaService,
+    private readonly state: StateService,
+    private readonly qaService: QaService,
     private readonly dialog: DialogService,
   ) {
   }
@@ -49,10 +53,6 @@ export class QaGridItemComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.destroy$.next(true);
     this.destroy$.complete();
-  }
-
-  download(): void {
-
   }
 
   edit(): void {
@@ -120,6 +120,21 @@ export class QaGridItemComponent implements OnInit, OnDestroy {
 
     // this way user will be aware of a failure if any
     this.item.enabled = newValue;
+  }
+
+  download(): void {
+    var jsonBlob = new Blob([JSON.stringify(this.item)], {
+      type: 'application/json'
+    });
+
+    // TODO: A more useful download
+    saveAs(jsonBlob, this.state.currentApplication.name +
+      "_" +
+      this.state.currentLocale +
+      "_faq_" +
+      new Date().getTime() +
+      ".json"
+    );
   }
 
   private hide(): Observable<boolean> {
