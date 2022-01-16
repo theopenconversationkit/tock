@@ -127,15 +127,17 @@ object AdminService {
                 val toLowerCaseTranslation = translation.lowercase(s.language)
                 val newEntities = mutableListOf<ClassifiedEntity>()
                 val entities = s.classification.entities.mapNotNull { e ->
-                    val entityTranslation = engine.translate(e.textValue(s.text), s.language, query.targetLanguage)
-                    val start = toLowerCaseTranslation.indexOf(entityTranslation.lowercase(query.targetLanguage))
-                    val end = start + entityTranslation.length
+                    val originalEntityText = e.textValue(s.text)
+                    val entityTranslation = engine.translate(originalEntityText, s.language, query.targetLanguage)
+                    val index = toLowerCaseTranslation.indexOf(entityTranslation.lowercase(query.targetLanguage))
+                    val start = if(index != -1) index else toLowerCaseTranslation.indexOf(originalEntityText.lowercase())
+                    val end = start + if(index != -1) entityTranslation.length else originalEntityText.length
                     if (start == -1 || newEntities.any { it.overlap(start, end) }) {
                         null
                     } else {
                         e.copy(
                             start = start,
-                            end = start + entityTranslation.length,
+                            end = end,
                             //sub entities not yet supported
                             subEntities = emptyList()
                         )

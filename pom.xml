@@ -59,6 +59,7 @@
         <google-http-client>1.40.1</google-http-client>
         <jasypt>1.9.3</jasypt>
         <commons-csv>1.9.0</commons-csv>
+        <commons-text>1.9</commons-text>
         <emoji>5.0</emoji>
         <commons-codec>1.15</commons-codec>
         <commons-lang>3.12.0</commons-lang>
@@ -485,6 +486,11 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-csv</artifactId>
                 <version>${commons-csv}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>${commons-text}</version>
             </dependency>
             <dependency>
                 <groupId>org.json</groupId>

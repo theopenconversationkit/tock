@@ -30,6 +30,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+        </dependency>
+        <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-translator-core</artifactId>
         </dependency>
