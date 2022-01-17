@@ -46,6 +46,16 @@
             [ngClass]="{'tock--active': activeQaTab === 'Answer'}">
         Answer
       </span>
+
+      <div *ngIf="editorFormWarnings.length > 0"
+           [nbPopover]="editorwarnings"
+           nbPopoverTrigger="hint"
+           nbPopoverPlacement="bottom"
+           class="tock-form-problems float-right">
+        <nb-icon icon="alert-triangle-outline"></nb-icon>
+
+        {{editorFormWarnings.length}}
+      </div>
     </ng-container>
 
     <tock-qa-sidebar-editor-content tock-content
@@ -68,3 +78,15 @@
   </tock-inview-sidebar>
 
 </div>
+
+<ng-template #editorwarnings>
+  <nb-card [ngClass]="'tock-editor-warns'" status="danger" [style]="{'margin-bottom': 0}">
+
+    <nb-list>
+      <nb-list-item *ngFor="let message of editorFormWarnings">
+        {{ message }}
+      </nb-list-item>
+    </nb-list>
+
+  </nb-card>
+</ng-template>

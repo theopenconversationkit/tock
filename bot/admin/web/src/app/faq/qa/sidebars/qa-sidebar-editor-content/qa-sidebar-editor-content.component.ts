@@ -17,6 +17,7 @@ import { SentencesService } from 'src/app/faq/common/sentences.service';
 import { QaService } from 'src/app/faq/common/qa.service';
 import { EditorTabName } from '../../qa.component';
 import { startWith } from 'rxjs/operators';
+import  {collectProblems, FormProblems, isControlAlert, NoProblems } from '../../../common/model/form-problems';
 
 // Simple builder for text 'utterance predicate'
 function textMatch(text: string): (Utterance) => boolean {
@@ -57,7 +58,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
   fq?: FrequentQuestion;
 
   @Output()
-  validityChanged = new EventEmitter<boolean>();
+  validityChanged = new EventEmitter<FormProblems>();
 
   /* Form Data */
 
@@ -103,7 +104,6 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
   }
 
   ngAfterViewInit() {
-    this.validityChanged.emit(this.newFaqForm.valid); // initial event value
   }
 
   ngOnDestroy(): void {
@@ -112,7 +112,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
   }
 
   ngOnChanges(changes: { [key: string]: SimpleChange }): any {
-    if ('fq' in changes) {
+    if (changes.hasOwnProperty('fq')) {
       this.updateForm(changes?.fq?.currentValue);
     }
   }
@@ -140,13 +140,9 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
 
     combineLatest(this.editedUtterances$, valueChanges$)
       .pipe(
-        map(([utterances, _]) => {
-          return this.newFaqForm.valid && !!utterances?.length;
-        })
+        map(([utterances, _]) => this.buildProblemsReport(this.newFaqForm, utterances))
       )
-      .subscribe(
-      validity => this.validityChanged.next(validity)
-    );
+      .subscribe(problems => this.validityChanged.next(problems));
   }
 
   registerSaveAction(): void {
@@ -209,7 +205,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
   isControlAlert(controlName: string): boolean {
     const control = this.newFaqForm.controls[controlName];
 
-    return control.invalid && (control.dirty || control.touched);
+    return isControlAlert(control);
   }
 
   updateForm(fq?: FrequentQuestion): void {
@@ -225,6 +221,8 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
         active: fq.enabled === true
       });
       this.tags = new Set<string>(fq.tags.slice());
+
+      this.validityChanged.emit(this.buildProblemsReport(this.newFaqForm, utterances)); // initial event value
     } else {
 
       this.editedUtterances$.next([]);
@@ -235,6 +233,8 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
         active: false
       });
       this.tags = new Set<string>();
+
+      this.validityChanged.emit(NoProblems); // initial event value
     }
   }
 
@@ -256,6 +256,36 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
   utteranceSearchChange(e) {
     this.searchSubject$.next(e.target.value);
   }
+
+  private buildProblemsReport (form: FormGroup, utterances: Utterance[]): FormProblems {
+    // validation is not only function of angular Form errors but also overall component errors
+    const overallValid = form.valid && !!utterances?.length;
+
+    // when everythings is ok, report no problems
+    if (overallValid) {
+      return NoProblems;
+    }
+
+    // else grab angular form errors if any
+    const problems = collectProblems(form, {
+      'name_minlength': "Name must be at least 6 characters",
+      'name_maxlength': "Name must be at least 6 characters",
+      'name_required': "Name required",
+      'description_maxlength': "Description must be less than 10 characters",
+      'answer_required': "Answer required",
+    });
+
+    // also grab other errors if any
+    if (!utterances?.length) {
+      problems.items.push({
+        controlLabel: 'Utterances',
+        errorLabel: 'One utterance required at least'
+      });
+    }
+
+    return problems;
+  }
+
 
   private removeFromUtterances(u: Utterance): void {
 

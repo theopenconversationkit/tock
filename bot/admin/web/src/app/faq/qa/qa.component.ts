@@ -8,6 +8,7 @@ import {QaSidebarEditorService} from './sidebars/qa-sidebar-editor.service';
 import { truncate } from '../common/util/string-utils';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { QaService } from '../common/qa.service';
+import { FormProblems, InvalidFormProblems } from '../common/model/form-problems';
 
 // Specific action payload
 export type EditorTabName = 'Info' | 'Answer' | 'Question';
@@ -25,7 +26,9 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
   currentItem?: FrequentQuestion;
 
   editorPanelName?: string;
+
   editorFormValid = false;
+  editorFormWarnings: string[] = [];
 
   public filter: FaqQaFilter;
   @ViewChild(QaGridComponent) grid;
@@ -98,9 +101,13 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
     super.undock(); // toogle the docked/undocked state
   }
 
-  onEditorValidityChanged(value: boolean): void {
+  onEditorValidityChanged(report: FormProblems): void {
     window.setTimeout(() => { // ExpressionChangedAfterItHasBeenCheckedError workaround
-      this.editorFormValid = value;
+      this.editorFormValid = report.formValid;
+
+      this.editorFormWarnings = report.formValid ? [] : (<InvalidFormProblems> report).items.map(item => {
+        return item.errorLabel;
+      });
     }, 0);
 
   }
