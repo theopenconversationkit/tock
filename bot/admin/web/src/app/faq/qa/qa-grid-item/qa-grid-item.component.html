@@ -1,9 +1,6 @@
 <h6 class="tock--hideable mb-1" [ngClass]="hideableCssClass">{{item.title}}</h6>
 <div class="d-flex w-100 justify-content-between">
   <div class="pb-2 d-flex align-items-center">
-    <span class="badge" [style.background]="getStatusColor()">
-      {{getStatusText()}}
-    </span>
     <div class="tock-additional-info d-inline-block ml-1">
       {{item.utterances.length}} Question{{item.utterances.length === 1 ? '' : 's'}}
     </div>

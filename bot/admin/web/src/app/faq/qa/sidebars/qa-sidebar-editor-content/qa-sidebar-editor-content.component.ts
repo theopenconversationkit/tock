@@ -89,6 +89,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
   search?: string;
   searchSubject$: BehaviorSubject<string> = new BehaviorSubject('');
   displayedUtterances$: Observable<Utterance[]>;
+  utteranceTouched = false;
 
   constructor(
     private readonly sidebarEditorService: QaSidebarEditorService,
@@ -236,6 +237,8 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
 
       this.validityChanged.emit(NoProblems); // initial event value
     }
+
+    this.utteranceTouched = false;
   }
 
   public onTagRemove(tagToRemove: NbTagComponent): void {
@@ -276,10 +279,10 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
     });
 
     // also grab other errors if any
-    if (!utterances?.length) {
+    if (!utterances?.length && this.utteranceTouched) {
       problems.items.push({
         controlLabel: 'Utterances',
-        errorLabel: 'One utterance required at least'
+        errorLabel: 'One question required at least'
       });
     }
 
@@ -288,6 +291,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
 
 
   private removeFromUtterances(u: Utterance): void {
+    this.utteranceTouched = true;
 
     // get array
     this.editedUtterances$.pipe(take(1)).subscribe(arr => {
@@ -305,6 +309,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
   }
 
   private appendToUtterances(u: Utterance): void {
+    this.utteranceTouched = true;
 
     // get array
     this.editedUtterances$.pipe(take(1)).subscribe(arr => {
@@ -329,6 +334,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
     if (oldVersion === newVersion) {
       return;
     }
+    this.utteranceTouched = true;
 
     // get array
     this.editedUtterances$.pipe(take(1)).subscribe(arr => {
@@ -337,13 +343,18 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
         // when edited value is already elsewhere
         if (hasItem(arr, newVersion, utteranceSomewhatSimilar)) {
 
-          // update value at targeted position
+          // get that elsewhere position
           const targetedIndex = getPosition(arr, newVersion, utteranceSomewhatSimilar);
-          updatedArr.splice(targetedIndex, 1, newVersion);
 
           // remove edited position because value is now represented in another existing position
           const prevIndex = getPosition(arr, oldVersion, utteranceEquals);
-          updatedArr.splice(prevIndex, 1);
+
+          updatedArr.splice(targetedIndex, 1, newVersion);
+
+          // when edited position
+          if (prevIndex !== targetedIndex) {
+            updatedArr.splice(prevIndex, 1);
+          }
 
         } else { // when edited value is not elsewhere
 
