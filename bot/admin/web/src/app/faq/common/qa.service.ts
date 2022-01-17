@@ -32,7 +32,7 @@ export class QaService {
     const seed = (new Date().getTime()); // timestamp as random seed
     const now = new Date();
 
-    const someData: FrequentQuestion[] = Array<number>(1).fill(0).map((_, index) => {
+    const someData: FrequentQuestion[] = Array<number>(3).fill(0).map((_, index) => {
       const template = MOCK_FREQUENT_QUESTIONS[index % MOCK_FREQUENT_QUESTIONS.length];
 
       return {
