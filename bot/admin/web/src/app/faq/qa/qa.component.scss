@@ -43,3 +43,21 @@ tock-qa-header.tock--docked {
     color: #ffffff;
   }
 }
+
+.tock-form-problems {
+  position: absolute;
+  user-select: none;
+  top: 100px;
+  color: orangered;
+  right: 12px;
+
+  nb-icon {
+    vertical-align: middle;
+    user-select: none;
+  }
+}
+
+.tock-editor-warns>nb-list>nb-list-item {
+  color: orangered;
+}
+
