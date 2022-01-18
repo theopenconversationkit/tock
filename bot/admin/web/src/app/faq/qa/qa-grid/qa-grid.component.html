@@ -33,10 +33,13 @@
 
   <div infinite-scroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="300" (scrolled)="onScroll()">
     <div *ngFor="let d of data">
-      <tock-qa-grid-item (onEdit)="edit($event)"
+      <tock-qa-grid-item *ngIf="d?.status !== 'Deleted'"
+                         (onEdit)="edit($event)"
+                         (onRemove)="remove(d)"
                          [ngClass]="{'w-100': true, 'tock--selected': selectedItem?.id === d?.id}"
                          [item]="d"
-                         [viewMode]="viewMode">
+                         [viewMode]="viewMode"
+      >
       </tock-qa-grid-item>
     </div>
   </div>

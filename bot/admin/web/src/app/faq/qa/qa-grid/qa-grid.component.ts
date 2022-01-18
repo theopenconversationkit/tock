@@ -107,6 +107,10 @@ export class QaGridComponent extends ScrollComponent<FrequentQuestion> implement
     this.onEdit.emit(fq);
   }
 
+  remove(fq: FrequentQuestion): void {
+    fq.status = 'Deleted';
+  }
+
   toSearchQuery(query: PaginatedQuery): QaSearchQuery {
 
     const result = new QaSearchQuery(

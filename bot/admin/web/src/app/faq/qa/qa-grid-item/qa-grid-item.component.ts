@@ -3,12 +3,10 @@ import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angula
 import {Observable, of, ReplaySubject } from 'rxjs';
 import { delay, take, tap } from 'rxjs/operators';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
-import { SentenceStatus } from 'src/app/model/nlp';
 import { FrequentQuestion } from '../../common/model/frequent-question';
 import {isDocked, ViewMode } from '../../common/model/view-mode';
 import { QaService } from '../../common/qa.service';
 import { truncate } from '../../common/util/string-utils';
-import { statusAsColor, statusAsText } from '../../common/util/sentence-util';
 import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
 import { NbToastrService } from "@nebular/theme/components/toastr/toastr.service";
 import { StateService } from "src/app/core-nlp/state.service";
@@ -68,9 +66,7 @@ export class QaGridItemComponent implements OnInit, OnDestroy {
   }
 
   async remove(): Promise<any> {
-    this.item.status = SentenceStatus.deleted;
-
-    await this.qaService.save(this.item, this.destroy$)
+    await this.qaService.delete(this.item, this.destroy$)
       .pipe(take(1))
       .toPromise();
 
@@ -81,14 +77,6 @@ export class QaGridItemComponent implements OnInit, OnDestroy {
     this.hide().subscribe(_ => {
       this.onRemove.emit(true);
     });
-  }
-
-  getStatusColor(): string {
-    return statusAsColor(this.item.status);
-  }
-
-  getStatusText(): string {
-    return statusAsText(this.item.status);
   }
 
   async toggleEnabled(evt): Promise<any> {
@@ -142,7 +130,7 @@ export class QaGridItemComponent implements OnInit, OnDestroy {
 
     return of(true)
       .pipe(
-        delay(500),
+        delay(800),
         tap(_ =>  this.hideableCssClass = 'tock--hidden' )
       );
   }
