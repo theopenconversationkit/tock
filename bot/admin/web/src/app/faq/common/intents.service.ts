@@ -51,7 +51,6 @@ export class IntentsService {
 
   private canSaveIntent(name: string, label: string, description: string, category: string): Promise<boolean> {
     if (StateService.intentExistsInApp(this.state.currentApplication, name) || name === UNQUALIFIED_UNKNOWN_NAME) {
-      console.log("intentExistsInApp");
       this.dialog.notify(`Intent ${name} already exists`, 'Cancelled',
         {duration: 5000, status: "warning"});
       return Promise.resolve(false);

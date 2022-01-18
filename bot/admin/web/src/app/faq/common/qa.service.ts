@@ -41,7 +41,7 @@ export class QaService {
         answer: `${template.answer} ${index+1}`,
         title: template.title, // pick random (rotating) title
         enabled: (index < 5),
-        status: SentenceStatus.model,
+        status: template.status,
         tags: (template.tags  || []).slice(),
         applicationId,
         language,
@@ -51,6 +51,23 @@ export class QaService {
     });
 
     someData.forEach(fq => this.mockData.push(fq));
+  }
+
+  // fake real backend call
+  delete(fq: FrequentQuestion, cancel$: Observable<any> = empty()): Observable<FrequentQuestion> {
+    let newFq: FrequentQuestion | undefined;
+
+    this.mockData = this.mockData.map(item => {
+      if (fq.id && item.id === fq.id) {
+        newFq = JSON.parse(JSON.stringify(fq)); // deep copy
+        newFq.status = 'Deleted';
+        return newFq;
+      } else {
+        return item;
+      }
+    });
+
+    return (newFq === undefined) ? Observable.throw("Item not found") : of(newFq);
   }
 
   // fake real backend call
@@ -98,7 +115,7 @@ export class QaService {
         const predicates: Array<(FrequentQuestion) => boolean> = [];
 
         predicates.push(
-          (fq: FrequentQuestion) => fq.status !== SentenceStatus.deleted
+          (fq: FrequentQuestion) => fq.status !== 'Deleted'
         );
 
         predicates.push(
