@@ -17,7 +17,7 @@ import { SentencesService } from 'src/app/faq/common/sentences.service';
 import { QaService } from 'src/app/faq/common/qa.service';
 import { EditorTabName } from '../../qa.component';
 import { startWith } from 'rxjs/operators';
-import  {collectProblems, FormProblems, isControlAlert, NoProblems } from '../../../common/model/form-problems';
+import  {collectProblems, DEFAULT_ERROR_MAPPING, FormProblems, isControlAlert, NAME_MINLENGTH, NAME_MAXLENGTH ,NoProblems, DESCRIPTION_MAXLENGTH, ANSWER_MAXLENGTH } from '../../../common/model/form-problems';
 
 // Simple builder for text 'utterance predicate'
 function textMatch(text: string): (Utterance) => boolean {
@@ -69,15 +69,15 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
   readonly newFaqForm = new FormGroup({
     name: new FormControl('', [
       Validators.required,
-      Validators.minLength(6),
-      Validators.maxLength(40)
+      Validators.minLength(NAME_MINLENGTH),
+      Validators.maxLength(NAME_MAXLENGTH)
     ]),
     description: new FormControl('', [
-      Validators.maxLength(500)
+      Validators.maxLength(DESCRIPTION_MAXLENGTH)
     ]),
     answer: new FormControl('', [
       Validators.required,
-      Validators.maxLength(800)
+      Validators.maxLength(ANSWER_MAXLENGTH)
     ]),
     active: new FormControl(true, [
       Validators.required
@@ -90,6 +90,8 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
   searchSubject$: BehaviorSubject<string> = new BehaviorSubject('');
   displayedUtterances$: Observable<Utterance[]>;
   utteranceTouched = false;
+
+  public readonly ERR_MSG = DEFAULT_ERROR_MAPPING; // shorcut for access inside template
 
   constructor(
     private readonly sidebarEditorService: QaSidebarEditorService,
@@ -270,19 +272,13 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
     }
 
     // else grab angular form errors if any
-    const problems = collectProblems(form, {
-      'name_minlength': "Name must be at least 6 characters",
-      'name_maxlength': "Name must be at least 6 characters",
-      'name_required': "Name required",
-      'description_maxlength': "Description must be less than 10 characters",
-      'answer_required': "Answer required",
-    });
+    const problems = collectProblems(form, this.ERR_MSG);
 
     // also grab other errors if any
     if (!utterances?.length && this.utteranceTouched) {
       problems.items.push({
-        controlLabel: 'Utterances',
-        errorLabel: 'One question required at least'
+        controlLabel: 'Questions',
+        errorLabel: this.ERR_MSG.utterances_required
       });
     }
 

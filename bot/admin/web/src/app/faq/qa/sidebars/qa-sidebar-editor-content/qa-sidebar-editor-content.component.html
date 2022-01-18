@@ -8,14 +8,11 @@
 
       <nb-alert accent="warning" *ngIf="isControlAlert('name')">
         {{
-          newFaqForm.controls['name'].errors.required ?
-            "Name required" :
-          newFaqForm.controls['name'].errors.minlength ?
-            "Name must be at least 6 characters" :
-          newFaqForm.controls['name'].errors.maxlength ?
-             "Name must be less than 10 characters"
-            :
-            "Invalid name"
+          newFaqForm.controls['name'].errors.required ? ERR_MSG.name_required :
+          newFaqForm.controls['name'].errors.minlength ? ERR_MSG.name_minlength :
+          newFaqForm.controls['name'].errors.maxlength ? ERR_MSG.name_maxlength :
+             ERR_MSG.name_error
+
         }}
       </nb-alert>
     </div>
@@ -32,9 +29,8 @@
       <nb-alert accent="warning" *ngIf="isControlAlert('description')">
         {{
             newFaqForm.controls['description'].errors.maxlength ?
-              "Description must be less than 10 characters"
-              :
-              "Invalid description"
+              ERR_MSG.description_maxlength :
+              ERR_MSG.description_error
         }}
       </nb-alert>
     </div>
