@@ -34,23 +34,7 @@ import ai.tock.bot.admin.dialog.DialogReportDAO
 import ai.tock.bot.admin.dialog.DialogReportQueryResult
 import ai.tock.bot.admin.kotlin.compiler.KotlinFile
 import ai.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
-import ai.tock.bot.admin.model.BotAnswerConfiguration
-import ai.tock.bot.admin.model.BotBuiltinAnswerConfiguration
-import ai.tock.bot.admin.model.BotConfiguredAnswer
-import ai.tock.bot.admin.model.BotConfiguredSteps
-import ai.tock.bot.admin.model.BotScriptAnswerConfiguration
-import ai.tock.bot.admin.model.BotSimpleAnswerConfiguration
-import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
-import ai.tock.bot.admin.model.BotStoryDefinitionConfigurationMandatoryEntity
-import ai.tock.bot.admin.model.BotStoryDefinitionConfigurationStep
-import ai.tock.bot.admin.model.CreateI18nLabelRequest
-import ai.tock.bot.admin.model.CreateStoryRequest
-import ai.tock.bot.admin.model.DialogFlowRequest
-import ai.tock.bot.admin.model.DialogsSearchQuery
-import ai.tock.bot.admin.model.Feature
-import ai.tock.bot.admin.model.StorySearchRequest
-import ai.tock.bot.admin.model.UserSearchQuery
-import ai.tock.bot.admin.model.UserSearchQueryResult
+import ai.tock.bot.admin.model.*
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationByBotStep
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
@@ -70,18 +54,14 @@ import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.engine.dialog.DialogFlowDAO
 import ai.tock.bot.engine.feature.FeatureDAO
 import ai.tock.bot.engine.feature.FeatureState
+import ai.tock.bot.getIntentsByNamespaceAndName
 import ai.tock.nlp.admin.AdminService
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.service.applicationDAO
-import ai.tock.nlp.front.shared.config.ApplicationDefinition
-import ai.tock.nlp.front.shared.config.Classification
-import ai.tock.nlp.front.shared.config.ClassifiedSentence
+import ai.tock.nlp.front.shared.config.*
+import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.inbox
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
-import ai.tock.nlp.front.shared.config.EntityDefinition
-import ai.tock.nlp.front.shared.config.EntityTypeDefinition
-import ai.tock.nlp.front.shared.config.IntentDefinition
-import ai.tock.nlp.front.shared.config.SentencesQuery
 import ai.tock.shared.Dice
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.defaultZoneId
@@ -96,6 +76,7 @@ import ai.tock.translator.Translator
 import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 import java.time.DayOfWeek
 import java.time.Instant
@@ -122,7 +103,7 @@ object BotAdminService {
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO by injector.instance()
     private val featureDAO: FeatureDAO by injector.instance()
     private val dialogFlowDAO: DialogFlowDAO get() = injector.provide()
-    private val front = FrontClient
+    internal val front = FrontClient
 
     private class BotStoryDefinitionConfigurationDumpController(
         override val targetNamespace: String,
@@ -180,7 +161,7 @@ object BotAdminService {
         }
     }
 
-    private fun createOrGetIntent(
+    fun createOrGetIntent(
         namespace: String,
         intentName: String,
         applicationId: Id<ApplicationDefinition>,
@@ -1237,7 +1218,7 @@ object BotAdminService {
             )
         }
 
-    private fun saveSentence(
+    fun saveSentence(
         text: String,
         locale: Locale,
         applicationId: Id<ApplicationDefinition>,
@@ -1443,4 +1424,5 @@ object BotAdminService {
             storyDefinitionDAO.save(it.copy(botId = newApp.name))
         }
     }
+
 }

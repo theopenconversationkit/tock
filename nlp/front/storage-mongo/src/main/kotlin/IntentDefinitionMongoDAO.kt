@@ -20,9 +20,11 @@ import ai.tock.nlp.front.service.storage.IntentDefinitionDAO
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition_.Companion.Applications
+import ai.tock.nlp.front.shared.config.IntentDefinition_.Companion.Category
 import ai.tock.nlp.front.shared.config.IntentDefinition_.Companion.Entities
 import ai.tock.nlp.front.shared.config.IntentDefinition_.Companion.Name
 import ai.tock.nlp.front.shared.config.IntentDefinition_.Companion.Namespace
+import ai.tock.nlp.front.shared.config.IntentDefinition_.Companion._id
 import ai.tock.nlp.front.storage.mongo.MongoFrontConfiguration.asyncDatabase
 import ai.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
 import ai.tock.shared.ensureIndex

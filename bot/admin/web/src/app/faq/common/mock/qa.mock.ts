@@ -23,7 +23,7 @@ import {FaqDefinition} from "../model/faq-definition";
 export const MOCK_FREQUENT_QUESTIONS: Partial<FaqDefinition>[] = [
   {
     title: 'Comment accéder au CMB?',
-    status: 'Draft',
+    status: 'draft',
     enabled: true,
     answer: 'Une fois la carte max reçue et activée, vous avez accès à votre RIB max via le menu ou via « finances » puis « mon compte max ».\n' +
       'Il s\'agit d\'un RIB français.',
@@ -34,7 +34,7 @@ export const MOCK_FREQUENT_QUESTIONS: Partial<FaqDefinition>[] = [
   },
   {
     title: 'Adresse RIB différente',
-    status: 'Draft',
+    status: 'draft',
     enabled: true,
     answer: 'L\'adresse mentionnée sur le RIB correspond à celle du siège social de Nouvelle Vague.',
     utterances: [
@@ -44,7 +44,7 @@ export const MOCK_FREQUENT_QUESTIONS: Partial<FaqDefinition>[] = [
   },
   {
     title: 'Process virement MAX',
-    status: 'Draft',
+    status: 'draft',
     enabled: true,
     answer: '"Vous pouvez effectuer et recevoir gratuitement des virements SEPA (Single Euro Payments Area). Le compte max autorise uniquement les virements en euros et exclut les virements internationaux.\n' +
       '\n' +
@@ -60,7 +60,7 @@ export const MOCK_FREQUENT_QUESTIONS: Partial<FaqDefinition>[] = [
   },
   {
     title: 'Délai virement compte Max',
-    status: 'Draft',
+    status: 'draft',
     enabled: true,
     answer: '"Nous sommes compatibles avec les virements instantanés en France, à condition que l\'autre banque le soit aussi. Sinon, le délai d\'un virement interbancaire est de 72 heures ouvrées maximum (hors week-end et jours fériés). \n' +
       '\n' +
@@ -72,7 +72,7 @@ export const MOCK_FREQUENT_QUESTIONS: Partial<FaqDefinition>[] = [
   },
   {
     title: 'Delais reception carte',
-    status: 'Draft',
+    status: 'draft',
     enabled: true,
     answer: '"Après commande de votre carte, le délai de réception en courrier simple est de 4 jours en moyenne. Pour une carte premium ou métal, le délai peut être rallongé de quelques jours.\n' +
       'Dès réception de votre première carte max, vous pourrez directement l\'activer sur l\'appli dans ""carte max"" ou bien sur le tchat s\'il s\'agissait d\'une opposition. \n' +
