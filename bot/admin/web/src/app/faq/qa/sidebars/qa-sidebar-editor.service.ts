@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core';
 import {empty, Observable, ReplaySubject, Subject} from 'rxjs';
 import { concatMap, debounceTime, delay } from 'rxjs/operators';
 import {map, take, takeUntil, tap, filter, mergeMap} from 'rxjs/operators';
-import {FrequentQuestion} from '../../common/model/frequent-question';
+import {FaqDefinition} from '../../common/model/faq-definition';
 
 /**
  * Q&A Editor Dialog related service and types
@@ -22,11 +22,11 @@ type OutcomeName = 'cancel-save' | 'save-done' | 'adhoc-action-done';
 export type QaEditorEvent = {
   transactionId: number,
   name:  ActionName | OutcomeName,
-  payload?: FrequentQuestion
+  payload?: FaqDefinition
 };
 
 // produce outcome for a specific event
-export type ActionResult = {outcome: OutcomeName, payload?: FrequentQuestion};
+export type ActionResult = {outcome: OutcomeName, payload?: FaqDefinition};
 export type ActionHandler = (QaEditorEvent) => Observable<ActionResult>;
 
 export type EventListener= (QaEditorEvent) => void;
@@ -34,7 +34,7 @@ export type EventListener= (QaEditorEvent) => void;
 const newAction = (() => {
   let idGenerator = 1;
 
-  return (name: ActionName, payload?: FrequentQuestion) => {
+  return (name: ActionName, payload?: FaqDefinition) => {
     return {
       name,
       transactionId: ++idGenerator,
@@ -48,7 +48,7 @@ const isInitiatedBy = (action: QaEditorEvent) => (evt: QaEditorEvent) => evt.tra
 
 const hasName = (name: ActionName | OutcomeName) => (evt: QaEditorEvent) => evt.name === name;
 
-const toFrequentQuestion = (evt: QaEditorEvent) => <FrequentQuestion> evt.payload;
+const toFaqDefinition = (evt: QaEditorEvent) => <FaqDefinition> evt.payload;
 
 /**
  * Controlling interactions between parts of the 0&A Editor Side Bar
@@ -76,13 +76,13 @@ export class QaSidebarEditorService {
    *
    * Note: Trigger 'save' event then await its outcome
    */
-  public save(cancel$: Observable<any> = empty()): Promise<FrequentQuestion> {
+  public save(cancel$: Observable<any> = empty()): Promise<FaqDefinition> {
     const actionEvt = newAction('save');
 
-    const result =  new Promise<FrequentQuestion>((resolve, reject) => {
+    const result =  new Promise<FaqDefinition>((resolve, reject) => {
       this.takeActionOutcome(actionEvt, cancel$).subscribe(evt => {
         if (evt.name === 'save-done') {
-          resolve(<FrequentQuestion> evt.payload);
+          resolve(<FaqDefinition> evt.payload);
         } else {
           reject(evt.name);
         }

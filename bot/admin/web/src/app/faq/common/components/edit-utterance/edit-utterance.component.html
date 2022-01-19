@@ -1,35 +1,40 @@
 <nb-card>
+  <!-- DIALOG HEADER -->
   <nb-card-header status="info">{{title}}</nb-card-header>
+
+  <!-- DIALOG BODY -->
   <nb-card-body>
-    <div class="w-100 m-auto py-2 tock--notice">
+    <div class="tock--notice w-100 m-auto py-2">
       Sample question a user might type or say, which matches accepted response
     </div>
     <div class="w-100 my-4">
       <label class="block m-2">Question:</label>
-      <input type="text"
+      <input nbInput
+             type="text"
              placeholder="How many sides does a heptadecagon have?"
              [(ngModel)]="value"
              [ngModelChangeDebounceTime]="1000"
              (ngModelChangeDebounced)="ensureUniq($event)"
-             fullWidth fieldSize="medium" nbInput />
+             fullWidth fieldSize="medium"/>
     </div>
 
-    <div class="tock-alert tock--warning mx-5 p-2 mb-4" *ngIf="!!existingQuestion">
-      <span class="tock-alert-content">
+    <div *ngIf="!!existingQuestion" class="tock-alert tock--warning mx-5 p-2 mb-4">
+      <div class="alert alert-warning" role="alert">
         A similar question would be replaced:
-        <br />
+        <br/>
         <strong> {{existingQuestion}} </strong>
-      </span>
+      </div>
     </div>
   </nb-card-body>
 
-
-
+  <!-- DIALOG FOOTER -->
   <nb-card-footer>
-    <button size="small" class="float-left" nbButton status="default" (click)="cancel()" nbTooltip="Close" >
+    <button nbButton class="float-left"
+            (click)="cancel()" size="small" status="default" nbTooltip="Close">
       Close
     </button>
-    <button [disabled]="!canSave()" size="small" class="float-right" nbButton status="primary" (click)="save()" nbTooltip="Ok" >
+    <button nbButton class="float-right"
+            (click)="save()" [disabled]="!canSave()" size="small"  status="primary"  nbTooltip="Ok">
       Ok
     </button>
   </nb-card-footer>

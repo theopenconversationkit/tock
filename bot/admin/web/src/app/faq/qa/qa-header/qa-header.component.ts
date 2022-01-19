@@ -84,7 +84,7 @@ export class QaHeaderComponent implements OnInit {
     this.search();
   }
 
-  search() {
+  search(): void {
     this.filter.onlyActives = (true === this.onlyActives);
     this.onSearch.emit(this.filter);
   }
@@ -102,7 +102,7 @@ export class QaHeaderComponent implements OnInit {
     this.onImport.next(null);
   }
 
-  newFrequentQuestion(): void {
+  newFaqDefinition(): void {
     this.onNew.next(null);
   }
 

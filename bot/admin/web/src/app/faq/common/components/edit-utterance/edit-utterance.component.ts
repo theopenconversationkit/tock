@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
-import { Utterance } from '../../model/frequent-question';
+import { Utterance } from '../../model/faq-definition';
 import { EditUtteranceResult } from './edit-utterance-result';
 
 /**

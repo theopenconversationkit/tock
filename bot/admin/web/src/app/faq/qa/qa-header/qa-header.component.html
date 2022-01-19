@@ -43,31 +43,22 @@
                  nbPrefix
                  pack="material-icons"
                  icon="view_headline">
-
         </nb-icon>
 
       </ng-container>
       <ng-container *ngIf="!isDocked()">
         <button class="mr-2" nbButton status="default">Export FAQ</button>
         <button (click)="importFaq()" class="mr-2" nbButton status="default">Import FAQ</button>
-        <button (click)="newFrequentQuestion()" nbButton status="primary">New FAQ</button>
+        <button (click)="newFaqDefinition()" nbButton status="primary">New FAQ</button>
       </ng-container>
     </div>
-
   </nb-card-body>
 </nb-card>
 
 <ng-template #menu>
   <nb-card [style]="{'margin-bottom': 0}">
-
-
-      <button class="d-block" fullWidth nbButton ghost size="small" (click)="newFrequentQuestion()" status="primary">New FAQ</button>
-
+      <button class="d-block" fullWidth nbButton ghost size="small" (click)="newFaqDefinition()" status="primary">New FAQ</button>
       <button class="d-block" fullWidth nbButton ghost size="small" >Export FAQ</button>
-
       <button class="d-block" fullWidth nbButton ghost size="small" (click)="importFaq()">Import FAQ</button>
-
-
-
   </nb-card>
 </ng-template>

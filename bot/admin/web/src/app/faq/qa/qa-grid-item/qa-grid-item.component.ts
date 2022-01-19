@@ -3,7 +3,7 @@ import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angula
 import {Observable, of, ReplaySubject } from 'rxjs';
 import { delay, take, tap } from 'rxjs/operators';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
-import { FrequentQuestion } from '../../common/model/frequent-question';
+import { FaqDefinition } from '../../common/model/faq-definition';
 import {isDocked, ViewMode } from '../../common/model/view-mode';
 import { QaService } from '../../common/qa.service';
 import { truncate } from '../../common/util/string-utils';
@@ -20,7 +20,7 @@ import { StateService } from "src/app/core-nlp/state.service";
 export class QaGridItemComponent implements OnInit, OnDestroy {
 
   @Input()
-  item: FrequentQuestion;
+  item: FaqDefinition;
 
   @Input()
   viewMode: ViewMode;
@@ -29,7 +29,7 @@ export class QaGridItemComponent implements OnInit, OnDestroy {
   onRemove = new EventEmitter<boolean>();
 
   @Output()
-  onEdit= new EventEmitter<FrequentQuestion>();
+  onEdit= new EventEmitter<FaqDefinition>();
 
   @Output()
   onDownload = new EventEmitter<boolean>();
@@ -92,8 +92,7 @@ export class QaGridItemComponent implements OnInit, OnDestroy {
       }
     }).onClose.pipe(take(1)).toPromise();
 
-    console.log('result', result);
-    if (result.toLowerCase() !== 'yes') {
+    if (result?.toLowerCase() !== 'yes') {
       return;
     }
 
@@ -106,8 +105,7 @@ export class QaGridItemComponent implements OnInit, OnDestroy {
 
     await done$.pipe(take(1)).toPromise();
 
-    // this way user will be aware of a failure if any
-    this.item.enabled = newValue;
+    this.item.enabled = newValue; // update visible state for user
   }
 
   download(): void {
