@@ -343,7 +343,7 @@ open class BotAdminVerticle : AdminVerticle() {
                         unauthorized()
                     }
                     if (getBotConfigurationByApplicationIdAndBotId(bot.namespace, bot.applicationId, bot.botId)
-                        ?.run { _id != conf._id } == true
+                            ?.run { _id != conf._id } == true
                     ) {
                         badRequest("Connector identifier already exists")
                     }
@@ -768,6 +768,19 @@ open class BotAdminVerticle : AdminVerticle() {
                 ?: ""
         }
 
+        blockingJsonPost(
+            "/faq/new",
+            nlpUser,
+            logger<FaqDefinitionRequest>("Create FAQ")
+        ) { context, query: FaqDefinitionRequest ->
+            val applicationDefinition = BotAdminService.front.getApplicationById(query.applicationId)
+            if (context.organization == applicationDefinition?.namespace) {
+                FaqAdminService.saveFAQ(query, context.userLogin,applicationDefinition)
+            } else {
+                unauthorized()
+            }
+
+        }
         blockingJsonGet("/configuration") {
             botAdminConfiguration
         }

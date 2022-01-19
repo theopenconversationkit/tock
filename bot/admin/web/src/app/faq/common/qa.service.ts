@@ -17,11 +17,13 @@
 import {Injectable} from '@angular/core';
 import {MOCK_FREQUENT_QUESTIONS} from '../common/mock/qa.mock';
 
-import {empty, Observable, of } from 'rxjs';
-import {PaginatedResult, SearchQuery, Sentence, SentenceStatus} from 'src/app/model/nlp';
-import { FaqDefinition } from './model/faq-definition';
-import { QaSearchQuery } from './model/qa-search-query';
-import { Utterance } from './model/utterance';
+import {empty, Observable, of} from 'rxjs';
+import {PaginatedResult} from 'src/app/model/nlp';
+import {FaqDefinition} from './model/faq-definition';
+import {QaSearchQuery} from './model/qa-search-query';
+import {Utterance} from './model/utterance';
+import {RestService} from "../../core-nlp/rest/rest.service";
+import {map, takeUntil} from "rxjs/operators";
 
 @Injectable()
 export class QaService {
@@ -31,8 +33,7 @@ export class QaService {
   // generate fake data for pagination
   mockData: FaqDefinition[] = [];
 
-  constructor() {
-  }
+  constructor(private rest: RestService) {}
 
   // add random data at initialization until real backend is there instead
   setupMockData({applicationId, applicationName, language}:
@@ -77,7 +78,7 @@ export class QaService {
     this.mockData = this.mockData.map(item => {
       if (fq.id && item.id === fq.id) {
         newFq = JSON.parse(JSON.stringify(fq)); // deep copy
-        newFq.status = 'Deleted';
+        newFq.status = 'deleted';
         return newFq;
       } else {
         return item;
@@ -92,6 +93,7 @@ export class QaService {
 
     let dirty = false;
 
+    //TODO : search here
     this.mockData = this.mockData.map(item => {
       if (fq.id && item.id === fq.id) {
         dirty = true;
@@ -102,12 +104,18 @@ export class QaService {
       }
     });
 
-    if (!dirty) { // when no match
-      fq.id = String(Math.trunc(Math.random() * 1000000));
-      this.mockData.push(fq);
+    if(!dirty) {
+      return this.newFaq(fq, cancel$);
     }
+  }
 
-    return of(fq);
+  newFaq(request: FaqDefinition, cancel$: Observable<any> = empty()): Observable<FaqDefinition> {
+    return this.rest.post('/faq/new', request)
+      .pipe(
+        takeUntil(cancel$),
+        map(_ => {
+          return JSON.parse(JSON.stringify(request));
+    }));
   }
 
   // fake real backend call
@@ -132,7 +140,7 @@ export class QaService {
         const predicates: Array<(FaqDefinition) => boolean> = [];
 
         predicates.push(
-          (fq: FaqDefinition) => fq.status !== 'Deleted'
+          (fq: FaqDefinition) => fq.status !== 'deleted'
         );
 
         predicates.push(
