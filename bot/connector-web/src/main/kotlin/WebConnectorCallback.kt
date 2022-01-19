@@ -17,13 +17,18 @@
 package ai.tock.bot.connector.web
 
 import ai.tock.bot.connector.ConnectorCallbackBase
+import ai.tock.bot.connector.web.WebMarkdown.markdown
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.MetadataEvent
+import ai.tock.shared.property
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.vertx.core.http.HttpHeaders
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
+import org.commonmark.node.Node
+import org.commonmark.parser.Parser
+import org.commonmark.renderer.html.HtmlRenderer
 import java.util.Locale
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -38,6 +43,7 @@ internal class WebConnectorCallback(
 ) : ConnectorCallbackBase(applicationId, webConnectorType) {
 
     private val logger = KotlinLogging.logger {}
+    private val isMarkdown = property("allow_markdown", "false")
 
     fun addAction(action: Action) {
         actions.add(action)
@@ -53,7 +59,13 @@ internal class WebConnectorCallback(
             .filterIsInstance<SendSentence>()
             .mapNotNull {
                 if (it.stringText != null) {
-                    WebMessage(it.stringText!!)
+                    WebMessage(
+                        if (isMarkdown.toBoolean()) {
+                            markdown(it.stringText!!)
+                        } else {
+                            it.stringText!!
+                        }
+                    )
                 } else {
                     it.message(webConnectorType) as? WebMessage
                 }
