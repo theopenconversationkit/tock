@@ -73,7 +73,7 @@
         <junit-jupiter>5.8.2</junit-jupiter>
 
         <mockk>1.12.1</mockk>
-        <assertj>3.12.2</assertj>
+        <assertj>3.22.0</assertj>
         <byte-buddy>1.12.6</byte-buddy>
         <atrium>0.15.0</atrium>
 
