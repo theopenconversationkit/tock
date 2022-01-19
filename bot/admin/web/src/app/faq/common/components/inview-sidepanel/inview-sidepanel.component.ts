@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-export interface ValidUtteranceResult {
-  cancelled: false;
-  value: string;
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+
+@Component({
+  selector: 'tock-inview-sidepanel',
+  templateUrl: './inview-sidepanel.component.html',
+  styleUrls: ['./inview-sidepanel.component.scss']
+})
+export class InviewSidepanelComponent {
+
+  @Input()
+  isContentHeader: boolean;
+
+  @Output()
+  onClose = new EventEmitter<void>();
+
+  close(): void {
+    this.onClose.emit(null);
+  }
+
 }
-
-interface CancelledUtteranceResult {
-  cancelled: true;
-}
-
-/**
- * Result of Utterance creation/edition Dialog
- */
-export type EditUtteranceResult = ValidUtteranceResult | CancelledUtteranceResult;
-
-export const notCancelled = (item: EditUtteranceResult) => !item.cancelled;

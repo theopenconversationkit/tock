@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,15 +40,15 @@ import {
   NbInputModule,
   NbListModule,
   NbMenuModule,
+  NbPopoverModule,
   NbRadioModule,
   NbRouteTabsetModule,
   NbSelectModule,
   NbSidebarModule,
   NbSpinnerModule,
-  NbTooltipModule,
-  NbUserModule,
   NbTagModule,
-  NbPopoverModule
+  NbTooltipModule,
+  NbUserModule
 } from "@nebular/theme";
 import {TrainComponent} from './train/train.component';
 import {TrainHeaderComponent} from './train/train-header/train-header.component';
@@ -62,18 +62,18 @@ import {TrainToolbarComponent} from './train/train-toolbar/train-toolbar.compone
 import {TrainSidebarComponent} from './train/train-sidebar/train-sidebar.component';
 import {TrainGridItemComponent} from "./train/train-grid-item/train-grid-item.component";
 import {TrainGridComponent} from "./train/train-grid/train-grid.component";
-import { BotAnalyticsModule } from "../analytics/analytics.module";
-import { QaComponent } from './qa/qa.component';
-import { QaHeaderComponent } from './qa/qa-header/qa-header.component';
-import { QaGridComponent } from './qa/qa-grid/qa-grid.component';
-import { QaGridItemComponent } from './qa/qa-grid-item/qa-grid-item.component';
-import { QaService } from "./common/qa.service";
-import { InviewSidebarComponent } from './common/components/inview-sidebar/inview-sidebar.component';
-import { QaSidebarImportContentComponent } from './qa/sidebars/qa-sidebar-import-content/qa-sidebar-import-content.component';
-import { QaSidebarEditorContentComponent } from './qa/sidebars/qa-sidebar-editor-content/qa-sidebar-editor-content.component';
-import { ReactiveFormsModule } from "@angular/forms";
-import { QaSidebarEditorService } from './qa/sidebars/qa-sidebar-editor.service';
-import { EditUtteranceComponent } from './common/components/edit-utterance/edit-utterance.component';
+import {BotAnalyticsModule} from "../analytics/analytics.module";
+import {QaComponent} from './qa/qa.component';
+import {QaHeaderComponent} from './qa/qa-header/qa-header.component';
+import {QaGridComponent} from './qa/qa-grid/qa-grid.component';
+import {QaGridItemComponent} from './qa/qa-grid-item/qa-grid-item.component';
+import {QaService} from "./common/qa.service";
+import {InviewSidepanelComponent} from './common/components/inview-sidepanel/inview-sidepanel.component';
+import {QaSidebarImportContentComponent} from './qa/sidebars/qa-sidebar-import-content/qa-sidebar-import-content.component';
+import {QaSidebarEditorContentComponent} from './qa/sidebars/qa-sidebar-editor-content/qa-sidebar-editor-content.component';
+import {ReactiveFormsModule} from "@angular/forms";
+import {QaSidebarEditorService} from './qa/sidebars/qa-sidebar-editor.service';
+import {EditUtteranceComponent} from './common/components/edit-utterance/edit-utterance.component';
 
 const routes: Routes = [
   {
@@ -152,7 +152,7 @@ export class FaqRoutingModule {
     QaHeaderComponent,
     QaGridComponent,
     QaGridItemComponent,
-    InviewSidebarComponent,
+    InviewSidepanelComponent,
     QaSidebarImportContentComponent,
     QaSidebarEditorContentComponent,
     EditUtteranceComponent

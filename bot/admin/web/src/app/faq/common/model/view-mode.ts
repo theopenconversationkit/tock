@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,13 @@
  */
 
 /**
- * FULL_WIDTH: Take entire screen when screen is wide
- * RESPONSIVE_FULL_WIDTH: Take entire screen when screen is not wide
- * DOCKED_PANEL: There is a panel to the right
- * RESPONSIVE_DOCKED_PANEL: There is a panel to the right when screen is not wide
+ * Display mode which allow components to adapt themselves to available display space variations
+ *
+ * Modes:
+ * - FULL_WIDTH:               Take entire screen when screen is wide
+ * - RESPONSIVE_FULL_WIDTH:    Take entire screen when screen is not wide
+ * - DOCKED_PANEL:             There is a panel to the right
+ * - RESPONSIVE_DOCKED_PANEL:  There is a panel to the right when screen is not wide
  */
 export type ViewMode = 'FULL_WIDTH' | 'DOCKED_PANEL' | 'RESPONSIVE_FULL_WIDTH' | 'RESPONSIVE_DOCKED_PANEL';
 

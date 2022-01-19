@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-export interface ValidUtteranceResult {
-  cancelled: false;
-  value: string;
-}
-
-interface CancelledUtteranceResult {
-  cancelled: true;
-}
+import {somewhatSimilar, verySimilar } from "../util/string-utils";
 
 /**
- * Result of Utterance creation/edition Dialog
+ * Single utterance for a given FAQ Definition
  */
-export type EditUtteranceResult = ValidUtteranceResult | CancelledUtteranceResult;
+export type Utterance = string;
 
-export const notCancelled = (item: EditUtteranceResult) => !item.cancelled;
+export const utteranceEquals = (a: Utterance, b: Utterance) => a === b;
+export const utteranceEquivalent = (a: Utterance, b: Utterance) => verySimilar(a, b);
+export const utteranceSomewhatSimilar = (a: Utterance, b: Utterance) => somewhatSimilar(a, b);

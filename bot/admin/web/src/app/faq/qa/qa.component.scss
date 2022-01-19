@@ -1,10 +1,26 @@
+/*
+ * Copyright (C) 2017/2022 e-voyageurs technologies
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 .tock-qa-viewport.tock--full_width, .tock-qa-viewport.tock--full_width--small {
 
-  >tock-qa-grid {
+  > tock-qa-grid {
     flex: 0 0 100%;
   }
 
-  >.tock-qa-sidebar {
+  > .tock-qa-sidebar {
     flex: 0 0 0%;
   }
 }
@@ -12,11 +28,11 @@
 
 .tock-qa-viewport.tock--docked-panel {
 
-  >tock-qa-grid {
+  > tock-qa-grid {
     flex: 1 1 auto;
   }
 
-  >.tock-qa-sidebar {
+  > .tock-qa-sidebar {
     flex: 0 0 400px;
   }
 }
@@ -57,7 +73,7 @@ tock-qa-header.tock--docked {
   }
 }
 
-.tock-editor-warns>nb-list>nb-list-item {
+.tock-editor-warns > nb-list > nb-list-item {
   color: orangered;
 }
 

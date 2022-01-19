@@ -1,12 +1,26 @@
+/*
+ * Copyright (C) 2017/2022 e-voyageurs technologies
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {SentenceStatus} from 'src/app/model/nlp';
 import {FilterOption} from 'src/app/search/filter/search-filter.component';
 import {DEFAULT_FAQ_SENTENCE_SORT, FaqSentenceFilter, TrainGridComponent} from './train-grid/train-grid.component';
 import {StateService} from "../../core-nlp/state.service";
 import {Sentence} from "../../model/nlp";
-import {ViewMode, toggleSmallScreenMode, toggleWideScreenMode, isDocked, dock, undock} from "../common/model/view-mode";
-import { fromEvent, Observable, ReplaySubject } from 'rxjs';
-import { debounceTime, takeUntil } from 'rxjs/operators';
+import {ReplaySubject} from 'rxjs';
 import {WithSidePanel} from '../common/mixin/with-side-panel';
 
 @Component({
@@ -47,7 +61,6 @@ export class TrainComponent extends WithSidePanel() implements OnInit, OnDestroy
     };
 
     this.applicationName = this.state.currentApplication.name;
-
     this.initSidePanel(this.destroy$);
   }
 
@@ -68,17 +81,13 @@ export class TrainComponent extends WithSidePanel() implements OnInit, OnDestroy
   }
 
   search(filter: Partial<FaqSentenceFilter>): void {
-
     this.filter.search = filter.search;
     this.filter.sort = filter.sort;
-
     this.grid.refresh();
   }
 
   sentenceSelect(sentence: string): void {
     this.filter.search = sentence.trim();
-    this.filter = { ...this.filter, clone: this.filter.clone }; // trigger detection change
-
-    //this.grid.refresh();
+    this.filter = {...this.filter, clone: this.filter.clone}; // trigger detection change
   }
 }

@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017/2022 e-voyageurs technologies
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {Injectable} from '@angular/core';
 import {StateService} from "../../core-nlp/state.service";
 import {Intent} from "../../model/nlp";
@@ -8,12 +24,11 @@ import {empty, Observable} from 'rxjs';
 import {IntentDialogComponent} from "../../sentence-analysis/intent-dialog/intent-dialog.component";
 import {ConfirmDialogComponent} from "../../shared-nlp/confirm-dialog/confirm-dialog.component";
 
-/**
- * TODO: Makes it a common service and migrates it to NLP
- */
-
 const UNQUALIFIED_UNKNOWN_NAME = Intent.unknown.split(":")[1];
 
+/**
+ * Intents operations for FAQ module
+ */
 @Injectable()
 export class IntentsService {
 
@@ -25,10 +40,10 @@ export class IntentsService {
   }
 
   /**
-   * Try to creates new Intent
+   * Creates new Intent
    *
    * Note: User has ability to cancel the save
-   * @param cancel$
+   * @param cancel$ Cancellation observable
    */
   public async newIntent(cancel$: Observable<any> = empty()): Promise<Intent> {
 

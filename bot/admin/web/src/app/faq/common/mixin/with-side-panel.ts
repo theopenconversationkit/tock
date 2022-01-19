@@ -25,11 +25,9 @@ export const DEFAULT_PANEL_NAME = 'default';
 type Constructor<T = {}> = new(...args: any[]) => T;
 
 /**
- * Enrich component to handle side-panel (common to /train and /qa views)
+ * Extends this Mixing to gain Dock/Undock' and 'small screen'/'wide screen' state
  *
- * Currently only the toggle logic is provided
- * @param BaseClass
- * @constructor
+ * Note: This will observe Window 'resize' event to toggle on/off ViewMode states
  */
 export function WithSidePanel<T extends Constructor>(BaseClass: T= (class {} as any)) {
   return class extends BaseClass {
@@ -51,20 +49,33 @@ export function WithSidePanel<T extends Constructor>(BaseClass: T= (class {} as 
 
     /**
      * Is a side panel opened
+     * @param name (Optional) Name of specific Side panel
      */
     isPanelDocked(name = DEFAULT_PANEL_NAME): boolean {
       return isDocked(this.viewMode) && (this.panelName === name);
     }
 
+    /**
+     * Is any side panel opened
+     */
     isDocked(): boolean {
       return isDocked(this.viewMode);
     }
 
+    /**
+     * Toggle On a Side Panel
+     * @param name (Optional) Name of specific Side panel
+     * @protected
+     */
     protected dock(name = DEFAULT_PANEL_NAME): void {
       this.viewMode = dock(this.viewMode);
       this.panelName = name;
     }
 
+    /**
+     * Toggle Off active Side Panel if any
+     * @protected
+     */
     protected undock(): void {
       this.viewMode = undock(this.viewMode);
       this.panelName = DEFAULT_PANEL_NAME;
@@ -77,8 +88,6 @@ export function WithSidePanel<T extends Constructor>(BaseClass: T= (class {} as 
     }
 
     private adjustViewMode(): void {
-      console.log("window width", window.innerWidth);
-
       if (window.innerWidth < 1620) {
         this.viewMode = toggleSmallScreenMode(this.viewMode);
       } else {

@@ -1,28 +1,57 @@
+/*
+ * Copyright (C) 2017/2022 e-voyageurs technologies
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 /**
  * Array related utilities
  */
 
-export type Bucket<T> = {
+/**
+ * (position, item) of a given item in Array
+ */
+export type ArrayEntry<T> = {
   index: number,
   item: T;
 }
 
 /**
- * Get existing couple (position, item) equivalent to given item
- * @param arr
- * @param item
- * @param equivalence
+ * Find (position, item) of given item for specified equivalence function
+ *
+ * @param arr Array
+ * @param item Item which is equivalent to another/itself item in array
+ * @param equivalence Equivalence function
  */
-export function getBucket<T>(arr: T[], item: T, equivalence: (a: T, b: T) => boolean): Bucket<T> {
-  const existingBucket = arr.map((arrItem, index) => {
-    return { item: arrItem, index };
+export function findEntry<T>(arr: T[], item: T, equivalence: (a: T, b: T) => boolean): ArrayEntry<T> | undefined {
+  return arr.map((arrItem, index) => {
+    return {item: arrItem, index};
   }).filter(bucket => equivalence(bucket.item, item))[0];
+}
 
-  if (!existingBucket) {
+/**
+ * Get (position, item) for a given item which is equivalent to another/itself item in array
+ *
+ * @param arr Array
+ * @param item Item which is equivalent to another/itself item in array
+ * @param equivalence Equivalence function
+ */
+export function getEntry<T>(arr: T[], item: T, equivalence: (a: T, b: T) => boolean): ArrayEntry<T> {
+  const found = findEntry(arr, item, equivalence);
+  if (found === undefined) {
     throw new Error("Original element location lost"); // must never happens
   }
-
-  return existingBucket;
+  return <ArrayEntry<T>>found;
 }
 
 /**
@@ -32,7 +61,7 @@ export function getBucket<T>(arr: T[], item: T, equivalence: (a: T, b: T) => boo
  * @param equivalence
  */
 export function getPosition<T>(arr: T[], item: T, equivalence: (a: T, b: T) => boolean): number {
-  const existingBucket = getBucket(arr, item, equivalence);
+  const existingBucket = getEntry(arr, item, equivalence);
 
   return existingBucket.index;
 }

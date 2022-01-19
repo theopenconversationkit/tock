@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2017/2022 e-voyageurs technologies
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 $chat-bubble-bg: #dedede;
 $chat-bubble-bg-mine: #0072ff;
@@ -18,13 +33,27 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
 
 
 @keyframes bounce-6 {
-  0%   { transform: scale(1,1)      translateY(0); }
-  10%  { transform: scale(1.1,.9)   translateY(0); }
-  30%  { transform: scale(.9,1.1)   translateY(-100px); }
-  50%  { transform: scale(1.05,.95) translateY(0); }
-  57%  { transform: scale(1,1)      translateY(-7px); }
-  64%  { transform: scale(1,1)      translateY(0); }
-  100% { transform: scale(1,1)      translateY(0); }
+  0% {
+    transform: scale(1, 1) translateY(0);
+  }
+  10% {
+    transform: scale(1.1, .9) translateY(0);
+  }
+  30% {
+    transform: scale(.9, 1.1) translateY(-100px);
+  }
+  50% {
+    transform: scale(1.05, .95) translateY(0);
+  }
+  57% {
+    transform: scale(1, 1) translateY(-7px);
+  }
+  64% {
+    transform: scale(1, 1) translateY(0);
+  }
+  100% {
+    transform: scale(1, 1) translateY(0);
+  }
 }
 
 /* $chat-bubble-bg-mine: #3888ea; */
@@ -126,11 +155,11 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
 
 /* question/answer gap (only in right side) */
 .bubble-container.tock--right {
-    margin-bottom: 30px;
+  margin-bottom: 30px;
 }
 
 /* There is no need of question/answer gap */
-.tock--condensed  .bubble-container.tock--right {
+.tock--condensed .bubble-container.tock--right {
   margin-bottom: 0;
 }
 
@@ -156,14 +185,14 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
     transform: scale($chat-bubble-scale-factor);
   }
 
-  >.bubble:before {
+  > .bubble:before {
     transition: all 0.3s ease;
   }
 }
 
 /* WHEN RIGHT BUBBLE */
 
-.tock--right>.tock-bubble-icon {
+.tock--right > .tock-bubble-icon {
   position: absolute;
   width: 12%;
   bottom: -70px;
@@ -176,7 +205,7 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
 
 .tock--right {
 
-  >.bubble {
+  > .bubble {
     float: right;
     clear: both;
     background: $chat-bubble-bg-mine;
@@ -186,7 +215,7 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
     border-right: 4px solid $chat-bubble-border-mine;
   }
 
-  >.bubble:before {
+  > .bubble:before {
     content: "";
     width: 0px;
     height: 0px;
@@ -199,19 +228,19 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
   }
 }
 
-.tock--right + .tock--right >.bubble {
+.tock--right + .tock--right > .bubble {
   margin-top: 60px;
 }
 
-.tock--condensed .tock--right + .tock--right >.bubble {
+.tock--condensed .tock--right + .tock--right > .bubble {
   margin-top: 30px;
 }
 
 /* WHEN LEFT BUBBLE */
 
-.tock--placeholder,.tock--left {
+.tock--placeholder, .tock--left {
 
-  >.bubble{
+  > .bubble {
     float: left;
     clear: both;
     background: $chat-bubble-bg;
@@ -221,7 +250,7 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
     border-right: 4px solid $chat-bubble-border;
   }
 
-  >.bubble:before {
+  > .bubble:before {
     content: "";
     width: 0px;
     height: 0px;
@@ -234,7 +263,7 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
     bottom: -18px;
   }
 
-  >.tock-bubble-icon {
+  > .tock-bubble-icon {
     position: absolute;
     width: 16%;
     bottom: -70px;
@@ -243,17 +272,17 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
   }
 }
 
-.tock--left + .tock--left >.bubble {
+.tock--left + .tock--left > .bubble {
   margin-top: 60px;
 }
 
-.tock--condensed .tock--left  + .tock--left >.bubble {
+.tock--condensed .tock--left + .tock--left > .bubble {
   margin-top: 30px;
 }
 
 /* ACTIVE STYLE (ONLY LEFT) */
 
-.tock--active.tock--left>.bubble,.tock--placeholder>.bubble {
+.tock--active.tock--left > .bubble, .tock--placeholder > .bubble {
   background: $chat-bubble-bg-active;
   color: #070605;
   /* color: #e53d3d; */
@@ -272,7 +301,7 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
 
 /* Show bottom icons */
 
-.tock--condensed  {
+.tock--condensed {
   .tock--left.tock-bubble-icon {
     position: absolute;
     width: 16%;
@@ -295,7 +324,7 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
 /* Placeholder when no conversation found */
 
 .tock--placeholder {
-  margin-bottom : 100px;
+  margin-bottom: 100px;
 }
 
 
