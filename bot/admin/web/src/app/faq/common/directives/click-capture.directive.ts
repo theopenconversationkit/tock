@@ -17,7 +17,7 @@
 import { Directive, Output, EventEmitter, HostListener  } from '@angular/core';
 
 @Directive({
-  selector: "[tock-click-capture]"
+  selector: '[tock-click-capture]'
 })
 export class ClickCaptureDirective {
 

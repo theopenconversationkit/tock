@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Directive, Output, EventEmitter, HostListener, Input, OnDestroy  } from '@angular/core';
-import { Subscription } from 'rxjs';
+import {Directive, EventEmitter, Input, OnDestroy, Output} from '@angular/core';
+import {Subscription} from 'rxjs';
 import {NgModel} from '@angular/forms';
 import {debounceTime, distinctUntilChanged, skip} from 'rxjs/operators';
 
@@ -29,7 +29,8 @@ export class NgModelChangeDebouncedDirective implements OnDestroy {
   ngModelChangeDebounceTime = 500; // optional, 500 default
 
   subscription: Subscription;
-  ngOnDestroy() {
+
+  ngOnDestroy(): void  {
     this.subscription.unsubscribe();
   }
 

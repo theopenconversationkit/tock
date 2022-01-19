@@ -1,14 +1,27 @@
+/*
+ * Copyright (C) 2017/2022 e-voyageurs technologies
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { ReplaySubject } from 'rxjs';
-import { Subject } from 'rxjs';
-import {filter, map, switchMap, takeUntil } from 'rxjs/operators';
-import { AnalyticsService } from 'src/app/analytics/analytics.service';
-import { DialogReportQuery } from 'src/app/analytics/dialogs/dialogs';
-import { StateService } from 'src/app/core-nlp/state.service';
-import { DialogReport, Sentence } from 'src/app/shared/model/dialog-data';
-import moment from 'moment';
-import { noAccents } from '../../common/util/string-utils';
+import {Observable, ReplaySubject, Subject} from 'rxjs';
+import {filter, map, switchMap, takeUntil} from 'rxjs/operators';
+import {AnalyticsService} from 'src/app/analytics/analytics.service';
+import {DialogReportQuery} from 'src/app/analytics/dialogs/dialogs';
+import {StateService} from 'src/app/core-nlp/state.service';
+import {DialogReport, Sentence} from 'src/app/shared/model/dialog-data';
+import {noAccents} from '../../common/util/string-utils';
 
 type RETAIN_MODE = 'ONLY_BOT' | 'ONLY_USER' | 'BOTH';
 
@@ -42,7 +55,8 @@ export class TrainSidebarComponent implements OnInit, OnDestroy, OnChanges {
   constructor(
     private readonly analyticsService: AnalyticsService,
     private readonly state: StateService
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     this.observeSentenceConversation();
@@ -58,13 +72,13 @@ export class TrainSidebarComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['sentence']){
+    if (changes['sentence']) {
       const sentence = changes['sentence'].currentValue;
       this.sentenceChanged$.next(sentence);
     }
   }
 
-  toggleOnlyUser():  void {
+  toggleOnlyUser(): void {
     if (this.retainMode === 'ONLY_USER') {
       this.retainMode = 'BOTH';
     } else {
@@ -72,7 +86,7 @@ export class TrainSidebarComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  toggleOnlyBot():  void {
+  toggleOnlyBot(): void {
     if (this.retainMode === 'ONLY_BOT') {
       this.retainMode = 'BOTH';
     } else {
@@ -124,8 +138,8 @@ export class TrainSidebarComponent implements OnInit, OnDestroy, OnChanges {
         switchMap(this.fetchDialogs.bind(this)),
       ).subscribe(reports => {
 
-        this.dialogReports = reports;
-        this.dialogChanged$.next(reports[0]);
+      this.dialogReports = reports;
+      this.dialogChanged$.next(reports[0]);
     });
   }
 

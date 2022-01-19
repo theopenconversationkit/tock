@@ -1,15 +1,20 @@
-/**
- * Placeholder Type until we really have QA in tock
+/*
+ * Copyright (C) 2017/2022 e-voyageurs technologies
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
-import { SentenceStatus } from "src/app/model/nlp";
-import {somewhatSimilar, verySimilar } from "../util/string-utils";
-
-export type Utterance = string;
-
-export const utteranceEquals = (a: Utterance, b: Utterance) => a === b;
-export const utteranceEquivalent = (a: Utterance, b: Utterance) => verySimilar(a, b);
-export const utteranceSomewhatSimilar = (a: Utterance, b: Utterance) => somewhatSimilar(a, b);
+import {Utterance} from "./utterance";
 
 export type FaqDefinitionStatus = 'Draft' | 'Model' | 'Deleted'; // Adapt to your needs
 
@@ -28,7 +33,7 @@ export type FaqDefinition = {
   enabled: boolean
 };
 
-export function blankFaqDefinition(config: {language: string, applicationId: string}): FaqDefinition {
+export function blankFaqDefinition(config: { language: string, applicationId: string }): FaqDefinition {
   return {
     id: undefined,
     title: '',

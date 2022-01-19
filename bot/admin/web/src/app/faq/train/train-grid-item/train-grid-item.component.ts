@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017/2022 e-voyageurs technologies
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -8,7 +24,7 @@ import {
   OnInit,
   Output
 } from '@angular/core';
-import {SelectionModel } from "@angular/cdk/collections";
+import {SelectionModel} from "@angular/cdk/collections";
 import {Observable, of, ReplaySubject} from "rxjs";
 import {delay, take, tap} from 'rxjs/operators';
 import {Intent, Sentence, SentenceStatus} from "../../../model/nlp";
@@ -54,7 +70,7 @@ export class TrainGridItemComponent implements OnInit, OnDestroy {
   onUnknown = new EventEmitter<boolean>();
 
   @Output()
-  onDetails= new EventEmitter<Sentence>();
+  onDetails = new EventEmitter<Sentence>();
 
   selectedIntentId: string;
 
@@ -63,13 +79,14 @@ export class TrainGridItemComponent implements OnInit, OnDestroy {
   private readonly destroy$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(
-    private  readonly ref: ChangeDetectorRef,
-      public readonly state: StateService,
-      private readonly nlp: NlpService,
-      private readonly dialog: DialogService,
-      private readonly intentsService: IntentsService,
-      private readonly sentencesService: SentencesService
-  ) { }
+    private readonly ref: ChangeDetectorRef,
+    public readonly state: StateService,
+    private readonly nlp: NlpService,
+    private readonly dialog: DialogService,
+    private readonly intentsService: IntentsService,
+    private readonly sentencesService: SentencesService
+  ) {
+  }
 
   ngOnInit(): void {
   }
@@ -174,8 +191,8 @@ export class TrainGridItemComponent implements OnInit, OnDestroy {
     return of(true)
       .pipe(
         delay(500),
-        tap(_ =>  this.cardCssClass = 'tock--hidden' )
-        );
+        tap(_ => this.cardCssClass = 'tock--hidden')
+      );
   }
 
   toggle(): void {

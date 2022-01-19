@@ -14,18 +14,28 @@
  * limitations under the License.
  */
 
-export interface ValidUtteranceResult {
-  cancelled: false;
-  value: string;
+:host {
+  display: flex;
+  flex-flow: column nowrap;
+  margin: 10px 20px;
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+
+  /* experimental: more place in the page for it */
+  position: relative;
+  top: -105px; /* TODO: find a cleaner solution */
+
 }
 
-interface CancelledUtteranceResult {
-  cancelled: true;
+.tock--sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 90px;
+  display: flex;
+  height: calc(100vh - 80px);
+  flex-flow: column nowrap;
 }
 
-/**
- * Result of Utterance creation/edition Dialog
- */
-export type EditUtteranceResult = ValidUtteranceResult | CancelledUtteranceResult;
-
-export const notCancelled = (item: EditUtteranceResult) => !item.cancelled;
+.tock-sidebar-body {
+  min-height: calc(100% - 200px);
+}
