@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,9 @@ import { Directive, Output, EventEmitter, HostListener  } from '@angular/core';
   selector: "[tock-click-capture]"
 })
 export class ClickCaptureDirective {
-  //@Output() OnCapturedClick: EventEmitter<boolean> = new EventEmitter<false>();
 
   @HostListener("click", ["$event"])
   public onListenerTriggered(event: any): void {
-    //this.OnCapturedClick.emit(true);
     event.stopPropagation();
   }
 }

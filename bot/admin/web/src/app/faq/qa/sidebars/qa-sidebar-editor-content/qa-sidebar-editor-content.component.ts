@@ -8,7 +8,7 @@ import {debounceTime, map, take} from 'rxjs/operators';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { EditUtteranceResult, notCancelled, ValidUtteranceResult } from 'src/app/faq/common/components/edit-utterance/edit-utterance-result';
 import { EditUtteranceComponent } from 'src/app/faq/common/components/edit-utterance/edit-utterance.component';
-import {FrequentQuestion, Utterance, utteranceEquals, utteranceEquivalent, utteranceSomewhatSimilar} from 'src/app/faq/common/model/frequent-question';
+import {FaqDefinition, Utterance, utteranceEquals, utteranceEquivalent, utteranceSomewhatSimilar} from 'src/app/faq/common/model/faq-definition';
 import {ActionResult, QaEditorEvent, QaSidebarEditorService} from '../qa-sidebar-editor.service';
 import {getPosition, hasItem} from '../../../common/util/array-utils';
 import {somewhatSimilar, verySimilar } from 'src/app/faq/common/util/string-utils';
@@ -17,7 +17,8 @@ import { SentencesService } from 'src/app/faq/common/sentences.service';
 import { QaService } from 'src/app/faq/common/qa.service';
 import { EditorTabName } from '../../qa.component';
 import { startWith } from 'rxjs/operators';
-import  {collectProblems, DEFAULT_ERROR_MAPPING, FormProblems, isControlAlert, NAME_MINLENGTH, NAME_MAXLENGTH ,NoProblems, DESCRIPTION_MAXLENGTH, ANSWER_MAXLENGTH } from '../../../common/model/form-problems';
+import  {collectProblems, DEFAULT_ERROR_MAPPING, FormProblems, isControlAlert, NAME_MINLENGTH,
+  NAME_MAXLENGTH ,NoProblems, DESCRIPTION_MAXLENGTH, ANSWER_MAXLENGTH } from '../../../common/model/form-problems';
 
 // Simple builder for text 'utterance predicate'
 function textMatch(text: string): (Utterance) => boolean {
@@ -55,7 +56,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
   tabName: EditorTabName;
 
   @Input()
-  fq?: FrequentQuestion;
+  fq?: FaqDefinition;
 
   @Output()
   validityChanged = new EventEmitter<FormProblems>();
@@ -158,7 +159,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
     return this.editedUtterances$.pipe(take(1), concatMap( utterances => {
 
       // validate and construct entity from form data
-      const fq: FrequentQuestion = {
+      const fq: FaqDefinition = {
         id: this.fq.id,
         applicationId: this.fq.applicationId,
         language: this.fq.language,
@@ -211,7 +212,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
     return isControlAlert(control);
   }
 
-  updateForm(fq?: FrequentQuestion): void {
+  updateForm(fq?: FaqDefinition): void {
     if (fq) {
       const utterances = JSON.parse(JSON.stringify(fq.utterances)); // deep clone
 

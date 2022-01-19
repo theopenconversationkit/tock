@@ -13,7 +13,7 @@
      'tock--full_width--small': viewMode === 'RESPONSIVE_FULL_WIDTH'
      }"
 >
-  <tock-qa-grid (onDetails)="details($event)" (onEdit)="edit($event)"  [viewMode]="viewMode" [filter]="filter"></tock-qa-grid>
+  <tock-qa-grid (onEdit)="edit($event)"  [viewMode]="viewMode" [filter]="filter"></tock-qa-grid>
 
   <tock-inview-sidebar [isContentHeader]="false" [ngClass]="'tock-qa-sidebar'" *ngIf="isPanelDocked('import')" (onClose)="undock()">
     <div tock-header>
@@ -22,8 +22,11 @@
     <tock-qa-sidebar-import-content tock-content></tock-qa-sidebar-import-content>
 
     <ng-container tock-footer>
-      <button class="float-right mx-2"  nbButton status="primary" size="small">
-        Ok
+      <button class="float-left mx-2" nbButton outline status="primary" size="small" (click)="undock()" >
+        Cancel
+      </button>
+      <button class="float-right mx-2" nbButton status="primary" size="small">
+        Start
       </button>
     </ng-container>
   </tock-inview-sidebar>

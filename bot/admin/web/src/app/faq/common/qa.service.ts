@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
-import {MOCK_QA_TITLES, MOCK_QA_DEFAULT_LABEL, MOCK_QA_DEFAULT_DESCRIPTION, MOCK_FREQUENT_QUESTIONS} from '../common/mock/qa.mock';
+import {MOCK_FREQUENT_QUESTIONS} from '../common/mock/qa.mock';
 
 import {empty, Observable, of } from 'rxjs';
 import {PaginatedResult, SearchQuery, Sentence, SentenceStatus} from 'src/app/model/nlp';
-import { FrequentQuestion, Utterance } from './model/frequent-question';
+import { FaqDefinition, Utterance } from './model/faq-definition';
 import { QaSearchQuery } from './model/qa-search-query';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class QaService {
   appIdByAppName = new Map<string, string>(); // for mock purpose only
 
   // generate fake data for pagination
-  mockData: FrequentQuestion[] = [];
+  mockData: FaqDefinition[] = [];
 
   constructor() {
   }
@@ -24,7 +24,7 @@ export class QaService {
     this.appIdByAppName.set(applicationName, applicationId);
 
     // when there is already data for given bot / language
-    if (this.mockData.some((fq: FrequentQuestion) => fq.applicationId === applicationId && fq.language == language)) {
+    if (this.mockData.some((fq: FaqDefinition) => fq.applicationId === applicationId && fq.language == language)) {
       // no need to add mock data
       return;
     }
@@ -32,7 +32,7 @@ export class QaService {
     const seed = (new Date().getTime()); // timestamp as random seed
     const now = new Date();
 
-    const someData: FrequentQuestion[] = Array<number>(3).fill(0).map((_, index) => {
+    const someData: FaqDefinition[] = Array<number>(3).fill(0).map((_, index) => {
       const template = MOCK_FREQUENT_QUESTIONS[index % MOCK_FREQUENT_QUESTIONS.length];
 
       return {
@@ -54,8 +54,8 @@ export class QaService {
   }
 
   // fake real backend call
-  delete(fq: FrequentQuestion, cancel$: Observable<any> = empty()): Observable<FrequentQuestion> {
-    let newFq: FrequentQuestion | undefined;
+  delete(fq: FaqDefinition, cancel$: Observable<any> = empty()): Observable<FaqDefinition> {
+    let newFq: FaqDefinition | undefined;
 
     this.mockData = this.mockData.map(item => {
       if (fq.id && item.id === fq.id) {
@@ -71,7 +71,7 @@ export class QaService {
   }
 
   // fake real backend call
-  save(fq: FrequentQuestion, cancel$: Observable<any> = empty()): Observable<FrequentQuestion> {
+  save(fq: FaqDefinition, cancel$: Observable<any> = empty()): Observable<FaqDefinition> {
 
     let dirty = false;
 
@@ -94,7 +94,7 @@ export class QaService {
   }
 
   // fake real backend call
-  searchQas(query: QaSearchQuery): Observable<PaginatedResult<FrequentQuestion>> {
+  searchQas(query: QaSearchQuery): Observable<PaginatedResult<FaqDefinition>> {
 
     // Because for historical reason, PaginatedResilt hold a application name instead of application id
     const queryApplicationId = this.appIdByAppName.get(query.applicationName);
@@ -112,20 +112,20 @@ export class QaService {
     // simulate backend query (filtering on status, application name etc..)
     const data = this.mockData
       .filter(fq => {
-        const predicates: Array<(FrequentQuestion) => boolean> = [];
+        const predicates: Array<(FaqDefinition) => boolean> = [];
 
         predicates.push(
-          (fq: FrequentQuestion) => fq.status !== 'Deleted'
+          (fq: FaqDefinition) => fq.status !== 'Deleted'
         );
 
         predicates.push(
-          (fq: FrequentQuestion) => fq.applicationId === queryApplicationId
+          (fq: FaqDefinition) => fq.applicationId === queryApplicationId
         );
 
         const lowerSearch = (query.search || '').toLowerCase().trim();
         if (lowerSearch) {
           predicates.push(
-            (fq: FrequentQuestion) => (fq.answer || '').toLowerCase().includes(lowerSearch) ||
+            (fq: FaqDefinition) => (fq.answer || '').toLowerCase().includes(lowerSearch) ||
               (fq.description || '').toLowerCase().includes(lowerSearch) ||
               fq.utterances.some((u: Utterance) => u.toLowerCase().includes(lowerSearch)) ||
               (fq.title || '').toLowerCase().includes(lowerSearch)
@@ -134,7 +134,7 @@ export class QaService {
 
         if(query.tags.length > 0) {
           predicates.push(
-            (fq: FrequentQuestion) => fq.tags.some(
+            (fq: FaqDefinition) => fq.tags.some(
               tag => query.tags.some(queryTag => queryTag.toLowerCase() === tag.toLowerCase())
             )
           );
@@ -175,16 +175,16 @@ export class QaService {
     return of(Array.from(tagSet));
   }
 
-  activate(fq: FrequentQuestion, cancel$: Observable<any> = empty()): Observable<FrequentQuestion> {
+  activate(fq: FaqDefinition, cancel$: Observable<any> = empty()): Observable<FaqDefinition> {
     return this.updateEnabled(fq,true, cancel$);
   }
 
-  disable(fq: FrequentQuestion, cancel$: Observable<any> = empty()): Observable<FrequentQuestion> {
+  disable(fq: FaqDefinition, cancel$: Observable<any> = empty()): Observable<FaqDefinition> {
     return this.updateEnabled(fq,false, cancel$);
   }
 
-  private updateEnabled(fq: FrequentQuestion, enabled: boolean, cancel$: Observable<any>)
-    : Observable<FrequentQuestion> {
+  private updateEnabled(fq: FaqDefinition, enabled: boolean, cancel$: Observable<any>)
+    : Observable<FaqDefinition> {
 
     let dirty = false;
 

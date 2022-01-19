@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import {Entry, PaginatedQuery} from 'src/app/model/commons';
 
-import {FrequentQuestion} from '../../common/model/frequent-question';
+import {FaqDefinition} from '../../common/model/faq-definition';
 import { MatPaginator } from '@angular/material/paginator';
 import {DataSource, SelectionModel } from '@angular/cdk/collections';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -26,7 +26,7 @@ import { QaSearchQuery } from '../../common/model/qa-search-query';
   templateUrl: './qa-grid.component.html',
   styleUrls: ['./qa-grid.component.scss']
 })
-export class QaGridComponent extends ScrollComponent<FrequentQuestion> implements AfterViewInit, OnDestroy, OnInit {
+export class QaGridComponent extends ScrollComponent<FaqDefinition> implements AfterViewInit, OnDestroy, OnInit {
 
   @Input()
   viewMode : ViewMode;
@@ -35,10 +35,10 @@ export class QaGridComponent extends ScrollComponent<FrequentQuestion> implement
   filter: FaqQaFilter;
 
   @Output()
-  onDetails = new EventEmitter<FrequentQuestion>();
+  onDetails = new EventEmitter<FaqDefinition>();
 
   @Output()
-  onEdit= new EventEmitter<FrequentQuestion>();
+  onEdit= new EventEmitter<FaqDefinition>();
 
   @ViewChild(MatPaginator)
   paginator: MatPaginator;
@@ -48,12 +48,12 @@ export class QaGridComponent extends ScrollComponent<FrequentQuestion> implement
   displayedColumns = [];
   dataSource: QaDataSource | null;
 
-  selectedItem?: FrequentQuestion;
+  selectedItem?: FaqDefinition;
 
   numHidden = 0;
 
   private readonly destroy$: ReplaySubject<boolean> = new ReplaySubject(1);
-  public readonly currentIntents$: Observable<FrequentQuestion[]>;
+  public readonly currentIntents$: Observable<FaqDefinition[]>;
 
   private sort: Sort[] = [];
 
@@ -102,12 +102,12 @@ export class QaGridComponent extends ScrollComponent<FrequentQuestion> implement
     })
   }
 
-  edit(fq: FrequentQuestion): void {
+  edit(fq: FaqDefinition): void {
     this.selectedItem = fq;
     this.onEdit.emit(fq);
   }
 
-  remove(fq: FrequentQuestion): void {
+  remove(fq: FaqDefinition): void {
     fq.status = 'Deleted';
   }
 
@@ -128,15 +128,15 @@ export class QaGridComponent extends ScrollComponent<FrequentQuestion> implement
     return result;
   }
 
-  search(query: PaginatedQuery): Observable<PaginatedResult<FrequentQuestion>> {
+  search(query: PaginatedQuery): Observable<PaginatedResult<FaqDefinition>> {
     return this.qaService.searchQas(this.toSearchQuery(query));
   }
 
-  dataEquals(q1: FrequentQuestion, q2: FrequentQuestion): boolean {
+  dataEquals(q1: FaqDefinition, q2: FaqDefinition): boolean {
     return q1.title === q2.title
   }
 
-  protected loadResults(result: PaginatedResult<FrequentQuestion>, init: boolean): boolean {
+  protected loadResults(result: PaginatedResult<FaqDefinition>, init: boolean): boolean {
     if (super.loadResults(result, init)) {
       this.dataSource.setNewValues(result.rows);
       this.pageIndex = Math.floor(result.start / this.pageSize);
@@ -162,7 +162,7 @@ export class FaqQaFilter {
   }
 }
 
-export class QaDataSource extends DataSource<FrequentQuestion> {
+export class QaDataSource extends DataSource<FaqDefinition> {
 
   private subject = new BehaviorSubject([]);
 
@@ -170,15 +170,15 @@ export class QaDataSource extends DataSource<FrequentQuestion> {
     this.subject.next(this.subject.value.slice(0));
   }
 
-  setNewValues(values: FrequentQuestion[]) {
+  setNewValues(values: FaqDefinition[]) {
     this.subject.next(values);
   }
 
-  getData(): FrequentQuestion[] {
+  getData(): FaqDefinition[] {
     return this.subject.getValue();
   }
 
-  connect(): Observable<FrequentQuestion[]> {
+  connect(): Observable<FaqDefinition[]> {
     return this.subject;
   }
 

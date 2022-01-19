@@ -11,9 +11,9 @@ export const utteranceEquals = (a: Utterance, b: Utterance) => a === b;
 export const utteranceEquivalent = (a: Utterance, b: Utterance) => verySimilar(a, b);
 export const utteranceSomewhatSimilar = (a: Utterance, b: Utterance) => somewhatSimilar(a, b);
 
-export type FrequentQuestionStatus = 'Draft' | 'Model' | 'Deleted'; // Adapt to your needs
+export type FaqDefinitionStatus = 'Draft' | 'Model' | 'Deleted'; // Adapt to your needs
 
-export type FrequentQuestion = {
+export type FaqDefinition = {
   id?: string,
   language: string,
   applicationId: string,
@@ -24,11 +24,11 @@ export type FrequentQuestion = {
   utterances: Utterance[],
   tags: string[],
   answer: string,
-  status: FrequentQuestionStatus,
+  status: FaqDefinitionStatus,
   enabled: boolean
 };
 
-export function blankFrequentQuestion(config: {language: string, applicationId: string}): FrequentQuestion {
+export function blankFaqDefinition(config: {language: string, applicationId: string}): FaqDefinition {
   return {
     id: undefined,
     title: '',

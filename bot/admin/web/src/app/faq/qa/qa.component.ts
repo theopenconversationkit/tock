@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ReplaySubject} from 'rxjs';
 import {StateService} from 'src/app/core-nlp/state.service';
 import {DEFAULT_PANEL_NAME, WithSidePanel} from '../common/mixin/with-side-panel';
-import {blankFrequentQuestion, FrequentQuestion} from '../common/model/frequent-question';
+import {blankFaqDefinition, FaqDefinition} from '../common/model/faq-definition';
 import {FaqQaFilter, QaGridComponent} from './qa-grid/qa-grid.component';
 import {QaSidebarEditorService} from './sidebars/qa-sidebar-editor.service';
 import { truncate } from '../common/util/string-utils';
@@ -23,7 +23,7 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
   activeQaTab: EditorTabName = 'Info';
 
   applicationName: string;
-  currentItem?: FrequentQuestion;
+  currentItem?: FaqDefinition;
 
   editorPanelName?: string;
 
@@ -78,11 +78,11 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
     this.grid.refresh();
   }
 
-  openImportSidepanel() {
+  openImportSidepanel(): void {
     this.dock("import");
   }
 
-  edit(fq: FrequentQuestion): void {
+  edit(fq: FaqDefinition): void {
     this.editorPanelName = 'Edit FAQ';
     this.currentItem = fq;
 
@@ -103,13 +103,14 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
 
   onEditorValidityChanged(report: FormProblems): void {
     window.setTimeout(() => { // ExpressionChangedAfterItHasBeenCheckedError workaround
+      // enable/disable 'save' button
       this.editorFormValid = report.formValid;
 
+      // extract error labels
       this.editorFormWarnings = report.formValid ? [] : (<InvalidFormProblems> report).items.map(item => {
         return item.errorLabel;
       });
     }, 0);
-
   }
 
   openNewSidepanel() {
@@ -117,14 +118,10 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
     const applicationId = this.state.currentApplication._id;
 
     this.editorPanelName = 'New FAQ';
-    this.currentItem = blankFrequentQuestion({applicationId, language: currentLocale});
+    this.currentItem = blankFaqDefinition({applicationId, language: currentLocale});
     this.activeQaTab = 'Info';
 
     this.dock("edit");
-  }
-
-  details(fq: FrequentQuestion) {
-
   }
 
   activateEditorTab(tabName: EditorTabName): void {
