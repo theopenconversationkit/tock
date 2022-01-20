@@ -82,7 +82,7 @@ export class FaqDefinitionService {
     this.mockData = this.mockData.map(item => {
       if (fq.id && item.id === fq.id) {
         newFq = JSON.parse(JSON.stringify(fq)); // deep copy
-        newFq.status = 'Deleted';
+        newFq.status = 'deleted';
         return newFq;
       } else {
         return item;
@@ -143,7 +143,7 @@ export class FaqDefinitionService {
         const predicates: Array<(FaqDefinition) => boolean> = [];
 
         predicates.push(
-          (fq: FaqDefinition) => fq.status !== 'Deleted'
+          (fq: FaqDefinition) => fq.status !== 'deleted'
         );
 
         predicates.push(
