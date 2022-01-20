@@ -31,7 +31,7 @@ import {getPosition, hasItem} from '../../../common/util/array-utils';
 import {somewhatSimilar, verySimilar } from 'src/app/faq/common/util/string-utils';
 import { concatMap } from 'rxjs/operators';
 import { SentencesService } from 'src/app/faq/common/sentences.service';
-import { QaService } from 'src/app/faq/common/qa.service';
+import { FaqDefinitionService } from 'src/app/faq/common/faq-definition.service';
 import { EditorTabName } from '../../qa.component';
 import { startWith } from 'rxjs/operators';
 import  {collectProblems, DEFAULT_ERROR_MAPPING, FormProblems, isControlAlert, NAME_MINLENGTH,
@@ -113,7 +113,7 @@ export class QaSidebarEditorContentComponent implements OnInit, OnDestroy, OnCha
 
   constructor(
     private readonly sidebarEditorService: QaSidebarEditorService,
-    private readonly qaService: QaService,
+    private readonly qaService: FaqDefinitionService,
     private readonly dialog: DialogService,
   ) {
   }

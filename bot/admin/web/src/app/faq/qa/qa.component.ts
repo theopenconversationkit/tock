@@ -23,7 +23,7 @@ import {FaqQaFilter, QaGridComponent} from './qa-grid/qa-grid.component';
 import {QaSidebarEditorService} from './sidebars/qa-sidebar-editor.service';
 import { truncate } from '../common/util/string-utils';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
-import { QaService } from '../common/qa.service';
+import { FaqDefinitionService } from '../common/faq-definition.service';
 import { FormProblems, InvalidFormProblems } from '../common/model/form-problems';
 
 // Specific action payload
@@ -55,7 +55,7 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
     private readonly state: StateService,
     private readonly sidebarEditorService: QaSidebarEditorService,
     private readonly dialog: DialogService,
-    private readonly qaService: QaService
+    private readonly qaService: FaqDefinitionService
   ) {
     super();
   }

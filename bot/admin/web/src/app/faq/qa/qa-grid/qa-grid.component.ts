@@ -29,7 +29,7 @@ import { NlpService } from 'src/app/nlp-tabs/nlp.service';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 import {PaginatedResult, SearchQuery, Sentence} from 'src/app/model/nlp';
 import { of } from 'rxjs';
-import { QaService } from '../../common/qa.service';
+import { FaqDefinitionService } from '../../common/faq-definition.service';
 import { ViewMode } from '../../common/model/view-mode';
 import { QaSidebarEditorService } from '../sidebars/qa-sidebar-editor.service';
 import { takeUntil } from 'rxjs/operators';
@@ -74,7 +74,7 @@ export class QaGridComponent extends ScrollComponent<FaqDefinition> implements A
 
   constructor(public readonly state: StateService,
               private readonly sidebarEditorService: QaSidebarEditorService,
-              private readonly qaService: QaService,
+              private readonly qaService: FaqDefinitionService,
               private readonly dialog: DialogService) {
     super(state);
   }

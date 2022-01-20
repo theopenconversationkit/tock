@@ -67,7 +67,7 @@ import {QaComponent} from './qa/qa.component';
 import {QaHeaderComponent} from './qa/qa-header/qa-header.component';
 import {QaGridComponent} from './qa/qa-grid/qa-grid.component';
 import {QaGridItemComponent} from './qa/qa-grid-item/qa-grid-item.component';
-import {QaService} from "./common/qa.service";
+import {FaqDefinitionService} from "./common/faq-definition.service";
 import {InviewSidepanelComponent} from './common/components/inview-sidepanel/inview-sidepanel.component';
 import {QaSidebarImportContentComponent} from './qa/sidebars/qa-sidebar-import-content/qa-sidebar-import-content.component';
 import {QaSidebarEditorContentComponent} from './qa/sidebars/qa-sidebar-editor-content/qa-sidebar-editor-content.component';
@@ -161,7 +161,7 @@ export class FaqRoutingModule {
   providers: [
     IntentsService,
     SentencesService,
-    QaService,
+    FaqDefinitionService,
     QaSidebarEditorService
   ],
   entryComponents: [

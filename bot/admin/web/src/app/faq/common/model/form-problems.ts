@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {AbstractControl, FormControl, FormGroup } from "@angular/forms";
+import {AbstractControl, FormGroup} from "@angular/forms";
 
 /**
  * About form problems reporting
@@ -35,7 +35,7 @@ export type InvalidFormProblems = {
 
 export type FormProblems = ValidFormState | InvalidFormProblems;
 
-export const NoProblems: ValidFormState = { formValid: true };
+export const NoProblems: ValidFormState = {formValid: true};
 
 /**
  * Check if user should be warned about a Control state
@@ -51,7 +51,7 @@ export function isControlAlert(control: AbstractControl): boolean {
  * @param form Angular Form
  * @param customErrorLabels Errors alternative labels
  */
-export function collectProblems(form: FormGroup, customErrorLabels: { [key: string]: string}): InvalidFormProblems {
+export function collectProblems(form: FormGroup, customErrorLabels: { [key: string]: string }): InvalidFormProblems {
   return {
     formValid: false,
 
@@ -59,15 +59,15 @@ export function collectProblems(form: FormGroup, customErrorLabels: { [key: stri
     items: Object.entries(form.controls)
       .filter(([key, control]) => isControlAlert(control)) // which are touched or dirty
       .map(([key, control]) => {
-      // for each errors in control
-      return Object.entries(control.errors).map(([errorKey, errorValue]) => {
-        // collect error
-        return {
-          controlLabel: key,
-          errorLabel: customErrorLabels[key+"_"+errorKey] || errorKey
-        };
-      });
-    }).reduce((acc, val) => acc.concat(val), []) // flatMap ES5 equivalent (concat first level arrays)
+        // for each errors in control
+        return Object.entries(control.errors).map(([errorKey, errorValue]) => {
+          // collect error
+          return {
+            controlLabel: key,
+            errorLabel: customErrorLabels[key + "_" + errorKey] || errorKey
+          };
+        });
+      }).reduce((acc, val) => acc.concat(val), []) // flatMap ES5 equivalent (concat first level arrays)
   };
 }
 

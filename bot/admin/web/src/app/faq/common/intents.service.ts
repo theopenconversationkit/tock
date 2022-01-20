@@ -54,7 +54,6 @@ export class IntentsService {
       .toPromise();
 
     if (!result?.name || !(await this.canSaveIntent(result.name, result.label, result.description, result.category))) {
-      console.log("reject");
       return Promise.reject("cancelled");
     }
 
