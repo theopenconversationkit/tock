@@ -15,12 +15,12 @@
  */
 
 import {Injectable} from '@angular/core';
-import {Sentence, SentenceStatus, UpdateSentencesQuery} from "../../model/nlp";
+import {Sentence, SentenceStatus} from "../../model/nlp";
 import {DialogService} from "../../core-nlp/dialog.service";
 import {NlpService} from "../../nlp-tabs/nlp.service";
 import {StateService} from "../../core-nlp/state.service";
-import {EMPTY, empty, merge, Observable, of} from 'rxjs';
-import {concatMap, flatMap, take, takeUntil} from 'rxjs/operators';
+import {empty, merge, Observable} from 'rxjs';
+import {flatMap, take, takeUntil} from 'rxjs/operators';
 
 @Injectable()
 export class SentencesService {
@@ -64,8 +64,8 @@ export class SentencesService {
 
     // because we could not use current backend API for doing this
     return sentences.reduce((acc, value) => {
-        return merge(acc, this.nlp.updateSentence(value))
-          .pipe(take(1), takeUntil(cancel$)); // on-the-fly Http Request cancellation
+      return merge(acc, this.nlp.updateSentence(value))
+        .pipe(take(1), takeUntil(cancel$)); // on-the-fly Http Request cancellation
     }, empty());
   }
 }

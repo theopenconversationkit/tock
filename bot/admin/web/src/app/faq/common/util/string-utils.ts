@@ -39,7 +39,7 @@ export function verySimilar(a?: string, b?: string): boolean {
 export function somewhatSimilar(a?: string, b?: string): boolean {
   function simplify(value?: string): string | undefined {
     return value
-      ?.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g,"") // no ponctuation
+      ?.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, "") // no ponctuation
       ?.replace(/\s\s+/g, " "); // merge consecutive spaces
   }
 

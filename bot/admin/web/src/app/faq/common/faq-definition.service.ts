@@ -25,19 +25,23 @@ import {Utterance} from './model/utterance';
 import {RestService} from "../../core-nlp/rest/rest.service";
 import {map, takeUntil} from "rxjs/operators";
 
+/**
+ * Faq Definition operations for FAQ module
+ */
 @Injectable()
-export class QaService {
+export class FaqDefinitionService {
 
   appIdByAppName = new Map<string, string>(); // for mock purpose only
 
   // generate fake data for pagination
   mockData: FaqDefinition[] = [];
 
-  constructor(private rest: RestService) {}
+  constructor(private rest: RestService) {
+  }
 
   // add random data at initialization until real backend is there instead
   setupMockData({applicationId, applicationName, language}:
-                         {applicationId: string, applicationName: string, language: string}): void {
+                  { applicationId: string, applicationName: string, language: string }): void {
 
     this.appIdByAppName.set(applicationName, applicationId);
 
@@ -54,13 +58,13 @@ export class QaService {
       const template = MOCK_FREQUENT_QUESTIONS[index % MOCK_FREQUENT_QUESTIONS.length];
 
       return {
-        id: ''+(index + 1) + '_' + seed,
-        utterances: [`${template.utterances[0]} ${index+1}`],
-        answer: `${template.answer} ${index+1}`,
+        id: '' + (index + 1) + '_' + seed,
+        utterances: [`${template.utterances[0]} ${index + 1}`],
+        answer: `${template.answer} ${index + 1}`,
         title: template.title, // pick random (rotating) title
         enabled: (index < 5),
         status: template.status,
-        tags: (template.tags  || []).slice(),
+        tags: (template.tags || []).slice(),
         applicationId,
         language,
         creationDate: now,
@@ -78,7 +82,7 @@ export class QaService {
     this.mockData = this.mockData.map(item => {
       if (fq.id && item.id === fq.id) {
         newFq = JSON.parse(JSON.stringify(fq)); // deep copy
-        newFq.status = 'deleted';
+        newFq.status = 'Deleted';
         return newFq;
       } else {
         return item;
@@ -93,7 +97,6 @@ export class QaService {
 
     let dirty = false;
 
-    //TODO : search here
     this.mockData = this.mockData.map(item => {
       if (fq.id && item.id === fq.id) {
         dirty = true;
@@ -104,7 +107,7 @@ export class QaService {
       }
     });
 
-    if(!dirty) {
+    if (!dirty) {
       return this.newFaq(fq, cancel$);
     }
   }
@@ -115,7 +118,7 @@ export class QaService {
         takeUntil(cancel$),
         map(_ => {
           return JSON.parse(JSON.stringify(request));
-    }));
+        }));
   }
 
   // fake real backend call
@@ -140,7 +143,7 @@ export class QaService {
         const predicates: Array<(FaqDefinition) => boolean> = [];
 
         predicates.push(
-          (fq: FaqDefinition) => fq.status !== 'deleted'
+          (fq: FaqDefinition) => fq.status !== 'Deleted'
         );
 
         predicates.push(
@@ -157,7 +160,7 @@ export class QaService {
           );
         }
 
-        if(query.tags.length > 0) {
+        if (query.tags.length > 0) {
           predicates.push(
             (fq: FaqDefinition) => fq.tags.some(
               tag => query.tags.some(queryTag => queryTag.toLowerCase() === tag.toLowerCase())
@@ -201,11 +204,11 @@ export class QaService {
   }
 
   activate(fq: FaqDefinition, cancel$: Observable<any> = empty()): Observable<FaqDefinition> {
-    return this.updateEnabled(fq,true, cancel$);
+    return this.updateEnabled(fq, true, cancel$);
   }
 
   disable(fq: FaqDefinition, cancel$: Observable<any> = empty()): Observable<FaqDefinition> {
-    return this.updateEnabled(fq,false, cancel$);
+    return this.updateEnabled(fq, false, cancel$);
   }
 
   private updateEnabled(fq: FaqDefinition, enabled: boolean, cancel$: Observable<any>)

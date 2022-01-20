@@ -21,7 +21,7 @@ import { delay, take, tap } from 'rxjs/operators';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { FaqDefinition } from '../../common/model/faq-definition';
 import {isDocked, ViewMode } from '../../common/model/view-mode';
-import { QaService } from '../../common/qa.service';
+import { FaqDefinitionService } from '../../common/faq-definition.service';
 import { truncate } from '../../common/util/string-utils';
 import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
 import { NbToastrService } from "@nebular/theme/components/toastr/toastr.service";
@@ -56,7 +56,7 @@ export class QaGridItemComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly state: StateService,
-    private readonly qaService: QaService,
+    private readonly qaService: FaqDefinitionService,
     private readonly dialog: DialogService,
   ) {
   }

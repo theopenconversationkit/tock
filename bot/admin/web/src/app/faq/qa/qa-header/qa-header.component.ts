@@ -20,7 +20,7 @@ import { ReplaySubject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { StateService } from 'src/app/core-nlp/state.service';
 import {isDocked, ViewMode } from '../../common/model/view-mode';
-import { QaService } from '../../common/qa.service';
+import { FaqDefinitionService } from '../../common/faq-definition.service';
 import { FaqQaFilter } from '../qa-grid/qa-grid.component';
 import { QaSidebarEditorService } from '../sidebars/qa-sidebar-editor.service';
 
@@ -66,7 +66,7 @@ export class QaHeaderComponent implements OnInit {
 
   constructor(
     private readonly state: StateService,
-    private readonly qaService: QaService,
+    private readonly qaService: FaqDefinitionService,
     private readonly qaSidebarEditorService: QaSidebarEditorService
   ) { }
 
