@@ -14,35 +14,21 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
+package ai.tock.nlp.front.shared.config
 
-import ai.tock.nlp.admin.model.PaginatedQuery
-import ai.tock.nlp.front.shared.config.ApplicationDefinition
-import ai.tock.nlp.front.shared.config.FaqQuery
-import ai.tock.nlp.front.shared.config.FaqStatus
 import org.litote.kmongo.Id
 
-data class SearchFaqRequest(
+class FaqQuery(
+    val start: Long = 0,
+    val size: Int = 1,
+    val search: String? = null,
+    val searchMark: SearchMark? = null,
     val tags: List<String>,
-    val search: String?,
     val enabled: Boolean,
-    val user: String?,
+    val status: FaqStatus,
+    val user :String?,
     val allButUser: String?,
 //    val applicationId: Id<ApplicationDefinition>
-) : PaginatedQuery() {
-    fun toFaqQuery(request: SearchFaqRequest, faqStatus: FaqStatus): FaqQuery {
-        return FaqQuery(
-            request.start,
-            request.size,
-            request.search,
-            request.searchMark,
-            request.tags,
-            request.enabled,
-            faqStatus,
-            request.user,
-            request.allButUser,
-            request.namespace,
-            request.applicationName,
-        )
-    }
-}
+    val applicationName: String,
+    val namespace: String
+)

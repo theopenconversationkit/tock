@@ -36,8 +36,7 @@ export class FaqDefinitionService {
   // generate fake data for pagination
   mockData: FaqDefinition[] = [];
 
-  constructor(private rest: RestService) {
-  }
+  constructor(private rest: RestService) {}
 
   // add random data at initialization until real backend is there instead
   setupMockData({applicationId, applicationName, language}:
@@ -122,8 +121,17 @@ export class FaqDefinitionService {
         }));
   }
 
+  searchFaq(request: QaSearchQuery, cancel$: Observable<any> = empty()): Observable<FaqDefinition> {
+    return this.rest.post('/faq/search', request)
+      .pipe(
+        takeUntil(cancel$),
+        map(_ => {
+          return JSON.parse(JSON.stringify(request));
+        }));
+  }
+
   // fake real backend call
-  searchQas(query: QaSearchQuery): Observable<PaginatedResult<FaqDefinition>> {
+  searchQas(query: QaSearchQuery, cancel$: Observable<any> = empty()): Observable<PaginatedResult<FaqDefinition>> {
 
     // Because for historical reason, PaginatedResilt hold a application name instead of application id
     const queryApplicationId = this.appIdByAppName.get(query.applicationName);
@@ -139,6 +147,7 @@ export class FaqDefinitionService {
     }
 
     // simulate backend query (filtering on status, application name etc..)
+    const dataTest = this.searchFaq(query,cancel$).toPromise()
     const data = this.mockData
       .filter(fq => {
         const predicates: Array<(FaqDefinition) => boolean> = [];

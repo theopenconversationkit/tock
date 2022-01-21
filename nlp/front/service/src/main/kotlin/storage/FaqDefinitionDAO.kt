@@ -41,4 +41,6 @@ interface FaqDefinitionDAO {
     fun getQAItemByIntentIds(intentIds: Set<Id<IntentDefinition>>): List<FaqDefinition>?
 
     fun getQAItemByTags(tags: Set<String>): List<FaqDefinition>
+
+    fun getFaqDetails(query: FaqQuery, applicationId: String): List<FaqQueryResult>
 }

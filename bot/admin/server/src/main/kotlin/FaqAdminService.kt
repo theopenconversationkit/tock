@@ -20,7 +20,6 @@ import ai.tock.bot.admin.model.CreateI18nLabelRequest
 import ai.tock.bot.admin.model.FaqDefinitionRequest
 import ai.tock.bot.admin.model.SearchFaqRequest
 import ai.tock.nlp.admin.AdminService
-import ai.tock.nlp.front.service.intentDAO
 import ai.tock.nlp.front.service.faqDefinitionDAO
 import ai.tock.nlp.front.shared.config.*
 import ai.tock.shared.injector
@@ -33,7 +32,6 @@ import mu.KotlinLogging
 import org.litote.kmongo.Id
 import java.time.Instant
 import java.util.*
-import kotlin.collections.HashSet
 
 object FaqAdminService {
 
@@ -127,6 +125,35 @@ object FaqAdminService {
         }
     }
 
+    fun searchFAQ(query: SearchFaqRequest, applicationDefinition: ApplicationDefinition): Set<FaqDefinition> {
+        val faqDefinitionDetails = faqDefinitionDAO.getFaqDetails(query.toFaqQuery(query,FaqStatus.draft), applicationDefinition._id.toString()).map {
+            i18nDao.getLabelById(it.i18nId)?.
+            let { i18nLabel ->
+                it.toFaqDefinitionDetailed(it,
+                    i18nLabel
+                )
+            }
+        }.toSet()
+
+        if(query.search != null && query.search.isNotBlank()) {
+            val intentLabels = findPredicatesFrom18nLabels(applicationDefinition,query.search).map{
+                (i18nLabel) ->
+                {
+                    faqDefinitionDetails.find { i18nLabel == it?.i18nId }
+
+                }
+            }
+        }
+
+    private fun findPredicatesFrom18nLabels(
+        applicationDefinition: ApplicationDefinition,
+        search: String,
+    ): Set<I18nLabel> {
+        return i18nDao.getLabels(
+            applicationDefinition.namespace,
+            I18nLabelFilter(search, FAQ_CATEGORY, I18nLabelStateFilter.VALIDATED)
+        ).toSet()
+    }
     private fun createOrUpdateIntent(
         query: FaqDefinitionRequest,
         applicationDefinition: ApplicationDefinition
