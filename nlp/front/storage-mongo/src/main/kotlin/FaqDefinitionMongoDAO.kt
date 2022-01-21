@@ -99,34 +99,37 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
 
     private const val CLASSIFIED_SENTENCE_COLLECTION = "classified_sentence"
 
-    private const val INTENT_DEFINTION_COLLECTON = "intent_definition"
+    private const val INTENT_DEFINITION_COLLECTON = "intent_definition"
 
-    fun getFaqDetails(query:FaqQuery) {
-        col.aggregate<FaqQueryResult>(
+    override fun getFaqDetails(query: FaqQuery, applicationId: String): List<FaqQueryResult> {
+        return col.aggregate<FaqQueryResult>(
             lookup(
                 CLASSIFIED_SENTENCE_COLLECTION,
                 FaqDefinition::intentId.name,
-                ClassifiedSentence::classification.name + ".intentId",
-                "uterrances"
+                ClassifiedSentence::classification.name + Classification::intentId.name, //classification.intentId
+                FaqQueryResult::utterances.name
             ),
-            lookup(INTENT_DEFINTION_COLLECTON, FaqDefinition::intentId.name, "_id", "faq"),
-            unwind("faq"),
+            lookup(INTENT_DEFINITION_COLLECTON, FaqDefinition::intentId.name, IntentDefinition::_id.name, "faq"),
+            FaqQueryResult::faq.unwind(),
             match(
-//                and(
-//                    listOfNotNull(
-//                        FAQQueryResult::faqDefinition
-//                        DialogFlowStateTransitionStatCol_.TransitionId `in` transitionIds,
-//                        if (botAppConfIds.isEmpty()) null else DialogFlowStateTransitionStatCol_.ApplicationId `in` botAppConfIds,
-//                        if (from == null) null else DialogFlowStateTransitionStatCol_.Date gt from.toInstant(),
-//                        if (to == null) null else DialogFlowStateTransitionStatCol_.Date lt to.toInstant()
-//                    )
-//                )
+                or(
+                    listOfNotNull(
+                        //regex is use like contains because not accessible with this writing
+                        if (query.search == null) null else FaqQueryResult::faq / IntentDefinition::name regex query.search!!,
+                        if (query.search == null) null else FaqQueryResult::faq / IntentDefinition::description regex query.search!!,
+//                        if (query.search == null) null else FaqQueryResult::utterances.filteredPosOp("text") / ClassifiedSentence::text regex query.search!!,
+                    )
+                ),
+                and(
+                    listOfNotNull(
+                        if (query.tags.isEmpty()) null else FaqQueryResult::tags eq query.tags,
+                    )
+                ),
             ),
-
-        ).map {
-//            it.utterances =
-        }
+            sample(query.size),
+            skip(query.start.toInt())
+        )
+            .mapNotNull { it }.toList()
     }
-
 
 }

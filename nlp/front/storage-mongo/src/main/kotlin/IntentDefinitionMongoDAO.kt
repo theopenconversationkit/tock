@@ -41,6 +41,7 @@ import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.reactivestreams.getCollection
 import org.litote.kmongo.save
+import java.util.ArrayList
 
 /**
  *
@@ -66,12 +67,20 @@ internal object IntentDefinitionMongoDAO : IntentDefinitionDAO {
         return col.find(Applications contains applicationId).toList()
     }
 
+    override fun getIntentsByApplicationIdAndCategory(applicationId: Id<ApplicationDefinition>, category:String): List<IntentDefinition> {
+        return col.find(Applications contains applicationId).filter(Category eq category).toList()
+    }
+
     override fun getIntentByNamespaceAndName(namespace: String, name: String): IntentDefinition? {
         return col.findOne(Name eq name, Namespace eq namespace)
     }
 
     override fun getIntentById(id: Id<IntentDefinition>): IntentDefinition? {
         return col.findOneById(id)
+    }
+
+    override fun getIntentByIds(ids: Set<Id<IntentDefinition>>): List<IntentDefinition>? {
+        return col.find(_id `in` ids).into(ArrayList())
     }
 
     override fun save(intent: IntentDefinition) {

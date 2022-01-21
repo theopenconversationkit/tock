@@ -123,7 +123,7 @@ export class QaGridComponent extends ScrollComponent<FaqDefinition> implements A
   }
 
   remove(fq: FaqDefinition): void {
-    fq.status = 'Deleted';
+    fq.status = 'deleted';
   }
 
   toSearchQuery(query: PaginatedQuery): QaSearchQuery {

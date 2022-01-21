@@ -781,6 +781,20 @@ open class BotAdminVerticle : AdminVerticle() {
             }
 
         }
+
+        blockingJsonPost(
+            "/faq/search",
+            nlpUser, logger<SearchFaqRequest>("Search FAQ")
+        )
+        { context, request: SearchFaqRequest ->
+            val applicationDefinition = BotAdminService.front.getApplicationByNamespaceAndName(request.namespace, request.applicationName)
+            if (context.organization == applicationDefinition?.namespace) {
+                FaqAdminService.searchFAQ(request, applicationDefinition)
+            } else {
+                unauthorized()
+            }
+        }
+
         blockingJsonGet("/configuration") {
             botAdminConfiguration
         }
