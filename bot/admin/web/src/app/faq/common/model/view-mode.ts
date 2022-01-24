@@ -68,3 +68,9 @@ export function undock(mode: ViewMode): ViewMode {
 export function isDocked(mode: ViewMode): boolean {
   return (mode === 'DOCKED_PANEL') || (mode === 'RESPONSIVE_DOCKED_PANEL');
 }
+
+export function isDockedOrSmall(mode: ViewMode): boolean {
+  return (mode === 'DOCKED_PANEL') ||
+    (mode === 'RESPONSIVE_DOCKED_PANEL') ||
+    (mode === 'RESPONSIVE_FULL_WIDTH');
+}

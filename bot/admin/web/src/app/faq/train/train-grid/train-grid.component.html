@@ -14,22 +14,24 @@
   ~ limitations under the License.
   -->
 
-<tock-train-toolbar
-  [disabled]="data.length === 0"
-  [ngClass]="['float-left', 'd-flex', toolbarStyleClass(), 'align-items-baseline', 'justify-content-between']"
-  [allChecked]="isAllSelected()"
-  (onToggleSelectAll)="onToggleSelectAll($event)"
-  (onBatchAction)="onBatchAction($event)">
-</tock-train-toolbar>
+<div class="d-flex justify-content-between flex-nowrap">
+  <tock-train-toolbar
+    [disabled]="data.length === 0"
+    [ngClass]="['float-left', 'd-flex', toolbarStyleClass(), 'align-items-baseline', 'justify-content-start']"
+    [allChecked]="isAllSelected()"
+    (onToggleSelectAll)="onToggleSelectAll($event)"
+    (onBatchAction)="onBatchAction($event)">
+  </tock-train-toolbar>
 
-<div class="paginator" [nbSpinner]="loading" nbSpinnerStatus="primary" *ngIf="total !== 0">
-    <mat-paginator #paginator
-                   [ngClass]="'background'"
-                   [length]="total"
-                   [pageIndex]="pageIndex"
-                   [pageSize]="pageSize"
-                   [pageSizeOptions]="[10, 25, 50, 100]">
-    </mat-paginator>
+  <div class="paginator" [nbSpinner]="loading" nbSpinnerStatus="primary" *ngIf="total !== 0">
+      <mat-paginator #paginator
+                     [ngClass]="'background'"
+                     [length]="total"
+                     [pageIndex]="pageIndex"
+                     [pageSize]="pageSize"
+                     [pageSizeOptions]="[10, 25, 50, 100]">
+      </mat-paginator>
+  </div>
 </div>
 
 <ng-container *ngIf="currentIntents$ | async as intents">
@@ -64,6 +66,7 @@
             (onUnknown)="refreshOnEmpty()"
             (onValidate)="refreshOnEmpty()"
             (onDetails)="details($event)"
+            (onToggle)="onToggle($event)"
             [viewMode]="viewMode"
             [selectionMode]="selectionMode"
             [selection]="selection"

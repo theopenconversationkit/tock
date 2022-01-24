@@ -13,11 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-@import '../../common/_base_faq.scss';
-@include faq-grid-style();
-
-.tock-robot {
-  width: 8%;
-  margin-right: 20px;
-}

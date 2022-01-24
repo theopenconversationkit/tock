@@ -93,6 +93,7 @@ export function WithSidePanel<T extends Constructor>(BaseClass: T= (class {} as 
       } else {
         this.viewMode = toggleWideScreenMode(this.viewMode);
       }
+      console.log("adjustViewMode",  this.viewMode);
     }
 
   }

@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-@import '../../common/_base_faq.scss';
-@include faq-grid-style();
+@import '~@nebular/theme/styles/theming';
+@import '~@nebular/theme/styles/themes/default';
 
-.tock-robot {
-  width: 8%;
-  margin-right: 20px;
-}
+$faq-subtle-color: #eee;
+
+$faq-subtle-hover-color: $faq-subtle-color; /* Nebular Ghost buttons hover background */
+$faq-subtle-border-color: $faq-subtle-color; /* Light borders between UI parts */
+
+$faq-active-fg-color: #fff; /* Foreground color when active */
+
+$faq-problembox-fg-color: orangered; /* Icon plus Floating box to show form validation problems */

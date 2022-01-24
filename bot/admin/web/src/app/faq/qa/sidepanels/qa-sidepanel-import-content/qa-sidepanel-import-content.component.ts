@@ -14,10 +14,21 @@
  * limitations under the License.
  */
 
-@import '../../common/_base_faq.scss';
-@include faq-grid-style();
+import { Component, OnInit } from '@angular/core';
 
-.tock-robot {
-  width: 8%;
-  margin-right: 20px;
+@Component({
+  selector: 'tock-qa-sidepanel-import-content',
+  templateUrl: './qa-sidepanel-import-content.component.html',
+  styleUrls: ['./qa-sidepanel-import-content.component.scss']
+})
+export class QaSidepanelImportContentComponent implements OnInit {
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+  importFaq(): void {
+
+  }
 }

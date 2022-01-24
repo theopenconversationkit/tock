@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
+/* Search control icon part  */
 .tock-search-icon {
   width: 40px;
 }
 
+/* Search control input part */
 .tock-search-bar {
   width: calc(100% - 40px);
 }
 
+/* Button for Menu Buttons when there is not enough space */
 .tock-burger-icon {
   cursor: pointer;
-  transform: scale(1.2);
+  position: absolute;
+  right: 5px;
+  top: calc(50% - 10px);
+  transform: scale(1.5);
   user-select: none;
 }

@@ -20,11 +20,12 @@ import {StateService} from 'src/app/core-nlp/state.service';
 import {DEFAULT_PANEL_NAME, WithSidePanel} from '../common/mixin/with-side-panel';
 import {blankFaqDefinition, FaqDefinition} from '../common/model/faq-definition';
 import {FaqQaFilter, QaGridComponent} from './qa-grid/qa-grid.component';
-import {QaSidebarEditorService} from './sidebars/qa-sidebar-editor.service';
-import { truncate } from '../common/util/string-utils';
-import { DialogService } from 'src/app/core-nlp/dialog.service';
-import { FaqDefinitionService } from '../common/faq-definition.service';
-import { FormProblems, InvalidFormProblems } from '../common/model/form-problems';
+import {truncate} from '../common/util/string-utils';
+import {DialogService} from 'src/app/core-nlp/dialog.service';
+import {FaqDefinitionService} from '../common/faq-definition.service';
+import {FormProblems, InvalidFormProblems} from '../common/model/form-problems';
+import {takeUntil} from "rxjs/operators";
+import {QaSidepanelEditorService} from "./sidepanels/qa-sidepanel-editor.service";
 
 // Specific action payload
 export type EditorTabName = 'Info' | 'Answer' | 'Question';
@@ -53,7 +54,7 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
 
   constructor(
     private readonly state: StateService,
-    private readonly sidebarEditorService: QaSidebarEditorService,
+    private readonly sidepanelEditorService: QaSidepanelEditorService,
     private readonly dialog: DialogService,
     private readonly qaService: FaqDefinitionService
   ) {
@@ -61,6 +62,7 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.clearFilter();
 
     // until server really store things
     this.qaService.setupMockData({
@@ -69,6 +71,25 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
       language: this.state.currentLocale
     });
 
+    this.applicationName = this.state.currentApplication.name;
+    this.initSidePanel(this.destroy$);
+
+    this.state.currentApplicationEmitter // when bot switch
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(a => {
+        this.currentItem = undefined;
+        this.clearFilter();
+        this.grid.refresh(); // seems no need, but to be secure
+        this.undock()
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
+  }
+
+  clearFilter(): void {
     this.filter = {
       sort: [],
       search: null,
@@ -77,13 +98,6 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
         return {...this};
       }
     };
-
-    this.applicationName = this.state.currentApplication.name;
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 
   search(filter: Partial<FaqQaFilter>): void {
@@ -107,14 +121,14 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
 
   dock(name = DEFAULT_PANEL_NAME): void {
     if (name !== 'edit') {
-      this.sidebarEditorService.leaveEditMode(); // tell other components we are done with editing now
+      this.sidepanelEditorService.leaveEditMode(); // tell other components we are done with editing now
     }
-    super.dock(name); // toogle the docked/undocked state
+    super.dock(name); // toggle the docked/undocked state
   }
 
   undock(): void {
-    this.sidebarEditorService.leaveEditMode(); // tell other components we are done with editing now
-    super.undock(); // toogle the docked/undocked state
+    this.sidepanelEditorService.leaveEditMode(); // tell other components we are done with editing now
+    super.undock(); // toggle the docked/undocked state
   }
 
   onEditorValidityChanged(report: FormProblems): void {
@@ -123,7 +137,7 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
       this.editorFormValid = report.formValid;
 
       // extract error labels
-      this.editorFormWarnings = report.formValid ? [] : (<InvalidFormProblems> report).items.map(item => {
+      this.editorFormWarnings = report.formValid ? [] : (<InvalidFormProblems>report).items.map(item => {
         return item.errorLabel;
       });
     }, 0);
@@ -145,7 +159,7 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
   }
 
   async save(): Promise<any> {
-    const fq = await this.sidebarEditorService.save(this.destroy$);
+    const fq = await this.sidepanelEditorService.save(this.destroy$);
     this.currentItem = fq;
 
     this.dialog.notify(`Saved`,

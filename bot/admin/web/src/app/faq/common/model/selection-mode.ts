@@ -16,5 +16,17 @@
 
 /**
  * Selection Mode for training view checkboxes
+ *
+ * SELECT_ALWAYS:
+ *  no need to recompute each checkbox state as they are always selected
+ *  in addition future items which will appear when scrolling will be considered selected
+ *
+ * SELECT_NEVER:
+ *  no need to recompute each checkbox state as they are always not selected
+ *  in addition future items which will appear when scrolling will be considered not selected
+ *
+ * SELECT_NEVER:
+ *  we dont know for sure which checkbox si selected or not
+ *  in addition future items which will appear when scrolling will be considered not selected
  */
 export type SelectionMode = 'SELECT_ALWAYS' | 'SELECT_NEVER' | 'SELECT_SOME';

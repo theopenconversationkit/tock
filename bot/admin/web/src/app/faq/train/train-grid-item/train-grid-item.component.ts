@@ -72,6 +72,9 @@ export class TrainGridItemComponent implements OnInit, OnDestroy {
   @Output()
   onDetails = new EventEmitter<Sentence>();
 
+  @Output()
+  onToggle= new EventEmitter<boolean>();
+
   selectedIntentId: string;
 
   public cardCssClass = "tock--opened"; // card closing animation
@@ -197,12 +200,16 @@ export class TrainGridItemComponent implements OnInit, OnDestroy {
 
   toggle(): void {
     this.selection.toggle(this.sentence);
+
+    // tell to transition from SELECT_ALL to SELECT_SOME or from SELECT_NONE to SELECT_SOME
+    if (this.selection.isSelected(this.sentence)) {
+      this.onToggle.next(true);
+    } else {
+      this.onToggle.next(false);
+    }
   }
 
   changeIntent(intentId: string): void {
-    console.log("changeIntent", intentId);
-
-
     const prevSentence = this.sentence;
     this.sentence = this.sentence.withIntent(this.state, intentId);
     this.ref.detectChanges(); // because ChangeDetectionStrategy is OnPush
@@ -212,9 +219,14 @@ export class TrainGridItemComponent implements OnInit, OnDestroy {
 
   updateSelection(prevSentence: Sentence, newSentence: Sentence): void {
     // we update version of sentence in selection set, so that bulk actions could reuse selection directly
-    if (this.selection.isSelected(prevSentence)) {
-      this.selection.toggle(prevSentence);
-      this.selection.select(newSentence);
+
+    if (this.selection.isSelected(prevSentence)) { // when previously it was selected
+      this.selection.toggle(prevSentence); // remove previous version from selection set
+      this.selection.select(newSentence); // add new version to selection set
+
+    } else { // when previously it was not selected, a business rule says we now want it selected
+      this.selection.select(newSentence); // add new version to selection set
+      this.onToggle.next(true); // tell upper components to transition to SELECT_SOME
     }
   }
 
