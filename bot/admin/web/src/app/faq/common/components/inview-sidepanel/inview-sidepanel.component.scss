@@ -23,7 +23,7 @@
 
   /* experimental: more place in the page for it */
   position: relative;
-  top: -105px; /* TODO: find a cleaner solution */
+  top: -155px; /* TODO: find a cleaner solution */
 
 }
 
@@ -36,6 +36,6 @@
   flex-flow: column nowrap;
 }
 
-.tock-sidebar-body {
+.tock-sidepanel-body {
   min-height: calc(100% - 200px);
 }

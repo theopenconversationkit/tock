@@ -14,10 +14,9 @@
   ~ limitations under the License.
   -->
 
-<nb-card ngClass="px-2 py-1">
-  <nb-card-body class="d-flex align-items-center p-2 flex-wrap">
-    <div class="col-4 d-flex justify-content-start">
-
+<nb-card [ngClass]="'px-2 py-1'" >
+  <nb-card-body [ngClass]="isDockedOrSmall() ? CSS_SMALL_CARD_BODY : CSS_WIDER_CARD_BODY">
+    <div [ngClass]="isDockedOrSmall() ? CSS_SMALL_CARD_PART : CSS_WIDER_CARD_PART">
       <nb-select [size]="'small'"
                  multiple
                  [(ngModel)]="filter.tags"
@@ -32,49 +31,46 @@
       <div class="tock-divider"></div>
     </div>
 
-    <div class="col-4 d-flex justify-content-between p-0">
+    <div [ngClass]="isDockedOrSmall() ? CSS_SMALL_CARD_PART + ' my-2' : CSS_WIDER_CARD_PART">
       <nb-form-field [ngClass]="['w-100', 'd-flex']">
         <div class="tock-search-icon nb-form-field-addon nb-form-field-prefix-medium nb-form-field-addon-basic">
           <nb-icon nbPrefix pack="material-icons" icon="search"></nb-icon>
         </div>
         <div class="nb-form-control-container nb-form-field-control-with-prefix tock-search-bar">
-          <input type="text"
+          <input nbInput type="text"
                  placeholder="Search"
                  [(ngModel)]="filter.search"
                  (keyup.enter)="search()"
                  [ngModelChangeDebounceTime]="1000"
                  (ngModelChangeDebounced)="searchChange($event)"
-                 fullWidth fieldSize="medium" nbInput />
+                 fullWidth fieldSize="medium" />
         </div>
       </nb-form-field>
       <div class="tock-divider ml-2"></div>
     </div>
 
-    <div class="col-4 d-flex justify-content-end p-0">
-      <ng-container *ngIf="isDocked()">
-
-        <nb-icon [ngClass]="'tock-burger-icon'"
-                 [nbPopover]="menu"
-                 nbPopoverPlacement="bottom"
-                 nbPrefix
-                 pack="material-icons"
-                 icon="view_headline">
-        </nb-icon>
-
-      </ng-container>
-      <ng-container *ngIf="!isDocked()">
-        <button class="mr-2" nbButton status="default">Export FAQ</button>
-        <button (click)="importFaq()" class="mr-2" nbButton status="default">Import FAQ</button>
-        <button (click)="newFaqDefinition()" nbButton status="primary">New FAQ</button>
-      </ng-container>
+    <div *ngIf="!isDockedOrSmall()" [ngClass]="isDockedOrSmall() ? CSS_SMALL_CARD_PART : CSS_WIDER_CARD_PART">
+      <button class="mr-2" nbButton status="basic">Export FAQ</button>
+      <button (click)="importFaq()" class="mr-2" nbButton status="basic">Import FAQ</button>
+      <button (click)="newFaqDefinition()" nbButton status="primary">New FAQ</button>
     </div>
+
+    <nb-icon *ngIf="isDockedOrSmall()"
+             [ngClass]="'tock-burger-icon'"
+             [nbPopover]="menu"
+             nbPopoverPlacement="bottom"
+             nbPrefix
+             pack="material-icons"
+             icon="view_headline">
+    </nb-icon>
+
   </nb-card-body>
 </nb-card>
 
 <ng-template #menu>
   <nb-card [style]="{'margin-bottom': 0}">
       <button class="d-block" fullWidth nbButton ghost size="small" (click)="newFaqDefinition()" status="primary">New FAQ</button>
-      <button class="d-block" fullWidth nbButton ghost size="small" >Export FAQ</button>
-      <button class="d-block" fullWidth nbButton ghost size="small" (click)="importFaq()">Import FAQ</button>
+      <button class="d-block" fullWidth nbButton ghost size="small" status="basic">Export FAQ</button>
+      <button class="d-block" fullWidth nbButton ghost size="small" (click)="importFaq()" status="basic">Import FAQ</button>
   </nb-card>
 </ng-template>

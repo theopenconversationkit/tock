@@ -14,26 +14,23 @@
  * limitations under the License.
  */
 
-import {AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {Entry, PaginatedQuery} from 'src/app/model/commons';
 import {FaqDefinition} from '../../common/model/faq-definition';
-import { MatPaginator } from '@angular/material/paginator';
-import {DataSource, SelectionModel } from '@angular/cdk/collections';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { ReplaySubject } from 'rxjs';
-import { Sort } from '@angular/material/sort';
-import { ScrollComponent } from 'src/app/scroll/scroll.component';
-import { UserRole } from 'src/app/model/auth';
-import { StateService } from 'src/app/core-nlp/state.service';
-import { NlpService } from 'src/app/nlp-tabs/nlp.service';
-import { DialogService } from 'src/app/core-nlp/dialog.service';
-import {PaginatedResult, SearchQuery, Sentence} from 'src/app/model/nlp';
-import { of } from 'rxjs';
-import { FaqDefinitionService } from '../../common/faq-definition.service';
-import { ViewMode } from '../../common/model/view-mode';
-import { QaSidebarEditorService } from '../sidebars/qa-sidebar-editor.service';
-import { takeUntil } from 'rxjs/operators';
-import { QaSearchQuery } from '../../common/model/qa-search-query';
+import {MatPaginator} from '@angular/material/paginator';
+import {DataSource} from '@angular/cdk/collections';
+import {BehaviorSubject, Observable, of, ReplaySubject} from 'rxjs';
+import {Sort} from '@angular/material/sort';
+import {ScrollComponent} from 'src/app/scroll/scroll.component';
+import {UserRole} from 'src/app/model/auth';
+import {StateService} from 'src/app/core-nlp/state.service';
+import {DialogService} from 'src/app/core-nlp/dialog.service';
+import {PaginatedResult} from 'src/app/model/nlp';
+import {FaqDefinitionService} from '../../common/faq-definition.service';
+import {ViewMode} from '../../common/model/view-mode';
+import {takeUntil} from 'rxjs/operators';
+import {QaSearchQuery} from '../../common/model/qa-search-query';
+import {QaSidepanelEditorService} from "../sidepanels/qa-sidepanel-editor.service";
 
 
 @Component({
@@ -73,7 +70,7 @@ export class QaGridComponent extends ScrollComponent<FaqDefinition> implements A
   private sort: Sort[] = [];
 
   constructor(public readonly state: StateService,
-              private readonly sidebarEditorService: QaSidebarEditorService,
+              private readonly sidepanelEditorService: QaSidepanelEditorService,
               private readonly qaService: FaqDefinitionService,
               private readonly dialog: DialogService) {
     super(state);
@@ -108,7 +105,7 @@ export class QaGridComponent extends ScrollComponent<FaqDefinition> implements A
   }
 
   observeEditModeExit(): void {
-    this.sidebarEditorService.registerActionHandler('exit-edit-mode', this.destroy$, evt => {
+    this.sidepanelEditorService.registerActionHandler('exit-edit-mode', this.destroy$, evt => {
       this.selectedItem = undefined; // force item de-selection
 
       return of({

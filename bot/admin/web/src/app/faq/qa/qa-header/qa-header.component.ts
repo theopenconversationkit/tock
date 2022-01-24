@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { NbMenuItem } from '@nebular/theme';
-import { ReplaySubject } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
-import { StateService } from 'src/app/core-nlp/state.service';
-import {isDocked, ViewMode } from '../../common/model/view-mode';
-import { FaqDefinitionService } from '../../common/faq-definition.service';
-import { FaqQaFilter } from '../qa-grid/qa-grid.component';
-import { QaSidebarEditorService } from '../sidebars/qa-sidebar-editor.service';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {ReplaySubject} from 'rxjs';
+import {take, takeUntil} from 'rxjs/operators';
+import {StateService} from 'src/app/core-nlp/state.service';
+import {isDockedOrSmall, ViewMode} from '../../common/model/view-mode';
+import {FaqDefinitionService} from '../../common/faq-definition.service';
+import {FaqQaFilter} from '../qa-grid/qa-grid.component';
+import {QaSidepanelEditorService} from "../sidepanels/qa-sidepanel-editor.service";
 
 @Component({
   selector: 'tock-qa-header',
@@ -30,6 +29,16 @@ import { QaSidebarEditorService } from '../sidebars/qa-sidebar-editor.service';
   styleUrls: ['./qa-header.component.scss']
 })
 export class QaHeaderComponent implements OnInit {
+
+  /* Template-available constants (vertical vs horizontal layout) */
+
+  public readonly CSS_WIDER_CARD_BODY = 'd-flex align-items-center p-2 flex-wrap';
+  public readonly CSS_SMALL_CARD_BODY = 'd-flex align-items-stretch p-2 flex-column flex-nowrap';
+
+  public readonly CSS_WIDER_CARD_PART = 'col-4 d-flex justify-content-start';
+  public readonly CSS_SMALL_CARD_PART = 'row-4 d-flex justify-content-start';
+
+  /* Input/Output */
 
   @Input()
   filter: FaqQaFilter;
@@ -46,28 +55,19 @@ export class QaHeaderComponent implements OnInit {
   @Output()
   onNew = new EventEmitter<void>();
 
-  readonly menuItems: NbMenuItem[] = [
-    {
-      title: 'Export FAQ'
-    },
-    {
-      title: 'Import FAQ'
-    },
-    {
-      title: 'New FAQ'
-    }
-  ];
+  /* Form-Like state */
 
   onlyActives = false;
-
   availableTags: string[] = [];
+
+  /* Component lifecycle */
 
   private readonly destroy$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(
     private readonly state: StateService,
     private readonly qaService: FaqDefinitionService,
-    private readonly qaSidebarEditorService: QaSidebarEditorService
+    private readonly sidepanelEditorService: QaSidepanelEditorService
   ) { }
 
   ngOnInit(): void {
@@ -75,7 +75,7 @@ export class QaHeaderComponent implements OnInit {
 
     // when user saved a frequent answer, try also to refresh tags
     // Note: There exist more robust implementation, we use this because it is very simple
-    this.qaSidebarEditorService.registerOutcomeListener('save-done', 1000, this.destroy$, () => {
+    this.sidepanelEditorService.registerOutcomeListener('save-done', 1000, this.destroy$, () => {
       this.fetchAvailableTags();
     });
   }
@@ -122,8 +122,8 @@ export class QaHeaderComponent implements OnInit {
     this.onNew.next(null);
   }
 
-  isDocked(): boolean {
-    return isDocked(this.viewMode);
+  isDockedOrSmall(): boolean {
+    return isDockedOrSmall(this.viewMode);
   }
 
 

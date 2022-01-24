@@ -163,6 +163,12 @@ export class TrainGridComponent extends ScrollComponent<Sentence> implements Aft
     this.onDetails.emit(sentence);
   }
 
+  // this allow to transition from SELECT_NEVER/SELECT_ALWAYS to SELECT_SOME mode
+  // because it was costly/too complicated to recompute "All elements are selected?" at each cycle
+  onToggle(active: boolean): void {
+    this.selectionMode  = 'SELECT_SOME';
+  }
+
   refresh() {
     this.selection.clear();
     super.refresh();

@@ -22,6 +22,7 @@ import {StateService} from "../../core-nlp/state.service";
 import {Sentence} from "../../model/nlp";
 import {ReplaySubject} from 'rxjs';
 import {WithSidePanel} from '../common/mixin/with-side-panel';
+import {takeUntil} from "rxjs/operators";
 
 @Component({
   selector: 'tock-train',
@@ -29,9 +30,6 @@ import {WithSidePanel} from '../common/mixin/with-side-panel';
   styleUrls: ['./train.component.scss']
 })
 export class TrainComponent extends WithSidePanel() implements OnInit, OnDestroy {
-
-  NO_INTENT_FILTER = new FilterOption('-1', 'All');
-  UNKNOWN_INTENT_FILTER = new FilterOption('tock:unknown', 'Unknown');
 
   selectedSentence?: Sentence;
   applicationName: string;
@@ -48,6 +46,28 @@ export class TrainComponent extends WithSidePanel() implements OnInit, OnDestroy
   }
 
   ngOnInit(): void {
+    this.clearFilter();
+
+    this.applicationName = this.state.currentApplication.name;
+    this.initSidePanel(this.destroy$);
+
+    // clear things when app change
+    this.state.currentApplicationEmitter
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(_ => {
+        this.selectedSentence = undefined;
+        this.clearFilter();
+        this.grid.refresh(); // seems no need, but to be secure
+        this.undock()
+      });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next(true);
+    this.destroy$.complete();
+  }
+
+  clearFilter(): void {
     this.filter = {
       sort: [DEFAULT_FAQ_SENTENCE_SORT],
       maxIntentProbability: 100,
@@ -59,14 +79,6 @@ export class TrainComponent extends WithSidePanel() implements OnInit, OnDestroy
         return {...this};
       }
     };
-
-    this.applicationName = this.state.currentApplication.name;
-    this.initSidePanel(this.destroy$);
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 
   details(sentence: Sentence): void {

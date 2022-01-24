@@ -25,8 +25,8 @@
      }"
 >
   <tock-train-grid (onDetails)="details($event)" [viewMode]="viewMode" [filter]="filter"></tock-train-grid>
-  <tock-train-sidebar *ngIf="isDocked()"
+  <tock-train-sidepanel *ngIf="isDocked()"
                       (onSentenceSelect)="sentenceSelect($event)"
                       (onClose)="undock()"
-                      [sentence]="selectedSentence"></tock-train-sidebar>
+                      [sentence]="selectedSentence"></tock-train-sidepanel>
 </div>

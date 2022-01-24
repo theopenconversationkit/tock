@@ -17,14 +17,55 @@
 /*
  Common SCSS to all FAQ components
 
- TODO: wrap rules under mixins or something like that, to prevent duplicating whole common css per component
+ Mixins allow code to be reused explicitly only when needed, on the contrary direct scss code,
+ is imported everytime by every components.
 */
 
-.background {
-  background: inherit;
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-around;
+@import "colors";
+
+/**
+  Grid component related styles
+ */
+@mixin faq-grid-style {
+  .background {
+    background: transparent;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-around;
+  }
+}
+
+/**
+  Grid item component related styles
+ */
+@mixin faq-item-style {
+  .tock--subtle-hover {
+    transition: background .5s ease;
+
+    &:hover {
+      background: $faq-subtle-hover-color;
+    }
+  }
+}
+
+/**
+  Shared behavior
+ */
+@mixin faq-element-behavior {
+
+  /* Something  you can toggle off */
+  .tock-toggleable {
+    transition: opacity .5s ease;
+    opacity: 1;
+
+    &.tock--hidden {
+      display: none;
+    }
+
+    &.tock--closed {
+      opacity: .8;
+    }
+  }
 }
 
 .tock-divider {

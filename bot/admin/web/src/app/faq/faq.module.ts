@@ -59,7 +59,7 @@ import {NgModelChangeDebouncedDirective} from './common/directives/ng-model-chan
 import {DelayDirective} from './common/directives/delay.directive';
 
 import {TrainToolbarComponent} from './train/train-toolbar/train-toolbar.component';
-import {TrainSidebarComponent} from './train/train-sidebar/train-sidebar.component';
+import {TrainSidepanelComponent} from './train/train-sidepanel/train-sidepanel.component';
 import {TrainGridItemComponent} from "./train/train-grid-item/train-grid-item.component";
 import {TrainGridComponent} from "./train/train-grid/train-grid.component";
 import {BotAnalyticsModule} from "../analytics/analytics.module";
@@ -69,11 +69,11 @@ import {QaGridComponent} from './qa/qa-grid/qa-grid.component';
 import {QaGridItemComponent} from './qa/qa-grid-item/qa-grid-item.component';
 import {FaqDefinitionService} from "./common/faq-definition.service";
 import {InviewSidepanelComponent} from './common/components/inview-sidepanel/inview-sidepanel.component';
-import {QaSidebarImportContentComponent} from './qa/sidebars/qa-sidebar-import-content/qa-sidebar-import-content.component';
-import {QaSidebarEditorContentComponent} from './qa/sidebars/qa-sidebar-editor-content/qa-sidebar-editor-content.component';
+import {QaSidepanelImportContentComponent} from './qa/sidepanels/qa-sidepanel-import-content/qa-sidepanel-import-content.component';
+import {QaSidepanelEditorContentComponent} from './qa/sidepanels/qa-sidepanel-editor-content/qa-sidepanel-editor-content.component';
 import {ReactiveFormsModule} from "@angular/forms";
-import {QaSidebarEditorService} from './qa/sidebars/qa-sidebar-editor.service';
 import {EditUtteranceComponent} from './common/components/edit-utterance/edit-utterance.component';
+import {QaSidepanelEditorService} from "./qa/sidepanels/qa-sidepanel-editor.service";
 
 const routes: Routes = [
   {
@@ -147,14 +147,14 @@ export class FaqRoutingModule {
     NgModelChangeDebouncedDirective,
     DelayDirective,
     TrainToolbarComponent,
-    TrainSidebarComponent,
+    TrainSidepanelComponent,
     QaComponent,
     QaHeaderComponent,
     QaGridComponent,
     QaGridItemComponent,
     InviewSidepanelComponent,
-    QaSidebarImportContentComponent,
-    QaSidebarEditorContentComponent,
+    QaSidepanelImportContentComponent,
+    QaSidepanelEditorContentComponent,
     EditUtteranceComponent
   ],
   exports: [],
@@ -162,7 +162,7 @@ export class FaqRoutingModule {
     IntentsService,
     SentencesService,
     FaqDefinitionService,
-    QaSidebarEditorService
+    QaSidepanelEditorService
   ],
   entryComponents: [
     EditUtteranceComponent

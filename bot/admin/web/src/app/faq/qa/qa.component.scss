@@ -14,57 +14,40 @@
  * limitations under the License.
  */
 
-.tock-qa-viewport.tock--full_width, .tock-qa-viewport.tock--full_width--small {
+@import  '../common/_colors.scss';
+@import  '../common/_sidepanel_layout.scss';
+@import '~@nebular/theme/styles/theming';
+@import '~@nebular/theme/styles/themes';
 
-  > tock-qa-grid {
-    flex: 0 0 100%;
+@include faq-sidepanel-layout(400px); /* dock/undock side panels */
+
+@include nb-install-component {
+
+  .tock-tab {
+    background-color: nb-theme(color-primary-transparent-200);
+    border-color: nb-theme(color-primary-500);
+    color: nb-theme(color-primary-500);
+    padding: 10px 27px;
+    margin: 0;
+    border-right: 1px solid nb-theme(background-basic-color-1);
+    border-bottom: 1px solid nb-theme(color-primary-500);
+    cursor: pointer;
+    user-select: none;
+
+    &.tock--active {
+      background-color: nb-theme(color-primary-500);
+      border-color: nb-theme(color-primary-500);
+      color: nb-theme(background-basic-color-1);
+    }
   }
 
-  > .tock-qa-sidebar {
-    flex: 0 0 0%;
-  }
-}
-
-
-.tock-qa-viewport.tock--docked-panel {
-
-  > tock-qa-grid {
-    flex: 1 1 auto;
-  }
-
-  > .tock-qa-sidebar {
-    flex: 0 0 400px;
-  }
-}
-
-tock-qa-header.tock--docked {
-  display: block;
-  width: calc(100% - 440px);
-}
-
-.tock-tab {
-  background-color: rgba(51, 102, 255, 0.16);
-  border-color: #3366ff;
-  color: #3366ff;
-  padding: 10px 27px;
-  margin: 0;
-  border-right: 1px solid #fff;
-  border-bottom: 1px solid #3366ff;
-  cursor: pointer;
-  user-select: none;
-
-  &.tock--active {
-    background-color: #3366ff;
-    border-color: #3366ff;
-    color: #ffffff;
-  }
 }
 
 .tock-form-problems {
   position: absolute;
   user-select: none;
   top: 100px;
-  color: orangered;
+  color: $faq-problembox-fg-color;
   right: 12px;
 
   nb-icon {
@@ -74,6 +57,6 @@ tock-qa-header.tock--docked {
 }
 
 .tock-editor-warns > nb-list > nb-list-item {
-  color: orangered;
+  color: $faq-problembox-fg-color;
 }
 

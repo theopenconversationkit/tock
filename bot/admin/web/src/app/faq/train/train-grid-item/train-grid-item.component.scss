@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-@import url(../../common/_base_faq.scss);
+@import '../../common/_base_faq.scss';
+@include faq-item-style(); /* Better button hover style */
 
 .tock-col-a {
   flex: 0 0 4%;
@@ -61,13 +62,7 @@ nb-card,nb-card-body {
     border: 0;
 }
 
-.tock--subtle-hover {
-  transition: background .5s ease;
 
-  &:hover {
-    background: #eee;
-  }
-}
 
 .tock-date-zone {
   position: absolute;
@@ -83,6 +78,8 @@ nb-card,nb-card-body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+
 
 nb-card {
   transition: opacity .5s ease;

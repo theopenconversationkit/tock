@@ -14,18 +14,31 @@
  * limitations under the License.
  */
 
-@import url(../../common/_base_faq.scss);
+@import  '../../common/_base_faq.scss';
+@import '~@nebular/theme/styles/theming';
+@import '~@nebular/theme/styles/themes';
 
+@include faq-grid-style();
+
+@include nb-install-component { /* Nebular theme dependent classes */
+
+  /* When item selected, apply special style */
+  tock-qa-grid-item.tock--selected {
+    border-left: 7px solid nb-theme(color-primary-500);
+    padding-left: 10px
+  }
+}
+
+/* Grid should take available space */
 :host {
   flex: 0 0 100%;
 }
 
+/* Image displayed when there is no data */
 .tock-robot {
   width: 8%;
   margin-right: 20px;
 }
 
-tock-qa-grid-item.tock--selected {
-  border-left: 7px solid #3366ff;
-  padding-left: 10px
-}
+
+
