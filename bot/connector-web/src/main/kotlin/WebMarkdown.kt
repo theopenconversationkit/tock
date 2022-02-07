@@ -20,11 +20,10 @@ import org.commonmark.node.Node
 import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
 import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 object WebMarkdown {
 
-    val regex = "`{3}([\\S\\s]*?)`{3}|`([^`]*)`|~~([\\S\\s]*?)~~"
+    internal val regex = "`{3}([\\S\\s]*?)`{3}|`([^`]*)`|~~([\\S\\s]*?)~~".toRegex()
 
     fun markdown(text: String?): String? {
         return if (text != null) {
@@ -77,10 +76,9 @@ object WebMarkdown {
         }
     }
 
-    fun extractAllDataWithRegex(regexValue: String?, value: String): String {
+    internal fun extractAllDataWithRegex(regex: Regex, value: String): String {
         val data = ArrayList<String>()
-        val pattern = Pattern.compile(regexValue, Pattern.MULTILINE)
-        val matcher: Matcher = pattern.matcher(value)
+        val matcher: Matcher = regex.toPattern().matcher(value)
         var tmp = value
 
         while (matcher.find()) {
