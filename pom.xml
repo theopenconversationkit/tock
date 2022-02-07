@@ -15,7 +15,8 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ai.tock</groupId>
@@ -63,6 +64,7 @@
         <emoji>5.0</emoji>
         <commons-codec>1.15</commons-codec>
         <commons-lang>3.12.0</commons-lang>
+        <commonmark>0.18.1</commonmark>
         <json>20211205</json>
         <httpclient>4.5.13</httpclient>
         <simmetrics>4.1.1</simmetrics>
@@ -502,6 +504,11 @@
                 <artifactId>simmetrics-core</artifactId>
                 <version>${simmetrics}</version>
             </dependency>
+            <dependency>
+                <groupId>org.commonmark</groupId>
+                <artifactId>commonmark</artifactId>
+                <version>${commonmark}</version>
+            </dependency>
 
             <dependency>
                 <groupId>io.github.microutils</groupId>
@@ -832,7 +839,7 @@
             <name>Apache License, Version 2.0</name>
             <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
-            <comments />
+            <comments/>
         </license>
     </licenses>
 
