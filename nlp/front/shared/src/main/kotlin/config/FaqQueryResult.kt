@@ -16,13 +16,8 @@
 
 package ai.tock.nlp.front.shared.config
 
-import ai.tock.nlp.core.EntitiesRegexp
-import ai.tock.shared.security.UserLogin
 import ai.tock.translator.I18nLabel
 import org.litote.kmongo.Id
-import org.litote.kmongo.newId
-import java.time.Instant
-import java.util.*
 
 data class FaqQueryResult(
     val _id: Id<FaqDefinition>?,
@@ -41,9 +36,17 @@ data class FaqQueryResult(
     val utterances: List<ClassifiedSentence>,
 
     val faq: IntentDefinition,
-)
-{
-    fun toFaqDefinitionDetailed(faqQueryResult: FaqQueryResult, i18nLabel: I18nLabel) : FaqDefinitionDetailed{
-        return FaqDefinitionDetailed(faqQueryResult._id, faqQueryResult.intentId, faqQueryResult.i18nId, faqQueryResult.tags, faqQueryResult.utterances, faqQueryResult.faq, i18nLabel)
+) {
+    fun toFaqDefinitionDetailed(faqQueryResult: FaqQueryResult, i18nLabel: I18nLabel): FaqDefinitionDetailed {
+        return FaqDefinitionDetailed(
+            faqQueryResult._id,
+            faqQueryResult.intentId,
+            faqQueryResult.i18nId,
+            faqQueryResult.tags,
+            faqQueryResult.utterances,
+            faqQueryResult.faq,
+            i18nLabel
+        )
     }
+
 }

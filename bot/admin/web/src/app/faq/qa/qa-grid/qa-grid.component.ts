@@ -31,6 +31,7 @@ import {ViewMode} from '../../common/model/view-mode';
 import {takeUntil} from 'rxjs/operators';
 import {QaSearchQuery} from '../../common/model/qa-search-query';
 import {QaSidepanelEditorService} from "../sidepanels/qa-sidepanel-editor.service";
+import {FaqDefinitionResult} from "../../common/model/faq-definition-result";
 
 
 @Component({
@@ -140,8 +141,8 @@ export class QaGridComponent extends ScrollComponent<FaqDefinition> implements A
     return result;
   }
 
-  search(query: PaginatedQuery): Observable<PaginatedResult<FaqDefinition>> {
-    return this.qaService.searchQas(this.toSearchQuery(query));
+  search(query: PaginatedQuery): Observable<FaqDefinitionResult> {
+    return this.qaService.searchFaq(this.toSearchQuery(query));
   }
 
   dataEquals(q1: FaqDefinition, q2: FaqDefinition): boolean {

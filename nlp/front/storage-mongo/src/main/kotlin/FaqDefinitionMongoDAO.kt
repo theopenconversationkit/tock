@@ -18,23 +18,23 @@ package ai.tock.nlp.front.storage.mongo
 
 import ai.tock.nlp.front.service.storage.FaqDefinitionDAO
 import ai.tock.nlp.front.shared.config.*
+import ai.tock.shared.ensureUniqueIndex
+import ai.tock.shared.watch
 import ai.tock.translator.I18nLabel
+import ai.tock.translator.I18nLabel_
 import com.mongodb.client.MongoCollection
+import com.mongodb.client.model.ReplaceOptions
 import mu.KotlinLogging
 import org.litote.kmongo.*
 import org.litote.kmongo.reactivestreams.getCollection
-import ai.tock.shared.watch
-import ai.tock.shared.ensureUniqueIndex
-import ai.tock.translator.I18nLabel_
-import com.mongodb.client.model.ReplaceOptions
-import java.util.*
+import kotlin.collections.ArrayList
 
 
 object FaqDefinitionMongoDAO : FaqDefinitionDAO {
 
     private val logger = KotlinLogging.logger {}
 
-    private val col: MongoCollection<FaqDefinition> by lazy {
+    internal val col: MongoCollection<FaqDefinition> by lazy {
 
         val c = MongoFrontConfiguration.database.getCollection<FaqDefinition>().apply {
             ensureUniqueIndex(FaqDefinition::i18nId, FaqDefinition::intentId)
@@ -59,26 +59,25 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
     }
 
 
-    override fun getQAItemByIntentId(id: Id<IntentDefinition>): FaqDefinition? {
+    override fun getFaqDefinitionByIntentId(id: Id<IntentDefinition>): FaqDefinition? {
         return col.findOneById(FaqDefinition::intentId eq id)
     }
 
-    override fun getQAItemByIntentIds(intentIds: Set<Id<IntentDefinition>>): List<FaqDefinition> {
+    override fun getFaqDefinitionByIntentIds(intentIds: Set<Id<IntentDefinition>>): List<FaqDefinition> {
         return col.find(FaqDefinition::intentId `in` intentIds).into(ArrayList())
     }
 
-    override fun getQAItemByTags(tags: Set<String>): List<FaqDefinition> {
+    override fun getFaqDefinitionByTags(tags: Set<String>): List<FaqDefinition> {
         return col.find(FaqDefinition::tags `in` tags).into(ArrayList())
     }
 
-    override fun getQAItemByI18nId(id: Id<I18nLabel>): FaqDefinition? {
+    override fun getFaqDefinitionByI18nId(id: Id<I18nLabel>): FaqDefinition? {
         return col.findOne(FaqDefinition::i18nId eq id)
     }
 
-    override fun getQAItemByI18nIds(ids: Set<Id<I18nLabel>>): List<FaqDefinition>? {
+    override fun getFaqDefinitionByI18nIds(ids: Set<Id<I18nLabel>>): List<FaqDefinition>? {
         return col.find(FaqDefinition::i18nId `in` ids).into(ArrayList())
     }
-
 
     override fun deleteByNamespaceAndId(namespace: String, id: Id<I18nLabel>) {
         col.deleteOne(I18nLabel_.Namespace eq namespace, I18nLabel_._id eq id)
@@ -101,15 +100,22 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
 
     private const val INTENT_DEFINITION_COLLECTON = "intent_definition"
 
-    override fun getFaqDetails(query: FaqQuery, applicationId: String): List<FaqQueryResult> {
+    override fun getFaqDetails(query: FaqQuery, applicationId: String, i18nIds: List<Id<I18nLabel>>?): List<FaqQueryResult> {
+        //TODO : count total in aggregation
+
         return col.aggregate<FaqQueryResult>(
             lookup(
                 CLASSIFIED_SENTENCE_COLLECTION,
                 FaqDefinition::intentId.name,
-                ClassifiedSentence::classification.name + Classification::intentId.name, //classification.intentId
-                FaqQueryResult::utterances.name
+                ClassifiedSentence::classification.name + "." + Classification::intentId.name, //classification.intentId
+                FaqQueryResult::utterances.name,
             ),
-            lookup(INTENT_DEFINITION_COLLECTON, FaqDefinition::intentId.name, IntentDefinition::_id.name, "faq"),
+            lookup(
+                INTENT_DEFINITION_COLLECTON,
+                FaqDefinition::intentId.name,
+                IntentDefinition::_id.name,
+                FaqQueryResult::faq.name
+            ),
             FaqQueryResult::faq.unwind(),
             match(
                 or(
@@ -117,19 +123,28 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                         //regex is use like contains because not accessible with this writing
                         if (query.search == null) null else FaqQueryResult::faq / IntentDefinition::name regex query.search!!,
                         if (query.search == null) null else FaqQueryResult::faq / IntentDefinition::description regex query.search!!,
-//                        if (query.search == null) null else FaqQueryResult::utterances.filteredPosOp("text") / ClassifiedSentence::text regex query.search!!,
+                        if (query.search == null) null else FaqQueryResult::utterances.allPosOp / ClassifiedSentence::text regex query.search!!,
+                        //i18nIds are optional and can be used if the request has i18nsIds
+                        if (i18nIds == null) null else FaqQueryResult::i18nId `in` i18nIds,
                     )
                 ),
                 and(
                     listOfNotNull(
+                        FaqQueryResult::faq / IntentDefinition::applications `in` applicationId,
                         if (query.tags.isEmpty()) null else FaqQueryResult::tags eq query.tags,
                     )
                 ),
             ),
+            sort(
+                ascending(
+                    FaqQueryResult::utterances / ClassifiedSentence::updateDate
+                )
+            ),
             sample(query.size),
             skip(query.start.toInt())
-        )
-            .mapNotNull { it }.toList()
+        ).mapNotNull {
+            it
+        }.toList()
     }
 
 }
