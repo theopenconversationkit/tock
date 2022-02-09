@@ -17,20 +17,17 @@
 package ai.tock.bot.admin.model
 
 import ai.tock.nlp.admin.model.PaginatedQuery
-import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.FaqQuery
 import ai.tock.nlp.front.shared.config.FaqStatus
-import org.litote.kmongo.Id
 
-data class SearchFaqRequest(
+data class FaqSearchRequest(
     val tags: List<String>,
     val search: String?,
     val enabled: Boolean,
     val user: String?,
     val allButUser: String?,
-//    val applicationId: Id<ApplicationDefinition>
 ) : PaginatedQuery() {
-    fun toFaqQuery(request: SearchFaqRequest, faqStatus: FaqStatus): FaqQuery {
+    fun toFaqQuery(request: FaqSearchRequest, faqStatus: FaqStatus): FaqQuery {
         return FaqQuery(
             request.start,
             request.size,
