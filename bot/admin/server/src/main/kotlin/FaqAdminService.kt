@@ -18,13 +18,15 @@ package ai.tock.bot.admin
 
 import ai.tock.bot.admin.model.CreateI18nLabelRequest
 import ai.tock.bot.admin.model.FaqDefinitionRequest
-import ai.tock.bot.admin.model.SearchFaqRequest
+import ai.tock.bot.admin.model.FaqDefinitionSearchResult
+import ai.tock.bot.admin.model.FaqSearchRequest
 import ai.tock.nlp.admin.AdminService
 import ai.tock.nlp.front.service.faqDefinitionDAO
 import ai.tock.nlp.front.shared.config.*
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.security.UserLogin
+import ai.tock.shared.supportedLanguages
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.translator.*
 import kotlinx.coroutines.runBlocking
@@ -125,25 +127,128 @@ object FaqAdminService {
         }
     }
 
-    fun searchFAQ(query: SearchFaqRequest, applicationDefinition: ApplicationDefinition): Set<FaqDefinition> {
-        val faqDefinitionDetails = faqDefinitionDAO.getFaqDetails(query.toFaqQuery(query,FaqStatus.draft), applicationDefinition._id.toString()).map {
-            i18nDao.getLabelById(it.i18nId)?.
-            let { i18nLabel ->
-                it.toFaqDefinitionDetailed(it,
-                    i18nLabel
+    /**
+     * Search and find FAQ and their details in database and convert them to
+     */
+    fun searchFAQ(query: FaqSearchRequest, applicationDefinition: ApplicationDefinition): FaqDefinitionSearchResult {
+        val faqResults = LinkedHashSet<FaqDefinitionRequest>()
+
+        //find predicates from i18n answers
+        val i18nLabels = query.search?.let { findPredicatesFrom18nLabels(applicationDefinition, query.search) }
+        val i18nIds = i18nLabels?.map { it._id }?.toList()
+
+        // list of the detailed found faq (i18nIds are optional)
+        val detailedFaq = faqDefinitionDAO.getFaqDetails(
+            query.toFaqQuery(query, FaqStatus.draft),
+            applicationDefinition._id.toString(),
+            i18nIds
+        )
+
+        // find details from the previous query with i18n filters
+        if (i18nLabels != null) {
+            val tockBot = detailedFaq
+                .map { faqQueryResult ->
+                    i18nLabels.filter { it._id == faqQueryResult.i18nId }
+                        .map { i18nLabel ->
+                            faqQueryResult.toFaqDefinitionDetailed(
+                                faqQueryResult,
+                                i18nLabel
+                            )
+                        }
+                    // flatten to avoid list of set
+                }.flatten().distinct().toSet()
+            faqResults.addAll(addToFaqRequestSet(tockBot, applicationDefinition))
+        } else {
+            // find details from the i18n found in the faqDefinitionDao
+            val tockFrontOnly =
+                detailedFaq.map {
+                    i18nDao.getLabelById(it.i18nId)!!.let { i18nLabel ->
+                        it.toFaqDefinitionDetailed(
+                            it,
+                            i18nLabel
+                        )
+                    }
+                }.toSet()
+            faqResults.addAll(addToFaqRequestSet(tockFrontOnly, applicationDefinition))
+        }
+        logger.debug { "faqResults $faqResults" }
+
+        return toFaqDefinitionSearchResult(query.start, faqResults)
+    }
+
+    private fun toFaqDefinitionSearchResult(start: Long, faqSet: Set<FaqDefinitionRequest>): FaqDefinitionSearchResult {
+        logger.debug { "FaqSet $faqSet" }
+        return FaqDefinitionSearchResult(faqSet.toList(), faqSet.size.toLong(), start)
+    }
+
+    /**
+     * Create a set or FaqDefinitionRequest from FaqDefinitionDetailed
+     * @sample FaqDefinitionRequest
+     */
+    private fun addToFaqRequestSet(
+        setFaqDetailed: Set<FaqDefinitionDetailed>,
+        applicationDefinition: ApplicationDefinition
+    ): Set<FaqDefinitionRequest> {
+
+        return setFaqDetailed
+            // filter empty uterrances if any empty data to not create them
+            .filter { it.utterances.isNotEmpty() }
+            // map the FaqDefinition to the set
+            .map { faqDefinition ->
+                //TODO : use an utterrance from the faq to determine the status and langage (what about multilanguage?)
+                logger.debug { "FAQ $faqDefinition" }
+                val currentUterrance = faqDefinition.utterances.map { it }
+                logger.debug { "uterrances $currentUterrance from ${faqDefinition.faq.name} and ${faqDefinition._id}" }
+                val currentLanguage = currentUterrance.map { it.language }.first()
+                // find status from ClassifiedSentences Status correspondance
+                val currentStatus =
+                    currentUterrance.map { it.status }.first()
+                        .let { findFaqStatusfromClassifiedSentenceStatus(it) }
+
+                FaqDefinitionRequest(
+                    faqDefinition._id.toString(),
+                    //TODO : multilangage ?
+                    currentLanguage,
+                    applicationDefinition._id,
+                    null,
+                    null,
+                    faqDefinition.faq.name,
+                    faqDefinition.faq.description.orEmpty(),
+                    //TODO : not a list but only label per Faq definition to proceed thought things
+                    faqDefinition.utterances.map { it.text },
+                    faqDefinition.tags,
+                    //TODO : what about alternatives ?
+                    faqDefinition.i18nLabel.i18n.map { it.label }.firstOrNull().orEmpty(),
+                    currentStatus,
+                    //TODO : one validated and the others not ?
+                    faqDefinition.i18nLabel.i18n.map { it.validated }.first(),
                 )
-            }
-        }.toSet()
+            }.toSet()
+    }
 
-        if(query.search != null && query.search.isNotBlank()) {
-            val intentLabels = findPredicatesFrom18nLabels(applicationDefinition,query.search).map{
-                (i18nLabel) ->
-                {
-                    faqDefinitionDetails.find { i18nLabel == it?.i18nId }
+    private fun findClassifiedSentenceStatus(status: Boolean): Set<ClassifiedSentenceStatus> {
+        return if (status) {
+            setOf(ClassifiedSentenceStatus.model, ClassifiedSentenceStatus.validated)
+        } else {
+            setOf(
+                ClassifiedSentenceStatus.inbox,
+                ClassifiedSentenceStatus.deleted
+            )
+        }
+    }
 
-                }
+    private fun findFaqStatusfromClassifiedSentenceStatus(status: ClassifiedSentenceStatus): FaqStatus {
+        return when (status) {
+            ClassifiedSentenceStatus.model -> FaqStatus.model
+            ClassifiedSentenceStatus.validated -> FaqStatus.model
+            ClassifiedSentenceStatus.deleted -> FaqStatus.deleted
+            ClassifiedSentenceStatus.inbox -> FaqStatus.draft
+            else -> {
+                logger.error("Cannot retrieve FaqStatus from ClassifiedSentenceStatus ${status}, default to draft")
+                FaqStatus.draft
             }
         }
+    }
 
     private fun findPredicatesFrom18nLabels(
         applicationDefinition: ApplicationDefinition,
@@ -154,6 +259,7 @@ object FaqAdminService {
             I18nLabelFilter(search, FAQ_CATEGORY, I18nLabelStateFilter.VALIDATED)
         ).toSet()
     }
+
     private fun createOrUpdateIntent(
         query: FaqDefinitionRequest,
         applicationDefinition: ApplicationDefinition
@@ -178,7 +284,7 @@ object FaqAdminService {
         query: FaqDefinitionRequest,
         applicationDefinition: ApplicationDefinition
     ): I18nLabel {
-        val faqItem = faqDefinitionDAO.getQAItemByIntentId(intentId)
+        val faqItem = faqDefinitionDAO.getFaqDefinitionByIntentId(intentId)
         //Remove the existing label in case the value is the same or no more the same
         return if (faqItem != null && faqItem.i18nId.toString().isNotBlank()) {
             //update existing label

@@ -39,9 +39,11 @@ import ai.tock.nlp.admin.model.ApplicationScopedQuery
 import ai.tock.nlp.admin.model.TranslateReport
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
+import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.provide
+import ai.tock.shared.security.NoEncryptionPassException
 import ai.tock.shared.security.TockUserRole.*
 import ai.tock.translator.I18nDAO
 import ai.tock.translator.I18nLabel
@@ -784,12 +786,20 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/faq/search",
-            nlpUser, logger<SearchFaqRequest>("Search FAQ")
+            nlpUser, logger<FaqSearchRequest>("Search FAQ")
         )
-        { context, request: SearchFaqRequest ->
+        { context, request: FaqSearchRequest ->
             val applicationDefinition = BotAdminService.front.getApplicationByNamespaceAndName(request.namespace, request.applicationName)
             if (context.organization == applicationDefinition?.namespace) {
+                try {
                 FaqAdminService.searchFAQ(request, applicationDefinition)
+                } catch (t: NoEncryptionPassException) {
+                    logger.error(t)
+                    badRequest("Error obfuscating faq: ${t.message}")
+                } catch (t: Exception) {
+                    logger.error(t)
+                    badRequest("Error searching faq: ${t.message}")
+                }
             } else {
                 unauthorized()
             }
