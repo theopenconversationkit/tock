@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-package ai.tock.nlp.front.shared.config
+import {PaginatedResult} from "../../../../../target/frontend/src/app/model/nlp";
+import {FaqDefinition} from "./faq-definition";
 
-import org.litote.kmongo.Id
+export class FaqDefinitionResult implements PaginatedResult<FaqDefinition> {
 
-class FaqQuery(
-    val start: Long = 0,
-    val size: Int = 1,
-    val search: String? = null,
-    val searchMark: SearchMark? = null,
-    val tags: List<String>,
-    val enabled: Boolean,
-    val status: FaqStatus,
-    val user :String?,
-    val allButUser: String?,
-    val applicationName: String,
-    val namespace: String
-)
+  constructor(public rows: FaqDefinition[] = [],
+              public total: number,
+              public start: number,
+              public end: number) {
+  }
+
+  static fromJSON(json?: any): FaqDefinitionResult {
+    const value = Object.create(FaqDefinitionResult.prototype);
+
+    return  Object.assign(value, json, {
+      rows: json.faq,
+    })
+  }
+
+}

@@ -24,6 +24,7 @@ import {QaSearchQuery} from './model/qa-search-query';
 import {Utterance} from './model/utterance';
 import {RestService} from "../../core-nlp/rest/rest.service";
 import {map, takeUntil} from "rxjs/operators";
+import {FaqDefinitionResult} from "./model/faq-definition-result";
 
 /**
  * Faq Definition operations for FAQ module
@@ -120,86 +121,12 @@ export class FaqDefinitionService {
           return JSON.parse(JSON.stringify(request));
         }));
   }
-
-  searchFaq(request: QaSearchQuery, cancel$: Observable<any> = empty()): Observable<FaqDefinition> {
-    return this.rest.post('/faq/search', request)
-      .pipe(
-        takeUntil(cancel$),
-        map(_ => {
-          return JSON.parse(JSON.stringify(request));
-        }));
-  }
-
-  // fake real backend call
-  searchQas(query: QaSearchQuery, cancel$: Observable<any> = empty()): Observable<PaginatedResult<FaqDefinition>> {
-
-    // Because for historical reason, PaginatedResilt hold a application name instead of application id
-    const queryApplicationId = this.appIdByAppName.get(query.applicationName);
-
-    // guard against empty case
-    if (query.start < 0 || query.size <= 0) {
-      return of({
-        start: 0,
-        end: 0,
-        rows: [],
-        total: this.mockData.length
-      });
-    }
-
-    // simulate backend query (filtering on status, application name etc..)
-    const dataTest = this.searchFaq(query,cancel$).toPromise()
-    const data = this.mockData
-      .filter(fq => {
-        const predicates: Array<(FaqDefinition) => boolean> = [];
-
-        predicates.push(
-          (fq: FaqDefinition) => fq.status !== 'deleted'
-        );
-
-        predicates.push(
-          (fq: FaqDefinition) => fq.applicationId === queryApplicationId
-        );
-
-        const lowerSearch = (query.search || '').toLowerCase().trim();
-        if (lowerSearch) {
-          predicates.push(
-            (fq: FaqDefinition) => (fq.answer || '').toLowerCase().includes(lowerSearch) ||
-              (fq.description || '').toLowerCase().includes(lowerSearch) ||
-              fq.utterances.some((u: Utterance) => u.toLowerCase().includes(lowerSearch)) ||
-              (fq.title || '').toLowerCase().includes(lowerSearch)
-          );
-        }
-
-        if (query.tags.length > 0) {
-          predicates.push(
-            (fq: FaqDefinition) => fq.tags.some(
-              tag => query.tags.some(queryTag => queryTag.toLowerCase() === tag.toLowerCase())
-            )
-          );
-        }
-
-        if (query.enabled) {
-          predicates.push(
-            (fq) => (true === fq.enabled)
-          );
-        }
-
-        // Return true when all criterias pass
-        return predicates.reduce((accepted, predicate) => {
-          return accepted && predicate(fq);
-        }, true);
-      });
-
-    // simulate backend pagination
-    const chunk = data.slice(query.start, query.start + query.size);
-
-    // simulate backend output
-    return of({
-      start: query.start,
-      end: query.start + query.size,
-      rows: chunk,
-      total: data.length
-    });
+  searchFaq(request: QaSearchQuery, cancel$: Observable<any> = empty()): Observable<FaqDefinitionResult> {
+    return this.rest.post('/faq/search', request).pipe(
+      takeUntil(cancel$),
+      map(json => {
+        return FaqDefinitionResult.fromJSON(json)
+      }));
   }
 
   getAvailableTags(applicationId: string, language: string): Observable<string[]> {

@@ -32,15 +32,21 @@ interface FaqDefinitionDAO {
 
     fun deleteByNamespaceAndId(namespace: String, id: Id<I18nLabel>)
 
-    fun getQAItemByI18nId(id: Id<I18nLabel>): FaqDefinition?
+    fun getFaqDefinitionByI18nId(id: Id<I18nLabel>): FaqDefinition?
 
-    fun getQAItemByI18nIds(ids: Set<Id<I18nLabel>>): List<FaqDefinition>?
+    fun getFaqDefinitionByI18nIds(ids: Set<Id<I18nLabel>>): List<FaqDefinition>?
 
-    fun getQAItemByIntentId(id: Id<IntentDefinition>): FaqDefinition?
+    fun getFaqDefinitionByIntentId(id: Id<IntentDefinition>): FaqDefinition?
 
-    fun getQAItemByIntentIds(intentIds: Set<Id<IntentDefinition>>): List<FaqDefinition>?
+    fun getFaqDefinitionByIntentIds(intentIds: Set<Id<IntentDefinition>>): List<FaqDefinition>?
 
-    fun getQAItemByTags(tags: Set<String>): List<FaqDefinition>
+    fun getFaqDefinitionByTags(tags: Set<String>): List<FaqDefinition>
 
-    fun getFaqDetails(query: FaqQuery, applicationId: String): List<FaqQueryResult>
+    /**
+     * Get the aggregated Faq
+     */
+    fun getFaqDetails(query: FaqQuery, applicationId: String, i18nIds: List<Id<I18nLabel>>? = null): List<FaqQueryResult>
+
+
+
 }
