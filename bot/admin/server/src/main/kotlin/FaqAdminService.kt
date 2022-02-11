@@ -127,6 +127,10 @@ object FaqAdminService {
         }
     }
 
+    fun searchTags(applicationId: String): List<String> {
+        return faqDefinitionDAO.getTags(applicationId)
+    }
+
     /**
      * Search and find FAQ and their details in database and convert them to
      */

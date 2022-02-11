@@ -24,6 +24,8 @@ import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabel_
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.ReplaceOptions
+import com.mongodb.client.model.UnwindOptions
+import config.FaqDefinitionTag
 import mu.KotlinLogging
 import org.litote.kmongo.*
 import org.litote.kmongo.reactivestreams.getCollection
@@ -98,53 +100,33 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
 
     private const val CLASSIFIED_SENTENCE_COLLECTION = "classified_sentence"
 
-    private const val INTENT_DEFINITION_COLLECTON = "intent_definition"
+    private const val INTENT_DEFINITION_COLLECTION = "intent_definition"
 
-    override fun getFaqDetails(query: FaqQuery, applicationId: String, i18nIds: List<Id<I18nLabel>>?): List<FaqQueryResult> {
-        //TODO : count total in aggregation
 
-        return col.aggregate<FaqQueryResult>(
+    override fun getTags(applicationId: String): List<String> {
+
+        return col.aggregate<FaqDefinitionTag>(
             lookup(
-                CLASSIFIED_SENTENCE_COLLECTION,
-                FaqDefinition::intentId.name,
-                ClassifiedSentence::classification.name + "." + Classification::intentId.name, //classification.intentId
-                FaqQueryResult::utterances.name,
-            ),
-            lookup(
-                INTENT_DEFINITION_COLLECTON,
+                INTENT_DEFINITION_COLLECTION,
                 FaqDefinition::intentId.name,
                 IntentDefinition::_id.name,
-                FaqQueryResult::faq.name
+                FaqDefinitionDetailed::faq.name
             ),
-            FaqQueryResult::faq.unwind(),
             match(
-                or(
-                    listOfNotNull(
-                        //regex is use like contains because not accessible with this writing
-                        if (query.search == null) null else FaqQueryResult::faq / IntentDefinition::name regex query.search!!,
-                        if (query.search == null) null else FaqQueryResult::faq / IntentDefinition::description regex query.search!!,
-                        if (query.search == null) null else FaqQueryResult::utterances.allPosOp / ClassifiedSentence::text regex query.search!!,
-                        //i18nIds are optional and can be used if the request has i18nsIds
-                        if (i18nIds == null) null else FaqQueryResult::i18nId `in` i18nIds,
-                    )
-                ),
                 and(
                     listOfNotNull(
-                        FaqQueryResult::faq / IntentDefinition::applications `in` applicationId,
-                        if (query.tags.isEmpty()) null else FaqQueryResult::tags eq query.tags,
+                        FaqDefinitionDetailed::faq / IntentDefinition::applications `in` applicationId,
                     )
-                ),
-            ),
-            sort(
-                ascending(
-                    FaqQueryResult::utterances / ClassifiedSentence::updateDate
                 )
             ),
-            sample(query.size),
-            skip(query.start.toInt())
-        ).mapNotNull {
-            it
-        }.toList()
+            FaqDefinition::tags.unwind(unwindOptions = UnwindOptions().preserveNullAndEmptyArrays(false)),
+            project(
+                excludeId(),
+                document(FaqDefinitionTag::tag from FaqDefinition::tags)
+            ),
+//            sort(ascending(FaqDefinitionTag::tag))
+        ).map { it.tag }.toList()
     }
 
 }
+

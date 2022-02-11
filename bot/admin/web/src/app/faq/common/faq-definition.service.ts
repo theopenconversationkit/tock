@@ -129,6 +129,14 @@ export class FaqDefinitionService {
       }));
   }
 
+  getAvailableTags(applicationId: string, cancel$: Observable<any> = empty()): Observable<string[]> {
+      return this.rest.post('/faq/tags', applicationId).pipe(
+          takeUntil(cancel$),
+          map(tags => {
+            return JSON.parse(JSON.stringify(tags));
+          }));
+  }
+
   getAvailableTags(applicationId: string, language: string): Observable<string[]> {
     const tagSet = new Set<string>();
 
