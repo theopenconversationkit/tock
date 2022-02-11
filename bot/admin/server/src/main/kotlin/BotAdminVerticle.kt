@@ -784,6 +784,20 @@ open class BotAdminVerticle : AdminVerticle() {
 
         }
 
+        blockingJsonPost("/faq/tags", nlpUser) { context, applicationId : String ->
+            val applicationDefinition = BotAdminService.front.getApplicationById(applicationId.toId())
+            if (context.organization == applicationDefinition?.namespace) {
+                try {
+                    FaqAdminService.searchTags(applicationDefinition._id.toString())
+                } catch (t: Exception) {
+                    logger.error(t)
+                    badRequest("Error searching faq tags: ${t.message}")
+                }
+            } else {
+                unauthorized()
+            }
+        }
+
         blockingJsonPost(
             "/faq/search",
             nlpUser, logger<FaqSearchRequest>("Search FAQ")

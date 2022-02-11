@@ -47,6 +47,10 @@ interface FaqDefinitionDAO {
      */
     fun getFaqDetails(query: FaqQuery, applicationId: String, i18nIds: List<Id<I18nLabel>>? = null): List<FaqQueryResult>
 
+    fun getFaqDetailsCount(query: FaqQuery, applicationId: String, i18nIds: List<Id<I18nLabel>>? = null): Pair<List<FaqQueryResult>,Long>
+
+    fun getTags(applicationId: String): List<String>
+
 
 
 }

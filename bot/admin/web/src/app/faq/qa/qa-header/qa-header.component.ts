@@ -87,9 +87,8 @@ export class QaHeaderComponent implements OnInit {
 
   fetchAvailableTags(): void {
     const applicationId = this.state.currentApplication._id;
-    const language = this.state.currentLocale;
 
-    this.qaService.getAvailableTags(applicationId, language)
+    this.qaService.getAvailableTags(applicationId)
       .pipe(take(1), takeUntil(this.destroy$))
       .subscribe(tags => {
         this.availableTags = tags;
