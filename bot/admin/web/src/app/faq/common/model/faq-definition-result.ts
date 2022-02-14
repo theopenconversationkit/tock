@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import {PaginatedResult} from "../../../../../target/frontend/src/app/model/nlp";
+
 import {FaqDefinition} from "./faq-definition";
+import {PaginatedResult} from "./../../../model/nlp";
 
 export class FaqDefinitionResult implements PaginatedResult<FaqDefinition> {
 

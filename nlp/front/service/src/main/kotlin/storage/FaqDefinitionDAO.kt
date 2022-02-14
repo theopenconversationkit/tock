@@ -31,8 +31,6 @@ interface FaqDefinitionDAO {
 
     fun listenFaqDefinitionChanges(listener: () -> Unit)
 
-    fun deleteByNamespaceAndId(namespace: String, id: Id<I18nLabel>)
-
     fun getFaqDefinitionByI18nId(id: Id<I18nLabel>): FaqDefinition?
 
     fun getFaqDefinitionByI18nIds(ids: Set<Id<I18nLabel>>): List<FaqDefinition>?
@@ -46,13 +44,10 @@ interface FaqDefinitionDAO {
     /**
      * Get the aggregated Faq and total count
      */
-    fun getFaqDetailsWithCount(
-        query: FaqQuery,
-        applicationId: String,
-        i18nIds: List<Id<I18nLabel>>? = null
-    ): Pair<List<FaqQueryResult>, Long>
+    fun getFaqDetailsWithCount(query: FaqQuery, applicationId: String, i18nIds: List<Id<I18nLabel>>? = null): Pair<List<FaqQueryResult>,Long>
 
     fun getTags(applicationId: String): List<String>
+
 
 
 }

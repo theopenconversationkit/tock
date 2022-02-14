@@ -20,7 +20,6 @@ import ai.tock.nlp.front.service.storage.FaqDefinitionDAO
 import ai.tock.nlp.front.shared.config.*
 import ai.tock.shared.watch
 import ai.tock.translator.I18nLabel
-import ai.tock.translator.I18nLabel_
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.ReplaceOptions
 import com.mongodb.client.model.UnwindOptions
@@ -63,7 +62,6 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
         return col.findOneById(id)
     }
 
-
     override fun getFaqDefinitionByIntentId(id: Id<IntentDefinition>): FaqDefinition? {
         return col.findOne(FaqDefinition::intentId eq id)
     }
@@ -82,10 +80,6 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
 
     override fun getFaqDefinitionByI18nIds(ids: Set<Id<I18nLabel>>): List<FaqDefinition>? {
         return col.find(FaqDefinition::i18nId `in` ids).into(ArrayList())
-    }
-
-    override fun deleteByNamespaceAndId(namespace: String, id: Id<I18nLabel>) {
-        col.deleteOne(I18nLabel_.Namespace eq namespace, I18nLabel_._id eq id)
     }
 
     override fun save(faqDefinition: FaqDefinition) {

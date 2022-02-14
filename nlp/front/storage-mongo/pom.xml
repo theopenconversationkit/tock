@@ -62,11 +62,6 @@
             <groupId>ai.tock</groupId>
             <artifactId>tock-translator-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>ai.tock</groupId>
-            <artifactId>tock-bot-storage-mongo</artifactId>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
