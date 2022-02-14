@@ -65,7 +65,7 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
     this.clearFilter();
 
     // until server really store things
-    this.qaService.setupMockData({
+    this.qaService.setupData({
       applicationName: this.state.currentApplication.name,
       applicationId: this.state.currentApplication._id,
       language: this.state.currentLocale
