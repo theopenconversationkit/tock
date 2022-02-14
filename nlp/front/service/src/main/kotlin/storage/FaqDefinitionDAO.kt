@@ -18,17 +18,18 @@ package ai.tock.nlp.front.service.storage
 
 import ai.tock.nlp.front.shared.config.*
 import ai.tock.translator.I18nLabel
+import config.FaqDefinitionTag
 import org.litote.kmongo.Id
 
 interface FaqDefinitionDAO {
 
-    fun deleteQAItemById(id: Id<FaqDefinition>)
+    fun deleteFaqDefinitionById(id: Id<FaqDefinition>)
 
     fun save(faqDefinition: FaqDefinition)
 
-    fun getQAItemById(id: Id<FaqDefinition>): FaqDefinition?
+    fun getFaqDefinitionById(id: Id<FaqDefinition>): FaqDefinition?
 
-    fun listenQAItemChanges(listener: () -> Unit)
+    fun listenFaqDefinitionChanges(listener: () -> Unit)
 
     fun deleteByNamespaceAndId(namespace: String, id: Id<I18nLabel>)
 
@@ -43,14 +44,15 @@ interface FaqDefinitionDAO {
     fun getFaqDefinitionByTags(tags: Set<String>): List<FaqDefinition>
 
     /**
-     * Get the aggregated Faq
+     * Get the aggregated Faq and total count
      */
-    fun getFaqDetails(query: FaqQuery, applicationId: String, i18nIds: List<Id<I18nLabel>>? = null): List<FaqQueryResult>
-
-    fun getFaqDetailsCount(query: FaqQuery, applicationId: String, i18nIds: List<Id<I18nLabel>>? = null): Pair<List<FaqQueryResult>,Long>
+    fun getFaqDetailsWithCount(
+        query: FaqQuery,
+        applicationId: String,
+        i18nIds: List<Id<I18nLabel>>? = null
+    ): Pair<List<FaqQueryResult>, Long>
 
     fun getTags(applicationId: String): List<String>
-
 
 
 }

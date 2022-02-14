@@ -73,6 +73,12 @@ export class QaHeaderComponent implements OnInit {
   ngOnInit(): void {
     this.fetchAvailableTags();
 
+    this.state.currentApplicationEmitter // when bot switch
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(a => {
+        this.fetchAvailableTags();
+      });
+
     // when user saved a frequent answer, try also to refresh tags
     // Note: There exist more robust implementation, we use this because it is very simple
     this.sidepanelEditorService.registerOutcomeListener('save-done', 1000, this.destroy$, () => {

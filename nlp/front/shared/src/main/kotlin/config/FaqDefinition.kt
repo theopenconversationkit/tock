@@ -19,6 +19,7 @@ package ai.tock.nlp.front.shared.config
 import ai.tock.translator.I18nLabel
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
+import java.time.Instant
 
 data class FaqDefinition(
 
@@ -30,13 +31,17 @@ data class FaqDefinition(
     /**
      * The intent id.
      */
-    val intentId : Id<IntentDefinition>,
+    val intentId: Id<IntentDefinition>,
 
     /**
      * The i18n label id.
      */
-    val i18nId : Id<I18nLabel>,
+    val i18nId: Id<I18nLabel>,
 
     val tags: List<String>,
+
+    val creationDate: Instant,
+
+    val updateDate: Instant,
 
     )

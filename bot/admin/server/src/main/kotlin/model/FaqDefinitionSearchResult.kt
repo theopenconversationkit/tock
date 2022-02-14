@@ -17,8 +17,8 @@
 package ai.tock.bot.admin.model
 
 data class FaqDefinitionSearchResult(
-    val faq: List<FaqDefinitionRequest> = emptyList(),
     val total: Long,
-    val start: Long= 0,
-    val end: Long= 10
+    val start: Long = 0,
+    val end: Long = 10,
+    val faq: List<FaqDefinitionRequest> = emptyList(),
 )

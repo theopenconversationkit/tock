@@ -18,7 +18,6 @@ package ai.tock.nlp.front.storage.mongo
 
 import ai.tock.nlp.front.service.storage.FaqDefinitionDAO
 import ai.tock.nlp.front.shared.config.*
-import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.watch
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabel_
@@ -29,7 +28,6 @@ import config.FaqDefinitionTag
 import mu.KotlinLogging
 import org.litote.kmongo.*
 import org.litote.kmongo.reactivestreams.getCollection
-import kotlin.collections.ArrayList
 
 
 object FaqDefinitionMongoDAO : FaqDefinitionDAO {
@@ -39,7 +37,12 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
     internal val col: MongoCollection<FaqDefinition> by lazy {
 
         val c = MongoFrontConfiguration.database.getCollection<FaqDefinition>().apply {
-            ensureUniqueIndex(FaqDefinition::i18nId, FaqDefinition::intentId)
+            ensureUniqueIndex(
+                FaqDefinition::intentId,
+                FaqDefinition::i18nId,
+                FaqDefinition::tags,
+                FaqDefinition::updateDate
+            )
         }
         c
     }
@@ -48,21 +51,21 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
         MongoFrontConfiguration.asyncDatabase.getCollection<FaqDefinition>()
     }
 
-    override fun listenQAItemChanges(listener: () -> Unit) {
+    override fun listenFaqDefinitionChanges(listener: () -> Unit) {
         asyncCol.watch { listener() }
     }
 
-    override fun deleteQAItemById(id: Id<FaqDefinition>) {
+    override fun deleteFaqDefinitionById(id: Id<FaqDefinition>) {
         col.deleteOneById(FaqDefinition::_id eq id)
     }
 
-    override fun getQAItemById(id: Id<FaqDefinition>): FaqDefinition? {
-        return col.findOneById(FaqDefinition::_id eq id)
+    override fun getFaqDefinitionById(id: Id<FaqDefinition>): FaqDefinition? {
+        return col.findOneById(id)
     }
 
 
     override fun getFaqDefinitionByIntentId(id: Id<IntentDefinition>): FaqDefinition? {
-        return col.findOneById(FaqDefinition::intentId eq id)
+        return col.findOne(FaqDefinition::intentId eq id)
     }
 
     override fun getFaqDefinitionByIntentIds(intentIds: Set<Id<IntentDefinition>>): List<FaqDefinition> {
@@ -91,7 +94,7 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                 FaqDefinition::intentId eq faqDefinition.intentId,
                 FaqDefinition::i18nId eq faqDefinition.i18nId,
                 FaqDefinition::_id eq faqDefinition._id,
-                FaqDefinition::tags eq faqDefinition.tags
+                FaqDefinition::tags eq faqDefinition.tags,
             ),
             faqDefinition,
             ReplaceOptions().upsert(true)
@@ -102,9 +105,71 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
 
     private const val INTENT_DEFINITION_COLLECTION = "intent_definition"
 
+    override fun getFaqDetailsWithCount(
+        query: FaqQuery,
+        applicationId: String,
+        i18nIds: List<Id<I18nLabel>>?
+    ): Pair<List<FaqQueryResult>, Long> {
+        with(query) {
+            val baseAggregation = arrayListOf(
+                sort(ascending(FaqDefinition::i18nId)),
+                lookup(
+                    INTENT_DEFINITION_COLLECTION,
+                    FaqDefinition::intentId.name,
+                    IntentDefinition::_id.name,
+                    FaqQueryResult::faq.name
+                ),
+                lookup(
+                    CLASSIFIED_SENTENCE_COLLECTION,
+                    FaqDefinition::intentId.name,
+                    ClassifiedSentence::classification.name + "." + Classification::intentId.name, //classification.intentId
+                    FaqQueryResult::utterances.name,
+                ),
+                FaqQueryResult::faq.unwind(),
+                match(
+                    or(
+                        listOfNotNull(
+                            //regex is use like contains because not accessible with this writing
+                            if (search == null) null else FaqQueryResult::faq / IntentDefinition::name regex search!!,
+                            if (search == null) null else FaqQueryResult::faq / IntentDefinition::description regex search!!,
+                            if (search == null) null else FaqQueryResult::utterances.allPosOp / ClassifiedSentence::text regex search!!,
+                            //i18nIds are optional and can be used if the request has i18nsIds
+                            if (i18nIds == null) null else FaqQueryResult::i18nId `in` i18nIds,
+                        )
+                    ),
+                    and(
+                        listOfNotNull(
+                            FaqQueryResult::faq / IntentDefinition::applications `in` applicationId,
+                            if (tags.isEmpty()) null else FaqQueryResult::tags eq tags,
+                        )
+                    )
+                ),
+                sort(
+                    ascending(
+                        FaqQueryResult::faq / IntentDefinition::name
+                    )
+                ),
+            )
+            logger.debug { baseAggregation.map { it.json } }
+            //counting total aggregation without skip and limit
+            val count = col.aggregate(baseAggregation, FaqQueryResult::class.java).count()
+            logger.debug { "count : $count" }
+            var aggregationWithSkipAndLimit =
+                if (start.toInt() > 0) baseAggregation.plusElement(skip(start.toInt())) else baseAggregation
+            aggregationWithSkipAndLimit.plusElement(limit(size))
+            return if (count > start) {
+                val res = col.aggregate(aggregationWithSkipAndLimit, FaqQueryResult::class.java)
+                Pair(
+                    res.mapNotNull { it }.sortedBy { it.faq._id.toString() },
+                    count.toLong()
+                )
+            } else {
+                Pair(emptyList(), 0)
+            }
+        }
+    }
 
     override fun getTags(applicationId: String): List<String> {
-
         return col.aggregate<FaqDefinitionTag>(
             lookup(
                 INTENT_DEFINITION_COLLECTION,
@@ -120,11 +185,15 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                 )
             ),
             FaqDefinition::tags.unwind(unwindOptions = UnwindOptions().preserveNullAndEmptyArrays(false)),
+            group(
+                FaqDefinition::tags,
+                FaqDefinition::tags.first(FaqQueryResult::tags)
+            ),
             project(
                 excludeId(),
                 document(FaqDefinitionTag::tag from FaqDefinition::tags)
             ),
-//            sort(ascending(FaqDefinitionTag::tag))
+            sort(ascending(FaqDefinitionTag::tag))
         ).map { it.tag }.toList()
     }
 

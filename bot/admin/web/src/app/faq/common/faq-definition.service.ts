@@ -35,51 +35,28 @@ export class FaqDefinitionService {
   appIdByAppName = new Map<string, string>(); // for mock purpose only
 
   // generate fake data for pagination
-  mockData: FaqDefinition[] = [];
+  faqData: FaqDefinitionResult = new FaqDefinitionResult([],0,0,0);
 
   constructor(private rest: RestService) {}
 
   // add random data at initialization until real backend is there instead
-  setupMockData({applicationId, applicationName, language}:
+  setupData({applicationId, applicationName, language}:
                   { applicationId: string, applicationName: string, language: string }): void {
 
     this.appIdByAppName.set(applicationName, applicationId);
 
     // when there is already data for given bot / language
-    if (this.mockData.some((fq: FaqDefinition) => fq.applicationId === applicationId && fq.language == language)) {
+    if (this.faqData.rows.some((fq: FaqDefinition) => fq.applicationId === applicationId && fq.language == language)) {
       // no need to add mock data
       return;
     }
-
-    const seed = (new Date().getTime()); // timestamp as random seed
-    const now = new Date();
-
-    const someData: FaqDefinition[] = Array<number>(3).fill(0).map((_, index) => {
-      const template = MOCK_FREQUENT_QUESTIONS[index % MOCK_FREQUENT_QUESTIONS.length];
-
-      return {
-        id: '' + (index + 1) + '_' + seed,
-        utterances: [`${template.utterances[0]} ${index + 1}`],
-        answer: `${template.answer} ${index + 1}`,
-        title: template.title, // pick random (rotating) title
-        enabled: (index < 5),
-        status: template.status,
-        tags: (template.tags || []).slice(),
-        applicationId,
-        language,
-        creationDate: now,
-        updateDate: now
-      };
-    });
-
-    someData.forEach(fq => this.mockData.push(fq));
   }
 
   // fake real backend call
   delete(fq: FaqDefinition, cancel$: Observable<any> = empty()): Observable<FaqDefinition> {
     let newFq: FaqDefinition | undefined;
 
-    this.mockData = this.mockData.map(item => {
+    this.faqData.rows = this.faqData.rows.map(item => {
       if (fq.id && item.id === fq.id) {
         newFq = JSON.parse(JSON.stringify(fq)); // deep copy
         newFq.status = 'deleted';
@@ -92,12 +69,10 @@ export class FaqDefinitionService {
     return (newFq === undefined) ? Observable.throw("Item not found") : of(newFq);
   }
 
-  // fake real backend call
-  save(fq: FaqDefinition, cancel$: Observable<any> = empty()): Observable<FaqDefinition> {
-
+  save(faq: FaqDefinition, cancel$: Observable<any> = empty()): Observable<FaqDefinition> {
+    /*
     let dirty = false;
-
-    //TODO : search here
+    //TODO : search here to not save if this is the same
     this.mockData = this.mockData.map(item => {
       if (fq.id && item.id === fq.id) {
         dirty = true;
@@ -109,23 +84,22 @@ export class FaqDefinitionService {
     });
 
     if (!dirty) {
-      return this.newFaq(fq, cancel$);
-    }
-  }
+     */
 
-  newFaq(request: FaqDefinition, cancel$: Observable<any> = empty()): Observable<FaqDefinition> {
-    return this.rest.post('/faq/new', request)
+    return this.rest.post('/faq/new', faq)
       .pipe(
         takeUntil(cancel$),
         map(_ => {
-          return JSON.parse(JSON.stringify(request));
+          return JSON.parse(JSON.stringify(faq));
         }));
   }
+
   searchFaq(request: QaSearchQuery, cancel$: Observable<any> = empty()): Observable<FaqDefinitionResult> {
     return this.rest.post('/faq/search', request).pipe(
       takeUntil(cancel$),
       map(json => {
-        return FaqDefinitionResult.fromJSON(json)
+        this.faqData = FaqDefinitionResult.fromJSON(json)
+        return this.faqData
       }));
   }
 
@@ -135,17 +109,6 @@ export class FaqDefinitionService {
           map(tags => {
             return JSON.parse(JSON.stringify(tags));
           }));
-  }
-
-  getAvailableTags(applicationId: string, language: string): Observable<string[]> {
-    const tagSet = new Set<string>();
-
-    // simulate backend aggregation query
-    this.mockData
-      .filter(fq => fq.applicationId === applicationId && fq.language === language)
-      .forEach(fq => fq.tags.forEach(tagSet.add.bind(tagSet)));
-
-    return of(Array.from(tagSet));
   }
 
   activate(fq: FaqDefinition, cancel$: Observable<any> = empty()): Observable<FaqDefinition> {
@@ -161,7 +124,7 @@ export class FaqDefinitionService {
 
     let dirty = false;
 
-    this.mockData = this.mockData.map(item => {
+    this.faqData.rows = this.faqData.rows.map(item => {
       if (fq.id && item.id === fq.id) {
         dirty = true;
         fq.enabled = (enabled === true);
@@ -172,7 +135,7 @@ export class FaqDefinitionService {
     });
 
     if (dirty) {
-      return of(this.mockData.filter(item => fq.id && item.id === fq.id)[0]);
+      return of(this.faqData.rows.filter(item => fq.id && item.id === fq.id)[0]);
     } else {
       return empty();
     }

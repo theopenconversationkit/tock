@@ -18,6 +18,7 @@ package ai.tock.nlp.front.shared.config
 
 import ai.tock.translator.I18nLabel
 import org.litote.kmongo.Id
+import java.time.Instant
 
 data class FaqQueryResult(
     val _id: Id<FaqDefinition>?,
@@ -33,6 +34,10 @@ data class FaqQueryResult(
 
     val tags: List<String>,
 
+    val creationDate: Instant,
+
+    val updateDate: Instant,
+
     val utterances: List<ClassifiedSentence>,
 
     val faq: IntentDefinition,
@@ -43,6 +48,8 @@ data class FaqQueryResult(
             faqQueryResult.intentId,
             faqQueryResult.i18nId,
             faqQueryResult.tags,
+            faqQueryResult.creationDate,
+            faqQueryResult.updateDate,
             faqQueryResult.utterances,
             faqQueryResult.faq,
             i18nLabel
