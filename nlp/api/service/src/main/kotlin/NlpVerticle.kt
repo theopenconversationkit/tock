@@ -50,6 +50,8 @@ class NlpVerticle : WebVerticle() {
 
     private val protectPath = verticleBooleanProperty("tock_nlp_protect_path", false)
 
+    private val checkEntitiesDefaultHealthcheck = verticleBooleanProperty("tock_nlp_check_healthcheck", false)
+
     override val rootPath: String = property("tock_nlp_root", "/rest/nlp")
 
     private val executor: Executor by injector.instance()
@@ -195,8 +197,12 @@ class NlpVerticle : WebVerticle() {
 
     override fun defaultHealthcheck(): (RoutingContext) -> Unit {
         return {
-            executor.executeBlocking {
-                it.response().setStatusCode(if (FrontClient.healthcheck()) 200 else 500).end()
+            if (checkEntitiesDefaultHealthcheck) {
+                executor.executeBlocking {
+                    it.response().setStatusCode(if (FrontClient.healthcheck()) 200 else 500).end()
+                }
+            } else {
+                it.response().end()
             }
         }
     }
