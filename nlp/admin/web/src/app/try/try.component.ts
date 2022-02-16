@@ -46,21 +46,6 @@ export class TryComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  createUploadListener(evt: any) : void {
-    const file: File = evt.target.files[0];
-    let fileReader = new FileReader();
-    fileReader.onload = (e) => {
-
-      // By lines
-      var lines = (<string> fileReader.result).split(/\r?\n/);
-      for (let line of lines){
-        this.onTry(line);
-      }
-    };
-
-    fileReader.readAsText(file);
-  }
-
   onTry(value: string) {
     const app = this.state.currentApplication;
     const language = this.state.currentLocale;
