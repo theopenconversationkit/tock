@@ -15,16 +15,15 @@
  */
 
 import {Injectable} from '@angular/core';
-import {MOCK_FREQUENT_QUESTIONS} from '../common/mock/qa.mock';
 
 import {empty, Observable, of} from 'rxjs';
-import {PaginatedResult} from 'src/app/model/nlp';
 import {FaqDefinition} from './model/faq-definition';
 import {QaSearchQuery} from './model/qa-search-query';
-import {Utterance} from './model/utterance';
 import {RestService} from "../../core-nlp/rest/rest.service";
 import {map, takeUntil} from "rxjs/operators";
 import {FaqDefinitionResult} from "./model/faq-definition-result";
+import {StateService} from "../../core-nlp/state.service";
+import {Intent} from "../../model/nlp";
 
 /**
  * Faq Definition operations for FAQ module
@@ -35,13 +34,14 @@ export class FaqDefinitionService {
   appIdByAppName = new Map<string, string>(); // for mock purpose only
 
   // generate fake data for pagination
-  faqData: FaqDefinitionResult = new FaqDefinitionResult([],0,0,0);
+  faqData: FaqDefinitionResult = new FaqDefinitionResult([], 0, 0, 0);
 
-  constructor(private rest: RestService) {}
+  constructor(private rest: RestService, private state: StateService) {
+  }
 
   // add random data at initialization until real backend is there instead
   setupData({applicationId, applicationName, language}:
-                  { applicationId: string, applicationName: string, language: string }): void {
+              { applicationId: string, applicationName: string, language: string }): void {
 
     this.appIdByAppName.set(applicationName, applicationId);
 
@@ -90,8 +90,40 @@ export class FaqDefinitionService {
       .pipe(
         takeUntil(cancel$),
         map(_ => {
+          this.createOrUpdateIntentState(faq)
           return JSON.parse(JSON.stringify(faq));
         }));
+  }
+
+  // add the current save to the state
+
+  //util inline method for label
+  private formatDisplayedLabel = (fq: FaqDefinition) => fq.title.replace(/[^A-Za-z_-]*/g, '').toLowerCase().trim();
+
+  /**
+   * Manage to update or add the intent in the state service
+   * @param fq
+   * @private
+   */
+  private createOrUpdateIntentState(fq: FaqDefinition){
+    // in Intents screen frontend the displayedLabel is the intent name
+    const intent = new Intent(this.formatDisplayedLabel(fq),
+      this.state.user.organization,
+      [],
+      [this.state.currentApplication._id],
+      [],
+      [],
+      fq.title,
+      fq.description,
+      'faq',
+      fq.id
+    )
+
+    if(!this.state.findIntentById(fq.id) || this.state.findIntentByName(fq.title)){
+      this.state.addIntent(intent)
+    } else {
+      this.state.updateIntent(intent)
+    }
   }
 
   searchFaq(request: QaSearchQuery, cancel$: Observable<any> = empty()): Observable<FaqDefinitionResult> {
@@ -104,11 +136,11 @@ export class FaqDefinitionService {
   }
 
   getAvailableTags(applicationId: string, cancel$: Observable<any> = empty()): Observable<string[]> {
-      return this.rest.post('/faq/tags', applicationId).pipe(
-          takeUntil(cancel$),
-          map(tags => {
-            return JSON.parse(JSON.stringify(tags));
-          }));
+    return this.rest.post('/faq/tags', applicationId).pipe(
+      takeUntil(cancel$),
+      map(tags => {
+        return JSON.parse(JSON.stringify(tags));
+      }));
   }
 
   activate(fq: FaqDefinition, cancel$: Observable<any> = empty()): Observable<FaqDefinition> {
