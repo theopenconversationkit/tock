@@ -16,7 +16,10 @@
 
 package ai.tock.bot.admin
 
-import ai.tock.bot.admin.model.*
+import ai.tock.bot.admin.model.CreateI18nLabelRequest
+import ai.tock.bot.admin.model.FaqDefinitionRequest
+import ai.tock.bot.admin.model.FaqDefinitionSearchResult
+import ai.tock.bot.admin.model.FaqSearchRequest
 import ai.tock.nlp.admin.AdminService
 import ai.tock.nlp.front.service.faqDefinitionDAO
 import ai.tock.nlp.front.shared.config.*
@@ -27,6 +30,7 @@ import ai.tock.shared.vertx.WebVerticle
 import ai.tock.translator.*
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import org.apache.commons.lang3.StringUtils
 import org.litote.kmongo.Id
 import java.time.Instant
 import java.util.*
@@ -292,6 +296,8 @@ object FaqAdminService {
             applicationDefinition.namespace,
             setOf(applicationDefinition._id),
             entities = emptySet(),
+            // label without accents and withespace and numbers and lowercase
+            label= StringUtils.deleteWhitespace(StringUtils.replaceAll(StringUtils.stripAccents(query.title.lowercase()),"[^A-Za-z_-]","")),
             description = query.description,
             category = FAQ_CATEGORY
         )
