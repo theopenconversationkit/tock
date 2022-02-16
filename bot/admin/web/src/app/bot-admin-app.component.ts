@@ -100,7 +100,7 @@ export class BotAdminAppComponent implements OnInit, OnDestroy {
         hidden: this.state.hasRole(UserRole.botUser)
       },
       {
-        title: 'Questions & Answers',
+        title: 'FAQ',
         icon: {
           icon: 'question_answer',
           pack: 'material-icons'

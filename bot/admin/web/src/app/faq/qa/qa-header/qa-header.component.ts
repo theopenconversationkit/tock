@@ -38,6 +38,9 @@ export class QaHeaderComponent implements OnInit {
   public readonly CSS_WIDER_CARD_PART = 'col-4 d-flex justify-content-start';
   public readonly CSS_SMALL_CARD_PART = 'row-4 d-flex justify-content-start';
 
+  public readonly CSS_WIDER_CARD_BUTTON_PART = 'col-4 d-flex justify-content-end';
+  public readonly CSS_SMALL_CARD_BUTTON_PART = 'row-4 d-flex justify-content-end';
+
   /* Input/Output */
 
   @Input()
