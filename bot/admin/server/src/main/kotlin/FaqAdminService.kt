@@ -292,13 +292,13 @@ object FaqAdminService {
         applicationDefinition: ApplicationDefinition
     ): IntentDefinition? {
         val newIntent = IntentDefinition(
-            query.title,
+            query.title.trim(),
             applicationDefinition.namespace,
             setOf(applicationDefinition._id),
             entities = emptySet(),
             // label without accents and withespace and numbers and lowercase
             label= StringUtils.deleteWhitespace(StringUtils.replaceAll(StringUtils.stripAccents(query.title.lowercase()),"[^A-Za-z_-]","")),
-            description = query.description,
+            description = query.description.trim(),
             category = FAQ_CATEGORY
         )
 
@@ -321,14 +321,14 @@ object FaqAdminService {
                 faqItem.i18nId,
                 applicationDefinition.namespace,
                 FAQ_CATEGORY,
-                linkedSetOf(I18nLocalizedLabel(query.language, UserInterfaceType.textChat, query.answer))
+                linkedSetOf(I18nLocalizedLabel(query.language, UserInterfaceType.textChat, query.answer.trim()))
             )
             i18nDao.saveIfNotExist(listOf(i18nLabel))
             i18nLabel
         } else {
             BotAdminService.createI18nRequest(
                 applicationDefinition.namespace, CreateI18nLabelRequest(
-                    query.answer, query.language,
+                    query.answer.trim(), query.language,
                     FAQ_CATEGORY
                 )
             )

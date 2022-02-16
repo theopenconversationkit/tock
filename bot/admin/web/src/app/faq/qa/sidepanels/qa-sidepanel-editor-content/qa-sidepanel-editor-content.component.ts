@@ -185,12 +185,12 @@ export class QaSidepanelEditorContentComponent implements OnInit, OnDestroy, OnC
         id: this.fq.id,
         applicationId: this.fq.applicationId,
         language: this.fq.language,
-        tags: Array.from(this.tags),
-        description: '' + (this.newFaqForm.controls['description'].value || ''),
-        answer: '' + (this.newFaqForm.controls['answer'].value || ''),
-        title: '' + (this.newFaqForm.controls['name'].value || ''),
+        tags: Array.from(this.tags).map(el => el.trim()),
+        description: '' + (this.newFaqForm.controls['description'].value.trim() || ''),
+        answer: '' + (this.newFaqForm.controls['answer'].value.trim() || ''),
+        title: '' + (this.newFaqForm.controls['name'].value.trim() || ''),
         status: this.fq.status,
-        utterances,
+        utterances: Array.from(utterances.map(el => el.trim())),
         enabled: (true === this.newFaqForm.controls['active'].value)
       };
 
