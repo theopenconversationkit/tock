@@ -88,7 +88,7 @@ export function WithSidePanel<T extends Constructor>(BaseClass: T= (class {} as 
     }
 
     private adjustViewMode(): void {
-      if (window.innerWidth < 1620) {
+      if (window.innerWidth < 1350) {
         this.viewMode = toggleSmallScreenMode(this.viewMode);
       } else {
         this.viewMode = toggleWideScreenMode(this.viewMode);
