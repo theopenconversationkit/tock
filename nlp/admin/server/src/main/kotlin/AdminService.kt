@@ -156,6 +156,9 @@ object AdminService {
         }
     }
 
+    /**
+     * Create or Update Intent and search the existing one by the intent qualifiedName
+     */
     fun createOrUpdateIntent(namespace: String, intent: IntentDefinition): IntentDefinition? {
         return if (namespace == intent.namespace) {
             val intentId = front.getIntentIdByQualifiedName(intent.qualifiedName)
