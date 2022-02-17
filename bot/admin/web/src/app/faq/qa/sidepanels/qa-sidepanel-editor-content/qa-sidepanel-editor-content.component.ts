@@ -183,6 +183,7 @@ export class QaSidepanelEditorContentComponent implements OnInit, OnDestroy, OnC
       // validate and construct entity from form data
       const fq: FaqDefinition = {
         id: this.fq.id,
+        intentId: this.fq.intentId,
         applicationId: this.fq.applicationId,
         language: this.fq.language,
         tags: Array.from(this.tags).map(el => el.trim()),

@@ -85,9 +85,9 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
     override fun save(faqDefinition: FaqDefinition) {
         col.replaceOneWithFilter(
             and(
+                FaqDefinition::_id eq faqDefinition._id,
                 FaqDefinition::intentId eq faqDefinition.intentId,
                 FaqDefinition::i18nId eq faqDefinition.i18nId,
-                FaqDefinition::_id eq faqDefinition._id,
                 FaqDefinition::tags eq faqDefinition.tags,
             ),
             faqDefinition,

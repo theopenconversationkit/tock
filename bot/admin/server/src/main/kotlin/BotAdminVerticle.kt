@@ -771,7 +771,7 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonPost(
-            "/faq/new",
+            "/faq",
             nlpUser,
             logger<FaqDefinitionRequest>("Create FAQ")
         ) { context, query: FaqDefinitionRequest ->
