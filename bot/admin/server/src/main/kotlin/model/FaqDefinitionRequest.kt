@@ -24,7 +24,7 @@ import java.util.*
 
 data class FaqDefinitionRequest(
     val id: String?,
-    val intentId: String,
+    val intentId: String?,
     val language: Locale,
     val applicationId: Id<ApplicationDefinition>,
     val creationDate: Instant?,

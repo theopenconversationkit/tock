@@ -80,7 +80,6 @@ export class FaqDefinitionService {
           }));
   }
 
-  // add the current save to the state
 
   //util inline method for label
   private formatDisplayedLabel = (fq: FaqDefinition) => fq.title.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Za-z_-]*/g, '').toLowerCase().trim();
@@ -103,8 +102,8 @@ export class FaqDefinitionService {
       'faq',
       fq.intentId
     )
-
-    if(!this.state.findIntentById(fq.intentId)){
+    const foundIntent = this.state.findIntentById(fq.intentId)
+    if(foundIntent == undefined){
       this.state.addIntent(intent)
     } else {
       this.state.updateIntent(intent)
