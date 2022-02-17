@@ -32,6 +32,8 @@ import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.apache.commons.lang3.StringUtils
 import org.litote.kmongo.Id
+import org.litote.kmongo.newId
+import org.litote.kmongo.toId
 import java.time.Instant
 import java.util.*
 
@@ -122,6 +124,7 @@ object FaqAdminService {
                 if (existingFaq != null) {
                     faqDefinitionDAO.save(
                         FaqDefinition(
+                            _id = existingFaq._id,
                             intentId = existingFaq.intentId,
                             i18nId = existingFaq.i18nId,
                             tags = existingFaq.tags,
@@ -235,11 +238,12 @@ object FaqAdminService {
                 FaqDefinitionRequest(
                     faqDefinition._id.toString(),
                     //TODO : multilangage ?
+                    faqDefinition.intentId.toString(),
                     currentLanguage,
                     applicationDefinition._id,
                     faqDefinition.creationDate,
                     faqDefinition.updateDate,
-                    faqDefinition.faq.name,
+                    faqDefinition.faq.label.orEmpty(),
                     faqDefinition.faq.description.orEmpty(),
                     //TODO : not a list but only label per Faq definition to proceed thought things
                     faqDefinition.utterances.map { it.text },
@@ -291,18 +295,34 @@ object FaqAdminService {
         query: FaqDefinitionRequest,
         applicationDefinition: ApplicationDefinition
     ): IntentDefinition? {
-        val newIntent = IntentDefinition(
-            query.title.trim(),
-            applicationDefinition.namespace,
-            setOf(applicationDefinition._id),
+
+        val intent = IntentDefinition(
+            name = StringUtils.deleteWhitespace(
+                StringUtils.replaceAll(
+                    StringUtils.stripAccents(query.title.lowercase()),
+                    "[^A-Za-z_-]",
+                    ""
+                )
+            ),
+            namespace = applicationDefinition.namespace,
+            applications = setOf(applicationDefinition._id),
             entities = emptySet(),
             // label without accents and withespace and numbers and lowercase
-            label= StringUtils.deleteWhitespace(StringUtils.replaceAll(StringUtils.stripAccents(query.title.lowercase()),"[^A-Za-z_-]","")),
+            label = query.title.trim(),
             description = query.description.trim(),
-            category = FAQ_CATEGORY
+            category = FAQ_CATEGORY,
+            _id = createOrFindFaqDefinitionId(query),
         )
 
-        return AdminService.createOrUpdateIntent(applicationDefinition.namespace, newIntent)
+        return AdminService.createOrUpdateIntent(applicationDefinition.namespace, intent)
+    }
+
+    private fun createOrFindFaqDefinitionId(query: FaqDefinitionRequest): Id<IntentDefinition> {
+        return if (query.id != null) {
+            faqDefinitionDAO.getFaqDefinitionById(query.id.toId())!!.intentId
+        } else {
+            newId()
+        }
     }
 
     /**

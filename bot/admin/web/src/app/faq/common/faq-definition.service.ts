@@ -70,35 +70,20 @@ export class FaqDefinitionService {
   }
 
   save(faq: FaqDefinition, cancel$: Observable<any> = empty()): Observable<FaqDefinition> {
-    /*
-    let dirty = false;
-    //TODO : search here to not save if this is the same
-    this.mockData = this.mockData.map(item => {
-      if (fq.id && item.id === fq.id) {
-        dirty = true;
-        fq.updateDate = new Date();
-        return fq;
-      } else {
-        return item;
-      }
-    });
-
-    if (!dirty) {
-     */
-
-    return this.rest.post('/faq/new', faq)
-      .pipe(
-        takeUntil(cancel$),
-        map(_ => {
-          this.createOrUpdateIntentState(faq)
-          return JSON.parse(JSON.stringify(faq));
-        }));
+      return this.rest.post('/faq', faq)
+        .pipe(
+          takeUntil(cancel$),
+          map(_ => {
+            // add the current save to the state
+            this.createOrUpdateIntentState(faq)
+            return JSON.parse(JSON.stringify(faq));
+          }));
   }
 
   // add the current save to the state
 
   //util inline method for label
-  private formatDisplayedLabel = (fq: FaqDefinition) => fq.title.replace(/[^A-Za-z_-]*/g, '').toLowerCase().trim();
+  private formatDisplayedLabel = (fq: FaqDefinition) => fq.title.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Za-z_-]*/g, '').toLowerCase().trim();
 
   /**
    * Manage to update or add the intent in the state service
@@ -116,10 +101,10 @@ export class FaqDefinitionService {
       fq.title,
       fq.description,
       'faq',
-      fq.id
+      fq.intentId
     )
 
-    if(!this.state.findIntentById(fq.id) || this.state.findIntentByName(fq.title)){
+    if(!this.state.findIntentById(fq.intentId)){
       this.state.addIntent(intent)
     } else {
       this.state.updateIntent(intent)

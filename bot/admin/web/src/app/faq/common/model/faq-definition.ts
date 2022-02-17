@@ -20,6 +20,7 @@ export type FaqDefinitionStatus = 'draft' | 'model' | 'deleted'; // Adapt to you
 
 export type FaqDefinition = {
   id?: string,
+  intentId: string,
   language: string,
   applicationId: string,
   creationDate?: Date,
@@ -36,6 +37,7 @@ export type FaqDefinition = {
 export function blankFaqDefinition(config: { language: string, applicationId: string }): FaqDefinition {
   return {
     id: undefined,
+    intentId: undefined,
     title: '',
     description: '',
     utterances: [],
