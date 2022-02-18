@@ -75,39 +75,9 @@ export class FaqDefinitionService {
           takeUntil(cancel$),
           map(_ => {
             // add the current save to the state
-            this.createOrUpdateIntentState(faq)
+            this.state.resetConfiguration()
             return JSON.parse(JSON.stringify(faq));
           }));
-  }
-
-
-  //util inline method for label
-  private formatDisplayedLabel = (fq: FaqDefinition) => fq.title.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Za-z_-]*/g, '').toLowerCase().trim();
-
-  /**
-   * Manage to update or add the intent in the state service
-   * @param fq
-   * @private
-   */
-  private createOrUpdateIntentState(fq: FaqDefinition){
-    // in Intents screen frontend the displayedLabel is the intent name
-    const intent = new Intent(this.formatDisplayedLabel(fq),
-      this.state.user.organization,
-      [],
-      [this.state.currentApplication._id],
-      [],
-      [],
-      fq.title,
-      fq.description,
-      'faq',
-      fq.intentId
-    )
-    const foundIntent = this.state.findIntentById(fq.intentId)
-    if(foundIntent == undefined){
-      this.state.addIntent(intent)
-    } else {
-      this.state.updateIntent(intent)
-    }
   }
 
   searchFaq(request: QaSearchQuery, cancel$: Observable<any> = empty()): Observable<FaqDefinitionResult> {
