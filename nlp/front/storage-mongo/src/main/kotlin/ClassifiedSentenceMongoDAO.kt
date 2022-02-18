@@ -360,7 +360,10 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                         }
                     }
                     .skip(start.toInt())
-                    .limit(size)
+                    .run {
+                        size?.let { limit(it) } ?: this
+                    }
+
 
                 return SentencesQueryResult(count, list.map { it.toSentence() }.toList())
             } else {

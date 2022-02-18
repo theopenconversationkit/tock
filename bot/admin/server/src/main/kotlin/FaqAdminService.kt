@@ -22,6 +22,7 @@ import ai.tock.bot.admin.model.FaqDefinitionSearchResult
 import ai.tock.bot.admin.model.FaqSearchRequest
 import ai.tock.nlp.admin.AdminService
 import ai.tock.nlp.front.service.faqDefinitionDAO
+import ai.tock.nlp.front.service.storage.ClassifiedSentenceDAO
 import ai.tock.nlp.front.shared.config.*
 import ai.tock.shared.injector
 import ai.tock.shared.provide
@@ -41,59 +42,10 @@ object FaqAdminService {
 
     private val logger = KotlinLogging.logger {}
 
-    private val front = BotAdminService.front
     private val i18nDao: I18nDAO get() = injector.provide()
+    private val classifiedSentenceDAO: ClassifiedSentenceDAO get() = injector.provide()
 
     private const val FAQ_CATEGORY = "faq"
-
-    /**
-     * @param answer : the answer text
-     * @param locale : the language
-     * @param applicationId :
-     * @param intentId
-     * @param sentenceStatus
-     * Save sentences for classifiedSentences
-     * Add the sentencesStatus parameter in contrary of :
-     * @see BotAdminService.saveSentence
-     */
-    private fun saveFaqSentence(
-        answer: String,
-        locale: Locale,
-        applicationId: Id<ApplicationDefinition>,
-        intentId: Id<IntentDefinition>,
-        sentenceStatus: ClassifiedSentenceStatus,
-        user: UserLogin
-    ) {
-        if (
-            front.search(
-                SentencesQuery(
-                    applicationId = applicationId,
-                    language = locale,
-                    search = answer,
-                    onlyExactMatch = true,
-                    intentId = intentId,
-                    status = setOf(
-                        ClassifiedSentenceStatus.validated, ClassifiedSentenceStatus.model
-                    )
-                )
-            ).total == 0L
-        ) {
-            front.save(
-                ClassifiedSentence(
-                    text = answer,
-                    language = locale,
-                    applicationId = applicationId,
-                    creationDate = Instant.now(),
-                    updateDate = Instant.now(),
-                    status = sentenceStatus,
-                    classification = Classification(intentId, emptyList()),
-                    lastIntentProbability = 1.0,
-                    lastEntityProbability = 1.0,
-                    qualifier = user
-                )
-            )
-        }
-    }
 
     /**
      * Save the Frequently asked question into database
@@ -105,21 +57,8 @@ object FaqAdminService {
             val intent = createOrUpdateIntent(query, applicationDefinition)
 
             if (intent != null) {
+                createOrUpdateUtterances(query,intent._id,userLogin)
                 val i18nLabel = manageI18nLabelUpdate(intent._id, query, applicationDefinition)
-                // TODO: do not save again if the uterrance already exists
-                query.utterances.forEach {
-                    runBlocking {
-                        saveFaqSentence(
-                            it,
-                            query.language,
-                            query.applicationId,
-                            intent._id,
-                            ClassifiedSentenceStatus.validated,
-                            userLogin
-                        )
-                    }
-                }
-                //TODO : search if FAQDefinition already exists (done in createOrUpdateIntent ?, just an replace so don't needed ?
                 val existingFaq = faqDefinitionDAO.getFaqDefinitionByIntentId(intent._id)
                 if (existingFaq != null) {
                     faqDefinitionDAO.save(
@@ -149,6 +88,122 @@ object FaqAdminService {
             }
         } else {
             WebVerticle.badRequest("Missing argument or trouble in query: $query")
+        }
+    }
+
+    /**
+     * Create or updates questions uterrances for the specified intent
+     */
+    private fun createOrUpdateUtterances(query: FaqDefinitionRequest, intentId : Id<IntentDefinition>, userLogin: UserLogin){
+        val sentences: Pair<List<String>,List<ClassifiedSentence>> = checkSentencesToAddOrDelete(query.utterances,query.language,query.applicationId,intentId)
+
+        val notYetPresentSentences: List<String> = sentences.first
+        notYetPresentSentences.forEach {
+            runBlocking {
+                saveFaqSentence(
+                    it,
+                    query.language,
+                    query.applicationId,
+                    intentId,
+                    ClassifiedSentenceStatus.validated,
+                    userLogin
+                )
+            }
+        }
+
+        val noMorePresentSentences: List<ClassifiedSentence> = sentences.second
+        classifiedSentenceDAO.switchSentencesStatus(noMorePresentSentences,ClassifiedSentenceStatus.deleted)
+    }
+
+    /**
+     * Check the Classified Sentences to Add or delete
+     * @return a Pair with the notYetPresentSentences String and noMorePresentSentences
+     */
+    private fun checkSentencesToAddOrDelete(
+        utterances: List<String>,
+        locale: Locale,
+        applicationId: Id<ApplicationDefinition>,
+        intentId: Id<IntentDefinition>,
+    ): Pair<List<String>,List<ClassifiedSentence>> {
+
+        val allSentences = classifiedSentenceDAO.search(
+            SentencesQuery(
+                applicationId = applicationId,
+                language = locale,
+                intentId = intentId,
+                status = setOf(ClassifiedSentenceStatus.validated,ClassifiedSentenceStatus.model),
+                //use secondary database
+                onlyExactMatch= true,
+                //skip limit on search (specified in the search function)
+                size=null
+            )
+        )
+
+        val allCurrentSentences = allSentences.sentences
+
+        var existingSentences: Set<ClassifiedSentence> = HashSet()
+        var notYetPresentSentences: Set<String> =  HashSet()
+        var noMorePresentSentences: Set<ClassifiedSentence> = HashSet()
+        utterances.forEach { utterance ->
+            val existing = allCurrentSentences.firstOrNull{it.text == utterance}
+            if (existing != null) {
+                existingSentences = existingSentences.plusElement(existing)
+            } else{
+                notYetPresentSentences = notYetPresentSentences.plusElement(utterance)
+            }
+        }
+
+        noMorePresentSentences = allCurrentSentences.toSet().subtract(existingSentences).toSet()
+
+        return Pair(notYetPresentSentences.toList(),noMorePresentSentences.toList())
+    }
+
+    /**
+     * @param utterance : the utterance text
+     * @param locale : the language
+     * @param applicationId :
+     * @param intentId
+     * @param sentenceStatus
+     * Save sentences for classifiedSentences
+     * Add the sentencesStatus parameter in contrary of :
+     * @see BotAdminService.saveSentence
+     */
+    private fun saveFaqSentence(
+        utterance: String,
+        locale: Locale,
+        applicationId: Id<ApplicationDefinition>,
+        intentId: Id<IntentDefinition>,
+        sentenceStatus: ClassifiedSentenceStatus,
+        user: UserLogin
+    ) {
+        if (
+            classifiedSentenceDAO.search(
+                SentencesQuery(
+                    applicationId = applicationId,
+                    language = locale,
+                    search = utterance,
+                    onlyExactMatch = true,
+                    intentId = intentId,
+                    status = setOf(
+                        ClassifiedSentenceStatus.validated, ClassifiedSentenceStatus.model
+                    )
+                )
+            ).total == 0L
+        ) {
+            classifiedSentenceDAO.save(
+                ClassifiedSentence(
+                    text = utterance,
+                    language = locale,
+                    applicationId = applicationId,
+                    creationDate = Instant.now(),
+                    updateDate = Instant.now(),
+                    status = sentenceStatus,
+                    classification = Classification(intentId, emptyList()),
+                    lastIntentProbability = 1.0,
+                    lastEntityProbability = 1.0,
+                    qualifier = user
+                )
+            )
         }
     }
 
@@ -228,7 +283,6 @@ object FaqAdminService {
             .filter { it.utterances.isNotEmpty() }
             // map the FaqDefinition to the set
             .map { faqDefinition ->
-                //TODO : use an utterrance from the faq to determine the status and langage (what about multilanguage?, may not happen from faq creation)
                 val currentUterrance = faqDefinition.utterances.map { it }
                 val currentLanguage = currentUterrance.map { it.language }.first()
                 // find status from ClassifiedSentences Status correspondance
@@ -245,7 +299,6 @@ object FaqAdminService {
                     faqDefinition.updateDate,
                     faqDefinition.faq.label.orEmpty(),
                     faqDefinition.faq.description.orEmpty(),
-                    //TODO : not a list but only label per Faq definition to proceed thought things
                     faqDefinition.utterances.map { it.text },
                     faqDefinition.tags,
                     //TODO : what about alternatives ?
@@ -257,17 +310,7 @@ object FaqAdminService {
             }.toSet()
     }
 
-    private fun findClassifiedSentenceStatus(status: Boolean): Set<ClassifiedSentenceStatus> {
-        return if (status) {
-            setOf(ClassifiedSentenceStatus.model, ClassifiedSentenceStatus.validated)
-        } else {
-            setOf(
-                ClassifiedSentenceStatus.inbox,
-                ClassifiedSentenceStatus.deleted
-            )
-        }
-    }
-
+    //TODO: Workaround since there are no real FaqStatus
     private fun findFaqStatusFromClassifiedSentenceStatus(status: ClassifiedSentenceStatus): FaqStatus {
         return when (status) {
             ClassifiedSentenceStatus.model -> FaqStatus.model
@@ -343,7 +386,7 @@ object FaqAdminService {
                 FAQ_CATEGORY,
                 linkedSetOf(I18nLocalizedLabel(query.language, UserInterfaceType.textChat, query.answer.trim()))
             )
-            i18nDao.saveIfNotExist(listOf(i18nLabel))
+            i18nDao.save(listOf(i18nLabel))
             i18nLabel
         } else {
             BotAdminService.createI18nRequest(

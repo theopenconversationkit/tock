@@ -135,6 +135,14 @@ export class FaqDefinitionService {
     return this.updateEnabled(fq, false, cancel$);
   }
 
+  /**
+   * Update
+   * NOT YET IMPLEMENTED
+   * @param fq
+   * @param enabled
+   * @param cancel$
+   * @private
+   */
   private updateEnabled(fq: FaqDefinition, enabled: boolean, cancel$: Observable<any>)
     : Observable<FaqDefinition> {
 
