@@ -21,6 +21,7 @@ import ai.tock.bot.admin.model.FaqDefinitionRequest
 import ai.tock.bot.admin.model.FaqDefinitionSearchResult
 import ai.tock.bot.admin.model.FaqSearchRequest
 import ai.tock.nlp.admin.AdminService
+import ai.tock.nlp.front.service.applicationDAO
 import ai.tock.nlp.front.service.faqDefinitionDAO
 import ai.tock.nlp.front.service.intentDAO
 import ai.tock.nlp.front.service.storage.ClassifiedSentenceDAO
@@ -60,7 +61,7 @@ object FaqAdminService {
             val intent = createOrUpdateIntent(query, applicationDefinition)
 
             if (intent != null) {
-                createOrUpdateUtterances(query,intent._id,userLogin)
+                createOrUpdateUtterances(query, intent._id, userLogin)
                 val i18nLabel = manageI18nLabelUpdate(intent._id, query, applicationDefinition)
                 val existingFaq = faqDefinitionDAO.getFaqDefinitionByIntentId(intent._id)
                 if (existingFaq != null) {
@@ -97,8 +98,13 @@ object FaqAdminService {
     /**
      * Create or updates questions uterrances for the specified intent
      */
-    private fun createOrUpdateUtterances(query: FaqDefinitionRequest, intentId : Id<IntentDefinition>, userLogin: UserLogin){
-        val sentences: Pair<List<String>,List<ClassifiedSentence>> = checkSentencesToAddOrDelete(query.utterances,query.language,query.applicationId,intentId)
+    private fun createOrUpdateUtterances(
+        query: FaqDefinitionRequest,
+        intentId: Id<IntentDefinition>,
+        userLogin: UserLogin
+    ) {
+        val sentences: Pair<List<String>, List<ClassifiedSentence>> =
+            checkSentencesToAddOrDelete(query.utterances, query.language, query.applicationId, intentId)
 
         val notYetPresentSentences: List<String> = sentences.first
         notYetPresentSentences.forEach {
@@ -115,7 +121,7 @@ object FaqAdminService {
         }
 
         val noMorePresentSentences: List<ClassifiedSentence> = sentences.second
-        classifiedSentenceDAO.switchSentencesStatus(noMorePresentSentences,ClassifiedSentenceStatus.deleted)
+        classifiedSentenceDAO.switchSentencesStatus(noMorePresentSentences, ClassifiedSentenceStatus.deleted)
     }
 
     /**
@@ -127,38 +133,39 @@ object FaqAdminService {
         locale: Locale,
         applicationId: Id<ApplicationDefinition>,
         intentId: Id<IntentDefinition>,
-    ): Pair<List<String>,List<ClassifiedSentence>> {
+    ): Pair<List<String>, List<ClassifiedSentence>> {
 
         val allSentences = classifiedSentenceDAO.search(
             SentencesQuery(
                 applicationId = applicationId,
                 language = locale,
                 intentId = intentId,
-                status = setOf(ClassifiedSentenceStatus.validated,ClassifiedSentenceStatus.model),
+                status = setOf(ClassifiedSentenceStatus.validated, ClassifiedSentenceStatus.model),
                 //use secondary database
-                onlyExactMatch= true,
+                onlyExactMatch = true,
                 //skip limit on search (specified in the search function)
-                size=null
+                size = null
             )
         )
 
         val allCurrentSentences = allSentences.sentences
 
         var existingSentences: Set<ClassifiedSentence> = HashSet()
-        var notYetPresentSentences: Set<String> =  HashSet()
-        var noMorePresentSentences: Set<ClassifiedSentence> = HashSet()
+        var notYetPresentSentences: Set<String> = HashSet()
+
         utterances.forEach { utterance ->
-            val existing = allCurrentSentences.firstOrNull{it.text == utterance}
+            val existing = allCurrentSentences.firstOrNull { it.text == utterance }
             if (existing != null) {
                 existingSentences = existingSentences.plusElement(existing)
-            } else{
+            } else {
                 notYetPresentSentences = notYetPresentSentences.plusElement(utterance)
             }
         }
 
-        noMorePresentSentences = allCurrentSentences.toSet().subtract(existingSentences).toSet()
+        val noMorePresentSentences: Set<ClassifiedSentence> =
+            allCurrentSentences.toSet().subtract(existingSentences).toSet()
 
-        return Pair(notYetPresentSentences.toList(),noMorePresentSentences.toList())
+        return Pair(notYetPresentSentences.toList(), noMorePresentSentences.toList())
     }
 
     /**
@@ -305,7 +312,6 @@ object FaqAdminService {
                         .let { findFaqStatusFromClassifiedSentenceStatus(it) }
                 FaqDefinitionRequest(
                     faqDefinition._id.toString(),
-                    //TODO : multilangage ?
                     faqDefinition.intentId.toString(),
                     currentLanguage,
                     applicationDefinition._id,
@@ -315,10 +321,8 @@ object FaqAdminService {
                     faqDefinition.faq.description.orEmpty(),
                     faqDefinition.utterances.map { it.text },
                     faqDefinition.tags,
-                    //TODO : what about alternatives ?
                     faqDefinition.i18nLabel.i18n.map { it.label }.firstOrNull().orEmpty(),
                     currentStatus,
-                    //TODO : one validated and the others not ?
                     faqDefinition.i18nLabel.i18n.map { it.validated }.first(),
                 )
             }.toSet()
