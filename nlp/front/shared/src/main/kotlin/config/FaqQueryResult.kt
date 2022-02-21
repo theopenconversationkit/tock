@@ -42,7 +42,7 @@ data class FaqQueryResult(
 
     val faq: IntentDefinition,
 ) {
-    fun toFaqDefinitionDetailed(faqQueryResult: FaqQueryResult, i18nLabel: I18nLabel): FaqDefinitionDetailed {
+    fun toFaqDefinitionDetailed(faqQueryResult: FaqQueryResult, i18nLabel: I18nLabel ): FaqDefinitionDetailed {
         return FaqDefinitionDetailed(
             faqQueryResult._id,
             faqQueryResult.intentId,
