@@ -772,7 +772,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/faq",
-            nlpUser,
+            botUser,
             logger<FaqDefinitionRequest>("Create FAQ")
         ) { context, query: FaqDefinitionRequest ->
             val applicationDefinition = BotAdminService.front.getApplicationById(query.applicationId)
@@ -781,7 +781,15 @@ open class BotAdminVerticle : AdminVerticle() {
             } else {
                 unauthorized()
             }
+        }
 
+
+        blockingJsonDelete(
+            "/faq/:faqId",
+            botUser,
+            simpleLogger("Delete Story", { it.path("faqId") })
+        ) { context ->
+            FaqAdminService.deleteFaqDefinition(context.organization, context.path("faqId"))
         }
 
         blockingJsonPost("/faq/tags", nlpUser) { context, applicationId : String ->

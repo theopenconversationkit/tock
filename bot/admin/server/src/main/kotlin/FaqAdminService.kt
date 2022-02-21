@@ -22,6 +22,7 @@ import ai.tock.bot.admin.model.FaqDefinitionSearchResult
 import ai.tock.bot.admin.model.FaqSearchRequest
 import ai.tock.nlp.admin.AdminService
 import ai.tock.nlp.front.service.faqDefinitionDAO
+import ai.tock.nlp.front.service.intentDAO
 import ai.tock.nlp.front.service.storage.ClassifiedSentenceDAO
 import ai.tock.nlp.front.shared.config.*
 import ai.tock.shared.injector
@@ -44,8 +45,10 @@ object FaqAdminService {
 
     private val i18nDao: I18nDAO get() = injector.provide()
     private val classifiedSentenceDAO: ClassifiedSentenceDAO get() = injector.provide()
+    private val front = BotAdminService.front
 
     private const val FAQ_CATEGORY = "faq"
+    private const val UNKNOWN_ANSWER = "UNKNOWN ANSWER"
 
     /**
      * Save the Frequently asked question into database
@@ -232,24 +235,21 @@ object FaqAdminService {
         if (i18nLabels != null && i18nLabels.isNotEmpty()) {
             val fromTockBotDb = faqDetailsWithCount.first
                 .map { faqQueryResult ->
-                    i18nLabels.filter { it._id == faqQueryResult.i18nId }
-                        .map { i18nLabel ->
-                            faqQueryResult.toFaqDefinitionDetailed(
-                                faqQueryResult,
-                                i18nLabel
-                            )
-                        }
-                    // flatten to avoid list of set
-                }.flatten().distinct().toSet()
+                    faqQueryResult.toFaqDefinitionDetailed(
+                        faqQueryResult,
+                        i18nLabels.firstOrNull { it._id == faqQueryResult.i18nId } ?: unknownI18n(applicationDefinition)
+                    )
+                }.toSet()
+
             faqResults.addAll(addToFaqRequestSet(fromTockBotDb, applicationDefinition))
         } else {
             // find details from the i18n found in the faqDefinitionDao
             val fromTockFrontDbOnly =
                 faqDetailsWithCount.first.map {
-                    i18nDao.getLabelById(it.i18nId)!!.let { i18nLabel ->
+                    i18nDao.getLabelById(it.i18nId).let { i18nLabel ->
                         it.toFaqDefinitionDetailed(
                             it,
-                            i18nLabel
+                            (i18nLabel ?: unknownI18n(applicationDefinition))
                         )
                     }
                 }.toSet()
@@ -258,6 +258,20 @@ object FaqAdminService {
         logger.debug { "faqResults $faqResults" }
 
         return toFaqDefinitionSearchResult(query.start, faqResults, faqDetailsWithCount.second)
+    }
+
+    private fun unknownI18n(applicationDefinition: ApplicationDefinition): I18nLabel {
+        val supportedLocale = applicationDefinition.supportedLocales.first()
+        val fakeLocalizedLabel = LinkedHashSet<I18nLocalizedLabel>()
+        fakeLocalizedLabel.add(I18nLocalizedLabel(supportedLocale, UserInterfaceType.textChat, UNKNOWN_ANSWER))
+        return I18nLabel(
+            newId(),
+            applicationDefinition.namespace,
+            FAQ_CATEGORY,
+            fakeLocalizedLabel,
+            UNKNOWN_ANSWER,
+            supportedLocale
+        )
     }
 
     private fun toFaqDefinitionSearchResult(
@@ -396,5 +410,32 @@ object FaqAdminService {
                 )
             )
         }
+    }
+
+    fun deleteFaqDefinition(namespace: String, faqDefinitionId: String): Boolean {
+        val faqDefinition = faqDefinitionDAO.getFaqDefinitionById(faqDefinitionId.toId())
+        if (faqDefinition != null) {
+            val intent = intentDAO.getIntentById(faqDefinition.intentId)
+            if (intent != null) {
+                val applicationDefinitionIds = intent.applications.map { it }
+                if (applicationDefinitionIds.isNotEmpty() && applicationDefinitionIds.size == 1) {
+                    val applicationDefinition = applicationDAO.getApplicationById(applicationDefinitionIds.first())
+                    val botConf = BotAdminService.getBotConfigurationsByNamespaceAndBotId(
+                        namespace,
+                        applicationDefinition?.name.toString()
+                    ).firstOrNull()
+                    if (botConf != null && applicationDefinition != null) {
+                        front.removeIntentFromApplication(applicationDefinition, faqDefinition.intentId)
+                        faqDefinitionDAO.deleteFaqDefinitionById(faqDefinition._id)
+                        i18nDao.deleteByNamespaceAndId(namespace, faqDefinition.i18nId)
+                        return true
+                    }
+                } else {
+                    throw NotImplementedError("Multiple application definition found for intent not IMPLEMENTED")
+                    return false
+                }
+            }
+        }
+        return false
     }
 }

@@ -54,12 +54,10 @@ import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.engine.dialog.DialogFlowDAO
 import ai.tock.bot.engine.feature.FeatureDAO
 import ai.tock.bot.engine.feature.FeatureState
-import ai.tock.bot.getIntentsByNamespaceAndName
 import ai.tock.nlp.admin.AdminService
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.service.applicationDAO
 import ai.tock.nlp.front.shared.config.*
-import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.inbox
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import ai.tock.shared.Dice
@@ -76,7 +74,6 @@ import ai.tock.translator.Translator
 import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import org.litote.kmongo.Id
-import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 import java.time.DayOfWeek
 import java.time.Instant

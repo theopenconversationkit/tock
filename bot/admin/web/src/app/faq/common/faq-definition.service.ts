@@ -23,7 +23,6 @@ import {RestService} from "../../core-nlp/rest/rest.service";
 import {map, takeUntil} from "rxjs/operators";
 import {FaqDefinitionResult} from "./model/faq-definition-result";
 import {StateService} from "../../core-nlp/state.service";
-import {Intent} from "../../model/nlp";
 
 /**
  * Faq Definition operations for FAQ module
@@ -53,20 +52,26 @@ export class FaqDefinitionService {
   }
 
   // fake real backend call
-  delete(fq: FaqDefinition, cancel$: Observable<any> = empty()): Observable<FaqDefinition> {
+  delete(fq: FaqDefinition, cancel$: Observable<any> = empty()): Observable<boolean> {
     let newFq: FaqDefinition | undefined;
 
-    this.faqData.rows = this.faqData.rows.map(item => {
-      if (fq.id && item.id === fq.id) {
-        newFq = JSON.parse(JSON.stringify(fq)); // deep copy
-        newFq.status = 'deleted';
-        return newFq;
-      } else {
-        return item;
-      }
-    });
+    return this.rest.delete(`/faq/${fq.id}`).pipe(
+      takeUntil(cancel$),
+      map(r => {
+        if (r) {
+          this.faqData.rows = this.faqData.rows.map(item => {
+            if (fq.id && item.id === fq.id) {
+              newFq = JSON.parse(JSON.stringify(fq)); // deep copy
+              newFq.status = 'deleted';
+              return newFq;
+            } else {
+              return item;
+            }
 
-    return (newFq === undefined) ? Observable.throw("Item not found") : of(newFq);
+          });
+          return r
+        }
+      }))
   }
 
   save(faq: FaqDefinition, cancel$: Observable<any> = empty()): Observable<FaqDefinition> {

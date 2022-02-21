@@ -101,10 +101,8 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
   }
 
   search(filter: Partial<FaqQaFilter>): void {
-
     this.filter.search = filter.search;
     this.filter.sort = filter.sort;
-
     this.grid.refresh();
   }
 
@@ -115,7 +113,6 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
   edit(fq: FaqDefinition): void {
     this.editorPanelName = 'Edit FAQ';
     this.currentItem = fq;
-
     this.dock("edit");
   }
 
