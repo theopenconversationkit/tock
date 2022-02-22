@@ -33,6 +33,7 @@ import ai.tock.shared.vertx.WebVerticle
 import ai.tock.translator.*
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import org.apache.commons.lang3.RegExUtils
 import org.apache.commons.lang3.StringUtils
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
@@ -358,7 +359,7 @@ object FaqAdminService {
     ): IntentDefinition? {
 
         var name = StringUtils.deleteWhitespace(
-            StringUtils.replaceAll(
+            RegExUtils.replaceAll(
                 StringUtils.stripAccents(query.title.lowercase()),
                 "[^A-Za-z_-]",
                 ""
@@ -472,7 +473,6 @@ object FaqAdminService {
                     }
                 } else {
                     throw NotImplementedError("Multiple application definition found for intent not IMPLEMENTED")
-                    return false
                 }
             }
         }
