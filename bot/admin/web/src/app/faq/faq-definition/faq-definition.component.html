@@ -30,8 +30,8 @@
      [ngClass]="isDocked() ? 'tock--docked' : 'tock--undocked'">
 
   <!-- GRID -->
-  <tock-qa-grid [ngClass]="'tock-grid'" (onEdit)="edit($event)" [viewMode]="viewMode" [filter]="filter">
-  </tock-qa-grid>
+  <tock-faq-grid [ngClass]="'tock-grid'" (onEdit)="edit($event)" [viewMode]="viewMode" [filter]="filter">
+  </tock-faq-grid>
 
   <!-- SIDE PANEL IMPORT -->
   <tock-inview-sidepanel *ngIf="isPanelDocked('import')"

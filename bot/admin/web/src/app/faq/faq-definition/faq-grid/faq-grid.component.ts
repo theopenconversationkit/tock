@@ -20,26 +20,24 @@ import {FaqDefinition} from '../../common/model/faq-definition';
 import {MatPaginator} from '@angular/material/paginator';
 import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, Observable, of, ReplaySubject} from 'rxjs';
-import {Sort} from '@angular/material/sort';
 import {ScrollComponent} from 'src/app/scroll/scroll.component';
 import {UserRole} from 'src/app/model/auth';
 import {StateService} from 'src/app/core-nlp/state.service';
-import {DialogService} from 'src/app/core-nlp/dialog.service';
 import {PaginatedResult} from 'src/app/model/nlp';
 import {FaqDefinitionService} from '../../common/faq-definition.service';
 import {ViewMode} from '../../common/model/view-mode';
 import {takeUntil} from 'rxjs/operators';
-import {QaSearchQuery} from '../../common/model/qa-search-query';
-import {QaSidepanelEditorService} from "../sidepanels/qa-sidepanel-editor.service";
+import {FaqSearchQuery} from '../../common/model/faq-search-query';
+import {FaqDefinitionSidepanelEditorService} from "../sidepanels/faq-definition-sidepanel-editor.service";
 import {FaqDefinitionResult} from "../../common/model/faq-definition-result";
 
 
 @Component({
-  selector: 'tock-qa-grid',
-  templateUrl: './qa-grid.component.html',
-  styleUrls: ['./qa-grid.component.scss']
+  selector: 'tock-faq-grid',
+  templateUrl: './faq-grid.component.html',
+  styleUrls: ['./faq-grid.component.scss']
 })
-export class QaGridComponent extends ScrollComponent<FaqDefinition> implements AfterViewInit, OnDestroy, OnInit {
+export class FaqGridComponent extends ScrollComponent<FaqDefinition> implements AfterViewInit, OnDestroy, OnInit {
 
   @Input()
   viewMode : ViewMode;
@@ -59,26 +57,22 @@ export class QaGridComponent extends ScrollComponent<FaqDefinition> implements A
   UserRole = UserRole;
   pageIndex: number = 0;
   displayedColumns = [];
-  dataSource: QaDataSource | null;
+  dataSource: FaqDataSource | null;
 
   selectedItem?: FaqDefinition;
 
   numHidden = 0;
 
   private readonly destroy$: ReplaySubject<boolean> = new ReplaySubject(1);
-  public readonly currentIntents$: Observable<FaqDefinition[]>;
-
-  private sort: Sort[] = [];
 
   constructor(public readonly state: StateService,
-              private readonly sidepanelEditorService: QaSidepanelEditorService,
-              private readonly qaService: FaqDefinitionService,
-              private readonly dialog: DialogService) {
+              private readonly sidepanelEditorService: FaqDefinitionSidepanelEditorService,
+              private readonly qaService: FaqDefinitionService) {
     super(state);
   }
 
   ngOnInit(): void {
-    this.dataSource = new QaDataSource();
+    this.dataSource = new FaqDataSource();
 
     super.ngOnInit();
   }
@@ -124,9 +118,8 @@ export class QaGridComponent extends ScrollComponent<FaqDefinition> implements A
     fq.status = 'deleted';
   }
 
-  toSearchQuery(query: PaginatedQuery): QaSearchQuery {
-
-    const result = new QaSearchQuery(
+  toSearchQuery(query: PaginatedQuery): FaqSearchQuery {
+    return new FaqSearchQuery(
       query.namespace,
       query.applicationName,
       query.language,
@@ -138,7 +131,6 @@ export class QaGridComponent extends ScrollComponent<FaqDefinition> implements A
       this.filter.sort,
       this.filter.onlyActives
     );
-    return result;
   }
 
   search(query: PaginatedQuery): Observable<FaqDefinitionResult> {
@@ -175,7 +167,7 @@ export class FaqQaFilter {
   }
 }
 
-export class QaDataSource extends DataSource<FaqDefinition> {
+export class FaqDataSource extends DataSource<FaqDefinition> {
 
   private subject = new BehaviorSubject([]);
 

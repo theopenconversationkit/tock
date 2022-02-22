@@ -20,15 +20,15 @@ import {take, takeUntil} from 'rxjs/operators';
 import {StateService} from 'src/app/core-nlp/state.service';
 import {isDockedOrSmall, ViewMode} from '../../common/model/view-mode';
 import {FaqDefinitionService} from '../../common/faq-definition.service';
-import {FaqQaFilter} from '../qa-grid/qa-grid.component';
-import {QaSidepanelEditorService} from "../sidepanels/qa-sidepanel-editor.service";
+import {FaqQaFilter} from '../faq-grid/faq-grid.component';
+import {FaqDefinitionSidepanelEditorService} from "../sidepanels/faq-definition-sidepanel-editor.service";
 
 @Component({
   selector: 'tock-qa-header',
-  templateUrl: './qa-header.component.html',
-  styleUrls: ['./qa-header.component.scss']
+  templateUrl: './faq-header.component.html',
+  styleUrls: ['./faq-header.component.scss']
 })
-export class QaHeaderComponent implements OnInit {
+export class FaqHeaderComponent implements OnInit {
 
   /* Template-available constants (vertical vs horizontal layout) */
 
@@ -69,8 +69,8 @@ export class QaHeaderComponent implements OnInit {
 
   constructor(
     private readonly state: StateService,
-    private readonly qaService: FaqDefinitionService,
-    private readonly sidepanelEditorService: QaSidepanelEditorService
+    private readonly faqService: FaqDefinitionService,
+    private readonly sidepanelEditorService: FaqDefinitionSidepanelEditorService
   ) { }
 
   ngOnInit(): void {
@@ -95,9 +95,7 @@ export class QaHeaderComponent implements OnInit {
   }
 
   fetchAvailableTags(): void {
-    const applicationId = this.state.currentApplication._id;
-
-    this.qaService.getAvailableTags(applicationId)
+    this.faqService.getAvailableTags(this.state.currentApplication._id)
       .pipe(take(1), takeUntil(this.destroy$))
       .subscribe(tags => {
         this.availableTags = tags;

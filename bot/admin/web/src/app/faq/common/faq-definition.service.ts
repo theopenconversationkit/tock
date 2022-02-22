@@ -18,7 +18,7 @@ import {Injectable} from '@angular/core';
 
 import {empty, Observable, of} from 'rxjs';
 import {FaqDefinition} from './model/faq-definition';
-import {QaSearchQuery} from './model/qa-search-query';
+import {FaqSearchQuery} from './model/faq-search-query';
 import {RestService} from "../../core-nlp/rest/rest.service";
 import {map, takeUntil} from "rxjs/operators";
 import {FaqDefinitionResult} from "./model/faq-definition-result";
@@ -85,7 +85,7 @@ export class FaqDefinitionService {
           }));
   }
 
-  searchFaq(request: QaSearchQuery, cancel$: Observable<any> = empty()): Observable<FaqDefinitionResult> {
+  searchFaq(request: FaqSearchQuery, cancel$: Observable<any> = empty()): Observable<FaqDefinitionResult> {
     return this.rest.post('/faq/search', request).pipe(
       takeUntil(cancel$),
       map(json => {

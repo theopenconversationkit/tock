@@ -25,11 +25,11 @@ import {notCancelled, ValidUtteranceResult} from 'src/app/faq/common/components/
 import {EditUtteranceComponent} from 'src/app/faq/common/components/edit-utterance/edit-utterance.component';
 import {FaqDefinition} from 'src/app/faq/common/model/faq-definition';
 import {Utterance, utteranceEquals, utteranceSomewhatSimilar} from 'src/app/faq/common/model/utterance';
-import {ActionResult, QaEditorEvent, QaSidepanelEditorService} from '../qa-sidepanel-editor.service';
+import {ActionResult, FaqEditorEvent, FaqDefinitionSidepanelEditorService} from '../faq-definition-sidepanel-editor.service';
 import {getPosition, hasItem} from '../../../common/util/array-utils';
 import {somewhatSimilar} from 'src/app/faq/common/util/string-utils';
 import {FaqDefinitionService} from 'src/app/faq/common/faq-definition.service';
-import {EditorTabName} from '../../qa.component';
+import {EditorTabName} from '../../faq-definition.component';
 import {
   ANSWER_MAXLENGTH,
   collectProblems,
@@ -56,7 +56,7 @@ function textMatch(text: string): (Utterance) => boolean {
 }
 
 /**
- * Content for Q&A Edition sidepanel
+ * Content for FAQ Edition sidepanel
  *
  * Handle both 'New' and 'Edit existing' cases
  *
@@ -64,13 +64,13 @@ function textMatch(text: string): (Utterance) => boolean {
  */
 @Component({
   selector: 'tock-qa-sidepanel-editor-content',
-  templateUrl: './qa-sidepanel-editor-content.component.html',
-  styleUrls: ['./qa-sidepanel-editor-content.component.scss'],
+  templateUrl: './faq-sidepanel-editor-content.component.html',
+  styleUrls: ['./faq-sidepanel-editor-content.component.scss'],
   host: {
     "class": "h-100 d-flex flex-column justify-content-start align-items-stretch"
   }
 })
-export class QaSidepanelEditorContentComponent implements OnInit, OnDestroy, OnChanges {
+export class FaqSidepanelEditorContentComponent implements OnInit, OnDestroy, OnChanges {
 
   private readonly destroy$: ReplaySubject<boolean> = new ReplaySubject(1);
 
@@ -117,7 +117,7 @@ export class QaSidepanelEditorContentComponent implements OnInit, OnDestroy, OnC
   public readonly ERR_MSG = DEFAULT_ERROR_MAPPING; // shorcut for access inside template
 
   constructor(
-    private readonly sidepanelEditorService: QaSidepanelEditorService,
+    private readonly sidepanelEditorService: FaqDefinitionSidepanelEditorService,
     private readonly qaService: FaqDefinitionService,
     private readonly dialog: DialogService,
   ) {
@@ -176,7 +176,7 @@ export class QaSidepanelEditorContentComponent implements OnInit, OnDestroy, OnC
     this.sidepanelEditorService.registerActionHandler('save', this.destroy$, this.save.bind(this));
   }
 
-  save(evt: QaEditorEvent): Observable<ActionResult> {
+  save(evt: FaqEditorEvent): Observable<ActionResult> {
     // replay last known utterances array
     return this.editedUtterances$.pipe(take(1), concatMap(utterances => {
 
