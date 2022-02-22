@@ -88,7 +88,6 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                 FaqDefinition::_id eq faqDefinition._id,
                 FaqDefinition::intentId eq faqDefinition.intentId,
                 FaqDefinition::i18nId eq faqDefinition.i18nId,
-                FaqDefinition::tags eq faqDefinition.tags,
             ),
             faqDefinition,
             ReplaceOptions().upsert(true)
