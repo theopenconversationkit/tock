@@ -357,14 +357,20 @@ object FaqAdminService {
         applicationDefinition: ApplicationDefinition
     ): IntentDefinition? {
 
+        var name = StringUtils.deleteWhitespace(
+            StringUtils.replaceAll(
+                StringUtils.stripAccents(query.title.lowercase()),
+                "[^A-Za-z_-]",
+                ""
+            ))
+        val intentId = createOrFindFaqDefinitionIntentId(query)
+        // name must not be modified if it already exist
+        val foundCurrentIntent = AdminService.front.getIntentById(intentId)
+        if (foundCurrentIntent != null) {
+            name = foundCurrentIntent.name
+        }
         val intent = IntentDefinition(
-            name = StringUtils.deleteWhitespace(
-                StringUtils.replaceAll(
-                    StringUtils.stripAccents(query.title.lowercase()),
-                    "[^A-Za-z_-]",
-                    ""
-                )
-            ),
+            name = name,
             namespace = applicationDefinition.namespace,
             applications = setOf(applicationDefinition._id),
             entities = emptySet(),
@@ -372,13 +378,43 @@ object FaqAdminService {
             label = query.title.trim(),
             description = query.description.trim(),
             category = FAQ_CATEGORY,
-            _id = createOrFindFaqDefinitionId(query),
+            _id = intentId,
         )
 
-        return AdminService.createOrUpdateIntent(applicationDefinition.namespace, intent)
+        return createOrUpdateIntentFromFaq(applicationDefinition.namespace, intent)
     }
 
-    private fun createOrFindFaqDefinitionId(query: FaqDefinitionRequest): Id<IntentDefinition> {
+    /**
+     * Create or Update Intent and from the existing one
+     */
+    private fun createOrUpdateIntentFromFaq(namespace: String, intent: IntentDefinition): IntentDefinition? {
+        return if (namespace == intent.namespace) {
+                    intent.run {
+                        copy(
+                            label = intent.label,
+                            description = intent.description,
+                            category = intent.category,
+                            applications = applications + intent.applications,
+                            entities = intent.entities + entities.filter { e -> intent.entities.none { it.role == e.role } },
+                            entitiesRegexp = entitiesRegexp + intent.entitiesRegexp,
+                            mandatoryStates = intent.mandatoryStates + mandatoryStates,
+                            sharedIntents = intent.sharedIntents + sharedIntents
+                        )
+                    }
+                    .apply {
+                    AdminService.front.save(this)
+                    applications.forEach { appId ->
+                        AdminService.front.getApplicationById(appId)?.also {
+                            AdminService.front.save(it.copy(intents = it.intents + _id))
+                        }
+                    }
+                }
+        } else {
+            null
+        }
+    }
+
+    private fun createOrFindFaqDefinitionIntentId(query: FaqDefinitionRequest): Id<IntentDefinition> {
         return if (query.id != null) {
             faqDefinitionDAO.getFaqDefinitionById(query.id.toId())!!.intentId
         } else {
