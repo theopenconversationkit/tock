@@ -71,7 +71,7 @@ object FaqAdminService {
                             _id = existingFaq._id,
                             intentId = existingFaq.intentId,
                             i18nId = existingFaq.i18nId,
-                            tags = existingFaq.tags,
+                            tags = query.tags,
                             creationDate = existingFaq.creationDate,
                             updateDate = Instant.now()
                         )
