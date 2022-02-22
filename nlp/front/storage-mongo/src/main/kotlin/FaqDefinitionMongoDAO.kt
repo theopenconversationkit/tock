@@ -147,7 +147,7 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
             //counting total aggregation without skip and limit
             val count = col.aggregate(baseAggregation, FaqQueryResult::class.java).count()
             logger.debug { "count : $count" }
-            var aggregationWithSkipAndLimit =
+            val aggregationWithSkipAndLimit =
                 if (start.toInt() > 0) baseAggregation.plusElement(skip(start.toInt())) else baseAggregation
             aggregationWithSkipAndLimit.plusElement(limit(size))
             return if (count > start) {
