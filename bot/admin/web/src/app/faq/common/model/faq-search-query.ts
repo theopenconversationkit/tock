@@ -19,7 +19,7 @@ import {Entry, PaginatedQuery, SearchMark} from "src/app/model/commons";
 /**
  * FAQ Grid query
  */
-export class QaSearchQuery extends PaginatedQuery {
+export class FaqSearchQuery extends PaginatedQuery {
   constructor(public namespace: string,
               public applicationName: string,
               public language: string,

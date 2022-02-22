@@ -14,31 +14,21 @@
  * limitations under the License.
  */
 
-@import  '../../common/_base_faq.scss';
-@import '~@nebular/theme/styles/theming';
-@import '~@nebular/theme/styles/themes';
+import { Component, OnInit } from '@angular/core';
 
-@include faq-grid-style();
+@Component({
+  selector: 'tock-qa-sidepanel-import-content',
+  templateUrl: './faq-sidepanel-import-content.component.html',
+  styleUrls: ['./faq-sidepanel-import-content.component.scss']
+})
+export class FaqSidepanelImportContentComponent implements OnInit {
 
-@include nb-install-component { /* Nebular theme dependent classes */
+  constructor() { }
 
-  /* When item selected, apply special style */
-  tock-qa-grid-item.tock--selected {
-    border-left: 7px solid nb-theme(color-primary-500);
-    padding-left: 10px
+  ngOnInit(): void {
+  }
+
+  importFaq(): void {
+
   }
 }
-
-/* Grid should take available space */
-:host {
-  flex: 0 0 100%;
-}
-
-/* Image displayed when there is no data */
-.tock-robot {
-  width: 8%;
-  margin-right: 20px;
-}
-
-
-

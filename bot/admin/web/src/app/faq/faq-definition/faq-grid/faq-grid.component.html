@@ -49,14 +49,14 @@
 
   <div infinite-scroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="300" (scrolled)="onScroll()">
     <div *ngFor="let d of data">
-      <tock-qa-grid-item *ngIf="d?.status !== 'deleted'"
-                         (onEdit)="edit($event)"
-                         (onRemove)="remove(d)"
-                         [ngClass]="{'w-100': true, 'tock--selected': selectedItem?.id === d?.id}"
-                         [item]="d"
-                         [viewMode]="viewMode"
+      <tock-faq-grid-item *ngIf="d?.status !== 'deleted'"
+                          (onEdit)="edit($event)"
+                          (onRemove)="remove(d)"
+                          [ngClass]="{'w-100': true, 'tock--selected': selectedItem?.id === d?.id}"
+                          [item]="d"
+                          [viewMode]="viewMode"
       >
-      </tock-qa-grid-item>
+      </tock-faq-grid-item>
     </div>
   </div>
 </ng-container>

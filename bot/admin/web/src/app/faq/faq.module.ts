@@ -63,17 +63,17 @@ import {TrainSidepanelComponent} from './train/train-sidepanel/train-sidepanel.c
 import {TrainGridItemComponent} from "./train/train-grid-item/train-grid-item.component";
 import {TrainGridComponent} from "./train/train-grid/train-grid.component";
 import {BotAnalyticsModule} from "../analytics/analytics.module";
-import {QaComponent} from './qa/qa.component';
-import {QaHeaderComponent} from './qa/qa-header/qa-header.component';
-import {QaGridComponent} from './qa/qa-grid/qa-grid.component';
-import {QaGridItemComponent} from './qa/qa-grid-item/qa-grid-item.component';
+import {FaqDefinitionComponent} from "./faq-definition/faq-definition.component";
+import {FaqHeaderComponent} from "./faq-definition/faq-header/faq-header.component";
+import {FaqGridComponent} from "./faq-definition/faq-grid/faq-grid.component";
+import {FaqGridItemComponent} from "./faq-definition/faq-grid-item/faq-grid-item.component";
 import {FaqDefinitionService} from "./common/faq-definition.service";
 import {InviewSidepanelComponent} from './common/components/inview-sidepanel/inview-sidepanel.component';
-import {QaSidepanelImportContentComponent} from './qa/sidepanels/qa-sidepanel-import-content/qa-sidepanel-import-content.component';
-import {QaSidepanelEditorContentComponent} from './qa/sidepanels/qa-sidepanel-editor-content/qa-sidepanel-editor-content.component';
+import {FaqSidepanelImportContentComponent} from "./faq-definition/sidepanels/faq-sidepanel-import-content/faq-sidepanel-import-content.component";
+import {FaqSidepanelEditorContentComponent} from "./faq-definition/sidepanels/faq-sidepanel-editor-content/faq-sidepanel-editor-content.component";
 import {ReactiveFormsModule} from "@angular/forms";
 import {EditUtteranceComponent} from './common/components/edit-utterance/edit-utterance.component';
-import {QaSidepanelEditorService} from "./qa/sidepanels/qa-sidepanel-editor.service";
+import {FaqDefinitionSidepanelEditorService} from "./faq-definition/sidepanels/faq-definition-sidepanel-editor.service";
 
 const routes: Routes = [
   {
@@ -86,7 +86,7 @@ const routes: Routes = [
   },
   {
     path: 'qa',
-    component: QaComponent,
+    component: FaqDefinitionComponent,
     canActivate: [AuthGuard],
     resolve: {
       application: ApplicationResolver
@@ -148,13 +148,13 @@ export class FaqRoutingModule {
     DelayDirective,
     TrainToolbarComponent,
     TrainSidepanelComponent,
-    QaComponent,
-    QaHeaderComponent,
-    QaGridComponent,
-    QaGridItemComponent,
+    FaqDefinitionComponent,
+    FaqHeaderComponent,
+    FaqGridComponent,
+    FaqGridItemComponent,
     InviewSidepanelComponent,
-    QaSidepanelImportContentComponent,
-    QaSidepanelEditorContentComponent,
+    FaqSidepanelImportContentComponent,
+    FaqSidepanelEditorContentComponent,
     EditUtteranceComponent
   ],
   exports: [],
@@ -162,7 +162,7 @@ export class FaqRoutingModule {
     IntentsService,
     SentencesService,
     FaqDefinitionService,
-    QaSidepanelEditorService
+    FaqDefinitionSidepanelEditorService
   ],
   entryComponents: [
     EditUtteranceComponent

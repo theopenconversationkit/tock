@@ -28,12 +28,12 @@ import { NbToastrService } from "@nebular/theme/components/toastr/toastr.service
 import { StateService } from "src/app/core-nlp/state.service";
 
 @Component({
-  selector: 'tock-qa-grid-item',
-  templateUrl: './qa-grid-item.component.html',
-  styleUrls: ['./qa-grid-item.component.scss'],
+  selector: 'tock-faq-grid-item',
+  templateUrl: './faq-grid-item.component.html',
+  styleUrls: ['./faq-grid-item.component.scss'],
   host: {'class': 'd-block mb-3'}
 })
-export class QaGridItemComponent implements OnInit, OnDestroy {
+export class FaqGridItemComponent implements OnInit, OnDestroy {
 
   /* Template-available constants (vertical vs horizontal layout) */
 

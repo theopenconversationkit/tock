@@ -20,7 +20,7 @@ import {concatMap, debounceTime, delay, filter, map, take, takeUntil} from 'rxjs
 import {FaqDefinition} from '../../common/model/faq-definition';
 
 /**
- * Q&A Editor Dialog related service and types
+ * FAQ Editor Dialog related service and types
  *
  * Why: Decoupling event emitter from actual action handler
  **/
@@ -33,7 +33,7 @@ type OutcomeName = 'cancel-save' | 'save-done' | 'adhoc-action-done';
 
 
 // event
-export type QaEditorEvent = {
+export type FaqEditorEvent = {
   transactionId: number,
   name: ActionName | OutcomeName,
   payload?: FaqDefinition
@@ -58,24 +58,24 @@ const newAction = (() => {
 })();
 
 
-const isInitiatedBy = (action: QaEditorEvent) => (evt: QaEditorEvent) => evt.transactionId === action.transactionId;
+const isInitiatedBy = (action: FaqEditorEvent) => (evt: FaqEditorEvent) => evt.transactionId === action.transactionId;
 
-const hasName = (name: ActionName | OutcomeName) => (evt: QaEditorEvent) => evt.name === name;
+const hasName = (name: ActionName | OutcomeName) => (evt: FaqEditorEvent) => evt.name === name;
 
 /**
  * Controlling interactions between parts of the 0&A Editor Side Bar
  */
 @Injectable()
-export class QaSidepanelEditorService {
+export class FaqDefinitionSidepanelEditorService {
 
-  private action$: Subject<QaEditorEvent> = new Subject<QaEditorEvent>();
+  private action$: Subject<FaqEditorEvent> = new Subject<FaqEditorEvent>();
 
-  private outcome$: Subject<QaEditorEvent> = new Subject<QaEditorEvent>();
+  private outcome$: Subject<FaqEditorEvent> = new Subject<FaqEditorEvent>();
 
   constructor() {
   }
 
-  private takeActionOutcome(action: QaEditorEvent, cancel$: Observable<any> = empty()): Observable<QaEditorEvent> {
+  private takeActionOutcome(action: FaqEditorEvent, cancel$: Observable<any> = empty()): Observable<FaqEditorEvent> {
     return this.outcome$.pipe(
       takeUntil(cancel$),
       filter(isInitiatedBy(action)),
@@ -125,7 +125,7 @@ export class QaSidepanelEditorService {
       concatMap(action => {
         return handler(action).pipe(map(
           res => {
-            const outcome: QaEditorEvent = {
+            const outcome: FaqEditorEvent = {
               transactionId: action.transactionId,
               name: res.outcome,
               payload: res.payload

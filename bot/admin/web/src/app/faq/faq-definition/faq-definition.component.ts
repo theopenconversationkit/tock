@@ -19,23 +19,23 @@ import {ReplaySubject} from 'rxjs';
 import {StateService} from 'src/app/core-nlp/state.service';
 import {DEFAULT_PANEL_NAME, WithSidePanel} from '../common/mixin/with-side-panel';
 import {blankFaqDefinition, FaqDefinition} from '../common/model/faq-definition';
-import {FaqQaFilter, QaGridComponent} from './qa-grid/qa-grid.component';
+import {FaqQaFilter, FaqGridComponent} from './faq-grid/faq-grid.component';
 import {truncate} from '../common/util/string-utils';
 import {DialogService} from 'src/app/core-nlp/dialog.service';
 import {FaqDefinitionService} from '../common/faq-definition.service';
 import {FormProblems, InvalidFormProblems} from '../common/model/form-problems';
 import {takeUntil} from "rxjs/operators";
-import {QaSidepanelEditorService} from "./sidepanels/qa-sidepanel-editor.service";
+import {FaqDefinitionSidepanelEditorService} from "./sidepanels/faq-definition-sidepanel-editor.service";
 
 // Specific action payload
 export type EditorTabName = 'Info' | 'Answer' | 'Question';
 
 @Component({
   selector: 'tock-qa',
-  templateUrl: './qa.component.html',
-  styleUrls: ['./qa.component.scss']
+  templateUrl: './faq-definition.component.html',
+  styleUrls: ['./faq-definition.component.scss']
 })
-export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
+export class FaqDefinitionComponent extends WithSidePanel() implements OnInit, OnDestroy {
 
   activeQaTab: EditorTabName = 'Info';
 
@@ -48,13 +48,13 @@ export class QaComponent extends WithSidePanel() implements OnInit, OnDestroy {
   editorFormWarnings: string[] = [];
 
   public filter: FaqQaFilter;
-  @ViewChild(QaGridComponent) grid;
+  @ViewChild(FaqGridComponent) grid;
 
   private readonly destroy$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(
     private readonly state: StateService,
-    private readonly sidepanelEditorService: QaSidepanelEditorService,
+    private readonly sidepanelEditorService: FaqDefinitionSidepanelEditorService,
     private readonly dialog: DialogService,
     private readonly qaService: FaqDefinitionService
   ) {
