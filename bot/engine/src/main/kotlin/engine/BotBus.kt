@@ -544,3 +544,9 @@ internal var BotBus.hasCurrentSwitchStoryProcess: Boolean
     set(v) {
         dialog.state.hasCurrentSwitchStoryProcess = v
     }
+
+internal var BotBus.hasCurrentAskAgainProcess: Boolean
+    get() = dialog.state.hasCurrentAskAgainProcess
+    set(v) {
+        dialog.state.hasCurrentAskAgainProcess = v
+    }
