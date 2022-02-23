@@ -20,6 +20,7 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.shared.injector
+import ai.tock.shared.intProperty
 import ai.tock.shared.provide
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
@@ -109,4 +110,6 @@ data class Dialog(
      * Current number of actions in dialog history.
      */
     val actionsSize: Int get() = stories.sumBy { it.actions.size }
+
+    var askRound: Int = intProperty("tock_ask_again_round",1)
 }

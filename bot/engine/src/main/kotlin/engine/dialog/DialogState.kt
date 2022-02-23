@@ -50,6 +50,7 @@ data class DialogState(
 
     companion object {
         private const val SWITCH_STORY_BUS_KEY = "_tock_switch"
+        private const val ASK_AGAIN_STORY_BUS_KEY = "_tock_ask_again"
 
         /**
          * Init a new state from the specified state.
@@ -69,6 +70,12 @@ data class DialogState(
         get() = context[SWITCH_STORY_BUS_KEY] == true
         set(v) {
             context[SWITCH_STORY_BUS_KEY] = v
+        }
+
+    internal var hasCurrentAskAgainProcess: Boolean
+        get() = context[ASK_AGAIN_STORY_BUS_KEY] == true
+        set(v) {
+            context[ASK_AGAIN_STORY_BUS_KEY] = v
         }
 
     /**

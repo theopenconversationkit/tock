@@ -20,11 +20,9 @@ import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.Intent
-import ai.tock.bot.engine.action.Action
-import ai.tock.bot.engine.action.SendAttachment
-import ai.tock.bot.engine.action.SendChoice
-import ai.tock.bot.engine.action.SendLocation
-import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.definition.StoryDefinition
+import ai.tock.bot.definition.StoryTag
+import ai.tock.bot.engine.action.*
 import ai.tock.bot.engine.config.BotDefinitionWrapper
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.Story
@@ -34,7 +32,7 @@ import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
-import java.util.Locale
+import java.util.*
 
 /**
  *
@@ -163,18 +161,29 @@ internal class Bot(
 
         val story =
             if (previousStory == null ||
-                (newIntent != null && !previousStory.supportAction(userTimeline, dialog, action, newIntent))
+                (newIntent != null &&
+                        (!previousStory.supportAction(
+                            userTimeline,
+                            dialog,
+                            action,
+                            newIntent
+                        ) && !previousStory.supportAskAgain(dialog)))
             ) {
-                val storyDefinition = botDefinition.findStoryDefinition(newIntent?.name, action.applicationId)
+                val storyDefinition: StoryDefinition =
+                    botDefinition.findStoryDefinition(newIntent?.name, action.applicationId)
                 val newStory = Story(
                     storyDefinition,
                     if (newIntent != null && storyDefinition.isStarterIntent(newIntent)) newIntent
                     else storyDefinition.mainIntent()
                 )
+                // first encounter if story ASK_AGAIN
+                if (storyDefinition.hasTag(StoryTag.ASK_AGAIN) && dialog.askRound > 0) {
+                    dialog.state.hasCurrentAskAgainProcess = true
+                }
                 dialog.stories.add(newStory)
                 newStory
             } else {
-                previousStory
+                newStoryOrAskAgainLastStory(previousStory, dialog, action, newIntent!!) ?: previousStory
             }
 
         story.computeCurrentStep(userTimeline, dialog, action, newIntent)
@@ -186,6 +195,22 @@ internal class Bot(
         action.state.step = story.step
 
         return story
+    }
+
+    private fun newStoryOrAskAgainLastStory(previousStory: Story?, dialog: Dialog, action: Action, newIntent: Intent): Story {
+        return if (previousStory?.supportAskAgain(dialog) == true) {
+            dialog.state.hasCurrentAskAgainProcess = false
+            previousStory
+        } else {
+            val storyDefinition: StoryDefinition =
+                botDefinition.findStoryDefinition(newIntent.name, action.applicationId)
+            val newStory = Story(
+                storyDefinition,
+                if (storyDefinition.isStarterIntent(newIntent)) newIntent
+                else storyDefinition.mainIntent()
+            )
+            newStory
+        }
     }
 
     private fun parseAction(
@@ -251,11 +276,11 @@ internal class Bot(
                             if (currentStory == null ||
                                 !currentStory.supportIntent(intent) ||
                                 !currentStory.supportIntent(
-                                        botDefinition.findIntent(
-                                                previousIntentName,
-                                                choice.applicationId
-                                            )
+                                    botDefinition.findIntent(
+                                        previousIntentName,
+                                        choice.applicationId
                                     )
+                                )
                             ) {
                                 dialog.stories.add(
                                     Story(
