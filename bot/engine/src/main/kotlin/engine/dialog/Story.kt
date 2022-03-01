@@ -159,13 +159,6 @@ data class Story(
     fun support(bus: BotBus): Double = definition.storyHandler.support(bus)
 
     /**
-     * Does this previousStory support Ask Again
-     */
-    fun supportAskAgain(dialog:Dialog): Boolean {
-        return definition.hasTag(ASK_AGAIN) && dialog.state.hasCurrentAskAgainProcess
-    }
-
-    /**
      * Does this story supports the action ?
      */
     fun supportAction(userTimeline: UserTimeline, dialog: Dialog, action: Action, intent: Intent): Boolean {
