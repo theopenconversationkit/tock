@@ -112,19 +112,18 @@ internal class ConfiguredStoryHandler(
         val answerContainer =
             configurationName?.let { name -> configuration.configuredAnswers.firstOrNull { it.botConfiguration == name } }
                 ?: configuration
+        removeAskAgainProcess(bus)
         answerContainer.send(bus)
-
-        considerAskAgainProcess(bus)
 
         switchStoryIfEnding(null, bus)
     }
 
     /**
-     * Consider to activate the ask again process to the last story
+     * Remove the ask again process to the last story if no more ask again round available
      */
-    private fun considerAskAgainProcess(bus: BotBus){
-        if (bus.dialog.stories.lastOrNull()?.definition?.hasTag(StoryTag.ASK_AGAIN) == true && bus.dialog.askRound > 0) {
-            bus.dialog.state.hasCurrentAskAgainProcess = true
+    private fun removeAskAgainProcess(bus: BotBus){
+        if (bus.dialog.stories.lastOrNull()?.definition?.hasTag(StoryTag.ASK_AGAIN) == true && bus.dialog.state.hasCurrentAskAgainProcess && bus.dialog.state.askAgainRound == 0) {
+            bus.dialog.state.hasCurrentAskAgainProcess = false
         }
     }
 

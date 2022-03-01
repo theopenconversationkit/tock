@@ -167,19 +167,30 @@ internal class Bot(
                             dialog,
                             action,
                             newIntent
-                        ) && !previousStory.supportAskAgain(dialog)))
+                        )))
             ) {
-                val storyDefinition: StoryDefinition = botDefinition.findStoryDefinition(newIntent?.name, action.applicationId)
+                val storyDefinition: StoryDefinition =
+                    botDefinition.findStoryDefinition(newIntent?.name, action.applicationId)
                 val newStory = Story(
                     storyDefinition,
                     if (newIntent != null && storyDefinition.isStarterIntent(newIntent)) newIntent
                     else storyDefinition.mainIntent()
                 )
-                dialog.stories.add(newStory)
-                newStory
-            }
-            else {
-                askAgainLastStory(previousStory,dialog)
+
+                if (previousStory?.definition?.hasTag(StoryTag.ASK_AGAIN) == true
+                    && dialog.state.askAgainRound > 0
+                    && !previousStory.supportIntent(newStory.definition.wrappedIntent())
+                ) {
+                    dialog.state.askAgainRound--
+                    dialog.state.hasCurrentAskAgainProcess = true
+                    dialog.stories.add(previousStory)
+                    previousStory
+                } else {
+                    dialog.stories.add(newStory)
+                    newStory
+                }
+            } else {
+                previousStory
             }
 
         story.computeCurrentStep(userTimeline, dialog, action, newIntent)
@@ -191,19 +202,6 @@ internal class Bot(
         action.state.step = story.step
 
         return story
-    }
-
-    /**
-     * Treat the the last story process or just ask previous story nominally
-     */
-    private fun askAgainLastStory(previousStory: Story, dialog: Dialog): Story {
-        return if (previousStory.supportAskAgain(dialog)) {
-            dialog.askRound--
-            dialog.state.hasCurrentAskAgainProcess = false
-            previousStory
-        } else{
-            previousStory
-        }
     }
 
     private fun parseAction(

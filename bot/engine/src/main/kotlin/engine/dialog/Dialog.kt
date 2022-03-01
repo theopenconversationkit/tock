@@ -111,5 +111,4 @@ data class Dialog(
      */
     val actionsSize: Int get() = stories.sumBy { it.actions.size }
 
-    var askRound: Int = intProperty("tock_ask_again_round",1)
 }
