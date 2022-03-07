@@ -1063,10 +1063,18 @@ object BotAdminService {
         )
     }
 
+    /**
+     * Checks and save the story
+     * @param namespace
+     * @param : story : botStoryDefinitionConfiguration
+     * @param: user : userLogin
+     * @param: createIntent : intent can be created out of the method
+     */
     fun saveStory(
         namespace: String,
         story: BotStoryDefinitionConfiguration,
-        user: UserLogin
+        user: UserLogin,
+        createdIntent : IntentDefinition? = null
     ): BotStoryDefinitionConfiguration? {
 
         // Two stories (built-in or configured) should not have the same _id
@@ -1101,7 +1109,7 @@ object BotAdminService {
             storyWithSameNsBotAndIntent.let {
                 if (it == null || it.currentType == builtin) {
                     // intent change
-                    if (storyWithSameId?._id != null) {
+                    if (storyWithSameId?._id != null && createdIntent == null) {
                         createOrGetIntent(
                             namespace,
                             story.intent.name,
@@ -1171,7 +1179,7 @@ object BotAdminService {
             logger.debug { "Saving story: $newStory" }
             storyDefinitionDAO.save(newStory)
 
-            if (story.userSentence.isNotBlank()) {
+            if (story.userSentence.isNotBlank() && createdIntent == null) {
                 val intent = createOrGetIntent(
                     namespace,
                     story.intent.name,
@@ -1179,6 +1187,8 @@ object BotAdminService {
                     story.category
                 )
                 saveSentence(story.userSentence, story.userSentenceLocale, application._id, intent._id, user)
+            } else{
+                saveSentence(story.userSentence, story.userSentenceLocale, application._id, createdIntent!!._id, user)
             }
 
             // save all intents of steps
@@ -1387,12 +1397,13 @@ object BotAdminService {
             applicationConfigurationDAO.delete(it)
         }
 
-        // delete stories
+        // delete stories and faqDefinitions
         storyDefinitionDAO.getStoryDefinitionsByNamespaceAndBotId(
             app.namespace, app.name
-        ).forEach {
-            storyDefinitionDAO.delete(it)
+        ).forEach { story ->
+            storyDefinitionDAO.delete(story)
         }
+
     }
 
     fun changeSupportedLocales(newApp: ApplicationDefinition) {
