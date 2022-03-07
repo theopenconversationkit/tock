@@ -55,7 +55,7 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
     }
 
     override fun deleteFaqDefinitionById(id: Id<FaqDefinition>) {
-        col.deleteOneById(FaqDefinition::_id eq id)
+        col.deleteOneById(id)
     }
 
     override fun getFaqDefinitionById(id: Id<FaqDefinition>): FaqDefinition? {

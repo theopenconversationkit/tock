@@ -78,4 +78,34 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         )
         assertEquals(1, col.countDocuments())
     }
+
+    @Test
+    fun `Remove a FaqDefinition just saved`() {
+        faqDefinitionDao.save(faqDefinition)
+
+        faqDefinitionDAO.deleteFaqDefinitionById(faqId)
+
+        assertEquals(0, col.countDocuments())
+
+        assertEquals(
+            expected = null,
+            actual = faqDefinitionDao.getFaqDefinitionByIntentId(intentId),
+            message = "There should be something returned with an intentId"
+        )
+        assertEquals(
+            expected = null,
+            actual = faqDefinitionDao.getFaqDefinitionById(faqId),
+            message = "There should be something returned with an faqId"
+        )
+        assertEquals(
+            expected = null,
+            actual = faqDefinitionDao.getFaqDefinitionByI18nIds(setOf(i18nId))?.firstOrNull(),
+            message = "There should be something returned with an i18nIds"
+        )
+        assertEquals(
+            expected = null,
+            actual = faqDefinitionDao.getFaqDefinitionByTags(tagList.toSet()).firstOrNull(),
+            message = "There should be something returned with tags"
+        )
+    }
 }
