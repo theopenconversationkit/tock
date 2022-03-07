@@ -17,7 +17,9 @@
 <nb-card [ngClass]="'px-2 py-1'">
   <nb-card-body [ngClass]="isDockedOrSmall() ? CSS_SMALL_CARD_BODY : CSS_WIDER_CARD_BODY">
     <div [ngClass]="isDockedOrSmall() ? CSS_SMALL_CARD_PART : CSS_WIDER_CARD_PART">
-      <nb-select [size]="'small'"
+      <nb-select
+        [disabled]="availableTags.length <= 0"
+        [size]="'small'"
                  multiple
                  [(ngModel)]="filter.tags"
                  (ngModelChange)="selectedTagsChanged($event)"
