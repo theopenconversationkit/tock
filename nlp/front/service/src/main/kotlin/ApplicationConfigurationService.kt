@@ -79,8 +79,10 @@ object ApplicationConfigurationService :
     override fun deleteApplicationById(id: Id<ApplicationDefinition>) {
         sentenceDAO.deleteSentencesByApplicationId(id)
         val app = applicationDAO.getApplicationById(id)!!
-        intentDAO.getIntentsByApplicationId(id).forEach {
-            removeIntentFromApplication(app, it._id)
+        intentDAO.getIntentsByApplicationId(id).forEach { intent ->
+            faqDefinitionDAO.getFaqDefinitionByIntentId(intent._id)
+                .let { faqDefinitionDAO.deleteFaqDefinitionById(it!!._id)}
+            removeIntentFromApplication(app, intent._id)
         }
         applicationDAO.deleteApplicationById(id)
     }
