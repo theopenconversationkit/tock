@@ -83,7 +83,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
     fun `Remove a FaqDefinition just saved`() {
         faqDefinitionDao.save(faqDefinition)
 
-        faqDefinitionDAO.deleteFaqDefinitionById(faqId)
+        faqDefinitionDao.deleteFaqDefinitionById(faqId)
 
         assertEquals(0, col.countDocuments())
 
