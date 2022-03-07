@@ -16,17 +16,22 @@
 
 package ai.tock.bot.admin
 
-import ai.tock.bot.admin.model.CreateI18nLabelRequest
-import ai.tock.bot.admin.model.FaqDefinitionRequest
-import ai.tock.bot.admin.model.FaqDefinitionSearchResult
-import ai.tock.bot.admin.model.FaqSearchRequest
+import ai.tock.bot.admin.answer.AnswerConfigurationType
+import ai.tock.bot.admin.answer.SimpleAnswer
+import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
+import ai.tock.bot.admin.model.*
+import ai.tock.bot.admin.story.StoryDefinitionConfiguration
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
+import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.nlp.admin.AdminService
 import ai.tock.nlp.front.service.applicationDAO
 import ai.tock.nlp.front.service.faqDefinitionDAO
 import ai.tock.nlp.front.service.intentDAO
 import ai.tock.nlp.front.service.storage.ClassifiedSentenceDAO
 import ai.tock.nlp.front.shared.config.*
+import ai.tock.shared.booleanProperty
 import ai.tock.shared.injector
+import ai.tock.shared.property
 import ai.tock.shared.provide
 import ai.tock.shared.security.UserLogin
 import ai.tock.shared.vertx.WebVerticle
@@ -47,6 +52,7 @@ object FaqAdminService {
 
     private val i18nDao: I18nDAO get() = injector.provide()
     private val classifiedSentenceDAO: ClassifiedSentenceDAO get() = injector.provide()
+    private val storyDefinitionDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
     private val front = BotAdminService.front
 
     private const val FAQ_CATEGORY = "faq"
@@ -88,12 +94,101 @@ object FaqAdminService {
                     )
                 }
 
+                if(query.enabled){
+                    // create the story and intent
+                    createOrUpdateStory(query, intent, userLogin, i18nLabel, applicationDefinition)
+
+                } else{
+                    //only create intent
+                    createOrUpdateIntentFromFaq(applicationDefinition.namespace, intent)
+                }
+
+                logger.debug { "Saved FAQ" }
+
             } else {
                 WebVerticle.badRequest("Intent not found")
             }
         } else {
             WebVerticle.badRequest("Missing argument or trouble in query: $query")
         }
+    }
+
+    private fun createOrUpdateStory(
+        query: FaqDefinitionRequest,
+        intent: IntentDefinition,
+        userLogin: UserLogin,
+        i18nLabel: I18nLabel,
+        applicationDefinition: ApplicationDefinition
+    ) {
+        val existingStory = storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(applicationDefinition.namespace,
+            applicationDefinition.name,
+            intent.name)
+
+        if (query.enabled) {
+            val storyDefinitionConfiguration =
+                createOrUpdateCurrentStory(query, intent, i18nLabel, applicationDefinition, existingStory)
+            BotAdminService.saveStory(
+                intent.namespace,
+                BotStoryDefinitionConfiguration(storyDefinitionConfiguration, i18nLabel.defaultLocale, false),
+                userLogin,intent)
+        } else {
+            if (existingStory != null) {
+                BotAdminService.deleteStory(intent.namespace, existingStory.storyId)
+            }
+        }
+    }
+
+    private fun createOrUpdateCurrentStory(
+        query: FaqDefinitionRequest,
+        intent: IntentDefinition,
+        i18nLabel: I18nLabel,
+        applicationDefinition: ApplicationDefinition,
+        existingStory: StoryDefinitionConfiguration?
+    ): StoryDefinitionConfiguration {
+        val newSimpleStory: StoryDefinitionConfiguration
+        if (existingStory != null) {
+            newSimpleStory = StoryDefinitionConfiguration(
+                existingStory.storyId,
+                applicationDefinition.name,
+                existingStory.intent,
+                AnswerConfigurationType.simple,
+                listOf(SimpleAnswerConfiguration(listOf(SimpleAnswer(I18nLabelValue(i18nLabel), -1, null)))),
+                1,
+                applicationDefinition.namespace,
+                existingStory.mandatoryEntities,
+                existingStory.steps,
+                intent.name,
+                FAQ_CATEGORY,
+                intent.description!!,
+                query.utterances.first(),
+                i18nLabel.defaultLocale,
+                existingStory.configurationName,
+                existingStory.features,
+                existingStory._id,
+                existingStory.tags,
+                existingStory.configuredAnswers,
+                existingStory.configuredSteps
+            )
+        } else {
+            newSimpleStory = StoryDefinitionConfiguration(
+                intent.name,
+                applicationDefinition.name,
+                IntentWithoutNamespace(intent.name),
+                AnswerConfigurationType.simple,
+                listOf(SimpleAnswerConfiguration(listOf(SimpleAnswer(I18nLabelValue(i18nLabel), -1, null)))),
+                1,
+                applicationDefinition.namespace,
+                emptyList(),
+                emptyList(),
+                intent.label!!,
+                FAQ_CATEGORY,
+                intent.description!!,
+                query.utterances.first(),
+                i18nLabel.defaultLocale
+            )
+        }
+
+        return newSimpleStory
     }
 
     /**
@@ -363,7 +458,8 @@ object FaqAdminService {
                 StringUtils.stripAccents(query.title.lowercase()),
                 "[^A-Za-z_-]",
                 ""
-            ))
+            )
+        )
         val intentId = createOrFindFaqDefinitionIntentId(query)
         // name must not be modified if it already exist
         val foundCurrentIntent = AdminService.front.getIntentById(intentId)
@@ -390,19 +486,19 @@ object FaqAdminService {
      */
     private fun createOrUpdateIntentFromFaq(namespace: String, intent: IntentDefinition): IntentDefinition? {
         return if (namespace == intent.namespace) {
-                    intent.run {
-                        copy(
-                            label = intent.label,
-                            description = intent.description,
-                            category = intent.category,
-                            applications = applications + intent.applications,
-                            entities = intent.entities + entities.filter { e -> intent.entities.none { it.role == e.role } },
-                            entitiesRegexp = entitiesRegexp + intent.entitiesRegexp,
-                            mandatoryStates = intent.mandatoryStates + mandatoryStates,
-                            sharedIntents = intent.sharedIntents + sharedIntents
-                        )
-                    }
-                    .apply {
+            intent.run {
+                copy(
+                    label = intent.label,
+                    description = intent.description,
+                    category = intent.category,
+                    applications = applications + intent.applications,
+                    entities = intent.entities + entities.filter { e -> intent.entities.none { it.role == e.role } },
+                    entitiesRegexp = entitiesRegexp + intent.entitiesRegexp,
+                    mandatoryStates = intent.mandatoryStates + mandatoryStates,
+                    sharedIntents = intent.sharedIntents + sharedIntents
+                )
+            }
+                .apply {
                     AdminService.front.save(this)
                     applications.forEach { appId ->
                         AdminService.front.getApplicationById(appId)?.also {
@@ -439,7 +535,9 @@ object FaqAdminService {
                 faqItem.i18nId,
                 applicationDefinition.namespace,
                 FAQ_CATEGORY,
-                linkedSetOf(I18nLocalizedLabel(query.language, UserInterfaceType.textChat, query.answer.trim()))
+                linkedSetOf(I18nLocalizedLabel(query.language, UserInterfaceType.textChat, query.answer.trim())),
+                query.answer.trim(),
+                query.language
             )
             i18nDao.save(listOf(i18nLabel))
             i18nLabel
@@ -461,14 +559,19 @@ object FaqAdminService {
                 val applicationDefinitionIds = intent.applications.map { it }
                 if (applicationDefinitionIds.isNotEmpty() && applicationDefinitionIds.size == 1) {
                     val applicationDefinition = applicationDAO.getApplicationById(applicationDefinitionIds.first())
-                    val botConf = BotAdminService.getBotConfigurationsByNamespaceAndBotId(
-                        namespace,
-                        applicationDefinition?.name.toString()
-                    ).firstOrNull()
-                    if (botConf != null && applicationDefinition != null) {
+                    if (applicationDefinition != null) {
                         front.removeIntentFromApplication(applicationDefinition, faqDefinition.intentId)
                         faqDefinitionDAO.deleteFaqDefinitionById(faqDefinition._id)
                         i18nDao.deleteByNamespaceAndId(namespace, faqDefinition.i18nId)
+
+                        val existingStory = storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(applicationDefinition.namespace,
+                            applicationDefinition.name,
+                            intent.name)
+
+                        if(existingStory != null) {
+                            BotAdminService.deleteStory(existingStory.namespace, existingStory._id.toString())
+                        }
+
                         return true
                     }
                 } else {
