@@ -190,7 +190,6 @@ export class FaqSidepanelEditorContentComponent implements OnInit, OnDestroy, On
         description: '' + (this.newFaqForm.controls['description'].value.trim() || ''),
         answer: '' + (this.newFaqForm.controls['answer'].value.trim() || ''),
         title: '' + (this.newFaqForm.controls['name'].value.trim() || ''),
-        status: this.fq.status,
         utterances: Array.from(utterances.map(el => el.trim())),
         enabled: (true === this.newFaqForm.controls['active'].value)
       };

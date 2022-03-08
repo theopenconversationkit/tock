@@ -114,10 +114,6 @@ export class FaqGridComponent extends ScrollComponent<FaqDefinition> implements 
     this.onEdit.emit(fq);
   }
 
-  remove(fq: FaqDefinition): void {
-    fq.status = 'deleted';
-  }
-
   toSearchQuery(query: PaginatedQuery): FaqSearchQuery {
     return new FaqSearchQuery(
       query.namespace,
