@@ -32,7 +32,6 @@ export class FaqDefinitionService {
 
   appIdByAppName = new Map<string, string>(); // for mock purpose only
 
-  // generate fake data for pagination
   faqData: FaqDefinitionResult = new FaqDefinitionResult([], 0, 0, 0);
 
   constructor(private rest: RestService, private state: StateService) {
@@ -51,7 +50,6 @@ export class FaqDefinitionService {
     }
   }
 
-  // fake real backend call
   delete(fq: FaqDefinition, cancel$: Observable<any> = empty()): Observable<boolean> {
     let newFq: FaqDefinition | undefined;
 
@@ -75,6 +73,15 @@ export class FaqDefinitionService {
   }
 
   save(faq: FaqDefinition, cancel$: Observable<any> = empty()): Observable<FaqDefinition> {
+    let dirty = false;
+
+    this.faqData.rows.some(item => {
+      if (FaqDefinitionService.compareFaqSave(faq, item)) {
+        dirty = true
+      }
+    });
+
+    if (!dirty) {
       return this.rest.post('/faq', faq)
         .pipe(
           takeUntil(cancel$),
@@ -83,6 +90,27 @@ export class FaqDefinitionService {
             this.state.resetConfiguration()
             return JSON.parse(JSON.stringify(faq));
           }));
+    } else {
+      return of(faq);
+    }
+  }
+
+  /**
+   * Compare faq but without creation or update Date
+   * @param newFaq
+   * @param oldFaq
+   * @private
+   */
+  private static compareFaqSave(newFaq: FaqDefinition, oldFaq: FaqDefinition): boolean {
+    return (newFaq.id == oldFaq.id
+      && newFaq.intentId == oldFaq.intentId
+      && newFaq.title == oldFaq.title
+      && newFaq.description == oldFaq.description
+      && newFaq.applicationId == oldFaq.applicationId
+      && newFaq.enabled == oldFaq.enabled
+      && JSON.stringify(newFaq.utterances) == JSON.stringify(oldFaq.utterances)
+      && newFaq.answer == oldFaq.answer
+      && JSON.stringify(newFaq.tags) == JSON.stringify(oldFaq.tags))
   }
 
   searchFaq(request: FaqSearchQuery, cancel$: Observable<any> = empty()): Observable<FaqDefinitionResult> {
