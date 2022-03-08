@@ -66,11 +66,11 @@ object FaqAdminService {
             val intent = createOrUpdateIntent(query, applicationDefinition)
 
             if (intent != null) {
-                logger.debug { "Saved intent $intent for FAQ"}
+                logger.debug { "Saved intent $intent for FAQ" }
                 createOrUpdateUtterances(query, intent._id, userLogin)
                 val i18nLabel = manageI18nLabelUpdate(intent._id, query, applicationDefinition)
                 val existingFaq = faqDefinitionDAO.getFaqDefinitionByIntentId(intent._id)
-                val savedFaq : FaqDefinition
+                val savedFaq: FaqDefinition
                 if (existingFaq != null) {
                     savedFaq = FaqDefinition(
                         _id = existingFaq._id,
@@ -80,7 +80,7 @@ object FaqAdminService {
                         creationDate = existingFaq.creationDate,
                         updateDate = Instant.now()
                     )
-                    faqDefinitionDAO.save(savedFaq).also { logger.info { "Updating FAQ \"${intent.label}\""} }
+                    faqDefinitionDAO.save(savedFaq).also { logger.info { "Updating FAQ \"${intent.label}\"" } }
                 } else {
                     savedFaq = FaqDefinition(
                         intentId = intent._id,
@@ -89,17 +89,15 @@ object FaqAdminService {
                         creationDate = Instant.now(),
                         updateDate = Instant.now()
                     )
-                    faqDefinitionDAO.save(savedFaq).also { logger.info { "Creating FAQ \"${intent.label}\""} }
+                    faqDefinitionDAO.save(savedFaq).also { logger.info { "Creating FAQ \"${intent.label}\"" } }
                 }
 
-                if(query.enabled){
+                if (query.enabled) {
                     // create the story and intent
                     createOrUpdateStory(query, intent, userLogin, i18nLabel, applicationDefinition)
-                    logger.info { "Saved FAQ \"${savedFaq._id}\" with story enabled"}
-                } else{
-                    //only create intent
-                    createOrUpdateIntentFromFaq(applicationDefinition.namespace, intent)
-                    logger.info { "Saved FAQ \"${savedFaq._id}\" without story enabled"}
+                    logger.info { "Saved FAQ with story enabled" }
+                } else {
+                    logger.info { "Saved FAQ without story enabled" }
                 }
 
             } else {
@@ -117,9 +115,11 @@ object FaqAdminService {
         i18nLabel: I18nLabel,
         applicationDefinition: ApplicationDefinition
     ) {
-        val existingStory = storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(applicationDefinition.namespace,
+        val existingStory = storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
+            applicationDefinition.namespace,
             applicationDefinition.name,
-            intent.name)
+            intent.name
+        )
 
         if (query.enabled) {
             val storyDefinitionConfiguration =
@@ -127,11 +127,13 @@ object FaqAdminService {
             val savedStory = BotAdminService.saveStory(
                 intent.namespace,
                 BotStoryDefinitionConfiguration(storyDefinitionConfiguration, i18nLabel.defaultLocale, false),
-                userLogin,intent)
-            logger.info { "Saved story : $savedStory" }
+                userLogin, intent
+            )
+            logger.debug { "Saved story : $savedStory" }
         } else {
             if (existingStory != null) {
-                BotAdminService.deleteStory(intent.namespace, existingStory.storyId).also {  logger.info { "Story disabled \"${existingStory.storyId}\"" } }
+                BotAdminService.deleteStory(intent.namespace, existingStory.storyId)
+                    .also { logger.info { "Story disabled \"${existingStory.storyId}\"" } }
             }
         }
     }
@@ -214,7 +216,7 @@ object FaqAdminService {
             }
         }
 
-        logger.info { "Saving ${notYetPresentSentences.size} utterances for FAQ"}
+        logger.info { "Create ${notYetPresentSentences.size} new utterances for FAQ" }
 
         val noMorePresentSentences: List<ClassifiedSentence> = sentences.second
         classifiedSentenceDAO.switchSentencesStatus(noMorePresentSentences, ClassifiedSentenceStatus.deleted)
@@ -308,7 +310,7 @@ object FaqAdminService {
                     lastIntentProbability = 1.0,
                     lastEntityProbability = 1.0,
                     qualifier = user
-                ).also { logger.info { "Saving classified sentence $it"} }
+                ).also { logger.info { "Saving classified sentence $it" } }
             )
 
         }
@@ -341,7 +343,8 @@ object FaqAdminService {
                 .map { faqQueryResult ->
                     faqQueryResult.toFaqDefinitionDetailed(
                         faqQueryResult,
-                        i18nLabels.firstOrNull { it._id == faqQueryResult.i18nId } ?: unknownI18n(applicationDefinition).also { logger.warn { "Could not found label for \"${it.i18n}\""} }
+                        i18nLabels.firstOrNull { it._id == faqQueryResult.i18nId }
+                            ?: unknownI18n(applicationDefinition).also { logger.warn { "Could not found label for \"${it.i18n}\"" } }
                     )
                 }.toSet()
 
@@ -353,7 +356,8 @@ object FaqAdminService {
                     i18nDao.getLabelById(it.i18nId).let { i18nLabel ->
                         it.toFaqDefinitionDetailed(
                             it,
-                            (i18nLabel ?: unknownI18n(applicationDefinition).also { logger.warn { "Could not found label for \"${it.i18n}\""} })
+                            (i18nLabel
+                                ?: unknownI18n(applicationDefinition).also { logger.warn { "Could not found label for \"${it.i18n}\"" } })
                         )
                     }
                 }.toSet()
@@ -453,64 +457,33 @@ object FaqAdminService {
         query: FaqDefinitionRequest,
         applicationDefinition: ApplicationDefinition
     ): IntentDefinition? {
-
-        var name = StringUtils.deleteWhitespace(
+        val name: String
+        val intentId = createOrFindFaqDefinitionIntentId(query)
+        // name must not be modified if it already exists
+        val foundCurrentIntent = AdminService.front.getIntentById(intentId)
+        name = foundCurrentIntent?.name ?: StringUtils.deleteWhitespace(
             RegExUtils.replaceAll(
                 StringUtils.stripAccents(query.title.lowercase()),
                 "[^A-Za-z_-]",
                 ""
             )
         )
-        val intentId = createOrFindFaqDefinitionIntentId(query)
-        // name must not be modified if it already exist
-        val foundCurrentIntent = AdminService.front.getIntentById(intentId)
-        if (foundCurrentIntent != null) {
-            name = foundCurrentIntent.name
-        }
+
         val intent = IntentDefinition(
             name = name,
             namespace = applicationDefinition.namespace,
             applications = setOf(applicationDefinition._id),
             entities = emptySet(),
-            // label without accents and withespace and numbers and lowercase
+            // label without accents and whitespace and numbers and lowercase
             label = query.title.trim(),
             description = query.description.trim(),
             category = FAQ_CATEGORY,
             _id = intentId,
         )
 
-        return createOrUpdateIntentFromFaq(applicationDefinition.namespace, intent)
+        return AdminService.createOrUpdateIntent(applicationDefinition.namespace, intent)
     }
 
-    /**
-     * Create or Update Intent and from the existing one
-     */
-    private fun createOrUpdateIntentFromFaq(namespace: String, intent: IntentDefinition): IntentDefinition? {
-        return if (namespace == intent.namespace) {
-            intent.run {
-                copy(
-                    label = intent.label,
-                    description = intent.description,
-                    category = intent.category,
-                    applications = applications + intent.applications,
-                    entities = intent.entities + entities.filter { e -> intent.entities.none { it.role == e.role } },
-                    entitiesRegexp = entitiesRegexp + intent.entitiesRegexp,
-                    mandatoryStates = intent.mandatoryStates + mandatoryStates,
-                    sharedIntents = intent.sharedIntents + sharedIntents
-                )
-            }
-                .apply {
-                    AdminService.front.save(this)
-                    applications.forEach { appId ->
-                        AdminService.front.getApplicationById(appId)?.also {
-                            AdminService.front.save(it.copy(intents = it.intents + _id))
-                        }
-                    }
-                }
-        } else {
-            null
-        }
-    }
 
     private fun createOrFindFaqDefinitionIntentId(query: FaqDefinitionRequest): Id<IntentDefinition> {
         return if (query.id != null) {
@@ -557,7 +530,7 @@ object FaqAdminService {
         if (faqDefinition != null) {
             val intent = intentDAO.getIntentById(faqDefinition.intentId)
             if (intent != null) {
-                logger.info { "Deleting FAQ Definition \"${intent.label}\""}
+                logger.info { "Deleting FAQ Definition \"${intent.label}\"" }
 
                 val applicationDefinitionIds = intent.applications.map { it }
                 if (applicationDefinitionIds.isNotEmpty() && applicationDefinitionIds.size == 1) {
@@ -567,12 +540,12 @@ object FaqAdminService {
                         faqDefinitionDAO.deleteFaqDefinitionById(faqDefinition._id)
                         i18nDao.deleteByNamespaceAndId(namespace, faqDefinition.i18nId)
 
-
-
-                        val existingStory = storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(applicationDefinition.namespace,
+                        val existingStory = storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
+                            applicationDefinition.namespace,
                             applicationDefinition.name,
-                            intent.name)
-                        if(existingStory != null) {
+                            intent.name
+                        )
+                        if (existingStory != null) {
                             BotAdminService.deleteStory(existingStory.namespace, existingStory._id.toString())
                         }
 
