@@ -101,7 +101,7 @@ object FaqAdminService {
                 }
 
             } else {
-                WebVerticle.badRequest("Intent not found")
+                WebVerticle.badRequest("Trouble when creating/updating intent : $intent")
             }
         } else {
             WebVerticle.badRequest("Missing argument or trouble in query: $query")
@@ -123,7 +123,7 @@ object FaqAdminService {
 
         if (query.enabled) {
             val storyDefinitionConfiguration =
-                createOrUpdateCurrentStory(query, intent, i18nLabel, applicationDefinition, existingStory)
+                prepareStoryCreationOrUpdate(query, intent, i18nLabel, applicationDefinition, existingStory)
             val savedStory = BotAdminService.saveStory(
                 intent.namespace,
                 BotStoryDefinitionConfiguration(storyDefinitionConfiguration, i18nLabel.defaultLocale, false),
@@ -138,16 +138,19 @@ object FaqAdminService {
         }
     }
 
-    private fun createOrUpdateCurrentStory(
+    /**
+     * Create or update the story
+     * @param existingStory : the optional existing story
+     */
+    private fun prepareStoryCreationOrUpdate(
         query: FaqDefinitionRequest,
         intent: IntentDefinition,
         i18nLabel: I18nLabel,
         applicationDefinition: ApplicationDefinition,
         existingStory: StoryDefinitionConfiguration?
     ): StoryDefinitionConfiguration {
-        val newSimpleStory: StoryDefinitionConfiguration
-        if (existingStory != null) {
-            newSimpleStory = StoryDefinitionConfiguration(
+        return if (existingStory != null) {
+            StoryDefinitionConfiguration(
                 existingStory.storyId,
                 applicationDefinition.name,
                 existingStory.intent,
@@ -170,7 +173,7 @@ object FaqAdminService {
                 existingStory.configuredSteps
             )
         } else {
-            newSimpleStory = StoryDefinitionConfiguration(
+           StoryDefinitionConfiguration(
                 intent.name,
                 applicationDefinition.name,
                 IntentWithoutNamespace(intent.name),
@@ -187,8 +190,6 @@ object FaqAdminService {
                 i18nLabel.defaultLocale
             )
         }
-
-        return newSimpleStory
     }
 
     /**
@@ -321,7 +322,7 @@ object FaqAdminService {
     }
 
     /**
-     * Search and find FAQ and their details in database and convert them to
+     * Search and find FAQ and their details in database and convert them to FaqDefinitionSearchResult
      */
     fun searchFAQ(query: FaqSearchRequest, applicationDefinition: ApplicationDefinition): FaqDefinitionSearchResult {
         val faqResults = LinkedHashSet<FaqDefinitionRequest>()
@@ -529,7 +530,6 @@ object FaqAdminService {
                         if (existingStory != null) {
                             BotAdminService.deleteStory(existingStory.namespace, existingStory._id.toString())
                         }
-
                         return true
                     }
                 } else {
