@@ -407,10 +407,6 @@ object FaqAdminService {
             .map { faqDefinition ->
                 val currentUtterance = faqDefinition.utterances.map { it }
                 val currentLanguage = currentUtterance.map { it.language }.first()
-                // find status from ClassifiedSentences Status correspondance
-                val currentStatus =
-                    currentUtterance.map { it.status }.first()
-                        .let { findFaqStatusFromClassifiedSentenceStatus(it) }
                 FaqDefinitionRequest(
                     faqDefinition._id.toString(),
                     faqDefinition.intentId.toString(),
@@ -423,24 +419,9 @@ object FaqAdminService {
                     faqDefinition.utterances.map { it.text },
                     faqDefinition.tags,
                     faqDefinition.i18nLabel.i18n.map { it.label }.firstOrNull().orEmpty(),
-                    currentStatus,
                     faqDefinition.i18nLabel.i18n.map { it.validated }.first(),
                 )
             }.toSet()
-    }
-
-    //TODO: Workaround since there are no real FaqStatus
-    private fun findFaqStatusFromClassifiedSentenceStatus(status: ClassifiedSentenceStatus): FaqStatus {
-        return when (status) {
-            ClassifiedSentenceStatus.model -> FaqStatus.model
-            ClassifiedSentenceStatus.validated -> FaqStatus.model
-            ClassifiedSentenceStatus.deleted -> FaqStatus.deleted
-            ClassifiedSentenceStatus.inbox -> FaqStatus.draft
-            else -> {
-                logger.error("Cannot retrieve FaqStatus from ClassifiedSentenceStatus ${status}, default to draft")
-                FaqStatus.draft
-            }
-        }
     }
 
     private fun findPredicatesFrom18nLabels(

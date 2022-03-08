@@ -34,6 +34,5 @@ data class FaqDefinitionRequest(
     val utterances: List<String>,
     val tags: List<String>,
     val answer: String,
-    val status: FaqStatus,
     val enabled: Boolean,
 )

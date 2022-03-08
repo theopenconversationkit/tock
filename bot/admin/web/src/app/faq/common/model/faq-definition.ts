@@ -16,8 +16,6 @@
 
 import {Utterance} from "./utterance";
 
-export type FaqDefinitionStatus = 'draft' | 'model' | 'deleted'; // Adapt to your needs
-
 export type FaqDefinition = {
   id?: string,
   intentId?: string,
@@ -30,7 +28,6 @@ export type FaqDefinition = {
   utterances: Utterance[],
   tags: string[],
   answer: string,
-  status: FaqDefinitionStatus,
   enabled: boolean
 };
 
@@ -44,7 +41,6 @@ export function blankFaqDefinition(config: { language: string, applicationId: st
     tags: [],
     answer: '',
     enabled: true,
-    status: 'draft',
     ...config
   };
 }
