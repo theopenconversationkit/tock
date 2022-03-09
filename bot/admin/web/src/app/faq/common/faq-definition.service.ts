@@ -59,6 +59,7 @@ export class FaqDefinitionService {
         if (r) {
           this.faqData.rows = this.faqData.rows.map(item => {
             if (fq.id && item.id === fq.id) {
+              newFq.status = 'deleted';
               newFq = JSON.parse(JSON.stringify(fq)); // deep copy
               return newFq;
             } else {
