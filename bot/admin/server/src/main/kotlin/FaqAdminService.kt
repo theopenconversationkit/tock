@@ -68,8 +68,8 @@ object FaqAdminService {
             if (intent != null) {
                 logger.debug { "Saved intent $intent for FAQ" }
                 createOrUpdateUtterances(query, intent._id, userLogin)
-                val i18nLabel = manageI18nLabelUpdate(intent._id, query, applicationDefinition)
                 val existingFaq = faqDefinitionDAO.getFaqDefinitionByIntentId(intent._id)
+                val i18nLabel = manageI18nLabelUpdate(query, applicationDefinition.namespace, existingFaq)
                 val savedFaq: FaqDefinition
                 if (existingFaq != null) {
                     savedFaq = FaqDefinition(
@@ -92,13 +92,14 @@ object FaqAdminService {
                     faqDefinitionDAO.save(savedFaq).also { logger.info { "Creating FAQ \"${intent.label}\"" } }
                 }
 
-                if (query.enabled) {
-                    // create the story and intent
-                    createOrUpdateStory(query, intent, userLogin, i18nLabel, applicationDefinition)
-                    logger.info { "Saved FAQ with story enabled" }
-                } else {
-                    logger.info { "Saved FAQ without story enabled" }
-                }
+                // create the story and intent
+                createOrUpdateActiveStoryOrRemoveDisabledStory(
+                    query,
+                    intent,
+                    userLogin,
+                    i18nLabel,
+                    applicationDefinition
+                )
 
             } else {
                 WebVerticle.badRequest("Trouble when creating/updating intent : $intent")
@@ -108,7 +109,7 @@ object FaqAdminService {
         }
     }
 
-    private fun createOrUpdateStory(
+    private fun createOrUpdateActiveStoryOrRemoveDisabledStory(
         query: FaqDefinitionRequest,
         intent: IntentDefinition,
         userLogin: UserLogin,
@@ -121,20 +122,22 @@ object FaqAdminService {
             intent.name
         )
 
+        // create active story
         if (query.enabled) {
             val storyDefinitionConfiguration =
                 prepareStoryCreationOrUpdate(query, intent, i18nLabel, applicationDefinition, existingStory)
-            val savedStory = BotAdminService.saveStory(
+
+            BotAdminService.saveStory(
                 intent.namespace,
                 BotStoryDefinitionConfiguration(storyDefinitionConfiguration, i18nLabel.defaultLocale, false),
                 userLogin, intent
-            )
-            logger.debug { "Saved story : $savedStory" }
-        } else {
-            if (existingStory != null) {
-                BotAdminService.deleteStory(intent.namespace, existingStory.storyId)
-                    .also { logger.info { "Story disabled \"${existingStory.storyId}\"" } }
-            }
+            ).also { logger.info { "Saved FAQ with story \"${it?.intent?.name}\" enabled" } }
+        // disable active story
+        } else if (existingStory != null) {
+            BotAdminService.deleteStory(intent.namespace, existingStory.storyId)
+                .also { logger.info { "Story disabled \"${existingStory.storyId}\"" } }
+        } else{
+            logger.info { "Saved FAQ without story enabled" }
         }
     }
 
@@ -173,7 +176,7 @@ object FaqAdminService {
                 existingStory.configuredSteps
             )
         } else {
-           StoryDefinitionConfiguration(
+            StoryDefinitionConfiguration(
                 intent.name,
                 applicationDefinition.name,
                 IntentWithoutNamespace(intent.name),
@@ -479,30 +482,28 @@ object FaqAdminService {
      * Create or update I18nLabelUpdate
      */
     private fun manageI18nLabelUpdate(
-        intentId: Id<IntentDefinition>,
         query: FaqDefinitionRequest,
-        applicationDefinition: ApplicationDefinition
+        namespace: String,
+        existingFaq: FaqDefinition?
     ): I18nLabel {
-        val faqItem = faqDefinitionDAO.getFaqDefinitionByIntentId(intentId)
-        //Remove the existing label in case the value is the same or no more the same
-        return if (faqItem != null && faqItem.i18nId.toString().isNotBlank()) {
+        return if (existingFaq != null && existingFaq.i18nId.toString().isNotBlank()) {
             //update existing label
             val i18nLabel = I18nLabel(
-                faqItem.i18nId,
-                applicationDefinition.namespace,
+                existingFaq.i18nId,
+                namespace,
                 FAQ_CATEGORY,
                 linkedSetOf(I18nLocalizedLabel(query.language, UserInterfaceType.textChat, query.answer.trim())),
                 query.answer.trim(),
                 query.language
             )
-            i18nDao.save(listOf(i18nLabel))
+            i18nDao.save(listOf(i18nLabel)).also { logger.info { "Updating I18n label : ${i18nLabel.defaultLabel}" } }
             i18nLabel
         } else {
             BotAdminService.createI18nRequest(
-                applicationDefinition.namespace, CreateI18nLabelRequest(
+                namespace, CreateI18nLabelRequest(
                     query.answer.trim(), query.language,
                     FAQ_CATEGORY
-                )
+                ).also { logger.info { "Creating I18n label : ${it.label}" } }
             )
         }
     }
