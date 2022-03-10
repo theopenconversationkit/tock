@@ -1185,16 +1185,19 @@ object BotAdminService {
             logger.debug { "Saving story: $newStory" }
             storyDefinitionDAO.save(newStory)
 
-            if (story.userSentence.isNotBlank() && createdIntent == null) {
+            if (story.userSentence.isNotBlank()) {
                 val intent = createOrGetIntent(
                     namespace,
                     story.intent.name,
                     application._id,
                     story.category
                 )
-                saveSentence(story.userSentence, story.userSentenceLocale, application._id, intent._id, user)
-            } else{
-                saveSentence(story.userSentence, story.userSentenceLocale, application._id, createdIntent!!._id, user)
+                saveSentence(
+                    story.userSentence,
+                    story.userSentenceLocale,
+                    application._id,
+                    createdIntent?._id ?: intent._id,
+                    user)
             }
 
             // save all intents of steps
