@@ -25,7 +25,6 @@ class FaqQuery(
     val searchMark: SearchMark? = null,
     val tags: List<String>,
     val enabled: Boolean,
-    val status: FaqStatus,
     val user :String?,
     val allButUser: String?,
     val applicationName: String,

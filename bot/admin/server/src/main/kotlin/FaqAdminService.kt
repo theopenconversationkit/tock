@@ -33,6 +33,7 @@ import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.security.UserLogin
 import ai.tock.shared.vertx.WebVerticle
+import ai.tock.shared.vertx.WebVerticle.Companion.badRequest
 import ai.tock.translator.*
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -60,12 +61,15 @@ object FaqAdminService {
      * Save the Frequently asked question into database
      */
     fun saveFAQ(query: FaqDefinitionRequest, userLogin: UserLogin, applicationDefinition: ApplicationDefinition) {
-        if (query.utterances.isNotEmpty() && query.title.isNotBlank()
-            && query.answer.isNotBlank()
-        ) {
+        if (query.utterances.isEmpty() && query.title.isBlank() && query.answer.isBlank()) {
+            badRequest("Missing argument or trouble in query: $query")
+        }
+        else{
             val intent = createOrUpdateIntent(query, applicationDefinition)
-
-            if (intent != null) {
+            if (intent == null) {
+                badRequest("Trouble when creating/updating intent : $intent")
+            }
+            else{
                 logger.debug { "Saved intent $intent for FAQ" }
                 createOrUpdateUtterances(query, intent._id, userLogin)
                 val existingFaq = faqDefinitionDAO.getFaqDefinitionByIntentId(intent._id)
@@ -100,12 +104,7 @@ object FaqAdminService {
                     i18nLabel,
                     applicationDefinition
                 )
-
-            } else {
-                WebVerticle.badRequest("Trouble when creating/updating intent : $intent")
             }
-        } else {
-            WebVerticle.badRequest("Missing argument or trouble in query: $query")
         }
     }
 
@@ -128,15 +127,13 @@ object FaqAdminService {
                 prepareStoryCreationOrUpdate(query, intent, i18nLabel, applicationDefinition, existingStory)
 
             BotAdminService.saveStory(
-                intent.namespace,
+                applicationDefinition.namespace,
                 BotStoryDefinitionConfiguration(storyDefinitionConfiguration, i18nLabel.defaultLocale, false),
                 userLogin, intent
             ).also { logger.info { "Saved FAQ with story \"${it?.intent?.name}\" enabled" } }
-        // disable active story
-        } else if (existingStory != null) {
-            BotAdminService.deleteStory(intent.namespace, existingStory.storyId)
-                .also { logger.info { "Story disabled \"${existingStory.storyId}\"" } }
-        } else{
+        }
+        //TODO : implement the story deactivation
+        else{
             logger.info { "Saved FAQ without story enabled" }
         }
     }
@@ -336,7 +333,7 @@ object FaqAdminService {
         //first is the List<FaqQueryResult>
         //second is the total count
         val faqDetailsWithCount = faqDefinitionDAO.getFaqDetailsWithCount(
-            query.toFaqQuery(query, FaqStatus.draft),
+            query.toFaqQuery(),
             applicationDefinition._id.toString(),
             i18nIds
         )
@@ -446,13 +443,7 @@ object FaqAdminService {
         val intentId = createOrFindFaqDefinitionIntentId(query)
         // name must not be modified if it already exists
         val foundCurrentIntent = AdminService.front.getIntentById(intentId)
-        name = foundCurrentIntent?.name ?: StringUtils.deleteWhitespace(
-            RegExUtils.replaceAll(
-                StringUtils.stripAccents(query.title.lowercase()),
-                "[^A-Za-z_-]",
-                ""
-            )
-        )
+        name = foundCurrentIntent?.name ?: formatIntentName(query.title)
 
         val intent = IntentDefinition(
             name = name,
@@ -465,8 +456,18 @@ object FaqAdminService {
             category = FAQ_CATEGORY,
             _id = intentId,
         )
-
         return AdminService.createOrUpdateIntent(applicationDefinition.namespace, intent)
+    }
+
+    /**
+     * Format intent name to corresponding frontend regex replacement for intent name
+     */
+    private fun formatIntentName(intentName: String) : String {
+        return StringUtils.deleteWhitespace(
+        RegExUtils.replaceAll(
+            StringUtils.stripAccents(intentName.lowercase()),
+            "[^A-Za-z_-]",
+            ""))
     }
 
 

@@ -17,25 +17,10 @@
 package ai.tock.bot.admin
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType
-import ai.tock.bot.admin.bot.BotApplicationConfiguration
-import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
-import ai.tock.bot.admin.dialog.DialogReportDAO
-import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
-import ai.tock.bot.admin.user.UserReportDAO
-import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.IntentWithoutNamespace
-import ai.tock.bot.engine.feature.FeatureDAO
-import ai.tock.nlp.front.service.storage.ApplicationDefinitionDAO
-import ai.tock.nlp.front.shared.ApplicationCodec
-import ai.tock.nlp.front.shared.ApplicationConfiguration
-import ai.tock.nlp.front.shared.ApplicationMonitor
-import ai.tock.nlp.front.shared.ModelTester
-import ai.tock.nlp.front.shared.ModelUpdater
-import ai.tock.nlp.front.shared.Parser
-import ai.tock.nlp.front.shared.codec.alexa.AlexaCodec
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.shared.tockInternalInjector
 import ai.tock.shared.vertx.BadRequestException
@@ -43,115 +28,35 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import io.mockk.clearAllMocks
 import io.mockk.every
-import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.litote.kmongo.Id
 import org.litote.kmongo.newId
-import java.util.Locale
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-class BotAdminServiceTest {
+class BotAdminServiceTest : AbstractTest() {
 
     companion object {
-
-        fun BotStoryDefinitionConfiguration.toStoryDefinitionConfiguration(): StoryDefinitionConfiguration {
-            return StoryDefinitionConfiguration(
-                storyId = storyId,
-                botId = botId,
-                intent = intent,
-                currentType = currentType,
-                namespace = namespace,
-                answers = emptyList(),
-                userSentenceLocale = userSentenceLocale,
-                _id = _id
-            )
-        }
-
-        fun newTestStory(
-            storyId: String,
-            type: AnswerConfigurationType,
-            _id: Id<StoryDefinitionConfiguration> = newId(),
-            name: String = storyId
-        ): BotStoryDefinitionConfiguration {
-            return BotStoryDefinitionConfiguration(
-                storyId = storyId,
-                botId = "testBotId",
-                intent = IntentWithoutNamespace("testIntent"),
-                currentType = type,
-                namespace = "testNamespace",
-                answers = emptyList(),
-                userSentenceLocale = Locale.FRANCE,
-                _id = _id,
-                name = name
-            )
-        }
-
-        val aApplication = BotApplicationConfiguration(
-            applicationId = "testApplicationId",
-            botId = "testBotId",
-            namespace = "testNamespace",
-            nlpModel = "testNlpModel",
-            connectorType = ConnectorType.rest
-        )
-
-        val aBuiltinStory = newTestStory("testBuiltinStory", AnswerConfigurationType.builtin)
-        val aMessageStory = newTestStory("testMessageStory", AnswerConfigurationType.message)
-
-        val storyDefinitionDAO: StoryDefinitionConfigurationDAO = mockk(relaxed = false)
-        val applicationConfigurationDAO: BotApplicationConfigurationDAO = mockk(relaxed = false)
-        val applicationDefininitionDAO: ApplicationDefinitionDAO = mockk(relaxed = false)
-
         init {
             // IOC
             tockInternalInjector = KodeinInjector()
-            val module = Kodein.Module {
+            val specificModule = Kodein.Module {
                 bind<StoryDefinitionConfigurationDAO>() with provider { storyDefinitionDAO }
-                bind<ApplicationConfiguration>() with provider { mockk<ApplicationConfiguration>(relaxed = true) }
-                bind<UserReportDAO>() with provider { mockk<UserReportDAO>(relaxed = true) }
-                bind<DialogReportDAO>() with provider { mockk<DialogReportDAO>(relaxed = true) }
-                bind<BotApplicationConfigurationDAO>() with provider { applicationConfigurationDAO }
-                bind<ApplicationDefinitionDAO>() with provider { applicationDefininitionDAO }
-                bind<FeatureDAO>() with provider { mockk<FeatureDAO>(relaxed = true) }
-                bind<Parser>() with provider { mockk<Parser>(relaxed = true) }
-                bind<ModelUpdater>() with provider { mockk<ModelUpdater>(relaxed = true) }
-                bind<ApplicationCodec>() with provider { mockk<ApplicationCodec>(relaxed = true) }
-                bind<AlexaCodec>() with provider { mockk<AlexaCodec>(relaxed = true) }
-                bind<ApplicationMonitor>() with provider { mockk<ApplicationMonitor>(relaxed = true) }
-                bind<ModelTester>() with provider { mockk<ModelTester>(relaxed = true) }
             }
             tockInternalInjector.inject(
                 Kodein {
-                    import(module)
+                    import(defaultModulesBinding())
+                    import(specificModule)
                 }
             )
         }
-    }
-
-    @BeforeEach
-    internal fun initMocks() {
-        every { applicationConfigurationDAO.getConfigurationsByNamespaceAndBotId(any(), any()) } answers {
-            listOf(
-                aApplication
-            )
-        }
-        every { storyDefinitionDAO.delete(any()) } returns Unit
-        every { storyDefinitionDAO.save(any()) } returns Unit
-    }
-
-    @AfterEach
-    internal fun clearMocks() {
-        clearAllMocks()
     }
 
     @Nested
