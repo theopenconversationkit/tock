@@ -439,7 +439,7 @@ val story = storyWithSteps<MyStep>("intent") {
 
 * Use buttons or quick replies
 
-More details on this topic [here](../code-a-bot/#postback-buttons-quick-replies).
+More details on this topic [here](#postback-buttons--quick-replies).
 
 
 #### StorySteps with complex behavior
