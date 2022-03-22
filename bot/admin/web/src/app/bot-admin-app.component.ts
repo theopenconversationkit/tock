@@ -90,7 +90,7 @@ export class BotAdminAppComponent implements OnInit, OnDestroy {
         hidden: this.state.hasRole(UserRole.admin)
       },
       {
-        title: 'Training',
+        title: 'FAQ Training',
         icon: {
           icon: 'school',
           pack: 'material-icons'
@@ -100,7 +100,7 @@ export class BotAdminAppComponent implements OnInit, OnDestroy {
         hidden: this.state.hasRole(UserRole.botUser)
       },
       {
-        title: 'FAQ',
+        title: 'FAQ Management',
         icon: {
           icon: 'question_answer',
           pack: 'material-icons'
