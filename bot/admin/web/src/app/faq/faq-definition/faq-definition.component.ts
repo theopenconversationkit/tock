@@ -39,7 +39,6 @@ export class FaqDefinitionComponent extends WithSidePanel() implements OnInit, O
 
   activeQaTab: EditorTabName = 'Info';
 
-  applicationName: string;
   currentItem?: FaqDefinition;
 
   editorPanelName?: string;
@@ -71,7 +70,6 @@ export class FaqDefinitionComponent extends WithSidePanel() implements OnInit, O
       language: this.state.currentLocale
     });
 
-    this.applicationName = this.state.currentApplication.name;
     this.initSidePanel(this.destroy$);
 
     this.state.currentApplicationEmitter // when bot switch
