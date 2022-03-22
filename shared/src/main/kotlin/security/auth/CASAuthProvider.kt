@@ -34,6 +34,7 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
 
     companion object {
         private val logger = KotlinLogging.logger {}
+        val isJoinNamespace = booleanProperty("tock_cas_join_same_namespace_per_user", true)
     }
 
     // Either type specialized in HTTP (Successful when Http error code is 2XX)
@@ -120,7 +121,7 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
         // NOTE: Currently registering same user multiple times is the only way to save multiple namespaces
         for ((namespace, roles) in rolesByNamespace) {
             user = injector.provide<TockUserListener>().registerUser(
-                TockUser(username, namespace, roles)
+                TockUser(username, namespace, roles),isJoinNamespace
             )
         }
         return user!! // !! is because user is already guaranteed to be not null

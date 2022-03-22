@@ -189,13 +189,14 @@ Voici les propriétés et leurs valeurs par défaut :
 | `tock_cas_auth_enabled`              | `false`           | Activation de l'authentification PAC4J/CAS.      |
 | `tock_cas_auth_proxy_host`           | `127.0.0.1`       | Host du proxy (ne pas indiquer si pas de proxy)  |
 | `tock_cas_auth_proxy_port`           | `3128`            | Port optionnel du proxy                          |
+| `tock_cas_join_same_namespace_per_user`| `true`          | Lors de la création de l'utilisateur, si le namespace existe déjà et que d'autres utilisateurs sont déjà présent, le nouvel utilisateur rejoint le même namespace existant                       |
 
 > Pour en savoir plus sur le fonctionnement précis de cette implémentation, voir la classe
 > [`CASAuthProvider`](https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/CASAuthProvider.kt).
 
 Note complémentaire:
 
-> Lorsque l'authentification est de type SSO le bouton de Logout est n'est pas disponible
+> Lorsque l'authentification est de type SSO le bouton de Logout n'est pas disponible
 
 ## Données
 
