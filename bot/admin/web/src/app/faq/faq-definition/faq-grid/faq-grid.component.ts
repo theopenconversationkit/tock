@@ -130,7 +130,7 @@ export class FaqGridComponent extends ScrollComponent<FaqDefinition> implements 
       null, /* NOTE: There is a weird behavior when set */
       this.filter.search,
       this.filter.sort,
-      this.filter.onlyActives
+      this.filter.enabled
     );
   }
 
@@ -156,7 +156,7 @@ export class FaqGridComponent extends ScrollComponent<FaqDefinition> implements 
 
 export class FaqQaFilter {
   constructor(
-    public onlyActives?: boolean,
+    public enabled?: Boolean,
     public search?: string,
     public sort?: Entry<string, boolean>[],
     public tags?: string[],
