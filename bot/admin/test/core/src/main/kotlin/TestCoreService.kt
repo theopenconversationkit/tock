@@ -33,6 +33,7 @@ import ai.tock.shared.injector
 import ai.tock.shared.property
 import ai.tock.shared.provide
 import ai.tock.shared.security.TockUserRole.botUser
+import ai.tock.shared.security.TockUserRole.faqNlpUser
 import ai.tock.shared.vertx.UnauthorizedException
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.WebVerticle.Companion
@@ -134,11 +135,14 @@ class TestCoreService : TestService {
             }
         }
 
-        blockingJsonPost("/test/talk", botUser) { context, query: BotDialogRequest ->
-            if (context.organization == query.namespace) {
-                talk(query)
-            } else {
-                Companion.unauthorized()
+        val cumulativeRoles = setOf(botUser,faqNlpUser)
+        cumulativeRoles.forEach { role ->
+            blockingJsonPost("/test/talk", role) { context, query: BotDialogRequest ->
+                if (context.organization == query.namespace) {
+                    talk(query)
+                } else {
+                    Companion.unauthorized()
+                }
             }
         }
     }

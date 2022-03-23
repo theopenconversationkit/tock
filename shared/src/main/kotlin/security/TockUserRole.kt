@@ -27,6 +27,16 @@ enum class TockUserRole {
      * A nlp user is allowed to qualify and search sentences, but not to update applications or builds.
      */
     nlpUser,
+
+    /**
+     *  A faq nlp user is allowed to qualify and search sentences, and train the FAQ, but not to update applications or builds.
+     */
+    faqNlpUser,
+
+    /**
+     *  A faq bot user is allowed to qualify and search sentences, and train the FAQ, but not to update applications or builds.
+     */
+    faqBotUser,
     /**
      * A bot user is allowed to modify answer & i18n, and to consult dialogs and conversations.
      */

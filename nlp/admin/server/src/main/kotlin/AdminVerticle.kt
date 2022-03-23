@@ -64,14 +64,9 @@ import ai.tock.shared.name
 import ai.tock.shared.namespace
 import ai.tock.shared.pingMongoDatabase
 import ai.tock.shared.provide
-import ai.tock.shared.security.NoEncryptionPassException
-import ai.tock.shared.security.TockUserRole.admin
-import ai.tock.shared.security.TockUserRole.nlpUser
-import ai.tock.shared.security.TockUserRole.technicalAdmin
-import ai.tock.shared.security.UNKNOWN_USER_LOGIN
+import ai.tock.shared.security.*
+import ai.tock.shared.security.TockUserRole.*
 import ai.tock.shared.security.auth.TockAuthProvider
-import ai.tock.shared.security.decrypt
-import ai.tock.shared.security.initEncryptor
 import ai.tock.shared.supportedLanguages
 import ai.tock.shared.vertx.RequestLogger
 import ai.tock.shared.vertx.WebVerticle
@@ -150,6 +145,119 @@ open class AdminVerticle : WebVerticle() {
                 }
             }
         }
+
+    private fun multiplesNlpAndNlpFaqRolesRoutesRoles(front: FrontClient,service: AdminService){
+        val roles = setOf(faqNlpUser,nlpUser)
+
+        roles.forEach { role ->
+            blockingJsonPost(
+                "/sentence",
+                role,
+                logger<SentenceReport>("Update Sentence") { _, s ->
+                    s?.applicationId
+                }
+            ) { context, sentenceReport: SentenceReport ->
+                if (context.organization == front.getApplicationById(sentenceReport.applicationId)?.namespace) {
+                    front.save(sentenceReport.toClassifiedSentence(), context.user?.user ?: UNKNOWN_USER_LOGIN)
+                } else {
+                    unauthorized()
+                }
+            }
+
+            blockingJsonPost("/sentences/search", role) { context, s: SearchQuery ->
+                if (context.organization == s.namespace) {
+                    try {
+                        service.searchSentences(s)
+                    } catch (t: NoEncryptionPassException) {
+                        logger.error(t)
+                        badRequest("Error obfuscating sentences: ${t.message}")
+                    } catch (t: Exception) {
+                        logger.error(t)
+                        badRequest("Error searching sentences: ${t.message}")
+                    }
+                } else {
+                    unauthorized()
+                }
+            }
+
+            blockingJsonGet(
+                "/sentence/users/:applicationId",
+                role
+            ) { context ->
+                val id: Id<ApplicationDefinition> = context.pathId("applicationId")
+                if (context.organization == front.getApplicationById(id)?.namespace) {
+                    front.users(id)
+                } else {
+                    unauthorized()
+                }
+            }
+
+            blockingJsonPost("/test/stats", role) { context, query: TestBuildQuery ->
+                val app = front.getApplicationByNamespaceAndName(
+                    query.namespace,
+                    query.applicationName
+                )
+                if (context.organization == app?.namespace
+                ) {
+                    AdminService.testBuildStats(query, app)
+                } else {
+                    unauthorized()
+                }
+            }
+
+            blockingJsonPost("/test/intent-errors", role) { context, query: TestBuildQuery ->
+                if (context.organization == query.namespace) {
+                    val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
+                        ?: error("application for $query not found")
+                    AdminService.searchTestIntentErrors(query.toTestErrorQuery(app))
+                } else {
+                    unauthorized()
+                }
+            }
+
+            blockingJsonPost(
+                "/test/intent-error/delete",
+                role,
+                logger<IntentTestErrorWithSentenceReport>("Delete Intent Test Error") { _, e -> e?.sentence?.applicationId }
+            ) { context, error: IntentTestErrorWithSentenceReport ->
+                if (context.organization == front.getApplicationById(error.sentence.applicationId)?.namespace) {
+                    front.deleteTestIntentError(
+                        error.sentence.applicationId,
+                        error.sentence.language,
+                        error.sentence.toClassifiedSentence().text
+                    )
+                } else {
+                    unauthorized()
+                }
+            }
+
+            blockingJsonPost("/test/entity-errors", role) { context, query: TestBuildQuery ->
+                if (context.organization == query.namespace) {
+                    val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
+                        ?: error("application for $query not found")
+                    service.searchTestEntityErrors(query.toTestErrorQuery(app))
+                } else {
+                    unauthorized()
+                }
+            }
+
+            blockingJsonPost(
+                "/test/entity-error/delete",
+                role,
+                logger<EntityTestErrorWithSentenceReport>("Delete Entity Test Error") { _, e -> e?.sentence?.applicationId }
+            ) { context, error: EntityTestErrorWithSentenceReport ->
+                if (context.organization == front.getApplicationById(error.sentence.applicationId)?.namespace) {
+                    front.deleteTestEntityError(
+                        error.sentence.applicationId,
+                        error.sentence.language,
+                        error.originalSentence.toClassifiedSentence().text
+                    )
+                } else {
+                    unauthorized()
+                }
+            }
+        }
+    }
 
     open fun configureServices() {
         val front = FrontClient
@@ -317,18 +425,6 @@ open class AdminVerticle : WebVerticle() {
                     front.triggerBuild(ModelBuildTrigger(newApp._id, true))
                 }
                 ApplicationWithIntents(newApp, front.getIntentsByApplicationId(newApp._id))
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingJsonGet(
-            "/sentence/users/:applicationId",
-            nlpUser
-        ) { context ->
-            val id: Id<ApplicationDefinition> = context.pathId("applicationId")
-            if (context.organization == front.getApplicationById(id)?.namespace) {
-                front.users(id)
             } else {
                 unauthorized()
             }
@@ -560,36 +656,6 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost(
-            "/sentence",
-            nlpUser,
-            logger<SentenceReport>("Update Sentence") { _, s ->
-                s?.applicationId
-            }
-        ) { context, sentenceReport: SentenceReport ->
-            if (context.organization == front.getApplicationById(sentenceReport.applicationId)?.namespace) {
-                front.save(sentenceReport.toClassifiedSentence(), context.user?.user ?: UNKNOWN_USER_LOGIN)
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingJsonPost("/sentences/search", nlpUser) { context, s: SearchQuery ->
-            if (context.organization == s.namespace) {
-                try {
-                    service.searchSentences(s)
-                } catch (t: NoEncryptionPassException) {
-                    logger.error(t)
-                    badRequest("Error obfuscating sentences: ${t.message}")
-                } catch (t: Exception) {
-                    logger.error(t)
-                    badRequest("Error searching sentences: ${t.message}")
-                }
-            } else {
-                unauthorized()
-            }
-        }
-
         blockingJsonPost("/sentence/reveal", admin) { context, s: SentenceReport ->
             val key = s.key
             if (key == null) {
@@ -805,71 +871,6 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/test/intent-errors", nlpUser) { context, query: TestBuildQuery ->
-            if (context.organization == query.namespace) {
-                val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
-                    ?: error("application for $query not found")
-                AdminService.searchTestIntentErrors(query.toTestErrorQuery(app))
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingJsonPost(
-            "/test/intent-error/delete",
-            nlpUser,
-            logger<IntentTestErrorWithSentenceReport>("Delete Intent Test Error") { _, e -> e?.sentence?.applicationId }
-        ) { context, error: IntentTestErrorWithSentenceReport ->
-            if (context.organization == front.getApplicationById(error.sentence.applicationId)?.namespace) {
-                front.deleteTestIntentError(
-                    error.sentence.applicationId,
-                    error.sentence.language,
-                    error.sentence.toClassifiedSentence().text
-                )
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingJsonPost("/test/entity-errors", nlpUser) { context, query: TestBuildQuery ->
-            if (context.organization == query.namespace) {
-                val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
-                    ?: error("application for $query not found")
-                service.searchTestEntityErrors(query.toTestErrorQuery(app))
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingJsonPost(
-            "/test/entity-error/delete",
-            nlpUser,
-            logger<EntityTestErrorWithSentenceReport>("Delete Entity Test Error") { _, e -> e?.sentence?.applicationId }
-        ) { context, error: EntityTestErrorWithSentenceReport ->
-            if (context.organization == front.getApplicationById(error.sentence.applicationId)?.namespace) {
-                front.deleteTestEntityError(
-                    error.sentence.applicationId,
-                    error.sentence.language,
-                    error.originalSentence.toClassifiedSentence().text
-                )
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingJsonPost("/test/stats", nlpUser) { context, query: TestBuildQuery ->
-            val app = front.getApplicationByNamespaceAndName(
-                query.namespace,
-                query.applicationName
-            )
-            if (context.organization == app?.namespace
-            ) {
-                AdminService.testBuildStats(query, app)
-            } else {
-                unauthorized()
-            }
-        }
-
         blockingJsonPost("/alexa/export", admin) { context, query: ApplicationScopedQuery ->
             val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
             if (app != null && context.organization == app.namespace) {
@@ -1078,6 +1079,8 @@ open class AdminVerticle : WebVerticle() {
                 unauthorized()
             }
         }
+
+        multiplesNlpAndNlpFaqRolesRoutesRoles(front,service)
     }
 
     // cache index.html content
@@ -1154,6 +1157,8 @@ open class AdminVerticle : WebVerticle() {
                 .handler(indexContentHandler)
         }
     }
+
+
 
     protected open fun deleteApplication(app: ApplicationDefinition) {
         front.deleteApplicationById(app._id)
