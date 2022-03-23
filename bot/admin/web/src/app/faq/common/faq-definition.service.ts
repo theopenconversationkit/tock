@@ -130,41 +130,33 @@ export class FaqDefinitionService {
       }));
   }
 
-  activate(fq: FaqDefinition, cancel$: Observable<any> = empty()): Observable<FaqDefinition> {
-    return this.updateEnabled(fq, true, cancel$);
-  }
-
-  disable(fq: FaqDefinition, cancel$: Observable<any> = empty()): Observable<FaqDefinition> {
-    return this.updateEnabled(fq, false, cancel$);
-  }
-
   /**
-   * Update
-   * NOT YET IMPLEMENTED
-   * @param fq
-   * @param enabled
+   * Update enable/disable Faq
+   * @param faq
+   * @param status : faq is activated or deactivated
    * @param cancel$
-   * @private
    */
-  private updateEnabled(fq: FaqDefinition, enabled: boolean, cancel$: Observable<any>)
-    : Observable<FaqDefinition> {
-
+  updateFaqStatus(faq: FaqDefinition, status: boolean, cancel$: Observable<any>): Observable<FaqDefinition> {
     let dirty = false;
 
-    this.faqData.rows = this.faqData.rows.map(item => {
-      if (fq.id && item.id === fq.id) {
-        dirty = true;
-        fq.enabled = (enabled === true);
-        return fq;
-      } else {
-        return item;
+    this.faqData.rows.filter(item => item.id == faq.id).some( item=>{
+      if (item.enabled == status) {
+        dirty = true
       }
     });
 
-    if (dirty) {
-      return of(this.faqData.rows.filter(item => fq.id && item.id === fq.id)[0]);
+    if (!dirty) {
+      faq.enabled = status
+      return this.rest.post("/faq/status", faq)
+        .pipe(
+          takeUntil(cancel$),
+          map(_ => {
+            // add the current save to the state
+            this.state.resetConfiguration()
+            return JSON.parse(JSON.stringify(faq));
+          }));
     } else {
-      return empty();
+      return of(faq);
     }
   }
 

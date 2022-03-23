@@ -44,7 +44,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
     private val tagList = listOf("TAG1", "TAG2")
     private val namespace = "test"
 
-    private val faqDefinition = FaqDefinition(faqId, intentId, i18nId, tagList, now, now)
+    private val faqDefinition = FaqDefinition(faqId, intentId, i18nId, tagList,true, now, now)
 
     private val col: MongoCollection<FaqDefinition> by lazy { FaqDefinitionMongoDAO.col }
 

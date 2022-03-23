@@ -34,6 +34,8 @@ data class FaqDefinitionDetailed(
 
     val tags: List<String>,
 
+    val enabled: Boolean,
+
     val creationDate: Instant,
 
     val updateDate: Instant,

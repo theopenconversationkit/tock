@@ -126,14 +126,9 @@ export class FaqGridItemComponent implements OnInit, OnDestroy {
       return;
     }
 
-    let done$: Observable<unknown>;
-    if (newValue) {
-      done$ = this.qaService.activate(this.item, this.destroy$);
-    } else {
-      done$ = this.qaService.disable(this.item, this.destroy$);
-    }
-
-    await done$.pipe(take(1)).toPromise();
+    await this.qaService.updateFaqStatus(this.item, newValue, this.destroy$)
+      .pipe(take(1))
+      .toPromise();
 
     this.item.enabled = newValue; // update visible state for user
   }

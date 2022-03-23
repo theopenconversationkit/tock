@@ -34,6 +34,8 @@ data class FaqQueryResult(
 
     val tags: List<String>,
 
+    val enabled: Boolean,
+
     val creationDate: Instant,
 
     val updateDate: Instant,
@@ -48,6 +50,7 @@ data class FaqQueryResult(
             faqQueryResult.intentId,
             faqQueryResult.i18nId,
             faqQueryResult.tags,
+            faqQueryResult.enabled,
             faqQueryResult.creationDate,
             faqQueryResult.updateDate,
             faqQueryResult.utterances,
