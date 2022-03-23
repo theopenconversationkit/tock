@@ -75,14 +75,17 @@ export class FaqDefinitionService {
   save(faq: FaqDefinition, cancel$: Observable<any> = empty()): Observable<FaqDefinition> {
     let dirty = false;
 
-    this.faqData.rows.some(item => {
+    this.faqData.rows
+      .filter(item => item.id == faq.id)
+      .some(item=>{
       if (FaqDefinitionService.compareFaqSave(faq, item)) {
+        console.log(FaqDefinitionService.compareFaqSave(faq, item))
         dirty = true
       }
     });
 
     if (!dirty) {
-      return this.rest.post('/faq', faq)
+      return this.rest.post("/faq", faq)
         .pipe(
           takeUntil(cancel$),
           map(_ => {
