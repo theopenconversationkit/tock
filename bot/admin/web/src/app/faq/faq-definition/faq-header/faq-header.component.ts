@@ -59,8 +59,8 @@ export class FaqHeaderComponent implements OnInit {
   onNew = new EventEmitter<void>();
 
   /* Form-Like state */
-
-  onlyActives = false;
+  activationStatus: Boolean = null;
+  statusCycleRound = 2
   availableTags: string[] = [];
 
   /* Component lifecycle */
@@ -107,7 +107,7 @@ export class FaqHeaderComponent implements OnInit {
   }
 
   search(): void {
-    this.filter.onlyActives = (true === this.onlyActives);
+    this.filter.enabled = this.activationStatus;
     this.onSearch.emit(this.filter);
   }
 
@@ -115,9 +115,28 @@ export class FaqHeaderComponent implements OnInit {
     this.search();
   }
 
-  toggleOnlyActives(value: boolean) {
-    this.onlyActives = value;
+  toggleFaqActivationSearch(value: Boolean) {
+    this.toggleActivationStatus(value)
     this.search();
+  }
+
+  /**
+   * Toggle the search activation with cycling states
+   * Enabled / Disbaled / Inderterminate
+   * @param value
+   * @private
+   */
+  private toggleActivationStatus(value: Boolean) {
+    let isToggable = this.statusCycleRound > 0
+
+    if(isToggable && value != null) {
+      this.activationStatus = value;
+      this.statusCycleRound--
+    } else {
+      this.activationStatus = null;
+      //put back default round available click
+      this.statusCycleRound = 2
+    }
   }
 
   importFaq(): void {

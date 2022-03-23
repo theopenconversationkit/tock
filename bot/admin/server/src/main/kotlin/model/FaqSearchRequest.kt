@@ -23,7 +23,7 @@ import ai.tock.nlp.front.shared.config.FaqStatus
 data class FaqSearchRequest(
     val tags: List<String>,
     val search: String?,
-    val enabled: Boolean,
+    val enabled: Boolean?,
     val user: String?,
     val allButUser: String?,
 ) : PaginatedQuery() {

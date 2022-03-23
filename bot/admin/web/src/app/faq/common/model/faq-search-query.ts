@@ -29,7 +29,7 @@ export class FaqSearchQuery extends PaginatedQuery {
               public searchMark?: SearchMark,
               public search?: string,
               public sort?: Entry<string, boolean>[],
-              public enabled: boolean = false,
+              public enabled: Boolean = null,
               public user?: string,
               public allButUser?: string) {
     super(namespace, applicationName, language, start, size, searchMark, sort)

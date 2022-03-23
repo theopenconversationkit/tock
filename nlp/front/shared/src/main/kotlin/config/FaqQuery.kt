@@ -24,7 +24,7 @@ class FaqQuery(
     val search: String? = null,
     val searchMark: SearchMark? = null,
     val tags: List<String>,
-    val enabled: Boolean,
+    val enabled: Boolean?,
     val user :String?,
     val allButUser: String?,
     val applicationName: String,
