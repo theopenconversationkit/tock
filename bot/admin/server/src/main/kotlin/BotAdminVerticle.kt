@@ -773,7 +773,7 @@ open class BotAdminVerticle : AdminVerticle() {
         blockingJsonPost(
             "/faq",
             botUser,
-            logger<FaqDefinitionRequest>("Create FAQ")
+            logger<FaqDefinitionRequest>("Save FAQ")
         ) { context, query: FaqDefinitionRequest ->
             val applicationDefinition = BotAdminService.front.getApplicationById(query.applicationId)
             if (context.organization == applicationDefinition?.namespace) {

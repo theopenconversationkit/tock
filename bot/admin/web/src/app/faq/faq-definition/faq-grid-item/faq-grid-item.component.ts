@@ -16,16 +16,15 @@
 
 import {saveAs} from "file-saver";
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {Observable, of, ReplaySubject } from 'rxjs';
-import { delay, take, tap } from 'rxjs/operators';
-import { DialogService } from 'src/app/core-nlp/dialog.service';
-import { FaqDefinition } from '../../common/model/faq-definition';
+import {Observable, of, ReplaySubject} from 'rxjs';
+import {delay, take, tap} from 'rxjs/operators';
+import {DialogService} from 'src/app/core-nlp/dialog.service';
+import {FaqDefinition} from '../../common/model/faq-definition';
 import {isDocked, isDockedOrSmall, ViewMode} from '../../common/model/view-mode';
-import { FaqDefinitionService } from '../../common/faq-definition.service';
-import { truncate } from '../../common/util/string-utils';
-import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
-import { NbToastrService } from "@nebular/theme/components/toastr/toastr.service";
-import { StateService } from "src/app/core-nlp/state.service";
+import {FaqDefinitionService} from '../../common/faq-definition.service';
+import {truncate} from '../../common/util/string-utils';
+import {ConfirmDialogComponent} from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
+import {StateService} from "src/app/core-nlp/state.service";
 
 @Component({
   selector: 'tock-faq-grid-item',
@@ -55,7 +54,7 @@ export class FaqGridItemComponent implements OnInit, OnDestroy {
   onRemove = new EventEmitter<boolean>();
 
   @Output()
-  onEdit= new EventEmitter<FaqDefinition>();
+  onEdit = new EventEmitter<FaqDefinition>();
 
   @Output()
   onDownload = new EventEmitter<boolean>();
@@ -114,7 +113,7 @@ export class FaqGridItemComponent implements OnInit, OnDestroy {
 
     const result = await this.dialog.openDialog(ConfirmDialogComponent, {
       context: {
-        title: `Toggle ${newValue? 'On' : 'Off'}`,
+        title: `Toggle ${newValue ? 'On' : 'Off'}`,
         subtitle: newValue ?
           `Activate '${this.item.title}' ?`
           : `Disable '${this.item.title}' ?`,
@@ -154,7 +153,7 @@ export class FaqGridItemComponent implements OnInit, OnDestroy {
     return of(true)
       .pipe(
         delay(800),
-        tap(_ =>  this.cssState = 'tock--hidden' )
+        tap(_ => this.cssState = 'tock--hidden')
       );
   }
 }
