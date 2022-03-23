@@ -827,6 +827,19 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
+        blockingJsonPost(
+            "/faq/status",
+            nlpUser,
+            logger<FaqDefinitionRequest>("Change FAQ status")
+        ) { context, query: FaqDefinitionRequest ->
+            val applicationDefinition = BotAdminService.front.getApplicationById(query.applicationId)
+            if (context.organization == applicationDefinition?.namespace) {
+                FaqAdminService.updateActivationStatusStory(query, context.userLogin,applicationDefinition)
+            } else {
+                unauthorized()
+            }
+        }
+
         blockingJsonGet("/configuration") {
             botAdminConfiguration
         }

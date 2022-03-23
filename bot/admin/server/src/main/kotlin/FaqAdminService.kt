@@ -22,6 +22,7 @@ import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
 import ai.tock.bot.admin.model.*
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.nlp.admin.AdminService
 import ai.tock.nlp.front.service.applicationDAO
@@ -32,7 +33,6 @@ import ai.tock.nlp.front.shared.config.*
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.security.UserLogin
-import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.WebVerticle.Companion.badRequest
 import ai.tock.translator.*
 import kotlinx.coroutines.runBlocking
@@ -63,13 +63,11 @@ object FaqAdminService {
     fun saveFAQ(query: FaqDefinitionRequest, userLogin: UserLogin, applicationDefinition: ApplicationDefinition) {
         if (query.utterances.isEmpty() && query.title.isBlank() && query.answer.isBlank()) {
             badRequest("Missing argument or trouble in query: $query")
-        }
-        else{
+        } else {
             val intent = createOrUpdateIntent(query, applicationDefinition)
             if (intent == null) {
                 badRequest("Trouble when creating/updating intent : $intent")
-            }
-            else{
+            } else {
                 logger.debug { "Saved intent $intent for FAQ" }
                 createOrUpdateUtterances(query, intent._id, userLogin)
                 val existingFaq = faqDefinitionDAO.getFaqDefinitionByIntentId(intent._id)
@@ -81,6 +79,7 @@ object FaqAdminService {
                         intentId = existingFaq.intentId,
                         i18nId = existingFaq.i18nId,
                         tags = query.tags,
+                        enabled= query.enabled,
                         creationDate = existingFaq.creationDate,
                         updateDate = Instant.now()
                     )
@@ -90,6 +89,7 @@ object FaqAdminService {
                         intentId = intent._id,
                         i18nId = i18nLabel._id,
                         tags = query.tags,
+                        enabled = query.enabled,
                         creationDate = Instant.now(),
                         updateDate = Instant.now()
                     )
@@ -97,7 +97,7 @@ object FaqAdminService {
                 }
 
                 // create the story and intent
-                createOrUpdateActiveStoryOrRemoveDisabledStory(
+                createOrUpdateStory(
                     query,
                     intent,
                     userLogin,
@@ -108,7 +108,10 @@ object FaqAdminService {
         }
     }
 
-    private fun createOrUpdateActiveStoryOrRemoveDisabledStory(
+    /**
+     * Create or Update the story associated to the FAQ
+     */
+    private fun createOrUpdateStory(
         query: FaqDefinitionRequest,
         intent: IntentDefinition,
         userLogin: UserLogin,
@@ -131,10 +134,67 @@ object FaqAdminService {
                 BotStoryDefinitionConfiguration(storyDefinitionConfiguration, i18nLabel.defaultLocale, false),
                 userLogin, intent
             ).also { logger.info { "Saved FAQ with story \"${it?.intent?.name}\" enabled" } }
-        }
-        //TODO : implement the story deactivation
-        else{
+        } else {
             logger.info { "Saved FAQ without story enabled" }
+        }
+    }
+
+    /**
+     * Update the FAQ status with the use of story activation feature
+     */
+    fun updateActivationStatusStory(query: FaqDefinitionRequest, userLogin: UserLogin, applicationDefinition: ApplicationDefinition) {
+        val currentFaq = query.id?.let { faqDefinitionDAO.getFaqDefinitionById(it.toId()) }
+        val currentIntent = currentFaq?.intentId?.let { AdminService.front.getIntentById(it) }
+
+        val existingStory = currentIntent?.let {
+            storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
+                applicationDefinition.namespace,
+                applicationDefinition.name,
+                currentIntent.name
+            )
+        }
+
+        existingStory?.let {
+           val savedFaq = FaqDefinition(
+                _id = currentFaq._id,
+                intentId = currentFaq.intentId,
+                i18nId = currentFaq.i18nId,
+                tags = currentFaq.tags,
+                enabled= query.enabled,
+                creationDate = currentFaq.creationDate,
+                updateDate = Instant.now()
+            )
+            faqDefinitionDAO.save(savedFaq).also { logger.info { "Updating FAQ \"${currentFaq._id}\"" } }
+
+        val botStoryDefinitionConfiguration = BotAdminService.saveStory(
+            applicationDefinition.namespace,
+            BotStoryDefinitionConfiguration(StoryDefinitionConfiguration(
+                existingStory.storyId,
+                existingStory.botId,
+                existingStory.intent,
+                existingStory.currentType,
+                existingStory.answers,
+                existingStory.version,
+                existingStory.namespace,
+                existingStory.mandatoryEntities,
+                existingStory.steps,
+                existingStory.name,
+                existingStory.category,
+                existingStory.description,
+                existingStory.userSentence,
+                existingStory.userSentenceLocale,
+                existingStory.configurationName,
+                listOf(StoryDefinitionConfigurationFeature(null, query.enabled, null, null)),
+                existingStory._id,
+                existingStory.tags,
+                existingStory.configuredAnswers,
+                existingStory.configuredSteps
+            ), existingStory.userSentenceLocale!!, false),
+            userLogin, currentIntent)
+
+            botStoryDefinitionConfiguration?.let {
+                logger.info { "Update FAQ status with feature activation : ${query.enabled}" }
+            }
         }
     }
 
@@ -166,7 +226,7 @@ object FaqAdminService {
                 query.utterances.first(),
                 i18nLabel.defaultLocale,
                 existingStory.configurationName,
-                existingStory.features,
+                listOf(StoryDefinitionConfigurationFeature(null, query.enabled, null, null)),
                 existingStory._id,
                 existingStory.tags,
                 existingStory.configuredAnswers,
@@ -187,7 +247,8 @@ object FaqAdminService {
                 FAQ_CATEGORY,
                 intent.description!!,
                 query.utterances.first(),
-                i18nLabel.defaultLocale
+                i18nLabel.defaultLocale,
+                features = listOf(StoryDefinitionConfigurationFeature(null, query.enabled, null, null))
             )
         }
     }
@@ -420,7 +481,7 @@ object FaqAdminService {
                     faqDefinition.utterances.map { it.text },
                     faqDefinition.tags,
                     faqDefinition.i18nLabel.i18n.map { it.label }.firstOrNull().orEmpty(),
-                    faqDefinition.i18nLabel.i18n.map { it.validated }.first(),
+                    faqDefinition.enabled,
                 )
             }.toSet()
     }
@@ -462,12 +523,14 @@ object FaqAdminService {
     /**
      * Format intent name to corresponding frontend regex replacement for intent name
      */
-    private fun formatIntentName(intentName: String) : String {
+    private fun formatIntentName(intentName: String): String {
         return StringUtils.deleteWhitespace(
-        RegExUtils.replaceAll(
-            StringUtils.stripAccents(intentName.lowercase()),
-            "[^A-Za-z_-]",
-            ""))
+            RegExUtils.replaceAll(
+                StringUtils.stripAccents(intentName.lowercase()),
+                "[^A-Za-z_-]",
+                ""
+            )
+        )
     }
 
 
