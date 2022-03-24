@@ -19,8 +19,11 @@
   <nb-card [ngClass]="['mt-0', 'ml-0', 'mr-0', 'mb-2', 'w-100']">
     <nb-card-body [ngClass]="['d-flex', 'justify-content-between', 'align-items-center']">
       <nb-select
+        placeholder="#{{selectedIndex + 1}} Conversation"
+        status="basic"
         [disabled]="dialogReports.length === 0"
-        [size]="'small'" placeholder="#{{selectedIndex + 1}} Conversation" status="default">
+        [size]="'small'"
+      >
         <nb-option *ngFor="let dialog of dialogReports; let index = index"
                    [value]="null"
                    (click)="selectDialog(dialog, index)" tock-click-capture>
@@ -38,7 +41,7 @@
 
   <!-- WHEN NOTHING SELECTED -->
 
-  <div class="tock-conversation-viewport" *ngIf="dialogReports.length === 0">
+  <nb-card *ngIf="dialogReports.length === 0" class="tock-conversation-viewport">
     <div class="tock-conversation-viewport-header">
       <div class="tock-conversation-viewport-pane tock--left">User</div>
       <div class="tock-conversation-viewport-pane tock--right">Bot</div>
@@ -52,16 +55,16 @@
 
       <img src="{{baseHref}}assets/images/beard_man.svg"  class="tock-bubble-icon" />
     </div>
-  </div>
+  </nb-card>
 
 
   <!-- WHEN DIALOG REPORT SELECTED -->
 
-  <div
+  <nb-card
+    *ngIf="dialogChanged$ | async; let dialogReport"
     class="tock-conversation-viewport"
     [ngClass]="{'tock--condensed': !isBothAgents()}"
-    *ngIf="dialogChanged$ | async; let dialogReport">
-
+  >
     <div class="tock-conversation-viewport-header">
       <div class="tock-conversation-viewport-pane tock--left" (click)="toggleOnlyUser()">User</div>
       <div class="tock-conversation-viewport-pane tock--right" (click)="toggleOnlyBot()">Bot</div>
@@ -111,6 +114,6 @@
       <br />
       <br />
     </div>
-  </div>
+  </nb-card>
 
 </div>
