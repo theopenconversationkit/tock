@@ -79,7 +79,6 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
 
 .tock-conversation-viewport {
   padding: 50px 20px 50px 20px;
-  border-radius: 0.25rem;
   position: relative;
   top: 0;
   left: 0;
@@ -212,11 +211,11 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
     background: $chat-bubble-bg-mine;
     color: #fff;
     margin: 0 0 1.2rem 0;
-  }
 
-  > .bubble:before {
-    border-right: 10px solid $chat-bubble-bg-mine;
-    right: 32px;
+    &:before {
+      border-right: 10px solid $chat-bubble-bg-mine;
+      right: 32px;
+    }
   }
 }
 
@@ -238,11 +237,11 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
     background: $chat-bubble-bg;
     margin: 0 0 .6rem 0;
     color: #333;
-  }
 
-  > .bubble:before {
-    border-left: 10px solid $chat-bubble-bg;
-    left: 32px;
+    &:before {
+      border-left: 10px solid $chat-bubble-bg;
+      left: 32px;
+    }
   }
 
   > .tock-bubble-icon {
