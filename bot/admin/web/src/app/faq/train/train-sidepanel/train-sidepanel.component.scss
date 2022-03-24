@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-$chat-bubble-bg: #dedede;
-$chat-bubble-bg-mine: #0072ff;
+$chat-bubble-bg: #edf1f7;
+$chat-bubble-bg-mine: #3366ff;
 
 $chat-bubble-bg-hover: lighten($chat-bubble-bg, 3%);
 $chat-bubble-bg-mine-hover: lighten($chat-bubble-bg-mine, 5%);
@@ -79,11 +79,7 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
 
 .tock-conversation-viewport {
   padding: 50px 20px 50px 20px;
-  background: #fff;
-  background: url("/assets/images/email-pattern.png");
-  background: linear-gradient(to bottom, #3d2f2f00 75%, rgba(4, 48, 103, 0.08)), url(/assets/images/email-pattern.png);
-  border: 1px solid #ccc;
-  box-shadow: 0 0 35px 2px #eeeeee;
+  border-radius: 0.25rem;
   position: relative;
   top: 0;
   left: 0;
@@ -185,8 +181,14 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
     transform: scale($chat-bubble-scale-factor);
   }
 
-  > .bubble:before {
+  &:before {
     transition: all 0.3s ease;
+    content: "";
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    border-bottom: 20px solid transparent;
+    bottom: -18px;
   }
 }
 
@@ -199,7 +201,6 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
   right: 5px;
 
   filter: hue-rotate(279deg);
-  filter: hue-rotate(279deg) brightness(1.2) drop-shadow(2px 2px 2px #AAA);
   opacity: .9;
 }
 
@@ -211,20 +212,11 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
     background: $chat-bubble-bg-mine;
     color: #fff;
     margin: 0 0 1.2rem 0;
-    border-top: 4px solid $chat-bubble-border-mine;
-    border-right: 4px solid $chat-bubble-border-mine;
   }
 
   > .bubble:before {
-    content: "";
-    width: 0px;
-    height: 0px;
-    position: absolute;
-    border-right: 24px solid $chat-bubble-bg-mine;
-    border-top: 12px solid $chat-bubble-bg-mine;
-    border-bottom: 20px solid transparent;
+    border-right: 10px solid $chat-bubble-bg-mine;
     right: 32px;
-    bottom: -18px;
   }
 }
 
@@ -246,21 +238,11 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
     background: $chat-bubble-bg;
     margin: 0 0 .6rem 0;
     color: #333;
-    border-top: 4px solid $chat-bubble-border;
-    border-right: 4px solid $chat-bubble-border;
   }
 
   > .bubble:before {
-    content: "";
-    width: 0px;
-    height: 0px;
-    position: absolute;
-    border-left: 24px solid $chat-bubble-bg;
-    border-right: 12px solid transparent;
-    border-top: 12px solid $chat-bubble-bg;
-    border-bottom: 20px solid transparent;
+    border-left: 10px solid $chat-bubble-bg;
     left: 32px;
-    bottom: -18px;
   }
 
   > .tock-bubble-icon {
@@ -268,7 +250,6 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
     width: 16%;
     bottom: -70px;
     left: 5px;
-    filter: drop-shadow(2px 2px 2px #AAA)
   }
 }
 
@@ -285,14 +266,10 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
 .tock--active.tock--left > .bubble, .tock--placeholder > .bubble {
   background: $chat-bubble-bg-active;
   color: #070605;
-  /* color: #e53d3d; */
   font-size: 1.4em;
-  border: 1px solid #444;
-  box-shadow: 4px -4px 10px 1px #a394944d;
 
   &:before {
-    border-left: 24px solid $chat-bubble-bg-active;
-    border-top: 12px solid $chat-bubble-bg-active;
+    border-left: 10px solid $chat-bubble-bg-active;
   }
 }
 
@@ -314,8 +291,6 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
     width: 12%;
     bottom: -30px;
     right: 5px;
-
-    filter: hue-rotate(279deg) brightness(1.2);
     opacity: .9;
   }
 
@@ -326,6 +301,3 @@ $chat-bubble-border-mine: darken(desaturate($chat-bubble-bg-mine, 3%), 5%);
 .tock--placeholder {
   margin-bottom: 100px;
 }
-
-
-
