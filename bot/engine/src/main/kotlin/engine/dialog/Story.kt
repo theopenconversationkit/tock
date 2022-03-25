@@ -20,7 +20,8 @@ import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryHandler
 import ai.tock.bot.definition.StoryStep
-import ai.tock.bot.definition.StoryTag.*
+import ai.tock.bot.definition.StoryTag.CHECK_ONLY_SUB_STEPS
+import ai.tock.bot.definition.StoryTag.CHECK_ONLY_SUB_STEPS_WITH_STORY_INTENT
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.action.Action
@@ -165,7 +166,6 @@ data class Story(
         if (supportIntent(intent)) {
             return true
         }
-
         val checkSteps = if (definition.hasTag(CHECK_ONLY_SUB_STEPS_WITH_STORY_INTENT)) {
             currentStep?.supportIntent(intent) == true ||
                     (currentStep?.children ?: definition.steps)
