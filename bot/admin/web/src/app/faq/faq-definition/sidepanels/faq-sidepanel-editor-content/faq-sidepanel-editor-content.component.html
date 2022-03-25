@@ -78,6 +78,12 @@
                 fieldSize="small"
                 formControlName="answer"
                 placeholder="A heptadecagon or septadecagon or 17-gon is a shape with 17 sides and 17 corners."></textarea>
+      <nb-alert accent="warning" *ngIf="isControlAlert('answer')">
+        {{
+          newFaqForm.controls['answer'].errors.maxlength ?
+            ERR_MSG.answer_maxlength : ''
+        }}
+      </nb-alert>
     </div>
   </div>
   <div [ngClass]="(tabName === 'Question') ? 'tock--active' : 'tock--hidden'">

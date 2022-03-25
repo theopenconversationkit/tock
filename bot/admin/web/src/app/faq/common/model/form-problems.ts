@@ -74,7 +74,7 @@ export function collectProblems(form: FormGroup, customErrorLabels: { [key: stri
 export const NAME_MINLENGTH = 6;
 export const NAME_MAXLENGTH = 40;
 export const DESCRIPTION_MAXLENGTH = 500;
-export const ANSWER_MAXLENGTH = 800;
+export const ANSWER_MAXLENGTH = 960;
 
 export const DEFAULT_ERROR_MAPPING = {
   name_minlength: `Name must be at least ${NAME_MINLENGTH} characters`,
@@ -83,6 +83,7 @@ export const DEFAULT_ERROR_MAPPING = {
   name_error: "Invalid name",
   description_maxlength: `Description must be less than ${DESCRIPTION_MAXLENGTH} characters`,
   description_error: "Invalid description",
+  answer_maxlength: `Answer must be less than ${ANSWER_MAXLENGTH} characters`,
   answer_required: "Answer required",
   utterances_required: "One question required at least"
 };
