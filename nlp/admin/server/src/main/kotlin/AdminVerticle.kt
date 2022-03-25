@@ -1115,7 +1115,9 @@ open class AdminVerticle : WebVerticle() {
 
             val indexContentHandler = Handler<RoutingContext> { context ->
                 if (indexContent != null) {
-                    context.response().end(indexContent)
+                    context.response()
+                        .putHeader(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=utf-8")
+                        .end(indexContent)
                 } else {
                     context.vertx().fileSystem().readFile("$webRoot/index.html") {
                         if (it.succeeded()) {
@@ -1127,7 +1129,9 @@ open class AdminVerticle : WebVerticle() {
                             if (!devEnvironment) {
                                 indexContent = result
                             }
-                            context.response().end(result)
+                            context.response()
+                                .putHeader(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=utf-8")
+                                .end(result)
                         } else {
                             logger.warn { "Can't find $webRoot/index.html" }
                             context.response().statusCode = 404

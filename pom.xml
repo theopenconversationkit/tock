@@ -70,6 +70,8 @@
         <batik>1.12</batik>
         <google>24.1.1</google>
         <aws-sdk>1.12.131</aws-sdk>
+        <pac4j>4.5.2</pac4j>
+        <vertx-pac4j>5.0.1</vertx-pac4j>
 
         <junit-jupiter>5.8.2</junit-jupiter>
 
@@ -599,6 +601,37 @@
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-batch</artifactId>
                 <version>${aws-sdk}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.pac4j</groupId>
+                <artifactId>pac4j-core</artifactId>
+                <version>${pac4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.pac4j</groupId>
+                <artifactId>pac4j-cas</artifactId>
+                <version>${pac4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.pac4j</groupId>
+                <artifactId>vertx-pac4j</artifactId>
+                <version>${vertx-pac4j}</version>
+
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.pac4j</groupId>
+                        <artifactId>pac4j-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.pac4j</groupId>
+                        <artifactId>pac4j-oauth</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.pac4j</groupId>
+                        <artifactId>pac4j-oidc</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <dependency>
