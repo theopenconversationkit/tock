@@ -74,8 +74,7 @@ export class BotAdminAppComponent implements OnInit, OnDestroy {
       {
         title: 'Analytics',
         icon: 'trending-up-outline',
-        link: '/analytics'
-        ,
+        link: '/analytics',
         hidden: this.state.hasRole(UserRole.botUser)
       },
       {
@@ -89,6 +88,26 @@ export class BotAdminAppComponent implements OnInit, OnDestroy {
         icon: 'settings-outline',
         link: '/configuration',
         hidden: this.state.hasRole(UserRole.admin)
+      },
+      {
+        title: 'FAQ Training',
+        icon: {
+          icon: 'school',
+          pack: 'material-icons'
+        },
+        link: '/faq/train'
+        ,
+        hidden: this.state.hasRole(UserRole.botUser)
+      },
+      {
+        title: 'FAQ Management',
+        icon: {
+          icon: 'question_answer',
+          pack: 'material-icons'
+        },
+        link: '/faq/qa'
+        ,
+        hidden: this.state.hasRole(UserRole.botUser)
       }
     ];
   }

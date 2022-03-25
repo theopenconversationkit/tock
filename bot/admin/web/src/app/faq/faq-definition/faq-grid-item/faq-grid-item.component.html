@@ -1,0 +1,77 @@
+<!--
+  ~ Copyright (C) 2017/2022 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<h6 class="tock-toggleable mb-1" [ngClass]="cssState">{{item.title}}</h6>
+<div class="d-flex w-100 justify-content-between">
+  <div class="pb-2 d-flex align-items-center">
+    <div class="tock-additional-info d-inline-block ml-1">
+      {{item.utterances.length}} Question{{item.utterances.length === 1 ? '' : 's'}}
+    </div>
+  </div>
+
+  <div class="tock-tags-box pb-2">
+    <nb-tag-list>
+      <nb-tag *ngFor="let tag of item.tags"
+              [ngClass]="'mb-0'"
+              [text]="tag"
+              [removable]="false"
+              size="small" appearance="outline">
+      </nb-tag>
+    </nb-tag-list>
+  </div>
+</div>
+<nb-card [ngClass]="['overflow-hidden', 'mb-2', 'tock-toggleable', cssState]">
+  <nb-card-body class="d-flex p-2 justify-content-between overflow-hidden"
+                [ngClass]="isDockedOrSmall() ? CSS_SMALL_CARD_BODY : CSS_WIDER_CARD_BODY">
+    <div [ngClass]="isDockedOrSmall() ? CSS_SMALL_FIRST_CARD_PART : CSS_WIDER_FIRST_CARD_PART">
+      {{getFirstUtterance()}}
+    </div>
+    <div class="tock-divider ml-3">&nbsp;</div>
+    <div class="tock-col-b d-flex justify-content-between ">
+      {{item.answer}}
+    </div>
+    <div class="tock-divider ml-3">&nbsp;</div>
+    <div class="tock-col-d d-flex justify-content-end">
+      <nb-toggle status="basic" [ngModel]="item.enabled" (mousedown)="toggleEnabled($event)">
+      </nb-toggle>
+
+      <button class="tock-action tock--subtle-hover text-muted"
+              (click)="edit()"
+              title="Edit"
+              nbButton size="medium" ghost status="secondary">
+        <nb-icon icon="edit-outline"></nb-icon>
+        <ng-container *ngIf="viewMode === 'FULL_WIDTH'">Edit</ng-container>
+      </button>
+
+      <button class="tock-action tock--subtle-hover text-muted"
+              (click)="download()"
+              title="Download"
+              nbButton size="medium" ghost status="secondary">
+        <nb-icon icon="download-outline"></nb-icon>
+        <ng-container *ngIf="viewMode === 'FULL_WIDTH'">Download</ng-container>
+      </button>
+
+      <button class="tock-action tock--subtle-hover text-muted"
+              (click)="remove()"
+              title="Delete"
+              nbButton size="medium" ghost status="secondary">
+        <nb-icon icon="trash-2-outline"></nb-icon>
+        <ng-container *ngIf="viewMode === 'FULL_WIDTH'">Delete</ng-container>
+      </button>
+
+    </div>
+  </nb-card-body>
+</nb-card>

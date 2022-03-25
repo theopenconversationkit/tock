@@ -58,6 +58,10 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-translator-core</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

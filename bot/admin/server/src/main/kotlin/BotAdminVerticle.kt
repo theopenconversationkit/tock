@@ -24,19 +24,7 @@ import ai.tock.bot.admin.BotAdminService.importStories
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.dialog.DialogReportQuery
-import ai.tock.bot.admin.model.BotAdminConfiguration
-import ai.tock.bot.admin.model.BotConnectorConfiguration
-import ai.tock.bot.admin.model.BotI18nLabel
-import ai.tock.bot.admin.model.BotI18nLabels
-import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
-import ai.tock.bot.admin.model.CreateI18nLabelRequest
-import ai.tock.bot.admin.model.CreateStoryRequest
-import ai.tock.bot.admin.model.DialogFlowRequest
-import ai.tock.bot.admin.model.DialogsSearchQuery
-import ai.tock.bot.admin.model.Feature
-import ai.tock.bot.admin.model.I18LabelQuery
-import ai.tock.bot.admin.model.StorySearchRequest
-import ai.tock.bot.admin.model.UserSearchQuery
+import ai.tock.bot.admin.model.*
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
 import ai.tock.bot.admin.test.TestPlanService
 import ai.tock.bot.admin.test.findTestService
@@ -51,11 +39,12 @@ import ai.tock.nlp.admin.model.ApplicationScopedQuery
 import ai.tock.nlp.admin.model.TranslateReport
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
+import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.provide
-import ai.tock.shared.security.TockUserRole.admin
-import ai.tock.shared.security.TockUserRole.botUser
+import ai.tock.shared.security.NoEncryptionPassException
+import ai.tock.shared.security.TockUserRole.*
 import ai.tock.translator.I18nDAO
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.Translator
@@ -356,7 +345,7 @@ open class BotAdminVerticle : AdminVerticle() {
                         unauthorized()
                     }
                     if (getBotConfigurationByApplicationIdAndBotId(bot.namespace, bot.applicationId, bot.botId)
-                        ?.run { _id != conf._id } == true
+                            ?.run { _id != conf._id } == true
                     ) {
                         badRequest("Connector identifier already exists")
                     }
@@ -761,7 +750,6 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blocking(GET, "/file/:id.:suffix", botUser) { context ->
-
             val id = context.path("id")
             if (!id.startsWith(context.organization)) {
                 unauthorized()
@@ -780,6 +768,76 @@ open class BotAdminVerticle : AdminVerticle() {
             context.response().putHeader("Cache-Control", "max-age=84600, public")
             ConnectorTypeConfiguration.connectorConfigurations.firstOrNull { it.connectorType.id == connectorType }?.svgIcon
                 ?: ""
+        }
+
+        blockingJsonPost(
+            "/faq",
+            botUser,
+            logger<FaqDefinitionRequest>("Save FAQ")
+        ) { context, query: FaqDefinitionRequest ->
+            val applicationDefinition = BotAdminService.front.getApplicationById(query.applicationId)
+            if (context.organization == applicationDefinition?.namespace) {
+                FaqAdminService.saveFAQ(query, context.userLogin,applicationDefinition)
+            } else {
+                unauthorized()
+            }
+        }
+
+
+        blockingJsonDelete(
+            "/faq/:faqId",
+            botUser,
+            simpleLogger("Delete Story", { it.path("faqId") })
+        ) { context ->
+            FaqAdminService.deleteFaqDefinition(context.organization, context.path("faqId"))
+        }
+
+        blockingJsonPost("/faq/tags", nlpUser) { context, applicationId : String ->
+            val applicationDefinition = BotAdminService.front.getApplicationById(applicationId.toId())
+            if (context.organization == applicationDefinition?.namespace) {
+                try {
+                    FaqAdminService.searchTags(applicationDefinition._id.toString())
+                } catch (t: Exception) {
+                    logger.error(t)
+                    badRequest("Error searching faq tags: ${t.message}")
+                }
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost(
+            "/faq/search",
+            nlpUser, logger<FaqSearchRequest>("Search FAQ")
+        )
+        { context, request: FaqSearchRequest ->
+            val applicationDefinition = BotAdminService.front.getApplicationByNamespaceAndName(request.namespace, request.applicationName)
+            if (context.organization == applicationDefinition?.namespace) {
+                try {
+                FaqAdminService.searchFAQ(request, applicationDefinition)
+                } catch (t: NoEncryptionPassException) {
+                    logger.error(t)
+                    badRequest("Error obfuscating faq: ${t.message}")
+                } catch (t: Exception) {
+                    logger.error(t)
+                    badRequest("Error searching faq: ${t.message}")
+                }
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost(
+            "/faq/status",
+            nlpUser,
+            logger<FaqDefinitionRequest>("Change FAQ status")
+        ) { context, query: FaqDefinitionRequest ->
+            val applicationDefinition = BotAdminService.front.getApplicationById(query.applicationId)
+            if (context.organization == applicationDefinition?.namespace) {
+                FaqAdminService.updateActivationStatusStory(query, context.userLogin,applicationDefinition)
+            } else {
+                unauthorized()
+            }
         }
 
         blockingJsonGet("/configuration") {

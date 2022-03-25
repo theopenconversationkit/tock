@@ -1,0 +1,93 @@
+<!--
+  ~ Copyright (C) 2017/2022 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<nb-card class="overflow-hidden mb-2" [ngClass]="cardCssClass">
+  <nb-card-body
+    [ngClass]="{
+     'tock--docked-panel': isDocked(),
+     'tock--full_width': viewMode === 'FULL_WIDTH',
+     'tock--full_width--small': viewMode === 'RESPONSIVE_FULL_WIDTH'
+     }"
+    class="d-flex tock-grid-item-card-body align-items-center justify-content-between p-2 flex-wrap">
+    <div class="tock-col-a d-flex justify-content-start">
+      <nb-checkbox [ngClass]="['ml-2', 'd-flex']"
+                   (checkedChange)="toggle()"
+                   [checked]="isSelected()"
+      ></nb-checkbox>
+      <div class="tock-divider ml-3">&nbsp;</div>
+    </div>
+    <div class="tock-col-b d-flex justify-content-between ">
+      <div class="text-muted tock-date-zone">
+        {{sentence.creationDate | amDateFormat: 'MM/DD HH:mm' }}
+      </div>
+      {{sentence.text}}
+    </div>
+    <div class="tock-col-c d-flex justify-content-between align-items-center">
+      <div class="tock-divider">&nbsp;</div>
+      <span class="d-inline-block ml-5">FAQ</span>
+      <div class="tock-select-faq input-group ml-2">
+        <nb-select [size]="'small'" [(ngModel)]="selectedIntentId" (selectedChange)="changeIntent($event)" placeholder="{{getRichIntentLabel()}}">
+          <nb-option *ngFor="let intent of intents" value="{{intent._id}}">
+            <span class="tock-option-label" title="{{intent.intentLabel()}}">
+              {{intent.intentLabel()}}
+            </span>
+          </nb-option>
+        </nb-select>
+        <div class="input-group-append ml-1">
+          <button class="tock-btn-addfaq input-group-text tock--subtle-hover" (click)="newIntent()">
+            <nb-icon nbPrefix pack="material-icons" icon="add_circle_outline"></nb-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="tock-divider ml-2">&nbsp;</div>
+    </div>
+    <div class="tock-col-d d-flex justify-content-end">
+      <button class="tock-action tock--subtle-hover tock--success text-muted ml-2"
+              (click)="validate()"
+              title="Validate"
+              nbButton size="medium" ghost status="secondary">
+        <nb-icon icon="checkmark-circle-2"></nb-icon>
+        <ng-container *ngIf="viewMode === 'FULL_WIDTH'">Validate</ng-container>
+      </button>
+
+      <button class="tock-action tock--danger tock--subtle-hover text-muted ml-2"
+              (click)="unknown()"
+              title="Unknown"
+              nbButton size="medium" ghost status="secondary">
+        <nb-icon icon="close-circle-outline"></nb-icon>
+        <ng-container *ngIf="viewMode === 'FULL_WIDTH'">Unknown</ng-container>
+      </button>
+
+      <button class="tock-action tock--subtle-hover text-muted ml-2"
+              (click)="remove()"
+              title="Delete"
+              nbButton size="medium" ghost status="secondary">
+        <nb-icon icon="trash-2-outline"></nb-icon>
+        <ng-container *ngIf="viewMode === 'FULL_WIDTH'">Delete</ng-container>
+      </button>
+
+      <button class="tock-action tock--subtle-hover text-muted ml-2"
+              (click)="details()"
+              title="Details"
+              nbButton size="medium" ghost status="secondary">
+        <nb-icon icon="message-circle-outline"></nb-icon>
+        <ng-container *ngIf="viewMode === 'FULL_WIDTH'">Details</ng-container>
+      </button>
+
+    </div>
+  </nb-card-body>
+</nb-card>

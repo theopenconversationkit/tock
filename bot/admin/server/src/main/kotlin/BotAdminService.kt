@@ -34,23 +34,7 @@ import ai.tock.bot.admin.dialog.DialogReportDAO
 import ai.tock.bot.admin.dialog.DialogReportQueryResult
 import ai.tock.bot.admin.kotlin.compiler.KotlinFile
 import ai.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
-import ai.tock.bot.admin.model.BotAnswerConfiguration
-import ai.tock.bot.admin.model.BotBuiltinAnswerConfiguration
-import ai.tock.bot.admin.model.BotConfiguredAnswer
-import ai.tock.bot.admin.model.BotConfiguredSteps
-import ai.tock.bot.admin.model.BotScriptAnswerConfiguration
-import ai.tock.bot.admin.model.BotSimpleAnswerConfiguration
-import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
-import ai.tock.bot.admin.model.BotStoryDefinitionConfigurationMandatoryEntity
-import ai.tock.bot.admin.model.BotStoryDefinitionConfigurationStep
-import ai.tock.bot.admin.model.CreateI18nLabelRequest
-import ai.tock.bot.admin.model.CreateStoryRequest
-import ai.tock.bot.admin.model.DialogFlowRequest
-import ai.tock.bot.admin.model.DialogsSearchQuery
-import ai.tock.bot.admin.model.Feature
-import ai.tock.bot.admin.model.StorySearchRequest
-import ai.tock.bot.admin.model.UserSearchQuery
-import ai.tock.bot.admin.model.UserSearchQueryResult
+import ai.tock.bot.admin.model.*
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationByBotStep
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
@@ -73,15 +57,9 @@ import ai.tock.bot.engine.feature.FeatureState
 import ai.tock.nlp.admin.AdminService
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.service.applicationDAO
-import ai.tock.nlp.front.shared.config.ApplicationDefinition
-import ai.tock.nlp.front.shared.config.Classification
-import ai.tock.nlp.front.shared.config.ClassifiedSentence
+import ai.tock.nlp.front.shared.config.*
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
-import ai.tock.nlp.front.shared.config.EntityDefinition
-import ai.tock.nlp.front.shared.config.EntityTypeDefinition
-import ai.tock.nlp.front.shared.config.IntentDefinition
-import ai.tock.nlp.front.shared.config.SentencesQuery
 import ai.tock.shared.Dice
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.defaultZoneId
@@ -122,7 +100,7 @@ object BotAdminService {
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO by injector.instance()
     private val featureDAO: FeatureDAO by injector.instance()
     private val dialogFlowDAO: DialogFlowDAO get() = injector.provide()
-    private val front = FrontClient
+    internal val front = FrontClient
 
     private class BotStoryDefinitionConfigurationDumpController(
         override val targetNamespace: String,
@@ -180,7 +158,7 @@ object BotAdminService {
         }
     }
 
-    private fun createOrGetIntent(
+    fun createOrGetIntent(
         namespace: String,
         intentName: String,
         applicationId: Id<ApplicationDefinition>,
@@ -1086,10 +1064,18 @@ object BotAdminService {
         )
     }
 
+    /**
+     * Checks and save the story
+     * @param namespace
+     * @param : story : botStoryDefinitionConfiguration
+     * @param: user : userLogin
+     * @param: createIntent : intent can be created out of the method
+     */
     fun saveStory(
         namespace: String,
         story: BotStoryDefinitionConfiguration,
-        user: UserLogin
+        user: UserLogin,
+        createdIntent : IntentDefinition? = null
     ): BotStoryDefinitionConfiguration? {
 
         // Two stories (built-in or configured) should not have the same _id
@@ -1124,7 +1110,7 @@ object BotAdminService {
             storyWithSameNsBotAndIntent.let {
                 if (it == null || it.currentType == builtin) {
                     // intent change
-                    if (storyWithSameId?._id != null) {
+                    if (storyWithSameId?._id != null && createdIntent == null) {
                         createOrGetIntent(
                             namespace,
                             story.intent.name,
@@ -1201,7 +1187,12 @@ object BotAdminService {
                     application._id,
                     story.category
                 )
-                saveSentence(story.userSentence, story.userSentenceLocale, application._id, intent._id, user)
+                saveSentence(
+                    story.userSentence,
+                    story.userSentenceLocale,
+                    application._id,
+                    createdIntent?._id ?: intent._id,
+                    user)
             }
 
             // save all intents of steps
@@ -1238,7 +1229,7 @@ object BotAdminService {
         )
     }
 
-    private fun saveSentence(
+    fun saveSentence(
         text: String,
         locale: Locale,
         applicationId: Id<ApplicationDefinition>,
@@ -1410,12 +1401,13 @@ object BotAdminService {
             applicationConfigurationDAO.delete(it)
         }
 
-        // delete stories
+        // delete stories and faqDefinitions
         storyDefinitionDAO.getStoryDefinitionsByNamespaceAndBotId(
             app.namespace, app.name
-        ).forEach {
-            storyDefinitionDAO.delete(it)
+        ).forEach { story ->
+            storyDefinitionDAO.delete(story)
         }
+
     }
 
     fun changeSupportedLocales(newApp: ApplicationDefinition) {
@@ -1444,4 +1436,5 @@ object BotAdminService {
             storyDefinitionDAO.save(it.copy(botId = newApp.name))
         }
     }
+
 }

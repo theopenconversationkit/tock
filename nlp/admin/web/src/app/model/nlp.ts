@@ -451,6 +451,21 @@ export class Sentence extends EntityContainer {
       this.key);
   }
 
+  public withIntent(state: StateService, intentId: string): Sentence {
+    // setup a new version of sentence bound to newer intent
+    const newSentence = this.clone();
+    newSentence.classification.intentId = intentId;
+
+    // Keep only entities compatible with newer intent
+    const newIntent = state.findIntentById(intentId);
+    newSentence.classification.entities =
+      this
+        .classification
+        .entities
+        .filter(e => newIntent && newIntent.containsEntity(e.type, e.role));
+    return newSentence;
+  }
+
   static fromJSON(json?: any): Sentence {
     const value = Object.create(Sentence.prototype);
 
