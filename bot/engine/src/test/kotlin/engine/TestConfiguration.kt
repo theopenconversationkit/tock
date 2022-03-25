@@ -76,7 +76,8 @@ enum class TestStoryDefinition(
     test2(StoryHandler2Test),
     voice_not_supported(StoryHandlerVoiceNotSupported, unsupportedUserInterface = voiceAssistant),
     withoutStep(StoryHandlerWithoutStep, stepsArray = emptyArray()),
-    unknown(StoryHandlerUnknown);
+    unknown(StoryHandlerUnknown),
+    withAskAgainTag(StoryHandlerWithoutStep, stepsArray = emptyArray(), tags = setOf<StoryTag>(StoryTag.ASK_AGAIN));
 
     val registeredBus: BotBus? get() = storyHandler.registeredBus
 }
