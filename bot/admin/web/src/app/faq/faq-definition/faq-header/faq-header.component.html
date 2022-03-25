@@ -18,12 +18,14 @@
   <nb-card-body [ngClass]="isDockedOrSmall() ? CSS_SMALL_CARD_BODY : CSS_WIDER_CARD_BODY">
     <div [ngClass]="isDockedOrSmall() ? CSS_SMALL_CARD_PART : CSS_WIDER_CARD_PART">
       <nb-select
+        multiple
+        placeholder="Tags"
+        [optionsListClass]="'option-list--break-word'"
         [disabled]="availableTags.length <= 0"
         [size]="'small'"
-                 multiple
-                 [(ngModel)]="filter.tags"
-                 (ngModelChange)="selectedTagsChanged($event)"
-                 placeholder="Tags">
+        [(ngModel)]="filter.tags"
+        (ngModelChange)="selectedTagsChanged($event)"
+      >
         <nb-option *ngFor="let tag of availableTags" value="{{tag}}">
           {{tag}}
         </nb-option>

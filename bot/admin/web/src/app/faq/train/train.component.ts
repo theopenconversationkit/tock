@@ -32,7 +32,6 @@ import {takeUntil} from "rxjs/operators";
 export class TrainComponent extends WithSidePanel() implements OnInit, OnDestroy {
 
   selectedSentence?: Sentence;
-  applicationName: string;
 
   public filter: FaqSentenceFilter;
   @ViewChild(TrainGridComponent) grid;
@@ -48,7 +47,6 @@ export class TrainComponent extends WithSidePanel() implements OnInit, OnDestroy
   ngOnInit(): void {
     this.clearFilter();
 
-    this.applicationName = this.state.currentApplication.name;
     this.initSidePanel(this.destroy$);
 
     // clear things when app change
