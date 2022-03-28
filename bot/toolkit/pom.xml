@@ -33,7 +33,10 @@
             <groupId>ai.tock</groupId>
             <artifactId>bot-toolkit-base</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-bot-connector-iadvize</artifactId>
+        </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-bot-connector-messenger</artifactId>

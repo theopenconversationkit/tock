@@ -17,6 +17,7 @@
 package ai.tock.bot.engine
 
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
+import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorConfiguration
 import ai.tock.bot.connector.ConnectorData
@@ -59,6 +60,8 @@ internal class TockConnectorController constructor(
     override val botDefinition: BotDefinition,
     private val configuration: ConnectorConfiguration
 ) : ConnectorController {
+
+    override val botConfiguration: BotApplicationConfiguration = bot.configuration
 
     companion object {
 
