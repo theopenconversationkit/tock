@@ -164,9 +164,6 @@ export class FaqRoutingModule {
     FaqDefinitionService,
     FaqDefinitionSidepanelEditorService
   ],
-  // entryComponents: [
-  //   EditUtteranceComponent
-  // ]
 })
 export class FaqModule {
 }
