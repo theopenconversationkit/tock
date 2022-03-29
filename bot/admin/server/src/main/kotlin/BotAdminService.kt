@@ -16,14 +16,9 @@
 
 package ai.tock.bot.admin
 
-import ai.tock.bot.admin.answer.AnswerConfiguration
+import ai.tock.bot.admin.answer.*
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
 import ai.tock.bot.admin.answer.AnswerConfigurationType.script
-import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
-import ai.tock.bot.admin.answer.DedicatedAnswerConfiguration
-import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
-import ai.tock.bot.admin.answer.ScriptAnswerVersionedConfiguration
-import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.BotConfiguration
@@ -34,29 +29,8 @@ import ai.tock.bot.admin.dialog.DialogReportDAO
 import ai.tock.bot.admin.dialog.DialogReportQueryResult
 import ai.tock.bot.admin.kotlin.compiler.KotlinFile
 import ai.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
-import ai.tock.bot.admin.model.BotAnswerConfiguration
-import ai.tock.bot.admin.model.BotBuiltinAnswerConfiguration
-import ai.tock.bot.admin.model.BotConfiguredAnswer
-import ai.tock.bot.admin.model.BotConfiguredSteps
-import ai.tock.bot.admin.model.BotScriptAnswerConfiguration
-import ai.tock.bot.admin.model.BotSimpleAnswerConfiguration
-import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
-import ai.tock.bot.admin.model.BotStoryDefinitionConfigurationMandatoryEntity
-import ai.tock.bot.admin.model.BotStoryDefinitionConfigurationStep
-import ai.tock.bot.admin.model.CreateI18nLabelRequest
-import ai.tock.bot.admin.model.CreateStoryRequest
-import ai.tock.bot.admin.model.DialogFlowRequest
-import ai.tock.bot.admin.model.DialogsSearchQuery
-import ai.tock.bot.admin.model.Feature
-import ai.tock.bot.admin.model.StorySearchRequest
-import ai.tock.bot.admin.model.UserSearchQuery
-import ai.tock.bot.admin.model.UserSearchQueryResult
-import ai.tock.bot.admin.story.StoryDefinitionConfiguration
-import ai.tock.bot.admin.story.StoryDefinitionConfigurationByBotStep
-import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
-import ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity
-import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep
-import ai.tock.bot.admin.story.StoryDefinitionConfigurationSummary
+import ai.tock.bot.admin.model.*
+import ai.tock.bot.admin.story.*
 import ai.tock.bot.admin.story.dump.ScriptAnswerVersionedConfigurationDump
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpController
@@ -73,20 +47,10 @@ import ai.tock.bot.engine.feature.FeatureState
 import ai.tock.nlp.admin.AdminService
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.service.applicationDAO
-import ai.tock.nlp.front.shared.config.ApplicationDefinition
-import ai.tock.nlp.front.shared.config.Classification
-import ai.tock.nlp.front.shared.config.ClassifiedSentence
+import ai.tock.nlp.front.shared.config.*
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
-import ai.tock.nlp.front.shared.config.EntityDefinition
-import ai.tock.nlp.front.shared.config.EntityTypeDefinition
-import ai.tock.nlp.front.shared.config.IntentDefinition
-import ai.tock.nlp.front.shared.config.SentencesQuery
-import ai.tock.shared.Dice
-import ai.tock.shared.defaultLocale
-import ai.tock.shared.defaultZoneId
-import ai.tock.shared.injector
-import ai.tock.shared.provide
+import ai.tock.shared.*
 import ai.tock.shared.security.UserLogin
 import ai.tock.shared.vertx.WebVerticle.Companion.badRequest
 import ai.tock.translator.I18nKeyProvider
@@ -94,20 +58,15 @@ import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.Translator
 import com.github.salomonbrys.kodein.instance
-import java.time.DayOfWeek
-import java.time.Instant
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.ZonedDateTime
-import java.time.format.TextStyle
-import java.util.Locale
-import java.util.stream.LongStream
-import java.util.stream.Stream
-import kotlin.streams.toList
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
+import java.time.*
+import java.time.format.TextStyle
+import java.util.*
+import java.util.stream.LongStream
+import java.util.stream.Stream
+import kotlin.streams.toList
 
 /**
  *
@@ -291,7 +250,7 @@ object BotAdminService {
         return UserAnalyticsQueryResult(dates, result, confByTypes.map { it.connectorType.id })
     }
 
-    private fun atTimeOfDay(date: ZonedDateTime?, time: LocalTime) =
+    private fun atTimeOfDay(date: ZonedDateTime?, time: LocalTime): LocalDateTime =
         LocalDateTime.of(date?.withZoneSameInstant(defaultZoneId)?.toLocalDate(), time)
 
     private fun <S> reportMessagesByDateAndSeries(
@@ -456,6 +415,18 @@ object BotAdminService {
         return UserAnalyticsQueryResult(listOf("All Range"), result, series.toList(), functionResult.second)
     }
 
+    fun reportMessagesByType2(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val applications = loadApplications(request)
+        val namespace = request.namespace
+        val botId = request.botId
+        val applicationIds = applications.map { it._id }.toSet()
+        val fromDate = atTimeOfDay(request.from, LocalTime.MIDNIGHT)
+        val toDate = atTimeOfDay(request.to, LocalTime.MAX)
+        val usersData = dialogFlowDAO.search2(namespace, botId, applicationIds, request.from, request.to)
+        val (dates, filledUsersData) = sortMessagesByDate2(fromDate, toDate, usersData, 1)
+        return UserAnalyticsQueryResult(dates, filledUsersData)
+    }
+
     fun reportMessagesByType(request: DialogFlowRequest): UserAnalyticsQueryResult {
         val applications = loadApplications(request)
         return reportMessagesByDateAndSeries(
@@ -586,6 +557,24 @@ object BotAdminService {
         return reportMessagesByFunction(request, applications, dialogFlowDAO::searchByDateWithActionType)
     }
 
+    private fun sortMessagesByDate2(
+        fromDate: LocalDateTime,
+        toDate: LocalDateTime,
+        queryResult: Map<String, List<Int>>,
+        seriesCount: Int,
+    ): Pair<List<String>, List<List<Int>>> {
+        val emptyList: List<Int> = IntArray(seriesCount).toList()
+        return if (isSameDay(fromDate, toDate)) {
+            val hoursList = buildHoursList(toDate.toLocalDate())
+            val usersAnalytics: List<List<Int>> = hoursList.map { queryResult[it] ?: emptyList }
+            Pair(formatHours(hoursList), usersAnalytics)
+        } else {
+            val datesBetween = getDatesBetween(fromDate.toLocalDate(), toDate.toLocalDate())
+            val usersAnalytics = datesBetween.map { queryResult[it] ?: emptyList }
+            Pair(datesBetween, usersAnalytics)
+        }
+    }
+
     private fun sortMessagesByDate(
         fromDate: LocalDateTime?,
         toDate: LocalDateTime?,
@@ -607,7 +596,7 @@ object BotAdminService {
                 if (queryResult[it] != null) {
                     queryResult[it]
                 } else {
-                    listOf<DialogFlowTransitionStatsData>()
+                    listOf()
                 }
             }.toList()
             Pair(datesBetween, usersAnalytics)

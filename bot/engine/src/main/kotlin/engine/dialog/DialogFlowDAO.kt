@@ -37,6 +37,14 @@ interface DialogFlowDAO {
         intent: String? = null
     ): ApplicationDialogFlowData
 
+    fun search2(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?,
+    ): Map<String, List<Int>>
+
     fun search(
         namespace: String,
         botId: String,

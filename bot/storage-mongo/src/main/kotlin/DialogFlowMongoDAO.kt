@@ -59,27 +59,12 @@ import ai.tock.shared.error
 import ai.tock.shared.longProperty
 import ai.tock.shared.security.TockObfuscatorService.obfuscate
 import ai.tock.shared.sumByLong
+import com.mongodb.client.model.Accumulators
+import com.mongodb.client.model.Aggregates.group
 import com.mongodb.client.model.IndexOptions
 import mu.KotlinLogging
-import org.litote.kmongo.Id
-import org.litote.kmongo.`in`
-import org.litote.kmongo.aggregate
-import org.litote.kmongo.all
-import org.litote.kmongo.and
-import org.litote.kmongo.ascendingSort
-import org.litote.kmongo.eq
-import org.litote.kmongo.find
-import org.litote.kmongo.findOne
-import org.litote.kmongo.from
-import org.litote.kmongo.getCollection
-import org.litote.kmongo.group
-import org.litote.kmongo.gt
-import org.litote.kmongo.lt
-import org.litote.kmongo.match
-import org.litote.kmongo.project
-import org.litote.kmongo.size
-import org.litote.kmongo.sum
-import org.litote.kmongo.toId
+import org.bson.BsonDocument
+import org.litote.kmongo.*
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -173,6 +158,45 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         return ApplicationDialogFlowData(statesWithStats, transitionsWithStats, emptyList()/*TODO*/)
     }
 
+    override fun search2(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): Map<String, List<Int>> {
+        val match = match(
+            and(
+                listOfNotNull(
+                    if (applicationIds.isEmpty()) null else ApplicationId `in` applicationIds,
+                    if (from == null) null else Date gt from.toInstant(),
+                    if (to == null) null else Date lt to.toInstant()
+                )
+            )
+        )
+        // group messages that were sent the same day together
+        val group = group(BsonDocument.parse("""
+                    {
+                        "$ dateToString": {
+                            "date": "$ date",
+                            "format": "%Y-%m-%d",
+                            "timezone": "Europe/Paris"
+                        }
+                    }""".formatJson()),
+                    Accumulators.sum("count", 1)
+        )
+        val proj = project(
+            DialogFlowAggregateResult::date from "\$_id",
+            DialogFlowAggregateResult::count from "\$count"
+        )
+        logger.debug { "Flow Message pipeline: [$match, $group, $proj]" }
+        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(
+            match,
+            group,
+            proj
+        ).map { it.date to listOf(it.count) }.toMap()
+    }
+
     override fun search(
         namespace: String,
         botId: String,
@@ -211,9 +235,16 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         to: ZonedDateTime?,
         intent: String?
     ): Pair<List<DialogFlowTransitionStatsData>, List<String>> {
-        val transitions = findTransitions(namespace, botId).groupBy { it._id.toString() }.mapValues { it.value.firstOrNull() }
-        val messages = search(namespace, botId, applicationIds, from, to, intent)
-        val transitionToIntent = messages.groupBy { it.transitionId }.keys.associateBy({ it }, { transitions[it]?.intent })
+        // SELECT (m.applicationId, m.transitionId, m.dialogId, t.intent, m.date)
+        // FROM messages m INNER JOIN transitions t ON m.transitionId = t.id
+        // WHERE m.date BETWEEN (from, to) AND m.namespace = namespace
+
+        // all message transitions contained in the database
+        val transitions: Map<String, DialogFlowStateTransitionCol> = findTransitions(namespace, botId).associateBy { it._id.toString() }
+        // all messages contained in the database, for the relevant time period and namespace
+        val messages: List<DialogFlowTransitionStatsData> = search(namespace, botId, applicationIds, from, to, intent)
+        // all transitions that are used by at least one message over the relevant time period
+        val transitionToIntent: Map<String?, String?> = messages.associateBy({ it.transitionId }, { transitions[it.transitionId]?.intent })
         return Pair(
             messages.map {
                 DialogFlowTransitionStatsData(

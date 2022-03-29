@@ -67,3 +67,10 @@ internal data class DialogFlowStateTransitionStatCol(
     val text: String?,
     val date: Instant = now()
 )
+
+@Data(internal = true)
+@JacksonData(internal = true)
+internal data class DialogFlowAggregateResult(
+    val date: String = "",
+    val count: Int = 0,
+)
