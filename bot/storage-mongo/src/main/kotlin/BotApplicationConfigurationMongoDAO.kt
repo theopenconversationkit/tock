@@ -59,7 +59,7 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
     private val botCol = database.getCollection<BotConfiguration>("bot")
     private val asyncBotCol = asyncDatabase.getCollectionOfName<BotConfiguration>("bot")
 
-    private val col = database.getCollection<BotApplicationConfiguration>("bot_configuration")
+    val col = database.getCollection<BotApplicationConfiguration>("bot_configuration")
     private val asyncCol = asyncDatabase.getCollectionOfName<BotApplicationConfiguration>("bot_configuration")
 
     init {
