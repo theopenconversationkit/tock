@@ -45,13 +45,21 @@
 
   <!-- DIALOG FOOTER -->
   <nb-card-footer>
-    <button nbButton class="float-left"
-            (click)="cancel()" size="small" status="default" nbTooltip="Close">
+    <!-- EDIT MODE -->
+    <button nbButton class="float-left" (click)="cancel()" size="small" status="default" nbTooltip="Close">
       Close
     </button>
-    <button nbButton class="float-right"
-            (click)="save()" [disabled]="!canSave()" size="small"  status="primary"  nbTooltip="Ok">
+    
+    <button nbButton class="float-right" *ngIf="mode=='edit'" (click)="saveAndClose()" [disabled]="!canSave()" size="small"  status="primary"  nbTooltip="Ok">
       Ok
+    </button>
+    
+    <!-- ADD MODE -->
+    <button nbButton class="float-right" *ngIf="mode=='add'" (click)="saveAndClose()" [disabled]="!canSave()" size="small"  status="primary"  nbTooltip="Add question and close">
+      Add & close
+    </button>
+    <button nbButton class="float-right mr-2" *ngIf="mode=='add'" (click)="save()" [disabled]="!canSave()" size="small"  status="primary"  nbTooltip="Add question">
+      Add
     </button>
   </nb-card-footer>
 </nb-card>

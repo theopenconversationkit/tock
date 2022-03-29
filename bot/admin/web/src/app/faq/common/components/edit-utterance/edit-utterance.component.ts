@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, Input} from '@angular/core';
+import {Component, Input, Output} from '@angular/core';
 import {NbDialogRef} from '@nebular/theme';
 import {Utterance} from '../../model/utterance';
 import {EditUtteranceResult} from './edit-utterance-result';
@@ -37,6 +37,12 @@ export class EditUtteranceComponent {
 
   @Input()
   public lookup?: (string) => (Utterance | null);
+  
+  @Input()
+  public mode?: string;
+  
+  @Output()
+  public saveAction?: (string) => void;
 
   public existingQuestion?: string;
 
@@ -52,12 +58,17 @@ export class EditUtteranceComponent {
     this.dialogRef.close(result);
   }
 
-  save(): void {
+  saveAndClose(): void {
     const result: EditUtteranceResult = {
       cancelled: false,
       value: this.value || ''
     };
     this.dialogRef.close(result);
+  }
+
+  save(): void {
+    this.saveAction(this.value)
+    this.value = ""
   }
 
   canSave(): boolean {
