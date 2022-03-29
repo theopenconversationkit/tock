@@ -51,24 +51,24 @@
 
   <!-- DIALOG FOOTER -->
   <nb-card-footer>
-    <button
-      nbButton
-      class="float-left"
-      outline
+    <!-- EDIT MODE -->
+    <button nbButton class="float-left" outline
       size="small"
       status="primary"
       (click)="cancel()"
     >
       Cancel
     </button>
-    <button
-      nbButton
-      class="float-right"
-      size="small"
-      status="primary"
-      [disabled]="!canSave"
-      (click)="save()"
-    >
+
+    <button nbButton class="float-right" *ngIf="mode=='edit'" (click)="saveAndClose()" [disabled]="!canSave()" size="small"  status="primary"  nbTooltip="Ok">
+      Ok
+    </button>
+
+    <!-- ADD MODE -->
+    <button nbButton class="float-right" *ngIf="mode=='add'" (click)="saveAndClose()" [disabled]="!canSave()" size="small"  status="primary"  nbTooltip="Add question and close">
+      Add & close
+    </button>
+    <button nbButton class="float-right mr-2" *ngIf="mode=='add'" (click)="save()" [disabled]="!canSave()" size="small"  status="primary"  nbTooltip="Add question">
       Add
     </button>
   </nb-card-footer>
