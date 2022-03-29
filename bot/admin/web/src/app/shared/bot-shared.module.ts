@@ -40,7 +40,7 @@ import {
 } from '@nebular/theme';
 import { InfoButtonComponent } from './info-button/info-button.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
-import {CustomNbIconLibraries} from './icons/custom-nb-icon-libraries'
+import {ErrorHelperComponent} from './error-helper/error-helper.component';
 
 @NgModule({
   imports: [
@@ -66,14 +66,16 @@ import {CustomNbIconLibraries} from './icons/custom-nb-icon-libraries'
     SelectBotComponent,
     DateRangeCalendarComponent,
     InfoButtonComponent,
-    ConfirmationDialogComponent
+    ConfirmationDialogComponent,
+    ErrorHelperComponent
   ],
   exports: [
     BotMessageComponent,
     DisplayDialogComponent,
     SelectBotComponent,
     DateRangeCalendarComponent,
-    InfoButtonComponent
+    InfoButtonComponent,
+    ErrorHelperComponent
   ],
   providers: [BotSharedService],
   entryComponents: []
