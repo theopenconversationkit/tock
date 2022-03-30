@@ -97,4 +97,12 @@ interface DialogFlowDAO {
         from: ZonedDateTime?,
         to: ZonedDateTime?
     ): Map<String, List<DialogFlowAggregateData>>
+
+    fun countMessagesByDateAndConfiguration(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): Map<String, List<DialogFlowAggregateData>>
 }

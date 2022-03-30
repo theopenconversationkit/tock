@@ -62,10 +62,12 @@ import com.mongodb.client.model.IndexOptions
 import mu.KotlinLogging
 import org.bson.BsonDocument
 import org.bson.BsonString
+import org.bson.conversions.Bson
 import org.litote.kmongo.*
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 /**
@@ -185,14 +187,10 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         )
         val proj = project(
             DialogFlowAggregateResult::date from "\$_id",
-            DialogFlowAggregateResult::count from "\$count"
+            DialogFlowAggregateResult::count from "\$count",
+            DialogFlowAggregateResult::seriesKey from "Messages"
         )
-        logger.debug { "Flow Message pipeline: [$match, $group, $proj]" }
-        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(
-            match,
-            group,
-            proj
-        ).groupBy ({ it.date}, { DialogFlowAggregateData("Messages", it.count) })
+        return aggregateFlowTransitionStats(match, group, proj)
     }
 
     override fun countUsersByDate(
@@ -230,15 +228,10 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         )
         val proj = project(
             DialogFlowAggregateResult::date from "\$_id",
-            DialogFlowAggregateResult::count from "\$count"
+            DialogFlowAggregateResult::count from "\$count",
+            DialogFlowAggregateResult::seriesKey from "Users"
         )
-        logger.debug { "Flow Message pipeline: [$match, $distinct, $group, $proj]" }
-        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(
-            match,
-            distinct,
-            group,
-            proj
-        ).groupBy ({ it.date }, { DialogFlowAggregateData("Users", it.count) })
+        return aggregateFlowTransitionStats(match, distinct, group, proj)
     }
 
     override fun countMessagesByDateAndConnectorType(
@@ -257,7 +250,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                 )
             )
         )
-        val lookup = lookup("bot_configuration", "applicationId", "_id", "application")
+        val lookup = lookup("bot_configuration", "applicationId", "_id", "configuration")
         val group = group(
             BsonDocument.parse("""
             {
@@ -269,7 +262,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                   }
                 },
                 connectorType: {
-                    $ arrayElemAt: ["$ application.connectorType.id", 0]
+                    $ arrayElemAt: ["$ configuration.connectorType.id", 0]
                 }
             }
         """.formatJson()),
@@ -280,13 +273,54 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
             DialogFlowAggregateResult::count from "\$count",
             DialogFlowAggregateResult::seriesKey from "\$_id.connectorType"
         )
-        logger.debug { "Flow Message pipeline: [$match, $lookup, $group, $proj]" }
-        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(
-            match,
-            lookup,
-            group,
-            proj
-        ).groupBy({it.date}, { DialogFlowAggregateData(it.seriesKey, it.count) })
+        return aggregateFlowTransitionStats(match, lookup, group, proj)
+    }
+
+    override fun countMessagesByDateAndConfiguration(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): Map<String, List<DialogFlowAggregateData>> {
+        val match = match(
+            and(
+                listOfNotNull(
+                    if (applicationIds.isEmpty()) null else ApplicationId `in` applicationIds,
+                    if (from == null) null else Date gt from.toInstant(),
+                    if (to == null) null else Date lt to.toInstant()
+                )
+            )
+        )
+        val lookup = lookup("bot_configuration", "applicationId", "_id", "configuration")
+        val group = group(
+            BsonDocument.parse("""
+            {
+                date: {
+                  $ dateToString: {
+                    date: "$ date",
+                    format: "%Y-%m-%d",
+                    timezone: "Europe/Paris"
+                  }
+                },
+                configuration: {
+                    $ arrayElemAt: ["$ configuration.name", 0]
+                }
+            }
+        """.formatJson()),
+            Accumulators.sum("count", 1)
+        )
+        val proj = project(
+            DialogFlowAggregateResult::date from "\$_id.date",
+            DialogFlowAggregateResult::count from "\$count",
+            DialogFlowAggregateResult::seriesKey from "\$_id.configuration"
+        )
+        return aggregateFlowTransitionStats(match, lookup, group, proj)
+    }
+
+    private fun aggregateFlowTransitionStats(vararg pipeline: Bson): Map<String, List<DialogFlowAggregateData>> {
+        logger.debug { "Flow Message pipeline: ${pipeline.contentToString()}" }
+        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(*pipeline).groupBy({ it.date }, { DialogFlowAggregateData(it.seriesKey, it.count) })
     }
 
     override fun search(

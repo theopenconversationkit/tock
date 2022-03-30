@@ -496,6 +496,16 @@ object BotAdminService {
         )
     }
 
+    fun reportMessagesByConfiguration2(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val namespace = request.namespace
+        val botId = request.botId
+        val applicationIds = loadApplications(request).mapTo(mutableSetOf()) { it._id }
+        val fromDate = atTimeOfDay(request.from, LocalTime.MIDNIGHT)
+        val toDate = atTimeOfDay(request.to, LocalTime.MAX)
+        val usersData = dialogFlowDAO.countMessagesByDateAndConfiguration(namespace, botId, applicationIds, request.from, request.to)
+        return prepareAnalyticsResponse(fromDate, toDate, usersData)
+    }
+
     fun reportMessagesByDayOfWeek(request: DialogFlowRequest): UserAnalyticsQueryResult {
         val applications = loadApplications(request)
         return reportMessagesBySeries(
