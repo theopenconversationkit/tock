@@ -31,16 +31,6 @@
         *ngIf="isControlAlert('name')"
         [field]="newFaqForm.controls['name']"
       ></tock-error-helper>
-
-      <!--<nb-alert accent="warning" *ngIf="isControlAlert('name')">
-        {{
-          newFaqForm.controls['name'].errors.required ? ERR_MSG.name_required :
-          newFaqForm.controls['name'].errors.minlength ? ERR_MSG.name_minlength :
-          newFaqForm.controls['name'].errors.maxlength ? ERR_MSG.name_maxlength :
-             ERR_MSG.name_error
-
-        }}
-      </nb-alert>-->
     </div>
     <div class="tock-field d-flex h-25 flex-column mb-3 ">
       <label class="d-block mb-1"> Description</label>
@@ -57,14 +47,6 @@
         *ngIf="isControlAlert('description')"
         [field]="newFaqForm.controls['description']"
       ></tock-error-helper>
-
-      <!--<nb-alert accent="warning" *ngIf="isControlAlert('description')">
-        {{
-            newFaqForm.controls['description'].errors.maxlength ?
-              ERR_MSG.description_maxlength :
-              ERR_MSG.description_error
-        }}
-      </nb-alert>-->
     </div>
 
     <div class="tock-field mb-3">
@@ -100,13 +82,6 @@
         *ngIf="isControlAlert('answer')"
         [field]="newFaqForm.controls['answer']"
       ></tock-error-helper>
-
-      <!--<nb-alert accent="warning" *ngIf="isControlAlert('answer')">
-        {{
-          newFaqForm.controls['answer'].errors.maxlength ?
-            ERR_MSG.answer_maxlength : ''
-        }}
-      </nb-alert>-->
     </div>
   </div>
   <div [ngClass]="(tabName === 'Question') ? 'tock--active' : 'tock--hidden'">
