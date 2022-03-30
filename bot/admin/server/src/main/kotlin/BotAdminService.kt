@@ -482,24 +482,6 @@ object BotAdminService {
         return reportAnalytics(request, DialogFlowDAO::countMessagesByDateAndConfiguration)
     }
 
-    private fun reportAnalytics(
-        request: DialogFlowRequest, method: DialogFlowDAO.(
-            namespace: String,
-            botId: String,
-            applicationIds: Set<Id<BotApplicationConfiguration>>,
-            from: ZonedDateTime?,
-            to: ZonedDateTime?
-        ) -> Map<String, List<DialogFlowAggregateData>>
-    ): UserAnalyticsQueryResult {
-        val namespace = request.namespace
-        val botId = request.botId
-        val applicationIds = loadApplications(request).mapTo(mutableSetOf()) { it._id }
-        val fromDate = atTimeOfDay(request.from, LocalTime.MIDNIGHT)
-        val toDate = atTimeOfDay(request.to, LocalTime.MAX)
-        val usersData = dialogFlowDAO.method(namespace, botId, applicationIds, request.from, request.to)
-        return prepareAnalyticsResponse(fromDate, toDate, usersData)
-    }
-
     fun reportMessagesByDayOfWeek(request: DialogFlowRequest): UserAnalyticsQueryResult {
         val applications = loadApplications(request)
         return reportMessagesBySeries(
@@ -511,11 +493,33 @@ object BotAdminService {
         )
     }
 
+    fun reportMessagesByDayOfWeek2(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val namespace = request.namespace
+        val botId = request.botId
+        val applicationIds = loadApplications(request).mapTo(mutableSetOf()) { it._id }
+        val usersData = dialogFlowDAO.countMessagesByDayOfWeek(namespace, botId, applicationIds, request.from, request.to)
+        return UserAnalyticsQueryResult(listOf("All Range"), listOf(DayOfWeek.values().map { usersData[it] ?: 0}), DayOfWeek.values().map {
+            it.getDisplayName(TextStyle.FULL_STANDALONE, defaultLocale)
+        })
+    }
+
     fun reportMessagesByHour(request: DialogFlowRequest): UserAnalyticsQueryResult {
         val applications = loadApplications(request)
         return reportMessagesBySeries(
-            request, applications, (0..24).toList().toSet(),
+            request, applications, (0..24).toSet(),
             { hour -> { transition -> transition.date.hour == hour } }, { "${it}h" }
+        )
+    }
+
+    fun reportMessagesByHour2(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val namespace = request.namespace
+        val botId = request.botId
+        val applicationIds = loadApplications(request).mapTo(mutableSetOf()) { it._id }
+        val usersData = dialogFlowDAO.countMessagesByHour(namespace, botId, applicationIds, request.from, request.to)
+        return UserAnalyticsQueryResult(
+            listOf("All Range"),
+            listOf((0..24).map { usersData[it] ?: 0 }),
+            (0..24).map { "${it}h" }
         )
     }
 
@@ -574,6 +578,24 @@ object BotAdminService {
     fun reportMessagesByActionType(request: DialogFlowRequest): UserAnalyticsQueryResult {
         val applications = loadApplications(request)
         return reportMessagesByFunction(request, applications, dialogFlowDAO::searchByDateWithActionType)
+    }
+
+    private fun reportAnalytics(
+        request: DialogFlowRequest, method: DialogFlowDAO.(
+            namespace: String,
+            botId: String,
+            applicationIds: Set<Id<BotApplicationConfiguration>>,
+            from: ZonedDateTime?,
+            to: ZonedDateTime?
+        ) -> Map<String, List<DialogFlowAggregateData>>
+    ): UserAnalyticsQueryResult {
+        val namespace = request.namespace
+        val botId = request.botId
+        val applicationIds = loadApplications(request).mapTo(mutableSetOf()) { it._id }
+        val fromDate = atTimeOfDay(request.from, LocalTime.MIDNIGHT)
+        val toDate = atTimeOfDay(request.to, LocalTime.MAX)
+        val usersData = dialogFlowDAO.method(namespace, botId, applicationIds, request.from, request.to)
+        return prepareAnalyticsResponse(fromDate, toDate, usersData)
     }
 
     private fun prepareAnalyticsResponse(

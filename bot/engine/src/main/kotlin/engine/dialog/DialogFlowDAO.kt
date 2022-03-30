@@ -23,6 +23,7 @@ import ai.tock.bot.admin.dialog.DialogFlowTransitionStatsData
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.DialogFlowDefinition
 import org.litote.kmongo.Id
+import java.time.DayOfWeek
 import java.time.ZonedDateTime
 
 interface DialogFlowDAO {
@@ -105,4 +106,20 @@ interface DialogFlowDAO {
         from: ZonedDateTime?,
         to: ZonedDateTime?
     ): Map<String, List<DialogFlowAggregateData>>
+
+    fun countMessagesByDayOfWeek(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): Map<DayOfWeek, Int>
+
+    fun countMessagesByHour(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): Map<Int, Int>
 }

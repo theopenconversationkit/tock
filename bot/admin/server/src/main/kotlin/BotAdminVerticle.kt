@@ -222,12 +222,38 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
+        blockingJsonPost("/analytics/messages/byDayOfWeek2", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                measureTimeMillis(
+                    context,
+                    {
+                        BotAdminService.reportMessagesByDayOfWeek2(request)
+                    }
+                )
+            } else {
+                unauthorized()
+            }
+        }
+
         blockingJsonPost("/analytics/messages/byHour", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
                 measureTimeMillis(
                     context,
                     {
                         BotAdminService.reportMessagesByHour(request)
+                    }
+                )
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byHour2", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                measureTimeMillis(
+                    context,
+                    {
+                        BotAdminService.reportMessagesByHour2(request)
                     }
                 )
             } else {

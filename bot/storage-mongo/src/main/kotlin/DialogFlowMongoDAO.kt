@@ -51,11 +51,9 @@ import ai.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.Application
 import ai.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.Date
 import ai.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.DialogId
 import ai.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.TransitionId
+import ai.tock.shared.*
 import ai.tock.shared.ensureIndex
-import ai.tock.shared.error
-import ai.tock.shared.longProperty
 import ai.tock.shared.security.TockObfuscatorService.obfuscate
-import ai.tock.shared.sumByLong
 import com.mongodb.client.model.Accumulators
 import com.mongodb.client.model.Aggregates.group
 import com.mongodb.client.model.IndexOptions
@@ -64,9 +62,11 @@ import org.bson.BsonDocument
 import org.bson.BsonString
 import org.bson.conversions.Bson
 import org.litote.kmongo.*
+import java.time.DayOfWeek
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.time.format.TextStyle
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -284,6 +284,64 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
             DialogFlowAggregateResult::seriesKey from "\$_id.configuration"
         )
         return aggregateFlowTransitionStats(match, lookup, group, proj)
+    }
+
+    override fun countMessagesByDayOfWeek(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): Map<DayOfWeek, Int> {
+        val match = buildAnalyticsFilter(applicationIds, from, to)
+        val group = group(
+            BsonDocument.parse("""
+            {
+              $ dateToString: {
+                date: "$ date",
+                format: "%u",
+                timezone: "Europe/Paris"
+              }
+            }
+        """.formatJson()),
+            Accumulators.sum("count", 1)
+        )
+        val proj = project(
+            DialogFlowAggregateResult::date from "\$_id",
+            DialogFlowAggregateResult::count from "\$count",
+        )
+        logger.debug { "Flow Message pipeline: [$match, $group, $proj]" }
+        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(match, group, proj)
+            .associateBy({ DayOfWeek.of(it.date.toInt()) }, { it.count })
+    }
+
+    override fun countMessagesByHour(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): Map<Int, Int> {
+        val match = buildAnalyticsFilter(applicationIds, from, to)
+        val group = group(
+            BsonDocument.parse("""
+            {
+              $ dateToString: {
+                date: "$ date",
+                format: "%H",
+                timezone: "Europe/Paris"
+              }
+            }
+        """.formatJson()),
+            Accumulators.sum("count", 1)
+        )
+        val proj = project(
+            DialogFlowAggregateResult::date from "\$_id",
+            DialogFlowAggregateResult::count from "\$count",
+        )
+        logger.debug { "Flow Message pipeline: [$match, $group, $proj]" }
+        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(match, group, proj)
+            .associateBy({ it.date.toInt() }, { it.count })
     }
 
     private fun buildAnalyticsFilter(
