@@ -37,7 +37,7 @@ interface DialogFlowDAO {
         intent: String? = null
     ): ApplicationDialogFlowData
 
-    fun search2(
+    fun countMessagesByDate(
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
@@ -80,4 +80,12 @@ interface DialogFlowDAO {
         to: ZonedDateTime?,
         intent: String? = null
     ): Pair<List<DialogFlowTransitionStatsData>, List<String>>
+
+    fun countUsersByDate(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): Map<String, List<Int>>
 }

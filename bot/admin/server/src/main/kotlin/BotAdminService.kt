@@ -422,9 +422,9 @@ object BotAdminService {
         val applicationIds = applications.map { it._id }.toSet()
         val fromDate = atTimeOfDay(request.from, LocalTime.MIDNIGHT)
         val toDate = atTimeOfDay(request.to, LocalTime.MAX)
-        val usersData = dialogFlowDAO.search2(namespace, botId, applicationIds, request.from, request.to)
+        val usersData = dialogFlowDAO.countMessagesByDate(namespace, botId, applicationIds, request.from, request.to)
         val (dates, filledUsersData) = sortMessagesByDate2(fromDate, toDate, usersData, 1)
-        return UserAnalyticsQueryResult(dates, filledUsersData)
+        return UserAnalyticsQueryResult(dates, filledUsersData, listOf("Messages"))
     }
 
     fun reportMessagesByType(request: DialogFlowRequest): UserAnalyticsQueryResult {
@@ -457,6 +457,18 @@ object BotAdminService {
             },
             { if (it) "Tests" else "Users" }
         )
+    }
+
+    fun reportUsersByType2(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val applications = loadApplications(request)
+        val namespace = request.namespace
+        val botId = request.botId
+        val applicationIds = applications.map { it._id }.toSet()
+        val fromDate = atTimeOfDay(request.from, LocalTime.MIDNIGHT)
+        val toDate = atTimeOfDay(request.to, LocalTime.MAX)
+        val usersData = dialogFlowDAO.countUsersByDate(namespace, botId, applicationIds, request.from, request.to)
+        val (dates, filledUsersData) = sortMessagesByDate2(fromDate, toDate, usersData, 1)
+        return UserAnalyticsQueryResult(dates, filledUsersData, listOf("Users"))
     }
 
     fun reportMessagesByConnectorType(request: DialogFlowRequest): UserAnalyticsQueryResult {
