@@ -28,4 +28,4 @@ interface CancelledUtteranceResult {
  */
 export type EditUtteranceResult = ValidUtteranceResult | CancelledUtteranceResult;
 
-export const notCancelled = (item: EditUtteranceResult) => !item.cancelled;
+export const notCancelled = (item: EditUtteranceResult) => item && !item.cancelled;
