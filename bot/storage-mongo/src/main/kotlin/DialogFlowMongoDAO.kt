@@ -165,15 +165,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         from: ZonedDateTime?,
         to: ZonedDateTime?
     ): Map<String, List<DialogFlowAggregateData>> {
-        val match = match(
-            and(
-                listOfNotNull(
-                    if (applicationIds.isEmpty()) null else ApplicationId `in` applicationIds,
-                    if (from == null) null else Date gt from.toInstant(),
-                    if (to == null) null else Date lt to.toInstant()
-                )
-            )
-        )
+        val match = buildAnalyticsFilter(applicationIds, from, to)
         // group messages that were sent the same day together
         val group = group(BsonDocument.parse("""
                     {
@@ -200,15 +192,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         from: ZonedDateTime?,
         to: ZonedDateTime?
     ): Map<String, List<DialogFlowAggregateData>> {
-        val match = match(
-            and(
-                listOfNotNull(
-                    if (applicationIds.isEmpty()) null else ApplicationId `in` applicationIds,
-                    if (from == null) null else Date gt from.toInstant(),
-                    if (to == null) null else Date lt to.toInstant()
-                )
-            )
-        )
+        val match = buildAnalyticsFilter(applicationIds, from, to)
         // keep one object for every date/user combination
         val distinct = group(BsonDocument.parse("""
             {
@@ -241,15 +225,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         from: ZonedDateTime?,
         to: ZonedDateTime?
     ): Map<String, List<DialogFlowAggregateData>> {
-        val match = match(
-            and(
-                listOfNotNull(
-                    if (applicationIds.isEmpty()) null else ApplicationId `in` applicationIds,
-                    if (from == null) null else Date gt from.toInstant(),
-                    if (to == null) null else Date lt to.toInstant()
-                )
-            )
-        )
+        val match = buildAnalyticsFilter(applicationIds, from, to)
         val lookup = lookup("bot_configuration", "applicationId", "_id", "configuration")
         val group = group(
             BsonDocument.parse("""
@@ -283,15 +259,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         from: ZonedDateTime?,
         to: ZonedDateTime?
     ): Map<String, List<DialogFlowAggregateData>> {
-        val match = match(
-            and(
-                listOfNotNull(
-                    if (applicationIds.isEmpty()) null else ApplicationId `in` applicationIds,
-                    if (from == null) null else Date gt from.toInstant(),
-                    if (to == null) null else Date lt to.toInstant()
-                )
-            )
-        )
+        val match = buildAnalyticsFilter(applicationIds, from, to)
         val lookup = lookup("bot_configuration", "applicationId", "_id", "configuration")
         val group = group(
             BsonDocument.parse("""
@@ -317,6 +285,20 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         )
         return aggregateFlowTransitionStats(match, lookup, group, proj)
     }
+
+    private fun buildAnalyticsFilter(
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ) = match(
+        and(
+            listOfNotNull(
+                if (applicationIds.isEmpty()) null else ApplicationId `in` applicationIds,
+                if (from == null) null else Date gt from.toInstant(),
+                if (to == null) null else Date lt to.toInstant()
+            )
+        )
+    )
 
     private fun aggregateFlowTransitionStats(vararg pipeline: Bson): Map<String, List<DialogFlowAggregateData>> {
         logger.debug { "Flow Message pipeline: ${pipeline.contentToString()}" }
