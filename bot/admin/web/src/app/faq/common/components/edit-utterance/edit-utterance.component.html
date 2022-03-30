@@ -23,17 +23,23 @@
     <div class="tock--notice w-100 m-auto py-2">
       Sample question a user might type or say, which matches accepted response
     </div>
-    <div class="w-100 my-4">
-      <label class="block m-2">Question:</label>
-      <input nbInput
-             type="text"
-             placeholder="How many sides does a heptadecagon have?"
-             (keyup.enter)="canSave() && save()"
-             [(ngModel)]="value"
-             [ngModelChangeDebounceTime]="1000"
-             (ngModelChangeDebounced)="ensureUniq($event)"
-             fullWidth fieldSize="medium"/>
+    <div class="w-100 my-4" [formGroup]="form">
+      <label class="block">Question (*)</label>
+      <input
+        nbInput
+        formControlName="utterance"
+        fullWidth
+        placeholder="How many sides does a heptadecagon have?"
+        type="text"
+        (keyup.enter)="canSave && save()"
+      />
+      <tock-error-helper
+        *ngIf="isSubmitted"
+        class="d-block mt-1"
+        [field]="utterance"
+      ></tock-error-helper>
     </div>
+
     <div *ngIf="!!existingQuestion" class="tock-alert tock--warning mx-5 p-2 mb-4">
       <div class="alert alert-warning" role="alert">
         A similar question would be replaced:
@@ -45,20 +51,51 @@
 
   <!-- DIALOG FOOTER -->
   <nb-card-footer>
+    <button
+      nbButton
+      class="float-left"
+      outline
+      size="small"
+      status="primary"
+      (click)="cancel()"
+    >
+      Cancel
+    </button>
+
     <!-- EDIT MODE -->
-    <button nbButton class="float-left" (click)="cancel()" size="small" status="default" nbTooltip="Close">
-      Close
+    <button
+      *ngIf="mode=='edit'"
+      nbButton
+      class="float-right"
+      size="small"
+      status="primary"
+      [disabled]="!canSave"
+      (click)="saveAndClose()"
+    >
+      Edit
     </button>
-    
-    <button nbButton class="float-right" *ngIf="mode=='edit'" (click)="saveAndClose()" [disabled]="!canSave()" size="small"  status="primary"  nbTooltip="Ok">
-      Ok
-    </button>
-    
+
     <!-- ADD MODE -->
-    <button nbButton class="float-right" *ngIf="mode=='add'" (click)="saveAndClose()" [disabled]="!canSave()" size="small"  status="primary"  nbTooltip="Add question and close">
+    <button
+      *ngIf="mode=='add'"
+      nbButton
+      class="float-right"
+      size="small"
+      status="primary"
+      [disabled]="!canSave"
+      (click)="saveAndClose()"
+    >
       Add & close
     </button>
-    <button nbButton class="float-right mr-2" *ngIf="mode=='add'" (click)="save()" [disabled]="!canSave()" size="small"  status="primary"  nbTooltip="Add question">
+    <button
+      *ngIf="mode=='add'"
+      nbButton
+      class="float-right mr-2"
+      size="small"
+      status="primary"
+      [disabled]="!canSave"
+      (click)="save()"
+    >
       Add
     </button>
   </nb-card-footer>

@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-import {Component, Input, Output} from '@angular/core';
-import {NbDialogRef} from '@nebular/theme';
-import {Utterance} from '../../model/utterance';
-import {EditUtteranceResult} from './edit-utterance-result';
+import { Component, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { NbDialogRef } from '@nebular/theme';
+import { Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
+
+import { EditUtteranceResult } from './edit-utterance-result';
+import { Utterance } from '../../model/utterance';
 
 /**
  * Edit Utterance DIALOG
@@ -27,7 +31,7 @@ import {EditUtteranceResult} from './edit-utterance-result';
   templateUrl: './edit-utterance.component.html',
   styleUrls: ['./edit-utterance.component.scss']
 })
-export class EditUtteranceComponent {
+export class EditUtteranceComponent implements OnInit, OnDestroy {
 
   @Input()
   public title: string;
@@ -36,19 +40,50 @@ export class EditUtteranceComponent {
   public value: string;
 
   @Input()
-  public lookup?: (string) => (Utterance | null);
-  
+  public lookup?: (v: string) => (Utterance | null);
+
   @Input()
   public mode?: string;
-  
+
   @Output()
   public saveAction?: (string) => void;
 
   public existingQuestion?: string;
 
+  public form = new FormGroup({
+    utterance: new FormControl('', [Validators.required, Validators.maxLength(260)])
+  });
+
+  public isSubmitted = false;
+
+  private subscriptions = new Subscription();
+
+  get utterance(): FormControl {
+    return this.form.get('utterance') as FormControl;
+  }
+
+  get canSave(): boolean {
+    return this.isSubmitted ? this.form.valid : this.form.dirty;
+  }
+
   constructor(
     private readonly dialogRef: NbDialogRef<EditUtteranceComponent>
-  ) {
+  ) {}
+
+  ngOnInit() {
+    this.utterance.patchValue(this.value);
+
+    this.subscriptions.add(
+      this.utterance.valueChanges
+        .pipe(debounceTime(500))
+        .subscribe(v => {
+          this.ensureUniq(v);
+        })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   cancel(): void {
@@ -59,28 +94,28 @@ export class EditUtteranceComponent {
   }
 
   saveAndClose(): void {
-    const result: EditUtteranceResult = {
-      cancelled: false,
-      value: this.value || ''
-    };
-    this.dialogRef.close(result);
+    this.isSubmitted = true;
+
+    if (this.canSave) {
+      const result: EditUtteranceResult = {
+        cancelled: false,
+        value: this.utterance.value
+      };
+      this.dialogRef.close(result);
+    }
   }
 
   save(): void {
-    this.saveAction(this.value)
-    this.value = ""
-  }
+    this.isSubmitted = true;
 
-  canSave(): boolean {
-    if (!this.value) {
-      return false;
+    if (this.canSave) {
+      this.saveAction(this.utterance.value);
+      this.utterance.patchValue('');
     }
-
-    return this.value.trim().length > 0;
   }
 
-  ensureUniq(evt): void {
-    const res = this.lookup ? this.lookup(this.value) : undefined; // look for similar question
+  ensureUniq(evt: string): void {
+    const res = this.lookup ? this.lookup(evt) : undefined; // look for similar question
     if (res) {
       this.existingQuestion = res;
     } else {
