@@ -77,7 +77,6 @@ export class EditUtteranceComponent implements OnInit, OnDestroy {
       this.utterance.valueChanges
         .pipe(debounceTime(500))
         .subscribe(v => {
-          console.log('pass', v)
           this.ensureUniq(v);
         })
     );
@@ -112,13 +111,11 @@ export class EditUtteranceComponent implements OnInit, OnDestroy {
     if (this.canSave) {
       this.saveAction(this.utterance.value);
       this.utterance.patchValue('');
-      this.utterance.updateValueAndValidity();
     }
   }
 
   ensureUniq(evt: string): void {
     const res = this.lookup ? this.lookup(evt) : undefined; // look for similar question
-    //console.log('res', res, this.lookup, this.lookup(evt))
     if (res) {
       this.existingQuestion = res;
     } else {
