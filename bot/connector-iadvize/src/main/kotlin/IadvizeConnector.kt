@@ -50,6 +50,8 @@ class IadvizeConnector(
         private val logger = KotlinLogging.logger {}
     }
 
+    val echo: MutableSet<String> = mutableSetOf()
+
     private val QUERY_ID_OPERATOR: String = "idOperator"
     private val QUERY_ID_CONVERSATION: String = "idConversation"
     private val QUERY_ID_CONNECTOR_VERSION: String = "idConnectorVersion"
@@ -99,7 +101,6 @@ class IadvizeConnector(
                 }
             }
 
-
             router.get("$path/bots/:idOperator/conversation-first-messages").handler { context ->
                 try {
                     val idOperator: String = context.pathParam(QUERY_ID_OPERATOR)
@@ -126,13 +127,20 @@ class IadvizeConnector(
             router.post("$path/conversations/:idConversation/messages").handler { context ->
                 try {
                     val idConversation: String = context.pathParam(QUERY_ID_CONVERSATION)
-                    logger.info { "request : POST /conversations/$idConversation/messages\nbody : ${context.bodyAsString}" }
-                    val messageRequest =
-                        MessageRequest(
-                            mapper.readValue(context.bodyAsString, MessageRequestJson::class.java),
-                            idConversation)
-                    logger.info { "body parsed : $messageRequest" }
-                    handleRequest(controller, context, messageRequest)
+                    if(!isEcho(idConversation)) {
+                        logger.info { "request : POST /conversations/$idConversation/messages\nbody : ${context.bodyAsString}" }
+                        val messageRequest =
+                            MessageRequest(
+                                mapper.readValue(context.bodyAsString, MessageRequestJson::class.java),
+                                idConversation)
+                        logger.info { "body parsed : $messageRequest" }
+                        // warn echo message from iadvize
+                        echo.add(idConversation)
+                        handleRequest(controller, context, messageRequest)
+                    } else {
+                        logger.info { "request echo : POST /conversations/$idConversation/messages ${context.bodyAsString}"}
+                        context.response().end()
+                    }
                 } catch (e: Throwable) {
                     logger.error(e)
                     context.fail(500)
@@ -140,6 +148,11 @@ class IadvizeConnector(
             }
         }
 
+    }
+
+    private fun isEcho(idConversation: String): Boolean {
+        //if id conversation is in echo, it's an echo : do not treat request.
+        return echo.remove(idConversation)
     }
 
     private fun getBotUpdate(idOperator: String, controller: ConnectorController): BotUpdated {
