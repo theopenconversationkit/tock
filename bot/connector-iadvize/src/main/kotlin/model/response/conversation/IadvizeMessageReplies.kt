@@ -17,10 +17,13 @@
 package ai.tock.bot.connector.iadvize.model.response.conversation
 
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeReply
+import com.fasterxml.jackson.annotation.JsonFormat
 import java.time.LocalDateTime
 
 data class IadvizeMessageReplies(val idConversation: String,
                                  val idOperator: String,
+                                 @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
                                  val createdAt: LocalDateTime,
+                                 @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
                                  val updatedAt: LocalDateTime,
                                  val replies: MutableList<IadvizeReply> = mutableListOf()) : IadvizeResponse

@@ -29,6 +29,7 @@ internal object IadvizeConnectorProvider : ConnectorProvider {
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration) {
             return IadvizeConnector(
+                connectorId,
                 connectorConfiguration.path,
                 parameters.getValue(EDITOR_URL),
                 parameters.getValue(FIRST_MESSAGE)
