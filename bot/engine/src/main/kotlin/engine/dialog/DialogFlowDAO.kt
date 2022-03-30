@@ -18,6 +18,7 @@ package ai.tock.bot.engine.dialog
 
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.dialog.ApplicationDialogFlowData
+import ai.tock.bot.admin.dialog.DialogFlowAggregateData
 import ai.tock.bot.admin.dialog.DialogFlowTransitionStatsData
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.DialogFlowDefinition
@@ -43,7 +44,7 @@ interface DialogFlowDAO {
         applicationIds: Set<Id<BotApplicationConfiguration>>,
         from: ZonedDateTime?,
         to: ZonedDateTime?,
-    ): Map<String, List<Int>>
+    ): Map<String, List<DialogFlowAggregateData>>
 
     fun search(
         namespace: String,
@@ -87,5 +88,13 @@ interface DialogFlowDAO {
         applicationIds: Set<Id<BotApplicationConfiguration>>,
         from: ZonedDateTime?,
         to: ZonedDateTime?
-    ): Map<String, List<Int>>
+    ): Map<String, List<DialogFlowAggregateData>>
+
+    fun countMessagesByDateAndConnectorType(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): Map<String, List<DialogFlowAggregateData>>
 }

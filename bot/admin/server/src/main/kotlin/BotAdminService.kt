@@ -23,10 +23,7 @@ import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.bot.BotVersion
-import ai.tock.bot.admin.dialog.ApplicationDialogFlowData
-import ai.tock.bot.admin.dialog.DialogFlowTransitionStatsData
-import ai.tock.bot.admin.dialog.DialogReportDAO
-import ai.tock.bot.admin.dialog.DialogReportQueryResult
+import ai.tock.bot.admin.dialog.*
 import ai.tock.bot.admin.kotlin.compiler.KotlinFile
 import ai.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
 import ai.tock.bot.admin.model.*
@@ -416,15 +413,13 @@ object BotAdminService {
     }
 
     fun reportMessagesByType2(request: DialogFlowRequest): UserAnalyticsQueryResult {
-        val applications = loadApplications(request)
         val namespace = request.namespace
         val botId = request.botId
-        val applicationIds = applications.map { it._id }.toSet()
+        val applicationIds = loadApplications(request).mapTo(mutableSetOf()) { it._id }
         val fromDate = atTimeOfDay(request.from, LocalTime.MIDNIGHT)
         val toDate = atTimeOfDay(request.to, LocalTime.MAX)
         val usersData = dialogFlowDAO.countMessagesByDate(namespace, botId, applicationIds, request.from, request.to)
-        val (dates, filledUsersData) = sortMessagesByDate2(fromDate, toDate, usersData, 1)
-        return UserAnalyticsQueryResult(dates, filledUsersData, listOf("Messages"))
+        return prepareAnalyticsResponse(fromDate, toDate, usersData)
     }
 
     fun reportMessagesByType(request: DialogFlowRequest): UserAnalyticsQueryResult {
@@ -460,15 +455,13 @@ object BotAdminService {
     }
 
     fun reportUsersByType2(request: DialogFlowRequest): UserAnalyticsQueryResult {
-        val applications = loadApplications(request)
         val namespace = request.namespace
         val botId = request.botId
-        val applicationIds = applications.map { it._id }.toSet()
+        val applicationIds = loadApplications(request).mapTo(mutableSetOf()) { it._id }
         val fromDate = atTimeOfDay(request.from, LocalTime.MIDNIGHT)
         val toDate = atTimeOfDay(request.to, LocalTime.MAX)
         val usersData = dialogFlowDAO.countUsersByDate(namespace, botId, applicationIds, request.from, request.to)
-        val (dates, filledUsersData) = sortMessagesByDate2(fromDate, toDate, usersData, 1)
-        return UserAnalyticsQueryResult(dates, filledUsersData, listOf("Users"))
+        return prepareAnalyticsResponse(fromDate, toDate, usersData)
     }
 
     fun reportMessagesByConnectorType(request: DialogFlowRequest): UserAnalyticsQueryResult {
@@ -480,6 +473,16 @@ object BotAdminService {
             { connectorType -> { transition -> applications.find { it._id.toString() == transition.applicationId }?.connectorType == connectorType } },
             { it.id }
         )
+    }
+
+    fun reportMessagesByConnectorType2(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val namespace = request.namespace
+        val botId = request.botId
+        val applicationIds = loadApplications(request).mapTo(mutableSetOf()) { it._id }
+        val fromDate = atTimeOfDay(request.from, LocalTime.MIDNIGHT)
+        val toDate = atTimeOfDay(request.to, LocalTime.MAX)
+        val usersData = dialogFlowDAO.countMessagesByDateAndConnectorType(namespace, botId, applicationIds, request.from, request.to)
+        return prepareAnalyticsResponse(fromDate, toDate, usersData)
     }
 
     fun reportMessagesByConfiguration(request: DialogFlowRequest): UserAnalyticsQueryResult {
@@ -569,21 +572,21 @@ object BotAdminService {
         return reportMessagesByFunction(request, applications, dialogFlowDAO::searchByDateWithActionType)
     }
 
-    private fun sortMessagesByDate2(
+    private fun prepareAnalyticsResponse(
         fromDate: LocalDateTime,
         toDate: LocalDateTime,
-        queryResult: Map<String, List<Int>>,
-        seriesCount: Int,
-    ): Pair<List<String>, List<List<Int>>> {
-        val emptyList: List<Int> = IntArray(seriesCount).toList()
+        queryResult: Map<String, List<DialogFlowAggregateData>>
+    ): UserAnalyticsQueryResult {
+        val series: List<String> = queryResult.values.asSequence().flatten().map { it.seriesKey }.distinct().toList()
+        val emptyList: List<Int> = IntArray(series.size).toList()
         return if (isSameDay(fromDate, toDate)) {
             val hoursList = buildHoursList(toDate.toLocalDate())
-            val usersAnalytics: List<List<Int>> = hoursList.map { queryResult[it] ?: emptyList }
-            Pair(formatHours(hoursList), usersAnalytics)
+            val usersAnalytics: List<List<Int>> = hoursList.map { date -> queryResult[date]?.map { it.count } ?: emptyList }
+            UserAnalyticsQueryResult(formatHours(hoursList), usersAnalytics, series)
         } else {
             val datesBetween = getDatesBetween(fromDate.toLocalDate(), toDate.toLocalDate())
-            val usersAnalytics = datesBetween.map { queryResult[it] ?: emptyList }
-            Pair(datesBetween, usersAnalytics)
+            val usersAnalytics = datesBetween.map { date -> queryResult[date]?.map { it.count } ?: emptyList }
+            UserAnalyticsQueryResult(datesBetween, usersAnalytics, series)
         }
     }
 

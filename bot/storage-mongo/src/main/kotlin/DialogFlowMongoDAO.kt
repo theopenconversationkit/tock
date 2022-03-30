@@ -17,10 +17,7 @@
 package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
-import ai.tock.bot.admin.dialog.ApplicationDialogFlowData
-import ai.tock.bot.admin.dialog.DialogFlowStateData
-import ai.tock.bot.admin.dialog.DialogFlowStateTransitionData
-import ai.tock.bot.admin.dialog.DialogFlowTransitionStatsData
+import ai.tock.bot.admin.dialog.*
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.DialogFlowDefinition
 import ai.tock.bot.definition.DialogFlowStateTransitionType
@@ -165,7 +162,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         applicationIds: Set<Id<BotApplicationConfiguration>>,
         from: ZonedDateTime?,
         to: ZonedDateTime?
-    ): Map<String, List<Int>> {
+    ): Map<String, List<DialogFlowAggregateData>> {
         val match = match(
             and(
                 listOfNotNull(
@@ -195,7 +192,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
             match,
             group,
             proj
-        ).map { it.date to listOf(it.count) }.toMap()
+        ).groupBy ({ it.date}, { DialogFlowAggregateData("Messages", it.count) })
     }
 
     override fun countUsersByDate(
@@ -204,7 +201,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         applicationIds: Set<Id<BotApplicationConfiguration>>,
         from: ZonedDateTime?,
         to: ZonedDateTime?
-    ): Map<String, List<Int>> {
+    ): Map<String, List<DialogFlowAggregateData>> {
         val match = match(
             and(
                 listOfNotNull(
@@ -241,7 +238,55 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
             distinct,
             group,
             proj
-        ).map { it.date to listOf(it.count) }.toMap()
+        ).groupBy ({ it.date }, { DialogFlowAggregateData("Users", it.count) })
+    }
+
+    override fun countMessagesByDateAndConnectorType(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): Map<String, List<DialogFlowAggregateData>> {
+        val match = match(
+            and(
+                listOfNotNull(
+                    if (applicationIds.isEmpty()) null else ApplicationId `in` applicationIds,
+                    if (from == null) null else Date gt from.toInstant(),
+                    if (to == null) null else Date lt to.toInstant()
+                )
+            )
+        )
+        val lookup = lookup("bot_configuration", "applicationId", "_id", "application")
+        val group = group(
+            BsonDocument.parse("""
+            {
+                date: {
+                  $ dateToString: {
+                    date: "$ date",
+                    format: "%Y-%m-%d",
+                    timezone: "Europe/Paris"
+                  }
+                },
+                connectorType: {
+                    $ arrayElemAt: ["$ application.connectorType.id", 0]
+                }
+            }
+        """.formatJson()),
+            Accumulators.sum("count", 1)
+        )
+        val proj = project(
+            DialogFlowAggregateResult::date from "\$_id.date",
+            DialogFlowAggregateResult::count from "\$count",
+            DialogFlowAggregateResult::seriesKey from "\$_id.connectorType"
+        )
+        logger.debug { "Flow Message pipeline: [$match, $lookup, $group, $proj]" }
+        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(
+            match,
+            lookup,
+            group,
+            proj
+        ).groupBy({it.date}, { DialogFlowAggregateData(it.seriesKey, it.count) })
     }
 
     override fun search(
