@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import {NbDialogRef} from '@nebular/theme';
+import { NbDialogRef } from '@nebular/theme';
 import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
-import {EditUtteranceResult} from './edit-utterance-result';
-import {Utterance} from '../../model/utterance';
+import { EditUtteranceResult } from './edit-utterance-result';
+import { Utterance } from '../../model/utterance';
 
 /**
  * Edit Utterance DIALOG
@@ -40,7 +40,13 @@ export class EditUtteranceComponent implements OnInit, OnDestroy {
   public value: string;
 
   @Input()
-  public lookup?: (string) => (Utterance | null);
+  public lookup?: (v: string) => (Utterance | null);
+
+  @Input()
+  public mode?: string;
+
+  @Output()
+  public saveAction?: (string) => void;
 
   public existingQuestion?: string;
 
@@ -71,6 +77,7 @@ export class EditUtteranceComponent implements OnInit, OnDestroy {
       this.utterance.valueChanges
         .pipe(debounceTime(500))
         .subscribe(v => {
+          console.log('pass', v)
           this.ensureUniq(v);
         })
     );
@@ -87,7 +94,7 @@ export class EditUtteranceComponent implements OnInit, OnDestroy {
     this.dialogRef.close(result);
   }
 
-  save(): void {
+  saveAndClose(): void {
     this.isSubmitted = true;
 
     if (this.canSave) {
@@ -95,13 +102,23 @@ export class EditUtteranceComponent implements OnInit, OnDestroy {
         cancelled: false,
         value: this.utterance.value
       };
-
       this.dialogRef.close(result);
     }
   }
 
-  ensureUniq(evt): void {
-    const res = this.lookup ? this.lookup(this.utterance.value) : undefined; // look for similar question
+  save(): void {
+    this.isSubmitted = true;
+
+    if (this.canSave) {
+      this.saveAction(this.utterance.value);
+      this.utterance.patchValue('');
+      this.utterance.updateValueAndValidity();
+    }
+  }
+
+  ensureUniq(evt: string): void {
+    const res = this.lookup ? this.lookup(evt) : undefined; // look for similar question
+    //console.log('res', res, this.lookup, this.lookup(evt))
     if (res) {
       this.existingQuestion = res;
     } else {

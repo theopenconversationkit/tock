@@ -61,9 +61,36 @@
     >
       Cancel
     </button>
+
+    <!-- EDIT MODE -->
     <button
+      *ngIf="mode=='edit'"
       nbButton
       class="float-right"
+      size="small"
+      status="primary"
+      [disabled]="!canSave"
+      (click)="saveAndClose()"
+    >
+      Edit
+    </button>
+
+    <!-- ADD MODE -->
+    <button
+      *ngIf="mode=='add'"
+      nbButton
+      class="float-right"
+      size="small"
+      status="primary"
+      [disabled]="!canSave"
+      (click)="saveAndClose()"
+    >
+      Add & close
+    </button>
+    <button
+      *ngIf="mode=='add'"
+      nbButton
+      class="float-right mr-2"
       size="small"
       status="primary"
       [disabled]="!canSave"
