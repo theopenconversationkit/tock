@@ -48,7 +48,23 @@ export class EditUtteranceComponent {
 
   constructor(
     private readonly dialogRef: NbDialogRef<EditUtteranceComponent>
-  ) {
+  ) {}
+
+  ngOnInit() {
+    this.utterance.patchValue(this.value);
+
+    this.subscriptions.add(
+      this.utterance.valueChanges
+        .pipe(debounceTime(500))
+        .subscribe(v => {
+          console.log('pass', v)
+          this.ensureUniq(v);
+        })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   cancel(): void {
@@ -71,9 +87,9 @@ export class EditUtteranceComponent {
     this.value = ""
   }
 
-  canSave(): boolean {
-    if (!this.value) {
-      return false;
+    if (this.canSave) {
+      this.saveAction(this.utterance.value);
+      this.utterance.patchValue('');
     }
 
     return this.value.trim().length > 0;
