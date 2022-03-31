@@ -15,6 +15,7 @@
  */
 
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import { Router } from '@angular/router';
 import {ReplaySubject} from 'rxjs';
 import {StateService} from 'src/app/core-nlp/state.service';
 import {DEFAULT_PANEL_NAME, WithSidePanel} from '../common/mixin/with-side-panel';
@@ -55,7 +56,8 @@ export class FaqDefinitionComponent extends WithSidePanel() implements OnInit, O
     private readonly state: StateService,
     private readonly sidepanelEditorService: FaqDefinitionSidepanelEditorService,
     private readonly dialog: DialogService,
-    private readonly qaService: FaqDefinitionService
+    private readonly qaService: FaqDefinitionService,
+    private readonly router: Router
   ) {
     super();
   }
