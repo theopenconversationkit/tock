@@ -274,12 +274,38 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
+        blockingJsonPost("/analytics/messages/byDateAndIntent2", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                measureTimeMillis(
+                    context,
+                    {
+                        BotAdminService.reportMessagesByDateAndIntent2(request)
+                    }
+                )
+            } else {
+                unauthorized()
+            }
+        }
+
         blockingJsonPost("/analytics/messages/byIntent", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
                 measureTimeMillis(
                     context,
                     {
                         BotAdminService.reportMessagesByIntent(request)
+                    }
+                )
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/analytics/messages/byIntent2", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                measureTimeMillis(
+                    context,
+                    {
+                        BotAdminService.reportMessagesByIntent2(request)
                     }
                 )
             } else {

@@ -83,6 +83,14 @@ interface DialogFlowDAO {
         intent: String? = null
     ): Pair<List<DialogFlowTransitionStatsData>, List<String>>
 
+    /**
+     * Counts the number of users per day over a given period of time.
+     *
+     * In the returned map, the keys represent dates using the "YYYY-MM-DD" format.
+     * Values are singleton lists containing the data point for that day.
+     *
+     * @return a [Map] of user counts indexed by days
+     */
     fun countUsersByDate(
         namespace: String,
         botId: String,
@@ -91,6 +99,14 @@ interface DialogFlowDAO {
         to: ZonedDateTime?
     ): Map<String, List<DialogFlowAggregateData>>
 
+    /**
+     * Counts the number of messages per day and connector type over a given period of time.
+     *
+     * In the returned map, the keys represent dates using the "YYYY-MM-DD" format.
+     * Values are lists containing one data point for each represented connector type (web, messenger, etc.).
+     *
+     * @return a [Map] of message counts per connector type, indexed by days
+     */
     fun countMessagesByDateAndConnectorType(
         namespace: String,
         botId: String,
@@ -99,6 +115,14 @@ interface DialogFlowDAO {
         to: ZonedDateTime?
     ): Map<String, List<DialogFlowAggregateData>>
 
+    /**
+     * Counts the number of messages per day and bot configuration over a given period of time.
+     *
+     * In the returned map, the keys represent dates using the "YYYY-MM-DD" format.
+     * Values are lists containing one data point for each represented bot configuration.
+     *
+     * @return a [Map] of message counts per configuration, indexed by days
+     */
     fun countMessagesByDateAndConfiguration(
         namespace: String,
         botId: String,
@@ -107,6 +131,11 @@ interface DialogFlowDAO {
         to: ZonedDateTime?
     ): Map<String, List<DialogFlowAggregateData>>
 
+    /**
+     * Counts the total number of messages sent on each day-of-week.
+     *
+     * @return a [Map] of message counts, indexed by day-of-week
+     */
     fun countMessagesByDayOfWeek(
         namespace: String,
         botId: String,
@@ -115,6 +144,11 @@ interface DialogFlowDAO {
         to: ZonedDateTime?
     ): Map<DayOfWeek, Int>
 
+    /**
+     * Counts the total number of messages sent on each hour of the day over a given period of time.
+     *
+     * @return a [Map] of message counts, indexed by hour (from 0 to 23)
+     */
     fun countMessagesByHour(
         namespace: String,
         botId: String,
@@ -122,4 +156,33 @@ interface DialogFlowDAO {
         from: ZonedDateTime?,
         to: ZonedDateTime?
     ): Map<Int, Int>
+
+    /**
+     * Counts the number of messages per day and intent over a given period of time.
+     *
+     * In the returned map, the keys represent dates using the "YYYY-MM-DD" format.
+     * Values are lists containing one data point for each represented intent.
+     *
+     * @return a [Map] of message counts per intent, indexed by day
+     */
+    fun countMessagesByDateAndIntent(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): Map<String, List<DialogFlowAggregateData>>
+
+    /**
+     * Counts the total number of messages sent for each intent over a given period of time.
+     *
+     * @return a [Map] of message counts, indexed by intent name
+     */
+    fun countMessagesByIntent(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): Map<String, Int>
 }

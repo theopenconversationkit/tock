@@ -498,7 +498,7 @@ object BotAdminService {
         val botId = request.botId
         val applicationIds = loadApplications(request).mapTo(mutableSetOf()) { it._id }
         val usersData = dialogFlowDAO.countMessagesByDayOfWeek(namespace, botId, applicationIds, request.from, request.to)
-        return UserAnalyticsQueryResult(listOf("All Range"), listOf(DayOfWeek.values().map { usersData[it] ?: 0}), DayOfWeek.values().map {
+        return UserAnalyticsQueryResult(DayOfWeek.values().map { usersData[it] ?: 0}, DayOfWeek.values().map {
             it.getDisplayName(TextStyle.FULL_STANDALONE, defaultLocale)
         })
     }
@@ -517,8 +517,7 @@ object BotAdminService {
         val applicationIds = loadApplications(request).mapTo(mutableSetOf()) { it._id }
         val usersData = dialogFlowDAO.countMessagesByHour(namespace, botId, applicationIds, request.from, request.to)
         return UserAnalyticsQueryResult(
-            listOf("All Range"),
-            listOf((0..24).map { usersData[it] ?: 0 }),
+            (0..24).map { usersData[it] ?: 0 },
             (0..24).map { "${it}h" }
         )
     }
@@ -528,9 +527,21 @@ object BotAdminService {
         return reportMessagesByFunction(request, applications, dialogFlowDAO::searchByDateWithIntent)
     }
 
+    fun reportMessagesByIntent2(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val namespace = request.namespace
+        val botId = request.botId
+        val applicationIds = loadApplications(request).mapTo(mutableSetOf()) { it._id }
+        val (series, data) = dialogFlowDAO.countMessagesByIntent(namespace, botId, applicationIds, request.from, request.to).toList().unzip()
+        return UserAnalyticsQueryResult(data, series)
+    }
+
     fun reportMessagesByDateAndIntent(request: DialogFlowRequest): UserAnalyticsQueryResult {
         val applications = loadApplications(request)
         return reportMessagesByDateAndFunction(request, applications, dialogFlowDAO::searchByDateWithIntent)
+    }
+
+    fun reportMessagesByDateAndIntent2(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        return reportAnalytics(request, DialogFlowDAO::countMessagesByDateAndIntent)
     }
 
     fun reportMessagesByStory(request: DialogFlowRequest): UserAnalyticsQueryResult {
@@ -603,7 +614,7 @@ object BotAdminService {
         toDate: LocalDateTime,
         queryResult: Map<String, List<DialogFlowAggregateData>>
     ): UserAnalyticsQueryResult {
-        val series: List<String> = queryResult.values.asSequence().flatten().map { it.seriesKey }.distinct().toList()
+        val series: List<String> = collectAnalyticsSeries(queryResult)
         val emptyList: List<Int> = IntArray(series.size).toList()
         return if (isSameDay(fromDate, toDate)) {
             val hoursList = buildHoursList(toDate.toLocalDate())
@@ -615,6 +626,9 @@ object BotAdminService {
             UserAnalyticsQueryResult(datesBetween, usersAnalytics, series)
         }
     }
+
+    private fun collectAnalyticsSeries(queryResult: Map<String, List<DialogFlowAggregateData>>) =
+        queryResult.values.asSequence().flatten().map { it.seriesKey }.distinct().toList()
 
     private fun sortMessagesByDate(
         fromDate: LocalDateTime?,

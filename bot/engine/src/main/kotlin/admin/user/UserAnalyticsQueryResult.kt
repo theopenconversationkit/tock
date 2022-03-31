@@ -21,4 +21,10 @@ data class UserAnalyticsQueryResult(
     val usersData: List<List<Int?>> = emptyList(),
     val connectorsType: List<String> = emptyList(),
     val intents: List<String> = emptyList()
-)
+) {
+    constructor(usersData: List<Int?>, series: List<String>): this(
+        dates = listOf("All Range"),
+        usersData = listOf(usersData),
+        connectorsType = series
+    )
+}

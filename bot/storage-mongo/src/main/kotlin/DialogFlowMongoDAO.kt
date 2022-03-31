@@ -344,6 +344,66 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
             .associateBy({ it.date.toInt() }, { it.count })
     }
 
+    override fun countMessagesByDateAndIntent(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): Map<String, List<DialogFlowAggregateData>> {
+        val match = buildAnalyticsFilter(applicationIds, from, to)
+        val lookup = lookup("flow_transition", "transitionId", "_id", "transition")
+        val group = group(
+            BsonDocument.parse("""
+            {
+                date: {
+                  $ dateToString: {
+                    date: "$ date",
+                    format: "%Y-%m-%d",
+                    timezone: "Europe/Paris"
+                  }
+                },
+                intent: {
+                    $ arrayElemAt: ["$ transition.intent", 0]
+                }
+            }
+        """.formatJson()),
+            Accumulators.sum("count", 1)
+        )
+        val proj = project(
+            DialogFlowAggregateResult::date from "\$_id.date",
+            DialogFlowAggregateResult::count from "\$count",
+            DialogFlowAggregateResult::seriesKey from "\$_id.intent"
+        )
+        return aggregateFlowTransitionStats(match, lookup, group, proj)
+    }
+
+    override fun countMessagesByIntent(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): Map<String, Int> {
+        val match = buildAnalyticsFilter(applicationIds, from, to)
+        val lookup = lookup("flow_transition", "transitionId", "_id", "transition")
+        val group = group(
+            BsonDocument.parse("""{
+                $ ifNull: [
+                    {$ arrayElemAt: ["$ transition.intent", 0]},
+                    "unknown"
+                ]
+            }""".formatJson()),
+            Accumulators.sum("count", 1)
+        )
+        val proj = project(
+            DialogFlowAggregateResult::seriesKey from "\$_id",
+            DialogFlowAggregateResult::count from "\$count",
+        )
+        logger.debug { "Flow Message pipeline: [$match, $lookup, $group, $proj]" }
+        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(match, lookup, group, proj).associateBy({ it.seriesKey }, { it.count })
+    }
+
     private fun buildAnalyticsFilter(
         applicationIds: Set<Id<BotApplicationConfiguration>>,
         from: ZonedDateTime?,
