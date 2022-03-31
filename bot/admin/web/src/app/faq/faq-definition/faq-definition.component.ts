@@ -27,6 +27,7 @@ import {FaqDefinitionService} from '../common/faq-definition.service';
 import {FormProblems, InvalidFormProblems} from '../common/model/form-problems';
 import {takeUntil} from "rxjs/operators";
 import {FaqDefinitionSidepanelEditorService} from "./sidepanels/faq-definition-sidepanel-editor.service";
+import { Utterance } from '../common/model/utterance';
 
 // Specific action payload
 export type EditorTabName = 'Info' | 'Answer' | 'Question';
@@ -47,6 +48,8 @@ export class FaqDefinitionComponent extends WithSidePanel() implements OnInit, O
   editorFormValid = false;
   editorFormWarnings: string[] = [];
 
+  initUtterance: Utterance
+
   public filter: FaqQaFilter;
   @ViewChild(FaqGridComponent) grid;
 
@@ -60,17 +63,12 @@ export class FaqDefinitionComponent extends WithSidePanel() implements OnInit, O
     private readonly router: Router
   ) {
     super();
+
+    this.initUtterance = this.router.getCurrentNavigation().extras?.state?.question
   }
 
   ngOnInit(): void {
     this.clearFilter();
-
-    // until server really store things
-    this.qaService.setupData({
-      applicationName: this.state.currentApplication.name,
-      applicationId: this.state.currentApplication._id,
-      language: this.state.currentLocale
-    });
 
     this.initSidePanel(this.destroy$);
 
@@ -82,6 +80,10 @@ export class FaqDefinitionComponent extends WithSidePanel() implements OnInit, O
         this.grid.refresh(); // seems no need, but to be secure
         this.undock()
       });
+
+      if(this.initUtterance){
+        this.openNewSidepanel(this.initUtterance)
+      }
   }
 
   ngOnDestroy(): void {
@@ -140,13 +142,18 @@ export class FaqDefinitionComponent extends WithSidePanel() implements OnInit, O
     }, 0);
   }
 
-  openNewSidepanel() {
+  openNewSidepanel(initUtterance?:Utterance) {
     const currentLocale = this.state.currentLocale;
     const applicationId = this.state.currentApplication._id;
 
     this.editorPanelName = 'New FAQ';
     this.currentItem = blankFaqDefinition({applicationId, language: currentLocale});
     this.activeQaTab = 'Info';
+
+    if(initUtterance) {
+      this.currentItem.utterances = [initUtterance]
+      this.activeQaTab = 'Question';
+    }
 
     this.dock("edit");
   }
