@@ -36,6 +36,7 @@ import {SentencesService} from "../../common/sentences.service";
 import {SelectionMode} from "../../common/model/selection-mode";
 import {truncate} from "../../common/util/string-utils";
 import {isDocked, ViewMode} from "../../common/model/view-mode";
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'tock-train-grid-item',
@@ -87,7 +88,8 @@ export class TrainGridItemComponent implements OnInit, OnDestroy {
     private readonly nlp: NlpService,
     private readonly dialog: DialogService,
     private readonly intentsService: IntentsService,
-    private readonly sentencesService: SentencesService
+    private readonly sentencesService: SentencesService,
+    private readonly router: Router
   ) {
   }
 
@@ -124,6 +126,10 @@ export class TrainGridItemComponent implements OnInit, OnDestroy {
     this.updateSelection(prevSentence, this.sentence);
 
     this.ref.detectChanges(); // because ChangeDetectionStrategy is OnPush
+  }
+
+  public redirectToFaqManagement(): void {
+    this.router.navigate(['faq/qa'], { state: { question: this.sentence.getText() }})
   }
 
   public async validate(): Promise<void> {
