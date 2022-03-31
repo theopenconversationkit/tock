@@ -52,7 +52,7 @@ internal object IadvizeConnectorProvider : ConnectorProvider {
                     true
                 )
             ),
-            resourceAsString("/test.svg")
+            resourceAsString("/iadvize.svg")
         )
 
     override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(

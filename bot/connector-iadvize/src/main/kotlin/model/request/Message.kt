@@ -16,13 +16,12 @@
 
 package ai.tock.bot.connector.iadvize.model.request
 
-import ai.tock.bot.connector.iadvize.model.response.conversation.payload.TextPayload
+import ai.tock.bot.connector.iadvize.model.response.conversation.payload.Payload
 
-data class MessageRequest(val idOperator: String, val idConversation: String, val message: Message<TextPayload>) : IadvizeRequest {
-    data class MessageRequestJson(val idOperator: String, val message: Message<TextPayload>)
-
-    constructor(messageRequestJson: MessageRequestJson, idConversation: String) :
-            this(messageRequestJson.idOperator, idConversation, messageRequestJson.message)
-
-    data class Author(val role: String)
-}
+data class Message<T : Payload>(
+    val idMessage: String,
+    val author: MessageRequest.Author,
+    val payload: T,
+    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z[Etc/UTC]'")
+    //val createdAt: ZonedDateTime)
+    val createdAt: String)

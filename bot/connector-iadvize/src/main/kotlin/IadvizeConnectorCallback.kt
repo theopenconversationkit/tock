@@ -21,7 +21,6 @@ import ai.tock.bot.connector.iadvize.model.request.ConversationsRequest
 import ai.tock.bot.connector.iadvize.model.request.IadvizeRequest
 import ai.tock.bot.connector.iadvize.model.request.MessageRequest
 import ai.tock.bot.connector.iadvize.model.response.conversation.IadvizeMessageReplies
-import ai.tock.bot.connector.iadvize.model.response.conversation.IadvizeReplies
 import ai.tock.bot.connector.iadvize.model.response.conversation.IadvizeResponse
 import ai.tock.bot.connector.iadvize.model.response.conversation.payload.Payload
 import ai.tock.bot.connector.iadvize.model.response.conversation.payload.TextPayload
@@ -46,6 +45,13 @@ class IadvizeConnectorCallback(override val  applicationId: String,
                                val actions: MutableList<ActionWithDelay> = CopyOnWriteArrayList()) :
     ConnectorCallbackBase(applicationId, iadvizeConnectorType) {
 
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
+    @Volatile
+    private var answered: Boolean = false
+
     data class ActionWithDelay(val action: Action, val delayInMs: Long = 0)
 
     fun addAction(event: Event, delayInMs: Long) {
@@ -56,13 +62,9 @@ class IadvizeConnectorCallback(override val  applicationId: String,
         }
     }
 
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
-
     override fun eventSkipped(event: Event) {
         super.eventSkipped(event)
-        //sendResponse()
+        sendResponse()
     }
 
     override fun eventAnswered(event: Event) {
@@ -72,8 +74,12 @@ class IadvizeConnectorCallback(override val  applicationId: String,
 
     fun sendResponse() {
         try {
-            val iadvizeResponse: IadvizeResponse? = buildResponse()
-            context.response().endWithJson(iadvizeResponse)
+            if (!answered) {
+                answered = true
+
+                val iadvizeResponse: IadvizeResponse? = buildResponse()
+                context.response().endWithJson(iadvizeResponse)
+            }
         } catch (t: Throwable) {
             logger.error(t)
             context.fail(t)
