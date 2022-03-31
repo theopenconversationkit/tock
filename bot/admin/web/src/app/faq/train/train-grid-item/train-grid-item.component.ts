@@ -24,19 +24,18 @@ import {
   OnInit,
   Output
 } from '@angular/core';
+import { Router } from '@angular/router';
 import {SelectionModel} from "@angular/cdk/collections";
 import {Observable, of, ReplaySubject} from "rxjs";
 import {delay, take, tap} from 'rxjs/operators';
+
 import {Intent, Sentence, SentenceStatus} from "../../../model/nlp";
 import {StateService} from "../../../core-nlp/state.service";
 import {DialogService} from "../../../core-nlp/dialog.service";
-import {NlpService} from "../../../nlp-tabs/nlp.service";
-import {IntentsService} from "../../common/intents.service";
 import {SentencesService} from "../../common/sentences.service";
 import {SelectionMode} from "../../common/model/selection-mode";
 import {truncate} from "../../common/util/string-utils";
 import {isDocked, ViewMode} from "../../common/model/view-mode";
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'tock-train-grid-item',
@@ -84,12 +83,10 @@ export class TrainGridItemComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly ref: ChangeDetectorRef,
-    public readonly state: StateService,
-    private readonly nlp: NlpService,
     private readonly dialog: DialogService,
-    private readonly intentsService: IntentsService,
+    private readonly router: Router,
     private readonly sentencesService: SentencesService,
-    private readonly router: Router
+    public readonly state: StateService
   ) {
   }
 
@@ -110,22 +107,6 @@ export class TrainGridItemComponent implements OnInit, OnDestroy {
       + '%';
 
     return str;
-  }
-
-  public async newIntent(): Promise<void> {
-    // cleanup entities
-    this.sentence.classification.entities = [];
-    const savedIntention = await this.intentsService.newIntent(
-      this.destroy$
-    );
-
-    const prevSentence = this.sentence;
-    this.sentence = this.sentence.withIntent(this.state, savedIntention._id);
-
-    this.selectedIntentId = savedIntention._id;
-    this.updateSelection(prevSentence, this.sentence);
-
-    this.ref.detectChanges(); // because ChangeDetectionStrategy is OnPush
   }
 
   public redirectToFaqManagement(): void {
@@ -251,5 +232,4 @@ export class TrainGridItemComponent implements OnInit, OnDestroy {
   isDocked(): boolean {
     return isDocked(this.viewMode);
   }
-
 }
