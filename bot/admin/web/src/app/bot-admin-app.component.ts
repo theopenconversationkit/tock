@@ -21,7 +21,7 @@ import { NbMenuItem, NbToastrService } from '@nebular/theme';
 import { AuthService } from './core-nlp/auth/auth.service';
 import { RestService } from './core-nlp/rest/rest.service';
 import { StateService } from './core-nlp/state.service';
-import { UserRole } from './model/auth';
+import { User, UserRole } from './model/auth';
 
 
 
@@ -35,7 +35,7 @@ export class BotAdminAppComponent implements OnInit, OnDestroy {
   UserRole = UserRole;
 
   private errorUnsuscriber: any;
-  public menu: NbMenuItem[];
+  public menu: NbMenuItem[] = [];
 
   constructor(public auth: AuthService,
               public state: StateService,
@@ -45,49 +45,54 @@ export class BotAdminAppComponent implements OnInit, OnDestroy {
               sanitizer: DomSanitizer) {
     iconRegistry.addSvgIcon(
       'logo',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo.svg'));
+      sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo.svg')
+    );
+    this.auth.addListener(this);
   }
 
   ngOnInit(): void {
     this.errorUnsuscriber = this.rest.errorEmitter.subscribe(e =>
       this.toastrService.show(e, "Error", {duration: 5000, status: 'danger'})
     );
+  }
+
+  login(user: User): void {
     this.menu = [
       {
         title: 'Language Understanding',
         icon: 'message-circle-outline',
         link: '/nlp',
-        hidden: this.state.hasRole(UserRole.nlpUser)
+        hidden: !this.state.hasRole(UserRole.nlpUser)
       },
       {
         title: 'Stories & Answers',
         icon: 'book-open-outline',
         link: '/build',
-        hidden: this.state.hasRole(UserRole.botUser)
+        hidden: !this.state.hasRole(UserRole.botUser)
       },
       {
         title: 'Test',
         icon: 'play-circle-outline',
         link: '/test',
-        hidden: this.state.hasRole(UserRole.botUser)
+        hidden: !this.state.hasRole(UserRole.botUser)
       },
       {
         title: 'Analytics',
         icon: 'trending-up-outline',
         link: '/analytics',
-        hidden: this.state.hasRole(UserRole.botUser)
+        hidden: !this.state.hasRole(UserRole.botUser)
       },
       {
         title: 'Model Quality',
         icon: 'clipboard-outline',
         link: '/quality',
-        hidden: this.state.hasRole(UserRole.nlpUser)
+        hidden: !this.state.hasRole(UserRole.nlpUser)
       },
       {
         title: 'Settings',
         icon: 'settings-outline',
         link: '/configuration',
-        hidden: this.state.hasRole(UserRole.admin)
+        hidden: !this.state.hasRole(UserRole.admin)
       },
       {
         title: 'FAQ Training',
@@ -97,7 +102,7 @@ export class BotAdminAppComponent implements OnInit, OnDestroy {
         },
         link: '/faq/train'
         ,
-        hidden: this.state.hasRole(UserRole.botUser)
+        hidden: !this.state.hasRole(UserRole.botUser)
       },
       {
         title: 'FAQ Management',
@@ -107,10 +112,11 @@ export class BotAdminAppComponent implements OnInit, OnDestroy {
         },
         link: '/faq/qa'
         ,
-        hidden: this.state.hasRole(UserRole.botUser)
+        hidden: !this.state.hasRole(UserRole.botUser)
       }
     ];
   }
+  logout(): void {}
 
   ngOnDestroy(): void {
     this.errorUnsuscriber.unsubscribe();
