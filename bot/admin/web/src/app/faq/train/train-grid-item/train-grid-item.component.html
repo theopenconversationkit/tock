@@ -46,9 +46,14 @@
             </span>
           </nb-option>
         </nb-select>
-        <div class="input-group-append ml-1">
-          <button class="tock-btn-addfaq input-group-text tock--subtle-hover" (click)="redirectToFaqManagement()">
-            <nb-icon nbPrefix pack="material-icons" icon="add_circle_outline"></nb-icon>
+        <div class="ml-1">
+          <button
+            nbTooltip="Create new FAQ"
+            ghost
+            class="tock-btn-addfaq input-group-text tock--subtle-hover"
+            (click)="redirectToFaqManagement()"
+          >
+            <nb-icon pack="material-icons" icon="add_circle_outline"></nb-icon>
           </button>
         </div>
       </div>
@@ -56,36 +61,48 @@
       <div class="tock-divider ml-2">&nbsp;</div>
     </div>
     <div class="tock-col-d d-flex justify-content-end">
-      <button class="tock-action tock--subtle-hover tock--success text-muted ml-2"
-              (click)="validate()"
-              title="Validate"
-              nbButton size="medium" ghost status="secondary">
+      <button
+        nbButton
+        nbTooltip="Validate"
+        class="tock--success tock--subtle-hover ml-2"
+        ghost
+        status="secondary"
+        (click)="validate()"
+      >
         <nb-icon icon="checkmark-circle-2"></nb-icon>
-        <ng-container *ngIf="viewMode === 'FULL_WIDTH'">Validate</ng-container>
       </button>
 
-      <button class="tock-action tock--danger tock--subtle-hover text-muted ml-2"
-              (click)="unknown()"
-              title="Unknown"
-              nbButton size="medium" ghost status="secondary">
+      <button
+        nbButton
+        nbTooltip="Unknown"
+        class="tock--danger tock--subtle-hover ml-2"
+        ghost
+        status="secondary"
+        (click)="unknown()"
+      >
         <nb-icon icon="close-circle-outline"></nb-icon>
-        <ng-container *ngIf="viewMode === 'FULL_WIDTH'">Unknown</ng-container>
       </button>
 
-      <button class="tock-action tock--subtle-hover text-muted ml-2"
-              (click)="remove()"
-              title="Delete"
-              nbButton size="medium" ghost status="secondary">
+      <button
+        nbButton
+        nbTooltip="Delete"
+        class="tock--subtle-hover text-muted ml-2"
+        ghost
+        status="secondary"
+        (click)="remove()"
+      >
         <nb-icon icon="trash-2-outline"></nb-icon>
-        <ng-container *ngIf="viewMode === 'FULL_WIDTH'">Delete</ng-container>
       </button>
 
-      <button class="tock-action tock--subtle-hover text-muted ml-2"
-              (click)="details()"
-              title="Details"
-              nbButton size="medium" ghost status="secondary">
+      <button
+        nbButton
+        nbTooltip="Details"
+        class="tock--subtle-hover text-muted ml-2"
+        ghost
+        status="secondary"
+        (click)="details()"
+      >
         <nb-icon icon="message-circle-outline"></nb-icon>
-        <ng-container *ngIf="viewMode === 'FULL_WIDTH'">Details</ng-container>
       </button>
 
     </div>
