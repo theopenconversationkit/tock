@@ -77,8 +77,9 @@ const routes: Routes = [
     },
     children: [
       {
-        path: '',
-        component: InboxComponent
+        path: '', 
+        redirectTo: 'inbox', 
+        pathMatch: 'full'
       },
       {
         path: 'try',
