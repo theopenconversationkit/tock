@@ -82,8 +82,9 @@ const routes: Routes = [
     },
     children: [
       {
-        path: '',
-        component: CreateStoryComponent
+        path: '', 
+        redirectTo: 'story-create', 
+        pathMatch: 'full'
       },
       {
         path: 'story-create',
