@@ -44,6 +44,7 @@ import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.provide
 import ai.tock.shared.security.NoEncryptionPassException
+import ai.tock.shared.security.TockUserRole
 import ai.tock.shared.security.TockUserRole.*
 import ai.tock.translator.I18nDAO
 import ai.tock.translator.I18nLabel
@@ -84,11 +85,11 @@ open class BotAdminVerticle : AdminVerticle() {
     }
 
 
-    private fun multiplesBotUserAndBotFaqRolesRoutesRoles() {
-        val roles = setOf(faqNlpUser, nlpUser)
+    private fun multipleFaqBotUserAndBotUserRoutesRoles() {
+        val botUsersRoles = setOf(faqBotUser, botUser)
 
-        roles.forEach { role ->
-            blockingJsonPost("/analytics/messages", role) { context, request: DialogFlowRequest ->
+        botUsersRoles.forEach { botUserRole ->
+            blockingJsonPost("/analytics/messages", botUserRole) { context, request: DialogFlowRequest ->
                 if (context.organization == request.namespace) {
                     measureTimeMillis(
                         context
@@ -100,7 +101,7 @@ open class BotAdminVerticle : AdminVerticle() {
                 }
             }
 
-            blockingJsonPost("/analytics/users", role) { context, request: DialogFlowRequest ->
+            blockingJsonPost("/analytics/users", botUserRole) { context, request: DialogFlowRequest ->
                 if (context.organization == request.namespace) {
                     measureTimeMillis(
                         context
@@ -112,7 +113,7 @@ open class BotAdminVerticle : AdminVerticle() {
                 }
             }
 
-            blockingJsonPost("/analytics/messages/byConfiguration", role) { context, request: DialogFlowRequest ->
+            blockingJsonPost("/analytics/messages/byConfiguration", botUserRole) { context, request: DialogFlowRequest ->
                 if (context.organization == request.namespace) {
                     measureTimeMillis(
                         context
@@ -124,7 +125,7 @@ open class BotAdminVerticle : AdminVerticle() {
                 }
             }
 
-            blockingJsonPost("/analytics/messages/byConnectorType", role) { context, request: DialogFlowRequest ->
+            blockingJsonPost("/analytics/messages/byConnectorType", botUserRole) { context, request: DialogFlowRequest ->
                 if (context.organization == request.namespace) {
                     measureTimeMillis(
                         context
@@ -136,7 +137,7 @@ open class BotAdminVerticle : AdminVerticle() {
                 }
             }
 
-            blockingJsonPost("/analytics/messages/byDayOfWeek", role) { context, request: DialogFlowRequest ->
+            blockingJsonPost("/analytics/messages/byDayOfWeek", botUserRole) { context, request: DialogFlowRequest ->
                 if (context.organization == request.namespace) {
                     measureTimeMillis(
                         context
@@ -148,7 +149,7 @@ open class BotAdminVerticle : AdminVerticle() {
                 }
             }
 
-            blockingJsonPost("/analytics/messages/byHour", role) { context, request: DialogFlowRequest ->
+            blockingJsonPost("/analytics/messages/byHour", botUserRole) { context, request: DialogFlowRequest ->
                 if (context.organization == request.namespace) {
                     measureTimeMillis(
                         context
@@ -160,7 +161,7 @@ open class BotAdminVerticle : AdminVerticle() {
                 }
             }
 
-            blockingJsonPost("/analytics/messages/byDateAndIntent", role) { context, request: DialogFlowRequest ->
+            blockingJsonPost("/analytics/messages/byDateAndIntent", botUserRole) { context, request: DialogFlowRequest ->
                 if (context.organization == request.namespace) {
                     measureTimeMillis(
                         context
@@ -172,7 +173,7 @@ open class BotAdminVerticle : AdminVerticle() {
                 }
             }
 
-            blockingJsonPost("/analytics/messages/byIntent", role) { context, request: DialogFlowRequest ->
+            blockingJsonPost("/analytics/messages/byIntent", botUserRole) { context, request: DialogFlowRequest ->
                 if (context.organization == request.namespace) {
                     measureTimeMillis(
                         context
@@ -184,7 +185,7 @@ open class BotAdminVerticle : AdminVerticle() {
                 }
             }
 
-            blockingJsonPost("/analytics/messages/byDateAndStory", role) { context, request: DialogFlowRequest ->
+            blockingJsonPost("/analytics/messages/byDateAndStory", botUserRole) { context, request: DialogFlowRequest ->
                 if (context.organization == request.namespace) {
                     measureTimeMillis(
                         context
@@ -196,7 +197,7 @@ open class BotAdminVerticle : AdminVerticle() {
                 }
             }
 
-            blockingJsonPost("/analytics/messages/byStory", role) { context, request: DialogFlowRequest ->
+            blockingJsonPost("/analytics/messages/byStory", botUserRole) { context, request: DialogFlowRequest ->
                 if (context.organization == request.namespace) {
                     measureTimeMillis(
                         context
@@ -208,7 +209,7 @@ open class BotAdminVerticle : AdminVerticle() {
                 }
             }
 
-            blockingJsonPost("/analytics/messages/byStoryCategory", role) { context, request: DialogFlowRequest ->
+            blockingJsonPost("/analytics/messages/byStoryCategory", botUserRole) { context, request: DialogFlowRequest ->
                 if (context.organization == request.namespace) {
                     measureTimeMillis(
                         context
@@ -220,7 +221,7 @@ open class BotAdminVerticle : AdminVerticle() {
                 }
             }
 
-            blockingJsonPost("/analytics/messages/byStoryType", role) { context, request: DialogFlowRequest ->
+            blockingJsonPost("/analytics/messages/byStoryType", botUserRole) { context, request: DialogFlowRequest ->
                 if (context.organization == request.namespace) {
                     measureTimeMillis(
                         context
@@ -232,7 +233,7 @@ open class BotAdminVerticle : AdminVerticle() {
                 }
             }
 
-            blockingJsonPost("/analytics/messages/byStoryLocale", role) { context, request: DialogFlowRequest ->
+            blockingJsonPost("/analytics/messages/byStoryLocale", botUserRole) { context, request: DialogFlowRequest ->
                 if (context.organization == request.namespace) {
                     measureTimeMillis(
                         context
@@ -244,7 +245,7 @@ open class BotAdminVerticle : AdminVerticle() {
                 }
             }
 
-            blockingJsonPost("/analytics/messages/byActionType", role) { context, request: DialogFlowRequest ->
+            blockingJsonPost("/analytics/messages/byActionType", botUserRole) { context, request: DialogFlowRequest ->
                 if (context.organization == request.namespace) {
                     measureTimeMillis(
                         context
@@ -256,17 +257,9 @@ open class BotAdminVerticle : AdminVerticle() {
                 }
             }
 
-            blockingJsonPost("/dialogs/search", role) { context, query: DialogsSearchQuery ->
-                if (context.organization == query.namespace) {
-                    BotAdminService.search(query)
-                } else {
-                    unauthorized()
-                }
-            }
-
             blockingJsonPost(
                 "/faq",
-                role,
+                botUserRole,
                 logger<FaqDefinitionRequest>("Create FAQ")
             ) { context, query: FaqDefinitionRequest ->
                 val applicationDefinition = BotAdminService.front.getApplicationById(query.applicationId)
@@ -279,13 +272,13 @@ open class BotAdminVerticle : AdminVerticle() {
 
             blockingJsonDelete(
                 "/faq/:faqId",
-                role,
+                botUserRole,
                 simpleLogger("Delete Story", { it.path("faqId") })
             ) { context ->
                 FaqAdminService.deleteFaqDefinition(context.organization, context.path("faqId"))
             }
 
-            blockingJsonPost("/faq/tags", role) { context, applicationId: String ->
+            blockingJsonPost("/faq/tags", botUserRole) { context, applicationId: String ->
                 val applicationDefinition = BotAdminService.front.getApplicationById(applicationId.toId())
                 if (context.organization == applicationDefinition?.namespace) {
                     try {
@@ -301,7 +294,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
             blockingJsonPost(
                 "/faq/search",
-                role, logger<FaqSearchRequest>("Search FAQ")
+                botUserRole, logger<FaqSearchRequest>("Search FAQ")
             )
             { context, request: FaqSearchRequest ->
                 val applicationDefinition =
@@ -323,7 +316,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
             blockingJsonPost(
                 "/faq/status",
-                role,
+                botUserRole,
                 logger<FaqDefinitionRequest>("Change FAQ status")
             ) { context, query: FaqDefinitionRequest ->
                 val applicationDefinition = BotAdminService.front.getApplicationById(query.applicationId)
@@ -334,7 +327,7 @@ open class BotAdminVerticle : AdminVerticle() {
                 }
             }
 
-            blockingJsonGet("/i18n", role) { context ->
+            blockingJsonGet("/i18n", botUserRole) { context ->
                 val stats = i18n.getLabelStats(context.organization).groupBy { it.labelId }
                 BotI18nLabels(
                     i18n
@@ -350,7 +343,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
             blockingJsonPost(
                 "/i18n/complete",
-                role,
+                botUserRole,
                 simpleLogger("Complete Responses Labels")
             ) { context, labels: List<I18nLabel> ->
                 if (!injector.provide<TranslatorEngine>().supportAdminTranslation) {
@@ -361,7 +354,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
             blockingJsonPost(
                 "/i18n/saveAll",
-                role,
+                botUserRole,
                 simpleLogger("Save Responses Labels")
             ) { context, labels: List<I18nLabel> ->
                 i18n.save(labels.filter { it.namespace == context.organization })
@@ -369,7 +362,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
             blockingJsonPost(
                 "/i18n/save",
-                role,
+                botUserRole,
                 simpleLogger("Save Response Label")
             ) { context, label: I18nLabel ->
                 if (label.namespace == context.organization) {
@@ -381,7 +374,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
             blockingJsonPost(
                 "/i18n/create",
-                role,
+                botUserRole,
                 simpleLogger("Create Response Label")
             ) { context, request: CreateI18nLabelRequest ->
                 createI18nRequest(context.organization, request)
@@ -389,23 +382,23 @@ open class BotAdminVerticle : AdminVerticle() {
 
             blockingDelete(
                 "/i18n/:id",
-                role,
+                botUserRole,
                 simpleLogger("Delete Response Label", { it.path("id") })
             ) { context ->
                 i18n.deleteByNamespaceAndId(context.organization, context.pathId("id"))
             }
 
-            blockingJsonGet("/i18n/export/csv", role) { context ->
+            blockingJsonGet("/i18n/export/csv", botUserRole) { context ->
                 I18nCsvCodec.exportCsv(context.organization)
             }
 
-            blockingJsonPost("/i18n/export/csv", role) { context, query: I18LabelQuery ->
+            blockingJsonPost("/i18n/export/csv", botUserRole) { context, query: I18LabelQuery ->
                 I18nCsvCodec.exportCsv(context.organization, query)
             }
 
             blockingUploadPost(
                 "/i18n/import/csv",
-                role,
+                botUserRole,
                 simpleLogger("CSV Import Response Labels")
             ) { context, content ->
                 measureTimeMillis(context) {
@@ -413,18 +406,18 @@ open class BotAdminVerticle : AdminVerticle() {
                 }
             }
 
-            blockingJsonGet("/i18n/export/json", role) { context ->
+            blockingJsonGet("/i18n/export/json", botUserRole) { context ->
                 mapper.writeValueAsString(i18n.getLabels(context.organization))
             }
 
-            blockingJsonPost("/i18n/export/json", role) { context, query: I18LabelQuery ->
+            blockingJsonPost("/i18n/export/json", botUserRole) { context, query: I18LabelQuery ->
                 val labels = i18n.getLabels(context.organization, query.toI18nLabelFilter())
                 mapper.writeValueAsString(labels)
             }
 
             blockingUploadJsonPost(
                 "/i18n/import/json",
-                role,
+                botUserRole,
                 simpleLogger("JSON Import Response Labels")
             ) { context, labels: List<I18nLabel> ->
                 measureTimeMillis(context) {
@@ -442,18 +435,18 @@ open class BotAdminVerticle : AdminVerticle() {
                 }
             }
 
-            blockingJsonGet("/action/nlp-stats/:actionId", role) { context ->
+            blockingJsonGet("/action/nlp-stats/:actionId", botUserRole) { context ->
                 dialogReportDAO.getNlpCallStats(context.pathId("actionId"), context.organization)
             }
 
-            blockingJsonGet("/feature/:applicationId", role) { context ->
+            blockingJsonGet("/feature/:applicationId", botUserRole) { context ->
                 val applicationId = context.path("applicationId")
                 BotAdminService.getFeatures(applicationId, context.organization)
             }
 
             blockingPost(
                 "/feature/:applicationId/toggle",
-                role,
+                botUserRole,
                 simpleLogger("Toogle Application Feature", { it.bodyAsString })
             ) { context ->
                 val applicationId = context.path("applicationId")
@@ -464,7 +457,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
             blockingPost(
                 "/feature/:applicationId/update",
-                role,
+                botUserRole,
                 simpleLogger("Update Application Feature", { it.bodyAsString })
             ) { context ->
                 val applicationId = context.path("applicationId")
@@ -479,7 +472,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
             blockingPost(
                 "/feature/:applicationId/add",
-                role,
+                botUserRole,
                 simpleLogger("Create Application Feature", { it.bodyAsString })
             ) { context ->
                 val applicationId = context.path("applicationId")
@@ -490,7 +483,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
             blockingDelete(
                 "/feature/:botId/:category/:name/",
-                role,
+                botUserRole,
                 simpleLogger(
                     "Delete Application Feature",
                     { listOf(it.path("botId"), it.path("category"), it.path("name")) }
@@ -504,7 +497,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
             blockingDelete(
                 "/feature/:botId/:category/:name/:applicationId",
-                role,
+                botUserRole,
                 simpleLogger(
                     "Delete Application Feature",
                     { listOf(it.path("botId"), it.path("category"), it.path("name"), it.path("applicationId")) }
@@ -525,7 +518,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
             blockingJsonPost(
                 "/bot/story",
-                role,
+                botUserRole,
                 logger<BotStoryDefinitionConfiguration>("Update Story") { context, r ->
                     r?.let { s ->
                         getBotConfigurationsByNamespaceAndBotId(context.organization, s.botId)
@@ -544,7 +537,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
             blockingJsonPost(
                 "/bot/story/new",
-                role,
+                botUserRole,
                 logger<CreateStoryRequest>("Create Story") { context, r ->
                     r?.story?.let { s ->
                         BotAdminService.getBotConfigurationsByNamespaceAndBotId(context.organization, s.botId)
@@ -561,7 +554,7 @@ open class BotAdminVerticle : AdminVerticle() {
                 BotAdminService.createStory(context.organization, query, context.userLogin) ?: unauthorized()
             }
 
-            blockingJsonPost("/bot/story/load", role) { context, request: StorySearchRequest ->
+            blockingJsonPost("/bot/story/load", botUserRole) { context, request: StorySearchRequest ->
                 if (context.organization == request.namespace) {
                     BotAdminService.loadStories(request)
                 } else {
@@ -569,7 +562,7 @@ open class BotAdminVerticle : AdminVerticle() {
                 }
             }
 
-            blockingJsonPost("/bot/story/search", role) { context, request: StorySearchRequest ->
+            blockingJsonPost("/bot/story/search", botUserRole) { context, request: StorySearchRequest ->
                 if (context.organization == request.namespace) {
                     BotAdminService.searchStories(request)
                 } else {
@@ -577,15 +570,15 @@ open class BotAdminVerticle : AdminVerticle() {
                 }
             }
 
-            blockingJsonGet("/bot/story/:storyId", role) { context ->
+            blockingJsonGet("/bot/story/:storyId", botUserRole) { context ->
                 BotAdminService.findStory(context.organization, context.path("storyId"))
             }
 
-            blockingJsonGet("/bot/story/:botId/settings", role) { context ->
+            blockingJsonGet("/bot/story/:botId/settings", botUserRole) { context ->
                 BotAdminService.findRuntimeStorySettings(context.organization, context.path("botId"))
             }
 
-            blockingJsonGet("/bot/story/:botId/:intent", role) { context ->
+            blockingJsonGet("/bot/story/:botId/:intent", botUserRole) { context ->
                 BotAdminService.findConfiguredStoryByBotIdAndIntent(
                     context.organization,
                     context.path("botId"),
@@ -595,18 +588,42 @@ open class BotAdminVerticle : AdminVerticle() {
 
             blockingJsonDelete(
                 "/bot/story/:storyId",
-                role,
+                botUserRole,
                 simpleLogger("Delete Story", { it.path("storyId") })
             ) { context ->
                 BotAdminService.deleteStory(context.organization, context.path("storyId"))
             }
+
+            blockingJsonGet("/connectorTypes", botUserRole) {
+                ConnectorTypeConfiguration.connectorConfigurations
+            }
         }
+    }
+
+    private fun multipleBotAndFaqUsersRoutesRoles(){
+        val faqNlpUserCumulatedWithBotUserRoles = setOf(faqNlpUser,faqBotUser,botUser)
+        faqNlpUserCumulatedWithBotUserRoles.forEach { role ->
+            blockingJsonGet("/bots/:botId", role) { context ->
+                BotAdminService.getBots(context.organization, context.path("botId"))
+            }
+
+            blockingJsonPost("/dialogs/search", role) { context, query: DialogsSearchQuery ->
+                if (context.organization == query.namespace) {
+                    BotAdminService.search(query)
+                } else {
+                    unauthorized()
+                }
+            }
+        }
+
     }
 
     override fun configure() {
         configureServices()
 
-        multiplesBotUserAndBotFaqRolesRoutesRoles()
+        multipleBotAndFaqUsersRoutesRoles()
+
+        multipleFaqBotUserAndBotUserRoutesRoles()
 
         blockingJsonPost("/users/search", botUser) { context, query: UserSearchQuery ->
             if (context.organization == query.namespace) {
@@ -635,20 +652,8 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonPost("/dialogs/search", botUser) { context, query: DialogsSearchQuery ->
-            if (context.organization == query.namespace) {
-                BotAdminService.search(query)
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingJsonGet("/bots/:botId", botUser) { context ->
-            BotAdminService.getBots(context.organization, context.path("botId"))
-        }
-
         blockingJsonPost(
-            "/bot",
+            "/bot", admin,
             logger = logger<BotConfiguration>(" Create or Update Bot Configuration") { _, c ->
                 c?.let { FrontClient.getApplicationByNamespaceAndName(it.namespace, it.nlpModel)?._id }
             }
@@ -673,7 +678,7 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonPost(
-            "/configuration/bot",
+            "/configuration/bot", admin,
             logger = logger<BotConnectorConfiguration>("Create or Update Bot Connector Configuration") { _, c ->
                 c?.let { FrontClient.getApplicationByNamespaceAndName(it.namespace, it.nlpModel)?._id }
             }
@@ -773,52 +778,6 @@ open class BotAdminVerticle : AdminVerticle() {
                 } ?: unauthorized()
         }
 
-        blockingJsonGet("/action/nlp-stats/:actionId", botUser) { context ->
-            dialogReportDAO.getNlpCallStats(context.pathId("actionId"), context.organization)
-        }
-
-        blockingJsonGet("/feature/:applicationId", botUser) { context ->
-            val applicationId = context.path("applicationId")
-            BotAdminService.getFeatures(applicationId, context.organization)
-        }
-
-        blockingPost(
-            "/feature/:applicationId/toggle",
-            botUser,
-            simpleLogger("Toogle Application Feature", { it.bodyAsString })
-        ) { context ->
-            val applicationId = context.path("applicationId")
-            val body = context.bodyAsString
-            val feature: Feature = mapper.readValue(body)
-            BotAdminService.toggleFeature(applicationId, context.organization, feature)
-        }
-
-        blockingPost(
-            "/feature/:applicationId/update",
-            botUser,
-            simpleLogger("Update Application Feature", { it.bodyAsString })
-        ) { context ->
-            val applicationId = context.path("applicationId")
-            val body = context.bodyAsString
-            val feature: Feature = mapper.readValue(body)
-            BotAdminService.updateDateAndEnableFeature(
-                applicationId,
-                context.organization,
-                feature
-            )
-        }
-
-        blockingPost(
-            "/feature/:applicationId/add",
-            botUser,
-            simpleLogger("Create Application Feature", { it.bodyAsString })
-        ) { context ->
-            val applicationId = context.path("applicationId")
-            val body = context.bodyAsString
-            val feature: Feature = mapper.readValue(body)
-            BotAdminService.addFeature(applicationId, context.organization, feature)
-        }
-
         blockingDelete(
             "/feature/:botId/:category/:name/",
             botUser,
@@ -894,60 +853,6 @@ open class BotAdminVerticle : AdminVerticle() {
             )
         }
 
-        blockingJsonPost(
-            "/bot/story",
-            botUser,
-            logger<BotStoryDefinitionConfiguration>("Update Story") { context, r ->
-                r?.let { s ->
-                    getBotConfigurationsByNamespaceAndBotId(context.organization, s.botId)
-                        .firstOrNull()
-                        ?.let { FrontClient.getApplicationByNamespaceAndName(context.organization, it.nlpModel)?._id }
-                }
-            }
-        ) { context, story: BotStoryDefinitionConfiguration ->
-            BotAdminService.saveStory(context.organization, story, context.userLogin) ?: unauthorized()
-        }
-
-        blockingJsonPost("/bot/story/load", botUser) { context, request: StorySearchRequest ->
-            if (context.organization == request.namespace) {
-                BotAdminService.loadStories(request)
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingJsonPost("/bot/story/search", botUser) { context, request: StorySearchRequest ->
-            if (context.organization == request.namespace) {
-                BotAdminService.searchStories(request)
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingJsonGet("/bot/story/:storyId", botUser) { context ->
-            BotAdminService.findStory(context.organization, context.path("storyId"))
-        }
-
-        blockingJsonGet("/bot/story/:botId/settings", botUser) { context ->
-            BotAdminService.findRuntimeStorySettings(context.organization, context.path("botId"))
-        }
-
-        blockingJsonGet("/bot/story/:botId/:intent", botUser) { context ->
-            BotAdminService.findConfiguredStoryByBotIdAndIntent(
-                context.organization,
-                context.path("botId"),
-                context.path("intent")
-            )
-        }
-
-        blockingJsonDelete(
-            "/bot/story/:storyId",
-            botUser,
-            simpleLogger("Delete Story", { it.path("storyId") })
-        ) { context ->
-            BotAdminService.deleteStory(context.organization, context.path("storyId"))
-        }
-
         blockingJsonPost("/flow", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
                 measureTimeMillis(
@@ -973,10 +878,6 @@ open class BotAdminVerticle : AdminVerticle() {
             } else {
                 downloadFile(context, id, context.path("suffix"))
             }
-        }
-
-        blockingJsonGet("/connectorTypes", botUser) {
-            ConnectorTypeConfiguration.connectorConfigurations
         }
 
         blockingGet("/connectorIcon/:connectorType/icon.svg", null, basePath) { context ->
