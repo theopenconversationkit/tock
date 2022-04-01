@@ -17,6 +17,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { NbMenuItem, NbToastrService } from '@nebular/theme';
+import { AuthListener } from './core-nlp/auth/auth.listener';
 
 import { AuthService } from './core-nlp/auth/auth.service';
 import { RestService } from './core-nlp/rest/rest.service';
@@ -30,7 +31,7 @@ import { User, UserRole } from './model/auth';
   templateUrl: './bot-admin-app.component.html',
   styleUrls: ['./bot-admin-app.component.css']
 })
-export class BotAdminAppComponent implements OnInit, OnDestroy {
+export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
 
   UserRole = UserRole;
 
