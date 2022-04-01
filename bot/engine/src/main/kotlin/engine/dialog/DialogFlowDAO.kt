@@ -185,4 +185,20 @@ interface DialogFlowDAO {
         from: ZonedDateTime?,
         to: ZonedDateTime?
     ): Map<String, Int>
+
+    /**
+     * Counts the number of messages per day and story over a given period of time.
+     *
+     * In the returned map, the keys represent dates using the "YYYY-MM-DD" format.
+     * Values are lists containing one data point for each represented intent.
+     *
+     * @return a [Map] of message counts per intent, indexed by day
+     */
+    fun countMessagesByDateAndStory(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): Map<String, List<DialogFlowAggregateData>>
 }

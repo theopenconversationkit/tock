@@ -66,7 +66,6 @@ import java.time.DayOfWeek
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.time.format.TextStyle
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -402,6 +401,49 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         )
         logger.debug { "Flow Message pipeline: [$match, $lookup, $group, $proj]" }
         return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(match, lookup, group, proj).associateBy({ it.seriesKey }, { it.count })
+    }
+
+    override fun countMessagesByDateAndStory(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): Map<String, List<DialogFlowAggregateData>> {
+        val match = buildAnalyticsFilter(applicationIds, from, to)
+        val transitionLookup = lookup("flow_transition", "transitionId", "_id", "transition")
+        val proj1 = project(BsonDocument.parse("""
+            {
+              date: 1,
+              nextStateId: {
+                  $ arrayElemAt: ["$ transition.nextStateId", 0]
+              }
+            }
+        """.formatJson()))
+        val nextStateLookup = lookup("flow_state", "nextStateId", "_id", "nextState")
+        val group = group(
+            BsonDocument.parse("""
+            {
+                date: {
+                  $ dateToString: {
+                    date: "$ date",
+                    format: "%Y-%m-%d",
+                    timezone: "Europe/Paris"
+                  }
+                },
+                storyDefinitionId: {
+                    $ arrayElemAt: ["$ nextState.storyDefinitionId", 0]
+                }
+            }
+        """.formatJson()),
+            Accumulators.sum("count", 1)
+        )
+        val proj2 = project(
+            DialogFlowAggregateResult::date from "\$_id.date",
+            DialogFlowAggregateResult::count from "\$count",
+            DialogFlowAggregateResult::seriesKey from "\$_id.storyDefinitionId"
+        )
+        return aggregateFlowTransitionStats(match, transitionLookup, proj1, nextStateLookup, group, proj2)
     }
 
     private fun buildAnalyticsFilter(

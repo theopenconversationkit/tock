@@ -560,6 +560,10 @@ object BotAdminService {
         ) { it?.let { stories.find { story -> story._id.toString() == it }?.name } ?: "$it" }
     }
 
+    fun reportMessagesByDateAndStory2(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        return reportAnalytics(request, DialogFlowDAO::countMessagesByDateAndStory)
+    }
+
     fun reportMessagesByStoryType(request: DialogFlowRequest): UserAnalyticsQueryResult {
         val applications = loadApplications(request)
         val stories = storyDefinitionDAO.getStoryDefinitionsByNamespaceAndBotId(request.namespace, request.botId)
