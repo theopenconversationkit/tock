@@ -15,7 +15,7 @@
  */
 
 
-import {map} from 'rxjs/operators';
+import {map, share} from 'rxjs/operators';
 import {Injectable, OnDestroy} from "@angular/core";
 import {Observable, of} from "rxjs";
 import {
@@ -72,8 +72,14 @@ export class ApplicationService implements OnDestroy {
     });
   }
 
+  getApplicationsPending: Observable<Application[]>
   getApplications(): Observable<Application[]> {
-    return this.rest.getArray("/applications", Application.fromJSONArray);
+    if(!this.getApplicationsPending){
+      this.getApplicationsPending = this.rest.getArray("/applications", Application.fromJSONArray).pipe(
+        share()
+      )
+    }
+    return this.getApplicationsPending
   }
 
   nlpEngineTypes(): Observable<NlpEngineType[]> {
