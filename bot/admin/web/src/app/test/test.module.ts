@@ -49,7 +49,8 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        component: BotDialogComponent
+        redirectTo: 'test', 
+        pathMatch: 'full'
       },
       {
         path: 'test',

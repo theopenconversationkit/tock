@@ -15,7 +15,7 @@
  */
 
 
-import {tap} from 'rxjs/operators';
+import {share, tap} from 'rxjs/operators';
 import {Injectable, OnDestroy} from "@angular/core";
 import {RestService} from "../core-nlp/rest/rest.service";
 import {Observable, of} from "rxjs";
@@ -63,11 +63,15 @@ export class BotSharedService implements OnDestroy {
     return this.rest.get(`/action/nlp-stats/${actionId}`, NlpCallStats.fromJSON)
   }
 
+  getConfigurationPending: Observable<AdminConfiguration>
   getConfiguration(): Observable<AdminConfiguration> {
     if(this.configuration) {
       return of(this.configuration);
     } else {
-      return this.rest.get(`/configuration`, AdminConfiguration.fromJSON);
+      if(!this.getConfigurationPending) {
+        this.getConfigurationPending = this.rest.get(`/configuration`, AdminConfiguration.fromJSON).pipe(share());
+      }
+      return this.getConfigurationPending
     }
   }
 

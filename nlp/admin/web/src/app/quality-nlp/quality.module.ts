@@ -51,8 +51,9 @@ const routes: Routes = [
     },
     children: [
       {
-        path: '',
-        component: TestBuildsComponent
+        path: '', 
+        redirectTo: 'test-builds', 
+        pathMatch: 'full'
       },
       {
         path: 'log-stats',
