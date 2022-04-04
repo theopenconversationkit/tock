@@ -64,7 +64,7 @@ export class FaqDefinitionComponent extends WithSidePanel() implements OnInit, O
   ) {
     super();
 
-    this.initUtterance = this.router.getCurrentNavigation().extras?.state?.question
+    this.initUtterance = this.router.getCurrentNavigation().extras?.state?.question;
   }
 
   ngOnInit(): void {
@@ -78,11 +78,11 @@ export class FaqDefinitionComponent extends WithSidePanel() implements OnInit, O
         this.currentItem = undefined;
         this.clearFilter();
         this.grid.refresh(); // seems no need, but to be secure
-        this.undock()
+        this.undock();
       });
 
       if(this.initUtterance){
-        this.openNewSidepanel(this.initUtterance)
+        this.openNewSidepanel(this.initUtterance);
       }
   }
 
@@ -151,7 +151,7 @@ export class FaqDefinitionComponent extends WithSidePanel() implements OnInit, O
     this.activeQaTab = 'Info';
 
     if(initUtterance) {
-      this.currentItem.utterances = [initUtterance]
+      this.currentItem.utterances = [initUtterance];
       this.activeQaTab = 'Question';
     }
 

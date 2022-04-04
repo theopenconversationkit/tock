@@ -33,17 +33,6 @@ import {StateService} from "src/app/core-nlp/state.service";
   host: {'class': 'd-block mb-3'}
 })
 export class FaqGridItemComponent implements OnInit, OnDestroy {
-
-  /* Template-available constants (vertical vs horizontal layout) */
-
-  public readonly CSS_WIDER_CARD_BODY = 'align-items-center flex-wrap';
-  public readonly CSS_SMALL_CARD_BODY = 'tock--small flex-column flex-nowrap align-items-stretch';
-
-  public readonly CSS_WIDER_FIRST_CARD_PART = 'tock-col-a d-flex flex-column justify-content-between';
-  public readonly CSS_SMALL_FIRST_CARD_PART = 'tock-col-a d-flex justify-content-between mb-3 mr-4 ml-2';
-
-  /* Input/Output */
-
   @Input()
   item: FaqDefinition;
 

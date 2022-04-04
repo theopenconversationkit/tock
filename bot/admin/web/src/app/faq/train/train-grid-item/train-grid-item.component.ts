@@ -21,7 +21,6 @@ import {
   EventEmitter,
   Input,
   OnDestroy,
-  OnInit,
   Output
 } from '@angular/core';
 import { Router } from '@angular/router';
@@ -36,6 +35,7 @@ import {SentencesService} from "../../common/sentences.service";
 import {SelectionMode} from "../../common/model/selection-mode";
 import {truncate} from "../../common/util/string-utils";
 import {isDocked, ViewMode} from "../../common/model/view-mode";
+import { UserRole } from 'src/app/model/auth';
 
 @Component({
   selector: 'tock-train-grid-item',
@@ -43,7 +43,7 @@ import {isDocked, ViewMode} from "../../common/model/view-mode";
   styleUrls: ['./train-grid-item.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush // better perfs when list is huge
 })
-export class TrainGridItemComponent implements OnInit, OnDestroy {
+export class TrainGridItemComponent implements OnDestroy {
 
   @Input()
   sentence: Sentence;
@@ -79,6 +79,8 @@ export class TrainGridItemComponent implements OnInit, OnDestroy {
 
   public cardCssClass = "tock--opened"; // card closing animation
 
+  public UserRole = UserRole;
+
   private readonly destroy$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(
@@ -87,11 +89,7 @@ export class TrainGridItemComponent implements OnInit, OnDestroy {
     private readonly router: Router,
     private readonly sentencesService: SentencesService,
     public readonly state: StateService
-  ) {
-  }
-
-  ngOnInit(): void {
-  }
+  ) {}
 
   ngOnDestroy() {
     this.destroy$.next(true);
