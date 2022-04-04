@@ -90,6 +90,7 @@ export class EditUtteranceComponent {
     if (this.canSave) {
       this.saveAction(this.utterance.value);
       this.utterance.patchValue('');
+      this.isSubmitted = false;
     }
 
     return this.value.trim().length > 0;
