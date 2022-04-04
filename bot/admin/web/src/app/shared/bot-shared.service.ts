@@ -63,7 +63,7 @@ export class BotSharedService implements OnDestroy {
     return this.rest.get(`/action/nlp-stats/${actionId}`, NlpCallStats.fromJSON)
   }
 
-  getConfigurationPending
+  getConfigurationPending: Observable<AdminConfiguration>
   getConfiguration(): Observable<AdminConfiguration> {
     if(this.configuration) {
       return of(this.configuration);
