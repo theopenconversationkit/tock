@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-nlp-model</artifactId>
-        <version>21.9.3-SNAPSHOT</version>
+        <version>21.9.7-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-nlp-model-opennlp</artifactId>
@@ -29,7 +29,7 @@
     <description>OpenNlp implementation of Tock NLP Model</description>
 
     <properties>
-        <opennlp>1.9.3</opennlp>
+        <opennlp>1.9.4</opennlp>
     </properties>
 
     <dependencies>

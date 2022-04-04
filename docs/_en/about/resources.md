@@ -9,6 +9,18 @@ in addition to the main documentation and demo instance.
 
 ## Conferences / Video
 
+* _[20 minutes from zero to live chatbot with Tock](https://www.youtube.com/watch?v=UsKkpYL7Hto)_  
+  @ _Open Source Experience_ **2021** (live demo)
+  [ℹ️ info](https://www.opensource-experience.com/en/event/20-minutes-from-zero-to-live-chatbot-with-tock/) /
+  [📽️ 20 min](https://www.youtube.com/watch?v=UsKkpYL7Hto)
+
+<a href="https://www.youtube.com/watch?v=UsKkpYL7Hto"
+target="tock_osxp">
+<img alt="Tock @ OSXP 2021"
+src="https://doc.tock.ai/en/images/tock_osxp_2021.png"
+style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
+</a>
+
 * _AlloCovid_ @ _Voice Tech Paris_
   **2020** (by INSERM, Allo-Media & SNCF)
   [ℹ️ info](https://www.voicetechparis.com/conferences-2/)
@@ -16,7 +28,7 @@ in addition to the main documentation and demo instance.
 <a href="https://www.voicetechparis.com/conferences-2/"
 target="tock_voicetech">
 <img alt="AlloCovid @ Voice Tech Paris 2020"
-src="https://www.voicetechparis.com/wp-content/uploads/2020/10/img-digitale-orange.png"
+src="https://doc.tock.ai/fr/images/voicetechparis2020.jpeg"
 style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
 </a>
 

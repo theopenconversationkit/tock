@@ -65,6 +65,7 @@ import java.util.Collections
 import java.util.Comparator
 import java.util.HashMap
 import java.util.stream.Collectors
+import org.jetbrains.kotlin.psi.KtNamedFunction
 
 /**
  * Kotlin source code compiler.
@@ -174,13 +175,13 @@ internal object KotlinCompiler {
         val mainFunctionDetector = MainFunctionDetector(bindingContext, LanguageVersionSettingsImpl.DEFAULT)
         for (file in files) {
             if (file.name.contains(fileName)) {
-                if (!searchForMain || mainFunctionDetector.hasMain(file.declarations)) {
+                if (!searchForMain || file.declarations.any { it is KtNamedFunction &&  mainFunctionDetector.isMain(it) } ) {
                     return getMainClassName(file)
                 }
             }
         }
         return files
-            .firstOrNull { mainFunctionDetector.hasMain(it.declarations) }
+            .firstOrNull { it.declarations.any { it is KtNamedFunction &&  mainFunctionDetector.isMain(it) } }
             ?.let { getMainClassName(it) }
             ?: getMainClassName(files.iterator().next())
     }

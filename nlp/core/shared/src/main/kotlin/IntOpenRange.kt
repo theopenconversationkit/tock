@@ -34,7 +34,7 @@ interface IntOpenRange : Comparable<IntOpenRange> {
     }
 
     fun overlap(start: Int, end: Int): Boolean {
-        return !(this.end <= start || this.start >= end)
+        return this.end > start && this.start < end
     }
 
     fun isSameRange(range: IntOpenRange): Boolean {

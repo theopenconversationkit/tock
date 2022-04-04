@@ -53,6 +53,7 @@ export class TryComponent implements OnInit, OnDestroy {
     if (v.length == 0) {
       this.toastrService.show(`Please enter a non-empty query`, "ERROR", {duration: 2000});
     } else {
+      this.sentence = null;
       this.nlp.parse(
         new ParseQuery(
           app.namespace,

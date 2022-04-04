@@ -78,12 +78,9 @@ internal class ApplicationDefinition_Serializer :
         gen.writeFieldName("unknownIntentThreshold")
         val _unknownIntentThreshold_ = value.unknownIntentThreshold
         gen.writeNumber(_unknownIntentThreshold_)
-        gen.writeFieldName("caseInsensitive")
-        val _caseInsensitive_ = value.caseInsensitive
-        gen.writeBoolean(_caseInsensitive_)
-        gen.writeFieldName("ignoreTrailingPunctuation")
-        val _ignoreTrailingPunctuation_ = value.ignoreTrailingPunctuation
-        gen.writeBoolean(_ignoreTrailingPunctuation_)
+        gen.writeFieldName("normalizeText")
+        val _normalizeText_ = value.normalizeText
+        gen.writeBoolean(_normalizeText_)
         gen.writeFieldName("_id")
         val __id_ = value._id
         serializers.defaultSerializeValue(__id_, gen)

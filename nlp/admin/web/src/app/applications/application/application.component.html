@@ -64,23 +64,19 @@
           </mat-form-field>
         </p>
         <p>
-          <nb-checkbox class="separator" [(ngModel)]="application.caseInsensitive"
-                       nbTooltip="If selected, this option uses case insensitive models">
-            Case insensitive models
+          <nb-checkbox class="separator" [(ngModel)]="application.normalizeText"
+                       nbTooltip="If selected, this option uses normalized text models - for intent only models">
+            Normalized text models
           </nb-checkbox>
-          <nb-checkbox class="separator" [(ngModel)]="application.ignoreTrailingPunctuation"
-                       nbTooltip="If selected, this option uses models with no trailing punctuation which are .,:;?! ">
-            Ignore trailing punctuation
-          </nb-checkbox>
-          <nb-checkbox class="separator" [(ngModel)]="application.mergeEngineTypes"
+          <nb-checkbox *ngIf="!application.normalizeText" class="separator" [(ngModel)]="application.mergeEngineTypes"
                        nbTooltip="If selected, this option uses built-in entity models (like dates) in conjunction with standard NER">
             Use entity models
           </nb-checkbox>
-          <nb-checkbox class="separator" *ngIf="!application.mergeEngineTypes" [(ngModel)]="application.useEntityModels"
+          <nb-checkbox class="separator" *ngIf="!application.normalizeText && !application.mergeEngineTypes" [(ngModel)]="application.useEntityModels"
                        nbTooltip="If selected, built-in entity models results are provided only for info and potential entity disambiguation">
             Entity disambiguation only
           </nb-checkbox>
-          <nb-checkbox class="separator" [(ngModel)]="application.supportSubEntities"
+          <nb-checkbox *ngIf="!application.normalizeText" class="separator" [(ngModel)]="application.supportSubEntities"
                        nbTooltip="If selected, you can use subentities in your nlp models">Allow subentities
           </nb-checkbox>
         </p>

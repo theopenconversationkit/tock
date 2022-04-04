@@ -54,8 +54,8 @@ import ai.tock.shared.jackson.mapper
 import ai.tock.shared.warn
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
-import com.microsoft.bot.schema.models.Activity
-import com.microsoft.bot.schema.models.ActivityTypes
+import com.microsoft.bot.schema.Activity
+import com.microsoft.bot.schema.ActivityTypes
 import java.time.Duration
 import java.util.Locale
 import kotlin.system.measureTimeMillis
@@ -105,7 +105,7 @@ internal class TeamsConnector(
                         val body = context.bodyAsString
                         logger.debug { body }
                         val activity: Activity = mapper.readValue(body)
-                        if (activity.type() != ActivityTypes.MESSAGE) {
+                        if (activity.type != ActivityTypes.MESSAGE) {
                             throw NoMessageException("The activity received is not a message")
                         }
                         logger.debug { "check authentication..." }
@@ -118,10 +118,10 @@ internal class TeamsConnector(
                         executor.executeBlocking {
                             logger.debug { "sentence created..." }
                             val e = SendSentence(
-                                PlayerId(activity.from().id()),
+                                PlayerId(activity.from.id),
                                 connectorId,
                                 PlayerId(connectorId, PlayerType.bot),
-                                activity.text()
+                                activity.text
                             )
                             logger.debug { "send to controller..." }
                             controller.handle(
@@ -159,14 +159,14 @@ internal class TeamsConnector(
 
     override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences {
         return when (callback) {
-            is TeamsConnectorCallback -> UserPreferences().apply { locale = locale(callback.activity.locale()) }
+            is TeamsConnectorCallback -> UserPreferences().apply { locale = locale(callback.activity.locale) }
             else -> UserPreferences()
         }
     }
 
     override fun refreshProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences? {
         return when (callback) {
-            is TeamsConnectorCallback -> UserPreferences().apply { locale = locale(callback.activity.locale()) }
+            is TeamsConnectorCallback -> UserPreferences().apply { locale = locale(callback.activity.locale) }
             else -> null
         }
     }

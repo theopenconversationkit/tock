@@ -29,7 +29,6 @@ import ai.tock.nlp.core.NlpEngineType
 import ai.tock.nlp.core.ParsingResult
 import ai.tock.nlp.core.merge.ValueDescriptor
 import ai.tock.nlp.core.quality.TestContext
-import ai.tock.nlp.core.service.ModelCoreService.formatTockText
 import ai.tock.nlp.core.service.entity.EntityCore
 import ai.tock.nlp.core.service.entity.EntityCoreService
 import ai.tock.nlp.core.service.entity.EntityMerge
@@ -41,6 +40,7 @@ import ai.tock.nlp.model.ModelNotInitializedException
 import ai.tock.nlp.model.NlpClassifier
 import ai.tock.shared.checkMaxLengthAllowed
 import ai.tock.shared.error
+import ai.tock.shared.normalize
 import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
@@ -213,10 +213,11 @@ internal object NlpCoreService : NlpCore {
         return entityCore.healthcheck()
     }
 
-    private fun CallContext.prepareText(text: String): String =
-        if (application.caseInsensitive || application.ignoreTrailingPunctuation)
-            text.formatTockText(application, language)
+    private fun CallContext.prepareText(text: String): String {
+        return if (application.normalizeText)
+            text.normalize(language)
         else text
+    }
 
     private fun TestContext.prepareText(text: String): String = callContext.prepareText(text)
 }

@@ -32,6 +32,9 @@ environment.dev.ts
 #System Files
 .DS_Store
 Thumbs.db
+settings.xml
+sign
+travis
 
 #vert.x
 /file-uploads

@@ -71,13 +71,9 @@ data class ApplicationDefinition(
      */
     val unknownIntentThreshold: Double = 0.0,
     /**
-     * Case insensitive model - sentences are persisted with lower case.
+     * Normalized text model - sentences are persisted with normalizedText.
      */
-    val caseInsensitive: Boolean = false,
-    /**
-     * No trailing punctuation model - sentences are persisted without trailing punctuation.
-     */
-    val ignoreTrailingPunctuation: Boolean = false,
+    val normalizeText: Boolean = false,
     /**
      * The id of the app.
      */

@@ -40,13 +40,12 @@ import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Language
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.LastEntityProbability
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.LastIntentProbability
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.LastUsage
-import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.LowerCaseText
+import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.NormalizedText
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Status
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Text
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UnknownCount
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UpdateDate
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UsageCount
-import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.WithoutTrailingPunctuationText
 import ai.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
 import ai.tock.nlp.front.storage.mongo.ParseRequestLogMongoDAO.ParseRequestLogStatCol
 import ai.tock.shared.Executor
@@ -54,12 +53,12 @@ import ai.tock.shared.defaultLocale
 import ai.tock.shared.ensureIndex
 import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.error
+import ai.tock.shared.normalize
 import ai.tock.shared.injector
 import ai.tock.shared.listProperty
 import ai.tock.shared.longProperty
 import ai.tock.shared.namespace
 import ai.tock.shared.provide
-import ai.tock.shared.removeTrailingPunctuation
 import ai.tock.shared.safeCollation
 import ai.tock.shared.security.UserLogin
 import com.mongodb.ReadPreference.secondaryPreferred
@@ -80,7 +79,6 @@ import org.litote.kmongo.combine
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.distinct
 import org.litote.kmongo.eq
-import org.litote.kmongo.exists
 import org.litote.kmongo.find
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.gt
@@ -119,8 +117,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     @JacksonData(internal = true)
     data class ClassifiedSentenceCol(
         val text: String,
-        val lowerCaseText: String = text.lowercase(),
-        val withoutTrailingPunctuationText: String = text.removeTrailingPunctuation(),
+        val normalizedText: String = text,
         val fullText: String = text,
         val language: Locale,
         val applicationId: Id<ApplicationDefinition>,
@@ -142,8 +139,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         constructor(sentence: ClassifiedSentence) :
                 this(
                     textKey(sentence.text),
-                    sentence.text.lowercase(sentence.language),
-                    sentence.text.removeTrailingPunctuation(),
+                    sentence.text.normalize(sentence.language),
                     sentence.text,
                     sentence.language,
                     sentence.applicationId,
@@ -187,8 +183,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         val c = database.getCollection<ClassifiedSentenceCol>("classified_sentence")
         try {
             c.ensureUniqueIndex(Text, Language, ApplicationId)
-            c.ensureIndex(LowerCaseText, Language, ApplicationId)
-            c.ensureIndex(WithoutTrailingPunctuationText, Language, ApplicationId)
+            c.ensureIndex(NormalizedText, Language, ApplicationId)
             c.ensureIndex(Language, ApplicationId, Status)
             c.ensureIndex(Status)
             c.ensureIndex(orderBy(mapOf(ApplicationId to true, Language to true, UpdateDate to false)))
@@ -234,20 +229,12 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         c
     }
 
-    override fun updateCaseInsensitiveSentences(applicationId: Id<ApplicationDefinition>) {
-        logger.debug { "start updating case insensitive sentences" }
-        col.find(LowerCaseText exists false, ApplicationId eq applicationId).forEach {
-            save(it.copy(lowerCaseText = it.text.lowercase(it.language)))
+    override fun updateFormattedSentences(applicationId: Id<ApplicationDefinition>) {
+        logger.debug { "start updating formatted sentences" }
+        col.find(ApplicationId eq applicationId).forEach {
+            save(it.copy(normalizedText = it.text.normalize(it.language)))
         }
-        logger.debug { "end updating case insensitive sentences" }
-    }
-
-    override fun updateIgnoreTrailingPunctuationSentences(applicationId: Id<ApplicationDefinition>) {
-        logger.debug { "start updating sentences with ignoring trailing punctuation" }
-        col.find(WithoutTrailingPunctuationText exists false, ApplicationId eq applicationId).forEach {
-            save(it.copy(withoutTrailingPunctuationText = it.text.removeTrailingPunctuation()))
-        }
-        logger.debug { "end updating sentences with ignoring trailing punctuation" }
+        logger.debug { "end updating formatted sentences" }
     }
 
     override fun getSentences(
@@ -430,11 +417,17 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
 
     private fun SentencesQuery.filterText(): Bson? = when {
         search.isNullOrBlank() -> null
-        onlyExactMatch -> if (caseInsensitiveExactMatch) LowerCaseText eq search?.lowercase(
-            language ?: defaultLocale
-        ) else Text eq search
+        onlyExactMatch -> filterOnlyExactMatchText()
         else -> FullText.regex(search!!.trim(), "i")
     }
+
+    private fun SentencesQuery.filterOnlyExactMatchText() =
+        when {
+            normalizeText -> {
+                NormalizedText eq search?.normalize(language ?: defaultLocale)
+            }
+            else -> Text eq search
+        }
 
     private fun SentencesQuery.filterLanguage() = if (language == null) null else Language eq language
 

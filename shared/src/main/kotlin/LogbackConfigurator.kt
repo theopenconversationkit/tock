@@ -83,28 +83,30 @@ internal class LogbackConfigurator : ContextAwareBase(), Configurator {
             }
             appender.start()
 
-            loggerContext.getLogger("org.mongodb.driver").apply {
-                level = Level.INFO
-                isAdditive = false
-                addAppender(appender)
-            }
+            if(defaultLevel.toInt() <= Level.INFO.toInt()) {
+                loggerContext.getLogger("org.mongodb.driver").apply {
+                    level = Level.INFO
+                    isAdditive = false
+                    addAppender(appender)
+                }
 
-            loggerContext.getLogger("io.netty").apply {
-                level = Level.INFO
-                isAdditive = false
-                addAppender(appender)
-            }
+                loggerContext.getLogger("io.netty").apply {
+                    level = Level.INFO
+                    isAdditive = false
+                    addAppender(appender)
+                }
 
-            loggerContext.getLogger("okhttp3").apply {
-                level = Level.INFO
-                isAdditive = false
-                addAppender(appender)
-            }
+                loggerContext.getLogger("okhttp3").apply {
+                    level = Level.INFO
+                    isAdditive = false
+                    addAppender(appender)
+                }
 
-            loggerContext.getLogger("io.mockk").apply {
-                level = Level.INFO
-                isAdditive = false
-                addAppender(appender)
+                loggerContext.getLogger("io.mockk").apply {
+                    level = Level.INFO
+                    isAdditive = false
+                    addAppender(appender)
+                }
             }
 
             loggerContext.getLogger(Logger.ROOT_LOGGER_NAME).apply {

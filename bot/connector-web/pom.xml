@@ -19,7 +19,7 @@
     <parent>
         <artifactId>tock-bot</artifactId>
         <groupId>ai.tock</groupId>
-        <version>21.9.3-SNAPSHOT</version>
+        <version>21.9.7-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -76,6 +76,10 @@
             <groupId>io.mockk</groupId>
             <artifactId>mockk</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.commonmark</groupId>
+            <artifactId>commonmark</artifactId>
         </dependency>
     </dependencies>
 

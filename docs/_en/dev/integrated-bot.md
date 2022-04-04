@@ -61,14 +61,14 @@ With Maven:
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>bot-toolkit</artifactId>
-            <version>21.9.1</version>
+            <version>21.9.6</version>
         </dependency>
 ```
 
 With Gradle:
 
 ```groovy
-      compile 'ai.tock:bot-toolkit:21.9.1'
+      compile 'ai.tock:bot-toolkit:21.9.6'
 ```
 
 ### A Bot is a Set of Stories
@@ -439,7 +439,7 @@ val story = storyWithSteps<MyStep>("intent") {
 
 * Use buttons or quick replies
 
-More details on this topic [here](../code-a-bot/#postback-buttons-quick-replies).
+More details on this topic [here](#postback-buttons--quick-replies).
 
 
 #### StorySteps with complex behavior

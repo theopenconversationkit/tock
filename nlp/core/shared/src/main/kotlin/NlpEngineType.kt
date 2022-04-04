@@ -23,7 +23,7 @@ data class NlpEngineType(
     /**
      * The unique name of nlp engine.
      */
-    val name: String
+    val name: String = opennlp.name
 ) {
 
     companion object {

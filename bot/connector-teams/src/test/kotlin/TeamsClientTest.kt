@@ -22,7 +22,7 @@ import ai.tock.shared.addJacksonConverter
 import ai.tock.shared.create
 import ai.tock.shared.longProperty
 import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
-import com.microsoft.bot.schema.models.Activity
+import com.microsoft.bot.schema.Activity
 import mu.KotlinLogging
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer

@@ -62,6 +62,5 @@ data class SentencesQuery(
     val allButUser: String? = null,
     val maxIntentProbability: Float = 1f,
     val minIntentProbability: Float = 0f,
-    val caseInsensitiveExactMatch: Boolean = false,
-    val ignoreTrailingPunctuationExactMatch: Boolean = false,
+    val normalizeText: Boolean = false,
 )
