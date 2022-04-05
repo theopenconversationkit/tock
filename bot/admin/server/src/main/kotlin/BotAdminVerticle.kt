@@ -299,7 +299,7 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonPost(
-            "/bot",
+            "/bot", setOf(admin),
             logger = logger<BotConfiguration>(" Create or Update Bot Configuration") { _, c ->
                 c?.let { FrontClient.getApplicationByNamespaceAndName(it.namespace, it.nlpModel)?._id }
             }
@@ -324,7 +324,7 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonPost(
-            "/configuration/bot",
+            "/configuration/bot", setOf(admin),
             logger = logger<BotConnectorConfiguration>("Create or Update Bot Connector Configuration") { _, c ->
                 c?.let { FrontClient.getApplicationByNamespaceAndName(it.namespace, it.nlpModel)?._id }
             }
