@@ -32,8 +32,7 @@ import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.property
 import ai.tock.shared.provide
-import ai.tock.shared.security.TockUserRole.botUser
-import ai.tock.shared.security.TockUserRole.faqNlpUser
+import ai.tock.shared.security.TockUserRole.*
 import ai.tock.shared.vertx.UnauthorizedException
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.WebVerticle.Companion
@@ -65,25 +64,25 @@ class TestCoreService : TestService {
             } ?: Companion.notFound()
         }
 
-        blockingJsonGet("/test/plans", botUser) { context ->
+        blockingJsonGet("/test/plans", setOf(botUser)) { context ->
             TestPlanService.getTestPlansByNamespace(context.organization)
         }
 
-        blockingJsonGet("/test/plan/:planId", botUser) { context ->
+        blockingJsonGet("/test/plan/:planId", setOf(botUser)) { context ->
             context.loadTestPlan()
         }
 
-        blockingJsonGet("/test/plan/:planId/executions", botUser) { context ->
+        blockingJsonGet("/test/plan/:planId/executions", setOf(botUser)) { context ->
             TestPlanService.getPlanExecutions(context.loadTestPlan())
         }
 
-        blockingJsonGet("/test/plan/:planId/executions/:executionId", botUser) { context ->
+        blockingJsonGet("/test/plan/:planId/executions/:executionId", setOf(botUser)) { context ->
             TestPlanService.getTestPlanExecution(context.loadTestPlan(), context.pathId("executionId"))
         }
 
         blockingJsonPost(
             "/test/plan",
-            botUser,
+            setOf(botUser),
             logger<TestPlanUpdate>("Update Test Plan") { _, p ->
                 p?.let { FrontClient.getApplicationByNamespaceAndName(it.namespace, it.nlpModel)?._id }
             }
@@ -97,7 +96,7 @@ class TestCoreService : TestService {
 
         blockingDelete(
             "/test/plan/:planId",
-            botUser,
+            setOf(botUser),
             simpleLogger("Delete Test Plan", { it.path("planId") to true })
         ) { context ->
             TestPlanService.removeTestPlan(context.loadTestPlan())
@@ -105,7 +104,7 @@ class TestCoreService : TestService {
 
         blockingJsonPost(
             "/test/plan/:planId/dialog/:dialogId",
-            botUser,
+            setOf(botUser),
             simpleLogger("Add Dialog to Test Plan", { it.path("planId") to it.path("dialogId") })
         ) { context, _: ApplicationScopedQuery ->
             TestPlanService.addDialogToTestPlan(context.loadTestPlan(), context.pathId("dialogId"))
@@ -113,7 +112,7 @@ class TestCoreService : TestService {
 
         blockingJsonPost(
             "/test/plan/:planId/dialog/delete/:dialogId",
-            botUser,
+            setOf(botUser),
             simpleLogger("Remove Dialog from Test Plan", { it.path("planId") to it.path("dialogId") })
         ) { context, _: ApplicationScopedQuery ->
             TestPlanService.removeDialogFromTestPlan(
@@ -122,27 +121,24 @@ class TestCoreService : TestService {
             )
         }
 
-        blockingJsonPost("/test/plan/execute", botUser) { context, testPlan: TestPlan ->
+        blockingJsonPost("/test/plan/execute", setOf(botUser)) { context, testPlan: TestPlan ->
             saveAndExecuteTestPlan(context.organization, testPlan, newId())
         }
 
         /**
          * Triggered on click on "Launch" button.
          */
-        blockingJsonPost("/test/plan/:planId/run", botUser) { context, _: ApplicationScopedQuery ->
+        blockingJsonPost("/test/plan/:planId/run", setOf(botUser)) { context, _: ApplicationScopedQuery ->
             context.loadTestPlan().run {
                 executeTestPlan(this)
             }
         }
 
-        val cumulativeRoles = setOf(botUser,faqNlpUser)
-        cumulativeRoles.forEach { role ->
-            blockingJsonPost("/test/talk", role) { context, query: BotDialogRequest ->
-                if (context.organization == query.namespace) {
-                    talk(query)
-                } else {
-                    Companion.unauthorized()
-                }
+        blockingJsonPost("/test/talk", setOf(botUser,faqNlpUser,faqBotUser)) { context, query: BotDialogRequest ->
+            if (context.organization == query.namespace) {
+                talk(query)
+            } else {
+                Companion.unauthorized()
             }
         }
     }
