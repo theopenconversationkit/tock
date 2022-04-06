@@ -106,11 +106,14 @@ export class EditUtteranceComponent implements OnInit, OnDestroy {
   }
 
   save(): void {
+    if(!this.saveAction)return this.saveAndClose()
+    
     this.isSubmitted = true;
 
     if (this.canSave) {
       this.saveAction(this.utterance.value);
       this.utterance.patchValue('');
+      this.isSubmitted = false;
     }
   }
 
