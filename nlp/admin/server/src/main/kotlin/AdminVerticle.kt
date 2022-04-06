@@ -211,7 +211,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonPost(
             "/sentences/dump/:dumpType/:applicationId",
-            admin
+            setOf(admin,technicalAdmin)
         ) { context, query: SearchQuery ->
             val id: Id<ApplicationDefinition> = context.pathId("applicationId")
             if (context.organization == front.getApplicationById(id)?.namespace) {
@@ -268,18 +268,6 @@ open class AdminVerticle : WebVerticle() {
                     DumpType.parseDumpType(it.path("dumpType")),
                     it.path("intent"),
                     it.pathToLocale("locale")
-                )
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingJsonPost("/sentences/dump/:dumpType/:applicationId", technicalAdmin) { context, query: SearchQuery ->
-            val id: Id<ApplicationDefinition> = context.pathId("applicationId")
-            if (context.organization == front.getApplicationById(id)?.namespace) {
-                front.exportSentences(
-                    query.toSentencesQuery(id),
-                    DumpType.parseDumpType(context.path("dumpType"))
                 )
             } else {
                 unauthorized()
