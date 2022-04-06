@@ -21,6 +21,7 @@ import {
   EventEmitter,
   Input,
   OnDestroy,
+  OnInit,
   Output
 } from '@angular/core';
 import { Router } from '@angular/router';
@@ -35,7 +36,7 @@ import {SentencesService} from "../../common/sentences.service";
 import {SelectionMode} from "../../common/model/selection-mode";
 import {truncate} from "../../common/util/string-utils";
 import {isDocked, ViewMode} from "../../common/model/view-mode";
-import { UserRole } from 'src/app/model/auth';
+import { UserRole } from '../../../model/auth';
 
 @Component({
   selector: 'tock-train-grid-item',
@@ -43,7 +44,7 @@ import { UserRole } from 'src/app/model/auth';
   styleUrls: ['./train-grid-item.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush // better perfs when list is huge
 })
-export class TrainGridItemComponent implements OnDestroy {
+export class TrainGridItemComponent implements OnInit, OnDestroy {
 
   @Input()
   sentence: Sentence;
@@ -77,6 +78,11 @@ export class TrainGridItemComponent implements OnDestroy {
 
   selectedIntentId: string;
 
+  public selectedIntent = {
+    placeholder: '',
+    probability: null
+  };
+
   public cardCssClass = "tock--opened"; // card closing animation
 
   public UserRole = UserRole;
@@ -91,20 +97,16 @@ export class TrainGridItemComponent implements OnDestroy {
     public readonly state: StateService
   ) {}
 
-  ngOnDestroy() {
-    this.destroy$.next(true);
-    this.destroy$.complete();
+  ngOnInit(): void {
+    this.selectedIntent = {
+      placeholder: this.sentence.getIntentLabel(this.state),
+      probability: Math.trunc(this.sentence.classification.intentProbability * 100)
+    }
   }
 
-  public getRichIntentLabel() {
-    const intentLabel = this.sentence.getIntentLabel(this.state);
-
-    const str = truncate(intentLabel.padEnd(34, '\xa0'), 35)
-      + " "
-      + Math.trunc(this.sentence.classification.intentProbability * 100)
-      + '%';
-
-    return str;
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 
   public redirectToFaqManagement(): void {
