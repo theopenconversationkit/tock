@@ -65,9 +65,7 @@ import ai.tock.shared.namespace
 import ai.tock.shared.pingMongoDatabase
 import ai.tock.shared.provide
 import ai.tock.shared.security.NoEncryptionPassException
-import ai.tock.shared.security.TockUserRole.admin
-import ai.tock.shared.security.TockUserRole.nlpUser
-import ai.tock.shared.security.TockUserRole.technicalAdmin
+import ai.tock.shared.security.TockUserRole.*
 import ai.tock.shared.security.UNKNOWN_USER_LOGIN
 import ai.tock.shared.security.auth.TockAuthProvider
 import ai.tock.shared.security.decrypt
