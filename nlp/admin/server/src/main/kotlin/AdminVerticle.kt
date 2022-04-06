@@ -170,7 +170,7 @@ open class AdminVerticle : WebVerticle() {
                 ?.takeIf { it.namespace == context.organization }
         }
 
-        blockingJsonGet("/application/:applicationId/model/:engine/configuration", setOf(admin)) { context ->
+        blockingJsonGet("/application/:applicationId/model/:engine/configuration", admin) { context ->
             front.getApplicationById(context.pathId("applicationId"))
                 ?.takeIf { it.namespace == context.organization }
                 ?.let { front.getCurrentModelConfiguration(it.qualifiedName, NlpEngineType(context.path("engine"))) }
@@ -178,7 +178,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonPost(
             "/application/:applicationId/model/:engine/configuration",
-            setOf(admin),
+            admin,
             simpleLogger("Model Configuration")
         ) { context, conf: NlpApplicationConfiguration ->
             front.getApplicationById(context.pathId("applicationId"))
@@ -187,7 +187,7 @@ open class AdminVerticle : WebVerticle() {
         }
 
         // Retrieve full application dump that matches given identifier
-        blockingJsonGet("/application/dump/:id", setOf(technicalAdmin)) {
+        blockingJsonGet("/application/dump/:id", technicalAdmin) {
             val id: Id<ApplicationDefinition> = it.pathId("id")
             if (it.organization == front.getApplicationById(id)?.namespace) {
                 front.export(id, DumpType.full)
@@ -197,7 +197,7 @@ open class AdminVerticle : WebVerticle() {
         }
 
         // Retrieve sentences dump that matches given application identifier
-        blockingJsonGet("/sentences/dump/:dumpType/:applicationId", setOf(admin)) {
+        blockingJsonGet("/sentences/dump/:dumpType/:applicationId", admin) {
             val id: Id<ApplicationDefinition> = it.pathId("applicationId")
             if (it.organization == front.getApplicationById(id)?.namespace) {
                 front.exportSentences(
@@ -228,7 +228,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonPost(
             "/sentences/dump/:dumpType/:applicationId/fromText",
-            setOf(admin)
+            admin
         ) { context, query: SentencesTextQuery ->
             val id: Id<ApplicationDefinition> = context.pathId("applicationId")
             if (context.organization == front.getApplicationById(id)?.namespace) {
@@ -246,7 +246,7 @@ open class AdminVerticle : WebVerticle() {
         }
 
         // Retrieve qualified sentences dum<p that matches given application identifier and intent
-        blockingJsonGet("/sentences/dump/:dumpType/:applicationId/:intent", setOf(admin)) {
+        blockingJsonGet("/sentences/dump/:dumpType/:applicationId/:intent", admin) {
             val id: Id<ApplicationDefinition> = it.pathId("applicationId")
             if (it.organization == front.getApplicationById(id)?.namespace) {
                 front.exportSentences(
@@ -260,7 +260,7 @@ open class AdminVerticle : WebVerticle() {
         }
 
         // Retrieve qualified sentences dump that matches given application identifier, intent and locale
-        blockingJsonGet("/sentences/dump/:dumpType/:applicationId/:intent/:locale", setOf(admin)) {
+        blockingJsonGet("/sentences/dump/:dumpType/:applicationId/:intent/:locale", admin) {
             val id: Id<ApplicationDefinition> = it.pathId("applicationId")
             if (it.organization == front.getApplicationById(id)?.namespace) {
                 front.exportSentences(
@@ -289,7 +289,7 @@ open class AdminVerticle : WebVerticle() {
         // Create or update application
         blockingJsonPost(
             "/application",
-            setOf(admin),
+            admin,
             logger<ApplicationWithIntents>("Create or Update Application") { _, app ->
                 app?._id
             }
@@ -334,7 +334,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonPost(
             "/application/build/trigger",
-            setOf(admin),
+            admin,
             logger<ApplicationWithIntents>("Trigger Build") { _, app ->
                 app?._id
             }
@@ -347,7 +347,7 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/application/builds", setOf(nlpUser)) { context, query: PaginatedQuery ->
+        blockingJsonPost("/application/builds", nlpUser) { context, query: PaginatedQuery ->
             val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
             if (context.organization == app?.namespace) {
                 front.builds(app._id, query.currentLanguage, query.start.toInt(), query.size)
@@ -359,7 +359,7 @@ open class AdminVerticle : WebVerticle() {
         // Upload a complete application model
         blockingUploadJsonPost(
             "/dump/application",
-            setOf(technicalAdmin),
+            technicalAdmin,
             logger<ApplicationDump>("Application Dump") { _, app ->
                 app?.application?._id
             }
@@ -370,7 +370,7 @@ open class AdminVerticle : WebVerticle() {
         // Upload a complete application model [sentences dump format]
         blockingUploadJsonPost(
             "/dump/sentences",
-            setOf(admin),
+            admin,
             logger<SentencesDump>("Sentences Dump") { context, app ->
                 app?.applicationName?.let {
                     front.getApplicationByNamespaceAndName(context.organization, it)?._id
@@ -383,7 +383,7 @@ open class AdminVerticle : WebVerticle() {
         // Upload complete application dump and set specified name as application name
         blockingUploadJsonPost(
             "/dump/application/:name",
-            setOf(admin),
+            admin,
             logger<ApplicationDump>("Application Dump with new Name") { _, app ->
                 app?.application?._id
             }
@@ -394,7 +394,7 @@ open class AdminVerticle : WebVerticle() {
         // Upload complete application dump [sentences dump format] and set specified name as application name
         blockingUploadJsonPost(
             "/dump/sentences/:name",
-            setOf(admin),
+            admin,
             logger<SentencesDump>("Sentences Dump with new Name") { context, app ->
                 app?.applicationName?.let {
                     front.getApplicationByNamespaceAndName(context.organization, it)?._id
@@ -405,7 +405,7 @@ open class AdminVerticle : WebVerticle() {
         }
 
         // Delete application that matches given identifier
-        blockingDelete("/application/:applicationId", setOf(admin), simpleLogger("Delete Application")) {
+        blockingDelete("/application/:applicationId", admin, simpleLogger("Delete Application")) {
             val id: Id<ApplicationDefinition> = it.pathId("applicationId")
             val app = front.getApplicationById(id)
             if (it.organization == app?.namespace) {
@@ -522,7 +522,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonDelete(
             "/application/:applicationId/entity/:entityType/:role",
-            setOf(nlpUser),
+            nlpUser,
             simpleLogger(
                 "Remove SubEntity from Entity",
                 {
@@ -588,7 +588,7 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/sentence/reveal", setOf(admin)) { context, s: SentenceReport ->
+        blockingJsonPost("/sentence/reveal", admin) { context, s: SentenceReport ->
             val key = s.key
             if (key == null) {
                 unauthorized()
@@ -614,7 +614,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonPost(
             "/sentences/update",
-            setOf(admin),
+            admin,
             logger<UpdateSentencesQuery>("Update Sentences") { context, q ->
                 q?.applicationName?.let {
                     front.getApplicationByNamespaceAndName(context.organization, it)?._id
@@ -630,7 +630,7 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/users/logs/search", setOf(technicalAdmin)) { context, s: UserActionLogQuery ->
+        blockingJsonPost("/users/logs/search", technicalAdmin) { context, s: UserActionLogQuery ->
             if (context.organization == s.namespace) {
                 front.search(s)
             } else {
@@ -638,7 +638,7 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/logs/search", setOf(nlpUser)) { context, s: LogsQuery ->
+        blockingJsonPost("/logs/search", nlpUser) { context, s: LogsQuery ->
             if (context.organization == s.namespace) {
                 service.searchLogs(s)
             } else {
@@ -646,7 +646,7 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonGet("/logs/:applicationId/:locale/export", setOf(nlpUser)) { context ->
+        blockingJsonGet("/logs/:applicationId/:locale/export", nlpUser) { context ->
             val app = front.getApplicationById(context.pathId("applicationId"))!!
             if (context.organization == app.namespace) {
                 val sb = StringBuilder()
@@ -662,7 +662,7 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/logs/stats", setOf(nlpUser)) { context, s: LogStatsQuery ->
+        blockingJsonPost("/logs/stats", nlpUser) { context, s: LogStatsQuery ->
             if (context.organization == s.namespace) {
                 front.stats(s.toStatQuery(front.getApplicationByNamespaceAndName(s.namespace, s.applicationName)!!))
             } else {
@@ -670,7 +670,7 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/logs/intent/stats", setOf(nlpUser)) { context, s: LogStatsQuery ->
+        blockingJsonPost("/logs/intent/stats", nlpUser) { context, s: LogStatsQuery ->
             if (context.organization == s.namespace) {
                 front.intentStats(
                     s.toStatQuery(
@@ -687,7 +687,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonPost(
             "/intent",
-            setOf(nlpUser),
+            nlpUser,
             simpleLogger("Create or Update Intent")
         ) { context, intent: IntentDefinition ->
             AdminService.createOrUpdateIntent(context.organization, intent) ?: unauthorized()
@@ -707,7 +707,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonPost(
             "/entity",
-            setOf(nlpUser),
+            nlpUser,
             logger<UpdateEntityDefinitionQuery>("Update Entity") { context, q ->
                 q?.applicationName?.let {
                     front.getApplicationByNamespaceAndName(context.organization, it)?._id
@@ -729,7 +729,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonPost(
             "/dictionary",
-            setOf(nlpUser),
+            nlpUser,
             simpleLogger("Update Dictionary")
         ) { context, dictionary: DictionaryData ->
             if (context.organization == dictionary.namespace) {
@@ -744,7 +744,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingUploadJsonPost(
             "/dump/dictionary/:entityName",
-            setOf(admin),
+            admin,
             simpleLogger("Update Dictionary")
         ) { context, dump: DictionaryData ->
             val data = dump.copy(namespace = context.organization, entityName = context.path("entityName"))
@@ -756,7 +756,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonPost<CreateEntityQuery, EntityTypeDefinition?>(
             "/entity-type/create",
-            setOf(nlpUser),
+            nlpUser,
             simpleLogger("Create Entity")
         ) { context, query ->
             val entityName = "${context.organization}:${query.type.lowercase().name()}"
@@ -771,7 +771,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonPost(
             "/entity-type",
-            setOf(nlpUser),
+            nlpUser,
             simpleLogger("Update Entity")
         ) { context, entityType: EntityTypeDefinition ->
             if (context.organization == entityType.name.namespace()) {
@@ -868,7 +868,7 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/alexa/export", setOf(admin)) { context, query: ApplicationScopedQuery ->
+        blockingJsonPost("/alexa/export", admin) { context, query: ApplicationScopedQuery ->
             val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
             if (app != null && context.organization == app.namespace) {
                 front.exportIntentsSchema(app.name, app._id, query.currentLanguage)
@@ -879,7 +879,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonPost(
             "/dictionary/predefined-values",
-            setOf(nlpUser),
+            nlpUser,
             simpleLogger("Update Predefined Value")
         ) { context, query: PredefinedValueQuery ->
 
@@ -920,7 +920,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonPost(
             "/dictionary/predefined-value/labels",
-            setOf(nlpUser),
+            nlpUser,
             simpleLogger("Update Predefined Labels")
         ) { context, query: PredefinedLabelQuery ->
 
@@ -987,7 +987,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonPost(
             "/translation/sentence",
-            setOf(admin),
+            admin,
             logger<TranslateSentencesQuery>("Translate Sentences") { context, s ->
                 s?.applicationName?.let {
                     front.getApplicationByNamespaceAndName(context.organization, it)?._id
@@ -1018,7 +1018,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingPost(
             "/namespace/:namespace",
-            setOf(admin),
+            admin,
             simpleLogger("Create Namespace")
         ) { context ->
             val n = context.path("namespace").trim()
@@ -1036,7 +1036,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonPost(
             "/namespace",
-            setOf(admin),
+            admin,
             simpleLogger("Add or Update Namespace for User")
         ) { context, namespace: UserNamespace ->
             // get the namespace of the current user

@@ -246,9 +246,13 @@ abstract class WebVerticle : AbstractVerticle() {
     protected open fun authProvider(): TockAuthProvider? = null
 
     /**
+     * The default role of a service.
+     */
+    open fun defaultRole(): TockUserRole? = null
+    /**
      * The default roles of a service.
      */
-    open fun defaultRoles(): Set<TockUserRole>? = null
+    open fun defaultRoles(): Set<TockUserRole>? = defaultRole()?.let { setOf(defaultRole()!!) }
 
     /**
      * The default port of the verticle
@@ -313,6 +317,15 @@ abstract class WebVerticle : AbstractVerticle() {
             }
     }
 
+    fun blocking(
+        method: HttpMethod,
+        path: String,
+        role: TockUserRole,
+        basePath: String = rootPath,
+        handler: (RoutingContext) -> Unit
+    ) {
+        blocking(method, path, setOf(role), basePath, handler)
+    }
 
     fun blocking(
         method: HttpMethod,
@@ -331,7 +344,8 @@ abstract class WebVerticle : AbstractVerticle() {
         ?: resultHandler.invoke(Future.failedFuture("No user set"))
 
     /**
-     * Check the user is authorized to call the endpoint with multiple roles
+     * Check the user has any authorized role
+     *
      */
     private fun RoutingContext.areAuthorized(
         roles: Set<TockUserRole?>,
@@ -343,7 +357,6 @@ abstract class WebVerticle : AbstractVerticle() {
         if (roles.any { tockUserRole -> tockUserRole?.name in tockUser.roles}){
             val aRole = roles.first { it?.name in tockUserRoles }?.name
                 user()?.isAuthorized(aRole, resultHandler)
-                ?: resultHandler.invoke(Future.failedFuture("No user set"))
         } else {
             resultHandler.invoke(Future.failedFuture("Not authorized for user"))
         }
@@ -387,6 +400,14 @@ abstract class WebVerticle : AbstractVerticle() {
 
     fun <O> blockingJsonGet(
         path: String,
+        role: TockUserRole,
+        handler: (RoutingContext) -> O
+    ) {
+        blockingJsonGet(path,setOf(role),handler)
+    }
+
+    fun <O> blockingJsonGet(
+        path: String,
         roles: Set<TockUserRole>? = defaultRoles(),
         handler: (RoutingContext) -> O
     ) {
@@ -394,6 +415,15 @@ abstract class WebVerticle : AbstractVerticle() {
             val result = handler.invoke(context)
             context.endJson(result)
         }
+    }
+
+    protected fun blockingPost(
+        path: String,
+        role: TockUserRole,
+        logger: RequestLogger = defaultRequestLogger,
+        handler: (RoutingContext) -> Unit
+    ) {
+        blockingPost(path,setOf(role),logger,handler)
     }
 
     protected fun blockingPost(
@@ -425,6 +455,15 @@ abstract class WebVerticle : AbstractVerticle() {
         blocking(GET, path, roles, basePath) { context ->
             context.response().end(handler.invoke(context))
         }
+    }
+
+    protected inline fun <reified F : Any, O> blockingUploadJsonPost(
+        path: String,
+        role: TockUserRole,
+        logger: RequestLogger = defaultRequestLogger,
+        crossinline handler: (RoutingContext, F) -> O
+    ) {
+        blockingUploadJsonPost(path, setOf(role),logger,handler)
     }
 
     protected inline fun <reified F : Any, O> blockingUploadJsonPost(
@@ -474,6 +513,14 @@ abstract class WebVerticle : AbstractVerticle() {
 
     protected inline fun <O> blockingUploadBinaryPost(
         path: String,
+        role: TockUserRole,
+        crossinline handler: (RoutingContext, Pair<String, ByteArray>) -> O
+    ) {
+        blockingUploadBinaryPost(path,setOf(role), handler)
+    }
+
+    protected inline fun <O> blockingUploadBinaryPost(
+        path: String,
         roles: Set<TockUserRole>? = defaultRoles(),
         crossinline handler: (RoutingContext, Pair<String, ByteArray>) -> O
     ) {
@@ -493,6 +540,15 @@ abstract class WebVerticle : AbstractVerticle() {
         blockingWithBodyJson(POST, path, roles, logger, handler)
     }
 
+    inline fun <reified I : Any, O> blockingJsonPost(
+        path: String,
+        role: TockUserRole,
+        logger: RequestLogger = defaultRequestLogger,
+        crossinline handler: (RoutingContext, I) -> O
+    ) {
+        blockingWithBodyJson(POST, path, setOf(role), logger, handler)
+    }
+
     protected inline fun <reified I : Any, O> blockingJsonPut(
         path: String,
         roles: Set<TockUserRole>? = defaultRoles(),
@@ -500,6 +556,24 @@ abstract class WebVerticle : AbstractVerticle() {
         crossinline handler: (RoutingContext, I) -> O
     ) {
         blockingWithBodyJson(PUT, path, roles, logger, handler)
+    }
+
+    protected inline fun <reified I : Any, O> blockingJsonPut(
+        path: String,
+        role: TockUserRole? = defaultRole(),
+        logger: RequestLogger = defaultRequestLogger,
+        crossinline handler: (RoutingContext, I) -> O
+    ) {
+        blockingWithBodyJson(PUT, path, role?.let { setOf(role) }, logger, handler)
+    }
+
+    fun blockingDelete(
+        path: String,
+        role: TockUserRole,
+        logger: RequestLogger = defaultRequestLogger,
+        handler: (RoutingContext) -> Unit
+    ) {
+        blockingDelete(path,role?.let { setOf(role) },logger,handler)
     }
 
     fun blockingDelete(
@@ -520,6 +594,15 @@ abstract class WebVerticle : AbstractVerticle() {
             }
             context.success()
         }
+    }
+
+    protected fun blockingJsonDelete(
+        path: String,
+        role: TockUserRole,
+        logger: RequestLogger = defaultRequestLogger,
+        handler: (RoutingContext) -> Boolean
+    ) {
+        blockingJsonDelete(path,setOf(role),logger,handler)
     }
 
     protected fun blockingJsonDelete(

@@ -64,25 +64,25 @@ class TestCoreService : TestService {
             } ?: Companion.notFound()
         }
 
-        blockingJsonGet("/test/plans", setOf(botUser)) { context ->
+        blockingJsonGet("/test/plans", botUser) { context ->
             TestPlanService.getTestPlansByNamespace(context.organization)
         }
 
-        blockingJsonGet("/test/plan/:planId", setOf(botUser)) { context ->
+        blockingJsonGet("/test/plan/:planId", botUser) { context ->
             context.loadTestPlan()
         }
 
-        blockingJsonGet("/test/plan/:planId/executions", setOf(botUser)) { context ->
+        blockingJsonGet("/test/plan/:planId/executions", botUser) { context ->
             TestPlanService.getPlanExecutions(context.loadTestPlan())
         }
 
-        blockingJsonGet("/test/plan/:planId/executions/:executionId", setOf(botUser)) { context ->
+        blockingJsonGet("/test/plan/:planId/executions/:executionId", botUser) { context ->
             TestPlanService.getTestPlanExecution(context.loadTestPlan(), context.pathId("executionId"))
         }
 
         blockingJsonPost(
             "/test/plan",
-            setOf(botUser),
+            botUser,
             logger<TestPlanUpdate>("Update Test Plan") { _, p ->
                 p?.let { FrontClient.getApplicationByNamespaceAndName(it.namespace, it.nlpModel)?._id }
             }
@@ -96,7 +96,7 @@ class TestCoreService : TestService {
 
         blockingDelete(
             "/test/plan/:planId",
-            setOf(botUser),
+            botUser,
             simpleLogger("Delete Test Plan", { it.path("planId") to true })
         ) { context ->
             TestPlanService.removeTestPlan(context.loadTestPlan())
@@ -104,7 +104,7 @@ class TestCoreService : TestService {
 
         blockingJsonPost(
             "/test/plan/:planId/dialog/:dialogId",
-            setOf(botUser),
+            botUser,
             simpleLogger("Add Dialog to Test Plan", { it.path("planId") to it.path("dialogId") })
         ) { context, _: ApplicationScopedQuery ->
             TestPlanService.addDialogToTestPlan(context.loadTestPlan(), context.pathId("dialogId"))
@@ -112,7 +112,7 @@ class TestCoreService : TestService {
 
         blockingJsonPost(
             "/test/plan/:planId/dialog/delete/:dialogId",
-            setOf(botUser),
+            botUser,
             simpleLogger("Remove Dialog from Test Plan", { it.path("planId") to it.path("dialogId") })
         ) { context, _: ApplicationScopedQuery ->
             TestPlanService.removeDialogFromTestPlan(
@@ -121,14 +121,14 @@ class TestCoreService : TestService {
             )
         }
 
-        blockingJsonPost("/test/plan/execute", setOf(botUser)) { context, testPlan: TestPlan ->
+        blockingJsonPost("/test/plan/execute", botUser) { context, testPlan: TestPlan ->
             saveAndExecuteTestPlan(context.organization, testPlan, newId())
         }
 
         /**
          * Triggered on click on "Launch" button.
          */
-        blockingJsonPost("/test/plan/:planId/run", setOf(botUser)) { context, _: ApplicationScopedQuery ->
+        blockingJsonPost("/test/plan/:planId/run", botUser) { context, _: ApplicationScopedQuery ->
             context.loadTestPlan().run {
                 executeTestPlan(this)
             }
