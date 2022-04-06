@@ -19,20 +19,11 @@
 
 /* Fix card overflow */
 nb-card,nb-card-body {
-    overflow-x: hidden;
+  overflow-x: hidden;
 }
 
 .tock-select-faq > nb-select {
   width: 280px;
-}
-
-.tock-btn-addfaq {
-    height: 40px;
-    width: 40px;
-    display: flex;
-    justify-content: center;
-    background: transparent;
-    border: 0;
 }
 
 .tock-option-label {
