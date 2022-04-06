@@ -249,6 +249,7 @@ abstract class WebVerticle : AbstractVerticle() {
      * The default role of a service.
      */
     open fun defaultRole(): TockUserRole? = null
+
     /**
      * The default roles of a service.
      */
@@ -487,6 +488,15 @@ abstract class WebVerticle : AbstractVerticle() {
                 throw t
             }
         }
+    }
+
+    protected inline fun <O> blockingUploadPost(
+        path: String,
+        role: TockUserRole,
+        logger: RequestLogger = defaultRequestLogger,
+        crossinline handler: (RoutingContext, String) -> O
+    ) {
+        blockingUploadPost(path, setOf(role), logger, handler)
     }
 
     protected inline fun <O> blockingUploadPost(

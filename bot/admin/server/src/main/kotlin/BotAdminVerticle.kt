@@ -695,11 +695,11 @@ open class BotAdminVerticle : AdminVerticle() {
             I18nCsvCodec.exportCsv(context.organization, query)
         }
 
-        blockingUploadJsonPost(
+        blockingUploadPost(
             "/i18n/import/csv",
             botUser,
             simpleLogger("CSV Import Response Labels")
-        ) { context, content:String ->
+        ) { context, content ->
             measureTimeMillis(context) {
                 I18nCsvCodec.importCsv(context.organization, content)
             }
