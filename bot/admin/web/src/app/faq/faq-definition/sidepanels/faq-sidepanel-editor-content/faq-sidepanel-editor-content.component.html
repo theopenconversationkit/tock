@@ -86,7 +86,7 @@
   </div>
   <div [ngClass]="(tabName === 'Question') ? 'tock--active' : 'tock--hidden'">
 
-    <div class="mb-1 w-100 d-flex justify-content-between p-1">
+    <div class="mb-2 w-100 d-flex justify-content-between">
       <nb-form-field [ngClass]="['w-100', 'd-flex']">
         <div class="tock-search-icon nb-form-field-addon nb-form-field-prefix-small nb-form-field-addon-basic">
           <nb-icon nbPrefix pack="material-icons" icon="search"></nb-icon>
@@ -99,17 +99,22 @@
                  fullWidth fieldSize="small" nbInput />
         </div>
       </nb-form-field>
-      <button class="d-inline-block my-0 mx-0 tock-action tock--subtle-hover text-muted"
-              (click)="addUtterance()"
-              title="Add"
-              nbButton size="small" ghost status="secondary">
+      <button
+        nbButton
+        nbTooltip="Add"
+        class="tock-action tock--subtle-hover text-muted"
+        ghost
+        size="small"
+        status="secondary"
+        (click)="addUtterance()"
+      >
         <nb-icon icon="plus-outline"></nb-icon>
       </button>
     </div>
 
     <div class="tock-utterances-wrapper">
       <nb-alert [ngClass]="'mt-2'" accent="warning" *ngIf="!(editedUtterances$ | async)?.length">
-        Please add at least one question..
+        Please add at least one question
       </nb-alert>
       <table class="table table-sm table-bordered table-fixed tock-utterances-table">
         <colgroup>
@@ -123,17 +128,27 @@
           </td>
           <td>
             <div class="d-flex justify-content-center w-100">
-              <button class="d-inline-block my-0 mx-0 px-1 tock-action tock--subtle-hover text-muted"
-                      (click)="edit(u)"
-                      title="Edit"
-                      nbButton size="small" ghost status="secondary">
+              <button
+                nbButton
+                nbTooltip="Edit"
+                class="tock-action tock--subtle-hover text-muted"
+                ghost
+                size="small"
+                status="secondary"
+                (click)="edit(u)"
+              >
                 <nb-icon icon="edit-outline"></nb-icon>
               </button>
 
-              <button class="d-inline-block my-0 mx-0 px-1  tock-action tock--subtle-hover text-muted"
-                      (click)="remove(u)"
-                      title="Delete"
-                      nbButton size="small" ghost status="secondary">
+              <button
+                nbButton
+                nbTooltip="Delete"
+                class="tock-action tock--subtle-hover text-muted"
+                ghost
+                size="small"
+                status="secondary"
+                (click)="remove(u)"
+              >
                 <nb-icon icon="trash-2-outline"></nb-icon>
               </button>
             </div>
