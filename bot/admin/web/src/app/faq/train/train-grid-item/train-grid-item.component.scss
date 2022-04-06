@@ -17,33 +17,6 @@
 @import '../../common/_base_faq.scss';
 @include faq-item-style(); /* Better button hover style */
 
-.tock-col-a {
-  flex: 0 0 4%;
-}
-
-.tock-col-b {
-  flex: 0 0 28%;
-}
-
-.tock-col-c {
-  flex: 0 0 33%;
-}
-
-.tock-col-d {
-  flex: 1;
-}
-
-.tock-grid-item-card-body.tock--docked-panel,.tock-grid-item-card-body.tock--full_width--small {
-  .tock-col-b {
-    flex: 0 0 25%;
-    padding: 0 0 0 .5rem;
-  }
-
-  .tock-col-c {
-    flex: 0 0 48%;
-  }
-}
-
 /* Fix card overflow */
 nb-card,nb-card-body {
     overflow-x: hidden;
@@ -54,21 +27,12 @@ nb-card,nb-card-body {
 }
 
 .tock-btn-addfaq {
-    height: 32px;
-    width: 32px;
+    height: 40px;
+    width: 40px;
     display: flex;
     justify-content: center;
     background: transparent;
     border: 0;
-}
-
-
-
-.tock-date-zone {
-  position: absolute;
-  top: -15px;
-  left: 240px;
-  font-size: 0.8em;
 }
 
 .tock-option-label {
@@ -78,8 +42,6 @@ nb-card,nb-card-body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-
 
 nb-card {
   transition: opacity .5s ease;
