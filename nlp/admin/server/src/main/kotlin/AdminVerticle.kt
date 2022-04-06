@@ -406,7 +406,7 @@ open class AdminVerticle : WebVerticle() {
         // Remove an intent from an application model. If the intent does not belong to an other model, delete the intent.
         blockingJsonDelete(
             "/application/:applicationId/intent/:intentId",
-            setOf(nlpUser),
+            nlpUser,
             simpleLogger(
                 "Remove Intent",
                 {
@@ -428,7 +428,7 @@ open class AdminVerticle : WebVerticle() {
         // Remove a entity role from intent of an application model.
         blockingJsonDelete(
             "/application/:applicationId/intent/:intentId/entity/:entityType/:role",
-            setOf(nlpUser),
+            nlpUser,
             simpleLogger(
                 "Remove Entity Role from Intent",
                 {
@@ -456,7 +456,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonDelete(
             "/application/:applicationId/intent/:intentId/state/:state",
-            setOf(nlpUser),
+            nlpUser,
             simpleLogger(
                 "Remove Mandatory State from Intent",
                 {
@@ -483,7 +483,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonDelete(
             "/application/:applicationId/intent/:intentId/shared/:sharedIntentId",
-            setOf(nlpUser),
+            nlpUser,
             simpleLogger(
                 "Remove SharedIntent from Intent",
                 {
@@ -782,7 +782,7 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonDelete("/entity-type/:name", setOf(nlpUser), simpleLogger("Delete Entity", { it.path("name") to true })) {
+        blockingJsonDelete("/entity-type/:name", nlpUser, simpleLogger("Delete Entity", { it.path("name") to true })) {
             val entityType = it.path("name")
             if (it.organization == entityType.namespace()) {
                 front.deleteEntityTypeByName(entityType)
@@ -895,7 +895,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingDelete(
             "/dictionary/predefined-values/:entityType/:value",
-            setOf(nlpUser),
+            nlpUser,
             simpleLogger("Delete Predefined Value", { it.path("entityType") to it.path("value") })
         ) { context ->
             val entityType = context.path("entityType")
@@ -947,7 +947,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingDelete(
             "/dictionary/predefined-value/labels/:entityType/:value/:locale/:label",
-            setOf(nlpUser),
+            nlpUser,
             simpleLogger(
                 "Delete Predefined Label",
                 {
