@@ -408,7 +408,9 @@ export class Sentence extends EntityContainer {
   getIntentLabel(state: StateService): string {
     if (!this.intentLabel) {
       const intent = state.findIntentById(this.classification.intentId);
-      this.intentLabel = intent ? intent.name : nameFromQualifiedName(Intent.unknown);
+      this.intentLabel = intent ?
+        intent.label ? intent.label : intent.name :
+        nameFromQualifiedName(Intent.unknown);
     }
     return this.intentLabel;
   }
