@@ -16,18 +16,20 @@
 
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import { Router } from '@angular/router';
-import {ReplaySubject} from 'rxjs';
+import {ReplaySubject, Subscription} from 'rxjs';
+import {takeUntil} from "rxjs/operators";
+
 import {StateService} from 'src/app/core-nlp/state.service';
 import {DEFAULT_PANEL_NAME, WithSidePanel} from '../common/mixin/with-side-panel';
 import {blankFaqDefinition, FaqDefinition} from '../common/model/faq-definition';
 import {FaqQaFilter, FaqGridComponent} from './faq-grid/faq-grid.component';
 import {truncate} from '../common/util/string-utils';
 import {DialogService} from 'src/app/core-nlp/dialog.service';
-import {FaqDefinitionService} from '../common/faq-definition.service';
 import {FormProblems, InvalidFormProblems} from '../common/model/form-problems';
-import {takeUntil} from "rxjs/operators";
 import {FaqDefinitionSidepanelEditorService} from "./sidepanels/faq-definition-sidepanel-editor.service";
 import { Utterance } from '../common/model/utterance';
+import { BotConfigurationService } from '../../core/bot-configuration.service';
+import { BotApplicationConfiguration } from '../../core/model/configuration';
 
 // Specific action payload
 export type EditorTabName = 'Info' | 'Answer' | 'Question';
@@ -41,6 +43,8 @@ export class FaqDefinitionComponent extends WithSidePanel() implements OnInit, O
 
   activeQaTab: EditorTabName = 'Info';
 
+  configurations: BotApplicationConfiguration[];
+
   currentItem?: FaqDefinition;
 
   editorPanelName?: string;
@@ -48,7 +52,9 @@ export class FaqDefinitionComponent extends WithSidePanel() implements OnInit, O
   editorFormValid = false;
   editorFormWarnings: string[] = [];
 
-  initUtterance: Utterance
+  initUtterance: Utterance;
+
+  subscriptions = new Subscription();
 
   public filter: FaqQaFilter;
   @ViewChild(FaqGridComponent) grid;
@@ -59,7 +65,7 @@ export class FaqDefinitionComponent extends WithSidePanel() implements OnInit, O
     private readonly state: StateService,
     private readonly sidepanelEditorService: FaqDefinitionSidepanelEditorService,
     private readonly dialog: DialogService,
-    private readonly qaService: FaqDefinitionService,
+    private readonly botConfiguration: BotConfigurationService,
     private readonly router: Router
   ) {
     super();
@@ -77,18 +83,25 @@ export class FaqDefinitionComponent extends WithSidePanel() implements OnInit, O
       .subscribe(a => {
         this.currentItem = undefined;
         this.clearFilter();
-        this.grid.refresh(); // seems no need, but to be secure
         this.undock();
       });
 
       if(this.initUtterance){
         this.openNewSidepanel(this.initUtterance);
       }
+
+    this.subscriptions.add(
+      this.botConfiguration.configurations.subscribe(confs => {
+        this.configurations = confs;
+      })
+    );
   }
 
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
+
+    this.subscriptions.unsubscribe();
   }
 
   clearFilter(): void {
