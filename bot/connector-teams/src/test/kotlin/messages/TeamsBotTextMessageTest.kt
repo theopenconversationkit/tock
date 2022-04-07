@@ -16,8 +16,7 @@
 
 package ai.tock.bot.connector.teams.messages
 
-import com.microsoft.bot.schema.ActionTypes
-import com.microsoft.bot.schema.ActionTypes.MESSAGE_BACK
+import com.microsoft.bot.schema.ActionTypes.IM_BACK
 import com.microsoft.bot.schema.ActionTypes.OPEN_URL
 import com.microsoft.bot.schema.CardAction
 import com.microsoft.bot.schema.CardImage
@@ -33,7 +32,7 @@ class TeamsBotTextMessageTest {
         text = "text"
         value = "value"
     }
-    private val differentCardAction = CardAction(MESSAGE_BACK, "title").apply {
+    private val differentCardAction = CardAction(IM_BACK, "title").apply {
         displayText = "displayText"
         text = "text"
         value = "value"
