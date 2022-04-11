@@ -35,24 +35,27 @@
             <span>FAQ</span>
             <nb-select
               class="ml-2 mr-2"
-              placeholder="{{getRichIntentLabel()}}"
+              placeholder="{{ selectedIntent.placeholder }}"
               [(ngModel)]="selectedIntentId"
               (selectedChange)="changeIntent($event)"
             >
-              <nb-option *ngFor="let intent of intents" value="{{intent._id}}">
-                <span class="tock-option-label" title="{{intent.intentLabel()}}">
-                  {{intent.intentLabel()}}
+              <nb-option *ngFor="let intent of intents" value="{{ intent._id }}">
+                <span class="tock-option-label" title="{{ intent.intentLabel() }}">
+                  {{ intent.intentLabel() }}
                 </span>
               </nb-option>
             </nb-select>
+            <span nbTooltip="Detection probability" class="mr-2">{{ selectedIntent.probability }}%</span>
             <button
               *ngIf="state.hasRole(UserRole.botUser)"
+              nbButton
               nbTooltip="Create new FAQ"
               ghost
-              class="tock-btn-addfaq input-group-text tock--subtle-hover"
+              status="secondary"
+              class="tock--subtle-hover text-muted"
               (click)="redirectToFaqManagement()"
             >
-              <nb-icon pack="material-icons" icon="add_circle_outline"></nb-icon>
+              <nb-icon icon="plus-circle-outline"></nb-icon>
             </button>
           </div>
         </div>
