@@ -16,4 +16,6 @@
 
 package ai.tock.bot.connector.iadvize.model.response.conversation.payload
 
-interface Payload
+interface Payload {
+    val contentType: String
+}

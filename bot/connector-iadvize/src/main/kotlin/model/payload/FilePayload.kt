@@ -16,12 +16,17 @@
 
 package ai.tock.bot.connector.iadvize.model.response.conversation.payload
 
-import ai.tock.bot.connector.iadvize.model.response.conversation.payload.genericjson.Image
-import ai.tock.bot.connector.iadvize.model.response.conversation.payload.genericjson.Action
+import com.fasterxml.jackson.annotation.JsonValue
 
-data class GenericCardPayload(val title: String?,
-                              val text: String?,
-                              val image: Image?,
-                              val actions: MutableList<Action> = mutableListOf()) : Payload {
-    val contentType: String = "card/content"
+data class FilePayload(val fileName: String,
+                       val mimeType: MimeType,
+                       val url: String) : Payload {
+    override val contentType: String = "file"
+
+    enum class MimeType(@JsonValue val value: String) {
+        GIF("image/gif"),
+        PDF("application/pdf"),
+        PNG("image/png"),
+        JPEG("image/jpeg");
+    }
 }

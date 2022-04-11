@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.iadvize.model.response.conversation.payload
+package ai.tock.bot.connector.iadvize.model.response.conversation
 
-data class TextPayload(val value: String) : Payload {
-    val contentType: String = "text"
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeReply
+
+data class RepliesResponse(val replies: MutableList<IadvizeReply> = mutableListOf()) : IadvizeResponse {
+    constructor(iadvizeReply: IadvizeReply) : this(mutableListOf(iadvizeReply))
 }

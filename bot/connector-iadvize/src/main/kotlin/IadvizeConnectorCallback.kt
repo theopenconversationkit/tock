@@ -20,7 +20,7 @@ import ai.tock.bot.connector.ConnectorCallbackBase
 import ai.tock.bot.connector.iadvize.model.request.ConversationsRequest
 import ai.tock.bot.connector.iadvize.model.request.IadvizeRequest
 import ai.tock.bot.connector.iadvize.model.request.MessageRequest
-import ai.tock.bot.connector.iadvize.model.response.conversation.IadvizeMessageReplies
+import ai.tock.bot.connector.iadvize.model.response.conversation.MessageResponse
 import ai.tock.bot.connector.iadvize.model.response.conversation.IadvizeResponse
 import ai.tock.bot.connector.iadvize.model.response.conversation.payload.Payload
 import ai.tock.bot.connector.iadvize.model.response.conversation.payload.TextPayload
@@ -98,14 +98,14 @@ class IadvizeConnectorCallback(override val  applicationId: String,
 
        return when(request) {
             is ConversationsRequest ->
-               IadvizeMessageReplies(
+               MessageResponse(
                     request.idConversation,
                     request.idOperator,
                     LocalDateTime.now(),
                     LocalDateTime.now())
 
            is MessageRequest -> {
-               val replies = IadvizeMessageReplies(
+               val replies = MessageResponse(
                    request.idConversation,
                    request.idOperator,
                    LocalDateTime.now(),
@@ -128,7 +128,7 @@ class IadvizeConnectorCallback(override val  applicationId: String,
         context.fail(throwable)
     }
 
-    private fun <T> HttpServerResponse.endWithJson(response: T) {
+    fun <T> HttpServerResponse.endWithJson(response: T) {
         logger.debug { "iAdvize response : $response" }
 
         val writeValueAsString = mapper.writeValueAsString(response)

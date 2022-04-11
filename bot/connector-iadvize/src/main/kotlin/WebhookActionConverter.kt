@@ -16,24 +16,11 @@
 
 package ai.tock.bot.connector.iadvize
 
-import ai.tock.bot.connector.iadvize.model.request.IadvizeRequest
 import ai.tock.bot.connector.iadvize.model.request.MessageRequest
-import ai.tock.bot.connector.iadvize.model.response.conversation.payload.TextPayload
-import ai.tock.bot.engine.action.SendChoice
-import ai.tock.bot.engine.action.SendLocation
 import ai.tock.bot.engine.action.SendSentence
-import ai.tock.bot.engine.event.EndConversationEvent
 import ai.tock.bot.engine.event.Event
-import ai.tock.bot.engine.event.LoginEvent
-import ai.tock.bot.engine.event.LogoutEvent
-import ai.tock.bot.engine.event.MediaStatusEvent
-import ai.tock.bot.engine.event.NewDeviceEvent
-import ai.tock.bot.engine.event.NoInputEvent
-import ai.tock.bot.engine.event.StartConversationEvent
-import ai.tock.bot.engine.stt.SttService
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
-import ai.tock.bot.engine.user.UserLocation
 
 /**
  *

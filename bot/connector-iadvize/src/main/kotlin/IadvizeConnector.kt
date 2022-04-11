@@ -29,7 +29,7 @@ import ai.tock.bot.engine.event.Event
 import ai.tock.shared.error
 import mu.KotlinLogging
 import ai.tock.bot.connector.iadvize.model.response.AvailabilityStrategies.Strategy.customAvailability
-import ai.tock.bot.connector.iadvize.model.response.conversation.IadvizeReplies
+import ai.tock.bot.connector.iadvize.model.response.conversation.RepliesResponse
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMessage
 import ai.tock.bot.engine.action.Action
 import ai.tock.shared.jackson.mapper
@@ -37,7 +37,7 @@ import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.RoutingContext
 import java.time.LocalDateTime
 
-class IadvizeConnector(
+class IadvizeConnector internal constructor(
     val applicationId: String,
     val path: String,
     val editorUrl: String,
@@ -54,25 +54,32 @@ class IadvizeConnector(
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
-            router.get("$path/external-bots").handler { context -> handlerGetBots(context, controller) }
+            router.get("$path/external-bots")
+                .handler { context -> handlerGetBots(context, controller) }
 
-            router.get("$path/bots/:idOperator").handler { context -> handlerGetBot(context, controller) }
+            router.get("$path/bots/:idOperator")
+                .handler { context -> handlerGetBot(context, controller) }
 
-            router.put("$path/bots/:idOperator").handler { context -> handlerUpdateBot(context, controller) }
+            router.put("$path/bots/:idOperator")
+                .handler { context -> handlerUpdateBot(context, controller) }
 
-            router.get("$path/availability-strategies").handler(handlerStrategies)
+            router.get("$path/availability-strategies")
+                .handler { context -> handlerStrategies(context, controller) }
 
-            router.get("$path/bots/:idOperator/conversation-first-messages").handler(handlerFirstMessage)
+            router.get("$path/bots/:idOperator/conversation-first-messages")
+                .handler { context -> handlerFirstMessage(context, controller) }
 
-            router.post("$path/conversations").handler { context -> handlerStartConversation(context, controller) }
+            router.post("$path/conversations")
+                .handler { context -> handlerStartConversation(context, controller) }
 
-            router.post("$path/conversations/:idConversation/messages").handler { context -> handlerConversation(context, controller) }
+            router.post("$path/conversations/:idConversation/messages")
+                .handler { context -> handlerConversation(context, controller) }
         }
     }
 
-    protected var handlerGetBots: (RoutingContext, ConnectorController) -> Unit = { context, controller ->
+    var handlerGetBots: (RoutingContext, ConnectorController) -> Unit = { context, controller ->
         try {
-            logger.info { "request : GET /external-bots\nbody : ${context.bodyAsString}" }
+            logger.info { "request : GET /external-bots\nbody : ${context.getBodyAsString()}" }
             context.response().endWithJson(listOf(getBot(controller)))
         } catch (e: Throwable) {
             logger.error(e)
@@ -80,10 +87,10 @@ class IadvizeConnector(
         }
     }
 
-    protected var handlerGetBot: (RoutingContext, ConnectorController) -> Unit = { context, controller ->
+    var handlerGetBot: (RoutingContext, ConnectorController) -> Unit = { context, controller ->
         try {
             val idOperator: String = context.pathParam(QUERY_ID_OPERATOR)
-            logger.info { "request : GET /bots/$idOperator\nbody : ${context.bodyAsString}" }
+            logger.info { "request : GET /bots/$idOperator\nbody : ${context.getBodyAsString()}" }
             context.response().endWithJson(getBotUpdate(idOperator, controller))
         } catch (e: Throwable) {
             logger.error(e)
@@ -91,10 +98,10 @@ class IadvizeConnector(
         }
     }
 
-    protected var handlerUpdateBot: (RoutingContext, ConnectorController) -> Unit = { context, controller ->
+    var handlerUpdateBot: (RoutingContext, ConnectorController) -> Unit = { context, controller ->
         try {
             val idOperator: String = context.pathParam(QUERY_ID_OPERATOR)
-            logger.info { "request : PUT /bots/$idOperator\nbody : ${context.bodyAsString}" }
+            logger.info { "request : PUT /bots/$idOperator\nbody : ${context.getBodyAsString()}" }
             context.response().endWithJson(getBotUpdate(idOperator, controller))
         } catch (e: Throwable) {
             logger.error(e)
@@ -102,9 +109,9 @@ class IadvizeConnector(
         }
     }
 
-    protected var handlerStrategies: (RoutingContext) -> Unit = { context ->
+    var handlerStrategies: (RoutingContext, ConnectorController) -> Unit = { context, controller ->
         try {
-            logger.info { "request : GET /availability-strategies\nbody : ${context.bodyAsString}" }
+            logger.info { "request : GET /availability-strategies\nbody : ${context.getBodyAsString()}" }
             context.response().endWithJson(AvailabilityStrategies(strategy = customAvailability, availability = true))
         } catch (e: Throwable) {
             logger.error(e)
@@ -112,21 +119,21 @@ class IadvizeConnector(
         }
     }
 
-    protected var handlerFirstMessage: (RoutingContext) -> Unit = { context ->
+    var handlerFirstMessage: (RoutingContext, ConnectorController) -> Unit = { context, controller ->
         try {
             val idOperator: String = context.pathParam(QUERY_ID_OPERATOR)
-            logger.info { "request : GET /bots/$idOperator/conversation-first-messages\nbody : ${context.bodyAsString}" }
-            context.response().endWithJson(IadvizeReplies(IadvizeMessage(firstMessage)))
+            logger.info { "request : GET /bots/$idOperator/conversation-first-messages\nbody : ${context.getBodyAsString()}" }
+            context.response().endWithJson(RepliesResponse(IadvizeMessage(firstMessage)))
         } catch (e: Throwable) {
             logger.error(e)
             context.fail(500)
         }
     }
 
-    protected var handlerStartConversation: (RoutingContext, ConnectorController) -> Unit = { context, controller ->
+    var handlerStartConversation: (RoutingContext, ConnectorController) -> Unit = { context, controller ->
         try {
-            logger.info { "request : POST /conversations\nbody : ${context.bodyAsString}" }
-            val conversationRequest: ConversationsRequest = mapper.readValue(context.bodyAsString, ConversationsRequest::class.java)
+            logger.info { "request : POST /conversations\nbody : ${context.getBodyAsString()}" }
+            val conversationRequest: ConversationsRequest = mapper.readValue(context.getBodyAsString(), ConversationsRequest::class.java)
             val callback = IadvizeConnectorCallback(applicationId, controller, context, conversationRequest)
             callback.sendResponse()
         } catch (e: Throwable) {
@@ -135,18 +142,18 @@ class IadvizeConnector(
         }
     }
 
-    protected var handlerConversation: (RoutingContext, ConnectorController) -> Unit = { context, controller ->
+    var handlerConversation: (RoutingContext, ConnectorController) -> Unit = { context, controller ->
         try {
             val idConversation: String = context.pathParam(QUERY_ID_CONVERSATION)
             if(!isEcho(idConversation)) {
-                logger.info { "request : POST /conversations/$idConversation/messages\nbody : ${context.bodyAsString}" }
+                logger.info { "request : POST /conversations/$idConversation/messages\nbody : ${context.getBodyAsString()}" }
                 val iadvizeRequest: IadvizeRequest = mapRequest(idConversation, context)
                 logger.info { "body parsed : $iadvizeRequest" }
                 // warn echo message from iadvize
                 echo.add(idConversation)
                 handleRequest(controller, context, iadvizeRequest)
             } else {
-                logger.info { "request echo : POST /conversations/$idConversation/messages ${context.bodyAsString}"}
+                logger.info { "request echo : POST /conversations/$idConversation/messages ${context.getBodyAsString()}"}
                 context.response().end()
             }
         } catch (e: Throwable) {
@@ -156,12 +163,12 @@ class IadvizeConnector(
     }
 
     private fun mapRequest(idConversation: String, context: RoutingContext): IadvizeRequest {
-        val typeMessage: TypeMessage = mapper.readValue(context.bodyAsString, TypeMessage::class.java)
+        val typeMessage: TypeMessage = mapper.readValue(context.getBodyAsString(), TypeMessage::class.java)
         return when(typeMessage.type) {
             // json dont contains idConversation, to prevent null pointer, used inner class MessageRequestJson
             "text" -> {
                 val messageRequestJson: MessageRequestJson =
-                    mapper.readValue(context.bodyAsString, MessageRequestJson::class.java)
+                    mapper.readValue(context.getBodyAsString(), MessageRequestJson::class.java)
                 MessageRequest(messageRequestJson, idConversation)
             }
             else -> null

@@ -43,12 +43,12 @@ internal object IadvizeConnectorProvider : ConnectorProvider {
             listOf(
                 ConnectorTypeConfigurationField(
                     "URL de l'éditeur",
-                     EDITOR_URL,
+                    EDITOR_URL,
                     true
                 ),
                 ConnectorTypeConfigurationField(
                     "Premier message affiché par le bot avant le début de conversation",
-                     FIRST_MESSAGE,
+                    FIRST_MESSAGE,
                     true
                 )
             ),

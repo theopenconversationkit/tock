@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.iadvize.model.response.conversation
+package ai.tock.bot.connector.iadvize.model.response.conversation.payload
 
-import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeReply
-
-data class IadvizeReplies(val replies: MutableList<IadvizeReply> = mutableListOf()) : IadvizeResponse {
-    constructor(iadvizeReply: IadvizeReply) : this(mutableListOf(iadvizeReply))
+data class ProductOfferBundlePayload(val cards: MutableList<ProductOfferPayload> = mutableListOf()) : Payload {
+    override val contentType: String = "bundle/product-offer"
 }

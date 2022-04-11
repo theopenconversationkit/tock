@@ -16,6 +16,12 @@
 
 package ai.tock.bot.connector.iadvize.model.response.conversation.payload
 
-data class CardBundlePayload(val cards: MutableList<GenericCardPayload> = mutableListOf()) : Payload {
-    val contentType: String = "bundle/card"
+import ai.tock.bot.connector.iadvize.model.response.conversation.payload.genericjson.Image
+import ai.tock.bot.connector.iadvize.model.response.conversation.payload.genericjson.Action
+
+data class GenericCardPayload(val title: String?,
+                              val text: String?,
+                              val image: Image?,
+                              val actions: MutableList<Action> = mutableListOf()) : Payload {
+    override val contentType: String = "card/content"
 }

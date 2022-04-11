@@ -27,7 +27,7 @@ data class ProductOfferPayload(val name: String,
                                val availability: AvailabilityStatus,
                                val image: Image?,
                                val actions: MutableList<Action> = mutableListOf()) : Payload {
-    val contentType: String = "product-offer"
+    override val contentType: String = "product-offer"
 
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     enum class AvailabilityStatus(val status: String) {
