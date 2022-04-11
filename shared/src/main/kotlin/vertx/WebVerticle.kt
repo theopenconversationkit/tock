@@ -355,9 +355,9 @@ abstract class WebVerticle : AbstractVerticle() {
         val tockUser = user() as TockUser
         val tockUserRoles = tockUser.roles
         // if any of the role are in the profile then you can invoke the handler
-        if (roles.any { tockUserRole -> tockUserRole?.name in tockUser.roles}){
+        if (roles.any { tockUserRole -> tockUserRole?.name in tockUser.roles }) {
             val aRole = roles.first { it?.name in tockUserRoles }?.name
-                user()?.isAuthorized(aRole, resultHandler)
+            user()?.isAuthorized(aRole, resultHandler)
         } else {
             resultHandler.invoke(Future.failedFuture("Not authorized for user"))
         }
@@ -404,7 +404,7 @@ abstract class WebVerticle : AbstractVerticle() {
         role: TockUserRole,
         handler: (RoutingContext) -> O
     ) {
-        blockingJsonGet(path,setOf(role),handler)
+        blockingJsonGet(path, setOf(role), handler)
     }
 
     fun <O> blockingJsonGet(
@@ -424,7 +424,7 @@ abstract class WebVerticle : AbstractVerticle() {
         logger: RequestLogger = defaultRequestLogger,
         handler: (RoutingContext) -> Unit
     ) {
-        blockingPost(path,setOf(role),logger,handler)
+        blockingPost(path, setOf(role), logger, handler)
     }
 
     protected fun blockingPost(
@@ -464,7 +464,7 @@ abstract class WebVerticle : AbstractVerticle() {
         logger: RequestLogger = defaultRequestLogger,
         crossinline handler: (RoutingContext, F) -> O
     ) {
-        blockingUploadJsonPost(path, setOf(role),logger,handler)
+        blockingUploadJsonPost(path, setOf(role), logger, handler)
     }
 
     protected inline fun <reified F : Any, O> blockingUploadJsonPost(
@@ -526,7 +526,7 @@ abstract class WebVerticle : AbstractVerticle() {
         role: TockUserRole,
         crossinline handler: (RoutingContext, Pair<String, ByteArray>) -> O
     ) {
-        blockingUploadBinaryPost(path,setOf(role), handler)
+        blockingUploadBinaryPost(path, setOf(role), handler)
     }
 
     protected inline fun <O> blockingUploadBinaryPost(
@@ -583,7 +583,7 @@ abstract class WebVerticle : AbstractVerticle() {
         logger: RequestLogger = defaultRequestLogger,
         handler: (RoutingContext) -> Unit
     ) {
-        blockingDelete(path,role?.let { setOf(role) },logger,handler)
+        blockingDelete(path, role?.let { setOf(role) }, logger, handler)
     }
 
     fun blockingDelete(
@@ -612,7 +612,7 @@ abstract class WebVerticle : AbstractVerticle() {
         logger: RequestLogger = defaultRequestLogger,
         handler: (RoutingContext) -> Boolean
     ) {
-        blockingJsonDelete(path,setOf(role),logger,handler)
+        blockingJsonDelete(path, setOf(role), logger, handler)
     }
 
     protected fun blockingJsonDelete(
